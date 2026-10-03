@@ -1,7 +1,6 @@
 package identitycore
 
 import (
-	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -99,44 +98,6 @@ func TestPasswordLoginConfigurationRequiresEveryDependency(t *testing.T) {
 		PasswordLoginRequest(response, request, "", config)
 		if response.Code != http.StatusInternalServerError || signedIn || audited {
 			t.Fatalf("invalid password dependency %d response=%d signedIn=%v audited=%v", index, response.Code, signedIn, audited)
-		}
-	}
-}
-
-func TestMFAHTTPConfigurationRequiresEveryDependency(t *testing.T) {
-	t.Parallel()
-	valid := MFAHTTPConfig{
-		RecentlyAuthenticated: func(*http.Request, time.Duration) bool { return true },
-		ReadJSON:              func(http.ResponseWriter, *http.Request, any) bool { return true },
-		Setup:                 func(*http.Request) (Enrollment, error) { return Enrollment{}, nil },
-		Confirm:               func(*http.Request, string) error { return nil },
-		MarkStrong:            func(*http.Request) error { return nil },
-		Verify:                func(*http.Request, string) bool { return true },
-		Disable:               func(*http.Request) error { return nil },
-		Error:                 func(http.ResponseWriter, error, int) {},
-		JSON:                  func(http.ResponseWriter, any, int) {},
-		WebError:              func(http.ResponseWriter, *http.Request, error, int) {},
-		WebConfirmSuccess:     func(http.ResponseWriter, *http.Request) {},
-		WebDisableSuccess:     func(http.ResponseWriter, *http.Request) {},
-	}
-	mutations := []func(*MFAHTTPConfig){
-		func(config *MFAHTTPConfig) { config.ReadJSON = nil },
-		func(config *MFAHTTPConfig) { config.Setup = nil },
-		func(config *MFAHTTPConfig) { config.Confirm = nil },
-		func(config *MFAHTTPConfig) { config.MarkStrong = nil },
-		func(config *MFAHTTPConfig) { config.Verify = nil },
-		func(config *MFAHTTPConfig) { config.Disable = nil },
-		func(config *MFAHTTPConfig) { config.Error = nil },
-		func(config *MFAHTTPConfig) { config.JSON = nil },
-		func(config *MFAHTTPConfig) { config.WebError = nil },
-		func(config *MFAHTTPConfig) { config.WebConfirmSuccess = nil },
-		func(config *MFAHTTPConfig) { config.WebDisableSuccess = nil },
-	}
-	for index, mutate := range mutations {
-		config := valid
-		mutate(&config)
-		if _, err := NewMFAHandlers(config); !errors.Is(err, ErrInvalidConfig) {
-			t.Fatalf("invalid MFA HTTP dependency %d error = %v", index, err)
 		}
 	}
 }

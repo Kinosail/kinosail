@@ -3,7 +3,7 @@
   "scope": "All version-controlled packages/**/*.go Test/Benchmark/Fuzz declarations in *_test.go at the pinned baseline; browser/JS/scripts/app tests excluded. Test-only Go support inventory preserved.",
   "baseline_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
   "audit_complete": false,
-  "audit_limit": "Only entries with audit_status=reviewed were classified. Null decisions are explicit unread/incompletely-reviewed inventory and were preserved. This is a focused reviewed removal batch, not a claim that every low-signal package test has been found.",
+  "audit_limit": "Package audit is ongoing: only reviewed declarations have semantic verdicts. F/C rows from read-only auditors preserve distinct useful existing assertions/measurements and name precise remaining gaps; only watchrooms F rows have repaired/red-control/final-green claims.",
   "environment": {
     "checkout": "/Users/mikeo/Documents/Codex/2026-10-03/task/shared-identity",
     "branch": "test-overhaul-shared-identity",
@@ -19,15 +19,16 @@
     "baseline_test_lines": 66475,
     "declarations": 1900,
     "decisions": {
-      "R": 652,
-      "D": 18,
-      "unreviewed": 1224,
-      "F": 6
+      "R": 654,
+      "D": 27,
+      "unreviewed": 1198,
+      "C": 3,
+      "F": 18
     },
-    "removed_declarations": 18,
-    "removed_test_lines": 311,
-    "final_declarations": 1882,
-    "final_test_lines": 66164,
+    "removed_declarations": 27,
+    "removed_test_lines": 484,
+    "final_declarations": 1873,
+    "final_test_lines": 65991,
     "removed_support_helpers": 6,
     "removed_support_files": 3,
     "removed_support_lines": 141
@@ -441,7 +442,7 @@
       "parallel_review": {
         "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
         "reviewed_R": 129,
-        "remaining_pending": 12,
+        "remaining_pending": 3,
         "entry_evidence": "Complete per-declaration owner/caller/failure/history/actual-vs-fixtureE2E gap follows in declarations. D/F candidates independently reviewed before implementation."
       }
     },
@@ -614,7 +615,7 @@
       "parallel_review": {
         "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
         "reviewed_R": 30,
-        "remaining_pending": 3,
+        "remaining_pending": 2,
         "entry_evidence": "Complete per-declaration owner/caller/failure/history/actual-vs-fixtureE2E gap follows in declarations. D/F candidates independently reviewed before implementation."
       }
     },
@@ -629,8 +630,8 @@
     "catalog": {
       "parallel_review": {
         "reviewer": "/root/tooling",
-        "reviewed_R": 102,
-        "remaining_pending": 5,
+        "reviewed_R": 103,
+        "remaining_pending": 3,
         "entry_evidence": "Complete per-declaration owner/caller/failure/history/actual-vs-fixtureE2E gap follows in declarations. D/F candidates independently reviewed before implementation."
       }
     },
@@ -692,8 +693,8 @@
     "metadata": {
       "parallel_review": {
         "reviewer": "/root/tooling",
-        "reviewed_R": 94,
-        "remaining_pending": 4,
+        "reviewed_R": 95,
+        "remaining_pending": 1,
         "entry_evidence": "Complete per-declaration owner/caller/failure/history/actual-vs-fixtureE2E gap follows in declarations. D/F candidates independently reviewed before implementation."
       }
     },
@@ -701,7 +702,7 @@
       "parallel_review": {
         "reviewer": "/root",
         "reviewed_R": 18,
-        "remaining_pending": 2,
+        "remaining_pending": 0,
         "entry_evidence": "Complete per-declaration owner/caller/failure/history/actual-vs-fixtureE2E gap follows in declarations. D/F candidates independently reviewed before implementation."
       }
     }
@@ -11679,9 +11680,9 @@
       "owner_group": "catalog",
       "body_sha256": "89dcb11364dc0e3020c4daddf66667f885a2955ffcc4a78f5d17d249a58391b6",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain after independent comparison found a unique literal article policy despite shared ranking branches. Private integer probes are supplemented by the richer Unicode sorted-order keeper, but that keeper cannot subsume this the-prefix example.",
       "validation_command": "cd packages && go test ./catalog",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.794722-06:00",
@@ -11689,7 +11690,52 @@
         "Package": "github.com/MikeO7/kinosail/packages/catalog",
         "Test": "TestSearchRankCoversEveryMatchShape",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Removing the separate the-article prefix handling would rank The Alpha below its documented article match, changing common Library search relevance. The richer Unicode keeper only uses An Caf\u00e9; its an-article case does not cover the separately hardcoded the-prefix policy.",
+      "production_owner": [
+        "packages/catalog/{browse,browse_apply,browse_sort,letters,search,search_metadata,show}.go fully read"
+      ],
+      "production_callers": [
+        "apps/{player,subtitles}/internal/server/library and libraryIndex Browse use shared catalog; smartplaylist uses Filter/Sort; progress projection uses shared history"
+      ],
+      "remaining_coverage": "Retain this declaration for The Alpha article relevance. TestCoverageSearchUnicodeRankingAndFilterIsolation supplies Unicode normalization and actual sorted order for An Caf\u00e9; TestSearchSortingPreservesRelevanceAndTieBreaks checks exact/prefix ranking and ties.",
+      "coverage_gap": "No genuine browser E2E asserts relevance ordering of a the-prefixed title against word/substring matches. Catalog The Beacon fixtures exercise metadata selection, not this article ranking policy. The separate a-prefix policy has no dedicated assertion identified here.",
+      "execution_claim": "Existing baseline terminal event only; read-only reviewer did not run tests.",
+      "production_owner_paths": [
+        "packages/catalog/browse.go",
+        "packages/catalog/browse_apply.go",
+        "packages/catalog/browse_sort.go",
+        "packages/catalog/letters.go",
+        "packages/catalog/search.go",
+        "packages/catalog/search_metadata.go",
+        "packages/catalog/show.go"
+      ],
+      "history": [
+        "a69c5d2157d8ec4bd8e79326af29c435c35233d2 Stop obsolete catalog work after request cancellation",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "source_file_sha256": "2c5b6fc0453c2d1d4d576ec9f332f19b51e7cb114e541d9a594eb44ceb946173",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/catalog/browse_edges_test.go:54:TestSearchRankCoversEveryMatchShape",
+      "implementation_status": "retained",
+      "remaining_isolated_keepers": [
+        {
+          "file": "packages/catalog/coverage_browse_letters_final_test.go",
+          "line": 85,
+          "name": "TestCoverageSearchUnicodeRankingAndFilterIsolation",
+          "body_sha256": "f53ca69548b17b07d8676ff8a0f3b9bd1ae226bcd8cc18f97c509da5aa199716"
+        }
+      ],
+      "independent_review_resolution": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "result": "R restored before source deletion",
+        "reason": "The Unicode keeper only tests the separately hardcoded an-prefix policy."
+      },
+      "callers": [
+        "apps/{player,subtitles}/internal/server/library and libraryIndex Browse use shared catalog; smartplaylist uses Filter/Sort; progress projection uses shared history"
+      ],
+      "gap": "No genuine browser E2E asserts relevance ordering of a the-prefixed title against word/substring matches. Catalog The Beacon fixtures exercise metadata selection, not this article ranking policy. The separate a-prefix policy has no dedicated assertion identified here.",
+      "auditor": "/root/tooling",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/catalog/browse_edges_test.go",
@@ -11821,9 +11867,9 @@
       "owner_group": "catalog",
       "body_sha256": "79567272d74fbb978f403a6559cc688562176d42c9a6117763ac49b42a90012c",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Constructor field echoes and profile getter examples duplicate actual TestBrowseAccessPreservesCallerReferencesAndFreshViewState and RequestProgressStore projections; duplicate query rejection protected by ParseBrowse public matrix. Sole raw-whitespace value echo has no important separate bug contract.",
       "validation_command": "cd packages && go test ./catalog",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.366234-06:00",
@@ -11831,7 +11877,64 @@
         "Package": "github.com/MikeO7/kinosail/packages/catalog",
         "Test": "TestSmallBrowseHelpers",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Constructor field echoes and profile getter examples duplicate actual TestBrowseAccessPreservesCallerReferencesAndFreshViewState and RequestProgressStore projections; duplicate query rejection protected by ParseBrowse public matrix. Sole raw-whitespace value echo has no important separate bug contract.",
+      "production_owner": [
+        "packages/catalog/{browse,browse_apply,browse_sort,letters,search,search_metadata,show}.go fully read"
+      ],
+      "production_callers": [
+        "apps/{player,subtitles}/internal/server/library and libraryIndex Browse use shared catalog; smartplaylist uses Filter/Sort; progress projection uses shared history"
+      ],
+      "remaining_coverage": "packages/catalog/browse_access_test.go:15:TestBrowseAccessPreservesCallerReferencesAndFreshViewState; packages/catalog/progress_request_store_test.go:87:TestRequestProgressStoreProjectsViewerState; packages/catalog/catalog_test.go:16:TestBrowseValidatesBeforeSelectionAndBuildsStablePages. Genuine browser evidence is partial and does not establish equivalence to these isolated assertions.",
+      "coverage_gap": "Public Player populated title jump verifies one ASCII B toggle; actual Subtitles happy search checks Arrival/missing and playback watched/ContinueWatching. None tests Unicode/large-key ties, shared-storage aliasing, cancelled locks or malformed query matrix.",
+      "execution_claim": "Existing baseline terminal event only; read-only reviewer did not run tests.",
+      "production_owner_paths": [
+        "packages/catalog/browse.go",
+        "packages/catalog/browse_apply.go",
+        "packages/catalog/browse_sort.go",
+        "packages/catalog/letters.go",
+        "packages/catalog/search.go",
+        "packages/catalog/search_metadata.go",
+        "packages/catalog/show.go"
+      ],
+      "history": [
+        "a69c5d2157d8ec4bd8e79326af29c435c35233d2 Stop obsolete catalog work after request cancellation",
+        "c685c5a4d51ce18edc195c1197dd8c636687121d Reuse owned catalog snapshots during browse selection",
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code"
+      ],
+      "source_file_sha256": "f69043b262f82e8b9fb69c9a0bb9c6ffa4629febb7db1aebe61cd94e46a1f6dc",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/catalog/catalog_test.go:89:TestSmallBrowseHelpers",
+      "implementation_status": "removed",
+      "remaining_isolated_keepers": [
+        {
+          "file": "packages/catalog/browse_access_test.go",
+          "line": 15,
+          "name": "TestBrowseAccessPreservesCallerReferencesAndFreshViewState",
+          "body_sha256": "9c8bc8982abeea8a6430534e0753e2d48274b401190bb6944ac9a045d4bea6e7"
+        },
+        {
+          "file": "packages/catalog/progress_request_store_test.go",
+          "line": 87,
+          "name": "TestRequestProgressStoreProjectsViewerState",
+          "body_sha256": "8f3133cc86702236579b7b6f61e1a66388e1f8f4aab2dc1d19fd5a57136be4f7"
+        },
+        {
+          "file": "packages/catalog/catalog_test.go",
+          "line": 16,
+          "name": "TestBrowseValidatesBeforeSelectionAndBuildsStablePages",
+          "body_sha256": "2ff7069090aea565a470ee8aa6e18d5b7682eeb1eef3022fe55d13d323dbfb6d"
+        }
+      ],
+      "auditor": "/root/tooling",
+      "independent_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved",
+        "evidence": "Complete candidate bodies and referenced keepers/protocol owners read before removal; proposed BulkMetadataHTML and SearchRank D independently challenged and corrected to R. No browser equivalence inferred from synthetic fixtures."
+      },
+      "callers": [
+        "apps/{player,subtitles}/internal/server/library and libraryIndex Browse use shared catalog; smartplaylist uses Filter/Sort; progress projection uses shared history"
+      ],
+      "gap": "Public Player populated title jump verifies one ASCII B toggle; actual Subtitles happy search checks Arrival/missing and playback watched/ContinueWatching. None tests Unicode/large-key ties, shared-storage aliasing, cancelled locks or malformed query matrix."
     },
     {
       "file": "packages/catalog/catalog_test.go",
@@ -12748,9 +12851,9 @@
       "owner_group": "catalog",
       "body_sha256": "799de739ad7832ec488f21856ca3c5cced7afc1196cc566ee186ad8ec7ef9fe8",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Isolated 1/2-track template copy check has no important behavior beyond grammar and catches no playback/order/access bug. Public populated E2E reads album and actual track/audio; no exact grammatical count equivalence claimed.",
       "validation_command": "cd packages && go test ./catalog",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.793628-06:00",
@@ -12758,7 +12861,51 @@
         "Package": "github.com/MikeO7/kinosail/packages/catalog",
         "Test": "TestAlbumTrackCountUsesSingularAndPlural",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Isolated 1/2-track template copy check has no important behavior beyond grammar and catches no playback/order/access bug. Public populated E2E reads album and actual track/audio; no exact grammatical count equivalence claimed.",
+      "production_owner": [
+        "packages/catalog/{index,index_order,scan,watch,watch_events,detail_http}.go; watcher/detail/order fixtures fully read"
+      ],
+      "production_callers": [
+        "apps/{player,subtitles}/internal/server/server.go creates catalog.NewIndex; settings_library_http.go/api_admin.go UpdateRoots; album.go builds MustDetailSources and NewDetailHTTP"
+      ],
+      "remaining_coverage": "packages/catalog/detail_http_test.go:106:TestAlbumHandlerProjectsAndReportsResults. Genuine browser evidence is partial and does not establish equivalence to these isolated assertions.",
+      "coverage_gap": "Exact singular/plural grammar is intentionally unverified after removal. Player test-instance-library.spec.ts:52 reaches an album, then track, then audio on the populated real server. The retained AlbumHandler test checks projection, first-track default and read/render faults; it does not assert this copy.",
+      "execution_claim": "Existing baseline terminal event only; read-only reviewer did not run tests.",
+      "production_owner_paths": [
+        "packages/catalog/index.go",
+        "packages/catalog/index_order.go",
+        "packages/catalog/scan.go",
+        "packages/catalog/watch.go",
+        "packages/catalog/watch_events.go",
+        "packages/catalog/detail_http.go"
+      ],
+      "history": [
+        "b35a79a024cfbce7dc1700aaa33d4b5b6d5fbb3a fix(player): resolve web QA findings",
+        "58c7db72d9b22c0193b8c5c00b5648c55b075c40 Remove duplicate package contracts and frozen asset snapshots",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "source_file_sha256": "96d67509971cc7202bd81033e70e293fb1aba075fb0c85e00b40b1948cc69bf8",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/catalog/detail_http_test.go:16:TestAlbumTrackCountUsesSingularAndPlural",
+      "implementation_status": "removed",
+      "remaining_isolated_keepers": [
+        {
+          "file": "packages/catalog/detail_http_test.go",
+          "line": 106,
+          "name": "TestAlbumHandlerProjectsAndReportsResults",
+          "body_sha256": "4d10848dca5c984497f6a8e62059981b03ee79f6373a1e23c52d0a68cff33bbe"
+        }
+      ],
+      "auditor": "/root/tooling",
+      "independent_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved",
+        "evidence": "Complete candidate bodies and referenced keepers/protocol owners read before removal; proposed BulkMetadataHTML and SearchRank D independently challenged and corrected to R. No browser equivalence inferred from synthetic fixtures."
+      },
+      "callers": [
+        "apps/{player,subtitles}/internal/server/server.go creates catalog.NewIndex; settings_library_http.go/api_admin.go UpdateRoots; album.go builds MustDetailSources and NewDetailHTTP"
+      ],
+      "gap": "Exact singular/plural grammar is intentionally unverified after removal. Player test-instance-library.spec.ts:52 reaches an album, then track, then audio on the populated real server. The retained AlbumHandler test checks projection, first-track default and read/render faults; it does not assert this copy."
     },
     {
       "file": "packages/catalog/detail_http_test.go",
@@ -15223,12 +15370,42 @@
       "owner_group": "catalog",
       "body_sha256": "f476771d6457a9cca7099dbdda737e52bec349079aa5f9ee873035baf6a70f05",
       "baseline_result": "not_run",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "C",
+      "audit_status": "reviewed",
+      "risk": "Representative1024media with sidecars compares serial/parallel allocation/time and validates count on execution; benchmark is not an automatic go-test regression assertion or E2E. Keep measurement fixture honestly separate.",
       "validation_command": "cd packages && go test ./catalog",
       "baseline_event": null,
-      "baseline_not_run_reason": "Benchmark is not run by go test without -bench."
+      "baseline_not_run_reason": "Benchmark is not run by go test without -bench.",
+      "credible_failure": "Representative1024media with sidecars compares serial/parallel allocation/time and validates count on execution; benchmark is not an automatic go-test regression assertion or E2E. Keep measurement fixture honestly separate.",
+      "production_owner": [
+        "packages/catalog/{index,index_order,scan,watch,watch_events,detail_http}.go; watcher/detail/order fixtures fully read"
+      ],
+      "production_callers": [
+        "apps/{player,subtitles}/internal/server/server.go creates catalog.NewIndex; settings_library_http.go/api_admin.go UpdateRoots; album.go builds MustDetailSources and NewDetailHTTP"
+      ],
+      "remaining_coverage": "Retain this executed isolated boundary; actual public browser proof described in top-level e2e_evidence.",
+      "coverage_gap": "Populated Player library E2E proves normal media views/local TMDB/albumtrack/audio/book reader and creates one smart video Example rule; static media never injects watcher/provider errors, restricted readers, duplicateID/scratch growth or cache publication.",
+      "execution_claim": "Existing baseline terminal event only; read-only reviewer did not run tests.",
+      "production_owner_paths": [
+        "packages/catalog/index.go",
+        "packages/catalog/index_order.go",
+        "packages/catalog/scan.go",
+        "packages/catalog/watch.go",
+        "packages/catalog/watch_events.go",
+        "packages/catalog/detail_http.go"
+      ],
+      "history": [
+        "3e005ce72c44f4185dc00edaa034113251f8d66b Bound independent catalog, marker, and metadata work"
+      ],
+      "source_file_sha256": "849ce0941512f903ef7bcfa5f9b0c5a068840cbef2a26447a5a46ecb8bce8490",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/catalog/scan_concurrency_test.go:48:BenchmarkScanRoots",
+      "implementation_status": "retained",
+      "callers": [
+        "apps/{player,subtitles}/internal/server/server.go creates catalog.NewIndex; settings_library_http.go/api_admin.go UpdateRoots; album.go builds MustDetailSources and NewDetailHTTP"
+      ],
+      "gap": "Populated Player library E2E proves normal media views/local TMDB/albumtrack/audio/book reader and creates one smart video Example rule; static media never injects watcher/provider errors, restricted readers, duplicateID/scratch growth or cache publication.",
+      "auditor": "/root/tooling",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/catalog/search_metadata_test.go",
@@ -15396,9 +15573,9 @@
       "owner_group": "catalog",
       "body_sha256": "35554fa47fbba0a5ebf933cc4eae54082ee041fbf5e1483e4186fbd5f0e8f881",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Direct normalization literal echo duplicates stronger public Matches field-boundary/Unicode/large compatibility tests and CoverageSearch normalization+actual ordering. No independent important contract beyond those owners.",
       "validation_command": "cd packages && go test ./catalog",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.628888-06:00",
@@ -15406,7 +15583,70 @@
         "Package": "github.com/MikeO7/kinosail/packages/catalog",
         "Test": "TestSearchTextNormalizesASCIIAndUnicodeMetadata",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Direct normalization literal echo duplicates stronger public Matches field-boundary/Unicode/large compatibility tests and CoverageSearch normalization+actual ordering. No independent important contract beyond those owners.",
+      "production_owner": [
+        "packages/catalog/{browse,browse_apply,browse_sort,letters,search,search_metadata,show}.go fully read"
+      ],
+      "production_callers": [
+        "apps/{player,subtitles}/internal/server/library and libraryIndex Browse use shared catalog; smartplaylist uses Filter/Sort; progress projection uses shared history"
+      ],
+      "remaining_coverage": "packages/catalog/coverage_browse_letters_final_test.go:85:TestCoverageSearchUnicodeRankingAndFilterIsolation; packages/catalog/search_metadata_test.go:10:TestMetadataSearchPreservesFieldBoundariesAndNormalization; packages/catalog/search_metadata_test.go:31:TestMetadataSearchNormalizesEveryUnicodeField; packages/catalog/search_metadata_test.go:53:TestMetadataSearchPreservesLargeAndCompatibilityValues. Genuine browser evidence is partial and does not establish equivalence to these isolated assertions.",
+      "coverage_gap": "Public Player populated title jump verifies one ASCII B toggle; actual Subtitles happy search checks Arrival/missing and playback watched/ContinueWatching. None tests Unicode/large-key ties, shared-storage aliasing, cancelled locks or malformed query matrix.",
+      "execution_claim": "Existing baseline terminal event only; read-only reviewer did not run tests.",
+      "production_owner_paths": [
+        "packages/catalog/browse.go",
+        "packages/catalog/browse_apply.go",
+        "packages/catalog/browse_sort.go",
+        "packages/catalog/letters.go",
+        "packages/catalog/search.go",
+        "packages/catalog/search_metadata.go",
+        "packages/catalog/show.go"
+      ],
+      "history": [
+        "a69c5d2157d8ec4bd8e79326af29c435c35233d2 Stop obsolete catalog work after request cancellation",
+        "5c1e357b0fac091922d35ab64385c332524bd98a Speed up Player catalog search and cached artwork",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "source_file_sha256": "66cd9febf7df71298b92ff93d0f0ef08ea3874daaf7503b55e16adcc3ff3e660",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/catalog/search_sort_test.go:46:TestSearchTextNormalizesASCIIAndUnicodeMetadata",
+      "implementation_status": "removed",
+      "remaining_isolated_keepers": [
+        {
+          "file": "packages/catalog/coverage_browse_letters_final_test.go",
+          "line": 85,
+          "name": "TestCoverageSearchUnicodeRankingAndFilterIsolation",
+          "body_sha256": "f53ca69548b17b07d8676ff8a0f3b9bd1ae226bcd8cc18f97c509da5aa199716"
+        },
+        {
+          "file": "packages/catalog/search_metadata_test.go",
+          "line": 10,
+          "name": "TestMetadataSearchPreservesFieldBoundariesAndNormalization",
+          "body_sha256": "d66c66b22137bbc5ebcb4b1f896ebe125e779e7120a40e27c67b8f2be1074b1d"
+        },
+        {
+          "file": "packages/catalog/search_metadata_test.go",
+          "line": 31,
+          "name": "TestMetadataSearchNormalizesEveryUnicodeField",
+          "body_sha256": "981f455d0296358e1219bc1653987f150f17d4f891f11905694962157dffc6f9"
+        },
+        {
+          "file": "packages/catalog/search_metadata_test.go",
+          "line": 53,
+          "name": "TestMetadataSearchPreservesLargeAndCompatibilityValues",
+          "body_sha256": "1f08b60cbf8bf5a13a7105d407e48b71c419b7af1159ec506886425fd23fbc5f"
+        }
+      ],
+      "auditor": "/root/tooling",
+      "independent_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved",
+        "evidence": "Complete candidate bodies and referenced keepers/protocol owners read before removal; proposed BulkMetadataHTML and SearchRank D independently challenged and corrected to R. No browser equivalence inferred from synthetic fixtures."
+      },
+      "callers": [
+        "apps/{player,subtitles}/internal/server/library and libraryIndex Browse use shared catalog; smartplaylist uses Filter/Sort; progress projection uses shared history"
+      ],
+      "gap": "Public Player populated title jump verifies one ASCII B toggle; actual Subtitles happy search checks Arrival/missing and playback watched/ContinueWatching. None tests Unicode/large-key ties, shared-storage aliasing, cancelled locks or malformed query matrix."
     },
     {
       "file": "packages/catalog/sort_storage_test.go",
@@ -23508,17 +23748,48 @@
       "owner_group": "httpguard",
       "body_sha256": "da1c0699ec4ece2bb0663e3bbfa3d40acd8402bcda06945ccf1d7267f4a9481b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./httpguard",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Low: removes only duplicate or implementation placeholder assertion.",
+      "validation_command": "go -C packages test ./httpguard -run ^TestCSRFParseFunctionsRemainSafeBeforeExecution$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.883974-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/httpguard",
         "Test": "TestCSRFParseFunctionsRemainSafeBeforeExecution",
         "Elapsed": 0
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "9995e3de2000eb38e24e9f64e22074ee39fc1d58 Centralize CSRF templates and enforce incremental DRY"
+      ],
+      "sourcechecksum": "da1c0699ec4ece2bb0663e3bbfa3d40acd8402bcda06945ccf1d7267f4a9481b",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/httpguard/csrf_template_test.go:30:TestCSRFParseFunctionsRemainSafeBeforeExecution",
+      "source_file_checksum": "00d951cd5c6b13680fb170726a57ca0f7d6fbd7a423d00be99d39627bb201ac5",
+      "credible_failure": "Parse-time placeholder functions could return a nonempty literal, with no production requirement to execute the unbound template.",
+      "reason": "Private placeholder call-shape check; all actual production rendering clones the template and replaces placeholders. No unique observable contract.",
+      "production_owner": [
+        "packages/httpguard/csrf_template.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/locale.go",
+        "apps/subtitles/internal/server/locale.go",
+        "apps/player/internal/server/security.go:57",
+        "apps/subtitles/internal/server/security.go:55"
+      ],
+      "gap": "Populated login/profile mutation helpers exercise valid CSRF and strict JSON; no actual browser duplicate/Unicode/malformed-cookie/scanner flood/IPv6/concurrency/failing-reader matrix. Fixture passkey routes are UI-only. No exact runtime test executed here.",
+      "remaining_coverage": "packages/httpguard/csrf_template_test.go:12#TestCSRFTemplateSourceAndExecution; packages/httpguard/csrf_anonymous_test.go:10#TestAnonymousTemplatesDoNotRenderSessionTokens checks absence of anonymous markers. CSRFParseFuncs remains used by app locale/template compilation.",
+      "command": "go -C packages test ./httpguard -run ^TestCSRFParseFunctionsRemainSafeBeforeExecution$",
+      "unlocked_deletion": "None; production APIs have non-test callers.",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "source_read_evidence": "Full declaration body, table and local helper assertions read; production owners plus relevant caller blocks, dependency-backed types, overlapping owner tests, E2E source/history and CI routing inspected.",
+      "auditor": "/root/subtitles_shared/shared_identity/identity_security_audit",
+      "independent_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved",
+        "evidence": "Complete candidate bodies and referenced keepers/protocol owners read before removal; proposed BulkMetadataHTML and SearchRank D independently challenged and corrected to R. No browser equivalence inferred from synthetic fixtures."
+      },
+      "implementation_status": "removed"
     },
     {
       "file": "packages/httpguard/csrf_template_test.go",
@@ -23819,17 +24090,51 @@
       "owner_group": "httpguard",
       "body_sha256": "ba5fa41495a281c72ca9254e0bea5bf6bdb10f989264848ac78a4170a8cf7101",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./httpguard",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Low: removes only duplicate or implementation placeholder assertion.",
+      "validation_command": "go -C packages test ./httpguard -run ^TestDecodeRequestJSONAcceptsOneStrictObject$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.88354-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/httpguard",
         "Test": "TestDecodeRequestJSONAcceptsOneStrictObject",
         "Elapsed": 0
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "d4c7a24b43c9adb1f6320baae46c1a0c67cba969 Reject ambiguous external JSON before acquisition",
+        "f23ae81a0c5145e61d81d7480edb1d195d1405c4 Reject ambiguous JSON at shared request boundary",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "ba5fa41495a281c72ca9254e0bea5bf6bdb10f989264848ac78a4170a8cf7101",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/httpguard/httpguard_test.go:66:TestDecodeRequestJSONAcceptsOneStrictObject",
+      "source_file_checksum": "7e4ea9c2812eacd313c45f2950aa21d2f94bc024d0ef0157d42a1ae2a2c10352",
+      "credible_failure": "The HTTP JSON adapter could reject ordinary valid object or fail to populate target.",
+      "reason": "Positive adapter input repeats stronger public API reader proof with actual HTTP response translation.",
+      "production_owner": [
+        "packages/httpguard/json.go",
+        "packages/httpguard/unique_json.go",
+        "packages/httpguard/limiter.go"
+      ],
+      "callers": [
+        "packages/apihttp/api.go:16",
+        "packages/identitycore/viewer_mutations_http.go",
+        "packages/identitycore/viewer_onboarding_http.go"
+      ],
+      "gap": "Populated login/profile mutation helpers exercise valid CSRF and strict JSON; no actual browser duplicate/Unicode/malformed-cookie/scanner flood/IPv6/concurrency/failing-reader matrix. Fixture passkey routes are UI-only. No exact runtime test executed here.",
+      "remaining_coverage": "packages/apihttp/api_test.go:13#TestReadJSONAndResponses checks valid struct population through apihttp.ReadJSON -> httpguard.DecodeRequestJSON plus unknown-field400 response; httpguard request negative matrix remains.",
+      "command": "go -C packages test ./httpguard -run ^TestDecodeRequestJSONAcceptsOneStrictObject$",
+      "unlocked_deletion": "None; production APIs have non-test callers.",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "source_read_evidence": "Full declaration body, table and local helper assertions read; production owners plus relevant caller blocks, dependency-backed types, overlapping owner tests, E2E source/history and CI routing inspected.",
+      "auditor": "/root/subtitles_shared/shared_identity/identity_security_audit",
+      "independent_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved",
+        "evidence": "Complete candidate bodies and referenced keepers/protocol owners read before removal; proposed BulkMetadataHTML and SearchRank D independently challenged and corrected to R. No browser equivalence inferred from synthetic fixtures."
+      },
+      "implementation_status": "removed"
     },
     {
       "file": "packages/httpguard/httpguard_test.go",
@@ -24623,17 +24928,50 @@
       "owner_group": "httpguard",
       "body_sha256": "7ee173b5ff313d02973acea6438f2c354c80c9f299c12eb8d9d85271c7974714",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./httpguard",
+      "decision": "F",
+      "audit_status": "reviewed",
+      "risk": "Important security/failure boundary; deleting without equivalent proof loses an independently exercised defect.",
+      "validation_command": "go -C packages test ./httpguard -run ^TestPublicGuardRemainingCapacityAndExpiryEdges$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.882947-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/httpguard",
         "Test": "TestPublicGuardRemainingCapacityAndExpiryEdges",
         "Elapsed": 0
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "7ee173b5ff313d02973acea6438f2c354c80c9f299c12eb8d9d85271c7974714",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/httpguard/public_test.go:124:TestPublicGuardRemainingCapacityAndExpiryEdges",
+      "source_file_checksum": "d165533e4a7f6add9fe0da7fee6590efa876e4adaf47270d2d34f850e9188ad6",
+      "credible_failure": "Expired source state could never be reclaimed or global64 cap bypassed; invalid range endpoints could pass.",
+      "reason": "Retain unique global-capacity/expiry cases, but saturated-prefix assertion says fail closed although strikePrefix returns false and merely does not allocate. The reclaimed-prefix case does not assert the new bucket was added; repair wording/assertion at owning boundary in separately authorized test work.",
+      "production_owner": [
+        "packages/httpguard/public.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/tripwire.go:10",
+        "apps/subtitles/internal/server/tripwire.go:10"
+      ],
+      "gap": "Populated login/profile mutation helpers exercise valid CSRF and strict JSON; no actual browser duplicate/Unicode/malformed-cookie/scanner flood/IPv6/concurrency/failing-reader matrix. Fixture passkey routes are UI-only. No exact runtime test executed here.",
+      "remaining_coverage": "packages/httpguard/public_test.go:124 remains unique global64 and stale-source proof; TestPublicCapacityBoundsSourcesAndIPv6Prefixes covers source/prefix limits; no actual browser saturation proof.",
+      "command": "go -C packages test ./httpguard -run ^TestPublicGuardRemainingCapacityAndExpiryEdges$",
+      "unlocked_deletion": "None; production APIs have non-test callers.",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "source_read_evidence": "Full declaration body, table and local helper assertions read; production owners plus relevant caller blocks, dependency-backed types, overlapping owner tests, E2E source/history and CI routing inspected.",
+      "failure_analysis": {
+        "useful_retained_assertion": "The current global64 capacity assertion and stale-source reclamation fail when global admission cap or source cleanup is removed.",
+        "assertion_blindspot": "Saturated-prefix false means no prefix quarantine/allocation, not fail-closed denial; new-prefix reclaim does not check the new bucket.",
+        "minimal_existing_test_improvement": "Correct misleading failure wording; after reclaim assert the new /64 bucket exists and map remains bounded.",
+        "red_control_plan": "Remove prefix cleanup/allocation for that new bucket; repaired assertion must fail. Global cap proof already observable.",
+        "control_executed": false,
+        "repair_applied": false,
+        "state": "read_only_proposal_requires_parent_control_and_keeper_execution"
+      },
+      "auditor": "/root/subtitles_shared/shared_identity/identity_security_audit",
+      "implementation_status": "retained; identified limited control or optional measurement/consolidation gap documented; no assertion/code change or candidate validation claimed"
     },
     {
       "file": "packages/httpguard/route_pattern_test.go",
@@ -25846,17 +26184,50 @@
       "owner_group": "identitycore",
       "body_sha256": "8c7cab57af7cde284acef499e05d9d11b3ff50fea51282c5832b7b44bfab8996",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./identitycore",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Low for important asserted behavior: positive/one-use/persistence keepers remain. Explicit pre-existing gap in malformed-state guard proof.",
+      "validation_command": "go -C packages test ./identitycore -run ^TestFactorVerifyRejectsInvalidStateWithoutPersistence$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.6284-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/identitycore",
         "Test": "TestFactorVerifyRejectsInvalidStateWithoutPersistence",
         "Elapsed": 0
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "8c7cab57af7cde284acef499e05d9d11b3ff50fea51282c5832b7b44bfab8996",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/identitycore/factor_transaction_test.go:238:TestFactorVerifyRejectsInvalidStateWithoutPersistence",
+      "source_file_checksum": "38ab73627f047e5459005e4be8bf20925c6e8593aaaef2b840688ee570504a43",
+      "credible_failure": "It detects accepting any arbitrary wrong recovery or nil transaction, but every identity/input/count rejection row currently has no matching valid TOTP/recovery control; removing those guards leaves expected rejection.",
+      "reason": "Invalid-input matrix mostly rejects for unrelated missing identity/invalid code/no recovery match. Wrong-recovery/no-write behavior duplicates stronger valid recovery then replay rejection; nil-receiver convenience has no observed production caller. No unique important defect is independently exercised. The eleven-empty-code row provides no count-guard proof.",
+      "production_owner": [
+        "packages/identitycore/factor_transaction.go",
+        "packages/identitycore/mfa.go",
+        "packages/identitycore/sessions_admin.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/profiles_mfa.go",
+        "apps/subtitles/internal/server/profiles_mfa.go",
+        "apps/player/internal/server/mfa.go",
+        "apps/subtitles/internal/server/mfa.go"
+      ],
+      "gap": "Count/input guard isolation is not provided by this declaration or actual E2E; deleting these vacuous rows does not remove that nonexistent proof. Nil receiver defense is intentionally no longer unit-anchored if deleted; production always constructs the transaction.",
+      "remaining_coverage": "packages/identitycore/factor_transaction_test.go:215#TestFactorVerifyAcceptsTOTPAndConsumesRecoveryOnce exercises valid TOTP, matching one-use recovery, unchanged sessions and failed replay/no extra write; :274#TestFactorRecoveryPersistenceFailureDoesNotConsumeCode guards recovery persistence failure. Gap: no genuine otherwise-matching11-recovery-code rejection proof reviewed, and existing malformed identity/code rows do not isolate those guards.",
+      "command": "go -C packages test ./identitycore -run ^TestFactorVerifyRejectsInvalidStateWithoutPersistence$",
+      "unlocked_deletion": "None; production APIs have non-test callers.",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "source_read_evidence": "Full declaration body, table and local helper assertions read; production owners plus relevant caller blocks, dependency-backed types, overlapping owner tests, E2E source/history and CI routing inspected.",
+      "auditor": "/root/subtitles_shared/shared_identity/identity_security_audit",
+      "independent_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved",
+        "evidence": "Complete candidate bodies and referenced keepers/protocol owners read before removal; proposed BulkMetadataHTML and SearchRank D independently challenged and corrected to R. No browser equivalence inferred from synthetic fixtures."
+      },
+      "implementation_status": "removed"
     },
     {
       "file": "packages/identitycore/factor_transaction_test.go",
@@ -26183,17 +26554,47 @@
       "owner_group": "identitycore",
       "body_sha256": "3b7bbcbdc92487a300b67de40b7d9a6b0acacf7048264a98b57207cd767ca43e",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./identitycore",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Low: removes only duplicate or implementation placeholder assertion.",
+      "validation_command": "go -C packages test ./identitycore -run ^TestMFAHTTPConfigurationRequiresEveryDependency$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.622829-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/identitycore",
         "Test": "TestMFAHTTPConfigurationRequiresEveryDependency",
         "Elapsed": 0
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "62393eeb5019643102e20ca7e019b4ad1d941a73 Fix identity lifecycle and delegated session authority",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "3b7bbcbdc92487a300b67de40b7d9a6b0acacf7048264a98b57207cd767ca43e",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/identitycore/handlers_config_test.go:106:TestMFAHTTPConfigurationRequiresEveryDependency",
+      "source_file_checksum": "432c3c6c81edce21dee476546b7dc574c527e48f39bd30321a4072400713c22a",
+      "credible_failure": "Factory could accept a missing callback.",
+      "reason": "The11 missing-callback rows exactly repeat stronger public factory matrix; no unique assertion. Both omit RecentlyAuthenticated=nil, so deletion does not remove that absent proof.",
+      "production_owner": [
+        "packages/identitycore/handlers.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/mfa.go",
+        "apps/subtitles/internal/server/mfa.go"
+      ],
+      "gap": "Actual valid login/first-install/MFA gate covers only ordinary success. No server E2E missing-callback, persistence-failure, stale enrollment, strong API session, strict malformed form, boundary-size or domain-error injection was found. No new execution here.",
+      "remaining_coverage": "packages/identitycore/handlers_mfa_disable_test.go:82#TestMFADisableConfigurationFailsClosedBeforeCallbacks checks same11 callback omissions, ErrInvalidConfig, all returned handlers nil and no callback events, plus valid config.",
+      "command": "go -C packages test ./identitycore -run ^TestMFAHTTPConfigurationRequiresEveryDependency$",
+      "unlocked_deletion": "None; production APIs have non-test callers.",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "source_read_evidence": "Full declaration body, table and local helper assertions read; production owners plus relevant caller blocks, dependency-backed types, overlapping owner tests, E2E source/history and CI routing inspected.",
+      "auditor": "/root/subtitles_shared/shared_identity/identity_security_audit",
+      "independent_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved",
+        "evidence": "Complete candidate bodies and referenced keepers/protocol owners read before removal; proposed BulkMetadataHTML and SearchRank D independently challenged and corrected to R. No browser equivalence inferred from synthetic fixtures."
+      },
+      "implementation_status": "removed"
     },
     {
       "file": "packages/identitycore/handlers_mfa_disable_test.go",
@@ -26335,17 +26736,51 @@
       "owner_group": "identitycore",
       "body_sha256": "0355094f7077223cba3c9c91d754ffad76a9133d6c9762ce85fbc6e2f995d31d",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./identitycore",
+      "decision": "F",
+      "audit_status": "reviewed",
+      "risk": "Important security/failure boundary; deleting without equivalent proof loses an independently exercised defect.",
+      "validation_command": "go -C packages test ./identitycore -run ^TestRespondDenial$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.629198-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/identitycore",
         "Test": "TestRespondDenial",
         "Elapsed": 0
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "62393eeb5019643102e20ca7e019b4ad1d941a73 Fix identity lifecycle and delegated session authority",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "0355094f7077223cba3c9c91d754ffad76a9133d6c9762ce85fbc6e2f995d31d",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/identitycore/handlers_test.go:38:TestRespondDenial",
+      "source_file_checksum": "f01efd73526d7bc7c62d62c2e70cacff2240ae3d77d833d02a799f35c54386b5",
+      "credible_failure": "Remote denial could use ordinary403 instead of404, MFA could lose its exact redirect, or ordinary denial could emit JSON; MFA JSON could omit its enrollment flag undetected.",
+      "reason": "Retain unique denial-presentation/audit mapping and exact MFA redirect. assertMFAJSONDenial only checks a nonnil value, so map with incorrect/missing mfaEnrollmentRequired passes. Minimal repair checks returned map enrollment flag=true (and the intended error field). Existing actual browser only proves web enrollment redirect, not API JSON flag.",
+      "production_owner": [
+        "packages/identitycore/handlers.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/auth.go",
+        "apps/subtitles/internal/server/auth.go"
+      ],
+      "gap": "Actual valid login/first-install/MFA gate covers only ordinary success. No server E2E missing-callback, persistence-failure, stale enrollment, strong API session, strict malformed form, boundary-size or domain-error injection was found. No new execution here.",
+      "remaining_coverage": "packages/identitycore/handlers_test.go:38 remains primary shared denial adapter proof; packages/identitycore/access_test.go tests policy decisions, not JSON payload; apps/player/e2e/test-instance.spec.ts:65 verifies web MFA gate only.",
+      "command": "go -C packages test ./identitycore -run ^TestRespondDenial$",
+      "unlocked_deletion": "None; production APIs have non-test callers.",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "source_read_evidence": "Full declaration body, table and local helper assertions read; production owners plus relevant caller blocks, dependency-backed types, overlapping owner tests, E2E source/history and CI routing inspected.",
+      "failure_analysis": {
+        "useful_retained_assertion": "404 remote denial, exact MFA web redirect, audit callback and ordinary-vs-JSON transport already independently exercised.",
+        "assertion_blindspot": "MFA API map can omit mfaEnrollmentRequired or set it false while nonnil JSON check passes.",
+        "minimal_existing_test_improvement": "Assert map mfaEnrollmentRequired=true and required error field in current MFA JSON row.",
+        "red_control_plan": "Temporarily remove/set false enrollment flag in production response; repaired row must fail.",
+        "control_executed": false,
+        "repair_applied": false,
+        "state": "read_only_proposal_requires_parent_control_and_keeper_execution"
+      },
+      "auditor": "/root/subtitles_shared/shared_identity/identity_security_audit",
+      "implementation_status": "retained; identified limited control or optional measurement/consolidation gap documented; no assertion/code change or candidate validation claimed"
     },
     {
       "file": "packages/identitycore/handlers_test.go",
@@ -26355,17 +26790,51 @@
       "owner_group": "identitycore",
       "body_sha256": "ac2c34798d16dcbdf1824f7b2539cc282e3e03e443f3a9aa2491fa59f1da5b6c",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./identitycore",
+      "decision": "F",
+      "audit_status": "reviewed",
+      "risk": "Important security/failure boundary; deleting without equivalent proof loses an independently exercised defect.",
+      "validation_command": "go -C packages test ./identitycore -run ^TestOwnerMiddleware$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.627465-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/identitycore",
         "Test": "TestOwnerMiddleware",
         "Elapsed": 0
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "62393eeb5019643102e20ca7e019b4ad1d941a73 Fix identity lifecycle and delegated session authority",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "ac2c34798d16dcbdf1824f7b2539cc282e3e03e443f3a9aa2491fa59f1da5b6c",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/identitycore/handlers_test.go:132:TestOwnerMiddleware",
+      "source_file_checksum": "f01efd73526d7bc7c62d62c2e70cacff2240ae3d77d833d02a799f35c54386b5",
+      "credible_failure": "A Viewer could reach next, stale Owner could reach sensitive mutation, or stale Owner API response could omit stepUpRequired despite403.",
+      "reason": "Retain valuable status/next admission matrix. Step-up JSON value and redirect Location are never checked, so both could be wrong while the test passes. Minimal repair checks stepUpRequired=true in JSON and exact /login?step-up=true redirect for existing rows.",
+      "production_owner": [
+        "packages/identitycore/handlers.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/auth.go:272",
+        "apps/subtitles/internal/server/auth.go:209"
+      ],
+      "gap": "Actual valid login/first-install/MFA gate covers only ordinary success. No server E2E missing-callback, persistence-failure, stale enrollment, strong API session, strict malformed form, boundary-size or domain-error injection was found. No new execution here.",
+      "remaining_coverage": "packages/identitycore/handlers_test.go:132 is primary Owner adapter admission; handlers_config_test.go:33 checks freshness callback/window; management_session_test.go:56 checks sensitive GET/HEAD. No actual step-up API payload or stale mutation browser proof reviewed.",
+      "command": "go -C packages test ./identitycore -run ^TestOwnerMiddleware$",
+      "unlocked_deletion": "None; production APIs have non-test callers.",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "source_read_evidence": "Full declaration body, table and local helper assertions read; production owners plus relevant caller blocks, dependency-backed types, overlapping owner tests, E2E source/history and CI routing inspected.",
+      "failure_analysis": {
+        "useful_retained_assertion": "Viewer/stale Owner cannot reach next; local/managed/fresh Owner admission and safe read behavior are exercised.",
+        "assertion_blindspot": "Step-up map flag and Location value not checked; status303/403 remains even if payload/target wrong.",
+        "minimal_existing_test_improvement": "Assert stepUpRequired=true JSON and exact callback-provided /login?step-up=true Location in existing rows.",
+        "red_control_plan": "Temporarily remove JSON flag or change redirect target; repaired corresponding existing row must fail.",
+        "control_executed": false,
+        "repair_applied": false,
+        "state": "read_only_proposal_requires_parent_control_and_keeper_execution"
+      },
+      "auditor": "/root/subtitles_shared/shared_identity/identity_security_audit",
+      "implementation_status": "retained; identified limited control or optional measurement/consolidation gap documented; no assertion/code change or candidate validation claimed"
     },
     {
       "file": "packages/identitycore/handlers_test.go",
@@ -26375,17 +26844,51 @@
       "owner_group": "identitycore",
       "body_sha256": "a409fc730e5e2adb79f8dbcad09cf4bd0d0c44f347ded06118eb7d7a95358fbc",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./identitycore",
+      "decision": "F",
+      "audit_status": "reviewed",
+      "risk": "Important security/failure boundary; deleting without equivalent proof loses an independently exercised defect.",
+      "validation_command": "go -C packages test ./identitycore -run ^TestLoginRequestLifecycle$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.629227-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/identitycore",
         "Test": "TestLoginRequestLifecycle",
         "Elapsed": 0
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "62393eeb5019643102e20ca7e019b4ad1d941a73 Fix identity lifecycle and delegated session authority",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "a409fc730e5e2adb79f8dbcad09cf4bd0d0c44f347ded06118eb7d7a95358fbc",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/identitycore/handlers_test.go:187:TestLoginRequestLifecycle",
+      "source_file_checksum": "f01efd73526d7bc7c62d62c2e70cacff2240ae3d77d833d02a799f35c54386b5",
+      "credible_failure": "Wrong credentials or failed session persistence could still audit/create a session; successful login could bypass configured ReturnPath and redirect to raw caller input.",
+      "reason": "Retain unique HTTP status plus sign-in/audit suppression after credential or persistence failure. Current success only checks303, not Location; replacing ReturnPath(next) with next still passes. Minimal repair asserts existing success Location=/library for input /requested. Core login tests verify profile propagation/error identity but cannot prove HTTP ReturnPath use.",
+      "production_owner": [
+        "packages/identitycore/handlers.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/profiles_http.go",
+        "apps/subtitles/internal/server/profiles_http.go"
+      ],
+      "gap": "Actual valid login/first-install/MFA gate covers only ordinary success. No server E2E missing-callback, persistence-failure, stale enrollment, strong API session, strict malformed form, boundary-size or domain-error injection was found. No new execution here.",
+      "remaining_coverage": "packages/identitycore/handlers_test.go:187 anchors adapter failures; login_test.go:34 anchors core propagated session error/profile ID; actual first-install login is positive ordinary path and does not verify requested-return sanitization.",
+      "command": "go -C packages test ./identitycore -run ^TestLoginRequestLifecycle$",
+      "unlocked_deletion": "None; production APIs have non-test callers.",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "source_read_evidence": "Full declaration body, table and local helper assertions read; production owners plus relevant caller blocks, dependency-backed types, overlapping owner tests, E2E source/history and CI routing inspected.",
+      "failure_analysis": {
+        "useful_retained_assertion": "Credential rejection and failed SignIn suppress audit and session-success response; shared HTTP failure translation valuable.",
+        "assertion_blindspot": "Success303 alone does not prove configured ReturnPath rather than raw next is used.",
+        "minimal_existing_test_improvement": "Assert success Location=/library from fixture ReturnPath for raw next=/requested.",
+        "red_control_plan": "Temporarily redirect raw next; repaired existing success row must fail.",
+        "control_executed": false,
+        "repair_applied": false,
+        "state": "read_only_proposal_requires_parent_control_and_keeper_execution"
+      },
+      "auditor": "/root/subtitles_shared/shared_identity/identity_security_audit",
+      "implementation_status": "retained; identified limited control or optional measurement/consolidation gap documented; no assertion/code change or candidate validation claimed"
     },
     {
       "file": "packages/identitycore/handlers_test.go",
@@ -27175,17 +27678,47 @@
       "owner_group": "identitycore",
       "body_sha256": "56389ad51b56f064a2daca5c4cb62bc26487777c8c185e85d397c3ba02e438b5",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./identitycore",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Low: removes only duplicate or implementation placeholder assertion.",
+      "validation_command": "go -C packages test ./identitycore -run ^TestNewMFAHandlersRejectsInvalidConfig$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.624692-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/identitycore",
         "Test": "TestNewMFAHandlersRejectsInvalidConfig",
         "Elapsed": 0
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "62393eeb5019643102e20ca7e019b4ad1d941a73 Fix identity lifecycle and delegated session authority",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "56389ad51b56f064a2daca5c4cb62bc26487777c8c185e85d397c3ba02e438b5",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/identitycore/mfa_http_test.go:118:TestNewMFAHandlersRejectsInvalidConfig",
+      "source_file_checksum": "83e41b319d7924e098f706fa2468d2a417c2419dc4c71889371d4649e8c75075",
+      "credible_failure": "All-empty factory configuration could return handlers rather than ErrInvalidConfig.",
+      "reason": "Zero-config smoke repeats the same conjunctive factory missing-dependency contract fully covered by the stronger11-row public matrix. No independent important contract beyond those omissions.",
+      "production_owner": [
+        "packages/identitycore/handlers.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/mfa.go",
+        "apps/subtitles/internal/server/mfa.go"
+      ],
+      "gap": "Actual valid login/first-install/MFA gate covers only ordinary success. No server E2E missing-callback, persistence-failure, stale enrollment, strong API session, strict malformed form, boundary-size or domain-error injection was found. No new execution here.",
+      "remaining_coverage": "packages/identitycore/handlers_mfa_disable_test.go:82#TestMFADisableConfigurationFailsClosedBeforeCallbacks checks all returned handlers nil, ErrInvalidConfig and no callbacks for individual missing deps; complete positive config additionally exercised.",
+      "command": "go -C packages test ./identitycore -run ^TestNewMFAHandlersRejectsInvalidConfig$",
+      "unlocked_deletion": "None; production APIs have non-test callers.",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "source_read_evidence": "Full declaration body, table and local helper assertions read; production owners plus relevant caller blocks, dependency-backed types, overlapping owner tests, E2E source/history and CI routing inspected.",
+      "auditor": "/root/subtitles_shared/shared_identity/identity_security_audit",
+      "independent_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved",
+        "evidence": "Complete candidate bodies and referenced keepers/protocol owners read before removal; proposed BulkMetadataHTML and SearchRank D independently challenged and corrected to R. No browser equivalence inferred from synthetic fixtures."
+      },
+      "implementation_status": "removed"
     },
     {
       "file": "packages/identitycore/mfa_http_test.go",
@@ -27577,17 +28110,51 @@
       "owner_group": "identitycore",
       "body_sha256": "a0bf4590bd5801d9622865f888d2bc818fc887fa98d634c89f88549c628b531c",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./identitycore",
+      "decision": "F",
+      "audit_status": "reviewed",
+      "risk": "Important security/failure boundary; deleting without equivalent proof loses an independently exercised defect.",
+      "validation_command": "go -C packages test ./identitycore -run ^TestMFAExpiryDiscardAndNilEngine$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.612382-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/identitycore",
         "Test": "TestMFAExpiryDiscardAndNilEngine",
         "Elapsed": 0
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "a0bf4590bd5801d9622865f888d2bc818fc887fa98d634c89f88549c628b531c",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/identitycore/mfa_test.go:171:TestMFAExpiryDiscardAndNilEngine",
+      "source_file_checksum": "c94990fb0757316a96bb12d785c3aa8f208be81c1b1302f3eed61cbf01505ec1",
+      "credible_failure": "MFA.Discard could fail to remove pending enrollment after failed first-Owner persistence, retaining secret/recovery material; successful bounded identity discard is independently exercised.",
+      "reason": "Keep unique successful bounded-identity/Owner Discard deletion used by auth_setup.go:56 after commitFirstOwner failure. The expired Confirm subcase uses invalid secret/code and adds no expiry proof; remove that misleading overlapping Confirm rejection, while retaining deletion contract. Nil convenience alone does not justify retaining this declaration.",
+      "production_owner": [
+        "packages/identitycore/mfa.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/mfa.go",
+        "apps/subtitles/internal/server/mfa.go",
+        "apps/player/internal/server/auth_setup.go:56"
+      ],
+      "gap": "Real fresh-install TOTP/WebAuthn and populated login exercise ordinary factor success; Viewer required-MFA journey inspects instructions. No actual browser entropy failure, recovery reuse/persistence failure, owner last-factor denial, public-session revocation on factor mutation, or exact malformed/size/counter boundary matrix identified.",
+      "remaining_coverage": "packages/identitycore/mfa_test.go:143#TestMFAConfirmIsolatesMissingExpiredAndInvalidCodes proves expiry using otherwise valid RFC secret/TOTP. This declaration is the only reviewed positive Discard deletion proof. apps/player/internal/server/auth_setup.go:56 calls discard on owner commit failure; mfa.go:26 delegates Discard. No actual browser failed-owner-install cleanup proof.",
+      "command": "go -C packages test ./identitycore -run ^TestMFAExpiryDiscardAndNilEngine$",
+      "unlocked_deletion": "None; production APIs have non-test callers.",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "source_read_evidence": "Full declaration body, table and local helper assertions read; production owners plus relevant caller blocks, dependency-backed types, overlapping owner tests, E2E source/history and CI routing inspected.",
+      "failure_analysis": {
+        "useful_retained_assertion": "Successful Discard of bounded identity and Owner removes pending enrollment; no other reviewed Discard keeper.",
+        "assertion_blindspot": "Expired-invalid Confirm row rejects for wrong secret/code even without expiry guard; valid-expiry sibling already isolates expiry.",
+        "minimal_existing_test_improvement": "Remove the misleading duplicate Confirm rejection and preserve successful Discard assertions. Name can be narrowed to Discard contract without adding a declaration.",
+        "red_control_plan": "No new expiry repair needed: existing valid-input expiry keeper. If adjusting Discard assertion, no-op Discard must fail retained deletion checks.",
+        "control_executed": false,
+        "repair_applied": false,
+        "state": "read_only_proposal_requires_parent_control_and_keeper_execution"
+      },
+      "auditor": "/root/subtitles_shared/shared_identity/identity_security_audit",
+      "implementation_status": "retained; identified limited control or optional measurement/consolidation gap documented; no assertion/code change or candidate validation claimed"
     },
     {
       "file": "packages/identitycore/mfa_test.go",
@@ -27830,17 +28397,50 @@
       "owner_group": "identitycore",
       "body_sha256": "7305e2a9fb40f2e7b1caa34974327f96b8d70fb48bdd1a26ced992c46e2101b7",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./identitycore",
+      "decision": "F",
+      "audit_status": "reviewed",
+      "risk": "Important security/failure boundary; deleting without equivalent proof loses an independently exercised defect.",
+      "validation_command": "go -C packages test ./identitycore -run ^TestOutboundHTTPClientDialPolicy$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.610442-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/identitycore",
         "Test": "TestOutboundHTTPClientDialPolicy",
         "Elapsed": 0
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "7305e2a9fb40f2e7b1caa34974327f96b8d70fb48bdd1a26ced992c46e2101b7",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/identitycore/network_test.go:78:TestOutboundHTTPClientDialPolicy",
+      "source_file_checksum": "dff104ddb43ac691c336513cbd55122695905e0414aff2b4193333e65516d714",
+      "credible_failure": "Malformed address/DNS and local listener connection wiring could regress.",
+      "reason": "Denied127.0.0.1:80 negative can pass from connection refusal even when policy check is removed; it does not prove no dial. Retain malformed/DNS/local connection proof, repair denial using a reachable effect-observing server or canonical owner boundary when test repair authorized.",
+      "production_owner": [
+        "packages/identitycore/network.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/security.go",
+        "apps/subtitles/internal/server/security.go"
+      ],
+      "gap": "Real populated login/media/profile journeys prove normal valid paths and Viewer MFA gating; none exercise malicious peer headers, DNS mixture, nil config, proxy token bounds, closed public integration routes or precise policy denial precedence. Fixture passkey tests do not execute server.",
+      "remaining_coverage": "packages/identitycore/network_test.go:12#TestAllowedResolvedAddress retains mixed-private DNS policy; this declaration retains dial wiring and needs negative-control repair. No browser no-dial proof.",
+      "command": "go -C packages test ./identitycore -run ^TestOutboundHTTPClientDialPolicy$",
+      "unlocked_deletion": "None; production APIs have non-test callers.",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "source_read_evidence": "Full declaration body, table and local helper assertions read; production owners plus relevant caller blocks, dependency-backed types, overlapping owner tests, E2E source/history and CI routing inspected.",
+      "failure_analysis": {
+        "useful_retained_assertion": "Actual local listener accepted connection proves allowed-client dial wiring and malformed addresses/DNS return errors.",
+        "assertion_blindspot": "127.0.0.1:80 may refuse connection even with allow policy removed, so err!=nil does not isolate denied dial.",
+        "minimal_existing_test_improvement": "Reuse the existing reachable listener address for the denied-policy call after listener creation; require denial error before positive dial.",
+        "red_control_plan": "Temporarily bypass policy check; denied dial to reachable listener must succeed and fail assertion.",
+        "control_executed": false,
+        "repair_applied": false,
+        "state": "read_only_proposal_requires_parent_control_and_keeper_execution"
+      },
+      "auditor": "/root/subtitles_shared/shared_identity/identity_security_audit",
+      "implementation_status": "retained; identified limited control or optional measurement/consolidation gap documented; no assertion/code change or candidate validation claimed"
     },
     {
       "file": "packages/identitycore/profile_policy_test.go",
@@ -28169,17 +28769,52 @@
       "owner_group": "identitycore",
       "body_sha256": "4e8138b890b652d8c10f0c87a895d3f693f06770b6d4fe7b635e1d0823947574",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./identitycore",
+      "decision": "F",
+      "audit_status": "reviewed",
+      "risk": "Important security/failure boundary; deleting without equivalent proof loses an independently exercised defect.",
+      "validation_command": "go -C packages test ./identitycore -run ^TestProfileStoreSCIMCreateFailuresAndRehydrate$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.418841-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/identitycore",
         "Test": "TestProfileStoreSCIMCreateFailuresAndRehydrate",
         "Elapsed": 0
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "62393eeb5019643102e20ca7e019b4ad1d941a73 Fix identity lifecycle and delegated session authority",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "4e8138b890b652d8c10f0c87a895d3f693f06770b6d4fe7b635e1d0823947574",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/identitycore/profile_scim_transaction_test.go:77:TestProfileStoreSCIMCreateFailuresAndRehydrate",
+      "source_file_checksum": "90c8362dadbf1f99df14e1e4c071a2b882323da154032e7ab432778b648411b8",
+      "credible_failure": "SCIM restore/create persistence failures could alter state; rehydrate could retain credentials/sessions or tombstone revision.",
+      "reason": "Unique failure/rehydration proof is valuable. Duplicate tombstone fixture has empty stable ExternalIDs and new directory-id, so first tombstone rejects identity mismatch before duplicate branch. Set both deleted tombstones ExternalID=directory-id in existing case when repair authorized.",
+      "production_owner": [
+        "packages/identitycore/profile_scim.go",
+        "packages/scim/model.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/profiles_scim.go",
+        "apps/subtitles/internal/server/profiles_scim.go"
+      ],
+      "gap": "Real first-install and populated helper flows exercise valid local Owner/Viewer create/read/remove and MFA instruction gate. No actual browser SCIM lifecycle/restore/ETag/identity change, API-key migration/order, file/database failure injection, deep-copy mutation, or schedule time-boundary scenario identified. Browser timeout tests read options only.",
+      "remaining_coverage": "packages/identitycore/profile_scim_identity_test.go:12#TestSCIMRestoreRequiresSameStableIdentity is primary mismatch/no-ID restore proof; this declaration retains successful rehydrate/failure behavior but duplicate-tombstone control requires repair.",
+      "command": "go -C packages test ./identitycore -run ^TestProfileStoreSCIMCreateFailuresAndRehydrate$",
+      "unlocked_deletion": "None; production APIs have non-test callers.",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "source_read_evidence": "Full declaration body, table and local helper assertions read; production owners plus relevant caller blocks, dependency-backed types, overlapping owner tests, E2E source/history and CI routing inspected.",
+      "failure_analysis": {
+        "useful_retained_assertion": "Successful tombstone restore clears credentials, revokes sessions and increments revision; failed persisted rehydrate does not commit memory.",
+        "assertion_blindspot": "Duplicate tombstone fixtures have empty external IDs; new directory-id conflicts at the first tombstone before duplicate detection.",
+        "minimal_existing_test_improvement": "Set both same-username deleted tombstones stable ExternalID=directory-id for the existing duplicate row.",
+        "red_control_plan": "Temporarily choose first matching tombstone without detecting a duplicate; corrected row must fail for duplicate recognition.",
+        "control_executed": false,
+        "repair_applied": false,
+        "state": "read_only_proposal_requires_parent_control_and_keeper_execution"
+      },
+      "auditor": "/root/subtitles_shared/shared_identity/identity_security_audit",
+      "implementation_status": "retained; identified limited control or optional measurement/consolidation gap documented; no assertion/code change or candidate validation claimed"
     },
     {
       "file": "packages/identitycore/profile_scim_transaction_test.go",
@@ -28329,17 +28964,51 @@
       "owner_group": "identitycore",
       "body_sha256": "8dc5068773b792702911d8c10a8969bde37be4f175f24d1de4c5e0f9da8a0839",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./identitycore",
+      "decision": "F",
+      "audit_status": "reviewed",
+      "risk": "Important security/failure boundary; deleting without equivalent proof loses an independently exercised defect.",
+      "validation_command": "go -C packages test ./identitycore -run ^TestLoadProfileStateStopsOnLoaderFailure$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.419308-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/identitycore",
         "Test": "TestLoadProfileStateStopsOnLoaderFailure",
         "Elapsed": 0
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "8dc5068773b792702911d8c10a8969bde37be4f175f24d1de4c5e0f9da8a0839",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/identitycore/profile_state_test.go:28:TestLoadProfileStateStopsOnLoaderFailure",
+      "source_file_checksum": "ac392a0f79663e34c9f54ff62b0e933222fb811387ed03991966b8d897e1a989",
+      "credible_failure": "Startup loader could continue to related reads after earlier loader fails or discard causal error.",
+      "reason": "It asserts propagated error and at least one call, but does not assert expected call list, so continuing sessions/keys after profile error can pass. Retain contract with exact stage prefix assertion when repair authorized.",
+      "production_owner": [
+        "packages/identitycore/profile_state.go",
+        "packages/identitycore/profile_validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/profiles.go:33",
+        "apps/subtitles/internal/server/profiles.go:33"
+      ],
+      "gap": "Real first-install and populated helper flows exercise valid local Owner/Viewer create/read/remove and MFA instruction gate. No actual browser SCIM lifecycle/restore/ETag/identity change, API-key migration/order, file/database failure injection, deep-copy mutation, or schedule time-boundary scenario identified. Browser timeout tests read options only.",
+      "remaining_coverage": "packages/identitycore/profile_state_test.go:28 remains primary loader-failure proof; :64#TestLoadProfileStateRejectsInvalidProfilesBeforeRelatedReads checks invalid profiles before related callbacks, not loader failures.",
+      "command": "go -C packages test ./identitycore -run ^TestLoadProfileStateStopsOnLoaderFailure$",
+      "unlocked_deletion": "None; production APIs have non-test callers.",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "source_read_evidence": "Full declaration body, table and local helper assertions read; production owners plus relevant caller blocks, dependency-backed types, overlapping owner tests, E2E source/history and CI routing inspected.",
+      "failure_analysis": {
+        "useful_retained_assertion": "Each profile/session/API-key injected loader error is propagated through public LoadProfileState.",
+        "assertion_blindspot": "len(calls)>0 does not detect executing later loaders after prior failure.",
+        "minimal_existing_test_improvement": "Assert exact calls prefixes for profiles failure, sessions failure, keys failure respectively.",
+        "red_control_plan": "Temporarily continue to next loader after a failed loader while preserving first causal error; exact call-list assertion must fail.",
+        "control_executed": false,
+        "repair_applied": false,
+        "state": "read_only_proposal_requires_parent_control_and_keeper_execution"
+      },
+      "auditor": "/root/subtitles_shared/shared_identity/identity_security_audit",
+      "implementation_status": "retained; identified limited control or optional measurement/consolidation gap documented; no assertion/code change or candidate validation claimed"
     },
     {
       "file": "packages/identitycore/profile_state_test.go",
@@ -28620,17 +29289,54 @@
       "owner_group": "identitycore",
       "body_sha256": "a9182857e77ee48c3b2a9e2f178d2561e4690cd62923943e9993f49f6e99c968",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./identitycore",
+      "decision": "F",
+      "audit_status": "reviewed",
+      "risk": "Important security/failure boundary; deleting without equivalent proof loses an independently exercised defect.",
+      "validation_command": "go -C packages test ./identitycore -run ^TestProfileStoreSetupAndAuthentication$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.601421-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/identitycore",
         "Test": "TestProfileStoreSetupAndAuthentication",
         "Elapsed": 0.19
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "a9182857e77ee48c3b2a9e2f178d2561e4690cd62923943e9993f49f6e99c968",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/identitycore/profile_store_transaction_test.go:42:TestProfileStoreSetupAndAuthentication",
+      "source_file_checksum": "09e850324000de97f80672477f0a0af524bfaef7d650e6a58261a86cf0a0e313",
+      "credible_failure": "First Owner creation/authentication could accept wrong/disabled identity or commit failed storage.",
+      "reason": "After setting SCIMDeleted=true it authenticates missing name, so the deleted-profile rejection is unexercised. Retain setup/persistence/credential contracts; minimally authenticate existing Owner with correct password while SCIMDeleted, then keep separate missing-name check when repair authorized.",
+      "production_owner": [
+        "packages/identitycore/profile_store.go",
+        "packages/identitycore/profile.go",
+        "packages/federation/profiles.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/profiles.go",
+        "apps/subtitles/internal/server/profiles.go",
+        "apps/player/internal/server/profiles_storage.go:27",
+        "apps/subtitles/internal/server/profiles_storage.go:27"
+      ],
+      "gap": "Real first-install and populated helper flows exercise valid local Owner/Viewer create/read/remove and MFA instruction gate. No actual browser SCIM lifecycle/restore/ETag/identity change, API-key migration/order, file/database failure injection, deep-copy mutation, or schedule time-boundary scenario identified. Browser timeout tests read options only.",
+      "remaining_coverage": "This declaration plus profile_store_transaction_test.go:79,106,148 remains primary transaction proof; real first-install E2E covers setup/sign-in but no disabled/deleted storage failure.",
+      "command": "go -C packages test ./identitycore -run ^TestProfileStoreSetupAndAuthentication$",
+      "unlocked_deletion": "None; production APIs have non-test callers.",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "source_read_evidence": "Full declaration body, table and local helper assertions read; production owners plus relevant caller blocks, dependency-backed types, overlapping owner tests, E2E source/history and CI routing inspected.",
+      "failure_analysis": {
+        "useful_retained_assertion": "Wrong-password and Disabled existing Owner denial plus AddOwner storage-failure/no memorycommit are actual useful assertions absent positive E2E.",
+        "assertion_blindspot": "After setting SCIMDeleted it authenticates missing name, so deleted-existing-Owner check is not exercised.",
+        "minimal_existing_test_improvement": "Authenticate existing Owner with correct password while SCIMDeleted; retain separate missing-name case.",
+        "red_control_plan": "Temporarily omit SCIMDeleted exclusion in authentication; repaired deleted-existing-profile case must fail.",
+        "control_executed": false,
+        "repair_applied": false,
+        "state": "read_only_proposal_requires_parent_control_and_keeper_execution"
+      },
+      "auditor": "/root/subtitles_shared/shared_identity/identity_security_audit",
+      "implementation_status": "retained; identified limited control or optional measurement/consolidation gap documented; no assertion/code change or candidate validation claimed"
     },
     {
       "file": "packages/identitycore/profile_store_transaction_test.go",
@@ -30007,17 +30713,51 @@
       "owner_group": "identitycore",
       "body_sha256": "5631aaf31b3141672c4593835205ee7155c33fdc5d45a12159aa830b1d32d78c",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./identitycore",
+      "decision": "F",
+      "audit_status": "reviewed",
+      "risk": "Important security/failure boundary; deleting without equivalent proof loses an independently exercised defect.",
+      "validation_command": "go -C packages test ./identitycore -run ^TestWithoutPublicSessionsReturnsAnIndependentCopy$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.610918-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/identitycore",
         "Test": "TestWithoutPublicSessionsReturnsAnIndependentCopy",
         "Elapsed": 0
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "4e5613ecb5505206c368d66098cfd15638b52436 fix(auth): persist browser cookies for the configured session lifetime",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "5631aaf31b3141672c4593835205ee7155c33fdc5d45a12159aa830b1d32d78c",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/identitycore/session_requests_test.go:77:TestWithoutPublicSessionsReturnsAnIndependentCopy",
+      "source_file_checksum": "9b1a27612d7c2c4683cc3d0930b698fba65952ba00ecd82124d28f9d867bb7f3",
+      "credible_failure": "Revoking public access could mutate live map or also discard all local sessions.",
+      "reason": "Current test deletes local from result before checking length, so returning empty map passes. Retain copy/filter contract; assert local entry exists and public does not before existing delete when repair authorized.",
+      "production_owner": [
+        "packages/identitycore/sessions_admin.go:127"
+      ],
+      "callers": [
+        "apps/player/internal/server/sessions.go",
+        "apps/subtitles/internal/server/sessions.go"
+      ],
+      "gap": "Fresh-install E2E signs in/out through real server; populated timeout tests only read controls after valid auth. No actual browser migration, stale revision, management-device replay, cap10, storage failure or exact idle/absolute expiry/malformed token proof identified.",
+      "remaining_coverage": "packages/identitycore/sessions_admin.go:127#WithoutPublicSessions used by apps/{player,subtitles}/internal/server/sessions.go#revokePublicSessions. No actual browser public-disable preservation scenario found.",
+      "command": "go -C packages test ./identitycore -run ^TestWithoutPublicSessionsReturnsAnIndependentCopy$",
+      "unlocked_deletion": "None; production APIs have non-test callers.",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "source_read_evidence": "Full declaration body, table and local helper assertions read; production owners plus relevant caller blocks, dependency-backed types, overlapping owner tests, E2E source/history and CI routing inspected.",
+      "failure_analysis": {
+        "useful_retained_assertion": "Returning all sessions instead of filtering leaves public entry after delete(local), causing current len assertion failure; mutating original map also fails.",
+        "assertion_blindspot": "Returning an empty map drops valid local sessions and passes both current length assertions.",
+        "minimal_existing_test_improvement": "Assert retained local entry identity and public absence before existing delete(local).",
+        "red_control_plan": "Temporarily return empty map; repaired retained-local assertion must fail.",
+        "control_executed": false,
+        "repair_applied": false,
+        "state": "read_only_proposal_requires_parent_control_and_keeper_execution"
+      },
+      "auditor": "/root/subtitles_shared/shared_identity/identity_security_audit",
+      "implementation_status": "retained; identified limited control or optional measurement/consolidation gap documented; no assertion/code change or candidate validation claimed"
     },
     {
       "file": "packages/identitycore/session_requests_test.go",
@@ -39315,9 +40055,9 @@
       "owner_group": "metadata",
       "body_sha256": "99baef8c984b536990f06f3fa3d67cc99e426470fa41db1de92d7d92e60983e3",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain after independent review distinguished actual template execution from the Page renderer stub. The test protects the asset binding contract; it does not fetch those assets or prove bulk authorization, data edits or hostile template escaping.",
       "validation_command": "cd packages && go test ./metadata",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.910839-06:00",
@@ -39325,7 +40065,60 @@
         "Package": "github.com/MikeO7/kinosail/packages/metadata",
         "Test": "TestBulkMetadataHTMLUsesProductProfile",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "The actual BulkMetadataHTML template could lose or misbind its theme script or stylesheet, leaving the bulk editor unstyled or uninitialized even while TestBulkEditorPage mocked-render projection passes. This test executes the real template and independently pins the generated asset bindings; the product/title fragments are supplementary.",
+      "production_owner": [
+        "packages/metadata/{record,cast,chapters,network,bulk_editor,bulk_editor_http,refresh_http,schedule,artwork_cache,provider_http}.go; provider/body/bulk fixtures fully read"
+      ],
+      "production_callers": [
+        "apps/{player,subtitles}/internal/server/{metadata_provider,metadata_provider_tmdb,metadata_bulk}.go load/validate/apply/merge records, ownerroutes bulk edits andprovider JSON/image; server.go chapterprovider"
+      ],
+      "remaining_coverage": "This retained declaration executes BulkMetadataHTML with PlayerBulkPage and verifies the expected theme and stylesheet URLs in actual rendered output. TestBulkEditorPage separately checks projection and sorting with a renderer stub.",
+      "coverage_gap": "No genuine browser E2E exercises this shared bulk editor route and verifies the rendered theme/stylesheet bindings. TestBulkEditorPage cannot replace this assertion because its renderer does not execute the template.",
+      "execution_claim": "Existing baseline terminal event only; read-only reviewer did not run tests.",
+      "production_owner_paths": [
+        "packages/metadata/record.go",
+        "packages/metadata/cast.go",
+        "packages/metadata/chapters.go",
+        "packages/metadata/network.go",
+        "packages/metadata/bulk_editor.go",
+        "packages/metadata/bulk_editor_http.go",
+        "packages/metadata/refresh_http.go",
+        "packages/metadata/schedule.go",
+        "packages/metadata/artwork_cache.go",
+        "packages/metadata/provider_http.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "source_file_sha256": "64dd57e7ece3045c9f9063ff51627025bb264be835e7a82b5b5724a2c814ac02",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/metadata/bulk_editor_http_test.go:178:TestBulkMetadataHTMLUsesProductProfile",
+      "implementation_status": "retained",
+      "remaining_isolated_keepers": [
+        {
+          "file": "packages/metadata/bulk_editor_http_test.go",
+          "line": 42,
+          "name": "TestBulkEditorPage",
+          "body_sha256": "c2d5c479101d2ea31e337e53063564eb7792dea96dd3c7af519da7d4f6999510"
+        },
+        {
+          "file": "packages/metadata/bulk_editor_http_test.go",
+          "line": 80,
+          "name": "TestBulkEditorPageFailures",
+          "body_sha256": "1f92200e6f334ab4ff0f4622a5f9ce6fef3f646b9f54e9e045f489d1ad14f01c"
+        }
+      ],
+      "independent_review_resolution": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "result": "R restored before source deletion",
+        "reason": "Actual rendered asset bindings differ from mocked page projection."
+      },
+      "callers": [
+        "apps/{player,subtitles}/internal/server/{metadata_provider,metadata_provider_tmdb,metadata_bulk}.go load/validate/apply/merge records, ownerroutes bulk edits andprovider JSON/image; server.go chapterprovider"
+      ],
+      "gap": "No genuine browser E2E exercises this shared bulk editor route and verifies the rendered theme/stylesheet bindings. TestBulkEditorPage cannot replace this assertion because its renderer does not execute the template.",
+      "auditor": "/root/tooling",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/metadata/bulk_editor_test.go",
@@ -40373,9 +41166,9 @@
       "owner_group": "metadata",
       "body_sha256": "af1c7b25bf35822a82953e187a840e311a295ebe5123f82ff4659a51820ce951",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "No-identity example duplicates stronger TestChapterPresentationAndLookupBoundaries invalid identity table and no network lookup policy; missing TVDB empty parses same invalid ID branch. No important separate assertion.",
       "validation_command": "cd packages && go test ./metadata",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.865222-06:00",
@@ -40383,7 +41176,53 @@
         "Package": "github.com/MikeO7/kinosail/packages/metadata",
         "Test": "TestChapterProviderReturnsNoDataWithoutTVDBEpisodeIdentity",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "No-identity example duplicates stronger TestChapterPresentationAndLookupBoundaries invalid identity table and no network lookup policy; missing TVDB empty parses same invalid ID branch. No important separate assertion.",
+      "production_owner": [
+        "packages/metadata/{record,cast,chapters,network,bulk_editor,bulk_editor_http,refresh_http,schedule,artwork_cache,provider_http}.go; provider/body/bulk fixtures fully read"
+      ],
+      "production_callers": [
+        "apps/{player,subtitles}/internal/server/{metadata_provider,metadata_provider_tmdb,metadata_bulk}.go load/validate/apply/merge records, ownerroutes bulk edits andprovider JSON/image; server.go chapterprovider"
+      ],
+      "remaining_coverage": "packages/metadata/chapters_edges_test.go:16:TestChapterPresentationAndLookupBoundaries. Genuine browser evidence is partial and does not establish equivalence to these isolated assertions.",
+      "coverage_gap": "Private chapter identity table directly rejects missing Show/Episode and bad/zero TVDB values; empty TVDB shares parsing rejection. The candidate test asserts only a nil result from default external provider, without observing network absence. No browser invalid-identity or no-network equivalence is claimed.",
+      "execution_claim": "Existing baseline terminal event only; read-only reviewer did not run tests.",
+      "production_owner_paths": [
+        "packages/metadata/record.go",
+        "packages/metadata/cast.go",
+        "packages/metadata/chapters.go",
+        "packages/metadata/network.go",
+        "packages/metadata/bulk_editor.go",
+        "packages/metadata/bulk_editor_http.go",
+        "packages/metadata/refresh_http.go",
+        "packages/metadata/schedule.go",
+        "packages/metadata/artwork_cache.go",
+        "packages/metadata/provider_http.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "source_file_sha256": "624081306bb29e6f0a08262f439b5b532c48c5a196078eef5c4a0d519583c436",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/metadata/chapters_test.go:107:TestChapterProviderReturnsNoDataWithoutTVDBEpisodeIdentity",
+      "implementation_status": "removed",
+      "remaining_isolated_keepers": [
+        {
+          "file": "packages/metadata/chapters_edges_test.go",
+          "line": 16,
+          "name": "TestChapterPresentationAndLookupBoundaries",
+          "body_sha256": "970f3abe0ebc254b005cd326b38de6038f74d3b7fa6d9782e20be0b84a24f7a7"
+        }
+      ],
+      "auditor": "/root/tooling",
+      "independent_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved",
+        "evidence": "Complete candidate bodies and referenced keepers/protocol owners read before removal; proposed BulkMetadataHTML and SearchRank D independently challenged and corrected to R. No browser equivalence inferred from synthetic fixtures."
+      },
+      "callers": [
+        "apps/{player,subtitles}/internal/server/{metadata_provider,metadata_provider_tmdb,metadata_bulk}.go load/validate/apply/merge records, ownerroutes bulk edits andprovider JSON/image; server.go chapterprovider"
+      ],
+      "gap": "Private chapter identity table directly rejects missing Show/Episode and bad/zero TVDB values; empty TVDB shares parsing rejection. The candidate test asserts only a nil result from default external provider, without observing network absence. No browser invalid-identity or no-network equivalence is claimed."
     },
     {
       "file": "packages/metadata/config_test.go",
@@ -41970,12 +42809,45 @@
       "owner_group": "metadata",
       "body_sha256": "fccee8a976b61655af7fd46e3579496101ea8e3d2c47ad1f28f21d05352213ff",
       "baseline_result": "not_run",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "C",
+      "audit_status": "reviewed",
+      "risk": "Serial-versus-parallel completeuncached4movie workflow benchmark checks validoutputs; notrun byordinary go-test andnotautomaticbugproof/E2E.",
       "validation_command": "cd packages && go test ./metadata",
       "baseline_event": null,
-      "baseline_not_run_reason": "Benchmark is not run by go test without -bench."
+      "baseline_not_run_reason": "Benchmark is not run by go test without -bench.",
+      "credible_failure": "Serial-versus-parallel completeuncached4movie workflow benchmark checks validoutputs; notrun byordinary go-test andnotautomaticbugproof/E2E.",
+      "production_owner": [
+        "packages/metadata/{config,record,tmdb,tmdb_cache,tmdb_cast,tmdb_fetch,tmdb_details,tmdb_search,tvmaze}.go fully read; allprovider/cache/concurrency fixtures read"
+      ],
+      "production_callers": [
+        "apps/{player,subtitles}/internal/server/server.go NewTMDB\u2192legacyMetadata.Enrich inindexdecorator; metadata_provider.go normalizes/configuresrecordstore; metadata_provider_tmdb.go ResolveTMDBRecord/Episode +TVMazefallback andimagecache"
+      ],
+      "remaining_coverage": "Retain this executed isolated boundary; actual public browser proof described in top-level e2e_evidence.",
+      "coverage_gap": "Actual populated Player generatedlocal TMDB verifiesnormalmovieplot, episodeartwork and album/book/routes, real happy journey playbackprogress. No externalprovider fault/certification/SSRF/response bounds, malformed cache disk state/concurrency/ambiguity/TVMazefallback proof. Benchmarks explicitly not executed as tests.",
+      "execution_claim": "Existing baseline terminal event only; read-only reviewer did not run tests.",
+      "production_owner_paths": [
+        "packages/metadata/config.go",
+        "packages/metadata/record.go",
+        "packages/metadata/tmdb.go",
+        "packages/metadata/tmdb_cache.go",
+        "packages/metadata/tmdb_cast.go",
+        "packages/metadata/tmdb_fetch.go",
+        "packages/metadata/tmdb_details.go",
+        "packages/metadata/tmdb_search.go",
+        "packages/metadata/tvmaze.go"
+      ],
+      "history": [
+        "3e005ce72c44f4185dc00edaa034113251f8d66b Bound independent catalog, marker, and metadata work"
+      ],
+      "source_file_sha256": "25efeab7a6888ae4436db4e22f1489c79016caa6e71e73beeee5e352690db620",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/metadata/tmdb_concurrency_test.go:145:BenchmarkTMDBEnrichMovies",
+      "implementation_status": "retained",
+      "callers": [
+        "apps/{player,subtitles}/internal/server/server.go NewTMDB\u2192legacyMetadata.Enrich inindexdecorator; metadata_provider.go normalizes/configuresrecordstore; metadata_provider_tmdb.go ResolveTMDBRecord/Episode +TVMazefallback andimagecache"
+      ],
+      "gap": "Actual populated Player generatedlocal TMDB verifiesnormalmovieplot, episodeartwork and album/book/routes, real happy journey playbackprogress. No externalprovider fault/certification/SSRF/response bounds, malformed cache disk state/concurrency/ambiguity/TVMazefallback proof. Benchmarks explicitly not executed as tests.",
+      "auditor": "/root/tooling",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/metadata/tmdb_concurrency_test.go",
@@ -41985,12 +42857,45 @@
       "owner_group": "metadata",
       "body_sha256": "84a756a6161d7dc3981cf261aee2e4e9bef432859a20c070e6739239022807aa",
       "baseline_result": "not_run",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "C",
+      "audit_status": "reviewed",
+      "risk": "Serial-versus-parallel eightportrait HTTP/cache benchmark checksoutput; explicitmeasurementfixture, ordinary go-test doesnotexecute.",
       "validation_command": "cd packages && go test ./metadata",
       "baseline_event": null,
-      "baseline_not_run_reason": "Benchmark is not run by go test without -bench."
+      "baseline_not_run_reason": "Benchmark is not run by go test without -bench.",
+      "credible_failure": "Serial-versus-parallel eightportrait HTTP/cache benchmark checksoutput; explicitmeasurementfixture, ordinary go-test doesnotexecute.",
+      "production_owner": [
+        "packages/metadata/{config,record,tmdb,tmdb_cache,tmdb_cast,tmdb_fetch,tmdb_details,tmdb_search,tvmaze}.go fully read; allprovider/cache/concurrency fixtures read"
+      ],
+      "production_callers": [
+        "apps/{player,subtitles}/internal/server/server.go NewTMDB\u2192legacyMetadata.Enrich inindexdecorator; metadata_provider.go normalizes/configuresrecordstore; metadata_provider_tmdb.go ResolveTMDBRecord/Episode +TVMazefallback andimagecache"
+      ],
+      "remaining_coverage": "Retain this executed isolated boundary; actual public browser proof described in top-level e2e_evidence.",
+      "coverage_gap": "Actual populated Player generatedlocal TMDB verifiesnormalmovieplot, episodeartwork and album/book/routes, real happy journey playbackprogress. No externalprovider fault/certification/SSRF/response bounds, malformed cache disk state/concurrency/ambiguity/TVMazefallback proof. Benchmarks explicitly not executed as tests.",
+      "execution_claim": "Existing baseline terminal event only; read-only reviewer did not run tests.",
+      "production_owner_paths": [
+        "packages/metadata/config.go",
+        "packages/metadata/record.go",
+        "packages/metadata/tmdb.go",
+        "packages/metadata/tmdb_cache.go",
+        "packages/metadata/tmdb_cast.go",
+        "packages/metadata/tmdb_fetch.go",
+        "packages/metadata/tmdb_details.go",
+        "packages/metadata/tmdb_search.go",
+        "packages/metadata/tvmaze.go"
+      ],
+      "history": [
+        "3e005ce72c44f4185dc00edaa034113251f8d66b Bound independent catalog, marker, and metadata work"
+      ],
+      "source_file_sha256": "25efeab7a6888ae4436db4e22f1489c79016caa6e71e73beeee5e352690db620",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/metadata/tmdb_concurrency_test.go:192:BenchmarkTMDBCastImages",
+      "implementation_status": "retained",
+      "callers": [
+        "apps/{player,subtitles}/internal/server/server.go NewTMDB\u2192legacyMetadata.Enrich inindexdecorator; metadata_provider.go normalizes/configuresrecordstore; metadata_provider_tmdb.go ResolveTMDBRecord/Episode +TVMazefallback andimagecache"
+      ],
+      "gap": "Actual populated Player generatedlocal TMDB verifiesnormalmovieplot, episodeartwork and album/book/routes, real happy journey playbackprogress. No externalprovider fault/certification/SSRF/response bounds, malformed cache disk state/concurrency/ambiguity/TVMazefallback proof. Benchmarks explicitly not executed as tests.",
+      "auditor": "/root/tooling",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/metadata/tmdb_details_test.go",
@@ -45906,17 +46811,41 @@
       "owner_group": "owneraccess",
       "body_sha256": "97f7b430844ac24c8db20519623efa2360a1bfff3c72cb9a0468a35aaa427882",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./owneraccess",
+      "decision": "F",
+      "audit_status": "reviewed",
+      "risk": "Private management security/lifecycle boundary retained; no assertions modified.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./owneraccess",
       "baseline_event": {
         "Time": "2026-10-03T10:35:34.405908-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/owneraccess",
         "Test": "TestPrivateDNSOnlyAnswersPairedDevices",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "A valid paired-device DNS request receives no correct management address/transaction ID or an unauthorized reply is observed first.",
+      "production_owner": [
+        "packages/owneraccess/owneraccess.go",
+        "packages/owneraccess/runtime.go",
+        "packages/owneraccess/runtime_factory.go",
+        "packages/owneraccess/dns.go",
+        "packages/owneraccess/http.go",
+        "packages/owneraccess/validation.go",
+        "packages/owneraccess/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/management_access.go::newOwnerAccess/registerOwnerAccess",
+        "apps/subtitles/internal/server/management_access.go::newOwnerAccess/registerOwnerAccess",
+        "apps/player/internal/server/auth.go",
+        "apps/subtitles/internal/server/auth.go"
+      ],
+      "remaining_coverage": "packages/owneraccess/dns_runtime_test.go::TestPrivateDNSOnlyAnswersPairedDevices",
+      "gap": "Existing real browser library/admin/subtitle journeys do not create real WireGuard devices, DNS peers, revoke active tunnel streams, corrupt persisted management state or inject disk failure. Direct HTTP adapters are isolated fixtures, not Server/browser E2E. One received reply is checked; it does not drain/assert absence of all additional unauthorized replies. Retained paired DNS response proof remains useful.",
+      "history": [
+        "375ce3b1e97e37ea9c88cbad262f2644eb4b4582 Stabilize hosted tooling and expand runtime regression coverage"
+      ],
+      "auditor": "/root",
+      "unlocked_deletion": "None.",
+      "implementation_status": "retained; identified limited control or optional measurement/consolidation gap documented; no assertion/code change or candidate validation claimed"
     },
     {
       "file": "packages/owneraccess/dns_test.go",
@@ -46405,17 +47334,43 @@
       "owner_group": "owneraccess",
       "body_sha256": "edbe3da890885b24c602b198200b8ef3f94c78b35501f0ad660178d6d10b279f",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./owneraccess",
+      "decision": "F",
+      "audit_status": "reviewed",
+      "risk": "Private management security/lifecycle boundary retained; no assertions modified.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./owneraccess",
       "baseline_event": {
         "Time": "2026-10-03T10:35:34.269374-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/owneraccess",
         "Test": "TestManagementTunnelBindsPeerRevokesLiveStreamAndPreservesPrivateBoundary",
         "Elapsed": 5.29
-      }
+      },
+      "credible_failure": "A real WireGuard tunnel loses Owner context, exposes keys, lets forged headers establish identity, retains live streams after revoke, reuses revoked addresses or preserves changed credentials.",
+      "production_owner": [
+        "packages/owneraccess/owneraccess.go",
+        "packages/owneraccess/runtime.go",
+        "packages/owneraccess/runtime_factory.go",
+        "packages/owneraccess/dns.go",
+        "packages/owneraccess/http.go",
+        "packages/owneraccess/validation.go",
+        "packages/owneraccess/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/management_access.go::newOwnerAccess/registerOwnerAccess",
+        "apps/subtitles/internal/server/management_access.go::newOwnerAccess/registerOwnerAccess",
+        "apps/player/internal/server/auth.go",
+        "apps/subtitles/internal/server/auth.go"
+      ],
+      "remaining_coverage": "packages/owneraccess/owneraccess_test.go::TestManagementTunnelBindsPeerRevokesLiveStreamAndPreservesPrivateBoundary",
+      "gap": "Existing real browser library/admin/subtitle journeys do not create real WireGuard devices, DNS peers, revoke active tunnel streams, corrupt persisted management state or inject disk failure. Direct HTTP adapters are isolated fixtures, not Server/browser E2E. The negative LAN/host dial probes have no accepting target-service control, so connection failure alone does not prove a routing denial. Real device binding/revoked-stream positive sequence still catches important bugs.",
+      "history": [
+        "6d8392372f3e551512038604ce83ea28eab907e7 Resolve mechanical Go lint findings without changing behavior",
+        "878dc2a63d62880e6d3a5aa395ce25dd40919539 Remove retired artifacts and unused code",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root",
+      "unlocked_deletion": "None.",
+      "implementation_status": "retained; identified limited control or optional measurement/consolidation gap documented; no assertion/code change or candidate validation claimed"
     },
     {
       "file": "packages/owneraccess/persisted_devices_test.go",
@@ -62958,7 +63913,12 @@
       "cmd:routeinventory",
       "productapi",
       "isobmff",
-      "watchrooms"
+      "watchrooms",
+      "identitycore remaining167packet",
+      "httpguard",
+      "catalog",
+      "metadata",
+      "owneraccess"
     ],
     "additional_reviewed_declarations": 41,
     "additional_removals": 2,
@@ -62997,15 +63957,6 @@
           "remaining_coverage": "packages/apihttp/api_test.go:13#TestReadJSONAndResponses checks valid struct population through apihttp.ReadJSON -> httpguard.DecodeRequestJSON plus unknown-field400 response; httpguard request negative matrix remains."
         },
         {
-          "file": "packages/httpguard/public_test.go",
-          "name": "TestPublicGuardRemainingCapacityAndExpiryEdges",
-          "candidate_decision": "F",
-          "credible_failure": "Expired source state could never be reclaimed or global64 cap bypassed; invalid range endpoints could pass.",
-          "reason": "Retain unique global-capacity/expiry cases, but saturated-prefix assertion says fail closed although strikePrefix returns false and merely does not allocate. The reclaimed-prefix case does not assert the new bucket was added; repair wording/assertion at owning boundary in separately authorized test work.",
-          "gap": "Populated login/profile mutation helpers exercise valid CSRF and strict JSON; no actual browser duplicate/Unicode/malformed-cookie/scanner flood/IPv6/concurrency/failing-reader matrix. Fixture passkey routes are UI-only. No exact runtime test executed here.",
-          "remaining_coverage": "packages/httpguard/public_test.go:124 remains unique global64 and stale-source proof; TestPublicCapacityBoundsSourcesAndIPv6Prefixes covers source/prefix limits; no actual browser saturation proof."
-        },
-        {
           "file": "packages/identitycore/factor_transaction_test.go",
           "name": "TestFactorVerifyRejectsInvalidStateWithoutPersistence",
           "candidate_decision": "D",
@@ -63024,33 +63975,6 @@
           "remaining_coverage": "packages/identitycore/handlers_mfa_disable_test.go:82#TestMFADisableConfigurationFailsClosedBeforeCallbacks checks same11 callback omissions, ErrInvalidConfig, all returned handlers nil and no callback events, plus valid config."
         },
         {
-          "file": "packages/identitycore/handlers_test.go",
-          "name": "TestRespondDenial",
-          "candidate_decision": "F",
-          "credible_failure": "Remote denial could use ordinary403 instead of404, MFA could lose its exact redirect, or ordinary denial could emit JSON; MFA JSON could omit its enrollment flag undetected.",
-          "reason": "Retain unique denial-presentation/audit mapping and exact MFA redirect. assertMFAJSONDenial only checks a nonnil value, so map with incorrect/missing mfaEnrollmentRequired passes. Minimal repair checks returned map enrollment flag=true (and the intended error field). Existing actual browser only proves web enrollment redirect, not API JSON flag.",
-          "gap": "Actual valid login/first-install/MFA gate covers only ordinary success. No server E2E missing-callback, persistence-failure, stale enrollment, strong API session, strict malformed form, boundary-size or domain-error injection was found. No new execution here.",
-          "remaining_coverage": "packages/identitycore/handlers_test.go:38 remains primary shared denial adapter proof; packages/identitycore/access_test.go tests policy decisions, not JSON payload; apps/player/e2e/test-instance.spec.ts:65 verifies web MFA gate only."
-        },
-        {
-          "file": "packages/identitycore/handlers_test.go",
-          "name": "TestOwnerMiddleware",
-          "candidate_decision": "F",
-          "credible_failure": "A Viewer could reach next, stale Owner could reach sensitive mutation, or stale Owner API response could omit stepUpRequired despite403.",
-          "reason": "Retain valuable status/next admission matrix. Step-up JSON value and redirect Location are never checked, so both could be wrong while the test passes. Minimal repair checks stepUpRequired=true in JSON and exact /login?step-up=true redirect for existing rows.",
-          "gap": "Actual valid login/first-install/MFA gate covers only ordinary success. No server E2E missing-callback, persistence-failure, stale enrollment, strong API session, strict malformed form, boundary-size or domain-error injection was found. No new execution here.",
-          "remaining_coverage": "packages/identitycore/handlers_test.go:132 is primary Owner adapter admission; handlers_config_test.go:33 checks freshness callback/window; management_session_test.go:56 checks sensitive GET/HEAD. No actual step-up API payload or stale mutation browser proof reviewed."
-        },
-        {
-          "file": "packages/identitycore/handlers_test.go",
-          "name": "TestLoginRequestLifecycle",
-          "candidate_decision": "F",
-          "credible_failure": "Wrong credentials or failed session persistence could still audit/create a session; successful login could bypass configured ReturnPath and redirect to raw caller input.",
-          "reason": "Retain unique HTTP status plus sign-in/audit suppression after credential or persistence failure. Current success only checks303, not Location; replacing ReturnPath(next) with next still passes. Minimal repair asserts existing success Location=/library for input /requested. Core login tests verify profile propagation/error identity but cannot prove HTTP ReturnPath use.",
-          "gap": "Actual valid login/first-install/MFA gate covers only ordinary success. No server E2E missing-callback, persistence-failure, stale enrollment, strong API session, strict malformed form, boundary-size or domain-error injection was found. No new execution here.",
-          "remaining_coverage": "packages/identitycore/handlers_test.go:187 anchors adapter failures; login_test.go:34 anchors core propagated session error/profile ID; actual first-install login is positive ordinary path and does not verify requested-return sanitization."
-        },
-        {
           "file": "packages/identitycore/mfa_http_test.go",
           "name": "TestNewMFAHandlersRejectsInvalidConfig",
           "candidate_decision": "D",
@@ -63058,60 +63982,6 @@
           "reason": "Zero-config smoke repeats the same conjunctive factory missing-dependency contract fully covered by the stronger11-row public matrix. No independent important contract beyond those omissions.",
           "gap": "Actual valid login/first-install/MFA gate covers only ordinary success. No server E2E missing-callback, persistence-failure, stale enrollment, strong API session, strict malformed form, boundary-size or domain-error injection was found. No new execution here.",
           "remaining_coverage": "packages/identitycore/handlers_mfa_disable_test.go:82#TestMFADisableConfigurationFailsClosedBeforeCallbacks checks all returned handlers nil, ErrInvalidConfig and no callbacks for individual missing deps; complete positive config additionally exercised."
-        },
-        {
-          "file": "packages/identitycore/mfa_test.go",
-          "name": "TestMFAExpiryDiscardAndNilEngine",
-          "candidate_decision": "F",
-          "credible_failure": "MFA.Discard could fail to remove pending enrollment after failed first-Owner persistence, retaining secret/recovery material; successful bounded identity discard is independently exercised.",
-          "reason": "Keep unique successful bounded-identity/Owner Discard deletion used by auth_setup.go:56 after commitFirstOwner failure. The expired Confirm subcase uses invalid secret/code and adds no expiry proof; remove that misleading overlapping Confirm rejection, while retaining deletion contract. Nil convenience alone does not justify retaining this declaration.",
-          "gap": "Real fresh-install TOTP/WebAuthn and populated login exercise ordinary factor success; Viewer required-MFA journey inspects instructions. No actual browser entropy failure, recovery reuse/persistence failure, owner last-factor denial, public-session revocation on factor mutation, or exact malformed/size/counter boundary matrix identified.",
-          "remaining_coverage": "packages/identitycore/mfa_test.go:143#TestMFAConfirmIsolatesMissingExpiredAndInvalidCodes proves expiry using otherwise valid RFC secret/TOTP. This declaration is the only reviewed positive Discard deletion proof. apps/player/internal/server/auth_setup.go:56 calls discard on owner commit failure; mfa.go:26 delegates Discard. No actual browser failed-owner-install cleanup proof."
-        },
-        {
-          "file": "packages/identitycore/network_test.go",
-          "name": "TestOutboundHTTPClientDialPolicy",
-          "candidate_decision": "F",
-          "credible_failure": "Malformed address/DNS and local listener connection wiring could regress.",
-          "reason": "Denied127.0.0.1:80 negative can pass from connection refusal even when policy check is removed; it does not prove no dial. Retain malformed/DNS/local connection proof, repair denial using a reachable effect-observing server or canonical owner boundary when test repair authorized.",
-          "gap": "Real populated login/media/profile journeys prove normal valid paths and Viewer MFA gating; none exercise malicious peer headers, DNS mixture, nil config, proxy token bounds, closed public integration routes or precise policy denial precedence. Fixture passkey tests do not execute server.",
-          "remaining_coverage": "packages/identitycore/network_test.go:12#TestAllowedResolvedAddress retains mixed-private DNS policy; this declaration retains dial wiring and needs negative-control repair. No browser no-dial proof."
-        },
-        {
-          "file": "packages/identitycore/profile_scim_transaction_test.go",
-          "name": "TestProfileStoreSCIMCreateFailuresAndRehydrate",
-          "candidate_decision": "F",
-          "credible_failure": "SCIM restore/create persistence failures could alter state; rehydrate could retain credentials/sessions or tombstone revision.",
-          "reason": "Unique failure/rehydration proof is valuable. Duplicate tombstone fixture has empty stable ExternalIDs and new directory-id, so first tombstone rejects identity mismatch before duplicate branch. Set both deleted tombstones ExternalID=directory-id in existing case when repair authorized.",
-          "gap": "Real first-install and populated helper flows exercise valid local Owner/Viewer create/read/remove and MFA instruction gate. No actual browser SCIM lifecycle/restore/ETag/identity change, API-key migration/order, file/database failure injection, deep-copy mutation, or schedule time-boundary scenario identified. Browser timeout tests read options only.",
-          "remaining_coverage": "packages/identitycore/profile_scim_identity_test.go:12#TestSCIMRestoreRequiresSameStableIdentity is primary mismatch/no-ID restore proof; this declaration retains successful rehydrate/failure behavior but duplicate-tombstone control requires repair."
-        },
-        {
-          "file": "packages/identitycore/profile_state_test.go",
-          "name": "TestLoadProfileStateStopsOnLoaderFailure",
-          "candidate_decision": "F",
-          "credible_failure": "Startup loader could continue to related reads after earlier loader fails or discard causal error.",
-          "reason": "It asserts propagated error and at least one call, but does not assert expected call list, so continuing sessions/keys after profile error can pass. Retain contract with exact stage prefix assertion when repair authorized.",
-          "gap": "Real first-install and populated helper flows exercise valid local Owner/Viewer create/read/remove and MFA instruction gate. No actual browser SCIM lifecycle/restore/ETag/identity change, API-key migration/order, file/database failure injection, deep-copy mutation, or schedule time-boundary scenario identified. Browser timeout tests read options only.",
-          "remaining_coverage": "packages/identitycore/profile_state_test.go:28 remains primary loader-failure proof; :64#TestLoadProfileStateRejectsInvalidProfilesBeforeRelatedReads checks invalid profiles before related callbacks, not loader failures."
-        },
-        {
-          "file": "packages/identitycore/profile_store_transaction_test.go",
-          "name": "TestProfileStoreSetupAndAuthentication",
-          "candidate_decision": "F",
-          "credible_failure": "First Owner creation/authentication could accept wrong/disabled identity or commit failed storage.",
-          "reason": "After setting SCIMDeleted=true it authenticates missing name, so the deleted-profile rejection is unexercised. Retain setup/persistence/credential contracts; minimally authenticate existing Owner with correct password while SCIMDeleted, then keep separate missing-name check when repair authorized.",
-          "gap": "Real first-install and populated helper flows exercise valid local Owner/Viewer create/read/remove and MFA instruction gate. No actual browser SCIM lifecycle/restore/ETag/identity change, API-key migration/order, file/database failure injection, deep-copy mutation, or schedule time-boundary scenario identified. Browser timeout tests read options only.",
-          "remaining_coverage": "This declaration plus profile_store_transaction_test.go:79,106,148 remains primary transaction proof; real first-install E2E covers setup/sign-in but no disabled/deleted storage failure."
-        },
-        {
-          "file": "packages/identitycore/session_requests_test.go",
-          "name": "TestWithoutPublicSessionsReturnsAnIndependentCopy",
-          "candidate_decision": "F",
-          "credible_failure": "Revoking public access could mutate live map or also discard all local sessions.",
-          "reason": "Current test deletes local from result before checking length, so returning empty map passes. Retain copy/filter contract; assert local entry exists and public does not before existing delete when repair authorized.",
-          "gap": "Fresh-install E2E signs in/out through real server; populated timeout tests only read controls after valid auth. No actual browser migration, stale revision, management-device replay, cap10, storage failure or exact idle/absolute expiry/malformed token proof identified.",
-          "remaining_coverage": "packages/identitycore/sessions_admin.go:127#WithoutPublicSessions used by apps/{player,subtitles}/internal/server/sessions.go#revokePublicSessions. No actual browser public-disable preservation scenario found."
         }
       ],
       "e2e_evidence": {
@@ -63123,23 +63993,14 @@
     },
     "/root/tooling": {
       "path": "/tmp/kinosail-catalog-metadata-audit.json",
-      "sha256": "90d568b83b776bb3b27ba192188cd1f2ca2ddba524e9246651b110943edd3ace",
-      "bytes": 627546,
+      "sha256": "6561e268c29963124b4471c35c7178c1a05b676562e549ca06a3f68cccd457b1",
+      "bytes": 628023,
       "reviewer": "/root/tooling",
       "read_only": true,
-      "accepted_R_declarations": 196,
+      "accepted_R_declarations": 198,
       "source_reviewed_declarations": 205,
       "execution": "None. Source baseline terminal events only; root serializes candidate validation.",
       "deferred_candidates": [
-        {
-          "file": "packages/catalog/browse_edges_test.go",
-          "name": "TestSearchRankCoversEveryMatchShape",
-          "candidate_decision": "D",
-          "credible_failure": "Private six-integer rank probes duplicate every rank shape covered by TestCoverageSearchUnicodeRankingAndFilterIsolation, which also asserts actual sorted order and Unicode normalization; no independent important contract.",
-          "reason": null,
-          "gap": "Public Player populated title jump verifies one ASCII B toggle; actual Subtitles happy search checks Arrival/missing and playback watched/ContinueWatching. None tests Unicode/large-key ties, shared-storage aliasing, cancelled locks or malformed query matrix.",
-          "remaining_coverage": "packages/catalog/coverage_browse_letters_final_test.go:85:TestCoverageSearchUnicodeRankingAndFilterIsolation. Genuine browser evidence is partial and does not establish equivalence to these isolated assertions."
-        },
         {
           "file": "packages/catalog/catalog_test.go",
           "name": "TestSmallBrowseHelpers",
@@ -63159,15 +64020,6 @@
           "remaining_coverage": "packages/catalog/detail_http_test.go:106:TestAlbumHandlerProjectsAndReportsResults. Genuine browser evidence is partial and does not establish equivalence to these isolated assertions."
         },
         {
-          "file": "packages/catalog/scan_concurrency_test.go",
-          "name": "BenchmarkScanRoots",
-          "candidate_decision": "C",
-          "credible_failure": "Representative1024media with sidecars compares serial/parallel allocation/time and validates count on execution; benchmark is not an automatic go-test regression assertion or E2E. Keep measurement fixture honestly separate.",
-          "reason": null,
-          "gap": "Populated Player library E2E proves normal media views/local TMDB/albumtrack/audio/book reader and creates one smart video Example rule; static media never injects watcher/provider errors, restricted readers, duplicateID/scratch growth or cache publication.",
-          "remaining_coverage": "Retain this executed isolated boundary; actual public browser proof described in top-level e2e_evidence."
-        },
-        {
           "file": "packages/catalog/search_sort_test.go",
           "name": "TestSearchTextNormalizesASCIIAndUnicodeMetadata",
           "candidate_decision": "D",
@@ -63177,15 +64029,6 @@
           "remaining_coverage": "packages/catalog/coverage_browse_letters_final_test.go:85:TestCoverageSearchUnicodeRankingAndFilterIsolation; packages/catalog/search_metadata_test.go:10:TestMetadataSearchPreservesFieldBoundariesAndNormalization; packages/catalog/search_metadata_test.go:31:TestMetadataSearchNormalizesEveryUnicodeField; packages/catalog/search_metadata_test.go:53:TestMetadataSearchPreservesLargeAndCompatibilityValues. Genuine browser evidence is partial and does not establish equivalence to these isolated assertions."
         },
         {
-          "file": "packages/metadata/bulk_editor_http_test.go",
-          "name": "TestBulkMetadataHTMLUsesProductProfile",
-          "candidate_decision": "D",
-          "credible_failure": "Three default asset/title fragment echoes and derivative profile literal checks protect no important bulk-edit/auth/data behavior; the same Player profile values already in TestBulkEditorPage, actual template field escaping and asset fetches are not asserted. No equivalent bulk route E2E claimed.",
-          "reason": null,
-          "gap": "Retained TestBulkEditorPage proves actual page projection and Player profile, but uses a renderer stub. There is no genuine bulk-edit E2E or exact template profile/copy equivalence. The deleted test only checks three static fragments and Subtitles literals, without loading assets, editing metadata, auth, or escaping hostile data.",
-          "remaining_coverage": "packages/metadata/bulk_editor_http_test.go:42:TestBulkEditorPage; packages/metadata/bulk_editor_http_test.go:80:TestBulkEditorPageFailures. Genuine browser evidence is partial and does not establish equivalence to these isolated assertions."
-        },
-        {
           "file": "packages/metadata/chapters_test.go",
           "name": "TestChapterProviderReturnsNoDataWithoutTVDBEpisodeIdentity",
           "candidate_decision": "D",
@@ -63193,24 +64036,6 @@
           "reason": null,
           "gap": "Private chapter identity table directly rejects missing Show/Episode and bad/zero TVDB values; empty TVDB shares parsing rejection. The candidate test asserts only a nil result from default external provider, without observing network absence. No browser invalid-identity or no-network equivalence is claimed.",
           "remaining_coverage": "packages/metadata/chapters_edges_test.go:16:TestChapterPresentationAndLookupBoundaries. Genuine browser evidence is partial and does not establish equivalence to these isolated assertions."
-        },
-        {
-          "file": "packages/metadata/tmdb_concurrency_test.go",
-          "name": "BenchmarkTMDBEnrichMovies",
-          "candidate_decision": "C",
-          "credible_failure": "Serial-versus-parallel completeuncached4movie workflow benchmark checks validoutputs; notrun byordinary go-test andnotautomaticbugproof/E2E.",
-          "reason": null,
-          "gap": "Actual populated Player generatedlocal TMDB verifiesnormalmovieplot, episodeartwork and album/book/routes, real happy journey playbackprogress. No externalprovider fault/certification/SSRF/response bounds, malformed cache disk state/concurrency/ambiguity/TVMazefallback proof. Benchmarks explicitly not executed as tests.",
-          "remaining_coverage": "Retain this executed isolated boundary; actual public browser proof described in top-level e2e_evidence."
-        },
-        {
-          "file": "packages/metadata/tmdb_concurrency_test.go",
-          "name": "BenchmarkTMDBCastImages",
-          "candidate_decision": "C",
-          "credible_failure": "Serial-versus-parallel eightportrait HTTP/cache benchmark checksoutput; explicitmeasurementfixture, ordinary go-test doesnotexecute.",
-          "reason": null,
-          "gap": "Actual populated Player generatedlocal TMDB verifiesnormalmovieplot, episodeartwork and album/book/routes, real happy journey playbackprogress. No externalprovider fault/certification/SSRF/response bounds, malformed cache disk state/concurrency/ambiguity/TVMazefallback proof. Benchmarks explicitly not executed as tests.",
-          "remaining_coverage": "Retain this executed isolated boundary; actual public browser proof described in top-level e2e_evidence."
         }
       ],
       "e2e_evidence": {
@@ -63227,26 +64052,7 @@
       "accepted_R_declarations": 44,
       "source_reviewed_declarations": 46,
       "execution": "None. Source baseline terminal events only; root serializes candidate validation.",
-      "deferred_candidates": [
-        {
-          "file": "packages/owneraccess/dns_runtime_test.go",
-          "name": "TestPrivateDNSOnlyAnswersPairedDevices",
-          "candidate_decision": "F",
-          "credible_failure": "A valid paired-device DNS request receives no correct management address/transaction ID or an unauthorized reply is observed first.",
-          "reason": null,
-          "gap": "Existing real browser library/admin/subtitle journeys do not create real WireGuard devices, DNS peers, revoke active tunnel streams, corrupt persisted management state or inject disk failure. Direct HTTP adapters are isolated fixtures, not Server/browser E2E. One received reply is checked; it does not drain/assert absence of all additional unauthorized replies. Retained paired DNS response proof remains useful.",
-          "remaining_coverage": "packages/owneraccess/dns_runtime_test.go::TestPrivateDNSOnlyAnswersPairedDevices"
-        },
-        {
-          "file": "packages/owneraccess/owneraccess_test.go",
-          "name": "TestManagementTunnelBindsPeerRevokesLiveStreamAndPreservesPrivateBoundary",
-          "candidate_decision": "F",
-          "credible_failure": "A real WireGuard tunnel loses Owner context, exposes keys, lets forged headers establish identity, retains live streams after revoke, reuses revoked addresses or preserves changed credentials.",
-          "reason": null,
-          "gap": "Existing real browser library/admin/subtitle journeys do not create real WireGuard devices, DNS peers, revoke active tunnel streams, corrupt persisted management state or inject disk failure. Direct HTTP adapters are isolated fixtures, not Server/browser E2E. The negative LAN/host dial probes have no accepting target-service control, so connection failure alone does not prove a routing denial. Real device binding/revoked-stream positive sequence still catches important bugs.",
-          "remaining_coverage": "packages/owneraccess/owneraccess_test.go::TestManagementTunnelBindsPeerRevokesLiveStreamAndPreservesPrivateBoundary"
-        }
-      ],
+      "deferred_candidates": [],
       "e2e_evidence": [
         "apps/player/e2e/happy-path.spec.ts",
         "apps/player/e2e/ui-happy-paths.spec.ts",
