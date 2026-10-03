@@ -8077,24 +8077,40 @@
       "sha256": "a003582b185610b5d5185a5f8b188e969a1d76edc6108d9332784254ca32a901",
       "path": "apps/player/internal/server/auth_all_routes_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Retain route-specific security proof unavailable from existing live browser happy-path journeys. Pins and classifies478 actual app/shared registered routes, then sends unauthenticated HTTP requests and requires the applicable denial or capability handling. A new accidentally public/protected route or unreviewed inventory change fails.",
+      "category": "application route authorization security boundary",
+      "credible_failure": "Pins and classifies478 actual app/shared registered routes, then sends unauthenticated HTTP requests and requires the applicable denial or capability handling. A new accidentally public/protected route or unreviewed inventory change fails.",
+      "production_owner": [
+        "apps/player/internal/server/auth.go:protect,serveIdentity,viewerAccess",
+        "apps/player/internal/server/auth_remote_routes.go:publicRoutes",
+        "apps/player/internal/server/api_keys.go:profileAllowsAPI,route scope maps",
+        "apps/player/internal/server/security.go:security,unsafeCrossOrigin",
+        "packages/identitycore/access.go:EvaluateAccess,AllowsAPI"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/server.go:New and application middleware/route registrations"
+      ],
+      "remaining_proof": [
+        {
+          "path": "apps/player/internal/server/auth_all_routes_test.go",
+          "scenario": "TestEveryRegisteredRouteHasReviewedAnonymousAccess",
+          "kind": "retained isolated real app handler matrix; not a browser/process E2E"
+        }
+      ],
+      "coverage_limit": "Live first-install/playback/library/Supporter journeys log in and access selected routes; they do not exercise all478 route patterns across invalid/revoked tokens, each role/scope, expired schedule, HEAD and hostile origins. Positive matrix cases prove authorization admission, not successful business behavior of missing-resource endpoints. Cookie fixtures do not prove real-browser CSRF or Secure cookie enforcement.",
       "history": [
         "3aeb7d62603addf02b5328888a5a122f5f1ec5b5 Keep merged subtitle guidance and Owner route coverage",
         "a766afa013dd2af2be50d4310cbbb5d3a2fdfad2 Merge remote-tracking branch 'origin/main' into codex/subtitle-selector-copy",
         "582f359aa4f00a46bebc40d6c981fccf2f64d513 Limit Player subtitle menus to the preferred language"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "high: app route authorization is an independently meaningful security boundary",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_context": "App route inventory and scope classification evolved in reviewed route coverage updates, including3aeb7d626; each row preserves its exact original history list.",
+      "reviewed_assertions": "Pins and classifies478 actual app/shared registered routes, then sends unauthenticated HTTP requests and requires the applicable denial or capability handling. A new accidentally public/protected route or unreviewed inventory change fails."
     },
     {
       "name": "TestEveryProtectedRouteAcceptsOwnerAndRejectsInvalidOrRevokedSessions",
@@ -8103,24 +8119,40 @@
       "sha256": "676ba91135efd8f6680d068192bae7de803cfa72d89f5112762a3d9b218dfac6",
       "path": "apps/player/internal/server/auth_all_routes_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Retain route-specific security proof unavailable from existing live browser happy-path journeys. Every protected route receives a valid Owner session, malformed token and explicitly revoked session. Protects auth bypass and accidental total-denial on any route.",
+      "category": "application route authorization security boundary",
+      "credible_failure": "Every protected route receives a valid Owner session, malformed token and explicitly revoked session. Protects auth bypass and accidental total-denial on any route.",
+      "production_owner": [
+        "apps/player/internal/server/auth.go:protect,serveIdentity,viewerAccess",
+        "apps/player/internal/server/auth_remote_routes.go:publicRoutes",
+        "apps/player/internal/server/api_keys.go:profileAllowsAPI,route scope maps",
+        "apps/player/internal/server/security.go:security,unsafeCrossOrigin",
+        "packages/identitycore/access.go:EvaluateAccess,AllowsAPI"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/server.go:New and application middleware/route registrations"
+      ],
+      "remaining_proof": [
+        {
+          "path": "apps/player/internal/server/auth_all_routes_test.go",
+          "scenario": "TestEveryProtectedRouteAcceptsOwnerAndRejectsInvalidOrRevokedSessions",
+          "kind": "retained isolated real app handler matrix; not a browser/process E2E"
+        }
+      ],
+      "coverage_limit": "Live first-install/playback/library/Supporter journeys log in and access selected routes; they do not exercise all478 route patterns across invalid/revoked tokens, each role/scope, expired schedule, HEAD and hostile origins. Positive matrix cases prove authorization admission, not successful business behavior of missing-resource endpoints. Cookie fixtures do not prove real-browser CSRF or Secure cookie enforcement.",
       "history": [
         "3aeb7d62603addf02b5328888a5a122f5f1ec5b5 Keep merged subtitle guidance and Owner route coverage",
         "a766afa013dd2af2be50d4310cbbb5d3a2fdfad2 Merge remote-tracking branch 'origin/main' into codex/subtitle-selector-copy",
         "582f359aa4f00a46bebc40d6c981fccf2f64d513 Limit Player subtitle menus to the preferred language"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "high: app route authorization is an independently meaningful security boundary",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_context": "App route inventory and scope classification evolved in reviewed route coverage updates, including3aeb7d626; each row preserves its exact original history list.",
+      "reviewed_assertions": "Every protected route receives a valid Owner session, malformed token and explicitly revoked session. Protects auth bypass and accidental total-denial on any route."
     },
     {
       "name": "TestEveryProtectedRouteEnforcesOwnerAndViewerRoles",
@@ -8129,24 +8161,40 @@
       "sha256": "ed548fcefd752ebafe3756bfe14c2ca0c8ff2170e30fb1e7f21385626361642e",
       "path": "apps/player/internal/server/auth_all_routes_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Retain route-specific security proof unavailable from existing live browser happy-path journeys. Creates a real Viewer via API, then requires Owner-only routes to deny with explicit Owner-required403 while other routes accept the authorized Viewer.",
+      "category": "application route authorization security boundary",
+      "credible_failure": "Creates a real Viewer via API, then requires Owner-only routes to deny with explicit Owner-required403 while other routes accept the authorized Viewer.",
+      "production_owner": [
+        "apps/player/internal/server/auth.go:protect,serveIdentity,viewerAccess",
+        "apps/player/internal/server/auth_remote_routes.go:publicRoutes",
+        "apps/player/internal/server/api_keys.go:profileAllowsAPI,route scope maps",
+        "apps/player/internal/server/security.go:security,unsafeCrossOrigin",
+        "packages/identitycore/access.go:EvaluateAccess,AllowsAPI"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/server.go:New and application middleware/route registrations"
+      ],
+      "remaining_proof": [
+        {
+          "path": "apps/player/internal/server/auth_all_routes_test.go",
+          "scenario": "TestEveryProtectedRouteEnforcesOwnerAndViewerRoles",
+          "kind": "retained isolated real app handler matrix; not a browser/process E2E"
+        }
+      ],
+      "coverage_limit": "Live first-install/playback/library/Supporter journeys log in and access selected routes; they do not exercise all478 route patterns across invalid/revoked tokens, each role/scope, expired schedule, HEAD and hostile origins. Positive matrix cases prove authorization admission, not successful business behavior of missing-resource endpoints. Cookie fixtures do not prove real-browser CSRF or Secure cookie enforcement.",
       "history": [
         "3aeb7d62603addf02b5328888a5a122f5f1ec5b5 Keep merged subtitle guidance and Owner route coverage",
         "a766afa013dd2af2be50d4310cbbb5d3a2fdfad2 Merge remote-tracking branch 'origin/main' into codex/subtitle-selector-copy",
         "582f359aa4f00a46bebc40d6c981fccf2f64d513 Limit Player subtitle menus to the preferred language"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "high: app route authorization is an independently meaningful security boundary",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_context": "App route inventory and scope classification evolved in reviewed route coverage updates, including3aeb7d626; each row preserves its exact original history list.",
+      "reviewed_assertions": "Creates a real Viewer via API, then requires Owner-only routes to deny with explicit Owner-required403 while other routes accept the authorized Viewer."
     },
     {
       "name": "TestEveryProtectedRouteEnforcesViewerSchedule",
@@ -8155,24 +8203,40 @@
       "sha256": "496cff6b47fb7762f7b57cd1626a46926f30a509f8473321b9bc50dadaa6f516",
       "path": "apps/player/internal/server/auth_all_routes_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Retain route-specific security proof unavailable from existing live browser happy-path journeys. Logs in a real Viewer, updates its schedule to00:00\u201300:00, and requires every protected route to return the specific schedule-denied403.",
+      "category": "application route authorization security boundary",
+      "credible_failure": "Logs in a real Viewer, updates its schedule to00:00\u201300:00, and requires every protected route to return the specific schedule-denied403.",
+      "production_owner": [
+        "apps/player/internal/server/auth.go:protect,serveIdentity,viewerAccess",
+        "apps/player/internal/server/auth_remote_routes.go:publicRoutes",
+        "apps/player/internal/server/api_keys.go:profileAllowsAPI,route scope maps",
+        "apps/player/internal/server/security.go:security,unsafeCrossOrigin",
+        "packages/identitycore/access.go:EvaluateAccess,AllowsAPI"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/server.go:New and application middleware/route registrations"
+      ],
+      "remaining_proof": [
+        {
+          "path": "apps/player/internal/server/auth_all_routes_test.go",
+          "scenario": "TestEveryProtectedRouteEnforcesViewerSchedule",
+          "kind": "retained isolated real app handler matrix; not a browser/process E2E"
+        }
+      ],
+      "coverage_limit": "Live first-install/playback/library/Supporter journeys log in and access selected routes; they do not exercise all478 route patterns across invalid/revoked tokens, each role/scope, expired schedule, HEAD and hostile origins. Positive matrix cases prove authorization admission, not successful business behavior of missing-resource endpoints. Cookie fixtures do not prove real-browser CSRF or Secure cookie enforcement.",
       "history": [
         "3aeb7d62603addf02b5328888a5a122f5f1ec5b5 Keep merged subtitle guidance and Owner route coverage",
         "a766afa013dd2af2be50d4310cbbb5d3a2fdfad2 Merge remote-tracking branch 'origin/main' into codex/subtitle-selector-copy",
         "582f359aa4f00a46bebc40d6c981fccf2f64d513 Limit Player subtitle menus to the preferred language"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "high: app route authorization is an independently meaningful security boundary",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_context": "App route inventory and scope classification evolved in reviewed route coverage updates, including3aeb7d626; each row preserves its exact original history list.",
+      "reviewed_assertions": "Logs in a real Viewer, updates its schedule to00:00\u201300:00, and requires every protected route to return the specific schedule-denied403."
     },
     {
       "name": "TestEveryProtectedRouteEnforcesExactAPIKeyScopes",
@@ -8181,24 +8245,40 @@
       "sha256": "4171a98539ffd257900189112344d84cfb956eeed7e2af5ca5d3f77be0fd6c9f",
       "path": "apps/player/internal/server/auth_all_routes_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Retain route-specific security proof unavailable from existing live browser happy-path journeys. Creates separate real keys for library/write/stream/download/admin and requires the exact allow/deny matrix at every protected route; rejects a denial for another reason.",
+      "category": "application route authorization security boundary",
+      "credible_failure": "Creates separate real keys for library/write/stream/download/admin and requires the exact allow/deny matrix at every protected route; rejects a denial for another reason.",
+      "production_owner": [
+        "apps/player/internal/server/auth.go:protect,serveIdentity,viewerAccess",
+        "apps/player/internal/server/auth_remote_routes.go:publicRoutes",
+        "apps/player/internal/server/api_keys.go:profileAllowsAPI,route scope maps",
+        "apps/player/internal/server/security.go:security,unsafeCrossOrigin",
+        "packages/identitycore/access.go:EvaluateAccess,AllowsAPI"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/server.go:New and application middleware/route registrations"
+      ],
+      "remaining_proof": [
+        {
+          "path": "apps/player/internal/server/auth_all_routes_test.go",
+          "scenario": "TestEveryProtectedRouteEnforcesExactAPIKeyScopes",
+          "kind": "retained isolated real app handler matrix; not a browser/process E2E"
+        }
+      ],
+      "coverage_limit": "Live first-install/playback/library/Supporter journeys log in and access selected routes; they do not exercise all478 route patterns across invalid/revoked tokens, each role/scope, expired schedule, HEAD and hostile origins. Positive matrix cases prove authorization admission, not successful business behavior of missing-resource endpoints. Cookie fixtures do not prove real-browser CSRF or Secure cookie enforcement.",
       "history": [
         "3aeb7d62603addf02b5328888a5a122f5f1ec5b5 Keep merged subtitle guidance and Owner route coverage",
         "a766afa013dd2af2be50d4310cbbb5d3a2fdfad2 Merge remote-tracking branch 'origin/main' into codex/subtitle-selector-copy",
         "582f359aa4f00a46bebc40d6c981fccf2f64d513 Limit Player subtitle menus to the preferred language"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "high: app route authorization is an independently meaningful security boundary",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_context": "App route inventory and scope classification evolved in reviewed route coverage updates, including3aeb7d626; each row preserves its exact original history list.",
+      "reviewed_assertions": "Creates separate real keys for library/write/stream/download/admin and requires the exact allow/deny matrix at every protected route; rejects a denial for another reason."
     },
     {
       "name": "TestAPISetupSettingsFailureDoesNotClaimFirstOwner",
@@ -8412,22 +8492,38 @@
       "sha256": "c71fe695b91071c420daf7489ade7ab49358a6b9e93ea69a2da0698afa4ae8b4",
       "path": "apps/player/internal/server/auth_cookie_routes_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Retain route-specific security proof unavailable from existing live browser happy-path journeys. Repeats Owner/Viewer roles andinvalid/revoked credentials through actual cookie transport for every protected route; refreshes cookies after logout/revoke mutations.",
+      "category": "application route authorization security boundary",
+      "credible_failure": "Repeats Owner/Viewer roles andinvalid/revoked credentials through actual cookie transport for every protected route; refreshes cookies after logout/revoke mutations.",
+      "production_owner": [
+        "apps/player/internal/server/auth.go:protect,serveIdentity,viewerAccess",
+        "apps/player/internal/server/auth_remote_routes.go:publicRoutes",
+        "apps/player/internal/server/api_keys.go:profileAllowsAPI,route scope maps",
+        "apps/player/internal/server/security.go:security,unsafeCrossOrigin",
+        "packages/identitycore/access.go:EvaluateAccess,AllowsAPI"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/server.go:New and application middleware/route registrations"
+      ],
+      "remaining_proof": [
+        {
+          "path": "apps/player/internal/server/auth_cookie_routes_test.go",
+          "scenario": "TestEveryProtectedRouteEnforcesBrowserSessionRolesAndRevocation",
+          "kind": "retained isolated real app handler matrix; not a browser/process E2E"
+        }
+      ],
+      "coverage_limit": "Live first-install/playback/library/Supporter journeys log in and access selected routes; they do not exercise all478 route patterns across invalid/revoked tokens, each role/scope, expired schedule, HEAD and hostile origins. Positive matrix cases prove authorization admission, not successful business behavior of missing-resource endpoints. Cookie fixtures do not prove real-browser CSRF or Secure cookie enforcement.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "high: app route authorization is an independently meaningful security boundary",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_context": "App route inventory and scope classification evolved in reviewed route coverage updates, including3aeb7d626; each row preserves its exact original history list.",
+      "reviewed_assertions": "Repeats Owner/Viewer roles andinvalid/revoked credentials through actual cookie transport for every protected route; refreshes cookies after logout/revoke mutations."
     },
     {
       "name": "TestEveryMutatingRouteRejectsCrossOriginRequests",
@@ -8436,23 +8532,39 @@
       "sha256": "36893452cb58ba1cf6a67f350ea034d9ca0b1b91b469868591e01e7632071f82",
       "path": "apps/player/internal/server/auth_cross_origin_routes_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Retain route-specific security proof unavailable from existing live browser happy-path journeys. Every POST/PUT/DELETE/PATCH mutation gets Origin:https://attacker.example and must return403. Request security checks unsafe origins before normal authentication.",
+      "category": "application route authorization security boundary",
+      "credible_failure": "Every POST/PUT/DELETE/PATCH mutation gets Origin:https://attacker.example and must return403. Request security checks unsafe origins before normal authentication.",
+      "production_owner": [
+        "apps/player/internal/server/auth.go:protect,serveIdentity,viewerAccess",
+        "apps/player/internal/server/auth_remote_routes.go:publicRoutes",
+        "apps/player/internal/server/api_keys.go:profileAllowsAPI,route scope maps",
+        "apps/player/internal/server/security.go:security,unsafeCrossOrigin",
+        "packages/identitycore/access.go:EvaluateAccess,AllowsAPI"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/server.go:New and application middleware/route registrations"
+      ],
+      "remaining_proof": [
+        {
+          "path": "apps/player/internal/server/auth_cross_origin_routes_test.go",
+          "scenario": "TestEveryMutatingRouteRejectsCrossOriginRequests",
+          "kind": "retained isolated real app handler matrix; not a browser/process E2E"
+        }
+      ],
+      "coverage_limit": "Live first-install/playback/library/Supporter journeys log in and access selected routes; they do not exercise all478 route patterns across invalid/revoked tokens, each role/scope, expired schedule, HEAD and hostile origins. Positive matrix cases prove authorization admission, not successful business behavior of missing-resource endpoints. Cookie fixtures do not prove real-browser CSRF or Secure cookie enforcement.",
       "history": [
         "ee9b4e6b5333eae424766844c2ba22be1be7ca1b Strengthen negative API security contracts",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "high: app route authorization is an independently meaningful security boundary",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_context": "App route inventory and scope classification evolved in reviewed route coverage updates, including3aeb7d626; each row preserves its exact original history list.",
+      "reviewed_assertions": "Every POST/PUT/DELETE/PATCH mutation gets Origin:https://attacker.example and must return403. Request security checks unsafe origins before normal authentication."
     },
     {
       "name": "TestEveryGetEndpointAppliesTheSameAuthorizationToHead",
@@ -8461,22 +8573,38 @@
       "sha256": "5c0f3754ff21e7f6ea2fbfb3da2292e1cff947ac59e522f0583d5d3b6212bbf8",
       "path": "apps/player/internal/server/auth_head_routes_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Retain route-specific security proof unavailable from existing live browser happy-path journeys. Repeats anonymous, Owner, Viewer andfive exact key-scope dimensions through HEAD for every GETroute, catching Go implicit HEAD authorization bypass.",
+      "category": "application route authorization security boundary",
+      "credible_failure": "Repeats anonymous, Owner, Viewer andfive exact key-scope dimensions through HEAD for every GETroute, catching Go implicit HEAD authorization bypass.",
+      "production_owner": [
+        "apps/player/internal/server/auth.go:protect,serveIdentity,viewerAccess",
+        "apps/player/internal/server/auth_remote_routes.go:publicRoutes",
+        "apps/player/internal/server/api_keys.go:profileAllowsAPI,route scope maps",
+        "apps/player/internal/server/security.go:security,unsafeCrossOrigin",
+        "packages/identitycore/access.go:EvaluateAccess,AllowsAPI"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/server.go:New and application middleware/route registrations"
+      ],
+      "remaining_proof": [
+        {
+          "path": "apps/player/internal/server/auth_head_routes_test.go",
+          "scenario": "TestEveryGetEndpointAppliesTheSameAuthorizationToHead",
+          "kind": "retained isolated real app handler matrix; not a browser/process E2E"
+        }
+      ],
+      "coverage_limit": "Live first-install/playback/library/Supporter journeys log in and access selected routes; they do not exercise all478 route patterns across invalid/revoked tokens, each role/scope, expired schedule, HEAD and hostile origins. Positive matrix cases prove authorization admission, not successful business behavior of missing-resource endpoints. Cookie fixtures do not prove real-browser CSRF or Secure cookie enforcement.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "high: app route authorization is an independently meaningful security boundary",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_context": "App route inventory and scope classification evolved in reviewed route coverage updates, including3aeb7d626; each row preserves its exact original history list.",
+      "reviewed_assertions": "Repeats anonymous, Owner, Viewer andfive exact key-scope dimensions through HEAD for every GETroute, catching Go implicit HEAD authorization bypass."
     },
     {
       "name": "TestOwnerCanManageOwnerProfilesThroughWeb",
@@ -8629,22 +8757,38 @@
       "sha256": "349ba492dd2df8911e47fca9d5639331dfbc66cf654961412e4a1871363ccc94",
       "path": "apps/player/internal/server/auth_revoked_routes_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Retain route-specific security proof unavailable from existing live browser happy-path journeys. Creates full-scope key, lists its ID, revokes it via API, then requires auth denial at every protected route with that same key.",
+      "category": "application route authorization security boundary",
+      "credible_failure": "Creates full-scope key, lists its ID, revokes it via API, then requires auth denial at every protected route with that same key.",
+      "production_owner": [
+        "apps/player/internal/server/auth.go:protect,serveIdentity,viewerAccess",
+        "apps/player/internal/server/auth_remote_routes.go:publicRoutes",
+        "apps/player/internal/server/api_keys.go:profileAllowsAPI,route scope maps",
+        "apps/player/internal/server/security.go:security,unsafeCrossOrigin",
+        "packages/identitycore/access.go:EvaluateAccess,AllowsAPI"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/server.go:New and application middleware/route registrations"
+      ],
+      "remaining_proof": [
+        {
+          "path": "apps/player/internal/server/auth_revoked_routes_test.go",
+          "scenario": "TestEveryProtectedRouteRejectsARevokedAPIKey",
+          "kind": "retained isolated real app handler matrix; not a browser/process E2E"
+        }
+      ],
+      "coverage_limit": "Live first-install/playback/library/Supporter journeys log in and access selected routes; they do not exercise all478 route patterns across invalid/revoked tokens, each role/scope, expired schedule, HEAD and hostile origins. Positive matrix cases prove authorization admission, not successful business behavior of missing-resource endpoints. Cookie fixtures do not prove real-browser CSRF or Secure cookie enforcement.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "high: app route authorization is an independently meaningful security boundary",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_context": "App route inventory and scope classification evolved in reviewed route coverage updates, including3aeb7d626; each row preserves its exact original history list.",
+      "reviewed_assertions": "Creates full-scope key, lists its ID, revokes it via API, then requires auth denial at every protected route with that same key."
     },
     {
       "name": "TestStepUpReturnsToKnownOwnerPage",
@@ -8652,23 +8796,45 @@
       "end_line": 25,
       "sha256": "b4b0e82d5cd02acf1c822fe24896c059574acb93e968896b90ebfa6087fe76e2",
       "path": "apps/player/internal/server/auth_stepup_internal_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "Player directly replays identitycore redirect helper through direct function aliases or a1-line forwarding function. Canonical package tests contain every removed case and additional malformed-input boundaries; no unique app request/response assertion.",
+      "category": "duplicate shared security owner contract",
+      "credible_failure": "Unsafe external/ambiguous redirect target, wrong Owner step-up return path or unescaped passkey offer destination. Canonical identitycore redirect tests preserve these important security failures independently.",
+      "production_owner": [
+        "apps/player/internal/server/auth_login.go:stepUpLoginPath,passkeyOfferPath,safeLoginReturn",
+        "packages/identitycore/redirects.go:StepUpLoginPath,SafeLoginReturn,PasskeyOfferPath"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/auth_login.go:login",
+        "apps/player/internal/server/auth.go:serveIdentity",
+        "apps/player/internal/server/mfa.go",
+        "apps/player/internal/server/passkeys.go",
+        "apps/player/internal/server/web_error.go",
+        "apps/player/internal/server/passkey_account.go"
+      ],
+      "remaining_proof": [
+        {
+          "path": "packages/identitycore/redirects_test.go",
+          "scenario": "TestStepUpLoginPathReturnsToKnownOwnerPage",
+          "kind": "retained canonical isolated security contract; not genuine E2E; exact removed input/expected pairs remain"
+        },
+        {
+          "path": "apps/player/internal/server/auth_stepup_internal_test.go",
+          "scenario": "TestPasswordLoginCreatesRecentAuthentication, TestOwnerSetupCreatesRecentAuthentication",
+          "kind": "retained isolated app handlers/session state; distinct login/setup integration risk"
+        }
+      ],
+      "coverage_limit": "Existing genuine test-instance first-install/login journeys do not exercise malicious next destinations, encoded slash/backslash or all Owner step-up routes. Shared isolated security keepers explicitly remain; no E2E equivalence claim.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; aliases/forwarder have real production callers and remain.",
+      "risk": "low with canonical security tests retained; no production behavior change",
+      "validation_command": "go test ./packages/identitycore -run \"TestStepUpLoginPathReturnsToKnownOwnerPage|TestSafeLoginReturnRejectsExternalAndAmbiguousTargets|TestPasskeyOfferPathEscapesValidatedDestination\" -count=1; root Player Go suite",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_context": "3701a5eaf Validate login redirects for CodeQL gate: retain repaired owner and canonical regression matrix. This deletion consolidates exact copies rather than weakening redirect validation."
     },
     {
       "name": "TestLoginReturnRejectsExternalAndAmbiguousTargets",
@@ -8676,23 +8842,45 @@
       "end_line": 36,
       "sha256": "e2d65d512677dc7b8ce45f818faefe990b18595c974919353e5bc02eb0a41a58",
       "path": "apps/player/internal/server/auth_stepup_internal_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "Player directly replays identitycore redirect helper through direct function aliases or a1-line forwarding function. Canonical package tests contain every removed case and additional malformed-input boundaries; no unique app request/response assertion.",
+      "category": "duplicate shared security owner contract",
+      "credible_failure": "Unsafe external/ambiguous redirect target, wrong Owner step-up return path or unescaped passkey offer destination. Canonical identitycore redirect tests preserve these important security failures independently.",
+      "production_owner": [
+        "apps/player/internal/server/auth_login.go:stepUpLoginPath,passkeyOfferPath,safeLoginReturn",
+        "packages/identitycore/redirects.go:StepUpLoginPath,SafeLoginReturn,PasskeyOfferPath"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/auth_login.go:login",
+        "apps/player/internal/server/auth.go:serveIdentity",
+        "apps/player/internal/server/mfa.go",
+        "apps/player/internal/server/passkeys.go",
+        "apps/player/internal/server/web_error.go",
+        "apps/player/internal/server/passkey_account.go"
+      ],
+      "remaining_proof": [
+        {
+          "path": "packages/identitycore/redirects_test.go",
+          "scenario": "TestSafeLoginReturnRejectsExternalAndAmbiguousTargets",
+          "kind": "retained canonical isolated security contract; not genuine E2E; exact removed input/expected pairs remain"
+        },
+        {
+          "path": "apps/player/internal/server/auth_stepup_internal_test.go",
+          "scenario": "TestPasswordLoginCreatesRecentAuthentication, TestOwnerSetupCreatesRecentAuthentication",
+          "kind": "retained isolated app handlers/session state; distinct login/setup integration risk"
+        }
+      ],
+      "coverage_limit": "Existing genuine test-instance first-install/login journeys do not exercise malicious next destinations, encoded slash/backslash or all Owner step-up routes. Shared isolated security keepers explicitly remain; no E2E equivalence claim.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; aliases/forwarder have real production callers and remain.",
+      "risk": "low with canonical security tests retained; no production behavior change",
+      "validation_command": "go test ./packages/identitycore -run \"TestStepUpLoginPathReturnsToKnownOwnerPage|TestSafeLoginReturnRejectsExternalAndAmbiguousTargets|TestPasskeyOfferPathEscapesValidatedDestination\" -count=1; root Player Go suite",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_context": "3701a5eaf Validate login redirects for CodeQL gate: retain repaired owner and canonical regression matrix. This deletion consolidates exact copies rather than weakening redirect validation."
     },
     {
       "name": "TestPasskeyOfferPathKeepsTheValidatedLoginDestination",
@@ -8700,23 +8888,45 @@
       "end_line": 42,
       "sha256": "76bfd26195497e958ae2f92c7361dc53d7e76bed1b3f1f123990d9ce6ff37955",
       "path": "apps/player/internal/server/auth_stepup_internal_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "Player directly replays identitycore redirect helper through direct function aliases or a1-line forwarding function. Canonical package tests contain every removed case and additional malformed-input boundaries; no unique app request/response assertion.",
+      "category": "duplicate shared security owner contract",
+      "credible_failure": "Unsafe external/ambiguous redirect target, wrong Owner step-up return path or unescaped passkey offer destination. Canonical identitycore redirect tests preserve these important security failures independently.",
+      "production_owner": [
+        "apps/player/internal/server/auth_login.go:stepUpLoginPath,passkeyOfferPath,safeLoginReturn",
+        "packages/identitycore/redirects.go:StepUpLoginPath,SafeLoginReturn,PasskeyOfferPath"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/auth_login.go:login",
+        "apps/player/internal/server/auth.go:serveIdentity",
+        "apps/player/internal/server/mfa.go",
+        "apps/player/internal/server/passkeys.go",
+        "apps/player/internal/server/web_error.go",
+        "apps/player/internal/server/passkey_account.go"
+      ],
+      "remaining_proof": [
+        {
+          "path": "packages/identitycore/redirects_test.go",
+          "scenario": "TestPasskeyOfferPathEscapesValidatedDestination",
+          "kind": "retained canonical isolated security contract; not genuine E2E; exact removed input/expected pairs remain"
+        },
+        {
+          "path": "apps/player/internal/server/auth_stepup_internal_test.go",
+          "scenario": "TestPasswordLoginCreatesRecentAuthentication, TestOwnerSetupCreatesRecentAuthentication",
+          "kind": "retained isolated app handlers/session state; distinct login/setup integration risk"
+        }
+      ],
+      "coverage_limit": "Existing genuine test-instance first-install/login journeys do not exercise malicious next destinations, encoded slash/backslash or all Owner step-up routes. Shared isolated security keepers explicitly remain; no E2E equivalence claim.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; aliases/forwarder have real production callers and remain.",
+      "risk": "low with canonical security tests retained; no production behavior change",
+      "validation_command": "go test ./packages/identitycore -run \"TestStepUpLoginPathReturnsToKnownOwnerPage|TestSafeLoginReturnRejectsExternalAndAmbiguousTargets|TestPasskeyOfferPathEscapesValidatedDestination\" -count=1; root Player Go suite",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_context": "3701a5eaf Validate login redirects for CodeQL gate: retain repaired owner and canonical regression matrix. This deletion consolidates exact copies rather than weakening redirect validation."
     },
     {
       "name": "TestPasswordLoginCreatesRecentAuthentication",
@@ -25865,16 +26075,19 @@
     "TestBrandUsesFoldedPlayLogo",
     "TestDirectPlayerDoesNotRestartTheSourceSelectedByHTML",
     "TestHardwareSupportAcceptsAutomaticAndKnownBackends",
+    "TestLoginReturnRejectsExternalAndAmbiguousTargets",
     "TestNavigationPagesRefreshCachedAssets",
     "TestOfflineDownloadQueueRejectsOverflowBeforeCreatingAJob",
     "TestOfflinePagesUseTheCurrentNavigationBundle",
     "TestPWAHandlesServiceWorkerRegistrationFailure",
     "TestPagesUseSharedModernStyles",
+    "TestPasskeyOfferPathKeepsTheValidatedLoginDestination",
     "TestPasswordFieldsOfferAccessibleRevealControls",
     "TestPlayerDatabaseAdapterUsesConfiguredDocuments",
     "TestPlayerNegotiatesCodecSupportBeforeStartingAdaptivePlayback",
     "TestPlayerUsesCastIconForDevicePlayback",
     "TestProductionUITemplatesAvoidMixedGlyphIcons",
+    "TestStepUpReturnsToKnownOwnerPage",
     "TestUIIconSetIsCompleteAndLocal",
     "TestVersionedApplicationStylesheetIncludesSupporterStyles"
   ],
@@ -25884,20 +26097,23 @@
     "TestBrandUsesFoldedPlayLogo",
     "TestDirectPlayerDoesNotRestartTheSourceSelectedByHTML",
     "TestHardwareSupportAcceptsAutomaticAndKnownBackends",
+    "TestLoginReturnRejectsExternalAndAmbiguousTargets",
     "TestNavigationPagesRefreshCachedAssets",
     "TestOfflineDownloadQueueRejectsOverflowBeforeCreatingAJob",
     "TestOfflinePagesUseTheCurrentNavigationBundle",
     "TestPWAHandlesServiceWorkerRegistrationFailure",
     "TestPagesUseSharedModernStyles",
+    "TestPasskeyOfferPathKeepsTheValidatedLoginDestination",
     "TestPasswordFieldsOfferAccessibleRevealControls",
     "TestPlayerDatabaseAdapterUsesConfiguredDocuments",
     "TestPlayerNegotiatesCodecSupportBeforeStartingAdaptivePlayback",
     "TestPlayerUsesCastIconForDevicePlayback",
     "TestProductionUITemplatesAvoidMixedGlyphIcons",
+    "TestStepUpReturnsToKnownOwnerPage",
     "TestUIIconSetIsCompleteAndLocal",
     "TestVersionedApplicationStylesheetIncludesSupporterStyles"
   ],
-  "removal_count": 16,
+  "removal_count": 19,
   "verification": [
     {
       "command": "gofmt -w <five touched retained Go files>",
@@ -25926,9 +26142,9 @@
     "TestConfigurationTransactionRejectsSemanticallyInvalidRecoveryWithoutSideEffects"
   ],
   "review_summary": {
-    "inventory_only_retained_pending_semantic_review": 800,
-    "semantic_review_complete": 18,
-    "candidate_evidence_complete": 16,
+    "inventory_only_retained_pending_semantic_review": 788,
+    "semantic_review_complete": 27,
+    "candidate_evidence_complete": 19,
     "test_and_boundary_review_pending_full_owner": 3
   }
 }
