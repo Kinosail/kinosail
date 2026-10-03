@@ -13145,7 +13145,12 @@
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "test_limit": "ProposedD only; rootindependentreview requested before removal. Source retainedatthiscommit.",
       "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared. Root conveyed independent frontend review retaining this exact whole declaration.",
-      "implementation_status": "Retained; earlier removal candidate rejected by independent review."
+      "implementation_status": "Retained; earlier removal candidate rejected by independent review.",
+      "independent_review_receipt": {
+        "path": "/tmp/frontend-player-presentation-review.json",
+        "sha256": "42ab799d01bcc87254d4d9a06f081ec4e394a6d134c52281ea354bfe10fb1685",
+        "reviewer": "/root/frontend_native"
+      }
     },
     {
       "name": "TestWebBetaBadgeAppearsInSharedBrowserHeader",
@@ -13179,7 +13184,12 @@
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "test_limit": "ProposedD only; rootindependentreview requested before removal. Source retainedatthiscommit.",
       "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared. Independent frontend reviewer retained three unique presentation cases and approved this removal; root message2026-10-03.",
-      "implementation_status": "Removed after full body/owner comparison and independent frontend review returned through root; exact baseline declaration SHA guard passed."
+      "implementation_status": "Removed after full body/owner comparison and independent frontend review returned through root; exact baseline declaration SHA guard passed.",
+      "independent_review_receipt": {
+        "path": "/tmp/frontend-player-presentation-review.json",
+        "sha256": "42ab799d01bcc87254d4d9a06f081ec4e394a6d134c52281ea354bfe10fb1685",
+        "reviewer": "/root/frontend_native"
+      }
     },
     {
       "name": "TestLetterJumpBucketsStayUniqueWithPunctuatedTitles",
@@ -14498,7 +14508,12 @@
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "test_limit": "ProposedD only; rootindependentreview requested before removal. Source retainedatthiscommit.",
       "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared. Root conveyed independent frontend review retaining this exact whole declaration.",
-      "implementation_status": "Retained; earlier removal candidate rejected by independent review."
+      "implementation_status": "Retained; earlier removal candidate rejected by independent review.",
+      "independent_review_receipt": {
+        "path": "/tmp/frontend-player-presentation-review.json",
+        "sha256": "42ab799d01bcc87254d4d9a06f081ec4e394a6d134c52281ea354bfe10fb1685",
+        "reviewer": "/root/frontend_native"
+      }
     },
     {
       "name": "TestCollectionCardEscapesMetadataNameAsOneRouteSegment",
@@ -19082,7 +19097,12 @@
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "test_limit": "ProposedD only; rootindependentreview requested before removal. Source retainedatthiscommit.",
       "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared. Independent frontend reviewer retained three unique presentation cases and approved this removal; root message2026-10-03.",
-      "implementation_status": "Removed after full body/owner comparison and independent frontend review returned through root; exact baseline declaration SHA guard passed."
+      "implementation_status": "Removed after full body/owner comparison and independent frontend review returned through root; exact baseline declaration SHA guard passed.",
+      "independent_review_receipt": {
+        "path": "/tmp/frontend-player-presentation-review.json",
+        "sha256": "42ab799d01bcc87254d4d9a06f081ec4e394a6d134c52281ea354bfe10fb1685",
+        "reviewer": "/root/frontend_native"
+      }
     },
     {
       "name": "TestLastLightEmptyHomeHasNoInventedFeature",
@@ -23041,7 +23061,12 @@
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "test_limit": "ProposedD only; rootindependentreview requested before removal. Source retainedatthiscommit.",
       "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared. Root conveyed independent frontend review retaining this exact whole declaration.",
-      "implementation_status": "Retained; earlier removal candidate rejected by independent review."
+      "implementation_status": "Retained; earlier removal candidate rejected by independent review.",
+      "independent_review_receipt": {
+        "path": "/tmp/frontend-player-presentation-review.json",
+        "sha256": "42ab799d01bcc87254d4d9a06f081ec4e394a6d134c52281ea354bfe10fb1685",
+        "reviewer": "/root/frontend_native"
+      }
     },
     {
       "name": "TestItemPlaybackPreferencesIsolationRemovalAndPersistenceFailure",
@@ -27250,8 +27275,8 @@
       "end_line": 63,
       "sha256": "2ca1ce3c31b8476b7fdd41081a1b5d526fde2993e41f991ca727a91b2413d114",
       "path": "apps/player/internal/server/mfa_test.go",
-      "decision": "C",
-      "review_status": "semantic_review_complete",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
       "reason": "Only asserts GET library200 for internal Config{} open mode; shipping configuredServerConfig always RequireAuth:true, and authenticated setup/MFA boundaries remain in actual app contracts.",
       "category": "security_identity_protocol_boundary",
       "credible_failure": "Only asserts GET library200 for internal Config{} open mode; shipping configuredServerConfig always RequireAuth:true, and authenticated setup/MFA boundaries remain in actual app contracts.",
@@ -27277,15 +27302,15 @@
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None beyond dead test-only helpers after approved declaration deletion.",
+      "production_or_support_deletion_unlocked": "Unused imports only; production behavior unchanged; shared helper cleanup belongs to shared owner.",
       "risk": "reviewed; source unchanged pending independent removal approval",
       "validation_command": "cd apps/player && make test; make test-instance-check",
       "baseline_result": "pass",
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "source_read_evidence": "Root fully read all97 declarations across48 files (3285 lines), local helpers, selected production/caller boundaries and canonical alternatives; frontend independently read cast bindings; Player independently confirmed preempted SCIM guard.",
-      "review_provenance": "Complete-body read-only evidence by /root; full97 packet SHA256 b4b723a86c0f24b52dc8b376f9e91ffcbe495e4c5cad1fb8490cf31480ea0831; original declaration SHA verified. Source unchanged by this reviewer.",
+      "review_provenance": "Complete-body read-only evidence by /root; full97 packet SHA256 b4b723a86c0f24b52dc8b376f9e91ffcbe495e4c5cad1fb8490cf31480ea0831; original declaration SHA verified. Source unchanged by this reviewer. Independently re-read by Player owner before source edit: complete declaration/helpers and tested app production methods/callers, canonical guards; root final review approved.",
       "proposed_decision": "D",
-      "implementation_status": "Source held for independent review of concrete keeper/coverage; not removed."
+      "implementation_status": "Removed after root complete97 audit packet and separate Player body/helper/owner/canonical review; exact original declaration SHA guarded."
     },
     {
       "name": "TestEmbeddedMusicTagsOrganizeLibraryThroughAPIAndWeb",
@@ -33452,8 +33477,8 @@
       "end_line": 58,
       "sha256": "e9d2abd5f341d211c579d54a9054bcec16102e4dc362143a1860e209d7716d75",
       "path": "apps/player/internal/server/profiles_scim_test.go",
-      "decision": "C",
-      "review_status": "semantic_review_complete",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
       "reason": "Empty input.ExternalID rejects at first tombstone before ambiguity guard can run; canonical TestSCIMRestoreRequiresSameStableIdentity owns empty stable-ID rejection with no writes. Valid duplicate stable-ID tombstones remain an unproved gap.",
       "category": "security_identity_protocol_boundary",
       "credible_failure": "Empty input.ExternalID rejects at first tombstone before ambiguity guard can run; canonical TestSCIMRestoreRequiresSameStableIdentity owns empty stable-ID rejection with no writes. Valid duplicate stable-ID tombstones remain an unproved gap.",
@@ -33479,15 +33504,15 @@
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None beyond dead test-only helpers after approved declaration deletion.",
+      "production_or_support_deletion_unlocked": "Unused imports only; production behavior unchanged; shared helper cleanup belongs to shared owner.",
       "risk": "reviewed; source unchanged pending independent removal approval",
       "validation_command": "cd apps/player && make test; make test-instance-check",
       "baseline_result": "pass",
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "source_read_evidence": "Root fully read all97 declarations across48 files (3285 lines), local helpers, selected production/caller boundaries and canonical alternatives; frontend independently read cast bindings; Player independently confirmed preempted SCIM guard.",
-      "review_provenance": "Complete-body read-only evidence by /root; full97 packet SHA256 b4b723a86c0f24b52dc8b376f9e91ffcbe495e4c5cad1fb8490cf31480ea0831; original declaration SHA verified. Source unchanged by this reviewer.",
+      "review_provenance": "Complete-body read-only evidence by /root; full97 packet SHA256 b4b723a86c0f24b52dc8b376f9e91ffcbe495e4c5cad1fb8490cf31480ea0831; original declaration SHA verified. Source unchanged by this reviewer. Independently re-read by Player owner before source edit: complete declaration/helpers and tested app production methods/callers, canonical guards; root final review approved.",
       "proposed_decision": "D",
-      "implementation_status": "Source held for independent review of concrete keeper/coverage; not removed."
+      "implementation_status": "Removed after root complete97 audit packet and separate Player body/helper/owner/canonical review; exact original declaration SHA guarded."
     },
     {
       "name": "TestSCIMOIDCLinkingRequiresOneStableProvisionedSubject",
@@ -34046,8 +34071,8 @@
       "end_line": 19,
       "sha256": "dc9ba28d9595e424bf48de9ab3d3eef844e0f0c5d2f923be979f6f373fea2a07",
       "path": "apps/player/internal/server/qa_permission_edges_test.go",
-      "decision": "C",
-      "review_status": "semantic_review_complete",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
       "reason": "Pure aliased Profile.Permits and toy route-set replay; canonical TestProfileFactorAndScopePolicy and actual registered-route exact five-scope matrix retain policy and app wiring. Granted matrix is authorization-only, not all business outcomes.",
       "category": "security_identity_protocol_boundary",
       "credible_failure": "Pure aliased Profile.Permits and toy route-set replay; canonical TestProfileFactorAndScopePolicy and actual registered-route exact five-scope matrix retain policy and app wiring. Granted matrix is authorization-only, not all business outcomes.",
@@ -34073,15 +34098,15 @@
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None beyond dead test-only helpers after approved declaration deletion.",
+      "production_or_support_deletion_unlocked": "Unused imports only; production behavior unchanged; shared helper cleanup belongs to shared owner.",
       "risk": "reviewed; source unchanged pending independent removal approval",
       "validation_command": "cd apps/player && make test; make test-instance-check",
       "baseline_result": "pass",
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "source_read_evidence": "Root fully read all97 declarations across48 files (3285 lines), local helpers, selected production/caller boundaries and canonical alternatives; frontend independently read cast bindings; Player independently confirmed preempted SCIM guard.",
-      "review_provenance": "Complete-body read-only evidence by /root; full97 packet SHA256 b4b723a86c0f24b52dc8b376f9e91ffcbe495e4c5cad1fb8490cf31480ea0831; original declaration SHA verified. Source unchanged by this reviewer.",
+      "review_provenance": "Complete-body read-only evidence by /root; full97 packet SHA256 b4b723a86c0f24b52dc8b376f9e91ffcbe495e4c5cad1fb8490cf31480ea0831; original declaration SHA verified. Source unchanged by this reviewer. Independently re-read by Player owner before source edit: complete declaration/helpers and tested app production methods/callers, canonical guards; root final review approved.",
       "proposed_decision": "D",
-      "implementation_status": "Source held for independent review of concrete keeper/coverage; not removed."
+      "implementation_status": "Removed after root complete97 audit packet and separate Player body/helper/owner/canonical review; exact original declaration SHA guarded."
     },
     {
       "name": "TestManualUpdateCheckValidatesEmptyFormAndRedirects",
@@ -40877,8 +40902,8 @@
       "end_line": 37,
       "sha256": "9a1e28e9abe2e8c9f5f6c2610bf0e9eaf27d0184720ccf943b6c2383ce9d8e0c",
       "path": "apps/player/internal/server/setup_capability_test.go",
-      "decision": "C",
-      "review_status": "semantic_review_complete",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
       "reason": "Bare valid API setup/replay duplicates retained SetupCapabilityContract API valid-after-invalid and eight concurrent create controls; genuine populated browser additionally completes fresh Owner onboarding.",
       "category": "security_identity_protocol_boundary",
       "credible_failure": "Bare valid API setup/replay duplicates retained SetupCapabilityContract API valid-after-invalid and eight concurrent create controls; genuine populated browser additionally completes fresh Owner onboarding.",
@@ -40904,15 +40929,15 @@
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None beyond dead test-only helpers after approved declaration deletion.",
+      "production_or_support_deletion_unlocked": "Unused imports only; production behavior unchanged; shared helper cleanup belongs to shared owner.",
       "risk": "reviewed; source unchanged pending independent removal approval",
       "validation_command": "cd apps/player && make test; make test-instance-check",
       "baseline_result": "pass",
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "source_read_evidence": "Root fully read all97 declarations across48 files (3285 lines), local helpers, selected production/caller boundaries and canonical alternatives; frontend independently read cast bindings; Player independently confirmed preempted SCIM guard.",
-      "review_provenance": "Complete-body read-only evidence by /root; full97 packet SHA256 b4b723a86c0f24b52dc8b376f9e91ffcbe495e4c5cad1fb8490cf31480ea0831; original declaration SHA verified. Source unchanged by this reviewer.",
+      "review_provenance": "Complete-body read-only evidence by /root; full97 packet SHA256 b4b723a86c0f24b52dc8b376f9e91ffcbe495e4c5cad1fb8490cf31480ea0831; original declaration SHA verified. Source unchanged by this reviewer. Independently re-read by Player owner before source edit: complete declaration/helpers and tested app production methods/callers, canonical guards; root final review approved.",
       "proposed_decision": "D",
-      "implementation_status": "Source held for independent review of concrete keeper/coverage; not removed."
+      "implementation_status": "Removed after root complete97 audit packet and separate Player body/helper/owner/canonical review; exact original declaration SHA guarded."
     },
     {
       "name": "TestFirstOwnerWebSetupNeedsNoCode",
@@ -40920,8 +40945,8 @@
       "end_line": 47,
       "sha256": "d85464bff426dc1695302895ddd94d39bd9be0a6e15c67d3436b76f17ed23ad3",
       "path": "apps/player/internal/server/setup_capability_test.go",
-      "decision": "C",
-      "review_status": "semantic_review_complete",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
       "reason": "Bare valid form303 duplicates retained SetupCapabilityContract web valid-after-five-invalid cases and genuine populated browser onboarding.",
       "category": "security_identity_protocol_boundary",
       "credible_failure": "Bare valid form303 duplicates retained SetupCapabilityContract web valid-after-five-invalid cases and genuine populated browser onboarding.",
@@ -40947,15 +40972,15 @@
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None beyond dead test-only helpers after approved declaration deletion.",
+      "production_or_support_deletion_unlocked": "Unused imports only; production behavior unchanged; shared helper cleanup belongs to shared owner.",
       "risk": "reviewed; source unchanged pending independent removal approval",
       "validation_command": "cd apps/player && make test; make test-instance-check",
       "baseline_result": "pass",
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "source_read_evidence": "Root fully read all97 declarations across48 files (3285 lines), local helpers, selected production/caller boundaries and canonical alternatives; frontend independently read cast bindings; Player independently confirmed preempted SCIM guard.",
-      "review_provenance": "Complete-body read-only evidence by /root; full97 packet SHA256 b4b723a86c0f24b52dc8b376f9e91ffcbe495e4c5cad1fb8490cf31480ea0831; original declaration SHA verified. Source unchanged by this reviewer.",
+      "review_provenance": "Complete-body read-only evidence by /root; full97 packet SHA256 b4b723a86c0f24b52dc8b376f9e91ffcbe495e4c5cad1fb8490cf31480ea0831; original declaration SHA verified. Source unchanged by this reviewer. Independently re-read by Player owner before source edit: complete declaration/helpers and tested app production methods/callers, canonical guards; root final review approved.",
       "proposed_decision": "D",
-      "implementation_status": "Source held for independent review of concrete keeper/coverage; not removed."
+      "implementation_status": "Removed after root complete97 audit packet and separate Player body/helper/owner/canonical review; exact original declaration SHA guarded."
     },
     {
       "name": "TestApplicationPagesExposeSharedKeyboardShortcuts",
@@ -45395,6 +45420,7 @@
     }
   ],
   "proposed_removals": [
+    "TestAPIKeyPermissionsHonorScopeAndRouteClassification",
     "TestApplicationPagesExposeSharedKeyboardShortcuts",
     "TestAutomaticSkipTimelineMergesAndClampsRanges",
     "TestAutomaticSkipTimelineNeverRemovesTheWholeItem",
@@ -45402,8 +45428,11 @@
     "TestBrowserSessionCookiesAreAlwaysHostBoundAndSecure",
     "TestCleanDeviceNameNormalizesBrowserAgentsAndBoundsOtherNames",
     "TestCopyControlsReportClipboardFallback",
+    "TestDefaultMFADoesNotBlockOpenInitialServer",
     "TestDesktopRailSeparatesUtilitiesFromAccount",
     "TestDirectPlayerDoesNotRestartTheSourceSelectedByHTML",
+    "TestFirstOwnerSetupNeedsNoCode",
+    "TestFirstOwnerWebSetupNeedsNoCode",
     "TestHardwareSupportAcceptsAutomaticAndKnownBackends",
     "TestLastLightHomeUsesRealLibraryArtwork",
     "TestLibraryNavigationKeepsEveryDestinationInMainWithCompactOverflow",
@@ -45424,6 +45453,7 @@
     "TestProfileSnapshotsDoNotAliasStoredIdentityState",
     "TestQuickConnectPageUsesSixDigitAutoSubmitControl",
     "TestReaderServesPDFEPUBAndComicPagesThroughAPIAndWeb",
+    "TestSCIMRehydrationRejectsAmbiguousDeletedProfiles",
     "TestStepUpReturnsToKnownOwnerPage",
     "TestSupportedLanguageCoverageIncludesJellyfinLocaleSet",
     "TestUIIconSetIsCompleteAndLocal",
@@ -45435,6 +45465,7 @@
   ],
   "semantic_audit_complete": false,
   "implemented_removals": [
+    "TestAPIKeyPermissionsHonorScopeAndRouteClassification",
     "TestApplicationPagesExposeSharedKeyboardShortcuts",
     "TestAutomaticSkipTimelineMergesAndClampsRanges",
     "TestAutomaticSkipTimelineNeverRemovesTheWholeItem",
@@ -45442,8 +45473,11 @@
     "TestBrowserSessionCookiesAreAlwaysHostBoundAndSecure",
     "TestCleanDeviceNameNormalizesBrowserAgentsAndBoundsOtherNames",
     "TestCopyControlsReportClipboardFallback",
+    "TestDefaultMFADoesNotBlockOpenInitialServer",
     "TestDesktopRailSeparatesUtilitiesFromAccount",
     "TestDirectPlayerDoesNotRestartTheSourceSelectedByHTML",
+    "TestFirstOwnerSetupNeedsNoCode",
+    "TestFirstOwnerWebSetupNeedsNoCode",
     "TestHardwareSupportAcceptsAutomaticAndKnownBackends",
     "TestLastLightHomeUsesRealLibraryArtwork",
     "TestLibraryNavigationKeepsEveryDestinationInMainWithCompactOverflow",
@@ -45464,6 +45498,7 @@
     "TestProfileSnapshotsDoNotAliasStoredIdentityState",
     "TestQuickConnectPageUsesSixDigitAutoSubmitControl",
     "TestReaderServesPDFEPUBAndComicPagesThroughAPIAndWeb",
+    "TestSCIMRehydrationRejectsAmbiguousDeletedProfiles",
     "TestStepUpReturnsToKnownOwnerPage",
     "TestSupportedLanguageCoverageIncludesJellyfinLocaleSet",
     "TestUIIconSetIsCompleteAndLocal",
@@ -45473,7 +45508,7 @@
     "TestViewerCanSearchLibrary",
     "TestWebBetaBadgeAppearsInSharedBrowserHeader"
   ],
-  "removal_count": 37,
+  "removal_count": 42,
   "verification": [
     {
       "command": "gofmt -w <five touched retained Go files>",
@@ -45554,8 +45589,8 @@
     "TestConfigurationTransactionRejectsSemanticallyInvalidRecoveryWithoutSideEffects"
   ],
   "review_summary": {
-    "semantic_review_complete": 688,
-    "candidate_evidence_complete": 37,
+    "semantic_review_complete": 683,
+    "candidate_evidence_complete": 42,
     "inventory_only_retained_pending_semantic_review": 111,
     "test_and_boundary_review_pending_full_owner": 1
   }

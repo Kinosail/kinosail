@@ -1,7 +1,6 @@
 package server
 
 import (
-	"errors"
 	"strings"
 	"testing"
 	"time"
@@ -35,25 +34,6 @@ func TestSCIMManagedProfileAllowsLocalPolicyButRejectsIdentityLifecycleChanges(t
 	}
 	if len(store.profiles) != 1 || !store.profiles[0].SCIMManaged {
 		t.Fatal("SCIM-managed profile was changed by local lifecycle operation")
-	}
-}
-
-func TestSCIMRehydrationRejectsAmbiguousDeletedProfiles(t *testing.T) {
-	now := time.Now().UTC()
-	deleted := func(id, name string) viewerProfile {
-		return viewerProfile{ID: id, Name: name, SCIMManaged: true, SCIMDeleted: true, Disabled: true, SCIMUserName: "same@example.com", SCIMName: scimProfileName{Formatted: name}, SCIMCreatedAt: now, SCIMUpdatedAt: now}
-	}
-	store := &profileStore{
-		profiles:    []viewerProfile{{ID: "owner", Name: "Owner", Owner: true}, deleted("deleted-1", "First"), deleted("deleted-2", "Second")},
-		sessions:    map[string]viewerSession{},
-		apiKeys:     map[string]apiKey{},
-		file:        "profiles.json",
-		sessionFile: "sessions.json",
-		apiFile:     "api-keys.json",
-		persist:     func(string, any) error { return nil },
-	}
-	if _, err := store.createSCIMProfile(scimProfileInput{UserName: "same@example.com", Name: "Recreated", Active: true}); !errors.Is(err, errSCIMConflict) {
-		t.Fatalf("ambiguous SCIM rehydration error = %v", err)
 	}
 }
 
