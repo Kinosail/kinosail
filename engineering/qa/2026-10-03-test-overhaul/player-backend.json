@@ -8773,24 +8773,40 @@
       "sha256": "c6f5b879f4e5e359a8b25d9a80b1c93b132ad0c3569d54e23cbecb3891c95bfd",
       "path": "apps/player/internal/server/audio_enhancements_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Profileboth effects and itemdialogue override must select isolatede3/e1 cache recipe, hide direct stream, label correctly, preserve preference and effect URL after app restart.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Profileboth effects and itemdialogue override must select isolatede3/e1 cache recipe, hide direct stream, label correctly, preserve preference and effect URL after app restart.",
+      "production_owner": [
+        "apps/player/internal/server/audio_enhancements.go:audioEnhancedPlan/audioEnhancedRecipe",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources/applyCompatiblePlaybackSource",
+        "apps/player/internal/server/hls.go:prepare/encodeVariants/encodeVariant",
+        "apps/player/internal/server/hls_audio.go:encodeAudioVariant",
+        "apps/player/internal/server/hls_presentation.go:encodePresentation",
+        "packages/playback/hls_delivery.go:HLSCodecArguments",
+        "packages/playback/hls_filters.go:AudioFilterArguments",
+        "packages/playback/hls_recipe.go:ParseHLSRecipe/Token",
+        "packages/playback/hls_source.go:ResolveHLSSource"
+      ],
+      "non_test_callers": [
+        "Actual versioned playback API + app hls route \u2192 source validation, cache/job admission \u2192 FFmpeg audio/video presentation. Owner/shared selection maps actual source track."
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Real native/browser music playback uses plain settings; no effect-specific API cache identity or persisted profile/item overrides.",
       "history": [
         "af0ad58832f22b22e3779eb4660b34dcaa7bbf3d Format audio enhancement persistence regression",
         "7ac25c34f7920d2abbe140e9e73447420f6c00e9 Auto-save iPhone audio enhancements and keep options responsive",
         "0ad594b5255cf76db12d1aef2fef8af958a72a90 Add dialog boost and loudness normalization"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Dummy media/scriptedprobe; actual app persistence/plan only, encoder /bin/false no decoded effects.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestPlaybackAudioEnhancementsRespectViewerTranscodePermission",
@@ -8799,24 +8815,40 @@
       "sha256": "d6662c8d1eb4bdaca7a488319b5df383e3970afd0408bd33dc320d4b4242080a",
       "path": "apps/player/internal/server/audio_enhancements_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Viewer withouttranscode enablingdialogue must403 before cache output work, preventing forbidden heavy encoding.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Viewer withouttranscode enablingdialogue must403 before cache output work, preventing forbidden heavy encoding.",
+      "production_owner": [
+        "apps/player/internal/server/audio_enhancements.go:audioEnhancedPlan/audioEnhancedRecipe",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources/applyCompatiblePlaybackSource",
+        "apps/player/internal/server/hls.go:prepare/encodeVariants/encodeVariant",
+        "apps/player/internal/server/hls_audio.go:encodeAudioVariant",
+        "apps/player/internal/server/hls_presentation.go:encodePresentation",
+        "packages/playback/hls_delivery.go:HLSCodecArguments",
+        "packages/playback/hls_filters.go:AudioFilterArguments",
+        "packages/playback/hls_recipe.go:ParseHLSRecipe/Token",
+        "packages/playback/hls_source.go:ResolveHLSSource"
+      ],
+      "non_test_callers": [
+        "Actual versioned playback API + app hls route \u2192 source validation, cache/job admission \u2192 FFmpeg audio/video presentation. Owner/shared selection maps actual source track."
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Genuine owner happy playback never requests enhancements as restricted Viewer; shared policy cannot establish this app enhancement admission guard.",
       "history": [
         "af0ad58832f22b22e3779eb4660b34dcaa7bbf3d Format audio enhancement persistence regression",
         "7ac25c34f7920d2abbe140e9e73447420f6c00e9 Auto-save iPhone audio enhancements and keep options responsive",
         "0ad594b5255cf76db12d1aef2fef8af958a72a90 Add dialog boost and loudness normalization"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Cache directory count before/after, not process spy; injected falseFFmpeg and fakeprobe.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestPlaybackAudioEnhancementStreamDecodes",
@@ -8825,24 +8857,40 @@
       "sha256": "b5b10a6ce4b5ff578b3f10672025c9b4e58f6f6a6e47aa5183c23e29a861ffe7",
       "path": "apps/player/internal/server/audio_enhancements_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Bothenhancements must produce delivered AAC-only compatible stream with decoded PCM>=2seconds instead of unplayable audio filter output.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Bothenhancements must produce delivered AAC-only compatible stream with decoded PCM>=2seconds instead of unplayable audio filter output.",
+      "production_owner": [
+        "apps/player/internal/server/audio_enhancements.go:audioEnhancedPlan/audioEnhancedRecipe",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources/applyCompatiblePlaybackSource",
+        "apps/player/internal/server/hls.go:prepare/encodeVariants/encodeVariant",
+        "apps/player/internal/server/hls_audio.go:encodeAudioVariant",
+        "apps/player/internal/server/hls_presentation.go:encodePresentation",
+        "packages/playback/hls_delivery.go:HLSCodecArguments",
+        "packages/playback/hls_filters.go:AudioFilterArguments",
+        "packages/playback/hls_recipe.go:ParseHLSRecipe/Token",
+        "packages/playback/hls_source.go:ResolveHLSSource"
+      ],
+      "non_test_callers": [
+        "Actual versioned playback API + app hls route \u2192 source validation, cache/job admission \u2192 FFmpeg audio/video presentation. Owner/shared selection maps actual source track."
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Actual browser/music journey uses plain generated AAC, no dialogue+night recipe.",
       "history": [
         "af0ad58832f22b22e3779eb4660b34dcaa7bbf3d Format audio enhancement persistence regression",
         "7ac25c34f7920d2abbe140e9e73447420f6c00e9 Auto-save iPhone audio enhancements and keep options responsive",
         "0ad594b5255cf76db12d1aef2fef8af958a72a90 Add dialog boost and loudness normalization"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "RealFFmpeg/FFprobe and HTTP; existence of PCM proves decoding, not effect magnitude; skip if tools absent.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestVideoTranscodingAppliesAudioEnhancementsToEveryRendition",
@@ -8851,23 +8899,39 @@
       "sha256": "9efc0e44010c9637e1f702c3ffc960ab3de8ab4e03fc5e67593f45a25faab956",
       "path": "apps/player/internal/server/audio_enhancements_video_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Dialogue/night/both must raise decoded speech-frequencyRMS>=1.3xplain in every delivered rendition with unchangedcount, catching per-output misplaced -af or lost effects.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Dialogue/night/both must raise decoded speech-frequencyRMS>=1.3xplain in every delivered rendition with unchangedcount, catching per-output misplaced -af or lost effects.",
+      "production_owner": [
+        "apps/player/internal/server/audio_enhancements.go:audioEnhancedPlan/audioEnhancedRecipe",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources/applyCompatiblePlaybackSource",
+        "apps/player/internal/server/hls.go:prepare/encodeVariants/encodeVariant",
+        "apps/player/internal/server/hls_audio.go:encodeAudioVariant",
+        "apps/player/internal/server/hls_presentation.go:encodePresentation",
+        "packages/playback/hls_delivery.go:HLSCodecArguments",
+        "packages/playback/hls_filters.go:AudioFilterArguments",
+        "packages/playback/hls_recipe.go:ParseHLSRecipe/Token",
+        "packages/playback/hls_source.go:ResolveHLSSource"
+      ],
+      "non_test_callers": [
+        "Actual versioned playback API + app hls route \u2192 source validation, cache/job admission \u2192 FFmpeg audio/video presentation. Owner/shared selection maps actual source track."
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Browser chooses plain compatibility ladder, never compares decoded audio against measuredbaseline acrossallrenditions.",
       "history": [
         "0c0a880c03be35be9105ddca0cce747444e49304 Document test lifecycle context propagation",
         "ed0c8870348952612678060ad55bb14814ad6bb4 Apply audio enhancements to every video HLS rendition"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "RealFFmpeg/HTTP/PCM; tooldependent. Does not verify subjective quality or real speech intelligibility.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestAudioFormatsDecodeThroughCompatiblePlayback",
@@ -8876,22 +8940,38 @@
       "sha256": "b64bab08a98c51e74b911d4faca5a5f3436294ff72cd929a033acf6de8326a22",
       "path": "apps/player/internal/server/audio_formats_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Fourteen actualcodec/container inputs must retain direct+compatibleaudio-onlyAAC plan/master and decodePCM; extension-only admission or mappedmissing video breaks uncommonformats.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Fourteen actualcodec/container inputs must retain direct+compatibleaudio-onlyAAC plan/master and decodePCM; extension-only admission or mappedmissing video breaks uncommonformats.",
+      "production_owner": [
+        "apps/player/internal/server/audio_enhancements.go:audioEnhancedPlan/audioEnhancedRecipe",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources/applyCompatiblePlaybackSource",
+        "apps/player/internal/server/hls.go:prepare/encodeVariants/encodeVariant",
+        "apps/player/internal/server/hls_audio.go:encodeAudioVariant",
+        "apps/player/internal/server/hls_presentation.go:encodePresentation",
+        "packages/playback/hls_delivery.go:HLSCodecArguments",
+        "packages/playback/hls_filters.go:AudioFilterArguments",
+        "packages/playback/hls_recipe.go:ParseHLSRecipe/Token",
+        "packages/playback/hls_source.go:ResolveHLSSource"
+      ],
+      "non_test_callers": [
+        "Actual versioned playback API + app hls route \u2192 source validation, cache/job admission \u2192 FFmpeg audio/video presentation. Owner/shared selection maps actual source track."
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Genuinemusic/audiobook uses generated AAC/MP3, not PCM24/FLAC/Vorbis/Opus/WMA/ALAC/AIFC/CAF/WavPack/TTA/AC3/EAC3 matrix.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Realencoders/HTTP/probe/PCM; tooldependent; expectedMIME checked onlyM4A/M4B/FLAC.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestAudioHLSRejectsInvalidRecipesBeforeEncoding",
@@ -8900,22 +8980,38 @@
       "sha256": "4915b2ca2481a0181327fa83b6a39222d3b6d09df18f41b9241debc50ded331c",
       "path": "apps/player/internal/server/audio_formats_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Invalid/missing/oversized/out-of-range/wrongmode/subtitle/toneMap/size/offset audio recipes must reject before encoder marker or cache changes.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Invalid/missing/oversized/out-of-range/wrongmode/subtitle/toneMap/size/offset audio recipes must reject before encoder marker or cache changes.",
+      "production_owner": [
+        "apps/player/internal/server/audio_enhancements.go:audioEnhancedPlan/audioEnhancedRecipe",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources/applyCompatiblePlaybackSource",
+        "apps/player/internal/server/hls.go:prepare/encodeVariants/encodeVariant",
+        "apps/player/internal/server/hls_audio.go:encodeAudioVariant",
+        "apps/player/internal/server/hls_presentation.go:encodePresentation",
+        "packages/playback/hls_delivery.go:HLSCodecArguments",
+        "packages/playback/hls_filters.go:AudioFilterArguments",
+        "packages/playback/hls_recipe.go:ParseHLSRecipe/Token",
+        "packages/playback/hls_source.go:ResolveHLSSource"
+      ],
+      "non_test_callers": [
+        "Actual versioned playback API + app hls route \u2192 source validation, cache/job admission \u2192 FFmpeg audio/video presentation. Owner/shared selection maps actual source track."
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Normal browser URLs valid; no adversarial recipe grammar/source-validation matrix and no side-effect sentinel.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Rejectioncode>=300 not exactstatus. FakeFFmpeg markerabsence and directorynames equality prove no encoder/output for matrix.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestVideoFallbackStillDecodesWithAudioCompatibilityEnabled",
@@ -8924,22 +9020,38 @@
       "sha256": "ef8dcc6ddfbcdb40b208761f416770887b2d436576d08e2956e9b202a28f05e0",
       "path": "apps/player/internal/server/audio_formats_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "FFV1+PCM MKV fallback must still deliver decodable video+audio after audio-only capability changes, preventing silent video-stream drop.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "FFV1+PCM MKV fallback must still deliver decodable video+audio after audio-only capability changes, preventing silent video-stream drop.",
+      "production_owner": [
+        "apps/player/internal/server/audio_enhancements.go:audioEnhancedPlan/audioEnhancedRecipe",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources/applyCompatiblePlaybackSource",
+        "apps/player/internal/server/hls.go:prepare/encodeVariants/encodeVariant",
+        "apps/player/internal/server/hls_audio.go:encodeAudioVariant",
+        "apps/player/internal/server/hls_presentation.go:encodePresentation",
+        "packages/playback/hls_delivery.go:HLSCodecArguments",
+        "packages/playback/hls_filters.go:AudioFilterArguments",
+        "packages/playback/hls_recipe.go:ParseHLSRecipe/Token",
+        "packages/playback/hls_source.go:ResolveHLSSource"
+      ],
+      "non_test_callers": [
+        "Actual versioned playback API + app hls route \u2192 source validation, cache/job admission \u2192 FFmpeg audio/video presentation. Owner/shared selection maps actual source track."
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Genuine generated browser H264/AAC does not exercise FFV1/PCM transcode fallback.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "RealFFmpeg HTTPdecode2seconds; tooldependent, not browser seek/quality switching.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestViewerCanSelectEmbeddedAudioTrack",
@@ -8948,22 +9060,38 @@
       "sha256": "8b18501ba2d8d4bff5e603e780c0d6d5505e3eac965ca3d857ffd6ba4e8af150",
       "path": "apps/player/internal/server/audio_tracks_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "SelectedSpanish AC3 track1 must project readable label/planned audio-conversionURL and emit -map0:a:1? with copiedvideo; wrongordinal silentlyplays English.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "SelectedSpanish AC3 track1 must project readable label/planned audio-conversionURL and emit -map0:a:1? with copiedvideo; wrongordinal silentlyplays English.",
+      "production_owner": [
+        "apps/player/internal/server/audio_enhancements.go:audioEnhancedPlan/audioEnhancedRecipe",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources/applyCompatiblePlaybackSource",
+        "apps/player/internal/server/hls.go:prepare/encodeVariants/encodeVariant",
+        "apps/player/internal/server/hls_audio.go:encodeAudioVariant",
+        "apps/player/internal/server/hls_presentation.go:encodePresentation",
+        "packages/playback/hls_delivery.go:HLSCodecArguments",
+        "packages/playback/hls_filters.go:AudioFilterArguments",
+        "packages/playback/hls_recipe.go:ParseHLSRecipe/Token",
+        "packages/playback/hls_source.go:ResolveHLSSource"
+      ],
+      "non_test_callers": [
+        "Actual versioned playback API + app hls route \u2192 source validation, cache/job admission \u2192 FFmpeg audio/video presentation. Owner/shared selection maps actual source track."
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Genuine configured media contains oneaudio track; synthetic UI track selection cannot prove scanned facts and encoder app mapping.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Scriptedprobe/fakeHLS encoder argument capture, no real AC3 decode. Legacy audio route and plannedURL both asserted.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestAudiobooksHaveDedicatedResumableChapterExperience",
@@ -8971,24 +9099,35 @@
       "end_line": 38,
       "sha256": "4f52a762029f41675030f8e5163c7fb938f588e67b3ec8d82ffbd68fe98493f2",
       "path": "apps/player/internal/server/audiobook_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "reason": "ActualM4Bscan/probe must classifyaudiobook, rendertwo embedded chaptertitles and speed/sleep controls with resume/progress binding; dropped audiobookprojection leaves audio playablebut chapters unavailable.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "ActualM4Bscan/probe must classifyaudiobook, rendertwo embedded chaptertitles and speed/sleep controls with resume/progress binding; dropped audiobookprojection leaves audio playablebut chapters unavailable.",
+      "production_owner": [
+        "apps/player/internal/server/player.go:buildPlayerData/playerHTML",
+        "packages/playerweb/player_projection.go:PlayerData.ApplyMedia",
+        "packages/mediaprobe/parse.go:parseChapters",
+        "apps/player/internal/server/assets.go:playerJS"
+      ],
+      "non_test_callers": [
+        "watch app builds actualAudiobook flag+media chapters; playerJS sharedaudio helpers bindspeed/sleep; genuine library API/view shares actualscan classification."
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Genuine test-instance-production decodes realaudiobook after Compatibility but doesnotassert chaptertitles/sleep/rate projection; routedchaptercontrols suppliesfixtureDOM.",
       "history": [
         "54ae6adaebe09cfc7bfa4483eed782cb33b9ae51 Support audio receivers in device playback picker",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Scriptedffprobe/dummyM4B; JSsourcefragments do not prove timer/reload behavior; test name resumable only data-progress attribute, not saved/resumed actualposition.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestIdentityAuditPersistsWithoutSecrets",
@@ -17725,22 +17864,32 @@
       "sha256": "60e086c6e07a3cafbab71b7582aa619320f737171375bef367798438d1c6772f",
       "path": "apps/player/internal/server/media_item_preferences_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Item override must stay Viewer-scoped; injected failed durable deletion must500 and preserve override; valid deletion restores default and malformed rate/missing object must400.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Item override must stay Viewer-scoped; injected failed durable deletion must500 and preserve override; valid deletion restores default and malformed rate/missing object must400.",
+      "production_owner": [
+        "apps/player/internal/server/media_preferences.go:decodeMediaFields/UnmarshalJSON/validate",
+        "apps/player/internal/server/media_experience_http.go:defaultHandler/itemHTTP",
+        "apps/player/internal/server/media_experience_store.go:change/defaults/experienceKey"
+      ],
+      "non_test_callers": [
+        "registerMediaExperience wires actual versioned default/item preference API; apiPlaybackInfo reads Viewer-specific preference and constructs effect-specific delivery."
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Real browser media uses default no per-item preference API failure injection or differentViewer/read-after-failed-delete.",
       "history": [
         "375ce3b1e97e37ea9c88cbad262f2644eb4b4582 Stabilize hosted tooling and expand runtime regression coverage"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Internal withViewer injects owner context; assert state after failedpersist rather than disk byte contents; source real persistence callback replaced.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestMediaPreferencesRejectInvalidWithoutSaving",
@@ -17749,23 +17898,33 @@
       "sha256": "6093c13314962b1965f2005697a4f14c9598355df309dda6c354ac01d641f2bd",
       "path": "apps/player/internal/server/media_preferences_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Missing seven required preference fields and invalid rate/volume/download-next/nullwifi/limit/theme/unknown key must400 and preserve serialized live state.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Missing seven required preference fields and invalid rate/volume/download-next/nullwifi/limit/theme/unknown key must400 and preserve serialized live state.",
+      "production_owner": [
+        "apps/player/internal/server/media_preferences.go:decodeMediaFields/UnmarshalJSON/validate",
+        "apps/player/internal/server/media_experience_http.go:defaultHandler/itemHTTP",
+        "apps/player/internal/server/media_experience_store.go:change/defaults/experienceKey"
+      ],
+      "non_test_callers": [
+        "registerMediaExperience wires actual versioned default/item preference API; apiPlaybackInfo reads Viewer-specific preference and constructs effect-specific delivery."
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Browser has no media-preferences API malformed-field rejection or no-mutation matrix.",
       "history": [
         "f0004529b3ab3eabd67687e3b4059083c2ba1e4a Reuse shared JSON guard for media and subtitle requests",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Internal handler/in-memory snapshot, no disk/reopen claim.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestMediaPreferencesJSONRequiresPlaybackFields",
@@ -17774,23 +17933,33 @@
       "sha256": "2b13739038b04aa0bc0d1e9b3a91d8313d162289f4f579f390fd243b491daa5a",
       "path": "apps/player/internal/server/media_preferences_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Omitting each of eight required playback fields must JSON-error rather than silently reset a Viewer choice via zero values.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Omitting each of eight required playback fields must JSON-error rather than silently reset a Viewer choice via zero values.",
+      "production_owner": [
+        "apps/player/internal/server/media_preferences.go:decodeMediaFields/UnmarshalJSON/validate",
+        "apps/player/internal/server/media_experience_http.go:defaultHandler/itemHTTP",
+        "apps/player/internal/server/media_experience_store.go:change/defaults/experienceKey"
+      ],
+      "non_test_callers": [
+        "registerMediaExperience wires actual versioned default/item preference API; apiPlaybackInfo reads Viewer-specific preference and constructs effect-specific delivery."
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Browser does not submit incomplete nested playback object; shared JSON strict helper cannot know this app required field schema.",
       "history": [
         "f0004529b3ab3eabd67687e3b4059083c2ba1e4a Reuse shared JSON guard for media and subtitle requests",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Direct custom UnmarshalJSON; valid-value ranges separately tested. Outer missing fields tested in adjacent handler matrix.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestMediaPreferenceStorePersistsViewerIsolation",
@@ -17799,23 +17968,33 @@
       "sha256": "88f2d31dfd04069b93c15029e643e158d8938d6dfb7e249761c7744649ca5f93",
       "path": "apps/player/internal/server/media_preferences_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Saved ViewerA rate1.5 must survive reopen while ViewerB retains1, preventing cross-profile preference leakage/data loss.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Saved ViewerA rate1.5 must survive reopen while ViewerB retains1, preventing cross-profile preference leakage/data loss.",
+      "production_owner": [
+        "apps/player/internal/server/media_preferences.go:decodeMediaFields/UnmarshalJSON/validate",
+        "apps/player/internal/server/media_experience_http.go:defaultHandler/itemHTTP",
+        "apps/player/internal/server/media_experience_store.go:change/defaults/experienceKey"
+      ],
+      "non_test_callers": [
+        "registerMediaExperience wires actual versioned default/item preference API; apiPlaybackInfo reads Viewer-specific preference and constructs effect-specific delivery."
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Browser playback same profile cannot establish separate Viewer persistence boundary.",
       "history": [
         "f0004529b3ab3eabd67687e3b4059083c2ba1e4a Reuse shared JSON guard for media and subtitle requests",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Internal actual persistence helper, not authenticated API session binding.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestSyncSnapshotRequiresAllFields",
@@ -17824,23 +18003,34 @@
       "sha256": "aaf4218d5436aca841ffd3a0c66f2868fd08d21a00581af12f20696b663e2bea",
       "path": "apps/player/internal/server/media_preferences_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Incomplete/null/unknown progress snapshot fields must reject instead of zeroing watched/revision conflict baseline.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Incomplete/null/unknown progress snapshot fields must reject instead of zeroing watched/revision conflict baseline.",
+      "production_owner": [
+        "apps/player/internal/server/media_preferences.go:decodeMediaFields/UnmarshalJSON/validate",
+        "apps/player/internal/server/media_experience_http.go:defaultHandler/itemHTTP",
+        "apps/player/internal/server/media_experience_store.go:change/defaults/experienceKey",
+        "apps/player/internal/server/media_progress_sync.go:mediaProgressSnapshot.UnmarshalJSON"
+      ],
+      "non_test_callers": [
+        "registerMediaExperience wires actual versioned default/item preference API; apiPlaybackInfo reads Viewer-specific preference and constructs effect-specific delivery."
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Browser online/offline synchronization uses valid fields; no direct incomplete/null snapshot matrix.",
       "history": [
         "f0004529b3ab3eabd67687e3b4059083c2ba1e4a Reuse shared JSON guard for media and subtitle requests",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Four decode inputs, not duplicate nested key or ordering concurrency proof.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestMediaDownloadStorageLimits",
@@ -17849,23 +18039,33 @@
       "sha256": "40357f5c31373f06edcf28346e84a6b424dbe089848db46369fa71282aa72cad",
       "path": "apps/player/internal/server/media_preferences_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Boundary0/unlimited through8388607GiB must round-trip; negative/fraction/null/string/overflow/above cap rejects preserving preference state.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Boundary0/unlimited through8388607GiB must round-trip; negative/fraction/null/string/overflow/above cap rejects preserving preference state.",
+      "production_owner": [
+        "apps/player/internal/server/media_preferences.go:decodeMediaFields/UnmarshalJSON/validate",
+        "apps/player/internal/server/media_experience_http.go:defaultHandler/itemHTTP",
+        "apps/player/internal/server/media_experience_store.go:change/defaults/experienceKey"
+      ],
+      "non_test_callers": [
+        "registerMediaExperience wires actual versioned default/item preference API; apiPlaybackInfo reads Viewer-specific preference and constructs effect-specific delivery."
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Normal browser offline preparation never uses storage budget integer boundary or invalid JSON range.",
       "history": [
         "f0004529b3ab3eabd67687e3b4059083c2ba1e4a Reuse shared JSON guard for media and subtitle requests",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "No actualGiBallocation; logical preference/int validation only.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestProgressSyncSnapshotBounds",
@@ -34159,9 +34359,9 @@
     "TestConfigurationTransactionRejectsSemanticallyInvalidRecoveryWithoutSideEffects"
   ],
   "review_summary": {
-    "semantic_review_complete": 319,
+    "semantic_review_complete": 334,
     "candidate_evidence_complete": 35,
-    "inventory_only_retained_pending_semantic_review": 479,
+    "inventory_only_retained_pending_semantic_review": 464,
     "test_and_boundary_review_pending_full_owner": 4
   }
 }
