@@ -25,9 +25,9 @@
       "C": 63
     },
     "removed_declarations": 102,
-    "removed_test_lines": 1971,
+    "removed_test_lines": 1975,
     "final_declarations": 1798,
-    "final_test_lines": 64504,
+    "final_test_lines": 64500,
     "removed_support_helpers": 8,
     "removed_support_files": 3,
     "removed_support_lines": 176,
@@ -130157,5 +130157,69 @@
       "pending": 0
     },
     "five_prior_classifier_rows": "Strict independent root receipts remain authoritative; child non-implementer cutover recheck and prior classification disclosed per row."
+  },
+  "integrated_line_count_reconciliation": {
+    "source_checkout": "/Users/mikeo/Documents/Codex/2026-10-03/task/kinosail",
+    "source_head": "3264b60bcc9766f6c964bb03c9fefcdc7be1d951",
+    "working_tree_status": [],
+    "isolated_source_receipt_head": "ec6201be3e4c022c3e578574cf193fbcf59f937d",
+    "isolated_receipt_removed_lines": 1971,
+    "integrated_removed_lines": 1975,
+    "scope": "Final counts now describe reconciled root source after four unused import lines were removed. Baseline1900 declarations and102D decisions unchanged; upstream cookie48line addition remains separately counted.",
+    "repairs": [
+      {
+        "commit": "8ca71310b2941715a7a9f7c49781b0ec21cccff4",
+        "file": "packages/updatecontrol/github_test.go",
+        "removed_unused_imports": [
+          "context",
+          "sync/atomic"
+        ],
+        "removed_lines": 2
+      },
+      {
+        "commit": "b0b5497d2017931a13da86e2e2816b404a847f56",
+        "file": "packages/viewing/manager_test.go",
+        "removed_unused_imports": [
+          "context"
+        ],
+        "removed_lines": 1
+      },
+      {
+        "commit": "3264b60bcc9766f6c964bb03c9fefcdc7be1d951",
+        "file": "packages/downloads/manager_test.go",
+        "removed_unused_imports": [
+          "github.com/MikeO7/kinosail/packages/playback"
+        ],
+        "removed_lines": 1
+      }
+    ],
+    "final_test_file_hashes": [
+      {
+        "path": "packages/downloads/manager_test.go",
+        "isolated_lines": 158,
+        "integrated_lines": 157,
+        "isolated_sha256": "e7b8bd1b68614b2d768e040e6ea2ec345b6307627e9e779068bf897430715ffb",
+        "integrated_sha256": "feee70d4b2f103e7741b31af954e09d229c31a44ee07da5aa137926176e38eac",
+        "difference": "Only unused import removal; full diff reviewed, retained test/helper bodies unchanged."
+      },
+      {
+        "path": "packages/updatecontrol/github_test.go",
+        "isolated_lines": 169,
+        "integrated_lines": 167,
+        "isolated_sha256": "e3b5a38fa483d6ec6b8ae3f075cdc5e3822ae1ef0ed79e789fd8cd3b01de5e3f",
+        "integrated_sha256": "2551ba2fc24f701a5c7f79338b56c9bf39a6670b75cca9f11a3b02a47dcaf99c",
+        "difference": "Only unused import removal; full diff reviewed, retained test/helper bodies unchanged."
+      },
+      {
+        "path": "packages/viewing/manager_test.go",
+        "isolated_lines": 214,
+        "integrated_lines": 213,
+        "isolated_sha256": "5b2c7cefe260821c45eda0f0c0e7783d1d476d2b87f50874fc011facc388e3e8",
+        "integrated_sha256": "facd5385a6e1d3bd44998f7f721767339a3360fa78d7608519475e5d080e3385",
+        "difference": "Only unused import removal; full diff reviewed, retained test/helper bodies unchanged."
+      }
+    ],
+    "inspection": "Read-only full own-to-root comparison across all530 baseline test files: only these3 files differ, each solely by unused imports.84 changed surviving test files scanned for unreferenced import aliases; no other candidate found after playback repair. This is not a Go lint/typecheck run.",
+    "historical_artifact_limit": "shared-ledger-source-integrity.json and shared-ledger-checksums.json remain exact historical source ec6201be3 receipts with1971 removed lines. Their hashes/commands are not rewritten or presented as execution of the reconciled source."
   }
 }
