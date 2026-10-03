@@ -7924,24 +7924,39 @@
       "sha256": "e3d2b7de7035d14a679b130bacc1c528fc59a63b30e5507928e5f2923e94bc0c",
       "path": "apps/player/internal/server/assets_performance_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual eight-item movies/photos pages must reserve intrinsic image dimensions, eagerly prioritize exactly two visible images and lazy-load later art; losing dimensions/policy can cause load-time shifts and bandwidth contention missed by post-load ratio screenshots.",
+      "category": "asset_performance_cache_boundary",
+      "credible_failure": "Actual eight-item movies/photos pages must reserve intrinsic image dimensions, eagerly prioritize exactly two visible images and lazy-load later art; losing dimensions/policy can cause load-time shifts and bandwidth contention missed by post-load ratio screenshots.",
+      "production_owner": [
+        "apps/player/internal/server/assets.go",
+        "apps/player/internal/server/assets_compression.go",
+        "apps/player/internal/server/server.go:newApplication",
+        "apps/player/internal/server/player.go",
+        "packages/servertest/assets_performance_contract.go"
+      ],
+      "non_test_callers": [
+        "newApplication registers actual embedded scripts/styles/art assets; rendered home/watch-page URLs and browser cache policy depend on assets.go/compressedAsset."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/assets_performance_test.go",
+          "scenario": "TestLibraryPrioritizesVisibleArtworkWithoutLayoutShift"
+        }
+      ],
+      "coverage_limit": "Live media artwork test checks final ratio/visibility; it does not assert pre-load CLS or scheduling attributes. Worker-upgrade real-browser fixture uses a custom Node server and its supplied headers rather than Go static transport/content hash.",
       "history": [
         "98972d7c073d77314c41503002ea27708ce9d69b Fix mobile player control targets and touch auto-hide",
         "38335baa6ffccddbe8cc0ac1fdf37424100a8192 Reconcile launch fixes and retain QA lifecycle and cache regressions",
         "1be4230f047da8e6b63c433acc886dbb011b825a Reconcile content-based player script URLs"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below."
     },
     {
       "name": "TestVersionedStaticAssetsUseImmutableCaching",
@@ -7950,24 +7965,39 @@
       "sha256": "36756eef88aff4d65bf5a2df0ab533495ef245161cc0e99779468fe39f807ba0",
       "path": "apps/player/internal/server/assets_performance_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual app transport must distinguish unversioned daily caching from immutable versioned script caching; wrong headers leave stale script code or disable cache efficiency.",
+      "category": "asset_performance_cache_boundary",
+      "credible_failure": "Actual app transport must distinguish unversioned daily caching from immutable versioned script caching; wrong headers leave stale script code or disable cache efficiency.",
+      "production_owner": [
+        "apps/player/internal/server/assets.go",
+        "apps/player/internal/server/assets_compression.go",
+        "apps/player/internal/server/server.go:newApplication",
+        "apps/player/internal/server/player.go",
+        "packages/servertest/assets_performance_contract.go"
+      ],
+      "non_test_callers": [
+        "newApplication registers actual embedded scripts/styles/art assets; rendered home/watch-page URLs and browser cache policy depend on assets.go/compressedAsset."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/assets_performance_test.go",
+          "scenario": "TestVersionedStaticAssetsUseImmutableCaching"
+        }
+      ],
+      "coverage_limit": "Live media artwork test checks final ratio/visibility; it does not assert pre-load CLS or scheduling attributes. Worker-upgrade real-browser fixture uses a custom Node server and its supplied headers rather than Go static transport/content hash.",
       "history": [
         "98972d7c073d77314c41503002ea27708ce9d69b Fix mobile player control targets and touch auto-hide",
         "38335baa6ffccddbe8cc0ac1fdf37424100a8192 Reconcile launch fixes and retain QA lifecycle and cache regressions",
         "1be4230f047da8e6b63c433acc886dbb011b825a Reconcile content-based player script URLs"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below."
     },
     {
       "name": "TestPlayerScriptURLTracksServedContents",
@@ -7976,24 +8006,39 @@
       "sha256": "6c906592a595a765badfb9fbf0ae4416e0f6f48c9f5f36f548f90c32bbe24b75",
       "path": "apps/player/internal/server/assets_performance_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Rendered watch-page script URL must encode the SHA256 of exact served bytes under immutable caching; failing to update a URL after script change traps existing browsers on old playback code.",
+      "category": "asset_performance_cache_boundary",
+      "credible_failure": "Rendered watch-page script URL must encode the SHA256 of exact served bytes under immutable caching; failing to update a URL after script change traps existing browsers on old playback code.",
+      "production_owner": [
+        "apps/player/internal/server/assets.go",
+        "apps/player/internal/server/assets_compression.go",
+        "apps/player/internal/server/server.go:newApplication",
+        "apps/player/internal/server/player.go",
+        "packages/servertest/assets_performance_contract.go"
+      ],
+      "non_test_callers": [
+        "newApplication registers actual embedded scripts/styles/art assets; rendered home/watch-page URLs and browser cache policy depend on assets.go/compressedAsset."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/assets_performance_test.go",
+          "scenario": "TestPlayerScriptURLTracksServedContents"
+        }
+      ],
+      "coverage_limit": "Live media artwork test checks final ratio/visibility; it does not assert pre-load CLS or scheduling attributes. Worker-upgrade real-browser fixture uses a custom Node server and its supplied headers rather than Go static transport/content hash.",
       "history": [
         "98972d7c073d77314c41503002ea27708ce9d69b Fix mobile player control targets and touch auto-hide",
         "38335baa6ffccddbe8cc0ac1fdf37424100a8192 Reconcile launch fixes and retain QA lifecycle and cache regressions",
         "1be4230f047da8e6b63c433acc886dbb011b825a Reconcile content-based player script URLs"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below."
     },
     {
       "name": "TestVersionedApplicationStylesheetIncludesSupporterStyles",
@@ -10651,23 +10696,48 @@
       "end_line": 16,
       "sha256": "cba9a591705fe75f57003cbbe83481e21c919b25d9be10e9f89476d118b7eaa3",
       "path": "apps/player/internal/server/catalog_cancellation_benchmark_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "reason": "Repeatable performance workload: 10000 rich metadata already-cancelled/10ms deadline response bytes/status/allocation/timing comparison. This records scaling measurements that the small populated browser catalog omits.",
+      "category": "benchmark_measurement",
+      "credible_failure": "Repeatable performance workload: 10000 rich metadata already-cancelled/10ms deadline response bytes/status/allocation/timing comparison. This records scaling measurements that the small populated browser catalog omits.",
+      "production_owner": [
+        "apps/player/internal/server/browse.go",
+        "apps/player/internal/server/access.go",
+        "packages/identitycore/library_access.go",
+        "packages/library/access.go",
+        "packages/catalog/index.go",
+        "packages/catalog/index_order.go",
+        "packages/catalog/browse.go",
+        "packages/catalog/browse_apply.go",
+        "packages/catalog/browse_sort.go",
+        "packages/catalog/letters.go",
+        "packages/catalog/search.go",
+        "packages/catalog/search_metadata.go",
+        "packages/catalogapi/library.go",
+        "packages/home/handler.go"
+      ],
+      "non_test_callers": [
+        "Player newApplication registers GET /api/v1/library and GET /{$}; browseLibrary applies current viewer policy/progress/list access and catalogapi.Library or home.NewHandler publishes bounded results."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/catalog_cancellation_benchmark_test.go",
+          "scenario": "BenchmarkNativeCatalogCancelledMetadataSearch"
+        }
+      ],
+      "coverage_limit": "Retained measurement harness; ordinary go test executes no benchmark iterations. No hard ns/op threshold: a timing-only regression is visible in benchmark output, not an automatic assertion failure. Genuine E2E does not reproduce these large/concurrent workloads.",
       "history": [
         "a69c5d2157d8ec4bd8e79326af29c435c35233d2 Stop obsolete catalog work after request cancellation"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test ./internal/server -run=^$ -bench=BenchmarkNativeCatalogCancelledMetadataSearch -benchmem -count=3",
       "baseline_result": "not_run_benchmark",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below.",
+      "test_limit": "Permits either200 with known title or503 without partial items to compare baseline/candidate. Does not independently enforce cancellation rejection or a latency ceiling; retained as measurement only."
     },
     {
       "name": "TestCatalogAPIStopsCancelledMetadataSearch",
@@ -10676,22 +10746,49 @@
       "sha256": "51d78d18a11cb18d8ae35b56f51f92edfecffb5e6ac9f9533534d578fd80c986",
       "path": "apps/player/internal/server/catalog_cancellation_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Cancelled, expired and expires-during-search HTTP must return503 with no partial items page; otherwise ended work publishes misleading partial success.",
+      "category": "catalog_scaling_concurrency_or_input_boundary",
+      "credible_failure": "Cancelled, expired and expires-during-search HTTP must return503 with no partial items page; otherwise ended work publishes misleading partial success.",
+      "production_owner": [
+        "apps/player/internal/server/browse.go",
+        "apps/player/internal/server/access.go",
+        "packages/identitycore/library_access.go",
+        "packages/library/access.go",
+        "packages/catalog/index.go",
+        "packages/catalog/index_order.go",
+        "packages/catalog/browse.go",
+        "packages/catalog/browse_apply.go",
+        "packages/catalog/browse_sort.go",
+        "packages/catalog/letters.go",
+        "packages/catalog/search.go",
+        "packages/catalog/search_metadata.go",
+        "packages/catalogapi/library.go",
+        "packages/home/handler.go",
+        "packages/servertest/library_api_pagination.go",
+        "packages/servertest/library_benchmark.go"
+      ],
+      "non_test_callers": [
+        "Player newApplication registers GET /api/v1/library and GET /{$}; browseLibrary applies current viewer policy/progress/list access and catalogapi.Library or home.NewHandler publishes bounded results."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/catalog_cancellation_test.go",
+          "scenario": "TestCatalogAPIStopsCancelledMetadataSearch"
+        }
+      ],
+      "coverage_limit": "Populated live browser Library/playback journeys use small valid fixture catalogs and do not exercise10000-item bounds, malformed pagination, arbitrary Unicode scratch boundaries, cancelled HTTP contexts or forced concurrent publication. library-scroll.spec.ts supplies fake HTML/routes, not Go pagination.",
       "history": [
         "a69c5d2157d8ec4bd8e79326af29c435c35233d2 Stop obsolete catalog work after request cancellation"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below.",
+      "test_limit": "No elapsed-time or scan-iteration assertion; protects cancellation response/no partial page, not a proven CPU cancellation latency budget."
     },
     {
       "name": "BenchmarkNativeCatalogColdBrowse",
@@ -10700,22 +10797,47 @@
       "sha256": "7f5d2583a22431b8f107cad573c0ef23cc301a5f2d9ea64b4ae884cef99b8a13",
       "path": "apps/player/internal/server/catalog_cold_performance_benchmark_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Repeatable performance workload: 100000 cold all/movies/sparse one-book view, correct bounded item count and total. This records scaling measurements that the small populated browser catalog omits.",
+      "category": "benchmark_measurement",
+      "credible_failure": "Repeatable performance workload: 100000 cold all/movies/sparse one-book view, correct bounded item count and total. This records scaling measurements that the small populated browser catalog omits.",
+      "production_owner": [
+        "apps/player/internal/server/browse.go",
+        "apps/player/internal/server/access.go",
+        "packages/identitycore/library_access.go",
+        "packages/library/access.go",
+        "packages/catalog/index.go",
+        "packages/catalog/index_order.go",
+        "packages/catalog/browse.go",
+        "packages/catalog/browse_apply.go",
+        "packages/catalog/browse_sort.go",
+        "packages/catalog/letters.go",
+        "packages/catalog/search.go",
+        "packages/catalog/search_metadata.go",
+        "packages/catalogapi/library.go",
+        "packages/home/handler.go"
+      ],
+      "non_test_callers": [
+        "Player newApplication registers GET /api/v1/library and GET /{$}; browseLibrary applies current viewer policy/progress/list access and catalogapi.Library or home.NewHandler publishes bounded results."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/catalog_cold_performance_benchmark_test.go",
+          "scenario": "BenchmarkNativeCatalogColdBrowse"
+        }
+      ],
+      "coverage_limit": "Retained measurement harness; ordinary go test executes no benchmark iterations. No hard ns/op threshold: a timing-only regression is visible in benchmark output, not an automatic assertion failure. Genuine E2E does not reproduce these large/concurrent workloads.",
       "history": [
         "d1454d09d49f0c5d41564bc5e9b5cc62ae6d2409 Cache completed catalog title order for repeated browsing"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test ./internal/server -run=^$ -bench=BenchmarkNativeCatalogColdBrowse -benchmem -count=3",
       "baseline_result": "not_run_benchmark",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below.",
+      "test_limit": "Not new isolated testing and not claimed to be a default-run unit regression gate; rerun explicitly with -run=^$ -bench=BenchmarkNativeCatalogColdBrowse -benchmem -count=3 and save exact SHA/environment/output."
     },
     {
       "name": "BenchmarkNativeCatalogLargeTitles",
@@ -10724,22 +10846,47 @@
       "sha256": "ce684e5b466df104fae49202a484817b18110b4268f268eb153e28e9b210de90",
       "path": "apps/player/internal/server/catalog_large_titles_benchmark_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Repeatable performance workload: 1000 long ASCII/Unicode-expansion titles and long plots with absent query must return zero hits. This records scaling measurements that the small populated browser catalog omits.",
+      "category": "benchmark_measurement",
+      "credible_failure": "Repeatable performance workload: 1000 long ASCII/Unicode-expansion titles and long plots with absent query must return zero hits. This records scaling measurements that the small populated browser catalog omits.",
+      "production_owner": [
+        "apps/player/internal/server/browse.go",
+        "apps/player/internal/server/access.go",
+        "packages/identitycore/library_access.go",
+        "packages/library/access.go",
+        "packages/catalog/index.go",
+        "packages/catalog/index_order.go",
+        "packages/catalog/browse.go",
+        "packages/catalog/browse_apply.go",
+        "packages/catalog/browse_sort.go",
+        "packages/catalog/letters.go",
+        "packages/catalog/search.go",
+        "packages/catalog/search_metadata.go",
+        "packages/catalogapi/library.go",
+        "packages/home/handler.go"
+      ],
+      "non_test_callers": [
+        "Player newApplication registers GET /api/v1/library and GET /{$}; browseLibrary applies current viewer policy/progress/list access and catalogapi.Library or home.NewHandler publishes bounded results."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/catalog_large_titles_benchmark_test.go",
+          "scenario": "BenchmarkNativeCatalogLargeTitles"
+        }
+      ],
+      "coverage_limit": "Retained measurement harness; ordinary go test executes no benchmark iterations. No hard ns/op threshold: a timing-only regression is visible in benchmark output, not an automatic assertion failure. Genuine E2E does not reproduce these large/concurrent workloads.",
       "history": [
         "2f5927b3f1631be053b9699ee407b708dfe5e35b Skip full rich metadata normalization after confirmed matches"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test ./internal/server -run=^$ -bench=BenchmarkNativeCatalogLargeTitles -benchmem -count=3",
       "baseline_result": "not_run_benchmark",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below.",
+      "test_limit": "Not new isolated testing and not claimed to be a default-run unit regression gate; rerun explicitly with -run=^$ -bench=BenchmarkNativeCatalogLargeTitles -benchmem -count=3 and save exact SHA/environment/output."
     },
     {
       "name": "BenchmarkNativeMixedCatalog",
@@ -10748,22 +10895,47 @@
       "sha256": "769316a3c2393ba5448f197a1645b38cf801c50bdab2aaf3eae0391970882035",
       "path": "apps/player/internal/server/catalog_mixed_benchmark_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Repeatable performance workload: 10000/100000 mixed movies/shows/music, owner/restricted, cold/warm, owner-seeded shared order; exact kinds/IDs/totals/body stability and SHA256 receipt. This records scaling measurements that the small populated browser catalog omits.",
+      "category": "benchmark_measurement",
+      "credible_failure": "Repeatable performance workload: 10000/100000 mixed movies/shows/music, owner/restricted, cold/warm, owner-seeded shared order; exact kinds/IDs/totals/body stability and SHA256 receipt. This records scaling measurements that the small populated browser catalog omits.",
+      "production_owner": [
+        "apps/player/internal/server/browse.go",
+        "apps/player/internal/server/access.go",
+        "packages/identitycore/library_access.go",
+        "packages/library/access.go",
+        "packages/catalog/index.go",
+        "packages/catalog/index_order.go",
+        "packages/catalog/browse.go",
+        "packages/catalog/browse_apply.go",
+        "packages/catalog/browse_sort.go",
+        "packages/catalog/letters.go",
+        "packages/catalog/search.go",
+        "packages/catalog/search_metadata.go",
+        "packages/catalogapi/library.go",
+        "packages/home/handler.go"
+      ],
+      "non_test_callers": [
+        "Player newApplication registers GET /api/v1/library and GET /{$}; browseLibrary applies current viewer policy/progress/list access and catalogapi.Library or home.NewHandler publishes bounded results."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/catalog_mixed_benchmark_test.go",
+          "scenario": "BenchmarkNativeMixedCatalog"
+        }
+      ],
+      "coverage_limit": "Retained measurement harness; ordinary go test executes no benchmark iterations. No hard ns/op threshold: a timing-only regression is visible in benchmark output, not an automatic assertion failure. Genuine E2E does not reproduce these large/concurrent workloads.",
       "history": [
         "ba1ae25bca487553ac5d70f5443e705b909423d1 Reuse complete intrinsic catalog title orders within bounded cache"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test ./internal/server -run=^$ -bench=BenchmarkNativeMixedCatalog -benchmem -count=3",
       "baseline_result": "not_run_benchmark",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below.",
+      "test_limit": "Not new isolated testing and not claimed to be a default-run unit regression gate; rerun explicitly with -run=^$ -bench=BenchmarkNativeMixedCatalog -benchmem -count=3 and save exact SHA/environment/output."
     },
     {
       "name": "TestCatalogHTTPPublicationRejectsLateOldOrder",
@@ -10772,22 +10944,49 @@
       "sha256": "e5f4a5a51ce41646293237a570fdeb97bbc150974bb07f1fb71e676a03ff8e93",
       "path": "apps/player/internal/server/catalog_order_http_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Forced in-flight request snapshot must retain Alpha/Beta while a subsequent request sees Apple/Zebra; late old order publication otherwise corrupts ordering after metadata refresh.",
+      "category": "catalog_scaling_concurrency_or_input_boundary",
+      "credible_failure": "Forced in-flight request snapshot must retain Alpha/Beta while a subsequent request sees Apple/Zebra; late old order publication otherwise corrupts ordering after metadata refresh.",
+      "production_owner": [
+        "apps/player/internal/server/browse.go",
+        "apps/player/internal/server/access.go",
+        "packages/identitycore/library_access.go",
+        "packages/library/access.go",
+        "packages/catalog/index.go",
+        "packages/catalog/index_order.go",
+        "packages/catalog/browse.go",
+        "packages/catalog/browse_apply.go",
+        "packages/catalog/browse_sort.go",
+        "packages/catalog/letters.go",
+        "packages/catalog/search.go",
+        "packages/catalog/search_metadata.go",
+        "packages/catalogapi/library.go",
+        "packages/home/handler.go",
+        "packages/servertest/library_api_pagination.go",
+        "packages/servertest/library_benchmark.go"
+      ],
+      "non_test_callers": [
+        "Player newApplication registers GET /api/v1/library and GET /{$}; browseLibrary applies current viewer policy/progress/list access and catalogapi.Library or home.NewHandler publishes bounded results."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/catalog_order_http_test.go",
+          "scenario": "TestCatalogHTTPPublicationRejectsLateOldOrder"
+        }
+      ],
+      "coverage_limit": "Populated live browser Library/playback journeys use small valid fixture catalogs and do not exercise10000-item bounds, malformed pagination, arbitrary Unicode scratch boundaries, cancelled HTTP contexts or forced concurrent publication. library-scroll.spec.ts supplies fake HTML/routes, not Go pagination.",
       "history": [
         "d1454d09d49f0c5d41564bc5e9b5cc62ae6d2409 Cache completed catalog title order for repeated browsing"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below.",
+      "test_limit": "Uses shared catalog/catalogapi directly, no Player handler or viewer callback; retained forced HTTP publication interleaving differs from canonical intrinsic movies-view and serial publication checks."
     },
     {
       "name": "BenchmarkNativeCatalogNavigation",
@@ -10796,24 +10995,49 @@
       "sha256": "97763267a45dee4704276a57a8756403a60da2b5896d32aac04f1730c97cd177",
       "path": "apps/player/internal/server/catalog_performance_benchmark_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Repeatable performance workload: 10000/100000 native browse and selective known-title navigation allocations and response bytes. This records scaling measurements that the small populated browser catalog omits.",
+      "category": "benchmark_measurement",
+      "credible_failure": "Repeatable performance workload: 10000/100000 native browse and selective known-title navigation allocations and response bytes. This records scaling measurements that the small populated browser catalog omits.",
+      "production_owner": [
+        "apps/player/internal/server/browse.go",
+        "apps/player/internal/server/access.go",
+        "packages/identitycore/library_access.go",
+        "packages/library/access.go",
+        "packages/catalog/index.go",
+        "packages/catalog/index_order.go",
+        "packages/catalog/browse.go",
+        "packages/catalog/browse_apply.go",
+        "packages/catalog/browse_sort.go",
+        "packages/catalog/letters.go",
+        "packages/catalog/search.go",
+        "packages/catalog/search_metadata.go",
+        "packages/catalogapi/library.go",
+        "packages/home/handler.go"
+      ],
+      "non_test_callers": [
+        "Player newApplication registers GET /api/v1/library and GET /{$}; browseLibrary applies current viewer policy/progress/list access and catalogapi.Library or home.NewHandler publishes bounded results."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/catalog_performance_benchmark_test.go",
+          "scenario": "BenchmarkNativeCatalogNavigation"
+        }
+      ],
+      "coverage_limit": "Retained measurement harness; ordinary go test executes no benchmark iterations. No hard ns/op threshold: a timing-only regression is visible in benchmark output, not an automatic assertion failure. Genuine E2E does not reproduce these large/concurrent workloads.",
       "history": [
         "a69c5d2157d8ec4bd8e79326af29c435c35233d2 Stop obsolete catalog work after request cancellation",
         "e3c23d8efd5ee0db266242f77e5a782dcd672163 Reduce catalog metadata search allocation and processing cost",
         "c685c5a4d51ce18edc195c1197dd8c636687121d Reuse owned catalog snapshots during browse selection"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test ./internal/server -run=^$ -bench=BenchmarkNativeCatalogNavigation -benchmem -count=3",
       "baseline_result": "not_run_benchmark",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below.",
+      "test_limit": "Not new isolated testing and not claimed to be a default-run unit regression gate; rerun explicitly with -run=^$ -bench=BenchmarkNativeCatalogNavigation -benchmem -count=3 and save exact SHA/environment/output."
     },
     {
       "name": "BenchmarkNativeCatalogMetadataSearch",
@@ -10822,24 +11046,49 @@
       "sha256": "044324f43ded7c0649e12aabccf0962aa85ffa14e1c7f9ab14d17cb01d8f5a37",
       "path": "apps/player/internal/server/catalog_performance_benchmark_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Repeatable performance workload: 10000 short/long/late-Unicode metadata searches with known-title membership. This records scaling measurements that the small populated browser catalog omits.",
+      "category": "benchmark_measurement",
+      "credible_failure": "Repeatable performance workload: 10000 short/long/late-Unicode metadata searches with known-title membership. This records scaling measurements that the small populated browser catalog omits.",
+      "production_owner": [
+        "apps/player/internal/server/browse.go",
+        "apps/player/internal/server/access.go",
+        "packages/identitycore/library_access.go",
+        "packages/library/access.go",
+        "packages/catalog/index.go",
+        "packages/catalog/index_order.go",
+        "packages/catalog/browse.go",
+        "packages/catalog/browse_apply.go",
+        "packages/catalog/browse_sort.go",
+        "packages/catalog/letters.go",
+        "packages/catalog/search.go",
+        "packages/catalog/search_metadata.go",
+        "packages/catalogapi/library.go",
+        "packages/home/handler.go"
+      ],
+      "non_test_callers": [
+        "Player newApplication registers GET /api/v1/library and GET /{$}; browseLibrary applies current viewer policy/progress/list access and catalogapi.Library or home.NewHandler publishes bounded results."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/catalog_performance_benchmark_test.go",
+          "scenario": "BenchmarkNativeCatalogMetadataSearch"
+        }
+      ],
+      "coverage_limit": "Retained measurement harness; ordinary go test executes no benchmark iterations. No hard ns/op threshold: a timing-only regression is visible in benchmark output, not an automatic assertion failure. Genuine E2E does not reproduce these large/concurrent workloads.",
       "history": [
         "a69c5d2157d8ec4bd8e79326af29c435c35233d2 Stop obsolete catalog work after request cancellation",
         "e3c23d8efd5ee0db266242f77e5a782dcd672163 Reduce catalog metadata search allocation and processing cost",
         "c685c5a4d51ce18edc195c1197dd8c636687121d Reuse owned catalog snapshots during browse selection"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test ./internal/server -run=^$ -bench=BenchmarkNativeCatalogMetadataSearch -benchmem -count=3",
       "baseline_result": "not_run_benchmark",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below.",
+      "test_limit": "Not new isolated testing and not claimed to be a default-run unit regression gate; rerun explicitly with -run=^$ -bench=BenchmarkNativeCatalogMetadataSearch -benchmem -count=3 and save exact SHA/environment/output."
     },
     {
       "name": "BenchmarkNativeCatalogProfileProjection",
@@ -10848,23 +11097,48 @@
       "sha256": "5e59fe9ada56fe8de7a608496e12d0ff52257339193fe5b3e57cd62b7fd6dc3f",
       "path": "apps/player/internal/server/catalog_projection_benchmark_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Repeatable performance workload: 10000/100000 owner/restricted current profile list/unwatched/history/exact views after owner warm-up, with allowed IDs and totals. This records scaling measurements that the small populated browser catalog omits.",
+      "category": "benchmark_measurement",
+      "credible_failure": "Repeatable performance workload: 10000/100000 owner/restricted current profile list/unwatched/history/exact views after owner warm-up, with allowed IDs and totals. This records scaling measurements that the small populated browser catalog omits.",
+      "production_owner": [
+        "apps/player/internal/server/browse.go",
+        "apps/player/internal/server/access.go",
+        "packages/identitycore/library_access.go",
+        "packages/library/access.go",
+        "packages/catalog/index.go",
+        "packages/catalog/index_order.go",
+        "packages/catalog/browse.go",
+        "packages/catalog/browse_apply.go",
+        "packages/catalog/browse_sort.go",
+        "packages/catalog/letters.go",
+        "packages/catalog/search.go",
+        "packages/catalog/search_metadata.go",
+        "packages/catalogapi/library.go",
+        "packages/home/handler.go"
+      ],
+      "non_test_callers": [
+        "Player newApplication registers GET /api/v1/library and GET /{$}; browseLibrary applies current viewer policy/progress/list access and catalogapi.Library or home.NewHandler publishes bounded results."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/catalog_projection_benchmark_test.go",
+          "scenario": "BenchmarkNativeCatalogProfileProjection"
+        }
+      ],
+      "coverage_limit": "Retained measurement harness; ordinary go test executes no benchmark iterations. No hard ns/op threshold: a timing-only regression is visible in benchmark output, not an automatic assertion failure. Genuine E2E does not reproduce these large/concurrent workloads.",
       "history": [
         "01b5c8c8a5a20aa8d377e2f5b97b88d47d49ce7b Record projection controls and reconciled verification boundaries",
         "27ba5a8c75c2ff3d88bc54fd127671573df48f04 Project only catalog state needed by each view"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test ./internal/server -run=^$ -bench=BenchmarkNativeCatalogProfileProjection -benchmem -count=3",
       "baseline_result": "not_run_benchmark",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below.",
+      "test_limit": "Not new isolated testing and not claimed to be a default-run unit regression gate; rerun explicitly with -run=^$ -bench=BenchmarkNativeCatalogProfileProjection -benchmem -count=3 and save exact SHA/environment/output."
     },
     {
       "name": "BenchmarkNativeCatalogProfileCold",
@@ -10873,23 +11147,48 @@
       "sha256": "32872b4406f6700730d306dca90387ad4c9b1334413d3fa5e8dbc81bd68f08e0",
       "path": "apps/player/internal/server/catalog_projection_benchmark_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Repeatable performance workload: 100000 owner/restricted cold movies/list/exact projection with allowed IDs and totals. This records scaling measurements that the small populated browser catalog omits.",
+      "category": "benchmark_measurement",
+      "credible_failure": "Repeatable performance workload: 100000 owner/restricted cold movies/list/exact projection with allowed IDs and totals. This records scaling measurements that the small populated browser catalog omits.",
+      "production_owner": [
+        "apps/player/internal/server/browse.go",
+        "apps/player/internal/server/access.go",
+        "packages/identitycore/library_access.go",
+        "packages/library/access.go",
+        "packages/catalog/index.go",
+        "packages/catalog/index_order.go",
+        "packages/catalog/browse.go",
+        "packages/catalog/browse_apply.go",
+        "packages/catalog/browse_sort.go",
+        "packages/catalog/letters.go",
+        "packages/catalog/search.go",
+        "packages/catalog/search_metadata.go",
+        "packages/catalogapi/library.go",
+        "packages/home/handler.go"
+      ],
+      "non_test_callers": [
+        "Player newApplication registers GET /api/v1/library and GET /{$}; browseLibrary applies current viewer policy/progress/list access and catalogapi.Library or home.NewHandler publishes bounded results."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/catalog_projection_benchmark_test.go",
+          "scenario": "BenchmarkNativeCatalogProfileCold"
+        }
+      ],
+      "coverage_limit": "Retained measurement harness; ordinary go test executes no benchmark iterations. No hard ns/op threshold: a timing-only regression is visible in benchmark output, not an automatic assertion failure. Genuine E2E does not reproduce these large/concurrent workloads.",
       "history": [
         "01b5c8c8a5a20aa8d377e2f5b97b88d47d49ce7b Record projection controls and reconciled verification boundaries",
         "27ba5a8c75c2ff3d88bc54fd127671573df48f04 Project only catalog state needed by each view"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test ./internal/server -run=^$ -bench=BenchmarkNativeCatalogProfileCold -benchmem -count=3",
       "baseline_result": "not_run_benchmark",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below.",
+      "test_limit": "Not new isolated testing and not claimed to be a default-run unit regression gate; rerun explicitly with -run=^$ -bench=BenchmarkNativeCatalogProfileCold -benchmem -count=3 and save exact SHA/environment/output."
     },
     {
       "name": "BenchmarkNativeCatalogRichSearch",
@@ -10898,22 +11197,47 @@
       "sha256": "41f7645ed857d88729f47338b2dd56643e804721b3a1ff3f35aef4d6125b825f",
       "path": "apps/player/internal/server/catalog_rich_search_benchmark_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Repeatable performance workload: 10000 long-plot title/all/exact/metadata/absent query totals. This records scaling measurements that the small populated browser catalog omits.",
+      "category": "benchmark_measurement",
+      "credible_failure": "Repeatable performance workload: 10000 long-plot title/all/exact/metadata/absent query totals. This records scaling measurements that the small populated browser catalog omits.",
+      "production_owner": [
+        "apps/player/internal/server/browse.go",
+        "apps/player/internal/server/access.go",
+        "packages/identitycore/library_access.go",
+        "packages/library/access.go",
+        "packages/catalog/index.go",
+        "packages/catalog/index_order.go",
+        "packages/catalog/browse.go",
+        "packages/catalog/browse_apply.go",
+        "packages/catalog/browse_sort.go",
+        "packages/catalog/letters.go",
+        "packages/catalog/search.go",
+        "packages/catalog/search_metadata.go",
+        "packages/catalogapi/library.go",
+        "packages/home/handler.go"
+      ],
+      "non_test_callers": [
+        "Player newApplication registers GET /api/v1/library and GET /{$}; browseLibrary applies current viewer policy/progress/list access and catalogapi.Library or home.NewHandler publishes bounded results."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/catalog_rich_search_benchmark_test.go",
+          "scenario": "BenchmarkNativeCatalogRichSearch"
+        }
+      ],
+      "coverage_limit": "Retained measurement harness; ordinary go test executes no benchmark iterations. No hard ns/op threshold: a timing-only regression is visible in benchmark output, not an automatic assertion failure. Genuine E2E does not reproduce these large/concurrent workloads.",
       "history": [
         "2f5927b3f1631be053b9699ee407b708dfe5e35b Skip full rich metadata normalization after confirmed matches"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test ./internal/server -run=^$ -bench=BenchmarkNativeCatalogRichSearch -benchmem -count=3",
       "baseline_result": "not_run_benchmark",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below.",
+      "test_limit": "Not new isolated testing and not claimed to be a default-run unit regression gate; rerun explicitly with -run=^$ -bench=BenchmarkNativeCatalogRichSearch -benchmem -count=3 and save exact SHA/environment/output."
     },
     {
       "name": "TestCatalogAPIRichSearchPreservesCompleteMetadata",
@@ -10922,22 +11246,49 @@
       "sha256": "947e17e39a787c99973584f31fea15b711ff17854e703f923e4048c8617c804b",
       "path": "apps/player/internal/server/catalog_rich_search_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Thirty-two rich search scenarios must preserve hits/misses across long fields, normalization, Unicode expansion, scratch-prefix boundaries, adjacent/nonadjacent field boundaries and cast metadata; prefix-only optimization or over-normalization drops valid results.",
+      "category": "catalog_scaling_concurrency_or_input_boundary",
+      "credible_failure": "Thirty-two rich search scenarios must preserve hits/misses across long fields, normalization, Unicode expansion, scratch-prefix boundaries, adjacent/nonadjacent field boundaries and cast metadata; prefix-only optimization or over-normalization drops valid results.",
+      "production_owner": [
+        "apps/player/internal/server/browse.go",
+        "apps/player/internal/server/access.go",
+        "packages/identitycore/library_access.go",
+        "packages/library/access.go",
+        "packages/catalog/index.go",
+        "packages/catalog/index_order.go",
+        "packages/catalog/browse.go",
+        "packages/catalog/browse_apply.go",
+        "packages/catalog/browse_sort.go",
+        "packages/catalog/letters.go",
+        "packages/catalog/search.go",
+        "packages/catalog/search_metadata.go",
+        "packages/catalogapi/library.go",
+        "packages/home/handler.go",
+        "packages/servertest/library_api_pagination.go",
+        "packages/servertest/library_benchmark.go"
+      ],
+      "non_test_callers": [
+        "Player newApplication registers GET /api/v1/library and GET /{$}; browseLibrary applies current viewer policy/progress/list access and catalogapi.Library or home.NewHandler publishes bounded results."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/catalog_rich_search_test.go",
+          "scenario": "TestCatalogAPIRichSearchPreservesCompleteMetadata"
+        }
+      ],
+      "coverage_limit": "Populated live browser Library/playback journeys use small valid fixture catalogs and do not exercise10000-item bounds, malformed pagination, arbitrary Unicode scratch boundaries, cancelled HTTP contexts or forced concurrent publication. library-scroll.spec.ts supplies fake HTML/routes, not Go pagination.",
       "history": [
         "2f5927b3f1631be053b9699ee407b708dfe5e35b Skip full rich metadata normalization after confirmed matches"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below.",
+      "test_limit": "In-memory index with actual browse/API projection; no scan or external metadata network exercised."
     },
     {
       "name": "TestCinemaBackgroundServesLandscapeAsset",
@@ -13961,22 +14312,48 @@
       "sha256": "3c76bf379bff07a4913f66ef050da5dde17b01be850f3f267e52b7ca08e945a4",
       "path": "apps/player/internal/server/library_api_pagination_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual server API/web must select one of three movies at limit1/offset1 with correct total and previous/next links; wiring one endpoint to an unpaged owner can return divergent data.",
+      "category": "catalog_scaling_concurrency_or_input_boundary",
+      "credible_failure": "Actual server API/web must select one of three movies at limit1/offset1 with correct total and previous/next links; wiring one endpoint to an unpaged owner can return divergent data.",
+      "production_owner": [
+        "apps/player/internal/server/browse.go",
+        "apps/player/internal/server/access.go",
+        "packages/identitycore/library_access.go",
+        "packages/library/access.go",
+        "packages/catalog/index.go",
+        "packages/catalog/index_order.go",
+        "packages/catalog/browse.go",
+        "packages/catalog/browse_apply.go",
+        "packages/catalog/browse_sort.go",
+        "packages/catalog/letters.go",
+        "packages/catalog/search.go",
+        "packages/catalog/search_metadata.go",
+        "packages/catalogapi/library.go",
+        "packages/home/handler.go",
+        "packages/servertest/library_api_pagination.go",
+        "packages/servertest/library_benchmark.go"
+      ],
+      "non_test_callers": [
+        "Player newApplication registers GET /api/v1/library and GET /{$}; browseLibrary applies current viewer policy/progress/list access and catalogapi.Library or home.NewHandler publishes bounded results."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/library_api_pagination_test.go",
+          "scenario": "TestLibraryPaginationIsSharedByAPIAndWeb"
+        }
+      ],
+      "coverage_limit": "Populated live browser Library/playback journeys use small valid fixture catalogs and do not exercise10000-item bounds, malformed pagination, arbitrary Unicode scratch boundaries, cancelled HTTP contexts or forced concurrent publication. library-scroll.spec.ts supplies fake HTML/routes, not Go pagination.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below."
     },
     {
       "name": "TestDeepLibraryPageDoesNotRepeatHomeShelves",
@@ -13985,22 +14362,48 @@
       "sha256": "6a60a9068dca088f7b42845ff210363d6c3ae8f8d14d9f14cc43017ddb7d92fa",
       "path": "apps/player/internal/server/library_api_pagination_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual offset1 web page must omit Recently added/played shelves; repeating landing shelves on every appended page adds irrelevant titles and breaks infinite Library projection.",
+      "category": "catalog_scaling_concurrency_or_input_boundary",
+      "credible_failure": "Actual offset1 web page must omit Recently added/played shelves; repeating landing shelves on every appended page adds irrelevant titles and breaks infinite Library projection.",
+      "production_owner": [
+        "apps/player/internal/server/browse.go",
+        "apps/player/internal/server/access.go",
+        "packages/identitycore/library_access.go",
+        "packages/library/access.go",
+        "packages/catalog/index.go",
+        "packages/catalog/index_order.go",
+        "packages/catalog/browse.go",
+        "packages/catalog/browse_apply.go",
+        "packages/catalog/browse_sort.go",
+        "packages/catalog/letters.go",
+        "packages/catalog/search.go",
+        "packages/catalog/search_metadata.go",
+        "packages/catalogapi/library.go",
+        "packages/home/handler.go",
+        "packages/servertest/library_api_pagination.go",
+        "packages/servertest/library_benchmark.go"
+      ],
+      "non_test_callers": [
+        "Player newApplication registers GET /api/v1/library and GET /{$}; browseLibrary applies current viewer policy/progress/list access and catalogapi.Library or home.NewHandler publishes bounded results."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/library_api_pagination_test.go",
+          "scenario": "TestDeepLibraryPageDoesNotRepeatHomeShelves"
+        }
+      ],
+      "coverage_limit": "Populated live browser Library/playback journeys use small valid fixture catalogs and do not exercise10000-item bounds, malformed pagination, arbitrary Unicode scratch boundaries, cancelled HTTP contexts or forced concurrent publication. library-scroll.spec.ts supplies fake HTML/routes, not Go pagination.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below."
     },
     {
       "name": "TestInfiniteLibraryPageReturnsOnlyTheBoundedFragment",
@@ -14009,22 +14412,48 @@
       "sha256": "a298c3422558fec53a8d74951ae1404037b7af7f83313c8298de08219d0d70c9",
       "path": "apps/player/internal/server/library_api_pagination_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual fragment request must return one bounded card without full document/shell, and malformed/duplicate/oversized header values reject400; wrong header wiring appends full HTML or unbounded data.",
+      "category": "catalog_scaling_concurrency_or_input_boundary",
+      "credible_failure": "Actual fragment request must return one bounded card without full document/shell, and malformed/duplicate/oversized header values reject400; wrong header wiring appends full HTML or unbounded data.",
+      "production_owner": [
+        "apps/player/internal/server/browse.go",
+        "apps/player/internal/server/access.go",
+        "packages/identitycore/library_access.go",
+        "packages/library/access.go",
+        "packages/catalog/index.go",
+        "packages/catalog/index_order.go",
+        "packages/catalog/browse.go",
+        "packages/catalog/browse_apply.go",
+        "packages/catalog/browse_sort.go",
+        "packages/catalog/letters.go",
+        "packages/catalog/search.go",
+        "packages/catalog/search_metadata.go",
+        "packages/catalogapi/library.go",
+        "packages/home/handler.go",
+        "packages/servertest/library_api_pagination.go",
+        "packages/servertest/library_benchmark.go"
+      ],
+      "non_test_callers": [
+        "Player newApplication registers GET /api/v1/library and GET /{$}; browseLibrary applies current viewer policy/progress/list access and catalogapi.Library or home.NewHandler publishes bounded results."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/library_api_pagination_test.go",
+          "scenario": "TestInfiniteLibraryPageReturnsOnlyTheBoundedFragment"
+        }
+      ],
+      "coverage_limit": "Populated live browser Library/playback journeys use small valid fixture catalogs and do not exercise10000-item bounds, malformed pagination, arbitrary Unicode scratch boundaries, cancelled HTTP contexts or forced concurrent publication. library-scroll.spec.ts supplies fake HTML/routes, not Go pagination.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below."
     },
     {
       "name": "TestLibraryPaginationRejectsAmbiguousAndOutOfRangeInput",
@@ -14033,22 +14462,48 @@
       "sha256": "cb4745ef3d2a8ca45752a5b62f7b3722906b6364ee8cf3993e2d39d5f7400a21",
       "path": "apps/player/internal/server/library_api_pagination_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual API/web must reject duplicate/bad pagination, unsupported keys/views/sorts/letters and incompatible letter/offset/query combinations; permissive parsing can bypass bounds and confuse page selection.",
+      "category": "catalog_scaling_concurrency_or_input_boundary",
+      "credible_failure": "Actual API/web must reject duplicate/bad pagination, unsupported keys/views/sorts/letters and incompatible letter/offset/query combinations; permissive parsing can bypass bounds and confuse page selection.",
+      "production_owner": [
+        "apps/player/internal/server/browse.go",
+        "apps/player/internal/server/access.go",
+        "packages/identitycore/library_access.go",
+        "packages/library/access.go",
+        "packages/catalog/index.go",
+        "packages/catalog/index_order.go",
+        "packages/catalog/browse.go",
+        "packages/catalog/browse_apply.go",
+        "packages/catalog/browse_sort.go",
+        "packages/catalog/letters.go",
+        "packages/catalog/search.go",
+        "packages/catalog/search_metadata.go",
+        "packages/catalogapi/library.go",
+        "packages/home/handler.go",
+        "packages/servertest/library_api_pagination.go",
+        "packages/servertest/library_benchmark.go"
+      ],
+      "non_test_callers": [
+        "Player newApplication registers GET /api/v1/library and GET /{$}; browseLibrary applies current viewer policy/progress/list access and catalogapi.Library or home.NewHandler publishes bounded results."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/library_api_pagination_test.go",
+          "scenario": "TestLibraryPaginationRejectsAmbiguousAndOutOfRangeInput"
+        }
+      ],
+      "coverage_limit": "Populated live browser Library/playback journeys use small valid fixture catalogs and do not exercise10000-item bounds, malformed pagination, arbitrary Unicode scratch boundaries, cancelled HTTP contexts or forced concurrent publication. library-scroll.spec.ts supplies fake HTML/routes, not Go pagination.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below."
     },
     {
       "name": "TestKnownTitleSearchRanksLikelyMatchesAcrossAPIAndWeb",
@@ -14129,22 +14584,39 @@
       "sha256": "18550e803e4a5d2bd9101b2271ee017b350a6f6c895aa4492841c4b323d0db43",
       "path": "apps/player/internal/server/library_benchmark_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Finding the last item in a10000-item index must return the item with zero allocations; copying the catalog per seek allocates O(n) memory on playback hot paths.",
+      "category": "catalog_scaling_concurrency_or_input_boundary",
+      "credible_failure": "Finding the last item in a10000-item index must return the item with zero allocations; copying the catalog per seek allocates O(n) memory on playback hot paths.",
+      "production_owner": [
+        "apps/player/internal/server/library_index_test.go:memoryLibraryIndex",
+        "apps/player/internal/server/settings_library.go:libraryIndex",
+        "apps/player/internal/server/home.go:filter",
+        "packages/catalog/index.go:Find",
+        "packages/catalog/search.go:Filter",
+        "packages/servertest/library_benchmark.go"
+      ],
+      "non_test_callers": [
+        "Visible-item/file/playback/HLS paths call catalog.Index.Find; actual home/API query selection uses shared catalog search."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/library_benchmark_test.go",
+          "scenario": "TestLibraryFindDoesNotCopyTheLibrary"
+        }
+      ],
+      "coverage_limit": "Populated live browser Library/playback journeys use small valid fixture catalogs and do not exercise10000-item bounds, malformed pagination, arbitrary Unicode scratch boundaries, cancelled HTTP contexts or forced concurrent publication. library-scroll.spec.ts supplies fake HTML/routes, not Go pagination.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below.",
+      "test_limit": "AllocsPerRun is a scaling invariant, not elapsed-time proof; canonical catalog tests found do not assert this zero-copy allocation contract."
     },
     {
       "name": "BenchmarkLibraryFind",
@@ -14153,22 +14625,39 @@
       "sha256": "8147e75d345b1b1463fde659e228b2c37906e2956d7455410b0faff622b359bf",
       "path": "apps/player/internal/server/library_benchmark_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Repeatable performance workload: 10000-item last-ID lookup allocation/timing measurement. This records scaling measurements that the small populated browser catalog omits.",
+      "category": "benchmark_measurement",
+      "credible_failure": "Repeatable performance workload: 10000-item last-ID lookup allocation/timing measurement. This records scaling measurements that the small populated browser catalog omits.",
+      "production_owner": [
+        "apps/player/internal/server/library_index_test.go:memoryLibraryIndex",
+        "apps/player/internal/server/settings_library.go:libraryIndex",
+        "apps/player/internal/server/home.go:filter",
+        "packages/catalog/index.go:Find",
+        "packages/catalog/search.go:Filter",
+        "packages/servertest/library_benchmark.go"
+      ],
+      "non_test_callers": [
+        "Visible-item/file/playback/HLS paths call catalog.Index.Find; actual home/API query selection uses shared catalog search."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/library_benchmark_test.go",
+          "scenario": "BenchmarkLibraryFind"
+        }
+      ],
+      "coverage_limit": "Retained measurement harness; ordinary go test executes no benchmark iterations. No hard ns/op threshold: a timing-only regression is visible in benchmark output, not an automatic assertion failure. Genuine E2E does not reproduce these large/concurrent workloads.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test ./internal/server -run=^$ -bench=BenchmarkLibraryFind -benchmem -count=3",
       "baseline_result": "not_run_benchmark",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below.",
+      "test_limit": "Not new isolated testing and not claimed to be a default-run unit regression gate; rerun explicitly with -run=^$ -bench=BenchmarkLibraryFind -benchmem -count=3 and save exact SHA/environment/output."
     },
     {
       "name": "BenchmarkLibrarySearch10K",
@@ -14177,22 +14666,39 @@
       "sha256": "065a21cf64ce2b19628d889c7b07aea7229dbb4a965696563f51f4b76d1f1ae3",
       "path": "apps/player/internal/server/library_benchmark_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Repeatable performance workload: 10000-item known-title normalization/search timing and allocation measurement. This records scaling measurements that the small populated browser catalog omits.",
+      "category": "benchmark_measurement",
+      "credible_failure": "Repeatable performance workload: 10000-item known-title normalization/search timing and allocation measurement. This records scaling measurements that the small populated browser catalog omits.",
+      "production_owner": [
+        "apps/player/internal/server/library_index_test.go:memoryLibraryIndex",
+        "apps/player/internal/server/settings_library.go:libraryIndex",
+        "apps/player/internal/server/home.go:filter",
+        "packages/catalog/index.go:Find",
+        "packages/catalog/search.go:Filter",
+        "packages/servertest/library_benchmark.go"
+      ],
+      "non_test_callers": [
+        "Visible-item/file/playback/HLS paths call catalog.Index.Find; actual home/API query selection uses shared catalog search."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/library_benchmark_test.go",
+          "scenario": "BenchmarkLibrarySearch10K"
+        }
+      ],
+      "coverage_limit": "Retained measurement harness; ordinary go test executes no benchmark iterations. No hard ns/op threshold: a timing-only regression is visible in benchmark output, not an automatic assertion failure. Genuine E2E does not reproduce these large/concurrent workloads.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test ./internal/server -run=^$ -bench=BenchmarkLibrarySearch10K -benchmem -count=3",
       "baseline_result": "not_run_benchmark",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below.",
+      "test_limit": "Not new isolated testing and not claimed to be a default-run unit regression gate; rerun explicitly with -run=^$ -bench=BenchmarkLibrarySearch10K -benchmem -count=3 and save exact SHA/environment/output."
     },
     {
       "name": "TestViewerCanBrowseDedicatedLibraryViews",
@@ -15994,22 +16500,39 @@
       "sha256": "dd48d711a49e7436b91e164e34b54652cd11f151c4c9705ebc1d7bac368a47f5",
       "path": "apps/player/internal/server/media_range_benchmark_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Repeatable performance workload: 8MiB real HTTP Go app file, parallel4MiB ranged206 reads validated for full byte count with throughput/allocations. This records scaling measurements that the small populated browser catalog omits.",
+      "category": "benchmark_measurement",
+      "credible_failure": "Repeatable performance workload: 8MiB real HTTP Go app file, parallel4MiB ranged206 reads validated for full byte count with throughput/allocations. This records scaling measurements that the small populated browser catalog omits.",
+      "production_owner": [
+        "apps/player/internal/server/files.go:registerFiles/serveFile",
+        "packages/playback/file_delivery.go:LibraryFileHandler",
+        "apps/player/internal/server/access.go:visibleItem",
+        "packages/identitycore/library_access.go",
+        "packages/library/access.go",
+        "packages/catalog/index.go:Safe/Find"
+      ],
+      "non_test_callers": [
+        "Actual media playback/browser seek GET /media/{id} -> authorized safe LibraryFileHandler -> net/http.ServeFile."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/media_range_benchmark_test.go",
+          "scenario": "BenchmarkMediaRangeThroughServer"
+        }
+      ],
+      "coverage_limit": "Retained measurement harness; ordinary go test executes no benchmark iterations. No hard ns/op threshold: a timing-only regression is visible in benchmark output, not an automatic assertion failure. Genuine E2E does not reproduce these large/concurrent workloads.",
       "history": [
         "2aaf4dac80740938488410d4e093e03b2d9c0ba9 Preserve sendfile fast path for media responses"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test ./internal/server -run=^$ -bench=BenchmarkMediaRangeThroughServer -benchmem -count=3",
       "baseline_result": "not_run_benchmark",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below.",
+      "test_limit": "Not new isolated testing and not claimed to be a default-run unit regression gate; rerun explicitly with -run=^$ -bench=BenchmarkMediaRangeThroughServer -benchmem -count=3 and save exact SHA/environment/output."
     },
     {
       "name": "TestOwnerCreatesClaimsStreamsAndRevokesMediaShare",
@@ -17405,24 +17928,37 @@
       "sha256": "95602f6335fda436c643e3e9953c3491ea193e49152c46c2580099f797b28e0e",
       "path": "apps/player/internal/server/navigation_shell_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Focused playback/auth/reader routes must be excluded from injected navigation while management/detail routes include it; wrong route classification obstructs focused screens or removes navigation from settings.",
+      "category": "navigation_transform_boundary",
+      "credible_failure": "Focused playback/auth/reader routes must be excluded from injected navigation while management/detail routes include it; wrong route classification obstructs focused screens or removes navigation from settings.",
+      "production_owner": [
+        "apps/player/internal/server/navigation_shell.go:withApplicationShell/injectApplicationShell/applicationShellRoute/applicationShellCSSVersion",
+        "apps/player/internal/server/security.go:applicationRequests"
+      ],
+      "non_test_callers": [
+        "applicationRequests wraps authorized app HTML with withApplicationShell; actual registered route pattern selects injection, current identity/settings create navigation."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/navigation_shell_internal_test.go",
+          "scenario": "TestApplicationShellRouteBoundary"
+        }
+      ],
+      "coverage_limit": "Live beta routes and keyboard/Axe journeys do not exercise every focused-route exclusion or synthetic missing/old asset/id variants.",
       "history": [
         "98972d7c073d77314c41503002ea27708ce9d69b Fix mobile player control targets and touch auto-hide",
         "38335baa6ffccddbe8cc0ac1fdf37424100a8192 Reconcile launch fixes and retain QA lifecycle and cache regressions",
         "104c7a78665230b7503639dc928b9580272d3e6b Keep Safari gesture recovery usable after queued media events"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below.",
+      "test_limit": "Pins reviewed route policy list; live beta journey visits most management/details but does not assert absence on every focused/OAuth/watch-together route."
     },
     {
       "name": "TestApplicationShellRefreshesCachedStylesheetVersions",
@@ -17431,24 +17967,37 @@
       "sha256": "435c207c7a798691effc959e41454bdc4e8c51c740f5a78a6cc3c33ebd93b587",
       "path": "apps/player/internal/server/navigation_shell_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Previously rendered pages with old stylesheet URLs must upgrade to the current version when shell is injected; retaining stale immutable URLs causes old CSS to survive releases.",
+      "category": "navigation_transform_boundary",
+      "credible_failure": "Previously rendered pages with old stylesheet URLs must upgrade to the current version when shell is injected; retaining stale immutable URLs causes old CSS to survive releases.",
+      "production_owner": [
+        "apps/player/internal/server/navigation_shell.go:withApplicationShell/injectApplicationShell/applicationShellRoute/applicationShellCSSVersion",
+        "apps/player/internal/server/security.go:applicationRequests"
+      ],
+      "non_test_callers": [
+        "applicationRequests wraps authorized app HTML with withApplicationShell; actual registered route pattern selects injection, current identity/settings create navigation."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/navigation_shell_internal_test.go",
+          "scenario": "TestApplicationShellRefreshesCachedStylesheetVersions"
+        }
+      ],
+      "coverage_limit": "Live beta routes and keyboard/Axe journeys do not exercise every focused-route exclusion or synthetic missing/old asset/id variants.",
       "history": [
         "98972d7c073d77314c41503002ea27708ce9d69b Fix mobile player control targets and touch auto-hide",
         "38335baa6ffccddbe8cc0ac1fdf37424100a8192 Reconcile launch fixes and retain QA lifecycle and cache regressions",
         "104c7a78665230b7503639dc928b9580272d3e6b Keep Safari gesture recovery usable after queued media events"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below.",
+      "test_limit": "Enumerated versions and literal current recipe are brittle, but current genuine E2E starts from fresh responses/cache and does not inject old template CSS versions."
     },
     {
       "name": "TestApplicationShellLoadsRecognitionOnce",
@@ -17457,24 +18006,37 @@
       "sha256": "c5b8aba458056c2b810eafce26c5f81718a39787d09f66e05b830abdd67bd1ed",
       "path": "apps/player/internal/server/navigation_shell_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Shell injection into HTML with/without existing supporter script must insert exactly one script; duplication causes duplicated registration/events and omission loses recognition behavior.",
+      "category": "navigation_transform_boundary",
+      "credible_failure": "Shell injection into HTML with/without existing supporter script must insert exactly one script; duplication causes duplicated registration/events and omission loses recognition behavior.",
+      "production_owner": [
+        "apps/player/internal/server/navigation_shell.go:withApplicationShell/injectApplicationShell/applicationShellRoute/applicationShellCSSVersion",
+        "apps/player/internal/server/security.go:applicationRequests"
+      ],
+      "non_test_callers": [
+        "applicationRequests wraps authorized app HTML with withApplicationShell; actual registered route pattern selects injection, current identity/settings create navigation."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/navigation_shell_internal_test.go",
+          "scenario": "TestApplicationShellLoadsRecognitionOnce"
+        }
+      ],
+      "coverage_limit": "Live beta routes and keyboard/Axe journeys do not exercise every focused-route exclusion or synthetic missing/old asset/id variants.",
       "history": [
         "98972d7c073d77314c41503002ea27708ce9d69b Fix mobile player control targets and touch auto-hide",
         "38335baa6ffccddbe8cc0ac1fdf37424100a8192 Reconcile launch fixes and retain QA lifecycle and cache regressions",
         "104c7a78665230b7503639dc928b9580272d3e6b Keep Safari gesture recovery usable after queued media events"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below.",
+      "test_limit": "Isolated real transformation; no browser registration/event-count observation."
     },
     {
       "name": "TestApplicationShellMainTarget",
@@ -17483,24 +18045,37 @@
       "sha256": "c36b1cc262e01f90fc652648f3131446054cdcc6d1701dc838d6bba2aacc2c43",
       "path": "apps/player/internal/server/navigation_shell_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Shell injection must distinguish data-palette-id from a real main id, preserve existing target and insert exactly one main/skip target; substring matching can break keyboard skip access.",
+      "category": "navigation_transform_boundary",
+      "credible_failure": "Shell injection must distinguish data-palette-id from a real main id, preserve existing target and insert exactly one main/skip target; substring matching can break keyboard skip access.",
+      "production_owner": [
+        "apps/player/internal/server/navigation_shell.go:withApplicationShell/injectApplicationShell/applicationShellRoute/applicationShellCSSVersion",
+        "apps/player/internal/server/security.go:applicationRequests"
+      ],
+      "non_test_callers": [
+        "applicationRequests wraps authorized app HTML with withApplicationShell; actual registered route pattern selects injection, current identity/settings create navigation."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/navigation_shell_internal_test.go",
+          "scenario": "TestApplicationShellMainTarget"
+        }
+      ],
+      "coverage_limit": "Live beta routes and keyboard/Axe journeys do not exercise every focused-route exclusion or synthetic missing/old asset/id variants.",
       "history": [
         "98972d7c073d77314c41503002ea27708ce9d69b Fix mobile player control targets and touch auto-hide",
         "38335baa6ffccddbe8cc0ac1fdf37424100a8192 Reconcile launch fixes and retain QA lifecycle and cache regressions",
         "104c7a78665230b7503639dc928b9580272d3e6b Keep Safari gesture recovery usable after queued media events"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below.",
+      "test_limit": "Actual transformation matrix covers attribute suffix bug; live beta Axe checks use existing production templates and omit the synthetic missing-id variants."
     },
     {
       "name": "TestOwnerCanCustomizeLibraryNavigationThroughAPIAndWeb",
@@ -18904,24 +19479,51 @@
       "sha256": "f303c7bcf6b414856e2c05b80e08e146f40ab0a001bcdbc9f3b42a6b5e08e3dc",
       "path": "apps/player/internal/server/performance_benchmark_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "A10000-item actual web render must publish100cards, response\u226427000bytes and next offset100; unbounded projection/render balloons browser memory and download size.",
+      "category": "catalog_scaling_concurrency_or_input_boundary",
+      "credible_failure": "A10000-item actual web render must publish100cards, response\u226427000bytes and next offset100; unbounded projection/render balloons browser memory and download size.",
+      "production_owner": [
+        "apps/player/internal/server/browse.go",
+        "apps/player/internal/server/access.go",
+        "packages/identitycore/library_access.go",
+        "packages/library/access.go",
+        "packages/catalog/index.go",
+        "packages/catalog/index_order.go",
+        "packages/catalog/browse.go",
+        "packages/catalog/browse_apply.go",
+        "packages/catalog/browse_sort.go",
+        "packages/catalog/letters.go",
+        "packages/catalog/search.go",
+        "packages/catalog/search_metadata.go",
+        "packages/catalogapi/library.go",
+        "packages/home/handler.go",
+        "packages/servertest/library_api_pagination.go",
+        "packages/servertest/library_benchmark.go"
+      ],
+      "non_test_callers": [
+        "Player newApplication registers GET /api/v1/library and GET /{$}; browseLibrary applies current viewer policy/progress/list access and catalogapi.Library or home.NewHandler publishes bounded results."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/performance_benchmark_test.go",
+          "scenario": "TestLargeLibraryWebResponseIsBounded"
+        }
+      ],
+      "coverage_limit": "Populated live browser Library/playback journeys use small valid fixture catalogs and do not exercise10000-item bounds, malformed pagination, arbitrary Unicode scratch boundaries, cancelled HTTP contexts or forced concurrent publication. library-scroll.spec.ts supplies fake HTML/routes, not Go pagination.",
       "history": [
         "c685c5a4d51ce18edc195c1197dd8c636687121d Reuse owned catalog snapshots during browse selection",
         "2b17e62c4e12bccb4bd81d043f7ef315fc5c3f16 Open video selections directly in web player",
         "2c08d90156356d3b72ede8381ad19ff51d564c82 feat(player): group wide desktop navigation in sidebar"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below.",
+      "test_limit": "Cardinality/size cap protects large-response scaling; exact byte threshold is an intentionally retained ceiling rather than source equality."
     },
     {
       "name": "TestLargeLetterBucketRemainsBoundedAndPageable",
@@ -18930,24 +19532,50 @@
       "sha256": "b5be56585a5d0da27e0d7747a2700d9a869ff156d32da58ed8512d6bc42aa5ac",
       "path": "apps/player/internal/server/performance_benchmark_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "A10000-item M-letter bucket must render100cards with a next page and remain bounded after offset100; using whole letter bucket bypasses pagination and exhausts browser memory.",
+      "category": "catalog_scaling_concurrency_or_input_boundary",
+      "credible_failure": "A10000-item M-letter bucket must render100cards with a next page and remain bounded after offset100; using whole letter bucket bypasses pagination and exhausts browser memory.",
+      "production_owner": [
+        "apps/player/internal/server/browse.go",
+        "apps/player/internal/server/access.go",
+        "packages/identitycore/library_access.go",
+        "packages/library/access.go",
+        "packages/catalog/index.go",
+        "packages/catalog/index_order.go",
+        "packages/catalog/browse.go",
+        "packages/catalog/browse_apply.go",
+        "packages/catalog/browse_sort.go",
+        "packages/catalog/letters.go",
+        "packages/catalog/search.go",
+        "packages/catalog/search_metadata.go",
+        "packages/catalogapi/library.go",
+        "packages/home/handler.go",
+        "packages/servertest/library_api_pagination.go",
+        "packages/servertest/library_benchmark.go"
+      ],
+      "non_test_callers": [
+        "Player newApplication registers GET /api/v1/library and GET /{$}; browseLibrary applies current viewer policy/progress/list access and catalogapi.Library or home.NewHandler publishes bounded results."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/performance_benchmark_test.go",
+          "scenario": "TestLargeLetterBucketRemainsBoundedAndPageable"
+        }
+      ],
+      "coverage_limit": "Populated live browser Library/playback journeys use small valid fixture catalogs and do not exercise10000-item bounds, malformed pagination, arbitrary Unicode scratch boundaries, cancelled HTTP contexts or forced concurrent publication. library-scroll.spec.ts supplies fake HTML/routes, not Go pagination.",
       "history": [
         "c685c5a4d51ce18edc195c1197dd8c636687121d Reuse owned catalog snapshots during browse selection",
         "2b17e62c4e12bccb4bd81d043f7ef315fc5c3f16 Open video selections directly in web player",
         "2c08d90156356d3b72ede8381ad19ff51d564c82 feat(player): group wide desktop navigation in sidebar"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below."
     },
     {
       "name": "BenchmarkLargeLibraryBrowse",
@@ -18956,24 +19584,49 @@
       "sha256": "45be20e1fa4164be03263a66c776652c866f8dc43cfccc6573d3e5a9d5c732d8",
       "path": "apps/player/internal/server/performance_benchmark_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Repeatable performance workload: 10000-item actual web page response bytes and allocation/timing measurement. This records scaling measurements that the small populated browser catalog omits.",
+      "category": "benchmark_measurement",
+      "credible_failure": "Repeatable performance workload: 10000-item actual web page response bytes and allocation/timing measurement. This records scaling measurements that the small populated browser catalog omits.",
+      "production_owner": [
+        "apps/player/internal/server/browse.go",
+        "apps/player/internal/server/access.go",
+        "packages/identitycore/library_access.go",
+        "packages/library/access.go",
+        "packages/catalog/index.go",
+        "packages/catalog/index_order.go",
+        "packages/catalog/browse.go",
+        "packages/catalog/browse_apply.go",
+        "packages/catalog/browse_sort.go",
+        "packages/catalog/letters.go",
+        "packages/catalog/search.go",
+        "packages/catalog/search_metadata.go",
+        "packages/catalogapi/library.go",
+        "packages/home/handler.go"
+      ],
+      "non_test_callers": [
+        "Player newApplication registers GET /api/v1/library and GET /{$}; browseLibrary applies current viewer policy/progress/list access and catalogapi.Library or home.NewHandler publishes bounded results."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/performance_benchmark_test.go",
+          "scenario": "BenchmarkLargeLibraryBrowse"
+        }
+      ],
+      "coverage_limit": "Retained measurement harness; ordinary go test executes no benchmark iterations. No hard ns/op threshold: a timing-only regression is visible in benchmark output, not an automatic assertion failure. Genuine E2E does not reproduce these large/concurrent workloads.",
       "history": [
         "c685c5a4d51ce18edc195c1197dd8c636687121d Reuse owned catalog snapshots during browse selection",
         "2b17e62c4e12bccb4bd81d043f7ef315fc5c3f16 Open video selections directly in web player",
         "2c08d90156356d3b72ede8381ad19ff51d564c82 feat(player): group wide desktop navigation in sidebar"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test ./internal/server -run=^$ -bench=BenchmarkLargeLibraryBrowse -benchmem -count=3",
       "baseline_result": "not_run_benchmark",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below.",
+      "test_limit": "Not new isolated testing and not claimed to be a default-run unit regression gate; rerun explicitly with -run=^$ -bench=BenchmarkLargeLibraryBrowse -benchmem -count=3 and save exact SHA/environment/output."
     },
     {
       "name": "BenchmarkLargeLibraryKnownTitleNavigation",
@@ -18982,24 +19635,49 @@
       "sha256": "b2d45e0c8e60e1d64c513b2919315e849cff936475bfd453a922ecfedef81d34",
       "path": "apps/player/internal/server/performance_benchmark_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Repeatable performance workload: 10000-item web selective query/letter navigation response validity and allocation/timing measurement. This records scaling measurements that the small populated browser catalog omits.",
+      "category": "benchmark_measurement",
+      "credible_failure": "Repeatable performance workload: 10000-item web selective query/letter navigation response validity and allocation/timing measurement. This records scaling measurements that the small populated browser catalog omits.",
+      "production_owner": [
+        "apps/player/internal/server/browse.go",
+        "apps/player/internal/server/access.go",
+        "packages/identitycore/library_access.go",
+        "packages/library/access.go",
+        "packages/catalog/index.go",
+        "packages/catalog/index_order.go",
+        "packages/catalog/browse.go",
+        "packages/catalog/browse_apply.go",
+        "packages/catalog/browse_sort.go",
+        "packages/catalog/letters.go",
+        "packages/catalog/search.go",
+        "packages/catalog/search_metadata.go",
+        "packages/catalogapi/library.go",
+        "packages/home/handler.go"
+      ],
+      "non_test_callers": [
+        "Player newApplication registers GET /api/v1/library and GET /{$}; browseLibrary applies current viewer policy/progress/list access and catalogapi.Library or home.NewHandler publishes bounded results."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/performance_benchmark_test.go",
+          "scenario": "BenchmarkLargeLibraryKnownTitleNavigation"
+        }
+      ],
+      "coverage_limit": "Retained measurement harness; ordinary go test executes no benchmark iterations. No hard ns/op threshold: a timing-only regression is visible in benchmark output, not an automatic assertion failure. Genuine E2E does not reproduce these large/concurrent workloads.",
       "history": [
         "c685c5a4d51ce18edc195c1197dd8c636687121d Reuse owned catalog snapshots during browse selection",
         "2b17e62c4e12bccb4bd81d043f7ef315fc5c3f16 Open video selections directly in web player",
         "2c08d90156356d3b72ede8381ad19ff51d564c82 feat(player): group wide desktop navigation in sidebar"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test ./internal/server -run=^$ -bench=BenchmarkLargeLibraryKnownTitleNavigation -benchmem -count=3",
       "baseline_result": "not_run_benchmark",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below.",
+      "test_limit": "Not new isolated testing and not claimed to be a default-run unit regression gate; rerun explicitly with -run=^$ -bench=BenchmarkLargeLibraryKnownTitleNavigation -benchmem -count=3 and save exact SHA/environment/output."
     },
     {
       "name": "BenchmarkSaveProgressJSON10K",
@@ -19008,24 +19686,41 @@
       "sha256": "7ab62ef1abd632e94fe09e17758defcd4c514b20b1f26bfebc925440916f1192",
       "path": "apps/player/internal/server/performance_benchmark_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Repeatable performance workload: 10000 memory progress records, actual JSON persistence update allocation/timing measurement. This records scaling measurements that the small populated browser catalog omits.",
+      "category": "benchmark_measurement",
+      "credible_failure": "Repeatable performance workload: 10000 memory progress records, actual JSON persistence update allocation/timing measurement. This records scaling measurements that the small populated browser catalog omits.",
+      "production_owner": [
+        "apps/player/internal/server/progress.go:newProgressStore",
+        "packages/catalogapi/progress_store.go:NewProgressStore",
+        "packages/catalog/progress_request_store.go:Storage/Update",
+        "packages/catalog/progress_change.go",
+        "apps/player/internal/server/database.go",
+        "packages/documentdb/documentdb.go"
+      ],
+      "non_test_callers": [
+        "Actual web/API/player progress updates use request progress transactions and JSON fallback or SQLite entry persistence."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/performance_benchmark_test.go",
+          "scenario": "BenchmarkSaveProgressJSON10K"
+        }
+      ],
+      "coverage_limit": "Retained measurement harness; ordinary go test executes no benchmark iterations. No hard ns/op threshold: a timing-only regression is visible in benchmark output, not an automatic assertion failure. Genuine E2E does not reproduce these large/concurrent workloads.",
       "history": [
         "c685c5a4d51ce18edc195c1197dd8c636687121d Reuse owned catalog snapshots during browse selection",
         "2b17e62c4e12bccb4bd81d043f7ef315fc5c3f16 Open video selections directly in web player",
         "2c08d90156356d3b72ede8381ad19ff51d564c82 feat(player): group wide desktop navigation in sidebar"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test ./internal/server -run=^$ -bench=BenchmarkSaveProgressJSON10K -benchmem -count=3",
       "baseline_result": "not_run_benchmark",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below.",
+      "test_limit": "Not new isolated testing and not claimed to be a default-run unit regression gate; rerun explicitly with -run=^$ -bench=BenchmarkSaveProgressJSON10K -benchmem -count=3 and save exact SHA/environment/output."
     },
     {
       "name": "BenchmarkSaveProgress10K",
@@ -19034,24 +19729,41 @@
       "sha256": "e9ffdc173f7c65cf1b85fbcbf33fb6cb769c38f20bea1a049a165473192f19f8",
       "path": "apps/player/internal/server/performance_benchmark_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Repeatable performance workload: 10000 memory progress records, actual SQLite single-entry persistence update allocation/timing measurement. This records scaling measurements that the small populated browser catalog omits.",
+      "category": "benchmark_measurement",
+      "credible_failure": "Repeatable performance workload: 10000 memory progress records, actual SQLite single-entry persistence update allocation/timing measurement. This records scaling measurements that the small populated browser catalog omits.",
+      "production_owner": [
+        "apps/player/internal/server/progress.go:newProgressStore",
+        "packages/catalogapi/progress_store.go:NewProgressStore",
+        "packages/catalog/progress_request_store.go:Storage/Update",
+        "packages/catalog/progress_change.go",
+        "apps/player/internal/server/database.go",
+        "packages/documentdb/documentdb.go"
+      ],
+      "non_test_callers": [
+        "Actual web/API/player progress updates use request progress transactions and JSON fallback or SQLite entry persistence."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_actual_owner_boundary",
+          "path": "apps/player/internal/server/performance_benchmark_test.go",
+          "scenario": "BenchmarkSaveProgress10K"
+        }
+      ],
+      "coverage_limit": "Retained measurement harness; ordinary go test executes no benchmark iterations. No hard ns/op threshold: a timing-only regression is visible in benchmark output, not an automatic assertion failure. Genuine E2E does not reproduce these large/concurrent workloads.",
       "history": [
         "c685c5a4d51ce18edc195c1197dd8c636687121d Reuse owned catalog snapshots during browse selection",
         "2b17e62c4e12bccb4bd81d043f7ef315fc5c3f16 Open video selections directly in web player",
         "2c08d90156356d3b72ede8381ad19ff51d564c82 feat(player): group wide desktop navigation in sidebar"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained.",
+      "risk": "Retained important boundary missed by existing genuine E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test ./internal/server -run=^$ -bench=BenchmarkSaveProgress10K -benchmem -count=3",
       "baseline_result": "not_run_benchmark",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Player owner fully read test/helper, relevant production, entry/callers, dependency behavior, overlap and actual live/fixture E2E; original path history recorded below.",
+      "test_limit": "Replace seeds10000 in-memory records; only updated key is written to SQLite. Does not prove a10000-record durable restore or whole-document flush."
     },
     {
       "name": "TestViewerCannotReachContentOutsideGrantedLibraries",
@@ -23141,9 +23853,11 @@
       "category": "shared_asset_policy_retained_with_runtime_gap",
       "credible_failure": "The sole retained shared playerJS policy probe catches removal of declared adaptive startup, ABR/FPS caps, manifest/level callbacks, manual next-level selection and retry wiring tokens; current runtime tests omit several flags and recovery branches.",
       "production_owner": [
-        "packages/webassets/player.js",
-        "apps/player/internal/server/server.go:newApplication GET /static/player.js",
-        "apps/player/internal/server/assets.go:serveScript"
+        "packages/webassets/static/player-core.js",
+        "apps/player/internal/server/static/player-streaming-adaptive.js",
+        "apps/player/internal/server/static/player-streaming-recovery.js",
+        "apps/player/internal/server/assets.go:playerJS composition/serveScript",
+        "apps/player/internal/server/server.go:newApplication GET /static/player.js"
       ],
       "non_test_callers": [
         "Actual watch-page browser script loads the shared Player JS served by Player; Subtitles serves the same embedded script."
@@ -23165,7 +23879,7 @@
           "scenario": "compatibility and bounded network retry/pause recovery with FakeHls"
         }
       ],
-      "coverage_limit": "Live quality switching verifies real browser media/backend, but no genuine E2E proves every asserted startup/ABR flag or injected recovery branch. FakeHls recovery is isolated fixture proof. Grep cannot prove in-band measurement or seamless decoded playback; no equivalence claimed.",
+      "coverage_limit": "Live quality switching verifies real browser media/backend, but no genuine E2E proves every asserted startup/ABR flag or injected recovery branch. FakeHls recovery is isolated fixture proof. Grep cannot prove in-band measurement or seamless decoded playback; no equivalence claimed. Player script also contains app-local streaming parts; Subtitles duplicate comparison must establish token ownership before treating whole script as shared-equivalent.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
@@ -27067,9 +27781,9 @@
     "TestConfigurationTransactionRejectsSemanticallyInvalidRecoveryWithoutSideEffects"
   ],
   "review_summary": {
-    "semantic_review_complete": 89,
+    "semantic_review_complete": 122,
     "candidate_evidence_complete": 19,
-    "inventory_only_retained_pending_semantic_review": 726,
+    "inventory_only_retained_pending_semantic_review": 693,
     "test_and_boundary_review_pending_full_owner": 3
   }
 }
