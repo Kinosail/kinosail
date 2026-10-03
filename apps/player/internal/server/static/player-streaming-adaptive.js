@@ -53,7 +53,9 @@ const streamAt = (seconds) => {
 };
 const useAdaptive = (preference = "auto", resume = false, target = resume ? pendingResume?.seconds ?? player.currentTime : Number(player.dataset.start) || 0) => {
   cancelNetworkRecovery();
-  if (resume) resumeAfterSourceChange(false, true, target);
+  // A direct source may publish metadata while the adapter is loading. Retain
+  // the intended position/play state for the compatible source's metadata too.
+  resumeAfterSourceChange(!resume && (player.autoplay || player.hasAttribute("data-autoplay")), true, target);
   delete player.dataset.offline;
   hls?.destroy();
   playbackTimelineOffset = 0;

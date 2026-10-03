@@ -137,7 +137,7 @@ func (startup *startupPreparation) idleLocked() bool {
 	return !playing && startup.directRequests == 0 && now.Sub(startup.lastMedia) >= 2*time.Second
 }
 
-func (startup *startupPreparation) next(parent context.Context) { //nolint:contextcheck // Each queued request retains its own trusted authorization scope, rather than inheriting the first request that started this worker.
+func (startup *startupPreparation) next(parent context.Context) {
 	startup.mu.Lock()
 	if parent.Err() != nil || len(startup.queue) == 0 || !startup.idleLocked() {
 		startup.mu.Unlock()
@@ -145,10 +145,16 @@ func (startup *startupPreparation) next(parent context.Context) { //nolint:conte
 	}
 	value := startup.queue[0]
 	startup.queue = startup.queue[1:]
+	startup.startRequest(value.request, value)
+}
+
+// startRequest releases the queue lock after attaching cancellation/ownership.
+// The explicit request parameter retains this queued viewer's trusted scope.
+func (startup *startupPreparation) startRequest(request *http.Request, value startupRequest) {
 	// Retain trusted cookie/application/connection scope while dropping only the
 	// ended HTTP request's cancellation. Server shutdown still stops preparation.
-	ctx, cancel := context.WithTimeout(context.WithoutCancel(value.request.Context()), 12*time.Second)
-	stop := context.AfterFunc(startup.hls.ctx, cancel)
+	ctx, cancel := context.WithTimeout(context.WithoutCancel(request.Context()), 12*time.Second)
+	stop := context.AfterFunc(startup.hls.ctx, cancel) //nolint:contextcheck // Server shutdown also cancels work; authorization values come from this queued request.
 	startup.current, startup.cancel = &value, cancel
 	startup.mu.Unlock()
 	defer func() {
@@ -158,7 +164,7 @@ func (startup *startupPreparation) next(parent context.Context) { //nolint:conte
 		startup.current, startup.cancel = nil, nil
 		startup.mu.Unlock()
 	}()
-	item, allowed := startup.authorizedItem(ctx, value)
+	item, allowed := startup.authorizedItem(ctx, request, value)
 	if !allowed {
 		return
 	}
@@ -173,8 +179,8 @@ func (startup *startupPreparation) next(parent context.Context) { //nolint:conte
 	startup.hls.prepareStartupWindow(ctx, item, value.recipe, value.encoding)
 }
 
-func (startup *startupPreparation) authorizedItem(ctx context.Context, value startupRequest) (library.Item, bool) {
-	request := value.request.Clone(ctx)
+func (startup *startupPreparation) authorizedItem(ctx context.Context, original *http.Request, value startupRequest) (library.Item, bool) {
+	request := original.Clone(ctx)
 	viewer, authenticated := startup.auth.identity(request)
 	if !authenticated || viewer.ID != value.viewer || startup.auth.viewerAccess(viewer, request, "POST /api/v1/items/{id}/playback-prepare") != identitycore.Allowed {
 		slog.InfoContext(ctx, "HLS startup preparation", "request_id", requestActivityID(ctx), "state", "authorization-expired")

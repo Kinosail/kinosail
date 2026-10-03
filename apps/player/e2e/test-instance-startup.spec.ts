@@ -33,7 +33,7 @@ test('bounded startup preparation preserves the exact stream and playback priori
   const headers = {...await csrf(), Origin: process.env.KINOSAIL_E2E_URL!};
   await page.route('**/playback-prepare', route => route.abort());
   const prepare = (name: string, source: string) => page.request.post(`/api/v1/items/${id(name)}/playback-prepare`, {headers, data: {source}});
-  let negotiatedQuery = '?videoCodecs=h264&audioCodecs=aac';
+  let negotiatedQuery = '';
   const plan = async (name: string) => (await (await page.request.get(`/api/v1/items/${id(name)}/playback${negotiatedQuery}`)).json());
   const source = (value: {compatible: string}, resume = 0) => value.compatible.replace('/index.m3u8', `${resume ? '-o' + Math.floor(resume * 10) * 100 : ''}/index.m3u8`);
   const receipts: object[] = [];
@@ -81,8 +81,8 @@ test('bounded startup preparation preserves the exact stream and playback priori
     page.on('response', response);
     const started = Date.now();
     const link = page.locator(`a[href="/watch/${id(name)}"]:visible`).first();
-    if (await link.count()) await link.click();
-    else await page.goto(`/watch/${id(name)}`);
+    await expect(link).toBeVisible();
+    await link.click();
     const video = page.locator('video');
     await expect.poll(() => page.evaluate(() => (window as unknown as {startupFrames: number[]}).startupFrames.length)).toBeGreaterThan(0);
     const frame = await page.evaluate(() => {
@@ -99,6 +99,7 @@ test('bounded startup preparation preserves the exact stream and playback priori
   }
   expect((await page.request.put('/api/v1/settings/playback', {headers, data: {mode: 'automatic', autoplay: true, subtitles: 'on', autoSkip: []}})).ok()).toBe(true);
   await page.evaluate(() => localStorage.setItem('kinosail.playback-policy-v2', 'compatible'));
+  await page.goto('/?q=Cold');
   const cold = await moving('Cold');
   receipts.push({name: 'cold', ...cold});
   await page.locator('video').evaluate(media => media.pause());
@@ -142,6 +143,14 @@ test('bounded startup preparation preserves the exact stream and playback priori
   expect((await unauthenticated.request.post(`/api/v1/items/${id('Warm')}/playback-prepare`, {data: {source: warmSource}})).status()).toBe(401);
   await unauthenticated.close();
   expect((await readdir(join(run, 'cache'))).sort()).toEqual(beforeRejected);
+  await page.evaluate(() => localStorage.setItem('kinosail.playback-policy-v2', 'direct-first'));
+  const directPlayback = await moving('Direct');
+  receipts.push({name: 'direct-first', ...directPlayback});
+  expect(await page.locator('video').evaluate(media => media.currentSrc)).toContain(`/media/${id('Direct')}`);
+  expect((await readdir(join(run, 'cache'))).some(value => value.startsWith(id('Direct')))).toBe(false);
+  await page.locator('video').evaluate(media => media.pause());
+  await page.evaluate(() => localStorage.setItem('kinosail.playback-policy-v2', 'compatible'));
+  await page.goto('/?q=Adopt');
   const adopt = source(await plan('Adopt'));
   expect((await prepare('Adopt', adopt)).status()).toBe(202);
   await expect.poll(async () => {
