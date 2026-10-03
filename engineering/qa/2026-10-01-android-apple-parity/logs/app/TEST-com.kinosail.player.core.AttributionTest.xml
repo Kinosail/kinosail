@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kinosail.player.core.AttributionTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-10-02T06:26:54.679Z" hostname="MikeOs-MacBook-Pro.local" time="4.426">
+  <properties/>
+  <testcase name="packageIncludesDependencyNotices" classname="com.kinosail.player.core.AttributionTest" time="3.928"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

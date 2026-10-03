@@ -3,24 +3,26 @@ import { configureTestInstance, firstPlayable, login } from "./test-instance-hel
 
 configureTestInstance();
 
-test("scrubbing a populated title shows its frame before seeking", async ({ page }, testInfo) => {
+test("@smoke native playback seeks and retains controls on a populated title", async ({ page }, testInfo) => {
   await login(page);
   await page.goto(await firstPlayable(page));
   const video = page.locator("video");
-  await expect.poll(() => video.evaluate((media: HTMLVideoElement) => media.duration > 11)).toBeTruthy();
-  await video.evaluate((media: HTMLVideoElement) => media.pause());
-  const start = await video.evaluate((media: HTMLVideoElement) => media.currentTime);
-  const seek = page.locator("[data-player-seek]");
-  await seek.evaluate((input: HTMLInputElement) => { input.value = "11"; input.dispatchEvent(new Event("input")); });
-  await expect(page.locator("[data-seek-preview]")).toBeVisible();
-  await expect.poll(() => page.locator("[data-seek-preview] img").evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
-  for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
+  await expect(video).toHaveJSProperty("controls", true);
+  await expect(video).toHaveAttribute("data-native-controls", "");
+  await expect.poll(() => video.evaluate((media: HTMLVideoElement) => Number.isFinite(media.duration) && media.duration > 0)).toBeTruthy();
+  const seekTo = await video.evaluate((media: HTMLVideoElement) => media.duration / 3);
+  await video.evaluate((media: HTMLVideoElement, position) => { media.pause(); media.currentTime = position; }, seekTo);
+  await expect.poll(() => video.evaluate((media: HTMLVideoElement) => media.currentTime)).toBeGreaterThanOrEqual(seekTo - 0.1);
+  await expect.poll(() => video.evaluate((media: HTMLVideoElement) => media.readyState)).toBeGreaterThanOrEqual(2);
+  await video.evaluate((media: HTMLVideoElement) => media.play());
+  await expect.poll(() => video.evaluate((media: HTMLVideoElement) => media.currentTime)).toBeGreaterThan(seekTo);
+  await video.dispatchEvent("click");
+  await expect(video).toHaveJSProperty("paused", false);
+  for (const viewport of [{ width: 390, height: 844 }, { width: 844, height: 390 }, { width: 1440, height: 900 }]) {
     await page.setViewportSize(viewport);
-    await page.locator(".media-stage").screenshot({ path: testInfo.outputPath(`seek-preview-${viewport.width}.png`) });
+    await expect(page.locator("[data-player-controls]")).toBeHidden();
+    await page.screenshot({ path: testInfo.outputPath(`native-player-${viewport.width}.png`), fullPage: true });
   }
-  expect(await video.evaluate((media: HTMLVideoElement) => media.currentTime)).toBeCloseTo(start, 0);
-  await seek.dispatchEvent("change");
-  await expect.poll(() => video.evaluate((media: HTMLVideoElement) => media.currentTime)).toBeGreaterThan(10);
 });
 
 test("adaptive playback starts on Auto and keeps semantic quality choices", async ({ page }) => {
@@ -85,4 +87,20 @@ test("Owner can inspect, update, and remove a skip marker", async ({ page }, tes
   await page.getByText("Manage media", { exact: true }).click();
   await page.getByText("Edit skip markers", { exact: true }).click();
   await expect(page.getByRole("button", { name: "Remove Recap marker", exact: true })).toHaveCount(0);
+});
+
+test("native compatibility playback retains the full movie seek range", async ({page}) => {
+  await login(page);
+  const watch = await firstPlayable(page);
+  await page.goto(`${watch}?compatible=1`);
+  const video = page.locator("video");
+  await expect(video).toHaveJSProperty("controls", true);
+  await expect.poll(() => video.evaluate(media => media.readyState), {timeout: 30_000}).toBeGreaterThanOrEqual(2);
+  await page.getByRole("button", {name: "Settings", exact: true}).click();
+  const position = page.getByRole("slider", {name: "Movie position", exact: true});
+  await expect(position).toBeVisible();
+  const duration = Number(await video.getAttribute("data-duration"));
+  await expect(position).toHaveAttribute("max", String(duration));
+  await position.fill(String(duration * 0.75));
+  await expect.poll(() => video.evaluate(media => media.currentTime), {timeout: 30_000}).toBeGreaterThanOrEqual(duration * 0.75 - 1);
 });

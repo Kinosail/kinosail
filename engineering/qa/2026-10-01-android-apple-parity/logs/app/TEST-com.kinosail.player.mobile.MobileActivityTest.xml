@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kinosail.player.mobile.MobileActivityTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-02T06:27:10.846Z" hostname="MikeOs-MacBook-Pro.local" time="2.743">
+  <properties/>
+  <testcase name="oldPhonesDoNotEnterPip" classname="com.kinosail.player.mobile.MobileActivityTest" time="1.262"/>
+  <testcase name="onlyPlayingVideoEntersPipWhenLeavingOldPhones" classname="com.kinosail.player.mobile.MobileActivityTest" time="1.32"/>
+  <testcase name="phonesWithoutPipSupportStayFullscreen" classname="com.kinosail.player.mobile.MobileActivityTest" time="0.056"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

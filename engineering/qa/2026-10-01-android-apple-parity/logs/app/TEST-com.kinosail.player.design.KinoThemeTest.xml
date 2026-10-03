@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kinosail.player.design.KinoThemeTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-10-02T06:27:10.781Z" hostname="MikeOs-MacBook-Pro.local" time="0.056">
+  <properties/>
+  <testcase name="phoneShellStaysDarkWhenSystemIsLight" classname="com.kinosail.player.design.KinoThemeTest" time="0.054"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

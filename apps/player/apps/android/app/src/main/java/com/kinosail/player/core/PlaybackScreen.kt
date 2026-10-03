@@ -1,6 +1,8 @@
 package com.kinosail.player.core
 
 import android.view.KeyEvent
+import android.view.View
+import android.view.accessibility.AccessibilityManager
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
@@ -82,12 +84,21 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
     val trackFocus = remember { FocusRequester() }
     val trackButtonFocus = remember { FocusRequester() }
     val context = LocalContext.current
+    var controlsVisible by remember(player) { mutableStateOf(true) }
+    val accessibleControls = (context.getSystemService(android.content.Context.ACCESSIBILITY_SERVICE) as? AccessibilityManager)?.isEnabled == true
     val closeTracks = { trackPicker = false; if (tv) trackButtonFocus.requestFocus() }
     val playerView = remember(player, context) { player?.let { engine -> PlayerView(context).apply {
         this.player = engine
         useController = true
-        controllerShowTimeoutMs = if (tv) 5_000 else 3_000
+        controllerShowTimeoutMs = if (accessibleControls) 0 else 4_000
     } } }
+    DisposableEffect(playerView) {
+        playerView?.setControllerVisibilityListener(PlayerView.ControllerVisibilityListener { visibility ->
+            controlsVisible = visibility == View.VISIBLE
+        })
+        controlsVisible = playerView?.isControllerFullyVisible == true
+        onDispose { playerView?.setControllerVisibilityListener(null as PlayerView.ControllerVisibilityListener?) }
+    }
     DisposableEffect(playerView, videoPipHost) {
         videoPipHost?.setVideoPipView(playerView)
         onDispose { videoPipHost?.setVideoPipView(null) }
@@ -127,7 +138,8 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
                     playerView.dispatchKeyEvent(it.nativeKeyEvent)
             } else Modifier),
         )
-        if (!inPip) Column(Modifier.fillMaxSize().safeDrawingPadding().padding(if (tv) 40.dp else 16.dp),
+        if (!inPip && (controlsVisible || accessibleControls || audio || speedPicker || trackPicker || playback.loading ||
+            playback.message != null || playback.progressNotice != null || playback.preferenceNotice != null)) Column(Modifier.fillMaxSize().safeDrawingPadding().padding(if (tv) 40.dp else 16.dp),
             verticalArrangement = Arrangement.SpaceBetween) {
             Column(Modifier.background(Color.Black), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(item.title, color = Color.White, modifier = Modifier.fillMaxWidth(), maxLines = 1,

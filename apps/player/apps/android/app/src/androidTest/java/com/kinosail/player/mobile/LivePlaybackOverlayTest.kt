@@ -16,11 +16,15 @@ import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.printToString
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.test.core.app.ActivityScenario
@@ -59,7 +63,9 @@ class LivePlaybackOverlayTest {
         val prefix = json.optString("capture", "phone")
         verifyLabels(capture("$prefix-loaded"), title)
         // Real View/decoder timers are outside Compose's test clock.
-        Thread.sleep(4_000)
+        Thread.sleep(5_000)
+        compose.onRoot().performTouchInput { click(center) }
+        waitForText("Speed 1×")
         verifyLabels(capture("$prefix-controller-settled"), title)
         val captions = captionsLabel()
         compose.onNodeWithText(captions).assertIsEnabled().performClick()
@@ -139,11 +145,11 @@ class LivePlaybackOverlayTest {
         try {
             setMedia(json, mode)
             ActivityScenario.launch(MobileActivity::class.java).use { scenario ->
-                waitForText("Library")
-                compose.onNodeWithText("Library").performClick()
+                waitForText("Search")
+                compose.onNodeWithText("Search").performClick()
                 waitForText("Search library")
                 compose.onNodeWithText("Search library").performTextInput(title)
-                compose.onNodeWithText("Search", useUnmergedTree = true).performClick()
+                compose.onNode(hasText("Search") and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Button)).performClick()
                 compose.waitUntil(30_000) {
                     compose.onAllNodesWithContentDescription(title).fetchSemanticsNodes().isNotEmpty()
                 }

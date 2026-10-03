@@ -13,6 +13,8 @@ import (
 	"path/filepath"
 	"slices"
 	"time"
+
+	"github.com/MikeO7/kinosail/packages/httpguard"
 )
 
 const (
@@ -269,7 +271,7 @@ func validateManifest(staged map[string][]byte) error { //nolint:cyclop // Every
 	}
 	delete(staged, manifestName)
 	var description manifest
-	if json.Unmarshal(data, &description) != nil || description.Format != 1 || description.StateSchema != 1 || description.KinosailVersion == "" {
+	if httpguard.DecodeUniqueJSON(bytes.NewReader(data), maxFileSize, &description) != nil || description.Format != 1 || description.StateSchema != 1 || description.KinosailVersion == "" {
 		return errors.New("backup manifest is invalid")
 	}
 	if _, err := time.Parse(time.RFC3339, description.CreatedAt); err != nil {

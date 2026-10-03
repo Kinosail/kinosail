@@ -1,11 +1,11 @@
 package playback
 
 import (
-	"encoding/json"
 	"errors"
-	"io"
 	"net/http"
 	"strings"
+
+	"github.com/MikeO7/kinosail/packages/httpguard"
 )
 
 const maxPlaybackTraceMilliseconds = 31_622_400_000
@@ -38,13 +38,8 @@ func ReadTrace(writer http.ResponseWriter, request *http.Request, validSession f
 		return TraceEvent{}, errors.New("invalid playback trace")
 	}
 	request.Body = http.MaxBytesReader(writer, request.Body, 4096)
-	decoder := json.NewDecoder(request.Body)
-	decoder.DisallowUnknownFields()
 	var event TraceEvent
-	if err := decoder.Decode(&event); err != nil {
-		return TraceEvent{}, errors.New("invalid playback trace")
-	}
-	if err := decoder.Decode(&struct{}{}); !errors.Is(err, io.EOF) || !ValidTrace(event, validSession) {
+	if httpguard.DecodeUniqueJSON(request.Body, 4096, &event) != nil || !ValidTrace(event, validSession) {
 		return TraceEvent{}, errors.New("invalid playback trace")
 	}
 	return event, nil

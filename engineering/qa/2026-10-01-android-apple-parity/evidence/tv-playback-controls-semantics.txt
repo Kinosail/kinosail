@@ -1,0 +1,32 @@
+Printing with useUnmergedTree = 'false'
+Node #1197 at (l=0.0, t=0.0, r=1920.0, b=1080.0)px
+ |-Node #1344 at (l=0.0, t=0.0, r=1920.0, b=1080.0)px
+   Shape = 'RectangleShape'
+    |-Node #1355 at (l=0.0, t=0.0, r=1920.0, b=1080.0)px
+    | Focused = 'false'
+    | Actions = [RequestFocus]
+    | MergeDescendants = 'true'
+    |-Node #1361 at (l=80.0, t=80.0, r=1840.0, b=217.0)px
+      Shape = 'RectangleShape'
+       |-Node #1362 at (l=80.0, t=80.0, r=1840.0, b=113.0)px
+       | Text = '[Continuing Film]'
+       | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+       |-Node #1363 at (l=80.0, t=137.0, r=1840.0, b=217.0)px
+         HorizontalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=0.0, reverseScrolling=false)'
+         IsTraversalGroup = 'true'
+         Shape = 'androidx.compose.foundation.HorizontalScrollableClipShape@87d7f45'
+         Actions = [ScrollBy, ScrollByOffset]
+          |-Node #1364 at (l=80.0, t=137.0, r=264.0, b=217.0)px
+          | Focused = 'false'
+          | Role = 'Button'
+          | Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+          | Text = '[Speed 1×]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, OnLongClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          | MergeDescendants = 'true'
+          |-Node #1368 at (l=288.0, t=137.0, r=419.0, b=217.0)px
+            Focused = 'false'
+            Role = 'Button'
+            Shape = 'RoundedCornerShape(topStart = CornerSize(size = 50.0%), topEnd = CornerSize(size = 50.0%), bottomEnd = CornerSize(size = 50.0%), bottomStart = CornerSize(size = 50.0%))'
+            Text = '[Done]'
+            Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, OnLongClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+            MergeDescendants = 'true'

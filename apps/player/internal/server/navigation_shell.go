@@ -116,8 +116,15 @@ func injectApplicationShell(page, navigation []byte) []byte {
 	}
 	if mainStart := bytes.Index(page, []byte("<main")); mainStart >= 0 {
 		mainEnd := mainStart + bytes.IndexByte(page[mainStart:], '>')
-		if mainEnd >= mainStart && !bytes.Contains(page[mainStart:mainEnd], []byte(` id="`)) {
-			page = append(append(append([]byte(nil), page[:mainStart+len("<main")]...), []byte(` id="main"`)...), page[mainStart+len("<main"):]...)
+		if mainEnd >= mainStart {
+			var attributes []byte
+			if !bytes.Contains(page[mainStart:mainEnd], []byte(` id="`)) {
+				attributes = append(attributes, []byte(` id="main"`)...)
+			}
+			if !bytes.Contains(page[mainStart:mainEnd], []byte(` tabindex=`)) {
+				attributes = append(attributes, []byte(` tabindex="-1"`)...)
+			}
+			page = append(append(append([]byte(nil), page[:mainStart+len("<main")]...), attributes...), page[mainStart+len("<main"):]...)
 		}
 	}
 	insertAt := bodyEnd + 1
@@ -137,10 +144,10 @@ func applicationShellCSSVersion(page []byte) []byte {
 	if start := bytes.Index(page, []byte(`/static/app.css?v=`)); start >= 0 {
 		version := start + len(`/static/app.css?v=`)
 		if end := bytes.IndexByte(page[version:], '"'); end >= 0 {
-			if bytes.Equal(page[version:version+end], []byte("electric-43")) {
+			if bytes.Equal(page[version:version+end], []byte("electric-44")) {
 				return page
 			}
-			page = append(append(append([]byte(nil), page[:version]...), []byte("electric-43")...), page[version+end:]...)
+			page = append(append(append([]byte(nil), page[:version]...), []byte("electric-44")...), page[version+end:]...)
 		}
 	}
 	return page

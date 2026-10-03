@@ -1,0 +1,81 @@
+INSTRUMENTATION_STATUS: class=com.kinosail.player.core.NativeParityJourneyTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=3
+INSTRUMENTATION_STATUS: stream=
+com.kinosail.player.core.NativeParityJourneyTest:
+INSTRUMENTATION_STATUS: test=populatedNavigationDetailsAndMyList
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.kinosail.player.core.NativeParityJourneyTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=3
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=populatedNavigationDetailsAndMyList
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: class=com.kinosail.player.core.NativeParityJourneyTest
+INSTRUMENTATION_STATUS: current=2
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=3
+INSTRUMENTATION_STATUS: stream=
+INSTRUMENTATION_STATUS: test=pendingFailureEmptyAndRecoveryKeepTheirOwnState
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.kinosail.player.core.NativeParityJourneyTest
+INSTRUMENTATION_STATUS: current=2
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=3
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=pendingFailureEmptyAndRecoveryKeepTheirOwnState
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: class=com.kinosail.player.core.NativeParityJourneyTest
+INSTRUMENTATION_STATUS: current=3
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=3
+INSTRUMENTATION_STATUS: stream=
+INSTRUMENTATION_STATUS: test=playbackChromeHidesTogetherAndReturnsWithInput
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.kinosail.player.core.NativeParityJourneyTest
+INSTRUMENTATION_STATUS: current=3
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=3
+INSTRUMENTATION_STATUS: stack=androidx.compose.ui.test.ComposeTimeoutException: Condition still not satisfied after 10000 ms
+	at androidx.compose.ui.test.AndroidComposeUiTestEnvironment$AndroidComposeUiTestImpl.waitUntil(ComposeUiTest.android.kt:901)
+	at androidx.compose.ui.test.junit4.AndroidComposeTestRule.waitUntil(AndroidComposeTestRule.android.kt:500)
+	at com.kinosail.player.core.NativeParityJourneyTest.playbackChromeHidesTogetherAndReturnsWithInput$lambda$0(NativeParityJourneyTest.kt:97)
+	at com.kinosail.player.core.NativeParityJourneyTest$$ExternalSyntheticLambda6.invoke(D8$$SyntheticClass:0)
+	at com.kinosail.player.core.NativeParityJourneyTest.journey(NativeParityJourneyTest.kt:114)
+	at com.kinosail.player.core.NativeParityJourneyTest.journey$default(NativeParityJourneyTest.kt:108)
+	at com.kinosail.player.core.NativeParityJourneyTest.playbackChromeHidesTogetherAndReturnsWithInput(NativeParityJourneyTest.kt:91)
+
+INSTRUMENTATION_STATUS: stream=
+Error in playbackChromeHidesTogetherAndReturnsWithInput(com.kinosail.player.core.NativeParityJourneyTest):
+androidx.compose.ui.test.ComposeTimeoutException: Condition still not satisfied after 10000 ms
+	at androidx.compose.ui.test.AndroidComposeUiTestEnvironment$AndroidComposeUiTestImpl.waitUntil(ComposeUiTest.android.kt:901)
+	at androidx.compose.ui.test.junit4.AndroidComposeTestRule.waitUntil(AndroidComposeTestRule.android.kt:500)
+	at com.kinosail.player.core.NativeParityJourneyTest.playbackChromeHidesTogetherAndReturnsWithInput$lambda$0(NativeParityJourneyTest.kt:97)
+	at com.kinosail.player.core.NativeParityJourneyTest$$ExternalSyntheticLambda6.invoke(D8$$SyntheticClass:0)
+	at com.kinosail.player.core.NativeParityJourneyTest.journey(NativeParityJourneyTest.kt:114)
+	at com.kinosail.player.core.NativeParityJourneyTest.journey$default(NativeParityJourneyTest.kt:108)
+	at com.kinosail.player.core.NativeParityJourneyTest.playbackChromeHidesTogetherAndReturnsWithInput(NativeParityJourneyTest.kt:91)
+
+INSTRUMENTATION_STATUS: test=playbackChromeHidesTogetherAndReturnsWithInput
+INSTRUMENTATION_STATUS_CODE: -2
+INSTRUMENTATION_RESULT: stream=
+
+Time: 39.743
+There was 1 failure:
+1) playbackChromeHidesTogetherAndReturnsWithInput(com.kinosail.player.core.NativeParityJourneyTest)
+androidx.compose.ui.test.ComposeTimeoutException: Condition still not satisfied after 10000 ms
+	at androidx.compose.ui.test.AndroidComposeUiTestEnvironment$AndroidComposeUiTestImpl.waitUntil(ComposeUiTest.android.kt:901)
+	at androidx.compose.ui.test.junit4.AndroidComposeTestRule.waitUntil(AndroidComposeTestRule.android.kt:500)
+	at com.kinosail.player.core.NativeParityJourneyTest.playbackChromeHidesTogetherAndReturnsWithInput$lambda$0(NativeParityJourneyTest.kt:97)
+	at com.kinosail.player.core.NativeParityJourneyTest$$ExternalSyntheticLambda6.invoke(D8$$SyntheticClass:0)
+	at com.kinosail.player.core.NativeParityJourneyTest.journey(NativeParityJourneyTest.kt:114)
+	at com.kinosail.player.core.NativeParityJourneyTest.journey$default(NativeParityJourneyTest.kt:108)
+	at com.kinosail.player.core.NativeParityJourneyTest.playbackChromeHidesTogetherAndReturnsWithInput(NativeParityJourneyTest.kt:91)
+
+FAILURES!!!
+Tests run: 3,  Failures: 1
+
+
+INSTRUMENTATION_CODE: -1

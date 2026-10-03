@@ -242,6 +242,7 @@ jobs:
           name: ${{ inputs.app }}-${{ matrix.engine }}-browser-failures
           path: |
             ${{ runner.temp }}/${{ inputs.app }}-${{ matrix.engine }}-browser-results
+            ${{ runner.temp }}/${{ inputs.app }}-${{ matrix.engine }}-browser-results-${{ matrix.engine }}
           retention-days: 7
           if-no-files-found: ignore
 

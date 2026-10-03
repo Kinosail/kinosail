@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.kinosail.player.core.PhotoClientTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-02T06:27:01.599Z" hostname="MikeOs-MacBook-Pro.local" time="0.096">
+  <properties/>
+  <testcase name="rejectsRedirectWrongTypeAndOversizedPhoto" classname="com.kinosail.player.core.PhotoClientTest" time="0.011"/>
+  <testcase name="rejectsOtherMediaPathsAndInvalidCredentialsBeforeNetwork" classname="com.kinosail.player.core.PhotoClientTest" time="0.01"/>
+  <testcase name="fetchesAndDecodesOnlyTheViewersOriginalPhoto" classname="com.kinosail.player.core.PhotoClientTest" time="0.026"/>
+  <testcase name="presentsCameraOrientationUpright" classname="com.kinosail.player.core.PhotoClientTest" time="0.047"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

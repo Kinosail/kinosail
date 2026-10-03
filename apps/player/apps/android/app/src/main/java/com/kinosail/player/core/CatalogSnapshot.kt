@@ -10,17 +10,18 @@ import kotlinx.serialization.json.put
 
 internal object CatalogSnapshot {
     fun encode(page: CatalogPage): ByteArray {
-        require(page.offset == 0 && page.limit == CatalogApi.PAGE_SIZE &&
-            page.total in page.items.size..10_000_000 && page.items.size <= CatalogApi.PAGE_SIZE &&
+        require(page.offset == 0 && page.limit in 1..200 &&
+            page.total in page.items.size..10_000_000 && page.items.size <= page.limit &&
             page.items.map(CatalogItem::id).toSet().size == page.items.size) { "Invalid catalog snapshot." }
         val raw = buildJsonObject {
             put("version", 1); put("total", page.total); put("offset", page.offset); put("limit", page.limit)
             put("items", buildJsonArray { page.items.forEach { item -> add(buildJsonObject {
                 put("id", item.id); put("kind", item.kind); put("title", item.title)
                 put("year", item.year); put("plot", item.plot); put("artwork", item.artwork)
-                put("progress", item.progress.json()); put("showId", item.showId)
+                put("progress", JsonObject(item.progress.json() + ("dismissed" to JsonPrimitive(item.progress.dismissed)))); put("showId", item.showId)
                 put("season", item.season); put("episode", item.episode); put("stream", item.stream)
                 put("artist", item.artist); put("album", item.album)
+                put("backdrop", item.backdrop); put("rating", item.rating); put("genres", item.genres)
             }) } })
         }.toString().toByteArray(Charsets.UTF_8)
         require(raw.size <= 512 * 1024 && decode(raw) == page) { "Invalid catalog snapshot." }
@@ -38,16 +39,16 @@ internal object CatalogSnapshot {
             require(value != null && !value.isString) { "Invalid catalog snapshot." }
             return value.intOrNull ?: throw IllegalArgumentException("Invalid catalog snapshot.")
         }
-        require(number("version") == 1 && number("offset") == 0 && number("limit") == CatalogApi.PAGE_SIZE) {
+        require(number("version") == 1 && number("offset") == 0 && number("limit") in 1..200) {
             "Invalid catalog snapshot."
         }
         val total = number("total")
         val items = root["items"] as? JsonArray
-        require(items != null && items.size <= CatalogApi.PAGE_SIZE && total in items.size..10_000_000) {
+        require(items != null && items.size <= number("limit") && total in items.size..10_000_000) {
             "Invalid catalog snapshot."
         }
         val parsed = items.map(CatalogApi::parseItem)
         require(parsed.map(CatalogItem::id).toSet().size == parsed.size) { "Invalid catalog snapshot." }
-        return CatalogPage(parsed, total, 0, CatalogApi.PAGE_SIZE)
+        return CatalogPage(parsed, total, 0, number("limit"))
     }
 }
