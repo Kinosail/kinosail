@@ -2,6 +2,9 @@ package watchrooms
 
 import (
 	"context"
+	"errors"
+	"io"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"sync/atomic"
@@ -103,8 +106,15 @@ func assertHTTPConnectionClosed(t *testing.T, connection *websocket.Conn) {
 	t.Helper()
 	ctx, cancel := context.WithTimeout(t.Context(), 2*time.Second)
 	defer cancel()
-	if err := wsjson.Read(ctx, connection, &Event{}); err == nil {
+	_, _, err := connection.Read(ctx)
+	if err == nil {
 		t.Fatal("connection remained open")
+	}
+	if ctx.Err() != nil {
+		t.Fatalf("server did not close connection before deadline: %v", err)
+	}
+	if websocket.CloseStatus(err) == -1 && !errors.Is(err, io.EOF) && !errors.Is(err, io.ErrUnexpectedEOF) && !errors.Is(err, net.ErrClosed) {
+		t.Fatalf("read failed without evidence of peer closure: %v", err)
 	}
 	_ = connection.CloseNow()
 }
