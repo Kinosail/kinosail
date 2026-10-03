@@ -19,16 +19,16 @@
     "baseline_test_lines": 66475,
     "declarations": 1900,
     "decisions": {
-      "R": 654,
-      "D": 27,
-      "unreviewed": 1198,
+      "R": 686,
+      "D": 34,
+      "unreviewed": 1159,
       "C": 3,
       "F": 18
     },
-    "removed_declarations": 27,
-    "removed_test_lines": 484,
-    "final_declarations": 1873,
-    "final_test_lines": 65991,
+    "removed_declarations": 34,
+    "removed_test_lines": 647,
+    "final_declarations": 1866,
+    "final_test_lines": 65828,
     "removed_support_helpers": 6,
     "removed_support_files": 3,
     "removed_support_lines": 141
@@ -328,20 +328,26 @@
     },
     "servertransport": {
       "owners": [
-        "packages/servertransport/server.go:CheckHealth"
+        "packages/servertransport/server.go",
+        "packages/servertransport/log.go",
+        "packages/servertransport/tls.go",
+        "packages/servertransport/tls_operations.go"
       ],
       "dependencies": [
-        "net.SplitHostPort",
-        "net/http request+client",
-        "net/url.Parse",
-        "crypto/tls TLS1.3 client policy"
+        "packages/privatefile/privatefile.go:Read/Write",
+        "crypto/tls/x509/ecdsa/rand",
+        "net/http.Server limits/ListenAndServe/TLS",
+        "log/slog"
       ],
       "callers": [
-        "packages/appcli/application.go",
-        "apps/player/cmd/kinosail",
-        "apps/subtitles/cmd/kinosail"
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "packages/appcli/command.go",
+        "packages/remoteaccess/gateway.go",
+        "packages/publicgateway/gateway.go",
+        "packages/owneraccess/runtime.go"
       ],
-      "e2e": "Browser app journeys require a running server but do not prove CLI loopback health protocol/error handling. App-local direct CheckHealth replay is redundant with TestCheckHealthCoversProtocolsAndInputFailures; app process healthcheck ownership remains independently tested."
+      "e2e": "Browser journeys verify normal real app availability/playback. Real app TLS process keepers negotiate TLS1.2/1.3, reject obsolete protocols/plain requests, check certificate chain and private file mode, and start explicit HTTP mode. They do not inject CA/leaf entropy/signing/marshal/read/write/PEM failures, corrupted/unsafe owner files, host-change persistence, SNI mismatch, redacted transport failures or fullHTTP2/slow-header resource policy. No new isolated tests."
     },
     "operations": {
       "owners": [
@@ -705,6 +711,31 @@
         "remaining_pending": 0,
         "entry_evidence": "Complete per-declaration owner/caller/failure/history/actual-vs-fixtureE2E gap follows in declarations. D/F candidates independently reviewed before implementation."
       }
+    },
+    "appcli": {
+      "owners": [
+        "packages/appcli/application.go",
+        "packages/appcli/command.go",
+        "packages/appcli/configuration.go",
+        "packages/appcli/server_config.go"
+      ],
+      "dependencies": [
+        "packages/owneraccess/owneraccess.go:Recover",
+        "packages/publicgateway/gateway.go:Run",
+        "packages/servertransport/server.go:Serve/CheckHealth",
+        "packages/servertransport/tls.go:WriteTrustAnchor",
+        "remoteaccess.New/trustedhttps.Parse/New",
+        "signal.NotifyContext and http.Server.Shutdown"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "apps/player/cmd/kinosail/config_command.go",
+        "apps/subtitles/cmd/kinosail/config_command.go",
+        "apps/player/internal/server/settings_configuration.go:UpdateLoggingLevel",
+        "apps/subtitles/internal/server/settings_configuration.go:UpdateLoggingLevel"
+      ],
+      "e2e": "Genuine browser setup/library/playback journeys start real app servers and consume valid local configuration but do not invoke CLI failure/precedence paths, signal an active request, mis-key SCIM expiry/identity secrets, inject optional access/listener/shutdown failures or enumerate unsafe proxy inputs. Real app CLIContract includes in-process command/backend state fixtures plus explicit entrypoint/listen subprocess tests; real TLS tests negotiate actual subprocess sockets. These distinct layers are identified per deletion rather than labeled browser E2E."
     }
   },
   "test_support_inventory": {
@@ -8888,9 +8919,9 @@
       "owner_group": "appcli",
       "body_sha256": "cbb87929aabd59575224b9ba688634a2e793b66f7df1f9a3c4ec5bb520637d55",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./appcli",
       "baseline_event": {
         "Time": "2026-10-03T10:35:24.133882-06:00",
@@ -8898,7 +8929,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/appcli",
         "Test": "TestExecuteDispatchesCommandsAndServerMode",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/appcli/application.go",
+        "packages/appcli/command.go",
+        "packages/appcli/configuration.go",
+        "packages/appcli/server_config.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "apps/player/cmd/kinosail/config_command.go",
+        "apps/subtitles/cmd/kinosail/config_command.go",
+        "apps/player/internal/server/settings_configuration.go:UpdateLoggingLevel",
+        "apps/subtitles/internal/server/settings_configuration.go:UpdateLoggingLevel"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine browser setup/library/playback journeys start real app servers and consume valid local configuration but do not invoke CLI failure/precedence paths, signal an active request, mis-key SCIM expiry/identity secrets, inject optional access/listener/shutdown failures or enumerate unsafe proxy inputs. Real app CLIContract includes in-process command/backend state fixtures plus explicit entrypoint/listen subprocess tests; real TLS tests negotiate actual subprocess sockets. These distinct layers are identified per deletion rather than labeled browser E2E.",
+      "credible_failure": "Preserve command precedence, process exit propagation, storage/auth-origin arguments and canceled MCP exit semantics without accidentally starting ordinary server mode.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/appcli/application_test.go",
@@ -8908,9 +8959,9 @@
       "owner_group": "appcli",
       "body_sha256": "e669cd086d034f9fbd32ae4a65925800e6835fef7d3c83d00faeb77c96a9512d",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./appcli",
       "baseline_event": {
         "Time": "2026-10-03T10:35:24.134761-06:00",
@@ -8918,7 +8969,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/appcli",
         "Test": "TestExecuteFailurePaths",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/appcli/application.go",
+        "packages/appcli/command.go",
+        "packages/appcli/configuration.go",
+        "packages/appcli/server_config.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "apps/player/cmd/kinosail/config_command.go",
+        "apps/subtitles/cmd/kinosail/config_command.go",
+        "apps/player/internal/server/settings_configuration.go:UpdateLoggingLevel",
+        "apps/subtitles/internal/server/settings_configuration.go:UpdateLoggingLevel"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine browser setup/library/playback journeys start real app servers and consume valid local configuration but do not invoke CLI failure/precedence paths, signal an active request, mis-key SCIM expiry/identity secrets, inject optional access/listener/shutdown failures or enumerate unsafe proxy inputs. Real app CLIContract includes in-process command/backend state fixtures plus explicit entrypoint/listen subprocess tests; real TLS tests negotiate actual subprocess sockets. These distinct layers are identified per deletion rather than labeled browser E2E.",
+      "credible_failure": "Configuration loading, configuration command, MCP, command adapter or unsafe remote capability errors must produce a failing process exit rather than start the application successfully.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/appcli/application_test.go",
@@ -8928,9 +8999,9 @@
       "owner_group": "appcli",
       "body_sha256": "8ddc98c4d821c6ce970a9791b63c99d0385b759bdd30ce5dd6eeb1cf93b38770",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./appcli",
       "baseline_event": {
         "Time": "2026-10-03T10:35:24.346139-06:00",
@@ -8938,7 +9009,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/appcli",
         "Test": "TestSecureProxyConfiguration",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/appcli/application.go",
+        "packages/appcli/command.go",
+        "packages/appcli/configuration.go",
+        "packages/appcli/server_config.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "apps/player/cmd/kinosail/config_command.go",
+        "apps/subtitles/cmd/kinosail/config_command.go",
+        "apps/player/internal/server/settings_configuration.go:UpdateLoggingLevel",
+        "apps/subtitles/internal/server/settings_configuration.go:UpdateLoggingLevel"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine browser setup/library/playback journeys start real app servers and consume valid local configuration but do not invoke CLI failure/precedence paths, signal an active request, mis-key SCIM expiry/identity secrets, inject optional access/listener/shutdown failures or enumerate unsafe proxy inputs. Real app CLIContract includes in-process command/backend state fixtures plus explicit entrypoint/listen subprocess tests; real TLS tests negotiate actual subprocess sockets. These distinct layers are identified per deletion rather than labeled browser E2E.",
+      "credible_failure": "Reject an absent capability on a remotely advertised process and a short token even without remote hostname; allow explicitly local/no-token and32-character capability. Browser journeys use valid config and never enumerate this process security matrix.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/appcli/command_restart_test.go",
@@ -8948,9 +9039,9 @@
       "owner_group": "appcli",
       "body_sha256": "7d8835f6fdebdbeaeab85eae5d075a652214cca8009ab2bf4e2938301ecd5085",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./appcli",
       "baseline_event": {
         "Time": "2026-10-03T10:35:24.293817-06:00",
@@ -8958,7 +9049,28 @@
         "Package": "github.com/MikeO7/kinosail/packages/appcli",
         "Test": "TestRunWaitsForActiveRequestBeforeExiting",
         "Elapsed": 0.16
-      }
+      },
+      "production_owner": [
+        "packages/appcli/application.go",
+        "packages/appcli/command.go",
+        "packages/appcli/configuration.go",
+        "packages/appcli/server_config.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "apps/player/cmd/kinosail/config_command.go",
+        "apps/subtitles/cmd/kinosail/config_command.go",
+        "apps/player/internal/server/settings_configuration.go:UpdateLoggingLevel",
+        "apps/subtitles/internal/server/settings_configuration.go:UpdateLoggingLevel"
+      ],
+      "history": [
+        "33542f9868b819ad222d655e242cd30871e2a7d4 Keep shutdown regression compatible with Go lint",
+        "f14958fbaf5868334596c0975ed82d8f50954ecd Wait for active requests during Server replacement"
+      ],
+      "gap": "Genuine browser setup/library/playback journeys start real app servers and consume valid local configuration but do not invoke CLI failure/precedence paths, signal an active request, mis-key SCIM expiry/identity secrets, inject optional access/listener/shutdown failures or enumerate unsafe proxy inputs. Real app CLIContract includes in-process command/backend state fixtures plus explicit entrypoint/listen subprocess tests; real TLS tests negotiate actual subprocess sockets. These distinct layers are identified per deletion rather than labeled browser E2E.",
+      "credible_failure": "The real signal-handling subprocess must drain an active HTTP response after SIGTERM before exiting; losing shutdown wait can truncate in-flight writes during restart.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/appcli/command_test.go",
@@ -8968,9 +9080,9 @@
       "owner_group": "appcli",
       "body_sha256": "e255ada9160f40ad65b15b43f06da4ec443cea21d33d416f0cc5ad63dad12059",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./appcli",
       "baseline_event": {
         "Time": "2026-10-03T10:35:24.433131-06:00",
@@ -8978,7 +9090,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/appcli",
         "Test": "TestBoundCommandDispatchesAppAndSharedOperations",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/appcli/application.go",
+        "packages/appcli/command.go",
+        "packages/appcli/configuration.go",
+        "packages/appcli/server_config.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "apps/player/cmd/kinosail/config_command.go",
+        "apps/subtitles/cmd/kinosail/config_command.go",
+        "apps/player/internal/server/settings_configuration.go:UpdateLoggingLevel",
+        "apps/subtitles/internal/server/settings_configuration.go:UpdateLoggingLevel"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine browser setup/library/playback journeys start real app servers and consume valid local configuration but do not invoke CLI failure/precedence paths, signal an active request, mis-key SCIM expiry/identity secrets, inject optional access/listener/shutdown failures or enumerate unsafe proxy inputs. Real app CLIContract includes in-process command/backend state fixtures plus explicit entrypoint/listen subprocess tests; real TLS tests negotiate actual subprocess sockets. These distinct layers are identified per deletion rather than labeled browser E2E.",
+      "credible_failure": "Actual appcli command dispatcher must forward each update-artifact/plan/report selector rather than substituting a different command; real app update tests bind updateCommand directly and do not pass through appcli command dispatch.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/appcli/command_test.go",
@@ -8988,9 +9120,9 @@
       "owner_group": "appcli",
       "body_sha256": "fdba98a3f1721f65867edbbbbf81a15e67cc1957e998b20180ed19e6ca0faf71",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./appcli",
       "baseline_event": {
         "Time": "2026-10-03T10:35:24.43303-06:00",
@@ -8998,7 +9130,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/appcli",
         "Test": "TestBoundCommandRejectsUnknownAndUnsafeArguments",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/appcli/application.go",
+        "packages/appcli/command.go",
+        "packages/appcli/configuration.go",
+        "packages/appcli/server_config.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "apps/player/cmd/kinosail/config_command.go",
+        "apps/subtitles/cmd/kinosail/config_command.go",
+        "apps/player/internal/server/settings_configuration.go:UpdateLoggingLevel",
+        "apps/subtitles/internal/server/settings_configuration.go:UpdateLoggingLevel"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine browser setup/library/playback journeys start real app servers and consume valid local configuration but do not invoke CLI failure/precedence paths, signal an active request, mis-key SCIM expiry/identity secrets, inject optional access/listener/shutdown failures or enumerate unsafe proxy inputs. Real app CLIContract includes in-process command/backend state fixtures plus explicit entrypoint/listen subprocess tests; real TLS tests negotiate actual subprocess sockets. These distinct layers are identified per deletion rather than labeled browser E2E.",
+      "credible_failure": "Bound arbitrary argument lengths/count before backup callbacks, reject unknown or extra built-in arguments, and keep ordinary no-args startup distinct from handled command failure.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/appcli/command_test.go",
@@ -9008,9 +9160,9 @@
       "owner_group": "appcli",
       "body_sha256": "129ceb6b5bc2359da76c6e971adcafdff61eeca29ff82126e1b0b3e1a44690d5",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./appcli",
       "baseline_event": {
         "Time": "2026-10-03T10:35:24.491825-06:00",
@@ -9018,7 +9170,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/appcli",
         "Test": "TestBuiltInTransportCommandsPropagateErrors",
         "Elapsed": 0.04
-      }
+      },
+      "production_owner": [
+        "packages/appcli/application.go",
+        "packages/appcli/command.go",
+        "packages/appcli/configuration.go",
+        "packages/appcli/server_config.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "apps/player/cmd/kinosail/config_command.go",
+        "apps/subtitles/cmd/kinosail/config_command.go",
+        "apps/player/internal/server/settings_configuration.go:UpdateLoggingLevel",
+        "apps/subtitles/internal/server/settings_configuration.go:UpdateLoggingLevel"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine browser setup/library/playback journeys start real app servers and consume valid local configuration but do not invoke CLI failure/precedence paths, signal an active request, mis-key SCIM expiry/identity secrets, inject optional access/listener/shutdown failures or enumerate unsafe proxy inputs. Real app CLIContract includes in-process command/backend state fixtures plus explicit entrypoint/listen subprocess tests; real TLS tests negotiate actual subprocess sockets. These distinct layers are identified per deletion rather than labeled browser E2E.",
+      "credible_failure": "Built-in health command must propagate an invalid listen endpoint error and tls-certificate must write actual certificate bytes rather than silently succeeding or dispatching another command.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/appcli/command_test.go",
@@ -9028,9 +9200,9 @@
       "owner_group": "appcli",
       "body_sha256": "e6336816a0e20e9e205708cde1f48340cc1af884809f46f6282ed9bce93b0999",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./appcli",
       "baseline_event": {
         "Time": "2026-10-03T10:35:24.422877-06:00",
@@ -9038,7 +9210,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/appcli",
         "Test": "TestLogLevelsFollowPlayerPolicy",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/appcli/application.go",
+        "packages/appcli/command.go",
+        "packages/appcli/configuration.go",
+        "packages/appcli/server_config.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "apps/player/cmd/kinosail/config_command.go",
+        "apps/subtitles/cmd/kinosail/config_command.go",
+        "apps/player/internal/server/settings_configuration.go:UpdateLoggingLevel",
+        "apps/subtitles/internal/server/settings_configuration.go:UpdateLoggingLevel"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine browser setup/library/playback journeys start real app servers and consume valid local configuration but do not invoke CLI failure/precedence paths, signal an active request, mis-key SCIM expiry/identity secrets, inject optional access/listener/shutdown failures or enumerate unsafe proxy inputs. Real app CLIContract includes in-process command/backend state fixtures plus explicit entrypoint/listen subprocess tests; real TLS tests negotiate actual subprocess sockets. These distinct layers are identified per deletion rather than labeled browser E2E.",
+      "credible_failure": "Preserve validated debug/info/warn/error filtering policy for process and live settings updates; incorrect level mapping loses requested diagnostics or admits overly verbose logs. Genuine browser journeys do not assert logger filtering levels.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/appcli/command_test.go",
@@ -9048,9 +9240,9 @@
       "owner_group": "appcli",
       "body_sha256": "7eac3f076ee0767ab97255fe3efa2dd4db86722eb4ae037bb738767e6ff0abd6",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./appcli",
       "baseline_event": {
         "Time": "2026-10-03T10:35:24.465161-06:00",
@@ -9058,7 +9250,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/appcli",
         "Test": "TestRunUsesSharedLifecycleAndToleratesOptionalManagerFailures",
         "Elapsed": 0.01
-      }
+      },
+      "production_owner": [
+        "packages/appcli/application.go",
+        "packages/appcli/command.go",
+        "packages/appcli/configuration.go",
+        "packages/appcli/server_config.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "apps/player/cmd/kinosail/config_command.go",
+        "apps/subtitles/cmd/kinosail/config_command.go",
+        "apps/player/internal/server/settings_configuration.go:UpdateLoggingLevel",
+        "apps/subtitles/internal/server/settings_configuration.go:UpdateLoggingLevel"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine browser setup/library/playback journeys start real app servers and consume valid local configuration but do not invoke CLI failure/precedence paths, signal an active request, mis-key SCIM expiry/identity secrets, inject optional access/listener/shutdown failures or enumerate unsafe proxy inputs. Real app CLIContract includes in-process command/backend state fixtures plus explicit entrypoint/listen subprocess tests; real TLS tests negotiate actual subprocess sockets. These distinct layers are identified per deletion rather than labeled browser E2E.",
+      "credible_failure": "Process composition must install its remote-handler seam and propagate configured TLS/private storage/certificate manager to actual transport owner rather than bypass private middleware or serving with defaults.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/appcli/command_test.go",
@@ -9068,9 +9280,9 @@
       "owner_group": "appcli",
       "body_sha256": "34611ad48fd5be85f07e49d1b347e6108be343da86a4ffcf92a60b41e509fc2b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./appcli",
       "baseline_event": {
         "Time": "2026-10-03T10:35:24.422764-06:00",
@@ -9078,7 +9290,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/appcli",
         "Test": "TestRunFailurePaths",
         "Elapsed": 0.05
-      }
+      },
+      "production_owner": [
+        "packages/appcli/application.go",
+        "packages/appcli/command.go",
+        "packages/appcli/configuration.go",
+        "packages/appcli/server_config.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "apps/player/cmd/kinosail/config_command.go",
+        "apps/subtitles/cmd/kinosail/config_command.go",
+        "apps/player/internal/server/settings_configuration.go:UpdateLoggingLevel",
+        "apps/subtitles/internal/server/settings_configuration.go:UpdateLoggingLevel"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine browser setup/library/playback journeys start real app servers and consume valid local configuration but do not invoke CLI failure/precedence paths, signal an active request, mis-key SCIM expiry/identity secrets, inject optional access/listener/shutdown failures or enumerate unsafe proxy inputs. Real app CLIContract includes in-process command/backend state fixtures plus explicit entrypoint/listen subprocess tests; real TLS tests negotiate actual subprocess sockets. These distinct layers are identified per deletion rather than labeled browser E2E.",
+      "credible_failure": "Discard failed optional access managers, distinguish actual serve failure from normal ErrServerClosed, and fail a missing HTTP server instead of exposing successful startup.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/appcli/command_test.go",
@@ -9088,9 +9320,9 @@
       "owner_group": "appcli",
       "body_sha256": "3ce0b1ca09e85ba471e7d8e110a4232c431962f7d2c751c9331334e888a56556",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./appcli",
       "baseline_event": {
         "Time": "2026-10-03T10:35:24.375247-06:00",
@@ -9098,7 +9330,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/appcli",
         "Test": "TestAccessConfigurationUsesPlayerPolicy",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/appcli/application.go",
+        "packages/appcli/command.go",
+        "packages/appcli/configuration.go",
+        "packages/appcli/server_config.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "apps/player/cmd/kinosail/config_command.go",
+        "apps/subtitles/cmd/kinosail/config_command.go",
+        "apps/player/internal/server/settings_configuration.go:UpdateLoggingLevel",
+        "apps/subtitles/internal/server/settings_configuration.go:UpdateLoggingLevel"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine browser setup/library/playback journeys start real app servers and consume valid local configuration but do not invoke CLI failure/precedence paths, signal an active request, mis-key SCIM expiry/identity secrets, inject optional access/listener/shutdown failures or enumerate unsafe proxy inputs. Real app CLIContract includes in-process command/backend state fixtures plus explicit entrypoint/listen subprocess tests; real TLS tests negotiate actual subprocess sockets. These distinct layers are identified per deletion rather than labeled browser E2E.",
+      "credible_failure": "The appcli settings adapter must disable remote mode safely, reject unsafe remote/trusted configuration, and create a valid trusted manager from configured JSON/private storage.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/appcli/command_test.go",
@@ -9108,9 +9360,9 @@
       "owner_group": "appcli",
       "body_sha256": "10e4e80b686bed245ab411156b1cdeb91fe6432a2776e350572522dc56a387db",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./appcli",
       "baseline_event": {
         "Time": "2026-10-03T10:35:24.311072-06:00",
@@ -9118,7 +9370,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/appcli",
         "Test": "TestRemoteAndShutdownFailuresCompleteLifecycle",
         "Elapsed": 0.02
-      }
+      },
+      "production_owner": [
+        "packages/appcli/application.go",
+        "packages/appcli/command.go",
+        "packages/appcli/configuration.go",
+        "packages/appcli/server_config.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "apps/player/cmd/kinosail/config_command.go",
+        "apps/subtitles/cmd/kinosail/config_command.go",
+        "apps/player/internal/server/settings_configuration.go:UpdateLoggingLevel",
+        "apps/subtitles/internal/server/settings_configuration.go:UpdateLoggingLevel"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine browser setup/library/playback journeys start real app servers and consume valid local configuration but do not invoke CLI failure/precedence paths, signal an active request, mis-key SCIM expiry/identity secrets, inject optional access/listener/shutdown failures or enumerate unsafe proxy inputs. Real app CLIContract includes in-process command/backend state fixtures plus explicit entrypoint/listen subprocess tests; real TLS tests negotiate actual subprocess sockets. These distinct layers are identified per deletion rather than labeled browser E2E.",
+      "credible_failure": "An occupied real remote port must expose listener failure, and an injected listener-close failure must still complete shutdown/serve lifecycle rather than hang indefinitely.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/appcli/configuration_test.go",
@@ -9128,9 +9400,9 @@
       "owner_group": "appcli",
       "body_sha256": "226f719caef4a8c369b04bf83e46faa70be0bc76019ec876a9d211486d520445",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Delete only redundant/synthetic or ineffective probe; reachable process security, real signal/TLS paths and injection boundaries retained.",
       "validation_command": "cd packages && go test ./appcli",
       "baseline_event": {
         "Time": "2026-10-03T10:35:24.374353-06:00",
@@ -9138,7 +9410,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/appcli",
         "Test": "TestConfigurationCommand",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/appcli/application.go",
+        "packages/appcli/command.go",
+        "packages/appcli/configuration.go",
+        "packages/appcli/server_config.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "apps/player/cmd/kinosail/config_command.go",
+        "apps/subtitles/cmd/kinosail/config_command.go",
+        "apps/player/internal/server/settings_configuration.go:UpdateLoggingLevel",
+        "apps/subtitles/internal/server/settings_configuration.go:UpdateLoggingLevel"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Exact fake1/2/3/4 source diagnostic string no longer asserted; real source counts/path and loader/writer failure contracts remain. Config fixture calls actual app adapter and real private configuration storage in process; it is not browser E2E.",
+      "credible_failure": "Synthetic successful callback output duplicates public ConfigurationCommand path and real typed app configuration-source scenario; exact diagnostics grammar is low-impact, while explicit path and actualUI/file/environment source projection remain protected.",
+      "reason": "Synthetic successful callback output duplicates public ConfigurationCommand path and real typed app configuration-source scenario; exact diagnostics grammar is low-impact, while explicit path and actualUI/file/environment source projection remain protected.",
+      "remaining_coverage": [
+        "apps/player/cmd/kinosail/config_command_test.go:TestConfigurationCommandValidatesAndSummarizesSources",
+        "apps/subtitles/cmd/kinosail/config_command_test.go:TestConfigurationCommandValidatesAndSummarizesSources",
+        "packages/appcli/configuration_test.go:TestBoundConfigurationCommandAdaptsTypedSnapshots"
+      ]
     },
     {
       "file": "packages/appcli/configuration_test.go",
@@ -9148,9 +9445,9 @@
       "owner_group": "appcli",
       "body_sha256": "e57d754fa9d5c8d177382ce06109d16f8b2909da4d119b049673ccc86dfb0890",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./appcli",
       "baseline_event": {
         "Time": "2026-10-03T10:35:24.374305-06:00",
@@ -9158,7 +9455,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/appcli",
         "Test": "TestConfigurationCommandRejectsInvalidInputBeforeValidation",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/appcli/application.go",
+        "packages/appcli/command.go",
+        "packages/appcli/configuration.go",
+        "packages/appcli/server_config.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "apps/player/cmd/kinosail/config_command.go",
+        "apps/subtitles/cmd/kinosail/config_command.go",
+        "apps/player/internal/server/settings_configuration.go:UpdateLoggingLevel",
+        "apps/subtitles/internal/server/settings_configuration.go:UpdateLoggingLevel"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine browser setup/library/playback journeys start real app servers and consume valid local configuration but do not invoke CLI failure/precedence paths, signal an active request, mis-key SCIM expiry/identity secrets, inject optional access/listener/shutdown failures or enumerate unsafe proxy inputs. Real app CLIContract includes in-process command/backend state fixtures plus explicit entrypoint/listen subprocess tests; real TLS tests negotiate actual subprocess sockets. These distinct layers are identified per deletion rather than labeled browser E2E.",
+      "credible_failure": "Malformed CLI arguments must never invoke validation; propagate injected validator and output-write failure instead of claiming config validity.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/appcli/configuration_test.go",
@@ -9168,9 +9485,9 @@
       "owner_group": "appcli",
       "body_sha256": "547f0be2457227c935f46234b0029aefbec4097b09480fb552ae4409e4304fa7",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Delete only redundant/synthetic or ineffective probe; reachable process security, real signal/TLS paths and injection boundaries retained.",
       "validation_command": "cd packages && go test ./appcli",
       "baseline_event": {
         "Time": "2026-10-03T10:35:24.374277-06:00",
@@ -9178,7 +9495,31 @@
         "Package": "github.com/MikeO7/kinosail/packages/appcli",
         "Test": "TestCountConfigurationSources",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/appcli/application.go",
+        "packages/appcli/command.go",
+        "packages/appcli/configuration.go",
+        "packages/appcli/server_config.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "apps/player/cmd/kinosail/config_command.go",
+        "apps/subtitles/cmd/kinosail/config_command.go",
+        "apps/player/internal/server/settings_configuration.go:UpdateLoggingLevel",
+        "apps/subtitles/internal/server/settings_configuration.go:UpdateLoggingLevel"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "No direct assertion remains for synthetic unrecognized source or repeated fakeUI source counts; no important reachable state, security or persistence boundary lost. No browser equivalence claimed.",
+      "credible_failure": "Simple counter echo uses a synthetic unknown source value absent from real four-valued app source enum; actual app source summary and retained generic snapshot bridge exercise the same owner with real/default source values.",
+      "reason": "Simple counter echo uses a synthetic unknown source value absent from real four-valued app source enum; actual app source summary and retained generic snapshot bridge exercise the same owner with real/default source values.",
+      "remaining_coverage": [
+        "packages/commandtest/configuration.go:ConfigurationCommandSources called by both apps",
+        "packages/appcli/configuration_test.go:TestBoundConfigurationCommandAdaptsTypedSnapshots"
+      ]
     },
     {
       "file": "packages/appcli/configuration_test.go",
@@ -9188,9 +9529,9 @@
       "owner_group": "appcli",
       "body_sha256": "314d02191bba91e70538e940627062f16eec929cd58912444588b669b9a4bda4",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./appcli",
       "baseline_event": {
         "Time": "2026-10-03T10:35:24.374158-06:00",
@@ -9198,7 +9539,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/appcli",
         "Test": "TestBoundConfigurationCommandAdaptsTypedSnapshots",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/appcli/application.go",
+        "packages/appcli/command.go",
+        "packages/appcli/configuration.go",
+        "packages/appcli/server_config.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "apps/player/cmd/kinosail/config_command.go",
+        "apps/subtitles/cmd/kinosail/config_command.go",
+        "apps/player/internal/server/settings_configuration.go:UpdateLoggingLevel",
+        "apps/subtitles/internal/server/settings_configuration.go:UpdateLoggingLevel"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine browser setup/library/playback journeys start real app servers and consume valid local configuration but do not invoke CLI failure/precedence paths, signal an active request, mis-key SCIM expiry/identity secrets, inject optional access/listener/shutdown failures or enumerate unsafe proxy inputs. Real app CLIContract includes in-process command/backend state fixtures plus explicit entrypoint/listen subprocess tests; real TLS tests negotiate actual subprocess sockets. These distinct layers are identified per deletion rather than labeled browser E2E.",
+      "credible_failure": "Shared generic snapshot adapter must pass actual field sources to counts/output and preserve loader errors; app data types cannot be replaced by an unrelated snapshot without a reported error.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/appcli/coverage_edges_test.go",
@@ -9208,9 +9569,9 @@
       "owner_group": "appcli",
       "body_sha256": "61b993e0b3409cd84e1ee1547fa54f78690743752818c1c36711fc26f43f0d58",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Delete only redundant/synthetic or ineffective probe; reachable process security, real signal/TLS paths and injection boundaries retained.",
       "validation_command": "cd packages && go test ./appcli",
       "baseline_event": {
         "Time": "2026-10-03T10:35:24.422751-06:00",
@@ -9218,7 +9579,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/appcli",
         "Test": "TestBuiltInCommandRemainingEdges",
         "Elapsed": 0.04
-      }
+      },
+      "production_owner": [
+        "packages/appcli/application.go",
+        "packages/appcli/command.go",
+        "packages/appcli/configuration.go",
+        "packages/appcli/server_config.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "apps/player/cmd/kinosail/config_command.go",
+        "apps/subtitles/cmd/kinosail/config_command.go",
+        "apps/player/internal/server/settings_configuration.go:UpdateLoggingLevel",
+        "apps/subtitles/internal/server/settings_configuration.go:UpdateLoggingLevel"
+      ],
+      "history": [
+        "e2bd457a852e5623c1f7825180049f9f449e5c09 test(appcli): retire unobserved shutdown replay",
+        "f08661b00ca8dc37f915afceef87f0f7cf74606f test(appcli): remove duplicate configuration error case",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "No unique behavior removed; duplicate fixtures are not browser E2E.",
+      "credible_failure": "Exact same healthcheck invalid endpoint and valid tls-certificate cases are covered by TestBuiltInTransportCommandsPropagateErrors, which additionally requires actual certificate output.",
+      "reason": "Exact same healthcheck invalid endpoint and valid tls-certificate cases are covered by TestBuiltInTransportCommandsPropagateErrors, which additionally requires actual certificate output.",
+      "remaining_coverage": [
+        "packages/appcli/command_test.go:TestBuiltInTransportCommandsPropagateErrors"
+      ]
     },
     {
       "file": "packages/appcli/coverage_edges_test.go",
@@ -9228,9 +9614,9 @@
       "owner_group": "appcli",
       "body_sha256": "5d4dcf3a7bafa7b52b48e919957c369076f2891fb5df1bee2fe88aa33ccd5a00",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Delete only redundant/synthetic or ineffective probe; reachable process security, real signal/TLS paths and injection boundaries retained.",
       "validation_command": "cd packages && go test ./appcli",
       "baseline_event": {
         "Time": "2026-10-03T10:35:24.373996-06:00",
@@ -9238,7 +9624,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/appcli",
         "Test": "TestAccessManagerAndTrustedHTTPSInitialization",
         "Elapsed": 0.03
-      }
+      },
+      "production_owner": [
+        "packages/appcli/application.go",
+        "packages/appcli/command.go",
+        "packages/appcli/configuration.go",
+        "packages/appcli/server_config.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "apps/player/cmd/kinosail/config_command.go",
+        "apps/subtitles/cmd/kinosail/config_command.go",
+        "apps/player/internal/server/settings_configuration.go:UpdateLoggingLevel",
+        "apps/subtitles/internal/server/settings_configuration.go:UpdateLoggingLevel"
+      ],
+      "history": [
+        "e2bd457a852e5623c1f7825180049f9f449e5c09 test(appcli): retire unobserved shutdown replay",
+        "f08661b00ca8dc37f915afceef87f0f7cf74606f test(appcli): remove duplicate configuration error case",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Valid Config.Encode to TrustedHTTPS path no longer repeated here; shared trusted provider config round-trip remains owned by trustedhttps. No fixture/E2E equivalence claimed.",
+      "credible_failure": "Private remote-start callback presence and valid trusted JSON/private-directory construction repeat stronger actual run composition and access-settings adapter keepers. Occupied listener only prevents network progress; test observes neither server response nor certificate negotiation.",
+      "reason": "Private remote-start callback presence and valid trusted JSON/private-directory construction repeat stronger actual run composition and access-settings adapter keepers. Occupied listener only prevents network progress; test observes neither server response nor certificate negotiation.",
+      "remaining_coverage": [
+        "packages/appcli/command_test.go:TestRunUsesSharedLifecycleAndToleratesOptionalManagerFailures",
+        "packages/appcli/command_test.go:TestAccessConfigurationUsesPlayerPolicy",
+        "packages/appcli/command_test.go:TestRemoteAndShutdownFailuresCompleteLifecycle"
+      ]
     },
     {
       "file": "packages/appcli/owner_recovery_test.go",
@@ -9248,9 +9661,9 @@
       "owner_group": "appcli",
       "body_sha256": "b6ce9a5d64d39059409628069410921a3c9c4c6edbc696c15b952c1071300c0f",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./appcli",
       "baseline_event": {
         "Time": "2026-10-03T10:35:24.340207-06:00",
@@ -9258,7 +9671,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/appcli",
         "Test": "TestOwnerRecoveryDispatchNeverStartsTheServer",
         "Elapsed": 0.03
-      }
+      },
+      "production_owner": [
+        "packages/appcli/application.go",
+        "packages/appcli/command.go",
+        "packages/appcli/configuration.go",
+        "packages/appcli/server_config.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "apps/player/cmd/kinosail/config_command.go",
+        "apps/subtitles/cmd/kinosail/config_command.go",
+        "apps/player/internal/server/settings_configuration.go:UpdateLoggingLevel",
+        "apps/subtitles/internal/server/settings_configuration.go:UpdateLoggingLevel"
+      ],
+      "history": [
+        "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts"
+      ],
+      "gap": "Genuine browser setup/library/playback journeys start real app servers and consume valid local configuration but do not invoke CLI failure/precedence paths, signal an active request, mis-key SCIM expiry/identity secrets, inject optional access/listener/shutdown failures or enumerate unsafe proxy inputs. Real app CLIContract includes in-process command/backend state fixtures plus explicit entrypoint/listen subprocess tests; real TLS tests negotiate actual subprocess sockets. These distinct layers are identified per deletion rather than labeled browser E2E.",
+      "credible_failure": "Local recovery must not dispatch MCP, ordinary commands, auth lookup or server startup, and must persist the exact disabled owner-access state only after valid invocation/settings load.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/appcli/owner_recovery_test.go",
@@ -9268,9 +9701,9 @@
       "owner_group": "appcli",
       "body_sha256": "6b063d28c0179482140b03c23850d500e2dff4e35093f7096d938cd4ecec6a5a",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Delete only redundant/synthetic or ineffective probe; reachable process security, real signal/TLS paths and injection boundaries retained.",
       "validation_command": "cd packages && go test ./appcli",
       "baseline_event": {
         "Time": "2026-10-03T10:35:24.346043-06:00",
@@ -9278,7 +9711,31 @@
         "Package": "github.com/MikeO7/kinosail/packages/appcli",
         "Test": "TestPublicGatewayRejectsInvalidInvocationBeforeApplicationLoading",
         "Elapsed": 0.01
-      }
+      },
+      "production_owner": [
+        "packages/appcli/application.go",
+        "packages/appcli/command.go",
+        "packages/appcli/configuration.go",
+        "packages/appcli/server_config.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "apps/player/cmd/kinosail/config_command.go",
+        "apps/subtitles/cmd/kinosail/config_command.go",
+        "apps/player/internal/server/settings_configuration.go:UpdateLoggingLevel",
+        "apps/subtitles/internal/server/settings_configuration.go:UpdateLoggingLevel"
+      ],
+      "history": [
+        "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts"
+      ],
+      "gap": "No useful precedence proof existed: this empty-Application negative control does not observe Load/Run side effects. Correct gateway-before-private-load precedence remains an explicit gap unless a valid application/callback observing control is available; no new isolated test added.",
+      "credible_failure": "Every case supplies an otherwise invalid empty Application, so moving public gateway dispatch after application validation still passes all cases without exercising gateway validation. Nil getenv is impossible from actual main os.Getenv; missing/invalid hostname belongs to publicgateway owner.",
+      "reason": "Every case supplies an otherwise invalid empty Application, so moving public gateway dispatch after application validation still passes all cases without exercising gateway validation. Nil getenv is impossible from actual main os.Getenv; missing/invalid hostname belongs to publicgateway owner.",
+      "remaining_coverage": [
+        "packages/publicgateway/gateway_test.go:actual publicgateway owner validation remains",
+        "apps/player/cmd/kinosail/main.go:actual main passes all bound Application callbacks and os.Getenv"
+      ]
     },
     {
       "file": "packages/appcli/server_config_test.go",
@@ -9288,9 +9745,9 @@
       "owner_group": "appcli",
       "body_sha256": "d7f017d7efc9b480617121c6dae131d54b4bd976967012b1026895135eb7dfcd",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./appcli",
       "baseline_event": {
         "Time": "2026-10-03T10:35:24.346093-06:00",
@@ -9298,7 +9755,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/appcli",
         "Test": "TestServerValuesKeepIdentityStorageAndExpiryBoundaries",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/appcli/application.go",
+        "packages/appcli/command.go",
+        "packages/appcli/configuration.go",
+        "packages/appcli/server_config.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "apps/player/cmd/kinosail/config_command.go",
+        "apps/subtitles/cmd/kinosail/config_command.go",
+        "apps/player/internal/server/settings_configuration.go:UpdateLoggingLevel",
+        "apps/subtitles/internal/server/settings_configuration.go:UpdateLoggingLevel"
+      ],
+      "history": [
+        "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts"
+      ],
+      "gap": "Genuine browser setup/library/playback journeys start real app servers and consume valid local configuration but do not invoke CLI failure/precedence paths, signal an active request, mis-key SCIM expiry/identity secrets, inject optional access/listener/shutdown failures or enumerate unsafe proxy inputs. Real app CLIContract includes in-process command/backend state fixtures plus explicit entrypoint/listen subprocess tests; real TLS tests negotiate actual subprocess sockets. These distinct layers are identified per deletion rather than labeled browser E2E.",
+      "credible_failure": "Shared settings composition must preserve SAML private data/root origin, SCIM token/expiry and OIDC secret alongside storage/backup policy; dropping or mis-keying expiry/secret is absent from valid local-browser fixtures.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/auditjournal/activity_http_test.go",
@@ -55108,9 +55585,9 @@
       "owner_group": "servertransport",
       "body_sha256": "afa727501f40b6086c5affc4c8870be56edbb022e7990c325a3e150bc8a9fa70",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./servertransport",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.275663-06:00",
@@ -55118,7 +55595,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/servertransport",
         "Test": "TestNewServerAppliesSharedTransportLimits",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/servertransport/server.go",
+        "packages/servertransport/log.go",
+        "packages/servertransport/tls.go",
+        "packages/servertransport/tls_operations.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "packages/appcli/command.go",
+        "packages/remoteaccess/gateway.go",
+        "packages/publicgateway/gateway.go",
+        "packages/owneraccess/runtime.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Browser journeys verify normal real app availability/playback. Real app TLS process keepers negotiate TLS1.2/1.3, reject obsolete protocols/plain requests, check certificate chain and private file mode, and start explicit HTTP mode. They do not inject CA/leaf entropy/signing/marshal/read/write/PEM failures, corrupted/unsafe owner files, host-change persistence, SNI mismatch, redacted transport failures or fullHTTP2/slow-header resource policy. No new isolated tests.",
+      "credible_failure": "Enforce bounded headers/HTTP2streams/frame buffers and read/ping/idle limits without timing out streamed writes; ordinary browser E2E cannot simulate slow header or exhausted HTTP2 resource policy.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/servertransport/server_test.go",
@@ -55128,9 +55625,9 @@
       "owner_group": "servertransport",
       "body_sha256": "714f5d17580c4f5054e406c7a8e9af9900518a2e694aa7cf682a4ed3e43643af",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./servertransport",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.275926-06:00",
@@ -55138,7 +55635,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/servertransport",
         "Test": "TestServerErrorLogRedactsClientAddress",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/servertransport/server.go",
+        "packages/servertransport/log.go",
+        "packages/servertransport/tls.go",
+        "packages/servertransport/tls_operations.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "packages/appcli/command.go",
+        "packages/remoteaccess/gateway.go",
+        "packages/publicgateway/gateway.go",
+        "packages/owneraccess/runtime.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Browser journeys verify normal real app availability/playback. Real app TLS process keepers negotiate TLS1.2/1.3, reject obsolete protocols/plain requests, check certificate chain and private file mode, and start explicit HTTP mode. They do not inject CA/leaf entropy/signing/marshal/read/write/PEM failures, corrupted/unsafe owner files, host-change persistence, SNI mismatch, redacted transport failures or fullHTTP2/slow-header resource policy. No new isolated tests.",
+      "credible_failure": "Actual HTTP transport logger must remove IPv4/IPv6 client addresses and ports from error messages while keeping diagnostic context; ordinary E2E does not inject TLS/accept errors containing private addresses.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/servertransport/server_test.go",
@@ -55148,9 +55665,9 @@
       "owner_group": "servertransport",
       "body_sha256": "7510923ba1a1cee7ad975a9a07f5086ef8f82a50177db83dd596476cdcb7587b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./servertransport",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.7412-06:00",
@@ -55158,7 +55675,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/servertransport",
         "Test": "TestServeSelectsProtocolAndReportsCertificateFailure",
         "Elapsed": 0.03
-      }
+      },
+      "production_owner": [
+        "packages/servertransport/server.go",
+        "packages/servertransport/log.go",
+        "packages/servertransport/tls.go",
+        "packages/servertransport/tls_operations.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "packages/appcli/command.go",
+        "packages/remoteaccess/gateway.go",
+        "packages/publicgateway/gateway.go",
+        "packages/owneraccess/runtime.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Browser journeys verify normal real app availability/playback. Real app TLS process keepers negotiate TLS1.2/1.3, reject obsolete protocols/plain requests, check certificate chain and private file mode, and start explicit HTTP mode. They do not inject CA/leaf entropy/signing/marshal/read/write/PEM failures, corrupted/unsafe owner files, host-change persistence, SNI mismatch, redacted transport failures or fullHTTP2/slow-header resource policy. No new isolated tests.",
+      "credible_failure": "Select the configured serving protocol and propagate certificate generation/plain/TLS listener failures; a failed TLS initialization must not silently fall back to plain serving.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/servertransport/server_test.go",
@@ -55168,9 +55705,9 @@
       "owner_group": "servertransport",
       "body_sha256": "fca3e2765f1f6112091defe424a1a00c9c1aff2ecb59a87ab7516657b99a7723",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Delete only redundant/synthetic or ineffective probe; reachable process security, real signal/TLS paths and injection boundaries retained.",
       "validation_command": "cd packages && go test ./servertransport",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.320571-06:00",
@@ -55178,7 +55715,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/servertransport",
         "Test": "TestServeRunsPlainAndSecureListeners",
         "Elapsed": 0.04
-      }
+      },
+      "production_owner": [
+        "packages/servertransport/server.go",
+        "packages/servertransport/log.go",
+        "packages/servertransport/tls.go",
+        "packages/servertransport/tls_operations.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "packages/appcli/command.go",
+        "packages/remoteaccess/gateway.go",
+        "packages/publicgateway/gateway.go",
+        "packages/owneraccess/runtime.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "The removed direct Serve loop had no trustworthy listener/protocol assertion. Real app subprocess tests are process E2E with actual socket/TLS/client, distinct from browser E2E and from private injected dispatch tests.",
+      "credible_failure": "Polling loop never asserts TCP dial succeeded and observes no HTTP response or TLS negotiation. Immediate ErrServerClosed/no successful listener can pass; real app subprocess TLS and HTTP serving keepers assert actual health response and protocol rejection.",
+      "reason": "Polling loop never asserts TCP dial succeeded and observes no HTTP response or TLS negotiation. Immediate ErrServerClosed/no successful listener can pass; real app subprocess TLS and HTTP serving keepers assert actual health response and protocol rejection.",
+      "remaining_coverage": [
+        "apps/player/cmd/kinosail/tls_server_test.go:TestCommandLineServesCompatibleHTTPSByDefault",
+        "apps/player/cmd/kinosail/tls_server_test.go:TestCommandLineCanDisableTLS",
+        "apps/subtitles/cmd/kinosail/tls_server_test.go:corresponding real process keepers",
+        "packages/servertransport/server_test.go:TestServeSelectsProtocolAndReportsCertificateFailure"
+      ]
     },
     {
       "file": "packages/servertransport/server_test.go",
@@ -55188,9 +55751,9 @@
       "owner_group": "servertransport",
       "body_sha256": "fe33dd3e0ff5318063af90614ae25c117762b06f070a9a07f18e84471c6f9d23",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Delete only redundant/synthetic or ineffective probe; reachable process security, real signal/TLS paths and injection boundaries retained.",
       "validation_command": "cd packages && go test ./servertransport",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.741229-06:00",
@@ -55198,7 +55761,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/servertransport",
         "Test": "TestConfigureCertificatesInitializesMissingTLSConfig",
         "Elapsed": 0.03
-      }
+      },
+      "production_owner": [
+        "packages/servertransport/server.go",
+        "packages/servertransport/log.go",
+        "packages/servertransport/tls.go",
+        "packages/servertransport/tls_operations.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "packages/appcli/command.go",
+        "packages/remoteaccess/gateway.go",
+        "packages/publicgateway/gateway.go",
+        "packages/owneraccess/runtime.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Exported ConfigureCertificates nil-TLSConfig fallback has no direct assertion after removal; no actual application caller supplies a nil TLSConfig. No browser equivalence claimed for intentionally raw server construction.",
+      "credible_failure": "Deliberately raw http.Server with nil TLSConfig is absent from every actual Serve composition, which uses servertransport.NewServer and its initialized TLSConfig. Real startup/TLS/SNI owner tests enforce reachable configuration.",
+      "reason": "Deliberately raw http.Server with nil TLSConfig is absent from every actual Serve composition, which uses servertransport.NewServer and its initialized TLSConfig. Real startup/TLS/SNI owner tests enforce reachable configuration.",
+      "remaining_coverage": [
+        "packages/servertransport/tls_test.go:TestConfigureCertificatesSelectsTrustedSNIAndLocalFallback",
+        "packages/servertransport/server_test.go:TestNewServerAppliesSharedTransportLimits",
+        "apps/player/cmd/kinosail/main.go:newConfiguredHTTPServerWithAccess uses NewServer",
+        "apps/subtitles/cmd/kinosail/main.go:newConfiguredHTTPServerWithAccess uses NewServer"
+      ]
     },
     {
       "file": "packages/servertransport/server_test.go",
@@ -55243,9 +55832,9 @@
       "owner_group": "servertransport",
       "body_sha256": "a69218577bfc716d3a9471fcc5d6a880cc56bb0f45d7eac82d9008c3e82e5230",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./servertransport",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.335082-06:00",
@@ -55253,7 +55842,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/servertransport",
         "Test": "TestLoadOrCreateRejectsCertificateWithoutPrivateKey",
         "Elapsed": 0.01
-      }
+      },
+      "production_owner": [
+        "packages/servertransport/server.go",
+        "packages/servertransport/log.go",
+        "packages/servertransport/tls.go",
+        "packages/servertransport/tls_operations.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "packages/appcli/command.go",
+        "packages/remoteaccess/gateway.go",
+        "packages/publicgateway/gateway.go",
+        "packages/owneraccess/runtime.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Browser journeys verify normal real app availability/playback. Real app TLS process keepers negotiate TLS1.2/1.3, reject obsolete protocols/plain requests, check certificate chain and private file mode, and start explicit HTTP mode. They do not inject CA/leaf entropy/signing/marshal/read/write/PEM failures, corrupted/unsafe owner files, host-change persistence, SNI mismatch, redacted transport failures or fullHTTP2/slow-header resource policy. No new isolated tests.",
+      "credible_failure": "An owner certificate without its private key must fail rather than report an identity that cannot negotiate TLS.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/servertransport/tls_edges_test.go",
@@ -55263,9 +55872,9 @@
       "owner_group": "servertransport",
       "body_sha256": "2aab7598ed1a4df37e0e196f85a57c0f5ea399e2c7afcee47b811f08b3fae161",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./servertransport",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.355011-06:00",
@@ -55273,7 +55882,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/servertransport",
         "Test": "TestCertificateInputAndDirectoryFailures",
         "Elapsed": 0.02
-      }
+      },
+      "production_owner": [
+        "packages/servertransport/server.go",
+        "packages/servertransport/log.go",
+        "packages/servertransport/tls.go",
+        "packages/servertransport/tls_operations.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "packages/appcli/command.go",
+        "packages/remoteaccess/gateway.go",
+        "packages/publicgateway/gateway.go",
+        "packages/owneraccess/runtime.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Browser journeys verify normal real app availability/playback. Real app TLS process keepers negotiate TLS1.2/1.3, reject obsolete protocols/plain requests, check certificate chain and private file mode, and start explicit HTTP mode. They do not inject CA/leaf entropy/signing/marshal/read/write/PEM failures, corrupted/unsafe owner files, host-change persistence, SNI mismatch, redacted transport failures or fullHTTP2/slow-header resource policy. No new isolated tests.",
+      "credible_failure": "Propagate blocked/non-directory TLS state paths and injected directory creation/private identity read errors rather than starting with partially persisted identity.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/servertransport/tls_edges_test.go",
@@ -55283,9 +55912,9 @@
       "owner_group": "servertransport",
       "body_sha256": "a60a60a81b4aa35d788b0f8275aed0ddd1174b6fbb79a1a5ef73b7c3a1e8364d",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./servertransport",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.365981-06:00",
@@ -55293,7 +55922,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/servertransport",
         "Test": "TestLocalAuthorityReportsEveryDependencyFailure",
         "Elapsed": 0.01
-      }
+      },
+      "production_owner": [
+        "packages/servertransport/server.go",
+        "packages/servertransport/log.go",
+        "packages/servertransport/tls.go",
+        "packages/servertransport/tls_operations.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "packages/appcli/command.go",
+        "packages/remoteaccess/gateway.go",
+        "packages/publicgateway/gateway.go",
+        "packages/owneraccess/runtime.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Browser journeys verify normal real app availability/playback. Real app TLS process keepers negotiate TLS1.2/1.3, reject obsolete protocols/plain requests, check certificate chain and private file mode, and start explicit HTTP mode. They do not inject CA/leaf entropy/signing/marshal/read/write/PEM failures, corrupted/unsafe owner files, host-change persistence, SNI mismatch, redacted transport failures or fullHTTP2/slow-header resource policy. No new isolated tests.",
+      "credible_failure": "Injected entropy/serial/signing/write/directory failures and invalid generated DER must stop local authority creation rather than return an unusable or nondurable CA.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/servertransport/tls_edges_test.go",
@@ -55303,9 +55952,9 @@
       "owner_group": "servertransport",
       "body_sha256": "552afeaa3ab107b7088a127c039316752f7fa12119d4c2faf944d976aee6b144",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./servertransport",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.385215-06:00",
@@ -55313,7 +55962,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/servertransport",
         "Test": "TestOptionalAuthorityRejectsMalformedAndNonCAIdentity",
         "Elapsed": 0.02
-      }
+      },
+      "production_owner": [
+        "packages/servertransport/server.go",
+        "packages/servertransport/log.go",
+        "packages/servertransport/tls.go",
+        "packages/servertransport/tls_operations.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "packages/appcli/command.go",
+        "packages/remoteaccess/gateway.go",
+        "packages/publicgateway/gateway.go",
+        "packages/owneraccess/runtime.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Browser journeys verify normal real app availability/playback. Real app TLS process keepers negotiate TLS1.2/1.3, reject obsolete protocols/plain requests, check certificate chain and private file mode, and start explicit HTTP mode. They do not inject CA/leaf entropy/signing/marshal/read/write/PEM failures, corrupted/unsafe owner files, host-change persistence, SNI mismatch, redacted transport failures or fullHTTP2/slow-header resource policy. No new isolated tests.",
+      "credible_failure": "Reject corrupt or non-CA private authority identity rather than treating an arbitrary leaf as the generated signing authority.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/servertransport/tls_edges_test.go",
@@ -55323,9 +55992,9 @@
       "owner_group": "servertransport",
       "body_sha256": "5171cf1c3217f085c1f4a0ed6d4f02d7a14aa62479206947a7ee96e40bb76a08",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./servertransport",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.401784-06:00",
@@ -55333,7 +56002,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/servertransport",
         "Test": "TestIssueCertificateReportsEveryDependencyFailure",
         "Elapsed": 0.02
-      }
+      },
+      "production_owner": [
+        "packages/servertransport/server.go",
+        "packages/servertransport/log.go",
+        "packages/servertransport/tls.go",
+        "packages/servertransport/tls_operations.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "packages/appcli/command.go",
+        "packages/remoteaccess/gateway.go",
+        "packages/publicgateway/gateway.go",
+        "packages/owneraccess/runtime.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Browser journeys verify normal real app availability/playback. Real app TLS process keepers negotiate TLS1.2/1.3, reject obsolete protocols/plain requests, check certificate chain and private file mode, and start explicit HTTP mode. They do not inject CA/leaf entropy/signing/marshal/read/write/PEM failures, corrupted/unsafe owner files, host-change persistence, SNI mismatch, redacted transport failures or fullHTTP2/slow-header resource policy. No new isolated tests.",
+      "credible_failure": "Leaf issuance must fail on injected entropy/serial/signing/private write error and preserve the cause rather than expose success with no valid persisted identity.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/servertransport/tls_edges_test.go",
@@ -55343,9 +56032,9 @@
       "owner_group": "servertransport",
       "body_sha256": "cb39f98da8cf09425aad477ff5b87e593356cdd85babea99e7b4fb50f59ebbeb",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./servertransport",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.404625-06:00",
@@ -55353,7 +56042,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/servertransport",
         "Test": "TestWriteIdentityReportsMarshalEncodeAndWriteFailures",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/servertransport/server.go",
+        "packages/servertransport/log.go",
+        "packages/servertransport/tls.go",
+        "packages/servertransport/tls_operations.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "packages/appcli/command.go",
+        "packages/remoteaccess/gateway.go",
+        "packages/publicgateway/gateway.go",
+        "packages/owneraccess/runtime.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Browser journeys verify normal real app availability/playback. Real app TLS process keepers negotiate TLS1.2/1.3, reject obsolete protocols/plain requests, check certificate chain and private file mode, and start explicit HTTP mode. They do not inject CA/leaf entropy/signing/marshal/read/write/PEM failures, corrupted/unsafe owner files, host-change persistence, SNI mismatch, redacted transport failures or fullHTTP2/slow-header resource policy. No new isolated tests.",
+      "credible_failure": "Private identity serialization must propagate key marshal, either certificate/key PEM encoding or private write failures; partial output cannot be accepted as a durable identity.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/servertransport/tls_edges_test.go",
@@ -55363,9 +56072,9 @@
       "owner_group": "servertransport",
       "body_sha256": "4feec48cb7f546bcfdba3fd8796695067b52f8216c48adde9a6e7eb471699173",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./servertransport",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.458653-06:00",
@@ -55373,7 +56082,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/servertransport",
         "Test": "TestTrustAnchorReportsReadParseAuthorityAndEncodeFailures",
         "Elapsed": 0.05
-      }
+      },
+      "production_owner": [
+        "packages/servertransport/server.go",
+        "packages/servertransport/log.go",
+        "packages/servertransport/tls.go",
+        "packages/servertransport/tls_operations.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "packages/appcli/command.go",
+        "packages/remoteaccess/gateway.go",
+        "packages/publicgateway/gateway.go",
+        "packages/owneraccess/runtime.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Browser journeys verify normal real app availability/playback. Real app TLS process keepers negotiate TLS1.2/1.3, reject obsolete protocols/plain requests, check certificate chain and private file mode, and start explicit HTTP mode. They do not inject CA/leaf entropy/signing/marshal/read/write/PEM failures, corrupted/unsafe owner files, host-change persistence, SNI mismatch, redacted transport failures or fullHTTP2/slow-header resource policy. No new isolated tests.",
+      "credible_failure": "Trust export must fail on invalid input/private read/DER parse/recreated authority or PEM output failures instead of emitting invalid installable trust or swallowing errors.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/servertransport/tls_edges_test.go",
@@ -55383,9 +56112,9 @@
       "owner_group": "servertransport",
       "body_sha256": "d1f6cb16de34f0b8b66483578d77e690a1ce4f3fe9af2b3fcf7e8d2408167809",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./servertransport",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.458697-06:00",
@@ -55393,7 +56122,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/servertransport",
         "Test": "TestFirstCertificateRejectsInvalidDER",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/servertransport/server.go",
+        "packages/servertransport/log.go",
+        "packages/servertransport/tls.go",
+        "packages/servertransport/tls_operations.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "packages/appcli/command.go",
+        "packages/remoteaccess/gateway.go",
+        "packages/publicgateway/gateway.go",
+        "packages/owneraccess/runtime.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Browser journeys verify normal real app availability/playback. Real app TLS process keepers negotiate TLS1.2/1.3, reject obsolete protocols/plain requests, check certificate chain and private file mode, and start explicit HTTP mode. They do not inject CA/leaf entropy/signing/marshal/read/write/PEM failures, corrupted/unsafe owner files, host-change persistence, SNI mismatch, redacted transport failures or fullHTTP2/slow-header resource policy. No new isolated tests.",
+      "credible_failure": "The first certificate parser must return an error for missing PEM or invalid DER instead of panicking at block.Bytes or accepting corrupt persisted private identity.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/servertransport/tls_test.go",
@@ -55403,9 +56152,9 @@
       "owner_group": "servertransport",
       "body_sha256": "81db586779c31478852e727223e498aee8eff1e8a685b2c13e5c879e0ce43ad0",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./servertransport",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.495837-06:00",
@@ -55413,7 +56162,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/servertransport",
         "Test": "TestGeneratedIdentityPersistsAndRotatesForChangedHosts",
         "Elapsed": 0.04
-      }
+      },
+      "production_owner": [
+        "packages/servertransport/server.go",
+        "packages/servertransport/log.go",
+        "packages/servertransport/tls.go",
+        "packages/servertransport/tls_operations.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "packages/appcli/command.go",
+        "packages/remoteaccess/gateway.go",
+        "packages/publicgateway/gateway.go",
+        "packages/owneraccess/runtime.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Browser journeys verify normal real app availability/playback. Real app TLS process keepers negotiate TLS1.2/1.3, reject obsolete protocols/plain requests, check certificate chain and private file mode, and start explicit HTTP mode. They do not inject CA/leaf entropy/signing/marshal/read/write/PEM failures, corrupted/unsafe owner files, host-change persistence, SNI mismatch, redacted transport failures or fullHTTP2/slow-header resource policy. No new isolated tests.",
+      "credible_failure": "Reuse valid generated identity byte-for-byte, rotate changed host leaf while retaining CA, verify host SANs and export exactly one public CA certificate.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/servertransport/tls_test.go",
@@ -55423,9 +56192,9 @@
       "owner_group": "servertransport",
       "body_sha256": "52b314d5db2b6e8dd0c671f46a90847278284cedeeb87368480f507f558af8f4",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./servertransport",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.5051-06:00",
@@ -55433,7 +56202,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/servertransport",
         "Test": "TestOwnerIdentityIsPreservedAndExported",
         "Elapsed": 0.01
-      }
+      },
+      "production_owner": [
+        "packages/servertransport/server.go",
+        "packages/servertransport/log.go",
+        "packages/servertransport/tls.go",
+        "packages/servertransport/tls_operations.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "packages/appcli/command.go",
+        "packages/remoteaccess/gateway.go",
+        "packages/publicgateway/gateway.go",
+        "packages/owneraccess/runtime.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Browser journeys verify normal real app availability/playback. Real app TLS process keepers negotiate TLS1.2/1.3, reject obsolete protocols/plain requests, check certificate chain and private file mode, and start explicit HTTP mode. They do not inject CA/leaf entropy/signing/marshal/read/write/PEM failures, corrupted/unsafe owner files, host-change persistence, SNI mismatch, redacted transport failures or fullHTTP2/slow-header resource policy. No new isolated tests.",
+      "credible_failure": "Never overwrite an owner-supplied identity merely because configured hosts differ; preserve its bytes and export its actual public certificate.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/servertransport/tls_test.go",
@@ -55443,9 +56232,9 @@
       "owner_group": "servertransport",
       "body_sha256": "65c0aa00a5abc0f4e09014c582a64c4f1e2e7cadea52bb81626f0bf6c63f07be",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./servertransport",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.669849-06:00",
@@ -55453,7 +56242,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/servertransport",
         "Test": "TestIdentityRejectsUnsafePrivateFilesWithoutMutation",
         "Elapsed": 0.16
-      }
+      },
+      "production_owner": [
+        "packages/servertransport/server.go",
+        "packages/servertransport/log.go",
+        "packages/servertransport/tls.go",
+        "packages/servertransport/tls_operations.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "packages/appcli/command.go",
+        "packages/remoteaccess/gateway.go",
+        "packages/publicgateway/gateway.go",
+        "packages/owneraccess/runtime.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Browser journeys verify normal real app availability/playback. Real app TLS process keepers negotiate TLS1.2/1.3, reject obsolete protocols/plain requests, check certificate chain and private file mode, and start explicit HTTP mode. They do not inject CA/leaf entropy/signing/marshal/read/write/PEM failures, corrupted/unsafe owner files, host-change persistence, SNI mismatch, redacted transport failures or fullHTTP2/slow-header resource policy. No new isolated tests.",
+      "credible_failure": "Reject public-permission/symlink/oversized leaf or authority files without replacing those files or changing the existing leaf, protecting private-key and owner identity integrity.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/servertransport/tls_test.go",
@@ -55463,9 +56272,9 @@
       "owner_group": "servertransport",
       "body_sha256": "2225f55aa73a5f63f4dab670a6337f6839c448972a96e588bc3982b1f92a125d",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./servertransport",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.670316-06:00",
@@ -55473,7 +56282,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/servertransport",
         "Test": "TestIdentityRejectsInvalidInputsBeforeEffects",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/servertransport/server.go",
+        "packages/servertransport/log.go",
+        "packages/servertransport/tls.go",
+        "packages/servertransport/tls_operations.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "packages/appcli/command.go",
+        "packages/remoteaccess/gateway.go",
+        "packages/publicgateway/gateway.go",
+        "packages/owneraccess/runtime.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Browser journeys verify normal real app availability/playback. Real app TLS process keepers negotiate TLS1.2/1.3, reject obsolete protocols/plain requests, check certificate chain and private file mode, and start explicit HTTP mode. They do not inject CA/leaf entropy/signing/marshal/read/write/PEM failures, corrupted/unsafe owner files, host-change persistence, SNI mismatch, redacted transport failures or fullHTTP2/slow-header resource policy. No new isolated tests.",
+      "credible_failure": "Reject invalid/oversized directory/host names and host count before creating any filesystem state, preventing partial invalid TLS installations.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/servertransport/tls_test.go",
@@ -55483,9 +56312,9 @@
       "owner_group": "servertransport",
       "body_sha256": "b2c23e399b759f5f8a913ecff437beed4eabfca60ad658481a63486a6feeb09e",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve a distinct important process, resource, security or durable private-identity boundary.",
       "validation_command": "cd packages && go test ./servertransport",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.708434-06:00",
@@ -55493,7 +56322,27 @@
         "Package": "github.com/MikeO7/kinosail/packages/servertransport",
         "Test": "TestConfigureCertificatesSelectsTrustedSNIAndLocalFallback",
         "Elapsed": 0.04
-      }
+      },
+      "production_owner": [
+        "packages/servertransport/server.go",
+        "packages/servertransport/log.go",
+        "packages/servertransport/tls.go",
+        "packages/servertransport/tls_operations.go"
+      ],
+      "callers": [
+        "apps/player/cmd/kinosail/main.go",
+        "apps/subtitles/cmd/kinosail/main.go",
+        "packages/appcli/command.go",
+        "packages/remoteaccess/gateway.go",
+        "packages/publicgateway/gateway.go",
+        "packages/owneraccess/runtime.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Browser journeys verify normal real app availability/playback. Real app TLS process keepers negotiate TLS1.2/1.3, reject obsolete protocols/plain requests, check certificate chain and private file mode, and start explicit HTTP mode. They do not inject CA/leaf entropy/signing/marshal/read/write/PEM failures, corrupted/unsafe owner files, host-change persistence, SNI mismatch, redacted transport failures or fullHTTP2/slow-header resource policy. No new isolated tests.",
+      "credible_failure": "Select the trusted manager certificate only for exact matching SNI; other host names must receive the local fallback instead of another host certificate.",
+      "remaining_coverage": "This owner declaration remains; real process/backend/browser complementary evidence and limits are explicit in owner_groups."
     },
     {
       "file": "packages/settings/configuration_test.go",
@@ -63918,7 +64767,9 @@
       "httpguard",
       "catalog",
       "metadata",
-      "owneraccess"
+      "owneraccess",
+      "appcli",
+      "servertransport"
     ],
     "additional_reviewed_declarations": 41,
     "additional_removals": 2,

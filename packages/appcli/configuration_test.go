@@ -8,23 +8,6 @@ import (
 	"testing"
 )
 
-func TestConfigurationCommand(t *testing.T) {
-	t.Parallel()
-	var output bytes.Buffer
-	path := ""
-	validate := func(value string) (ConfigurationCounts, error) {
-		path = value
-		return ConfigurationCounts{Defaults: 1, UI: 2, File: 3, Environment: 4}, nil
-	}
-	handled, err := ConfigurationCommand([]string{"config", "validate", "settings.yaml"}, &output, validate)
-	if !handled || err != nil || path != "settings.yaml" {
-		t.Fatalf("validate = %v, %v, %q", handled, err, path)
-	}
-	if output.String() != "Configuration is valid: 1 defaults, 2 UI, 3 file, 4 environment.\n" {
-		t.Fatalf("output = %q", output.String())
-	}
-}
-
 func TestConfigurationCommandRejectsInvalidInputBeforeValidation(t *testing.T) {
 	t.Parallel()
 	called := false
@@ -54,15 +37,6 @@ func assertInvalidConfigurationArguments(t *testing.T, validate func(string) (Co
 		if handled, err := ConfigurationCommand(args, io.Discard, validate); !handled || err == nil {
 			t.Errorf("invalid arguments accepted: %#v", args)
 		}
-	}
-}
-
-func TestCountConfigurationSources(t *testing.T) {
-	t.Parallel()
-	fields := []struct{ source string }{{"default"}, {"ui"}, {"ui"}, {"file"}, {"environment"}, {"other"}}
-	counts := CountConfigurationSources(fields, func(field struct{ source string }) string { return field.source }, "default", "ui", "file", "environment")
-	if counts != (ConfigurationCounts{Defaults: 1, UI: 2, File: 1, Environment: 1}) {
-		t.Fatalf("counts = %#v", counts)
 	}
 }
 
