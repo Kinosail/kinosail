@@ -171,6 +171,11 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 			manager.mu.Unlock()
 			return nil
 		}
+		if job != nil && ctx.Value(startupEncodingKey{}) != nil {
+			// Preparation cannot replace a foreground seek or any shared encoder.
+			manager.mu.Unlock()
+			return nil
+		}
 		if job != nil {
 			job.cancel(errHLSSeekRestart)
 			manager.mu.Unlock()
