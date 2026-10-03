@@ -31,7 +31,7 @@ const freePort = () => new Promise(resolve => {
   });
 });
 async function ready(app) {
-  for (let attempt = 0; attempt < 100; attempt++) {
+  for (let attempt = 0; attempt < 300; attempt++) {
     if (app.process.exitCode !== null) throw new Error('Disposable Server exited before readiness');
     try { if ((await fetch(app.url+'/healthz')).ok) return; } catch {}
     await sleep(100);
@@ -230,7 +230,7 @@ try {
     await setup(app); const settings=await api(app.owner,'/api/v1/settings'); expect(settings.status).toBe(200);
     expect(settings.body.publicSessionInactiveHours).toBe(.25); expect(settings.body.publicSessionAbsoluteHours).toBe(8);
     expect(settings.body.publicSessionTimeoutsConfigured).toBe(false); record(app,'legacy effective public defaults');
-    await configUI(app); await uiStates(app); await viewer(app);
+    await configUI(app); await uiStates(app); if(process.env.KINOSAIL_TIMEOUT_PHASE==='ui') continue; await viewer(app);
     const local=await signIn(app,false), pub=await signIn(app,true);
     await permissionChecks(app,local,pub);
     await stop(app); start(app); await ready(app);

@@ -2,9 +2,10 @@ package server
 
 import (
 	"errors"
-	"github.com/MikeO7/kinosail/packages/httpguard"
 	"net/http"
 	"time"
+
+	"github.com/MikeO7/kinosail/packages/httpguard"
 )
 
 func publicSessionTimeoutHours(settings installationSettings) (float64, float64) {
