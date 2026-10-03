@@ -1,0 +1,24 @@
+{
+  "verification": "passed",
+  "baseline_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+  "declaration_count": 196,
+  "test_file_count": 70,
+  "source_owner_files_verified": 274,
+  "decisions": {
+    "R": 189,
+    "D": 7
+  },
+  "baseline_terminal_statuses": {
+    "pass": 195,
+    "skip": 1
+  },
+  "baseline_receipts": [
+    {
+      "path": "/Users/mikeo/Documents/Codex/2026-10-03/task/kinosail/.verification/test-overhaul/baseline/player-go.jsonl",
+      "present": true,
+      "checksum_matches": true
+    }
+  ],
+  "packet_sha256": "e9611880cd8011ead95a40ba204708af06c784ebf88a167d3424b0a7b62cca00",
+  "execution": "Read-only assigned-declaration/body/owner/receipt checksum validation. No Go or E2E execution."
+}
