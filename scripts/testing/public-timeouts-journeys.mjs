@@ -79,13 +79,14 @@ async function uiStates(app) {
   const page=app.owner; app.lastpage=page;
   await page.goto(app.url+'/settings#security');
   const section=page.locator('#session-timeouts'), form=section.locator('[data-timeout-access="public"]');
+  await page.setViewportSize({width:1440,height:900}); await form.getByRole('button',{name:'Save public timeouts'}).scrollIntoViewIfNeeded();
   const loaded=await section.boundingBox();
   let pending, resume;
   const seen=new Promise(resolve=>pending=resolve), release=new Promise(resolve=>resume=resolve);
   await page.route(app.url+'/settings/public-session-timeouts',async route=>{pending(); await release; await route.continue();});
   const saved=page.waitForURL(app.url+'/settings#security');
-  const clicked=form.getByRole('button',{name:'Save public timeouts'}).click();
-  await seen; expect(await section.boundingBox()).toEqual(loaded);
+  let clickError; const clicked=form.getByRole('button',{name:'Save public timeouts'}).click({noWaitAfter:true}).catch(error=>{clickError=error;pending();resume();});
+  await seen; if(clickError) throw clickError; const during=await section.boundingBox(); expect({width:during.width,height:during.height}).toEqual({width:loaded.width,height:loaded.height});
   await page.screenshot({path:join(evidence,app.name+'-settings-pending.png'),fullPage:true});
   resume(); await clicked; await saved; await page.unroute(app.url+'/settings/public-session-timeouts');
   await expect(section).toBeVisible(); record(app,'pending Save keeps loaded control geometry');
@@ -113,5 +114,32 @@ async function enableMFAConcurrency(app) {
   const after=await snapshot(app); expect(after.requiredMFA).toBe(true); expect(after.sessions).toEqual([]);
   record(app,'disabled to enabled MFA concurrent timeout Save completes and revokes sessions',{statuses:responses});
 }
-return {configUI,legacyChecks,admissionChecks,atomicChecks,uiStates,enableMFAConcurrency};
+async function rollbackChecks(app) {
+  await save(app,true,8760,8760); const removed=await signIn(app,true);
+  await fixture(app,'boundary',{viewerID:app.viewerID,channel:'public',mode:'expiry',inactive:8760,absolute:8760,margin:0});
+  await save(app,true,8760,8760); await me(app,removed,401,'unobserved expired sessions removed before rollback');
+  const valid=await signIn(app,true), before=await snapshot(app);
+  expect((await api(app.owner,settingsPath(true),'DELETE')).status).toBe(200);
+  const fields=(await api(app.owner,'/api/v1/settings')).body;
+  expect(fields.publicSessionTimeoutsConfigured).toBe(false);
+  const reset=await snapshot(app); expect(reset.compatibleSettingsSHA256).toBe(before.compatibleSettingsSHA256);
+  expect(reset.unrelatedDataSHA256).toEqual(before.unrelatedDataSHA256);
+  for(const session of reset.sessions.filter(value=>value.channel==='public')) expect(session.expiresAt-session.createdAt).toBeLessThanOrEqual(8*3600);
+  expect((await api(app.owner,'/api/v1/sessions','DELETE')).status).toBe(200);
+  expect((await api(app.owner,'/api/v1/session','DELETE')).status).toBe(200);
+  await stop(app); app.legacy=true; start(app); await ready(app);
+  await me(app,valid,401,'pre-feature binary cannot reuse rollback-revoked session');
+  await app.owner.goto(app.url+'/login'); await app.owner.locator('[data-passkey-login]').click(); await expect(app.owner).toHaveURL(app.url+'/');
+  expect((await api(app.owner,'/api/v1/settings')).status).toBe(200);
+  record(app,'pre-feature binary reads current DB and accepts fresh Owner sign-in');
+  await me(app,removed,401,'pre-feature binary cannot resurrect deleted session');
+  const old=await snapshot(app); expect(old.compatibleSettingsSHA256).toBe(before.compatibleSettingsSHA256);
+  expect(old.unrelatedDataSHA256).toEqual(before.unrelatedDataSHA256);
+  await stop(app); app.legacy=false; start(app); await ready(app);
+  expect((await api(app.owner,'/api/v1/settings')).body.publicSessionTimeoutsConfigured).toBe(false);
+  await me(app,removed,401,'upgrade after rollback cannot resurrect session');
+  await me(app,valid,401,'upgrade retains rollback session revocations');
+  await removed.ctx.close(); await valid.ctx.close(); record(app,'real downgrade and upgrade preserve unrelated data and current revocations');
+}
+return {configUI,legacyChecks,admissionChecks,atomicChecks,uiStates,enableMFAConcurrency,rollbackChecks};
 }

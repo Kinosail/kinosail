@@ -75,3 +75,13 @@ The Owner API uses `PUT /api/v1/settings/session-timeouts` for private access an
 Both accept `inactiveHours` and `absoluteHours`. Read effective limits and `publicSessionTimeoutsConfigured` from `GET /api/v1/settings`.
 
 Inactivity limits apply to browser sessions. Other public clients use the absolute limit.
+
+Before using a Server version released before public timeout settings, select **Use original public limits** in Settings.
+This removes only the public timeout settings and shortens existing public sessions to the original limits.
+It preserves private settings, other preferences, current data, and session revocations.
+The API equivalent is `DELETE /api/v1/settings/public-session-timeouts` with an empty body and current Owner authentication.
+A successful reset sets `publicSessionTimeoutsConfigured` to `false`.
+Confirm this result. Select **Sign out other devices**, then sign out of your current Owner session.
+The API equivalents are `DELETE /api/v1/sessions`, then `DELETE /api/v1/session`.
+Stop the Server, change its version, and sign in again. Do not restore an old authentication backup.
+Older versions do not enforce stored browser inactivity ceilings, so signing everyone out is required for this rollback.

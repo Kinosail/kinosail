@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Change only stopped disposable E2E state to exercise time without waiting a year."""
 import json
+import hashlib
 from pathlib import Path
 import sqlite3
 import sys
@@ -18,7 +19,12 @@ now = int(time.time())
 count = 0
 if operation == 'snapshot':
     safe = [{'channel': x.get('channel',''), 'createdAt': x.get('createdAt'), 'expiresAt': x.get('expiresAt'), 'inactiveSeconds': x.get('inactiveSeconds')} for x in sessions.values() if x['profileId']==values['viewerID']]
-    print(json.dumps({'requiredMFA':settings.get('requireMfa'),'sessions':safe,'policies':{k:v for k,v in settings.items() if 'Session' in k or 'session' in k}}))
+    compatible=dict(settings)
+    compatible.pop('publicSessionInactiveHours',None)
+    compatible.pop('publicSessionAbsoluteHours',None)
+    settings_digest=hashlib.sha256(json.dumps(compatible,sort_keys=True).encode()).hexdigest()
+    data_digests={name:hashlib.sha256(bytes(value)).hexdigest() for name,value in connection.execute('SELECT name,value FROM state') if name in ['profiles.json','progress.json','lists.json','collections.json','playlists.json']}
+    print(json.dumps({'compatibleSettingsSHA256':settings_digest,'unrelatedDataSHA256':data_digests,'requiredMFA':settings.get('requireMfa'),'sessions':safe,'policies':{k:v for k,v in settings.items() if 'Session' in k or 'session' in k}}))
     connection.close()
     raise SystemExit(0)
 if operation == 'deny-write':

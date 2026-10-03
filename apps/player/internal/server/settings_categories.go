@@ -91,7 +91,7 @@ var settingsSectionCategories = map[string]string{
 	"general": "general", "updates": "general", "onboarding": "general",
 	"playback": "playback", "appearance": "appearance", "navigation": "appearance",
 	"profiles": "household", "library": "library", "system": "library",
-	"security": "security", "session-timeouts": "security", "public-session-timeouts": "security", "transcoder": "system",
+	"security": "security", "session-timeouts": "security", "public-session-timeouts": "security", "public-session-timeouts/reset": "security", "transcoder": "system",
 	"access": "network", "jellyfin": "network", "trusted-https": "network", "viewing-imports": "migration",
 }
 

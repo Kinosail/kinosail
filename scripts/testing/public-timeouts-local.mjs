@@ -39,7 +39,7 @@ async function ready(app) {
   throw new Error('Disposable Server readiness failed');
 }
 function start(app) {
-  app.process = spawn(join(evidence, app.name), [], {env:{...process.env,
+  app.process = spawn(join(evidence, app.name+(app.legacy?'-legacy':'')), [], {env:{...process.env,
     KINOSAIL_LISTEN:`127.0.0.1:${app.port}`, KINOSAIL_AUTH_URL:app.url, KINOSAIL_TLS_ENABLED:'false',
     KINOSAIL_DATA_DIR:app.config, KINOSAIL_MEDIA_DIR:join(state, 'media'),
     KINOSAIL_CACHE_DIR:join(state, app.name, 'cache'), KINOSAIL_BACKUP_DIR:join(state, app.name, 'backups'),
@@ -163,7 +163,11 @@ async function permissionChecks(app,local,pub) {
     expect(response.status).toBe(client===pub&&app.name==='player'?404:403); record(app,'Viewer settings denied',{publicSession:client===pub,publicPolicy:publicAccess,status:response.status});
   }
   expect((await api(app.owner,settingsPath(true),'PUT',{inactiveHours:1,absoluteHours:4},false)).status).toBe(403);
-  record(app,'missing CSRF denied');
+  expect((await api(app.owner,settingsPath(true),'DELETE',undefined,false)).status).toBe(403);
+  expect((await api(app.owner,settingsPath(true),'DELETE',{invalid:true})).status).toBe(400);
+  expect((await api(local.page,settingsPath(true),'DELETE')).status).toBe(403);
+  expect((await api(pub.page,settingsPath(true),'DELETE')).status).toBe(app.name==='player'?404:403);
+  record(app,'missing CSRF and unauthorized/reset bodies denied');
   for(const input of [{inactiveHours:0,absoluteHours:8},{inactiveHours:-1,absoluteHours:8},{inactiveHours:.24,absoluteHours:8},{inactiveHours:1,absoluteHours:3.99},{inactiveHours:8761,absoluteHours:8761},{inactiveHours:24,absoluteHours:8},{inactiveHours:1,absoluteHours:8761},{inactiveHours:1,absoluteHours:8,unknown:true}]) {
     expect((await api(app.owner,settingsPath(true),'PUT',input)).status).toBe(400);
   }
@@ -213,7 +217,7 @@ async function transitionChecks(app) {
   await save(app,true,1,4); await me(app,valid,200,'tightening preserves still-valid session'); await valid.ctx.close();
 }
 const {extraJourneys}=await import('./public-timeouts-journeys.mjs');
-const {configUI,legacyChecks,admissionChecks,atomicChecks,uiStates,enableMFAConcurrency}=extraJourneys({api,expect,record,fixture,signIn,me,save,stop,start,ready,spawnSync,settingsPath,join,evidence});
+const {configUI,legacyChecks,admissionChecks,atomicChecks,uiStates,enableMFAConcurrency,rollbackChecks}=extraJourneys({api,expect,record,fixture,signIn,me,save,stop,start,ready,spawnSync,settingsPath,join,evidence});
 try {
   await mkdir(join(state,'media'));
   for(const [name,cookie] of [['player','__Host-kinosail_player_session'],['subtitles','__Host-kinosail_subtitles_session']]) {
@@ -234,7 +238,7 @@ try {
     expect(persisted.publicSessionInactiveHours).toBe(8760); expect(persisted.sessionInactiveHours).toBe(.25);
     await me(app,local,200,'private persists across restart'); await me(app,pub,200,'public persists across restart');
     record(app,'independent settings persist across server restart'); await local.ctx.close(); await pub.ctx.close();
-    await boundaryChecks(app); await transitionChecks(app); await atomicChecks(app); await legacyChecks(app); await admissionChecks(app); await enableMFAConcurrency(app);
+    await boundaryChecks(app); await transitionChecks(app); await atomicChecks(app); await legacyChecks(app); await admissionChecks(app); await rollbackChecks(app); await enableMFAConcurrency(app);
   }
   receipt.result='passed';
 } catch(error) { receipt.error=String(error.message).slice(0,700); for(const app of apps) if(app.lastpage&&!app.lastpage.isClosed()) { await app.lastpage.screenshot({path:join(evidence,app.name+'-failure.png')}); receipt.failureUI=(await app.lastpage.locator('main').innerText().catch(()=> '')).slice(0,1500); } }
@@ -244,7 +248,7 @@ finally {
   for(const app of apps) { if(app.viewerBrowser) await app.viewerBrowser.close(); await stop(app); }
   receipt.safeServerLogs=Object.fromEntries(apps.map(app=>[app.name,app.safeLogs]));
   receipt.binarySHA256={};
-  for(const app of apps) receipt.binarySHA256[app.name]=digest(await readFile(join(evidence,app.name)));
+  for(const app of apps) { receipt.binarySHA256[app.name]=digest(await readFile(join(evidence,app.name))); receipt.binarySHA256[app.name+'-legacy']=digest(await readFile(join(evidence,app.name+'-legacy'))); }
   await writeFile(join(evidence,'receipt.json'),JSON.stringify(receipt,null,2)+'\n');
   await rm(state,{recursive:true,force:true});
   console.log(JSON.stringify({artifact:evidence,result:receipt.result,observations:receipt.results.length,error:receipt.error},null,2));

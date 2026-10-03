@@ -19,7 +19,7 @@ func (store *settingsStore) auditSnapshot(request *http.Request) map[string]stri
 		return map[string]string{"items": strings.Join(store.value.Navigation, ",")}
 	case "/settings/mfa", "/api/v1/settings/mfa":
 		return map[string]string{"required": strconv.FormatBool(store.value.RequireMFA)}
-	case "/settings/public-session-timeouts", "/api/v1/settings/public-session-timeouts":
+	case "/settings/public-session-timeouts", "/settings/public-session-timeouts/reset", "/api/v1/settings/public-session-timeouts":
 		inactive, absolute := publicSessionTimeoutHours(store.value)
 		return map[string]string{"access": "public", "inactiveHours": strconv.FormatFloat(inactive, 'f', -1, 64), "absoluteHours": strconv.FormatFloat(absolute, 'f', -1, 64)}
 	case "/settings/session-timeouts", "/api/v1/settings/session-timeouts":

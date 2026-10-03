@@ -1,6 +1,11 @@
 package server
 
-import "time"
+import (
+	"errors"
+	"github.com/MikeO7/kinosail/packages/httpguard"
+	"net/http"
+	"time"
+)
 
 func publicSessionTimeoutHours(settings installationSettings) (float64, float64) {
 	if settings.PublicSessionInactiveHours != 0 && settings.PublicSessionAbsoluteHours != 0 {
@@ -38,4 +43,31 @@ func (auth *authentication) publicAuthenticationMaximumAge() time.Duration {
 	}
 	_, absolute := auth.settings.publicSessionTimeouts()
 	return absolute
+}
+
+func resetPublicSessionTimeouts(settings *settingsStore, api bool) http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		if !httpguard.EmptyMutationRequest(writer, request) {
+			if api {
+				apiError(writer, errors.New("reset requires an empty request"), http.StatusBadRequest)
+			} else {
+				localizedError(writer, request, "reset requires an empty request", http.StatusBadRequest)
+			}
+			return
+		}
+		if err := settings.resetPublicSessionTimeouts(); err != nil {
+			timeoutSettingsFailure(request)
+			if api {
+				apiError(writer, errors.New("could not reset public session timeouts"), http.StatusInternalServerError)
+			} else {
+				localizedError(writer, request, "could not reset public session timeouts", http.StatusInternalServerError)
+			}
+			return
+		}
+		if api {
+			writeJSON(writer, map[string]string{"status": "reset"}, http.StatusOK)
+		} else {
+			http.Redirect(writer, request, "/settings#security", http.StatusSeeOther)
+		}
+	}
 }
