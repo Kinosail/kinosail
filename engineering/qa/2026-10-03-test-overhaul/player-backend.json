@@ -7156,23 +7156,34 @@
       "end_line": 9,
       "sha256": "f06f0c34db0aa5db04ed7e0b18832a2f358bb5b33260ca15942622aeb34a8e44",
       "path": "apps/player/internal/server/album_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "First(track1) and Late(track2) fixture already sorts identically by title/file; omitting track sort can still pass. Album route/track presence has genuine media journey and stronger shared hierarchy/projection guards.",
+      "category": "reader_archive_trust_or_durable_position",
+      "credible_failure": "First(track1) and Late(track2) fixture already sorts identically by title/file; omitting track sort can still pass. Album route/track presence has genuine media journey and stronger shared hierarchy/projection guards.",
+      "production_owner": [
+        "apps/player/internal/server/album.go:browseAlbum",
+        "packages/catalog/detail_http.go:Album",
+        "packages/library/organization.go:OrganizeMusic"
+      ],
+      "non_test_callers": [
+        "Actual Go app registered GET /read/{id}, reader API/file/asset routes or persisted reader/bookmark mutation; library visible-item boundary precedes archive work."
+      ],
+      "remaining_proof": [
+        "apps/player/e2e/test-instance-library.spec.ts:public media journey opens real ExampleAlbum then ExampleTrackOne audio.",
+        "Retained packages/library/organization_test.go:TestOrganizersBuildVideoAndMusicHierarchies supplies reversed track2/track1 and asserts track1 first; packages/catalog/detail_http_test.go:TestAlbumHandlerProjectsAndReportsResults asserts actual first-track projection/render failure."
+      ],
+      "coverage_limit": "Genuine media browser has one album/track and does not establish multi-track order. Removed fixture itself does not distinguish alphabetical versus metadata order; shared keeper reverses track2/track1 input. No new order matrix added.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Coarse smoke/order fixture consolidates against explicit stronger proofs; no security boundary deleted.",
+      "validation_command": "Root full Player Go plus genuine populated browser media journey; child did not run builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "",
+      "review_provenance": "Complete test and helper body, tested reader/archive/position/bookmark owner methods, application routes/callers, pinned file history and genuine test-instance-library scenario read; no synthetic UI equivalence assumed."
     },
     {
       "name": "TestOwnerSettingsAndOperationsAPIRoutes",
@@ -11031,22 +11042,34 @@
       "sha256": "b5f38fe5162c562f7e20e717c5e961123fe4d328c44b1511f87427d66afe4d2d",
       "path": "apps/player/internal/server/books_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Book template must expose download link and app download route must200 with attachment metadata for visible ebook; wrong app binding can break ebooks despite shared handler correctness.",
+      "category": "reader_archive_trust_or_durable_position",
+      "credible_failure": "Book template must expose download link and app download route must200 with attachment metadata for visible ebook; wrong app binding can break ebooks despite shared handler correctness.",
+      "production_owner": [
+        "apps/player/internal/server/book.go:browseBook",
+        "apps/player/internal/server/album.go:detailPages",
+        "apps/player/internal/server/files.go:download",
+        "packages/catalog/detail_http.go:Book",
+        "packages/playback/file_delivery.go:LibraryDownloadHandler"
+      ],
+      "non_test_callers": [
+        "Actual Go app registered GET /read/{id}, reader API/file/asset routes or persisted reader/bookmark mutation; library visible-item boundary precedes archive work."
+      ],
+      "remaining_proof": [
+        "Retain this actual app HTTP archive/progress boundary; shared parser tests do not prove app-visible route response/state adapters."
+      ],
+      "coverage_limit": "Genuine PDF/EPUB/CBZ media journey opens Read now but never ebook Download. Canonical shared TestLibraryDownloadHandler proves body/filename/auth ordering but cannot prove this app route and detail policy callback.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Security/data loss or important format delivery current genuine E2E misses.",
+      "validation_command": "Root full Player Go plus genuine populated browser media journey; child did not run builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Malformed tiny epub/pdf; fixture asserts200/nonempty header only, not correct body/full filename or browser downloaded bytes.",
+      "review_provenance": "Complete test and helper body, tested reader/archive/position/bookmark owner methods, application routes/callers, pinned file history and genuine test-instance-library scenario read; no synthetic UI equivalence assumed."
     },
     {
       "name": "TestReaderServesPDFEPUBAndComicPagesThroughAPIAndWeb",
@@ -11054,23 +11077,34 @@
       "end_line": 17,
       "sha256": "fb753645461fb5dfd0efe16b3a32b4a9375cf4fdcf241bdd2a407b642552a400",
       "path": "apps/player/internal/server/books_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "Coarse200/type-present/readURL/title smoke detects no additional important format boundary beyond stronger app reader positives and genuine format journey.",
+      "category": "reader_archive_trust_or_durable_position",
+      "credible_failure": "Coarse200/type-present/readURL/title smoke detects no additional important format boundary beyond stronger app reader positives and genuine format journey.",
+      "production_owner": [
+        "apps/player/internal/server/reader.go:registerReader/readerFor/epubSpine/serveReaderFile/serveReaderAsset",
+        "apps/player/internal/server/reader_archive.go:archiveImages",
+        "packages/library/archive.go:ArchiveImages/ReadArchiveAsset/CleanArchivePath"
+      ],
+      "non_test_callers": [
+        "Actual Go app registered GET /read/{id}, reader API/file/asset routes or persisted reader/bookmark mutation; library visible-item boundary precedes archive work."
+      ],
+      "remaining_proof": [
+        "apps/player/e2e/test-instance-library.spec.ts:public test instance exercises every media section and local TMDB metadata opens actual PDF+EPUB iframe and2CBZimages.",
+        "Retained same-app TestReaderServesOnlyValidatedBookFilesAndAssets validates PDF and EPUB resource routes/headers; TestEPUBReaderPersistsChapterProgressThroughAPIAndWeb asserts correct selected chapter URL/restart; TestReaderPreservesDistinctPagesAndRelativeEPUBChaptersThroughHTTP checks exactCBZ/EPUB metadata/bytes."
+      ],
+      "coverage_limit": "Existing E2E is genuine actual Go app; retained HTTP fixtures remain isolated and are not called E2E. Coarse API PDF type-presence has no stronger semantic assertion than readerFor-backed successful PDF web reader.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Coarse smoke/order fixture consolidates against explicit stronger proofs; no security boundary deleted.",
+      "validation_command": "Root full Player Go plus genuine populated browser media journey; child did not run builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "",
+      "review_provenance": "Complete test and helper body, tested reader/archive/position/bookmark owner methods, application routes/callers, pinned file history and genuine test-instance-library scenario read; no synthetic UI equivalence assumed."
     },
     {
       "name": "TestReaderServesMainstreamComicArchivesThroughAPIAndWeb",
@@ -11078,23 +11112,34 @@
       "end_line": 22,
       "sha256": "80831dd7903c9295a2f5fd69c9a9d171db885d1127ec7fb7e08058ceea1f2489",
       "path": "apps/player/internal/server/books_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "reason": "App CB7/CBT extensions must scan into comic manifests/pages and literal leading-dash asset route must return expected body; option injection or app format classification breaks usable archive access.",
+      "category": "reader_archive_trust_or_durable_position",
+      "credible_failure": "App CB7/CBT extensions must scan into comic manifests/pages and literal leading-dash asset route must return expected body; option injection or app format classification breaks usable archive access.",
+      "production_owner": [
+        "apps/player/internal/server/reader.go:registerReader/readerFor/epubSpine/serveReaderFile/serveReaderAsset",
+        "apps/player/internal/server/reader_archive.go:archiveImages",
+        "packages/library/archive.go:ArchiveImages/ReadArchiveAsset/CleanArchivePath",
+        "packages/archivetest/archive.go:WriteTar"
+      ],
+      "non_test_callers": [
+        "Actual Go app registered GET /read/{id}, reader API/file/asset routes or persisted reader/bookmark mutation; library visible-item boundary precedes archive work."
+      ],
+      "remaining_proof": [
+        "Retain this actual app HTTP archive/progress boundary; shared parser tests do not prove app-visible route response/state adapters."
+      ],
+      "coverage_limit": "Genuine browser uses CBZ only, no CBT or leading-dash TAR extraction through app asset URLs. Shared archive keeper validates extraction but not app route/type projection.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Security/data loss or important format delivery current genuine E2E misses.",
+      "validation_command": "Root full Player Go plus genuine populated browser media journey; child did not run builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Fixture writes TAR bytes with both cb7 and cbt extensions. Does NOT prove real7z/CB7 decoding; retained F to expose limit.",
+      "review_provenance": "Complete test and helper body, tested reader/archive/position/bookmark owner methods, application routes/callers, pinned file history and genuine test-instance-library scenario read; no synthetic UI equivalence assumed."
     },
     {
       "name": "TestPlayerBrandingIsUsedByTheWebAppShell",
@@ -17589,22 +17634,32 @@
       "sha256": "76c33d46e8128481d84ba78c38bb6e99ccd3840106f72ee742c1f3c4dfa61039",
       "path": "apps/player/internal/server/media_bookmarks_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Audio/audiobook bookmark seconds, generated64-char ID and trimmed title must persist after reopen/delete; invalid JSON/type/range/mixed page+seconds/clientID/duplicatefields must400 and preserve exact saved collection.",
+      "category": "reader_archive_trust_or_durable_position",
+      "credible_failure": "Audio/audiobook bookmark seconds, generated64-char ID and trimmed title must persist after reopen/delete; invalid JSON/type/range/mixed page+seconds/clientID/duplicatefields must400 and preserve exact saved collection.",
+      "production_owner": [
+        "apps/player/internal/server/media_bookmarks.go",
+        "apps/player/internal/server/media_experience_http.go:bookmarksHTTP",
+        "apps/player/internal/server/media_experience_store.go:mediaBookmark/change"
+      ],
+      "non_test_callers": [
+        "Actual Go app registered GET /read/{id}, reader API/file/asset routes or persisted reader/bookmark mutation; library visible-item boundary precedes archive work."
+      ],
+      "remaining_proof": [
+        "Retain this actual app HTTP archive/progress boundary; shared parser tests do not prove app-visible route response/state adapters."
+      ],
+      "coverage_limit": "Real media browser journeys open audio but never create malformed bookmark matrix or reopen persisted bookmark state.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Security/data loss or important format delivery current genuine E2E misses.",
+      "validation_command": "Root full Player Go plus genuine populated browser media journey; child did not run builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Dummy MP3/M4B; no decoding. IDlength checked not direct entropy quality; entropy-failure test covers generation failure.",
+      "review_provenance": "Complete test and helper body, tested reader/archive/position/bookmark owner methods, application routes/callers, pinned file history and genuine test-instance-library scenario read; no synthetic UI equivalence assumed."
     },
     {
       "name": "TestPhotoBookmarksRejectWithoutSaving",
@@ -17613,22 +17668,31 @@
       "sha256": "5db18f3ae9c6d912141d9804f81c8a8b8b6fd44d32686a105a354ebb72143721",
       "path": "apps/player/internal/server/media_bookmarks_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Photo item bookmark GET/POST must400 unsupported instead of storing meaningless position state.",
+      "category": "reader_archive_trust_or_durable_position",
+      "credible_failure": "Photo item bookmark GET/POST must400 unsupported instead of storing meaningless position state.",
+      "production_owner": [
+        "apps/player/internal/server/media_experience_http.go:bookmarksHTTP",
+        "packages/library/library.go:Kind"
+      ],
+      "non_test_callers": [
+        "Actual Go app registered GET /read/{id}, reader API/file/asset routes or persisted reader/bookmark mutation; library visible-item boundary precedes archive work."
+      ],
+      "remaining_proof": [
+        "Retain this actual app HTTP archive/progress boundary; shared parser tests do not prove app-visible route response/state adapters."
+      ],
+      "coverage_limit": "Genuine photo view does not call bookmark API on unsupported kind.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Security/data loss or important format delivery current genuine E2E misses.",
+      "validation_command": "Root full Player Go plus genuine populated browser media journey; child did not run builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Name says without saving but assertions only400/body text; no raw state snapshot/reopen proof. Retained narrow capability-kind boundary.",
+      "review_provenance": "Complete test and helper body, tested reader/archive/position/bookmark owner methods, application routes/callers, pinned file history and genuine test-instance-library scenario read; no synthetic UI equivalence assumed."
     },
     {
       "name": "TestPlayerShowsMediaInformation",
@@ -27208,22 +27272,33 @@
       "sha256": "6d3954e95d9e6304ca99632f52d3843cac09113a9053f3d40295c0d7c45d3aba",
       "path": "apps/player/internal/server/reader_archive_trust_http_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Duplicate CBZ/CBT/EPUB resources (different/identical/oversized ZIP declarations and reversed ordering) must yield exact canonical404 rather than pick attacker-controlled first/last resource; source archive and outside sentinel hashes must remain unchanged.",
+      "category": "reader_archive_trust_or_durable_position",
+      "credible_failure": "Duplicate CBZ/CBT/EPUB resources (different/identical/oversized ZIP declarations and reversed ordering) must yield exact canonical404 rather than pick attacker-controlled first/last resource; source archive and outside sentinel hashes must remain unchanged.",
+      "production_owner": [
+        "apps/player/internal/server/reader.go:registerReader/readerFor/epubSpine/serveReaderFile/serveReaderAsset",
+        "apps/player/internal/server/reader_archive.go:archiveImages",
+        "packages/library/archive.go:ArchiveImages/ReadArchiveAsset/CleanArchivePath",
+        "apps/player/internal/server/reader_archive_trust_fixture_test.go:ordered archive and preserved sentinel fixture"
+      ],
+      "non_test_callers": [
+        "Actual Go app registered GET /read/{id}, reader API/file/asset routes or persisted reader/bookmark mutation; library visible-item boundary precedes archive work."
+      ],
+      "remaining_proof": [
+        "Retain this actual app HTTP archive/progress boundary; shared parser tests do not prove app-visible route response/state adapters."
+      ],
+      "coverage_limit": "Actual browser generated books contain unique well-formed entries; no ambiguous ZIP/TAR resource or oversized central-directory metadata adversary.",
       "history": [
         "f8ea65c09c372b6d20f5ea111d6420e59b288b12 Reject ambiguous Reader archives and malformed EPUB spines"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Security/data loss or important format delivery current genuine E2E misses.",
+      "validation_command": "Root full Player Go plus genuine populated browser media journey; child did not run builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "CBT requires bsdtar; oversized declared bytes stay small, no 64MiB inflation claimed.",
+      "review_provenance": "Complete test and helper body, tested reader/archive/position/bookmark owner methods, application routes/callers, pinned file history and genuine test-instance-library scenario read; no synthetic UI equivalence assumed."
     },
     {
       "name": "TestReaderRejectsDuplicateEPUBManifestIDsThroughHTTP",
@@ -27232,22 +27307,33 @@
       "sha256": "9b7ae390b7e2591e553aefce54ad5b0c5b867fe61085598e069566409a314410",
       "path": "apps/player/internal/server/reader_archive_trust_http_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Duplicate manifest IDs must reject reader construction in both orders while independent exact-name assets still return correct bytes and protected headers.",
+      "category": "reader_archive_trust_or_durable_position",
+      "credible_failure": "Duplicate manifest IDs must reject reader construction in both orders while independent exact-name assets still return correct bytes and protected headers.",
+      "production_owner": [
+        "apps/player/internal/server/reader.go:registerReader/readerFor/epubSpine/serveReaderFile/serveReaderAsset",
+        "apps/player/internal/server/reader_archive.go:archiveImages",
+        "packages/library/archive.go:ArchiveImages/ReadArchiveAsset/CleanArchivePath",
+        "apps/player/internal/server/reader_archive_trust_fixture_test.go:ordered archive and preserved sentinel fixture"
+      ],
+      "non_test_callers": [
+        "Actual Go app registered GET /read/{id}, reader API/file/asset routes or persisted reader/bookmark mutation; library visible-item boundary precedes archive work."
+      ],
+      "remaining_proof": [
+        "Retain this actual app HTTP archive/progress boundary; shared parser tests do not prove app-visible route response/state adapters."
+      ],
+      "coverage_limit": "Normal EPUB browser scenario has distinct IDs; shared parser tests cannot prove HTTP404 versus valid exact-name asset adapter.",
       "history": [
         "f8ea65c09c372b6d20f5ea111d6420e59b288b12 Reject ambiguous Reader archives and malformed EPUB spines"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Security/data loss or important format delivery current genuine E2E misses.",
+      "validation_command": "Root full Player Go plus genuine populated browser media journey; child did not run builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Checks duplicate same-case IDs; separate case-distinct positive keeper remains.",
+      "review_provenance": "Complete test and helper body, tested reader/archive/position/bookmark owner methods, application routes/callers, pinned file history and genuine test-instance-library scenario read; no synthetic UI equivalence assumed."
     },
     {
       "name": "TestReaderRejectsRootEscapingEPUBSpinesThroughHTTP",
@@ -27256,22 +27342,33 @@
       "sha256": "fa8b17931ef1ac1f52175b6d704bacff8c10ba023aa0c1a6cedc433400b5aee9",
       "path": "apps/player/internal/server/reader_archive_trust_http_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Escaping-only and mixed valid/escaping EPUB spines must reject whole reader, hide outside sentinel, and preserve valid exact-name resource delivery.",
+      "category": "reader_archive_trust_or_durable_position",
+      "credible_failure": "Escaping-only and mixed valid/escaping EPUB spines must reject whole reader, hide outside sentinel, and preserve valid exact-name resource delivery.",
+      "production_owner": [
+        "apps/player/internal/server/reader.go:registerReader/readerFor/epubSpine/serveReaderFile/serveReaderAsset",
+        "apps/player/internal/server/reader_archive.go:archiveImages",
+        "packages/library/archive.go:ArchiveImages/ReadArchiveAsset/CleanArchivePath",
+        "apps/player/internal/server/reader_archive_trust_fixture_test.go:ordered archive and preserved sentinel fixture"
+      ],
+      "non_test_callers": [
+        "Actual Go app registered GET /read/{id}, reader API/file/asset routes or persisted reader/bookmark mutation; library visible-item boundary precedes archive work."
+      ],
+      "remaining_proof": [
+        "Retain this actual app HTTP archive/progress boundary; shared parser tests do not prove app-visible route response/state adapters."
+      ],
+      "coverage_limit": "Normal browser EPUB never supplies ../../href or encoded traversal asset routes.",
       "history": [
         "f8ea65c09c372b6d20f5ea111d6420e59b288b12 Reject ambiguous Reader archives and malformed EPUB spines"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Security/data loss or important format delivery current genuine E2E misses.",
+      "validation_command": "Root full Player Go plus genuine populated browser media journey; child did not run builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Canonical404 response/sentinel non-disclosure and cleanup preservation, not operating-system sandbox penetration test.",
+      "review_provenance": "Complete test and helper body, tested reader/archive/position/bookmark owner methods, application routes/callers, pinned file history and genuine test-instance-library scenario read; no synthetic UI equivalence assumed."
     },
     {
       "name": "TestReaderRejectsMalformedEPUBMetadataThroughHTTP",
@@ -27280,22 +27377,33 @@
       "sha256": "c27ce2dcbc1c53f85fdfc76f58c3cc24e8d888be36cc585328b8bf8e9faf8bd1",
       "path": "apps/player/internal/server/reader_archive_trust_http_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Missing/empty IDs/references/hrefs, unknown refs, absolute and backslash hrefs must fail whole reader without making valid unambiguous assets inaccessible.",
+      "category": "reader_archive_trust_or_durable_position",
+      "credible_failure": "Missing/empty IDs/references/hrefs, unknown refs, absolute and backslash hrefs must fail whole reader without making valid unambiguous assets inaccessible.",
+      "production_owner": [
+        "apps/player/internal/server/reader.go:registerReader/readerFor/epubSpine/serveReaderFile/serveReaderAsset",
+        "apps/player/internal/server/reader_archive.go:archiveImages",
+        "packages/library/archive.go:ArchiveImages/ReadArchiveAsset/CleanArchivePath",
+        "apps/player/internal/server/reader_archive_trust_fixture_test.go:ordered archive and preserved sentinel fixture"
+      ],
+      "non_test_callers": [
+        "Actual Go app registered GET /read/{id}, reader API/file/asset routes or persisted reader/bookmark mutation; library visible-item boundary precedes archive work."
+      ],
+      "remaining_proof": [
+        "Retain this actual app HTTP archive/progress boundary; shared parser tests do not prove app-visible route response/state adapters."
+      ],
+      "coverage_limit": "Genuine book journey exercises only one valid manifest/spine; no malformed metadata rejection matrix.",
       "history": [
         "f8ea65c09c372b6d20f5ea111d6420e59b288b12 Reject ambiguous Reader archives and malformed EPUB spines"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Security/data loss or important format delivery current genuine E2E misses.",
+      "validation_command": "Root full Player Go plus genuine populated browser media journey; child did not run builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Missing/empty ID input appends malformed manifest but keeps good spine; validates owner rejects malformed manifest rather than only used refs.",
+      "review_provenance": "Complete test and helper body, tested reader/archive/position/bookmark owner methods, application routes/callers, pinned file history and genuine test-instance-library scenario read; no synthetic UI equivalence assumed."
     },
     {
       "name": "TestReaderPreservesUnsupportedEPUBMediaTypeBehavior",
@@ -27304,22 +27412,33 @@
       "sha256": "366b9b9919d5c16c31972b45784c8c2bc935eba929d6b4cab86ead43ac711aed",
       "path": "apps/player/internal/server/reader_archive_trust_http_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Unsupported image spine entries must not erase valid text chapter or enter navigable page list, while exact-name picture bytes remain available.",
+      "category": "reader_archive_trust_or_durable_position",
+      "credible_failure": "Unsupported image spine entries must not erase valid text chapter or enter navigable page list, while exact-name picture bytes remain available.",
+      "production_owner": [
+        "apps/player/internal/server/reader.go:registerReader/readerFor/epubSpine/serveReaderFile/serveReaderAsset",
+        "apps/player/internal/server/reader_archive.go:archiveImages",
+        "packages/library/archive.go:ArchiveImages/ReadArchiveAsset/CleanArchivePath",
+        "apps/player/internal/server/reader_archive_trust_fixture_test.go:ordered archive and preserved sentinel fixture"
+      ],
+      "non_test_callers": [
+        "Actual Go app registered GET /read/{id}, reader API/file/asset routes or persisted reader/bookmark mutation; library visible-item boundary precedes archive work."
+      ],
+      "remaining_proof": [
+        "Retain this actual app HTTP archive/progress boundary; shared parser tests do not prove app-visible route response/state adapters."
+      ],
+      "coverage_limit": "Normal browser EPUB has one XHTML spine entry; no unsupported mixed spine content selection.",
       "history": [
         "f8ea65c09c372b6d20f5ea111d6420e59b288b12 Reject ambiguous Reader archives and malformed EPUB spines"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Security/data loss or important format delivery current genuine E2E misses.",
+      "validation_command": "Root full Player Go plus genuine populated browser media journey; child did not run builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Returned one page exact URL/number and both body/header positive resources checked.",
+      "review_provenance": "Complete test and helper body, tested reader/archive/position/bookmark owner methods, application routes/callers, pinned file history and genuine test-instance-library scenario read; no synthetic UI equivalence assumed."
     },
     {
       "name": "TestReaderPreservesDistinctPagesAndRelativeEPUBChaptersThroughHTTP",
@@ -27328,22 +27447,33 @@
       "sha256": "39b3e2707d8a739e4ac240c5ce38bf1faea49a6e140d0409ec42e1f145da9825",
       "path": "apps/player/internal/server/reader_archive_trust_http_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Distinct comic images, case-distinct EPUB IDs and safe parent-relative chapter must preserve sequential metadata/exact bytes; overbroad traversal defenses can drop legitimate book content.",
+      "category": "reader_archive_trust_or_durable_position",
+      "credible_failure": "Distinct comic images, case-distinct EPUB IDs and safe parent-relative chapter must preserve sequential metadata/exact bytes; overbroad traversal defenses can drop legitimate book content.",
+      "production_owner": [
+        "apps/player/internal/server/reader.go:registerReader/readerFor/epubSpine/serveReaderFile/serveReaderAsset",
+        "apps/player/internal/server/reader_archive.go:archiveImages",
+        "packages/library/archive.go:ArchiveImages/ReadArchiveAsset/CleanArchivePath",
+        "apps/player/internal/server/reader_archive_trust_fixture_test.go:ordered archive and preserved sentinel fixture"
+      ],
+      "non_test_callers": [
+        "Actual Go app registered GET /read/{id}, reader API/file/asset routes or persisted reader/bookmark mutation; library visible-item boundary precedes archive work."
+      ],
+      "remaining_proof": [
+        "Retain this actual app HTTP archive/progress boundary; shared parser tests do not prove app-visible route response/state adapters."
+      ],
+      "coverage_limit": "Browser happy EPUB and CBZ omit case-distinct IDs or parent-relative path normalization.",
       "history": [
         "f8ea65c09c372b6d20f5ea111d6420e59b288b12 Reject ambiguous Reader archives and malformed EPUB spines"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Security/data loss or important format delivery current genuine E2E misses.",
+      "validation_command": "Root full Player Go plus genuine populated browser media journey; child did not run builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "ZIP real images 1x1; actual HTML bytes and protected asset headers checked, no browser decoding claim.",
+      "review_provenance": "Complete test and helper body, tested reader/archive/position/bookmark owner methods, application routes/callers, pinned file history and genuine test-instance-library scenario read; no synthetic UI equivalence assumed."
     },
     {
       "name": "TestReaderPreservesSameBasenamesInDistinctComicFolders",
@@ -27352,22 +27482,33 @@
       "sha256": "998cfe2803fcfe214bb6abb69c04fa9791455dac4345658e88d5d1d75a3f5986",
       "path": "apps/player/internal/server/reader_archive_trust_http_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "CBZ/CBT a/page.png and b/page.png must remain two distinct route-addressable pages with their exact different bodies; basename-only normalization loses content.",
+      "category": "reader_archive_trust_or_durable_position",
+      "credible_failure": "CBZ/CBT a/page.png and b/page.png must remain two distinct route-addressable pages with their exact different bodies; basename-only normalization loses content.",
+      "production_owner": [
+        "apps/player/internal/server/reader.go:registerReader/readerFor/epubSpine/serveReaderFile/serveReaderAsset",
+        "apps/player/internal/server/reader_archive.go:archiveImages",
+        "packages/library/archive.go:ArchiveImages/ReadArchiveAsset/CleanArchivePath",
+        "apps/player/internal/server/reader_archive_trust_fixture_test.go:ordered archive and preserved sentinel fixture"
+      ],
+      "non_test_callers": [
+        "Actual Go app registered GET /read/{id}, reader API/file/asset routes or persisted reader/bookmark mutation; library visible-item boundary precedes archive work."
+      ],
+      "remaining_proof": [
+        "Retain this actual app HTTP archive/progress boundary; shared parser tests do not prove app-visible route response/state adapters."
+      ],
+      "coverage_limit": "Normal generated CBZ images use distinct filenames at root; browser does not open nested same-basename TAR/ZIP.",
       "history": [
         "f8ea65c09c372b6d20f5ea111d6420e59b288b12 Reject ambiguous Reader archives and malformed EPUB spines"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Security/data loss or important format delivery current genuine E2E misses.",
+      "validation_command": "Root full Player Go plus genuine populated browser media journey; child did not run builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "2page metadata uniqueness plus both route byte/header assertions and archive/sentinel cleanup integrity.",
+      "review_provenance": "Complete test and helper body, tested reader/archive/position/bookmark owner methods, application routes/callers, pinned file history and genuine test-instance-library scenario read; no synthetic UI equivalence assumed."
     },
     {
       "name": "TestReaderRejectsCBTDuplicatesBeyondMetadataWindow",
@@ -27376,22 +27517,33 @@
       "sha256": "dce2690fd74b86f11b6bbdf883deb2fcb2f409ee52542dfa0d49df8510b3713e",
       "path": "apps/player/internal/server/reader_archive_trust_http_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "A duplicate entry after the first10,000 CBT metadata entries must still reject whole archive; unique late image must stay outside public metadata/asset window without changing earlier exact page.",
+      "category": "reader_archive_trust_or_durable_position",
+      "credible_failure": "A duplicate entry after the first10,000 CBT metadata entries must still reject whole archive; unique late image must stay outside public metadata/asset window without changing earlier exact page.",
+      "production_owner": [
+        "apps/player/internal/server/reader.go:registerReader/readerFor/epubSpine/serveReaderFile/serveReaderAsset",
+        "apps/player/internal/server/reader_archive.go:archiveImages",
+        "packages/library/archive.go:ArchiveImages/ReadArchiveAsset/CleanArchivePath",
+        "apps/player/internal/server/reader_archive_trust_fixture_test.go:ordered archive and preserved sentinel fixture"
+      ],
+      "non_test_callers": [
+        "Actual Go app registered GET /read/{id}, reader API/file/asset routes or persisted reader/bookmark mutation; library visible-item boundary precedes archive work."
+      ],
+      "remaining_proof": [
+        "Retain this actual app HTTP archive/progress boundary; shared parser tests do not prove app-visible route response/state adapters."
+      ],
+      "coverage_limit": "Genuine browser comic is two-entry CBZ; no TAR metadata-window tail ambiguity/resource limit.",
       "history": [
         "f8ea65c09c372b6d20f5ea111d6420e59b288b12 Reject ambiguous Reader archives and malformed EPUB spines"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Security/data loss or important format delivery current genuine E2E misses.",
+      "validation_command": "Root full Player Go plus genuine populated browser media journey; child did not run builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "10,001-entry TAR uses small entries, real bsdtar path; unique late resource404 checked.",
+      "review_provenance": "Complete test and helper body, tested reader/archive/position/bookmark owner methods, application routes/callers, pinned file history and genuine test-instance-library scenario read; no synthetic UI equivalence assumed."
     },
     {
       "name": "TestReaderRejectsMalformedProgressWithoutPersisting",
@@ -27400,22 +27552,33 @@
       "sha256": "d7732c1d3dd6ca475714ec01297f43f916fb18c3c667837ef39a3c7684098205",
       "path": "apps/player/internal/server/reader_archive_trust_http_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Reader progress on root-escaping malformed EPUB must canonical404 and preserve progress bytes after fresh server reopen; valid two-chapter control must durably save and reopen page1.",
+      "category": "reader_archive_trust_or_durable_position",
+      "credible_failure": "Reader progress on root-escaping malformed EPUB must canonical404 and preserve progress bytes after fresh server reopen; valid two-chapter control must durably save and reopen page1.",
+      "production_owner": [
+        "apps/player/internal/server/reader.go:registerReader/readerFor/epubSpine/serveReaderFile/serveReaderAsset",
+        "apps/player/internal/server/reader_archive.go:archiveImages",
+        "packages/library/archive.go:ArchiveImages/ReadArchiveAsset/CleanArchivePath",
+        "apps/player/internal/server/reader_archive_trust_fixture_test.go:ordered archive and preserved sentinel fixture"
+      ],
+      "non_test_callers": [
+        "Actual Go app registered GET /read/{id}, reader API/file/asset routes or persisted reader/bookmark mutation; library visible-item boundary precedes archive work."
+      ],
+      "remaining_proof": [
+        "Retain this actual app HTTP archive/progress boundary; shared parser tests do not prove app-visible route response/state adapters."
+      ],
+      "coverage_limit": "Real browser reading opens valid content but never updates malformed archive progress and restarts.",
       "history": [
         "f8ea65c09c372b6d20f5ea111d6420e59b288b12 Reject ambiguous Reader archives and malformed EPUB spines"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Security/data loss or important format delivery current genuine E2E misses.",
+      "validation_command": "Root full Player Go plus genuine populated browser media journey; child did not run builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Reopen uses same persistence root; compares actual generic item progress and archive/outside-sentinel bytes. No simulated disk write failure.",
+      "review_provenance": "Complete test and helper body, tested reader/archive/position/bookmark owner methods, application routes/callers, pinned file history and genuine test-instance-library scenario read; no synthetic UI equivalence assumed."
     },
     {
       "name": "TestReaderRejectsMalformedAndEmptyBookArchives",
@@ -27424,22 +27587,32 @@
       "sha256": "73f524bdd56004b3234db142ebddd100ab2e07d41773b94adf194b3968024d44",
       "path": "apps/player/internal/server/reader_boundary_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Malformed CB7/CBT/ZIP and EPUB missing/invalid container/package/spine or unsafe image entries must404 before presenting unusable reader.",
+      "category": "reader_archive_trust_or_durable_position",
+      "credible_failure": "Malformed CB7/CBT/ZIP and EPUB missing/invalid container/package/spine or unsafe image entries must404 before presenting unusable reader.",
+      "production_owner": [
+        "apps/player/internal/server/reader.go:registerReader/readerFor/epubSpine/serveReaderFile/serveReaderAsset",
+        "apps/player/internal/server/reader_archive.go:archiveImages",
+        "packages/library/archive.go:ArchiveImages/ReadArchiveAsset/CleanArchivePath"
+      ],
+      "non_test_callers": [
+        "Actual Go app registered GET /read/{id}, reader API/file/asset routes or persisted reader/bookmark mutation; library visible-item boundary precedes archive work."
+      ],
+      "remaining_proof": [
+        "Retain this actual app HTTP archive/progress boundary; shared parser tests do not prove app-visible route response/state adapters."
+      ],
+      "coverage_limit": "Genuine media journey uses generated valid PDF/EPUB/CBZ; no malformed/empty archives or parser metadata failures.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Security/data loss or important format delivery current genuine E2E misses.",
+      "validation_command": "Root full Player Go plus genuine populated browser media journey; child did not run builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Eleven status404 assertions, not exact body/sentinel or real malformed7z decoding proof.",
+      "review_provenance": "Complete test and helper body, tested reader/archive/position/bookmark owner methods, application routes/callers, pinned file history and genuine test-instance-library scenario read; no synthetic UI equivalence assumed."
     },
     {
       "name": "TestReaderServesOnlyValidatedBookFilesAndAssets",
@@ -27448,22 +27621,32 @@
       "sha256": "3bb03c188e1c9f57c827398efbeba44bbefb54dba230ced5f6bc7e3a00a0e7ce",
       "path": "apps/player/internal/server/reader_boundary_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Only PDF /file and safe exact EPUB assets may200; missing/encoded traversal or EPUB-as-file must404 and same-origin embeddability headers remain.",
+      "category": "reader_archive_trust_or_durable_position",
+      "credible_failure": "Only PDF /file and safe exact EPUB assets may200; missing/encoded traversal or EPUB-as-file must404 and same-origin embeddability headers remain.",
+      "production_owner": [
+        "apps/player/internal/server/reader.go:registerReader/readerFor/epubSpine/serveReaderFile/serveReaderAsset",
+        "apps/player/internal/server/reader_archive.go:archiveImages",
+        "packages/library/archive.go:ArchiveImages/ReadArchiveAsset/CleanArchivePath"
+      ],
+      "non_test_callers": [
+        "Actual Go app registered GET /read/{id}, reader API/file/asset routes or persisted reader/bookmark mutation; library visible-item boundary precedes archive work."
+      ],
+      "remaining_proof": [
+        "Retain this actual app HTTP archive/progress boundary; shared parser tests do not prove app-visible route response/state adapters."
+      ],
+      "coverage_limit": "Real PDF browser checks embeddability, but does not call EPUB/file, missing/encoded traversal/missing item adapter matrix.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Security/data loss or important format delivery current genuine E2E misses.",
+      "validation_command": "Root full Player Go plus genuine populated browser media journey; child did not run builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "PDF is prefix-only fake document; positivestatus/header checks without byte validation, complemented by trust positive exact bytes.",
+      "review_provenance": "Complete test and helper body, tested reader/archive/position/bookmark owner methods, application routes/callers, pinned file history and genuine test-instance-library scenario read; no synthetic UI equivalence assumed."
     },
     {
       "name": "TestEPUBReaderPersistsChapterProgressThroughAPIAndWeb",
@@ -27472,23 +27655,38 @@
       "sha256": "8ac8da938ffec536c8172312f5ad5ecd7552df0c61c0710b41fbebf37f311120",
       "path": "apps/player/internal/server/reader_progress_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Page and normalized offset/bookmarks must round-trip after restart; invalid/null/ambiguous/unknown values and offset query modes must400 without changing saved state; web chapter choice must select correct iframe and clear stale choice.",
+      "category": "reader_archive_trust_or_durable_position",
+      "credible_failure": "Page and normalized offset/bookmarks must round-trip after restart; invalid/null/ambiguous/unknown values and offset query modes must400 without changing saved state; web chapter choice must select correct iframe and clear stale choice.",
+      "production_owner": [
+        "apps/player/internal/server/reader.go:registerReader/readerFor/epubSpine/serveReaderFile/serveReaderAsset",
+        "apps/player/internal/server/reader_archive.go:archiveImages",
+        "packages/library/archive.go:ArchiveImages/ReadArchiveAsset/CleanArchivePath",
+        "apps/player/internal/server/reader_progress_response.go:readerProgressResponse",
+        "apps/player/internal/server/media_bookmarks.go:readBookmark/bookmarkResponse",
+        "apps/player/internal/server/media_experience_http.go:bookmarksHTTP",
+        "apps/player/internal/server/media_experience_store.go:change",
+        "packages/catalog/progress_request_store.go:SetReaderPosition/ReaderPage"
+      ],
+      "non_test_callers": [
+        "Actual Go app registered GET /read/{id}, reader API/file/asset routes or persisted reader/bookmark mutation; library visible-item boundary precedes archive work."
+      ],
+      "remaining_proof": [
+        "Retain this actual app HTTP archive/progress boundary; shared parser tests do not prove app-visible route response/state adapters."
+      ],
+      "coverage_limit": "Real browser EPUB journey opens iframe only; routed reader UI does not prove app strict decoding, compatibility field omission, rejected-state equality or persistent reopen.",
       "history": [
         "f0004529b3ab3eabd67687e3b4059083c2ba1e4a Reuse shared JSON guard for media and subtitle requests",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Security/data loss or important format delivery current genuine E2E misses.",
+      "validation_command": "Root full Player Go plus genuine populated browser media journey; child did not run builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Actual two-chapter ZIP and SQLite state, not actual browser scroll restoration; invalid page0/3 code asserted, malformed-offset cases additionally verify state.",
+      "review_provenance": "Complete test and helper body, tested reader/archive/position/bookmark owner methods, application routes/callers, pinned file history and genuine test-instance-library scenario read; no synthetic UI equivalence assumed."
     },
     {
       "name": "TestHomeShowsRecentlyAddedInNewestFirstOrder",
@@ -33833,10 +34031,12 @@
     "TestProfilePolicyChangeDoesNotPersistBeforeSessionRevocation",
     "TestProfileSnapshotsDoNotAliasStoredIdentityState",
     "TestQuickConnectPageUsesSixDigitAutoSubmitControl",
+    "TestReaderServesPDFEPUBAndComicPagesThroughAPIAndWeb",
     "TestStepUpReturnsToKnownOwnerPage",
     "TestSupportedLanguageCoverageIncludesJellyfinLocaleSet",
     "TestUIIconSetIsCompleteAndLocal",
     "TestVersionedApplicationStylesheetIncludesSupporterStyles",
+    "TestViewerCanBrowseAlbumTracksInOrder",
     "TestViewerCanOpenHome",
     "TestViewerCanSearchLibrary"
   ],
@@ -33869,14 +34069,16 @@
     "TestProfilePolicyChangeDoesNotPersistBeforeSessionRevocation",
     "TestProfileSnapshotsDoNotAliasStoredIdentityState",
     "TestQuickConnectPageUsesSixDigitAutoSubmitControl",
+    "TestReaderServesPDFEPUBAndComicPagesThroughAPIAndWeb",
     "TestStepUpReturnsToKnownOwnerPage",
     "TestSupportedLanguageCoverageIncludesJellyfinLocaleSet",
     "TestUIIconSetIsCompleteAndLocal",
     "TestVersionedApplicationStylesheetIncludesSupporterStyles",
+    "TestViewerCanBrowseAlbumTracksInOrder",
     "TestViewerCanOpenHome",
     "TestViewerCanSearchLibrary"
   ],
-  "removal_count": 33,
+  "removal_count": 35,
   "verification": [
     {
       "command": "gofmt -w <five touched retained Go files>",
@@ -33957,9 +34159,9 @@
     "TestConfigurationTransactionRejectsSemanticallyInvalidRecoveryWithoutSideEffects"
   ],
   "review_summary": {
-    "semantic_review_complete": 303,
-    "candidate_evidence_complete": 33,
-    "inventory_only_retained_pending_semantic_review": 497,
+    "semantic_review_complete": 319,
+    "candidate_evidence_complete": 35,
+    "inventory_only_retained_pending_semantic_review": 479,
     "test_and_boundary_review_pending_full_owner": 4
   }
 }
