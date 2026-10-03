@@ -129,9 +129,13 @@ async function rollbackChecks(app) {
   for(const session of reset.sessions.filter(value=>value.channel==='public')) expect(session.expiresAt-session.createdAt).toBeLessThanOrEqual(8*3600);
   expect((await api(app.owner,'/api/v1/sessions','DELETE')).status).toBe(204);
   expect((await api(app.owner,'/api/v1/session','DELETE')).status).toBe(204);
+  expect((await api(app.owner,'/api/v1/me')).status).toBe(401);
   await stop(app); app.legacy=true; start(app); await ready(app);
   await me(app,valid,401,'pre-feature binary cannot reuse rollback-revoked session');
+  await app.owner.evaluate(()=>localStorage.removeItem('kinosail-passkey'));
+  const begins=app.begins;
   await app.owner.goto(app.url+'/login'); await app.owner.locator('[data-passkey-login]').click(); await expect(app.owner).toHaveURL(app.url+'/');
+  expect(app.begins).toBeGreaterThan(begins);
   expect((await api(app.owner,'/api/v1/settings')).status).toBe(200);
   record(app,'pre-feature binary reads current DB and accepts fresh Owner sign-in');
   await me(app,removed,401,'pre-feature binary cannot resurrect deleted session');
