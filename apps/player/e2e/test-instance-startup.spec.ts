@@ -206,6 +206,7 @@ test('bounded startup preparation preserves the exact stream and playback priori
   await expect.poll(async () => (await prepare('Invalidation', burnSource)).json(), {timeout: 30_000}).toMatchObject({state: 'ready'});
   expect(await readBurnVersion()).not.toBe(settingsVersion);
   // Decode across the prepared eight seconds using the original init and lazy segments.
+  const continuationInit = await initHashes('Invalidation', transcodeToken);
   const master = await page.request.get(burnSource);
   expect(master.ok()).toBe(true);
   const rendition = (await master.text()).split('\n').find(line => line.endsWith('/index.m3u8'))!;
@@ -218,9 +219,9 @@ test('bounded startup preparation preserves the exact stream and playback priori
   }
   const spanning = info.outputPath('synthetic-original-init-spanning-window.mp4');
   await writeFile(spanning, Buffer.concat(fragments));
-  const decode = execFileSync('ffmpeg', ['-nostdin', '-v', 'error', '-threads', '2', '-i', spanning, '-f', 'null', '-'], {encoding: 'utf8'});
-  expect(decode).toBe('');
-  expect(await initHashes('Invalidation', transcodeToken)).toEqual(await initHashes('Invalidation', transcodeToken));
+  const decode = execFileSync('ffmpeg', ['-nostdin', '-v', 'error', '-xerror', '-threads', '2', '-i', spanning, '-progress', 'pipe:1', '-f', 'null', '-'], {encoding: 'utf8'});
+  expect(Number([...decode.matchAll(/frame=(\d+)/g)].at(-1)?.[1] || 0)).toBeGreaterThanOrEqual(240);
+  expect(await initHashes('Invalidation', transcodeToken)).toEqual(continuationInit);
   const resources = JSON.parse(await readFile(join(run, 'resources.json'), 'utf8'));
   expect(resources.peakSpeculativeFFmpeg).toBeLessThanOrEqual(1);
   expect(resources.peakFFmpeg).toBeLessThanOrEqual(2);
