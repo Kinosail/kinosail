@@ -20,15 +20,15 @@
     "declarations": 1900,
     "decisions": {
       "R": 1035,
-      "D": 40,
+      "D": 45,
       "F": 34,
-      "unreviewed": 778,
+      "unreviewed": 773,
       "C": 13
     },
-    "removed_declarations": 40,
-    "removed_test_lines": 697,
-    "final_declarations": 1860,
-    "final_test_lines": 65778,
+    "removed_declarations": 45,
+    "removed_test_lines": 809,
+    "final_declarations": 1855,
+    "final_test_lines": 65666,
     "removed_support_helpers": 6,
     "removed_support_files": 3,
     "removed_support_lines": 141
@@ -11966,9 +11966,9 @@
       "owner_group": "backup",
       "body_sha256": "3983aa07b3c05154bd152b65963ffbf0c61d1d7e4b23444600b6b1e4e31cb99f",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Error-only ../profiles archive rejection adds no important boundary beyond unknown-entry rejection and seeded public confinement property.",
       "validation_command": "cd packages && go test ./backup",
       "baseline_event": {
         "Time": "2026-10-03T10:35:37.483741-06:00",
@@ -11976,6 +11976,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/backup",
         "Test": "TestRestoreRejectsTraversal",
         "Elapsed": 0.01
+      },
+      "credible_failure": "Error-only ../profiles archive rejection adds no important boundary beyond unknown-entry rejection and seeded public confinement property.",
+      "auditor": "/root",
+      "execution_claim": "Baseline JSON event only; no new package runtime run claimed by root in this slice.",
+      "production_owner": [
+        "packages/backup/restore_files.go",
+        "packages/backup/command.go",
+        "packages/backup/service.go",
+        "packages/backup/manager_write.go",
+        "packages/backup/encrypted.go",
+        "packages/backup/archive.go",
+        "packages/backup/manager.go",
+        "packages/backup/archive_limits.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/backup/backup.go::{Command,Write,WriteEncrypted,VerifyAuto}",
+        "apps/{player,subtitles}/internal/server/backup_manager.go::newBackupManager"
+      ],
+      "history": [
+        "12af736fa Reject ambiguous backup manifests before restoring state",
+        "fe1b89a84 Respect cancellation before starting queued automatic backups"
+      ],
+      "gap": "Existing populated Owner/library/playback/subtitle journeys do not inject malformed recovery input, wrong passphrase, partial writes, database failure, key entropy, signed-event tampering, notification backpressure or cancellation/retention races. Direct HTTP fixtures are not Server/browser E2E.",
+      "remaining_coverage": "FuzzRestoreWritesOnlyConfigurationState seeded ../escaped.json checks all actual filesystem effects/private permissions/outside+unmanaged sentinel; TestRestoreRejectsMalformedArchiveContracts unknown entries. Error-only traversal test cannot isolate path guard because fixed exact entry allowlist rejects ../profiles independently.",
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run",
+      "reason": "Error-only ../profiles archive rejection adds no important boundary beyond unknown-entry rejection and seeded public confinement property.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-durable-state-audit.json",
+        "source_packet_sha256": "801f1beac9c7349936102dc7976f2b64c128d5003ebd2ef20c2b95bfa5818069"
       }
     },
     {
@@ -12072,9 +12103,9 @@
       "owner_group": "backup",
       "body_sha256": "3f1977c9cecde12a1400d86170b5a41632aad847b63a537d09ef1969074facc7",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Both cases assert only nonempty output, unable to detect incorrect encryption choice; persisted WriteAuto roundtrip already rejects empty output.",
       "validation_command": "cd packages && go test ./backup",
       "baseline_event": {
         "Time": "2026-10-03T10:35:28.00915-06:00",
@@ -12082,6 +12113,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/backup",
         "Test": "TestWriteAutoSelectsEncryptedOrPlainArchive",
         "Elapsed": 0.08
+      },
+      "credible_failure": "Both cases assert only nonempty output, unable to detect incorrect encryption choice; persisted WriteAuto roundtrip already rejects empty output.",
+      "auditor": "/root",
+      "execution_claim": "Baseline JSON event only; no new package runtime run claimed by root in this slice.",
+      "production_owner": [
+        "packages/backup/restore_files.go",
+        "packages/backup/command.go",
+        "packages/backup/service.go",
+        "packages/backup/manager_write.go",
+        "packages/backup/encrypted.go",
+        "packages/backup/archive.go",
+        "packages/backup/manager.go",
+        "packages/backup/archive_limits.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/backup/backup.go::{Command,Write,WriteEncrypted,VerifyAuto}",
+        "apps/{player,subtitles}/internal/server/backup_manager.go::newBackupManager"
+      ],
+      "history": [
+        "12af736fa Reject ambiguous backup manifests before restoring state",
+        "fe1b89a84 Respect cancellation before starting queued automatic backups"
+      ],
+      "gap": "Existing populated Owner/library/playback/subtitle journeys do not inject malformed recovery input, wrong passphrase, partial writes, database failure, key entropy, signed-event tampering, notification backpressure or cancellation/retention races. Direct HTTP fixtures are not Server/browser E2E.",
+      "remaining_coverage": "TestPersistedBackupDecodedBoundaryRoundtrip / TestPersistedBackupRejectsAggregateAndEncodedOverflowBeforeOutput exercise WriteAuto both keys through actual SQLite snapshot verify/restore; TestEncryptedBackupAuthenticatesAndRestoresExpandedState protects explicit encryption/authentication. Gap: existing WriteAuto examples do not assert format choice; no format equivalence claimed.",
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run",
+      "reason": "Both cases assert only nonempty output, unable to detect incorrect encryption choice; persisted WriteAuto roundtrip already rejects empty output.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-durable-state-audit.json",
+        "source_packet_sha256": "801f1beac9c7349936102dc7976f2b64c128d5003ebd2ef20c2b95bfa5818069"
       }
     },
     {
@@ -12652,9 +12714,9 @@
       "owner_group": "backup",
       "body_sha256": "532130a28c35c65b84363a93d019c4f55c19b9984d1535848c6cea5cabdfce47",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Handled/error echoes duplicate stronger callbacks/IO-aware command rejection; nil static factory inputs have no production caller.",
       "validation_command": "cd packages && go test ./backup",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.548566-06:00",
@@ -12662,6 +12724,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/backup",
         "Test": "TestBoundCommandRejectsInvalidCommandsBeforeEffects",
         "Elapsed": 0
+      },
+      "credible_failure": "Handled/error echoes duplicate stronger callbacks/IO-aware command rejection; nil static factory inputs have no production caller.",
+      "auditor": "/root",
+      "execution_claim": "Baseline JSON event only; no new package runtime run claimed by root in this slice.",
+      "production_owner": [
+        "packages/backup/restore_files.go",
+        "packages/backup/command.go",
+        "packages/backup/service.go",
+        "packages/backup/manager_write.go",
+        "packages/backup/encrypted.go",
+        "packages/backup/archive.go",
+        "packages/backup/manager.go",
+        "packages/backup/archive_limits.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/backup/backup.go::{Command,Write,WriteEncrypted,VerifyAuto}",
+        "apps/{player,subtitles}/internal/server/backup_manager.go::newBackupManager"
+      ],
+      "history": [
+        "12af736fa Reject ambiguous backup manifests before restoring state",
+        "fe1b89a84 Respect cancellation before starting queued automatic backups"
+      ],
+      "gap": "Existing populated Owner/library/playback/subtitle journeys do not inject malformed recovery input, wrong passphrase, partial writes, database failure, key entropy, signed-event tampering, notification backpressure or cancellation/retention races. Direct HTTP fixtures are not Server/browser E2E.",
+      "remaining_coverage": "TestCommandRejectionsHaveNoCallbacksOrIO exact unrelated/bad args/missing input/output with handled/error plus version/read/write counters; invalid static service/version BindCommand has no production caller.",
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run",
+      "reason": "Handled/error echoes duplicate stronger callbacks/IO-aware command rejection; nil static factory inputs have no production caller.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-durable-state-audit.json",
+        "source_packet_sha256": "801f1beac9c7349936102dc7976f2b64c128d5003ebd2ef20c2b95bfa5818069"
       }
     },
     {
@@ -13275,9 +13368,9 @@
       "owner_group": "backup",
       "body_sha256": "cc827112076ca7e69bf62bd1e70be2bb9384af7abd5c6b2dd16b11a0764c99c4",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Empty static constructor panic-only echo has no production caller; app compositions exercise real bound dependencies.",
       "validation_command": "cd packages && go test ./backup",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.625221-06:00",
@@ -13285,6 +13378,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/backup",
         "Test": "TestMustNewPanicsForInvalidStaticConfiguration",
         "Elapsed": 0
+      },
+      "credible_failure": "Empty static constructor panic-only echo has no production caller; app compositions exercise real bound dependencies.",
+      "auditor": "/root",
+      "execution_claim": "Baseline JSON event only; no new package runtime run claimed by root in this slice.",
+      "production_owner": [
+        "packages/backup/restore_files.go",
+        "packages/backup/command.go",
+        "packages/backup/service.go",
+        "packages/backup/manager_write.go",
+        "packages/backup/encrypted.go",
+        "packages/backup/archive.go",
+        "packages/backup/manager.go",
+        "packages/backup/archive_limits.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/backup/backup.go::{Command,Write,WriteEncrypted,VerifyAuto}",
+        "apps/{player,subtitles}/internal/server/backup_manager.go::newBackupManager"
+      ],
+      "history": [
+        "12af736fa Reject ambiguous backup manifests before restoring state",
+        "fe1b89a84 Respect cancellation before starting queued automatic backups"
+      ],
+      "gap": "Existing populated Owner/library/playback/subtitle journeys do not inject malformed recovery input, wrong passphrase, partial writes, database failure, key entropy, signed-event tampering, notification backpressure or cancellation/retention races. Direct HTTP fixtures are not Server/browser E2E.",
+      "remaining_coverage": "Both actual app backup.go static MustNew compositions; retained real command archive lifecycle and fault matrices. No empty production Config caller.",
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run",
+      "reason": "Empty static constructor panic-only echo has no production caller; app compositions exercise real bound dependencies.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-durable-state-audit.json",
+        "source_packet_sha256": "801f1beac9c7349936102dc7976f2b64c128d5003ebd2ef20c2b95bfa5818069"
       }
     },
     {
@@ -13597,9 +13721,9 @@
       "owner_group": "backup",
       "body_sha256": "26739c06d0af1abb3411cdb7cc2229b5d1135b2ed81cf28ef5e24f728024b546",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Static dependency/filename constructor guard has no user-controlled production invocation; actual app service compositions exercise valid setup.",
       "validation_command": "cd packages && go test ./backup",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.627364-06:00",
@@ -13607,6 +13731,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/backup",
         "Test": "TestNewRejectsInvalidConfigurationWithoutOpeningDatabase",
         "Elapsed": 0
+      },
+      "credible_failure": "Static dependency/filename constructor guard has no user-controlled production invocation; actual app service compositions exercise valid setup.",
+      "auditor": "/root",
+      "execution_claim": "Baseline JSON event only; no new package runtime run claimed by root in this slice.",
+      "production_owner": [
+        "packages/backup/restore_files.go",
+        "packages/backup/command.go",
+        "packages/backup/service.go",
+        "packages/backup/manager_write.go",
+        "packages/backup/encrypted.go",
+        "packages/backup/archive.go",
+        "packages/backup/manager.go",
+        "packages/backup/archive_limits.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/backup/backup.go::{Command,Write,WriteEncrypted,VerifyAuto}",
+        "apps/{player,subtitles}/internal/server/backup_manager.go::newBackupManager"
+      ],
+      "history": [
+        "12af736fa Reject ambiguous backup manifests before restoring state",
+        "fe1b89a84 Respect cancellation before starting queued automatic backups"
+      ],
+      "gap": "Existing populated Owner/library/playback/subtitle journeys do not inject malformed recovery input, wrong passphrase, partial writes, database failure, key entropy, signed-event tampering, notification backpressure or cancellation/retention races. Direct HTTP fixtures are not Server/browser E2E.",
+      "remaining_coverage": "Both actual app backup.go static filename/opener/validator compositions; retained TestWritePropagatesDatabaseFailuresBeforeOutput tests runtime adapter open/nil/export/close/semantic fault; no untrusted Config constructor caller.",
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run",
+      "reason": "Static dependency/filename constructor guard has no user-controlled production invocation; actual app service compositions exercise valid setup.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-durable-state-audit.json",
+        "source_packet_sha256": "801f1beac9c7349936102dc7976f2b64c128d5003ebd2ef20c2b95bfa5818069"
       }
     },
     {
