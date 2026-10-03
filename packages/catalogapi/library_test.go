@@ -75,20 +75,6 @@ func TestLibraryMapsBrowseErrorsBeforeProjection(t *testing.T) {
 	}
 }
 
-func TestLibraryRejectsIncompleteConfiguration(t *testing.T) {
-	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/library", nil)
-	for _, handler := range []http.HandlerFunc{
-		Library(nil, func(*http.Request, library.Item) any { return nil }),
-		Library(func(*http.Request) (catalog.Result, error) { return catalog.Result{}, nil }, nil),
-	} {
-		response := httptest.NewRecorder()
-		handler(response, request)
-		if response.Code != http.StatusInternalServerError || response.Body.String() != `{"error":"Library API is unavailable"}`+"\n" {
-			t.Fatalf("response = %d %s", response.Code, response.Body.String())
-		}
-	}
-}
-
 func assertPrivateResponse(t *testing.T, response *httptest.ResponseRecorder) {
 	t.Helper()
 	if response.Header().Get("Content-Type") != "application/json" || response.Header().Get("Cache-Control") != "no-store" {

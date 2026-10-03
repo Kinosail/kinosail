@@ -167,20 +167,6 @@ func TestAutomaticAndManualChecksPinTheAvailableRelease(t *testing.T) { //nolint
 	}
 }
 
-func TestRequestAvailableRequiresManagerAndCompletedAvailableCheck(t *testing.T) {
-	t.Parallel()
-	checker := mustChecker(t, CheckerConfig{
-		CurrentVersion: "v1.0.0", Automatic: func() bool { return false }, SaveAutomatic: func(bool) error { return nil },
-		Source: ReleaseSourceFunc(func(context.Context, string) (string, string, bool, error) { return "v1.0.0", "", false, nil }),
-	})
-	if status, err := checker.RequestAvailable(); err != nil || status.State != "not-checked" {
-		t.Fatalf("unchecked request = %#v, %v", status, err)
-	}
-	if status, err := checker.CheckAndRequest(t.Context()); err != nil || status.State != "current" || status.Manager.RequestID != "" {
-		t.Fatalf("current request = %#v, %v", status, err)
-	}
-}
-
 func TestSetAutomaticPersistsBeforeTriggering(t *testing.T) { //nolint:cyclop // One sequence proves failed, disabled, enabled, and coalesced persistence behavior.
 	t.Parallel()
 	var saved atomic.Int32

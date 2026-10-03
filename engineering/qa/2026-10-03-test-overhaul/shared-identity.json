@@ -20,15 +20,15 @@
     "declarations": 1900,
     "decisions": {
       "R": 1531,
-      "D": 79,
+      "D": 85,
       "F": 54,
       "C": 26,
-      "unreviewed": 210
+      "unreviewed": 204
     },
-    "removed_declarations": 79,
-    "removed_test_lines": 1437,
-    "final_declarations": 1821,
-    "final_test_lines": 65038,
+    "removed_declarations": 85,
+    "removed_test_lines": 1544,
+    "final_declarations": 1815,
+    "final_test_lines": 64931,
     "removed_support_helpers": 6,
     "removed_support_files": 3,
     "removed_support_lines": 141
@@ -19640,9 +19640,9 @@
       "owner_group": "catalogapi",
       "body_sha256": "978f99df67914428bb1d549a1b2560c083dcd81fd97d4d4fbdc7f1208d8d5758",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Static nil callbacks supplied only by this test are unreachable in both application RegisterFoundationAPI factories.",
       "validation_command": "cd packages && go test ./catalogapi",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.293834-06:00",
@@ -19650,6 +19650,38 @@
         "Package": "github.com/MikeO7/kinosail/packages/catalogapi",
         "Test": "TestLibraryRejectsIncompleteConfiguration",
         "Elapsed": 0
+      },
+      "credible_failure": "Static nil callbacks supplied only by this test are unreachable in both application RegisterFoundationAPI factories.",
+      "auditor": "/root",
+      "production_owner": [
+        "packages/catalogapi/media_http_read.go",
+        "packages/catalogapi/library.go",
+        "packages/catalogapi/media_http_write.go",
+        "packages/catalogapi/media_http.go",
+        "packages/catalogapi/action.go",
+        "packages/catalogapi/progress_store.go",
+        "packages/catalogapi/browse_http.go",
+        "packages/catalogapi/playlist_document.go",
+        "packages/catalogapi/projection.go",
+        "packages/catalogapi/actor.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/{api,api_media,progress,playlist_document}.go",
+        "apps/player/internal/server/actor.go"
+      ],
+      "gap": "Real Server Player happy journey uses normal video progress/listing and Subtitles admin uses ordinary catalog. Album/actor/cast/portable documents, per-Viewer API identity, malformed JSON, disk failure and exact private headers not exhaustively asserted. Registered mux tests use stubs, not durable Server/browsers; leaf projectors are independent public-client contract for native clients.",
+      "remaining_coverage": "apps/{player,subtitles}/internal/server/api.go RegisterFoundationAPI always binds browse closure and api.progress.ClientItem method. TestLibraryProjectsPlayerBrowseContract and TestLibraryMapsBrowseErrorsBeforeProjection keep actual response/errors; clean6c actual populated journeys prove valid app binding.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "unlocked_deletion": "One declaration only; production guards remain unchanged.",
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run",
+      "reason": "Static nil callbacks supplied only by this test are unreachable in both application RegisterFoundationAPI factories.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/root-runtime-library-audit.json",
+        "source_packet_sha256": "52567b3935d625b2e71de95d3de64f2d033d5c9e0f902d7b7cbb2904b356eb10"
       }
     },
     {
@@ -90631,9 +90663,9 @@
       "owner_group": "updatecontrol",
       "body_sha256": "ecab2cebf820fe049c6d92c19dc20204bad9be681773795db35c075f73248404",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Manager is always nil, so absent-manager guard makes unchecked/current no-request assertions pass without reaching available-state request guard; both app factories supply actual manager.",
       "validation_command": "cd packages && go test ./updatecontrol",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.489666-06:00",
@@ -90641,6 +90673,38 @@
         "Package": "github.com/MikeO7/kinosail/packages/updatecontrol",
         "Test": "TestRequestAvailableRequiresManagerAndCompletedAvailableCheck",
         "Elapsed": 0
+      },
+      "credible_failure": "Manager is always nil, so absent-manager guard makes unchecked/current no-request assertions pass without reaching available-state request guard; both app factories supply actual manager.",
+      "auditor": "/root",
+      "production_owner": [
+        "packages/updatecontrol/manifest.go",
+        "packages/updatecontrol/command.go",
+        "packages/updatecontrol/release.go",
+        "packages/updatecontrol/policy.go",
+        "packages/updatecontrol/protocol.go",
+        "packages/updatecontrol/control.go",
+        "packages/updatecontrol/http.go",
+        "packages/updatecontrol/validation.go",
+        "packages/updatecontrol/checker.go",
+        "packages/updatecontrol/github.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/{application_init,updates,updates_http}.go",
+        "apps/{player,subtitles}/cmd/kinosail/main.go"
+      ],
+      "gap": "Actual native-build smoke selects host archive from generated manifest; product browser journeys run SHA/dev server and ordinary preferences. They never install approved public/native release or inject GitHub response, persisted-state/report/storage/concurrency/recovery failures. No manual deployment/update attempted. Scheduler timers use bounded fixtures, not24hour real clock.",
+      "remaining_coverage": "TestAutomaticAndManualChecksPinTheAvailableRelease retains configured-manager positive immutable target; TestCommitImagesDoNotQueryOrInstallVersionReleases and TestCheckerMapsReleaseFailuresWithoutRequestingAnUpdate retain unavailable requests. Candidate managernil cannot prove configured-manager current/no-release guard: gap reported, no equivalence claim.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "unlocked_deletion": "One declaration only; production guards remain unchanged.",
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run",
+      "reason": "Manager is always nil, so absent-manager guard makes unchecked/current no-request assertions pass without reaching available-state request guard; both app factories supply actual manager.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/root-runtime-library-audit.json",
+        "source_packet_sha256": "52567b3935d625b2e71de95d3de64f2d033d5c9e0f902d7b7cbb2904b356eb10"
       }
     },
     {
@@ -90966,9 +91030,9 @@
       "owner_group": "updatecontrol",
       "body_sha256": "537f614de5a00fe05c4c21cbac5e7e6cbdac863855c1c450f2e53073188efc0d",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Only static policy/nil function literals are changed; both app main factories unconditionally bind policy, OpenDatabase and Version functions.",
       "validation_command": "cd packages && go test ./updatecontrol",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.458379-06:00",
@@ -90976,6 +91040,38 @@
         "Package": "github.com/MikeO7/kinosail/packages/updatecontrol",
         "Test": "TestBindCommandRejectsInvalidConfiguration",
         "Elapsed": 0
+      },
+      "credible_failure": "Only static policy/nil function literals are changed; both app main factories unconditionally bind policy, OpenDatabase and Version functions.",
+      "auditor": "/root",
+      "production_owner": [
+        "packages/updatecontrol/manifest.go",
+        "packages/updatecontrol/command.go",
+        "packages/updatecontrol/release.go",
+        "packages/updatecontrol/policy.go",
+        "packages/updatecontrol/protocol.go",
+        "packages/updatecontrol/control.go",
+        "packages/updatecontrol/http.go",
+        "packages/updatecontrol/validation.go",
+        "packages/updatecontrol/checker.go",
+        "packages/updatecontrol/github.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/{application_init,updates,updates_http}.go",
+        "apps/{player,subtitles}/cmd/kinosail/main.go"
+      ],
+      "gap": "Actual native-build smoke selects host archive from generated manifest; product browser journeys run SHA/dev server and ordinary preferences. They never install approved public/native release or inject GitHub response, persisted-state/report/storage/concurrency/recovery failures. No manual deployment/update attempted. Scheduler timers use bounded fixtures, not24hour real clock.",
+      "remaining_coverage": "apps/{player,subtitles}/cmd/kinosail/main.go binds fixed releasePolicy, openUpdateDatabase and version closure. TestBoundCommandRunsPlayerUpdateOperations and TestBoundCommandPropagatesStorageAndOutputFailures keep actual run/storage/lifecycle; scripts/test-native-builds.sh host CLI artifact real binary smoke.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "unlocked_deletion": "One declaration only; production guards remain unchanged.",
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run",
+      "reason": "Only static policy/nil function literals are changed; both app main factories unconditionally bind policy, OpenDatabase and Version functions.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/root-runtime-library-audit.json",
+        "source_packet_sha256": "52567b3935d625b2e71de95d3de64f2d033d5c9e0f902d7b7cbb2904b356eb10"
       }
     },
     {
@@ -91259,9 +91355,9 @@
       "owner_group": "updatecontrol",
       "body_sha256": "2245a4f2e4b08c45deb09b0975f5f949a60ea381716b7f569ab84285a3a7590c",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Only impossible app-owned schema ranges/empty policy passed to New; actual factories derive fixed schema constants and application-specific policies.",
       "validation_command": "cd packages && go test ./updatecontrol",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.489736-06:00",
@@ -91269,6 +91365,39 @@
         "Package": "github.com/MikeO7/kinosail/packages/updatecontrol",
         "Test": "TestNewRejectsInvalidPolicyBeforeLoadingState",
         "Elapsed": 0
+      },
+      "credible_failure": "Only impossible app-owned schema ranges/empty policy passed to New; actual factories derive fixed schema constants and application-specific policies.",
+      "auditor": "/root",
+      "production_owner": [
+        "packages/updatecontrol/manifest.go",
+        "packages/updatecontrol/command.go",
+        "packages/updatecontrol/release.go",
+        "packages/updatecontrol/policy.go",
+        "packages/updatecontrol/protocol.go",
+        "packages/updatecontrol/control.go",
+        "packages/updatecontrol/http.go",
+        "packages/updatecontrol/validation.go",
+        "packages/updatecontrol/checker.go",
+        "packages/updatecontrol/github.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/{application_init,updates,updates_http}.go",
+        "apps/{player,subtitles}/cmd/kinosail/main.go"
+      ],
+      "gap": "Actual native-build smoke selects host archive from generated manifest; product browser journeys run SHA/dev server and ordinary preferences. They never install approved public/native release or inject GitHub response, persisted-state/report/storage/concurrency/recovery failures. No manual deployment/update attempted. Scheduler timers use bounded fixtures, not24hour real clock.",
+      "remaining_coverage": "Both application_init.go build update manager from application policy and database/configuration.SchemaVersion constants; TestApplicationPoliciesKeepIndependentReleaseIdentities asserts actual separate policy, Store persisted-state/transition/failure matrices retained.",
+      "history": [
+        "26917ef5ea674681d7308947d14fe89b26d497af Enable hosted CI and secured releases for public Kinosail organization",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "unlocked_deletion": "One declaration only; production guards remain unchanged.",
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run",
+      "reason": "Only impossible app-owned schema ranges/empty policy passed to New; actual factories derive fixed schema constants and application-specific policies.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/root-runtime-library-audit.json",
+        "source_packet_sha256": "52567b3935d625b2e71de95d3de64f2d033d5c9e0f902d7b7cbb2904b356eb10"
       }
     },
     {
@@ -91691,9 +91820,9 @@
       "owner_group": "updatecontrol",
       "body_sha256": "00a7f6bdac6cf5bb2d66feb887e13c5be356089bf930447e34c14436059f27b3",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Static nil client, private empty policy or nonnil custom source injection has no production call: app factories always bind hardened client/policy and omit source.",
       "validation_command": "cd packages && go test ./updatecontrol",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.495513-06:00",
@@ -91701,6 +91830,38 @@
         "Package": "github.com/MikeO7/kinosail/packages/updatecontrol",
         "Test": "TestNewGitHubCheckerRejectsInvalidAdaptersBeforeNetworkAccess",
         "Elapsed": 0
+      },
+      "credible_failure": "Static nil client, private empty policy or nonnil custom source injection has no production call: app factories always bind hardened client/policy and omit source.",
+      "auditor": "/root",
+      "production_owner": [
+        "packages/updatecontrol/manifest.go",
+        "packages/updatecontrol/command.go",
+        "packages/updatecontrol/release.go",
+        "packages/updatecontrol/policy.go",
+        "packages/updatecontrol/protocol.go",
+        "packages/updatecontrol/control.go",
+        "packages/updatecontrol/http.go",
+        "packages/updatecontrol/validation.go",
+        "packages/updatecontrol/checker.go",
+        "packages/updatecontrol/github.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/{application_init,updates,updates_http}.go",
+        "apps/{player,subtitles}/cmd/kinosail/main.go"
+      ],
+      "gap": "Actual native-build smoke selects host archive from generated manifest; product browser journeys run SHA/dev server and ordinary preferences. They never install approved public/native release or inject GitHub response, persisted-state/report/storage/concurrency/recovery failures. No manual deployment/update attempted. Scheduler timers use bounded fixtures, not24hour real clock.",
+      "remaining_coverage": "apps/{player,subtitles}/internal/server/updates.go newUpdateChecker always binds hardenedHTTPClient, application release policy and config.Source unset. TestGitHubCheckerUsesApplicationReleaseIdentity and actual response/privacy/security matrices retain runtime release boundary.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "unlocked_deletion": "One declaration only; production guards remain unchanged.",
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run",
+      "reason": "Static nil client, private empty policy or nonnil custom source injection has no production call: app factories always bind hardened client/policy and omit source.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/root-runtime-library-audit.json",
+        "source_packet_sha256": "52567b3935d625b2e71de95d3de64f2d033d5c9e0f902d7b7cbb2904b356eb10"
       }
     },
     {
@@ -91801,9 +91962,9 @@
       "owner_group": "updatecontrol",
       "body_sha256": "9c1dd4fa1741478e5c9ac57dd7e24efe7ed5d21cbcc71aa8872a79df1f30a780",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Only statically missing response/read functions or nil checker is supplied; both updateHTTP factories bind all functions and newUpdateChecker constructs actual checker.",
       "validation_command": "cd packages && go test ./updatecontrol",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.494945-06:00",
@@ -91811,6 +91972,38 @@
         "Package": "github.com/MikeO7/kinosail/packages/updatecontrol",
         "Test": "TestNewHTTPHandlersRejectsMissingAdaptersBeforeEffects",
         "Elapsed": 0
+      },
+      "credible_failure": "Only statically missing response/read functions or nil checker is supplied; both updateHTTP factories bind all functions and newUpdateChecker constructs actual checker.",
+      "auditor": "/root",
+      "production_owner": [
+        "packages/updatecontrol/manifest.go",
+        "packages/updatecontrol/command.go",
+        "packages/updatecontrol/release.go",
+        "packages/updatecontrol/policy.go",
+        "packages/updatecontrol/protocol.go",
+        "packages/updatecontrol/control.go",
+        "packages/updatecontrol/http.go",
+        "packages/updatecontrol/validation.go",
+        "packages/updatecontrol/checker.go",
+        "packages/updatecontrol/github.go"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/{application_init,updates,updates_http}.go",
+        "apps/{player,subtitles}/cmd/kinosail/main.go"
+      ],
+      "gap": "Actual native-build smoke selects host archive from generated manifest; product browser journeys run SHA/dev server and ordinary preferences. They never install approved public/native release or inject GitHub response, persisted-state/report/storage/concurrency/recovery failures. No manual deployment/update attempted. Scheduler timers use bounded fixtures, not24hour real clock.",
+      "remaining_coverage": "Both updates_http.go updateHTTP bind readJSON,writeJSON,apiError,localizedError function literals plus actual checker. Runtime API/web negative and positive matrices retained; no untrusted missing-adapter interface exists.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "unlocked_deletion": "One declaration only; production guards remain unchanged.",
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run",
+      "reason": "Only statically missing response/read functions or nil checker is supplied; both updateHTTP factories bind all functions and newUpdateChecker constructs actual checker.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/root-runtime-library-audit.json",
+        "source_packet_sha256": "52567b3935d625b2e71de95d3de64f2d033d5c9e0f902d7b7cbb2904b356eb10"
       }
     },
     {
