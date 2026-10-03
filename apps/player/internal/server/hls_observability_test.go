@@ -11,8 +11,6 @@ import (
 	"regexp"
 	"strings"
 	"testing"
-
-	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
 func TestHLSDiagnosticErrorBoundsAndRedactsPrivatePaths(t *testing.T) {
@@ -23,12 +21,6 @@ func TestHLSDiagnosticErrorBoundsAndRedactsPrivatePaths(t *testing.T) {
 	if err.Error() != "compatible playback failed" || strings.Contains(err.Detail(), "Private Title") || strings.Contains(err.Detail(), "/private/") || len(err.Detail()) > hlsDiagnosticLimit {
 		t.Fatalf("unsafe diagnostic error: public=%q detail=%q", err.Error(), err.Detail())
 	}
-}
-
-func TestHLSDiagnosticPreservesCauseAndKeepsOnlyRecentOutput(t *testing.T) {
-	cause := errors.New("transcoder failed")
-	failure := newHLSDiagnosticError(cause, "detail")
-	servertest.HLSDiagnosticPreservesCauseAndKeepsOnlyRecentOutput(t, cause, failure, new(hlsDiagnosticBuffer), hlsDiagnosticLimit)
 }
 
 func TestHLSFailureIsCorrelatedAndPrivate(t *testing.T) {

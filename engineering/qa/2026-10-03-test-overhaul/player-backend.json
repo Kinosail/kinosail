@@ -15820,8 +15820,8 @@
       "end_line": 32,
       "sha256": "d3bd1e8acc6895bafe4e23e8773d3ec301e374057b0365cc93755fd34cb906cc",
       "path": "apps/player/internal/server/hls_observability_test.go",
-      "decision": "C",
-      "review_status": "semantic_review_complete",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
       "reason": "Pure shared-owner alias/replay adds no important distinct failure beyond retained canonical owner and stronger actual app boundary.",
       "category": "pure_shared_replay_pending_independent_review",
       "credible_failure": "Pure shared-owner alias/replay adds no important distinct failure beyond retained canonical owner and stronger actual app boundary.",
@@ -15837,7 +15837,7 @@
         "packages/playback/hls_storage_test.go:TestHLSDiagnosticsBoundOutputAndPreserveCause",
         "App type aliases and forwarding function add no policy; canonical cause/buffer bound/process diagnostics retained. Two-private-path app guard and actual failing HTTP/log privacy keeper remain."
       ],
-      "coverage_limit": "No browser E2E equivalence claimed; shared-owner consolidation only. App type aliases and forwarding function add no policy; canonical cause/buffer bound/process diagnostics retained. Two-private-path app guard and actual failing HTTP/log privacy keeper remain.",
+      "coverage_limit": "No browser E2E equivalence claimed; shared-owner consolidation only. App type aliases and forwarding function add no policy; canonical cause/buffer bound/process diagnostics retained. Two-private-path app guard and actual failing HTTP/log privacy keeper remain. Name overstates recent-tail coverage: old helper makes one all-x write and cannot distinguish retained oldest versus newest bytes. Canonical makes one all-y write; neither proves mixed repeated-write recent-tail behavior.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
@@ -15847,9 +15847,9 @@
       "baseline_result": "pass",
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "test_limit": "Exact small numeric literals vary; test does not exercise independent app request callback.",
-      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared. Independent root review: full app alias/CompleteVOD constant2, canonical exact bytes and actual Sessionless HTTP parity/unchanged-cache plus polling and diagnostics helper read. Shared owner confirms all canonical keepers retained.",
       "proposed_decision": "D",
-      "implementation_status": "Source held for root independent review; shared owner confirms named keepers retained."
+      "implementation_status": "Removed after root independent five-body/owner/canonical comparison and shared-owner keeper confirmation; exact baseline SHA checked."
     },
     {
       "name": "TestHLSFailureIsCorrelatedAndPrivate",
@@ -16132,8 +16132,8 @@
       "end_line": 98,
       "sha256": "5646fe9276109017398c4034b14eebe14d7fa9275c0373ca26b4fb9d453dc4e0",
       "path": "apps/player/internal/server/hls_playlist_session_internal_test.go",
-      "decision": "C",
-      "review_status": "semantic_review_complete",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
       "reason": "Pure shared-owner alias/replay adds no important distinct failure beyond retained canonical owner and stronger actual app boundary.",
       "category": "pure_shared_replay_pending_independent_review",
       "credible_failure": "Pure shared-owner alias/replay adds no important distinct failure beyond retained canonical owner and stronger actual app boundary.",
@@ -16159,9 +16159,9 @@
       "baseline_result": "pass",
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "test_limit": "Exact small numeric literals vary; test does not exercise independent app request callback.",
-      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared. Independent root review: full app alias/CompleteVOD constant2, canonical exact bytes and actual Sessionless HTTP parity/unchanged-cache plus polling and diagnostics helper read. Shared owner confirms all canonical keepers retained.",
       "proposed_decision": "D",
-      "implementation_status": "Source held for root independent review; shared owner confirms named keepers retained."
+      "implementation_status": "Removed after root independent five-body/owner/canonical comparison and shared-owner keeper confirmation; exact baseline SHA checked."
     },
     {
       "name": "TestJellyfinVODPlaylistUsesObservedSegmentCadence",
@@ -16169,8 +16169,8 @@
       "end_line": 106,
       "sha256": "64eabfd72419dc81c40ad1cad0db1be190b3bb06f1911ced322b4414af242d99",
       "path": "apps/player/internal/server/hls_playlist_session_internal_test.go",
-      "decision": "C",
-      "review_status": "semantic_review_complete",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
       "reason": "Pure shared-owner alias/replay adds no important distinct failure beyond retained canonical owner and stronger actual app boundary.",
       "category": "pure_shared_replay_pending_independent_review",
       "credible_failure": "Pure shared-owner alias/replay adds no important distinct failure beyond retained canonical owner and stronger actual app boundary.",
@@ -16196,9 +16196,9 @@
       "baseline_result": "pass",
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "test_limit": "Exact small numeric literals vary; test does not exercise independent app request callback.",
-      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared. Independent root review: full app alias/CompleteVOD constant2, canonical exact bytes and actual Sessionless HTTP parity/unchanged-cache plus polling and diagnostics helper read. Shared owner confirms all canonical keepers retained.",
       "proposed_decision": "D",
-      "implementation_status": "Source held for root independent review; shared owner confirms named keepers retained."
+      "implementation_status": "Removed after root independent five-body/owner/canonical comparison and shared-owner keeper confirmation; exact baseline SHA checked."
     },
     {
       "name": "TestHLSSeekUsesThePublishedSegmentTimeline",
@@ -16245,8 +16245,8 @@
       "end_line": 130,
       "sha256": "9258007955987e0e70b469251d34c74d65bfe0413dc5adba980f05330ca76f25",
       "path": "apps/player/internal/server/hls_playlist_session_internal_test.go",
-      "decision": "C",
-      "review_status": "semantic_review_complete",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
       "reason": "Pure shared-owner alias/replay adds no important distinct failure beyond retained canonical owner and stronger actual app boundary.",
       "category": "pure_shared_replay_pending_independent_review",
       "credible_failure": "Pure shared-owner alias/replay adds no important distinct failure beyond retained canonical owner and stronger actual app boundary.",
@@ -16272,9 +16272,9 @@
       "baseline_result": "pass",
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "test_limit": "Exact small numeric literals vary; test does not exercise independent app request callback.",
-      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared. Independent root review: full app alias/CompleteVOD constant2, canonical exact bytes and actual Sessionless HTTP parity/unchanged-cache plus polling and diagnostics helper read. Shared owner confirms all canonical keepers retained.",
       "proposed_decision": "D",
-      "implementation_status": "Source held for root independent review; shared owner confirms named keepers retained."
+      "implementation_status": "Removed after root independent five-body/owner/canonical comparison and shared-owner keeper confirmation; exact baseline SHA checked."
     },
     {
       "name": "TestWaitForHLSFileFollowsThePublishedVODTimeline",
@@ -16282,8 +16282,8 @@
       "end_line": 148,
       "sha256": "1f5c6a09f19102be5e59ae60d94f61cabb3cd0de7ef692e78f22dbd4fffcb3fd",
       "path": "apps/player/internal/server/hls_playlist_session_internal_test.go",
-      "decision": "C",
-      "review_status": "semantic_review_complete",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
       "reason": "Pure shared-owner alias/replay adds no important distinct failure beyond retained canonical owner and stronger actual app boundary.",
       "category": "pure_shared_replay_pending_independent_review",
       "credible_failure": "Pure shared-owner alias/replay adds no important distinct failure beyond retained canonical owner and stronger actual app boundary.",
@@ -16309,9 +16309,9 @@
       "baseline_result": "pass",
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "test_limit": "Exact small numeric literals vary; test does not exercise independent app request callback.",
-      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared. Independent root review: full app alias/CompleteVOD constant2, canonical exact bytes and actual Sessionless HTTP parity/unchanged-cache plus polling and diagnostics helper read. Shared owner confirms all canonical keepers retained.",
       "proposed_decision": "D",
-      "implementation_status": "Source held for root independent review; shared owner confirms named keepers retained."
+      "implementation_status": "Removed after root independent five-body/owner/canonical comparison and shared-owner keeper confirmation; exact baseline SHA checked."
     },
     {
       "name": "TestServeRecipeRejectsUnknownPathsWithoutCacheSideEffects",
@@ -45433,7 +45433,11 @@
     "TestDirectPlayerDoesNotRestartTheSourceSelectedByHTML",
     "TestFirstOwnerSetupNeedsNoCode",
     "TestFirstOwnerWebSetupNeedsNoCode",
+    "TestHLSDiagnosticPreservesCauseAndKeepsOnlyRecentOutput",
     "TestHardwareSupportAcceptsAutomaticAndKnownBackends",
+    "TestJellyfinVODPlaylistPreservesCompletedTranscoderTimeline",
+    "TestJellyfinVODPlaylistRejectsInvalidSegmentDuration",
+    "TestJellyfinVODPlaylistUsesObservedSegmentCadence",
     "TestLastLightHomeUsesRealLibraryArtwork",
     "TestLibraryNavigationKeepsEveryDestinationInMainWithCompactOverflow",
     "TestLoginReturnRejectsExternalAndAmbiguousTargets",
@@ -45461,6 +45465,7 @@
     "TestViewerCanBrowseAlbumTracksInOrder",
     "TestViewerCanOpenHome",
     "TestViewerCanSearchLibrary",
+    "TestWaitForHLSFileFollowsThePublishedVODTimeline",
     "TestWebBetaBadgeAppearsInSharedBrowserHeader"
   ],
   "semantic_audit_complete": false,
@@ -45478,7 +45483,11 @@
     "TestDirectPlayerDoesNotRestartTheSourceSelectedByHTML",
     "TestFirstOwnerSetupNeedsNoCode",
     "TestFirstOwnerWebSetupNeedsNoCode",
+    "TestHLSDiagnosticPreservesCauseAndKeepsOnlyRecentOutput",
     "TestHardwareSupportAcceptsAutomaticAndKnownBackends",
+    "TestJellyfinVODPlaylistPreservesCompletedTranscoderTimeline",
+    "TestJellyfinVODPlaylistRejectsInvalidSegmentDuration",
+    "TestJellyfinVODPlaylistUsesObservedSegmentCadence",
     "TestLastLightHomeUsesRealLibraryArtwork",
     "TestLibraryNavigationKeepsEveryDestinationInMainWithCompactOverflow",
     "TestLoginReturnRejectsExternalAndAmbiguousTargets",
@@ -45506,9 +45515,10 @@
     "TestViewerCanBrowseAlbumTracksInOrder",
     "TestViewerCanOpenHome",
     "TestViewerCanSearchLibrary",
+    "TestWaitForHLSFileFollowsThePublishedVODTimeline",
     "TestWebBetaBadgeAppearsInSharedBrowserHeader"
   ],
-  "removal_count": 42,
+  "removal_count": 47,
   "verification": [
     {
       "command": "gofmt -w <five touched retained Go files>",
@@ -45589,8 +45599,8 @@
     "TestConfigurationTransactionRejectsSemanticallyInvalidRecoveryWithoutSideEffects"
   ],
   "review_summary": {
-    "semantic_review_complete": 683,
-    "candidate_evidence_complete": 42,
+    "semantic_review_complete": 678,
+    "candidate_evidence_complete": 47,
     "inventory_only_retained_pending_semantic_review": 111,
     "test_and_boundary_review_pending_full_owner": 1
   }
