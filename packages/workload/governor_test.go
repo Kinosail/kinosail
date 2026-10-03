@@ -140,20 +140,6 @@ func TestGovernorReservesTwoHeavySlotsForPlayback(t *testing.T) {
 	}
 }
 
-func TestNilGovernorAndMinimumCapacity(t *testing.T) {
-	var governor *Governor
-	release, err := governor.Acquire(t.Context(), Playback)
-	if err != nil || release == nil {
-		t.Fatalf("nil acquire returned release=%t, error=%v", release != nil, err)
-	}
-	release()
-
-	metrics := New(0).Metrics()
-	if metrics.Capacity != 1 || metrics.BackgroundCapacity != 1 {
-		t.Fatalf("minimum metrics = %#v", metrics)
-	}
-}
-
 func TestHeavyCapacityTracksAvailableProcessors(t *testing.T) {
 	want := min(3, max(1, runtime.GOMAXPROCS(0)-1))
 	if got := HeavyCapacity(); got != want {

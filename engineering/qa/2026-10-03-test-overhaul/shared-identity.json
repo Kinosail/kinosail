@@ -19,17 +19,17 @@
     "baseline_test_lines": 66475,
     "declarations": 1900,
     "decisions": {
-      "R": 191,
-      "D": 11,
-      "unreviewed": 1698
+      "R": 236,
+      "D": 17,
+      "unreviewed": 1647
     },
-    "removed_declarations": 11,
-    "removed_test_lines": 207,
-    "final_declarations": 1889,
-    "final_test_lines": 66268,
-    "removed_support_helpers": 5,
-    "removed_support_files": 2,
-    "removed_support_lines": 113
+    "removed_declarations": 17,
+    "removed_test_lines": 297,
+    "final_declarations": 1883,
+    "final_test_lines": 66178,
+    "removed_support_helpers": 6,
+    "removed_support_files": 3,
+    "removed_support_lines": 141
   },
   "focused_validation_command": "cd packages && go test ./apihttp ./validation ./hlsmanifest ./transcodepolicy ./transcodehardware",
   "validation_results": {
@@ -58,7 +58,7 @@
     "candidate": "not_run_parent_serializes",
     "format": {
       "status": "passed",
-      "command": "gofmt -w packages/validation/validation_test.go packages/hlsmanifest/vod_test.go packages/transcodepolicy/policy_edges_test.go packages/transcodehardware/capabilities_test.go packages/transcodehardware/probe_test.go; gofmt -w packages/servertest/assets.go packages/servertest/password_manager.go packages/operations/metadata_test.go packages/operations/system_http_test.go"
+      "command": "gofmt -w packages/validation/validation_test.go packages/hlsmanifest/vod_test.go packages/transcodepolicy/policy_edges_test.go packages/transcodehardware/capabilities_test.go packages/transcodehardware/probe_test.go; gofmt -w packages/servertest/assets.go packages/servertest/password_manager.go packages/operations/metadata_test.go packages/operations/system_http_test.go; gofmt -w packages/downloads/manager_test.go packages/workload/governor_test.go packages/workload/encoding_test.go packages/routeinventory/inventory_test.go"
     },
     "git_diff_check": {
       "status": "passed",
@@ -419,6 +419,141 @@
         "apps/subtitles/internal/server/downloads_http.go"
       ],
       "e2e": "Actual Player test-instance-library.spec.ts:public test instance exercises every media section and local TMDB metadata prepares720p on the real server, sees ready/save-file, transfers to device, asserts Saved and verified compatibility-check text, and installs a video source at/offline-media before and after disconnect. It does not assert advancing offline playback time or decoded pixels. Actual test-instance-offline.spec.ts:offline download stops before transfer when device storage is full prepares720p on the real server, injects browser storage estimate and asserts no file request after the quota error. The same offline spec also has /__offline-lifecycle-test manually supplied HTML and fake job routes; those are fixture/control tests, not backend proof. TestCompatibleDownloadCopiesVideoWithoutEncoderOptions is a real localFFmpeg decoder integration, not app/browser E2E."
+    },
+    "workload": {
+      "owners": [
+        "packages/workload/governor.go"
+      ],
+      "dependencies": [
+        "runtime.GOMAXPROCS",
+        "sync.Once",
+        "context cancellation",
+        "atomic counters and channels"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:workload.New(workload.HeavyCapacity())",
+        "apps/subtitles/internal/server/server.go:workload.New(workload.HeavyCapacity())",
+        "apps/player/internal/server/hls_presentation.go",
+        "apps/subtitles/internal/server/hls_presentation.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_config.go"
+      ],
+      "e2e": "Actual populated browser playback/download journeys exercise a real constructed nonnil governor but do not saturate atomic multi-encoder budgets, force GPU contention, cancel queued reservations, or enumerate CPU-derived capacity. The benchmark is an optional measurement, not an automatic performance budget or default-suite result."
+    },
+    "liveevents": {
+      "owners": [
+        "packages/liveevents/hub.go",
+        "packages/liveevents/http.go"
+      ],
+      "dependencies": [
+        "http.ResponseController.Flush",
+        "encoding/json.Marshal",
+        "time.Ticker",
+        "mutex-protected bounded subscription channels"
+      ],
+      "callers": [
+        "apps/player/internal/server/live_events.go",
+        "apps/subtitles/internal/server/live_events.go",
+        "packages/mcpgateway/events_delivery.go:ObserveEvents",
+        "packages/operations/binding.go:Metrics"
+      ],
+      "e2e": "Actual library/offline journeys may consume app live events but do not independently assert private-profile backlog isolation, cursor extremes,128-event retention,256-subscriber capacity, slow-stream eviction, access revocation, or injected write/flush failures. Player test-instance-offline.spec.ts /__offline-lifecycle-test replaces EventSource and supplies its own page; that fixture is not backend stream proof. Watch Together reconnect has a separate watchrooms owner and is not SSE equivalence."
+    },
+    "privatefile": {
+      "owners": [
+        "packages/privatefile/privatefile.go",
+        "packages/privatefile/permissions_unix.go",
+        "packages/privatefile/permissions_windows.go"
+      ],
+      "dependencies": [
+        "os.Lstat/SameFile/OpenFile/CreateTemp/Rename/File.Sync",
+        "io.LimitReader",
+        "platform directory sync semantics"
+      ],
+      "callers": [
+        "packages/configurationcore/transaction.go",
+        "packages/auditjournal/load.go",
+        "packages/auditjournal/storage.go",
+        "packages/remoteaccess/remoteaccess.go",
+        "packages/owneraccess/owneraccess.go",
+        "packages/trustedhttps/issuer_files.go",
+        "packages/servertransport/tls_operations.go",
+        "packages/metadata/provider_http.go",
+        "packages/mediaprobe/cache.go",
+        "apps/player/internal/configuration/load.go",
+        "apps/subtitles/internal/configuration/load.go"
+      ],
+      "e2e": "Actual setup/configuration, backup and playback journeys exercise normal installation I/O but do not inject file replacement/open/read/sync/close failures, unsafe symlinks/public permissions, vanished parent directories or disable-marker durability. Unix-specific injection tests have build tags; Windows permission/sync implementations differ and are not claimed validated by the Mac baseline."
+    },
+    "maintenance": {
+      "owners": [
+        "packages/maintenance/maintenance.go",
+        "packages/maintenance/status.go",
+        "packages/maintenance/http.go"
+      ],
+      "dependencies": [
+        "packages/playback/hls_cache.go:HLSCacheControl",
+        "packages/backup/manager.go:Status",
+        "packages/markers/analyzer.go:SetWait",
+        "packages/markers/store.go:Status",
+        "packages/apihttp/api.go:WriteJSON"
+      ],
+      "callers": [
+        "apps/player/internal/server/maintenance.go",
+        "apps/subtitles/internal/server/maintenance.go",
+        "packages/operations/binding.go:Maintenance.Run/Metrics"
+      ],
+      "e2e": "Actual app playback, System/settings and maintenance operations exercise valid wiring but do not coordinate24 active HTTP reads with cache pruning, exact quiet-time boundaries, canceled background timers, both pruning failures or all maintenance status modes. No real browser journey explicitly asserts this complete private JSON contract."
+    },
+    "routeinventory": {
+      "owners": [
+        "packages/routeinventory/inventory.go"
+      ],
+      "dependencies": [
+        "go/parser.ParseFile",
+        "go/ast.Inspect",
+        "filepath.Glob",
+        "scim.Patterns and mcpgateway.Patterns supplied by callers"
+      ],
+      "callers": [
+        "packages/servertest/route_authorization_inventory.go:RegisteredRouteInventory",
+        "packages/cmd/routeinventory/main.go:run",
+        "apps/player/internal/server/auth_all_routes_helpers_test.go",
+        "apps/subtitles/internal/server/auth_all_routes_helpers_test.go",
+        "scripts/quality/check-route-inventory.sh"
+      ],
+      "e2e": "Browser journeys visit a finite route subset and cannot prove the complete security authorization inventory. The syntheticGo snippets are isolated parser fixtures, not HTTP/backend E2E; the complete app route authorization suites and executable quality gate are the relevant consumers."
+    },
+    "commandtest": {
+      "reviewed_scope": "child.go and all3 child_test.go declarations only; other commandtest test-support helpers are preserved without a semantic audit claim.",
+      "owners": [
+        "packages/commandtest/child.go"
+      ],
+      "dependencies": [
+        "os.Executable",
+        "exec.CommandContext/last-value-wins environment",
+        "regexp.QuoteMeta",
+        "flag.Lookup(test.gocoverdir)"
+      ],
+      "callers": [],
+      "e2e": "No production, app test or other commandtest helper calls CoveredChild in exact baseline876b771 or clean integrated rootc635a3cf9. Its only callers are its own self-tests. Other real CLI/MCP/entrypoint subprocess helpers remain; browser E2E is not evidence for this unused helper."
+    },
+    "cmd": {
+      "reviewed_scope": "packages/cmd/routeinventory only, all2 declarations.",
+      "owners": [
+        "packages/cmd/routeinventory/main.go"
+      ],
+      "dependencies": [
+        "packages/routeinventory/inventory.go",
+        "packages/scim:Patterns",
+        "packages/mcpgateway:Patterns",
+        "encoding/json.Encoder",
+        "os.Exit"
+      ],
+      "callers": [
+        "scripts/quality/check-route-inventory.sh"
+      ],
+      "e2e": "Browser tests do not invoke the source-inventory CLI. Executable quality routing calls go run for both actual app source trees; the retained owner tests uniquely exercise invalid invocation, discovery and output failure exits."
     }
   },
   "test_support_inventory": {
@@ -693,6 +828,24 @@
         },
         "remaining_coverage": "App ledgers map removed wrappers to actual browser keyboard behavior; this support removal deletes no independently executable Test/Benchmark/Fuzz declaration.",
         "gap": "Validate after integrated app-removal commits; isolated shared checkout retains baseline app wrappers and cannot compile those old callers without integration."
+      },
+      {
+        "file": "packages/commandtest/child.go",
+        "name": "CoveredChild",
+        "decision": "D",
+        "audit_status": "reviewed",
+        "baseline_body_sha256": "62b33203f5c55c418448edd71eecb6673ea1b7dd990d8a9e3dc886fc9a6f5001",
+        "credible_failure": "Unused support helper only called by its own self-tests; no app or other helper caller.",
+        "caller_evidence": {
+          "checkout": "/Users/mikeo/Documents/Codex/2026-10-03/task/kinosail",
+          "sha": "c635a3cf9e6cd6e0483c7314dc2941089e2289d9",
+          "working_tree": "clean",
+          "baseline_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+          "command": "git grep -n CoveredChild -- *.go, at baseline and clean integrated HEAD",
+          "result": "Only helper declaration/documentation and packages/commandtest/child_test.go references; no external caller."
+        },
+        "remaining_coverage": "All still-used commandtest entrypoint/CLI/MCP/transport/backup/update/configuration helpers remain. No app or gate assertion removed.",
+        "gap": "No E2E equivalence claimed for an unused test-support facility."
       }
     ],
     "unreviewed_preserved": "All other support inventory is preserved without complete semantic classification; removals are restricted to helpers with no integrated app callers."
@@ -13755,9 +13908,9 @@
       "owner_group": "cmd",
       "body_sha256": "761ad0fa6ba9c4cb9bdd70a2e8eced3f11bb58a1d2a153296a327f5963596503",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./cmd/routeinventory",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.402827-06:00",
@@ -13765,7 +13918,20 @@
         "Package": "github.com/MikeO7/kinosail/packages/cmd/routeinventory",
         "Test": "TestRunCoversUsageDiscoveryEncodingAndSuccess",
         "Elapsed": 0.08
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/cmd/routeinventory/main.go"
+      ],
+      "callers": [
+        "scripts/quality/check-route-inventory.sh"
+      ],
+      "credible_failure": "CLI callers must receive nonzero status and diagnostics for bad arguments/discovery/writer failure, while a real shared-source inventory succeeds and emits data.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Browser tests do not invoke the source-inventory CLI. Executable quality routing calls go run for both actual app source trees; the retained owner tests uniquely exercise invalid invocation, discovery and output failure exits.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/cmd/routeinventory/main_test.go",
@@ -13775,9 +13941,9 @@
       "owner_group": "cmd",
       "body_sha256": "f73caac2b4eb5175771d7ffcc20eded9b5a4ea9138576d385f29406d74f6b3dd",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./cmd/routeinventory",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.320623-06:00",
@@ -13785,7 +13951,20 @@
         "Package": "github.com/MikeO7/kinosail/packages/cmd/routeinventory",
         "Test": "TestMainDispatchesExitCode",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/cmd/routeinventory/main.go"
+      ],
+      "callers": [
+        "scripts/quality/check-route-inventory.sh"
+      ],
+      "credible_failure": "Propagate run exit status through the command entrypoint so a usage failure cannot be exposed as success to shell tooling; this protects the shell gate boundary beyond the run helper.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Browser tests do not invoke the source-inventory CLI. Executable quality routing calls go run for both actual app source trees; the retained owner tests uniquely exercise invalid invocation, discovery and output failure exits.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/commandtest/child_test.go",
@@ -13795,9 +13974,9 @@
       "owner_group": "commandtest",
       "body_sha256": "015f07dcc33343140c12fdaa324f80511a12a3cb3cfb53ec3c62b4a194064ce2",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Remove only redundant parser branches, unreachable static governor fallback assertions, or unused support self-tests; meaningful pressure/permission/durability protection remains.",
       "validation_command": "cd packages && go test ./commandtest",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.378559-06:00",
@@ -13805,7 +13984,21 @@
         "Package": "github.com/MikeO7/kinosail/packages/commandtest",
         "Test": "TestCoveredChildUsesExactTargetAndPropagatesCoverage",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/commandtest/child.go"
+      ],
+      "callers": [],
+      "credible_failure": "Exercises only unused CoveredChild helper or supplies its child process fixture; no app, production or other helper caller exists. The fixture itself has no direct assertion and only exists for the removed environment self-test.",
+      "reason": "Exercises only unused CoveredChild helper or supplies its child process fixture; no app, production or other helper caller exists. The fixture itself has no direct assertion and only exists for the removed environment self-test.",
+      "remaining_coverage": [
+        "Other still-used commandtest CLI/MCP/entrypoint subprocess helpers remain unchanged."
+      ],
+      "gap": "Unused exact-test child/coverage/environment construction has no independent app regression protection. No coverage requirement or CI check is weakened; no app subprocess assertion is removed.",
+      "unlocked_deletion": "packages/commandtest/child.go:CoveredChild unused test-support helper."
     },
     {
       "file": "packages/commandtest/child_test.go",
@@ -13815,9 +14008,9 @@
       "owner_group": "commandtest",
       "body_sha256": "8abf3894ee8e20147e45d2ccd09407c60babb3b4c22c720ed56d2e3594eb984d",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Remove only redundant parser branches, unreachable static governor fallback assertions, or unused support self-tests; meaningful pressure/permission/durability protection remains.",
       "validation_command": "cd packages && go test ./commandtest",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.401885-06:00",
@@ -13825,7 +14018,21 @@
         "Package": "github.com/MikeO7/kinosail/packages/commandtest",
         "Test": "TestCoveredChildEnvironmentOverridesInheritedValue",
         "Elapsed": 0.02
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/commandtest/child.go"
+      ],
+      "callers": [],
+      "credible_failure": "Exercises only unused CoveredChild helper or supplies its child process fixture; no app, production or other helper caller exists. The fixture itself has no direct assertion and only exists for the removed environment self-test.",
+      "reason": "Exercises only unused CoveredChild helper or supplies its child process fixture; no app, production or other helper caller exists. The fixture itself has no direct assertion and only exists for the removed environment self-test.",
+      "remaining_coverage": [
+        "Other still-used commandtest CLI/MCP/entrypoint subprocess helpers remain unchanged."
+      ],
+      "gap": "Unused exact-test child/coverage/environment construction has no independent app regression protection. No coverage requirement or CI check is weakened; no app subprocess assertion is removed.",
+      "unlocked_deletion": "packages/commandtest/child.go:CoveredChild unused test-support helper."
     },
     {
       "file": "packages/commandtest/child_test.go",
@@ -13835,9 +14042,9 @@
       "owner_group": "commandtest",
       "body_sha256": "1bffd0c773db9bcc1c46d1d3b9a85362021d5ad361400ece2ddba133583df851",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Remove only redundant parser branches, unreachable static governor fallback assertions, or unused support self-tests; meaningful pressure/permission/durability protection remains.",
       "validation_command": "cd packages && go test ./commandtest",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.401943-06:00",
@@ -13845,7 +14052,21 @@
         "Package": "github.com/MikeO7/kinosail/packages/commandtest",
         "Test": "TestCoveredChildProcess",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/commandtest/child.go"
+      ],
+      "callers": [],
+      "credible_failure": "Exercises only unused CoveredChild helper or supplies its child process fixture; no app, production or other helper caller exists. The fixture itself has no direct assertion and only exists for the removed environment self-test.",
+      "reason": "Exercises only unused CoveredChild helper or supplies its child process fixture; no app, production or other helper caller exists. The fixture itself has no direct assertion and only exists for the removed environment self-test.",
+      "remaining_coverage": [
+        "Other still-used commandtest CLI/MCP/entrypoint subprocess helpers remain unchanged."
+      ],
+      "gap": "Unused exact-test child/coverage/environment construction has no independent app regression protection. No coverage requirement or CI check is weakened; no app subprocess assertion is removed.",
+      "unlocked_deletion": "packages/commandtest/child.go:CoveredChild unused test-support helper."
     },
     {
       "file": "packages/configurationcore/application_fields_test.go",
@@ -25453,9 +25674,9 @@
       "owner_group": "liveevents",
       "body_sha256": "b620dc78f11a63e5ff7cb551503a5db0e761db79b75c0bddd26051671034cd20",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./liveevents",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.426442-06:00",
@@ -25463,7 +25684,24 @@
         "Package": "github.com/MikeO7/kinosail/packages/liveevents",
         "Test": "TestHandlerRejectsInvalidAndExcessStreams",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/liveevents/hub.go",
+        "packages/liveevents/http.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/live_events.go",
+        "apps/subtitles/internal/server/live_events.go",
+        "packages/mcpgateway/events_delivery.go:ObserveEvents",
+        "packages/operations/binding.go:Metrics"
+      ],
+      "credible_failure": "Translate malformed Last-Event-ID to400 without subscribing and Hub capacity rejection to429 at the HTTP boundary, distinct from the Hub admission implementation.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual library/offline journeys may consume app live events but do not independently assert private-profile backlog isolation, cursor extremes,128-event retention,256-subscriber capacity, slow-stream eviction, access revocation, or injected write/flush failures. Player test-instance-offline.spec.ts /__offline-lifecycle-test replaces EventSource and supplies its own page; that fixture is not backend stream proof. Watch Together reconnect has a separate watchrooms owner and is not SSE equivalence.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/liveevents/http_test.go",
@@ -25473,9 +25711,9 @@
       "owner_group": "liveevents",
       "body_sha256": "5c7d65e5d4968d8200d8d8dcddedad074af7dfca67cb3dc8fb677886d624373b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./liveevents",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.428998-06:00",
@@ -25483,7 +25721,24 @@
         "Package": "github.com/MikeO7/kinosail/packages/liveevents",
         "Test": "TestHandlerStreamsBacklogAndPublishedEvents",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/liveevents/hub.go",
+        "packages/liveevents/http.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/live_events.go",
+        "apps/subtitles/internal/server/live_events.go",
+        "packages/mcpgateway/events_delivery.go:ObserveEvents",
+        "packages/operations/binding.go:Metrics"
+      ],
+      "credible_failure": "Send both backlog and subsequent published events with flushed SSE framing and no-store/no-buffering headers so intermediaries cannot cache or indefinitely buffer private events.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual library/offline journeys may consume app live events but do not independently assert private-profile backlog isolation, cursor extremes,128-event retention,256-subscriber capacity, slow-stream eviction, access revocation, or injected write/flush failures. Player test-instance-offline.spec.ts /__offline-lifecycle-test replaces EventSource and supplies its own page; that fixture is not backend stream proof. Watch Together reconnect has a separate watchrooms owner and is not SSE equivalence.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/liveevents/http_test.go",
@@ -25493,9 +25748,9 @@
       "owner_group": "liveevents",
       "body_sha256": "fc2bb61480f37dea3e124162f8364cfa06ae17dfc9f244dac5c598f92e75a94b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./liveevents",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.433524-06:00",
@@ -25503,7 +25758,24 @@
         "Package": "github.com/MikeO7/kinosail/packages/liveevents",
         "Test": "TestHandlerStopsForClosedStreamAndWriteFailures",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/liveevents/hub.go",
+        "packages/liveevents/http.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/live_events.go",
+        "apps/subtitles/internal/server/live_events.go",
+        "packages/mcpgateway/events_delivery.go:ObserveEvents",
+        "packages/operations/binding.go:Metrics"
+      ],
+      "credible_failure": "After a closed subscription, injected event write failure or event flush failure, stop the handler promptly instead of leaking a long-lived HTTP stream.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual library/offline journeys may consume app live events but do not independently assert private-profile backlog isolation, cursor extremes,128-event retention,256-subscriber capacity, slow-stream eviction, access revocation, or injected write/flush failures. Player test-instance-offline.spec.ts /__offline-lifecycle-test replaces EventSource and supplies its own page; that fixture is not backend stream proof. Watch Together reconnect has a separate watchrooms owner and is not SSE equivalence.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/liveevents/http_test.go",
@@ -25513,9 +25785,9 @@
       "owner_group": "liveevents",
       "body_sha256": "e12d14b39aa829ebfad1136eb15ef6bdbc802a60d6045ab2297cba482bb1df73",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./liveevents",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.433547-06:00",
@@ -25523,7 +25795,24 @@
         "Package": "github.com/MikeO7/kinosail/packages/liveevents",
         "Test": "TestHandlerStopsWhenBacklogWriteFails",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/liveevents/hub.go",
+        "packages/liveevents/http.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/live_events.go",
+        "apps/subtitles/internal/server/live_events.go",
+        "packages/mcpgateway/events_delivery.go:ObserveEvents",
+        "packages/operations/binding.go:Metrics"
+      ],
+      "credible_failure": "Unsubscribe immediately when an injected initial backlog write fails, releasing capacity before the streaming loop starts.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual library/offline journeys may consume app live events but do not independently assert private-profile backlog isolation, cursor extremes,128-event retention,256-subscriber capacity, slow-stream eviction, access revocation, or injected write/flush failures. Player test-instance-offline.spec.ts /__offline-lifecycle-test replaces EventSource and supplies its own page; that fixture is not backend stream proof. Watch Together reconnect has a separate watchrooms owner and is not SSE equivalence.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/liveevents/http_test.go",
@@ -25533,9 +25822,9 @@
       "owner_group": "liveevents",
       "body_sha256": "a01f42efb723a28c23de7f8dcdb0ff6fb5eb2ef087e6df28ba36d106e308d667",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./liveevents",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.436492-06:00",
@@ -25543,7 +25832,24 @@
         "Package": "github.com/MikeO7/kinosail/packages/liveevents",
         "Test": "TestHandlerStopsForFlushHeartbeatAndAccessResults",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/liveevents/hub.go",
+        "packages/liveevents/http.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/live_events.go",
+        "apps/subtitles/internal/server/live_events.go",
+        "packages/mcpgateway/events_delivery.go:ObserveEvents",
+        "packages/operations/binding.go:Metrics"
+      ],
+      "credible_failure": "Close a stream after initial/heartbeat flush failure or revoked access, and emit keepalive framing before heartbeat failure; a Viewer losing access must not retain an infinite stream.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual library/offline journeys may consume app live events but do not independently assert private-profile backlog isolation, cursor extremes,128-event retention,256-subscriber capacity, slow-stream eviction, access revocation, or injected write/flush failures. Player test-instance-offline.spec.ts /__offline-lifecycle-test replaces EventSource and supplies its own page; that fixture is not backend stream proof. Watch Together reconnect has a separate watchrooms owner and is not SSE equivalence.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/liveevents/http_test.go",
@@ -25553,9 +25859,9 @@
       "owner_group": "liveevents",
       "body_sha256": "41bb98ca783687a3cd0a656e2ae1c239072179eb8a1c41a1c1b203fe96085015",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./liveevents",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.436593-06:00",
@@ -25563,7 +25869,24 @@
         "Package": "github.com/MikeO7/kinosail/packages/liveevents",
         "Test": "TestLastEventIDAndWireFormatAreBounded",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/liveevents/hub.go",
+        "packages/liveevents/http.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/live_events.go",
+        "apps/subtitles/internal/server/live_events.go",
+        "packages/mcpgateway/events_delivery.go:ObserveEvents",
+        "packages/operations/binding.go:Metrics"
+      ],
+      "credible_failure": "Accept the complete uint64 cursor range but reject negative/oversized/nondecimal cursors; retain event ID framing and propagate JSON time or writer failures.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual library/offline journeys may consume app live events but do not independently assert private-profile backlog isolation, cursor extremes,128-event retention,256-subscriber capacity, slow-stream eviction, access revocation, or injected write/flush failures. Player test-instance-offline.spec.ts /__offline-lifecycle-test replaces EventSource and supplies its own page; that fixture is not backend stream proof. Watch Together reconnect has a separate watchrooms owner and is not SSE equivalence.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/liveevents/hub_test.go",
@@ -25573,9 +25896,9 @@
       "owner_group": "liveevents",
       "body_sha256": "2132bd6f2b2f2d939f20d209e070ce58218bd1179fcd030e57c9698e77e5f702",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./liveevents",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.436846-06:00",
@@ -25583,7 +25906,24 @@
         "Package": "github.com/MikeO7/kinosail/packages/liveevents",
         "Test": "TestHubScopesAndReplaysEvents",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/liveevents/hub.go",
+        "packages/liveevents/http.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/live_events.go",
+        "apps/subtitles/internal/server/live_events.go",
+        "packages/mcpgateway/events_delivery.go:ObserveEvents",
+        "packages/operations/binding.go:Metrics"
+      ],
+      "credible_failure": "Replay only the requested Viewer Profile plus global events after a cursor and keep UTC timestamps; cross-profile download details must never be delivered in another profile backlog.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual library/offline journeys may consume app live events but do not independently assert private-profile backlog isolation, cursor extremes,128-event retention,256-subscriber capacity, slow-stream eviction, access revocation, or injected write/flush failures. Player test-instance-offline.spec.ts /__offline-lifecycle-test replaces EventSource and supplies its own page; that fixture is not backend stream proof. Watch Together reconnect has a separate watchrooms owner and is not SSE equivalence.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/liveevents/hub_test.go",
@@ -25593,9 +25933,9 @@
       "owner_group": "liveevents",
       "body_sha256": "f1f86201b09372fb69207b2b0b5d21554b33886d997fa4d8ece7e5d010ea0f7e",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./liveevents",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.43688-06:00",
@@ -25603,7 +25943,24 @@
         "Package": "github.com/MikeO7/kinosail/packages/liveevents",
         "Test": "TestHubBoundsHistory",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/liveevents/hub.go",
+        "packages/liveevents/http.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/live_events.go",
+        "apps/subtitles/internal/server/live_events.go",
+        "packages/mcpgateway/events_delivery.go:ObserveEvents",
+        "packages/operations/binding.go:Metrics"
+      ],
+      "credible_failure": "Bound replay history to128 newest events rather than retaining unbounded event resources in a long-running server.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual library/offline journeys may consume app live events but do not independently assert private-profile backlog isolation, cursor extremes,128-event retention,256-subscriber capacity, slow-stream eviction, access revocation, or injected write/flush failures. Player test-instance-offline.spec.ts /__offline-lifecycle-test replaces EventSource and supplies its own page; that fixture is not backend stream proof. Watch Together reconnect has a separate watchrooms owner and is not SSE equivalence.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/liveevents/hub_test.go",
@@ -25613,9 +25970,9 @@
       "owner_group": "liveevents",
       "body_sha256": "c18774a959c09ff852f078ab8a9fc74964a82afb384fbdf167e23ccde5817cfa",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./liveevents",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.436909-06:00",
@@ -25623,7 +25980,24 @@
         "Package": "github.com/MikeO7/kinosail/packages/liveevents",
         "Test": "TestHubTracksReconnectsAndSlowStreams",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/liveevents/hub.go",
+        "packages/liveevents/http.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/live_events.go",
+        "apps/subtitles/internal/server/live_events.go",
+        "packages/mcpgateway/events_delivery.go:ObserveEvents",
+        "packages/operations/binding.go:Metrics"
+      ],
+      "credible_failure": "An unrelated-profile event must not fill a subscriber queue; a slow matching stream must be dropped/closed while delivery remains bounded and pressure counters stay accurate.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual library/offline journeys may consume app live events but do not independently assert private-profile backlog isolation, cursor extremes,128-event retention,256-subscriber capacity, slow-stream eviction, access revocation, or injected write/flush failures. Player test-instance-offline.spec.ts /__offline-lifecycle-test replaces EventSource and supplies its own page; that fixture is not backend stream proof. Watch Together reconnect has a separate watchrooms owner and is not SSE equivalence.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/liveevents/hub_test.go",
@@ -25633,9 +26007,9 @@
       "owner_group": "liveevents",
       "body_sha256": "0318f9c1b7d406be86c9112d89fd59550a20bc36c398eb56fb62a3a84604ae53",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./liveevents",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.436936-06:00",
@@ -25643,7 +26017,24 @@
         "Package": "github.com/MikeO7/kinosail/packages/liveevents",
         "Test": "TestHubRejectsExcessStreams",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/liveevents/hub.go",
+        "packages/liveevents/http.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/live_events.go",
+        "apps/subtitles/internal/server/live_events.go",
+        "packages/mcpgateway/events_delivery.go:ObserveEvents",
+        "packages/operations/binding.go:Metrics"
+      ],
+      "credible_failure": "Refuse subscriber257 and retain256 active streams rather than allocating unlimited long-lived channels; this is primary Hub admission proof.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual library/offline journeys may consume app live events but do not independently assert private-profile backlog isolation, cursor extremes,128-event retention,256-subscriber capacity, slow-stream eviction, access revocation, or injected write/flush failures. Player test-instance-offline.spec.ts /__offline-lifecycle-test replaces EventSource and supplies its own page; that fixture is not backend stream proof. Watch Together reconnect has a separate watchrooms owner and is not SSE equivalence.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/localization/localization_test.go",
@@ -26049,9 +26440,9 @@
       "owner_group": "maintenance",
       "body_sha256": "8f46b68f23188d7f2234401fbc6d7efa3678d07e3a82fafc6d8b4886806965b6",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./maintenance",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.529848-06:00",
@@ -26059,7 +26450,24 @@
         "Package": "github.com/MikeO7/kinosail/packages/maintenance",
         "Test": "TestConcurrentMediaReadsPreventAllUpkeep",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/maintenance/maintenance.go",
+        "packages/maintenance/status.go",
+        "packages/maintenance/http.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/maintenance.go",
+        "apps/subtitles/internal/server/maintenance.go",
+        "packages/operations/binding.go:Maintenance.Run/Metrics"
+      ],
+      "credible_failure": "Across24 simultaneously active media readers, neither cache nor metadata may be pruned; after readers drain retain the quiet period until its exact boundary.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual app playback, System/settings and maintenance operations exercise valid wiring but do not coordinate24 active HTTP reads with cache pruning, exact quiet-time boundaries, canceled background timers, both pruning failures or all maintenance status modes. No real browser journey explicitly asserts this complete private JSON contract.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/maintenance/maintenance_test.go",
@@ -26069,9 +26477,9 @@
       "owner_group": "maintenance",
       "body_sha256": "20c22763cedea8afd19dec1615fa36e52625ccdbb44406a31838aed2c4898a05",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./maintenance",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.529902-06:00",
@@ -26079,7 +26487,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/maintenance",
         "Test": "TestManagerDefaultsAreBounded",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "ff4eb0db21cccd5d4b6c72c38ab2daff1f7a341f Cover maintenance application binding",
+        "207fb05cae95fb35f9d9858d607011bd1d90224d Centralize maintenance and login redirect seams",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/maintenance/maintenance.go",
+        "packages/maintenance/status.go",
+        "packages/maintenance/http.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/maintenance.go",
+        "apps/subtitles/internal/server/maintenance.go",
+        "packages/operations/binding.go:Maintenance.Run/Metrics"
+      ],
+      "credible_failure": "Keep documented schedule-off nil-context mode and safe15-minute/10GiB defaults with startup delay capped250ms; actual E2E does not enumerate default resource policy and short configured periods.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual app playback, System/settings and maintenance operations exercise valid wiring but do not coordinate24 active HTTP reads with cache pruning, exact quiet-time boundaries, canceled background timers, both pruning failures or all maintenance status modes. No real browser journey explicitly asserts this complete private JSON contract.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/maintenance/maintenance_test.go",
@@ -26089,9 +26516,9 @@
       "owner_group": "maintenance",
       "body_sha256": "b74824dba7b5f9034471682a5860efbeb28088a176391d27fd557624d68233ff",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./maintenance",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.529931-06:00",
@@ -26099,7 +26526,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/maintenance",
         "Test": "TestNewBoundConnectsIdleWait",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "ff4eb0db21cccd5d4b6c72c38ab2daff1f7a341f Cover maintenance application binding",
+        "207fb05cae95fb35f9d9858d607011bd1d90224d Centralize maintenance and login redirect seams",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/maintenance/maintenance.go",
+        "packages/maintenance/status.go",
+        "packages/maintenance/http.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/maintenance.go",
+        "apps/subtitles/internal/server/maintenance.go",
+        "packages/operations/binding.go:Maintenance.Run/Metrics"
+      ],
+      "credible_failure": "Bind the manager idle-wait gate into background analysis so expensive analysis does not bypass interactive media protection.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual app playback, System/settings and maintenance operations exercise valid wiring but do not coordinate24 active HTTP reads with cache pruning, exact quiet-time boundaries, canceled background timers, both pruning failures or all maintenance status modes. No real browser journey explicitly asserts this complete private JSON contract.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/maintenance/maintenance_test.go",
@@ -26109,9 +26555,9 @@
       "owner_group": "maintenance",
       "body_sha256": "69ff0af2fd44b5e49706ec55f04c447b4e769c5056f69e7771e797373f55697b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./maintenance",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.529952-06:00",
@@ -26119,7 +26565,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/maintenance",
         "Test": "TestNewApplicationBindsSubsystems",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "ff4eb0db21cccd5d4b6c72c38ab2daff1f7a341f Cover maintenance application binding",
+        "207fb05cae95fb35f9d9858d607011bd1d90224d Centralize maintenance and login redirect seams",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/maintenance/maintenance.go",
+        "packages/maintenance/status.go",
+        "packages/maintenance/http.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/maintenance.go",
+        "apps/subtitles/internal/server/maintenance.go",
+        "packages/operations/binding.go:Maintenance.Run/Metrics"
+      ],
+      "credible_failure": "Invoke real HLS cache/backup/marker types through the shared maintenance composition, prune metadata and report configured status rather than merely constructing fake callback values.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual app playback, System/settings and maintenance operations exercise valid wiring but do not coordinate24 active HTTP reads with cache pruning, exact quiet-time boundaries, canceled background timers, both pruning failures or all maintenance status modes. No real browser journey explicitly asserts this complete private JSON contract.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/maintenance/maintenance_test.go",
@@ -26129,9 +26594,9 @@
       "owner_group": "maintenance",
       "body_sha256": "09ed1e8a6860d6ef02b2e3e1285c5f5d4e3f7facc36cd70faafd6d891b1efb4e",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./maintenance",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.530078-06:00",
@@ -26139,7 +26604,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/maintenance",
         "Test": "TestManagerRunsBoundedUpkeep",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "ff4eb0db21cccd5d4b6c72c38ab2daff1f7a341f Cover maintenance application binding",
+        "207fb05cae95fb35f9d9858d607011bd1d90224d Centralize maintenance and login redirect seams",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/maintenance/maintenance.go",
+        "packages/maintenance/status.go",
+        "packages/maintenance/http.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/maintenance.go",
+        "apps/subtitles/internal/server/maintenance.go",
+        "packages/operations/binding.go:Maintenance.Run/Metrics"
+      ],
+      "credible_failure": "Pass the bounded cache limit to pruning, preserve both cache and metadata errors, and skip all upkeep while foreground media is active.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual app playback, System/settings and maintenance operations exercise valid wiring but do not coordinate24 active HTTP reads with cache pruning, exact quiet-time boundaries, canceled background timers, both pruning failures or all maintenance status modes. No real browser journey explicitly asserts this complete private JSON contract.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/maintenance/maintenance_test.go",
@@ -26149,9 +26633,9 @@
       "owner_group": "maintenance",
       "body_sha256": "758aa71c0b370629622e6d8a5d03cff13805dad71b0049100f5dfec440dbcf10",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./maintenance",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.531668-06:00",
@@ -26159,7 +26643,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/maintenance",
         "Test": "TestManagerSchedulesUpkeep",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "ff4eb0db21cccd5d4b6c72c38ab2daff1f7a341f Cover maintenance application binding",
+        "207fb05cae95fb35f9d9858d607011bd1d90224d Centralize maintenance and login redirect seams",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/maintenance/maintenance.go",
+        "packages/maintenance/status.go",
+        "packages/maintenance/http.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/maintenance.go",
+        "apps/subtitles/internal/server/maintenance.go",
+        "packages/operations/binding.go:Maintenance.Run/Metrics"
+      ],
+      "credible_failure": "Cancellation must prevent upkeep, and a live scheduled startup must invoke pruning with its configured limit instead of losing the timer/cancellation lifecycle.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual app playback, System/settings and maintenance operations exercise valid wiring but do not coordinate24 active HTTP reads with cache pruning, exact quiet-time boundaries, canceled background timers, both pruning failures or all maintenance status modes. No real browser journey explicitly asserts this complete private JSON contract.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/maintenance/maintenance_test.go",
@@ -26169,9 +26672,9 @@
       "owner_group": "maintenance",
       "body_sha256": "e2445fdf61a7d71583a739107eeb0dce0001da3b350716eed637c26a64fee91a",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./maintenance",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.531881-06:00",
@@ -26179,7 +26682,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/maintenance",
         "Test": "TestManagerLogsUpkeepResult",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "ff4eb0db21cccd5d4b6c72c38ab2daff1f7a341f Cover maintenance application binding",
+        "207fb05cae95fb35f9d9858d607011bd1d90224d Centralize maintenance and login redirect seams",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/maintenance/maintenance.go",
+        "packages/maintenance/status.go",
+        "packages/maintenance/http.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/maintenance.go",
+        "apps/subtitles/internal/server/maintenance.go",
+        "packages/operations/binding.go:Maintenance.Run/Metrics"
+      ],
+      "credible_failure": "Expose injected maintenance failure to the owner diagnostic log and log successful completion at debug level, so unattended failures are diagnosable.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual app playback, System/settings and maintenance operations exercise valid wiring but do not coordinate24 active HTTP reads with cache pruning, exact quiet-time boundaries, canceled background timers, both pruning failures or all maintenance status modes. No real browser journey explicitly asserts this complete private JSON contract.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/maintenance/maintenance_test.go",
@@ -26189,9 +26711,9 @@
       "owner_group": "maintenance",
       "body_sha256": "230c61d2174e1926c68cf318ad7d01e5ddc2489ac6ed19da6e18461c141cbc5f",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./maintenance",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.532012-06:00",
@@ -26199,7 +26721,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/maintenance",
         "Test": "TestManagerTracksOnlyInteractiveMediaReads",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "ff4eb0db21cccd5d4b6c72c38ab2daff1f7a341f Cover maintenance application binding",
+        "207fb05cae95fb35f9d9858d607011bd1d90224d Centralize maintenance and login redirect seams",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/maintenance/maintenance.go",
+        "packages/maintenance/status.go",
+        "packages/maintenance/http.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/maintenance.go",
+        "apps/subtitles/internal/server/maintenance.go",
+        "packages/operations/binding.go:Maintenance.Run/Metrics"
+      ],
+      "credible_failure": "Track all media/file namespaces during the real wrapped handler and for the quiet period, exclude unrelated routes/methods, and make the exact quiet boundary idle.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual app playback, System/settings and maintenance operations exercise valid wiring but do not coordinate24 active HTTP reads with cache pruning, exact quiet-time boundaries, canceled background timers, both pruning failures or all maintenance status modes. No real browser journey explicitly asserts this complete private JSON contract.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/maintenance/maintenance_test.go",
@@ -26209,9 +26750,9 @@
       "owner_group": "maintenance",
       "body_sha256": "7f1e34c03e14bd3db3a71bf77f35c06230228719667f903e4eff9a99edd1011e",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./maintenance",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.784231-06:00",
@@ -26219,7 +26760,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/maintenance",
         "Test": "TestManagerWaitsForIdleOrCancellation",
         "Elapsed": 0.25
-      }
+      },
+      "history": [
+        "ff4eb0db21cccd5d4b6c72c38ab2daff1f7a341f Cover maintenance application binding",
+        "207fb05cae95fb35f9d9858d607011bd1d90224d Centralize maintenance and login redirect seams",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/maintenance/maintenance.go",
+        "packages/maintenance/status.go",
+        "packages/maintenance/http.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/maintenance.go",
+        "apps/subtitles/internal/server/maintenance.go",
+        "packages/operations/binding.go:Maintenance.Run/Metrics"
+      ],
+      "credible_failure": "Stop idle wait promptly on cancellation while foreground media remains active and allow it to resume when interactive work drains.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual app playback, System/settings and maintenance operations exercise valid wiring but do not coordinate24 active HTTP reads with cache pruning, exact quiet-time boundaries, canceled background timers, both pruning failures or all maintenance status modes. No real browser journey explicitly asserts this complete private JSON contract.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/maintenance/maintenance_test.go",
@@ -26229,9 +26789,9 @@
       "owner_group": "maintenance",
       "body_sha256": "0be58e37e97d1c778410c7a650554c08fe53416e2dfd0644268c8212dfee4408",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./maintenance",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.78427-06:00",
@@ -26239,7 +26799,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/maintenance",
         "Test": "TestManagerStatusReportsEveryMaintenanceMode",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "ff4eb0db21cccd5d4b6c72c38ab2daff1f7a341f Cover maintenance application binding",
+        "207fb05cae95fb35f9d9858d607011bd1d90224d Centralize maintenance and login redirect seams",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/maintenance/maintenance.go",
+        "packages/maintenance/status.go",
+        "packages/maintenance/http.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/maintenance.go",
+        "apps/subtitles/internal/server/maintenance.go",
+        "packages/operations/binding.go:Maintenance.Run/Metrics"
+      ],
+      "credible_failure": "Report attention and safe automatic/local metadata/cache/backup modes across missing setup, active foreground work and injected backup/cache errors.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual app playback, System/settings and maintenance operations exercise valid wiring but do not coordinate24 active HTTP reads with cache pruning, exact quiet-time boundaries, canceled background timers, both pruning failures or all maintenance status modes. No real browser journey explicitly asserts this complete private JSON contract.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/maintenance/maintenance_test.go",
@@ -26249,9 +26828,9 @@
       "owner_group": "maintenance",
       "body_sha256": "a01319a34decf5acf8e906c994512dd719d702d5304d128988a5dce4d7179610",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./maintenance",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.784627-06:00",
@@ -26259,7 +26838,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/maintenance",
         "Test": "TestStatusHandlerWritesPrivateJSON",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "ff4eb0db21cccd5d4b6c72c38ab2daff1f7a341f Cover maintenance application binding",
+        "207fb05cae95fb35f9d9858d607011bd1d90224d Centralize maintenance and login redirect seams",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/maintenance/maintenance.go",
+        "packages/maintenance/status.go",
+        "packages/maintenance/http.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/maintenance.go",
+        "apps/subtitles/internal/server/maintenance.go",
+        "packages/operations/binding.go:Maintenance.Run/Metrics"
+      ],
+      "credible_failure": "The actual maintenance HTTP handler must serialize current status with private no-store application/json response headers.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual app playback, System/settings and maintenance operations exercise valid wiring but do not coordinate24 active HTTP reads with cache pruning, exact quiet-time boundaries, canceled background timers, both pruning failures or all maintenance status modes. No real browser journey explicitly asserts this complete private JSON contract.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/markers/admin_coverage_test.go",
@@ -38014,9 +38612,9 @@
       "owner_group": "privatefile",
       "body_sha256": "01281e38d44bd1a78fe5c27c10034eee095bd7810e6fb5b18eea5f18e17d8805",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./privatefile",
       "baseline_event": {
         "Time": "2026-10-03T10:35:29.137384-06:00",
@@ -38024,7 +38622,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/privatefile",
         "Test": "TestReadReportsOpenStatAndReadFailures",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/privatefile/privatefile.go",
+        "packages/privatefile/permissions_unix.go",
+        "packages/privatefile/permissions_windows.go"
+      ],
+      "callers": [
+        "packages/configurationcore/transaction.go",
+        "packages/auditjournal/load.go",
+        "packages/auditjournal/storage.go",
+        "packages/remoteaccess/remoteaccess.go",
+        "packages/owneraccess/owneraccess.go",
+        "packages/trustedhttps/issuer_files.go",
+        "packages/servertransport/tls_operations.go",
+        "packages/metadata/provider_http.go",
+        "packages/mediaprobe/cache.go",
+        "apps/player/internal/configuration/load.go",
+        "apps/subtitles/internal/configuration/load.go"
+      ],
+      "credible_failure": "Injected open/stat/read failures must fail closed, rather than returning secret bytes from a replaced/closed/unreadable file.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual setup/configuration, backup and playback journeys exercise normal installation I/O but do not inject file replacement/open/read/sync/close failures, unsafe symlinks/public permissions, vanished parent directories or disable-marker durability. Unix-specific injection tests have build tags; Windows permission/sync implementations differ and are not claimed validated by the Mac baseline.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/privatefile/privatefile_edges_test.go",
@@ -38034,9 +38657,9 @@
       "owner_group": "privatefile",
       "body_sha256": "c4fcae2b4af4545aa8ebe16362539753ef1a17978d5bdd047a048b0178178e47",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./privatefile",
       "baseline_event": {
         "Time": "2026-10-03T10:35:29.139064-06:00",
@@ -38044,7 +38667,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/privatefile",
         "Test": "TestWriteReportsTemporaryAndFileFailures",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/privatefile/privatefile.go",
+        "packages/privatefile/permissions_unix.go",
+        "packages/privatefile/permissions_windows.go"
+      ],
+      "callers": [
+        "packages/configurationcore/transaction.go",
+        "packages/auditjournal/load.go",
+        "packages/auditjournal/storage.go",
+        "packages/remoteaccess/remoteaccess.go",
+        "packages/owneraccess/owneraccess.go",
+        "packages/trustedhttps/issuer_files.go",
+        "packages/servertransport/tls_operations.go",
+        "packages/metadata/provider_http.go",
+        "packages/mediaprobe/cache.go",
+        "apps/player/internal/configuration/load.go",
+        "apps/subtitles/internal/configuration/load.go"
+      ],
+      "credible_failure": "Injected temporary-file creation or closed-file operations must return errors rather than reporting a successfully persisted owner state.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual setup/configuration, backup and playback journeys exercise normal installation I/O but do not inject file replacement/open/read/sync/close failures, unsafe symlinks/public permissions, vanished parent directories or disable-marker durability. Unix-specific injection tests have build tags; Windows permission/sync implementations differ and are not claimed validated by the Mac baseline.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/privatefile/privatefile_edges_test.go",
@@ -38054,9 +38702,9 @@
       "owner_group": "privatefile",
       "body_sha256": "94b43ec673cb12fd076df78862f6da38499990b049e4507d5e8f7811dade71c9",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./privatefile",
       "baseline_event": {
         "Time": "2026-10-03T10:35:29.147367-06:00",
@@ -38064,7 +38712,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/privatefile",
         "Test": "TestCreateReportsSyncAndCloseFailures",
         "Elapsed": 0.01
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/privatefile/privatefile.go",
+        "packages/privatefile/permissions_unix.go",
+        "packages/privatefile/permissions_windows.go"
+      ],
+      "callers": [
+        "packages/configurationcore/transaction.go",
+        "packages/auditjournal/load.go",
+        "packages/auditjournal/storage.go",
+        "packages/remoteaccess/remoteaccess.go",
+        "packages/owneraccess/owneraccess.go",
+        "packages/trustedhttps/issuer_files.go",
+        "packages/servertransport/tls_operations.go",
+        "packages/metadata/provider_http.go",
+        "packages/mediaprobe/cache.go",
+        "apps/player/internal/configuration/load.go",
+        "apps/subtitles/internal/configuration/load.go"
+      ],
+      "credible_failure": "Propagate injected marker sync/close failures so callers cannot treat a nondurable security disable marker as successfully committed.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual setup/configuration, backup and playback journeys exercise normal installation I/O but do not inject file replacement/open/read/sync/close failures, unsafe symlinks/public permissions, vanished parent directories or disable-marker durability. Unix-specific injection tests have build tags; Windows permission/sync implementations differ and are not claimed validated by the Mac baseline.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/privatefile/privatefile_edges_test.go",
@@ -38074,9 +38747,9 @@
       "owner_group": "privatefile",
       "body_sha256": "400346ec5e4967935bf2bdd88c4e2b3cf5d8067b672cb71ee02b9f9e4c7402f0",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./privatefile",
       "baseline_event": {
         "Time": "2026-10-03T10:35:29.148233-06:00",
@@ -38084,7 +38757,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/privatefile",
         "Test": "TestSyncDirectoryReportsMissingPath",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/privatefile/privatefile.go",
+        "packages/privatefile/permissions_unix.go",
+        "packages/privatefile/permissions_windows.go"
+      ],
+      "callers": [
+        "packages/configurationcore/transaction.go",
+        "packages/auditjournal/load.go",
+        "packages/auditjournal/storage.go",
+        "packages/remoteaccess/remoteaccess.go",
+        "packages/owneraccess/owneraccess.go",
+        "packages/trustedhttps/issuer_files.go",
+        "packages/servertransport/tls_operations.go",
+        "packages/metadata/provider_http.go",
+        "packages/mediaprobe/cache.go",
+        "apps/player/internal/configuration/load.go",
+        "apps/subtitles/internal/configuration/load.go"
+      ],
+      "credible_failure": "A vanished parent directory cannot be treated as successfully synced; retain the low-level durability error consumed after replacement/removal instead of silently promising persistence.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual setup/configuration, backup and playback journeys exercise normal installation I/O but do not inject file replacement/open/read/sync/close failures, unsafe symlinks/public permissions, vanished parent directories or disable-marker durability. Unix-specific injection tests have build tags; Windows permission/sync implementations differ and are not claimed validated by the Mac baseline.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/privatefile/privatefile_edges_test.go",
@@ -38094,9 +38792,9 @@
       "owner_group": "privatefile",
       "body_sha256": "b930adaea129a25b14cbbabf1f2552bca4df0feb2b390b63d00415e8eb7b5189",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./privatefile",
       "baseline_event": {
         "Time": "2026-10-03T10:35:29.155764-06:00",
@@ -38104,7 +38802,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/privatefile",
         "Test": "TestRemoveReportsEveryDurabilityBoundary",
         "Elapsed": 0.01
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/privatefile/privatefile.go",
+        "packages/privatefile/permissions_unix.go",
+        "packages/privatefile/permissions_windows.go"
+      ],
+      "callers": [
+        "packages/configurationcore/transaction.go",
+        "packages/auditjournal/load.go",
+        "packages/auditjournal/storage.go",
+        "packages/remoteaccess/remoteaccess.go",
+        "packages/owneraccess/owneraccess.go",
+        "packages/trustedhttps/issuer_files.go",
+        "packages/servertransport/tls_operations.go",
+        "packages/metadata/provider_http.go",
+        "packages/mediaprobe/cache.go",
+        "apps/player/internal/configuration/load.go",
+        "apps/subtitles/internal/configuration/load.go"
+      ],
+      "credible_failure": "Remove an existing private file durably, make missing-file removal idempotent, and propagate injected remove/directory-sync failures.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual setup/configuration, backup and playback journeys exercise normal installation I/O but do not inject file replacement/open/read/sync/close failures, unsafe symlinks/public permissions, vanished parent directories or disable-marker durability. Unix-specific injection tests have build tags; Windows permission/sync implementations differ and are not claimed validated by the Mac baseline.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/privatefile/privatefile_test.go",
@@ -38114,9 +38837,9 @@
       "owner_group": "privatefile",
       "body_sha256": "70adf4646a7d8f658e75aa6ade58a92915f2a0bbb655d7ef44377f30cff73b36",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./privatefile",
       "baseline_event": {
         "Time": "2026-10-03T10:35:29.17748-06:00",
@@ -38124,7 +38847,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/privatefile",
         "Test": "TestWriteReadAndReplacePrivateFile",
         "Elapsed": 0.02
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/privatefile/privatefile.go",
+        "packages/privatefile/permissions_unix.go",
+        "packages/privatefile/permissions_windows.go"
+      ],
+      "callers": [
+        "packages/configurationcore/transaction.go",
+        "packages/auditjournal/load.go",
+        "packages/auditjournal/storage.go",
+        "packages/remoteaccess/remoteaccess.go",
+        "packages/owneraccess/owneraccess.go",
+        "packages/trustedhttps/issuer_files.go",
+        "packages/servertransport/tls_operations.go",
+        "packages/metadata/provider_http.go",
+        "packages/mediaprobe/cache.go",
+        "apps/player/internal/configuration/load.go",
+        "apps/subtitles/internal/configuration/load.go"
+      ],
+      "credible_failure": "Atomically replace private bytes, preserve0600 permissions and leave no temporary file beside owner credential/state data.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual setup/configuration, backup and playback journeys exercise normal installation I/O but do not inject file replacement/open/read/sync/close failures, unsafe symlinks/public permissions, vanished parent directories or disable-marker durability. Unix-specific injection tests have build tags; Windows permission/sync implementations differ and are not claimed validated by the Mac baseline.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/privatefile/privatefile_test.go",
@@ -38134,9 +38882,9 @@
       "owner_group": "privatefile",
       "body_sha256": "e638aa10526b09d6828b24ed34bd033dfb3f1be895d18ec94d940ac13fa23aee",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./privatefile",
       "baseline_event": {
         "Time": "2026-10-03T10:35:29.179102-06:00",
@@ -38144,7 +38892,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/privatefile",
         "Test": "TestWriteCacheReplacesPrivateFileWithoutDurabilitySync",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/privatefile/privatefile.go",
+        "packages/privatefile/permissions_unix.go",
+        "packages/privatefile/permissions_windows.go"
+      ],
+      "callers": [
+        "packages/configurationcore/transaction.go",
+        "packages/auditjournal/load.go",
+        "packages/auditjournal/storage.go",
+        "packages/remoteaccess/remoteaccess.go",
+        "packages/owneraccess/owneraccess.go",
+        "packages/trustedhttps/issuer_files.go",
+        "packages/servertransport/tls_operations.go",
+        "packages/metadata/provider_http.go",
+        "packages/mediaprobe/cache.go",
+        "apps/player/internal/configuration/load.go",
+        "apps/subtitles/internal/configuration/load.go"
+      ],
+      "credible_failure": "The public WriteCache path must create readable exact private cache bytes. Its name does not independently prove sync omission; no durability/performance assertion is claimed.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual setup/configuration, backup and playback journeys exercise normal installation I/O but do not inject file replacement/open/read/sync/close failures, unsafe symlinks/public permissions, vanished parent directories or disable-marker durability. Unix-specific injection tests have build tags; Windows permission/sync implementations differ and are not claimed validated by the Mac baseline.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/privatefile/privatefile_test.go",
@@ -38154,9 +38927,9 @@
       "owner_group": "privatefile",
       "body_sha256": "def238f5c819879cb966cd37d46354e5e2da37768c8f207e662fe9b52fbfafa7",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./privatefile",
       "baseline_event": {
         "Time": "2026-10-03T10:35:29.181844-06:00",
@@ -38164,7 +38937,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/privatefile",
         "Test": "TestReadRejectsUnsafeFiles",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/privatefile/privatefile.go",
+        "packages/privatefile/permissions_unix.go",
+        "packages/privatefile/permissions_windows.go"
+      ],
+      "callers": [
+        "packages/configurationcore/transaction.go",
+        "packages/auditjournal/load.go",
+        "packages/auditjournal/storage.go",
+        "packages/remoteaccess/remoteaccess.go",
+        "packages/owneraccess/owneraccess.go",
+        "packages/trustedhttps/issuer_files.go",
+        "packages/servertransport/tls_operations.go",
+        "packages/metadata/provider_http.go",
+        "packages/mediaprobe/cache.go",
+        "apps/player/internal/configuration/load.go",
+        "apps/subtitles/internal/configuration/load.go"
+      ],
+      "credible_failure": "Reject symlinks, public permissions, directories, missing/oversized files and invalid read bounds before reading secrets or cached credentials.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual setup/configuration, backup and playback journeys exercise normal installation I/O but do not inject file replacement/open/read/sync/close failures, unsafe symlinks/public permissions, vanished parent directories or disable-marker durability. Unix-specific injection tests have build tags; Windows permission/sync implementations differ and are not claimed validated by the Mac baseline.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/privatefile/privatefile_test.go",
@@ -38174,9 +38972,9 @@
       "owner_group": "privatefile",
       "body_sha256": "e78b46fdcd8d6c6f1a9b57b8380433fd928b4b5569449daf3ed1ff99ac0f83d6",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./privatefile",
       "baseline_event": {
         "Time": "2026-10-03T10:35:29.192565-06:00",
@@ -38184,7 +38982,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/privatefile",
         "Test": "TestCreatePrivateMarkerOnce",
         "Elapsed": 0.01
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/privatefile/privatefile.go",
+        "packages/privatefile/permissions_unix.go",
+        "packages/privatefile/permissions_windows.go"
+      ],
+      "callers": [
+        "packages/configurationcore/transaction.go",
+        "packages/auditjournal/load.go",
+        "packages/auditjournal/storage.go",
+        "packages/remoteaccess/remoteaccess.go",
+        "packages/owneraccess/owneraccess.go",
+        "packages/trustedhttps/issuer_files.go",
+        "packages/servertransport/tls_operations.go",
+        "packages/metadata/provider_http.go",
+        "packages/mediaprobe/cache.go",
+        "apps/player/internal/configuration/load.go",
+        "apps/subtitles/internal/configuration/load.go"
+      ],
+      "credible_failure": "Exclusive private marker creation must never replace an existing disable marker; empty marker bytes stay readable and invalid paths fail.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual setup/configuration, backup and playback journeys exercise normal installation I/O but do not inject file replacement/open/read/sync/close failures, unsafe symlinks/public permissions, vanished parent directories or disable-marker durability. Unix-specific injection tests have build tags; Windows permission/sync implementations differ and are not claimed validated by the Mac baseline.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/privatefile/privatefile_test.go",
@@ -38194,9 +39017,9 @@
       "owner_group": "privatefile",
       "body_sha256": "db9f9535f63c996282e8cc9cd925453310c94bdfaa157d6b75ab6a0ca1032e9b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./privatefile",
       "baseline_event": {
         "Time": "2026-10-03T10:35:29.199602-06:00",
@@ -38204,7 +39027,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/privatefile",
         "Test": "TestWriteAndCreateReportBlockedPaths",
         "Elapsed": 0.01
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/privatefile/privatefile.go",
+        "packages/privatefile/permissions_unix.go",
+        "packages/privatefile/permissions_windows.go"
+      ],
+      "callers": [
+        "packages/configurationcore/transaction.go",
+        "packages/auditjournal/load.go",
+        "packages/auditjournal/storage.go",
+        "packages/remoteaccess/remoteaccess.go",
+        "packages/owneraccess/owneraccess.go",
+        "packages/trustedhttps/issuer_files.go",
+        "packages/servertransport/tls_operations.go",
+        "packages/metadata/provider_http.go",
+        "packages/mediaprobe/cache.go",
+        "apps/player/internal/configuration/load.go",
+        "apps/subtitles/internal/configuration/load.go"
+      ],
+      "credible_failure": "A non-directory parent or directory target must fail without leaving temporary state files, protecting recovery from corrupted installation paths.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual setup/configuration, backup and playback journeys exercise normal installation I/O but do not inject file replacement/open/read/sync/close failures, unsafe symlinks/public permissions, vanished parent directories or disable-marker durability. Unix-specific injection tests have build tags; Windows permission/sync implementations differ and are not claimed validated by the Mac baseline.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/productapi/me_test.go",
@@ -40629,9 +41477,9 @@
       "owner_group": "routeinventory",
       "body_sha256": "7ae7dcf9f18256249dc29fee5e07e0d3869b91ff9163e0cd195ed48ac2a60a47",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./routeinventory",
       "baseline_event": {
         "Time": "2026-10-03T10:35:30.905358-06:00",
@@ -40639,7 +41487,24 @@
         "Package": "github.com/MikeO7/kinosail/packages/routeinventory",
         "Test": "TestInventoryRemainingParserAndCardinalityEdges",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/routeinventory/inventory.go"
+      ],
+      "callers": [
+        "packages/servertest/route_authorization_inventory.go:RegisteredRouteInventory",
+        "packages/cmd/routeinventory/main.go:run",
+        "apps/player/internal/server/auth_all_routes_helpers_test.go",
+        "apps/subtitles/internal/server/auth_all_routes_helpers_test.go",
+        "scripts/quality/check-route-inventory.sh"
+      ],
+      "credible_failure": "Bound explicit inventories, propagate malformed scan paths, and ignore nonregistration/nonliteral/nonstringAST while rejecting oversized patterns; it is the richer canonical parser-shape owner.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Browser journeys visit a finite route subset and cannot prove the complete security authorization inventory. The syntheticGo snippets are isolated parser fixtures, not HTTP/backend E2E; the complete app route authorization suites and executable quality gate are the relevant consumers.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/routeinventory/inventory_test.go",
@@ -40649,9 +41514,9 @@
       "owner_group": "routeinventory",
       "body_sha256": "1acbd89364e8a08dd88328fe8c6749594217988372c85f7893361bda64ccb48d",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./routeinventory",
       "baseline_event": {
         "Time": "2026-10-03T10:35:30.928663-06:00",
@@ -40659,7 +41524,24 @@
         "Package": "github.com/MikeO7/kinosail/packages/routeinventory",
         "Test": "TestDiscoverIncludesAppSharedAndExplicitRoutes",
         "Elapsed": 0.02
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/routeinventory/inventory.go"
+      ],
+      "callers": [
+        "packages/servertest/route_authorization_inventory.go:RegisteredRouteInventory",
+        "packages/cmd/routeinventory/main.go:run",
+        "apps/player/internal/server/auth_all_routes_helpers_test.go",
+        "apps/subtitles/internal/server/auth_all_routes_helpers_test.go",
+        "scripts/quality/check-route-inventory.sh"
+      ],
+      "credible_failure": "The authorization inventory must include app/shared/explicit registrations and skip comments/test-only routes, sort and deduplicate real patterns rather than silently missing shared endpoints.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Browser journeys visit a finite route subset and cannot prove the complete security authorization inventory. The syntheticGo snippets are isolated parser fixtures, not HTTP/backend E2E; the complete app route authorization suites and executable quality gate are the relevant consumers.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/routeinventory/inventory_test.go",
@@ -40669,9 +41551,9 @@
       "owner_group": "routeinventory",
       "body_sha256": "ea7a64038ec6ec740a18fd58ade696176df5cbb87d745119a28dda4c2dfe4370",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./routeinventory",
       "baseline_event": {
         "Time": "2026-10-03T10:35:30.923979-06:00",
@@ -40679,7 +41561,24 @@
         "Package": "github.com/MikeO7/kinosail/packages/routeinventory",
         "Test": "TestDiscoverRejectsInvalidInputs",
         "Elapsed": 0.02
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/routeinventory/inventory.go"
+      ],
+      "callers": [
+        "packages/servertest/route_authorization_inventory.go:RegisteredRouteInventory",
+        "packages/cmd/routeinventory/main.go:run",
+        "apps/player/internal/server/auth_all_routes_helpers_test.go",
+        "apps/subtitles/internal/server/auth_all_routes_helpers_test.go",
+        "scripts/quality/check-route-inventory.sh"
+      ],
+      "credible_failure": "Reject unsupported methods, missing roots/path and oversized explicit patterns rather than classifying malformed routes as an authorization policy inventory.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Browser journeys visit a finite route subset and cannot prove the complete security authorization inventory. The syntheticGo snippets are isolated parser fixtures, not HTTP/backend E2E; the complete app route authorization suites and executable quality gate are the relevant consumers.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/routeinventory/inventory_test.go",
@@ -40689,9 +41588,9 @@
       "owner_group": "routeinventory",
       "body_sha256": "f9247bf150d5fd1111a1140ad299884a8319283c25ac9907ac3e38c077816276",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Remove only redundant parser branches, unreachable static governor fallback assertions, or unused support self-tests; meaningful pressure/permission/durability protection remains.",
       "validation_command": "cd packages && go test ./routeinventory",
       "baseline_event": {
         "Time": "2026-10-03T10:35:30.906338-06:00",
@@ -40699,7 +41598,28 @@
         "Package": "github.com/MikeO7/kinosail/packages/routeinventory",
         "Test": "TestRouteDiscoveryCoversRejectedSourceShapes",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/routeinventory/inventory.go"
+      ],
+      "callers": [
+        "packages/servertest/route_authorization_inventory.go:RegisteredRouteInventory",
+        "packages/cmd/routeinventory/main.go:run",
+        "apps/player/internal/server/auth_all_routes_helpers_test.go",
+        "apps/subtitles/internal/server/auth_all_routes_helpers_test.go",
+        "scripts/quality/check-route-inventory.sh"
+      ],
+      "credible_failure": "Repeats exact explicit-count overflow, malformed glob and nonliteral handle argument cases covered by TestInventoryRemainingParserAndCardinalityEdges; its FuncLit/nonfunction CallExpr examples take the same default AST type branches as that richer owner matrix.",
+      "reason": "Repeats exact explicit-count overflow, malformed glob and nonliteral handle argument cases covered by TestInventoryRemainingParserAndCardinalityEdges; its FuncLit/nonfunction CallExpr examples take the same default AST type branches as that richer owner matrix.",
+      "remaining_coverage": [
+        "packages/routeinventory/coverage_edges_test.go:TestInventoryRemainingParserAndCardinalityEdges",
+        "packages/routeinventory/inventory_test.go:TestDiscoverIncludesAppSharedAndExplicitRoutes"
+      ],
+      "gap": "No independent contract lost: retained richer matrix tests all named rejecting branches, while public discovery fixtures prove accepted source registration/skip/sort/dedupe. Synthetic AST examples are not app E2E.",
+      "unlocked_deletion": "No production or support seam removed."
     },
     {
       "file": "packages/routeinventory/inventory_test.go",
@@ -40709,9 +41629,9 @@
       "owner_group": "routeinventory",
       "body_sha256": "b6f5bb040ef17f92334f22a86ce3eec48ae22d43d85c64e41360a7a659600a2a",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./routeinventory",
       "baseline_event": {
         "Time": "2026-10-03T10:35:30.928614-06:00",
@@ -40719,7 +41639,24 @@
         "Package": "github.com/MikeO7/kinosail/packages/routeinventory",
         "Test": "TestDiscoverReportsMissingAndMalformedSources",
         "Elapsed": 0.02
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/routeinventory/inventory.go"
+      ],
+      "callers": [
+        "packages/servertest/route_authorization_inventory.go:RegisteredRouteInventory",
+        "packages/cmd/routeinventory/main.go:run",
+        "apps/player/internal/server/auth_all_routes_helpers_test.go",
+        "apps/subtitles/internal/server/auth_all_routes_helpers_test.go",
+        "scripts/quality/check-route-inventory.sh"
+      ],
+      "credible_failure": "Do not accept an incomplete security route inventory when a shared source directory is empty or contains an unparsable source.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Browser journeys visit a finite route subset and cannot prove the complete security authorization inventory. The syntheticGo snippets are isolated parser fixtures, not HTTP/backend E2E; the complete app route authorization suites and executable quality gate are the relevant consumers.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/scim/app/adapter_test.go",
@@ -50318,9 +51255,9 @@
       "owner_group": "workload",
       "body_sha256": "2306bf112533a9f1cd492af3b91a1d9bd43b0d7669867e4135a5d0f7a775aa02",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./workload",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.660559-06:00",
@@ -50328,7 +51265,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/workload",
         "Test": "TestEncodingCostIsReservedAtomically",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "3061af1cd083cfc5848d42c038b478d5e573142b Restore static gates and offline regression contracts",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/workload/governor.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:workload.New(workload.HeavyCapacity())",
+        "apps/subtitles/internal/server/server.go:workload.New(workload.HeavyCapacity())",
+        "apps/player/internal/server/hls_presentation.go",
+        "apps/subtitles/internal/server/hls_presentation.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_config.go"
+      ],
+      "credible_failure": "A canceled two-encoder acquisition cannot consume the last partial permit, and repeated releases cannot create capacity beyond the atomic budget.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual populated browser playback/download journeys exercise a real constructed nonnil governor but do not saturate atomic multi-encoder budgets, force GPU contention, cancel queued reservations, or enumerate CPU-derived capacity. The benchmark is an optional measurement, not an automatic performance budget or default-suite result.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/workload/encoding_test.go",
@@ -50338,9 +51294,9 @@
       "owner_group": "workload",
       "body_sha256": "30617186935fd6c9975e249582f923b9eefa7871d291e973a77c4243394db9fa",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./workload",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.660585-06:00",
@@ -50348,7 +51304,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/workload",
         "Test": "TestHardwareSessionBudgetAndInvalidCosts",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "3061af1cd083cfc5848d42c038b478d5e573142b Restore static gates and offline regression contracts",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/workload/governor.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:workload.New(workload.HeavyCapacity())",
+        "apps/subtitles/internal/server/server.go:workload.New(workload.HeavyCapacity())",
+        "apps/player/internal/server/hls_presentation.go",
+        "apps/subtitles/internal/server/hls_presentation.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_config.go"
+      ],
+      "credible_failure": "Serialize one hardware device while allowing a different device, reject invalid/overcapacity cost or oversized device identities, and leave no active/waiting reservation counters after release.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual populated browser playback/download journeys exercise a real constructed nonnil governor but do not saturate atomic multi-encoder budgets, force GPU contention, cancel queued reservations, or enumerate CPU-derived capacity. The benchmark is an optional measurement, not an automatic performance budget or default-suite result.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/workload/encoding_test.go",
@@ -50358,9 +51333,9 @@
       "owner_group": "workload",
       "body_sha256": "5f4c803fc16f635fd1af9821bd10c9f571b73f0ddc896b55d76da269d48f037d",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Remove only redundant parser branches, unreachable static governor fallback assertions, or unused support self-tests; meaningful pressure/permission/durability protection remains.",
       "validation_command": "cd packages && go test ./workload",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.660606-06:00",
@@ -50368,7 +51343,30 @@
         "Package": "github.com/MikeO7/kinosail/packages/workload",
         "Test": "TestNilGovernorAdvertisesUsableSingleEncoder",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "3061af1cd083cfc5848d42c038b478d5e573142b Restore static gates and offline regression contracts",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/workload/governor.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:workload.New(workload.HeavyCapacity())",
+        "apps/subtitles/internal/server/server.go:workload.New(workload.HeavyCapacity())",
+        "apps/player/internal/server/hls_presentation.go",
+        "apps/subtitles/internal/server/hls_presentation.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_config.go"
+      ],
+      "credible_failure": "Only compares a nil governor capacity fallback to its own acquisition fallback. Both applications always supply the constructed process governor to playback/download/maintenance adapters. Reachable nonnil budgets retain public atomic/device/cancellation tests.",
+      "reason": "Only compares a nil governor capacity fallback to its own acquisition fallback. Both applications always supply the constructed process governor to playback/download/maintenance adapters. Reachable nonnil budgets retain public atomic/device/cancellation tests.",
+      "remaining_coverage": [
+        "packages/workload/encoding_test.go:TestEncodingCostIsReservedAtomically",
+        "packages/workload/encoding_test.go:TestHardwareSessionBudgetAndInvalidCosts"
+      ],
+      "gap": "No direct nil-governor advertisement/acquisition assertion remains; this optional fallback is not exercised by either real server. No E2E equivalence claimed.",
+      "unlocked_deletion": "No production or support seam removed."
     },
     {
       "file": "packages/workload/governor_test.go",
@@ -50378,9 +51376,9 @@
       "owner_group": "workload",
       "body_sha256": "4c983d88246a2bb908595d3f03a54a9168a0c52e5908dc770dafe75bdda13689",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./workload",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.664336-06:00",
@@ -50388,7 +51386,25 @@
         "Package": "github.com/MikeO7/kinosail/packages/workload",
         "Test": "TestGovernorReservesPlaybackCapacity",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/workload/governor.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:workload.New(workload.HeavyCapacity())",
+        "apps/subtitles/internal/server/server.go:workload.New(workload.HeavyCapacity())",
+        "apps/player/internal/server/hls_presentation.go",
+        "apps/subtitles/internal/server/hls_presentation.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_config.go"
+      ],
+      "credible_failure": "Leave playback capacity available behind background work, reject a canceled queued request, expose accurate counters and make repeated release idempotent instead of leaking/over-releasing permits.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual populated browser playback/download journeys exercise a real constructed nonnil governor but do not saturate atomic multi-encoder budgets, force GPU contention, cancel queued reservations, or enumerate CPU-derived capacity. The benchmark is an optional measurement, not an automatic performance budget or default-suite result.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/workload/governor_test.go",
@@ -50398,9 +51414,9 @@
       "owner_group": "workload",
       "body_sha256": "0057eb838e1da67ac85a72f2db7026b1b73137c85b586c80390a5c2d7c315d0f",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./workload",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.664425-06:00",
@@ -50408,7 +51424,25 @@
         "Package": "github.com/MikeO7/kinosail/packages/workload",
         "Test": "TestGovernorCancellationReleasesBackgroundSlot",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/workload/governor.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:workload.New(workload.HeavyCapacity())",
+        "apps/subtitles/internal/server/server.go:workload.New(workload.HeavyCapacity())",
+        "apps/player/internal/server/hls_presentation.go",
+        "apps/subtitles/internal/server/hls_presentation.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_config.go"
+      ],
+      "credible_failure": "Canceling background work while it waits on total capacity must release its background permit so later background work can proceed.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual populated browser playback/download journeys exercise a real constructed nonnil governor but do not saturate atomic multi-encoder budgets, force GPU contention, cancel queued reservations, or enumerate CPU-derived capacity. The benchmark is an optional measurement, not an automatic performance budget or default-suite result.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/workload/governor_test.go",
@@ -50418,9 +51452,9 @@
       "owner_group": "workload",
       "body_sha256": "ec245e73a4638d218bf9c03eb77ef6d159f48af0664ec6e4cb092894fcec0f86",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./workload",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.689362-06:00",
@@ -50428,7 +51462,25 @@
         "Package": "github.com/MikeO7/kinosail/packages/workload",
         "Test": "TestGovernorReservesHeavyCapacityForPlayback",
         "Elapsed": 0.03
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/workload/governor.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:workload.New(workload.HeavyCapacity())",
+        "apps/subtitles/internal/server/server.go:workload.New(workload.HeavyCapacity())",
+        "apps/player/internal/server/hls_presentation.go",
+        "apps/subtitles/internal/server/hls_presentation.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_config.go"
+      ],
+      "credible_failure": "A background job cannot admit a second background competitor or block the reserved playback slot when capacity is two.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual populated browser playback/download journeys exercise a real constructed nonnil governor but do not saturate atomic multi-encoder budgets, force GPU contention, cancel queued reservations, or enumerate CPU-derived capacity. The benchmark is an optional measurement, not an automatic performance budget or default-suite result.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/workload/governor_test.go",
@@ -50438,9 +51490,9 @@
       "owner_group": "workload",
       "body_sha256": "d6410fe5882077a0e1b20829130c96680b424b5462489f7abbea9e9f7f58589b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./workload",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.689426-06:00",
@@ -50448,7 +51500,25 @@
         "Package": "github.com/MikeO7/kinosail/packages/workload",
         "Test": "TestGovernorReservesTwoHeavySlotsForPlayback",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/workload/governor.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:workload.New(workload.HeavyCapacity())",
+        "apps/subtitles/internal/server/server.go:workload.New(workload.HeavyCapacity())",
+        "apps/player/internal/server/hls_presentation.go",
+        "apps/subtitles/internal/server/hls_presentation.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_config.go"
+      ],
+      "credible_failure": "The actual CPU-derived default budget must admit two playback jobs behind one background task on a sufficiently provisioned host.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual populated browser playback/download journeys exercise a real constructed nonnil governor but do not saturate atomic multi-encoder budgets, force GPU contention, cancel queued reservations, or enumerate CPU-derived capacity. The benchmark is an optional measurement, not an automatic performance budget or default-suite result.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/workload/governor_test.go",
@@ -50458,9 +51528,9 @@
       "owner_group": "workload",
       "body_sha256": "b1ff5e8a284c21ac744a2a9ae879802320b2c728d54ffc041ceb9fcb23aea665",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Remove only redundant parser branches, unreachable static governor fallback assertions, or unused support self-tests; meaningful pressure/permission/durability protection remains.",
       "validation_command": "cd packages && go test ./workload",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.689479-06:00",
@@ -50468,7 +51538,30 @@
         "Package": "github.com/MikeO7/kinosail/packages/workload",
         "Test": "TestNilGovernorAndMinimumCapacity",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/workload/governor.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:workload.New(workload.HeavyCapacity())",
+        "apps/subtitles/internal/server/server.go:workload.New(workload.HeavyCapacity())",
+        "apps/player/internal/server/hls_presentation.go",
+        "apps/subtitles/internal/server/hls_presentation.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_config.go"
+      ],
+      "credible_failure": "Deliberately nil governor and New(0) constructor probes are absent from real app composition roots, which always construct New(HeavyCapacity()) with a1..3 capacity. Retained actual default and atomic/cancellation/playback reservation owner tests enforce reachable resource limits.",
+      "reason": "Deliberately nil governor and New(0) constructor probes are absent from real app composition roots, which always construct New(HeavyCapacity()) with a1..3 capacity. Retained actual default and atomic/cancellation/playback reservation owner tests enforce reachable resource limits.",
+      "remaining_coverage": [
+        "packages/workload/governor_test.go:TestHeavyCapacityTracksAvailableProcessors",
+        "packages/workload/governor_test.go:TestGovernorReservesTwoHeavySlotsForPlayback",
+        "packages/workload/encoding_test.go:TestEncodingCostIsReservedAtomically"
+      ],
+      "gap": "Nil-governor fallback and intentionally zero constructor capacity no longer have direct assertions; no browser equivalence claimed for synthetic optional governor construction. Real server composition cannot produce either value.",
+      "unlocked_deletion": "No production or support seam removed."
     },
     {
       "file": "packages/workload/governor_test.go",
@@ -50478,9 +51571,9 @@
       "owner_group": "workload",
       "body_sha256": "2c6d8ffd2aeac2d8550808f60a742d3640f60f6f90f020118a6b172716b08dd1",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
       "validation_command": "cd packages && go test ./workload",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.689518-06:00",
@@ -50488,7 +51581,25 @@
         "Package": "github.com/MikeO7/kinosail/packages/workload",
         "Test": "TestHeavyCapacityTracksAvailableProcessors",
         "Elapsed": 0
-      }
+      },
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/workload/governor.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:workload.New(workload.HeavyCapacity())",
+        "apps/subtitles/internal/server/server.go:workload.New(workload.HeavyCapacity())",
+        "apps/player/internal/server/hls_presentation.go",
+        "apps/subtitles/internal/server/hls_presentation.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_config.go"
+      ],
+      "credible_failure": "Clamp CPU-derived heavy capacity to1..3 and reserve one CPU rather than allowing high-core machines to start an unbounded number of costly encoders. The arithmetic is simple but the resource policy is an independent important bound absent from E2E.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual populated browser playback/download journeys exercise a real constructed nonnil governor but do not saturate atomic multi-encoder budgets, force GPU contention, cancel queued reservations, or enumerate CPU-derived capacity. The benchmark is an optional measurement, not an automatic performance budget or default-suite result.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/workload/governor_test.go",
@@ -50498,12 +51609,30 @@
       "owner_group": "workload",
       "body_sha256": "06dd46532ed2a0922b7db9c1d9846030856c0985025dd83dc3fa450228c4814b",
       "baseline_result": "not_run",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./workload",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain the distinct important failure boundary or explicit optional measurement; no new isolated test.",
+      "validation_command": "cd packages && go test ./workload -run ^$ -bench ^BenchmarkPlaybackAdmissionWhileBackgroundWorkRuns$ -benchmem -count=5",
       "baseline_event": null,
-      "baseline_not_run_reason": "Benchmark is not run by go test without -bench."
+      "baseline_not_run_reason": "Benchmark is not run by go test without -bench.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_owner": [
+        "packages/workload/governor.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/server.go:workload.New(workload.HeavyCapacity())",
+        "apps/subtitles/internal/server/server.go:workload.New(workload.HeavyCapacity())",
+        "apps/player/internal/server/hls_presentation.go",
+        "apps/subtitles/internal/server/hls_presentation.go",
+        "apps/player/internal/server/downloads_config.go",
+        "apps/subtitles/internal/server/downloads_config.go"
+      ],
+      "credible_failure": "Retain manually invoked timing/allocation measurement for repeated playback admission while one background slot stays occupied. It has no automated ns/op budget and is unrun by default; deadlock/error is observable on explicit invocation.",
+      "remaining_coverage": "This canonical owner declaration remains; complementary actual consumers and E2E limits appear in owner_groups.",
+      "gap": "Actual populated browser playback/download journeys exercise a real constructed nonnil governor but do not saturate atomic multi-encoder budgets, force GPU contention, cancel queued reservations, or enumerate CPU-derived capacity. The benchmark is an optional measurement, not an automatic performance budget or default-suite result.",
+      "unlocked_deletion": "None."
     }
   ],
   "continued_review": {
@@ -50519,7 +51648,14 @@
     "additional_complete_groups": [
       "operations",
       "serverdiscovery",
-      "home"
+      "home",
+      "workload",
+      "liveevents",
+      "privatefile",
+      "maintenance",
+      "routeinventory",
+      "commandtest:child",
+      "cmd:routeinventory"
     ],
     "additional_reviewed_declarations": 41,
     "additional_removals": 2,
