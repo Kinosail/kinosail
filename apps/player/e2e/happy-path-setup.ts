@@ -14,7 +14,16 @@ export async function startHappyPath(page: Page, testInfo: TestInfo): Promise<Ha
 	}
 	let captureErrors = true;
 	page.on("console", (message) => {
-		if (captureErrors && message.type() === "error") errors.push(message.text());
+		if (!captureErrors || message.type() !== "error") return;
+		// An unauthenticated login page probes its session before offering WebAuthn.
+		// Keep every other 401, script error, and unexpected resource failure fatal.
+		try {
+			const source = new URL(message.location().url);
+			const current = new URL(page.url());
+			if (source.origin === current.origin && source.pathname === "/api/v1/me" && source.search === "" &&
+				current.pathname === "/login" && /^Failed to load resource: the server responded with a status of 401 \([^)]*\)$/.test(message.text())) return;
+		} catch { /* Console messages without a URL remain failures. */ }
+		errors.push(message.text());
 	});
 	page.on("pageerror", (error) => {
 		if (captureErrors) errors.push(error.message);
