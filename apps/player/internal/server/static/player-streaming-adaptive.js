@@ -53,7 +53,9 @@ const streamAt = (seconds) => {
 };
 const useAdaptive = (preference = "auto", resume = false, target = resume ? pendingResume?.seconds ?? player.currentTime : Number(player.dataset.start) || 0) => {
   cancelNetworkRecovery();
-  if (resume) resumeAfterSourceChange(false, true, target);
+  // A direct source may publish metadata while the adapter is loading. Retain
+  // the intended position/play state for the compatible source's metadata too.
+  resumeAfterSourceChange(!resume && networkWantsPlay, true, target);
   delete player.dataset.offline;
   hls?.destroy();
   playbackTimelineOffset = 0;
@@ -134,7 +136,7 @@ const startAdaptive = async (resume = false) => {
     negotiation = negotiateStream(generation);
   }
   // Load the decoder adapter alongside negotiation, only after compatible playback was selected.
-  const needsHls = typeof Hls === "undefined" && !player.canPlayType("application/vnd.apple.mpegurl");
+  const needsHls = typeof Hls === "undefined" && window.kinosailPlaybackCapabilities.needsAdapter(player);
   const adapter = needsHls ? loadHls() : Promise.resolve(true);
   const [, adapterLoaded] = await Promise.all([negotiation, adapter]);
   if (generation !== adaptiveGeneration) return;

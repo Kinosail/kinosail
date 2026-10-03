@@ -12,18 +12,17 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/playback"
 	"github.com/MikeO7/kinosail/packages/transcodehardware"
-	"github.com/MikeO7/kinosail/packages/workload"
 )
 
 func (manager *hlsManager) encodePresentation(ctx context.Context, item library.Item, root string, options transcodeSettings, recipe hlsRecipe, qualities []PlaybackQuality, audioBitrate int64, start float64, startNumber int) error { //nolint:funlen // One decode feeds the complete switchable presentation.
 	device := transcodehardware.DeviceKey(options)
-	release, err := manager.workloads.AcquireEncoding(ctx, workload.Playback, len(qualities), device)
+	release, err := manager.workloads.AcquireEncoding(ctx, startupWorkClass(ctx), len(qualities), device)
 	if err != nil {
 		return err
 	}
 	defer release()
 	input, _ := videoArguments(options, strconv.Itoa(qualities[len(qualities)-1].Width))
-	arguments := append([]string{"-hide_banner", "-loglevel", "error", "-filter_threads", "1", "-filter_complex_threads", "1", "-y"}, input...)
+	arguments := append(startupInputArguments(ctx, []string{"-hide_banner", "-loglevel", "error", "-filter_threads", "1", "-filter_complex_threads", "1", "-y"}), input...)
 	if startNumber > 0 {
 		arguments = append(arguments, "-avoid_negative_ts", "disabled", "-max_delay", "5000000")
 	}
@@ -31,7 +30,7 @@ func (manager *hlsManager) encodePresentation(ctx context.Context, item library.
 		arguments = append(arguments, "-ss", ffmpegSeconds(start))
 	}
 	arguments = append(arguments, "-i", item.Path)
-	encoderThreads := max(1, runtime.GOMAXPROCS(0)/len(qualities))
+	encoderThreads := startupEncoderThreads(ctx, max(1, runtime.GOMAXPROCS(0)/len(qualities)))
 	for index, quality := range qualities {
 		directory, playlistDirectory, err := preparePresentationDirectories(root, quality.Label, startNumber)
 		if err != nil {

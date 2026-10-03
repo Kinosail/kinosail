@@ -77,15 +77,15 @@ extension PlaybackEngine {
             // automatic resume and override a pause from native controls.
             intent.playing.withLock { $0 = rate > 0 }
         }
-        jumpObserver = NotificationCenter.default.addObserver(forName: .AVPlayerItemTimeJumped, object: nextItem, queue: .main) { [weak self, weak next] _ in
-            guard !intent.seeking.withLock({ $0 }) else { return }
-            Task { @MainActor in
-                guard let self, let next, self.generation == attempt, self.player === next, self.loading || self.recoveringNetwork else { return }
-                let time = next.currentTime().seconds
-                guard (try? Input.position(time)) != nil else { return }
-                self.nativeRecoveryPosition = self.timeline?.sourceTime(time) ?? time
-            }
+        #if os(tvOS)
+        // AVPlayer also jumps automatically while loading. Only AVKit's
+        // user-navigation delegate represents a native scrub to retain.
+        presentation.userNavigated = { [weak self, weak next] active, time in
+            guard let self, let next, active === next, self.player === next, self.generation == attempt,
+                  self.loading || self.recoveringNetwork, (try? Input.position(time)) != nil else { return }
+            self.nativeRecoveryPosition = self.timeline?.sourceTime(time) ?? time
         }
+        #endif
         let deadline = Date().addingTimeInterval(45)
         while nextItem.status == .unknown {
             try await Task.sleep(for: .milliseconds(100))
@@ -207,7 +207,9 @@ extension PlaybackEngine {
 
     func removeTimeObserver() {
         rateObservation?.invalidate(); rateObservation = nil
-        if let jumpObserver { NotificationCenter.default.removeObserver(jumpObserver); self.jumpObserver = nil }
+        #if os(tvOS)
+        presentation.userNavigated = nil
+        #endif
         if let timeObserver { player?.removeTimeObserver(timeObserver); self.timeObserver = nil }
     }
     static func isNetworkFailure(_ error: Error?, depth: Int = 0) -> Bool {

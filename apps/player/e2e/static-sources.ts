@@ -16,6 +16,7 @@ export const downloadsSource = await readStaticSource([
 ]);
 
 export const playerSource = await readStaticSource([
+	"../internal/server/static/playback-capabilities.js",
 	"../../../packages/webassets/static/player-core.js",
 	"../internal/server/static/player-subtitles.js",
 	"../internal/server/static/player.js",

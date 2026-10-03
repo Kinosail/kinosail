@@ -10,8 +10,8 @@ import (
 	"github.com/MikeO7/kinosail/packages/workload"
 )
 
-func registerFiles(mux *http.ServeMux, index *libraryIndex, probe *mediaProbe, workloads *workload.Governor) {
-	mux.HandleFunc("GET /media/{id}", serveFile(index, playback.MediaPath, ""))
+func registerFiles(mux *http.ServeMux, index *libraryIndex, probe *mediaProbe, workloads *workload.Governor, preparation ...*startupPreparation) {
+	mux.HandleFunc("GET /media/{id}", serveStartupMedia(index, preparation))
 	mux.HandleFunc("GET /download/{id}", download(index))
 	mux.HandleFunc("GET /subtitle/{id}", serveSubtitle(index))
 	mux.HandleFunc("GET /subtitle/{id}/{track}", serveSubtitle(index))
@@ -20,6 +20,19 @@ func registerFiles(mux *http.ServeMux, index *libraryIndex, probe *mediaProbe, w
 	mux.HandleFunc("GET /episode-art/{id}", serveEpisodeStill(index, probe, workloads))
 	mux.HandleFunc("GET /backdrop/{id}", serveFile(index, playback.BackdropPath, ""))
 	mux.HandleFunc("GET /person/{id}/{person}", playback.LibraryPersonHandler(index.VisibleItem))
+}
+
+func serveStartupMedia(index *libraryIndex, preparation []*startupPreparation) http.HandlerFunc {
+	handler := serveFile(index, playback.MediaPath, "")
+	return func(writer http.ResponseWriter, request *http.Request) {
+		if request.Method == http.MethodGet && len(preparation) > 0 {
+			if item, found := index.VisibleItem(request, request.PathValue("id")); found && index.Safe(item.Path) {
+				finished := preparation[0].beginDirect("direct:" + item.ID)
+				defer finished()
+			}
+		}
+		handler(writer, request)
+	}
 }
 
 func serveEpisodeStill(index *libraryIndex, probe *mediaProbe, workloads *workload.Governor) http.HandlerFunc {
