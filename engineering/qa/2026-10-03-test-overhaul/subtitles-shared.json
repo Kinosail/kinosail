@@ -17598,7 +17598,7 @@
       "decision": "R",
       "audit_status": "reviewed",
       "baseline_result": "pass (exact baseline JSON event; supplemental evidence event included)",
-      "credible_failure": "Public JSON API rejects opt-out, unknown/empty/duplicate/invalid policy, size/content-type/query and reordered confirmation without removing file; valid two-language digest hides FR.",
+      "credible_failure": "Public JSON requests reject opt-out and unknown, empty, duplicated or invalid policy; size, content type, query and reordered confirmation also reject without file removal. A valid two-language digest hides FR.",
       "production_owner": "apps/subtitles/internal/server/settings.go; apps/subtitles/internal/server/subtitle_cleanup.go; apps/subtitles/internal/server/subtitle_cleanup_api.go; apps/subtitles/internal/server/subtitle_cleanup_http.go; apps/subtitles/internal/server/subtitle_sidecar_file.go",
       "non_test_callers": "apps/subtitles/internal/server/server.go:New/registerSettings/registerAPI; apps/subtitles/internal/server/subtitle_cleanup_http.go:registerSubtitleCleanup; apps/subtitles/internal/server/subtitle_cleanup_api.go:registerSubtitleCleanupAPI; apps/subtitles/internal/server/subtitle_cleanup.go:previewSubtitleCleanup/hideSubtitleCleanup",
       "remaining_proof": [
