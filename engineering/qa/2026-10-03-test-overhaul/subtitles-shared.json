@@ -6,12 +6,12 @@
   "files": 379,
   "declarations": 954,
   "test_loc": 28832,
-  "reviewed": 511,
-  "pending": 443,
+  "reviewed": 535,
+  "pending": 419,
   "decisions": {
-    "R": 442,
-    "D": 49,
-    "F": 19,
+    "R": 459,
+    "D": 55,
+    "F": 20,
     "C": 1
   },
   "verification": [
@@ -11617,102 +11617,132 @@
       "line": 15,
       "test": "TestWebAPIAndJellyfinUseCapabilityDrivenPlaybackPlan",
       "baseline_file_sha256": "a13f7f39bd070f573085463e0a3119a02c08bd492f7bcff2c9f853621b59b160",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "One actual app fixture binds HEVC/Main10/EAC3 through web/API direct+adaptive fallback and Jellyfin profile direct/transcode choices; capability-bearing HLS master/variant/init/segment deliver, missing capability401 and invalid recipe/session404 leave cache unchanged.",
+      "production_owner": "apps/subtitles/internal/server/api_product.go; apps/subtitles/internal/server/player_playback.go; apps/subtitles/internal/server/jellyfin_playback.go; apps/subtitles/internal/server/hls.go",
+      "non_test_callers": "Actual app applyPlayback/watch/API/Jellyfin/HLS entry points call planner/timeline and media projection; pure fixture wrappers have no app callback and call shared playback.Decide directly.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_shared_policy_contract",
+          "reference": "apps/subtitles/internal/server/playback_adapters_test.go::TestWebAPIAndJellyfinUseCapabilityDrivenPlaybackPlan"
+        }
+      ],
+      "coverage_gap": "Real handler and shared auth services with scripted FFprobe/FFmpeg. Genuine browser owner playback does not exercise Jellyfin profile codecs or unauthorized transcode children/cache side effects.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete risk currently missing from genuine E2E; no isolated additions",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playback_adapters_test.go",
       "line": 72,
       "test": "TestAutomaticPlaybackStartsDirectWithAdaptiveFallback",
       "baseline_file_sha256": "a13f7f39bd070f573085463e0a3119a02c08bd492f7bcff2c9f853621b59b160",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual app local/public authenticated MP4 direct-first source is playback-session bound, adaptive fallback advertised without eager HLS bundle; public API direct mode includes compatible recipe.",
+      "production_owner": "apps/subtitles/internal/server/player_playback.go; apps/subtitles/internal/server/api_product.go",
+      "non_test_callers": "Actual app applyPlayback/watch/API/Jellyfin/HLS entry points call planner/timeline and media projection; pure fixture wrappers have no app callback and call shared playback.Decide directly.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_shared_policy_contract",
+          "reference": "apps/subtitles/internal/server/playback_adapters_test.go::TestAutomaticPlaybackStartsDirectWithAdaptiveFallback"
+        }
+      ],
+      "coverage_gap": "Actual app public viewer boundary and token wiring; generated browser direct-fallback fixture supplies HTML/levels, not this Go projection/security. Genuine true SubtitleApp CLI root differs classic fixture mode.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete risk currently missing from genuine E2E; no isolated additions",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playback_adapters_test.go",
       "line": 113,
       "test": "TestExplicitPlaybackModesBypassAutomaticFallbackAcrossAPIAndWeb",
       "baseline_file_sha256": "a13f7f39bd070f573085463e0a3119a02c08bd492f7bcff2c9f853621b59b160",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual settings direct vs compatible toggles across web/API prevent automatic data-adaptive/data-fallback, retains intro marker for direct and HLS transcode for compatible.",
+      "production_owner": "apps/subtitles/internal/server/player_playback.go; apps/subtitles/internal/server/api_product.go; apps/subtitles/internal/server/settings.go",
+      "non_test_callers": "Actual app applyPlayback/watch/API/Jellyfin/HLS entry points call planner/timeline and media projection; pure fixture wrappers have no app callback and call shared playback.Decide directly.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_shared_policy_contract",
+          "reference": "apps/subtitles/internal/server/playback_adapters_test.go::TestExplicitPlaybackModesBypassAutomaticFallbackAcrossAPIAndWeb"
+        }
+      ],
+      "coverage_gap": "App setting persisted in handler; browser source snippets are not equivalent to actual Go mode intent/API adapter. This classic-root fixture is isolated integration, not genuine CLI E2E.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete risk currently missing from genuine E2E; no isolated additions",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playback_adapters_test.go",
       "line": 155,
       "test": "TestTrustedOpeningOffsetAcrossAPIAndWeb",
       "baseline_file_sha256": "a13f7f39bd070f573085463e0a3119a02c08bd492f7bcff2c9f853621b59b160",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual manual intro0..20 sets direct web/API start20/autoplay/mediafragment; compatible uses source0/no API start; direct resume42 takes priority; near-end115 retains start but removes autoplay/fragment.",
+      "production_owner": "apps/subtitles/internal/server/player_playback.go; apps/subtitles/internal/server/api_product.go; packages/playback/timeline.go",
+      "non_test_callers": "Actual app applyPlayback/watch/API/Jellyfin/HLS entry points call planner/timeline and media projection; pure fixture wrappers have no app callback and call shared playback.Decide directly.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_shared_policy_contract",
+          "reference": "apps/subtitles/internal/server/playback_adapters_test.go::TestTrustedOpeningOffsetAcrossAPIAndWeb"
+        }
+      ],
+      "coverage_gap": "Real public marker/settings/progress routes; genuine opening frame journey tests manual1s only and does not cover compatible-vs-direct/resume/near-end matrix.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete risk currently missing from genuine E2E; no isolated additions",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playback_adapters_test.go",
       "line": 213,
       "test": "TestCompatiblePlaybackPreservesFullMovieDurationAcrossAPIAndWeb",
       "baseline_file_sha256": "a13f7f39bd070f573085463e0a3119a02c08bd492f7bcff2c9f853621b59b160",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual long7200s HEVC Matroska duration survives both compatible web data-duration and API duration; truncating duration to one HLS window fails.",
+      "production_owner": "apps/subtitles/internal/server/api_product.go; apps/subtitles/internal/server/player_playback.go",
+      "non_test_callers": "Actual app applyPlayback/watch/API/Jellyfin/HLS entry points call planner/timeline and media projection; pure fixture wrappers have no app callback and call shared playback.Decide directly.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_shared_policy_contract",
+          "reference": "apps/subtitles/internal/server/playback_adapters_test.go::TestCompatiblePlaybackPreservesFullMovieDurationAcrossAPIAndWeb"
+        }
+      ],
+      "coverage_gap": "Scripted ffprobe yields real app adapter duration projection, not decoding long movie. Browser fake duration tests exercise supplied HTML and cannot guard Go probe-to-adapter mapping.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete risk currently missing from genuine E2E; no isolated additions",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playback_adapters_test.go",
       "line": 231,
       "test": "TestMatroskaOriginalIsNotAdvertisedAsMP4AcrossAPIAndWeb",
       "baseline_file_sha256": "a13f7f39bd070f573085463e0a3119a02c08bd492f7bcff2c9f853621b59b160",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual h264/eac3 Matroska original advertises video/x-matroska in web+API and never mp4, preventing false canPlayType routing.",
+      "production_owner": "apps/subtitles/internal/server/player_playback.go; apps/subtitles/internal/server/api_product.go",
+      "non_test_callers": "Actual app applyPlayback/watch/API/Jellyfin/HLS entry points call planner/timeline and media projection; pure fixture wrappers have no app callback and call shared playback.Decide directly.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_shared_policy_contract",
+          "reference": "apps/subtitles/internal/server/playback_adapters_test.go::TestMatroskaOriginalIsNotAdvertisedAsMP4AcrossAPIAndWeb"
+        }
+      ],
+      "coverage_gap": "Browser direct-fallback tests deliberately supply directType=video/x-matroska and do not guard real Go directMediaType mapping. True current live sample does not prove both field projections.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete risk currently missing from genuine E2E; no isolated additions",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playback_capabilities_test.go",
@@ -11804,34 +11834,54 @@
       "line": 12,
       "test": "TestDecidePlaybackGoldenPlans",
       "baseline_file_sha256": "6a82d82a11b21f37736801f39d07709f61e5ab1734c0702cf488a283db08176d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Thirteen shared-plan modes include ColorMode, AV1 output, unknown facts, external/burned subtitle, denial and remux/audio/video. Canonical package tests do not assert every field; default product fixture has no app callback. Same pure helper matrix remains in Player; this declaration binds no Subtitles code.",
+      "production_owner": "packages/servertest/playback_plan_contract.go; packages/playback/plan.go",
+      "non_test_callers": "Actual app applyPlayback/watch/API/Jellyfin/HLS entry points call planner/timeline and media projection; pure fixture wrappers have no app callback and call shared playback.Decide directly.",
+      "remaining_proof": [
+        {
+          "kind": "canonical_shared_fixture_contract",
+          "reference": "apps/player/internal/server/playback_plan_test.go::TestDecidePlaybackGoldenPlans"
+        },
+        {
+          "kind": "distinct_product_audio_branch",
+          "reference": "packages/playback/plan_test.go::TestDecidePreservesPlayerPolicyAndProductAudioChoice"
+        }
+      ],
+      "coverage_gap": "Player Policy.PreferCompatibleAudio=true vs Subtitles false is documented: every removed helper case uses one audio track, so the alternate-audio branch has no distinct observable input. Shared canonical product test retains true/false with DTS-default plus AAC alternate. No app callback or genuine E2E equivalent asserted.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Low: identical helper assertions retained once in Player; Player owner confirmed R in23e54ffea; dead test-only Subtitles fixture binding removed with its last four callers.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "canonical_keeper_confirmation": "player_backend confirmed23e54ffea"
     },
     {
       "file": "apps/subtitles/internal/server/playback_plan_test.go",
       "line": 14,
       "test": "TestDirectFirstHasNoImplicitBitrateLimit",
       "baseline_file_sha256": "6a82d82a11b21f37736801f39d07709f61e5ab1734c0702cf488a283db08176d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "120Mbps direct-first must remain direct with MaxBitrate0; explicit20Mbps becomes transcode with bitrate-exceeds-limit. This owner guards unintentional implicit caps. Same pure helper matrix remains in Player; this declaration binds no Subtitles code.",
+      "production_owner": "packages/servertest/playback_plan_contract.go; packages/playback/plan.go",
+      "non_test_callers": "Actual app applyPlayback/watch/API/Jellyfin/HLS entry points call planner/timeline and media projection; pure fixture wrappers have no app callback and call shared playback.Decide directly.",
+      "remaining_proof": [
+        {
+          "kind": "canonical_shared_fixture_contract",
+          "reference": "apps/player/internal/server/playback_plan_test.go::TestDirectFirstHasNoImplicitBitrateLimit"
+        },
+        {
+          "kind": "distinct_product_audio_branch",
+          "reference": "packages/playback/plan_test.go::TestDecidePreservesPlayerPolicyAndProductAudioChoice"
+        }
+      ],
+      "coverage_gap": "Player Policy.PreferCompatibleAudio=true vs Subtitles false is documented: every removed helper case uses one audio track, so the alternate-audio branch has no distinct observable input. Shared canonical product test retains true/false with DTS-default plus AAC alternate. No app callback or genuine E2E equivalent asserted.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Low: identical helper assertions retained once in Player; Player owner confirmed R in23e54ffea; dead test-only Subtitles fixture binding removed with its last four callers.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "canonical_keeper_confirmation": "player_backend confirmed23e54ffea"
     },
     {
       "file": "apps/subtitles/internal/server/playback_presentation_test.go",
@@ -11855,221 +11905,296 @@
       "line": 5,
       "test": "TestAdaptiveQualitiesPreserveSourceShapeWithoutUpscaling",
       "baseline_file_sha256": "c4f6221e0e126ef14a1bb219e06df7de4f4473ecadc346cc2db51ee024e4f9d0",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Portrait1080x1920 quality ladder has >=2 tiers, even dimensions, no upscale, aspect ratio within.01 and606x1080 top. Canonical small/capped ladders miss exact portrait policy. Same pure helper matrix remains in Player; this declaration binds no Subtitles code.",
+      "production_owner": "packages/servertest/playback_plan_contract.go; packages/playback/qualities.go",
+      "non_test_callers": "Actual app applyPlayback/watch/API/Jellyfin/HLS entry points call planner/timeline and media projection; pure fixture wrappers have no app callback and call shared playback.Decide directly.",
+      "remaining_proof": [
+        {
+          "kind": "canonical_shared_fixture_contract",
+          "reference": "apps/player/internal/server/playback_qualities_test.go::TestAdaptiveQualitiesPreserveSourceShapeWithoutUpscaling"
+        },
+        {
+          "kind": "distinct_product_audio_branch",
+          "reference": "packages/playback/plan_test.go::TestDecidePreservesPlayerPolicyAndProductAudioChoice"
+        }
+      ],
+      "coverage_gap": "Player Policy.PreferCompatibleAudio=true vs Subtitles false is documented: every removed helper case uses one audio track, so the alternate-audio branch has no distinct observable input. Shared canonical product test retains true/false with DTS-default plus AAC alternate. No app callback or genuine E2E equivalent asserted.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Low: identical helper assertions retained once in Player; Player owner confirmed R in23e54ffea; dead test-only Subtitles fixture binding removed with its last four callers.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "canonical_keeper_confirmation": "player_backend confirmed23e54ffea"
     },
     {
       "file": "apps/subtitles/internal/server/playback_qualities_test.go",
       "line": 9,
       "test": "TestAdaptiveQualitiesUseConventionalTierForCroppedVideo",
       "baseline_file_sha256": "c4f6221e0e126ef14a1bb219e06df7de4f4473ecadc346cc2db51ee024e4f9d0",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "1920x804 cropped source remains top1080p with original dimensions and exact360/432/540/720/1080 tiers, avoiding misleading cropped labels. Same pure helper matrix remains in Player; this declaration binds no Subtitles code.",
+      "production_owner": "packages/servertest/playback_plan_contract.go; packages/playback/qualities.go",
+      "non_test_callers": "Actual app applyPlayback/watch/API/Jellyfin/HLS entry points call planner/timeline and media projection; pure fixture wrappers have no app callback and call shared playback.Decide directly.",
+      "remaining_proof": [
+        {
+          "kind": "canonical_shared_fixture_contract",
+          "reference": "apps/player/internal/server/playback_qualities_test.go::TestAdaptiveQualitiesUseConventionalTierForCroppedVideo"
+        },
+        {
+          "kind": "distinct_product_audio_branch",
+          "reference": "packages/playback/plan_test.go::TestDecidePreservesPlayerPolicyAndProductAudioChoice"
+        }
+      ],
+      "coverage_gap": "Player Policy.PreferCompatibleAudio=true vs Subtitles false is documented: every removed helper case uses one audio track, so the alternate-audio branch has no distinct observable input. Shared canonical product test retains true/false with DTS-default plus AAC alternate. No app callback or genuine E2E equivalent asserted.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Low: identical helper assertions retained once in Player; Player owner confirmed R in23e54ffea; dead test-only Subtitles fixture binding removed with its last four callers.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "canonical_keeper_confirmation": "player_backend confirmed23e54ffea"
     },
     {
       "file": "apps/subtitles/internal/server/playback_timeline_test.go",
       "line": 12,
       "test": "TestAutomaticSkipTimelineMergesAndClampsRanges",
       "baseline_file_sha256": "828083ebba8c748c5e8282dd6f859dfed7dcfe7438a537b4005cdc8c3b966ede",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Direct alias constructs same75s presentation from100s source, merges10..25 and clamps90..100; five time mappings identical to canonical package cases.",
+      "production_owner": "apps/subtitles/internal/server/playback_timeline.go; packages/playback/timeline.go; packages/playback/types.go",
+      "non_test_callers": "Actual app applyPlayback/watch/API/Jellyfin/HLS entry points call planner/timeline and media projection; pure fixture wrappers have no app callback and call shared playback.Decide directly.",
+      "remaining_proof": [
+        {
+          "kind": "exact_canonical_shared_keeper",
+          "reference": "Retained packages/playback/timeline_test.go::TestAutomaticSkipTimelineNormalizesTrustedRanges and plan_test.go::TestTimelineMapsBothDirections assert exact range/mapping matrix plus invalid/trust inputs. No app callback exercised."
+        }
+      ],
+      "coverage_gap": "Retained packages/playback/timeline_test.go::TestAutomaticSkipTimelineNormalizesTrustedRanges and plan_test.go::TestTimelineMapsBothDirections assert exact range/mapping matrix plus invalid/trust inputs. No app callback exercised.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Delete only exact canonical alias replay",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playback_timeline_test.go",
       "line": 31,
       "test": "TestAutomaticSkipTimelineNeverRemovesTheWholeItem",
       "baseline_file_sha256": "828083ebba8c748c5e8282dd6f859dfed7dcfe7438a537b4005cdc8c3b966ede",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Direct shared alias tests whole60-second omission reverts to60s/no ranges, exact canonical case.",
+      "production_owner": "apps/subtitles/internal/server/playback_timeline.go; packages/playback/timeline.go",
+      "non_test_callers": "Actual app applyPlayback/watch/API/Jellyfin/HLS entry points call planner/timeline and media projection; pure fixture wrappers have no app callback and call shared playback.Decide directly.",
+      "remaining_proof": [
+        {
+          "kind": "exact_canonical_shared_keeper",
+          "reference": "Retained packages/playback/timeline_test.go::TestAutomaticSkipTimelineNormalizesTrustedRanges exact whole60/no ranges case. No app callback exercised."
+        }
+      ],
+      "coverage_gap": "Retained packages/playback/timeline_test.go::TestAutomaticSkipTimelineNormalizesTrustedRanges exact whole60/no ranges case. No app callback exercised.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Delete only exact canonical alias replay",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playback_timeline_test.go",
       "line": 38,
       "test": "TestAutomaticStartOffsetOnlyUsesATrustedIntroAtTheSourceStart",
       "baseline_file_sha256": "828083ebba8c748c5e8282dd6f859dfed7dcfe7438a537b4005cdc8c3b966ede",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Ten direct-alias cases protect trusted opening20, resume42, disabled/later intro/unreviewed/unsafe sibling/conflicting trusted/late/NaN/Inf handling. Canonical seven-case table misses disabled/later/unreviewed combinations.",
+      "production_owner": "packages/servertest/playback_timeline_contract.go; packages/playback/timeline.go",
+      "non_test_callers": "Actual app applyPlayback/watch/API/Jellyfin/HLS entry points call planner/timeline and media projection; pure fixture wrappers have no app callback and call shared playback.Decide directly.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_shared_policy_contract",
+          "reference": "apps/subtitles/internal/server/playback_timeline_test.go::TestAutomaticStartOffsetOnlyUsesATrustedIntroAtTheSourceStart"
+        }
+      ],
+      "coverage_gap": "Genuine playback-startup opening-marker uses real manual1s marker, but does not inject untrusted/malformed/conflicting state. Direct alias helper is shared invariant owner, not app callback or E2E.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete risk currently missing from genuine E2E; no isolated additions",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playback_timeline_test.go",
       "line": 42,
       "test": "TestAutomaticSkipNeverRemovesUnreviewedDetectedCredits",
       "baseline_file_sha256": "828083ebba8c748c5e8282dd6f859dfed7dcfe7438a537b4005cdc8c3b966ede",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Empty/visual/model/recurrence credit sources never shorten timeline or become enabled; manual credits80..100 are admitted. Wrong eligibility can silently remove dialogue.",
+      "production_owner": "apps/subtitles/internal/server/playback_timeline.go; packages/playback/timeline.go",
+      "non_test_callers": "Actual app applyPlayback/watch/API/Jellyfin/HLS entry points call planner/timeline and media projection; pure fixture wrappers have no app callback and call shared playback.Decide directly.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_shared_policy_contract",
+          "reference": "apps/subtitles/internal/server/playback_timeline_test.go::TestAutomaticSkipNeverRemovesUnreviewedDetectedCredits"
+        }
+      ],
+      "coverage_gap": "Direct shared aliases; canonical cases cover visual intro but not complete credits-source trust matrix. No true browser detector credits-source injection.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete risk currently missing from genuine E2E; no isolated additions",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playback_timeline_test.go",
       "line": 59,
       "test": "TestWebPlaybackOffersButDoesNotAutoSkipUnreviewedCredits",
       "baseline_file_sha256": "828083ebba8c748c5e8282dd6f859dfed7dcfe7438a537b4005cdc8c3b966ede",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual app applyPlayback retains visual credits80..100 as optional markers and leaves AutoSkip/serverMarker empty even for owner.",
+      "production_owner": "apps/subtitles/internal/server/player_playback.go; packages/servertest/playback_web_timeline_contract.go",
+      "non_test_callers": "Actual app applyPlayback/watch/API/Jellyfin/HLS entry points call planner/timeline and media projection; pure fixture wrappers have no app callback and call shared playback.Decide directly.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_shared_policy_contract",
+          "reference": "apps/subtitles/internal/server/playback_timeline_test.go::TestWebPlaybackOffersButDoesNotAutoSkipUnreviewedCredits"
+        }
+      ],
+      "coverage_gap": "Real app callback bound with real settingsStore/viewer context; current browser startup manual marker does not prove visual-credit handling.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete risk currently missing from genuine E2E; no isolated additions",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playback_timeline_test.go",
       "line": 63,
       "test": "TestWebPlaybackStartsAfterATrustedOpeningWithoutTranscoding",
       "baseline_file_sha256": "828083ebba8c748c5e8282dd6f859dfed7dcfe7438a537b4005cdc8c3b966ede",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual app applyPlayback trusted intro0..20 starts at20 without transcode and preserves resume42 under non-owner direct policy.",
+      "production_owner": "apps/subtitles/internal/server/player_playback.go; packages/servertest/playback_web_timeline_contract.go",
+      "non_test_callers": "Actual app applyPlayback/watch/API/Jellyfin/HLS entry points call planner/timeline and media projection; pure fixture wrappers have no app callback and call shared playback.Decide directly.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_shared_policy_contract",
+          "reference": "apps/subtitles/internal/server/playback_timeline_test.go::TestWebPlaybackStartsAfterATrustedOpeningWithoutTranscoding"
+        }
+      ],
+      "coverage_gap": "Genuine opening-frame journey covers1s manual marker but fixture protects non-owner callback/settings and later resume application with synthetic facts; no fabricated browser equivalence.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete risk currently missing from genuine E2E; no isolated additions",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playback_timeline_test.go",
       "line": 67,
       "test": "TestAutomaticPlaybackKeepsSkipMarkersOnTheDirectTimeline",
       "baseline_file_sha256": "828083ebba8c748c5e8282dd6f859dfed7dcfe7438a537b4005cdc8c3b966ede",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual automatic app playback keeps100s source, intro10..20 and visual credits in both user/admin projections, direct plan and AutoSkip=intro; avoids server-shortening direct content.",
+      "production_owner": "apps/subtitles/internal/server/player_playback.go; packages/servertest/playback_web_timeline_contract.go",
+      "non_test_callers": "Actual app applyPlayback/watch/API/Jellyfin/HLS entry points call planner/timeline and media projection; pure fixture wrappers have no app callback and call shared playback.Decide directly.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_shared_policy_contract",
+          "reference": "apps/subtitles/internal/server/playback_timeline_test.go::TestAutomaticPlaybackKeepsSkipMarkersOnTheDirectTimeline"
+        }
+      ],
+      "coverage_gap": "Callback uses actual applyPlayback and settings store. Browser startup marker only at0..1 and has no admin marker projection assertion.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete risk currently missing from genuine E2E; no isolated additions",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playback_timeline_test.go",
       "line": 71,
       "test": "TestJellyfinOnlyExposesAutoEligibleMarkers",
       "baseline_file_sha256": "828083ebba8c748c5e8282dd6f859dfed7dcfe7438a537b4005cdc8c3b966ede",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Direct shared JellyfinSegments table omits visual credits while exposing fingerprint intro tied to episode. Canonical authoritative-type keeper omits visual recap, but lacks literal visual-credits case.",
+      "production_owner": "packages/markers/jellyfin.go",
+      "non_test_callers": "Actual app applyPlayback/watch/API/Jellyfin/HLS entry points call planner/timeline and media projection; pure fixture wrappers have no app callback and call shared playback.Decide directly.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_shared_policy_contract",
+          "reference": "apps/subtitles/internal/server/playback_timeline_test.go::TestJellyfinOnlyExposesAutoEligibleMarkers"
+        }
+      ],
+      "coverage_gap": "Shared invariant helper only; no app resolver callback. Genuine web journeys do not query Jellyfin media-segment eligibility.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete risk currently missing from genuine E2E; no isolated additions",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playback_timeline_test.go",
       "line": 81,
       "test": "TestAutomaticSkipFallbackPreservesNoTranscodePolicy",
       "baseline_file_sha256": "828083ebba8c748c5e8282dd6f859dfed7dcfe7438a537b4005cdc8c3b966ede",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual app playbackWithAutomaticSkip binding must return direct/unavailable when viewer has no transcode permission despite enabled omission. Wrong product policy would force unauthorized expensive conversion.",
+      "production_owner": "apps/subtitles/internal/server/playback_timeline.go; packages/servertest/playback_timeline_contract.go; packages/playback/timeline.go",
+      "non_test_callers": "Actual app applyPlayback/watch/API/Jellyfin/HLS entry points call planner/timeline and media projection; pure fixture wrappers have no app callback and call shared playback.Decide directly.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_shared_policy_contract",
+          "reference": "apps/subtitles/internal/server/playback_timeline_test.go::TestAutomaticSkipFallbackPreservesNoTranscodePolicy"
+        }
+      ],
+      "coverage_gap": "Real app wrapper uses Subtitles DecisionPolicy{}; canonical shared policy case plus browser normal owner lacks app binding under denied transcode.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete risk currently missing from genuine E2E; no isolated additions",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playback_timeline_test.go",
       "line": 85,
       "test": "TestAutomaticSkipCopiesVideoOnlyAtRandomAccessBoundaries",
       "baseline_file_sha256": "828083ebba8c748c5e8282dd6f859dfed7dcfe7438a537b4005cdc8c3b966ede",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual app wrapper at0/10/20/60 random access returns audio-transcode automatic-marker-skip-remux50s; moving10 keyframe to8 requires transcode automatic-marker-skip.",
+      "production_owner": "apps/subtitles/internal/server/playback_timeline.go; packages/servertest/playback_timeline_contract.go; packages/playback/timeline.go",
+      "non_test_callers": "Actual app applyPlayback/watch/API/Jellyfin/HLS entry points call planner/timeline and media projection; pure fixture wrappers have no app callback and call shared playback.Decide directly.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_shared_policy_contract",
+          "reference": "apps/subtitles/internal/server/playback_timeline_test.go::TestAutomaticSkipCopiesVideoOnlyAtRandomAccessBoundaries"
+        }
+      ],
+      "coverage_gap": "Shared fixture invokes real app wrapper; no browser stream fixture proves aligned vs unaligned copying policy. Not actual FFmpeg execution.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete risk currently missing from genuine E2E; no isolated additions",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playback_timeline_test.go",
       "line": 89,
       "test": "TestAutomaticSkipRecipeRoundTripsManyRanges",
       "baseline_file_sha256": "828083ebba8c748c5e8282dd6f859dfed7dcfe7438a537b4005cdc8c3b966ede",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App local recipe maps12 omitted ranges plus AV1/audio/subtitle/offset30 through shared serialization and app local converter exactly; omission-field mapping loss corrupts source/progress timing.",
+      "production_owner": "apps/subtitles/internal/server/hls_plan.go; packages/playback/hls_recipe.go",
+      "non_test_callers": "Actual app applyPlayback/watch/API/Jellyfin/HLS entry points call planner/timeline and media projection; pure fixture wrappers have no app callback and call shared playback.Decide directly.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_shared_policy_contract",
+          "reference": "apps/subtitles/internal/server/playback_timeline_test.go::TestAutomaticSkipRecipeRoundTripsManyRanges"
+        }
+      ],
+      "coverage_gap": "App hlsPolicy MaxBitrate100Mbps/offset30s differs product policy. Actual app conversions exercised; no true browser12-range recipe equivalent.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete risk currently missing from genuine E2E; no isolated additions",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playback_trace_test.go",
@@ -25957,51 +26082,67 @@
       "line": 16,
       "test": "TestDirectPlayerShowsSourceChaptersAndClientSkipMarkers",
       "baseline_file_sha256": "a008e26443204579c1f85838ffc0c41ebe41f8f3523bcf8a216853599770e414",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "F",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real app rendered player projects ffprobe Intro/First contact/End Credits chapters, source-time90/600 and1:30, marker tokens, direct controls and bounded trickplay URL. Removing chapter or marker projection would fail.",
+      "production_owner": "apps/subtitles/internal/server/player_playback.go; apps/subtitles/internal/server/player.go; apps/subtitles/internal/server/static/player.js",
+      "non_test_callers": "Actual app applyPlayback/watch/API/Jellyfin/HLS entry points call planner/timeline and media projection; pure fixture wrappers have no app callback and call shared playback.Decide directly.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_shared_policy_contract",
+          "reference": "apps/subtitles/internal/server/timeline_test.go::TestDirectPlayerShowsSourceChaptersAndClientSkipMarkers"
+        }
+      ],
+      "coverage_gap": "Exact cinema-11 asset version and JS fragments do not execute seeking/skipping/focus/trickplay; assertion name overpromises client behavior. Retain concrete rendered chapter/marker projection; recorded gap, no new test.",
+      "history": "d434c849a9fc1e16f948efa057344364bb107727 Version Player script URLs from their served contents",
+      "risk": "Retain concrete risk currently missing from genuine E2E; no isolated additions",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "repair_status": "Retain concrete rendered projection; source/asset-version/client execution gap recorded. No assertion edits."
     },
     {
       "file": "apps/subtitles/internal/server/timeline_test.go",
       "line": 55,
       "test": "TestChaptersDBFallbackSharesChapterDataWithWebAndAPI",
       "baseline_file_sha256": "a008e26443204579c1f85838ffc0c41ebe41f8f3523bcf8a216853599770e414",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real app reads TVDB NFO identity123, uses reachable ChaptersDB response and returns Cold open/The case through both watch and API despite no embedded chapters.",
+      "production_owner": "apps/subtitles/internal/server/player.go; apps/subtitles/internal/server/api_product.go; packages/metadata/chapters.go",
+      "non_test_callers": "Actual app applyPlayback/watch/API/Jellyfin/HLS entry points call planner/timeline and media projection; pure fixture wrappers have no app callback and call shared playback.Decide directly.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_shared_policy_contract",
+          "reference": "apps/subtitles/internal/server/timeline_test.go::TestChaptersDBFallbackSharesChapterDataWithWebAndAPI"
+        }
+      ],
+      "coverage_gap": "Runtime handler/provider/NFO/probe integration, scripted FFprobe; true E2E populated media does not inject missing embedded chapters plus provider fallback.",
+      "history": "d434c849a9fc1e16f948efa057344364bb107727 Version Player script URLs from their served contents",
+      "risk": "Retain concrete risk currently missing from genuine E2E; no isolated additions",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/timeline_test.go",
       "line": 106,
       "test": "TestViewerCanRequestBoundedTrickplayFrame",
       "baseline_file_sha256": "a008e26443204579c1f85838ffc0c41ebe41f8f3523bcf8a216853599770e414",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real app frame27 rounds FFmpeg seek to20, returns image/jpeg and actual fixture output;999999 rejected404. Prevents unbounded thumbnail work and broken seek quantization.",
+      "production_owner": "apps/subtitles/internal/server/trickplay.go",
+      "non_test_callers": "Actual app applyPlayback/watch/API/Jellyfin/HLS entry points call planner/timeline and media projection; pure fixture wrappers have no app callback and call shared playback.Decide directly.",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_app_or_shared_policy_contract",
+          "reference": "apps/subtitles/internal/server/timeline_test.go::TestViewerCanRequestBoundedTrickplayFrame"
+        }
+      ],
+      "coverage_gap": "Scripted ffmpeg jpeg bytes only, not image decode/real binary proof. Browser device tests route-fulfill trickplay and miss actual app quantization/out-of-range admission.",
+      "history": "d434c849a9fc1e16f948efa057344364bb107727 Version Player script URLs from their served contents",
+      "risk": "Retain concrete risk currently missing from genuine E2E; no isolated additions",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/transcode_test.go",
