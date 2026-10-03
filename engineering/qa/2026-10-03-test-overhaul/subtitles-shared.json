@@ -6,12 +6,12 @@
   "files": 379,
   "declarations": 954,
   "test_loc": 28832,
-  "reviewed": 726,
-  "pending": 228,
+  "reviewed": 751,
+  "pending": 203,
   "decisions": {
-    "R": 634,
-    "D": 62,
-    "F": 29,
+    "R": 655,
+    "D": 63,
+    "F": 32,
     "C": 1
   },
   "verification": [
@@ -1719,17 +1719,22 @@
       "line": 7,
       "test": "TestAgentCanCreateAnOrderedPlaylistInOneAPICall",
       "baseline_file_sha256": "c268d173e37d884469a70cd125adb0db068f7adbfa59aa1fea2ff82633e4ed7f",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real app-backed shared HTTP scenario resolves episode+movie IDs, asserts exact two-item order after creation, and rejects unavailable/201items/257-character ID with no rejected playlist names.",
+      "production_owner": "apps/subtitles/internal/server/api_product.go; apps/subtitles/internal/server/lists.go; packages/servertest/agent_playlist.go",
+      "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_storage_or_http_boundary",
+          "reference": "apps/subtitles/internal/server/agent_playlist_api_test.go::TestAgentCanCreateAnOrderedPlaylistInOneAPICall"
+        }
+      ],
+      "coverage_gap": "Same shared scenario uses actual app Server callbacks and app library/currentViewer mapping. Canonical policy-only tests cannot catch missing API registration or mapping; handler fixture is not genuine E2E.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app state, concurrency, privacy or actual transport contract absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/album_test.go",
@@ -7230,85 +7235,114 @@
       "line": 26,
       "test": "TestListMutationsDoNotChangeMemoryWhenPersistenceFails",
       "baseline_file_sha256": "029818211ef805625edad2f55dd1831708e05dead3ce2b807ffebf3b338e6d54",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Nine actual list-store mutations must return persistence failure and preserve detached full app state: list/create/smart/order/delete plus collections.",
+      "production_owner": "apps/subtitles/internal/server/lists.go; apps/subtitles/internal/server/collection.go; packages/catalog/{lists.go,list_operations.go}",
+      "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_storage_or_http_boundary",
+          "reference": "apps/subtitles/internal/server/lists_state_internal_test.go::TestListMutationsDoNotChangeMemoryWhenPersistenceFails"
+        }
+      ],
+      "coverage_gap": "Shared transaction keepers do not prove app storage pointer/file/database mapping. Real happy browser does not inject failed persistence.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app state, concurrency, privacy or actual transport contract absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/lists_state_internal_test.go",
       "line": 64,
       "test": "TestPersistedListAndProgressValidationIsBounded",
       "baseline_file_sha256": "029818211ef805625edad2f55dd1831708e05dead3ce2b807ffebf3b338e6d54",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Pure replay of shared validation for empty list key, duplicate playlist order and negative stored Seconds, using direct catalog calls and type aliases.",
+      "production_owner": "packages/catalog/{lists.go,progress.go}",
+      "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
+      "remaining_proof": [
+        {
+          "kind": "retained_shared_contract",
+          "reference": "packages/catalog/catalog_test.go::TestSearchListAndProgressRules"
+        },
+        {
+          "kind": "retained_shared_restoration_contract",
+          "reference": "packages/catalog/progress_request_store_test.go::TestRequestProgressStoreRestoration"
+        }
+      ],
+      "coverage_gap": "No application callback or wiring is exercised. Canonical restoration invokes ValidateStoredProgress on exact negative Seconds; no genuine E2E equivalence claimed.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Pure shared replay consolidated to exact canonical owner",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/lists_state_internal_test.go",
       "line": 77,
       "test": "TestProgressMutationDoesNotChangeMemoryWhenPersistenceFails",
       "baseline_file_sha256": "029818211ef805625edad2f55dd1831708e05dead3ce2b807ffebf3b338e6d54",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual app progress factory bound to currentViewer must leave committed10 seconds after rejected20-second failed write.",
+      "production_owner": "apps/subtitles/internal/server/progress.go; packages/catalog/progress_request_store.go; packages/catalogapi/progress_store.go",
+      "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_storage_or_http_boundary",
+          "reference": "apps/subtitles/internal/server/lists_state_internal_test.go::TestProgressMutationDoesNotChangeMemoryWhenPersistenceFails"
+        }
+      ],
+      "coverage_gap": "Shared store tests use synthetic header viewer callback; this app factory binds real identity context and persistence. E2E happy save misses failed durable commit.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app state, concurrency, privacy or actual transport contract absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/lists_state_internal_test.go",
       "line": 91,
       "test": "TestProgressMutationRejectsInvalidDurableStateBeforePersistence",
       "baseline_file_sha256": "029818211ef805625edad2f55dd1831708e05dead3ce2b807ffebf3b338e6d54",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real app store rejects129-character session with sentinel error and zero persistence calls/records.",
+      "production_owner": "apps/subtitles/internal/server/progress.go; packages/catalog/progress.go",
+      "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_storage_or_http_boundary",
+          "reference": "apps/subtitles/internal/server/lists_state_internal_test.go::TestProgressMutationRejectsInvalidDurableStateBeforePersistence"
+        }
+      ],
+      "coverage_gap": "Canonical shared input rejection exists but app factory identity/persistence binding is independently exercised; web status-only rejection does not prove zero side effects.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app state, concurrency, privacy or actual transport contract absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/lists_validation_test.go",
       "line": 9,
       "test": "TestPlaylistCreationBoundsItemsBeforeSideEffects",
       "baseline_file_sha256": "79d3c7099a1af7d96eacdd660f82efeed7ab7f8dd1cf9edb2aca09adc0ab82bd",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App list storage rejects201 items and257-character ID before creating playlist/order maps.",
+      "production_owner": "apps/subtitles/internal/server/lists.go; packages/catalog/list_operations.go",
+      "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_storage_or_http_boundary",
+          "reference": "apps/subtitles/internal/server/lists_validation_test.go::TestPlaylistCreationBoundsItemsBeforeSideEffects"
+        }
+      ],
+      "coverage_gap": "API status helper has real accepted ordered fixture and bounds but only checks names after response; direct app storage map side effects are independent of HTTP error mapping.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app state, concurrency, privacy or actual transport contract absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/live_events_test.go",
@@ -13199,136 +13233,178 @@
       "line": 16,
       "test": "TestPlaylistsSupportPersistentOrderAndDynamicRules",
       "baseline_file_sha256": "4554fa5ef72eb1584f2301a8c1bbd8a8599985c28a0fceb97acda5e0515c27b2",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real registered API creates/reorders manual playlist, restarts retained order, evaluates dynamic kind/query rules, and renders manual versus smart controls.",
+      "production_owner": "apps/subtitles/internal/server/lists.go; apps/subtitles/internal/server/playlist.go; apps/subtitles/internal/server/home.go; packages/catalog",
+      "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_storage_or_http_boundary",
+          "reference": "apps/subtitles/internal/server/playlist_features_test.go::TestPlaylistsSupportPersistentOrderAndDynamicRules"
+        }
+      ],
+      "coverage_gap": "Compatibility library handler fixture is isolated integration. Existing actual Subtitles CLI browser root is dashboard and does not verify this restart and dynamic rule adapter.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app state, concurrency, privacy or actual transport contract absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playlist_features_test.go",
       "line": 85,
       "test": "TestPlaylistDocumentsRoundTripThroughVersionedAPI",
       "baseline_file_sha256": "4554fa5ef72eb1584f2301a8c1bbd8a8599985c28a0fceb97acda5e0515c27b2",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real versioned export preserves format/version/name/ordered IDs and attachment header; import returns same members/order and rejects missing item/format without new playlist.",
+      "production_owner": "apps/subtitles/internal/server/api_product.go; apps/subtitles/internal/server/playlist_document.go; packages/catalogapi/playlist_document.go",
+      "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_storage_or_http_boundary",
+          "reference": "apps/subtitles/internal/server/playlist_features_test.go::TestPlaylistDocumentsRoundTripThroughVersionedAPI"
+        }
+      ],
+      "coverage_gap": "Genuine happy browser creates ordinary playlists without portable document import/export or rejection no-state-change controls.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app state, concurrency, privacy or actual transport contract absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playlist_features_test.go",
       "line": 132,
       "test": "TestPlaylistDocumentsAreReachableThroughWebAdapter",
       "baseline_file_sha256": "4554fa5ef72eb1584f2301a8c1bbd8a8599985c28a0fceb97acda5e0515c27b2",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real web document import redirects to playlist, renders membership/export link, and unavailable ID rejects without new playlist.",
+      "production_owner": "apps/subtitles/internal/server/playlist_document.go; apps/subtitles/internal/server/playlist.go; packages/catalogapi/playlist_document.go",
+      "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_storage_or_http_boundary",
+          "reference": "apps/subtitles/internal/server/playlist_features_test.go::TestPlaylistDocumentsAreReachableThroughWebAdapter"
+        }
+      ],
+      "coverage_gap": "API document contract does not execute web form binding/localized render and redirect. No genuine live portable document journey executed.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app state, concurrency, privacy or actual transport contract absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playlist_test.go",
       "line": 16,
       "test": "TestViewerCanCreateAndUsePersistentPlaylist",
       "baseline_file_sha256": "aa578abe0ea1f592ba36a0f7d1ace02143980350a50ae63e834dc1452ee41188",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real web creates playlist, rejects eight invalid membership/query forms, adds member through search redirect, survives restart, and removes into empty state.",
+      "production_owner": "apps/subtitles/internal/server/player.go; apps/subtitles/internal/server/playlist.go; apps/subtitles/internal/server/lists.go; packages/catalog/playlist_http.go",
+      "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_storage_or_http_boundary",
+          "reference": "apps/subtitles/internal/server/playlist_test.go::TestViewerCanCreateAndUsePersistentPlaylist"
+        }
+      ],
+      "coverage_gap": "API ordered playlist keeper does not guard actual web forms/query/redirect/restart binding. Happy browser lacks hostile form matrix and restart.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app state, concurrency, privacy or actual transport contract absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/playlist_test.go",
       "line": 54,
       "test": "TestViewerCanReorderPlaylistWithoutDragging",
       "baseline_file_sha256": "aa578abe0ea1f592ba36a0f7d1ace02143980350a50ae63e834dc1452ee41188",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "F",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real web emits accessible earlier/later buttons and rejects six invalid order forms around an accepted reorder.",
+      "production_owner": "apps/subtitles/internal/server/playlist.go; packages/catalog/playlist_http.go",
+      "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_storage_or_http_boundary",
+          "reference": "apps/subtitles/internal/server/playlist_test.go::TestViewerCanReorderPlaylistWithoutDragging"
+        }
+      ],
+      "coverage_gap": "Order string comparisons accept both expected titles absent because indexes equal-1; successful redirect alone does not prove persisted new order. Keep real accessible controls and invalid-form boundary; repair order presence needed.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app state, concurrency, privacy or actual transport contract absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "repair_status": "Contract retained; failure-analysis and assertion repair not yet performed. Exact false-pass scope stated above."
     },
     {
       "file": "apps/subtitles/internal/server/profile_progress_test.go",
       "line": 17,
       "test": "TestViewerProfilesKeepSeparatePlaybackProgress",
       "baseline_file_sha256": "ec35a1fab6c8f4e7dc5bb74aa5b424ac52b9527611d8c98c53bbae0bed6ad69e",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "F",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual owner/Sam MFA profile request binding prevents owner progress leaking into Sam continue-watching shelf.",
+      "production_owner": "apps/subtitles/internal/server/authentication.go; apps/subtitles/internal/server/progress.go; apps/subtitles/internal/server/home.go; packages/catalog/progress_projection.go",
+      "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_storage_or_http_boundary",
+          "reference": "apps/subtitles/internal/server/profile_progress_test.go::TestViewerProfilesKeepSeparatePlaybackProgress"
+        }
+      ],
+      "coverage_gap": "Missing positive control: owner save response succeeds but test never asserts owner progress or owner Continue exists. A total progress failure can satisfy Sam absence. Retain important app profile privacy contract with explicit gap.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app state, concurrency, privacy or actual transport contract absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "repair_status": "Contract retained; failure-analysis and assertion repair not yet performed. Exact false-pass scope stated above."
     },
     {
       "file": "apps/subtitles/internal/server/profile_progress_test.go",
       "line": 50,
       "test": "TestViewerProfilesKeepSeparatePersistentLists",
       "baseline_file_sha256": "ec35a1fab6c8f4e7dc5bb74aa5b424ac52b9527611d8c98c53bbae0bed6ad69e",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Owner web-list membership survives app restart while independently authenticated Sam does not inherit it.",
+      "production_owner": "apps/subtitles/internal/server/authentication.go; apps/subtitles/internal/server/lists.go; apps/subtitles/internal/server/player.go",
+      "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_storage_or_http_boundary",
+          "reference": "apps/subtitles/internal/server/profile_progress_test.go::TestViewerProfilesKeepSeparatePersistentLists"
+        }
+      ],
+      "coverage_gap": "Has positive ownerListed=true before Samfalse. Real profile lifecycle and restart are distinct from shared viewer-map helpers; genuine current Subtitles dashboard E2E does not execute classic list.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app state, concurrency, privacy or actual transport contract absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/profile_progress_test.go",
       "line": 88,
       "test": "TestViewerCanDismissContinueWatchingWithoutDeletingHistory",
       "baseline_file_sha256": "ec35a1fab6c8f4e7dc5bb74aa5b424ac52b9527611d8c98c53bbae0bed6ad69e",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real API/web dismiss removes Continue yet preserves61seconds and history member; EN/ES dismiss labels render and new progress reactivates.",
+      "production_owner": "apps/subtitles/internal/server/progress.go; apps/subtitles/internal/server/player.go; apps/subtitles/internal/server/home.go",
+      "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_storage_or_http_boundary",
+          "reference": "apps/subtitles/internal/server/profile_progress_test.go::TestViewerCanDismissContinueWatchingWithoutDeletingHistory"
+        }
+      ],
+      "coverage_gap": "Important no-data-loss dismissal versus history semantics. Genuine happy playback does not compare stored history after both API and web dismiss.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app state, concurrency, privacy or actual transport contract absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/profiles_saml_linking_test.go",
@@ -13459,51 +13535,66 @@
       "line": 10,
       "test": "TestProgressReadsRemainResponsiveAndCommittedWhileStateIsPersisted",
       "baseline_file_sha256": "e2e42afcf201394e002b009d82d8f62f1615e50608a2b59d337eac8bbeb29330",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual app factory blocked persistence must permit prompt progress read showing committed0 before publication and42 after release.",
+      "production_owner": "apps/subtitles/internal/server/progress.go; packages/catalog/progress.go",
+      "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_storage_or_http_boundary",
+          "reference": "apps/subtitles/internal/server/progress_concurrency_test.go::TestProgressReadsRemainResponsiveAndCommittedWhileStateIsPersisted"
+        }
+      ],
+      "coverage_gap": "Meaningful injected concurrency ordering; normal E2E never blocks durable write.25ms deadline is environment-sensitive; failure path before channel release can hang, not inferred broad race proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app state, concurrency, privacy or actual transport contract absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/progress_input_validation_test.go",
       "line": 14,
       "test": "TestWebProgressRejectsOversizedSession",
       "baseline_file_sha256": "6f2ac49543d3fc70e5b11d9409f10e1d2a60bb21baa1a2282a6e70f046084c52",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real POST/progress with129-character session returns400 through registered app store validation/status adapter.",
+      "production_owner": "apps/subtitles/internal/server/player.go; apps/subtitles/internal/server/progress.go; packages/catalog/progress_http.go",
+      "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_storage_or_http_boundary",
+          "reference": "apps/subtitles/internal/server/progress_input_validation_test.go::TestWebProgressRejectsOversizedSession"
+        }
+      ],
+      "coverage_gap": "Direct shared/store sentinel keeper does not prove real transport binding and status projection; status alone is not durable no-side-effect proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app state, concurrency, privacy or actual transport contract absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/progress_ordering_test.go",
       "line": 10,
       "test": "TestProgressRejectsStaleEventsWithinAPlaybackSession",
       "baseline_file_sha256": "263f0430984a20ec45d8cdb93a8f44e7cd5995feb9e1e8c7b1f0de267c49f310",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real API accepts120seconds/session revision2 then rejects10seconds revision1 with409 and preserves exact120/revision2 state.",
+      "production_owner": "apps/subtitles/internal/server/api_product.go; apps/subtitles/internal/server/progress.go; packages/catalog/progress_change.go",
+      "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_storage_or_http_boundary",
+          "reference": "apps/subtitles/internal/server/progress_ordering_test.go::TestProgressRejectsStaleEventsWithinAPlaybackSession"
+        }
+      ],
+      "coverage_gap": "Shared optimistic revision policy cannot catch actual JSON fields/status mapping. Genuine happy progress journey sends no stale events.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app state, concurrency, privacy or actual transport contract absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/provider_resilience_test.go",
@@ -14245,102 +14336,133 @@
       "line": 17,
       "test": "TestHomeShowsRecentlyAddedInNewestFirstOrder",
       "baseline_file_sha256": "986793be2cb26cfe2bd5f1dd0b620813d128749099ce5d0da947b2e5db902a53",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "F",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual classic home renders Recently-added shelf before Library for known added timestamps.",
+      "production_owner": "apps/subtitles/internal/server/home.go; packages/home/{handler.go,recent.go}",
+      "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_storage_or_http_boundary",
+          "reference": "apps/subtitles/internal/server/recent_test.go::TestHomeShowsRecentlyAddedInNewestFirstOrder"
+        }
+      ],
+      "coverage_gap": "New/Old order comparison can pass when both title indexes are-1. Retain real shelf placement projection but newest-order assertion requires presence control. Current actual CLI dashboard differs from compatibility handler.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app state, concurrency, privacy or actual transport contract absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "repair_status": "Contract retained; failure-analysis and assertion repair not yet performed. Exact false-pass scope stated above."
     },
     {
       "file": "apps/subtitles/internal/server/recent_test.go",
       "line": 45,
       "test": "TestHomePrioritizesVisibleRecentArtwork",
       "baseline_file_sha256": "986793be2cb26cfe2bd5f1dd0b620813d128749099ce5d0da947b2e5db902a53",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real populated home sets exactly firsttwo recent images fetchpriorityhigh and third loadinglazy.",
+      "production_owner": "apps/subtitles/internal/server/home.go; packages/home/recent.go; packages/playerweb/home.go",
+      "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_storage_or_http_boundary",
+          "reference": "apps/subtitles/internal/server/recent_test.go::TestHomePrioritizesVisibleRecentArtwork"
+        }
+      ],
+      "coverage_gap": "Screenshots/Axe do not assert scheduling attributes. Three real artwork files drive app availability and visible-template mapping; no live equivalent assertion.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app state, concurrency, privacy or actual transport contract absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/recent_test.go",
       "line": 70,
       "test": "TestHomeRecentlyAddedUsesShowPosterAndCleanTitle",
       "baseline_file_sha256": "986793be2cb26cfe2bd5f1dd0b620813d128749099ce5d0da947b2e5db902a53",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual NFO show metadata reuses poster and strips provider token from rendered recent episode title.",
+      "production_owner": "apps/subtitles/internal/server/home.go; apps/subtitles/internal/server/artwork.go; packages/home/projection.go; packages/library",
+      "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_storage_or_http_boundary",
+          "reference": "apps/subtitles/internal/server/recent_test.go::TestHomeRecentlyAddedUsesShowPosterAndCleanTitle"
+        }
+      ],
+      "coverage_gap": "Shared presentation map does not guard actual artwork discovery and app template output. Genuine review clip lacks episode/NFO token.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app state, concurrency, privacy or actual transport contract absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/recent_test.go",
       "line": 92,
       "test": "TestHomeRecentlyAddedStacksEpisodesAndReusesArtwork",
       "baseline_file_sha256": "986793be2cb26cfe2bd5f1dd0b620813d128749099ce5d0da947b2e5db902a53",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Two actual episodes render one show-stack count/title, reuse available first-episode artwork, and GETart returns actualposter.",
+      "production_owner": "apps/subtitles/internal/server/home.go; apps/subtitles/internal/server/artwork.go; packages/home/{projection.go,recent.go}",
+      "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_storage_or_http_boundary",
+          "reference": "apps/subtitles/internal/server/recent_test.go::TestHomeRecentlyAddedStacksEpisodesAndReusesArtwork"
+        }
+      ],
+      "coverage_gap": "Shared shelf tests cannot prove app artwork route resolves separate ShowID versus ArtworkID; ordinary movie browser journey misses grouping.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app state, concurrency, privacy or actual transport contract absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/recent_test.go",
       "line": 130,
       "test": "TestHomeShowsRecentlyPlayedMedia",
       "baseline_file_sha256": "986793be2cb26cfe2bd5f1dd0b620813d128749099ce5d0da947b2e5db902a53",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real API progress30 leads to Recently-played shelf with actual watch URL and single-item card rather than stack.",
+      "production_owner": "apps/subtitles/internal/server/home.go; apps/subtitles/internal/server/progress.go; packages/home/personal.go",
+      "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_storage_or_http_boundary",
+          "reference": "apps/subtitles/internal/server/recent_test.go::TestHomeShowsRecentlyPlayedMedia"
+        }
+      ],
+      "coverage_gap": "Actual app progress\u2192personal projection\u2192render callback contract; current genuine Subtitles dashboard does not expose classic recently played.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app state, concurrency, privacy or actual transport contract absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/recent_test.go",
       "line": 162,
       "test": "TestHomeRecentlyPlayedStacksEpisodesByShow",
       "baseline_file_sha256": "986793be2cb26cfe2bd5f1dd0b620813d128749099ce5d0da947b2e5db902a53",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Two distinct real episodes with saved progress render one accessible2episode show stack and hide individual episode title.",
+      "production_owner": "apps/subtitles/internal/server/home.go; apps/subtitles/internal/server/progress.go; packages/home/recent.go",
+      "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_storage_or_http_boundary",
+          "reference": "apps/subtitles/internal/server/recent_test.go::TestHomeRecentlyPlayedStacksEpisodesByShow"
+        }
+      ],
+      "coverage_gap": "No genuine live episode history grouping. Shared shelf projection does not prove currentViewer history and app template integration.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app state, concurrency, privacy or actual transport contract absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/remote_access_security_test.go",
@@ -33062,34 +33184,44 @@
       "line": 15,
       "test": "TestViewerCanMarkMediaWatched",
       "baseline_file_sha256": "cfa376d26a73882cb5d24130ab040e144d7181c96e84d909a29f65764290f1cf",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual web watched mutation survives app restart and changes player action to Mark-unwatched.",
+      "production_owner": "apps/subtitles/internal/server/player.go; apps/subtitles/internal/server/progress.go; packages/catalog/progress_http.go",
+      "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_storage_or_http_boundary",
+          "reference": "apps/subtitles/internal/server/watched_test.go::TestViewerCanMarkMediaWatched"
+        }
+      ],
+      "coverage_gap": "Happy browser changes button within same process; retained actual app persistence/restart bound is independent.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app state, concurrency, privacy or actual transport contract absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/watched_test.go",
       "line": 38,
       "test": "TestViewerCanFilterTheirUnwatchedMedia",
       "baseline_file_sha256": "cfa376d26a73882cb5d24130ab040e144d7181c96e84d909a29f65764290f1cf",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real watchedHeat state excludesHeat while retainingArrival from unwatched filter, with selectedview/all URL.",
+      "production_owner": "apps/subtitles/internal/server/home.go; apps/subtitles/internal/server/progress.go; packages/catalog",
+      "non_test_callers": "New constructs app index/list/progress/auth factories; registerPlayer and registerAPI bind visible-item/currentViewer state to web/API writes, homeSource.Personal to rendered shelves.",
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_storage_or_http_boundary",
+          "reference": "apps/subtitles/internal/server/watched_test.go::TestViewerCanFilterTheirUnwatchedMedia"
+        }
+      ],
+      "coverage_gap": "Contains positive available Arrival control. Genuine live current Subtitles root/dashboard does not exercise classic unwatched filter or actual viewer watched state.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain important app state, concurrency, privacy or actual transport contract absent equivalent genuine E2E",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/settingsstate/settings_test.go",
