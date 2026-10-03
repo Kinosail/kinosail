@@ -77,4 +77,6 @@ The diagnostic run at `45e9e19a0` with recorded temporary numeric instrumentatio
 
 The resume repair uses the existing tvOS AVPlayerViewController delegate to retain user-selected targets for the current player. Its `timeToSeekAfterUserNavigatedFrom:to:` callback represents user navigation and returns AVKit's target unchanged. Automatic player time jumps no longer replace saved positions. iOS touch controls retain their existing explicit coordinator seek path. An interrupted restoring seek uses a changed recorded user target, or reports failure; it no longer assumes the current position came from a scrub.
 
-Media acceptance and required iOS/tvOS compilation for this repair are pending the next coordinated build slot.
+At `49076cf93b8de88f1cb564b6631479804bbe30b5`, all six native journeys pass with zero skipped. Cold and prepared playback both restore three seconds, decode moving frames and pass seek, pause, resume and repeated-play assertions. Observed first moving frames arrive at 865 ms cold and 354 ms prepared. These are single fixture observations, not general startup guarantees or a physical remote-tap benchmark.
+
+The lifecycle results remain: cancelled startup preserves the active player with zero reads; HTTP 403 negotiates once; a cancelled preparation caller returns in 0.113 ms; speculative preparation causes zero competing reads; A1 → B → A2 uses two source reads. Independent review of the exact repair revision found no actionable issues. Required iOS/tvOS compilation and PR CI are recorded separately in the final artifact.
