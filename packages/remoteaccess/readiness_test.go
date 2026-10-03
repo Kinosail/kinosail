@@ -86,24 +86,3 @@ func TestNewReadinessHandlerUsesLiveStateAndReportsViewFailure(t *testing.T) {
 		}
 	}
 }
-
-func TestNewReadinessHandlerRejectsMissingDependencies(t *testing.T) {
-	t.Parallel()
-	profiles := func() ([]identitycore.Profile, error) { return nil, nil }
-	view := &readinessTestView{}
-	renderError := func(http.ResponseWriter, *http.Request, string, int) {}
-	for name, build := range map[string]func(){
-		"profiles": func() { NewReadinessHandler(nil, nil, view, renderError) },
-		"view":     func() { NewReadinessHandler(nil, profiles, nil, renderError) },
-		"error":    func() { NewReadinessHandler(nil, profiles, view, nil) },
-	} {
-		t.Run(name, func(t *testing.T) {
-			defer func() {
-				if recover() == nil {
-					t.Fatal("missing dependency did not panic")
-				}
-			}()
-			build()
-		})
-	}
-}

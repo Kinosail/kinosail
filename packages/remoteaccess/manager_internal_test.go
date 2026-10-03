@@ -92,23 +92,6 @@ func TestValidateCertificateRejectsEveryInvalidShape(t *testing.T) {
 	}
 }
 
-func TestKillAndResetRejectUnavailableOrUnremovableMarkers(t *testing.T) {
-	disabled, err := New(Config{})
-	if err != nil || disabled.Kill() == nil {
-		t.Fatalf("disabled kill = %#v, %v", disabled, err)
-	}
-	manager := activeManager(t)
-	if err = os.MkdirAll(manager.killPath, 0o700); err != nil {
-		t.Fatal(err)
-	}
-	if err = os.WriteFile(filepath.Join(manager.killPath, "keep"), nil, 0o600); err != nil {
-		t.Fatal(err)
-	}
-	if err = manager.ResetKill(); err == nil {
-		t.Fatal("non-empty kill marker directory was removed")
-	}
-}
-
 func certificateManager(t *testing.T, certificate func(*tls.ClientHelloInfo) (*tls.Certificate, error)) *Manager {
 	t.Helper()
 	config := Config{Enabled: true, PublicHTTPS: true, Domain: "family", Token: strings.Repeat("a", 32), Listen: "127.0.0.1:8443", DataDir: t.TempDir()}

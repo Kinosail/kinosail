@@ -20,15 +20,15 @@
     "declarations": 1900,
     "decisions": {
       "R": 1149,
-      "D": 47,
+      "D": 56,
       "F": 42,
-      "unreviewed": 649,
+      "unreviewed": 640,
       "C": 13
     },
-    "removed_declarations": 47,
-    "removed_test_lines": 846,
-    "final_declarations": 1853,
-    "final_test_lines": 65629,
+    "removed_declarations": 56,
+    "removed_test_lines": 1006,
+    "final_declarations": 1844,
+    "final_test_lines": 65469,
     "removed_support_helpers": 6,
     "removed_support_files": 3,
     "removed_support_lines": 141
@@ -28733,17 +28733,50 @@
       "owner_group": "federation",
       "body_sha256": "50d5e74f670569a33e172ad44babe9ad96d78276b19d6678041800eef71df984",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./federation",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Delete/consolidate only after parent review and keeper preservation proof.",
+      "validation_command": "go -C packages test ./federation/... -run ^TestSAMLBeginMapsAuthenticationAndRedirectErrors$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.410902-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/federation",
         "Test": "TestSAMLBeginMapsAuthenticationAndRedirectErrors",
         "Elapsed": 0.14
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "62393eeb5019643102e20ca7e019b4ad1d941a73 Fix identity lifecycle and delegated session authority",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "50d5e74f670569a33e172ad44babe9ad96d78276b19d6678041800eef71df984",
+      "source_file_checksum": "9a84590b1b709df100695ec900050d548805929fa03181dff753bd58e8465cf8",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/federation/saml_coverage_test.go:137:TestSAMLBeginMapsAuthenticationAndRedirectErrors",
+      "credible_failure": "Invalid injected SignatureMethod or empty certificate yields wrong Begin error.",
+      "reason": "Production always constructs RSA-SHA256 with parsed/generated certificate; injected SP shape is not externally attainable. Invalid algorithm regression in actual construction would already break real signed-flow keeper.",
+      "production_owner": [
+        "packages/federation/{oidc.go,oidc_protocol.go,oidc_http.go,saml.go,saml_protocol.go,saml_http.go,saml_key.go,saml_metadata.go,web.go,profiles.go,settings.go}"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/oidc.go:21 NewOIDCHTTP, saml.go:13 NewSAMLHTTP and profiles_federation.go:10/27 atomic current strong-session checker and live WebHooks",
+        "packages/identitycore/profile_store.go:205 exposes generic federation owner through locked clone/persist/commit binding (read in immutable first packet)",
+        "apps/{player,subtitles}/internal/server/settings_oidc_{configuration,storage,http}.go and settings_saml_{view,storage,http,status}.go real app view/change adapters",
+        "apps/{player,subtitles}/internal/configuration/mutation.go NewSettings plus stored_validation/load/validation_rules invoke coupled and metadata validators",
+        "Dependencies inspected: coreos/go-oidc v3.21.0 Verify/verifyJWT issuer/audience/expiry/signatures; crewjam/saml v0.5.1 SP ParseResponse/parseAssertion/validateAssertion signature/relay request IDs/recipient/audience; privatefile actual bounded no-symlink owner-only read/durable write."
+      ],
+      "gap": "Actual browser apps/player/e2e/layout-audit-configuration.spec.ts:40-95 and subtitles/e2e/layout-audit-settings-tests.ts:39-94 read real SSO controls and perform one valid OIDC settings Save with secret placeholder; SAML controls only. Neither initiates or completes OIDC/SAML IdP login/link, exercises revoked initiating session, signature/claim failures, replay, external metadata redirects or storage/crypto failure. conditional-states oidc-mfa is QA-rendered state fixture, not federated exchange. No browser execution here.",
+      "remaining_coverage": "packages/federation/saml_test.go:152#TestSAMLFlowStartsAndCompletesSignedResponse signs authentication and completes actual library exchange; packages/federation/web_edge_test.go:117#TestSAMLHTTPStartsMetadataAndMFA invokes successful redirect and POST bindings. No supported invalid-method contract or independent external fault injection.",
+      "command": "go -C packages test ./federation/... -run ^TestSAMLBeginMapsAuthenticationAndRedirectErrors$",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "unlocked_deletion": "None currently approved; inspect recorded test-only seam candidates.",
+      "source_read_evidence": "Full declaration/table/local helper assertions, production owner and relevant caller/dependency blocks, history and actual-versus-fixture browser source inspected.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-federated-authority-audit.json",
+        "source_packet_sha256": "759730b10bbba380850087ce22cc07f2aed12f81bb31464a4c622bcd4b941ffe"
+      },
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run"
     },
     {
       "file": "packages/federation/saml_edge_test.go",
@@ -29034,17 +29067,50 @@
       "owner_group": "federation",
       "body_sha256": "5b2b8832eac6f7484680ac871a64109a92314ec1ac5345ed11bd7ba318cafeab",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./federation",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Delete/consolidate only after parent review and keeper preservation proof.",
+      "validation_command": "go -C packages test ./federation/... -run ^TestRemoteSAMLMetadataRejectsMalformedAddressAndTransportFailure$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.808564-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/federation",
         "Test": "TestRemoteSAMLMetadataRejectsMalformedAddressAndTransportFailure",
         "Elapsed": 0
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
+        "62393eeb5019643102e20ca7e019b4ad1d941a73 Fix identity lifecycle and delegated session authority"
+      ],
+      "sourcechecksum": "5b2b8832eac6f7484680ac871a64109a92314ec1ac5345ed11bd7ba318cafeab",
+      "source_file_checksum": "3b643c580e943ca074dd554f2928f05bbdeb3270b47f0bdb547650bc100d11a3",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/federation/saml_metadata_test.go:20:TestRemoteSAMLMetadataRejectsMalformedAddressAndTransportFailure",
+      "credible_failure": "Private fetch returns nil/error on malformed or unsupported URL.",
+      "reason": "Both inputs are rejected by Configured before production fetch can run; unsupported scheme is not a reachable transport failure. Private call adds no independent supported input contract.",
+      "production_owner": [
+        "packages/federation/{oidc.go,oidc_protocol.go,oidc_http.go,saml.go,saml_protocol.go,saml_http.go,saml_key.go,saml_metadata.go,web.go,profiles.go,settings.go}"
+      ],
+      "callers": [
+        "apps/{player,subtitles}/internal/server/oidc.go:21 NewOIDCHTTP, saml.go:13 NewSAMLHTTP and profiles_federation.go:10/27 atomic current strong-session checker and live WebHooks",
+        "packages/identitycore/profile_store.go:205 exposes generic federation owner through locked clone/persist/commit binding (read in immutable first packet)",
+        "apps/{player,subtitles}/internal/server/settings_oidc_{configuration,storage,http}.go and settings_saml_{view,storage,http,status}.go real app view/change adapters",
+        "apps/{player,subtitles}/internal/configuration/mutation.go NewSettings plus stored_validation/load/validation_rules invoke coupled and metadata validators",
+        "Dependencies inspected: coreos/go-oidc v3.21.0 Verify/verifyJWT issuer/audience/expiry/signatures; crewjam/saml v0.5.1 SP ParseResponse/parseAssertion/validateAssertion signature/relay request IDs/recipient/audience; privatefile actual bounded no-symlink owner-only read/durable write."
+      ],
+      "gap": "Actual browser apps/player/e2e/layout-audit-configuration.spec.ts:40-95 and subtitles/e2e/layout-audit-settings-tests.ts:39-94 read real SSO controls and perform one valid OIDC settings Save with secret placeholder; SAML controls only. Neither initiates or completes OIDC/SAML IdP login/link, exercises revoked initiating session, signature/claim failures, replay, external metadata redirects or storage/crypto failure. conditional-states oidc-mfa is QA-rendered state fixture, not federated exchange. No browser execution here.",
+      "remaining_coverage": "packages/federation/saml_test.go:28#TestSAMLConfigurationRejectsInvalidSourcesBeforeKeyCreation rejects malformed/untrusted configuration; :52 invalid external metadata no-key; saml_edge_test.go:15 refresh HTTP outage. Honest gap: configured address connection failure is not specifically reproduced by this impossible-scheme probe.",
+      "command": "go -C packages test ./federation/... -run ^TestRemoteSAMLMetadataRejectsMalformedAddressAndTransportFailure$",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "unlocked_deletion": "None currently approved; inspect recorded test-only seam candidates.",
+      "source_read_evidence": "Full declaration/table/local helper assertions, production owner and relevant caller/dependency blocks, history and actual-versus-fixture browser source inspected.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-federated-authority-audit.json",
+        "source_packet_sha256": "759730b10bbba380850087ce22cc07f2aed12f81bb31464a4c622bcd4b941ffe"
+      },
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run"
     },
     {
       "file": "packages/federation/saml_test.go",
@@ -64140,17 +64206,52 @@
       "owner_group": "remoteaccess",
       "body_sha256": "2144d0e7ff35d19cb65df7012ab37ef9c3d56803257c3faeb53079c0090bb879",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./remoteaccess",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Delete/consolidate only after parent review and keeper preservation proof.",
+      "validation_command": "go -C packages test ./remoteaccess/... -run ^TestNewRejectsMultipleDependencySetsBeforeFiles$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:31.108768-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/remoteaccess",
         "Test": "TestNewRejectsMultipleDependencySetsBeforeFiles",
         "Elapsed": 0
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "2144d0e7ff35d19cb65df7012ab37ef9c3d56803257c3faeb53079c0090bb879",
+      "source_file_checksum": "b221560b996fb2f6017593e7c940dcd598556424ae3f15d4545e570f2d425c9e",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/remoteaccess/cardinality_test.go:11:TestNewRejectsMultipleDependencySetsBeforeFiles",
+      "credible_failure": "Only detects cardinality enforcement of variadic internal test dependency seam.",
+      "reason": "No production caller supplies Dependencies; appcli.RemoteAccess calls New(config) only. At-most-one dependency-set check keeps fixture injection call shape, not independently meaningful runtime/configuration behavior.",
+      "production_owner": [
+        "packages/remoteaccess/remoteaccess.go New/certificate/Kill/ResetKill/status",
+        "packages/remoteaccess/transport.go Serve/ServeContinuously/update/refresh/trackConnection",
+        "packages/remoteaccess/readiness.go and setup.go actual setup policy/model/template",
+        "packages/remoteaccess/http.go HTTP/API lifecycle adapters"
+      ],
+      "callers": [
+        "packages/appcli/command.go:187 RemoteAccess constructs New(config) with remote.gateway real bool (defaultfalse in configurationcore/application_fields.go:52); real direct and gateway branches supported",
+        "apps/{player,subtitles}/internal/server/{remote_readiness.go,api_product.go,settings_http.go/settings_routes.go,api_remote.go} real Owner management route adapters/readiness/revocation",
+        "packages/owneraccess/runtime_factory.go:44 uses UpdateDNS for private endpoint maintenance and runtime configured InternetCertificate receives Manager.Certificate",
+        "Dependencies: golang.org/x/crypto/acme/autocert v0.57.0 cache key naming +rsa/0600DirCache/HostWhitelist/GetCertificate inspected; privatefile no-symlink/owneronly/durable marker read/write inspected; actual Go1.27TLS/HTTP2 wire tests use real library path.",
+        "Actual gateway branch delegates publicgateway.TLSMetadata/CertificateHandler and identitycore.Remote; parent separately owns gateway. Unit protocol fixtures here exercise supported directTLS mode, not external gateway process."
+      ],
+      "gap": "Actual browser Player layout-audit-shell.spec.ts:56-60 and layout-audit-beta-helpers.ts:28,54-95; Subtitles layout-audit-media-tests.ts:184,195-215 visit real /settings/remote-readiness andcheckstatus/layout/screenshots/a11y. No browser toggles kill/reset, forces DDNS/certificate faults, sends malformed framing/SNI/Host, exhausts connections, or verifies internet/router reachability. Generic UI managed-remote flag fixture is not dedicated public TLS lifecycle. Parent owns gateway/system tests separately; not claimed equivalent. No execution by auditor.",
+      "remaining_coverage": "packages/remoteaccess/remoteaccess_test.go:132#TestSecureInternetAccessRejectsInvalidConfigurationWithoutNetworkActivity and boundaries_internal_test.go:26 actual New input/no-file guards remain; test-only dependency cardinality has no production input.",
+      "command": "go -C packages test ./remoteaccess/... -run ^TestNewRejectsMultipleDependencySetsBeforeFiles$",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "unlocked_deletion": "None currently approved; inspect recorded test-only seam candidates.",
+      "source_read_evidence": "Full declaration/table/local helper assertions, production owner and relevant caller/dependency blocks, history and actual-versus-fixture browser source inspected.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-federated-authority-audit.json",
+        "source_packet_sha256": "759730b10bbba380850087ce22cc07f2aed12f81bb31464a4c622bcd4b941ffe"
+      },
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run"
     },
     {
       "file": "packages/remoteaccess/certificate_test.go",
@@ -64659,17 +64760,53 @@
       "owner_group": "remoteaccess",
       "body_sha256": "5902770309b700e6390be14e72e51cc5d59dbb29e62e43553bdc7ba14015f60d",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./remoteaccess",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Delete/consolidate only after parent review and keeper preservation proof.",
+      "validation_command": "go -C packages test ./remoteaccess/... -run ^TestKillAndResetRejectUnavailableOrUnremovableMarkers$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:31.042451-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/remoteaccess",
         "Test": "TestKillAndResetRejectUnavailableOrUnremovableMarkers",
         "Elapsed": 0
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "148cf8317def71e026d111f05ce7e802612e983c Remove legacy viewer WireGuard access",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "5902770309b700e6390be14e72e51cc5d59dbb29e62e43553bdc7ba14015f60d",
+      "source_file_checksum": "e81f2d9365e1707a448c2eb9b5a49cf880a23c4a75477007e6d214f0dc321ecb",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/remoteaccess/manager_internal_test.go:95:TestKillAndResetRejectUnavailableOrUnremovableMarkers",
+      "credible_failure": "Disabled Kill rejects; proposed nonempty marker reset actually rejects earlier because manager is active.",
+      "reason": "Unremovable-marker branch never reached: activeManager.killed=false. Only useful disabled Kill rejection is already proven through KillHTTP disabled-manager conflict. No distinct retained assertion warrants F.",
+      "production_owner": [
+        "packages/remoteaccess/remoteaccess.go New/certificate/Kill/ResetKill/status",
+        "packages/remoteaccess/transport.go Serve/ServeContinuously/update/refresh/trackConnection",
+        "packages/remoteaccess/readiness.go and setup.go actual setup policy/model/template",
+        "packages/remoteaccess/http.go HTTP/API lifecycle adapters"
+      ],
+      "callers": [
+        "packages/appcli/command.go:187 RemoteAccess constructs New(config) with remote.gateway real bool (defaultfalse in configurationcore/application_fields.go:52); real direct and gateway branches supported",
+        "apps/{player,subtitles}/internal/server/{remote_readiness.go,api_product.go,settings_http.go/settings_routes.go,api_remote.go} real Owner management route adapters/readiness/revocation",
+        "packages/owneraccess/runtime_factory.go:44 uses UpdateDNS for private endpoint maintenance and runtime configured InternetCertificate receives Manager.Certificate",
+        "Dependencies: golang.org/x/crypto/acme/autocert v0.57.0 cache key naming +rsa/0600DirCache/HostWhitelist/GetCertificate inspected; privatefile no-symlink/owneronly/durable marker read/write inspected; actual Go1.27TLS/HTTP2 wire tests use real library path.",
+        "Actual gateway branch delegates publicgateway.TLSMetadata/CertificateHandler and identitycore.Remote; parent separately owns gateway. Unit protocol fixtures here exercise supported directTLS mode, not external gateway process."
+      ],
+      "gap": "Actual browser Player layout-audit-shell.spec.ts:56-60 and layout-audit-beta-helpers.ts:28,54-95; Subtitles layout-audit-media-tests.ts:184,195-215 visit real /settings/remote-readiness andcheckstatus/layout/screenshots/a11y. No browser toggles kill/reset, forces DDNS/certificate faults, sends malformed framing/SNI/Host, exhausts connections, or verifies internet/router reachability. Generic UI managed-remote flag fixture is not dedicated public TLS lifecycle. Parent owns gateway/system tests separately; not claimed equivalent. No execution by auditor.",
+      "remaining_coverage": "packages/remoteaccess/http_test.go:11#TestKillHTTPResultPaths kill failure uses New(Config{}) -> actual disabled Kill conflict; recovery_test.go:35#TestResetRequiresStopAndRestartsCurrentManager proves reset active-manager rejection. Honest gap: ResetKill filesystem removal failure while killed=true remains unproved.",
+      "command": "go -C packages test ./remoteaccess/... -run ^TestKillAndResetRejectUnavailableOrUnremovableMarkers$",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "unlocked_deletion": "None currently approved; inspect recorded test-only seam candidates.",
+      "source_read_evidence": "Full declaration/table/local helper assertions, production owner and relevant caller/dependency blocks, history and actual-versus-fixture browser source inspected.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-federated-authority-audit.json",
+        "source_packet_sha256": "759730b10bbba380850087ce22cc07f2aed12f81bb31464a4c622bcd4b941ffe"
+      },
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run"
     },
     {
       "file": "packages/remoteaccess/protocol_test.go",
@@ -64964,17 +65101,52 @@
       "owner_group": "remoteaccess",
       "body_sha256": "7feea5535a8517406ed6b48657085bbf999a36ffe62a1c0ce50161ed90354673",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./remoteaccess",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Delete/consolidate only after parent review and keeper preservation proof.",
+      "validation_command": "go -C packages test ./remoteaccess/... -run ^TestNewReadinessHandlerRejectsMissingDependencies$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:31.087714-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/remoteaccess",
         "Test": "TestNewReadinessHandlerRejectsMissingDependencies",
         "Elapsed": 0.01
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "7feea5535a8517406ed6b48657085bbf999a36ffe62a1c0ce50161ed90354673",
+      "source_file_checksum": "9260491b076f821a2d808de2e6cc6944ea00654e5caf7f5b82293208be1757f1",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/remoteaccess/readiness_test.go:90:TestNewReadinessHandlerRejectsMissingDependencies",
+      "credible_failure": "Only checks constructor panic on nil application-fixed callbacks.",
+      "reason": "Both actual app factories always bind nonnil profile loader/view/error writer; no external configuration/input creates these nil dependencies, and useful handler failure behavior has a separate owner test.",
+      "production_owner": [
+        "packages/remoteaccess/remoteaccess.go New/certificate/Kill/ResetKill/status",
+        "packages/remoteaccess/transport.go Serve/ServeContinuously/update/refresh/trackConnection",
+        "packages/remoteaccess/readiness.go and setup.go actual setup policy/model/template",
+        "packages/remoteaccess/http.go HTTP/API lifecycle adapters"
+      ],
+      "callers": [
+        "packages/appcli/command.go:187 RemoteAccess constructs New(config) with remote.gateway real bool (defaultfalse in configurationcore/application_fields.go:52); real direct and gateway branches supported",
+        "apps/{player,subtitles}/internal/server/{remote_readiness.go,api_product.go,settings_http.go/settings_routes.go,api_remote.go} real Owner management route adapters/readiness/revocation",
+        "packages/owneraccess/runtime_factory.go:44 uses UpdateDNS for private endpoint maintenance and runtime configured InternetCertificate receives Manager.Certificate",
+        "Dependencies: golang.org/x/crypto/acme/autocert v0.57.0 cache key naming +rsa/0600DirCache/HostWhitelist/GetCertificate inspected; privatefile no-symlink/owneronly/durable marker read/write inspected; actual Go1.27TLS/HTTP2 wire tests use real library path.",
+        "Actual gateway branch delegates publicgateway.TLSMetadata/CertificateHandler and identitycore.Remote; parent separately owns gateway. Unit protocol fixtures here exercise supported directTLS mode, not external gateway process."
+      ],
+      "gap": "Actual browser Player layout-audit-shell.spec.ts:56-60 and layout-audit-beta-helpers.ts:28,54-95; Subtitles layout-audit-media-tests.ts:184,195-215 visit real /settings/remote-readiness andcheckstatus/layout/screenshots/a11y. No browser toggles kill/reset, forces DDNS/certificate faults, sends malformed framing/SNI/Host, exhausts connections, or verifies internet/router reachability. Generic UI managed-remote flag fixture is not dedicated public TLS lifecycle. Parent owns gateway/system tests separately; not claimed equivalent. No execution by auditor.",
+      "remaining_coverage": "packages/remoteaccess/readiness_test.go:71#TestNewReadinessHandlerUsesLiveStateAndReportsViewFailure and actual app showRemoteReadiness factories preserve meaningful initialized boundary; no important runtime nil-convenience contract.",
+      "command": "go -C packages test ./remoteaccess/... -run ^TestNewReadinessHandlerRejectsMissingDependencies$",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "unlocked_deletion": "None currently approved; inspect recorded test-only seam candidates.",
+      "source_read_evidence": "Full declaration/table/local helper assertions, production owner and relevant caller/dependency blocks, history and actual-versus-fixture browser source inspected.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-federated-authority-audit.json",
+        "source_packet_sha256": "759730b10bbba380850087ce22cc07f2aed12f81bb31464a4c622bcd4b941ffe"
+      },
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run"
     },
     {
       "file": "packages/remoteaccess/recovery_test.go",
@@ -65336,17 +65508,53 @@
       "owner_group": "remoteaccess",
       "body_sha256": "10e65336bb703502897dad5c688c9526a822a5ad150fa8665f6c8b1b38e2dcac",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./remoteaccess",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Delete/consolidate only after parent review and keeper preservation proof.",
+      "validation_command": "go -C packages test ./remoteaccess/... -run ^TestResetKillIsStrictAndRemovesOnlyTheKillMarker$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:31.076135-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/remoteaccess",
         "Test": "TestResetKillIsStrictAndRemovesOnlyTheKillMarker",
         "Elapsed": 0.01
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "0c5276ff266da231d1eb32bedc967e360b398d82 Resume public access without restarting Server",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "10e65336bb703502897dad5c688c9526a822a5ad150fa8665f6c8b1b38e2dcac",
+      "source_file_checksum": "3e952032de00d0e9c502b4285560d43454e1d9ca3ac0ad2d155affc907d930a7",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/remoteaccess/reset_kill_test.go:13:TestResetKillIsStrictAndRemovesOnlyTheKillMarker",
+      "credible_failure": "Detects marker removal and disabled reset; title claims preservation of other files but none supplied.",
+      "reason": "Marker removal already observed through successful new Manager after kill/reset in recovery owner, disabled reset through web adapter. No unique only-file-removal assertion exists.",
+      "production_owner": [
+        "packages/remoteaccess/remoteaccess.go New/certificate/Kill/ResetKill/status",
+        "packages/remoteaccess/transport.go Serve/ServeContinuously/update/refresh/trackConnection",
+        "packages/remoteaccess/readiness.go and setup.go actual setup policy/model/template",
+        "packages/remoteaccess/http.go HTTP/API lifecycle adapters"
+      ],
+      "callers": [
+        "packages/appcli/command.go:187 RemoteAccess constructs New(config) with remote.gateway real bool (defaultfalse in configurationcore/application_fields.go:52); real direct and gateway branches supported",
+        "apps/{player,subtitles}/internal/server/{remote_readiness.go,api_product.go,settings_http.go/settings_routes.go,api_remote.go} real Owner management route adapters/readiness/revocation",
+        "packages/owneraccess/runtime_factory.go:44 uses UpdateDNS for private endpoint maintenance and runtime configured InternetCertificate receives Manager.Certificate",
+        "Dependencies: golang.org/x/crypto/acme/autocert v0.57.0 cache key naming +rsa/0600DirCache/HostWhitelist/GetCertificate inspected; privatefile no-symlink/owneronly/durable marker read/write inspected; actual Go1.27TLS/HTTP2 wire tests use real library path.",
+        "Actual gateway branch delegates publicgateway.TLSMetadata/CertificateHandler and identitycore.Remote; parent separately owns gateway. Unit protocol fixtures here exercise supported directTLS mode, not external gateway process."
+      ],
+      "gap": "Actual browser Player layout-audit-shell.spec.ts:56-60 and layout-audit-beta-helpers.ts:28,54-95; Subtitles layout-audit-media-tests.ts:184,195-215 visit real /settings/remote-readiness andcheckstatus/layout/screenshots/a11y. No browser toggles kill/reset, forces DDNS/certificate faults, sends malformed framing/SNI/Host, exhausts connections, or verifies internet/router reachability. Generic UI managed-remote flag fixture is not dedicated public TLS lifecycle. Parent owns gateway/system tests separately; not claimed equivalent. No execution by auditor.",
+      "remaining_coverage": "packages/remoteaccess/recovery_test.go:35#TestResetRequiresStopAndRestartsCurrentManager New(config) returns starting/not killed after reset; http_test.go:36#TestResetKillHTTPResultPaths disabled-manager conflict. Honest gap: preservation of unrelated preexisting data files during reset not asserted by this test.",
+      "command": "go -C packages test ./remoteaccess/... -run ^TestResetKillIsStrictAndRemovesOnlyTheKillMarker$",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "unlocked_deletion": "None currently approved; inspect recorded test-only seam candidates.",
+      "source_read_evidence": "Full declaration/table/local helper assertions, production owner and relevant caller/dependency blocks, history and actual-versus-fixture browser source inspected.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-federated-authority-audit.json",
+        "source_packet_sha256": "759730b10bbba380850087ce22cc07f2aed12f81bb31464a4c622bcd4b941ffe"
+      },
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run"
     },
     {
       "file": "packages/remoteaccess/resume_internal_test.go",
@@ -67313,17 +67521,50 @@
       "owner_group": "scim",
       "body_sha256": "d9fc98b2a8079b7c97af3f211a65f6ef6b2c67ed3c756e30a891e34afeb24eb0",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./scim",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Delete/consolidate only after parent review and keeper preservation proof.",
+      "validation_command": "go -C packages test ./scim/... -run ^TestSCIMIfMatchSerializesConcurrentMutations$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:30.979059-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/scim",
         "Test": "TestSCIMIfMatchSerializesConcurrentMutations",
         "Elapsed": 0
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "d9fc98b2a8079b7c97af3f211a65f6ef6b2c67ed3c756e30a891e34afeb24eb0",
+      "source_file_checksum": "fe4fff83a31e8921497104be42e24091e07b62e832050d6dc426f9dde75a1ecf",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/scim/scim_http_test.go:34:TestSCIMIfMatchSerializesConcurrentMutations",
+      "credible_failure": "Could detect missing If-Match forwarding, but atomic serialization itself is implemented by the mock repository mutex and expected-tag comparison.",
+      "reason": "The SCIM HTTP owner has no lock/transaction; both requests use the same correct forwarding path already covered by lifecycle stale PUT 412 and unchanged-state checks. No independent real storage concurrency contract is exercised.",
+      "production_owner": [
+        "packages/scim/scim.go:18 Register/protect and HTTP mutation handlers",
+        "packages/scim/{model.go,scim_protocol.go,scim_query.go,scim_query_options.go,scim_resource.go,scim_patch*.go,scim_enterprise.go,scim_optional.go}"
+      ],
+      "callers": [
+        "apps/player/internal/server/scim_adapter.go:11-15 and apps/subtitles/internal/server/scim_adapter.go:11-15 register actual server routes and typed identity store adapter",
+        "apps/{player,subtitles}/internal/server/profiles_scim.go actual identitycore SCIM persistence operations; scim_profile_projection.go:9 projects persisted profile",
+        "apps/{player,subtitles}/internal/server/settings_scim_{configuration,storage,http,contract}.go actual settings view/store/change adapters",
+        "apps/player/internal/server/auth_remote_routes.go:52 and subtitles equivalent:48 use scim.Patterns for remote route admission",
+        "packages/identitycore/profiles_scim.go invokes scim.NormalizeProfileInput/ETagMatches; golang.org/x/text/secure/precis v0.42.0 inspected"
+      ],
+      "gap": "Actual browser apps/player/e2e/layout-audit-configuration.spec.ts:7-38 and apps/subtitles/e2e/layout-audit-settings-tests.ts:6-37 read real server SCIM setup layout/default suggested token but do not Save SCIM config, send provisioning requests, expire a token, mutate roles or inject storage errors. Isolated SCIM HTTP fixture uses actual protected handlers plus memoryRepository, not actual app persistence/gateway/public-scope context. No browser execution by auditor.",
+      "remaining_coverage": "packages/scim/scim_http_test.go:15#TestSCIMProvisioningLifecycleAndBoundaries -> scim_lifecycle_helpers_test.go:65 assertSCIMLifecycleConditionals (stale If-Match rejected with unchanged profile); actual identitycore store locking remains separate. Honest gap: simultaneous real persisted app-store If-Match is not proven by either test.",
+      "command": "go -C packages test ./scim/... -run ^TestSCIMIfMatchSerializesConcurrentMutations$",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "unlocked_deletion": "None currently approved; inspect recorded test-only seam candidates.",
+      "source_read_evidence": "Full declaration/table/local helper assertions, production owner and relevant caller/dependency blocks, history and actual-versus-fixture browser source inspected.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-federated-authority-audit.json",
+        "source_packet_sha256": "759730b10bbba380850087ce22cc07f2aed12f81bb31464a4c622bcd4b941ffe"
+      },
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run"
     },
     {
       "file": "packages/scim/scim_http_test.go",
@@ -67333,17 +67574,50 @@
       "owner_group": "scim",
       "body_sha256": "295d2d2a187832f60736a463a7ca37de8a2e10ea4f1582fb4aad928057fb1eb9",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./scim",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Delete/consolidate only after parent review and keeper preservation proof.",
+      "validation_command": "go -C packages test ./scim/... -run ^TestSCIMRejectsDuplicateAuthorizationHeadersAndAuthenticatesPublicAccess$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:30.98026-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/scim",
         "Test": "TestSCIMRejectsDuplicateAuthorizationHeadersAndAuthenticatesPublicAccess",
         "Elapsed": 0
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "295d2d2a187832f60736a463a7ca37de8a2e10ea4f1582fb4aad928057fb1eb9",
+      "source_file_checksum": "fe4fff83a31e8921497104be42e24091e07b62e832050d6dc426f9dde75a1ecf",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/scim/scim_http_test.go:62:TestSCIMRejectsDuplicateAuthorizationHeadersAndAuthenticatesPublicAccess",
+      "credible_failure": "Duplicate header request receives 400 from missing TLS before header cardinality is inspected; secure positives duplicate existing lifecycle.",
+      "reason": "Unrelated denial and no remoteaccess/public identity marker mean the title overstates the input. Stronger secure duplicate-header test plus authenticated lifecycle preserve actual assertions.",
+      "production_owner": [
+        "packages/scim/scim.go:18 Register/protect and HTTP mutation handlers",
+        "packages/scim/{model.go,scim_protocol.go,scim_query.go,scim_query_options.go,scim_resource.go,scim_patch*.go,scim_enterprise.go,scim_optional.go}"
+      ],
+      "callers": [
+        "apps/player/internal/server/scim_adapter.go:11-15 and apps/subtitles/internal/server/scim_adapter.go:11-15 register actual server routes and typed identity store adapter",
+        "apps/{player,subtitles}/internal/server/profiles_scim.go actual identitycore SCIM persistence operations; scim_profile_projection.go:9 projects persisted profile",
+        "apps/{player,subtitles}/internal/server/settings_scim_{configuration,storage,http,contract}.go actual settings view/store/change adapters",
+        "apps/player/internal/server/auth_remote_routes.go:52 and subtitles equivalent:48 use scim.Patterns for remote route admission",
+        "packages/identitycore/profiles_scim.go invokes scim.NormalizeProfileInput/ETagMatches; golang.org/x/text/secure/precis v0.42.0 inspected"
+      ],
+      "gap": "Actual browser apps/player/e2e/layout-audit-configuration.spec.ts:7-38 and apps/subtitles/e2e/layout-audit-settings-tests.ts:6-37 read real server SCIM setup layout/default suggested token but do not Save SCIM config, send provisioning requests, expire a token, mutate roles or inject storage errors. Isolated SCIM HTTP fixture uses actual protected handlers plus memoryRepository, not actual app persistence/gateway/public-scope context. No browser execution by auditor.",
+      "remaining_coverage": "packages/scim/scim_http_edges_test.go:14#TestSCIMProtectRejectsUnconfiguredAndDuplicateSecureAuthorization (TLS duplicate headers/challenge); packages/scim/scim_http_test.go:15#TestSCIMProvisioningLifecycleAndBoundaries authenticated discovery/create/list. No gateway public-admission proof claimed.",
+      "command": "go -C packages test ./scim/... -run ^TestSCIMRejectsDuplicateAuthorizationHeadersAndAuthenticatesPublicAccess$",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "unlocked_deletion": "None currently approved; inspect recorded test-only seam candidates.",
+      "source_read_evidence": "Full declaration/table/local helper assertions, production owner and relevant caller/dependency blocks, history and actual-versus-fixture browser source inspected.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-federated-authority-audit.json",
+        "source_packet_sha256": "759730b10bbba380850087ce22cc07f2aed12f81bb31464a4c622bcd4b941ffe"
+      },
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run"
     },
     {
       "file": "packages/scim/scim_http_test.go",
@@ -68482,17 +68756,50 @@
       "owner_group": "scim",
       "body_sha256": "2b421a66acde2c0a97e3e25f8b5bc9a9d8fefdd316c61ddbd0fcdc0d4d3c7606",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
-      "validation_command": "cd packages && go test ./scim",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Delete/consolidate only after parent review and keeper preservation proof.",
+      "validation_command": "go -C packages test ./scim/... -run ^TestSCIMCanonicalPathReturnsPlainName$",
       "baseline_event": {
         "Time": "2026-10-03T10:35:30.976156-06:00",
         "Action": "pass",
         "Package": "github.com/MikeO7/kinosail/packages/scim",
         "Test": "TestSCIMCanonicalPathReturnsPlainName",
         "Elapsed": 0
-      }
+      },
+      "reviewed": true,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "sourcechecksum": "2b421a66acde2c0a97e3e25f8b5bc9a9d8fefdd316c61ddbd0fcdc0d4d3c7606",
+      "source_file_checksum": "a2c1569e9ae3c5a21729dbc69ad2a131fd62e7d9e814a626e920b60da7673438",
+      "declaration_identity": "876b771a7dd0aef5e65957fcee87add0312535e8:packages/scim/scim_patch_edges_test.go:189:TestSCIMCanonicalPathReturnsPlainName",
+      "credible_failure": "Only detects formatting of a manually constructed private path state not emitted by the parser.",
+      "reason": "Non-email parse returns full name.givenname in name and empty subattribute; synthetic name+subattribute state is unreachable from protocol. No independently important public contract is asserted.",
+      "production_owner": [
+        "packages/scim/scim.go:18 Register/protect and HTTP mutation handlers",
+        "packages/scim/{model.go,scim_protocol.go,scim_query.go,scim_query_options.go,scim_resource.go,scim_patch*.go,scim_enterprise.go,scim_optional.go}"
+      ],
+      "callers": [
+        "apps/player/internal/server/scim_adapter.go:11-15 and apps/subtitles/internal/server/scim_adapter.go:11-15 register actual server routes and typed identity store adapter",
+        "apps/{player,subtitles}/internal/server/profiles_scim.go actual identitycore SCIM persistence operations; scim_profile_projection.go:9 projects persisted profile",
+        "apps/{player,subtitles}/internal/server/settings_scim_{configuration,storage,http,contract}.go actual settings view/store/change adapters",
+        "apps/player/internal/server/auth_remote_routes.go:52 and subtitles equivalent:48 use scim.Patterns for remote route admission",
+        "packages/identitycore/profiles_scim.go invokes scim.NormalizeProfileInput/ETagMatches; golang.org/x/text/secure/precis v0.42.0 inspected"
+      ],
+      "gap": "Actual browser apps/player/e2e/layout-audit-configuration.spec.ts:7-38 and apps/subtitles/e2e/layout-audit-settings-tests.ts:6-37 read real server SCIM setup layout/default suggested token but do not Save SCIM config, send provisioning requests, expire a token, mutate roles or inject storage errors. Isolated SCIM HTTP fixture uses actual protected handlers plus memoryRepository, not actual app persistence/gateway/public-scope context. No browser execution by auditor.",
+      "remaining_coverage": "packages/scim/scim_query_edges_test.go:124#TestSCIMCanonicalPathSchemaEdges and public namespaced lifecycle PATCH retain actual path parsing; no preservation needed for synthetic private state.",
+      "command": "go -C packages test ./scim/... -run ^TestSCIMCanonicalPathReturnsPlainName$",
+      "command_status": "recommended_not_executed_by_this_auditor",
+      "unlocked_deletion": "None currently approved; inspect recorded test-only seam candidates.",
+      "source_read_evidence": "Full declaration/table/local helper assertions, production owner and relevant caller/dependency blocks, history and actual-versus-fixture browser source inspected.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "approved after complete candidate bodies, actual named keeper assertions and relevant production/callers read; no naming-only or fixture-E2E equivalence",
+        "source_packet": "/tmp/kinosail-federated-authority-audit.json",
+        "source_packet_sha256": "759730b10bbba380850087ce22cc07f2aed12f81bb31464a4c622bcd4b941ffe"
+      },
+      "implementation_status": "declaration removed; existing important keeper assertions unchanged; candidate validation awaits serial root run"
     },
     {
       "file": "packages/scim/scim_query_edges_test.go",
