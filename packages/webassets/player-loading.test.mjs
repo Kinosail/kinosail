@@ -25,6 +25,7 @@ function fixture(appleTouch = false) {
     play() { const error = new Error('A user gesture is required'); error.name = 'NotAllowedError'; return Promise.reject(error); },
     pause() { this.paused = true; },
     buffered: { length: 1, start: () => 0, end: () => 24 },
+    hasAttribute: () => false,
     addEventListener(name, handler) { listeners.set(name, handler); },
   };
   const message = { textContent: '' };
