@@ -88,7 +88,19 @@ test('bounded startup preparation preserves the exact stream and playback priori
     await expect(link).toBeVisible();
     await link.click();
     const video = page.locator('video');
-    await expect.poll(() => page.evaluate(() => (window as unknown as {startupFrames: number[]}).startupFrames.length)).toBeGreaterThan(0);
+    try {
+      await expect.poll(() => page.evaluate(() => (window as unknown as {startupFrames: number[]}).startupFrames.length)).toBeGreaterThan(0);
+    } catch (error) {
+      const readiness = await page.evaluate(() => {
+        const media = document.querySelector('video');
+        return {readyState: media?.readyState, networkState: media?.networkState, errorCode: media?.error?.code,
+          paused: media?.paused, position: media?.currentTime, hlsSource: media?.currentSrc.includes('/hls/') || media?.currentSrc.startsWith('blob:'),
+          hevcMSE: window.MediaSource?.isTypeSupported('video/mp4; codecs="hvc1.1.6.L123.B0"'),
+          h264MSE: window.MediaSource?.isTypeSupported('video/mp4; codecs="avc1.4d4028"')};
+      });
+      await record({name: 'moving-frame-failure', title: name, ...readiness});
+      throw error;
+    }
     const frame = await page.evaluate(() => {
       const navigationMS = (window as unknown as {startupFrames: number[]}).startupFrames[0];
       return {navigationMS, epochMS: performance.timeOrigin + navigationMS};

@@ -71,3 +71,11 @@ Previously authorized server work retains its existing deadline; sign-out sends 
 The browser fixture models authentication. Real-server populated browser CI remains required.
 Local new Player builds and app checks remain held; the shared test-support helper compiled without building either app.
 The composed browser-script lint passed with zero errors and warnings. All 50 CI contracts, refreshed architecture checks, actionlint, and source caps passed again.
+
+## Hosted Linux acceptance diagnosis
+
+Exact head `10ed3f1b1` passed 67 populated real-server browser journeys, both application Go suites, and fresh Go CodeQL analysis `1887011483` with zero findings.
+Its new Linux synthetic-media journey failed before recording the first moving frame.
+Safe artifact `11286087030` retains the failing receipt and resources, but intentionally excludes raw browser logs and authentication traces.
+Add bounded failure locations and video readiness/capability facts to those safe receipts before retrying the hosted journey.
+Keep all acceptance assertions and security gates unchanged; do not claim media acceptance from the passing populated suite.
