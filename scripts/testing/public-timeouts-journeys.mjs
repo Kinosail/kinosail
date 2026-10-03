@@ -140,11 +140,16 @@ async function rollbackChecks(app) {
   record(app,'pre-feature binary reads current DB and accepts fresh Owner sign-in');
   await me(app,removed,401,'pre-feature binary cannot resurrect deleted session');
   const old=await snapshot(app); expect(old.compatibleSettingsSHA256).toBe(before.compatibleSettingsSHA256);
-  expect(old.unrelatedDataSHA256).toEqual(before.unrelatedDataSHA256);
+  expect(old.stableDataSHA256).toEqual(before.stableDataSHA256);
+  expect(old.ownerPasskeyCounters).toHaveLength(before.ownerPasskeyCounters.length);
+  for(let index=0;index<old.ownerPasskeyCounters.length;index++) expect(old.ownerPasskeyCounters[index]).toBeGreaterThan(before.ownerPasskeyCounters[index]);
   await stop(app); app.legacy=false; start(app); await ready(app);
   expect((await api(app.owner,'/api/v1/settings')).body.publicSessionTimeoutsConfigured).toBe(false);
   await me(app,removed,401,'upgrade after rollback cannot resurrect session');
   await me(app,valid,401,'upgrade retains rollback session revocations');
+  const upgraded=await snapshot(app);
+  expect(upgraded.unrelatedDataSHA256).toEqual(old.unrelatedDataSHA256);
+  expect(upgraded.compatibleSettingsSHA256).toBe(old.compatibleSettingsSHA256);
   await removed.ctx.close(); await valid.ctx.close(); record(app,'real downgrade and upgrade preserve unrelated data and current revocations');
 }
 return {configUI,legacyChecks,admissionChecks,atomicChecks,uiStates,enableMFAConcurrency,rollbackChecks};

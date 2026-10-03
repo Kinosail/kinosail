@@ -24,7 +24,14 @@ if operation == 'snapshot':
     compatible.pop('publicSessionAbsoluteHours',None)
     settings_digest=hashlib.sha256(json.dumps(compatible,sort_keys=True).encode()).hexdigest()
     data_digests={name:hashlib.sha256(bytes(value)).hexdigest() for name,value in connection.execute('SELECT name,value FROM state') if name in ['profiles.json','progress.json','lists.json','collections.json','playlists.json']}
-    print(json.dumps({'compatibleSettingsSHA256':settings_digest,'unrelatedDataSHA256':data_digests,'requiredMFA':settings.get('requireMfa'),'sessions':safe,'policies':{k:v for k,v in settings.items() if 'Session' in k or 'session' in k}}))
+    profiles=read('profiles.json')
+    owner_counters=[key.get('authenticator',{}).get('signCount',0) for profile in profiles if profile.get('owner') for key in profile.get('passkeys',[])]
+    for profile in profiles:
+        for key in profile.get('passkeys',[]): key.get('authenticator',{}).pop('signCount',None)
+        for usage in profile.get('passkeyUsage',{}).values(): usage.pop('lastUsed',None)
+    # Fresh authentication changes only counters/activity; retain all identity and credential material in the digest.
+    stable_digests=dict(data_digests,**{'profiles.json':hashlib.sha256(json.dumps(profiles,sort_keys=True).encode()).hexdigest()})
+    print(json.dumps({'compatibleSettingsSHA256':settings_digest,'unrelatedDataSHA256':data_digests,'stableDataSHA256':stable_digests,'ownerPasskeyCounters':owner_counters,'requiredMFA':settings.get('requireMfa'),'sessions':safe,'policies':{k:v for k,v in settings.items() if 'Session' in k or 'session' in k}}))
     connection.close()
     raise SystemExit(0)
 if operation == 'deny-write':
