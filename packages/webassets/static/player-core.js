@@ -1,7 +1,16 @@
 const player = document.querySelector("video,audio");
 if (!player) throw new Error("playable media element is missing");
+const appleTouch = /iPhone|iPad|iPod/.test(navigator.userAgent) || navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1;
+const appleNativePlayback = player.tagName === "VIDEO" && appleTouch && typeof player.webkitEnterFullscreen === "function";
+let applePlaybackRequested = false;
+if (appleNativePlayback) {
+  // Safari presents playback in its own player, including a cold first Play tap.
+  player.removeAttribute("playsinline");
+  player.removeAttribute("webkit-playsinline");
+  player.controls = false;
+}
 // Keep the first touch Play gesture available for browser fullscreen in either control mode.
-if (player.tagName === "VIDEO" && navigator.maxTouchPoints > 0) {
+if (player.tagName === "VIDEO" && (appleNativePlayback || navigator.maxTouchPoints > 0)) {
   player.autoplay = false;
   delete player.dataset.autoplay;
 }
@@ -45,9 +54,10 @@ let managedSeek = false;
 const setPlayerTime = (seconds) => { managedSeek = true; player.currentTime = seconds; };
 let playbackPreparation;
 let preparationPausePending = 0;
-const requestPause = () => { playbackPreparation?.stop(); player.dispatchEvent(new CustomEvent("kinosail:playback-intent", {detail: {playing: false}})); player.pause(); };
+const requestPause = () => { playbackPreparation?.stop(); applePlaybackRequested = false; player.dispatchEvent(new CustomEvent("kinosail:playback-intent", {detail: {playing: false}})); player.pause(); };
 const requestPlay = (detail) => {
   playbackPreparation?.stop(false);
+  if (appleNativePlayback) { applePlaybackRequested = true; player.controls = true; }
   player.dispatchEvent(new CustomEvent("kinosail:playback-intent", {detail: {playing: true}}));
   playbackTrace("play-request", detail);
   const rejected = (error) => {

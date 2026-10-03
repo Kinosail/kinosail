@@ -1,7 +1,8 @@
 import { readFile } from "node:fs/promises";
 import { test } from "@playwright/test";
 import { playerSource } from "./static-sources";
-export function installPlayerExperienceFixture(native = false) {
+import { installAppleFullscreenApi, nativePlayerMarkup } from "./player-apple-fixture";
+export function installPlayerExperienceFixture(native = false, apple = false) {
 test.beforeEach(async ({ page }, testInfo) => {
   if (testInfo.title === "theater control gets out of the way during playback" || testInfo.title.includes("Safari startup")) await page.clock.install();
   let markup = `
@@ -13,19 +14,14 @@ test.beforeEach(async ({ page }, testInfo) => {
       <div class="player-buffer" role="status" aria-live="polite" data-player-status><span class="buffer-skeleton" aria-hidden="true"></span><span data-player-message>Loading video…</span><button type="button" data-player-fallback hidden>Try again</button><progress hidden max="100" value="0" aria-label="Video buffered" data-buffered>0%</progress></div>
     ${testInfo.title.includes("automatic skips") ? '<button hidden data-marker="intro" data-start="0" data-seek="10">Skip intro</button>' : ""}</div><details class="chapters"><summary><span>Chapters</span><small>15</small></summary><ol class="chapter-list"><li><button type="button" data-chapter data-start="0" data-end="60" data-seek="0"><span>First contact</span><time>0:00</time></button></li><li><button type="button" data-chapter data-start="60" data-end="100" data-seek="60"><span>The answer</span><time>1:00</time></button></li></ol></details></main></body>
   `;
-  if (native) {
-    markup = markup.replace('<video id="player-media"', '<video controls data-native-controls id="player-media"');
-    markup = markup.replace('<strong>Arrival</strong>', '<strong>Arrival</strong><button type="button" aria-label="Settings" aria-controls="player-settings" aria-expanded="false" data-player-settings>Settings</button><button type="button" aria-label="Enter fullscreen" data-player-fullscreen>Fullscreen</button>');
-    const start = markup.indexOf('<div class="player-controls"');
-    const end = markup.indexOf('<div class="player-settings"', start);
-    markup = markup.slice(0, start) + `<div class="player-controls player-native-controls" data-player-controls hidden><button class="player-center-control" type="button" aria-label="Play" data-player-toggle><span data-play-icon></span></button></div>` + markup.slice(end);
-  }
+  if (native) markup = nativePlayerMarkup(markup);
   await page.route("https://127.0.0.1:38127/", (route) => route.fulfill({ contentType: "text/html; charset=utf-8", body: markup }));
   await page.route("**/api/v1/items/movie/playback-events", (route) => route.fulfill({ status: 204 }));
   if (testInfo.title.includes("progress save") || testInfo.title.includes("rejected fullscreen")) await page.goto("https://127.0.0.1:38127/");
   else await page.setContent(markup);
-  await page.evaluate(({withInBand, safariStartup, queuedPause, queuedSeeking}) => {
-    if (safariStartup) Object.defineProperty(navigator, "userAgent", {configurable: true, value: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148"});
+  if (apple) await installAppleFullscreenApi(page);
+  await page.evaluate(({withInBand, safariStartup, queuedPause, queuedSeeking, apple}) => {
+    if (safariStartup || apple) Object.defineProperty(navigator, "userAgent", {configurable: true, value: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148"});
     try { Object.defineProperty(window, "localStorage", { value: { getItem: () => null, setItem: () => {} } }); } catch {}
     let bufferedEnd = 60;
     let bufferedStart = 0;
@@ -37,6 +33,7 @@ test.beforeEach(async ({ page }, testInfo) => {
     let readyState = safariStartup ? 0 : 4;
     let networkState = safariStartup ? 2 : 1;
     const video = document.querySelector("video")!;
+    if (safariStartup && !apple) Object.defineProperty(video, "webkitEnterFullscreen", {value: undefined, configurable: true});
     if (safariStartup) {
       let sourceLoaded = false;
       Object.defineProperty(video, "currentSrc", {get: () => sourceLoaded ? "https://127.0.0.1:38127/media/movie" : ""});
@@ -83,7 +80,7 @@ test.beforeEach(async ({ page }, testInfo) => {
       setNetworkState: (value: number) => { networkState = value; },
       textTrack,
     });
-  }, {withInBand: testInfo.title.includes("limited in-band"), safariStartup: testInfo.title.includes("Safari startup"), queuedPause: testInfo.title.includes("queued pause"), queuedSeeking: testInfo.title.includes("queued seeking")});
+  }, {withInBand: testInfo.title.includes("limited in-band"), safariStartup: testInfo.title.includes("Safari startup"), queuedPause: testInfo.title.includes("queued pause"), queuedSeeking: testInfo.title.includes("queued seeking"), apple});
   if (testInfo.title.includes("device playback") || testInfo.title.includes("AirPlay")) await page.evaluate((airplay) => {
     const video = document.querySelector("video")!;
     Object.defineProperty(video, "remote", {configurable: true, value: null});

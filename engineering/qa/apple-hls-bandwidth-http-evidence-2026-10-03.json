@@ -1,0 +1,64 @@
+{
+  "base_revision": "876b771a7dd0aef5e65957fcee87add0312535e8",
+  "verification_type": "synthetic public HTTP integration with real FFmpeg; not physical Safari proof",
+  "environment": {
+    "os": "macOS arm64",
+    "go": "1.27.1",
+    "ffmpeg": "9.0.1",
+    "ffprobe": "9.0.1",
+    "network": "temporary loopback HTTP; no TLS bypass",
+    "cache": "/tmp/kinosail-apple-go-cache",
+    "serial_build_parallelism": 1
+  },
+  "test_data": "12-second 320x180 MPEG-4 Matroska fixture: four-second black intro, then testsrc2; real FFmpeg reads at 1x to expose unfinished publication",
+  "red": {
+    "production_revision": "876b771a7dd0aef5e65957fcee87add0312535e8",
+    "command": "GOCACHE=/tmp/kinosail-apple-go-cache GOMAXPROCS=2 go test -p 1 ./internal/server -run ^TestRealBlackIntroHLSBandwidthSurvivesCachedMasterReuse$ -count=1 -v",
+    "result": "FAIL at initial and three legacy cached masters",
+    "planned_bps": 493000,
+    "initial_average_bps": 8080,
+    "initial_peak_bps": 8080,
+    "legacy_cached_average_bps": 1,
+    "legacy_cached_peak_bps": 1
+  },
+  "green": {
+    "command": "GOCACHE=/tmp/kinosail-apple-go-cache GOMAXPROCS=3 go test -p 1 ./internal/server -run ^TestRealBlackIntroHLSBandwidthSurvivesCachedMasterReuse$ -count=1 -v",
+    "result": "PASS",
+    "test_duration_seconds": 11.97,
+    "planned_bps": 493000,
+    "initial_average_bps": 493000,
+    "initial_peak_bps": 542300,
+    "completed_average_bps": 180056,
+    "completed_peak_bps": 286056,
+    "cache_repair_repetitions": 3,
+    "preserved": [
+      "rendition list",
+      "actual codec",
+      "actual resolution",
+      "independent segment declaration",
+      "cache identity",
+      "first segment size and modification time",
+      "existing encoder invocation count"
+    ],
+    "delivered_first_fragment_decoded": true
+  },
+  "retained_regressions": {
+    "playback_package": "PASS full ./playback suite after final changes",
+    "player_focus": "All selected HLS/seek/cache/cold-probe/copied-fragment regressions passed except the scheduler fixture under GOMAXPROCS=3; scheduler then passed independently with GOMAXPROCS=4",
+    "scheduler_environment_requirement": "HeavyCapacity is min(3,max(1,GOMAXPROCS-1)); the fixture expects 540p through 1080p, requiring GOMAXPROCS>=4",
+    "file_cap": "make max-loc PASS",
+    "whitespace": "git diff --check PASS"
+  },
+  "source_sha256": {
+    "packages/playback/hls_playlist.go": "b36bd5709e82a738f60adce24d0d9b73fae2470cffd43bb0b4163e91f982ccc6",
+    "apps/player/internal/server/hls.go": "50de5bb6c9ced1a1d57bbf990f03a1c811fb8508bbc1bb76f0aec6919bf3f4ca",
+    "apps/player/internal/server/hls_cached_master.go": "ce8cfaf9c6ef29549c797fd34165b3e1cb8a6efbdd082a8da942c2bcdc7fd75c",
+    "apps/player/internal/server/hls_bandwidth_delivery_test.go": "6e91e117060039137b2916d13e8a87ee257f65ca2e1dae92cdee0f58afe34df6"
+  },
+  "boundaries": [
+    "Nox was read only; no movie bytes exported, new encodes, deployment, or playback interruption",
+    "No physical iPhone Safari reproduction",
+    "No client-network bandwidth measurement for the reported session",
+    "Confirmed HLS bandwidth metadata defect is not proof of the sole reported buffering cause"
+  ]
+}

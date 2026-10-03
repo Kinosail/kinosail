@@ -39,12 +39,12 @@ if (playerStatus) {
   const readyForPlay = () => player.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA &&
     bufferedAhead() >= Math.min(2, Number.isFinite(player.duration) ? Math.max(0, player.duration - player.currentTime) : 2);
   const revealPlayControl = () => {
-    if (player.paused && !player.error && (readyForPlay() || needsGesture)) hidePlayerState();
+    if (player.paused && !player.error && (appleNativePlayback && !applePlaybackRequested || readyForPlay() || needsGesture)) hidePlayerState();
   };
-  const appleTouch = /iPhone|iPad|iPod/.test(navigator.userAgent) || navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1;
   let startupPaused = false;
   let startupFinished = false;
   const preparePlayback = () => {
+    if (appleNativePlayback) return revealPlayControl();
     if (!appleTouch || player.tagName !== "VIDEO" || player.dataset.room || startupPaused || startupFinished || hasPlayed || playbackPreparation || !player.paused || player.error ||
       !(player.currentSrc || player.getAttribute("src"))) return;
     // Muted inline playback lets Safari fetch media before the viewer's Play tap.
@@ -109,12 +109,14 @@ if (playerStatus) {
   for (const event of ["pause", "ended"]) player.addEventListener(event, () => {
     clearBufferingTimer();
     if (playerStatus.dataset.state === "buffering") hidePlayerState();
+    if (appleNativePlayback) revealPlayControl();
   });
   player.addEventListener("seeking", () => {
     clearBufferingTimer();
     seeking = true;
     playbackTime = player.currentTime;
     if (playbackPreparation) playbackPreparation.position = player.currentTime;
+    if (appleNativePlayback && !applePlaybackRequested && player.paused) return revealPlayControl();
     showPlayerState("seeking", "Seeking…");
   });
   player.addEventListener("progress", () => {
@@ -141,6 +143,7 @@ if (playerStatus) {
   player.addEventListener("seeked", () => {
     clearBufferingTimer();
     seeking = false;
+    if (appleNativePlayback && !applePlaybackRequested && player.paused) return revealPlayControl();
     if (player.paused && needsGesture) return revealPlayControl();
     if (hasPlayed ? player.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA : readyForPlay()) hidePlayerState();
     else showPlayerState("buffering", bufferedPercent() ? `Buffering · ${bufferedPercent()}% buffered` : "Buffering…");
@@ -154,5 +157,6 @@ if (playerStatus) {
   // Parser-started media can emit loadstart before this deferred script runs.
   if (!player.error && player.networkState === HTMLMediaElement.NETWORK_LOADING && player.readyState === HTMLMediaElement.HAVE_NOTHING) showPlayerState("loading", "Loading video…");
   if (player.hasAttribute("data-native-controls")) revealPlayControl();
+  if (appleNativePlayback) revealPlayControl();
   if (!playbackPreparation && !player.paused && player.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) hidePlayerState();
 }
