@@ -29,9 +29,9 @@
     "removed_test_lines": 1656,
     "final_declarations": 1811,
     "final_test_lines": 64819,
-    "removed_support_helpers": 6,
+    "removed_support_helpers": 7,
     "removed_support_files": 3,
-    "removed_support_lines": 141
+    "removed_support_lines": 159
   },
   "focused_validation_command": "cd packages && go test ./apihttp ./validation ./hlsmanifest ./transcodepolicy ./transcodehardware",
   "validation_results": {
@@ -1186,6 +1186,21 @@
         },
         "remaining_coverage": "All still-used commandtest entrypoint/CLI/MCP/transport/backup/update/configuration helpers remain. No app or gate assertion removed.",
         "gap": "No E2E equivalence claimed for an unused test-support facility."
+      },
+      {
+        "file": "packages/servertest/locale_catalog.go",
+        "name": "SupportedLanguageCoverageIncludesJellyfinLocaleSet",
+        "decision": "D",
+        "audit_status": "reviewed",
+        "baseline_body_sha256": "5ea2b7f163d151af8d4466461bfbe0f248273730d388d4ead75ba04de04d4c0a",
+        "credible_failure": "Dead test-only helper after both app wrappers removed; no live callable test remains.",
+        "caller_evidence": {
+          "integration_sha": "da20b2ca8063e5c6648c9905fac559f2c95d398b",
+          "command": "rg -n -g '*.go' 'SupportedLanguageCoverageIncludesJellyfinLocaleSet' apps packages",
+          "result": "Only helper comment and definition, no app/test callsites."
+        },
+        "remaining_coverage": "packages/localization/localization_test.go#TestSupportedLanguagesUsePlayerOrderAndDirections remains canonical actual owner count/unique/names/order/directions; both apps retain actual catalog/locale HTTP and cookie wiring guards.",
+        "gap": "No E2E equality claim; removed helper no longer had callers."
       }
     ],
     "unreviewed_preserved": "All other support inventory is preserved without complete semantic classification; removals are restricted to helpers with no integrated app callers.",
