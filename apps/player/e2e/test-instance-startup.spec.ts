@@ -1,5 +1,6 @@
 import {expect, test} from '@playwright/test';
-import {readFile, writeFile, readdir, stat} from 'node:fs/promises';
+import {readFile, writeFile, readdir, stat, utimes} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
 import {join} from 'node:path';
 import {totp} from './happy-path-helpers';
 
@@ -24,10 +25,32 @@ test('bounded startup preparation preserves the exact stream and playback priori
   const items = (await (await page.request.get('/api/v1/library')).json()).items;
   const id = (name: string) => items.find((item: {title: string}) => item.title === name).id;
   const headers = {...await csrf(), Origin: process.env.KINOSAIL_E2E_URL!};
+  await page.route('**/playback-prepare', route => route.abort());
   const prepare = (name: string, source: string) => page.request.post(`/api/v1/items/${id(name)}/playback-prepare`, {headers, data: {source}});
-  const plan = async (name: string) => (await (await page.request.get(`/api/v1/items/${id(name)}/playback?videoCodecs=h264&audioCodecs=aac`)).json());
+  let negotiatedQuery = '?videoCodecs=h264&audioCodecs=aac';
+  const plan = async (name: string) => (await (await page.request.get(`/api/v1/items/${id(name)}/playback${negotiatedQuery}`)).json());
   const source = (value: {compatible: string}, resume = 0) => value.compatible.replace('/index.m3u8', `${resume ? '-o' + Math.floor(resume * 10) * 100 : ''}/index.m3u8`);
   const receipts: object[] = [];
+  async function bytes(path: string): Promise<number> {
+    let total = 0;
+    for (const name of await readdir(path)) {
+      const file = join(path, name); const value = await stat(file);
+      total += value.isDirectory() ? await bytes(file) : value.size;
+    }
+    return total;
+  }
+  const cacheDirectory = async (name: string) => join(run, 'cache', (await readdir(join(run, 'cache'))).find(value => value.startsWith(id(name)))!);
+  async function initHashes(name: string) {
+    const directory = await cacheDirectory(name);
+    const hashes: Record<string, string> = {};
+    for (const rendition of await readdir(directory)) {
+      if (rendition.startsWith('.')) continue;
+      const path = join(directory, rendition, 'init.mp4');
+      try { hashes[rendition] = createHash('sha256').update(await readFile(path)).digest('hex'); } catch {}
+    }
+    return hashes;
+  }
+
   async function moving(name: string) {
     await page.addInitScript(() => {
       (window as unknown as {startupFrames: number[]}).startupFrames = [];
@@ -44,7 +67,11 @@ test('bounded startup preparation preserves the exact stream and playback priori
       });
     });
     const responses: string[] = [];
-    const response = (value: import('@playwright/test').Response) => { if (value.url().endsWith('/index.m3u8') && value.headers()['x-kinosail-startup-cache']) responses.push(value.headers()['x-kinosail-startup-cache']); };
+    const response = (value: import('@playwright/test').Response) => {
+      const url = new URL(value.url());
+      if (url.pathname.endsWith('/playback')) negotiatedQuery = url.search;
+      if (url.pathname.endsWith('/index.m3u8') && value.headers()['x-kinosail-startup-cache']) responses.push(value.headers()['x-kinosail-startup-cache']);
+    };
     page.on('response', response);
     const started = Date.now();
     await page.goto(`/watch/${id(name)}?compatible=1`);
@@ -62,12 +89,17 @@ test('bounded startup preparation preserves the exact stream and playback priori
   receipts.push({name: 'cold', ...cold});
   await page.locator('video').evaluate(media => media.pause());
   await page.goto('/?q=Warm');
+  await page.unroute('**/playback-prepare');
   await writeFile(info.outputPath('startup-measurements.json'), JSON.stringify(receipts, null, 2));
   if (process.env.KINOSAIL_STARTUP_BASELINE === '1') return;
   // Failure before code: this authenticated route is absent on the baseline.
   const warmSource = source(await plan('Warm'), 12.3);
-  expect((await prepare('Warm', warmSource)).status()).toBe(202);
+  const triggered = page.waitForRequest(request => request.method() === 'POST' && request.url().endsWith(`/items/${id('Warm')}/playback-prepare`));
+  await page.locator(`a[href="/watch/${id('Warm')}"]`).first().dispatchEvent('focusin');
+  expect((await triggered).postDataJSON()).toEqual({source: warmSource});
   await expect.poll(async () => (await prepare('Warm', warmSource)).json(), {timeout: 30_000}).toMatchObject({state: 'ready'});
+  const originalInit = await initHashes('Warm');
+  expect(Object.keys(originalInit).length).toBeGreaterThan(0);
   const warm = await moving('Warm');
   receipts.push({name: 'warm', ...warm});
   expect(warm.cache).toContain('warm');
@@ -75,35 +107,90 @@ test('bounded startup preparation preserves the exact stream and playback priori
   expect(warm.position).toBeLessThan(16);
   await expect.poll(() => page.locator('video').evaluate(media => media.currentTime), {timeout: 25_000}).toBeGreaterThan(25);
   expect(await page.locator('video').evaluate(media => media.error?.code || 0)).toBe(0);
+  expect(await initHashes('Warm')).toEqual(originalInit);
+  await page.locator('video').evaluate(media => {
+    if (media.textTracks[0]) media.textTracks[0].mode = 'showing';
+  });
+  await expect.poll(() => page.locator('video').evaluate(media => media.textTracks[0]?.cues?.length || 0)).toBeGreaterThan(0);
   await page.locator('video').evaluate(media => { media.pause(); media.currentTime = 42; });
   await page.locator('video').evaluate(media => media.play());
   await expect.poll(() => page.locator('video').evaluate(media => media.currentTime)).toBeGreaterThan(42.25);
+  await page.reload();
+  await expect.poll(() => page.locator('video').evaluate(media => media.currentTime)).toBeGreaterThan(40);
+  await page.locator('video').evaluate(media => media.pause());
   await page.goto('/?q=Direct');
   expect((await prepare('Direct', `/media/${id('Direct')}`)).status()).toBe(202);
+  const beforeRejected = (await readdir(join(run, 'cache'))).sort();
   for (const bad of ['https://evil.example/a', `/hls/${id('Cold')}/p/bad/index.m3u8`, warmSource + '?token=secret', warmSource.replace('-o12300', '-o999999999')]) {
     expect((await prepare('Warm', bad)).status()).toBe(400);
   }
   const unauthenticated = await page.context().browser()!.newContext({baseURL: process.env.KINOSAIL_E2E_URL});
   expect((await unauthenticated.request.post(`/api/v1/items/${id('Warm')}/playback-prepare`, {data: {source: warmSource}})).status()).toBe(401);
   await unauthenticated.close();
+  expect((await readdir(join(run, 'cache'))).sort()).toEqual(beforeRejected);
   const adopt = source(await plan('Adopt'));
   expect((await prepare('Adopt', adopt)).status()).toBe(202);
+  await expect.poll(async () => {
+    try { return Object.keys(await initHashes('Adopt')).length; } catch { return 0; }
+  }, {timeout: 20_000, intervals: [50]}).toBeGreaterThan(0);
+  // A real native HLS master request adopts the running preparation atomically.
+  expect((await page.request.get(adopt)).ok()).toBe(true);
+  const adoptedInit = await initHashes('Adopt');
   const adopted = await moving('Adopt');
   await expect.poll(() => page.locator('video').evaluate(media => media.currentTime), {timeout: 25_000}).toBeGreaterThan(14);
+  expect(await initHashes('Adopt')).toEqual(adoptedInit);
   receipts.push({name: 'adopted-active-preparation', ...adopted});
   expect((await prepare('Compete', source(await plan('Compete')))).status()).toBe(202);
   await page.waitForTimeout(1500);
+  expect((await readdir(join(run, 'cache'))).some(value => value.startsWith(id('Compete')))).toBe(false);
+  expect((await page.request.delete(`/api/v1/items/${id('Compete')}/playback-prepare`, {headers})).status()).toBe(204);
+  await page.locator('video').evaluate(media => media.pause());
+  await page.goto('/?q=Invalidation');
+  await page.route('**/playback-prepare', route => route.abort());
+  const staleSource = source(await plan('Invalidation'));
+  expect((await prepare('Invalidation', staleSource)).status()).toBe(202);
+  await expect.poll(async () => (await prepare('Invalidation', staleSource)).json(), {timeout: 30_000}).toMatchObject({state: 'ready'});
+  const staleDirectory = await cacheDirectory('Invalidation');
+  const beforeVersion = await readFile(join(staleDirectory, 'index.m3u8'), 'utf8');
+  const changed = new Date(Date.now() + 2000);
+  await utimes(join(run, 'media', 'Invalidation.mkv'), changed, changed);
+  expect(await (await prepare('Invalidation', staleSource)).json()).toMatchObject({state: 'queued'});
+  await expect.poll(async () => (await prepare('Invalidation', staleSource)).json(), {timeout: 30_000}).toMatchObject({state: 'ready'});
+  expect(await readFile(join(staleDirectory, 'index.m3u8'), 'utf8')).not.toBe(beforeVersion);
+  // Force the full video conversion path with bounded software encoders.
+  const settings = {quality: 'speed', codec: 'auto', accelerator: 'none', toneMap: true};
+  expect((await page.request.put('/api/v1/settings/transcoder', {headers, data: settings})).ok()).toBe(true);
+  const transcode = await (await page.request.get(`/api/v1/items/${id('Invalidation')}/playback?videoCodecs=h264`)).json();
+  const burnSource = source(transcode).replace('-s0-none-', '-s0-external-');
+  expect((await prepare('Invalidation', burnSource)).status()).toBe(202);
+  await expect.poll(async () => {
+    try { return Object.keys(await initHashes('Invalidation')).length; } catch { return 0; }
+  }, {timeout: 20_000, intervals: [100]}).toBeGreaterThan(0);
+  expect((await page.request.delete(`/api/v1/items/${id('Invalidation')}/playback-prepare`, {headers})).status()).toBe(204);
+  await page.waitForTimeout(600);
+  expect((await prepare('Invalidation', burnSource)).status()).toBe(202);
+  await expect.poll(async () => (await prepare('Invalidation', burnSource)).json(), {timeout: 30_000}).toMatchObject({state: 'ready'});
+  const burnDirectories = (await readdir(join(run, 'cache'))).filter(value => value.startsWith(id('Invalidation')) && value.includes('-external-'));
+  expect(burnDirectories).toHaveLength(1);
+  const burnDirectory = join(run, 'cache', burnDirectories[0]);
+  const readBurnVersion = () => readFile(join(burnDirectory, 'index.m3u8'), 'utf8');
+  const subtitleVersion = await readBurnVersion();
+  await utimes(join(run, 'media', 'Invalidation.en.srt'), changed, changed);
+  expect(await (await prepare('Invalidation', burnSource)).json()).toMatchObject({state: 'queued'});
+  await expect.poll(async () => (await prepare('Invalidation', burnSource)).json(), {timeout: 30_000}).toMatchObject({state: 'ready'});
+  expect(await readBurnVersion()).not.toBe(subtitleVersion);
+  const settingsVersion = await readBurnVersion();
+  expect((await page.request.put('/api/v1/settings/transcoder', {headers, data: {...settings, quality: 'quality'}})).ok()).toBe(true);
+  expect(await (await prepare('Invalidation', burnSource)).json()).toMatchObject({state: 'queued'});
+  await expect.poll(async () => (await prepare('Invalidation', burnSource)).json(), {timeout: 30_000}).toMatchObject({state: 'ready'});
+  expect(await readBurnVersion()).not.toBe(settingsVersion);
+  const resources = JSON.parse(await readFile(join(run, 'resources.json'), 'utf8'));
+  expect(resources.peakSpeculativeFFmpeg).toBeLessThanOrEqual(1);
+  expect(resources.peakFFmpeg).toBeLessThanOrEqual(2);
+  receipts.push({name: 'resource-bounds', ...resources});
   const logs = await readFile(join(run, 'server.log'), 'utf8');
   expect(logs).toContain('HLS startup preparation');
   expect(logs).not.toContain('secret');
-  async function bytes(path: string): Promise<number> {
-    let total = 0;
-    for (const name of await readdir(path)) {
-      const file = join(path, name); const value = await stat(file);
-      total += value.isDirectory() ? await bytes(file) : value.size;
-    }
-    return total;
-  }
   const cacheBytes = await bytes(join(run, 'cache'));
   expect(cacheBytes).toBeLessThan(512 * 1024 * 1024);
   await writeFile(info.outputPath('startup-measurements.json'), JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION, receipts, cacheBytes, result: 'passed'}, null, 2));
