@@ -76,7 +76,7 @@ extension PlaybackEngine {
             presentation.limitSubtitleLanguages(to: details.subtitlePickerLimited ? details.subtitleLanguage : nil)
             #endif
             playbackPreparation = nil
-            playbackPreparationTask?.cancel(); playbackPreparationTask = nil
+            playbackPreparationRequest?.cancel(); playbackPreparationRequest = nil
             try await install(details: details, compatible: valid.audioEnhancementsEnabled || details.direct == nil, at: position, attempt: attempt)
             beginMonitoring(attempt: attempt)
             if shouldResume { player?.play() }

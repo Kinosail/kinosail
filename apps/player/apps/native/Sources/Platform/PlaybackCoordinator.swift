@@ -150,9 +150,7 @@ final class PlaybackEngine {
     @ObservationIgnored var recoveryPosition: Double?
     @ObservationIgnored var nativeRecoveryPosition: Double?
     @ObservationIgnored var playbackPreparation: PlaybackPreparation?
-    @ObservationIgnored var playbackPreparationTask: Task<PlaybackPreparation, Error>?
-    @ObservationIgnored var playbackPreparationItemID: String?
-    @ObservationIgnored var playbackPreparationClientID: UUID?
+    @ObservationIgnored var playbackPreparationRequest: PlaybackPreparationRequest?
 
     init() {
         presentation.closedPictureInPicture = { [weak self] in self?.stop() }
@@ -160,17 +158,16 @@ final class PlaybackEngine {
 
     func play(_ item: MediaItem, client: ServerClient, store: ProgressSyncStore) async throws {
         guard [.video, .music, .audiobook].contains(item.kind) else { throw ClientError.invalidInput("This title does not contain playable audio or video.") }
+        try Task.checkCancellation()
         let scope = try await client.profileScope()
+        try Task.checkCancellation()
         stop(clearQueue: item.kind != .music)
         let attempt = generation
         devicePreferencesScope = scope
         self.client = client; self.store = store; currentItem = item; loading = true; wantsPlayback = true
         defer { if generation == attempt { loading = false } }
         do {
-            let prepared: PlaybackPreparation
-            do { prepared = try await preparedPlayback(for: item, client: client) }
-            catch is CancellationError { throw CancellationError() }
-            catch { prepared = try await fetchPlaybackPreparation(for: item, client: client) }
+            let prepared = try await preparedPlayback(for: item, client: client)
             let details = prepared.source
             try check(attempt)
             source = details; subtitlePolicy = details.subtitlePolicy
