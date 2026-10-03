@@ -5,6 +5,7 @@ import {createHmac} from "node:crypto";
 import {measureFlows} from "./layout-stability-flows.mjs";
 const require = createRequire(new URL("../../apps/player/e2e/package.json", import.meta.url));
 const {chromium, webkit, firefox} = require("@playwright/test");
+const AxeBuilder = require("@axe-core/playwright").default;
 const baseURL = process.env.KINOSAIL_E2E_URL, app = process.env.KINOSAIL_LAYOUT_APP, run = process.env.KINOSAIL_LAYOUT_RUN;
 const engine = process.env.KINOSAIL_LAYOUT_BROWSER || "chromium";
 const browser = await ({chromium, webkit, firefox}[engine]).launch(engine === "chromium" ? {channel: "chrome"} : {});
@@ -70,11 +71,11 @@ const viewports = process.env.KINOSAIL_LAYOUT_QUICK ? [{width: 390, height: 844}
   [{width: 320, height: 800}, {width: 390, height: 844}, {width: 844, height: 390}, {width: 768, height: 1024}, {width: 1024, height: 768}, {width: 1440, height: 900}, {width: 1920, height: 1080}];
 let routes = ["/login", "/", "/?view=movies", "/settings", "/settings#access", "/account", `/watch/${item.id}?playback=direct`, "/?view=movies&q=no-synthetic-match", "/item/missing-layout-probe"];
 if(app==="player")routes.push(`/item/${item.id}`);
-else {const sub=await pageRequestLibrary(); if(sub)routes.push(`/subtitles/inspect/${sub}?language=en`);}
+else {routes=routes.map(path=>path.replace("view=movies","view=library").replace("#access","#provider"));routes.push("/?view=wanted","/?view=history");const sub=await pageRequestLibrary(); if(!sub)throw new Error("Synthetic subtitle library must include an inspector item");routes.push(`/subtitles/inspect/${sub}?language=en`);}
 async function pageRequestLibrary(){const c=await browser.newContext({baseURL, storageState:auth});try{const r=await c.request.get("/api/v1/subtitle-library?view=library");const d=await r.json();return (d.items?.find(i=>i.title==="Layout Example")||d.items?.[0])?.id;}finally{await c.close();}}
 if(process.env.KINOSAIL_LAYOUT_PATHS)routes=process.env.KINOSAIL_LAYOUT_PATHS.split(",");
 const cases=viewports.flatMap(viewport=>routes.map(path=>({viewport,path,variant:"default"})));
-if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of ["/settings#access",`/watch/${item.id}?playback=direct`]){
+if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of [app==="player"?"/settings#access":"/settings#provider",`/watch/${item.id}?playback=direct`]){
   cases.push({viewport:{width:390,height:844},path,variant:"text-200",scale:"200%"});
   cases.push({viewport:{width:390,height:844},path,variant:"motion",motion:"no-preference"});
 }
@@ -143,6 +144,7 @@ try {
       await page.keyboard.press("Escape");await page.locator(".player-settings").waitFor({state:"hidden"});
       reports.at(-1).settingsKeyboard={closed:true,focusRestored:await settingsButton.evaluate(n=>n===document.activeElement)};
     }
+    if(viewport.width===390&&variant==="default"&&(path.startsWith("/settings")||path.startsWith("/watch/")||path.startsWith("/subtitles/inspect/"))){const audit=await new AxeBuilder({page}).analyze();reports.at(-1).accessibility={violations:audit.violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.map(n=>n.target)}))};}
     if(traced)await context.tracing.stop({path:join(run,name+"-trace.zip")});
     await context.close();
   }
