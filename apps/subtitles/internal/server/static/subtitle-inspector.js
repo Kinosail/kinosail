@@ -94,12 +94,20 @@
   async function load(initial = false) {
     const ticket = ++revision; if (!initial) status.textContent = "Loading subtitle details…"; status.setAttribute("aria-busy", "true"); apply.disabled = true; prepared = undefined; form.querySelector('button[type="submit"]').disabled = true;
     const lockRefresh = !busy;
+    const focused = lockRefresh && form.contains?.(document.activeElement) ? document.activeElement : undefined;
+    let focusMoved = false;
+    const observeFocus = event => { if (event.type === "pointerdown" || event.target !== document.body) focusMoved ||= event.target !== focused; };
+    if (focused) { document.addEventListener("focusin", observeFocus, true); document.addEventListener("pointerdown", observeFocus, true); }
     if (lockRefresh) setBusy(true, true);
     let result;
     try { result = await request(`/inspect?language=${encodeURIComponent(form.elements.language.value)}`); }
     catch (error) { if (ticket === revision) throw error; return; }
     finally {
       if (lockRefresh) { setBusy(false); form.querySelector('button[type="submit"]').disabled = true; }
+      if (focused) {
+        document.removeEventListener("focusin", observeFocus, true); document.removeEventListener("pointerdown", observeFocus, true);
+        if (ticket === revision && !focusMoved && document.activeElement === document.body && !focused.disabled) focused.focus({ preventScroll: true });
+      }
       if (ticket === revision) status.removeAttribute("aria-busy");
     }
     if (ticket !== revision) return;

@@ -36,6 +36,16 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
     const resizeAfter=await page.locator("#main").boundingBox();
     results.push({viewport,flow:"resize-after-settling",resizeBefore,resizeAfter,
       stable:JSON.stringify(resizeBefore)===JSON.stringify(resizeAfter),overflow:await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)});
+    if(viewport.width===390){
+      probe.stage="mobile-tabs-customize-focus";await page.setViewportSize(viewport);
+      await page.goto("/settings#navigation");
+      for(const settings of [false,true]){
+        const trigger=settings?page.locator("[data-customize-tabs]"):page.locator(".nav-more>summary");
+        if(!settings){await trigger.click();await page.getByRole("button",{name:"Customize tabs",exact:true}).click();}else await trigger.click();
+        await page.locator(".tab-editor").waitFor({state:"visible"});await page.keyboard.press("Escape");await page.locator(".tab-editor").waitFor({state:"hidden"});
+        const focusRetained=await trigger.evaluate(n=>n===document.activeElement);results.push({viewport,flow:settings?"settings-customize-tabs-focus":"more-customize-tabs-focus",focusRetained});
+      }
+    }
     await context.close();
   }
   const context = await browser.newContext({...options,viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce"});
@@ -82,6 +92,14 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
     const loadedEnabled=!await preview.isDisabled();
     if(pendingLocked&&loadedEnabled){await file.focus();await file.setInputFiles(payload);}
     results.push({flow:"inspector-edit-during-refresh",pendingLocked,loadedEnabled,stable:pendingLocked&&loadedEnabled});
+    for(const moveAway of [false,true]){
+      probe.stage="inspector-language-refresh-focus";await editor.reload();await editor.waitForFunction(()=>!document.querySelector('#subtitle-edit-form button[type="submit"]').disabled);
+      const language=editor.locator('select[name="language"]');const alternate=await language.evaluate(n=>[...n.options].find(option=>option.value&&option.value!==n.value)?.value);
+      if(!alternate)throw new Error("Synthetic inspector needs an alternate language");
+      await language.focus();await language.selectOption(alternate);await editor.waitForFunction(()=>document.querySelector("#inspector-status")?.getAttribute("aria-busy")==="true");
+      if(moveAway)await editor.keyboard.press("Tab");const focus=await editor.evaluateHandle(()=>document.activeElement);await editor.waitForFunction(()=>document.querySelector("#inspector-status")?.getAttribute("aria-busy")!=="true");
+      const focusRetained=moveAway?await editor.evaluate(n=>n===document.activeElement,focus):await language.evaluate(n=>n===document.activeElement);await focus.dispose();results.push({flow:moveAway?"inspector-language-refresh-tab-away":"inspector-language-refresh-focus",focusRetained});
+    }
     await editing.close();
   }
   return results;
