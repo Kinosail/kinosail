@@ -12304,22 +12304,43 @@
       "sha256": "78623c18f4fe775903f47bec62a2d8267b187f12d2e5e6c17e29d23a3aec6b1b",
       "path": "apps/player/internal/server/automatic_skip_browser_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual authenticated bundled player with Intro10..20 must retain full60s direct source/subtitles/client markers, store direct15s as source15 and resume15 without transformed token.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Actual authenticated bundled player with Intro10..20 must retain full60s direct source/subtitles/client markers, store direct15s as source15 and resume15 without transformed token.",
+      "production_owner": [
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "apps/player/internal/server/playback_timeline.go:playbackWithAutomaticSkip",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources",
+        "apps/player/internal/server/jellyfin_playback.go:playbackModule",
+        "apps/player/internal/server/jellyfin_delivery.go:deliveryModule",
+        "apps/player/internal/server/jellyfin_progress.go:sourcePositionTicks/userDataDTO",
+        "apps/player/internal/server/hls_skip_input.go:hlsSkipInput",
+        "apps/player/internal/server/hls.go:encodeVariants",
+        "packages/catalogapi/media_http_write.go:progress",
+        "packages/catalog/progress_http.go:Save",
+        "packages/servertest/automatic_skip_fixture.go",
+        "packages/servertest/transcode.go",
+        "packages/servertest/transcode_recovery.go",
+        "packages/servertest/transcode_ladder.go"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Synthetic player browser fixtures bypass app projection; genuine normal playback has no exact direct versus shortened subtitle/progress adapter matrix.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Scripted probes/encoders/in-process app HTTP; not genuine browser E2E.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestAutomaticPlaybackKeepsDirectTimelineAndOffersCompatibleFallback",
@@ -12328,22 +12349,43 @@
       "sha256": "5e0b6caf9492f4467868a61ae1303a620d3745198f326c2dc3d2dcfc138e0159",
       "path": "apps/player/internal/server/automatic_skip_fallback_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual versioned API remains direct60s with intro/fallback while two Jellyfin client identities receive50s compatible HLS/no duplicate segments; disabling auto-skip restores source markers60s.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Actual versioned API remains direct60s with intro/fallback while two Jellyfin client identities receive50s compatible HLS/no duplicate segments; disabling auto-skip restores source markers60s.",
+      "production_owner": [
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "apps/player/internal/server/playback_timeline.go:playbackWithAutomaticSkip",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources",
+        "apps/player/internal/server/jellyfin_playback.go:playbackModule",
+        "apps/player/internal/server/jellyfin_delivery.go:deliveryModule",
+        "apps/player/internal/server/jellyfin_progress.go:sourcePositionTicks/userDataDTO",
+        "apps/player/internal/server/hls_skip_input.go:hlsSkipInput",
+        "apps/player/internal/server/hls.go:encodeVariants",
+        "packages/catalogapi/media_http_write.go:progress",
+        "packages/catalog/progress_http.go:Save",
+        "packages/servertest/automatic_skip_fixture.go",
+        "packages/servertest/transcode.go",
+        "packages/servertest/transcode_recovery.go",
+        "packages/servertest/transcode_ladder.go"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Genuine browser exercises one bundled client, not Swiftfin/Android Jellyfin cross-client duration/marker policy plus disabled control.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Scripted probes/encoders/in-process app HTTP; not genuine browser E2E.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestServerAutomaticSkipRenditionRemovesConfiguredRanges",
@@ -12352,22 +12394,43 @@
       "sha256": "35193f0cd5cd722191bc8f7d0ad3f35dad7076268de7e0bc71255511cacceb0f",
       "path": "apps/player/internal/server/automatic_skip_fallback_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual planned and generic HLS must reuse one encode and choose concat video-copy plus audio aselect10..20 for random-access aligned omission.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Actual planned and generic HLS must reuse one encode and choose concat video-copy plus audio aselect10..20 for random-access aligned omission.",
+      "production_owner": [
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "apps/player/internal/server/playback_timeline.go:playbackWithAutomaticSkip",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources",
+        "apps/player/internal/server/jellyfin_playback.go:playbackModule",
+        "apps/player/internal/server/jellyfin_delivery.go:deliveryModule",
+        "apps/player/internal/server/jellyfin_progress.go:sourcePositionTicks/userDataDTO",
+        "apps/player/internal/server/hls_skip_input.go:hlsSkipInput",
+        "apps/player/internal/server/hls.go:encodeVariants",
+        "packages/catalogapi/media_http_write.go:progress",
+        "packages/catalog/progress_http.go:Save",
+        "packages/servertest/automatic_skip_fixture.go",
+        "packages/servertest/transcode.go",
+        "packages/servertest/transcode_recovery.go",
+        "packages/servertest/transcode_ladder.go"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Genuine playback does not observe exact one-process reuse or concat/copy argument selection for trusted range.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Scripted probes/encoders/in-process app HTTP; not genuine browser E2E.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestAutomaticSkipUsesExactTranscodeAwayFromRandomAccessPoints",
@@ -12376,22 +12439,43 @@
       "sha256": "a42f0d5303a8a149d4977897d7c7336015cc7853437b5d0cd18ca6a768a37545",
       "path": "apps/player/internal/server/automatic_skip_fallback_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "When keyframes8 and20 cannot exactly cut intro10..20, actual compatible plan must choose video conversion50s and -vf select without concat.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "When keyframes8 and20 cannot exactly cut intro10..20, actual compatible plan must choose video conversion50s and -vf select without concat.",
+      "production_owner": [
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "apps/player/internal/server/playback_timeline.go:playbackWithAutomaticSkip",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources",
+        "apps/player/internal/server/jellyfin_playback.go:playbackModule",
+        "apps/player/internal/server/jellyfin_delivery.go:deliveryModule",
+        "apps/player/internal/server/jellyfin_progress.go:sourcePositionTicks/userDataDTO",
+        "apps/player/internal/server/hls_skip_input.go:hlsSkipInput",
+        "apps/player/internal/server/hls.go:encodeVariants",
+        "packages/catalogapi/media_http_write.go:progress",
+        "packages/catalog/progress_http.go:Save",
+        "packages/servertest/automatic_skip_fixture.go",
+        "packages/servertest/transcode.go",
+        "packages/servertest/transcode_recovery.go",
+        "packages/servertest/transcode_ladder.go"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Normal E2E media cuts are not deliberately off keyframes; no actual process map assertion.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Scripted probes/encoders/in-process app HTTP; not genuine browser E2E.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestServerAutomaticSkipMapsPlaybackProgressBackToSourceTime",
@@ -12400,22 +12484,43 @@
       "sha256": "647bb18d3bd9fdadbfcdd90255180b367f97a31947cc1746c77e56efe2ca791e",
       "path": "apps/player/internal/server/automatic_skip_progress_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Jellyfin shortened progress15s must store25s source while item presentation still reports15s ticks.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Jellyfin shortened progress15s must store25s source while item presentation still reports15s ticks.",
+      "production_owner": [
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "apps/player/internal/server/playback_timeline.go:playbackWithAutomaticSkip",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources",
+        "apps/player/internal/server/jellyfin_playback.go:playbackModule",
+        "apps/player/internal/server/jellyfin_delivery.go:deliveryModule",
+        "apps/player/internal/server/jellyfin_progress.go:sourcePositionTicks/userDataDTO",
+        "apps/player/internal/server/hls_skip_input.go:hlsSkipInput",
+        "apps/player/internal/server/hls.go:encodeVariants",
+        "packages/catalogapi/media_http_write.go:progress",
+        "packages/catalog/progress_http.go:Save",
+        "packages/servertest/automatic_skip_fixture.go",
+        "packages/servertest/transcode.go",
+        "packages/servertest/transcode_recovery.go",
+        "packages/servertest/transcode_ladder.go"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Genuine bundled browser does not use Jellyfin session-bound shortened progress and compare source API storage.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Scripted probes/encoders/in-process app HTTP; not genuine browser E2E.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestVersionedPlaybackMapsProgressBackToSourceTime",
@@ -12424,22 +12529,43 @@
       "sha256": "a6ffd6e38de0fc32cc0b23e363a0d6426dd45a449ccc78c70349629dee9ac9bf",
       "path": "apps/player/internal/server/automatic_skip_progress_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Versioned playback token must map15s presentation to25s stored source, return15s presentation, and reject malformed token400.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Versioned playback token must map15s presentation to25s stored source, return15s presentation, and reject malformed token400.",
+      "production_owner": [
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "apps/player/internal/server/playback_timeline.go:playbackWithAutomaticSkip",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources",
+        "apps/player/internal/server/jellyfin_playback.go:playbackModule",
+        "apps/player/internal/server/jellyfin_delivery.go:deliveryModule",
+        "apps/player/internal/server/jellyfin_progress.go:sourcePositionTicks/userDataDTO",
+        "apps/player/internal/server/hls_skip_input.go:hlsSkipInput",
+        "apps/player/internal/server/hls.go:encodeVariants",
+        "packages/catalogapi/media_http_write.go:progress",
+        "packages/catalog/progress_http.go:Save",
+        "packages/servertest/automatic_skip_fixture.go",
+        "packages/servertest/transcode.go",
+        "packages/servertest/transcode_recovery.go",
+        "packages/servertest/transcode_ladder.go"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Normal browser does not compare versioned progress token source/presentation or malformed token.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Scripted probes/encoders/in-process app HTTP; not genuine browser E2E.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestServerAutomaticSkipKeepsSubtitleCuesOnTheShortenedTimeline",
@@ -12448,22 +12574,43 @@
       "sha256": "bebe0eb3990964b4f9a4c4de156d0e73d07c5f0c452aa657fd4bba173538ef40",
       "path": "apps/player/internal/server/automatic_skip_progress_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual Jellyfin signed subtitle URL must omit cue12..14 inside intro, shift22..24 to12..14 and retain After intro.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Actual Jellyfin signed subtitle URL must omit cue12..14 inside intro, shift22..24 to12..14 and retain After intro.",
+      "production_owner": [
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "apps/player/internal/server/playback_timeline.go:playbackWithAutomaticSkip",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources",
+        "apps/player/internal/server/jellyfin_playback.go:playbackModule",
+        "apps/player/internal/server/jellyfin_delivery.go:deliveryModule",
+        "apps/player/internal/server/jellyfin_progress.go:sourcePositionTicks/userDataDTO",
+        "apps/player/internal/server/hls_skip_input.go:hlsSkipInput",
+        "apps/player/internal/server/hls.go:encodeVariants",
+        "packages/catalogapi/media_http_write.go:progress",
+        "packages/catalog/progress_http.go:Save",
+        "packages/servertest/automatic_skip_fixture.go",
+        "packages/servertest/transcode.go",
+        "packages/servertest/transcode_recovery.go",
+        "packages/servertest/transcode_ladder.go"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Genuine normal subtitle playback has no shortened external cue translation/omission assertion.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Scripted probes/encoders/in-process app HTTP; not genuine browser E2E.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestRealFFmpegAutomaticSkipServesFutureSegments",
@@ -12472,22 +12619,43 @@
       "sha256": "817d43033361056d59b9b4b7eb191b35ccae54da7f1ee6e1a4b093257d424650",
       "path": "apps/player/internal/server/automatic_skip_real_ffmpeg_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual FFmpeg must advertise not-yet-materialized future shortened segments, serve every promised fragment and finalize exact10 projected segments matching disk.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Actual FFmpeg must advertise not-yet-materialized future shortened segments, serve every promised fragment and finalize exact10 projected segments matching disk.",
+      "production_owner": [
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "apps/player/internal/server/playback_timeline.go:playbackWithAutomaticSkip",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources",
+        "apps/player/internal/server/jellyfin_playback.go:playbackModule",
+        "apps/player/internal/server/jellyfin_delivery.go:deliveryModule",
+        "apps/player/internal/server/jellyfin_progress.go:sourcePositionTicks/userDataDTO",
+        "apps/player/internal/server/hls_skip_input.go:hlsSkipInput",
+        "apps/player/internal/server/hls.go:encodeVariants",
+        "packages/catalogapi/media_http_write.go:progress",
+        "packages/catalog/progress_http.go:Save",
+        "packages/servertest/automatic_skip_fixture.go",
+        "packages/servertest/transcode.go",
+        "packages/servertest/transcode_recovery.go",
+        "packages/servertest/transcode_ladder.go"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Ordinary browser startup/playback need not request all future fragments or compare projected/final disk segment count.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "skip",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Real FFmpeg tests opt in through KINOSAIL_REAL_FFMPEG/FFPROBE and can skip; helpers wait for lifecycle completion. No sustained browser or subjective media-quality claim.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestRealFFmpegAutomaticSkipCopiesPlayableVideo",
@@ -12496,22 +12664,43 @@
       "sha256": "16a8143b762c848192c401de2d23714166a21873a23dc1caee8c5239519031aa",
       "path": "apps/player/internal/server/automatic_skip_real_ffmpeg_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Real shortened HLS must have20s H264 Constrained Baseline/AAC and exactly480 retained decoded video frames with error-exploding decoder.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Real shortened HLS must have20s H264 Constrained Baseline/AAC and exactly480 retained decoded video frames with error-exploding decoder.",
+      "production_owner": [
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "apps/player/internal/server/playback_timeline.go:playbackWithAutomaticSkip",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources",
+        "apps/player/internal/server/jellyfin_playback.go:playbackModule",
+        "apps/player/internal/server/jellyfin_delivery.go:deliveryModule",
+        "apps/player/internal/server/jellyfin_progress.go:sourcePositionTicks/userDataDTO",
+        "apps/player/internal/server/hls_skip_input.go:hlsSkipInput",
+        "apps/player/internal/server/hls.go:encodeVariants",
+        "packages/catalogapi/media_http_write.go:progress",
+        "packages/catalog/progress_http.go:Save",
+        "packages/servertest/automatic_skip_fixture.go",
+        "packages/servertest/transcode.go",
+        "packages/servertest/transcode_recovery.go",
+        "packages/servertest/transcode_ladder.go"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Genuine browser playback can look playable while duplicated/lost frames or inaccurate shortened duration remain; it does not probe/count every frame.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "skip",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Real FFmpeg tests opt in through KINOSAIL_REAL_FFMPEG/FFPROBE and can skip; helpers wait for lifecycle completion. No sustained browser or subjective media-quality claim.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestRealFFmpegAutomaticSkipPreservesTranscodedFrames",
@@ -12520,22 +12709,43 @@
       "sha256": "de5934a57c7f482e57de9aa9555cb06670c8437184809a3299984d5e9e475ff8",
       "path": "apps/player/internal/server/automatic_skip_real_ffmpeg_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Real non-random-access intro0..1 conversion must keep4s moving output with at least94 distinct decoded frame hashes rather than freeze/duplicate output.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Real non-random-access intro0..1 conversion must keep4s moving output with at least94 distinct decoded frame hashes rather than freeze/duplicate output.",
+      "production_owner": [
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "apps/player/internal/server/playback_timeline.go:playbackWithAutomaticSkip",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources",
+        "apps/player/internal/server/jellyfin_playback.go:playbackModule",
+        "apps/player/internal/server/jellyfin_delivery.go:deliveryModule",
+        "apps/player/internal/server/jellyfin_progress.go:sourcePositionTicks/userDataDTO",
+        "apps/player/internal/server/hls_skip_input.go:hlsSkipInput",
+        "apps/player/internal/server/hls.go:encodeVariants",
+        "packages/catalogapi/media_http_write.go:progress",
+        "packages/catalog/progress_http.go:Save",
+        "packages/servertest/automatic_skip_fixture.go",
+        "packages/servertest/transcode.go",
+        "packages/servertest/transcode_recovery.go",
+        "packages/servertest/transcode_ladder.go"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Normal browser video movement does not count unique hashes across the exact shortened transcode branch.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "skip",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Real FFmpeg tests opt in through KINOSAIL_REAL_FFMPEG/FFPROBE and can skip; helpers wait for lifecycle completion. No sustained browser or subjective media-quality claim.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestSecurityClassificationAndMediaLimits",
@@ -14297,22 +14507,43 @@
       "sha256": "db85fe0424f86f41ca6f4b629c56a73924bada85a3b37258bbc79bcb6b44d42e",
       "path": "apps/player/internal/server/direct_type_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "App codec MIME must distinguish H264AAC/AC3, VP9Opus, AV1WebM/MP4, Matroska and reject unknown HEVC or unsupported TrueHD instead of claiming playable codec strings.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "App codec MIME must distinguish H264AAC/AC3, VP9Opus, AV1WebM/MP4, Matroska and reject unknown HEVC or unsupported TrueHD instead of claiming playable codec strings.",
+      "production_owner": [
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "apps/player/internal/server/playback_timeline.go:playbackWithAutomaticSkip",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources",
+        "apps/player/internal/server/jellyfin_playback.go:playbackModule",
+        "apps/player/internal/server/jellyfin_delivery.go:deliveryModule",
+        "apps/player/internal/server/jellyfin_progress.go:sourcePositionTicks/userDataDTO",
+        "apps/player/internal/server/hls_skip_input.go:hlsSkipInput",
+        "apps/player/internal/server/hls.go:encodeVariants",
+        "packages/catalogapi/media_http_write.go:progress",
+        "packages/catalog/progress_http.go:Save",
+        "packages/servertest/automatic_skip_fixture.go",
+        "packages/servertest/transcode.go",
+        "packages/servertest/transcode_recovery.go",
+        "packages/servertest/transcode_ladder.go"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Genuine generated browser H264AAC covers one row, not AV1/VP9/AC3/container/unsupported-audio matrix.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Scripted probes/encoders/in-process app HTTP; not genuine browser E2E.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestOwnerCanEnableBrowseAndRevokeDLNA",
@@ -15246,23 +15477,36 @@
       "end_line": 32,
       "sha256": "d3bd1e8acc6895bafe4e23e8773d3ec301e374057b0365cc93755fd34cb906cc",
       "path": "apps/player/internal/server/hls_observability_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "C",
+      "review_status": "semantic_review_complete",
+      "reason": "Pure shared-owner alias/replay adds no important distinct failure beyond retained canonical owner and stronger actual app boundary.",
+      "category": "pure_shared_replay_pending_independent_review",
+      "credible_failure": "Pure shared-owner alias/replay adds no important distinct failure beyond retained canonical owner and stronger actual app boundary.",
+      "production_owner": [
+        "apps/player/internal/server/hls_playlist_session.go",
+        "apps/player/internal/server/hls_observability.go",
+        "packages/playback/hls_storage_test.go:TestHLSDiagnosticsBoundOutputAndPreserveCause"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "packages/playback/hls_storage_test.go:TestHLSDiagnosticsBoundOutputAndPreserveCause",
+        "App type aliases and forwarding function add no policy; canonical cause/buffer bound/process diagnostics retained. Two-private-path app guard and actual failing HTTP/log privacy keeper remain."
+      ],
+      "coverage_limit": "No browser E2E equivalence claimed; shared-owner consolidation only. App type aliases and forwarding function add no policy; canonical cause/buffer bound/process diagnostics retained. Two-private-path app guard and actual failing HTTP/log privacy keeper remain.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Exact small numeric literals vary; test does not exercise independent app request callback.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared.",
+      "proposed_decision": "D",
+      "implementation_status": "Source held for root independent review; shared owner confirms named keepers retained."
     },
     {
       "name": "TestHLSFailureIsCorrelatedAndPrivate",
@@ -15545,23 +15789,36 @@
       "end_line": 98,
       "sha256": "5646fe9276109017398c4034b14eebe14d7fa9275c0373ca26b4fb9d453dc4e0",
       "path": "apps/player/internal/server/hls_playlist_session_internal_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "C",
+      "review_status": "semantic_review_complete",
+      "reason": "Pure shared-owner alias/replay adds no important distinct failure beyond retained canonical owner and stronger actual app boundary.",
+      "category": "pure_shared_replay_pending_independent_review",
+      "credible_failure": "Pure shared-owner alias/replay adds no important distinct failure beyond retained canonical owner and stronger actual app boundary.",
+      "production_owner": [
+        "apps/player/internal/server/hls_playlist_session.go",
+        "apps/player/internal/server/hls_observability.go",
+        "packages/hlsmanifest/vod_test.go:TestCompleteVODPreservesGuardedManifests + TestHLSSegmentDurationValidationBoundaries"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "packages/hlsmanifest/vod_test.go:TestCompleteVODPreservesGuardedManifests + TestHLSSegmentDurationValidationBoundaries",
+        "Actual app TestSessionlessHLSPlaylist also rejects NaN cadence without mutating disk and checks session parity."
+      ],
+      "coverage_limit": "No browser E2E equivalence claimed; shared-owner consolidation only. Actual app TestSessionlessHLSPlaylist also rejects NaN cadence without mutating disk and checks session parity.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Exact small numeric literals vary; test does not exercise independent app request callback.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared.",
+      "proposed_decision": "D",
+      "implementation_status": "Source held for root independent review; shared owner confirms named keepers retained."
     },
     {
       "name": "TestJellyfinVODPlaylistUsesObservedSegmentCadence",
@@ -15569,23 +15826,36 @@
       "end_line": 106,
       "sha256": "64eabfd72419dc81c40ad1cad0db1be190b3bb06f1911ced322b4414af242d99",
       "path": "apps/player/internal/server/hls_playlist_session_internal_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "C",
+      "review_status": "semantic_review_complete",
+      "reason": "Pure shared-owner alias/replay adds no important distinct failure beyond retained canonical owner and stronger actual app boundary.",
+      "category": "pure_shared_replay_pending_independent_review",
+      "credible_failure": "Pure shared-owner alias/replay adds no important distinct failure beyond retained canonical owner and stronger actual app boundary.",
+      "production_owner": [
+        "apps/player/internal/server/hls_playlist_session.go",
+        "apps/player/internal/server/hls_observability.go",
+        "packages/hlsmanifest/vod_test.go:TestCompleteVODUsesPlayerCadenceAndCompletedTimeline"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "packages/hlsmanifest/vod_test.go:TestCompleteVODUsesPlayerCadenceAndCompletedTimeline",
+        "Canonical exact output checks observed4.1+3.9 average4 then residual0.1; app fixed2 alias has no policy beyond cadence binding kept by actual SessionlessHLSPlaylist."
+      ],
+      "coverage_limit": "No browser E2E equivalence claimed; shared-owner consolidation only. Canonical exact output checks observed4.1+3.9 average4 then residual0.1; app fixed2 alias has no policy beyond cadence binding kept by actual SessionlessHLSPlaylist.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Exact small numeric literals vary; test does not exercise independent app request callback.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared.",
+      "proposed_decision": "D",
+      "implementation_status": "Source held for root independent review; shared owner confirms named keepers retained."
     },
     {
       "name": "TestHLSSeekUsesThePublishedSegmentTimeline",
@@ -15632,23 +15902,36 @@
       "end_line": 130,
       "sha256": "9258007955987e0e70b469251d34c74d65bfe0413dc5adba980f05330ca76f25",
       "path": "apps/player/internal/server/hls_playlist_session_internal_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "C",
+      "review_status": "semantic_review_complete",
+      "reason": "Pure shared-owner alias/replay adds no important distinct failure beyond retained canonical owner and stronger actual app boundary.",
+      "category": "pure_shared_replay_pending_independent_review",
+      "credible_failure": "Pure shared-owner alias/replay adds no important distinct failure beyond retained canonical owner and stronger actual app boundary.",
+      "production_owner": [
+        "apps/player/internal/server/hls_playlist_session.go",
+        "apps/player/internal/server/hls_observability.go",
+        "packages/hlsmanifest/vod_test.go:TestCompleteVODUsesPlayerCadenceAndCompletedTimeline"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "packages/hlsmanifest/vod_test.go:TestCompleteVODUsesPlayerCadenceAndCompletedTimeline",
+        "Canonical exact complete output retains discontinuity/tail and refuses extrapolation; actual app SessionlessHLSPlaylist exact completed HTTP body/parity/unchanged-cache also kept."
+      ],
+      "coverage_limit": "No browser E2E equivalence claimed; shared-owner consolidation only. Canonical exact complete output retains discontinuity/tail and refuses extrapolation; actual app SessionlessHLSPlaylist exact completed HTTP body/parity/unchanged-cache also kept.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Exact small numeric literals vary; test does not exercise independent app request callback.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared.",
+      "proposed_decision": "D",
+      "implementation_status": "Source held for root independent review; shared owner confirms named keepers retained."
     },
     {
       "name": "TestWaitForHLSFileFollowsThePublishedVODTimeline",
@@ -15656,23 +15939,36 @@
       "end_line": 148,
       "sha256": "1f5c6a09f19102be5e59ae60d94f61cabb3cd0de7ef692e78f22dbd4fffcb3fd",
       "path": "apps/player/internal/server/hls_playlist_session_internal_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "C",
+      "review_status": "semantic_review_complete",
+      "reason": "Pure shared-owner alias/replay adds no important distinct failure beyond retained canonical owner and stronger actual app boundary.",
+      "category": "pure_shared_replay_pending_independent_review",
+      "credible_failure": "Pure shared-owner alias/replay adds no important distinct failure beyond retained canonical owner and stronger actual app boundary.",
+      "production_owner": [
+        "apps/player/internal/server/hls_playlist_session.go",
+        "apps/player/internal/server/hls_observability.go",
+        "packages/playback/hls_ready_test.go:TestWaitHLSReadyPreservesPlayerPolling"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "packages/playback/hls_ready_test.go:TestWaitHLSReadyPreservesPlayerPolling",
+        "App adapter passes os.Stat directly; canonical late readiness/canceled/permanent-error matrix plus actual distant seek/future-segment HTTP delivery remain."
+      ],
+      "coverage_limit": "No browser E2E equivalence claimed; shared-owner consolidation only. App adapter passes os.Stat directly; canonical late readiness/canceled/permanent-error matrix plus actual distant seek/future-segment HTTP delivery remain.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Exact small numeric literals vary; test does not exercise independent app request callback.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared.",
+      "proposed_decision": "D",
+      "implementation_status": "Source held for root independent review; shared owner confirms named keepers retained."
     },
     {
       "name": "TestServeRecipeRejectsUnknownPathsWithoutCacheSideEffects",
@@ -30141,24 +30437,45 @@
       "sha256": "5ce00978cfc0a32ff294d3a6aed0600944a97952c6ca67a7104422caac227e2e",
       "path": "apps/player/internal/server/playback_adapters_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual local and trusted-public Viewer must start native media direct without HLS JS/script and retain adaptive fallback/API remux source.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Actual local and trusted-public Viewer must start native media direct without HLS JS/script and retain adaptive fallback/API remux source.",
+      "production_owner": [
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "apps/player/internal/server/playback_timeline.go:playbackWithAutomaticSkip",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources",
+        "apps/player/internal/server/jellyfin_playback.go:playbackModule",
+        "apps/player/internal/server/jellyfin_delivery.go:deliveryModule",
+        "apps/player/internal/server/jellyfin_progress.go:sourcePositionTicks/userDataDTO",
+        "apps/player/internal/server/hls_skip_input.go:hlsSkipInput",
+        "apps/player/internal/server/hls.go:encodeVariants",
+        "packages/catalogapi/media_http_write.go:progress",
+        "packages/catalog/progress_http.go:Save",
+        "packages/servertest/automatic_skip_fixture.go",
+        "packages/servertest/transcode.go",
+        "packages/servertest/transcode_recovery.go",
+        "packages/servertest/transcode_ladder.go"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Genuine one-context browser playback does not compare actual trusted-proxy public context and versioned plan to local source/script binding.",
       "history": [
         "7e6cc93dc8c82fcd3d37e3d46e310b8c8580fbf6 Remove real-time throttling from on-demand HLS",
         "dc3d51b0e9778452cea1e9c40198ac1ff70a6618 Fix Apple HLS fragment media type",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Scripted probes/encoders/in-process app HTTP; not genuine browser E2E.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestExplicitPlaybackModesBypassAutomaticFallbackAcrossAPIAndWeb",
@@ -30167,24 +30484,45 @@
       "sha256": "d7d76bfa1ec1cd483a4030c150657baed8fae01da357d09697d2977161f0e6b2",
       "path": "apps/player/internal/server/playback_adapters_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Explicit direct/compatible persisted settings with intro must suppress automatic adaptive/fallback where required across web and versioned API.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Explicit direct/compatible persisted settings with intro must suppress automatic adaptive/fallback where required across web and versioned API.",
+      "production_owner": [
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "apps/player/internal/server/playback_timeline.go:playbackWithAutomaticSkip",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources",
+        "apps/player/internal/server/jellyfin_playback.go:playbackModule",
+        "apps/player/internal/server/jellyfin_delivery.go:deliveryModule",
+        "apps/player/internal/server/jellyfin_progress.go:sourcePositionTicks/userDataDTO",
+        "apps/player/internal/server/hls_skip_input.go:hlsSkipInput",
+        "apps/player/internal/server/hls.go:encodeVariants",
+        "packages/catalogapi/media_http_write.go:progress",
+        "packages/catalog/progress_http.go:Save",
+        "packages/servertest/automatic_skip_fixture.go",
+        "packages/servertest/transcode.go",
+        "packages/servertest/transcode_recovery.go",
+        "packages/servertest/transcode_ladder.go"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Normal browser automatic mode does not assert conflicting explicit modes in both projection adapters.",
       "history": [
         "7e6cc93dc8c82fcd3d37e3d46e310b8c8580fbf6 Remove real-time throttling from on-demand HLS",
         "dc3d51b0e9778452cea1e9c40198ac1ff70a6618 Fix Apple HLS fragment media type",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Scripted probes/encoders/in-process app HTTP; not genuine browser E2E.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestTrustedOpeningOffsetAcrossAPIAndWeb",
@@ -30193,24 +30531,45 @@
       "sha256": "cf24cc2b9943b24e6e851737bc4aa2a99f1ac1f016f68bde42d017ab52beee48",
       "path": "apps/player/internal/server/playback_adapters_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Trusted opening intro0..20 must start direct20 with fragment/autoplay, compatible0 without direct permission; later42 resume preserved and near-end115 must not autoplay/fragment.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Trusted opening intro0..20 must start direct20 with fragment/autoplay, compatible0 without direct permission; later42 resume preserved and near-end115 must not autoplay/fragment.",
+      "production_owner": [
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "apps/player/internal/server/playback_timeline.go:playbackWithAutomaticSkip",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources",
+        "apps/player/internal/server/jellyfin_playback.go:playbackModule",
+        "apps/player/internal/server/jellyfin_delivery.go:deliveryModule",
+        "apps/player/internal/server/jellyfin_progress.go:sourcePositionTicks/userDataDTO",
+        "apps/player/internal/server/hls_skip_input.go:hlsSkipInput",
+        "apps/player/internal/server/hls.go:encodeVariants",
+        "packages/catalogapi/media_http_write.go:progress",
+        "packages/catalog/progress_http.go:Save",
+        "packages/servertest/automatic_skip_fixture.go",
+        "packages/servertest/transcode.go",
+        "packages/servertest/transcode_recovery.go",
+        "packages/servertest/transcode_ladder.go"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Normal browser resume has no trusted intro/compatible/near-end three-branch web/API projection comparison.",
       "history": [
         "7e6cc93dc8c82fcd3d37e3d46e310b8c8580fbf6 Remove real-time throttling from on-demand HLS",
         "dc3d51b0e9778452cea1e9c40198ac1ff70a6618 Fix Apple HLS fragment media type",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Scripted probes/encoders/in-process app HTTP; not genuine browser E2E.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestCompatiblePlaybackPreservesFullMovieDurationAcrossAPIAndWeb",
@@ -30219,24 +30578,45 @@
       "sha256": "de13de9c6f000270f40096ebc9b9f9c86694a39b8612fcca2b299c1b499b18df",
       "path": "apps/player/internal/server/playback_adapters_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual HEVC Matroska7200s full movie duration must remain7200 in compatible API and web rather than startup window.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Actual HEVC Matroska7200s full movie duration must remain7200 in compatible API and web rather than startup window.",
+      "production_owner": [
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "apps/player/internal/server/playback_timeline.go:playbackWithAutomaticSkip",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources",
+        "apps/player/internal/server/jellyfin_playback.go:playbackModule",
+        "apps/player/internal/server/jellyfin_delivery.go:deliveryModule",
+        "apps/player/internal/server/jellyfin_progress.go:sourcePositionTicks/userDataDTO",
+        "apps/player/internal/server/hls_skip_input.go:hlsSkipInput",
+        "apps/player/internal/server/hls.go:encodeVariants",
+        "packages/catalogapi/media_http_write.go:progress",
+        "packages/catalog/progress_http.go:Save",
+        "packages/servertest/automatic_skip_fixture.go",
+        "packages/servertest/transcode.go",
+        "packages/servertest/transcode_recovery.go",
+        "packages/servertest/transcode_ladder.go"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Generated genuine short clip does not detect truncated full movie duration projection.",
       "history": [
         "7e6cc93dc8c82fcd3d37e3d46e310b8c8580fbf6 Remove real-time throttling from on-demand HLS",
         "dc3d51b0e9778452cea1e9c40198ac1ff70a6618 Fix Apple HLS fragment media type",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Scripted probes/encoders/in-process app HTTP; not genuine browser E2E.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestMatroskaOriginalIsNotAdvertisedAsMP4AcrossAPIAndWeb",
@@ -30245,24 +30625,45 @@
       "sha256": "842e425b236df055315b175e69bad2e77f38da32384de67bbfcf5573c377bfa5",
       "path": "apps/player/internal/server/playback_adapters_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual H264/EAC3 Matroska facts must expose conservative video/x-matroska on both API/web with directAllowed, never fabricated MP4 codec MIME.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Actual H264/EAC3 Matroska facts must expose conservative video/x-matroska on both API/web with directAllowed, never fabricated MP4 codec MIME.",
+      "production_owner": [
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "apps/player/internal/server/playback_timeline.go:playbackWithAutomaticSkip",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources",
+        "apps/player/internal/server/jellyfin_playback.go:playbackModule",
+        "apps/player/internal/server/jellyfin_delivery.go:deliveryModule",
+        "apps/player/internal/server/jellyfin_progress.go:sourcePositionTicks/userDataDTO",
+        "apps/player/internal/server/hls_skip_input.go:hlsSkipInput",
+        "apps/player/internal/server/hls.go:encodeVariants",
+        "packages/catalogapi/media_http_write.go:progress",
+        "packages/catalog/progress_http.go:Save",
+        "packages/servertest/automatic_skip_fixture.go",
+        "packages/servertest/transcode.go",
+        "packages/servertest/transcode_recovery.go",
+        "packages/servertest/transcode_ladder.go"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Normal generated MP4 browser cannot detect wrong Matroska direct type in either adapter.",
       "history": [
         "7e6cc93dc8c82fcd3d37e3d46e310b8c8580fbf6 Remove real-time throttling from on-demand HLS",
         "dc3d51b0e9778452cea1e9c40198ac1ff70a6618 Fix Apple HLS fragment media type",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Scripted probes/encoders/in-process app HTTP; not genuine browser E2E.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestPlaybackSubtitlesOwnsDefaultSelection",
@@ -30411,22 +30812,43 @@
       "sha256": "918ca5ea399b701ceef68ec39a561989ef5ed3b158cdf5e7625e5f8b0029cad2",
       "path": "apps/player/internal/server/playback_latency_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Cold API and web planning with marker must invoke bounded -read_intervals frame probe and finish<1s rather than full-file slow scan.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Cold API and web planning with marker must invoke bounded -read_intervals frame probe and finish<1s rather than full-file slow scan.",
+      "production_owner": [
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "apps/player/internal/server/playback_timeline.go:playbackWithAutomaticSkip",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources",
+        "apps/player/internal/server/jellyfin_playback.go:playbackModule",
+        "apps/player/internal/server/jellyfin_delivery.go:deliveryModule",
+        "apps/player/internal/server/jellyfin_progress.go:sourcePositionTicks/userDataDTO",
+        "apps/player/internal/server/hls_skip_input.go:hlsSkipInput",
+        "apps/player/internal/server/hls.go:encodeVariants",
+        "packages/catalogapi/media_http_write.go:progress",
+        "packages/catalog/progress_http.go:Save",
+        "packages/servertest/automatic_skip_fixture.go",
+        "packages/servertest/transcode.go",
+        "packages/servertest/transcode_recovery.go",
+        "packages/servertest/transcode_ladder.go"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Normal tiny generated source can complete unbounded frame scan quickly and conceal missing interval bounds; test injected delay distinguishes it.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Scripted probes/encoders/in-process app HTTP; not genuine browser E2E.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestDecidePlaybackGoldenPlans",
@@ -41797,24 +42219,45 @@
       "sha256": "9da92581bf7096e890a15110fc97f73c9e777a469b0914bb0e069f3e661d5b43",
       "path": "apps/player/internal/server/transcode_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual unknown Matroska web projection must retain direct session source/conservative Matroska MIME/adaptive fallback and Safari-specific defer policy.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Actual unknown Matroska web projection must retain direct session source/conservative Matroska MIME/adaptive fallback and Safari-specific defer policy.",
+      "production_owner": [
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "apps/player/internal/server/playback_timeline.go:playbackWithAutomaticSkip",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources",
+        "apps/player/internal/server/jellyfin_playback.go:playbackModule",
+        "apps/player/internal/server/jellyfin_delivery.go:deliveryModule",
+        "apps/player/internal/server/jellyfin_progress.go:sourcePositionTicks/userDataDTO",
+        "apps/player/internal/server/hls_skip_input.go:hlsSkipInput",
+        "apps/player/internal/server/hls.go:encodeVariants",
+        "packages/catalogapi/media_http_write.go:progress",
+        "packages/catalog/progress_http.go:Save",
+        "packages/servertest/automatic_skip_fixture.go",
+        "packages/servertest/transcode.go",
+        "packages/servertest/transcode_recovery.go",
+        "packages/servertest/transcode_ladder.go"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Generated ordinary MP4 browser playback does not establish unknown Matroska/Safari projection before valid probe.",
       "history": [
         "d434c849a9fc1e16f948efa057344364bb107727 Version Player script URLs from their served contents",
         "bd2c84bfb9d3ac86313e49cf1c646b44bd45a050 Keep Safari preparation out of playing presentation",
         "b10e64db98bcf7e66fb87e0bd3f47c28d661f18c Prepare mobile Safari video before showing Play"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Scripted probes/encoders/in-process app HTTP; not genuine browser E2E.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestUnsupportedCodecInMP4DefaultsToDirectPlaybackWithCompatibleFallback",
@@ -41823,24 +42266,45 @@
       "sha256": "355b6cff57892bc1ecfc4485eee9190277ddb1c56963c6e7f2aba1987ea707b3",
       "path": "apps/player/internal/server/transcode_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual HEVC/EAC3 probe in MP4 must retain direct session but empty codec hint and compatible fallback so browser can choose capability handling.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Actual HEVC/EAC3 probe in MP4 must retain direct session but empty codec hint and compatible fallback so browser can choose capability handling.",
+      "production_owner": [
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "apps/player/internal/server/playback_timeline.go:playbackWithAutomaticSkip",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources",
+        "apps/player/internal/server/jellyfin_playback.go:playbackModule",
+        "apps/player/internal/server/jellyfin_delivery.go:deliveryModule",
+        "apps/player/internal/server/jellyfin_progress.go:sourcePositionTicks/userDataDTO",
+        "apps/player/internal/server/hls_skip_input.go:hlsSkipInput",
+        "apps/player/internal/server/hls.go:encodeVariants",
+        "packages/catalogapi/media_http_write.go:progress",
+        "packages/catalog/progress_http.go:Save",
+        "packages/servertest/automatic_skip_fixture.go",
+        "packages/servertest/transcode.go",
+        "packages/servertest/transcode_recovery.go",
+        "packages/servertest/transcode_ladder.go"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Normal generated H264/AAC does not establish conservative unknown-codec hint/fallback.",
       "history": [
         "d434c849a9fc1e16f948efa057344364bb107727 Version Player script URLs from their served contents",
         "bd2c84bfb9d3ac86313e49cf1c646b44bd45a050 Keep Safari preparation out of playing presentation",
         "b10e64db98bcf7e66fb87e0bd3f47c28d661f18c Prepare mobile Safari video before showing Play"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Scripted probes/encoders/in-process app HTTP; not genuine browser E2E.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestViewerCanRequestSeekableCompatiblePlaylist",
@@ -41849,24 +42313,45 @@
       "sha256": "a43d1cbd9383203ebcca89aeb45d6563f783367281ecc9906e14792f2b8db7de",
       "path": "apps/player/internal/server/transcode_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual stale seeded cache must regenerate complete seekable1080p ladder and every rendition finalize VOD/endlist rather than serve stale EVENT.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Actual stale seeded cache must regenerate complete seekable1080p ladder and every rendition finalize VOD/endlist rather than serve stale EVENT.",
+      "production_owner": [
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "apps/player/internal/server/playback_timeline.go:playbackWithAutomaticSkip",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources",
+        "apps/player/internal/server/jellyfin_playback.go:playbackModule",
+        "apps/player/internal/server/jellyfin_delivery.go:deliveryModule",
+        "apps/player/internal/server/jellyfin_progress.go:sourcePositionTicks/userDataDTO",
+        "apps/player/internal/server/hls_skip_input.go:hlsSkipInput",
+        "apps/player/internal/server/hls.go:encodeVariants",
+        "packages/catalogapi/media_http_write.go:progress",
+        "packages/catalog/progress_http.go:Save",
+        "packages/servertest/automatic_skip_fixture.go",
+        "packages/servertest/transcode.go",
+        "packages/servertest/transcode_recovery.go",
+        "packages/servertest/transcode_ladder.go"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Genuine startup does not seed stale raw cache manifest or assert all final rendition timeline tags.",
       "history": [
         "d434c849a9fc1e16f948efa057344364bb107727 Version Player script URLs from their served contents",
         "bd2c84bfb9d3ac86313e49cf1c646b44bd45a050 Keep Safari preparation out of playing presentation",
         "b10e64db98bcf7e66fb87e0bd3f47c28d661f18c Prepare mobile Safari video before showing Play"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Scripted probes/encoders/in-process app HTTP; not genuine browser E2E.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestInterruptedCompatibleCacheIsRegeneratedAfterServerRestart",
@@ -41875,24 +42360,45 @@
       "sha256": "0f0df7a745bc124a74779019d8c9190b857925f47b6bc3a32662d254c3c0a36c",
       "path": "apps/player/internal/server/transcode_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual restarted HLS must regenerate unfinished/malformed/lookalike-tag/missing-segment/empty-init/symlink cache entries instead of trust corrupted output.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Actual restarted HLS must regenerate unfinished/malformed/lookalike-tag/missing-segment/empty-init/symlink cache entries instead of trust corrupted output.",
+      "production_owner": [
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "apps/player/internal/server/playback_timeline.go:playbackWithAutomaticSkip",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources",
+        "apps/player/internal/server/jellyfin_playback.go:playbackModule",
+        "apps/player/internal/server/jellyfin_delivery.go:deliveryModule",
+        "apps/player/internal/server/jellyfin_progress.go:sourcePositionTicks/userDataDTO",
+        "apps/player/internal/server/hls_skip_input.go:hlsSkipInput",
+        "apps/player/internal/server/hls.go:encodeVariants",
+        "packages/catalogapi/media_http_write.go:progress",
+        "packages/catalog/progress_http.go:Save",
+        "packages/servertest/automatic_skip_fixture.go",
+        "packages/servertest/transcode.go",
+        "packages/servertest/transcode_recovery.go",
+        "packages/servertest/transcode_ladder.go"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Genuine browser restarts do not mutate encoder cache or inject six corruption forms and count renewed encoding.",
       "history": [
         "d434c849a9fc1e16f948efa057344364bb107727 Version Player script URLs from their served contents",
         "bd2c84bfb9d3ac86313e49cf1c646b44bd45a050 Keep Safari preparation out of playing presentation",
         "b10e64db98bcf7e66fb87e0bd3f47c28d661f18c Prepare mobile Safari video before showing Play"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Scripted probes/encoders/in-process app HTTP; not genuine browser E2E.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestAdaptiveHLSPublishesACompleteTruthfulLadder",
@@ -41901,24 +42407,45 @@
       "sha256": "09f8bf2d2fcb33aeab4f9fb4018617980466402954313105f4da5f9d93479cdf",
       "path": "apps/player/internal/server/transcode_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual HLS manifest must agree with encoded capacity/rendition count, source dimensions/codecs/observed bandwidth/frame rate and2s keyframe independent recipe.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Actual HLS manifest must agree with encoded capacity/rendition count, source dimensions/codecs/observed bandwidth/frame rate and2s keyframe independent recipe.",
+      "production_owner": [
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "apps/player/internal/server/playback_timeline.go:playbackWithAutomaticSkip",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources",
+        "apps/player/internal/server/jellyfin_playback.go:playbackModule",
+        "apps/player/internal/server/jellyfin_delivery.go:deliveryModule",
+        "apps/player/internal/server/jellyfin_progress.go:sourcePositionTicks/userDataDTO",
+        "apps/player/internal/server/hls_skip_input.go:hlsSkipInput",
+        "apps/player/internal/server/hls.go:encodeVariants",
+        "packages/catalogapi/media_http_write.go:progress",
+        "packages/catalog/progress_http.go:Save",
+        "packages/servertest/automatic_skip_fixture.go",
+        "packages/servertest/transcode.go",
+        "packages/servertest/transcode_recovery.go",
+        "packages/servertest/transcode_ladder.go"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Normal browser playback checks success, not exact capacity-aware encoded/advertised ladder/bandwidth/profile/thread recipe.",
       "history": [
         "d434c849a9fc1e16f948efa057344364bb107727 Version Player script URLs from their served contents",
         "bd2c84bfb9d3ac86313e49cf1c646b44bd45a050 Keep Safari preparation out of playing presentation",
         "b10e64db98bcf7e66fb87e0bd3f47c28d661f18c Prepare mobile Safari video before showing Play"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Scripted probes/encoders/in-process app HTTP; not genuine browser E2E.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestAdaptiveHLSDoesNotAdvertiseOrEncodeAbsentAudio",
@@ -41927,24 +42454,45 @@
       "sha256": "213961683c781ef8a4a788ca2ec74c33c29cba0893e62dda1df7338b3bedca9d",
       "path": "apps/player/internal/server/transcode_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual silent source must produce video-only codec master without audio codec or -c:a recipe.",
+      "category": "important_app_owned_boundary",
+      "credible_failure": "Actual silent source must produce video-only codec master without audio codec or -c:a recipe.",
+      "production_owner": [
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "apps/player/internal/server/playback_timeline.go:playbackWithAutomaticSkip",
+        "apps/player/internal/server/api_product.go:apiPlaybackInfo/applyPlaybackSources",
+        "apps/player/internal/server/jellyfin_playback.go:playbackModule",
+        "apps/player/internal/server/jellyfin_delivery.go:deliveryModule",
+        "apps/player/internal/server/jellyfin_progress.go:sourcePositionTicks/userDataDTO",
+        "apps/player/internal/server/hls_skip_input.go:hlsSkipInput",
+        "apps/player/internal/server/hls.go:encodeVariants",
+        "packages/catalogapi/media_http_write.go:progress",
+        "packages/catalog/progress_http.go:Save",
+        "packages/servertest/automatic_skip_fixture.go",
+        "packages/servertest/transcode.go",
+        "packages/servertest/transcode_recovery.go",
+        "packages/servertest/transcode_ladder.go"
+      ],
+      "non_test_callers": [
+        "actual New registers web watch/progress, versioned item playback/progress and Jellyfin PlaybackInfo/HLS/Session progress; app settings/probe/profile callbacks select timeline and encoder policy"
+      ],
+      "remaining_proof": [
+        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+      ],
+      "coverage_limit": "Genuine generated source has audio and cannot catch phantom audio manifest/encoder binding.",
       "history": [
         "d434c849a9fc1e16f948efa057344364bb107727 Version Player script URLs from their served contents",
         "bd2c84bfb9d3ac86313e49cf1c646b44bd45a050 Keep Safari preparation out of playing presentation",
         "b10e64db98bcf7e66fb87e0bd3f47c28d661f18c Prepare mobile Safari video before showing Play"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "test_limit": "Scripted probes/encoders/in-process app HTTP; not genuine browser E2E.",
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
     },
     {
       "name": "TestEveryHardwareBackendHasAnFFmpegRecipe",
@@ -43195,9 +43743,9 @@
     "TestConfigurationTransactionRejectsSemanticallyInvalidRecoveryWithoutSideEffects"
   ],
   "review_summary": {
-    "semantic_review_complete": 555,
+    "semantic_review_complete": 583,
     "candidate_evidence_complete": 35,
-    "inventory_only_retained_pending_semantic_review": 243,
+    "inventory_only_retained_pending_semantic_review": 215,
     "test_and_boundary_review_pending_full_owner": 4
   }
 }
