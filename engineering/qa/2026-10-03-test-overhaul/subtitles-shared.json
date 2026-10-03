@@ -6,13 +6,13 @@
   "files": 379,
   "declarations": 954,
   "test_loc": 28832,
-  "reviewed": 342,
-  "pending": 612,
+  "reviewed": 356,
+  "pending": 598,
   "decisions": {
-    "R": 288,
-    "D": 42,
-    "F": 12,
-    "C": 0
+    "R": 298,
+    "D": 44,
+    "F": 13,
+    "C": 1
   },
   "verification": [
     {
@@ -1924,68 +1924,88 @@
       "line": 16,
       "test": "TestScopedAPIKeysAreHashedEnforcedAndRevocable",
       "baseline_file_sha256": "f35b68e3fe569f380a0eec1c6ec0af83f43f2b82b258b4896b43a1aa0cc1ce6c",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual web creation emits uncached one-time secret, persists only hash, survives app restart, library key does not disclose source/direct/compatible/trickplay/download/stream internals, cannot mutate or stream/admin/metrics; actual revoke makes401.",
+      "production_owner": "apps/subtitles/internal/server/{api_keys,profiles_access,profiles,settings_actions,quick_connect,passkeys,auth,auth_remote_routes,audit_classification}.go; packages/{identitycore,quickconnect,credentials,settings,auditjournal}",
+      "non_test_callers": "Registered app web/API settings/profile/password/passkey/QuickConnect routes and authentication profile resolution; auditStore.Track Classify callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_contract",
+          "reference": "apps/subtitles/internal/server/api_key_test.go:TestScopedAPIKeysAreHashedEnforcedAndRevocable"
+        }
+      ],
+      "coverage_gap": "Genuine apps/subtitles/e2e/test-instance.spec.ts:Owner authorizes a waiting device with Quick Connect covers Owner happy approval/token string only, not Viewer session usability, replay, reassignment, configured TTL, thresholds, revoked/scoped API-key lifetime or invalid-password no-mutation failures. Config:false fixtures compose common identity/API handlers but do not establish genuine SubtitleApp:true dashboard coverage.",
+      "history": "d3d9cf3fe920adb391410c1af1d6a40be18c3c2c Add dependency thanks across active apps and remove retired Dashboard references",
+      "risk": "Retain concrete identity/credential boundary; effective assertions unchanged unless declared replay cases removed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_key_test.go",
       "line": 57,
       "test": "TestAPIKeyCreationRejectsUnknownScopes",
       "baseline_file_sha256": "f35b68e3fe569f380a0eec1c6ec0af83f43f2b82b258b4896b43a1aa0cc1ce6c",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual web settings unknown scope returns400 with validation error before issuer; shared parser alone does not prove form route integration.",
+      "production_owner": "apps/subtitles/internal/server/{api_keys,profiles_access,profiles,settings_actions,quick_connect,passkeys,auth,auth_remote_routes,audit_classification}.go; packages/{identitycore,quickconnect,credentials,settings,auditjournal}",
+      "non_test_callers": "Registered app web/API settings/profile/password/passkey/QuickConnect routes and authentication profile resolution; auditStore.Track Classify callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_contract",
+          "reference": "apps/subtitles/internal/server/api_key_test.go:TestAPIKeyCreationRejectsUnknownScopes"
+        }
+      ],
+      "coverage_gap": "Genuine apps/subtitles/e2e/test-instance.spec.ts:Owner authorizes a waiting device with Quick Connect covers Owner happy approval/token string only, not Viewer session usability, replay, reassignment, configured TTL, thresholds, revoked/scoped API-key lifetime or invalid-password no-mutation failures. Config:false fixtures compose common identity/API handlers but do not establish genuine SubtitleApp:true dashboard coverage.",
+      "history": "d3d9cf3fe920adb391410c1af1d6a40be18c3c2c Add dependency thanks across active apps and remove retired Dashboard references",
+      "risk": "Retain concrete identity/credential boundary; effective assertions unchanged unless declared replay cases removed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_key_test.go",
       "line": 67,
       "test": "TestRemovingProfileRevokesItsAPIKeys",
       "baseline_file_sha256": "f35b68e3fe569f380a0eec1c6ec0af83f43f2b82b258b4896b43a1aa0cc1ce6c",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual web Owner self-removal after creating second Owner must303, make old library key401 and remove named key from durable app storage. Retained API different-Owner removal does not exercise this web adapter/self-removal path.",
+      "production_owner": "apps/subtitles/internal/server/{api_keys,profiles_access,profiles,settings_actions,quick_connect,passkeys,auth,auth_remote_routes,audit_classification}.go; packages/{identitycore,quickconnect,credentials,settings,auditjournal}",
+      "non_test_callers": "Registered app web/API settings/profile/password/passkey/QuickConnect routes and authentication profile resolution; auditStore.Track Classify callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_contract",
+          "reference": "apps/subtitles/internal/server/api_key_test.go:TestRemovingProfileRevokesItsAPIKeys"
+        }
+      ],
+      "coverage_gap": "Genuine apps/subtitles/e2e/test-instance.spec.ts:Owner authorizes a waiting device with Quick Connect covers Owner happy approval/token string only, not Viewer session usability, replay, reassignment, configured TTL, thresholds, revoked/scoped API-key lifetime or invalid-password no-mutation failures. Config:false fixtures compose common identity/API handlers but do not establish genuine SubtitleApp:true dashboard coverage.",
+      "history": "d3d9cf3fe920adb391410c1af1d6a40be18c3c2c Add dependency thanks across active apps and remove retired Dashboard references",
+      "risk": "Retain concrete identity/credential boundary; effective assertions unchanged unless declared replay cases removed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_keys_internal_test.go",
       "line": 9,
       "test": "TestAPIKeysExpireAndTrackUse",
       "baseline_file_sha256": "355b8030cfb74c857364170f7eec6d3c907cd51690e5f8b74966606b90343300",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App createAPIKey binds expiry>creation bounded90days; actual app profile(request) updates LastUsed and rejects manually expired key. App accessor/expiry/persist binding differs canonical issuer.",
+      "production_owner": "apps/subtitles/internal/server/{api_keys,profiles_access,profiles,settings_actions,quick_connect,passkeys,auth,auth_remote_routes,audit_classification}.go; packages/{identitycore,quickconnect,credentials,settings,auditjournal}",
+      "non_test_callers": "Registered app web/API settings/profile/password/passkey/QuickConnect routes and authentication profile resolution; auditStore.Track Classify callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_contract",
+          "reference": "apps/subtitles/internal/server/api_keys_internal_test.go:TestAPIKeysExpireAndTrackUse"
+        }
+      ],
+      "coverage_gap": "Genuine apps/subtitles/e2e/test-instance.spec.ts:Owner authorizes a waiting device with Quick Connect covers Owner happy approval/token string only, not Viewer session usability, replay, reassignment, configured TTL, thresholds, revoked/scoped API-key lifetime or invalid-password no-mutation failures. Config:false fixtures compose common identity/API handlers but do not establish genuine SubtitleApp:true dashboard coverage.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete identity/credential boundary; effective assertions unchanged unless declared replay cases removed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_letter_test.go",
@@ -3175,17 +3195,27 @@
       "line": 86,
       "test": "TestEveryPublicPolicyNamesARegisteredRoute",
       "baseline_file_sha256": "ebb2349f3fd006748c2b6f6d839944d117d6e6d60c2e1a98ad53d202f8145b62",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Unregistered stale publicRoutes entries cannot authorize any handler because app protect matches actual ServeMux pattern. Structural reverse membership lint has no independent current runtime failure: retained reviewed exact route SHA and independent explicitAnonymous actual handler matrix catches changes to registered access.",
+      "production_owner": "apps/subtitles/internal/server/{api_keys,profiles_access,profiles,settings_actions,quick_connect,passkeys,auth,auth_remote_routes,audit_classification}.go; packages/{identitycore,quickconnect,credentials,settings,auditjournal}",
+      "non_test_callers": "Registered app web/API settings/profile/password/passkey/QuickConnect routes and authentication profile resolution; auditStore.Track Classify callback.",
+      "remaining_proof": [
+        {
+          "kind": "retained_reviewed_registered_route_digest_and_actual_anonymous_handler_matrix",
+          "reference": "apps/subtitles/internal/server/auth_all_routes_test.go:TestEveryRegisteredRouteHasReviewedAnonymousAccess",
+          "assertions": "reviewedRouteInventorySHA256 + independent explicitlyAnonymousRoutes classification + actual ServeHTTP denied/public results"
+        },
+        {
+          "kind": "retained_default_closed_public_policy_contract",
+          "reference": "apps/subtitles/internal/server/auth_policy_internal_test.go:TestPublicRoutePolicyIsExactAndDefaultsProtected"
+        }
+      ],
+      "coverage_gap": "No E2E equivalence claimed. Stale nonregistered entry bookkeeping guard removed; meaningful actual route access remains fenced. A later new registration changes digest and independently classifies anonymous behavior.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Low: app public decision uses matched registered pattern; an unregistered map entry does not create a route.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/auth_revoked_routes_test.go",
@@ -4376,17 +4406,22 @@
       "line": 13,
       "test": "TestUnsafePasswordsAreRejectedWithoutAccountSideEffects",
       "baseline_file_sha256": "4e3a32b07e6c61ee8e319b02f1967a7a0b45ab015a37148e8fbb0f35a3e4457a",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual web setup rejects common/oversized passwords then valid setup succeeds; API profile create rejects same bad values then valid Viewer succeeds; rejected password reset preserves original Viewer password. Shared credential validator misses adapter side effects.",
+      "production_owner": "apps/subtitles/internal/server/{api_keys,profiles_access,profiles,settings_actions,quick_connect,passkeys,auth,auth_remote_routes,audit_classification}.go; packages/{identitycore,quickconnect,credentials,settings,auditjournal}",
+      "non_test_callers": "Registered app web/API settings/profile/password/passkey/QuickConnect routes and authentication profile resolution; auditStore.Track Classify callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_contract",
+          "reference": "apps/subtitles/internal/server/credentials_boundary_test.go:TestUnsafePasswordsAreRejectedWithoutAccountSideEffects"
+        }
+      ],
+      "coverage_gap": "Genuine apps/subtitles/e2e/test-instance.spec.ts:Owner authorizes a waiting device with Quick Connect covers Owner happy approval/token string only, not Viewer session usability, replay, reassignment, configured TTL, thresholds, revoked/scoped API-key lifetime or invalid-password no-mutation failures. Config:false fixtures compose common identity/API handlers but do not establish genuine SubtitleApp:true dashboard coverage.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete identity/credential boundary; effective assertions unchanged unless declared replay cases removed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/csrf_internal_test.go",
@@ -12451,34 +12486,54 @@
       "line": 9,
       "test": "TestPasskeyBeginRoutesFailClosedWhenConfigurationIsInvalid",
       "baseline_file_sha256": "21c2bd7c8da30b49972064daaf008a525c17ac28465f94bf1c2bee8d7187d156",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Malformed app AuthURL must cause both actual registration/login begin503 before flow/store use; shared origin parser alone does not cover app unavailable engine handling.",
+      "production_owner": "apps/subtitles/internal/server/{api_keys,profiles_access,profiles,settings_actions,quick_connect,passkeys,auth,auth_remote_routes,audit_classification}.go; packages/{identitycore,quickconnect,credentials,settings,auditjournal}",
+      "non_test_callers": "Registered app web/API settings/profile/password/passkey/QuickConnect routes and authentication profile resolution; auditStore.Track Classify callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_contract",
+          "reference": "apps/subtitles/internal/server/qa_permission_edges_test.go:TestPasskeyBeginRoutesFailClosedWhenConfigurationIsInvalid"
+        }
+      ],
+      "coverage_gap": "Genuine apps/subtitles/e2e/test-instance.spec.ts:Owner authorizes a waiting device with Quick Connect covers Owner happy approval/token string only, not Viewer session usability, replay, reassignment, configured TTL, thresholds, revoked/scoped API-key lifetime or invalid-password no-mutation failures. Config:false fixtures compose common identity/API handlers but do not establish genuine SubtitleApp:true dashboard coverage.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete identity/credential boundary; effective assertions unchanged unless declared replay cases removed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/qa_permission_edges_test.go",
       "line": 15,
       "test": "TestAPIKeyPermissionsHonorScopeAndRouteClassification",
       "baseline_file_sha256": "21c2bd7c8da30b49972064daaf008a525c17ac28465f94bf1c2bee8d7187d156",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "viewerProfile is identitycore.Profile alias, Permits3 exact cases replay canonical factor/scope test; routeSet is one-line identitycore.RouteSet delegate and helper seeds only arbitrary2routes, not app registered route classification.",
+      "production_owner": "apps/subtitles/internal/server/{api_keys,profiles_access,profiles,settings_actions,quick_connect,passkeys,auth,auth_remote_routes,audit_classification}.go; packages/{identitycore,quickconnect,credentials,settings,auditjournal}",
+      "non_test_callers": "Registered app web/API settings/profile/password/passkey/QuickConnect routes and authentication profile resolution; auditStore.Track Classify callback.",
+      "remaining_proof": [
+        {
+          "kind": "retained_canonical_shared_scope_contract",
+          "reference": "packages/identitycore/profile_test.go:TestProfileFactorAndScopePolicy",
+          "assertions": "exact3Permitscases"
+        },
+        {
+          "kind": "retained_canonical_shared_route_sets_and_API_scope_policy",
+          "reference": "packages/identitycore/access_test.go:TestMFAAndAPIKeyPolicies",
+          "assertions": "allroutefamiliesandfreshmapisolation"
+        },
+        {
+          "kind": "retained_actual_app_scope_route_matrix",
+          "reference": "apps/subtitles/internal/server/auth_all_routes_test.go:TestEveryProtectedRouteEnforcesExactAPIKeyScopes"
+        }
+      ],
+      "coverage_gap": "No E2E equivalence claimed. Pure shared alias/default replay removed; actual app permission map and handler matrix retained.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Low: no app-owned type method or meaningful actual route binding in removed helper.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/qa_update_edges_test.go",
@@ -12519,85 +12574,116 @@
       "line": 21,
       "test": "TestViewerApprovesOneTimeQuickConnectSession",
       "baseline_file_sha256": "220a75cb9a72cbc15766699c74f65e51c029037af75fcd157ff29ee79a7b7cb6",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual Viewer-approved app QuickConnect with no pending token must mint usable library session, and consuming same secret again404. Genuine Owner authorization E2E does not attempt replay or Viewer grant.",
+      "production_owner": "apps/subtitles/internal/server/{api_keys,profiles_access,profiles,settings_actions,quick_connect,passkeys,auth,auth_remote_routes,audit_classification}.go; packages/{identitycore,quickconnect,credentials,settings,auditjournal}",
+      "non_test_callers": "Registered app web/API settings/profile/password/passkey/QuickConnect routes and authentication profile resolution; auditStore.Track Classify callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_contract",
+          "reference": "apps/subtitles/internal/server/quick_connect_test.go:TestViewerApprovesOneTimeQuickConnectSession"
+        }
+      ],
+      "coverage_gap": "Genuine apps/subtitles/e2e/test-instance.spec.ts:Owner authorizes a waiting device with Quick Connect covers Owner happy approval/token string only, not Viewer session usability, replay, reassignment, configured TTL, thresholds, revoked/scoped API-key lifetime or invalid-password no-mutation failures. Config:false fixtures compose common identity/API handlers but do not establish genuine SubtitleApp:true dashboard coverage.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete identity/credential boundary; effective assertions unchanged unless declared replay cases removed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/quick_connect_test.go",
       "line": 25,
       "test": "TestApprovedQuickConnectCannotBeReassignedToAnotherViewer",
       "baseline_file_sha256": "220a75cb9a72cbc15766699c74f65e51c029037af75fcd157ff29ee79a7b7cb6",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual Owner approval idempotent retry204 but second Viewer reassignment400; consumed app token must still identify original Owner. Browser approval E2E misses malicious reassignment.",
+      "production_owner": "apps/subtitles/internal/server/{api_keys,profiles_access,profiles,settings_actions,quick_connect,passkeys,auth,auth_remote_routes,audit_classification}.go; packages/{identitycore,quickconnect,credentials,settings,auditjournal}",
+      "non_test_callers": "Registered app web/API settings/profile/password/passkey/QuickConnect routes and authentication profile resolution; auditStore.Track Classify callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_contract",
+          "reference": "apps/subtitles/internal/server/quick_connect_test.go:TestApprovedQuickConnectCannotBeReassignedToAnotherViewer"
+        }
+      ],
+      "coverage_gap": "Genuine apps/subtitles/e2e/test-instance.spec.ts:Owner authorizes a waiting device with Quick Connect covers Owner happy approval/token string only, not Viewer session usability, replay, reassignment, configured TTL, thresholds, revoked/scoped API-key lifetime or invalid-password no-mutation failures. Config:false fixtures compose common identity/API handlers but do not establish genuine SubtitleApp:true dashboard coverage.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete identity/credential boundary; effective assertions unchanged unless declared replay cases removed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/quick_connect_test.go",
       "line": 29,
       "test": "TestQuickConnectCodeExpires",
       "baseline_file_sha256": "220a75cb9a72cbc15766699c74f65e51c029037af75fcd157ff29ee79a7b7cb6",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Config QuickConnectTTL10ms must reach app broker and expired real web code approval400 after20ms; default successful browser approval does not cover configured expiry binding.",
+      "production_owner": "apps/subtitles/internal/server/{api_keys,profiles_access,profiles,settings_actions,quick_connect,passkeys,auth,auth_remote_routes,audit_classification}.go; packages/{identitycore,quickconnect,credentials,settings,auditjournal}",
+      "non_test_callers": "Registered app web/API settings/profile/password/passkey/QuickConnect routes and authentication profile resolution; auditStore.Track Classify callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_contract",
+          "reference": "apps/subtitles/internal/server/quick_connect_test.go:TestQuickConnectCodeExpires"
+        }
+      ],
+      "coverage_gap": "Genuine apps/subtitles/e2e/test-instance.spec.ts:Owner authorizes a waiting device with Quick Connect covers Owner happy approval/token string only, not Viewer session usability, replay, reassignment, configured TTL, thresholds, revoked/scoped API-key lifetime or invalid-password no-mutation failures. Config:false fixtures compose common identity/API handlers but do not establish genuine SubtitleApp:true dashboard coverage.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete identity/credential boundary; effective assertions unchanged unless declared replay cases removed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/quick_connect_test.go",
       "line": 33,
       "test": "TestQuickConnectCreationIsRateLimited",
       "baseline_file_sha256": "220a75cb9a72cbc15766699c74f65e51c029037af75fcd157ff29ee79a7b7cb6",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual API21validJSONdevice starts from same source must429 with Retry-After60; app creation/start limiter wiring must enforce threshold independently of browser happy approval.",
+      "production_owner": "apps/subtitles/internal/server/{api_keys,profiles_access,profiles,settings_actions,quick_connect,passkeys,auth,auth_remote_routes,audit_classification}.go; packages/{identitycore,quickconnect,credentials,settings,auditjournal}",
+      "non_test_callers": "Registered app web/API settings/profile/password/passkey/QuickConnect routes and authentication profile resolution; auditStore.Track Classify callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_contract",
+          "reference": "apps/subtitles/internal/server/quick_connect_test.go:TestQuickConnectCreationIsRateLimited"
+        }
+      ],
+      "coverage_gap": "Genuine apps/subtitles/e2e/test-instance.spec.ts:Owner authorizes a waiting device with Quick Connect covers Owner happy approval/token string only, not Viewer session usability, replay, reassignment, configured TTL, thresholds, revoked/scoped API-key lifetime or invalid-password no-mutation failures. Config:false fixtures compose common identity/API handlers but do not establish genuine SubtitleApp:true dashboard coverage.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete identity/credential boundary; effective assertions unchanged unless declared replay cases removed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/quick_connect_test.go",
       "line": 37,
       "test": "TestQuickConnectRejectsInvalidDeviceBeforeCreatingRequest",
       "baseline_file_sha256": "220a75cb9a72cbc15766699c74f65e51c029037af75fcd157ff29ee79a7b7cb6",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "F",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual API newline device JSON returns400 via app CleanDevice/broker validation; no pending map/count or callback side effect is observed, so before-creation claim is unproven.",
+      "production_owner": "apps/subtitles/internal/server/{api_keys,profiles_access,profiles,settings_actions,quick_connect,passkeys,auth,auth_remote_routes,audit_classification}.go; packages/{identitycore,quickconnect,credentials,settings,auditjournal}",
+      "non_test_callers": "Registered app web/API settings/profile/password/passkey/QuickConnect routes and authentication profile resolution; auditStore.Track Classify callback.",
+      "remaining_proof": [
+        {
+          "kind": "isolated_actual_app_handler_store_contract",
+          "reference": "apps/subtitles/internal/server/quick_connect_test.go:TestQuickConnectRejectsInvalidDevice"
+        }
+      ],
+      "coverage_gap": "Genuine apps/subtitles/e2e/test-instance.spec.ts:Owner authorizes a waiting device with Quick Connect covers Owner happy approval/token string only, not Viewer session usability, replay, reassignment, configured TTL, thresholds, revoked/scoped API-key lifetime or invalid-password no-mutation failures. Config:false fixtures compose common identity/API handlers but do not establish genuine SubtitleApp:true dashboard coverage.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retain concrete identity/credential boundary; effective assertions unchanged unless declared replay cases removed.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server",
+      "final_test": "TestQuickConnectRejectsInvalidDevice",
+      "failure_analysis": [
+        "Start could allocate pending state and later return400; status-only fixture would still pass.",
+        "Current newline rejection proves app parser/CleanDevice/broker validation status, but no absence of pending state is observed.",
+        "Rename existing declaration to measured rejection; no new isolated assertions or production edits."
+      ]
     },
     {
       "file": "apps/subtitles/internal/server/rate_limit_test.go",
@@ -13318,17 +13404,36 @@
       "line": 9,
       "test": "TestRemoteSecurityMutationsHaveStableAuditActions",
       "baseline_file_sha256": "69fd634b25f2ca8041fc6ab525c07cb249610aa8864fe5d6e8996eb057a54ec6",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "C",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Retain exact web /settings/remote/kill and bare app /api/v1/media-shares/claim classification guards. Drop4exact API kill/reset/create/revoke direct shared default replays. Canonical claim includes /id/claim, so bare-claim exact guard remains.",
+      "production_owner": "apps/subtitles/internal/server/{api_keys,profiles_access,profiles,settings_actions,quick_connect,passkeys,auth,auth_remote_routes,audit_classification}.go; packages/{identitycore,quickconnect,credentials,settings,auditjournal}",
+      "non_test_callers": "Registered app web/API settings/profile/password/passkey/QuickConnect routes and authentication profile resolution; auditStore.Track Classify callback.",
+      "remaining_proof": [
+        {
+          "kind": "retained_exact_remaining_app_path_classification",
+          "reference": "apps/subtitles/internal/server/remote_security_audit_internal_test.go:TestRemoteSecurityMutationsHaveStableAuditActions",
+          "cases": [
+            "POST /settings/remote/kill -> remote-access.killed",
+            "POST /api/v1/media-shares/claim -> media-share.claimed"
+          ]
+        },
+        {
+          "kind": "retained_canonical_exact4APIclassificationcases",
+          "reference": "packages/auditjournal/classification_test.go:TestDynamicAuditActionsCoverEveryRouteFamily",
+          "cases": [
+            "POST /api/v1/remote-access/kill",
+            "DELETE /api/v1/remote-access/kill",
+            "POST /api/v1/media-shares",
+            "DELETE /api/v1/media-shares/id"
+          ]
+        }
+      ],
+      "coverage_gap": "Classification-only fixture never emits an actual app mutation event; no genuine E2E equivalence claimed. App overrides exclude these routes. Bare claim and web-kill exact paths are retained because canonical table does not assert them exactly.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Low:4direct shared classification rows removed,2unique exact paths remain; no new assertion or declaration.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -json -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/replaygain_test.go",
