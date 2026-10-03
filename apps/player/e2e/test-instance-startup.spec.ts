@@ -92,6 +92,7 @@ test('bounded startup preparation preserves the exact stream and playback priori
   for (const name of ['Cold', 'Warm']) {
     expect((await page.request.put(`/api/v1/items/${id(name)}/progress`, {headers, data: {seconds: 12.3}})).ok()).toBe(true);
   }
+  expect((await page.request.put('/api/v1/settings/playback', {headers, data: {mode: 'compatible', autoplay: true, subtitles: 'en', autoSkip: []}})).ok()).toBe(true);
   await page.evaluate(() => localStorage.setItem('kinosail.playback-policy-v2', 'compatible'));
   const cold = await moving('Cold');
   receipts.push({name: 'cold', ...cold});
