@@ -9,20 +9,6 @@ import (
 	"testing"
 )
 
-func TestStoredJSONRejectsMalformedDuplicateTrailingAndOversizedDocuments(t *testing.T) {
-	for name, document := range invalidStoredJSONDocuments(t) {
-		t.Run(name, func(t *testing.T) {
-			if _, err := parseJSON(document, configurationFile); err == nil {
-				t.Fatal("invalid stored JSON was accepted")
-			}
-		})
-	}
-	valid, err := parseJSON([]byte("{\"server.name\":\"Living Room\"}\n"), configurationFile)
-	if err != nil || valid["server.name"] != "Living Room" {
-		t.Fatalf("valid stored JSON = %#v, error %v", valid, err)
-	}
-}
-
 func TestInvalidStoredJSONCausesNoConfigurationMutation(t *testing.T) { //nolint:gocognit // One matrix proves identical no-side-effect behavior for every invalid stored document.
 	for name, document := range invalidStoredJSONDocuments(t) {
 		t.Run(name, func(t *testing.T) {

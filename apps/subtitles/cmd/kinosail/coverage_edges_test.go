@@ -10,7 +10,3 @@ import (
 func TestCommandConfigurationEdges(t *testing.T) {
 	commandtest.ConfigurationEdges(t, configuration.Load, configuredAuthURL, "38128")
 }
-
-func TestLoadConfigurationFindsDefaultFile(t *testing.T) {
-	commandtest.DefaultConfigurationFile(t, loadConfigurationPath)
-}

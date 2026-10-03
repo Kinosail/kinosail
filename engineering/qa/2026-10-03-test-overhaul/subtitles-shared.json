@@ -6,11 +6,11 @@
   "files": 379,
   "declarations": 954,
   "test_loc": 28832,
-  "reviewed": 68,
-  "pending": 886,
+  "reviewed": 125,
+  "pending": 829,
   "decisions": {
-    "R": 43,
-    "D": 25,
+    "R": 95,
+    "D": 30,
     "F": 0,
     "C": 0
   },
@@ -32,357 +32,461 @@
       "line": 10,
       "test": "TestConfigurationCommandValidatesAndSummarizesSources",
       "baseline_file_sha256": "813b616855ed85cf764be814d78e3ba8b316e4db88609f3abd8543431409711c",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "CLI config validate must report the actual file/UI/environment sources and fail for missing files or unknown commands; browser UI does not invoke CLI source reporting.",
+      "production_owner": "apps/subtitles/cmd/kinosail/{main,auth_url,mcp_stdio_unix}.go app bindings; packages/{appcli,mcpgateway,servertransport,updatecontrol}",
+      "non_test_callers": "main/appcli.Execute; serveConfiguredMCP/run/command; deployed CLI operations",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/cmd/kinosail/config_command_test.go:TestConfigurationCommandValidatesAndSummarizesSources"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/cmd/kinosail/coverage_edges_test.go",
       "line": 10,
       "test": "TestCommandConfigurationEdges",
       "baseline_file_sha256": "b2b4ad8d683f5fadf9136c76c0b5a24debcb47834dab1fd8ccdb3a7d3920b823",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "The app configuredAuthURL fallback port and explicit canonical remote origin must be correct; browser environment provides valid explicit origins.",
+      "production_owner": "apps/subtitles/cmd/kinosail/{main,auth_url,mcp_stdio_unix}.go app bindings; packages/{appcli,mcpgateway,servertransport,updatecontrol}",
+      "non_test_callers": "main/appcli.Execute; serveConfiguredMCP/run/command; deployed CLI operations",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/cmd/kinosail/coverage_edges_test.go:TestCommandConfigurationEdges"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "148cf8317def71e026d111f05ce7e802612e983c Remove legacy viewer WireGuard access",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/cmd/kinosail/coverage_edges_test.go",
       "line": 14,
       "test": "TestLoadConfigurationFindsDefaultFile",
       "baseline_file_sha256": "b2b4ad8d683f5fadf9136c76c0b5a24debcb47834dab1fd8ccdb3a7d3920b823",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
+      "credible_failure": "Writes a version-only YAML file but asserts only paths.data from KINOSAIL_DATA_DIR; would pass if default YAML discovery were deleted.",
+      "production_owner": "apps/subtitles/cmd/kinosail/main.go:loadConfigurationPath",
+      "non_test_callers": "main/appcli.Execute -> loadConfiguration; config command loads explicit path",
       "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "coverage_gap": "Default YAML auto-discovery has no meaningful assertion in this test and no demonstrated true E2E coverage. Gap recorded; removed declaration cannot catch that bug. Public explicit-YAML loading remains covered by ConfigurationCommandValidatesAndSummarizesSources.",
+      "history": "148cf8317def71e026d111f05ce7e802612e983c Remove legacy viewer WireGuard access",
+      "risk": "Low; stronger exact remaining proof or assertion shown vacuous. No production or shared support edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/cmd/kinosail/healthcheck_test.go",
       "line": 9,
       "test": "TestHealthcheckUsesConfiguredAuthHost",
       "baseline_file_sha256": "ec2f7b19e881612d773f663e306d983fbc07dcec7a1bdb5a99e5f11f4b7320b3",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "A real CLI subprocess healthcheck must address the configured canonical Host over HTTPS; direct shared CheckHealth tests cannot prove app wiring.",
+      "production_owner": "apps/subtitles/cmd/kinosail/{main,auth_url,mcp_stdio_unix}.go app bindings; packages/{appcli,mcpgateway,servertransport,updatecontrol}",
+      "non_test_callers": "main/appcli.Execute; serveConfiguredMCP/run/command; deployed CLI operations",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/cmd/kinosail/healthcheck_test.go:TestHealthcheckUsesConfiguredAuthHost"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/cmd/kinosail/main_test.go",
       "line": 10,
       "test": "TestCLIContract",
       "baseline_file_sha256": "5a818fc30fd0a4fda6bdac7218c7b17ff541a2a854a2e15ff41e344c7edffca9",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "The application command binder must preserve encrypted recovery/restore, real subprocess MCP tools using the actual owner database, error exits, listen failure, transport/log privacy and proxy capability. Browser tests do not exercise CLI or subprocess STDIO.",
+      "production_owner": "apps/subtitles/cmd/kinosail/{main,auth_url,mcp_stdio_unix}.go app bindings; packages/{appcli,mcpgateway,servertransport,updatecontrol}",
+      "non_test_callers": "main/appcli.Execute; serveConfiguredMCP/run/command; deployed CLI operations",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/cmd/kinosail/main_test.go:TestCLIContract"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/cmd/kinosail/main_test.go",
       "line": 19,
       "test": "TestCommandLineHelperProcess",
       "baseline_file_sha256": "5a818fc30fd0a4fda6bdac7218c7b17ff541a2a854a2e15ff41e344c7edffca9",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "This declaration is the required subprocess entrypoint for retained TLS/health/CLI/MCP executable scenarios, not a standalone assertion-free coverage probe; removing it silently destroys those process contracts.",
+      "production_owner": "apps/subtitles/cmd/kinosail/{main,auth_url,mcp_stdio_unix}.go app bindings; packages/{appcli,mcpgateway,servertransport,updatecontrol}",
+      "non_test_callers": "main/appcli.Execute; serveConfiguredMCP/run/command; deployed CLI operations",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/cmd/kinosail/main_test.go:TestCommandLineHelperProcess"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/cmd/kinosail/mcp_stdio_edges_unix_test.go",
       "line": 12,
       "test": "TestConfiguredMCPBindsBothStdioPaths",
       "baseline_file_sha256": "c5ea2e6b9331e3efe8063d0d153ce45edd1858c39de32ef9990fbefd4c7305ac",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Cancelled owner and relay STDIO paths must invoke the correct app MCPSDK server/relay binding and return cancellation; a browser HTTP connection does not exercise these transports.",
+      "production_owner": "apps/subtitles/cmd/kinosail/{main,auth_url,mcp_stdio_unix}.go app bindings; packages/{appcli,mcpgateway,servertransport,updatecontrol}",
+      "non_test_callers": "main/appcli.Execute; serveConfiguredMCP/run/command; deployed CLI operations",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/cmd/kinosail/mcp_stdio_edges_unix_test.go:TestConfiguredMCPBindsBothStdioPaths"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/cmd/kinosail/tls_health_test.go",
       "line": 14,
       "test": "TestHealthCheckCoversHTTPHTTPSAndCanonicalHost",
       "baseline_file_sha256": "e8fc2a4e4b7a450c2338167d8f74ecbd2a7f810f6e274329c32490f2f9d35bc4",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Direct shared CheckHealth replay has no application seam; primary package covers HTTP/TLS1.3/canonicalHost/non200/invalid addresses/auth URL/unreachable server plus invalid URL.",
+      "production_owner": "packages/servertransport/server.go:CheckHealth",
+      "non_test_callers": "appcli.Execute healthcheck invokes servertransport.CheckHealth",
+      "remaining_proof": [
+        {
+          "kind": "isolated_or_process_contract",
+          "reference": "packages/servertransport/server_test.go:TestCheckHealthCoversProtocolsAndInputFailures"
+        },
+        {
+          "kind": "isolated_or_process_contract",
+          "reference": "apps/subtitles/cmd/kinosail/healthcheck_test.go:TestHealthcheckUsesConfiguredAuthHost"
+        }
+      ],
+      "coverage_gap": "Shared isolated transport keeper covers exact branches (404 vs503 both same non200 branch); app keeper adds actual process/configured-origin integration. Browser smoke is not TLS/protocol failure coverage.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Low; stronger exact remaining proof or assertion shown vacuous. No production or shared support edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/cmd/kinosail/tls_health_test.go",
       "line": 56,
       "test": "TestConfiguredMCPServerUsesOnlyTheDataDirectory",
       "baseline_file_sha256": "e8fc2a4e4b7a450c2338167d8f74ecbd2a7f810f6e274329c32490f2f9d35bc4",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Checks one DataDir projection only; actual CLIContract/MCP subprocess builds owner in that directory and reads tools through the real app binder.",
+      "production_owner": "apps/subtitles/cmd/kinosail/main.go:configuredMCPServerConfig",
+      "non_test_callers": "serveConfiguredMCP -> serveMCPStdioCommand in appcli main",
+      "remaining_proof": [
+        {
+          "kind": "isolated_or_process_contract",
+          "reference": "apps/subtitles/cmd/kinosail/main_test.go:TestCLIContract/TestMCPStdioCommandConnectsAsSoleOwner"
+        }
+      ],
+      "coverage_gap": "Retained subprocess contract would fail if MCP pointed at a different owner database. Test name promises only DataDir but assertion does not inspect other fields; no stronger capability exclusion claim.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Low; stronger exact remaining proof or assertion shown vacuous. No production or shared support edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/cmd/kinosail/tls_server_test.go",
       "line": 18,
       "test": "TestCommandLineServesCompatibleHTTPSByDefault",
       "baseline_file_sha256": "5cf57d38b74da3dd5f1e54857e784ffc4f2102d184c3348491237e5550af60ac",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Real app process must enforce TLS1.2/1.3 AEAD, reject TLS1.1/CBC/plain HTTP, keep key files private and serve persistent correctly signed SAN certificates. Browser smoke uses an existing test HTTP server.",
+      "production_owner": "apps/subtitles/cmd/kinosail/{main,auth_url,mcp_stdio_unix}.go app bindings; packages/{appcli,mcpgateway,servertransport,updatecontrol}",
+      "non_test_callers": "main/appcli.Execute; serveConfiguredMCP/run/command; deployed CLI operations",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/cmd/kinosail/tls_server_test.go:TestCommandLineServesCompatibleHTTPSByDefault"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/cmd/kinosail/tls_server_test.go",
       "line": 103,
       "test": "TestCommandLineCanDisableTLS",
       "baseline_file_sha256": "5cf57d38b74da3dd5f1e54857e784ffc4f2102d184c3348491237e5550af60ac",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Explicit TLS disable must serve plain HTTP, reject HTTPS and avoid generating key material in a real process; browser server fixture cannot prove entrypoint selection.",
+      "production_owner": "apps/subtitles/cmd/kinosail/{main,auth_url,mcp_stdio_unix}.go app bindings; packages/{appcli,mcpgateway,servertransport,updatecontrol}",
+      "non_test_callers": "main/appcli.Execute; serveConfiguredMCP/run/command; deployed CLI operations",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/cmd/kinosail/tls_server_test.go:TestCommandLineCanDisableTLS"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/cmd/kinosail/tls_test.go",
       "line": 26,
       "test": "TestTrustedDuckDNSCertificateIsSelectedOnlyForItsSNI",
       "baseline_file_sha256": "08258cbbd14df4efd7d8da7e04fe6dc621da0649586da8e328913e119d9d9e83",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Loaded DuckDNS app settings must bind trusted certificate selection only to the matching SNI and use local fallback otherwise; browser does not exercise alternate TLS ClientHello hosts.",
+      "production_owner": "apps/subtitles/cmd/kinosail/{main,auth_url,mcp_stdio_unix}.go app bindings; packages/{appcli,mcpgateway,servertransport,updatecontrol}",
+      "non_test_callers": "main/appcli.Execute; serveConfiguredMCP/run/command; deployed CLI operations",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/cmd/kinosail/tls_test.go:TestTrustedDuckDNSCertificateIsSelectedOnlyForItsSNI"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/cmd/kinosail/tls_test.go",
       "line": 85,
       "test": "TestTrustedDuckDNSBecomesCanonicalAuthOrigin",
       "baseline_file_sha256": "08258cbbd14df4efd7d8da7e04fe6dc621da0649586da8e328913e119d9d9e83",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Application auth-origin adapter must derive canonical DuckDNS name and omit port443; shared TrustedOrigin alone cannot catch bypass in configuredAuthURL.",
+      "production_owner": "apps/subtitles/cmd/kinosail/{main,auth_url,mcp_stdio_unix}.go app bindings; packages/{appcli,mcpgateway,servertransport,updatecontrol}",
+      "non_test_callers": "main/appcli.Execute; serveConfiguredMCP/run/command; deployed CLI operations",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/cmd/kinosail/tls_test.go:TestTrustedDuckDNSBecomesCanonicalAuthOrigin"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/cmd/kinosail/tls_test.go",
       "line": 103,
       "test": "TestTLSCertificateCommandExportsOnlyPublicCertificate",
       "baseline_file_sha256": "08258cbbd14df4efd7d8da7e04fe6dc621da0649586da8e328913e119d9d9e83",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "CLI export must output only a persistent public local CA certificate, never private key material; browser does not exercise export.",
+      "production_owner": "apps/subtitles/cmd/kinosail/{main,auth_url,mcp_stdio_unix}.go app bindings; packages/{appcli,mcpgateway,servertransport,updatecontrol}",
+      "non_test_callers": "main/appcli.Execute; serveConfiguredMCP/run/command; deployed CLI operations",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/cmd/kinosail/tls_test.go:TestTLSCertificateCommandExportsOnlyPublicCertificate"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/cmd/kinosail/tls_test.go",
       "line": 122,
       "test": "TestCommandLineServesOwnerSuppliedRSACertificateToCompatibilityClient",
       "baseline_file_sha256": "08258cbbd14df4efd7d8da7e04fe6dc621da0649586da8e328913e119d9d9e83",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "A real process using owner RSA certificate must accept TLS1.2 ECDHE_RSA AEAD and not create a local CA; browser test server does not use this certificate source.",
+      "production_owner": "apps/subtitles/cmd/kinosail/{main,auth_url,mcp_stdio_unix}.go app bindings; packages/{appcli,mcpgateway,servertransport,updatecontrol}",
+      "non_test_callers": "main/appcli.Execute; serveConfiguredMCP/run/command; deployed CLI operations",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/cmd/kinosail/tls_test.go:TestCommandLineServesOwnerSuppliedRSACertificateToCompatibilityClient"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/cmd/kinosail/update_test.go",
       "line": 40,
       "test": "TestUpdateCommandsExposeAVersionedAdapterContract",
       "baseline_file_sha256": "603a85edcb95109670caae1f7083d704229cc99bada01319224bad2d334467bf",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App update command must expose Subtitles product/schema/artifact policy with the correct platform adapters; browser checks do not invoke update CLI contracts.",
+      "production_owner": "apps/subtitles/cmd/kinosail/{main,auth_url,mcp_stdio_unix}.go app bindings; packages/{appcli,mcpgateway,servertransport,updatecontrol}",
+      "non_test_callers": "main/appcli.Execute; serveConfiguredMCP/run/command; deployed CLI operations",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/cmd/kinosail/update_test.go:TestUpdateCommandsExposeAVersionedAdapterContract"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/cmd/kinosail/update_test.go",
       "line": 44,
       "test": "TestUpdateArtifactCommandSelectsVerifiedManifestEntry",
       "baseline_file_sha256": "603a85edcb95109670caae1f7083d704229cc99bada01319224bad2d334467bf",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App release policy must select only a verified matching platform manifest entry rather than an untrusted or wrong-product artifact.",
+      "production_owner": "apps/subtitles/cmd/kinosail/{main,auth_url,mcp_stdio_unix}.go app bindings; packages/{appcli,mcpgateway,servertransport,updatecontrol}",
+      "non_test_callers": "main/appcli.Execute; serveConfiguredMCP/run/command; deployed CLI operations",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/cmd/kinosail/update_test.go:TestUpdateArtifactCommandSelectsVerifiedManifestEntry"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/cmd/kinosail/update_test.go",
       "line": 48,
       "test": "TestUpdatePlanPinsManifestForPendingTarget",
       "baseline_file_sha256": "603a85edcb95109670caae1f7083d704229cc99bada01319224bad2d334467bf",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "CLI update plan must keep the pending target manifest pinned even when current release advances; browser does not exercise this release-state race.",
+      "production_owner": "apps/subtitles/cmd/kinosail/{main,auth_url,mcp_stdio_unix}.go app bindings; packages/{appcli,mcpgateway,servertransport,updatecontrol}",
+      "non_test_callers": "main/appcli.Execute; serveConfiguredMCP/run/command; deployed CLI operations",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/cmd/kinosail/update_test.go:TestUpdatePlanPinsManifestForPendingTarget"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/cmd/kinosail/update_test.go",
       "line": 52,
       "test": "TestUpdateReportCommandRejectsUntrustedInput",
       "baseline_file_sha256": "603a85edcb95109670caae1f7083d704229cc99bada01319224bad2d334467bf",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "CLI report ingestion must reject untrusted shapes/versions before state changes; browser update display uses valid stored reports.",
+      "production_owner": "apps/subtitles/cmd/kinosail/{main,auth_url,mcp_stdio_unix}.go app bindings; packages/{appcli,mcpgateway,servertransport,updatecontrol}",
+      "non_test_callers": "main/appcli.Execute; serveConfiguredMCP/run/command; deployed CLI operations",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/cmd/kinosail/update_test.go:TestUpdateReportCommandRejectsUntrustedInput"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/cmd/kinosail/update_test.go",
       "line": 56,
       "test": "TestUpdateCommandsReportUnavailableOrCorruptStorage",
       "baseline_file_sha256": "603a85edcb95109670caae1f7083d704229cc99bada01319224bad2d334467bf",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Empty path, file-as-directory and corrupt persisted SQLite settings must fail update actions rather than fabricate safe output.",
+      "production_owner": "apps/subtitles/cmd/kinosail/{main,auth_url,mcp_stdio_unix}.go app bindings; packages/{appcli,mcpgateway,servertransport,updatecontrol}",
+      "non_test_callers": "main/appcli.Execute; serveConfiguredMCP/run/command; deployed CLI operations",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/cmd/kinosail/update_test.go:TestUpdateCommandsReportUnavailableOrCorruptStorage"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/cmd/kinosail/update_test.go",
       "line": 97,
       "test": "TestUpdateCommandsRejectSemanticInvalidSQLiteSettingsWithoutEffects",
       "baseline_file_sha256": "603a85edcb95109670caae1f7083d704229cc99bada01319224bad2d334467bf",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Syntactically valid but semantically invalid Subtitles settings in SQLite must stop plan/report with empty output and unchanged updates row count.",
+      "production_owner": "apps/subtitles/cmd/kinosail/{main,auth_url,mcp_stdio_unix}.go app bindings; packages/{appcli,mcpgateway,servertransport,updatecontrol}",
+      "non_test_callers": "main/appcli.Execute; serveConfiguredMCP/run/command; deployed CLI operations",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/cmd/kinosail/update_test.go:TestUpdateCommandsRejectSemanticInvalidSQLiteSettingsWithoutEffects"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/backup/adapter_test.go",
@@ -474,170 +578,220 @@
       "line": 10,
       "test": "TestSharedConfigurationContract",
       "baseline_file_sha256": "44b76eb48d11eaf05dda9b1dd2f7672366f2ba8bc622afa3cbb94226ff906b6d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Load precedence environment > YAML > GUI > defaults, public secret redaction, secret-file permissions, trusted HTTPS cross-field validation, managed/default GUI editability, and invalid external input rejection may regress independently of the populated browser environment.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/configuration_test.go:TestSharedConfigurationContract"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "8e6a4a8768b1296eafa1db1acd34fc9aad8cf516 Match Subtitles supporter badges to Player and link Polar offers",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/configuration_test.go",
       "line": 16,
       "test": "TestSupporterActivationDefaultsToProduction",
       "baseline_file_sha256": "44b76eb48d11eaf05dda9b1dd2f7672366f2ba8bc622afa3cbb94226ff906b6d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Accidentally pointing default activation at staging breaks real supporter activation; browser journeys inject a local provider and miss this default.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/configuration_test.go:TestSupporterActivationDefaultsToProduction"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "8e6a4a8768b1296eafa1db1acd34fc9aad8cf516 Match Subtitles supporter badges to Player and link Polar offers",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/configuration_test.go",
       "line": 27,
       "test": "TestSupporterPurchaseDefaultsToSubtitlesCheckout",
       "baseline_file_sha256": "44b76eb48d11eaf05dda9b1dd2f7672366f2ba8bc622afa3cbb94226ff906b6d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "A Player or obsolete checkout default charges for the wrong product; browser journeys do not contact real billing.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/configuration_test.go:TestSupporterPurchaseDefaultsToSubtitlesCheckout"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "8e6a4a8768b1296eafa1db1acd34fc9aad8cf516 Match Subtitles supporter badges to Player and link Polar offers",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/coverage_edges_internal_test.go",
       "line": 12,
       "test": "TestStoredConfigurationValidationEdges",
       "baseline_file_sha256": "865a6e4271e8191ff7941e749fa03a94bf4bcc125b2e09a9f8d09df7b6ce58d0",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Loading corrupted or partially coupled saved state can silently accept unknown fields, missing SCIM/OIDC/provider companions or trusted HTTPS with TLS disabled; E2E uses valid saved state.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/coverage_edges_internal_test.go:TestStoredConfigurationValidationEdges"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/coverage_edges_internal_test.go",
       "line": 44,
       "test": "TestStoredConfigurationReadAndValidationHelpers",
       "baseline_file_sha256": "865a6e4271e8191ff7941e749fa03a94bf4bcc125b2e09a9f8d09df7b6ce58d0",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "A directory used as secret storage, individual SAML/SubSource mutation or SCIM expiration without a token must fail; populated journeys do not create those malformed states.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/coverage_edges_internal_test.go:TestStoredConfigurationReadAndValidationHelpers"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/coverage_edges_internal_test.go",
       "line": 67,
       "test": "TestConfigurationValueValidationEdges",
       "baseline_file_sha256": "865a6e4271e8191ff7941e749fa03a94bf4bcc125b2e09a9f8d09df7b6ce58d0",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Non-positive scan/backup duration must be rejected and a valid duration accepted; E2E does not inject zero duration. The unsupported-kind probe alone is weak, but this declaration has an independent duration boundary.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/coverage_edges_internal_test.go:TestConfigurationValueValidationEdges"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/mutation_internal_test.go",
       "line": 9,
       "test": "TestConfigurationMutationHelpersRejectInvalidBoundaries",
       "baseline_file_sha256": "0a3e70b545439569f7387ac2222001359fade28dde62cc8ea59541306654fd00",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "A regular file substituted for the data directory must prevent reading and paired persistence; public mutation and private write branches are exercised, unlike browser journeys.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/mutation_internal_test.go:TestConfigurationMutationHelpersRejectInvalidBoundaries"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/mutation_internal_test.go",
       "line": 29,
       "test": "TestSubtitleConfigurationTransactionUsesSharedRecovery",
       "baseline_file_sha256": "0a3e70b545439569f7387ac2222001359fade28dde62cc8ea59541306654fd00",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Transaction.Write persists only the journal, not target files; readStoredConfiguration must invoke shared Recover so a crash does not lose regular and secret configuration.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/mutation_internal_test.go:TestSubtitleConfigurationTransactionUsesSharedRecovery"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/oidc_test.go",
       "line": 13,
       "test": "TestOIDCConfigurationRequiresOneCompleteSafeSet",
       "baseline_file_sha256": "5bfc2d3e94c17501317d8f5e0a13d361b5d878c4f9b377b3a4c69a9047672d11",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Incomplete, untrusted or control-bearing OIDC credentials may cross the application Load boundary; browser authentication uses a valid controlled provider.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/oidc_test.go:TestOIDCConfigurationRequiresOneCompleteSafeSet"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/oidc_test.go",
       "line": 49,
       "test": "TestOIDCConfigurationChangesAtomically",
       "baseline_file_sha256": "5bfc2d3e94c17501317d8f5e0a13d361b5d878c4f9b377b3a4c69a9047672d11",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Rejected OIDC changes must leave both files unchanged; accepted pair save/delete must not orphan secrets or issuer fields.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/oidc_test.go:TestOIDCConfigurationChangesAtomically"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/oidc_validation_internal_test.go",
@@ -704,442 +858,580 @@
       "line": 12,
       "test": "TestOpenSubtitlesCredentialChangesAtomically",
       "baseline_file_sha256": "34604bca9e4d47a767daa74284f3892999e5c99a87c72d318309a23e96e73749",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App-specific complete credential save/delete must preserve coupled identity and keep password/API key in secret storage.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/opensubtitles_mutation_test.go:TestOpenSubtitlesCredentialChangesAtomically"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/opensubtitles_mutation_test.go",
       "line": 24,
       "test": "TestOpenSubtitlesCredentialRejectionPreservesState",
       "baseline_file_sha256": "34604bca9e4d47a767daa74284f3892999e5c99a87c72d318309a23e96e73749",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Invalid OpenSubtitles pair updates or individual mutations must fail before altering existing regular and secret bytes.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/opensubtitles_mutation_test.go:TestOpenSubtitlesCredentialRejectionPreservesState"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/opensubtitles_mutation_test.go",
       "line": 59,
       "test": "TestOpenSubtitlesMutationPropagatesStoredStateErrors",
       "baseline_file_sha256": "34604bca9e4d47a767daa74284f3892999e5c99a87c72d318309a23e96e73749",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Unreadable or malformed current provider storage must stop app-specific SetOpenSubtitles/DeleteOpenSubtitles rather than overwrite evidence.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/opensubtitles_mutation_test.go:TestOpenSubtitlesMutationPropagatesStoredStateErrors"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/opensubtitles_test.go",
       "line": 11,
       "test": "TestOpenSubtitlesConfigurationRequiresOneCompleteSafeSet",
       "baseline_file_sha256": "8f5a78531ae7d7209a1dcc01f24974b02815314864de41feeae115673166d81d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Load must reject partial credentials, unsafe API endpoints, whitespace, control characters and oversize provider secrets.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/opensubtitles_test.go:TestOpenSubtitlesConfigurationRequiresOneCompleteSafeSet"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/opensubtitles_test.go",
       "line": 46,
       "test": "TestSubtitleLanguageAcceptsRegionsAndRejectsAmbiguity",
       "baseline_file_sha256": "8f5a78531ae7d7209a1dcc01f24974b02815314864de41feeae115673166d81d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Application Load must use canonical selectable language grammar and reject ambiguous or whitespace-bearing values; catalog-only tests cannot prove the adapter invokes validation.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/opensubtitles_test.go:TestSubtitleLanguageAcceptsRegionsAndRejectsAmbiguity"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/saml_test.go",
       "line": 20,
       "test": "TestSAMLMetadataConfigurationRequiresTrustedBoundedURL",
       "baseline_file_sha256": "a662d6f808128cbee3327cbb84d602e61a8c32281b4c9fbdd3ab996173545991",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App Load must reject unsafe SAML metadata URLs including credentials/queries/unbounded values rather than trust external identity metadata.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/saml_test.go:TestSAMLMetadataConfigurationRequiresTrustedBoundedURL"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/saml_test.go",
       "line": 43,
       "test": "TestSAMLConfigurationAcceptsOneURLOrDownloadedMetadataDocument",
       "baseline_file_sha256": "a662d6f808128cbee3327cbb84d602e61a8c32281b4c9fbdd3ab996173545991",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Application Load must select exactly one SAML URL or bounded downloaded metadata source and reject ambiguous/incomplete sources.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/saml_test.go:TestSAMLConfigurationAcceptsOneURLOrDownloadedMetadataDocument"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/saml_test.go",
       "line": 74,
       "test": "TestStoredSAMLConfigurationRejectsConflictingSources",
       "baseline_file_sha256": "a662d6f808128cbee3327cbb84d602e61a8c32281b4c9fbdd3ab996173545991",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Saved SAML metadata URL plus document conflict must stop startup, a state the valid browser journey never constructs.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/saml_test.go:TestStoredSAMLConfigurationRejectsConflictingSources"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/saml_test.go",
       "line": 92,
       "test": "TestSAMLConfigurationChangesMetadataSourceAtomically",
       "baseline_file_sha256": "a662d6f808128cbee3327cbb84d602e61a8c32281b4c9fbdd3ab996173545991",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Switching SAML source and rejecting invalid changes must preserve complete stored identity configuration and secret separation.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/saml_test.go:TestSAMLConfigurationChangesMetadataSourceAtomically"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/scim_test.go",
       "line": 13,
       "test": "TestSCIMTokenIsValidatedAndRedacted",
       "baseline_file_sha256": "2c5264fe7be54751448a2658e76fabf054464d44cb9574041f926b84128bd75d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App Load may expose SCIM tokens in its public projection, accept malformed tokens, or mishandle expiration; browser E2E does not inspect these startup input matrices.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/scim_test.go:TestSCIMTokenIsValidatedAndRedacted"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/scim_test.go",
       "line": 50,
       "test": "TestSCIMConfigurationMutationsValidateTheCompletePair",
       "baseline_file_sha256": "2c5264fe7be54751448a2658e76fabf054464d44cb9574041f926b84128bd75d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "SCIM token/expiration invalid or non-atomic mutations must cause no files or changes; valid pair save/delete remains durable.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/scim_test.go:TestSCIMConfigurationMutationsValidateTheCompletePair"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/scim_test.go",
       "line": 102,
       "test": "TestSCIMConfigurationLoadsFromYAML",
       "baseline_file_sha256": "2c5264fe7be54751448a2658e76fabf054464d44cb9574041f926b84128bd75d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "SCIM secret-file path resolved relative to YAML may regress, losing provisioning credentials at startup; UI configuration does not exercise this source.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/scim_test.go:TestSCIMConfigurationLoadsFromYAML"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/scim_test.go",
       "line": 122,
       "test": "TestConfigurationMutationsSerializeAcrossThePair",
       "baseline_file_sha256": "2c5264fe7be54751448a2658e76fabf054464d44cb9574041f926b84128bd75d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Twelve concurrent regular/SCIM mutations could lose a field or leave a journal/temp file; serial E2E cannot exercise the paired storage race.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/scim_test.go:TestConfigurationMutationsSerializeAcrossThePair"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/stored_json_test.go",
       "line": 12,
       "test": "TestStoredJSONRejectsMalformedDuplicateTrailingAndOversizedDocuments",
       "baseline_file_sha256": "8a83a592306e9eaa9c13dc48591eaa82050e4cd8d84e2f0607a6c7a09c36a05d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Calls private parseJSON with exactly the same invalidStoredJSONDocuments matrix exercised by public Set/Delete no-side-effect keeper.",
+      "production_owner": "apps/subtitles/internal/configuration/stored_json.go:parseJSON",
+      "non_test_callers": "readJSON -> readStoredConfiguration -> Load/Set/Delete; server settings/API mutations and startup",
+      "remaining_proof": [
+        {
+          "kind": "isolated_or_process_contract",
+          "reference": "apps/subtitles/internal/configuration/stored_json_test.go:TestInvalidStoredJSONCausesNoConfigurationMutation"
+        },
+        {
+          "kind": "isolated_or_process_contract",
+          "reference": "apps/subtitles/internal/configuration/configuration_test.go:TestSharedConfigurationContract"
+        }
+      ],
+      "coverage_gap": "No remaining invalid-input gap relative to this probe; keeper checks identical byte inputs plus rejection before mutation. Normal valid parse remains public save/load contract; no E2E equivalence claimed.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Low; stronger exact remaining proof or assertion shown vacuous. No production or shared support edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/stored_json_test.go",
       "line": 26,
       "test": "TestInvalidStoredJSONCausesNoConfigurationMutation",
       "baseline_file_sha256": "8a83a592306e9eaa9c13dc48591eaa82050e4cd8d84e2f0607a6c7a09c36a05d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Malformed, duplicate, trailing, oversized, non-string, invalid UTF-8 and excess-key documents must reject public Set/Delete and preserve original bytes.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/stored_json_test.go:TestInvalidStoredJSONCausesNoConfigurationMutation"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/stored_json_test.go",
       "line": 50,
       "test": "TestConfigurationMutationRejectsExternalStoredFileSymlink",
       "baseline_file_sha256": "8a83a592306e9eaa9c13dc48591eaa82050e4cd8d84e2f0607a6c7a09c36a05d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Set must not follow stored-file symlinks and change an external file; browser valid state never injects this filesystem attack.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/stored_json_test.go:TestConfigurationMutationRejectsExternalStoredFileSymlink"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/stored_json_test.go",
       "line": 95,
       "test": "TestStoredJSONRequiresOwnerOnlyRegularFile",
       "baseline_file_sha256": "8a83a592306e9eaa9c13dc48591eaa82050e4cd8d84e2f0607a6c7a09c36a05d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Public 0644 stored JSON must not be read as private configuration; E2E test state is owner-only.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/stored_json_test.go:TestStoredJSONRequiresOwnerOnlyRegularFile"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/subdl_test.go",
       "line": 14,
       "test": "TestSubDLConfigurationRejectsUnsafeBoundaries",
       "baseline_file_sha256": "04c930317d0aa79ac19715edb2329eaa263a321889140890abc51101657d3b57",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App-specific SubDL Load must reject unsafe endpoint/credential combinations and controls before provider work.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/subdl_test.go:TestSubDLConfigurationRejectsUnsafeBoundaries"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/subdl_test.go",
       "line": 43,
       "test": "TestProviderCredentialMutationRejectsControlsWithoutWrite",
       "baseline_file_sha256": "04c930317d0aa79ac19715edb2329eaa263a321889140890abc51101657d3b57",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Control-bearing SubDL credentials must reject without altering persisted bytes.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/subdl_test.go:TestProviderCredentialMutationRejectsControlsWithoutWrite"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/subsource_mutation_test.go",
       "line": 13,
       "test": "TestSubSourceMutationPersistsAndDeletesThePair",
       "baseline_file_sha256": "dbca84e14453a6bd0096d169cc74f2ec070fd67f09bff7747246c6a37aced3e9",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "SubSource API key and personal-use consent must save/delete together while separating secret and public fields.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/subsource_mutation_test.go:TestSubSourceMutationPersistsAndDeletesThePair"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/subsource_mutation_test.go",
       "line": 38,
       "test": "TestSubSourceMutationRejectsInvalidInputWithoutSideEffects",
       "baseline_file_sha256": "dbca84e14453a6bd0096d169cc74f2ec070fd67f09bff7747246c6a37aced3e9",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Missing, spaced and oversized SubSource keys must preserve both existing files.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/subsource_mutation_test.go:TestSubSourceMutationRejectsInvalidInputWithoutSideEffects"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/subsource_mutation_test.go",
       "line": 66,
       "test": "TestSubSourceMutationRejectsUnavailableAndInvalidStorage",
       "baseline_file_sha256": "dbca84e14453a6bd0096d169cc74f2ec070fd67f09bff7747246c6a37aced3e9",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "File-as-directory or invalid current configuration must stop SubSource mutations and preserve corrupt state.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/subsource_mutation_test.go:TestSubSourceMutationRejectsUnavailableAndInvalidStorage"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/subsource_test.go",
       "line": 14,
       "test": "TestSubSourceConfigurationRequiresSafePersonalUse",
       "baseline_file_sha256": "ffd36f63060ce50b2192b4e6141fa035822c06dc90ae5ab280d9843be5caa3dc",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Load must reject unsafe SubSource endpoints/credentials and missing personal-use consent; valid browser provider configuration misses this startup trust matrix.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/subsource_test.go:TestSubSourceConfigurationRequiresSafePersonalUse"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/subsource_test.go",
       "line": 46,
       "test": "TestSubSourceCredentialMutationRejectsControlsWithoutWrite",
       "baseline_file_sha256": "ffd36f63060ce50b2192b4e6141fa035822c06dc90ae5ab280d9843be5caa3dc",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Control-bearing SubSource key mutation must not change stored configuration.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/subsource_test.go:TestSubSourceCredentialMutationRejectsControlsWithoutWrite"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/subtitle_local_test.go",
       "line": 11,
       "test": "TestLocalSubtitleConfigurationRejectsUnsafeValuesWithoutWriting",
       "baseline_file_sha256": "3ac3077748d8f5cd223194aacc210ca4f3ec12b23fcc4919eb119ed77f963ad7",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Local subtitle executable/path/options and unsafe endpoint values must reject before persistence, preventing unsafe process inputs and bad saved state.",
+      "production_owner": "apps/subtitles/internal/configuration/{load,mutation,stored_validation,stored_json,remote,oidc,saml,scim,opensubtitles,subsource}.go; packages/configurationcore transaction/value owners",
+      "non_test_callers": "CLI startup/config commands; internal/server/settings_configuration.go owner mutations and effective config snapshot",
+      "remaining_proof": [
+        {
+          "kind": "isolated_contract_or_real_process",
+          "reference": "apps/subtitles/internal/configuration/subtitle_local_test.go:TestLocalSubtitleConfigurationRejectsUnsafeValuesWithoutWriting"
+        }
+      ],
+      "coverage_gap": "No existing genuine E2E proves the named injected input, storage, security, concurrency, or command boundary; retain this exception. Fixtures and screenshots are not treated as equivalent proof.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Retention preserves distinct important failure protection; no assertion or production edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/configuration/subtitle_test.go",
       "line": 5,
       "test": "TestSubtitleLanguageConfigurationRejectsProviderSpellings",
       "baseline_file_sha256": "7a8c7780e23a2713278d2d690b9e0a890c358ca800188bcf1e38645639714c2b",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Thin validSubtitleLanguage calls NormalizeTag without app adaptation; repeats provider spellings already rejected by catalog owner.",
+      "production_owner": "apps/subtitles/internal/configuration/subtitle.go:validSubtitleLanguage",
+      "non_test_callers": "configuration.validation_rules requiredValid for subtitles.language; Load/Set used by CLI/server settings",
+      "remaining_proof": [
+        {
+          "kind": "isolated_or_process_contract",
+          "reference": "apps/subtitles/internal/subtitlelanguage/catalog_test.go:TestNormalizeTagIsCaseInsensitiveAndProviderSpellingsStayRejected"
+        },
+        {
+          "kind": "isolated_or_process_contract",
+          "reference": "apps/subtitles/internal/configuration/opensubtitles_test.go:TestSubtitleLanguageAcceptsRegionsAndRejectsAmbiguity"
+        }
+      ],
+      "coverage_gap": "Exact alias rejection remains isolated catalog coverage; app Load keeper proves validation is invoked. Browser dashboard is normal persisted language coverage, not all alias rejection.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Low; stronger exact remaining proof or assertion shown vacuous. No production or shared support edits.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/configuration ./internal/subtitlelanguage ./cmd/kinosail"
     },
     {
       "file": "apps/subtitles/internal/database/lifecycle_edges_test.go",
