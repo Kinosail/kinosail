@@ -70,3 +70,11 @@ ffmpeg -nostdin -hide_banner -loglevel error \
 ```
 
 The decoded-media journey is opt-in because the generated media file is external to the repository. Its artifact records the sample hash. It does not verify HEVC Main10, HDR, EAC3, HLS or a physical Apple TV.
+
+## Resume diagnosis and repair
+
+The diagnostic run at `45e9e19a0` with recorded temporary numeric instrumentation confirms the same sequence twice: source and retained position are three seconds; AVPlayer emits a zero-second jump during loading; the engine replaces the target with zero; seeking to zero succeeds. Fresh per-case progress stores and complete fixture request bodies exclude those alternate explanations.
+
+The resume repair uses the existing tvOS AVPlayerViewController delegate to retain user-selected targets for the current player. Its `timeToSeekAfterUserNavigatedFrom:to:` callback represents user navigation and returns AVKit's target unchanged. Automatic player time jumps no longer replace saved positions. iOS touch controls retain their existing explicit coordinator seek path. An interrupted restoring seek uses a changed recorded user target, or reports failure; it no longer assumes the current position came from a scrub.
+
+Media acceptance and required iOS/tvOS compilation for this repair are pending the next coordinated build slot.

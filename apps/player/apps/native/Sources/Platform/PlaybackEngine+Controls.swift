@@ -28,18 +28,16 @@ extension PlaybackEngine {
         guard duration == 0 || seconds <= duration + 1, let player else { throw ClientError.invalidInput("The playback position is unavailable.") }
         let attempt = generation
         let position = timeline?.presentationTime(seconds) ?? seconds
-        let intent = nativeIntent
-        intent.seeking.withLock { $0 = true }
-        defer { intent.seeking.withLock { $0 = false } }
         let success = await player.seek(to: CMTime(seconds: position, preferredTimescale: 600), toleranceBefore: .zero, toleranceAfter: .zero)
         try check(attempt)
         guard self.player === player else { throw CancellationError() }
         if !success {
             if let error = player.currentItem?.error { throw error }
-            // A native AVKit scrub can supersede the restoring seek.
-            if recoveringNetwork || loading {
-                let current = player.currentTime().seconds
-                if (try? Input.position(current)) != nil { nativeRecoveryPosition = timeline?.sourceTime(current) ?? current; return }
+            // Retry the changed explicit target if a user superseded this seek.
+            // Other interruptions must not silently replace saved progress.
+            if recoveringNetwork || loading, let requested = recoveryPosition ?? nativeRecoveryPosition,
+               abs(requested - seconds) >= 0.01 {
+                return
             }
             throw ClientError.invalidInput("Could not skip to that position. Try again.")
         }

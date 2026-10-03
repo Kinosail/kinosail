@@ -17,7 +17,6 @@ struct PlayerTrack: Identifiable {
 
 final class NativePlaybackIntent: Sendable {
     let playing = Mutex<Bool?>(nil)
-    let seeking = Mutex(false)
 }
 
 @MainActor @Observable
@@ -128,7 +127,6 @@ final class PlaybackEngine {
     @ObservationIgnored var observedSubtitleTrackID: String?
     @ObservationIgnored var timeObserver: Any?
     @ObservationIgnored var rateObservation: NSKeyValueObservation?
-    @ObservationIgnored var jumpObserver: NSObjectProtocol?
     @ObservationIgnored var monitoring: Task<Void, Never>?
     @ObservationIgnored var writing: Task<Void, Never>?
     @ObservationIgnored var notifications: [NSObjectProtocol] = []

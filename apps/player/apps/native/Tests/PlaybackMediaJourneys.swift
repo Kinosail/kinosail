@@ -13,10 +13,10 @@ import Testing
         let fixture = try await PlaybackStartupFixture()
         fixture.denied = false; fixture.media = data
         defer { fixture.close() }
-        let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-        defer { try? FileManager.default.removeItem(at: folder) }
-        let store = try await ProgressSyncStore(scope: fixture.client.profileScope(), directory: folder)
         for prepared in [false, true] {
+            let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+            defer { try? FileManager.default.removeItem(at: folder) }
+            let store = try await ProgressSyncStore(scope: fixture.client.profileScope(), directory: folder)
             let engine = PlaybackEngine()
             defer { engine.stop() }
             let item = try fixture.item("movie")
@@ -28,6 +28,7 @@ import Testing
             let output = AVPlayerItemVideoOutput(pixelBufferAttributes: [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA])
             playerItem.add(output)
             let initial = player.currentTime().seconds
+            print("MEDIA diagnostic planStart=\(engine.source?.start ?? -1) enginePosition=\(engine.seconds)")
             var decoded = false
             for _ in 0..<500 {
                 if player.currentTime().seconds > initial + 0.05,
