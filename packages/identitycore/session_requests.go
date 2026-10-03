@@ -76,7 +76,7 @@ func (sessions *RequestSessions) SignInPublicGrant(writer http.ResponseWriter, r
 	if err != nil {
 		return err
 	}
-	http.SetCookie(writer, PublicSessionCookie(token, time.Now(), request))
+	http.SetCookie(writer, sessions.issuedBrowserCookie(token, request))
 	return nil
 }
 
@@ -92,16 +92,23 @@ func (sessions *RequestSessions) signIn(writer http.ResponseWriter, request *htt
 	if err != nil {
 		return err
 	}
-	cookie := SessionCookie(token, request) //nolint:gosec // SessionCookie always sets Secure, HttpOnly, and Strict SameSite.
-	if public {
-		cookie = PublicSessionCookie(token, time.Now(), request)
-	} else {
-		_, absolute := sessions.config.Timeouts()
-		cookie.MaxAge = int(absolute / time.Second)
-		cookie.Expires = sessions.config.Now().Add(absolute)
-	}
-	http.SetCookie(writer, cookie)
+	http.SetCookie(writer, sessions.issuedBrowserCookie(token, request))
 	return nil
+}
+
+// Use the committed expiry, including the public cap, rather than restarting the
+// lifetime after persistence. A second boundary must not extend the cookie.
+func (sessions *RequestSessions) issuedBrowserCookie(token string, request *http.Request) *http.Cookie {
+	sessions.config.Mutex.RLock()
+	expires := (*sessions.config.Values)[SessionKey(token)].ExpiresAt
+	sessions.config.Mutex.RUnlock()
+	cookie := SessionCookie(token, request) //nolint:gosec // SessionCookie always sets Secure, HttpOnly, and Strict SameSite.
+	cookie.Expires = time.Unix(expires, 0)
+	cookie.MaxAge = int(expires - sessions.config.Now().Unix())
+	if cookie.MaxAge <= 0 {
+		cookie.MaxAge = -1
+	}
+	return cookie
 }
 
 // MarkStrong records recent authentication for the request session.
