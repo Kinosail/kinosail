@@ -101,6 +101,7 @@ async function offerConditionalLogin() {
 }
 
 async function offerLogin() {
+  if (await resumeSession() || manualLogin) return;
   let returning = false;
   try { returning = localStorage.getItem(storageKey) === "1"; } catch { /* Conditional autofill remains available below. */ }
   if (returning && document.querySelector("[data-passkey-login]")) {
@@ -113,6 +114,20 @@ async function offerLogin() {
     }
   }
   await offerConditionalLogin();
+}
+
+async function resumeSession() {
+  const query = new URLSearchParams(location.search);
+  if (!document.querySelector("[data-passkey-login]") || query.get("stepup") === "1" || query.get("switch") === "1") return false;
+  try {
+    // Strict cookies can be absent on the initial navigation from another site.
+    // A same-origin request checks the existing session against Server policy.
+    const response = await fetch("/api/v1/me", {credentials: "same-origin", cache: "no-store", headers: {Accept: "application/json"}, signal: AbortSignal.timeout(3000)});
+    if (!response.ok || manualLogin) return false;
+    const next = new URL(loginNext, location.origin).pathname === "/login" ? "/" : loginNext;
+    location.replace(next);
+    return true;
+  } catch { return false; }
 }
 
 offerLogin();
