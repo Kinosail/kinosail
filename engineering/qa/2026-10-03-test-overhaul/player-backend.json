@@ -13803,7 +13803,7 @@
       "non_test_callers": [
         "registerSettings /settings/remote/kill -> KillHTTP with revokePublicAuthorization; direct test bypasses actual route/auth"
       ],
-      "remaining_proof": "packages/remoteaccess/http_test.go TestKillHTTPResultPaths/TestResetKillHTTPResultPaths retain status+redirect/error translations; reset_kill_test.go TestResetKillIsStrictAndRemovesOnlyTheKillMarker retains killed->starting and marker deletion; TestRevokeAuthorizationJoinsDurableFailures retains callback/error joining. App remote_access_security_test.go TestOwnerKillSwitchFailsPublicAccessClosedAndPersists uses actual registered route/public-session kill+restart. All are controlled integration fixtures; no equivalent browser public-ingress E2E.",
+      "remaining_proof": "packages/remoteaccess/http_test.go::TestKillHTTPResultPaths and TestResetKillHTTPResultPaths retain status/redirect/disabled/error translations. packages/remoteaccess/recovery_test.go::TestResetRequiresStopAndRestartsCurrentManager, using killAndResetForRecovery, proves live-manager reset rejection, kill/reset then same-manager Serve and reconstructed starting state. packages/remoteaccess/resume_internal_test.go::TestServeContinuouslyReopensAfterKillReset proves a new actual TCP listener replaces the killed listener and stops with context. packages/remoteaccess/http_test.go::TestRevokeAuthorizationJoinsDurableFailures retains callback/error joining. apps/player/internal/server/remote_access_security_test.go::TestOwnerKillSwitchFailsPublicAccessClosedAndPersists uses actual registered API kill/reset routes and explicitly checks killed/starting states, persisted kill on reconstruction and marker deletion. Controlled integration and shared fixtures remain; no browser public-ingress E2E equivalence.",
       "coverage_limit": "Direct test request is /settings/remote-access/kill whereas production registration is /settings/remote/kill; it cannot catch app registration/auth regression. No sessions, passkey challenges, QuickConnect tokens or share grants exist to verify revocation here.",
       "history": [
         "0c5276ff266da231d1eb32bedc967e360b398d82 Resume public access without restarting Server",
@@ -13811,7 +13811,7 @@
       ],
       "production_or_support_deletion_unlocked": "Unused imports only; canonical/actual boundary support preserved.",
       "risk": "Only the identified low-signal probe would be removed; remaining proof and gaps are explicit.",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./remoteaccess -run 'TestKillHTTPResultPaths|TestResetKillHTTPResultPaths|TestResetRequiresStopAndRestartsCurrentManager|TestServeContinuouslyReopensAfterKillReset|TestRevokeAuthorizationJoinsDurableFailures'; GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -count=1 ./internal/server -run '^TestOwnerKillSwitchFailsPublicAccessClosedAndPersists$'",
       "baseline_result": "pass",
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "audit_status": "evidence_complete",
@@ -13823,7 +13823,7 @@
       "production_callers": [
         "registerSettings /settings/remote/kill -> KillHTTP with revokePublicAuthorization; direct test bypasses actual route/auth"
       ],
-      "remaining_coverage": "packages/remoteaccess/http_test.go TestKillHTTPResultPaths/TestResetKillHTTPResultPaths retain status+redirect/error translations; reset_kill_test.go TestResetKillIsStrictAndRemovesOnlyTheKillMarker retains killed->starting and marker deletion; TestRevokeAuthorizationJoinsDurableFailures retains callback/error joining. App remote_access_security_test.go TestOwnerKillSwitchFailsPublicAccessClosedAndPersists uses actual registered route/public-session kill+restart. All are controlled integration fixtures; no equivalent browser public-ingress E2E.",
+      "remaining_coverage": "packages/remoteaccess/http_test.go::TestKillHTTPResultPaths and TestResetKillHTTPResultPaths retain status/redirect/disabled/error translations. packages/remoteaccess/recovery_test.go::TestResetRequiresStopAndRestartsCurrentManager, using killAndResetForRecovery, proves live-manager reset rejection, kill/reset then same-manager Serve and reconstructed starting state. packages/remoteaccess/resume_internal_test.go::TestServeContinuouslyReopensAfterKillReset proves a new actual TCP listener replaces the killed listener and stops with context. packages/remoteaccess/http_test.go::TestRevokeAuthorizationJoinsDurableFailures retains callback/error joining. apps/player/internal/server/remote_access_security_test.go::TestOwnerKillSwitchFailsPublicAccessClosedAndPersists uses actual registered API kill/reset routes and explicitly checks killed/starting states, persisted kill on reconstruction and marker deletion. Controlled integration and shared fixtures remain; no browser public-ingress E2E equivalence.",
       "coverage_gap": "Direct test request is /settings/remote-access/kill whereas production registration is /settings/remote/kill; it cannot catch app registration/auth regression. No sessions, passkey challenges, QuickConnect tokens or share grants exist to verify revocation here.",
       "reviewer": "/root/tooling",
       "body_helpers_and_owner_read": true,
@@ -13851,6 +13851,12 @@
         "packet_sha256": "e9611880cd8011ead95a40ba204708af06c784ebf88a167d3424b0a7b62cca00",
         "evidence_commit": "73ce389fbbc8e39fad4089a84d8e0b418bc661f1",
         "original_body_sha256_verified": true
+      },
+      "keeper_reference_correction": {
+        "removed_stale_reference": "packages/remoteaccess/reset_kill_test.go::TestResetKillIsStrictAndRemovesOnlyTheKillMarker",
+        "read_actual_remaining_keeper_and_owner_bodies": true,
+        "reviewed_integration_sha": "694cf408ecc021d83af3f6c0d64df058a3bdacd7",
+        "note": "Earlier pointer referred to an original-base shared declaration independently removed by the shared owner. Actual remaining process/HTTP/app keepers above were fully re-read and protect the asserted kill/reset behavior."
       }
     },
     {
@@ -50180,8 +50186,7 @@
       "category": "Copied inventory",
       "credible_failure": "Restates the private fixed icon-name map and the i-* markup recipe; no device or visual behavior is exercised.",
       "production_owner": [
-        "apps/player/internal/server/ui_icons.go:uiIcon",
-        "packages/servertest/ui_icons.go"
+        "apps/player/internal/server/ui_icons.go:uiIcon"
       ],
       "non_test_callers": [
         "server.New -> route registration -> public GET/rendered browser page"
@@ -50199,7 +50204,13 @@
       "validation_command": "cd apps/player && make test; make test-instance-check",
       "baseline_result": "pass",
       "removal_status": "implemented",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_test_support": {
+        "path": "packages/servertest/ui_icons.go",
+        "sha256": "82550a599ba313723bb484dff94225822754f6132850c6c726194fd3a8c05b9d",
+        "revision": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "status": "Original-base support; shared-owner cleanup owns final retirement after all callers removed."
+      }
     },
     {
       "name": "TestProductionUITemplatesAvoidMixedGlyphIcons",
@@ -50213,8 +50224,7 @@
       "category": "Source-style inventory",
       "credible_failure": "Scans all production Go source for forbidden Unicode glyphs, including unrelated strings/comments. This is a style policy, not an observable feature contract.",
       "production_owner": [
-        "apps/player/internal/server/ui_icons.go:uiIcon",
-        "packages/servertest/ui_icons.go"
+        "apps/player/internal/server/ui_icons.go:uiIcon"
       ],
       "non_test_callers": [
         "server.New -> route registration -> public GET/rendered browser page"
@@ -50231,7 +50241,13 @@
       "validation_command": "cd apps/player && make test; make test-instance-check",
       "baseline_result": "pass",
       "removal_status": "implemented",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "baseline_test_support": {
+        "path": "packages/servertest/ui_icons.go",
+        "sha256": "82550a599ba313723bb484dff94225822754f6132850c6c726194fd3a8c05b9d",
+        "revision": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "status": "Original-base support; shared-owner cleanup owns final retirement after all callers removed."
+      }
     },
     {
       "name": "TestWriteUIStateFixtures",
@@ -51667,6 +51683,16 @@
     {
       "command": "gofmt -w apps/player/internal/server/collection_summary_test.go apps/player/internal/server/playback_trace_test.go; git diff --check",
       "result": "passed; no child Go/browser build"
+    },
+    {
+      "command": "Exact remaining Test* keeper names scanned across current Player/Subtitles/shared Go declarations and t.Run labels",
+      "result": "After reference correction, no absent Test* names in remaining_proof or remaining_coverage; source and shared fixtures remain distinguished from genuine E2E.",
+      "execution_owner": "Player audit child; read-only, no product tests/builds"
+    },
+    {
+      "command": "python3 engineering/qa/2026-10-03-test-overhaul/verify-player-audit.py --checkout ../kinosail --revision dfb1178728e1591169ca8a2213714fc182bb3714 --output engineering/qa/2026-10-03-test-overhaul/player-audit-verification.json",
+      "result": "passed on integration dfb1178728e1591169ca8a2213714fc182bb3714 before metadata-only packaging; final checked report generated after this ledger save",
+      "execution_owner": "Player audit child; read-only Git source facts, no product tests or builds"
     }
   ],
   "retention_examples": [
@@ -51776,7 +51802,8 @@
         "credible_failure": "Actual app RP origin/local user-verification policy, Owner setup mandatory protection and ceremony-cookie scope/HttpOnly/SameSite/server-side challenge handling remain distinct important security boundaries; preserve updated served passkeys.js version 16 assertion.",
         "production_owner": [
           "apps/player/internal/server/passkeys.go",
-          "packages/identitycore/passkeys.go"
+          "packages/passkeys/engine.go",
+          "packages/passkeys/profile_flow.go"
         ],
         "non_test_callers": [
           "server.New -> auth/session guard -> account or login route -> app-local template and shared identity ceremony handlers"
@@ -51802,6 +51829,16 @@
             "path": "apps/player/internal/server/passkeys.go",
             "revision": "e8eca5f762822b239cf322065a915c87482fb8b0",
             "sha256": "541abfa2324385dd3ed22e765df1bd2b4a264c3c954eb58a26cdc98c103dd4d7"
+          },
+          {
+            "path": "packages/passkeys/engine.go",
+            "revision": "e8eca5f762822b239cf322065a915c87482fb8b0",
+            "sha256": "f9533f3474a14190fdd78a1f11ca54ff9b993debe4ce6f80422168ab088079c9"
+          },
+          {
+            "path": "packages/passkeys/profile_flow.go",
+            "revision": "e8eca5f762822b239cf322065a915c87482fb8b0",
+            "sha256": "f65b9e99d41b71198e278fcdfb964f84d59feb7e01e5ecd405f3b18db7c8ab1e"
           }
         ],
         "risk": "Preserve existing app-specific contract; no new or altered isolated assertion in overhaul."
@@ -51870,5 +51907,30 @@
     "D": 63,
     "F": 57,
     "C": 1
+  },
+  "decision_definitions": {
+    "R": "Retained important independent failure boundary missed by actual E2E.",
+    "F": "Retained existing guard with explicitly weak or misleading assertions; no isolated repair added after code.",
+    "C": "Source body is preserved pending required genuine keeper execution; consolidation is not yet implemented.",
+    "D": "Removed after candidate/helper/production/caller/history/keeper comparison and independent review; no full E2E equivalence unless explicitly evidenced."
+  },
+  "source_removal_summary": {
+    "original_declarations": 837,
+    "own_implemented_removals": 59,
+    "external_nonserver_removals": 4,
+    "total_original_D_decisions": 63,
+    "retained_or_source_preserved": 774,
+    "unreviewed_declarations": 0,
+    "source_preserved_C_names": [
+      "TestSettingsExposeSmartSearch"
+    ],
+    "new_upstream_retained_declarations": 1,
+    "changed_upstream_retained_declarations": 2
+  },
+  "reproduce": {
+    "command": "python3 engineering/qa/2026-10-03-test-overhaul/verify-player-audit.py --checkout <integration-checkout> --revision <exact-reviewed-SHA> --output <artifact-path>",
+    "verifier": "engineering/qa/2026-10-03-test-overhaul/verify-player-audit.py",
+    "report": "engineering/qa/2026-10-03-test-overhaul/player-audit-verification.json",
+    "limits": "The checker verifies pinned inventory/body hashes, original removals, kept/changed upstream declarations and exact remaining keeper-name existence. Semantic claims are the reviewed ledger; Go/browser execution and reproducible live E2E artifacts belong to root and are separate."
   }
 }
