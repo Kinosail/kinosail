@@ -1,0 +1,37 @@
+{
+  "schema": "kinosail-player-audit-verification-v1",
+  "result": "pass",
+  "revision": "3885906a5508ef497c2775d547f3321ccc69d63d",
+  "base_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+  "checkout": "/Users/mikeo/Documents/Codex/2026-10-03/task/kinosail",
+  "ledger_sha256": "103e72939402ac92491a2dd2dd7fce683f43bc64d6b50388babff1573d50e115",
+  "verifier_sha256": "a3fef78dbcf7d4bb33f3dfb96e82013f064b7dca8f4d57717624f4fc9f2ab850",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "engineering/qa/2026-10-03-test-overhaul/verify-player-audit.py",
+    "--checkout",
+    ".",
+    "--output",
+    "/tmp/player-audit-388.json"
+  ],
+  "environment": {
+    "python": "3.14.7",
+    "platform": "macOS-27.0-arm64-arm-64bit-Mach-O"
+  },
+  "counts": {
+    "original_files": 351,
+    "original_declarations": 837,
+    "current_files": 343,
+    "current_declarations": 774,
+    "decisions": {
+      "R": 716,
+      "D": 64,
+      "F": 57
+    },
+    "upstream_rows": 5,
+    "upstream_fixture_files": 2,
+    "preserved_C_names": []
+  },
+  "scope": "Inventory/body integrity, actual removals/preservation and exact keeper-name existence. Semantic quality and product execution remain evidenced by ledger reviewers and root run artifacts.",
+  "errors": []
+}

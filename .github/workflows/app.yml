@@ -168,6 +168,7 @@ jobs:
       - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
         with:
           image-ref: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
+          cache-dir: ${{ runner.temp }}/trivy-${{ inputs.app }}-${{ matrix.runner }}
           severity: CRITICAL,HIGH
           ignore-unfixed: true
           exit-code: "1"

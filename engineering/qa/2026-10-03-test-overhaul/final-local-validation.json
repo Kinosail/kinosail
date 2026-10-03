@@ -1,0 +1,65 @@
+{
+  "schema": "kinosail-final-local-validation-v1",
+  "sourceRevision": "3885906a5508ef497c2775d547f3321ccc69d63d",
+  "sourceStatus": "clean at execution",
+  "scope": "Lightweight local verification only; complete required suites remain CI authority",
+  "commands": [
+    {
+      "command": "python3 -m unittest discover -s scripts/ci -p 'test_*.py'",
+      "chunk_id": "f1f037",
+      "wall_time_seconds": 1.364312102,
+      "exit_code": 0,
+      "original_token_count": 91,
+      "output": ".................................................\n----------------------------------------------------------------------\nRan 49 tests in 1.345s\n\nOK\nNewer main changes affect this app; retain the current production tags.\nNewer main changes affect this app; retain the current production tags.\nNewer main changes affect this app; retain the current production tags.\n"
+    },
+    {
+      "command": "actionlint .github/workflows/app.yml",
+      "chunk_id": "9cc5c3",
+      "wall_time_seconds": 0.059664505,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": ""
+    },
+    {
+      "command": "shellcheck -x scripts/ci/test-container-transport.sh apps/player/scripts/test-container.sh apps/subtitles/scripts/test-container.sh",
+      "chunk_id": "47668c",
+      "wall_time_seconds": 0.517077107,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": ""
+    },
+    {
+      "command": "make max-loc",
+      "chunk_id": "1467d6",
+      "wall_time_seconds": 0.749367955,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": ""
+    },
+    {
+      "command": "GOCACHE=/tmp/kinosail-testing-go-cache python3 scripts/tooling/generate-architecture-explorer.py player --check && GOCACHE=/tmp/kinosail-testing-go-cache python3 scripts/tooling/generate-architecture-explorer.py subtitles --check",
+      "chunk_id": "ab94bb",
+      "wall_time_seconds": 1.994549912,
+      "exit_code": 0,
+      "original_token_count": 57,
+      "output": "checked /Users/mikeo/Documents/Codex/2026-10-03/task/kinosail/apps/player/docs/architecture-explorer/index.html\nchecked /Users/mikeo/Documents/Codex/2026-10-03/task/kinosail/apps/subtitles/docs/architecture-explorer/index.html\n"
+    },
+    {
+      "command": "gitleaks git --redact --no-banner --log-opts=origin/main..HEAD --report-format json --report-path /tmp/gitleaks-388.json",
+      "exit_code": 0,
+      "result": "148 commits scanned; 37.82 MB; no leaks found",
+      "scope": "Historical exact checksum false positives remain narrowly fingerprinted and independently reviewed"
+    }
+  ],
+  "unrun": [
+    "Full local make verify-changed: includes heavy builds/lint and locally prohibited container engine",
+    "Local full Go/race/browser/native suites at final head: disk-space restriction",
+    "Physical Safari/iOS/tvOS/Android runtime",
+    "Manual deployment"
+  ],
+  "limits": [
+    "Recorded tests are existing retained checks; no new isolated unit tests added",
+    "Global and owner audit verifiers confirm source integrity, not product runtime",
+    "Historical native-Go populated HTTP artifacts retain their original exact SHA"
+  ]
+}

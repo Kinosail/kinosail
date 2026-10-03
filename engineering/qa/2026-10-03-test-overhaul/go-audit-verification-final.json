@@ -1,0 +1,3299 @@
+{
+  "schema": 1,
+  "base_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+  "upstream_sha": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+  "checkout_sha": "3885906a5508ef497c2775d547f3321ccc69d63d",
+  "tracked_status": [],
+  "verifier_sha256": "a576f0984b5c00778f385fb29e80f2d0e86569102fb247cb916d8e8227f25e55",
+  "approved_changes_sha256": "9f427dec709d87f42013426039a40d746f094beb8c53d8d18ef26debe91709bf",
+  "upstream_provenance_sha256": "8f50c204ff51734c819e6950a28287c5295f1147b725386b0d36b617d491ca80",
+  "counts": {
+    "player-backend.json": {
+      "R": 716,
+      "D": 64,
+      "F": 57
+    },
+    "subtitles-shared.json": {
+      "R": 830,
+      "D": 73,
+      "F": 50,
+      "C": 1
+    },
+    "shared-identity.json": {
+      "R": 1668,
+      "D": 102,
+      "F": 67,
+      "C": 63
+    }
+  },
+  "original_declarations": 3691,
+  "actual_declarations": 3454,
+  "upstream_added": [
+    {
+      "file": "apps/player/internal/server/hls_bandwidth_delivery_test.go",
+      "name": "TestRealBlackIntroHLSBandwidthSurvivesCachedMasterReuse",
+      "body_sha256": "22179b202a6f61d4133768112922ae7b5daca8c6646c7ac2d2f87a4fc1a5c001"
+    },
+    {
+      "file": "packages/identitycore/session_cookie_issuance_boundary_test.go",
+      "name": "TestCookieIssuancePreservesPersistedExpiryAcrossSecondBoundary",
+      "body_sha256": "175cedd1a344d6a7f438fd432e5b6fb35469bc5f34d42745ddcdb9d3e404e03e"
+    }
+  ],
+  "upstream_changed": [
+    {
+      "file": "apps/player/internal/server/auth_all_routes_test.go",
+      "name": "TestEveryRegisteredRouteHasReviewedAnonymousAccess",
+      "body_sha256": "d34cf4e74f98ac174a8f2cc3a26bc60ded87400a7cbdaa2c0ced1e5bfb8440b4"
+    },
+    {
+      "file": "apps/player/internal/server/passkeys_test.go",
+      "name": "TestPasskeyCeremoniesAreLocalAndServerSide",
+      "body_sha256": "6b1611c424a5ec60c0c2b59df03d9fecd4b446c740d2e12541352d35db8a97c3"
+    },
+    {
+      "file": "apps/player/internal/server/passkeys_test.go",
+      "name": "TestPasskeyLoginIsAvailableFromSignInPage",
+      "body_sha256": "67388e987b0acc25de2b6790f56400592dee8355d4c10a119a13afc5dc0bb7c6"
+    },
+    {
+      "file": "apps/player/internal/server/trusted_https_test.go",
+      "name": "TestTrustedHTTPSWizardDefaultsToDuckDNSAndSupportsDeSEC",
+      "body_sha256": "d5f10d9e6844b3cd9c03b3bd8e32433fb15b3f81b9837391027813083033b54b"
+    },
+    {
+      "file": "apps/subtitles/internal/server/passkeys_test.go",
+      "name": "TestPasskeyCeremoniesAreLocalAndServerSide",
+      "body_sha256": "950624f0610cc3ca2539f1ba8bf698b354ef03532c3fcb5486826cc33025e1d8"
+    },
+    {
+      "file": "apps/subtitles/internal/server/passkeys_test.go",
+      "name": "TestPasskeyLoginIsAvailableFromSignInPage",
+      "body_sha256": "67388e987b0acc25de2b6790f56400592dee8355d4c10a119a13afc5dc0bb7c6"
+    }
+  ],
+  "changed_assertions": [
+    {
+      "file": "apps/player/internal/server/auth_all_routes_test.go",
+      "name": "TestEveryRegisteredRouteHasReviewedAnonymousAccess",
+      "kind": "pinned_upstream_change",
+      "baseline_body_sha256": "a003582b185610b5d5185a5f8b188e969a1d76edc6108d9332784254ca32a901",
+      "candidate_body_sha256": "d34cf4e74f98ac174a8f2cc3a26bc60ded87400a7cbdaa2c0ced1e5bfb8440b4"
+    },
+    {
+      "file": "apps/player/internal/server/passkeys_test.go",
+      "name": "TestPasskeyCeremoniesAreLocalAndServerSide",
+      "kind": "pinned_upstream_change",
+      "baseline_body_sha256": "ee007905172fbfd1cd1379a31aa77b4a9c924491c8b506ba377799261ec8da63",
+      "candidate_body_sha256": "6b1611c424a5ec60c0c2b59df03d9fecd4b446c740d2e12541352d35db8a97c3"
+    },
+    {
+      "file": "apps/player/internal/server/passkeys_test.go",
+      "name": "TestPasskeyLoginIsAvailableFromSignInPage",
+      "kind": "pinned_upstream_change",
+      "baseline_body_sha256": "50517b7255330a578e6f9345d822cd95a8843cb7fab4ae1b5ae9fcfad8469ddb",
+      "candidate_body_sha256": "67388e987b0acc25de2b6790f56400592dee8355d4c10a119a13afc5dc0bb7c6"
+    },
+    {
+      "file": "apps/player/internal/server/trusted_https_test.go",
+      "name": "TestTrustedHTTPSWizardDefaultsToDuckDNSAndSupportsDeSEC",
+      "kind": "pinned_upstream_change",
+      "baseline_body_sha256": "9defcec32b0cf94068abcff8c214b23f1b996ac94a1a0c5abd489512c71a6f1f",
+      "candidate_body_sha256": "d5f10d9e6844b3cd9c03b3bd8e32433fb15b3f81b9837391027813083033b54b"
+    },
+    {
+      "file": "apps/subtitles/internal/server/passkey_lifecycle_internal_test.go",
+      "name": "TestPasskeyRemovalRequiresRecentStrongAuthentication",
+      "kind": "existing_name_and_comment_correction_only",
+      "baseline_body_sha256": "ac7f48c36398e01e4790a20b6455cdc86f52e6a74b2989c491a7710e719c9cd1",
+      "candidate_body_sha256": "40833973dbcda7e9566b0c43958a4530c2af4a3a28fffbb14eaf21ae885bc271"
+    },
+    {
+      "file": "apps/subtitles/internal/server/passkeys_test.go",
+      "name": "TestPasskeyCeremoniesAreLocalAndServerSide",
+      "kind": "pinned_upstream_change",
+      "baseline_body_sha256": "a1c41697c16b29c93fd998e82e5390abda5278b22cfcbb7c9facd458f3796466",
+      "candidate_body_sha256": "950624f0610cc3ca2539f1ba8bf698b354ef03532c3fcb5486826cc33025e1d8"
+    },
+    {
+      "file": "apps/subtitles/internal/server/passkeys_test.go",
+      "name": "TestPasskeyLoginIsAvailableFromSignInPage",
+      "kind": "pinned_upstream_change",
+      "baseline_body_sha256": "50517b7255330a578e6f9345d822cd95a8843cb7fab4ae1b5ae9fcfad8469ddb",
+      "candidate_body_sha256": "67388e987b0acc25de2b6790f56400592dee8355d4c10a119a13afc5dc0bb7c6"
+    },
+    {
+      "file": "apps/subtitles/internal/server/remote_access_security_test.go",
+      "name": "TestOwnerKillSwitchFailsPublicAccessClosedAndPersists",
+      "kind": "existing_name_and_comment_correction_only",
+      "baseline_body_sha256": "824db12d2664c215f409223ac4ba7fbbaea1fa7d4bc603549383dc806b856003",
+      "candidate_body_sha256": "8727f785e655f4dcfa435b2f810987c07a1696cc5bd38e03281eecfdc125b79a"
+    },
+    {
+      "file": "apps/subtitles/internal/server/remote_security_audit_internal_test.go",
+      "name": "TestRemoteSecurityMutationsHaveStableAuditActions",
+      "kind": "reviewed_consolidation",
+      "baseline_body_sha256": "01b70ad26d20a042019a14b3ae201bc100c57fda18287d5d3bfd7356a2cfcb23",
+      "candidate_body_sha256": "7b71403a41556a9b510ef65f75754f53fb5dcf5b2f9ed6062db7118f878b9e32"
+    },
+    {
+      "file": "apps/subtitles/internal/server/subsource_provider_internal_test.go",
+      "name": "TestSubSourceRejectsUnsafeOrAmbiguousResults",
+      "kind": "failure_analysis_before_assertion_repair",
+      "baseline_body_sha256": "22ab0c82a1b8eddcd5cad11cc5a4f35735c160e3ed56ec3c112e2d02f80de6c5",
+      "candidate_body_sha256": "5f265978e5188c11a3a1dd6169fded4fa963904e950a1c4ef4918623f35bfaa4"
+    },
+    {
+      "file": "apps/subtitles/internal/server/subtitle_excellence_internal_test.go",
+      "name": "TestSubtitleCleanupPreservesSpokenURLsAndRepeatedDialogue",
+      "kind": "failure_analysis_before_assertion_repair",
+      "baseline_body_sha256": "996b278cbd2e270beed82a3f3c50d9b7f2249930bc1a3b4605219d14f481b5c8",
+      "candidate_body_sha256": "08165914f61ba4172a786517e0844fd5a6dd82b73d4927da7a07803b7b2bb1d8"
+    },
+    {
+      "file": "apps/subtitles/internal/server/subtitle_sync_behavior_internal_test.go",
+      "name": "TestSynchronizeCandidateRejectsPreservedSubtitle",
+      "kind": "failure_analysis_before_assertion_repair",
+      "baseline_body_sha256": "f7cb1bba926776ac1ee3ba13fdbc3161cbd786e1f7adde95ddce1ab9efdf6877",
+      "candidate_body_sha256": "636ad4441140a4aff7245523aedbc292e1ae40a6803c962e51838e2cfe8e2285"
+    },
+    {
+      "file": "packages/watchrooms/http_test.go",
+      "name": "TestHTTPWebSocketPreservesLeaderAndValidationRules",
+      "kind": "failure_analysis_before_assertion_repair",
+      "baseline_body_sha256": "d58b78303306cf092562fef3036d85abecbdc77a8766046dc7cd783ea4372124",
+      "candidate_body_sha256": "577dd250831cc8918ebef94a6a776460dba19046511203b464b346284b14a8e6"
+    },
+    {
+      "file": "packages/watchrooms/http_test.go",
+      "name": "TestHTTPJoinAndAccessFailuresCloseConnections",
+      "kind": "failure_analysis_before_assertion_repair",
+      "baseline_body_sha256": "177d8df3f2d332e09bdf1002ef40aedc143e70412c9a79b2c6ff9942b83674a9",
+      "candidate_body_sha256": "bf0aecd34395638c164e0ddf27a0e8142b82843bf68ade23c0e4ce132f0ef1f6"
+    }
+  ],
+  "pre_edit_analysis_checks": [
+    {
+      "group": "subtitles_pipeline",
+      "valid": true,
+      "path": "engineering/qa/2026-10-03-test-overhaul/subtitles-pipeline-failure-analysis.md",
+      "sha256": "9078a6dc8b0a554ad76f23a0f9078eb60ef1b00ba04bf41923663aad59898896",
+      "analysis_commit": "a2666703aca057aa4c72f597450bd90b455d6038",
+      "repair_commit": "b248f865e7083f07bcb229848b070153ecf97075",
+      "validation_receipt": "engineering/qa/2026-10-03-test-overhaul/controls/subtitles-pipeline-controls.json"
+    },
+    {
+      "group": "watchrooms",
+      "valid": true,
+      "path": "engineering/qa/2026-10-03-test-overhaul/shared-identity.json",
+      "json_path": [
+        "failure_analysis_first",
+        "watchrooms_socket_closure"
+      ],
+      "analysis_keys": [
+        "scope",
+        "owners",
+        "dependency_source_read",
+        "failure_modes",
+        "existing_proof_and_gap",
+        "planned_existing_assertion_repair",
+        "control"
+      ],
+      "sha256": "366da19ba4d13941a2b8c7af2950bf8ca82f22056e3c968e7f233cb64f4c6f56",
+      "analysis_commit": "d116cb4fcf66beb3c20ffa3ff0c14d867bb7280d",
+      "repair_commit": "00ae768f0e16f26a2fa1f075bb33b9eda6baa55f",
+      "helper_path": "packages/watchrooms/http_lifecycle_test.go",
+      "helper_file_sha256": "0828f86eeede08a106450da68755c3069eeb5c356328cc3b5cc961b52b0ac535",
+      "validation_receipt": "engineering/qa/2026-10-03-test-overhaul/watchrooms-control/run-metadata.json"
+    }
+  ],
+  "upstream_source_preservation": [
+    {
+      "file": "apps/player/apps/native/Sources/Platform/PlaybackCoordinator.swift",
+      "pinned_sha256": "4e6b1bcd5efaaeda8a0d8c4cffa9fcab3bd9dee6b9f88892ac2fdfec5e01bcf5",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/apps/native/Sources/Platform/PlaybackEngine+Controls.swift",
+      "pinned_sha256": "6545df405e2fe3c89795e78863787615f6573443062c5e2eec810d319850a978",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/apps/native/Sources/Platform/PlaybackEngine+Recovery.swift",
+      "pinned_sha256": "c36fad94bcc07b3fd73e1cefef89a2f5ad6d628752931df14dec6d288011e344",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/apps/native/Sources/Platform/PlaybackPreparation.swift",
+      "pinned_sha256": "3c20ec7cc1b3eec15023ba47356ba98fb62043cd696c91b54194be4807728199",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/apps/native/Sources/Platform/PlayerPresentation.swift",
+      "pinned_sha256": "045f981744cea6fbebb10526e50879bb8391e73f9d4907e698cb067c84e15b74",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/apps/native/Tests/PlaybackMediaJourneys.swift",
+      "pinned_sha256": "0125ec0ec6a98eff48a87e76f9cb0da83c9bed4d69a09b67c56f76218268c7ab",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/apps/native/Tests/PlaybackStartupFixture.swift",
+      "pinned_sha256": "99b2a5ec44b98a1b7e64a8f2251c7360dd1d677dc6b0bea9e951ca8a5b71cc29",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/apps/native/Tests/PlaybackStartupJourneys.swift",
+      "pinned_sha256": "fed0f37922675f041967084f9f6cd5ffd06e3104806a53bfe5a226dfac1241f1",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/docs/architecture-explorer/index.html",
+      "pinned_sha256": "e5fbbc43c92129f88ba19b0f409dfccedc28559fb819e4c9d4c8b3652c4cf083",
+      "preserved_exact": false
+    },
+    {
+      "file": "apps/player/e2e/apple-playback.config.ts",
+      "pinned_sha256": "1db648ea8f10ae30b94e2e55105fb0b7d4b7bb3b89a06decb707d809660123a9",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/e2e/happy-path-setup.ts",
+      "pinned_sha256": "3c40e274daa1a85a73234808f8cd328e340fd0f0251fae877e552587306b51b8",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/e2e/passkeys.spec.ts",
+      "pinned_sha256": "3f214b38f84250407ca727cbc6de1cfca67147e68efb839339d05b688880ad5b",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/e2e/player-apple-fixture.ts",
+      "pinned_sha256": "bb417ebc9e2986a1ef5507c2323bfe71db8a8129c66cf7f50905334653fc698b",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/e2e/player-apple-launch.spec.ts",
+      "pinned_sha256": "7ce4b52848ecc0ce2c9fc15926564bef112b0b9b61b59292ce36330d0e69deb4",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/e2e/player-compatible-intent.spec.ts",
+      "pinned_sha256": "2e1d6131e744fb640169bfe34f59c621f4e96814a799b7e36869e0d18380f519",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/e2e/player-experience-fixture.ts",
+      "pinned_sha256": "ff175a1e5f061e44ddf80e1379ccbd39335fa0c1a44c7fe90f590865e1463dc4",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/e2e/player-native-controls.spec.ts",
+      "pinned_sha256": "0878422988dfc77dcf8ec34318f5a571f4eee8595197809e39c2f0281d640d43",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/e2e/player-native-seek-gap.spec.ts",
+      "pinned_sha256": "96c49bdf512d1ab763a7be87885846c0f97b81919d76dc35c7b400f7a3072af9",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/e2e/session-persistence.config.ts",
+      "pinned_sha256": "64223a10bdc699b3ea4d7235d3eeac5656c7a8875177fabcfab6612c79659c18",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/e2e/session-resume.spec.ts",
+      "pinned_sha256": "b8714103dd6a07b922c0a740f0c0ed8e152739db0edc3e4f9602b57c0ad40e4a",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/e2e/static-sources.ts",
+      "pinned_sha256": "63912fbc134bd00ea2f235c7848043faa07d9818f42e6234ad7061019176964e",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/e2e/test-instance-apple-launch.spec.ts",
+      "pinned_sha256": "55ea3c12fc12e7f90b7c24af33fffe2e5af45b414c2f67672f3417430eb46e4b",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/e2e/test-instance-session-persistence.spec.ts",
+      "pinned_sha256": "6b99f0196a6f3170697c14cf0bb561b51e56fd433d57e403b1ac7a408275011b",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/e2e/test-instance-startup.spec.ts",
+      "pinned_sha256": "0e621bc1f8fe768fa9838f43d0159546085d62c31bcf99ec7d28917c70893dc2",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/api.go",
+      "pinned_sha256": "96fa08de792bab9033468330dc2c21683907728d9c164369ab283626ef31be89",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/api_keys.go",
+      "pinned_sha256": "3fae0801a3f673f99029ae53b1cfcb8eec6d0308ee5b78f17f805ae646849baa",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/api_media.go",
+      "pinned_sha256": "21bed67830e38393273fbd1577f996c1c91e015d159f4dc0468696367b684a1f",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/api_openapi.json",
+      "pinned_sha256": "b5edcf185557e0cca60add6ec6e5491a9bedb1b4b08c41f673d4344174971b61",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/api_product.go",
+      "pinned_sha256": "5c7fadb5fd8e5ed338f92b0165638d2422cfcb2ed3a2a42d199519641d6acbc6",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/assets.go",
+      "pinned_sha256": "3dffcf49cdbb98e2b4eda7fc8314a433209b8f0bbf9046feb598447bbedc1366",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/auth_all_routes_test.go",
+      "pinned_sha256": "3909a9c0adb832053f6a5253fd1f7d1d3207c2b5677370ba88c2925ee03ad23f",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/files.go",
+      "pinned_sha256": "c06a590594dfb366989564d397f572bb85e84c04e51787ca5e0c8b2583d7fbf7",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/hls.go",
+      "pinned_sha256": "78583222e8d31e19f0fcfb1b9e0d4cd6c0646642395cd3e2c0f0f2d59ac0fbd7",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/hls_bandwidth_delivery_test.go",
+      "pinned_sha256": "6e91e117060039137b2916d13e8a87ee257f65ca2e1dae92cdee0f58afe34df6",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/hls_cached_master.go",
+      "pinned_sha256": "ce8cfaf9c6ef29549c797fd34165b3e1cb8a6efbdd082a8da942c2bcdc7fd75c",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/hls_playlist_session.go",
+      "pinned_sha256": "9f621abda17c7f39592eaed5089a5094cbb0cf56401cfd81e922ca5fb12846f5",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/hls_presentation.go",
+      "pinned_sha256": "a4dd02bdb31d5f1531eff2f7e515a5dc0fd7d25d029cc155c82f9958385cf94f",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/hls_seek.go",
+      "pinned_sha256": "d9827a09ce0237cde787fd9deadb6f7bf35d40aad21f89a407f0a65b4cb1a589",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/locale.go",
+      "pinned_sha256": "2207e1b89769bc01b481f0b02c67650697935276bcf1aeabb2bfa65f343f2a5b",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/mcp_route_policy.go",
+      "pinned_sha256": "1d11a34c762e997e0c5b05cd888fd760d33e09dc5a72b5bd04012cfebaf2c61e",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/passkeys.go",
+      "pinned_sha256": "541abfa2324385dd3ed22e765df1bd2b4a264c3c954eb58a26cdc98c103dd4d7",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/passkeys_test.go",
+      "pinned_sha256": "143799239fee42a34fa79cde23361629663e1068fe6ccde49cf88588ac6908ff",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/playback_trace.go",
+      "pinned_sha256": "876fe7de845692257b460a264724ff9bfec099abe929758fd19e7d2e64cd3e36",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/profiles_http.go",
+      "pinned_sha256": "ec0f36c999345b3116504b6269e6ca39af1234f5ce01b38d77fbcb5cd45046fd",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/server.go",
+      "pinned_sha256": "2212ba74139f80afc2063bec69dee4be37712c59345ee5a849c5269e6422dea4",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/startup_cache.go",
+      "pinned_sha256": "caf0ef192ac504eb17870d2255bdd9ffbf0eeb5375805e8a5b24c4cd3e2a6c39",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/startup_hls.go",
+      "pinned_sha256": "df104ad9d41950916a53497afad558138602b75a4832a5c6bd5e949a8338f532",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/startup_http.go",
+      "pinned_sha256": "af8afd3fe40367e6af007daadd5b0bb94f58403f6f543ca9dc6719486a918107",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/startup_preparation.go",
+      "pinned_sha256": "39266536dcd43e553bbf3e8b48c8f2ada8377ced541ea3ffbbb89274b1deac94",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/startup_window.go",
+      "pinned_sha256": "4e30129bd3b7247fdb979758736636d17b89b2baa5114f297db7c76ad6e050dc",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/static/playback-capabilities.js",
+      "pinned_sha256": "4c369515a923fbe1d85aa35e21d50a0e4c484b9f62d25d5904845826e10bac2b",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/static/player-streaming-adaptive.js",
+      "pinned_sha256": "c7545cf8ba5b400de5733017f204a7bb2565738b3acea3fb23b507a40dfb543c",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/static/player-streaming-recovery.js",
+      "pinned_sha256": "e0cb997619ab1f0b95f6fa94e8b5ed7ac6321e240dc2fd2478c0ea3d73fc3b54",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/static/player.js",
+      "pinned_sha256": "214997dbce7bb80fcb81d3c6988e3a6203c8a60935b05a13652e4644f5e059ba",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/static/startup-preparation.js",
+      "pinned_sha256": "a3145e7c4ee1b8f96f18143674b6ff3f96789102d5685697fe5f1e7113cb1c53",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/internal/server/trusted_https_test.go",
+      "pinned_sha256": "55c4af4e5eae3ba322eaf454c84e4058873826f69e09bf73c51655bc44f25728",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/scripts/test-apple-playback-local.py",
+      "pinned_sha256": "dbcb64f1993ced07c925a9c6444a90c2b55ed163ec5d2eddac6f32337356428b",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/player/scripts/test-container.sh",
+      "pinned_sha256": "f5b2e32899bbaeee8960c02e38b827aa5ec604e2ebc3fcaf739f946b61b0c7b7",
+      "preserved_exact": false
+    },
+    {
+      "file": "apps/player/scripts/test-startup-local.py",
+      "pinned_sha256": "a045b5059af53bb037e2d8fef312da2122e6f747242bf26dc860fb3e14f1895c",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/subtitles/docs/architecture-explorer/index.html",
+      "pinned_sha256": "fac4caa71410f963a674a132a5f7d96ac4674609377d3179c2ee3d856bb3035b",
+      "preserved_exact": false
+    },
+    {
+      "file": "apps/subtitles/e2e/passkeys.spec.ts",
+      "pinned_sha256": "27962d1d5605fe63b9eede27ff1aab0cdf0cdca274386a2d05db83deca71a054",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/subtitles/e2e/session-persistence.config.ts",
+      "pinned_sha256": "64223a10bdc699b3ea4d7235d3eeac5656c7a8875177fabcfab6612c79659c18",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/subtitles/e2e/session-resume.spec.ts",
+      "pinned_sha256": "b8714103dd6a07b922c0a740f0c0ed8e152739db0edc3e4f9602b57c0ad40e4a",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/subtitles/e2e/test-instance-session-persistence.spec.ts",
+      "pinned_sha256": "6b99f0196a6f3170697c14cf0bb561b51e56fd433d57e403b1ac7a408275011b",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/subtitles/internal/server/passkeys.go",
+      "pinned_sha256": "9c423adc03f1c66801278cd1177deaa3fe4a1fae9a064ca0a1c6151f198acc41",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/subtitles/internal/server/passkeys_test.go",
+      "pinned_sha256": "d180c917183db21d7e873f9083e4cdad6a4bf55b2cabad9a8a9012b9df934c74",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/subtitles/internal/server/profiles_http.go",
+      "pinned_sha256": "8b3d8e4dca0b23125c7ae2730d7880c354c0321ed6719568e55d9aefdc0636a3",
+      "preserved_exact": true
+    },
+    {
+      "file": "apps/subtitles/scripts/test-container.sh",
+      "pinned_sha256": "51e0506f9ffd40274b223649031143b37e97e08b0372adb628a341041e1e51e6",
+      "preserved_exact": false
+    },
+    {
+      "file": "engineering/qa/apple-hls-bandwidth-failure-analysis-2026-10-03.md",
+      "pinned_sha256": "21b7866692a04772b2c01174e1020eb86a148005ff92524561a55dd114cd7da1",
+      "preserved_exact": true
+    },
+    {
+      "file": "engineering/qa/apple-hls-bandwidth-http-evidence-2026-10-03.json",
+      "pinned_sha256": "3c92b2940fe187b10bd5a9a3bac882e5e94ef51752e2f2b90ebee1e15d3a1ac7",
+      "preserved_exact": true
+    },
+    {
+      "file": "engineering/qa/apple-mobile-startup-2026-10-03.md",
+      "pinned_sha256": "d978f034ff914d9045123edb3753c30087ec707d92b04db750b6bf24b19bfaa7",
+      "preserved_exact": true
+    },
+    {
+      "file": "engineering/qa/appletv-startup-failure-analysis-2026-10-03.md",
+      "pinned_sha256": "caac586359c896d75fea0d7a0d512fe67d21682bd4cbcf024aaaebbd27d2797d",
+      "preserved_exact": true
+    },
+    {
+      "file": "engineering/qa/browser-session-cookie-expiry-2026-10-03.md",
+      "pinned_sha256": "8a446f885710e0c3f943cc517f6068b63df516b14ad7dd7c509792b7c99ff50f",
+      "preserved_exact": true
+    },
+    {
+      "file": "engineering/qa/browser-session-resume-2026-10-03.md",
+      "pinned_sha256": "8f09466c23d2351fb2d5ae959e54a2118a2a0eb8cafbb56f76e19b1483014e2e",
+      "preserved_exact": true
+    },
+    {
+      "file": "engineering/qa/instant-startup-2026-10-03.md",
+      "pinned_sha256": "02df4ad7fdb43427c4e0b91dfb1ef5b81457aa82d6d4911adfa0389f3b3e1ee2",
+      "preserved_exact": true
+    },
+    {
+      "file": "engineering/qa/instant-startup-failure-analysis-2026-10-03.md",
+      "pinned_sha256": "3f94d9c9e445fe22a5c3b2f9341a70fdb2e7fb5ac8bd76fd7844c0e453ddec63",
+      "preserved_exact": true
+    },
+    {
+      "file": "packages/identitycore/session_cookie_issuance_boundary_test.go",
+      "pinned_sha256": "f0bd2de5ff6cda8f3fe5efa1b0550385b91e17ce490c30dd5c7856bbd3c50beb",
+      "preserved_exact": true
+    },
+    {
+      "file": "packages/identitycore/session_requests.go",
+      "pinned_sha256": "6f7c1df5fb7d16b0652095a4061a8aa342f51e527f95a93f9319079a230b85fe",
+      "preserved_exact": true
+    },
+    {
+      "file": "packages/playback/hls_playlist.go",
+      "pinned_sha256": "b36bd5709e82a738f60adce24d0d9b73fae2470cffd43bb0b4163e91f982ccc6",
+      "preserved_exact": true
+    },
+    {
+      "file": "packages/playback/trace_http.go",
+      "pinned_sha256": "4211f26a1d5c18df038d3b0b63de2aca4fd9bfd6ee74fde00b4ae0269c6a5a54",
+      "preserved_exact": true
+    },
+    {
+      "file": "packages/quickconnect/browser_page.go",
+      "pinned_sha256": "ca727f09e16630a3bcc1a2a41e0633a8d9db89cf0be7f308cc6bd608a6f3d053",
+      "preserved_exact": true
+    },
+    {
+      "file": "packages/servertest/passkey_cookie_isolation.go",
+      "pinned_sha256": "8fe134033e32bd4addd1afa4ff7b7a171619aba4bd0127e6c1f693723608e5ba",
+      "preserved_exact": true
+    },
+    {
+      "file": "packages/webassets/static/passkeys.js",
+      "pinned_sha256": "4936e8841c516efce04f6ff8a37b32f4e806a552649ad6de01c3d7d679fb7877",
+      "preserved_exact": true
+    },
+    {
+      "file": "packages/webassets/static/player-controls.js",
+      "pinned_sha256": "261c3da36c713c6ab24a86c6134b6e1ee97cd73a02614dca3e2937f85ba60838",
+      "preserved_exact": true
+    },
+    {
+      "file": "packages/webassets/static/player-core.js",
+      "pinned_sha256": "1660a29a46cdfeaafae82e490d549e65da79617e04f0903fe70da9f4e495b568",
+      "preserved_exact": true
+    },
+    {
+      "file": "packages/webassets/static/player-presentation.js",
+      "pinned_sha256": "dc91972306d3ed9fd0199f50e9ca8f28ca61252aeee5124627f1929f74456459",
+      "preserved_exact": true
+    },
+    {
+      "file": "packages/webassets/static/player-status.js",
+      "pinned_sha256": "748d8c2607261aff3afbd71c4dae44c338b44becc14407d594f4e1dca5017011",
+      "preserved_exact": true
+    },
+    {
+      "file": "scripts/testing/session-persistence-local.mjs",
+      "pinned_sha256": "9ddd4ae29141a6be09142f7ea7a0efa57ce5bf9044b99a0e69c4c9a03b100444",
+      "preserved_exact": true
+    },
+    {
+      "file": "scripts/testing/test-session-persistence-local.py",
+      "pinned_sha256": "6c70a6f4846450c7c5c8c82902200cc50aaa5fe511966b84374bdfb68a55d2cb",
+      "preserved_exact": true
+    }
+  ],
+  "verified_keeper_references": [
+    {
+      "removed": "apps/player/cmd/kinosail/coverage_edges_test.go::TestLoadConfigurationFindsDefaultFile",
+      "keeper": "TestConfigurationCommandValidatesAndSummarizesSources",
+      "matches": [
+        "apps/player/cmd/kinosail/config_command_test.go::TestConfigurationCommandValidatesAndSummarizesSources",
+        "apps/subtitles/cmd/kinosail/config_command_test.go::TestConfigurationCommandValidatesAndSummarizesSources"
+      ]
+    },
+    {
+      "removed": "apps/player/cmd/kinosail/coverage_edges_test.go::TestLoadConfigurationFindsDefaultFile",
+      "keeper": "TestSharedConfigurationContract",
+      "matches": [
+        "apps/player/internal/configuration/configuration_test.go::TestSharedConfigurationContract",
+        "apps/subtitles/internal/configuration/configuration_test.go::TestSharedConfigurationContract"
+      ]
+    },
+    {
+      "removed": "apps/player/cmd/kinosail/tls_health_test.go::TestConfiguredMCPServerUsesOnlyTheDataDirectory",
+      "keeper": "apps/player/cmd/kinosail/main_test.go::TestCLIContract/TestMCPStdioCommandConnectsAsSoleOwner",
+      "matches": [
+        "apps/player/cmd/kinosail/main_test.go::TestCLIContract/TestMCPStdioCommandConnectsAsSoleOwner"
+      ]
+    },
+    {
+      "removed": "apps/player/cmd/kinosail/tls_health_test.go::TestConfiguredMCPServerUsesOnlyTheDataDirectory",
+      "keeper": "apps/player/cmd/kinosail/main_test.go::TestCommandLineHelperProcess",
+      "matches": [
+        "apps/player/cmd/kinosail/main_test.go::TestCommandLineHelperProcess"
+      ]
+    },
+    {
+      "removed": "apps/player/cmd/kinosail/tls_health_test.go::TestHealthCheckCoversHTTPHTTPSAndCanonicalHost",
+      "keeper": "packages/servertransport/server_test.go::TestCheckHealthCoversProtocolsAndInputFailures",
+      "matches": [
+        "packages/servertransport/server_test.go::TestCheckHealthCoversProtocolsAndInputFailures"
+      ]
+    },
+    {
+      "removed": "apps/player/cmd/kinosail/tls_health_test.go::TestHealthCheckCoversHTTPHTTPSAndCanonicalHost",
+      "keeper": "TestHealthcheckUsesConfiguredAuthHost",
+      "matches": [
+        "apps/player/cmd/kinosail/healthcheck_test.go::TestHealthcheckUsesConfiguredAuthHost",
+        "apps/subtitles/cmd/kinosail/healthcheck_test.go::TestHealthcheckUsesConfiguredAuthHost"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/configuration/oidc_validation_internal_test.go::TestValidOIDCURLAllowsOnlyTrustedEndpointForms",
+      "keeper": "packages/federation/oidc_test.go::TestOIDCConfigurationAndValueValidation",
+      "matches": [
+        "packages/federation/oidc_test.go::TestOIDCConfigurationAndValueValidation"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/configuration/oidc_validation_internal_test.go::TestValidOIDCURLAllowsOnlyTrustedEndpointForms",
+      "keeper": "TestOIDCConfigurationRequiresOneCompleteSafeSet",
+      "matches": [
+        "apps/player/internal/configuration/oidc_test.go::TestOIDCConfigurationRequiresOneCompleteSafeSet",
+        "apps/subtitles/internal/configuration/oidc_test.go::TestOIDCConfigurationRequiresOneCompleteSafeSet"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/configuration/oidc_validation_internal_test.go::TestValidOIDCURLAllowsOnlyTrustedEndpointForms",
+      "keeper": "TestProtocolHelpersRejectRemainingMalformedValues",
+      "matches": [
+        "packages/federation/coverage_edge_test.go::TestProtocolHelpersRejectRemainingMalformedValues"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/database/adapter_test.go::TestPlayerDatabaseAdapterUsesConfiguredDocuments",
+      "keeper": "apps/player/internal/backup/sqlite_test.go::TestSQLiteBackupContract",
+      "matches": [
+        "apps/player/internal/backup/sqlite_test.go::TestSQLiteBackupContract"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/database/adapter_test.go::TestPlayerDatabaseAdapterUsesConfiguredDocuments",
+      "keeper": "apps/player/internal/server/sqlite_persistence_test.go::TestVersionedAPIAndWebPersistStateOnlyInSQLite",
+      "matches": [
+        "apps/player/internal/server/sqlite_persistence_test.go::TestVersionedAPIAndWebPersistStateOnlyInSQLite"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/album_test.go::TestViewerCanBrowseAlbumTracksInOrder",
+      "keeper": "packages/catalog/detail_http_test.go::TestAlbumHandlerProjectsAndReportsResults",
+      "matches": [
+        "packages/catalog/detail_http_test.go::TestAlbumHandlerProjectsAndReportsResults"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/album_test.go::TestViewerCanBrowseAlbumTracksInOrder",
+      "keeper": "packages/library/organization_test.go::TestOrganizersBuildVideoAndMusicHierarchies",
+      "matches": [
+        "packages/library/organization_test.go::TestOrganizersBuildVideoAndMusicHierarchies"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/assets_performance_test.go::TestVersionedApplicationStylesheetIncludesSupporterStyles",
+      "keeper": "apps/player/internal/server/assets_performance_test.go::TestVersionedStaticAssetsUseImmutableCaching",
+      "matches": [
+        "apps/player/internal/server/assets_performance_test.go::TestVersionedStaticAssetsUseImmutableCaching"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/assets_test.go::TestBrandUsesFoldedPlayLogo",
+      "keeper": "apps/player/internal/server/assets_test.go::TestHomeIsInstallableAsAWebApp",
+      "matches": [
+        "apps/player/internal/server/assets_test.go::TestHomeIsInstallableAsAWebApp"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/assets_test.go::TestDesktopRailSeparatesUtilitiesFromAccount",
+      "keeper": "apps/player/internal/server/navigation_test.go::TestDesktopSidebarGroupsConfiguredDestinationsAndKeepsTopSupport",
+      "matches": [
+        "apps/player/internal/server/navigation_test.go::TestDesktopSidebarGroupsConfiguredDestinationsAndKeepsTopSupport"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/assets_test.go::TestDesktopRailSeparatesUtilitiesFromAccount",
+      "keeper": "apps/player/internal/server/navigation_test.go::TestOwnerCanCustomizeLibraryNavigationThroughAPIAndWeb",
+      "matches": [
+        "apps/player/internal/server/navigation_test.go::TestOwnerCanCustomizeLibraryNavigationThroughAPIAndWeb"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/assets_test.go::TestLibraryNavigationKeepsEveryDestinationInMainWithCompactOverflow",
+      "keeper": "apps/player/internal/server/navigation_test.go::TestDesktopSidebarGroupsConfiguredDestinationsAndKeepsTopSupport",
+      "matches": [
+        "apps/player/internal/server/navigation_test.go::TestDesktopSidebarGroupsConfiguredDestinationsAndKeepsTopSupport"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/assets_test.go::TestLibraryNavigationKeepsEveryDestinationInMainWithCompactOverflow",
+      "keeper": "apps/player/internal/server/navigation_test.go::TestOwnerCanCustomizeLibraryNavigationThroughAPIAndWeb",
+      "matches": [
+        "apps/player/internal/server/navigation_test.go::TestOwnerCanCustomizeLibraryNavigationThroughAPIAndWeb"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/assets_test.go::TestPagesUseSharedModernStyles",
+      "keeper": "apps/player/internal/server/cinema_asset_test.go::TestCinemaBackgroundServesLandscapeAsset",
+      "matches": [
+        "apps/player/internal/server/cinema_asset_test.go::TestCinemaBackgroundServesLandscapeAsset"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/auth_stepup_internal_test.go::TestLoginReturnRejectsExternalAndAmbiguousTargets",
+      "keeper": "apps/player/internal/server/auth_stepup_internal_test.go::TestOwnerSetupCreatesRecentAuthentication",
+      "matches": [
+        "apps/player/internal/server/auth_stepup_internal_test.go::TestOwnerSetupCreatesRecentAuthentication"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/auth_stepup_internal_test.go::TestLoginReturnRejectsExternalAndAmbiguousTargets",
+      "keeper": "apps/player/internal/server/auth_stepup_internal_test.go::TestPasswordLoginCreatesRecentAuthentication",
+      "matches": [
+        "apps/player/internal/server/auth_stepup_internal_test.go::TestPasswordLoginCreatesRecentAuthentication"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/auth_stepup_internal_test.go::TestLoginReturnRejectsExternalAndAmbiguousTargets",
+      "keeper": "packages/identitycore/redirects_test.go::TestSafeLoginReturnRejectsExternalAndAmbiguousTargets",
+      "matches": [
+        "packages/identitycore/redirects_test.go::TestSafeLoginReturnRejectsExternalAndAmbiguousTargets"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/auth_stepup_internal_test.go::TestPasskeyOfferPathKeepsTheValidatedLoginDestination",
+      "keeper": "apps/player/internal/server/auth_stepup_internal_test.go::TestOwnerSetupCreatesRecentAuthentication",
+      "matches": [
+        "apps/player/internal/server/auth_stepup_internal_test.go::TestOwnerSetupCreatesRecentAuthentication"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/auth_stepup_internal_test.go::TestPasskeyOfferPathKeepsTheValidatedLoginDestination",
+      "keeper": "apps/player/internal/server/auth_stepup_internal_test.go::TestPasswordLoginCreatesRecentAuthentication",
+      "matches": [
+        "apps/player/internal/server/auth_stepup_internal_test.go::TestPasswordLoginCreatesRecentAuthentication"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/auth_stepup_internal_test.go::TestPasskeyOfferPathKeepsTheValidatedLoginDestination",
+      "keeper": "packages/identitycore/redirects_test.go::TestPasskeyOfferPathEscapesValidatedDestination",
+      "matches": [
+        "packages/identitycore/redirects_test.go::TestPasskeyOfferPathEscapesValidatedDestination"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/auth_stepup_internal_test.go::TestStepUpReturnsToKnownOwnerPage",
+      "keeper": "apps/player/internal/server/auth_stepup_internal_test.go::TestOwnerSetupCreatesRecentAuthentication",
+      "matches": [
+        "apps/player/internal/server/auth_stepup_internal_test.go::TestOwnerSetupCreatesRecentAuthentication"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/auth_stepup_internal_test.go::TestStepUpReturnsToKnownOwnerPage",
+      "keeper": "apps/player/internal/server/auth_stepup_internal_test.go::TestPasswordLoginCreatesRecentAuthentication",
+      "matches": [
+        "apps/player/internal/server/auth_stepup_internal_test.go::TestPasswordLoginCreatesRecentAuthentication"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/auth_stepup_internal_test.go::TestStepUpReturnsToKnownOwnerPage",
+      "keeper": "packages/identitycore/redirects_test.go::TestStepUpLoginPathReturnsToKnownOwnerPage",
+      "matches": [
+        "packages/identitycore/redirects_test.go::TestStepUpLoginPathReturnsToKnownOwnerPage"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/beta_boundaries_internal_test.go::TestRemoteAccessWebKillAndReset",
+      "keeper": "apps/player/internal/server/remote_access_security_test.go::TestOwnerKillSwitchFailsPublicAccessClosedAndPersists",
+      "matches": [
+        "apps/player/internal/server/remote_access_security_test.go::TestOwnerKillSwitchFailsPublicAccessClosedAndPersists"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/beta_boundaries_internal_test.go::TestRemoteAccessWebKillAndReset",
+      "keeper": "packages/remoteaccess/http_test.go::TestKillHTTPResultPaths",
+      "matches": [
+        "packages/remoteaccess/http_test.go::TestKillHTTPResultPaths"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/beta_boundaries_internal_test.go::TestRemoteAccessWebKillAndReset",
+      "keeper": "packages/remoteaccess/http_test.go::TestRevokeAuthorizationJoinsDurableFailures",
+      "matches": [
+        "packages/remoteaccess/http_test.go::TestRevokeAuthorizationJoinsDurableFailures"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/beta_boundaries_internal_test.go::TestRemoteAccessWebKillAndReset",
+      "keeper": "packages/remoteaccess/recovery_test.go::TestResetRequiresStopAndRestartsCurrentManager",
+      "matches": [
+        "packages/remoteaccess/recovery_test.go::TestResetRequiresStopAndRestartsCurrentManager"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/beta_boundaries_internal_test.go::TestRemoteAccessWebKillAndReset",
+      "keeper": "packages/remoteaccess/resume_internal_test.go::TestServeContinuouslyReopensAfterKillReset",
+      "matches": [
+        "packages/remoteaccess/resume_internal_test.go::TestServeContinuouslyReopensAfterKillReset"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/beta_boundaries_internal_test.go::TestRemoteAccessWebKillAndReset",
+      "keeper": "TestResetKillHTTPResultPaths",
+      "matches": [
+        "packages/remoteaccess/http_test.go::TestResetKillHTTPResultPaths"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/beta_boundaries_internal_test.go::TestStrongPublicSessionAndPasskeyViewAreIsolated",
+      "keeper": "TestCredentialCollectionsValidateCloneAndFind",
+      "matches": [
+        "packages/passkeys/credentials_test.go::TestCredentialCollectionsValidateCloneAndFind"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/beta_boundaries_internal_test.go::TestStrongPublicSessionAndPasskeyViewAreIsolated",
+      "keeper": "TestPublicSessionsAreStrongShortLivedAndBounded",
+      "matches": [
+        "apps/player/internal/server/sessions_internal_test.go::TestPublicSessionsAreStrongShortLivedAndBounded",
+        "apps/subtitles/internal/server/sessions_internal_test.go::TestPublicSessionsAreStrongShortLivedAndBounded"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/beta_boundaries_internal_test.go::TestStrongPublicSessionAndPasskeyViewAreIsolated",
+      "keeper": "TestRequestSessionsIssueCookiesAfterPersistence",
+      "matches": [
+        "packages/identitycore/session_requests_test.go::TestRequestSessionsIssueCookiesAfterPersistence"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/books_test.go::TestReaderServesPDFEPUBAndComicPagesThroughAPIAndWeb",
+      "keeper": "TestEPUBReaderPersistsChapterProgressThroughAPIAndWeb",
+      "matches": [
+        "apps/player/internal/server/reader_progress_test.go::TestEPUBReaderPersistsChapterProgressThroughAPIAndWeb",
+        "apps/subtitles/internal/server/reader_progress_test.go::TestEPUBReaderPersistsChapterProgressThroughAPIAndWeb"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/books_test.go::TestReaderServesPDFEPUBAndComicPagesThroughAPIAndWeb",
+      "keeper": "TestReaderPreservesDistinctPagesAndRelativeEPUBChaptersThroughHTTP",
+      "matches": [
+        "apps/player/internal/server/reader_archive_trust_http_test.go::TestReaderPreservesDistinctPagesAndRelativeEPUBChaptersThroughHTTP",
+        "apps/subtitles/internal/server/reader_archive_trust_http_test.go::TestReaderPreservesDistinctPagesAndRelativeEPUBChaptersThroughHTTP"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/books_test.go::TestReaderServesPDFEPUBAndComicPagesThroughAPIAndWeb",
+      "keeper": "TestReaderServesOnlyValidatedBookFilesAndAssets",
+      "matches": [
+        "apps/player/internal/server/reader_boundary_test.go::TestReaderServesOnlyValidatedBookFilesAndAssets",
+        "apps/subtitles/internal/server/reader_boundary_test.go::TestReaderServesOnlyValidatedBookFilesAndAssets"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/collection_summary_test.go::TestCollectionSummariesSeparateDefaultAndCustomSources",
+      "keeper": "TestCollectionReadsKeepDefaultsExclusionsAndCustomMembers",
+      "matches": [
+        "packages/catalog/collection_read_test.go::TestCollectionReadsKeepDefaultsExclusionsAndCustomMembers"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/collection_summary_test.go::TestCollectionSummariesSeparateDefaultAndCustomSources",
+      "keeper": "TestCollectionSummariesPreserveProjectionAndSearch",
+      "matches": [
+        "packages/catalog/collection_read_test.go::TestCollectionSummariesPreserveProjectionAndSearch"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/collection_summary_test.go::TestCollectionSummariesSeparateDefaultAndCustomSources",
+      "keeper": "TestCollectionSummarySearchAndJSON",
+      "matches": [
+        "packages/catalog/collection_read_test.go::TestCollectionSummarySearchAndJSON"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/collection_summary_test.go::TestCollectionSummariesSeparateDefaultAndCustomSources",
+      "keeper": "TestOwnerCanCreateAndCurateCollection",
+      "matches": [
+        "apps/player/internal/server/collection_test.go::TestOwnerCanCreateAndCurateCollection",
+        "apps/subtitles/internal/server/collection_test.go::TestOwnerCanCreateAndCurateCollection"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/download_concurrency_test.go::TestOfflineDownloadQueueRejectsOverflowBeforeCreatingAJob",
+      "keeper": "apps/player/internal/server/download_concurrency_test.go::TestOfflineDownloadsReserveCapacityForPlayback",
+      "matches": [
+        "apps/player/internal/server/download_concurrency_test.go::TestOfflineDownloadsReserveCapacityForPlayback"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/download_concurrency_test.go::TestOfflineDownloadQueueRejectsOverflowBeforeCreatingAJob",
+      "keeper": "packages/downloads/manager_test.go::TestQueueRejectsOverflowBeforeCreatingAJob",
+      "matches": [
+        "packages/downloads/manager_test.go::TestQueueRejectsOverflowBeforeCreatingAJob"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/hls_observability_test.go::TestHLSDiagnosticPreservesCauseAndKeepsOnlyRecentOutput",
+      "keeper": "packages/playback/hls_storage_test.go::TestHLSDiagnosticsBoundOutputAndPreserveCause",
+      "matches": [
+        "packages/playback/hls_storage_test.go::TestHLSDiagnosticsBoundOutputAndPreserveCause"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/hls_playlist_session_internal_test.go::TestJellyfinVODPlaylistPreservesCompletedTranscoderTimeline",
+      "keeper": "packages/hlsmanifest/vod_test.go::TestCompleteVODUsesPlayerCadenceAndCompletedTimeline",
+      "matches": [
+        "packages/hlsmanifest/vod_test.go::TestCompleteVODUsesPlayerCadenceAndCompletedTimeline"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/hls_playlist_session_internal_test.go::TestJellyfinVODPlaylistRejectsInvalidSegmentDuration",
+      "keeper": "packages/hlsmanifest/vod_test.go::TestCompleteVODPreservesGuardedManifests",
+      "matches": [
+        "packages/hlsmanifest/vod_test.go::TestCompleteVODPreservesGuardedManifests"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/hls_playlist_session_internal_test.go::TestJellyfinVODPlaylistRejectsInvalidSegmentDuration",
+      "keeper": "TestHLSSegmentDurationValidationBoundaries",
+      "matches": [
+        "packages/hlsmanifest/vod_test.go::TestHLSSegmentDurationValidationBoundaries"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/hls_playlist_session_internal_test.go::TestJellyfinVODPlaylistRejectsInvalidSegmentDuration",
+      "keeper": "TestSessionlessHLSPlaylist",
+      "matches": [
+        "apps/player/internal/server/hls_sessionless_test.go::TestSessionlessHLSPlaylist",
+        "apps/subtitles/internal/server/hls_sessionless_test.go::TestSessionlessHLSPlaylist"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/hls_playlist_session_internal_test.go::TestJellyfinVODPlaylistUsesObservedSegmentCadence",
+      "keeper": "packages/hlsmanifest/vod_test.go::TestCompleteVODUsesPlayerCadenceAndCompletedTimeline",
+      "matches": [
+        "packages/hlsmanifest/vod_test.go::TestCompleteVODUsesPlayerCadenceAndCompletedTimeline"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/hls_playlist_session_internal_test.go::TestWaitForHLSFileFollowsThePublishedVODTimeline",
+      "keeper": "packages/playback/hls_ready_test.go::TestWaitHLSReadyPreservesPlayerPolling",
+      "matches": [
+        "packages/playback/hls_ready_test.go::TestWaitHLSReadyPreservesPlayerPolling"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/last_light_test.go::TestLastLightHomeUsesRealLibraryArtwork",
+      "keeper": "apps/player/internal/server/home_compact_test.go::TestCompactHomeKeepsFeaturedResumeOutOfShelf",
+      "matches": [
+        "apps/player/internal/server/home_compact_test.go::TestCompactHomeKeepsFeaturedResumeOutOfShelf"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/last_light_test.go::TestLastLightHomeUsesRealLibraryArtwork",
+      "keeper": "apps/player/internal/server/item_details_test.go::TestFeaturedMovieAndShelfOpenPlayer",
+      "matches": [
+        "apps/player/internal/server/item_details_test.go::TestFeaturedMovieAndShelfOpenPlayer"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/last_light_test.go::TestLastLightHomeUsesRealLibraryArtwork",
+      "keeper": "apps/player/internal/server/last_light_test.go::TestLastLightEmptyHomeHasNoInventedFeature",
+      "matches": [
+        "apps/player/internal/server/last_light_test.go::TestLastLightEmptyHomeHasNoInventedFeature"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/last_light_test.go::TestLastLightHomeUsesRealLibraryArtwork",
+      "keeper": "TestHomeWithoutArtworkStartsWithTheLibrary",
+      "matches": [
+        "apps/player/internal/server/last_light_test.go::TestHomeWithoutArtworkStartsWithTheLibrary"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/lists_state_internal_test.go::TestPersistedListAndProgressValidationIsBounded",
+      "keeper": "TestRequestProgressStoreRestoration",
+      "matches": [
+        "packages/catalog/progress_request_store_test.go::TestRequestProgressStoreRestoration"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/lists_state_internal_test.go::TestPersistedListAndProgressValidationIsBounded",
+      "keeper": "TestSearchListAndProgressRules",
+      "matches": [
+        "packages/catalog/catalog_test.go::TestSearchListAndProgressRules"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/locale_catalog_test.go::TestSupportedLanguageCoverageIncludesJellyfinLocaleSet",
+      "keeper": "packages/localization/localization_test.go::TestSupportedLanguagesUsePlayerOrderAndDirections",
+      "matches": [
+        "packages/localization/localization_test.go::TestSupportedLanguagesUsePlayerOrderAndDirections"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/marker_analysis_api_test.go::TestMarkerAnalysisReportsDetectorVersion",
+      "keeper": "TestAdminRoutesManageMarkersAndQueueAnalysis",
+      "matches": [
+        "packages/markers/admin_test.go::TestAdminRoutesManageMarkersAndQueueAnalysis"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/marker_analysis_api_test.go::TestMarkerAnalysisReportsDetectorVersion",
+      "keeper": "TestVersionedAPIReadModelsAreReachableThroughOwnerSession",
+      "matches": [
+        "apps/player/internal/server/api_boundary_coverage_test.go::TestVersionedAPIReadModelsAreReachableThroughOwnerSession",
+        "apps/subtitles/internal/server/api_boundary_coverage_test.go::TestVersionedAPIReadModelsAreReachableThroughOwnerSession"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/navigation_pages_test.go::TestMobileMoreMenuPlacesLibraryAfterSecondaryActions",
+      "keeper": "apps/player/internal/server/navigation_pages_test.go::TestEveryMainNavigationDestinationRetainsTheMainBar",
+      "matches": [
+        "apps/player/internal/server/navigation_pages_test.go::TestEveryMainNavigationDestinationRetainsTheMainBar"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/navigation_pages_test.go::TestMobileMoreMenuPlacesLibraryAfterSecondaryActions",
+      "keeper": "apps/player/internal/server/navigation_pages_test.go::TestOwnerCanReachNavigationEditorFromMainBar",
+      "matches": [
+        "apps/player/internal/server/navigation_pages_test.go::TestOwnerCanReachNavigationEditorFromMainBar"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/password_manager_test.go::TestCopyControlsReportClipboardFallback",
+      "keeper": "apps/subtitles/internal/server/password_manager_test.go::TestCopyControlsReportClipboardFallback",
+      "matches": [
+        "apps/subtitles/internal/server/password_manager_test.go::TestCopyControlsReportClipboardFallback"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/password_manager_test.go::TestPasskeyLoginSupportsPasswordManagerAutofill",
+      "keeper": "apps/subtitles/internal/server/password_manager_test.go::TestPasskeyLoginSupportsPasswordManagerAutofill",
+      "matches": [
+        "apps/subtitles/internal/server/password_manager_test.go::TestPasskeyLoginSupportsPasswordManagerAutofill"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/playback_timeline_test.go::TestAutomaticSkipTimelineMergesAndClampsRanges",
+      "keeper": "packages/playback/plan_test.go::TestTimelineMapsBothDirections",
+      "matches": [
+        "packages/playback/plan_test.go::TestTimelineMapsBothDirections"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/playback_timeline_test.go::TestAutomaticSkipTimelineMergesAndClampsRanges",
+      "keeper": "packages/playback/timeline_test.go::TestAutomaticSkipTimelineNormalizesTrustedRanges",
+      "matches": [
+        "packages/playback/timeline_test.go::TestAutomaticSkipTimelineNormalizesTrustedRanges"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/playback_timeline_test.go::TestAutomaticSkipTimelineNeverRemovesTheWholeItem",
+      "keeper": "packages/playback/plan_test.go::TestTimelineMapsBothDirections",
+      "matches": [
+        "packages/playback/plan_test.go::TestTimelineMapsBothDirections"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/playback_timeline_test.go::TestAutomaticSkipTimelineNeverRemovesTheWholeItem",
+      "keeper": "packages/playback/timeline_test.go::TestAutomaticSkipTimelineNormalizesTrustedRanges",
+      "matches": [
+        "packages/playback/timeline_test.go::TestAutomaticSkipTimelineNormalizesTrustedRanges"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/playback_trace_test.go::TestPlaybackTraceRejectsInvalidInputWithoutLogging",
+      "keeper": "TestPlaybackTraceCorrelatesBrowserAndMediaWithoutPrivateData",
+      "matches": [
+        "apps/player/internal/server/playback_trace_test.go::TestPlaybackTraceCorrelatesBrowserAndMediaWithoutPrivateData",
+        "apps/subtitles/internal/server/playback_trace_test.go::TestPlaybackTraceCorrelatesBrowserAndMediaWithoutPrivateData"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/playback_trace_test.go::TestPlaybackTraceRejectsInvalidInputWithoutLogging",
+      "keeper": "TestTraceHTTPDiagnosticsRejectAmbiguityAndProtectLogPrivacy",
+      "matches": [
+        "packages/playback/trace_diagnostics_http_test.go::TestTraceHTTPDiagnosticsRejectAmbiguityAndProtectLogPrivacy"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/playback_trace_test.go::TestPlaybackTraceRejectsInvalidInputWithoutLogging",
+      "keeper": "TestTraceHTTPRejectsLogInjectionWithoutEffects",
+      "matches": [
+        "packages/playback/trace_http_test.go::TestTraceHTTPRejectsLogInjectionWithoutEffects"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/playback_trace_test.go::TestPlaybackTraceRejectsInvalidInputWithoutLogging",
+      "keeper": "TestTraceReaderRejectsBeforeCallerSideEffects",
+      "matches": [
+        "packages/playback/protocol_test.go::TestTraceReaderRejectsBeforeCallerSideEffects"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/playlist_summary_test.go::TestPlaylistSummariesDescribeRulesAndArtwork",
+      "keeper": "TestPlaylistSummariesPreserveModeRulesAndPreview",
+      "matches": [
+        "packages/catalog/collection_read_test.go::TestPlaylistSummariesPreserveModeRulesAndPreview"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/playlist_summary_test.go::TestPlaylistSummariesDescribeRulesAndArtwork",
+      "keeper": "TestPlaylistsSupportPersistentOrderAndDynamicRules",
+      "matches": [
+        "apps/player/internal/server/playlist_features_test.go::TestPlaylistsSupportPersistentOrderAndDynamicRules",
+        "apps/subtitles/internal/server/playlist_features_test.go::TestPlaylistsSupportPersistentOrderAndDynamicRules"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/playlist_summary_test.go::TestPlaylistSummariesDescribeRulesAndArtwork",
+      "keeper": "TestSmartPlaylistUsesCanonicalSearchKindsAndSort",
+      "matches": [
+        "packages/catalog/list_read_test.go::TestSmartPlaylistUsesCanonicalSearchKindsAndSort"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/profiles_storage_internal_test.go::TestProfileSnapshotsDoNotAliasStoredIdentityState",
+      "keeper": "packages/identitycore/profile_store_transaction_test.go::TestProfileStoreRemoveAndSnapshots",
+      "matches": [
+        "packages/identitycore/profile_store_transaction_test.go::TestProfileStoreRemoveAndSnapshots"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/profiles_storage_internal_test.go::TestProfileSnapshotsDoNotAliasStoredIdentityState",
+      "keeper": "packages/identitycore/profile_test.go::TestCloneProfilesDetachesMutableState",
+      "matches": [
+        "packages/identitycore/profile_test.go::TestCloneProfilesDetachesMutableState"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/profiles_storage_internal_test.go::TestProfileSnapshotsDoNotAliasStoredIdentityState",
+      "keeper": "packages/identitycore/profile_test.go::TestFindAndFederateProfile",
+      "matches": [
+        "packages/identitycore/profile_test.go::TestFindAndFederateProfile"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/pwa_registration_test.go::TestOfflinePagesUseTheCurrentNavigationBundle",
+      "keeper": "apps/player/internal/server/assets_performance_test.go::TestPlayerScriptURLTracksServedContents",
+      "matches": [
+        "apps/player/internal/server/assets_performance_test.go::TestPlayerScriptURLTracksServedContents"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/pwa_registration_test.go::TestPWAHandlesServiceWorkerRegistrationFailure",
+      "keeper": "apps/subtitles/internal/server/pwa_registration_test.go::TestPWAHandlesServiceWorkerRegistrationFailure",
+      "matches": [
+        "apps/subtitles/internal/server/pwa_registration_test.go::TestPWAHandlesServiceWorkerRegistrationFailure"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/qa_coverage_edges_test.go::TestDLNALabelExplainsUnconfiguredAndConfiguredStates",
+      "keeper": "TestDLNATokenAndLabelPolicy",
+      "matches": [
+        "packages/settings/dlna_test.go::TestDLNATokenAndLabelPolicy"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/qa_coverage_edges_test.go::TestDLNALabelExplainsUnconfiguredAndConfiguredStates",
+      "keeper": "TestOwnerCanEnableBrowseAndRevokeDLNA",
+      "matches": [
+        "apps/player/internal/server/dlna_test.go::TestOwnerCanEnableBrowseAndRevokeDLNA",
+        "apps/subtitles/internal/server/dlna_test.go::TestOwnerCanEnableBrowseAndRevokeDLNA"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/qa_coverage_edges_test.go::TestHardwareSupportAcceptsAutomaticAndKnownBackends",
+      "keeper": "apps/player/internal/server/hardware_capabilities_test.go::TestHardwareCapabilitiesDriveAutomaticSelectionAndVisibleFallback",
+      "matches": [
+        "apps/player/internal/server/hardware_capabilities_test.go::TestHardwareCapabilitiesDriveAutomaticSelectionAndVisibleFallback"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/qa_coverage_edges_test.go::TestHardwareSupportAcceptsAutomaticAndKnownBackends",
+      "keeper": "packages/transcodehardware/capabilities_test.go::TestCapabilityLookupAndEncoderResolution",
+      "matches": [
+        "packages/transcodehardware/capabilities_test.go::TestCapabilityLookupAndEncoderResolution"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/server_test.go::TestViewerCanOpenHome",
+      "keeper": "apps/player/internal/server/server_test.go::TestHealthReportsReady",
+      "matches": [
+        "apps/player/internal/server/server_test.go::TestHealthReportsReady"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/server_test.go::TestViewerCanOpenHome",
+      "keeper": "apps/player/internal/server/server_test.go::TestResponsesCarryBrowserSecurityPolicy",
+      "matches": [
+        "apps/player/internal/server/server_test.go::TestResponsesCarryBrowserSecurityPolicy"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/server_test.go::TestViewerCanSearchLibrary",
+      "keeper": "apps/player/internal/server/library_api_titles_test.go::TestKnownTitleSearchRanksLikelyMatchesAcrossAPIAndWeb",
+      "matches": [
+        "apps/player/internal/server/library_api_titles_test.go::TestKnownTitleSearchRanksLikelyMatchesAcrossAPIAndWeb"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/server_test.go::TestViewerCanSearchLibrary",
+      "keeper": "packages/catalog/coverage_browse_letters_final_test.go::TestCoverageSearchUnicodeRankingAndFilterIsolation",
+      "matches": [
+        "packages/catalog/coverage_browse_letters_final_test.go::TestCoverageSearchUnicodeRankingAndFilterIsolation"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/server_test.go::TestViewerCanSearchLibrary",
+      "keeper": "packages/catalog/search_metadata_test.go::TestMetadataSearchNormalizesEveryUnicodeField",
+      "matches": [
+        "packages/catalog/search_metadata_test.go::TestMetadataSearchNormalizesEveryUnicodeField"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/sessions_internal_test.go::TestBrowserSessionCookiesAreAlwaysHostBoundAndSecure",
+      "keeper": "apps/player/internal/server/session_cookie_isolation_test.go::TestBrowserSessionCookieIsolatedFromSiblingApp",
+      "matches": [
+        "apps/player/internal/server/session_cookie_isolation_test.go::TestBrowserSessionCookieIsolatedFromSiblingApp"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/sessions_internal_test.go::TestBrowserSessionCookiesAreAlwaysHostBoundAndSecure",
+      "keeper": "packages/identitycore/session_http_test.go::TestSessionNormalizationNamesAndCookies",
+      "matches": [
+        "packages/identitycore/session_http_test.go::TestSessionNormalizationNamesAndCookies"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/sessions_internal_test.go::TestCleanDeviceNameNormalizesBrowserAgentsAndBoundsOtherNames",
+      "keeper": "packages/identitycore/session_http_test.go::TestSessionNormalizationNamesAndCookies",
+      "matches": [
+        "packages/identitycore/session_http_test.go::TestSessionNormalizationNamesAndCookies"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/sessions_internal_test.go::TestProfilePolicyChangeDoesNotPersistBeforeSessionRevocation",
+      "keeper": "packages/identitycore/profile_store_transaction_test.go::TestProfileStoreSetProfileTransactions",
+      "matches": [
+        "packages/identitycore/profile_store_transaction_test.go::TestProfileStoreSetProfileTransactions"
+      ]
+    },
+    {
+      "removed": "apps/player/internal/server/supporter_editions_test.go::TestPreviewThreeEditionSupporter",
+      "keeper": "TestThreeEditionCollectionAndVisibility",
+      "matches": [
+        "apps/player/internal/server/supporter_editions_test.go::TestThreeEditionCollectionAndVisibility"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/cmd/kinosail/tls_health_test.go::TestConfiguredMCPServerUsesOnlyTheDataDirectory",
+      "keeper": "apps/subtitles/cmd/kinosail/main_test.go::TestCLIContract/TestMCPStdioCommandConnectsAsSoleOwner",
+      "matches": [
+        "apps/subtitles/cmd/kinosail/main_test.go::TestCLIContract/TestMCPStdioCommandConnectsAsSoleOwner"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/cmd/kinosail/tls_health_test.go::TestHealthCheckCoversHTTPHTTPSAndCanonicalHost",
+      "keeper": "apps/subtitles/cmd/kinosail/healthcheck_test.go::TestHealthcheckUsesConfiguredAuthHost",
+      "matches": [
+        "apps/subtitles/cmd/kinosail/healthcheck_test.go::TestHealthcheckUsesConfiguredAuthHost"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/cmd/kinosail/tls_health_test.go::TestHealthCheckCoversHTTPHTTPSAndCanonicalHost",
+      "keeper": "packages/servertransport/server_test.go::TestCheckHealthCoversProtocolsAndInputFailures",
+      "matches": [
+        "packages/servertransport/server_test.go::TestCheckHealthCoversProtocolsAndInputFailures"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/configuration/oidc_validation_internal_test.go::TestValidOIDCURLAllowsOnlyTrustedEndpointForms",
+      "keeper": "apps/subtitles/internal/configuration/oidc_test.go::TestOIDCConfigurationChangesAtomically",
+      "matches": [
+        "apps/subtitles/internal/configuration/oidc_test.go::TestOIDCConfigurationChangesAtomically"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/configuration/oidc_validation_internal_test.go::TestValidOIDCURLAllowsOnlyTrustedEndpointForms",
+      "keeper": "apps/subtitles/internal/configuration/oidc_test.go::TestOIDCConfigurationRequiresOneCompleteSafeSet",
+      "matches": [
+        "apps/subtitles/internal/configuration/oidc_test.go::TestOIDCConfigurationRequiresOneCompleteSafeSet"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/configuration/oidc_validation_internal_test.go::TestValidOIDCURLAllowsOnlyTrustedEndpointForms",
+      "keeper": "packages/federation/settings_test.go::TestSettingsOIDCLifecycleAndValidationEffects",
+      "matches": [
+        "packages/federation/settings_test.go::TestSettingsOIDCLifecycleAndValidationEffects"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/configuration/oidc_validation_internal_test.go::TestValidRemoteTokenRejectsWrongLengthAndCharacters",
+      "keeper": "packages/validation/validation_test.go::TestRemoteTokenValidation",
+      "matches": [
+        "packages/validation/validation_test.go::TestRemoteTokenValidation"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/configuration/stored_json_test.go::TestStoredJSONRejectsMalformedDuplicateTrailingAndOversizedDocuments",
+      "keeper": "apps/subtitles/internal/configuration/configuration_test.go::TestSharedConfigurationContract",
+      "matches": [
+        "apps/subtitles/internal/configuration/configuration_test.go::TestSharedConfigurationContract"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/configuration/stored_json_test.go::TestStoredJSONRejectsMalformedDuplicateTrailingAndOversizedDocuments",
+      "keeper": "apps/subtitles/internal/configuration/stored_json_test.go::TestInvalidStoredJSONCausesNoConfigurationMutation",
+      "matches": [
+        "apps/subtitles/internal/configuration/stored_json_test.go::TestInvalidStoredJSONCausesNoConfigurationMutation"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/configuration/subtitle_test.go::TestSubtitleLanguageConfigurationRejectsProviderSpellings",
+      "keeper": "apps/subtitles/internal/configuration/opensubtitles_test.go::TestSubtitleLanguageAcceptsRegionsAndRejectsAmbiguity",
+      "matches": [
+        "apps/subtitles/internal/configuration/opensubtitles_test.go::TestSubtitleLanguageAcceptsRegionsAndRejectsAmbiguity"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/configuration/subtitle_test.go::TestSubtitleLanguageConfigurationRejectsProviderSpellings",
+      "keeper": "apps/subtitles/internal/subtitlelanguage/catalog_test.go::TestNormalizeTagIsCaseInsensitiveAndProviderSpellingsStayRejected",
+      "matches": [
+        "apps/subtitles/internal/subtitlelanguage/catalog_test.go::TestNormalizeTagIsCaseInsensitiveAndProviderSpellingsStayRejected"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/assets_test.go::TestViewerCanChooseDarkLightOrSystemTheme",
+      "keeper": "apps/player/internal/server/assets_test.go::TestViewerCanChooseDarkLightOrSystemTheme",
+      "matches": [
+        "apps/player/internal/server/assets_test.go::TestViewerCanChooseDarkLightOrSystemTheme"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/auth_policy_internal_test.go::TestEveryPublicPolicyNamesARegisteredRoute",
+      "keeper": "apps/subtitles/internal/server/auth_all_routes_test.go::TestEveryRegisteredRouteHasReviewedAnonymousAccess",
+      "matches": [
+        "apps/subtitles/internal/server/auth_all_routes_test.go::TestEveryRegisteredRouteHasReviewedAnonymousAccess"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/auth_policy_internal_test.go::TestEveryPublicPolicyNamesARegisteredRoute",
+      "keeper": "apps/subtitles/internal/server/auth_policy_internal_test.go::TestPublicRoutePolicyIsExactAndDefaultsProtected",
+      "matches": [
+        "apps/subtitles/internal/server/auth_policy_internal_test.go::TestPublicRoutePolicyIsExactAndDefaultsProtected"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/auth_stepup_internal_test.go::TestLoginReturnRejectsExternalAndAmbiguousTargets",
+      "keeper": "apps/subtitles/internal/server/passkeys_test.go::TestPasswordLoginOffersPasskeyWithConfiguredStateAndSafeReturn",
+      "matches": [
+        "apps/subtitles/internal/server/passkeys_test.go::TestPasswordLoginOffersPasskeyWithConfiguredStateAndSafeReturn"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/auth_stepup_internal_test.go::TestLoginReturnRejectsExternalAndAmbiguousTargets",
+      "keeper": "apps/subtitles/internal/server/session_cookie_isolation_test.go::TestBrowserSessionCookieIsolatedFromSiblingApp",
+      "matches": [
+        "apps/subtitles/internal/server/session_cookie_isolation_test.go::TestBrowserSessionCookieIsolatedFromSiblingApp"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/auth_stepup_internal_test.go::TestLoginReturnRejectsExternalAndAmbiguousTargets",
+      "keeper": "packages/identitycore/redirects_test.go::TestSafeLoginReturnRejectsExternalAndAmbiguousTargets",
+      "matches": [
+        "packages/identitycore/redirects_test.go::TestSafeLoginReturnRejectsExternalAndAmbiguousTargets"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/auth_stepup_internal_test.go::TestPasskeyOfferPathKeepsTheValidatedLoginDestination",
+      "keeper": "apps/subtitles/internal/server/passkeys_test.go::TestPasswordLoginOffersPasskeyWithConfiguredStateAndSafeReturn",
+      "matches": [
+        "apps/subtitles/internal/server/passkeys_test.go::TestPasswordLoginOffersPasskeyWithConfiguredStateAndSafeReturn"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/auth_stepup_internal_test.go::TestPasskeyOfferPathKeepsTheValidatedLoginDestination",
+      "keeper": "apps/subtitles/internal/server/session_cookie_isolation_test.go::TestBrowserSessionCookieIsolatedFromSiblingApp",
+      "matches": [
+        "apps/subtitles/internal/server/session_cookie_isolation_test.go::TestBrowserSessionCookieIsolatedFromSiblingApp"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/auth_stepup_internal_test.go::TestPasskeyOfferPathKeepsTheValidatedLoginDestination",
+      "keeper": "packages/identitycore/redirects_test.go::TestPasskeyOfferPathEscapesValidatedDestination",
+      "matches": [
+        "packages/identitycore/redirects_test.go::TestPasskeyOfferPathEscapesValidatedDestination"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/auth_stepup_internal_test.go::TestStepUpReturnsToKnownOwnerPage",
+      "keeper": "apps/subtitles/internal/server/passkeys_test.go::TestPasswordLoginOffersPasskeyWithConfiguredStateAndSafeReturn",
+      "matches": [
+        "apps/subtitles/internal/server/passkeys_test.go::TestPasswordLoginOffersPasskeyWithConfiguredStateAndSafeReturn"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/auth_stepup_internal_test.go::TestStepUpReturnsToKnownOwnerPage",
+      "keeper": "apps/subtitles/internal/server/session_cookie_isolation_test.go::TestBrowserSessionCookieIsolatedFromSiblingApp",
+      "matches": [
+        "apps/subtitles/internal/server/session_cookie_isolation_test.go::TestBrowserSessionCookieIsolatedFromSiblingApp"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/auth_stepup_internal_test.go::TestStepUpReturnsToKnownOwnerPage",
+      "keeper": "packages/identitycore/redirects_test.go::TestStepUpLoginPathReturnsToKnownOwnerPage",
+      "matches": [
+        "packages/identitycore/redirects_test.go::TestStepUpLoginPathReturnsToKnownOwnerPage"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/beta_boundaries_internal_test.go::TestRemoteAccessWebKillAndReset",
+      "keeper": "apps/subtitles/internal/server/media_shares_internal_test.go::TestKillSwitchRevokesEveryPublicAuthorizationArtifact",
+      "matches": [
+        "apps/subtitles/internal/server/media_shares_internal_test.go::TestKillSwitchRevokesEveryPublicAuthorizationArtifact"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/beta_boundaries_internal_test.go::TestRemoteAccessWebKillAndReset",
+      "keeper": "apps/subtitles/internal/server/remote_access_security_test.go::TestOwnerCanPersistAndResetPublicKillSwitch",
+      "matches": [
+        "apps/subtitles/internal/server/remote_access_security_test.go::TestOwnerCanPersistAndResetPublicKillSwitch"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/beta_boundaries_internal_test.go::TestRemoteAccessWebKillAndReset",
+      "keeper": "packages/remoteaccess/http_test.go::TestKillHTTPResultPaths",
+      "matches": [
+        "packages/remoteaccess/http_test.go::TestKillHTTPResultPaths"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/beta_boundaries_internal_test.go::TestRemoteAccessWebKillAndReset",
+      "keeper": "TestResetKillHTTPResultPaths",
+      "matches": [
+        "packages/remoteaccess/http_test.go::TestResetKillHTTPResultPaths"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/beta_boundaries_internal_test.go::TestSecurityClassificationAndMediaLimits",
+      "keeper": "apps/player/internal/server/beta_boundaries_internal_test.go::TestSecurityClassificationAndMediaLimits",
+      "matches": [
+        "apps/player/internal/server/beta_boundaries_internal_test.go::TestSecurityClassificationAndMediaLimits"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/beta_boundaries_internal_test.go::TestSecurityClassificationAndMediaLimits",
+      "keeper": "apps/subtitles/internal/server/symlink_security_test.go::TestServingRejectsMediaReplacedBySymlink",
+      "matches": [
+        "apps/subtitles/internal/server/symlink_security_test.go::TestServingRejectsMediaReplacedBySymlink"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/download_concurrency_test.go::TestOfflineDownloadQueueRejectsOverflowBeforeCreatingAJob",
+      "keeper": "packages/downloads/manager_test.go::TestQueueRejectsOverflowBeforeCreatingAJob",
+      "matches": [
+        "packages/downloads/manager_test.go::TestQueueRejectsOverflowBeforeCreatingAJob"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/hls_delivery_internal_test.go::TestHLSPlaylistReaderRejectsSymlinkAndOversizedCacheFiles",
+      "keeper": "packages/playback/hls_path_edges_test.go::TestReadHLSPlaylistCoversEveryFilesystemFailure",
+      "matches": [
+        "packages/playback/hls_path_edges_test.go::TestReadHLSPlaylistCoversEveryFilesystemFailure"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/hls_delivery_internal_test.go::TestHLSPlaylistReaderRejectsSymlinkAndOversizedCacheFiles",
+      "keeper": "packages/playback/hls_storage_test.go::TestHLSPlaylistRejectsIncompleteAndUnsafeInputs",
+      "matches": [
+        "packages/playback/hls_storage_test.go::TestHLSPlaylistRejectsIncompleteAndUnsafeInputs"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/integration_helpers_internal_test.go::TestDecodeExternalJSONRequiresOneBoundedDocument",
+      "keeper": "packages/httpguard/httpguard_test.go::TestDecodeJSONAcceptsOneBoundedDocument",
+      "matches": [
+        "packages/httpguard/httpguard_test.go::TestDecodeJSONAcceptsOneBoundedDocument"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/integration_helpers_internal_test.go::TestDecodeExternalJSONRequiresOneBoundedDocument",
+      "keeper": "packages/httpguard/httpguard_test.go::TestDecodeJSONRejectsUnsafeExternalDocuments",
+      "matches": [
+        "packages/httpguard/httpguard_test.go::TestDecodeJSONRejectsUnsafeExternalDocuments"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/integration_helpers_internal_test.go::TestDecodeExternalJSONRequiresOneBoundedDocument",
+      "keeper": "packages/metadata/network_test.go::TestExternalJSONAndAtomicSave",
+      "matches": [
+        "packages/metadata/network_test.go::TestExternalJSONAndAtomicSave"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/lists_state_internal_test.go::TestPersistedListAndProgressValidationIsBounded",
+      "keeper": "packages/catalog/catalog_test.go::TestSearchListAndProgressRules",
+      "matches": [
+        "packages/catalog/catalog_test.go::TestSearchListAndProgressRules"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/lists_state_internal_test.go::TestPersistedListAndProgressValidationIsBounded",
+      "keeper": "packages/catalog/progress_request_store_test.go::TestRequestProgressStoreRestoration",
+      "matches": [
+        "packages/catalog/progress_request_store_test.go::TestRequestProgressStoreRestoration"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/locale_catalog_test.go::TestSupportedLanguageCoverageIncludesJellyfinLocaleSet",
+      "keeper": "packages/localization/localization_test.go::TestSupportedLanguagesUsePlayerOrderAndDirections",
+      "matches": [
+        "packages/localization/localization_test.go::TestSupportedLanguagesUsePlayerOrderAndDirections"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/mcp_stdio_test.go::TestMCPStdioRejectsMissingStreamsBeforeSideEffects",
+      "keeper": "apps/subtitles/internal/server/mcp_stdio_test.go::TestMCPStdioUsesSoleOwnerAndSharedAPI",
+      "matches": [
+        "apps/subtitles/internal/server/mcp_stdio_test.go::TestMCPStdioUsesSoleOwnerAndSharedAPI"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/mcp_stdio_test.go::TestMCPStdioRejectsMissingStreamsBeforeSideEffects",
+      "keeper": "packages/mcpgateway/stdio_test.go::TestStdioRejectsInvalidInputsWithoutSideEffects",
+      "matches": [
+        "packages/mcpgateway/stdio_test.go::TestStdioRejectsInvalidInputsWithoutSideEffects"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/mcp_stdio_test.go::TestMCPStdioRequiresRunningServerWithoutSideEffects",
+      "keeper": "apps/subtitles/internal/server/mcp_stdio_test.go::TestMCPStdioUsesSoleOwnerAndSharedAPI",
+      "matches": [
+        "apps/subtitles/internal/server/mcp_stdio_test.go::TestMCPStdioUsesSoleOwnerAndSharedAPI"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/mcp_stdio_test.go::TestMCPStdioRequiresRunningServerWithoutSideEffects",
+      "keeper": "packages/mcpgateway/stdio_edges_test.go::TestOpenStdioFailuresReturnNoRelayOrConnection",
+      "matches": [
+        "packages/mcpgateway/stdio_edges_test.go::TestOpenStdioFailuresReturnNoRelayOrConnection"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/mcp_stdio_test.go::TestMCPStdioRequiresRunningServerWithoutSideEffects",
+      "keeper": "packages/mcpgateway/stdio_test.go::TestStdioRejectsInvalidInputsWithoutSideEffects",
+      "matches": [
+        "packages/mcpgateway/stdio_test.go::TestStdioRejectsInvalidInputsWithoutSideEffects"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/playback_plan_test.go::TestDecidePlaybackGoldenPlans",
+      "keeper": "apps/player/internal/server/playback_plan_test.go::TestDecidePlaybackGoldenPlans",
+      "matches": [
+        "apps/player/internal/server/playback_plan_test.go::TestDecidePlaybackGoldenPlans"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/playback_plan_test.go::TestDecidePlaybackGoldenPlans",
+      "keeper": "packages/playback/plan_test.go::TestDecidePreservesPlayerPolicyAndProductAudioChoice",
+      "matches": [
+        "packages/playback/plan_test.go::TestDecidePreservesPlayerPolicyAndProductAudioChoice"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/playback_plan_test.go::TestDirectFirstHasNoImplicitBitrateLimit",
+      "keeper": "apps/player/internal/server/playback_plan_test.go::TestDirectFirstHasNoImplicitBitrateLimit",
+      "matches": [
+        "apps/player/internal/server/playback_plan_test.go::TestDirectFirstHasNoImplicitBitrateLimit"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/playback_plan_test.go::TestDirectFirstHasNoImplicitBitrateLimit",
+      "keeper": "packages/playback/plan_test.go::TestDecidePreservesPlayerPolicyAndProductAudioChoice",
+      "matches": [
+        "packages/playback/plan_test.go::TestDecidePreservesPlayerPolicyAndProductAudioChoice"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/playback_qualities_test.go::TestAdaptiveQualitiesPreserveSourceShapeWithoutUpscaling",
+      "keeper": "apps/player/internal/server/playback_qualities_test.go::TestAdaptiveQualitiesPreserveSourceShapeWithoutUpscaling",
+      "matches": [
+        "apps/player/internal/server/playback_qualities_test.go::TestAdaptiveQualitiesPreserveSourceShapeWithoutUpscaling"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/playback_qualities_test.go::TestAdaptiveQualitiesPreserveSourceShapeWithoutUpscaling",
+      "keeper": "packages/playback/plan_test.go::TestDecidePreservesPlayerPolicyAndProductAudioChoice",
+      "matches": [
+        "packages/playback/plan_test.go::TestDecidePreservesPlayerPolicyAndProductAudioChoice"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/playback_qualities_test.go::TestAdaptiveQualitiesUseConventionalTierForCroppedVideo",
+      "keeper": "apps/player/internal/server/playback_qualities_test.go::TestAdaptiveQualitiesUseConventionalTierForCroppedVideo",
+      "matches": [
+        "apps/player/internal/server/playback_qualities_test.go::TestAdaptiveQualitiesUseConventionalTierForCroppedVideo"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/playback_qualities_test.go::TestAdaptiveQualitiesUseConventionalTierForCroppedVideo",
+      "keeper": "packages/playback/plan_test.go::TestDecidePreservesPlayerPolicyAndProductAudioChoice",
+      "matches": [
+        "packages/playback/plan_test.go::TestDecidePreservesPlayerPolicyAndProductAudioChoice"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/playback_timeline_test.go::TestAutomaticSkipTimelineMergesAndClampsRanges",
+      "keeper": "packages/playback/plan_test.go::TestTimelineMapsBothDirections",
+      "matches": [
+        "packages/playback/plan_test.go::TestTimelineMapsBothDirections"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/playback_timeline_test.go::TestAutomaticSkipTimelineMergesAndClampsRanges",
+      "keeper": "packages/playback/timeline_test.go::TestAutomaticSkipTimelineNormalizesTrustedRanges",
+      "matches": [
+        "packages/playback/timeline_test.go::TestAutomaticSkipTimelineNormalizesTrustedRanges"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/playback_timeline_test.go::TestAutomaticSkipTimelineNeverRemovesTheWholeItem",
+      "keeper": "packages/playback/timeline_test.go::TestAutomaticSkipTimelineNormalizesTrustedRanges",
+      "matches": [
+        "packages/playback/timeline_test.go::TestAutomaticSkipTimelineNormalizesTrustedRanges"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/player_cast_icon_test.go::TestPlayerUsesCastIconForDevicePlayback",
+      "keeper": "apps/subtitles/internal/server/player_experience_test.go::TestVideoPlayerPresentsPlaybackStateAndTheaterControls",
+      "matches": [
+        "apps/subtitles/internal/server/player_experience_test.go::TestVideoPlayerPresentsPlaybackStateAndTheaterControls"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/profiles_saml_linking_test.go::TestSCIMSAMLIdentityAutoLinkingRequiresOneActiveStableMatch",
+      "keeper": "apps/subtitles/internal/server/saml_test.go::TestSAMLValidatesSignedResponseAndLinksProvisionedSubject",
+      "matches": [
+        "apps/subtitles/internal/server/saml_test.go::TestSAMLValidatesSignedResponseAndLinksProvisionedSubject"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/profiles_saml_linking_test.go::TestSCIMSAMLIdentityAutoLinkingRequiresOneActiveStableMatch",
+      "keeper": "packages/federation/profiles_test.go::TestProfilesAutoLinkSCIMRequiresOneActiveMatch",
+      "matches": [
+        "packages/federation/profiles_test.go::TestProfilesAutoLinkSCIMRequiresOneActiveMatch"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/profiles_saml_linking_test.go::TestSCIMSAMLIdentityAutoLinkingRequiresOneActiveStableMatch",
+      "keeper": "packages/identitycore/profile_test.go::TestFindAndFederateProfile",
+      "matches": [
+        "packages/identitycore/profile_test.go::TestFindAndFederateProfile"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/profiles_scim_test.go::TestSCIMOIDCLinkingRequiresOneStableProvisionedSubject",
+      "keeper": "apps/subtitles/internal/server/oidc_test.go::TestOIDCContract",
+      "matches": [
+        "apps/subtitles/internal/server/oidc_test.go::TestOIDCContract"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/profiles_scim_test.go::TestSCIMOIDCLinkingRequiresOneStableProvisionedSubject",
+      "keeper": "packages/federation/profiles_test.go::TestProfilesAutoLinkSCIMRequiresOneActiveMatch",
+      "matches": [
+        "packages/federation/profiles_test.go::TestProfilesAutoLinkSCIMRequiresOneActiveMatch"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/profiles_scim_test.go::TestSCIMOIDCLinkingRequiresOneStableProvisionedSubject",
+      "keeper": "packages/identitycore/profile_test.go::TestFindAndFederateProfile",
+      "matches": [
+        "packages/identitycore/profile_test.go::TestFindAndFederateProfile"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/profiles_scim_test.go::TestSCIMRehydrationRejectsAmbiguousDeletedProfiles",
+      "keeper": "packages/identitycore/profile_scim_identity_test.go::TestSCIMRestoreRequiresSameStableIdentity",
+      "matches": [
+        "packages/identitycore/profile_scim_identity_test.go::TestSCIMRestoreRequiresSameStableIdentity"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/qa_coverage_edges_test.go::TestHardwareSupportAcceptsAutomaticAndKnownBackends",
+      "keeper": "packages/transcodehardware/capabilities_test.go::TestCapabilityLookupAndEncoderResolution",
+      "matches": [
+        "packages/transcodehardware/capabilities_test.go::TestCapabilityLookupAndEncoderResolution"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/qa_permission_edges_test.go::TestAPIKeyPermissionsHonorScopeAndRouteClassification",
+      "keeper": "apps/subtitles/internal/server/auth_all_routes_test.go::TestEveryProtectedRouteEnforcesExactAPIKeyScopes",
+      "matches": [
+        "apps/subtitles/internal/server/auth_all_routes_test.go::TestEveryProtectedRouteEnforcesExactAPIKeyScopes"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/qa_permission_edges_test.go::TestAPIKeyPermissionsHonorScopeAndRouteClassification",
+      "keeper": "packages/identitycore/access_test.go::TestMFAAndAPIKeyPolicies",
+      "matches": [
+        "packages/identitycore/access_test.go::TestMFAAndAPIKeyPolicies"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/qa_permission_edges_test.go::TestAPIKeyPermissionsHonorScopeAndRouteClassification",
+      "keeper": "packages/identitycore/profile_test.go::TestProfileFactorAndScopePolicy",
+      "matches": [
+        "packages/identitycore/profile_test.go::TestProfileFactorAndScopePolicy"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/security_fuzz_test.go::FuzzPersistedMediaShareState",
+      "keeper": "apps/player/internal/server/security_fuzz_test.go::FuzzPersistedMediaShareState",
+      "matches": [
+        "apps/player/internal/server/security_fuzz_test.go::FuzzPersistedMediaShareState"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/server_test.go::TestViewerCanOpenHome",
+      "keeper": "apps/subtitles/internal/server/assets_test.go::TestHomeIsInstallableAsAWebApp",
+      "matches": [
+        "apps/subtitles/internal/server/assets_test.go::TestHomeIsInstallableAsAWebApp"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/sessions_internal_test.go::TestBrowserSessionCookiesAreAlwaysHostBoundAndSecure",
+      "keeper": "apps/subtitles/internal/server/passkeys_test.go::TestPasswordLoginOffersPasskeyWithConfiguredStateAndSafeReturn",
+      "matches": [
+        "apps/subtitles/internal/server/passkeys_test.go::TestPasswordLoginOffersPasskeyWithConfiguredStateAndSafeReturn"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/sessions_internal_test.go::TestBrowserSessionCookiesAreAlwaysHostBoundAndSecure",
+      "keeper": "apps/subtitles/internal/server/session_cookie_isolation_test.go::TestBrowserSessionCookieIsolatedFromSiblingApp",
+      "matches": [
+        "apps/subtitles/internal/server/session_cookie_isolation_test.go::TestBrowserSessionCookieIsolatedFromSiblingApp"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/sessions_internal_test.go::TestBrowserSessionCookiesAreAlwaysHostBoundAndSecure",
+      "keeper": "packages/identitycore/session_http_test.go::TestSessionNormalizationNamesAndCookies",
+      "matches": [
+        "packages/identitycore/session_http_test.go::TestSessionNormalizationNamesAndCookies"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/sessions_internal_test.go::TestCleanDeviceNameNormalizesBrowserAgentsAndBoundsOtherNames",
+      "keeper": "apps/subtitles/internal/server/passkeys_test.go::TestPasswordLoginOffersPasskeyWithConfiguredStateAndSafeReturn",
+      "matches": [
+        "apps/subtitles/internal/server/passkeys_test.go::TestPasswordLoginOffersPasskeyWithConfiguredStateAndSafeReturn"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/sessions_internal_test.go::TestCleanDeviceNameNormalizesBrowserAgentsAndBoundsOtherNames",
+      "keeper": "apps/subtitles/internal/server/session_cookie_isolation_test.go::TestBrowserSessionCookieIsolatedFromSiblingApp",
+      "matches": [
+        "apps/subtitles/internal/server/session_cookie_isolation_test.go::TestBrowserSessionCookieIsolatedFromSiblingApp"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/sessions_internal_test.go::TestCleanDeviceNameNormalizesBrowserAgentsAndBoundsOtherNames",
+      "keeper": "packages/identitycore/session_http_test.go::TestSessionNormalizationNamesAndCookies",
+      "matches": [
+        "packages/identitycore/session_http_test.go::TestSessionNormalizationNamesAndCookies"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/settings_subtitles_internal_test.go::TestInvalidSubtitleLanguageActionTruthTable",
+      "keeper": "TestOwnerCanChooseSubtitleLanguage",
+      "matches": [
+        "apps/subtitles/internal/server/subtitle_provider_test.go::TestOwnerCanChooseSubtitleLanguage"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/settings_subtitles_internal_test.go::TestInvalidSubtitleLanguageActionTruthTable",
+      "keeper": "TestSubtitleLanguageWebBoundaryRejectsAmbiguousInputBeforeSave",
+      "matches": [
+        "apps/subtitles/internal/server/settings_subtitles_internal_test.go::TestSubtitleLanguageWebBoundaryRejectsAmbiguousInputBeforeSave"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/settings_subtitles_internal_test.go::TestInvalidSubtitleLanguageActionTruthTable",
+      "keeper": "TestSubtitleLanguageWebFormPreservesSecondaryPreferences",
+      "matches": [
+        "apps/subtitles/internal/server/settings_subtitles_internal_test.go::TestSubtitleLanguageWebFormPreservesSecondaryPreferences"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/settings_subtitles_internal_test.go::TestInvalidSubtitleLanguageActionTruthTable",
+      "keeper": "TestSubtitleLanguageWebFormRejectsConflictingActionVariants",
+      "matches": [
+        "apps/subtitles/internal/server/settings_subtitles_internal_test.go::TestSubtitleLanguageWebFormRejectsConflictingActionVariants"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/setup_capability_test.go::TestFirstOwnerSetupNeedsNoServerCode",
+      "keeper": "apps/subtitles/internal/server/setup_capability_test.go::TestSetupCapabilityContract",
+      "matches": [
+        "apps/subtitles/internal/server/setup_capability_test.go::TestSetupCapabilityContract"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/subsource_provider_internal_test.go::TestSubSourceRejectsRedirectOutsideConfiguredOrigin",
+      "keeper": "TestSubtitleCredentialRedirectsBoundTargetsBeforeRequest",
+      "matches": [
+        "apps/subtitles/internal/server/subtitle_provider_redirect_http_test.go::TestSubtitleCredentialRedirectsBoundTargetsBeforeRequest"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/subtitle_candidate_internal_test.go::TestSubtitleLanguageSupportsCommonRegionalCodes",
+      "keeper": "TestLanguageNormalizationRejectsUnregisteredAndMalformedInput",
+      "matches": [
+        "apps/subtitles/internal/subtitlelanguage/normalization_edges_test.go::TestLanguageNormalizationRejectsUnregisteredAndMalformedInput"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/subtitle_candidate_internal_test.go::TestSubtitleLanguageSupportsCommonRegionalCodes",
+      "keeper": "TestNormalizeTagIsCaseInsensitiveAndProviderSpellingsStayRejected",
+      "matches": [
+        "apps/subtitles/internal/subtitlelanguage/catalog_test.go::TestNormalizeTagIsCaseInsensitiveAndProviderSpellingsStayRejected"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/subtitle_candidate_internal_test.go::TestSubtitleLanguageSupportsCommonRegionalCodes",
+      "keeper": "TestSubtitleMutationsRejectInvalidInputBeforeProviderOrFilesystem",
+      "matches": [
+        "apps/subtitles/internal/server/subtitle_mutations_test.go::TestSubtitleMutationsRejectInvalidInputBeforeProviderOrFilesystem"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/subtitle_cleanup_route_test.go::TestSubtitleSettingsCleanupJourney",
+      "keeper": "TestCleanupKeepsForcedInEveryLanguageButHidesUnselectedLanguages",
+      "matches": [
+        "apps/subtitles/internal/server/subtitle_cleanup_forced_all_test.go::TestCleanupKeepsForcedInEveryLanguageButHidesUnselectedLanguages"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/subtitle_cleanup_route_test.go::TestSubtitleSettingsCleanupJourney",
+      "keeper": "TestSubtitleCleanupRequiresOptInAndKeepsSeveralLanguages",
+      "matches": [
+        "apps/subtitles/internal/server/subtitle_cleanup_route_test.go::TestSubtitleCleanupRequiresOptInAndKeepsSeveralLanguages"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/subtitle_dashboard_latency_test.go::TestSubtitleDashboardInvalidQueryDoesNotStartTrackChecks",
+      "keeper": "TestSubtitleDashboardDoesNotWaitForBackgroundTrackChecks",
+      "matches": [
+        "apps/subtitles/internal/server/subtitle_dashboard_latency_test.go::TestSubtitleDashboardDoesNotWaitForBackgroundTrackChecks"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/subtitle_dashboard_latency_test.go::TestSubtitleDashboardInvalidQueryDoesNotStartTrackChecks",
+      "keeper": "TestSubtitleDashboardRejectsAmbiguousAndOversizedQueries",
+      "matches": [
+        "apps/subtitles/internal/server/subtitle_dashboard_test.go::TestSubtitleDashboardRejectsAmbiguousAndOversizedQueries"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/subtitle_dashboard_latency_test.go::TestSubtitleDashboardInvalidQueryDoesNotStartTrackChecks",
+      "keeper": "TestSubtitleLibraryRejectsMalformedFiltersBeforeAnyWork",
+      "matches": [
+        "apps/subtitles/internal/server/subtitle_dashboard_pages_test.go::TestSubtitleLibraryRejectsMalformedFiltersBeforeAnyWork"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/subtitle_dashboard_stream_test.go::TestSubtitleDashboardInvalidQueryDoesNotFlushOrReadLibrary",
+      "keeper": "TestSubtitleDashboardRejectsAmbiguousAndOversizedQueries",
+      "matches": [
+        "apps/subtitles/internal/server/subtitle_dashboard_test.go::TestSubtitleDashboardRejectsAmbiguousAndOversizedQueries"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/subtitle_dashboard_stream_test.go::TestSubtitleDashboardInvalidQueryDoesNotFlushOrReadLibrary",
+      "keeper": "TestSubtitleLibraryRejectsMalformedFiltersBeforeAnyWork",
+      "matches": [
+        "apps/subtitles/internal/server/subtitle_dashboard_pages_test.go::TestSubtitleLibraryRejectsMalformedFiltersBeforeAnyWork"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/subtitle_dashboard_test.go::TestSubtitleSettingsAPIRendersEverySavedLanguageAtTheLimit",
+      "keeper": "apps/subtitles/internal/server/api_subtitle_settings_test.go::TestSubtitleLanguageAPIRejectsInvalidInputWithoutChangingSettings",
+      "matches": [
+        "apps/subtitles/internal/server/api_subtitle_settings_test.go::TestSubtitleLanguageAPIRejectsInvalidInputWithoutChangingSettings"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/subtitle_dashboard_test.go::TestSubtitleSettingsAPIRendersEverySavedLanguageAtTheLimit",
+      "keeper": "apps/subtitles/internal/server/api_subtitle_settings_test.go::TestSubtitleLanguageAPISingularUpdatePreservesSecondaryPreferences",
+      "matches": [
+        "apps/subtitles/internal/server/api_subtitle_settings_test.go::TestSubtitleLanguageAPISingularUpdatePreservesSecondaryPreferences"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/subtitle_sync_behavior_internal_test.go::TestSynchronizeSubtitleRejectsWeakEvidence",
+      "keeper": "TestFindSubtitleAlignmentRejectsWeakEvidence",
+      "matches": [
+        "apps/subtitles/internal/server/subtitle_sync_internal_test.go::TestFindSubtitleAlignmentRejectsWeakEvidence"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/subtitle_sync_behavior_internal_test.go::TestSynchronizeSubtitleRejectsWeakEvidence",
+      "keeper": "TestSubtitleSynchronizationMathRejectsDegenerateRanges",
+      "matches": [
+        "apps/subtitles/internal/server/subtitle_sync_behavior_internal_test.go::TestSubtitleSynchronizationMathRejectsDegenerateRanges"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/subtitle_sync_behavior_internal_test.go::TestSynchronizeSubtitleRejectsWeakEvidence",
+      "keeper": "TestSynchronizeSubtitleAppliesSimpleModelsAndAbstains",
+      "matches": [
+        "apps/subtitles/internal/server/subtitle_sync_internal_test.go::TestSynchronizeSubtitleAppliesSimpleModelsAndAbstains"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/supporter_artwork_test.go::TestSupporterBadgeArtworkIsAvailableForEveryLevel",
+      "keeper": "apps/subtitles/internal/server/supporter_artwork_test.go::TestSupporterBadgeArtworkRejectsInvalidNames",
+      "matches": [
+        "apps/subtitles/internal/server/supporter_artwork_test.go::TestSupporterBadgeArtworkRejectsInvalidNames"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/supporter_artwork_test.go::TestSupporterBadgeArtworkIsAvailableForEveryLevel",
+      "keeper": "apps/subtitles/internal/server/supporter_share_internal_test.go::TestSupporterShareCertificatesUseEveryGallerySilhouette",
+      "matches": [
+        "apps/subtitles/internal/server/supporter_share_internal_test.go::TestSupporterShareCertificatesUseEveryGallerySilhouette"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/supporter_artwork_test.go::TestSupporterBadgeArtworkIsAvailableForEveryLevel",
+      "keeper": "apps/subtitles/internal/server/supporter_test.go::TestSupporterBadgeFamiliesUseSpanishAndArabicCatalogs",
+      "matches": [
+        "apps/subtitles/internal/server/supporter_test.go::TestSupporterBadgeFamiliesUseSpanishAndArabicCatalogs"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/supporter_assets_internal_test.go::TestSupporterCombinedStylesheetUsesFinalImmutableAsset",
+      "keeper": "apps/subtitles/internal/server/assets_performance_test.go::TestVersionedApplicationStylesheetIncludesSupporterStyles",
+      "matches": [
+        "apps/subtitles/internal/server/assets_performance_test.go::TestVersionedApplicationStylesheetIncludesSupporterStyles"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/transcoder_backends_test.go::TestEveryHardwareBackendHasAnFFmpegRecipe",
+      "keeper": "apps/player/internal/server/transcoder_backends_test.go::TestEveryHardwareBackendHasAnFFmpegRecipe",
+      "matches": [
+        "apps/player/internal/server/transcoder_backends_test.go::TestEveryHardwareBackendHasAnFFmpegRecipe"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/transcoder_backends_test.go::TestIntelBackendsUseTheDetectedRenderDevice",
+      "keeper": "apps/player/internal/server/transcoder_backends_test.go::TestIntelBackendsUseTheDetectedRenderDevice",
+      "matches": [
+        "apps/player/internal/server/transcoder_backends_test.go::TestIntelBackendsUseTheDetectedRenderDevice"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/server/transcoder_backends_test.go::TestRKMPPToneMappingUsesSoftwareDecodeAndFilterBeforeHardwareEncode",
+      "keeper": "apps/player/internal/server/transcoder_backends_test.go::TestRKMPPToneMappingUsesSoftwareDecodeAndFilterBeforeHardwareEncode",
+      "matches": [
+        "apps/player/internal/server/transcoder_backends_test.go::TestRKMPPToneMappingUsesSoftwareDecodeAndFilterBeforeHardwareEncode"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/settingsstate/validation_edges_test.go::TestLanguageParserRejectsWrongTypesBeforeReturningPreferences",
+      "keeper": "apps/subtitles/internal/settingsstate/settings_test.go::TestParseRejectsInvalidSettingsLanguageState",
+      "matches": [
+        "apps/subtitles/internal/settingsstate/settings_test.go::TestParseRejectsInvalidSettingsLanguageState"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/settingsstate/validation_edges_test.go::TestValidationRejectsIncompleteAndInvalidLanguageDocuments",
+      "keeper": "apps/subtitles/internal/backup/settings_semantics_test.go::TestRestoreAndVerifyRejectSemanticInvalidSettingsBeforeReplacement",
+      "matches": [
+        "apps/subtitles/internal/backup/settings_semantics_test.go::TestRestoreAndVerifyRejectSemanticInvalidSettingsBeforeReplacement"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/settingsstate/validation_edges_test.go::TestValidationRejectsIncompleteAndInvalidLanguageDocuments",
+      "keeper": "apps/subtitles/internal/settingsstate/settings_test.go::TestParseRejectsInvalidSettingsLanguageState",
+      "matches": [
+        "apps/subtitles/internal/settingsstate/settings_test.go::TestParseRejectsInvalidSettingsLanguageState"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/subtitlelanguage/normalization_edges_test.go::TestCatalogDeduplicatesOverlappingIdentitySources",
+      "keeper": "apps/subtitles/internal/subtitlelanguage/catalog_test.go::TestCatalogExceedsBazarrLanguageIdentityCount",
+      "matches": [
+        "apps/subtitles/internal/subtitlelanguage/catalog_test.go::TestCatalogExceedsBazarrLanguageIdentityCount"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/subtitlelanguage/normalization_edges_test.go::TestLanguageTagSyntaxRejectsMalformedInput",
+      "keeper": "apps/subtitles/internal/subtitlelanguage/catalog_test.go::TestNormalizeTagIsCaseInsensitiveAndProviderSpellingsStayRejected",
+      "matches": [
+        "apps/subtitles/internal/subtitlelanguage/catalog_test.go::TestNormalizeTagIsCaseInsensitiveAndProviderSpellingsStayRejected"
+      ]
+    },
+    {
+      "removed": "apps/subtitles/internal/subtitlelanguage/normalization_edges_test.go::TestLanguageTagSyntaxRejectsMalformedInput",
+      "keeper": "apps/subtitles/internal/subtitlelanguage/normalization_edges_test.go::TestLanguageNormalizationRejectsUnregisteredAndMalformedInput",
+      "matches": [
+        "apps/subtitles/internal/subtitlelanguage/normalization_edges_test.go::TestLanguageNormalizationRejectsUnregisteredAndMalformedInput"
+      ]
+    },
+    {
+      "removed": "packages/apihttp/register_test.go::TestRegisterPreservesPlayerAPIRouteOrder",
+      "keeper": "packages/apihttp/api_test.go::TestRouting",
+      "matches": [
+        "packages/apihttp/api_test.go::TestRouting"
+      ]
+    },
+    {
+      "removed": "packages/appcli/configuration_test.go::TestConfigurationCommand",
+      "keeper": "apps/player/cmd/kinosail/config_command_test.go::TestConfigurationCommandValidatesAndSummarizesSources",
+      "matches": [
+        "apps/player/cmd/kinosail/config_command_test.go::TestConfigurationCommandValidatesAndSummarizesSources"
+      ]
+    },
+    {
+      "removed": "packages/appcli/configuration_test.go::TestConfigurationCommand",
+      "keeper": "apps/subtitles/cmd/kinosail/config_command_test.go::TestConfigurationCommandValidatesAndSummarizesSources",
+      "matches": [
+        "apps/subtitles/cmd/kinosail/config_command_test.go::TestConfigurationCommandValidatesAndSummarizesSources"
+      ]
+    },
+    {
+      "removed": "packages/appcli/configuration_test.go::TestConfigurationCommand",
+      "keeper": "packages/appcli/configuration_test.go::TestBoundConfigurationCommandAdaptsTypedSnapshots",
+      "matches": [
+        "packages/appcli/configuration_test.go::TestBoundConfigurationCommandAdaptsTypedSnapshots"
+      ]
+    },
+    {
+      "removed": "packages/appcli/configuration_test.go::TestCountConfigurationSources",
+      "keeper": "packages/appcli/configuration_test.go::TestBoundConfigurationCommandAdaptsTypedSnapshots",
+      "matches": [
+        "packages/appcli/configuration_test.go::TestBoundConfigurationCommandAdaptsTypedSnapshots"
+      ]
+    },
+    {
+      "removed": "packages/appcli/coverage_edges_test.go::TestAccessManagerAndTrustedHTTPSInitialization",
+      "keeper": "packages/appcli/command_test.go::TestAccessConfigurationUsesPlayerPolicy",
+      "matches": [
+        "packages/appcli/command_test.go::TestAccessConfigurationUsesPlayerPolicy"
+      ]
+    },
+    {
+      "removed": "packages/appcli/coverage_edges_test.go::TestAccessManagerAndTrustedHTTPSInitialization",
+      "keeper": "packages/appcli/command_test.go::TestRemoteAndShutdownFailuresCompleteLifecycle",
+      "matches": [
+        "packages/appcli/command_test.go::TestRemoteAndShutdownFailuresCompleteLifecycle"
+      ]
+    },
+    {
+      "removed": "packages/appcli/coverage_edges_test.go::TestAccessManagerAndTrustedHTTPSInitialization",
+      "keeper": "packages/appcli/command_test.go::TestRunUsesSharedLifecycleAndToleratesOptionalManagerFailures",
+      "matches": [
+        "packages/appcli/command_test.go::TestRunUsesSharedLifecycleAndToleratesOptionalManagerFailures"
+      ]
+    },
+    {
+      "removed": "packages/appcli/coverage_edges_test.go::TestBuiltInCommandRemainingEdges",
+      "keeper": "packages/appcli/command_test.go::TestBuiltInTransportCommandsPropagateErrors",
+      "matches": [
+        "packages/appcli/command_test.go::TestBuiltInTransportCommandsPropagateErrors"
+      ]
+    },
+    {
+      "removed": "packages/backup/archive_test.go::TestRestoreRejectsTraversal",
+      "keeper": "FuzzRestoreWritesOnlyConfigurationState",
+      "matches": [
+        "packages/backup/restore_fuzz_test.go::FuzzRestoreWritesOnlyConfigurationState"
+      ]
+    },
+    {
+      "removed": "packages/backup/archive_test.go::TestRestoreRejectsTraversal",
+      "keeper": "TestRestoreRejectsMalformedArchiveContracts",
+      "matches": [
+        "packages/backup/behavior_test.go::TestRestoreRejectsMalformedArchiveContracts"
+      ]
+    },
+    {
+      "removed": "packages/backup/behavior_test.go::TestWriteAutoSelectsEncryptedOrPlainArchive",
+      "keeper": "TestEncryptedBackupAuthenticatesAndRestoresExpandedState",
+      "matches": [
+        "packages/backup/encrypted_test.go::TestEncryptedBackupAuthenticatesAndRestoresExpandedState"
+      ]
+    },
+    {
+      "removed": "packages/backup/behavior_test.go::TestWriteAutoSelectsEncryptedOrPlainArchive",
+      "keeper": "TestPersistedBackupDecodedBoundaryRoundtrip",
+      "matches": [
+        "packages/backup/roundtrip_budget_test.go::TestPersistedBackupDecodedBoundaryRoundtrip"
+      ]
+    },
+    {
+      "removed": "packages/backup/behavior_test.go::TestWriteAutoSelectsEncryptedOrPlainArchive",
+      "keeper": "TestPersistedBackupRejectsAggregateAndEncodedOverflowBeforeOutput",
+      "matches": [
+        "packages/backup/roundtrip_budget_test.go::TestPersistedBackupRejectsAggregateAndEncodedOverflowBeforeOutput"
+      ]
+    },
+    {
+      "removed": "packages/backup/command_test.go::TestBoundCommandRejectsInvalidCommandsBeforeEffects",
+      "keeper": "TestCommandRejectionsHaveNoCallbacksOrIO",
+      "matches": [
+        "packages/backup/boundary_hardening_test.go::TestCommandRejectionsHaveNoCallbacksOrIO"
+      ]
+    },
+    {
+      "removed": "packages/backup/service_test.go::TestNewRejectsInvalidConfigurationWithoutOpeningDatabase",
+      "keeper": "TestWritePropagatesDatabaseFailuresBeforeOutput",
+      "matches": [
+        "packages/backup/service_test.go::TestWritePropagatesDatabaseFailuresBeforeOutput"
+      ]
+    },
+    {
+      "removed": "packages/catalog/catalog_test.go::TestSmallBrowseHelpers",
+      "keeper": "packages/catalog/browse_access_test.go::TestBrowseAccessPreservesCallerReferencesAndFreshViewState",
+      "matches": [
+        "packages/catalog/browse_access_test.go::TestBrowseAccessPreservesCallerReferencesAndFreshViewState"
+      ]
+    },
+    {
+      "removed": "packages/catalog/catalog_test.go::TestSmallBrowseHelpers",
+      "keeper": "packages/catalog/catalog_test.go::TestBrowseValidatesBeforeSelectionAndBuildsStablePages",
+      "matches": [
+        "packages/catalog/catalog_test.go::TestBrowseValidatesBeforeSelectionAndBuildsStablePages"
+      ]
+    },
+    {
+      "removed": "packages/catalog/catalog_test.go::TestSmallBrowseHelpers",
+      "keeper": "packages/catalog/progress_request_store_test.go::TestRequestProgressStoreProjectsViewerState",
+      "matches": [
+        "packages/catalog/progress_request_store_test.go::TestRequestProgressStoreProjectsViewerState"
+      ]
+    },
+    {
+      "removed": "packages/catalog/detail_http_test.go::TestAlbumTrackCountUsesSingularAndPlural",
+      "keeper": "packages/catalog/detail_http_test.go::TestAlbumHandlerProjectsAndReportsResults",
+      "matches": [
+        "packages/catalog/detail_http_test.go::TestAlbumHandlerProjectsAndReportsResults"
+      ]
+    },
+    {
+      "removed": "packages/catalog/search_sort_test.go::TestSearchTextNormalizesASCIIAndUnicodeMetadata",
+      "keeper": "packages/catalog/coverage_browse_letters_final_test.go::TestCoverageSearchUnicodeRankingAndFilterIsolation",
+      "matches": [
+        "packages/catalog/coverage_browse_letters_final_test.go::TestCoverageSearchUnicodeRankingAndFilterIsolation"
+      ]
+    },
+    {
+      "removed": "packages/catalog/search_sort_test.go::TestSearchTextNormalizesASCIIAndUnicodeMetadata",
+      "keeper": "packages/catalog/search_metadata_test.go::TestMetadataSearchNormalizesEveryUnicodeField",
+      "matches": [
+        "packages/catalog/search_metadata_test.go::TestMetadataSearchNormalizesEveryUnicodeField"
+      ]
+    },
+    {
+      "removed": "packages/catalog/search_sort_test.go::TestSearchTextNormalizesASCIIAndUnicodeMetadata",
+      "keeper": "packages/catalog/search_metadata_test.go::TestMetadataSearchPreservesFieldBoundariesAndNormalization",
+      "matches": [
+        "packages/catalog/search_metadata_test.go::TestMetadataSearchPreservesFieldBoundariesAndNormalization"
+      ]
+    },
+    {
+      "removed": "packages/catalog/search_sort_test.go::TestSearchTextNormalizesASCIIAndUnicodeMetadata",
+      "keeper": "packages/catalog/search_metadata_test.go::TestMetadataSearchPreservesLargeAndCompatibilityValues",
+      "matches": [
+        "packages/catalog/search_metadata_test.go::TestMetadataSearchPreservesLargeAndCompatibilityValues"
+      ]
+    },
+    {
+      "removed": "packages/catalogapi/library_test.go::TestLibraryRejectsIncompleteConfiguration",
+      "keeper": "TestLibraryMapsBrowseErrorsBeforeProjection",
+      "matches": [
+        "packages/catalogapi/library_test.go::TestLibraryMapsBrowseErrorsBeforeProjection"
+      ]
+    },
+    {
+      "removed": "packages/catalogapi/library_test.go::TestLibraryRejectsIncompleteConfiguration",
+      "keeper": "TestLibraryProjectsPlayerBrowseContract",
+      "matches": [
+        "packages/catalogapi/library_test.go::TestLibraryProjectsPlayerBrowseContract"
+      ]
+    },
+    {
+      "removed": "packages/downloads/access_test.go::TestRequestAccessFailsClosedWithoutBindings",
+      "keeper": "packages/downloads/access_test.go::TestRequestAccessAppliesPlayerDownloadPolicy",
+      "matches": [
+        "packages/downloads/access_test.go::TestRequestAccessAppliesPlayerDownloadPolicy"
+      ]
+    },
+    {
+      "removed": "packages/downloads/access_test.go::TestRequestAccessFailsClosedWithoutBindings",
+      "keeper": "packages/downloads/current_access_test.go::TestPreparedDownloadsRecheckCurrentItemVisibility",
+      "matches": [
+        "packages/downloads/current_access_test.go::TestPreparedDownloadsRecheckCurrentItemVisibility"
+      ]
+    },
+    {
+      "removed": "packages/downloads/manager_edges_test.go::TestManagerDefaultsAndSaveValidation",
+      "keeper": "packages/downloads/manager_test.go::TestStartPreservesMemoryWhenPersistenceFails",
+      "matches": [
+        "packages/downloads/manager_test.go::TestStartPreservesMemoryWhenPersistenceFails"
+      ]
+    },
+    {
+      "removed": "packages/downloads/manager_edges_test.go::TestManagerDefaultsAndSaveValidation",
+      "keeper": "packages/downloads/manager_test.go::TestStartRejectsInvalidOrUnavailableRequests",
+      "matches": [
+        "packages/downloads/manager_test.go::TestStartRejectsInvalidOrUnavailableRequests"
+      ]
+    },
+    {
+      "removed": "packages/downloads/manager_edges_test.go::TestManagerDefaultsAndSaveValidation",
+      "keeper": "packages/downloads/state_edges_test.go::TestLoadAndReadJobsReportStorageFailures",
+      "matches": [
+        "packages/downloads/state_edges_test.go::TestLoadAndReadJobsReportStorageFailures"
+      ]
+    },
+    {
+      "removed": "packages/downloads/manager_test.go::TestEncodeBuildsVideoCommandAndReportsCopyErrors",
+      "keeper": "packages/downloads/copy_original_test.go::TestOriginalDownloadCopyIsPrivateAndRejectsInvalidSource",
+      "matches": [
+        "packages/downloads/copy_original_test.go::TestOriginalDownloadCopyIsPrivateAndRejectsInvalidSource"
+      ]
+    },
+    {
+      "removed": "packages/downloads/manager_test.go::TestEncodeBuildsVideoCommandAndReportsCopyErrors",
+      "keeper": "packages/downloads/copy_video_test.go::TestCompatibleDownloadCopiesVideoWithoutEncoderOptions",
+      "matches": [
+        "packages/downloads/copy_video_test.go::TestCompatibleDownloadCopiesVideoWithoutEncoderOptions"
+      ]
+    },
+    {
+      "removed": "packages/downloads/manager_test.go::TestEncodeBuildsVideoCommandAndReportsCopyErrors",
+      "keeper": "packages/downloads/reservation_test.go::TestDownloadsReserveExactlyOneSlot",
+      "matches": [
+        "packages/downloads/reservation_test.go::TestDownloadsReserveExactlyOneSlot"
+      ]
+    },
+    {
+      "removed": "packages/downloads/manager_test.go::TestEncodeBuildsVideoCommandAndReportsCopyErrors",
+      "keeper": "packages/downloads/transcoding_test.go::TestCopyAndIntegrityReportFileFailures",
+      "matches": [
+        "packages/downloads/transcoding_test.go::TestCopyAndIntegrityReportFileFailures"
+      ]
+    },
+    {
+      "removed": "packages/federation/saml_coverage_test.go::TestSAMLBeginMapsAuthenticationAndRedirectErrors",
+      "keeper": "TestSAMLFlowStartsAndCompletesSignedResponse",
+      "matches": [
+        "packages/federation/saml_test.go::TestSAMLFlowStartsAndCompletesSignedResponse"
+      ]
+    },
+    {
+      "removed": "packages/federation/saml_coverage_test.go::TestSAMLBeginMapsAuthenticationAndRedirectErrors",
+      "keeper": "TestSAMLHTTPStartsMetadataAndMFA",
+      "matches": [
+        "packages/federation/web_edge_test.go::TestSAMLHTTPStartsMetadataAndMFA"
+      ]
+    },
+    {
+      "removed": "packages/federation/saml_metadata_test.go::TestRemoteSAMLMetadataRejectsMalformedAddressAndTransportFailure",
+      "keeper": "TestSAMLConfigurationRejectsInvalidSourcesBeforeKeyCreation",
+      "matches": [
+        "packages/federation/saml_test.go::TestSAMLConfigurationRejectsInvalidSourcesBeforeKeyCreation"
+      ]
+    },
+    {
+      "removed": "packages/hlsmanifest/vod_test.go::TestObservedVODPrefixRequiresASegment",
+      "keeper": "packages/hlsmanifest/vod_test.go::TestCompleteVODPreservesGuardedManifests",
+      "matches": [
+        "packages/hlsmanifest/vod_test.go::TestCompleteVODPreservesGuardedManifests"
+      ]
+    },
+    {
+      "removed": "packages/hlsmanifest/vod_test.go::TestObservedVODPrefixRequiresASegment",
+      "keeper": "packages/hlsmanifest/vod_test.go::TestCompleteVODUsesPlayerCadenceAndCompletedTimeline",
+      "matches": [
+        "packages/hlsmanifest/vod_test.go::TestCompleteVODUsesPlayerCadenceAndCompletedTimeline"
+      ]
+    },
+    {
+      "removed": "packages/homeassistant/pairing_player_test.go::TestPlayerHTTPValidation",
+      "keeper": "TestRegisteredPlayerHTTP",
+      "matches": [
+        "packages/homeassistant/http_test.go::TestRegisteredPlayerHTTP"
+      ]
+    },
+    {
+      "removed": "packages/httpguard/csrf_template_test.go::TestCSRFParseFunctionsRemainSafeBeforeExecution",
+      "keeper": "TestAnonymousTemplatesDoNotRenderSessionTokens",
+      "matches": [
+        "packages/httpguard/csrf_anonymous_test.go::TestAnonymousTemplatesDoNotRenderSessionTokens"
+      ]
+    },
+    {
+      "removed": "packages/httpguard/csrf_template_test.go::TestCSRFParseFunctionsRemainSafeBeforeExecution",
+      "keeper": "TestCSRFTemplateSourceAndExecution",
+      "matches": [
+        "packages/httpguard/csrf_template_test.go::TestCSRFTemplateSourceAndExecution"
+      ]
+    },
+    {
+      "removed": "packages/httpguard/httpguard_test.go::TestDecodeRequestJSONAcceptsOneStrictObject",
+      "keeper": "TestReadJSONAndResponses",
+      "matches": [
+        "packages/apihttp/api_test.go::TestReadJSONAndResponses"
+      ]
+    },
+    {
+      "removed": "packages/identitycore/factor_transaction_test.go::TestFactorVerifyRejectsInvalidStateWithoutPersistence",
+      "keeper": "TestFactorRecoveryPersistenceFailureDoesNotConsumeCode",
+      "matches": [
+        "packages/identitycore/factor_transaction_test.go::TestFactorRecoveryPersistenceFailureDoesNotConsumeCode"
+      ]
+    },
+    {
+      "removed": "packages/identitycore/factor_transaction_test.go::TestFactorVerifyRejectsInvalidStateWithoutPersistence",
+      "keeper": "TestFactorVerifyAcceptsTOTPAndConsumesRecoveryOnce",
+      "matches": [
+        "packages/identitycore/factor_transaction_test.go::TestFactorVerifyAcceptsTOTPAndConsumesRecoveryOnce"
+      ]
+    },
+    {
+      "removed": "packages/identitycore/handlers_config_test.go::TestMFAHTTPConfigurationRequiresEveryDependency",
+      "keeper": "TestMFADisableConfigurationFailsClosedBeforeCallbacks",
+      "matches": [
+        "packages/identitycore/handlers_mfa_disable_test.go::TestMFADisableConfigurationFailsClosedBeforeCallbacks"
+      ]
+    },
+    {
+      "removed": "packages/identitycore/mfa_http_test.go::TestNewMFAHandlersRejectsInvalidConfig",
+      "keeper": "TestMFADisableConfigurationFailsClosedBeforeCallbacks",
+      "matches": [
+        "packages/identitycore/handlers_mfa_disable_test.go::TestMFADisableConfigurationFailsClosedBeforeCallbacks"
+      ]
+    },
+    {
+      "removed": "packages/jellyfincompat/identity_test.go::TestInvalidControlBoundaries",
+      "keeper": "TestItemIDsValidateOneBoundedQuery",
+      "matches": [
+        "packages/jellyfincompat/identity_test.go::TestItemIDsValidateOneBoundedQuery"
+      ]
+    },
+    {
+      "removed": "packages/markers/admin_coverage_test.go::TestAdminMarkerFormHelperBoundaries",
+      "keeper": "TestAdminRemoveRejectsEveryBoundaryWithoutMutation",
+      "matches": [
+        "packages/markers/admin_coverage_test.go::TestAdminRemoveRejectsEveryBoundaryWithoutMutation"
+      ]
+    },
+    {
+      "removed": "packages/markers/admin_coverage_test.go::TestAdminMarkerFormHelperBoundaries",
+      "keeper": "TestAdminRoutesRejectInvalidInputWithoutSideEffects",
+      "matches": [
+        "packages/markers/admin_test.go::TestAdminRoutesRejectInvalidInputWithoutSideEffects"
+      ]
+    },
+    {
+      "removed": "packages/markers/admin_test.go::TestMarkerFormHelpers",
+      "keeper": "TestAdminRoutesRejectInvalidInputWithoutSideEffects",
+      "matches": [
+        "packages/markers/admin_test.go::TestAdminRoutesRejectInvalidInputWithoutSideEffects"
+      ]
+    },
+    {
+      "removed": "packages/markers/batch_regression_test.go::TestFailedGroupDoesNotBlockOtherLibraries",
+      "keeper": "TestMarkerBatchFailureStillPublishesOtherGroups",
+      "matches": [
+        "packages/markers/batch_concurrency_test.go::TestMarkerBatchFailureStillPublishesOtherGroups"
+      ]
+    },
+    {
+      "removed": "packages/markers/markers_test.go::TestDetectPlaybackMarkersIgnoresOrdinaryChapters",
+      "keeper": "TestChapterDetectionAbstainsFromStoryAndAmbiguousLabels",
+      "matches": [
+        "packages/markers/chapter_safety_test.go::TestChapterDetectionAbstainsFromStoryAndAmbiguousLabels"
+      ]
+    },
+    {
+      "removed": "packages/markers/markers_test.go::TestDetectPlaybackMarkersIgnoresOrdinaryChapters",
+      "keeper": "TestChapterDetectionAcceptsOnlyBoundedValidRanges",
+      "matches": [
+        "packages/markers/chapter_safety_test.go::TestChapterDetectionAcceptsOnlyBoundedValidRanges"
+      ]
+    },
+    {
+      "removed": "packages/markers/schedule_test.go::TestScheduleRejectsMissingAdapters",
+      "keeper": "TestScheduleRunsChangedAnalysisAndReportsStatus",
+      "matches": [
+        "packages/markers/schedule_test.go::TestScheduleRunsChangedAnalysisAndReportsStatus"
+      ]
+    },
+    {
+      "removed": "packages/markers/state_coverage_test.go::TestMarkerStateValidFile",
+      "keeper": "TestMarkerAnalyzerRequiresSeasonConsensusAndPersistsResults",
+      "matches": [
+        "packages/markers/analyzer_test.go::TestMarkerAnalyzerRequiresSeasonConsensusAndPersistsResults"
+      ]
+    },
+    {
+      "removed": "packages/markers/state_coverage_test.go::TestMarkerStateValidFile",
+      "keeper": "TestOwnerRemovalSuppressesDetectedMarkerAcrossRestart",
+      "matches": [
+        "packages/markers/analyzer_test.go::TestOwnerRemovalSuppressesDetectedMarkerAcrossRestart"
+      ]
+    },
+    {
+      "removed": "packages/markers/state_coverage_test.go::TestMarkerStateValidFile",
+      "keeper": "TestSaveMarkerStateSuccessAndDeterministicFailures",
+      "matches": [
+        "packages/markers/state_coverage_test.go::TestSaveMarkerStateSuccessAndDeterministicFailures"
+      ]
+    },
+    {
+      "removed": "packages/mcpgateway/application_profile_state_final_test.go::TestProfilePrincipalsRejectIncompleteStateWithoutCallbacks",
+      "keeper": "TestMCPGrantPolicyRechecksRequiredEnrollment",
+      "matches": [
+        "packages/mcpgateway/profile_policy_test.go::TestMCPGrantPolicyRechecksRequiredEnrollment"
+      ]
+    },
+    {
+      "removed": "packages/mcpgateway/application_profile_state_final_test.go::TestProfilePrincipalsRejectIncompleteStateWithoutCallbacks",
+      "keeper": "TestProfilePrincipalsOwnCanonicalIdentityPolicy",
+      "matches": [
+        "packages/mcpgateway/application_profile_state_final_test.go::TestProfilePrincipalsOwnCanonicalIdentityPolicy"
+      ]
+    },
+    {
+      "removed": "packages/mcpgateway/application_state_test.go::TestApplicationStatePreservesMissingState",
+      "keeper": "TestBuiltInOAuthLifecyclePersistsOnlyHashes",
+      "matches": [
+        "packages/mcpgateway/connections_test.go::TestBuiltInOAuthLifecyclePersistsOnlyHashes"
+      ]
+    },
+    {
+      "removed": "packages/mcpgateway/application_test.go::TestAPIAdapterRejectsMissingDependencies",
+      "keeper": "TestAPIAdapterPreservesRoutingContextAndBytes",
+      "matches": [
+        "packages/mcpgateway/application_test.go::TestAPIAdapterPreservesRoutingContextAndBytes"
+      ]
+    },
+    {
+      "removed": "packages/mcpgateway/application_test.go::TestPrincipalAdapterRejectsMissingCallbacks",
+      "keeper": "TestMCPGrantPolicyRechecksRequiredEnrollment",
+      "matches": [
+        "packages/mcpgateway/profile_policy_test.go::TestMCPGrantPolicyRechecksRequiredEnrollment"
+      ]
+    },
+    {
+      "removed": "packages/mcpgateway/application_test.go::TestPrincipalAdapterRejectsMissingCallbacks",
+      "keeper": "TestProfilePrincipalsOwnCanonicalIdentityPolicy",
+      "matches": [
+        "packages/mcpgateway/application_profile_state_final_test.go::TestProfilePrincipalsOwnCanonicalIdentityPolicy"
+      ]
+    },
+    {
+      "removed": "packages/mcpgateway/application_test.go::TestRegisterApplicationReturnsGatewayOrNil",
+      "keeper": "TestBuiltInOAuthLifecyclePersistsOnlyHashes",
+      "matches": [
+        "packages/mcpgateway/connections_test.go::TestBuiltInOAuthLifecyclePersistsOnlyHashes"
+      ]
+    },
+    {
+      "removed": "packages/mcpgateway/application_test.go::TestRegisterApplicationReturnsGatewayOrNil",
+      "keeper": "TestGatewayUsesPlayerToolsAndFailClosedPolicies",
+      "matches": [
+        "packages/mcpgateway/gateway_test.go::TestGatewayUsesPlayerToolsAndFailClosedPolicies"
+      ]
+    },
+    {
+      "removed": "packages/mcpgateway/connections_authorize_edges_test.go::TestMetadataClientRejectsUnavailableAndInvalidDocuments",
+      "keeper": "TestClientMetadataDocumentAndRedirectRules",
+      "matches": [
+        "packages/mcpgateway/edge_test.go::TestClientMetadataDocumentAndRedirectRules"
+      ]
+    },
+    {
+      "removed": "packages/mcpgateway/events_boundaries_test.go::TestEventsDoNotRetryGoneOrOversizedDeliveries",
+      "keeper": "TestEventsFailureDiagnosticsAreCorrelatedAndSafe",
+      "matches": [
+        "packages/mcpgateway/events_diagnostics_test.go::TestEventsFailureDiagnosticsAreCorrelatedAndSafe"
+      ]
+    },
+    {
+      "removed": "packages/mcpgateway/events_boundaries_test.go::TestEventsDoNotRetryGoneOrOversizedDeliveries",
+      "keeper": "TestEventsRetrySameBodyThenSuspendUntilRefresh",
+      "matches": [
+        "packages/mcpgateway/events_boundaries_test.go::TestEventsRetrySameBodyThenSuspendUntilRefresh"
+      ]
+    },
+    {
+      "removed": "packages/mcpgateway/events_lifecycle_test.go::TestEventArgumentsRejectDuplicateOrCaseAliasedKeys",
+      "keeper": "TestEventsRejectInvalidInputWithoutCallbackOrSubscription",
+      "matches": [
+        "packages/mcpgateway/events_test.go::TestEventsRejectInvalidInputWithoutCallbackOrSubscription"
+      ]
+    },
+    {
+      "removed": "packages/mcpgateway/stdio_binding_unix_test.go::TestBoundStdioCommandRejectsMissingOperations",
+      "keeper": "TestBoundStdioCommandPreservesApplicationArguments",
+      "matches": [
+        "packages/mcpgateway/stdio_binding_unix_test.go::TestBoundStdioCommandPreservesApplicationArguments"
+      ]
+    },
+    {
+      "removed": "packages/mcpgateway/stdio_binding_unix_test.go::TestBoundStdioCommandRejectsMissingOperations",
+      "keeper": "TestRunStdioCommandValidatesAndExecutesRelay",
+      "matches": [
+        "packages/mcpgateway/stdio_command_unix_test.go::TestRunStdioCommandValidatesAndExecutesRelay"
+      ]
+    },
+    {
+      "removed": "packages/mcpgateway/stdio_command_unix_test.go::TestRunStdioCommandRejectsInvalidDependencies",
+      "keeper": "TestRunStdioCommandFallsBackWhenRelayIsUnavailable",
+      "matches": [
+        "packages/mcpgateway/stdio_command_unix_test.go::TestRunStdioCommandFallsBackWhenRelayIsUnavailable"
+      ]
+    },
+    {
+      "removed": "packages/mcpgateway/stdio_command_unix_test.go::TestRunStdioCommandRejectsInvalidDependencies",
+      "keeper": "TestRunStdioCommandValidatesAndExecutesRelay",
+      "matches": [
+        "packages/mcpgateway/stdio_command_unix_test.go::TestRunStdioCommandValidatesAndExecutesRelay"
+      ]
+    },
+    {
+      "removed": "packages/mediaprobe/behavior_test.go::TestProbeDurationRunsAndLoadsBoundedResults",
+      "keeper": "TestCanceledDurationDoesNotCacheFailure",
+      "matches": [
+        "packages/mediaprobe/duration_cache_test.go::TestCanceledDurationDoesNotCacheFailure"
+      ]
+    },
+    {
+      "removed": "packages/mediaprobe/behavior_test.go::TestProbeDurationRunsAndLoadsBoundedResults",
+      "keeper": "TestDurationCoalescesAndPersistsSourceFacts",
+      "matches": [
+        "packages/mediaprobe/duration_cache_test.go::TestDurationCoalescesAndPersistsSourceFacts"
+      ]
+    },
+    {
+      "removed": "packages/mediaprobe/behavior_test.go::TestProbeDurationRunsAndLoadsBoundedResults",
+      "keeper": "TestProbeRemainingExecutionAndCancellationEdges",
+      "matches": [
+        "packages/mediaprobe/coverage_edges_test.go::TestProbeRemainingExecutionAndCancellationEdges"
+      ]
+    },
+    {
+      "removed": "packages/mediaprobe/cache_test.go::TestProbeCacheRejectsStaleMalformedAndOversizedState",
+      "keeper": "packages/mediaprobe/cached_scan_facts_test.go::TestCachedScanFactsUsesScanVersionWithoutReadingMedia",
+      "matches": [
+        "packages/mediaprobe/cached_scan_facts_test.go::TestCachedScanFactsUsesScanVersionWithoutReadingMedia"
+      ]
+    },
+    {
+      "removed": "packages/mediaprobe/cache_test.go::TestProbeCacheRejectsStaleMalformedAndOversizedState",
+      "keeper": "packages/mediaprobe/duration_cache_test.go::TestOldProbeCacheCannotRetainRejectedFacts",
+      "matches": [
+        "packages/mediaprobe/duration_cache_test.go::TestOldProbeCacheCannotRetainRejectedFacts"
+      ]
+    },
+    {
+      "removed": "packages/mediashares/http_test.go::TestRegisterRejectsMissingDependencies",
+      "keeper": "TestWebHandlersCoverOwnerAndFailurePaths",
+      "matches": [
+        "packages/mediashares/http_failure_test.go::TestWebHandlersCoverOwnerAndFailurePaths"
+      ]
+    },
+    {
+      "removed": "packages/mediashares/mutation_delivery_test.go::TestDeliveryAuthorizationChecksEveryCondition",
+      "keeper": "TestStoreCapabilityLifecycle",
+      "matches": [
+        "packages/mediashares/store_test.go::TestStoreCapabilityLifecycle"
+      ]
+    },
+    {
+      "removed": "packages/mediashares/mutation_delivery_test.go::TestDeliveryAuthorizationChecksEveryCondition",
+      "keeper": "TestStoreDeliveryChecksEveryCapabilityState",
+      "matches": [
+        "packages/mediashares/mutation_delivery_test.go::TestStoreDeliveryChecksEveryCapabilityState"
+      ]
+    },
+    {
+      "removed": "packages/mediashares/mutation_dependencies_test.go::TestDependencyValidationRequiresEveryAdapter",
+      "keeper": "TestStoreCoversFailClosedBranches",
+      "matches": [
+        "packages/mediashares/failure_test.go::TestStoreCoversFailClosedBranches"
+      ]
+    },
+    {
+      "removed": "packages/mediashares/mutation_dependencies_test.go::TestDependencyValidationRequiresEveryAdapter",
+      "keeper": "TestStoreFailsClosedOnDependencyRandomAndPersistenceErrors",
+      "matches": [
+        "packages/mediashares/store_test.go::TestStoreFailsClosedOnDependencyRandomAndPersistenceErrors"
+      ]
+    },
+    {
+      "removed": "packages/metadata/chapters_test.go::TestChapterProviderReturnsNoDataWithoutTVDBEpisodeIdentity",
+      "keeper": "packages/metadata/chapters_edges_test.go::TestChapterPresentationAndLookupBoundaries",
+      "matches": [
+        "packages/metadata/chapters_edges_test.go::TestChapterPresentationAndLookupBoundaries"
+      ]
+    },
+    {
+      "removed": "packages/operations/metadata_test.go::TestRefreshMetadataRejectsIncompleteDependenciesWithoutSideEffects",
+      "keeper": "packages/operations/metadata_concurrency_test.go::TestRefreshMetadataBoundsConcurrencyAndStopsOnCancellation",
+      "matches": [
+        "packages/operations/metadata_concurrency_test.go::TestRefreshMetadataBoundsConcurrencyAndStopsOnCancellation"
+      ]
+    },
+    {
+      "removed": "packages/operations/metadata_test.go::TestRefreshMetadataRejectsIncompleteDependenciesWithoutSideEffects",
+      "keeper": "packages/operations/metadata_test.go::TestRefreshMetadataDiscardsCompletedWorkAfterCancellation",
+      "matches": [
+        "packages/operations/metadata_test.go::TestRefreshMetadataDiscardsCompletedWorkAfterCancellation"
+      ]
+    },
+    {
+      "removed": "packages/operations/metadata_test.go::TestRefreshMetadataRejectsIncompleteDependenciesWithoutSideEffects",
+      "keeper": "packages/operations/metadata_test.go::TestRefreshMetadataPreservesPartialSuccessAndFailureOrder",
+      "matches": [
+        "packages/operations/metadata_test.go::TestRefreshMetadataPreservesPartialSuccessAndFailureOrder"
+      ]
+    },
+    {
+      "removed": "packages/operations/system_http_test.go::TestSystemHandlerRejectsMissingDependenciesBeforeReads",
+      "keeper": "packages/operations/system_http_test.go::TestSystemHandlerReadsFreshSnapshotsAndPreservesRenderErrors",
+      "matches": [
+        "packages/operations/system_http_test.go::TestSystemHandlerReadsFreshSnapshotsAndPreservesRenderErrors"
+      ]
+    },
+    {
+      "removed": "packages/operations/system_http_test.go::TestSystemHandlerRejectsMissingDependenciesBeforeReads",
+      "keeper": "packages/operations/system_http_test.go::TestSystemViewBrandingAndValidation",
+      "matches": [
+        "packages/operations/system_http_test.go::TestSystemViewBrandingAndValidation"
+      ]
+    },
+    {
+      "removed": "packages/playback/hls_path_edges_test.go::TestVariantReadyRejectsFreshSymlink",
+      "keeper": "TestHLSPlaylistLifecycle",
+      "matches": [
+        "packages/playback/hls_storage_test.go::TestHLSPlaylistLifecycle"
+      ]
+    },
+    {
+      "removed": "packages/playback/hls_path_edges_test.go::TestVariantReadyRejectsFreshSymlink",
+      "keeper": "TestHLSPlaylistRejectsIncompleteAndUnsafeInputs",
+      "matches": [
+        "packages/playback/hls_storage_test.go::TestHLSPlaylistRejectsIncompleteAndUnsafeInputs"
+      ]
+    },
+    {
+      "removed": "packages/publicgateway/certificate_client_test.go::TestCertificateClientRejectsInvalidRPCResponses",
+      "keeper": "TestCertificateClientPerformsTrustedTLSHandshake",
+      "matches": [
+        "packages/publicgateway/certificate_client_test.go::TestCertificateClientPerformsTrustedTLSHandshake"
+      ]
+    },
+    {
+      "removed": "packages/publicgateway/certificate_client_test.go::TestCertificateClientRejectsInvalidRPCResponses",
+      "keeper": "TestCertificateHandlerRejectsUnavailableAndOversizedMaterial",
+      "matches": [
+        "packages/publicgateway/certificate_boundaries_test.go::TestCertificateHandlerRejectsUnavailableAndOversizedMaterial"
+      ]
+    },
+    {
+      "removed": "packages/publicgateway/certificate_client_test.go::TestCertificateClientRejectsNameAndMissingContext",
+      "keeper": "TestCertificateClientPerformsTrustedTLSHandshake",
+      "matches": [
+        "packages/publicgateway/certificate_client_test.go::TestCertificateClientPerformsTrustedTLSHandshake"
+      ]
+    },
+    {
+      "removed": "packages/publicgateway/certificate_client_test.go::TestCertificateClientRejectsNameAndMissingContext",
+      "keeper": "TestCertificateRPCRejectsInvalidInputBeforeIssuance",
+      "matches": [
+        "packages/publicgateway/gateway_test.go::TestCertificateRPCRejectsInvalidInputBeforeIssuance"
+      ]
+    },
+    {
+      "removed": "packages/quickconnect/quickconnect_test.go::TestNumericCodeUsesSixDigits",
+      "keeper": "TestApplicationStartAcceptsPlayerTransports",
+      "matches": [
+        "packages/quickconnect/http_start_test.go::TestApplicationStartAcceptsPlayerTransports"
+      ]
+    },
+    {
+      "removed": "packages/remoteaccess/cardinality_test.go::TestNewRejectsMultipleDependencySetsBeforeFiles",
+      "keeper": "TestSecureInternetAccessRejectsInvalidConfigurationWithoutNetworkActivity",
+      "matches": [
+        "packages/remoteaccess/remoteaccess_test.go::TestSecureInternetAccessRejectsInvalidConfigurationWithoutNetworkActivity"
+      ]
+    },
+    {
+      "removed": "packages/remoteaccess/manager_internal_test.go::TestKillAndResetRejectUnavailableOrUnremovableMarkers",
+      "keeper": "TestKillHTTPResultPaths",
+      "matches": [
+        "packages/remoteaccess/http_test.go::TestKillHTTPResultPaths"
+      ]
+    },
+    {
+      "removed": "packages/remoteaccess/manager_internal_test.go::TestKillAndResetRejectUnavailableOrUnremovableMarkers",
+      "keeper": "TestResetRequiresStopAndRestartsCurrentManager",
+      "matches": [
+        "packages/remoteaccess/recovery_test.go::TestResetRequiresStopAndRestartsCurrentManager"
+      ]
+    },
+    {
+      "removed": "packages/remoteaccess/readiness_test.go::TestNewReadinessHandlerRejectsMissingDependencies",
+      "keeper": "TestNewReadinessHandlerUsesLiveStateAndReportsViewFailure",
+      "matches": [
+        "packages/remoteaccess/readiness_test.go::TestNewReadinessHandlerUsesLiveStateAndReportsViewFailure"
+      ]
+    },
+    {
+      "removed": "packages/remoteaccess/reset_kill_test.go::TestResetKillIsStrictAndRemovesOnlyTheKillMarker",
+      "keeper": "TestResetKillHTTPResultPaths",
+      "matches": [
+        "packages/remoteaccess/http_test.go::TestResetKillHTTPResultPaths"
+      ]
+    },
+    {
+      "removed": "packages/remoteaccess/reset_kill_test.go::TestResetKillIsStrictAndRemovesOnlyTheKillMarker",
+      "keeper": "TestResetRequiresStopAndRestartsCurrentManager",
+      "matches": [
+        "packages/remoteaccess/recovery_test.go::TestResetRequiresStopAndRestartsCurrentManager"
+      ]
+    },
+    {
+      "removed": "packages/routeinventory/inventory_test.go::TestRouteDiscoveryCoversRejectedSourceShapes",
+      "keeper": "packages/routeinventory/coverage_edges_test.go::TestInventoryRemainingParserAndCardinalityEdges",
+      "matches": [
+        "packages/routeinventory/coverage_edges_test.go::TestInventoryRemainingParserAndCardinalityEdges"
+      ]
+    },
+    {
+      "removed": "packages/routeinventory/inventory_test.go::TestRouteDiscoveryCoversRejectedSourceShapes",
+      "keeper": "packages/routeinventory/inventory_test.go::TestDiscoverIncludesAppSharedAndExplicitRoutes",
+      "matches": [
+        "packages/routeinventory/inventory_test.go::TestDiscoverIncludesAppSharedAndExplicitRoutes"
+      ]
+    },
+    {
+      "removed": "packages/scim/scim_http_test.go::TestSCIMIfMatchSerializesConcurrentMutations",
+      "keeper": "TestSCIMProvisioningLifecycleAndBoundaries",
+      "matches": [
+        "packages/scim/scim_http_test.go::TestSCIMProvisioningLifecycleAndBoundaries"
+      ]
+    },
+    {
+      "removed": "packages/scim/scim_http_test.go::TestSCIMRejectsDuplicateAuthorizationHeadersAndAuthenticatesPublicAccess",
+      "keeper": "TestSCIMProtectRejectsUnconfiguredAndDuplicateSecureAuthorization",
+      "matches": [
+        "packages/scim/scim_http_edges_test.go::TestSCIMProtectRejectsUnconfiguredAndDuplicateSecureAuthorization"
+      ]
+    },
+    {
+      "removed": "packages/scim/scim_http_test.go::TestSCIMRejectsDuplicateAuthorizationHeadersAndAuthenticatesPublicAccess",
+      "keeper": "TestSCIMProvisioningLifecycleAndBoundaries",
+      "matches": [
+        "packages/scim/scim_http_test.go::TestSCIMProvisioningLifecycleAndBoundaries"
+      ]
+    },
+    {
+      "removed": "packages/scim/scim_patch_edges_test.go::TestSCIMCanonicalPathReturnsPlainName",
+      "keeper": "TestSCIMCanonicalPathSchemaEdges",
+      "matches": [
+        "packages/scim/scim_query_edges_test.go::TestSCIMCanonicalPathSchemaEdges"
+      ]
+    },
+    {
+      "removed": "packages/servertest/automatic_skip_constructor_test.go::TestAutomaticSkipConstructorPreservesAppBindings",
+      "keeper": "TestRealFFmpegAutomaticSkipServesFutureSegments",
+      "matches": [
+        "apps/player/internal/server/automatic_skip_real_ffmpeg_test.go::TestRealFFmpegAutomaticSkipServesFutureSegments",
+        "apps/subtitles/internal/server/automatic_skip_real_ffmpeg_test.go::TestRealFFmpegAutomaticSkipServesFutureSegments"
+      ]
+    },
+    {
+      "removed": "packages/servertest/security_fuzz_fixture_test.go::TestSecurityFuzzConstructorPreservesParserCallbacks",
+      "keeper": "FuzzRemoteBoundaryParsers",
+      "matches": [
+        "apps/player/internal/server/security_fuzz_test.go::FuzzRemoteBoundaryParsers",
+        "apps/subtitles/internal/server/security_fuzz_test.go::FuzzRemoteBoundaryParsers"
+      ]
+    },
+    {
+      "removed": "packages/servertransport/server_test.go::TestConfigureCertificatesInitializesMissingTLSConfig",
+      "keeper": "packages/servertransport/server_test.go::TestNewServerAppliesSharedTransportLimits",
+      "matches": [
+        "packages/servertransport/server_test.go::TestNewServerAppliesSharedTransportLimits"
+      ]
+    },
+    {
+      "removed": "packages/servertransport/server_test.go::TestConfigureCertificatesInitializesMissingTLSConfig",
+      "keeper": "packages/servertransport/tls_test.go::TestConfigureCertificatesSelectsTrustedSNIAndLocalFallback",
+      "matches": [
+        "packages/servertransport/tls_test.go::TestConfigureCertificatesSelectsTrustedSNIAndLocalFallback"
+      ]
+    },
+    {
+      "removed": "packages/servertransport/server_test.go::TestServeRunsPlainAndSecureListeners",
+      "keeper": "apps/player/cmd/kinosail/tls_server_test.go::TestCommandLineCanDisableTLS",
+      "matches": [
+        "apps/player/cmd/kinosail/tls_server_test.go::TestCommandLineCanDisableTLS"
+      ]
+    },
+    {
+      "removed": "packages/servertransport/server_test.go::TestServeRunsPlainAndSecureListeners",
+      "keeper": "apps/player/cmd/kinosail/tls_server_test.go::TestCommandLineServesCompatibleHTTPSByDefault",
+      "matches": [
+        "apps/player/cmd/kinosail/tls_server_test.go::TestCommandLineServesCompatibleHTTPSByDefault"
+      ]
+    },
+    {
+      "removed": "packages/servertransport/server_test.go::TestServeRunsPlainAndSecureListeners",
+      "keeper": "packages/servertransport/server_test.go::TestServeSelectsProtocolAndReportsCertificateFailure",
+      "matches": [
+        "packages/servertransport/server_test.go::TestServeSelectsProtocolAndReportsCertificateFailure"
+      ]
+    },
+    {
+      "removed": "packages/supporter/input_json_edges_test.go::TestDisplayAndStrictTimeFallbacks",
+      "keeper": "packages/supporter/certificate_edges_test.go::TestCurrentCertificatePredicatesRejectInvalidSignedValues",
+      "matches": [
+        "packages/supporter/certificate_edges_test.go::TestCurrentCertificatePredicatesRejectInvalidSignedValues"
+      ]
+    },
+    {
+      "removed": "packages/supporter/input_json_edges_test.go::TestDisplayAndStrictTimeFallbacks",
+      "keeper": "packages/supporter/legacy_edges_test.go::TestV2TimeProfilesRejectInvalidInputAndAcceptSubtitlesExpiry",
+      "matches": [
+        "packages/supporter/legacy_edges_test.go::TestV2TimeProfilesRejectInvalidInputAndAcceptSubtitlesExpiry"
+      ]
+    },
+    {
+      "removed": "packages/supporter/input_json_edges_test.go::TestDisplayAndStrictTimeFallbacks",
+      "keeper": "packages/supporter/validation_test.go::TestEmptyDerivativeStatusAndFingerprintUseSharedPolicy",
+      "matches": [
+        "packages/supporter/validation_test.go::TestEmptyDerivativeStatusAndFingerprintUseSharedPolicy"
+      ]
+    },
+    {
+      "removed": "packages/supporter/provider_edges_test.go::TestSendRejectsMalformedInternalEndpointBeforeNetwork",
+      "keeper": "packages/supporter/provider_test.go::TestProviderResponsesFailClosedWithoutStateChange",
+      "matches": [
+        "packages/supporter/provider_test.go::TestProviderResponsesFailClosedWithoutStateChange"
+      ]
+    },
+    {
+      "removed": "packages/supporter/provider_edges_test.go::TestSendRejectsMalformedInternalEndpointBeforeNetwork",
+      "keeper": "packages/supporter/service_test.go::TestActivationRejectsInputsAndProviderFailuresWithoutStateChange",
+      "matches": [
+        "packages/supporter/service_test.go::TestActivationRejectsInputsAndProviderFailuresWithoutStateChange"
+      ]
+    },
+    {
+      "removed": "packages/supporter/provider_edges_test.go::TestSendRejectsMalformedInternalEndpointBeforeNetwork",
+      "keeper": "packages/supporter/validation_test.go::TestConfigurationAndEndpointValidation",
+      "matches": [
+        "packages/supporter/validation_test.go::TestConfigurationAndEndpointValidation"
+      ]
+    },
+    {
+      "removed": "packages/supporter/state_edges_test.go::TestEmptyStateIsValid",
+      "keeper": "packages/supporter/service_edges_test.go::TestActivateAndSaveReturnsCommittedState",
+      "matches": [
+        "packages/supporter/service_edges_test.go::TestActivateAndSaveReturnsCommittedState"
+      ]
+    },
+    {
+      "removed": "packages/supporter/state_edges_test.go::TestEmptyStateIsValid",
+      "keeper": "packages/supporter/service_test.go::TestActivationUsesConfiguredPublicKeyStorage",
+      "matches": [
+        "packages/supporter/service_test.go::TestActivationUsesConfiguredPublicKeyStorage"
+      ]
+    },
+    {
+      "removed": "packages/supporter/status_edges_test.go::TestStatusChecksUnmigratedLegacyAgainstBothFamilies",
+      "keeper": "packages/supporter/legacy_edges_test.go::TestLegacyMigrationCanPopulateLivingStandard",
+      "matches": [
+        "packages/supporter/legacy_edges_test.go::TestLegacyMigrationCanPopulateLivingStandard"
+      ]
+    },
+    {
+      "removed": "packages/supporter/status_edges_test.go::TestStatusChecksUnmigratedLegacyAgainstBothFamilies",
+      "keeper": "packages/supporter/legacy_test.go::TestLegacyCertificatesUseTheSharedStatusAndCertificateInterface",
+      "matches": [
+        "packages/supporter/legacy_test.go::TestLegacyCertificatesUseTheSharedStatusAndCertificateInterface"
+      ]
+    },
+    {
+      "removed": "packages/supporter/status_edges_test.go::TestStatusChecksUnmigratedLegacyAgainstBothFamilies",
+      "keeper": "packages/supporter/legacy_test.go::TestMalformedLegacyCertificateAndUnicodeFailClosed",
+      "matches": [
+        "packages/supporter/legacy_test.go::TestMalformedLegacyCertificateAndUnicodeFailClosed"
+      ]
+    },
+    {
+      "removed": "packages/transcodehardware/capabilities_test.go::TestCodecCapabilitiesPreservePlayerPolicy",
+      "keeper": "packages/transcodehardware/probe_test.go::TestProbeDiscoversPortableBackendsAndCodecs",
+      "matches": [
+        "packages/transcodehardware/probe_test.go::TestProbeDiscoversPortableBackendsAndCodecs"
+      ]
+    },
+    {
+      "removed": "packages/transcodehardware/capabilities_test.go::TestCodecCapabilitiesPreservePlayerPolicy",
+      "keeper": "packages/transcodehardware/verification_test.go::TestVerificationDoesNotPromoteAnEncoderListing",
+      "matches": [
+        "packages/transcodehardware/verification_test.go::TestVerificationDoesNotPromoteAnEncoderListing"
+      ]
+    },
+    {
+      "removed": "packages/transcodehardware/capabilities_test.go::TestCodecCapabilitiesPreservePlayerPolicy",
+      "keeper": "packages/transcodepolicy/policy_test.go::TestCapabilitiesUsePlayerReadinessPolicy",
+      "matches": [
+        "packages/transcodepolicy/policy_test.go::TestCapabilitiesUsePlayerReadinessPolicy"
+      ]
+    },
+    {
+      "removed": "packages/transcodehardware/capabilities_test.go::TestEncoderForIsReadOnly",
+      "keeper": "packages/transcodehardware/capabilities_test.go::TestCapabilityLookupAndEncoderResolution",
+      "matches": [
+        "packages/transcodehardware/capabilities_test.go::TestCapabilityLookupAndEncoderResolution"
+      ]
+    },
+    {
+      "removed": "packages/transcodehardware/capabilities_test.go::TestEncoderForIsReadOnly",
+      "keeper": "packages/transcodehardware/verification_test.go::TestFailedDeviceEvidenceIsSharedAndExpires",
+      "matches": [
+        "packages/transcodehardware/verification_test.go::TestFailedDeviceEvidenceIsSharedAndExpires"
+      ]
+    },
+    {
+      "removed": "packages/transcodehardware/capabilities_test.go::TestEncoderForIsReadOnly",
+      "keeper": "packages/transcodehardware/verification_test.go::TestVerificationDoesNotPromoteAnEncoderListing",
+      "matches": [
+        "packages/transcodehardware/verification_test.go::TestVerificationDoesNotPromoteAnEncoderListing"
+      ]
+    },
+    {
+      "removed": "packages/transcodehardware/capabilities_test.go::TestHLSCodecsPreservePlayerManifestValues",
+      "keeper": "packages/playback/transcoding_regression_test.go::TestMasterUsesActualInitializationInsteadOfGuesses",
+      "matches": [
+        "packages/playback/transcoding_regression_test.go::TestMasterUsesActualInitializationInsteadOfGuesses"
+      ]
+    },
+    {
+      "removed": "packages/transcodehardware/presentation_test.go::TestEnhanceSettingsPagePreservesPlayerCopy",
+      "keeper": "TestLocalTranscoderCheckReturnsActionableFailure",
+      "matches": [
+        "apps/player/internal/server/transcoder_check_test.go::TestLocalTranscoderCheckReturnsActionableFailure",
+        "apps/subtitles/internal/server/transcoder_check_test.go::TestLocalTranscoderCheckReturnsActionableFailure"
+      ]
+    },
+    {
+      "removed": "packages/transcodehardware/presentation_test.go::TestEnhanceSettingsPagePreservesPlayerCopy",
+      "keeper": "TestOwnerCanRunLocalTranscoderCheckThroughWebAndAPI",
+      "matches": [
+        "apps/player/internal/server/transcoder_check_test.go::TestOwnerCanRunLocalTranscoderCheckThroughWebAndAPI",
+        "apps/subtitles/internal/server/transcoder_check_test.go::TestOwnerCanRunLocalTranscoderCheckThroughWebAndAPI"
+      ]
+    },
+    {
+      "removed": "packages/transcodehardware/probe_test.go::TestEmptyHardwareRequirementIsSatisfied",
+      "keeper": "packages/transcodehardware/probe_test.go::TestPortableBackendDeviceRequirements",
+      "matches": [
+        "packages/transcodehardware/probe_test.go::TestPortableBackendDeviceRequirements"
+      ]
+    },
+    {
+      "removed": "packages/transcodehardware/probe_test.go::TestEmptyHardwareRequirementIsSatisfied",
+      "keeper": "packages/transcodehardware/probe_test.go::TestProbeRequiresCompleteAccessibleHardware",
+      "matches": [
+        "packages/transcodehardware/probe_test.go::TestProbeRequiresCompleteAccessibleHardware"
+      ]
+    },
+    {
+      "removed": "packages/transcodepolicy/check_coordinator_test.go::TestCheckHandlerRunsAndRedirects",
+      "keeper": "TestOwnerCanRunLocalTranscoderCheckThroughWebAndAPI",
+      "matches": [
+        "apps/player/internal/server/transcoder_check_test.go::TestOwnerCanRunLocalTranscoderCheckThroughWebAndAPI",
+        "apps/subtitles/internal/server/transcoder_check_test.go::TestOwnerCanRunLocalTranscoderCheckThroughWebAndAPI"
+      ]
+    },
+    {
+      "removed": "packages/transcodepolicy/policy_edges_test.go::TestCapabilitiesExplainUndetectedVVC",
+      "keeper": "packages/transcodehardware/probe_test.go::TestProbeDiscoversPortableBackendsAndCodecs",
+      "matches": [
+        "packages/transcodehardware/probe_test.go::TestProbeDiscoversPortableBackendsAndCodecs"
+      ]
+    },
+    {
+      "removed": "packages/transcodepolicy/policy_edges_test.go::TestCapabilitiesExplainUndetectedVVC",
+      "keeper": "packages/transcodepolicy/policy_test.go::TestCapabilitiesUsePlayerReadinessPolicy",
+      "matches": [
+        "packages/transcodepolicy/policy_test.go::TestCapabilitiesUsePlayerReadinessPolicy"
+      ]
+    },
+    {
+      "removed": "packages/trustedhttps/issuer_edges_test.go::TestObtainCertificateUsesDefaultDirectory",
+      "keeper": "TestIssueRejectsACMEAdapterFailures",
+      "matches": [
+        "packages/trustedhttps/issuer_test.go::TestIssueRejectsACMEAdapterFailures"
+      ]
+    },
+    {
+      "removed": "packages/trustedhttps/manager_edges_test.go::TestManagerDefaultDependenciesAndNilReceiver",
+      "keeper": "TestManagerDefaultsAndErrorStateAreFailClosed",
+      "matches": [
+        "packages/trustedhttps/manager_additional_test.go::TestManagerDefaultsAndErrorStateAreFailClosed"
+      ]
+    },
+    {
+      "removed": "packages/trustedhttps/manager_edges_test.go::TestManagerDefaultDependenciesAndNilReceiver",
+      "keeper": "TestTunnelCertificateRenewsWithoutPublishingPrivateAddress",
+      "matches": [
+        "packages/trustedhttps/tunnel_test.go::TestTunnelCertificateRenewsWithoutPublishingPrivateAddress"
+      ]
+    },
+    {
+      "removed": "packages/trustedhttps/provider_edges_test.go::TestCheckAndProviderConstructionRejectInvalidBoundaries",
+      "keeper": "TestCheckUpdatesTheConfiguredAddress",
+      "matches": [
+        "packages/trustedhttps/provider_test.go::TestCheckUpdatesTheConfiguredAddress"
+      ]
+    },
+    {
+      "removed": "packages/trustedhttps/provider_edges_test.go::TestCheckAndProviderConstructionRejectInvalidBoundaries",
+      "keeper": "TestProviderConfigRejectsInvalidInput",
+      "matches": [
+        "packages/trustedhttps/config_test.go::TestProviderConfigRejectsInvalidInput"
+      ]
+    },
+    {
+      "removed": "packages/trustedhttps/provider_edges_test.go::TestDeSECPayloadFailureStopsBeforeRequest",
+      "keeper": "TestDeSECProviderManagesTXTWithPrivateAuthorization",
+      "matches": [
+        "packages/trustedhttps/provider_test.go::TestDeSECProviderManagesTXTWithPrivateAuthorization"
+      ]
+    },
+    {
+      "removed": "packages/trustedhttps/provider_edges_test.go::TestDeSECPayloadFailureStopsBeforeRequest",
+      "keeper": "TestDeSECProviderUpdatesAddressWithPrivateAuthorization",
+      "matches": [
+        "packages/trustedhttps/provider_test.go::TestDeSECProviderUpdatesAddressWithPrivateAuthorization"
+      ]
+    },
+    {
+      "removed": "packages/updatecontrol/checker_test.go::TestRequestAvailableRequiresManagerAndCompletedAvailableCheck",
+      "keeper": "TestAutomaticAndManualChecksPinTheAvailableRelease",
+      "matches": [
+        "packages/updatecontrol/checker_test.go::TestAutomaticAndManualChecksPinTheAvailableRelease"
+      ]
+    },
+    {
+      "removed": "packages/updatecontrol/checker_test.go::TestRequestAvailableRequiresManagerAndCompletedAvailableCheck",
+      "keeper": "TestCheckerMapsReleaseFailuresWithoutRequestingAnUpdate",
+      "matches": [
+        "packages/updatecontrol/checker_test.go::TestCheckerMapsReleaseFailuresWithoutRequestingAnUpdate"
+      ]
+    },
+    {
+      "removed": "packages/updatecontrol/checker_test.go::TestRequestAvailableRequiresManagerAndCompletedAvailableCheck",
+      "keeper": "TestCommitImagesDoNotQueryOrInstallVersionReleases",
+      "matches": [
+        "packages/updatecontrol/checker_container_test.go::TestCommitImagesDoNotQueryOrInstallVersionReleases"
+      ]
+    },
+    {
+      "removed": "packages/updatecontrol/command_test.go::TestBindCommandRejectsInvalidConfiguration",
+      "keeper": "TestBoundCommandPropagatesStorageAndOutputFailures",
+      "matches": [
+        "packages/updatecontrol/command_test.go::TestBoundCommandPropagatesStorageAndOutputFailures"
+      ]
+    },
+    {
+      "removed": "packages/updatecontrol/command_test.go::TestBindCommandRejectsInvalidConfiguration",
+      "keeper": "TestBoundCommandRunsPlayerUpdateOperations",
+      "matches": [
+        "packages/updatecontrol/command_test.go::TestBoundCommandRunsPlayerUpdateOperations"
+      ]
+    },
+    {
+      "removed": "packages/updatecontrol/control_test.go::TestNewRejectsInvalidPolicyBeforeLoadingState",
+      "keeper": "TestApplicationPoliciesKeepIndependentReleaseIdentities",
+      "matches": [
+        "packages/updatecontrol/control_test.go::TestApplicationPoliciesKeepIndependentReleaseIdentities"
+      ]
+    },
+    {
+      "removed": "packages/updatecontrol/github_test.go::TestNewGitHubCheckerRejectsInvalidAdaptersBeforeNetworkAccess",
+      "keeper": "TestGitHubCheckerUsesApplicationReleaseIdentity",
+      "matches": [
+        "packages/updatecontrol/github_test.go::TestGitHubCheckerUsesApplicationReleaseIdentity"
+      ]
+    },
+    {
+      "removed": "packages/validation/validation_test.go::TestAllRunes",
+      "keeper": "packages/validation/validation_test.go::TestRemoteTokenValidation",
+      "matches": [
+        "packages/validation/validation_test.go::TestRemoteTokenValidation"
+      ]
+    },
+    {
+      "removed": "packages/validation/validation_test.go::TestAllRunes",
+      "keeper": "packages/validation/validation_test.go::TestSCIMTokenValidation",
+      "matches": [
+        "packages/validation/validation_test.go::TestSCIMTokenValidation"
+      ]
+    },
+    {
+      "removed": "packages/viewing/manager_test.go::TestManagerRestoresAndSchedulesDurableState",
+      "keeper": "TestDueSyncWorkersAreBounded",
+      "matches": [
+        "packages/viewing/manager_boundary_test.go::TestDueSyncWorkersAreBounded"
+      ]
+    },
+    {
+      "removed": "packages/viewing/manager_test.go::TestManagerRestoresAndSchedulesDurableState",
+      "keeper": "TestManagerLoadErrorAndScheduleTimer",
+      "matches": [
+        "packages/viewing/manager_sync_test.go::TestManagerLoadErrorAndScheduleTimer"
+      ]
+    },
+    {
+      "removed": "packages/viewing/manager_test.go::TestManagerRestoresAndSchedulesDurableState",
+      "keeper": "TestPreviewStoreBoundsWorkAndConsumesOnlySuccessfulApplies",
+      "matches": [
+        "packages/viewing/preview_store_test.go::TestPreviewStoreBoundsWorkAndConsumesOnlySuccessfulApplies"
+      ]
+    },
+    {
+      "removed": "packages/viewing/manager_test.go::TestManagerRestoresAndSchedulesDurableState",
+      "keeper": "TestPreviewStoreCoversFullCanceledAndTimerPaths",
+      "matches": [
+        "packages/viewing/preview_store_test.go::TestPreviewStoreCoversFullCanceledAndTimerPaths"
+      ]
+    },
+    {
+      "removed": "packages/watchrooms/http_test.go::TestHTTPConfigurationRejectsMissingAdapters",
+      "keeper": "packages/watchrooms/http_test.go::TestHTTPRoutesValidateCreateRedirectAndPlayerProjection",
+      "matches": [
+        "packages/watchrooms/http_test.go::TestHTTPRoutesValidateCreateRedirectAndPlayerProjection"
+      ]
+    },
+    {
+      "removed": "packages/watchrooms/http_test.go::TestHTTPConfigurationRejectsMissingAdapters",
+      "keeper": "packages/watchrooms/http_test.go::TestHTTPWebSocketPreservesLeaderAndValidationRules",
+      "matches": [
+        "packages/watchrooms/http_test.go::TestHTTPWebSocketPreservesLeaderAndValidationRules"
+      ]
+    },
+    {
+      "removed": "packages/workload/encoding_test.go::TestNilGovernorAdvertisesUsableSingleEncoder",
+      "keeper": "packages/workload/encoding_test.go::TestEncodingCostIsReservedAtomically",
+      "matches": [
+        "packages/workload/encoding_test.go::TestEncodingCostIsReservedAtomically"
+      ]
+    },
+    {
+      "removed": "packages/workload/encoding_test.go::TestNilGovernorAdvertisesUsableSingleEncoder",
+      "keeper": "packages/workload/encoding_test.go::TestHardwareSessionBudgetAndInvalidCosts",
+      "matches": [
+        "packages/workload/encoding_test.go::TestHardwareSessionBudgetAndInvalidCosts"
+      ]
+    },
+    {
+      "removed": "packages/workload/governor_test.go::TestNilGovernorAndMinimumCapacity",
+      "keeper": "packages/workload/encoding_test.go::TestEncodingCostIsReservedAtomically",
+      "matches": [
+        "packages/workload/encoding_test.go::TestEncodingCostIsReservedAtomically"
+      ]
+    },
+    {
+      "removed": "packages/workload/governor_test.go::TestNilGovernorAndMinimumCapacity",
+      "keeper": "packages/workload/governor_test.go::TestGovernorReservesTwoHeavySlotsForPlayback",
+      "matches": [
+        "packages/workload/governor_test.go::TestGovernorReservesTwoHeavySlotsForPlayback"
+      ]
+    },
+    {
+      "removed": "packages/workload/governor_test.go::TestNilGovernorAndMinimumCapacity",
+      "keeper": "packages/workload/governor_test.go::TestHeavyCapacityTracksAvailableProcessors",
+      "matches": [
+        "packages/workload/governor_test.go::TestHeavyCapacityTracksAvailableProcessors"
+      ]
+    }
+  ],
+  "stale_keeper_references": [],
+  "errors": [],
+  "limits": "Source integrity only; no builds/tests executed. Name-only proof refs show all physical matches and do not prove semantic equivalence. Named CLI subtests resolve through the existing RunCLI/CLI.Run binding. Free-text gaps and unnamed browser scenarios remain manual review. Four root-maintained docs/container artifact harness files may differ from pinned main and are reported."
+}

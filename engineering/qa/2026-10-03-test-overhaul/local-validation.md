@@ -41,6 +41,15 @@ database, media scanning and API. A template fixture is not populated-server E2E
 
 ## Earlier receipt limitations
 
+CI37153629848 browser archives verify clean unchanged source and all members.
+Its four system archives verify every checksum and successful commands, but
+record pre-existing untracked `.cache/` from Trivy and exactRevisionProof:false.
+`ci-e2e-archive-verification-388.json` preserves those exact manifests. The
+scanner cache was moved outside the checkout for subsequent system proof;
+scanner severity, failure exit status and recorder dirty-source checks remain.
+That overall run failed the CodeQL findings policy; individual passing jobs
+and checksum-complete archives do not establish overall required-check success.
+
 `local-player-e2e-complete` passed the real Player happy journey at
 `8613c7beb`; `player-theme-firstpaint-initial` passed two populated journeys at
 `f0af87c08`. Those earlier browser runs had `ignoreHTTPSErrors=true`,

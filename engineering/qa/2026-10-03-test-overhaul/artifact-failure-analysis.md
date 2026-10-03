@@ -64,3 +64,15 @@ HTML output path can erase the earlier report. Set both HTML and JSON child
 output overrides inside the prepared run directory. Require setup HTTP201,
 confirmation HTTP200 with enabled:true, and finish HTTP303 with Location:/;
 do not follow redirects into a login page and claim completed setup.
+
+## Security cache pollution found before the workflow cache repair
+
+All four system artifacts at source39204bc9 record an empty tracked patch,
+unchanged source and successful commands, but pre-existing untracked `.cache/`
+from the Trivy action makes exactRevisionProof:false. Preserve that limitation.
+Place the same pinned scanner's cache under runner.temp, outside the checkout.
+Do not ignore dirty status, delete unrelated files, disable cache/scanning, change
+severity or weaken failure exit status. Re-run the actual system jobs and inspect
+their final downloaded manifests for clean source and every checksum member.
+The pinned action.yaml exposes cache-dir and assigns it to TRIVY_CACHE_DIR:
+https://raw.githubusercontent.com/aquasecurity/trivy-action/ed142fd0673e97e23eac54620cfb913e5ce36c25/action.yaml
