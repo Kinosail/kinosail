@@ -27,33 +27,35 @@ type Preferences struct {
 }
 
 type document struct {
-	Name                  string     `json:"name"`
-	Libraries             []string   `json:"libraries"`
-	RequireMFA            bool       `json:"requireMfa"`
-	SessionInactiveHours  float64    `json:"sessionInactiveHours,omitempty"`
-	SessionAbsoluteHours  float64    `json:"sessionAbsoluteHours,omitempty"`
-	JellyfinCompatibility bool       `json:"jellyfinCompatibility"`
-	HomeAssistant         bool       `json:"homeAssistant,omitempty"`
-	JellyfinID            string     `json:"jellyfinId,omitempty"`
-	PlaybackMode          string     `json:"playbackMode,omitempty"`
-	Transcoder            string     `json:"transcoder,omitempty"`
-	Codec                 string     `json:"codec,omitempty"`
-	Accelerator           string     `json:"accelerator,omitempty"`
-	ToneMap               bool       `json:"toneMap,omitempty"`
-	Autoplay              bool       `json:"autoplay,omitempty"`
-	AutoSkip              []string   `json:"autoSkip"`
-	Subtitles             string     `json:"subtitles,omitempty"`
-	SubtitleLanguage      string     `json:"subtitleLanguage,omitempty"`
-	SubtitleLanguages     []string   `json:"subtitleLanguages,omitempty"`
-	SubtitlePickerLimited bool       `json:"subtitlePickerLimited,omitempty"`
-	PickerKeepForced      bool       `json:"subtitlePickerKeepForced,omitempty"`
-	SubtitlePreference    string     `json:"subtitlePreference,omitempty"`
-	ScanFrequency         string     `json:"scanFrequency,omitempty"`
-	DLNAToken             string     `json:"dlnaToken,omitempty"`
-	Navigation            []string   `json:"navigation"`
-	OnboardingPending     bool       `json:"onboardingPending,omitempty"`
-	UpdateChecks          bool       `json:"updateChecks"`
-	Supporter             *supporter `json:"supporter,omitempty"`
+	Name                       string     `json:"name"`
+	Libraries                  []string   `json:"libraries"`
+	RequireMFA                 bool       `json:"requireMfa"`
+	SessionInactiveHours       float64    `json:"sessionInactiveHours,omitempty"`
+	SessionAbsoluteHours       float64    `json:"sessionAbsoluteHours,omitempty"`
+	PublicSessionInactiveHours float64    `json:"publicSessionInactiveHours,omitempty"`
+	PublicSessionAbsoluteHours float64    `json:"publicSessionAbsoluteHours,omitempty"`
+	JellyfinCompatibility      bool       `json:"jellyfinCompatibility"`
+	HomeAssistant              bool       `json:"homeAssistant,omitempty"`
+	JellyfinID                 string     `json:"jellyfinId,omitempty"`
+	PlaybackMode               string     `json:"playbackMode,omitempty"`
+	Transcoder                 string     `json:"transcoder,omitempty"`
+	Codec                      string     `json:"codec,omitempty"`
+	Accelerator                string     `json:"accelerator,omitempty"`
+	ToneMap                    bool       `json:"toneMap,omitempty"`
+	Autoplay                   bool       `json:"autoplay,omitempty"`
+	AutoSkip                   []string   `json:"autoSkip"`
+	Subtitles                  string     `json:"subtitles,omitempty"`
+	SubtitleLanguage           string     `json:"subtitleLanguage,omitempty"`
+	SubtitleLanguages          []string   `json:"subtitleLanguages,omitempty"`
+	SubtitlePickerLimited      bool       `json:"subtitlePickerLimited,omitempty"`
+	PickerKeepForced           bool       `json:"subtitlePickerKeepForced,omitempty"`
+	SubtitlePreference         string     `json:"subtitlePreference,omitempty"`
+	ScanFrequency              string     `json:"scanFrequency,omitempty"`
+	DLNAToken                  string     `json:"dlnaToken,omitempty"`
+	Navigation                 []string   `json:"navigation"`
+	OnboardingPending          bool       `json:"onboardingPending,omitempty"`
+	UpdateChecks               bool       `json:"updateChecks"`
+	Supporter                  *supporter `json:"supporter,omitempty"`
 }
 
 type supporter struct {
@@ -78,7 +80,7 @@ type supporterGrant struct {
 }
 
 var allowedFields = map[string]bool{
-	"name": true, "libraries": true, "requiremfa": true, "sessioninactivehours": true, "sessionabsolutehours": true,
+	"name": true, "libraries": true, "requiremfa": true, "sessioninactivehours": true, "sessionabsolutehours": true, "publicsessioninactivehours": true, "publicsessionabsolutehours": true,
 	"jellyfincompatibility": true, "homeassistant": true, "jellyfinid": true, "playbackmode": true, "transcoder": true,
 	"codec": true, "accelerator": true, "tonemap": true, "autoplay": true, "autoskip": true, "subtitles": true,
 	"subtitlelanguage": true, "subtitlelanguages": true, "subtitlepickerlimited": true, "subtitlepickerkeepforced": true, "subtitlepreference": true, "scanfrequency": true, "dlnatoken": true, "navigation": true,
@@ -121,6 +123,12 @@ func validateDocument(data []byte) (map[string]json.RawMessage, error) { //nolin
 	var settings document
 	if decoder.Decode(&settings) != nil || settings.Supporter != nil && (settings.Supporter.PatronLevel < 0 || settings.Supporter.PatronLevel > 10 || settings.Supporter.LivingLevel < 0 || settings.Supporter.LivingLevel > 10) {
 		return nil, errors.New("invalid installation settings")
+	}
+	if fields["publicsessioninactivehours"] != nil || fields["publicsessionabsolutehours"] != nil {
+		inactive, absolute := settings.PublicSessionInactiveHours, settings.PublicSessionAbsoluteHours
+		if inactive < .25 || inactive > 8760 || absolute < 4 || absolute > 8760 || inactive > absolute {
+			return nil, errors.New("invalid public session timeouts")
+		}
 	}
 	return fields, nil
 }

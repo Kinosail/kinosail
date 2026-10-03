@@ -26,6 +26,8 @@ type profileStore struct {
 	database                   *database.Store
 	requireMFA                 func() bool
 	sessionTimeouts            func() (time.Duration, time.Duration)
+	publicSessionTimeouts      func() (time.Duration, time.Duration)
+	publicSessionLifetime      func() time.Duration
 }
 
 func newProfileStore(dataDir string, databases ...*database.Store) *profileStore {

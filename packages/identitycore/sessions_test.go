@@ -261,7 +261,7 @@ func TestActivePublicAndSessionCopies(t *testing.T) {
 		"private":  {ProfileID: "viewer", ExpiresAt: now + 1},
 		"other":    {ProfileID: "other", Channel: "public", ExpiresAt: now + 1},
 	}
-	if activePublic(public, "viewer", now) != 1 {
+	if activePublic(public, "viewer", now, DefaultSessionInactive, DefaultSessionAbsolute) != 1 {
 		t.Fatal("active public session count is incorrect")
 	}
 	original := map[string]Session{"a": {ProfileID: "one"}, "b": {ProfileID: "two", Channel: "public"}, "c": {ProfileID: "two"}}

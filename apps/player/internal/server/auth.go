@@ -41,6 +41,9 @@ func newAuthentication(ctx context.Context, dataDir string, required bool, authU
 	notify := newNotification(notifications)
 	profiles := newProfileStore(dataDir, stateDB) //nolint:contextcheck // Startup state loading must finish independently of lifecycle cancellation.
 	profiles.sessionTimeouts = settings.sessionTimeouts
+	profiles.publicSessionTimeouts = settings.publicSessionTimeouts
+	profiles.publicSessionLifetime = settings.publicSessionLifetime
+	settings.profiles = profiles
 	profiles.requireMFA = settings.requireMFA
 	auth := &authentication{profiles: profiles, passkeys: newPasskeyAuth(authURL, profiles), mfa: newMFA(profiles), settings: settings, required: required, audit: newAuditStore(ctx, dataDir, func(event auditEvent) { notify.send(ctx, event) }, retentions...), notify: notify}
 	auth.passkeys.settings = settings
@@ -121,7 +124,7 @@ func (auth *authentication) serveIdentity(next http.Handler, writer http.Respons
 func (auth *authentication) viewerAccess(profile viewerProfile, request *http.Request, matched string) identitycore.Denial {
 	return identitycore.EvaluateAccess(identitycore.AccessInput{
 		Public: publicInternetRequest(request), Owner: profile.Owner, APIKey: profile.APIKey,
-		RecentlyAuthenticated: auth.profiles.recentlyAuthenticated(request, publicSessionMaximumAge), PublicSession: auth.profiles.publicSession(request),
+		RecentlyAuthenticated: auth.profiles.recentlyAuthenticated(request, auth.publicAuthenticationMaximumAge()), PublicSession: auth.profiles.publicSession(request),
 		RemoteRouteAllowed: publicViewerRouteAllowed(matched), ScheduleAllowed: profile.Allowed(publicInternetRequest(request), time.Now()), APIKeyAllowed: profileAllowsAPI(profile, matched),
 		LocalOwner: profile.ID == "local-owner", MFARequired: auth.settings.requireMFA(), Secured: profile.Secured(), EnrollmentRoute: mfaEnrollmentRoute(matched),
 	})
@@ -139,6 +142,8 @@ func (auth *authentication) setRequireMFA(ctx context.Context, required bool) (b
 	if err := auth.settings.editable("security.require_mfa"); err != nil {
 		return false, err
 	}
+	auth.profiles.mu.Lock()
+	defer auth.profiles.mu.Unlock()
 	auth.settings.mu.Lock()
 	defer auth.settings.mu.Unlock()
 	settings := auth.settings.value
@@ -151,8 +156,6 @@ func (auth *authentication) setRequireMFA(ctx context.Context, required bool) (b
 		auth.settings.value = settings
 		return false, nil
 	}
-	auth.profiles.mu.Lock()
-	defer auth.profiles.mu.Unlock()
 	sessions := make(map[string]viewerSession)
 	related := authRelatedDocument{"sessions.json", auth.profiles.sessionFile}
 	if err := auth.persistSettingsAnd(ctx, settings, related, sessions); err != nil {

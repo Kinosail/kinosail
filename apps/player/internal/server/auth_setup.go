@@ -64,10 +64,10 @@ func (auth *authentication) createOwner(ctx context.Context, name, password stri
 }
 
 func (auth *authentication) commitFirstOwner(ctx context.Context, profile viewerProfile, automaticUpdates bool) error {
-	auth.settings.mu.Lock()
-	defer auth.settings.mu.Unlock()
 	auth.profiles.mu.Lock()
 	defer auth.profiles.mu.Unlock()
+	auth.settings.mu.Lock()
+	defer auth.settings.mu.Unlock()
 	if len(auth.profiles.profiles) != 0 {
 		return errSetupComplete
 	}
