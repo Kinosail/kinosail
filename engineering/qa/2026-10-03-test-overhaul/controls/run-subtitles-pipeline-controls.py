@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 """Repeat existing-test guard controls from the recorded checkout, restoring files."""
-import argparse, hashlib, json, os, pathlib, platform, subprocess, time
+import argparse, hashlib, json, os, pathlib, platform, re, subprocess, time
 parser=argparse.ArgumentParser();parser.add_argument('--repo',type=pathlib.Path,default=pathlib.Path(__file__).resolve().parents[4]);parser.add_argument('--output',type=pathlib.Path,required=True);args=parser.parse_args()
 root=args.repo.resolve();out=args.output.resolve();out.mkdir(parents=True,exist_ok=False)
 env=os.environ.copy();env['GOCACHE']='/tmp/kinosail-testing-go-cache'
 def git(*cmd):return subprocess.check_output(['git','-C',str(root),*cmd])
 def digest(data):return hashlib.sha256(data).hexdigest()
-sha=git('rev-parse','HEAD').decode().strip();assert not git('diff','--name-only'), 'Start from a committed source tree'
-base='ac4224661';server='apps/subtitles/internal/server/'
+sha=git('rev-parse','HEAD').decode().strip();assert not git('status','--porcelain','--untracked-files=no'), 'Start from a clean committed tracked source tree, including staged changes'
+base='876b771a7dd0aef5e65957fcee87add0312535e8';server='apps/subtitles/internal/server/'
 files={key:server+name for key,name in {'candidate_prod':'subsource_candidate.go','candidate_test':'subsource_provider_internal_test.go','preserve_prod':'subtitle_sync_piecewise.go','preserve_test':'subtitle_sync_behavior_internal_test.go'}.items()}
 originals={key:(root/path).read_bytes() for key,path in files.items()}
 old={key:git('show',base+':'+files[key]) for key in ['candidate_test','preserve_test']}
+old_names={'candidate_test':'TestSubSourceRejectsUnsafeOrAmbiguousResults','preserve_test':'TestSynchronizeCandidateRejectsPreservedSubtitle'}
+old_declaration_checksums={key:digest(re.search(r'^func '+name+r'\(.*?^}',old[key].decode(),re.M|re.S).group().encode()) for key,name in old_names.items()}
 source=originals['candidate_prod'].decode()
 block='''\tif !validSubSourceCandidateInput(movie, subtitle, language) {
 \t\treturn subSourceCandidate{}, false
@@ -28,6 +30,7 @@ preserve_source=originals['preserve_prod'].decode();needle='''\tif candidate.Pre
 preserve=preserve_source.replace(needle,'''\tif candidate.Preserve {
 \t\tif false && changed {''').encode()
 manifest={'schema':1,'sha':sha,'old_test_source_sha':git('rev-parse',base).decode().strip(),'command':['python3',str(pathlib.Path(__file__).resolve()),'--repo',str(root),'--output',str(out)],'environment':{'platform':platform.platform(),'machine':platform.machine(),'python':platform.python_version(),'GOCACHE':env['GOCACHE'],'go_version':subprocess.check_output(['go','version'],env=env).decode().strip(),'go_env':json.loads(subprocess.check_output(['go','env','-json','GOOS','GOARCH','CGO_ENABLED','GOVERSION','GOMOD'],cwd=root/'apps/subtitles',env=env))},'source_checksums':{files[k]:digest(v) for k,v in originals.items()},'boundary':'Existing isolated deterministic provider/timing controls; not genuine E2E or real speech extraction. Production guard mutations are transient and restored byte for byte.','phases':[]}
+manifest['old_declaration_checksums']=old_declaration_checksums
 phases=[('candidate-old',{'candidate_prod':candidate,'candidate_test':old['candidate_test']},'TestSubSourceRejectsUnsafeOrAmbiguousResults',0),('candidate-repaired',{'candidate_prod':candidate},'TestSubSourceRejectsUnsafeOrAmbiguousResults',1),('response-limit-old',{'candidate_prod':response,'candidate_test':old['candidate_test']},'TestSubSourceRejectsUnsafeOrAmbiguousResults',0),('response-limit-repaired',{'candidate_prod':response},'TestSubSourceRejectsUnsafeOrAmbiguousResults',1),('preserve-old',{'preserve_prod':preserve,'preserve_test':old['preserve_test']},'TestSynchronizeCandidateRejectsPreservedSubtitle',0),('preserve-repaired',{'preserve_prod':preserve},'TestSynchronizeCandidateRejectsPreservedSubtitle',1),('restored-full-package',{},None,0)]
 try:
  for name,changes,test,expected in phases:

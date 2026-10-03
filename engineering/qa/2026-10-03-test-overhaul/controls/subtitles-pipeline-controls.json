@@ -33,7 +33,7 @@
     "apps/subtitles/internal/server/subtitle_sync_behavior_internal_test.go": "7a452337d648b66a6efe244ed2c13aef69cbcab913202a552a388051513ba4c1"
   },
   "source_restored_exactly": true,
-  "runner_sha256": "bc5cafce4eda0bbc2cba55e95c69f79998793b398fefa454907b0ad291b872e3",
+  "runner_sha256": "1c18f0b817845893f641aa30ce4142680c2977aa9286e9c60e10495fca7764e5",
   "artifact_directory": "/Users/mikeo/Documents/Codex/2026-10-03/task/subtitles-shared/.verification/test-overhaul/pipeline-controls-60cccadf0",
   "artifact_checksums": {
     "restored-full-package-localhost.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -62,7 +62,7 @@
     "preserve-old.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
   },
   "sandbox_failure": "Original restored full-package phase blocked at MCP httptest listener: bind tcp6 [::1]:0 operation not permitted. This was environment restriction, preserved in logs; no assertion removed.",
-  "phase_reproduction": "Run runner from recorded SHA with localhost sockets permitted. Exact old test source ac4224661 retained in Git; runner transient patches are deterministic and recorded. Original sandbox failure is a separate environment event.",
+  "phase_reproduction": "Run checked-in runner with localhost sockets permitted from a clean tracked checkout. Runner reads original tests from baseline876b771a7, guaranteed final main ancestor; the two original declarations are byte-identical to recorded childac4224661 original controls, as independently hash-verified. Historical receipt keeps exact source SHA used during execution.",
   "results_summary": {
     "pass": 820,
     "skip": 4
@@ -313,5 +313,10 @@
         "restored-full-package-localhost.stderr"
       ]
     }
-  ]
+  ],
+  "reproducible_baseline_old_declarations_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+  "baseline_old_declaration_checksums": {
+    "TestSubSourceRejectsUnsafeOrAmbiguousResults": "22ab0c82a1b8eddcd5cad11cc5a4f35735c160e3ed56ec3c112e2d02f80de6c5",
+    "TestSynchronizeCandidateRejectsPreservedSubtitle": "f7cb1bba926776ac1ee3ba13fdbc3161cbd786e1f7adde95ddce1ab9efdf6877"
+  }
 }
