@@ -77,6 +77,13 @@ final class PlaybackStartupFixture: @unchecked Sendable {
             let parts = header.components(separatedBy: "\r\n")[0].split(separator: " ")
             guard parts.count == 3, ["GET", "HEAD", "PUT"].contains(String(parts[0])), let url = URL(string: String(parts[1]), relativeTo: self.server.url) else { connection.cancel(); return }
             let path = url.path
+            let length = header.components(separatedBy: "\r\n").first { $0.lowercased().hasPrefix("content-length:") }
+                .flatMap { Int($0.split(separator: ":").last!.trimmingCharacters(in: .whitespaces)) } ?? 0
+            guard (0...4096).contains(length) else { connection.cancel(); return }
+            if next.count - boundary.upperBound < length {
+                if complete { connection.cancel() } else { self.receive(connection, data: next) }
+                return
+            }
             let (count, delayed, denied) = self.state.withLock { state in
                 state.counts[path, default: 0] += 1
                 return (state.counts[path]!, state.delayed, state.denied)
@@ -86,10 +93,7 @@ final class PlaybackStartupFixture: @unchecked Sendable {
                 return
             }
             if path.hasSuffix("/progress/sync") {
-                let length = header.components(separatedBy: "\r\n").first { $0.lowercased().hasPrefix("content-length:") }
-                    .flatMap { Int($0.split(separator: ":").last!.trimmingCharacters(in: .whitespaces)) } ?? 0
-                guard length <= 4096, next.count - boundary.upperBound >= length,
-                      let raw = try? StrictJSON.decode(Data(next.suffix(length))),
+                guard let raw = try? StrictJSON.decode(Data(next[boundary.upperBound..<(boundary.upperBound + length)])),
                       let body = try? raw.object(allowing: ["progress", "expected", "playbackToken"]),
                       let progress = body["progress"], let data = try? JSONEncoder().encode(progress) else { connection.cancel(); return }
                 self.send(data, type: "application/json", connection: connection)

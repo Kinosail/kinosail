@@ -52,3 +52,21 @@ Do not reset an existing simulator to repeat this check. Exact file hashes, revi
 These are native HTTP lifecycle journeys, not a moving-frame or physical Apple TV certificate. General tap-to-first-frame speed, direct/HLS/HDR decoding, audio/subtitle changes, seek/resume, interruptions and network recovery need representative playback acceptance. A read-only inventory found a paired physical Apple TV; it was not connected anew, installed, launched or exercised. Existing simulators and the dirty user repository were preserved. No Nox request, deployment, image operation or release was performed.
 
 Source review also identified that optional external subtitle reads precede playback, and readiness failures can have a long retry budget. Neither path was changed without measured media evidence. Reusing a compatible URL during recovery was not established as an expiry defect.
+
+## Decoded-media acceptance, before a resume repair
+
+At `b3bcfdda8`, all five lifecycle journeys pass. A separate opt-in native media journey sends a bounded fictional H.264/AAC MP4 through the production authenticated transport and AVPlayer. Both cold and prepared playback decode moving frames and pass seek, pause and resume checks. Both fail initial resume: the plan requests three seconds, but AVPlayer starts at zero. This is an unresolved acceptance failure; these timings do not establish correct startup performance.
+
+The additional failure modes are: initial AVPlayer time jumps replacing saved resume intent; an unsuccessful restoring seek being mistaken for a native scrub; stale pending progress between repeated starts; or incomplete HTTP request bodies in the fixture. The next diagnostic run separates them before any resume behavior changes.
+
+Generate the fictional sample, then include `-only-testing:Kinosail-tvOSTests/PlaybackMediaJourneys` in the command above:
+
+```sh
+ffmpeg -nostdin -hide_banner -loglevel error \
+  -f lavfi -i 'testsrc2=size=128x72:rate=30' \
+  -f lavfi -i 'sine=frequency=440:sample_rate=48000' \
+  -t 12 -threads 1 -c:v libx264 -preset ultrafast -pix_fmt yuv420p \
+  -c:a aac -ac 2 -movflags +faststart -y /tmp/kinosail-appletv-task7-media.mp4
+```
+
+The decoded-media journey is opt-in because the generated media file is external to the repository. Its artifact records the sample hash. It does not verify HEVC Main10, HDR, EAC3, HLS or a physical Apple TV.
