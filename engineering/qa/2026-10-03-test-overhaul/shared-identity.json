@@ -19,16 +19,16 @@
     "baseline_test_lines": 66475,
     "declarations": 1900,
     "decisions": {
-      "R": 983,
-      "D": 34,
+      "R": 1035,
+      "D": 40,
       "F": 34,
-      "unreviewed": 836,
+      "unreviewed": 778,
       "C": 13
     },
-    "removed_declarations": 34,
-    "removed_test_lines": 647,
-    "final_declarations": 1866,
-    "final_test_lines": 65828,
+    "removed_declarations": 40,
+    "removed_test_lines": 697,
+    "final_declarations": 1860,
+    "final_test_lines": 65778,
     "removed_support_helpers": 6,
     "removed_support_files": 3,
     "removed_support_lines": 141
@@ -790,6 +790,27 @@
         "remaining_pending": 0,
         "entry_evidence": "Complete semantic body/owner/caller/failure/history and actual-versus-fixture E2E evidence per declaration; D candidates independently reviewed before edits."
       }
+    },
+    "supporter": {
+      "owners": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "e2e": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor."
     }
   },
   "test_support_inventory": {
@@ -67656,9 +67677,9 @@
       "owner_group": "supporter",
       "body_sha256": "20775f764438c7912c3fce38cff531c3dc8f47949f17a5c257295156b18f47fa",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.286075-06:00",
@@ -67666,7 +67687,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestCertificateVersionAndClassificationEdges",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Legacy v2 sustaining grants reused as patron recognition must strip subscription/expiry semantics rather than wrongly expire historical patron honors; direct classification additionally rejects malformed/unknown version. Input uses synthetic invalid expiry, so it does not prove public signed parsing accepts that input.",
+      "remaining_coverage": "packages/supporter/certificate_edges_test.go::TestCertificateVersionAndClassificationEdges remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/certificate_edges_test.go",
@@ -67676,9 +67722,9 @@
       "owner_group": "supporter",
       "body_sha256": "22843947a5ae7a839b474e840395f341c73eb3af1dc8eb92a10e18edb23f3f7d",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.286101-06:00",
@@ -67686,7 +67732,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestCurrentCertificateParserRejectsInvalidVersionAndNullCollection",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "A present null collection must fail strict current signed-record parsing rather than masquerade as an absent optional collection. Browser chooser never submits signed null fields.",
+      "remaining_coverage": "packages/supporter/certificate_edges_test.go::TestCurrentCertificateParserRejectsInvalidVersionAndNullCollection remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/certificate_edges_test.go",
@@ -67696,9 +67767,9 @@
       "owner_group": "supporter",
       "body_sha256": "c6ec10fb0dc3603dedffcd3716720c3387ae97bc900aec9fb32378cd5cd8e76b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.286124-06:00",
@@ -67706,7 +67777,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestCurrentCertificatePredicatesRejectInvalidSignedValues",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Reject padded signed recognition names and malformed certificate times before a grant becomes recognition. Null-expiry and unsigned-name assertions use deliberately inconsistent decoded/raw values, so they do not establish independent public-parser reachability.",
+      "remaining_coverage": "packages/supporter/certificate_edges_test.go::TestCurrentCertificatePredicatesRejectInvalidSignedValues remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/certificate_edges_test.go",
@@ -67716,9 +67812,9 @@
       "owner_group": "supporter",
       "body_sha256": "5212ddc4185fb3409b6f6def5e749a1682eb0401e4d29342caeb56640f7ecdaa",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.286143-06:00",
@@ -67726,7 +67822,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestCollectionRejectsDuplicateApplicationIDs",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Signed Complete Fleet collection must reject a duplicate app membership instead of accepting repeated same-app IDs as multi-app recognition.",
+      "remaining_coverage": "packages/supporter/certificate_edges_test.go::TestCollectionRejectsDuplicateApplicationIDs remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/editions_test.go",
@@ -67736,9 +67857,9 @@
       "owner_group": "supporter",
       "body_sha256": "414e4f0e7ace7bbc4e34e7d1fb20f33c88c7139203f29118a543549e4731f583",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.290445-06:00",
@@ -67746,7 +67867,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestActivationRequiresConfiguredIssuerKey",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "03c7b4ad5e50e79d47fbeffbe4003aec2e6ad208 Prepare Player Supporter for production checkout (#65)"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "An otherwise valid signed activation from the wrong configured issuer must cause zero save/state effects, while the trusted issuer works. Invalid configured key encodings must also fail construction.",
+      "remaining_coverage": "packages/supporter/editions_test.go::TestActivationRequiresConfiguredIssuerKey remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/editions_test.go",
@@ -67756,9 +67902,9 @@
       "owner_group": "supporter",
       "body_sha256": "2475cc3d6a2240fa7b0f98cf1e6059c6a566aa879efd75b9339db22d8e2fb46b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.309512-06:00",
@@ -67766,7 +67912,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestThreeEditionsCoexistInEveryActivationOrder",
         "Elapsed": 0.02
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "03c7b4ad5e50e79d47fbeffbe4003aec2e6ad208 Prepare Player Supporter for production checkout (#65)"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Each of six one-time/monthly/yearly activation permutations must retain all three earned editions across JSON persistence/reload, lower-tier refresh and expiry rather than overwrite the recurring sibling or erase earned collection.",
+      "remaining_coverage": "packages/supporter/editions_test.go::TestThreeEditionsCoexistInEveryActivationOrder remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/editions_test.go",
@@ -67776,9 +67947,9 @@
       "owner_group": "supporter",
       "body_sha256": "e341c2c2ee24a49139db010287938b62e18539a2a2b10ee61ff6bb446b3a8d55",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.313896-06:00",
@@ -67786,7 +67957,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestEditionClaimsRejectInvalidAndConflictingValues",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "03c7b4ad5e50e79d47fbeffbe4003aec2e6ad208 Prepare Player Supporter for production checkout (#65)"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Invalid/case-padded/oversized edition and one-time-versus-recurring claim conflict must never save a provider grant or expose active recognition.",
+      "remaining_coverage": "packages/supporter/editions_test.go::TestEditionClaimsRejectInvalidAndConflictingValues remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/editions_test.go",
@@ -67796,9 +67992,9 @@
       "owner_group": "supporter",
       "body_sha256": "19354aec77112302bc4b66ea1d2bebb94f1df985beb01e4f34e6f0e34ea238b2",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.313948-06:00",
@@ -67806,7 +68002,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestEditionSaveFailureAndActivePrecedence",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "03c7b4ad5e50e79d47fbeffbe4003aec2e6ad208 Prepare Player Supporter for production checkout (#65)"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Disk failure cannot publish a newly active yearly edition; after a successful transition an active yearly certificate takes precedence over expired monthly while both downloadable certificate families survive.",
+      "remaining_coverage": "packages/supporter/editions_test.go::TestEditionSaveFailureAndActivePrecedence remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/editions_test.go",
@@ -67816,9 +68037,9 @@
       "owner_group": "supporter",
       "body_sha256": "d731d9deba2aa1b97f02335fcf2978fa660bee70b609b6d171c84f8e6fddf412",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.314999-06:00",
@@ -67826,7 +68047,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestYearlyCertificateCoversPaidYearWithoutWeakeningMonthlyOrLegacyBounds",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "03c7b4ad5e50e79d47fbeffbe4003aec2e6ad208 Prepare Player Supporter for production checkout (#65)"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Paid yearly grants must survive the monthly refresh boundary, expire at the paid year, and reject >370-day yearly or >45-day monthly/legacy terms without save effects.",
+      "remaining_coverage": "packages/supporter/editions_test.go::TestYearlyCertificateCoversPaidYearWithoutWeakeningMonthlyOrLegacyBounds remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/editions_test.go",
@@ -67836,9 +68082,9 @@
       "owner_group": "supporter",
       "body_sha256": "23fe879da529237736ca6e89b671129cea51266e381b1db30edeac5e4b777386",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.318494-06:00",
@@ -67846,7 +68092,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestEditionStateRejectsInvalidBeforeProvider",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "03c7b4ad5e50e79d47fbeffbe4003aec2e6ad208 Prepare Player Supporter for production checkout (#65)"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Malformed persisted recurring level/signature or wrongly slotted monthly grant must produce no provider call and return the unchanged prior state.",
+      "remaining_coverage": "packages/supporter/editions_test.go::TestEditionStateRejectsInvalidBeforeProvider remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/input_json_edges_test.go",
@@ -67856,9 +68127,9 @@
       "owner_group": "supporter",
       "body_sha256": "bcf98df36039e4fb6bbb0e023607bf3e91e65d3c8d398c81a041a3e47337474b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.318543-06:00",
@@ -67866,7 +68137,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestNewActivationInputNormalizesAndValidatesFormValues",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Actual form adapter must trim activation keys without manufacturing a recognition field, retain a valid name, and distinguish short-key versus padded-name validation errors.",
+      "remaining_coverage": "packages/supporter/input_json_edges_test.go::TestNewActivationInputNormalizesAndValidatesFormValues remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/input_json_edges_test.go",
@@ -67876,9 +68172,9 @@
       "owner_group": "supporter",
       "body_sha256": "4c39c63b1317412e945b0161e9afbbb90dca72c36b1701b7f362b7adae3a0369",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.318598-06:00",
@@ -67886,7 +68182,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestJSONObjectRejectsMalformedValuesAndTrailingData",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Provider/signed JSON object reader must reject incomplete values and trailing objects rather than accept an ambiguous certificate/request framing.",
+      "remaining_coverage": "packages/supporter/input_json_edges_test.go::TestJSONObjectRejectsMalformedValuesAndTrailingData remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/input_json_edges_test.go",
@@ -67896,9 +68217,9 @@
       "owner_group": "supporter",
       "body_sha256": "e2a24f8d15011934430d7b119813fdd75fd74ba937082a3df5da6e35a9e28921",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.318878-06:00",
@@ -67906,7 +68227,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestUnicodeEscapeValidationCoversEveryEscapeShape",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Strict signed-record Unicode policy must accept paired surrogates/basic escapes while rejecting truncated/unpaired or invalid low surrogates, preventing divergent signed-text interpretation.",
+      "remaining_coverage": "packages/supporter/input_json_edges_test.go::TestUnicodeEscapeValidationCoversEveryEscapeShape remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/input_json_edges_test.go",
@@ -67916,9 +68262,9 @@
       "owner_group": "supporter",
       "body_sha256": "5141f0aaa7bbd86d94b8e984fc41c033a7ea6b77ed01156bffcb6c9cacb0d478",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Remove only low-impact getter/redundant/synthetic or missing-data probe; crypto, real signed provider and failure boundaries retained.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.318928-06:00",
@@ -67926,7 +68272,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestDisplayAndStrictTimeFallbacks",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "No private strictTime malformed-literal or duplicate free/free-name assertion remains; signed malformed times and actual free status remain guarded.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Free display literals and private not-a-time rejection repeat actual empty status and strict signed time guards without a distinct protocol or state boundary.",
+      "reason": "Free display literals and private not-a-time rejection repeat actual empty status and strict signed time guards without a distinct protocol or state boundary.",
+      "remaining_coverage": [
+        "packages/supporter/validation_test.go:TestEmptyDerivativeStatusAndFingerprintUseSharedPolicy",
+        "packages/supporter/legacy_edges_test.go:TestV2TimeProfilesRejectInvalidInputAndAcceptSubtitlesExpiry",
+        "packages/supporter/certificate_edges_test.go:TestCurrentCertificatePredicatesRejectInvalidSignedValues"
+      ]
     },
     {
       "file": "packages/supporter/legacy_edges_test.go",
@@ -67936,9 +68312,9 @@
       "owner_group": "supporter",
       "body_sha256": "f10a566d167efdeb55e82bebd1469606757decfc060e9f5d9365798e785db98e",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.318951-06:00",
@@ -67946,7 +68322,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestV1TimeValidationRejectsFutureAndInvalidExpiry",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Legacy v1 issued-in-future and overlong recurring term cannot become valid historical recognition; normal browser populated states are fixture snapshots.",
+      "remaining_coverage": "packages/supporter/legacy_edges_test.go::TestV1TimeValidationRejectsFutureAndInvalidExpiry remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/legacy_edges_test.go",
@@ -67956,9 +68357,9 @@
       "owner_group": "supporter",
       "body_sha256": "aa95fc28a275dd606281e6e85da26b2074bc9bad9a849d70e536f4fb77236fa4",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.318981-06:00",
@@ -67966,7 +68367,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestV2SubscriptionValidationRejectsMismatchAndDefaultsHistoricalWatch",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Historical v2 subscription must reject unknown tier/raw-field mismatch while preserving missing watch default required by old recurring certificates.",
+      "remaining_coverage": "packages/supporter/legacy_edges_test.go::TestV2SubscriptionValidationRejectsMismatchAndDefaultsHistoricalWatch remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/legacy_edges_test.go",
@@ -67976,9 +68402,9 @@
       "owner_group": "supporter",
       "body_sha256": "4cf9f42b2ce69bfdcf0535e94058be8b13cdcf7d8bf2b892dbc370714d5a5d90",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.319004-06:00",
@@ -67986,7 +68412,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestV2TimeProfilesRejectInvalidInputAndAcceptSubtitlesExpiry",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Legacy malformed v2 time must fail and the distinct valid Subtitles recurring expiry profile must remain accepted; changing shared time policy can strand persisted certificates.",
+      "remaining_coverage": "packages/supporter/legacy_edges_test.go::TestV2TimeProfilesRejectInvalidInputAndAcceptSubtitlesExpiry remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/legacy_edges_test.go",
@@ -67996,9 +68447,9 @@
       "owner_group": "supporter",
       "body_sha256": "04fbab32ce40c95f9561e0fce2b9e8582de43e623f2207d40c4f96d9b6213d80",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.319026-06:00",
@@ -68006,7 +68457,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestLegacyMigrationCanPopulateLivingStandard",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "A valid signed historical recurring state must populate the living family during migration instead of losing the saved subscriber grant.",
+      "remaining_coverage": "packages/supporter/legacy_edges_test.go::TestLegacyMigrationCanPopulateLivingStandard remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/legacy_test.go",
@@ -68016,9 +68492,9 @@
       "owner_group": "supporter",
       "body_sha256": "0999692c282af7790c01aa3465434329a9e488c4f1b758c56b0b19c7e4607cca",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.319043-06:00",
@@ -68026,7 +68502,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestLegacyCertificatesUseTheSharedStatusAndCertificateInterface",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "82837169131f9e0626b2c33c9d9aec808bc0b085 Remove remaining retired app references",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Valid signed v1 patron and v2 recurring persisted records must continue projecting rank/certificate and active subscription through the public owner interface.",
+      "remaining_coverage": "packages/supporter/legacy_test.go::TestLegacyCertificatesUseTheSharedStatusAndCertificateInterface remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/legacy_test.go",
@@ -68036,9 +68538,9 @@
       "owner_group": "supporter",
       "body_sha256": "0de8bf74d932766a82711ca0659cc5bbe290042ac7c9d382f0cd64a949dc170b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.319062-06:00",
@@ -68046,7 +68548,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestMalformedLegacyCertificateAndUnicodeFailClosed",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "82837169131f9e0626b2c33c9d9aec808bc0b085 Remove remaining retired app references",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Otherwise complete signed record containing an unpaired Unicode surrogate must expose no badge; corrupt stored certificate encoding must fail state validation.",
+      "remaining_coverage": "packages/supporter/legacy_test.go::TestMalformedLegacyCertificateAndUnicodeFailClosed remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/legacy_test.go",
@@ -68056,9 +68584,9 @@
       "owner_group": "supporter",
       "body_sha256": "9d0fa553dc33be9c08c128d2b46ba8972bbda7cf358bc32ebe8720848cbe4f53",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.319175-06:00",
@@ -68066,7 +68594,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestLegacyCertificatesRejectMalformedSignedFieldsAndUnsupportedApps",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "82837169131f9e0626b2c33c9d9aec808bc0b085 Remove remaining retired app references",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Signed historical null booleans/expiry/name, unknown or padded recognition fields must fail; disabling legacy policy must reject an otherwise valid v1 grant.",
+      "remaining_coverage": "packages/supporter/legacy_test.go::TestLegacyCertificatesRejectMalformedSignedFieldsAndUnsupportedApps remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/legacy_test.go",
@@ -68076,9 +68630,9 @@
       "owner_group": "supporter",
       "body_sha256": "1bd2404d17d87ed68cc823dd627146cd9e9d8303d1ab323e026c697b5ead9cef",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.319233-06:00",
@@ -68086,7 +68640,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestSubtitlesLegacyProfilePreservesItsV2Rules",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "82837169131f9e0626b2c33c9d9aec808bc0b085 Remove remaining retired app references",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Actual Subtitles legacy profile must accept valid own-audience v2 while discarding old low-tier name and rejecting unsupported subscription or null recognition fields.",
+      "remaining_coverage": "packages/supporter/legacy_test.go::TestSubtitlesLegacyProfilePreservesItsV2Rules remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/legacy_test.go",
@@ -68096,9 +68676,9 @@
       "owner_group": "supporter",
       "body_sha256": "33da3c234c980012095c520be51592e7b2f5757effbf60342c51327cb1621e9b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.319287-06:00",
@@ -68106,7 +68686,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestLegacyMigrationPlacesPublicKeyAccordingToAppStorage",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "82837169131f9e0626b2c33c9d9aec808bc0b085 Remove remaining retired app references",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Migration must preserve a grant public key in Player storage and the global key for Subtitles instead of losing verification authority when clearing legacy fields.",
+      "remaining_coverage": "packages/supporter/legacy_test.go::TestLegacyMigrationPlacesPublicKeyAccordingToAppStorage remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/legacy_test.go",
@@ -68116,9 +68722,9 @@
       "owner_group": "supporter",
       "body_sha256": "5592542552287ba1d99e75ea0aa8e69d6e9014cae511246ccae7d6f2e80d05f6",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.319384-06:00",
@@ -68126,7 +68732,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestCurrentCertificateRejectsNonPlayerFieldsAndMalformedCollections",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "82837169131f9e0626b2c33c9d9aec808bc0b085 Remove remaining retired app references",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Otherwise valid signed current records with legacy-only fields, unknown/duplicate collection fields or padded collection edition must produce no badge.",
+      "remaining_coverage": "packages/supporter/legacy_test.go::TestCurrentCertificateRejectsNonPlayerFieldsAndMalformedCollections remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/legacy_test.go",
@@ -68136,9 +68768,9 @@
       "owner_group": "supporter",
       "body_sha256": "92fe36f75d320b0c1ec8e4a0fd3c96317c7c8cad210c0c91283b0830b4ce9242",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.31963-06:00",
@@ -68146,7 +68778,33 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestDerivativeSupporterIDBindingFailsClosed",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "82837169131f9e0626b2c33c9d9aec808bc0b085 Remove remaining retired app references",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Explicit exported derivative policy must reject an otherwise valid signed grant whose supporter mark differs from installation and accept the bound mark. Current Player/Subtitles app configs do not enable this flag; this is a narrow security-policy exception, not browser coverage.",
+      "remaining_coverage": "packages/supporter/legacy_test.go::TestDerivativeSupporterIDBindingFailsClosed remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/provider_edges_test.go",
@@ -68156,9 +68814,9 @@
       "owner_group": "supporter",
       "body_sha256": "1bb9c48c9e85ae5327dd8751f0de9718b42daf55459f6371351554d79097b0fc",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Remove only low-impact getter/redundant/synthetic or missing-data probe; crypto, real signed provider and failure boundaries retained.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.319651-06:00",
@@ -68166,7 +68824,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestSendRejectsMalformedInternalEndpointBeforeNetwork",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "No direct assertion remains for impossible private colon endpoint; reachable invalid external config, real provider framing/transport and state effects retained.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Mutates private validated endpoint to colon; every actual New constructor validates endpoint and no production setter exists. This cannot distinguish a reachable provider failure.",
+      "reason": "Mutates private validated endpoint to colon; every actual New constructor validates endpoint and no production setter exists. This cannot distinguish a reachable provider failure.",
+      "remaining_coverage": [
+        "packages/supporter/validation_test.go:TestConfigurationAndEndpointValidation",
+        "packages/supporter/provider_test.go:TestProviderResponsesFailClosedWithoutStateChange",
+        "packages/supporter/service_test.go:TestActivationRejectsInputsAndProviderFailuresWithoutStateChange"
+      ]
     },
     {
       "file": "packages/supporter/provider_edges_test.go",
@@ -68176,9 +68864,9 @@
       "owner_group": "supporter",
       "body_sha256": "6046bcebfe217aec02b4fbe69ec243c7d071314bc7492236e8c80c1db083fb63",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.319673-06:00",
@@ -68186,7 +68874,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestReadActivationResponseRejectsReadAndDecodeFailures",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Injected provider body read failure or wrong typed certificate field must report unavailable rather than accept a partial response; a real happy-path provider cannot inject these I/O faults.",
+      "remaining_coverage": "packages/supporter/provider_edges_test.go::TestReadActivationResponseRejectsReadAndDecodeFailures remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/provider_edges_test.go",
@@ -68196,9 +68909,9 @@
       "owner_group": "supporter",
       "body_sha256": "a8399e6531edd9f5625701b2926a591f55672e5d12838357be8989df2815bbbe",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.319691-06:00",
@@ -68206,7 +68919,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestProviderReportsRejectedKeyPrecisely",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Provider key rejection must map to invalid-input semantics instead of unavailable/retry ambiguity, preserving the actionable user error without publishing a grant.",
+      "remaining_coverage": "packages/supporter/provider_edges_test.go::TestProviderReportsRejectedKeyPrecisely remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/provider_test.go",
@@ -68216,9 +68954,9 @@
       "owner_group": "supporter",
       "body_sha256": "8d528e3f2d5be3f944fb7f9fc2a9a83fa979203d33ed32226b8acf3a69bbda5f",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.323043-06:00",
@@ -68226,7 +68964,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestProviderResponsesFailClosedWithoutStateChange",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Actual loopback HTTP provider matrix wrong media type/extra field/duplicate error/oversized body and rejected/failed status must preserve original prepared state with the correct invalid/unavailable error class.",
+      "remaining_coverage": "packages/supporter/provider_test.go::TestProviderResponsesFailClosedWithoutStateChange remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/provider_test.go",
@@ -68236,9 +68999,9 @@
       "owner_group": "supporter",
       "body_sha256": "519de7766440ad2288c58d6c230aacdc173dd241c3ae74344bbf9bada979bdf6",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.323454-06:00",
@@ -68246,7 +69009,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestDerivativeInvalidRequestResponseFailsClosedWithoutStateChange",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Explicit derivative invalid-request error policy must preserve saved state while returning the configured invalid classification, distinct from Player unavailable semantics. Neither current app enables this flag; narrow compatibility policy exception.",
+      "remaining_coverage": "packages/supporter/provider_test.go::TestDerivativeInvalidRequestResponseFailsClosedWithoutStateChange remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/service_edges_test.go",
@@ -68256,9 +69044,9 @@
       "owner_group": "supporter",
       "body_sha256": "828d0f942ef49aa0281cc936e860476da2b4e583acd01285455b600c2bca378e",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.323549-06:00",
@@ -68266,7 +69054,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestServiceDefaultsAndPreparationFailurePaths",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Default provider client must bound request time and refuse redirects, while malformed installation preparation must preserve its prior state and return ErrInvalid.",
+      "remaining_coverage": "packages/supporter/service_edges_test.go::TestServiceDefaultsAndPreparationFailurePaths remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/service_edges_test.go",
@@ -68276,9 +69089,9 @@
       "owner_group": "supporter",
       "body_sha256": "bab7447c8e26c2cec6eadea6a37b48872fa8625ec1df458df42de3aa4c978788",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.323575-06:00",
@@ -68286,7 +69099,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestActivationPreconditionsCauseNoNetworkOrStateChange",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Unconfigured activation and malformed saved installation/levels must fail without replacing caller state; malformed service endpoint is valid here so public Activate must stop on state before any usable provider request.",
+      "remaining_coverage": "packages/supporter/service_edges_test.go::TestActivationPreconditionsCauseNoNetworkOrStateChange remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/service_edges_test.go",
@@ -68296,9 +69134,9 @@
       "owner_group": "supporter",
       "body_sha256": "dccc0ab1862b4d280f19d583807fb73a60e2e21c3caf456e89ae8009d6de4eab",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.3236-06:00",
@@ -68306,7 +69144,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestActivationOutputRejectsIdentityBeforeChangingState",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Persisted public-key pin must reject a different provider key. The invalid activation-ID output also lacks usable certificate/signature, so it cannot prove the ID guard independently; pin assertion remains a concrete key-confusion boundary.",
+      "remaining_coverage": "packages/supporter/service_edges_test.go::TestActivationOutputRejectsIdentityBeforeChangingState remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/service_edges_test.go",
@@ -68316,9 +69179,9 @@
       "owner_group": "supporter",
       "body_sha256": "7b7cd02bdf1969499992ee8a7d9b32adcd154e265bd28c51dba5c38801688354",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.323822-06:00",
@@ -68326,7 +69189,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestNonRejectingAppKeepsHigherPatronWithoutMutation",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Current app policy without RejectPatronDowngrade must keep an existing higher signed patron grant and saved levels unchanged when a lower one arrives, instead of replacing earned recognition.",
+      "remaining_coverage": "packages/supporter/service_edges_test.go::TestNonRejectingAppKeepsHigherPatronWithoutMutation remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/service_edges_test.go",
@@ -68336,9 +69224,9 @@
       "owner_group": "supporter",
       "body_sha256": "74e4278ed05b7ab1e0e42c19d2f5a1a7b195f26fbbe981ef71311b69b04b65b0",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.324464-06:00",
@@ -68346,7 +69234,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestActivateAndSaveReturnsCommittedState",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Successful actual signed provider activation must invoke the save seam exactly once and return the same committed grant/status rather than reverting after durable success.",
+      "remaining_coverage": "packages/supporter/service_edges_test.go::TestActivateAndSaveReturnsCommittedState remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/service_edges_test.go",
@@ -68356,9 +69269,9 @@
       "owner_group": "supporter",
       "body_sha256": "012186b6c3d98a4af029fa43239bc262527e5ab281053420e6da4c577a1bf523",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Remove only low-impact getter/redundant/synthetic or missing-data probe; crypto, real signed provider and failure boundaries retained.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.324489-06:00",
@@ -68366,7 +69279,36 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestWrappedErrorPresentationAndCustomClientTimeout",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Custom nonzero timeout copy and exact synthetic specific-failure string are no longer asserted; real default timeout/redirect refusal and provider error classes remain. No equivalent browser failure test claimed.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Literal error message and copied client Timeout echo have no distinct important application behavior. Both real command compositions leave SupporterConfig.HTTPClient nil; injected app clients are test-only provider adapters.",
+      "reason": "Literal error message and copied client Timeout echo have no distinct important application behavior. Both real command compositions leave SupporterConfig.HTTPClient nil; injected app clients are test-only provider adapters.",
+      "remaining_coverage": [
+        "packages/supporter/service_edges_test.go:TestServiceDefaultsAndPreparationFailurePaths",
+        "packages/supporter/provider_test.go:TestProviderResponsesFailClosedWithoutStateChange"
+      ]
     },
     {
       "file": "packages/supporter/service_entropy_test.go",
@@ -68376,9 +69318,9 @@
       "owner_group": "supporter",
       "body_sha256": "adcbf7d6edf5fad7b1a2eda0c6874bee314fb650714924d10a112e3ba2782f56",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.324611-06:00",
@@ -68386,7 +69328,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestPrepareLeavesStateUnchangedWhenEntropyFails",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "c110031dde75986a1ccc4d769c6aea51ee7786db Handle entropy failures and Watch callbacks without crashes"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Injected cryptographic entropy failure must leave the empty installation state unchanged and report unavailable instead of publishing a weak/partial installation identity.",
+      "remaining_coverage": "packages/supporter/service_entropy_test.go::TestPrepareLeavesStateUnchangedWhenEntropyFails remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/service_test.go",
@@ -68396,9 +69363,9 @@
       "owner_group": "supporter",
       "body_sha256": "31ec72eb567f4eecf4736bfac0ced1edd183df6961b3e6dee359388dea225cae",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.325919-06:00",
@@ -68406,7 +69373,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestActivationUsesConfiguredPublicKeyStorage",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "82837169131f9e0626b2c33c9d9aec808bc0b085 Remove remaining retired app references",
+        "03c7b4ad5e50e79d47fbeffbe4003aec2e6ad208 Prepare Player Supporter for production checkout (#65)",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Actual signed provider grants must put verification authority in per-grant Player or global Subtitles-style storage according to app policy, avoiding unverifiable persisted certificates.",
+      "remaining_coverage": "packages/supporter/service_test.go::TestActivationUsesConfiguredPublicKeyStorage remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/service_test.go",
@@ -68416,9 +69410,9 @@
       "owner_group": "supporter",
       "body_sha256": "50cbf19bf77ac733ddf994b34936d01ab42842ed3ad4eea8adfb80cf8c2fd8e5",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.326412-06:00",
@@ -68426,7 +69420,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestActivateAndSaveCommitsOnlyValidatedChangedState",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "82837169131f9e0626b2c33c9d9aec808bc0b085 Remove remaining retired app references",
+        "03c7b4ad5e50e79d47fbeffbe4003aec2e6ad208 Prepare Player Supporter for production checkout (#65)",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Invalid activation cannot invoke save; a valid provider response followed by disk failure cannot publish changed state or pretend recognition committed.",
+      "remaining_coverage": "packages/supporter/service_test.go::TestActivateAndSaveCommitsOnlyValidatedChangedState remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/service_test.go",
@@ -68436,9 +69457,9 @@
       "owner_group": "supporter",
       "body_sha256": "e4f26c89344e5eb0588a0816040ebc84e440e3df49d0af26b75a8ecd10bb2c9e",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.329567-06:00",
@@ -68446,7 +69467,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestActivationBuildsBothBadgesAndStatus",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "82837169131f9e0626b2c33c9d9aec808bc0b085 Remove remaining retired app references",
+        "03c7b4ad5e50e79d47fbeffbe4003aec2e6ad208 Prepare Player Supporter for production checkout (#65)",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Two actual signed patron/living activations must retain earned levels, combined masterwork/service marks, Complete Fleet recognition and privacy-safe viewer badge cardinality.",
+      "remaining_coverage": "packages/supporter/service_test.go::TestActivationBuildsBothBadgesAndStatus remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/service_test.go",
@@ -68456,9 +69504,9 @@
       "owner_group": "supporter",
       "body_sha256": "ef7d24b7d3fc49af3488e1ebd8bac9f5b80124a9ce8e24582c6cb2eaa8310205",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.329604-06:00",
@@ -68466,7 +69514,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestActivationRejectsInputsAndProviderFailuresWithoutStateChange",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "82837169131f9e0626b2c33c9d9aec808bc0b085 Remove remaining retired app references",
+        "03c7b4ad5e50e79d47fbeffbe4003aec2e6ad208 Prepare Player Supporter for production checkout (#65)",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Malformed user key/name must cause zero provider calls and preserve prepared state; actual closed provider transport failure must return uncertain without installing a grant.",
+      "remaining_coverage": "packages/supporter/service_test.go::TestActivationRejectsInputsAndProviderFailuresWithoutStateChange remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/service_test.go",
@@ -68476,9 +69551,9 @@
       "owner_group": "supporter",
       "body_sha256": "9781e2dfd229aef44210893ab4ee1bf55e5828c507aee9acfac5202566b485ea",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.329624-06:00",
@@ -68486,7 +69561,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestActivationRetainsHigherPatronAndRemembersRejectedReference",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "82837169131f9e0626b2c33c9d9aec808bc0b085 Remove remaining retired app references",
+        "03c7b4ad5e50e79d47fbeffbe4003aec2e6ad208 Prepare Player Supporter for production checkout (#65)",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Rejecting policy must preserve stronger patron grant, remember lower activation reference, and reuse that exact reference on retry instead of consuming or losing a provider activation.",
+      "remaining_coverage": "packages/supporter/service_test.go::TestActivationRetainsHigherPatronAndRemembersRejectedReference remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/service_test.go",
@@ -68496,9 +69598,9 @@
       "owner_group": "supporter",
       "body_sha256": "b71312d02e93ca5bcbb585d2ebed12a95ced3350227d927d96f9acbaf854f59e",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.330795-06:00",
@@ -68506,7 +69608,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestMalformedSignedCertificateDoesNotChangeState",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "82837169131f9e0626b2c33c9d9aec808bc0b085 Remove remaining retired app references",
+        "03c7b4ad5e50e79d47fbeffbe4003aec2e6ad208 Prepare Player Supporter for production checkout (#65)",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Actual provider wrong app, signature or family must never replace local state or activate recognition despite otherwise normal response framing.",
+      "remaining_coverage": "packages/supporter/service_test.go::TestMalformedSignedCertificateDoesNotChangeState remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/service_test.go",
@@ -68516,9 +69645,9 @@
       "owner_group": "supporter",
       "body_sha256": "40219bd164ed968f5e6848442a3fb183e0ce74483e087cac07684b59cdc80327",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.330837-06:00",
@@ -68526,7 +69655,34 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestRecoveryAndRotationPreserveOnlySafeReferences",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "82837169131f9e0626b2c33c9d9aec808bc0b085 Remove remaining retired app references",
+        "03c7b4ad5e50e79d47fbeffbe4003aec2e6ad208 Prepare Player Supporter for production checkout (#65)",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Corrupt signature recovery must remove the invalid grant but retain bounded retry references; confirmed key rotation must clear old grants while preserving installation identity.",
+      "remaining_coverage": "packages/supporter/service_test.go::TestRecoveryAndRotationPreserveOnlySafeReferences remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/state_edges_test.go",
@@ -68536,9 +69692,9 @@
       "owner_group": "supporter",
       "body_sha256": "0eb70b2310a6eb73bdff9d67799c605f60e6c5ae3882ee200a9dd663065219f1",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.33087-06:00",
@@ -68546,7 +69702,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestMatchingActivationRejectsMalformedAndConflictingReferences",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Reusable key hashes with malformed or conflicting provider IDs must fail rather than bind one key to an unrelated activation; an agreeing grant must return its exact ID.",
+      "remaining_coverage": "packages/supporter/state_edges_test.go::TestMatchingActivationRejectsMalformedAndConflictingReferences remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/state_edges_test.go",
@@ -68556,9 +69737,9 @@
       "owner_group": "supporter",
       "body_sha256": "35e0feca63ef0aae36fdfdf5c865e00f1c3916c2993dbdf2e51fa09e0e05e0ad",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.330891-06:00",
@@ -68566,7 +69747,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestRememberActivationEvictsOnlyOldestReference",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Bounded replay-reference rotation at capacity must preserve newer refs and append the new one, preventing arbitrary lost references or unbounded key-associated history.",
+      "remaining_coverage": "packages/supporter/state_edges_test.go::TestRememberActivationEvictsOnlyOldestReference remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/state_edges_test.go",
@@ -68576,9 +69782,9 @@
       "owner_group": "supporter",
       "body_sha256": "9a910b439c69c9777902c79a9b480a7634ef8af1c2c6425a3b7c0bfc873cfc80",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.331001-06:00",
@@ -68586,7 +69792,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestRaiseLevelsIncludesValidLivingGrant",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "A valid signed living grant must restore its earned level from persisted certificate data instead of dropping subscriber collection progress during activation/migration.",
+      "remaining_coverage": "packages/supporter/state_edges_test.go::TestRaiseLevelsIncludesValidLivingGrant remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/state_edges_test.go",
@@ -68596,9 +69827,9 @@
       "owner_group": "supporter",
       "body_sha256": "b505c3c41ec6b1bf9917e918a3a3bb96b6d66fe754853141b82eb30ddf831a0c",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.331027-06:00",
@@ -68606,7 +69837,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestRotatePublicKeyRejectsEveryInvalidPrecondition",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Key rotation must require explicit supported confirmation, prepared installation, valid different public key; rejecting any precondition protects against destructive grant clearing.",
+      "remaining_coverage": "packages/supporter/state_edges_test.go::TestRotatePublicKeyRejectsEveryInvalidPrecondition remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/state_edges_test.go",
@@ -68616,9 +69872,9 @@
       "owner_group": "supporter",
       "body_sha256": "69240f9e1f6c73c1bcdf9a1c659da29b4970fdd2bdafdb9bbf2f35fb7ff3713f",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Remove only low-impact getter/redundant/synthetic or missing-data probe; crypto, real signed provider and failure boundaries retained.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.331067-06:00",
@@ -68626,7 +69882,36 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestEmptyStateIsValid",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "The exported unused direct empty ValidateState contract has no remaining direct assertion; actual empty first-install Prepare/Activate path remains protected.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Direct ValidateState(empty) result is a one-branch echo absent every production caller: prepareActivation calls Prepare first, which installs an identity before ValidateState. Actual first-install activation is already covered with signed provider and save effects.",
+      "reason": "Direct ValidateState(empty) result is a one-branch echo absent every production caller: prepareActivation calls Prepare first, which installs an identity before ValidateState. Actual first-install activation is already covered with signed provider and save effects.",
+      "remaining_coverage": [
+        "packages/supporter/service_test.go:TestActivationUsesConfiguredPublicKeyStorage",
+        "packages/supporter/service_edges_test.go:TestActivateAndSaveReturnsCommittedState"
+      ]
     },
     {
       "file": "packages/supporter/status_edges_test.go",
@@ -68636,9 +69921,9 @@
       "owner_group": "supporter",
       "body_sha256": "f19f57076980acfee827f76d0051071d58693de74963d59cab8f11ad951bd228",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Remove only low-impact getter/redundant/synthetic or missing-data probe; crypto, real signed provider and failure boundaries retained.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.331087-06:00",
@@ -68646,7 +69931,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestStatusChecksUnmigratedLegacyAgainstBothFamilies",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "No valid otherwise complete unmigrated recurring/patron fallback branch sensitivity was established by this missing-data probe; historical signed migration remains protected. No equivalence with populated HTML fixtures claimed.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Only invalid ActivationID is provided with no certificate, signature or verification key; removing either claimed legacy-family branch still rejects unrelated missing signed data. Strong valid/malformed historical owner tests protect real migration.",
+      "reason": "Only invalid ActivationID is provided with no certificate, signature or verification key; removing either claimed legacy-family branch still rejects unrelated missing signed data. Strong valid/malformed historical owner tests protect real migration.",
+      "remaining_coverage": [
+        "packages/supporter/legacy_test.go:TestLegacyCertificatesUseTheSharedStatusAndCertificateInterface",
+        "packages/supporter/legacy_test.go:TestMalformedLegacyCertificateAndUnicodeFailClosed",
+        "packages/supporter/legacy_edges_test.go:TestLegacyMigrationCanPopulateLivingStandard"
+      ]
     },
     {
       "file": "packages/supporter/status_edges_test.go",
@@ -68656,9 +69971,9 @@
       "owner_group": "supporter",
       "body_sha256": "e123ca677543063342249cd641dee6b4a0cf972e96cfa8d13d16828015fbab3b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.331107-06:00",
@@ -68666,7 +69981,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestBadgeCaseClampsMalformedPersistedLevels",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Raw persisted malformed negative/oversized levels must not unlock fabricated honors. App Status consumes settings state without a separate ValidateState read gate.",
+      "remaining_coverage": "packages/supporter/status_edges_test.go::TestBadgeCaseClampsMalformedPersistedLevels remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/status_edges_test.go",
@@ -68676,9 +70016,9 @@
       "owner_group": "supporter",
       "body_sha256": "eca8bb52819c87f614be8dd51cc4ef58c684f027c1827ef464c7a94317772742",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.331125-06:00",
@@ -68686,7 +70026,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestServiceMonthsHandlesInvalidExpiryAndCalendarBoundary",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Service marks must stop at actual expiry and count completed calendar months correctly at Jan31/Feb28 rather than fabricate a month from day-count rounding; malformed start returns no marks.",
+      "remaining_coverage": "packages/supporter/status_edges_test.go::TestServiceMonthsHandlesInvalidExpiryAndCalendarBoundary remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/status_edges_test.go",
@@ -68696,9 +70061,9 @@
       "owner_group": "supporter",
       "body_sha256": "66cb7df391841f0bd28b3782dc78f5970523356cfdb6ef13ce5c1522e7483305",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.331209-06:00",
@@ -68706,7 +70071,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestCertificateForLivingFamilyAndUnknownFamily",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Verified living certificate lookup must return the signed recurring badge/rank and reject unknown family routing, protecting download/rendering family confusion.",
+      "remaining_coverage": "packages/supporter/status_edges_test.go::TestCertificateForLivingFamilyAndUnknownFamily remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/validation_test.go",
@@ -68716,9 +70106,9 @@
       "owner_group": "supporter",
       "body_sha256": "3ee46e0ec5c3d5bf31337bf461beb06dab0cbd9591ac5e4121acb8b26512a815",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.331235-06:00",
@@ -68726,7 +70116,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestConfigurationAndEndpointValidation",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Reject insecure or userinfo external activation/support endpoints and malformed app/legacy policy before network work, while allowing explicitly local HTTP and valid HTTPS.",
+      "remaining_coverage": "packages/supporter/validation_test.go::TestConfigurationAndEndpointValidation remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/validation_test.go",
@@ -68736,9 +70151,9 @@
       "owner_group": "supporter",
       "body_sha256": "b4e1aea650c048ec7b94a81c447037af4385e4d32fc9a1f12fd79377817b42fd",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.33445-06:00",
@@ -68746,7 +70161,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestParseActivationJSONRejectsAmbiguousValues",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "User activation JSON must reject duplicate keys, null/missing/unknown values and padded/empty explicit names instead of interpreting ambiguous authorization inputs.",
+      "remaining_coverage": "packages/supporter/validation_test.go::TestParseActivationJSONRejectsAmbiguousValues remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/validation_test.go",
@@ -68756,9 +70196,9 @@
       "owner_group": "supporter",
       "body_sha256": "f2ea5ef953bfd7ba31c9f3ec8ed65b62c6a2f16e2dedc36adaf30400e610bb1a",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.334479-06:00",
@@ -68766,7 +70206,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestStateValidationAndPreparationRejectMalformedState",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Persisted invalid levels, installation/key encodings, incomplete grant or activation hash must fail and partial installation preparation preserve state; signed names reject hidden formatting/oversize.",
+      "remaining_coverage": "packages/supporter/validation_test.go::TestStateValidationAndPreparationRejectMalformedState remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/supporter/validation_test.go",
@@ -68776,9 +70241,9 @@
       "owner_group": "supporter",
       "body_sha256": "91ea020bba8a4fdddcf2d3c28287003745d02ce5fe7317395d534bf9e414b3ee",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "D",
+      "audit_status": "reviewed",
+      "risk": "Remove only low-impact getter/redundant/synthetic or missing-data probe; crypto, real signed provider and failure boundaries retained.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.334502-06:00",
@@ -68786,7 +70251,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestTierCatalogIsIsolated",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Exported Tiers slice-copy guarantee and exact NorthStar display/unknown fallback literals lose direct coverage. No production writer or important data-loss/security failure identified; real chooser coverage does not prove aliasing.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Cloned slice mutation and tier/name literal echoes exercise no actual caller mutation: both apps capture Tiers at initialization then only iterate/index it. Actual real browser chooser requires every level artwork/title while signed owner tests require rank semantics.",
+      "reason": "Cloned slice mutation and tier/name literal echoes exercise no actual caller mutation: both apps capture Tiers at initialization then only iterate/index it. Actual real browser chooser requires every level artwork/title while signed owner tests require rank semantics.",
+      "remaining_coverage": [
+        "apps/player/e2e/test-instance-supporter.spec.ts:Every supporter level shows its artwork and title (real route)",
+        "apps/subtitles/e2e/test-instance-supporter-tests.ts:Supporter page loads twenty distinct badges with accessible names (real route)",
+        "packages/supporter/service_test.go:TestActivationBuildsBothBadgesAndStatus"
+      ]
     },
     {
       "file": "packages/supporter/validation_test.go",
@@ -68796,9 +70291,9 @@
       "owner_group": "supporter",
       "body_sha256": "2fd0bf6e002590462e703bb998310a951ba61fb83701bdf44d44f9c1ca0a001c",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Retain distinct signed protocol, persistence/entropy, compatibility or state projection boundary missed by genuine E2E.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.334522-06:00",
@@ -68806,7 +70301,32 @@
         "Package": "github.com/MikeO7/kinosail/packages/supporter",
         "Test": "TestEmptyDerivativeStatusAndFingerprintUseSharedPolicy",
         "Elapsed": 0
-      }
+      },
+      "production_owner": [
+        "packages/supporter/service.go",
+        "packages/supporter/provider.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/legacy.go",
+        "packages/supporter/state.go",
+        "packages/supporter/status.go",
+        "packages/supporter/editions.go",
+        "packages/supporter/input.go",
+        "packages/supporter/json.go",
+        "packages/supporter/validation.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/supporter.go:newSupporterProgram/activate/status",
+        "apps/subtitles/internal/server/supporter.go:newSupporterProgram/activate/status/certificateForFamily",
+        "apps/player/internal/server/supporter_http.go:gallery/certificate/activation HTTP",
+        "apps/subtitles/internal/server/supporter_http.go:gallery/certificate/activation HTTP"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "Genuine Player test-instance-supporter chooser/every-level and supporter-checkout Owner cadence/accessibility journeys, plus Subtitles test-instance-supporter initial badge gallery execute real app routes. Player supporter-lifecycle is setContent+window.fetch fixture; Sailcraft populated states and both apps populated archive/certificates intercept route.fulfill rendered HTML/API/certificate snapshots. They cannot prove provider signatures/issuer/app/installation/time/edition/JSON strictness, replay references, disk/entropy failure, malformed saved state, migration or confirmed rotation. No browser execution by this auditor.",
+      "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
+      "credible_failure": "Subtitles empty status must retain nested identity and empty family badges; activation fingerprint must distinguish name presence so one in-flight request cannot overwrite a different recognition request.",
+      "remaining_coverage": "packages/supporter/validation_test.go::TestEmptyDerivativeStatusAndFingerprintUseSharedPolicy remains the primary isolated owner proof; no fixture/browser replacement claimed."
     },
     {
       "file": "packages/transcodehardware/backend_device_test.go",

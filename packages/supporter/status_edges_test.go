@@ -6,14 +6,6 @@ import (
 	"time"
 )
 
-func TestStatusChecksUnmigratedLegacyAgainstBothFamilies(t *testing.T) {
-	service := testServiceAt(t, App{}, testNow())
-	status := service.Status(State{ActivationID: "invalid"})
-	if status.PatronOrder != nil || status.LivingStandard != nil || status.Tier != "free" {
-		t.Fatalf("invalid legacy status = %#v", status)
-	}
-}
-
 func TestBadgeCaseClampsMalformedPersistedLevels(t *testing.T) {
 	service := testServiceAt(t, App{}, testNow())
 	badgeCase := service.badgeCase(State{LivingLevel: -1, PatronLevel: MaximumLevel + 1}, nil, nil)
