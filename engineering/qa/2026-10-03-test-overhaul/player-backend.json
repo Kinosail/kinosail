@@ -12668,23 +12668,42 @@
       "sha256": "84180e75c472340d88444d6a9e0107a234cc7506e6ebcd6193496b2b99bcc149",
       "path": "apps/player/internal/server/embedded_subtitles_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Hearing-impaired stream3 must be captions in actual API/web and route extraction-map0:3 to webVTT plus ticketed Jellyfin delivery; incorrect app mapping can label captions as subtitles or serve the wrong stream.",
+      "category": "app_owned_subtitle_selection_or_delivery_contract",
+      "credible_failure": "Hearing-impaired stream3 must be captions in actual API/web and route extraction-map0:3 to webVTT plus ticketed Jellyfin delivery; incorrect app mapping can label captions as subtitles or serve the wrong stream.",
+      "production_owner": [
+        "apps/player/internal/server/playback_http.go:playbackSubtitles/playbackSubtitleChoices/defaultTextSubtitle/selectDefaultTextSubtitle",
+        "apps/player/internal/server/player_subtitles.go:sidecarSubtitleLanguage/sameSubtitleLanguage",
+        "apps/player/internal/server/settings_subtitles.go:subtitleLanguage/pickerLimited",
+        "apps/player/internal/server/player.go:buildPlayerData",
+        "apps/player/internal/server/api_product.go:applyPlaybackSources",
+        "apps/player/internal/server/embedded_subtitles.go:serveEmbedded visibility adapter",
+        "apps/player/internal/server/embedded_subtitle_extract.go:extractEmbedded/embeddedOptions",
+        "apps/player/internal/server/embedded_subtitle_write.go:writeEmbedded",
+        "apps/player/internal/server/jellyfin_delivery.go:deliveryModule app callbacks",
+        "packages/mediaprobe/facts.go:subtitleFactsFor",
+        "packages/mediaprobe/embedded.go:Embedded/EmbeddedHandler/extractEmbeddedSubtitle",
+        "packages/mediaprobe/embedded_concurrency.go:embeddedData/extractAndCacheEmbedded"
+      ],
+      "non_test_callers": [
+        "Fixture creates actual authenticated app with configured Jellyfin and injected executable tools; real app media API/watch/Jellyfin callbacks issue shared extraction routes."
+      ],
+      "remaining_proof": [
+        "Retain exact app handler/selector/argument boundary; canonical shared subtitle parsing/extraction tests cannot prove this app callback/route/default selection."
+      ],
+      "coverage_limit": "Real browser subtitle journey covers external English/Spanish regular tracks, not embedded hearing_impaired stream3 semantics, ffmpeg argument map or authenticated Jellyfin delivery URL. Shared extraction tests cannot exercise app visibility/routing/Jellyfin bindings.",
       "history": [
         "cbf7ce4cfba482959e96b0c4b88ad807c2863ed9 Clarify Player subtitle track names",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; important retained contract.",
+      "risk": "Important language/content or strict mutation invariant current genuine E2E misses.",
+      "validation_command": "Root full Player Go suite and genuine test-instance preferred-language subtitle journey; no child execution.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Complete assigned test/helper table, tested selection/settings/extraction and mediaProbe dependency functions, actual web/API/Jellyfin caller, file history and genuine-versus-routed browser scenarios read.",
+      "test_limit": "Scripted ffprobe/ffmpeg return synthetic facts/VTT; checks actual arguments and application adapter behavior, not FFmpeg decoding or hearing-impaired corpus content."
     },
     {
       "name": "TestEnglishBrowserErrorsUseHumanCopy",
@@ -31561,24 +31580,37 @@
       "sha256": "25fac98a671b1900603a952aa54648d92a97321a24e52e118552b58cbbccc87e",
       "path": "apps/player/internal/server/subtitle_language_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "French preference selects regular French as default across actual HTML/API; limiting excludes English/Dutch forced choices, suppresses native controls, and preserves excluded sidecar files. Wrong forced/default-language projection can show unusable or private unintended subtitle choices.",
+      "category": "app_owned_subtitle_selection_or_delivery_contract",
+      "credible_failure": "French preference selects regular French as default across actual HTML/API; limiting excludes English/Dutch forced choices, suppresses native controls, and preserves excluded sidecar files. Wrong forced/default-language projection can show unusable or private unintended subtitle choices.",
+      "production_owner": [
+        "apps/player/internal/server/playback_http.go:playbackSubtitles/playbackSubtitleChoices/defaultTextSubtitle/selectDefaultTextSubtitle",
+        "apps/player/internal/server/player_subtitles.go:sidecarSubtitleLanguage/sameSubtitleLanguage",
+        "apps/player/internal/server/settings_subtitles.go:subtitleLanguage/pickerLimited",
+        "apps/player/internal/server/player.go:buildPlayerData",
+        "apps/player/internal/server/api_product.go:applyPlaybackSources",
+        "apps/player/internal/server/settings_actions.go:saveSubtitleLanguage/saveSubtitlePicker"
+      ],
+      "non_test_callers": [
+        "Actual watch template and versioned playback API project language/default/limited choice through app-owned functions; local scanned sidecars and shared embedded facts feed same choice owner."
+      ],
+      "remaining_proof": [
+        "Retain exact app handler/selector/argument boundary; canonical shared subtitle parsing/extraction tests cannot prove this app callback/route/default selection."
+      ],
+      "coverage_limit": "Genuine test-instance.spec.ts toggles default English/Spanish on one playable item; no French regular+French forced+Dutch forced matrix, API projection/source index or filesystem preservation stat. UI routed fixtures supply track HTML rather than exercising these app selections.",
       "history": [
         "08d1146b01b1067c8563bc231c6a64795ab81883 Hide native subtitle choices when picker is limited",
         "3c13e03c87e1fdc9394dd8624cda2bba8c41f886 Split subtitle picker regression checks for lint",
         "582f359aa4f00a46bebc40d6c981fccf2f64d513 Limit Player subtitle menus to the preferred language"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; important retained contract.",
+      "risk": "Important language/content or strict mutation invariant current genuine E2E misses.",
+      "validation_command": "Root full Player Go suite and genuine test-instance preferred-language subtitle journey; no child execution.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Complete assigned test/helper table, tested selection/settings/extraction and mediaProbe dependency functions, actual web/API/Jellyfin caller, file history and genuine-versus-routed browser scenarios read.",
+      "test_limit": "Dummy media; no decoded movie proof. Excluded sidecar preservation checks existence only, not bytes; target French forced presence not independently asserted after limiting."
     },
     {
       "name": "TestRetiredSubtitleRoutes",
@@ -31587,24 +31619,34 @@
       "sha256": "bc7f10cd5d8829e19f97bfcf29b4c7d752824bec6d2805a444845b810833b35f",
       "path": "apps/player/internal/server/subtitle_language_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Reintroducing retired fetch/provider routes violates local-only subtitle acquisition architecture and can restore outbound-provider mutation without any ordinary existing endpoint failing.",
+      "category": "app_owned_subtitle_selection_or_delivery_contract",
+      "credible_failure": "Reintroducing retired fetch/provider routes violates local-only subtitle acquisition architecture and can restore outbound-provider mutation without any ordinary existing endpoint failing.",
+      "production_owner": [
+        "apps/player/internal/server/server.go:route composition/registerFiles",
+        "apps/player/internal/server/files.go:current sidecar routes",
+        "apps/player/internal/server/api_product.go:current playback API"
+      ],
+      "non_test_callers": [
+        "Actual app ServeMux must404 legacy web fetch, legacy language lookup and versioned subtitles mutation routes."
+      ],
+      "remaining_proof": [
+        "Retain exact app handler/selector/argument boundary; canonical shared subtitle parsing/extraction tests cannot prove this app callback/route/default selection."
+      ],
+      "coverage_limit": "Genuine local subtitle success/UI journeys never call retired routes; shared current delivery tests do not enforce app negative route inventory.",
       "history": [
         "08d1146b01b1067c8563bc231c6a64795ab81883 Hide native subtitle choices when picker is limited",
         "3c13e03c87e1fdc9394dd8624cda2bba8c41f886 Split subtitle picker regression checks for lint",
         "582f359aa4f00a46bebc40d6c981fccf2f64d513 Limit Player subtitle menus to the preferred language"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; important retained contract.",
+      "risk": "Important language/content or strict mutation invariant current genuine E2E misses.",
+      "validation_command": "Root full Player Go suite and genuine test-instance preferred-language subtitle journey; no child execution.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Complete assigned test/helper table, tested selection/settings/extraction and mediaProbe dependency functions, actual web/API/Jellyfin caller, file history and genuine-versus-routed browser scenarios read.",
+      "test_limit": "Three specific retired route shapes, no proof of all possible obsolete routes or outbound network absence."
     },
     {
       "name": "TestSubtitlePickerRejectsInvalidValuesWithoutChangingSettings",
@@ -31613,24 +31655,36 @@
       "sha256": "e57a144e8c3e632ddd8db22dba01c1c38881f575f470a2395797f6c82af616e4",
       "path": "apps/player/internal/server/subtitle_language_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Missing/ambiguous/unknown/oversized web/API picker fields must reject without resetting saved limited=true; loosening input validation can silently broaden visible subtitle choices.",
+      "category": "app_owned_subtitle_selection_or_delivery_contract",
+      "credible_failure": "Missing/ambiguous/unknown/oversized web/API picker fields must reject without resetting saved limited=true; loosening input validation can silently broaden visible subtitle choices.",
+      "production_owner": [
+        "apps/player/internal/server/settings_actions.go:saveSubtitlePicker",
+        "apps/player/internal/server/settings_subtitles.go:setSubtitlePickerLimited/changeInstallationSettings",
+        "apps/player/internal/server/api_admin.go:PUT subtitle-picker pointer bool binding",
+        "packages/apihttp/save.go:Save",
+        "packages/httpguard/json.go:DecodeForm"
+      ],
+      "non_test_callers": [
+        "Actual settings webPOST/API PUT callbacks validate and persist one pointer-bool choice; settings GET exposes stored final choice."
+      ],
+      "remaining_proof": [
+        "Retain exact app handler/selector/argument boundary; canonical shared subtitle parsing/extraction tests cannot prove this app callback/route/default selection."
+      ],
+      "coverage_limit": "Genuine test-instance toggles valid on/off only; no duplicate/unknown/null/type/absent values or >1MiB JSON, response413 and preserved setting matrix.",
       "history": [
         "08d1146b01b1067c8563bc231c6a64795ab81883 Hide native subtitle choices when picker is limited",
         "3c13e03c87e1fdc9394dd8624cda2bba8c41f886 Split subtitle picker regression checks for lint",
         "582f359aa4f00a46bebc40d6c981fccf2f64d513 Limit Player subtitle menus to the preferred language"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; important retained contract.",
+      "risk": "Important language/content or strict mutation invariant current genuine E2E misses.",
+      "validation_command": "Root full Player Go suite and genuine test-instance preferred-language subtitle journey; no child execution.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Complete assigned test/helper table, tested selection/settings/extraction and mediaProbe dependency functions, actual web/API/Jellyfin caller, file history and genuine-versus-routed browser scenarios read.",
+      "test_limit": "Final stored value checked on same handler; no restart persistence proof for these rejected inputs."
     },
     {
       "name": "TestPreferredSubtitleLanguageRejectsInvalidValuesWithoutChangingSettings",
@@ -31639,24 +31693,32 @@
       "sha256": "4484a5874be8488bd602f88f69fb6aff557b8df4ec64e587012f82f5e5508439",
       "path": "apps/player/internal/server/subtitle_language_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Invalid blank/one-letter/unknown/long/nonalpha preferred language must return400 and preserve effective English; accepting invalid language can erase usable subtitle default.",
+      "category": "app_owned_subtitle_selection_or_delivery_contract",
+      "credible_failure": "Invalid blank/one-letter/unknown/long/nonalpha preferred language must return400 and preserve effective English; accepting invalid language can erase usable subtitle default.",
+      "production_owner": [
+        "apps/player/internal/server/settings_subtitles.go:canonicalSubtitleLanguage/setSubtitleLanguage/subtitleLanguage",
+        "apps/player/internal/server/settings_actions.go:saveSubtitleLanguage"
+      ],
+      "non_test_callers": [
+        "Actual webPOST settings language updates app persisted installation state and localized settings GET projects preference."
+      ],
+      "remaining_proof": [
+        "Retain exact app handler/selector/argument boundary; canonical shared subtitle parsing/extraction tests cannot prove this app callback/route/default selection."
+      ],
+      "coverage_limit": "Browser fills/toggles valid defaults and never invalid language values; isolated shared language parsing does not prove this app mutation preserves settings.",
       "history": [
         "08d1146b01b1067c8563bc231c6a64795ab81883 Hide native subtitle choices when picker is limited",
         "3c13e03c87e1fdc9394dd8624cda2bba8c41f886 Split subtitle picker regression checks for lint",
         "582f359aa4f00a46bebc40d6c981fccf2f64d513 Limit Player subtitle menus to the preferred language"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; important retained contract.",
+      "risk": "Important language/content or strict mutation invariant current genuine E2E misses.",
+      "validation_command": "Root full Player Go suite and genuine test-instance preferred-language subtitle journey; no child execution.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Complete assigned test/helper table, tested selection/settings/extraction and mediaProbe dependency functions, actual web/API/Jellyfin caller, file history and genuine-versus-routed browser scenarios read."
     },
     {
       "name": "TestAlwaysOnSubtitlesUseASeparateTextTrackWithoutVideoTranscoding",
@@ -31665,22 +31727,42 @@
       "sha256": "ade98d55c2021cc434b805fd27218bafbd72b5a00a8abba288a0a7d481bb0ce9",
       "path": "apps/player/internal/server/subtitle_preference_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Persisted subtitles=on must keep H264/AAC MP4 direct, select text stream3 rather than default image stream2, and extract separate VTT; regression into burn-in/HLS consumes video transcoding and changes startup.",
+      "category": "app_owned_subtitle_selection_or_delivery_contract",
+      "credible_failure": "Persisted subtitles=on must keep H264/AAC MP4 direct, select text stream3 rather than default image stream2, and extract separate VTT; regression into burn-in/HLS consumes video transcoding and changes startup.",
+      "production_owner": [
+        "apps/player/internal/server/playback_http.go:playbackSubtitles/playbackSubtitleChoices/defaultTextSubtitle/selectDefaultTextSubtitle",
+        "apps/player/internal/server/player_subtitles.go:sidecarSubtitleLanguage/sameSubtitleLanguage",
+        "apps/player/internal/server/settings_subtitles.go:subtitleLanguage/pickerLimited",
+        "apps/player/internal/server/player.go:buildPlayerData",
+        "apps/player/internal/server/api_product.go:applyPlaybackSources",
+        "apps/player/internal/server/embedded_subtitles.go:serveEmbedded visibility adapter",
+        "apps/player/internal/server/embedded_subtitle_extract.go:extractEmbedded/embeddedOptions",
+        "apps/player/internal/server/embedded_subtitle_write.go:writeEmbedded",
+        "apps/player/internal/server/jellyfin_delivery.go:deliveryModule app callbacks",
+        "packages/mediaprobe/facts.go:subtitleFactsFor",
+        "packages/mediaprobe/embedded.go:Embedded/EmbeddedHandler/extractEmbeddedSubtitle",
+        "packages/mediaprobe/embedded_concurrency.go:embeddedData/extractAndCacheEmbedded",
+        "apps/player/internal/server/settings_playback.go:setPlayback"
+      ],
+      "non_test_callers": [
+        "Actual persisted settings\u2192fresh app instance\u2192HTML/API source planning\u2192embedded extraction path."
+      ],
+      "remaining_proof": [
+        "Retain exact app handler/selector/argument boundary; canonical shared subtitle parsing/extraction tests cannot prove this app callback/route/default selection."
+      ],
+      "coverage_limit": "Normal real-browser sidecar/default subtitle choice lacks competing embedded PGS image stream and restart-reloaded direct-plan/extraction assertion. Routed native controls fixture supplies HTML and cannot validate server transcode plan.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; important retained contract.",
+      "risk": "Important language/content or strict mutation invariant current genuine E2E misses.",
+      "validation_command": "Root full Player Go suite and genuine test-instance preferred-language subtitle journey; no child execution.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Complete assigned test/helper table, tested selection/settings/extraction and mediaProbe dependency functions, actual web/API/Jellyfin caller, file history and genuine-versus-routed browser scenarios read.",
+      "test_limit": "Injected tools/dummy media; no real decoding. No data-hls and direct media source assertion guard plan, while separate extraction map confirms script requested text stream."
     },
     {
       "name": "TestSubtitlePreparationSelectsPreferredTextAndReusesCache",
@@ -31689,22 +31771,37 @@
       "sha256": "862b30c70b262127f64686014e76e28d7e4e56f79ea37cfc07747307ed8f57b8",
       "path": "apps/player/internal/server/subtitle_preparation_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Background selector must extract preferred French source3, fallback English2, skip external preferred sidecar/image-only/audio, and reuse cache rather than repeatedly running FFmpeg. Wrong stream or repeat work delays foreground media and loses preferred captions.",
+      "category": "app_owned_subtitle_selection_or_delivery_contract",
+      "credible_failure": "Background selector must extract preferred French source3, fallback English2, skip external preferred sidecar/image-only/audio, and reuse cache rather than repeatedly running FFmpeg. Wrong stream or repeat work delays foreground media and loses preferred captions.",
+      "production_owner": [
+        "apps/player/internal/server/subtitle_preparation.go:preparePreferredSubtitle",
+        "apps/player/internal/server/settings_subtitles.go:canonicalSubtitleLanguage",
+        "apps/player/internal/server/playback_http.go:defaultTextSubtitle/playbackSubtitles",
+        "apps/player/internal/server/embedded_subtitle_extract.go:extractEmbedded",
+        "apps/player/internal/server/probe.go:newMediaProbe",
+        "packages/mediaprobe/cache.go:Facts/inspect",
+        "packages/mediaprobe/embedded.go:Embedded",
+        "packages/mediaprobe/embedded_concurrency.go:embeddedData/extractAndCacheEmbedded"
+      ],
+      "non_test_callers": [
+        "scheduleSubtitles\u2192runSubtitlePreparation\u2192prepareSubtitleSnapshot\u2192prepareIdleSubtitle\u2192preparePreferredSubtitle runs app background selector; interactive serveEmbedded shares secure source-version cache."
+      ],
+      "remaining_proof": [
+        "Retain exact app handler/selector/argument boundary; canonical shared subtitle parsing/extraction tests cannot prove this app callback/route/default selection."
+      ],
+      "coverage_limit": "Genuine subtitle choice does not inspect background selected map, skip unnecessary extraction or count two identical preparations through actual configured process/cache. Shared embedded cache keeper omits app language/sidecar selector.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; important retained contract.",
+      "risk": "Important language/content or strict mutation invariant current genuine E2E misses.",
+      "validation_command": "Root full Player Go suite and genuine test-instance preferred-language subtitle journey; no child execution.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Complete assigned test/helper table, tested selection/settings/extraction and mediaProbe dependency functions, actual web/API/Jellyfin caller, file history and genuine-versus-routed browser scenarios read.",
+      "test_limit": "Fake ffprobe/ffmpeg execute actual commands; two sequential calls and map-line count prove reuse, no concurrency/preemption claim."
     },
     {
       "name": "TestSubtitlePreparationRejectsInvalidLanguageBeforeWork",
@@ -31713,22 +31810,31 @@
       "sha256": "83ca422cad73b66f5b554ee606496ee79088d8bec46a895a7b5a775746ac1d18",
       "path": "apps/player/internal/server/subtitle_preparation_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Invalid preference must reject before any probe/extract dereference; nil probe provides a direct ordering sentinel so garbage language cannot launch background work.",
+      "category": "app_owned_subtitle_selection_or_delivery_contract",
+      "credible_failure": "Invalid preference must reject before any probe/extract dereference; nil probe provides a direct ordering sentinel so garbage language cannot launch background work.",
+      "production_owner": [
+        "apps/player/internal/server/subtitle_preparation.go:preparePreferredSubtitle",
+        "apps/player/internal/server/settings_subtitles.go:canonicalSubtitleLanguage"
+      ],
+      "non_test_callers": [
+        "Background prepared preferred language enters this selector before Facts/ffmpeg work."
+      ],
+      "remaining_proof": [
+        "Retain exact app handler/selector/argument boundary; canonical shared subtitle parsing/extraction tests cannot prove this app callback/route/default selection."
+      ],
+      "coverage_limit": "Browser valid persisted settings never invokes invalid background language on nil dependency; web validation does not prove selector ordering at this internal work entry.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; important retained contract.",
+      "risk": "Important language/content or strict mutation invariant current genuine E2E misses.",
+      "validation_command": "Root full Player Go suite and genuine test-instance preferred-language subtitle journey; no child execution.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Complete assigned test/helper table, tested selection/settings/extraction and mediaProbe dependency functions, actual web/API/Jellyfin caller, file history and genuine-versus-routed browser scenarios read.",
+      "test_limit": "No actual subprocess spawned; nil probe distinguishes early validation from work access for four values."
     },
     {
       "name": "TestViewerCanChooseMultipleSubtitleTracks",
@@ -31737,22 +31843,37 @@
       "sha256": "538c0459cd6aa18d4098e8d90405edff0cd5bc288b2c2338a2bdf4b100fdc1bd",
       "path": "apps/player/internal/server/subtitle_tracks_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual scanned EnglishSRT/SpanishVTT sidecars must render two labeled tracks and route Spanish1 payload Hola; a dropped/misindexed sidecar delivery can leave track markup present while selected text fails.",
+      "category": "app_owned_subtitle_selection_or_delivery_contract",
+      "credible_failure": "Actual scanned EnglishSRT/SpanishVTT sidecars must render two labeled tracks and route Spanish1 payload Hola; a dropped/misindexed sidecar delivery can leave track markup present while selected text fails.",
+      "production_owner": [
+        "apps/player/internal/server/playback_http.go:playbackSubtitles/playbackSubtitleChoices/defaultTextSubtitle/selectDefaultTextSubtitle",
+        "apps/player/internal/server/player_subtitles.go:sidecarSubtitleLanguage/sameSubtitleLanguage",
+        "apps/player/internal/server/settings_subtitles.go:subtitleLanguage/pickerLimited",
+        "apps/player/internal/server/player.go:buildPlayerData",
+        "apps/player/internal/server/api_product.go:applyPlaybackSources",
+        "apps/player/internal/server/files.go:sidecar subtitle handler/writeSubtitle",
+        "packages/playback/subtitle_delivery.go:ServeSubtitle"
+      ],
+      "non_test_callers": [
+        "Actual watch template and versioned playback API project language/default/limited choice through app-owned functions; local scanned sidecars and shared embedded facts feed same choice owner.",
+        "Actual /subtitle/{id}/{track} indexes scanned sidecar list and serves/converts its payload."
+      ],
+      "remaining_proof": [
+        "Retain exact app handler/selector/argument boundary; canonical shared subtitle parsing/extraction tests cannot prove this app callback/route/default selection."
+      ],
+      "coverage_limit": "Genuine default English/Spanish picker toggling asserts track presence; it does not select/read Spanish VTT payload or pin correct language display labels. Routed subtitle-loading fixtures supply captions independently of scanned file route.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; important retained contract.",
+      "risk": "Important language/content or strict mutation invariant current genuine E2E misses.",
+      "validation_command": "Root full Player Go suite and genuine test-instance preferred-language subtitle journey; no child execution.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "review_provenance": "Complete assigned test/helper table, tested selection/settings/extraction and mediaProbe dependency functions, actual web/API/Jellyfin caller, file history and genuine-versus-routed browser scenarios read.",
+      "test_limit": "Dummy media and HTTP fixture; exact track count/labels/payload but no actual browser caption rendering."
     },
     {
       "name": "TestSupporterRejectsFreshV2CertificateWithoutChangingState",
@@ -33836,15 +33957,9 @@
     "TestConfigurationTransactionRejectsSemanticallyInvalidRecoveryWithoutSideEffects"
   ],
   "review_summary": {
-    "semantic_review_complete": 199,
-    "candidate_evidence_complete": 30,
-    "inventory_only_retained_pending_semantic_review": 604,
-    "test_and_boundary_review_pending_full_owner": 4,
-    "status_counts": {
-      "semantic_review_complete": 294,
-      "candidate_evidence_complete": 33,
-      "inventory_only_retained_pending_semantic_review": 506,
-      "test_and_boundary_review_pending_full_owner": 4
-    }
+    "semantic_review_complete": 303,
+    "candidate_evidence_complete": 33,
+    "inventory_only_retained_pending_semantic_review": 497,
+    "test_and_boundary_review_pending_full_owner": 4
   }
 }
