@@ -53,7 +53,9 @@ func (service *Service) write(writer io.Writer, dataDir, version string, include
 		return err
 	}
 	names := files
+	maximum := maxArchiveSize
 	if includeSecrets {
+		maximum -= encryptedOverhead
 		names = append(append([]string(nil), files...), secretFiles...)
 	}
 	contents := make(map[string][]byte, len(names))
@@ -76,7 +78,7 @@ func (service *Service) write(writer io.Writer, dataDir, version string, include
 	if len(written) == 0 {
 		return errors.New("no configuration state to back up")
 	}
-	return writeArchive(writer, version, contents, written)
+	return writeArchiveLimit(writer, version, contents, written, maximum)
 }
 
 func (service *Service) readDocuments(dataDir string) (map[string][]byte, error) {
@@ -102,7 +104,16 @@ func (service *Service) readDocuments(dataDir string) (map[string][]byte, error)
 }
 
 func writeArchive(writer io.Writer, version string, contents map[string][]byte, written []string) error {
-	gzipWriter := gzip.NewWriter(writer)
+	return writeArchiveLimit(writer, version, contents, written, maxArchiveSize)
+}
+
+func writeArchiveLimit(writer io.Writer, version string, contents map[string][]byte, written []string, maximum int) error {
+	manifestData := archiveManifest(version, written)
+	if err := validateArchiveSize(contents, written, manifestData); err != nil {
+		return err
+	}
+	output := &archiveBuffer{maximum: maximum}
+	gzipWriter := gzip.NewWriter(output)
 	tarWriter := tar.NewWriter(gzipWriter)
 	for _, name := range written {
 		data := contents[name]
@@ -113,12 +124,23 @@ func writeArchive(writer io.Writer, version string, contents map[string][]byte, 
 			return err
 		}
 	}
-	manifestErr := writeArchiveManifest(tarWriter, version, written)
-	return errors.Join(manifestErr, tarWriter.Close(), gzipWriter.Close())
+	manifestErr := writeManifestData(tarWriter, manifestData)
+	if err := errors.Join(manifestErr, tarWriter.Close(), gzipWriter.Close()); err != nil {
+		return err
+	}
+	return publishArchive(writer, output)
 }
 
 func writeArchiveManifest(writer *tar.Writer, version string, written []string) error {
+	return writeManifestData(writer, archiveManifest(version, written))
+}
+
+func archiveManifest(version string, written []string) []byte {
 	data, _ := json.Marshal(manifest{1, version, 1, time.Now().UTC().Format(time.RFC3339), written, false})
+	return data
+}
+
+func writeManifestData(writer *tar.Writer, data []byte) error {
 	if err := writer.WriteHeader(&tar.Header{Name: manifestName, Mode: 0o600, Size: int64(len(data))}); err != nil {
 		return err
 	}

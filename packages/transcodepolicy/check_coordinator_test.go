@@ -37,7 +37,7 @@ func TestCheckHandlerRunsAndRedirects(t *testing.T) {
 		called = true
 		return CheckResult{}
 	})
-	request := httptest.NewRequest(http.MethodPost, "/settings/transcoder/test", nil)
+	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/settings/transcoder/test", nil)
 	response := httptest.NewRecorder()
 	handler.ServeHTTP(response, request)
 	if !called || response.Code != http.StatusSeeOther || response.Header().Get("Location") != "/settings#transcoder" {

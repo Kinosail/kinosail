@@ -8,18 +8,17 @@ import (
 )
 
 func MapWebVTT(data []byte, timeline Timeline) []byte { //nolint:cyclop,gocognit // Each independent cue is parsed, mapped, or removed in one pass.
-	blocks := strings.Split(strings.ReplaceAll(string(data), "\r\n", "\n"), "\n\n")
+	blocks := strings.Split(normalizeSubtitleNewlines(data), "\n\n")
 	result := make([]string, 0, len(blocks))
 	for _, block := range blocks {
 		lines, mapped := strings.Split(block, "\n"), false
 		for index, line := range lines {
-			left, right, found := strings.Cut(line, " --> ")
-			if !found {
+			fields := subtitleTimingFields(line)
+			if fields == nil {
 				continue
 			}
-			end, settings, _ := strings.Cut(right, " ")
-			startSeconds, startErr := ParseVTTTime(left)
-			endSeconds, endErr := ParseVTTTime(end)
+			startSeconds, startErr := ParseVTTTime(fields[0])
+			endSeconds, endErr := ParseVTTTime(fields[2])
 			if startErr != nil || endErr != nil {
 				break
 			}
@@ -29,8 +28,8 @@ func MapWebVTT(data []byte, timeline Timeline) []byte { //nolint:cyclop,gocognit
 				break
 			}
 			lines[index] = FormatVTTTime(startSeconds) + " --> " + FormatVTTTime(endSeconds)
-			if settings != "" {
-				lines[index] += " " + settings
+			if len(fields) > 3 {
+				lines[index] += " " + strings.Join(fields[3:], " ")
 			}
 			mapped = true
 			break
@@ -40,6 +39,18 @@ func MapWebVTT(data []byte, timeline Timeline) []byte { //nolint:cyclop,gocognit
 		}
 	}
 	return []byte(strings.Join(result, "\n\n"))
+}
+
+func normalizeSubtitleNewlines(data []byte) string {
+	return strings.ReplaceAll(strings.ReplaceAll(string(data), "\r\n", "\n"), "\r", "\n")
+}
+
+func subtitleTimingFields(line string) []string {
+	fields := strings.FieldsFunc(line, func(character rune) bool { return character == ' ' || character == '\t' })
+	if len(fields) < 3 || fields[1] != "-->" {
+		return nil
+	}
+	return fields
 }
 
 func ParseVTTTime(value string) (float64, error) {

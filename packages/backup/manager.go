@@ -94,46 +94,6 @@ func (manager *Manager) retryDelay() time.Duration {
 	return min(manager.interval, time.Minute)
 }
 
-// Write waits for background capacity and writes one backup.
-func (manager *Manager) Write(ctx context.Context) error {
-	if err := manager.validate(); err != nil {
-		manager.recordError(err)
-		return err
-	}
-	release, err := manager.reserve(ctx)
-	if err != nil {
-		return err
-	}
-	defer release()
-	return manager.WriteNow()
-}
-
-func (manager *Manager) reserve(ctx context.Context) (func(), error) {
-	if manager.acquire == nil {
-		return func() {}, nil
-	}
-	return manager.acquire(ctx)
-}
-
-// WriteNow creates, verifies, and retains one encrypted backup immediately.
-func (manager *Manager) WriteNow() error {
-	if err := manager.validate(); err != nil {
-		manager.recordError(err)
-		return err
-	}
-	manager.mu.Lock()
-	defer manager.mu.Unlock()
-	err := manager.writeLocked()
-	if err == nil {
-		manager.lastSuccess = time.Now().UTC()
-		err = manager.verifyLocked()
-	}
-	if err != nil {
-		manager.lastError = err.Error()
-	}
-	return err
-}
-
 func (manager *Manager) recordError(err error) {
 	manager.mu.Lock()
 	manager.lastError = err.Error()
@@ -155,6 +115,12 @@ func (manager *Manager) writeLocked() error { //nolint:cyclop,gocognit // Archiv
 	if temporary != nil {
 		if err == nil {
 			err = temporary.Sync()
+		}
+		if err == nil {
+			_, err = temporary.Seek(0, io.SeekStart)
+		}
+		if err == nil {
+			err = manager.verifyAuto(temporary, manager.key)
 		}
 		if closeErr := temporary.Close(); err == nil {
 			err = closeErr

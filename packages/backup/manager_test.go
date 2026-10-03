@@ -156,3 +156,66 @@ func testManager(dataDir, directory string) *Manager {
 		},
 	)
 }
+
+// A failed candidate must never occupy a retention slot or claim success.
+func TestManagerVerifiesCandidateBeforePublicationAndRetention(t *testing.T) {
+	manager := testManager(t.TempDir(), t.TempDir())
+	manager.retention = 1
+	if err := manager.WriteNow(); err != nil {
+		t.Fatal(err)
+	}
+	before := manager.Status()
+	previousSuccess, previousVerify := manager.lastSuccess, manager.lastVerify
+	failure := errors.New("candidate verification failed")
+	manager.verifyAuto = func(reader io.Reader, _ string) error {
+		assertPrivateCandidate(t, manager.directory, reader)
+		return failure
+	}
+	for range 2 {
+		if err := manager.WriteNow(); !errors.Is(err, failure) {
+			t.Fatalf("verification error = %v", err)
+		}
+		assertFailedCandidateState(t, manager, before, previousSuccess, previousVerify, failure)
+	}
+	manager.verifyAuto = testManager("", "").verifyAuto
+	if err := manager.WriteNow(); err != nil {
+		t.Fatal(err)
+	}
+	status := manager.Status()
+	if status.Latest == before.Latest || status.LastError != "" || !manager.lastSuccess.After(previousSuccess) || !manager.lastVerify.After(previousVerify) {
+		t.Fatalf("recovery did not advance: %#v", status)
+	}
+}
+
+func assertPrivateCandidate(t *testing.T, directory string, reader io.Reader) {
+	t.Helper()
+	entries, err := os.ReadDir(directory)
+	if err != nil {
+		t.Fatal(err)
+	}
+	published := 0
+	for _, entry := range entries {
+		if strings.HasPrefix(entry.Name(), "kinosail-") {
+			published++
+		}
+	}
+	if published != 1 {
+		t.Errorf("candidate published before verification: %d", published)
+	}
+	data, err := io.ReadAll(reader)
+	if err != nil || string(data) != "encrypted" {
+		t.Errorf("candidate not rewound: %q, %v", data, err)
+	}
+}
+
+func assertFailedCandidateState(t *testing.T, manager *Manager, before Status, previousSuccess, previousVerify time.Time, failure error) {
+	t.Helper()
+	status := manager.Status()
+	if status.Latest != before.Latest || !manager.lastSuccess.Equal(previousSuccess) || !manager.lastVerify.Equal(previousVerify) || status.LastError != failure.Error() {
+		t.Fatalf("failed candidate changed recovery status: %#v", status)
+	}
+	entries, err := os.ReadDir(manager.directory)
+	if err != nil || len(entries) != 1 {
+		t.Fatalf("failed candidate remains: %v, %v", entries, err)
+	}
+}
