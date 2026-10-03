@@ -141,7 +141,7 @@ else
 fi
 grep --quiet h264_v4l2m2m <<<"$encoders"
 grep --quiet hevc_v4l2m2m <<<"$encoders"
-"$engine" "${run[@]}" --rm --entrypoint sh "$image" -c 'ffmpeg -hide_banner -loglevel error -f lavfi -i color=c=blue:s=1280x720:d=12 -c:v ffv1 -f matroska /tmp/arrival.mkv && cat /tmp/arrival.mkv' >"$media_dir/Arrival.mkv"
+"$engine" "${run[@]}" --rm --entrypoint sh "$image" -c 'ffmpeg -hide_banner -loglevel error -f lavfi -i color=c=blue:s=1280x720:d=12 -c:v ffv1 /tmp/arrival.mkv && cat /tmp/arrival.mkv' >"$media_dir/Arrival.mkv"
 "$engine" "${run[@]}" --rm --entrypoint ffmpeg "$image" -hide_banner -loglevel error -f lavfi -i testsrc2=size=320x180:rate=24:duration=2 -c:v mpeg2video -f mpegts - >"$media_dir/Transport.ts"
 ln "$media_dir/Arrival.mkv" "$media_dir/Beta.mkv"
 ln "$media_dir/Arrival.mkv" "$media_dir/Gamma.mkv"
