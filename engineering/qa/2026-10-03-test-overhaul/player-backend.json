@@ -8252,8 +8252,8 @@
       "end_line": 83,
       "sha256": "d2028198103486a9d3cd8a3613195713872860493fa290db2bfc8f60cb48c30f",
       "path": "apps/player/internal/server/api_letter_test.go",
-      "decision": "C",
-      "review_status": "semantic_review_complete",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
       "reason": "HTML string probe locks exact hook, HTMX swap, input hint and count markup without executing navigation.",
       "category": "redundant-probe",
       "credible_failure": "HTML string probe locks exact hook, HTMX swap, input hint and count markup without executing navigation.",
@@ -8275,7 +8275,7 @@
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
+      "production_or_support_deletion_unlocked": "Unused imports only; canonical/actual boundary support preserved.",
       "risk": "Only the identified low-signal probe would be removed; remaining proof and gaps are explicit.",
       "validation_command": "cd apps/player && make test; make test-instance-check",
       "baseline_result": "pass",
@@ -8312,9 +8312,9 @@
         "Test": "TestLetterJumpWebSupportsProgressiveMobileNavigation",
         "Elapsed": 0.02
       },
-      "review_provenance": "Complete-body read-only evidence by /root/tooling; incremental packet SHA256 348737054bfec69f197968645cd8bd41c6307cb97dd9a76bddbbda86d1b210df; original declaration SHA verified. Source unchanged by this reviewer.",
+      "review_provenance": "Complete-body read-only evidence by /root/tooling; incremental packet SHA256 348737054bfec69f197968645cd8bd41c6307cb97dd9a76bddbbda86d1b210df; original declaration SHA verified. Source unchanged by this reviewer. Independent root review fully read six source declarations, named shared/actual keepers and E2E limits; requested approved source batch2026-10-03. Numeric/accent title, actual public-session route, disk failure state, three-edition grants remain.",
       "proposed_decision": "D",
-      "implementation_status": "Source held for independent review of concrete keeper/coverage; not removed."
+      "implementation_status": "Removed after tooling semantic audit and root independent complete-body/keeper review; child re-read exact declaration and surviving adjacent guards then baseline SHA verified."
     },
     {
       "name": "TestSingleTitleBucketDoesNotRenderAJumpControl",
@@ -8322,8 +8322,8 @@
       "end_line": 95,
       "sha256": "1376245ddf9ad80b1c6c8ce07bf8b224ed0e62e75a78c2728e7db5c0d99bada3",
       "path": "apps/player/internal/server/api_letter_test.go",
-      "decision": "C",
-      "review_status": "semantic_review_complete",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
       "reason": "Single-item HTML probe only forbids a convenience-navigation hook; it does not verify a functional failure.",
       "category": "redundant-probe",
       "credible_failure": "Single-item HTML probe only forbids a convenience-navigation hook; it does not verify a functional failure.",
@@ -8344,7 +8344,7 @@
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
+      "production_or_support_deletion_unlocked": "Unused imports only; canonical/actual boundary support preserved.",
       "risk": "Only the identified low-signal probe would be removed; remaining proof and gaps are explicit.",
       "validation_command": "cd apps/player && make test; make test-instance-check",
       "baseline_result": "pass",
@@ -8380,9 +8380,9 @@
         "Test": "TestSingleTitleBucketDoesNotRenderAJumpControl",
         "Elapsed": 0.02
       },
-      "review_provenance": "Complete-body read-only evidence by /root/tooling; incremental packet SHA256 348737054bfec69f197968645cd8bd41c6307cb97dd9a76bddbbda86d1b210df; original declaration SHA verified. Source unchanged by this reviewer.",
+      "review_provenance": "Complete-body read-only evidence by /root/tooling; incremental packet SHA256 348737054bfec69f197968645cd8bd41c6307cb97dd9a76bddbbda86d1b210df; original declaration SHA verified. Source unchanged by this reviewer. Independent root review fully read six source declarations, named shared/actual keepers and E2E limits; requested approved source batch2026-10-03. Numeric/accent title, actual public-session route, disk failure state, three-edition grants remain.",
       "proposed_decision": "D",
-      "implementation_status": "Source held for independent review of concrete keeper/coverage; not removed."
+      "implementation_status": "Removed after tooling semantic audit and root independent complete-body/keeper review; child re-read exact declaration and surviving adjacent guards then baseline SHA verified."
     },
     {
       "name": "TestOpenAPIDocumentsEveryVersionedRouteExactlyOnce",
@@ -12831,8 +12831,8 @@
       "end_line": 45,
       "sha256": "9d77c8a6a0fa4e29bf5776e79bc88ff2fa0977a199b8cac4ca550630d656966c",
       "path": "apps/player/internal/server/beta_boundaries_internal_test.go",
-      "decision": "C",
-      "review_status": "semantic_review_complete",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
       "reason": "Only checks three cookie flags after direct wrapper call and literal CloneAll ID; no channel/lifetime/persistence or mutation-isolation assertion.",
       "category": "redundant-probe",
       "credible_failure": "Only checks three cookie flags after direct wrapper call and literal CloneAll ID; no channel/lifetime/persistence or mutation-isolation assertion.",
@@ -12850,7 +12850,7 @@
         "0c5276ff266da231d1eb32bedc967e360b398d82 Resume public access without restarting Server",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
+      "production_or_support_deletion_unlocked": "Unused imports only; canonical/actual boundary support preserved.",
       "risk": "Only the identified low-signal probe would be removed; remaining proof and gaps are explicit.",
       "validation_command": "cd apps/player && make test; make test-instance-check",
       "baseline_result": "pass",
@@ -12882,9 +12882,9 @@
         "Test": "TestStrongPublicSessionAndPasskeyViewAreIsolated",
         "Elapsed": 0.07
       },
-      "review_provenance": "Complete-body read-only evidence by /root/tooling; incremental packet SHA256 348737054bfec69f197968645cd8bd41c6307cb97dd9a76bddbbda86d1b210df; original declaration SHA verified. Source unchanged by this reviewer.",
+      "review_provenance": "Complete-body read-only evidence by /root/tooling; incremental packet SHA256 348737054bfec69f197968645cd8bd41c6307cb97dd9a76bddbbda86d1b210df; original declaration SHA verified. Source unchanged by this reviewer. Independent root review fully read six source declarations, named shared/actual keepers and E2E limits; requested approved source batch2026-10-03. Numeric/accent title, actual public-session route, disk failure state, three-edition grants remain.",
       "proposed_decision": "D",
-      "implementation_status": "Source held for independent review of concrete keeper/coverage; not removed."
+      "implementation_status": "Removed after tooling semantic audit and root independent complete-body/keeper review; child re-read exact declaration and surviving adjacent guards then baseline SHA verified."
     },
     {
       "name": "TestRemoteAccessWebKillAndReset",
@@ -12892,8 +12892,8 @@
       "end_line": 72,
       "sha256": "a11c48bc150993e70ab656127997a2d856ec1d58c09459255fd791515cad11d4",
       "path": "apps/player/internal/server/beta_boundaries_internal_test.go",
-      "decision": "C",
-      "review_status": "semantic_review_complete",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
       "reason": "Calls shared KillHTTP/ResetKillHTTP directly with an unregistered request path and empty public authorization stores; only303+killed/starting state are checked.",
       "category": "redundant-probe",
       "credible_failure": "Calls shared KillHTTP/ResetKillHTTP directly with an unregistered request path and empty public authorization stores; only303+killed/starting state are checked.",
@@ -12911,7 +12911,7 @@
         "0c5276ff266da231d1eb32bedc967e360b398d82 Resume public access without restarting Server",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
+      "production_or_support_deletion_unlocked": "Unused imports only; canonical/actual boundary support preserved.",
       "risk": "Only the identified low-signal probe would be removed; remaining proof and gaps are explicit.",
       "validation_command": "cd apps/player && make test; make test-instance-check",
       "baseline_result": "pass",
@@ -12944,9 +12944,9 @@
         "Test": "TestRemoteAccessWebKillAndReset",
         "Elapsed": 0.08
       },
-      "review_provenance": "Complete-body read-only evidence by /root/tooling; incremental packet SHA256 348737054bfec69f197968645cd8bd41c6307cb97dd9a76bddbbda86d1b210df; original declaration SHA verified. Source unchanged by this reviewer.",
+      "review_provenance": "Complete-body read-only evidence by /root/tooling; incremental packet SHA256 348737054bfec69f197968645cd8bd41c6307cb97dd9a76bddbbda86d1b210df; original declaration SHA verified. Source unchanged by this reviewer. Independent root review fully read six source declarations, named shared/actual keepers and E2E limits; requested approved source batch2026-10-03. Numeric/accent title, actual public-session route, disk failure state, three-edition grants remain.",
       "proposed_decision": "D",
-      "implementation_status": "Source held for independent review of concrete keeper/coverage; not removed."
+      "implementation_status": "Removed after tooling semantic audit and root independent complete-body/keeper review; child re-read exact declaration and surviving adjacent guards then baseline SHA verified."
     },
     {
       "name": "TestDLNADiscoveryBoundaries",
@@ -19945,8 +19945,8 @@
       "end_line": 75,
       "sha256": "67c692932882c24062c323940395f01fa7ced14f2c1eb33fed83d0969aa9eae4",
       "path": "apps/player/internal/server/lists_state_internal_test.go",
-      "decision": "C",
-      "review_status": "semantic_review_complete",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
       "reason": "Direct shared validation replay duplicates empty list key, duplicate order and negative progress checks without an app binding.",
       "category": "redundant-probe",
       "credible_failure": "Direct shared validation replay duplicates empty list key, duplicate order and negative progress checks without an app binding.",
@@ -19970,7 +19970,7 @@
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
+      "production_or_support_deletion_unlocked": "Unused imports only; canonical/actual boundary support preserved.",
       "risk": "Only the identified low-signal probe would be removed; remaining proof and gaps are explicit.",
       "validation_command": "cd apps/player && make test; make test-instance-check",
       "baseline_result": "pass",
@@ -20009,9 +20009,9 @@
         "Test": "TestPersistedListAndProgressValidationIsBounded",
         "Elapsed": 0
       },
-      "review_provenance": "Complete-body read-only evidence by /root/tooling; incremental packet SHA256 348737054bfec69f197968645cd8bd41c6307cb97dd9a76bddbbda86d1b210df; original declaration SHA verified. Source unchanged by this reviewer.",
+      "review_provenance": "Complete-body read-only evidence by /root/tooling; incremental packet SHA256 348737054bfec69f197968645cd8bd41c6307cb97dd9a76bddbbda86d1b210df; original declaration SHA verified. Source unchanged by this reviewer. Independent root review fully read six source declarations, named shared/actual keepers and E2E limits; requested approved source batch2026-10-03. Numeric/accent title, actual public-session route, disk failure state, three-edition grants remain.",
       "proposed_decision": "D",
-      "implementation_status": "Source held for independent review of concrete keeper/coverage; not removed."
+      "implementation_status": "Removed after tooling semantic audit and root independent complete-body/keeper review; child re-read exact declaration and surviving adjacent guards then baseline SHA verified."
     },
     {
       "name": "TestProgressMutationDoesNotChangeMemoryWhenPersistenceFails",
@@ -42758,8 +42758,8 @@
       "end_line": 69,
       "sha256": "698c6cdc8a07bb83e3ea10ea0fa130d44f9e5695e60b27d0e2e9e312a7d4afce",
       "path": "apps/player/internal/server/supporter_editions_test.go",
-      "decision": "C",
-      "review_status": "semantic_review_complete",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
       "reason": "Opt-in manual preview function adds no product regression assertion beyond already-retained three-edition setup, then blocks serving on a fixed port.",
       "category": "redundant-probe",
       "credible_failure": "Opt-in manual preview function adds no product regression assertion beyond already-retained three-edition setup, then blocks serving on a fixed port.",
@@ -42793,7 +42793,7 @@
       "history": [
         "03c7b4ad5e50e79d47fbeffbe4003aec2e6ad208 Prepare Player Supporter for production checkout (#65)"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
+      "production_or_support_deletion_unlocked": "Unused imports only; canonical/actual boundary support preserved.",
       "risk": "Only the identified low-signal probe would be removed; remaining proof and gaps are explicit.",
       "validation_command": "cd apps/player && make test; make test-instance-check",
       "baseline_result": "skip",
@@ -42842,9 +42842,9 @@
         "Test": "TestPreviewThreeEditionSupporter",
         "Elapsed": 0
       },
-      "review_provenance": "Complete-body read-only evidence by /root/tooling; incremental packet SHA256 348737054bfec69f197968645cd8bd41c6307cb97dd9a76bddbbda86d1b210df; original declaration SHA verified. Source unchanged by this reviewer.",
+      "review_provenance": "Complete-body read-only evidence by /root/tooling; incremental packet SHA256 348737054bfec69f197968645cd8bd41c6307cb97dd9a76bddbbda86d1b210df; original declaration SHA verified. Source unchanged by this reviewer. Independent root review fully read six source declarations, named shared/actual keepers and E2E limits; requested approved source batch2026-10-03. Numeric/accent title, actual public-session route, disk failure state, three-edition grants remain.",
       "proposed_decision": "D",
-      "implementation_status": "Source held for independent review of concrete keeper/coverage; not removed."
+      "implementation_status": "Removed after tooling semantic audit and root independent complete-body/keeper review; child re-read exact declaration and surviving adjacent guards then baseline SHA verified."
     },
     {
       "name": "TestSupporterStoresIndependentFirstClassBadges",
@@ -45439,6 +45439,7 @@
     "TestJellyfinVODPlaylistRejectsInvalidSegmentDuration",
     "TestJellyfinVODPlaylistUsesObservedSegmentCadence",
     "TestLastLightHomeUsesRealLibraryArtwork",
+    "TestLetterJumpWebSupportsProgressiveMobileNavigation",
     "TestLibraryNavigationKeepsEveryDestinationInMainWithCompactOverflow",
     "TestLoginReturnRejectsExternalAndAmbiguousTargets",
     "TestNavigationPagesRefreshCachedAssets",
@@ -45449,16 +45450,21 @@
     "TestPasskeyLoginSupportsPasswordManagerAutofill",
     "TestPasskeyOfferPathKeepsTheValidatedLoginDestination",
     "TestPasswordFieldsOfferAccessibleRevealControls",
+    "TestPersistedListAndProgressValidationIsBounded",
     "TestPlayerDatabaseAdapterUsesConfiguredDocuments",
     "TestPlayerNegotiatesCodecSupportBeforeStartingAdaptivePlayback",
     "TestPlayerUsesCastIconForDevicePlayback",
+    "TestPreviewThreeEditionSupporter",
     "TestProductionUITemplatesAvoidMixedGlyphIcons",
     "TestProfilePolicyChangeDoesNotPersistBeforeSessionRevocation",
     "TestProfileSnapshotsDoNotAliasStoredIdentityState",
     "TestQuickConnectPageUsesSixDigitAutoSubmitControl",
     "TestReaderServesPDFEPUBAndComicPagesThroughAPIAndWeb",
+    "TestRemoteAccessWebKillAndReset",
     "TestSCIMRehydrationRejectsAmbiguousDeletedProfiles",
+    "TestSingleTitleBucketDoesNotRenderAJumpControl",
     "TestStepUpReturnsToKnownOwnerPage",
+    "TestStrongPublicSessionAndPasskeyViewAreIsolated",
     "TestSupportedLanguageCoverageIncludesJellyfinLocaleSet",
     "TestUIIconSetIsCompleteAndLocal",
     "TestVersionedApplicationStylesheetIncludesSupporterStyles",
@@ -45489,6 +45495,7 @@
     "TestJellyfinVODPlaylistRejectsInvalidSegmentDuration",
     "TestJellyfinVODPlaylistUsesObservedSegmentCadence",
     "TestLastLightHomeUsesRealLibraryArtwork",
+    "TestLetterJumpWebSupportsProgressiveMobileNavigation",
     "TestLibraryNavigationKeepsEveryDestinationInMainWithCompactOverflow",
     "TestLoginReturnRejectsExternalAndAmbiguousTargets",
     "TestNavigationPagesRefreshCachedAssets",
@@ -45499,16 +45506,21 @@
     "TestPasskeyLoginSupportsPasswordManagerAutofill",
     "TestPasskeyOfferPathKeepsTheValidatedLoginDestination",
     "TestPasswordFieldsOfferAccessibleRevealControls",
+    "TestPersistedListAndProgressValidationIsBounded",
     "TestPlayerDatabaseAdapterUsesConfiguredDocuments",
     "TestPlayerNegotiatesCodecSupportBeforeStartingAdaptivePlayback",
     "TestPlayerUsesCastIconForDevicePlayback",
+    "TestPreviewThreeEditionSupporter",
     "TestProductionUITemplatesAvoidMixedGlyphIcons",
     "TestProfilePolicyChangeDoesNotPersistBeforeSessionRevocation",
     "TestProfileSnapshotsDoNotAliasStoredIdentityState",
     "TestQuickConnectPageUsesSixDigitAutoSubmitControl",
     "TestReaderServesPDFEPUBAndComicPagesThroughAPIAndWeb",
+    "TestRemoteAccessWebKillAndReset",
     "TestSCIMRehydrationRejectsAmbiguousDeletedProfiles",
+    "TestSingleTitleBucketDoesNotRenderAJumpControl",
     "TestStepUpReturnsToKnownOwnerPage",
+    "TestStrongPublicSessionAndPasskeyViewAreIsolated",
     "TestSupportedLanguageCoverageIncludesJellyfinLocaleSet",
     "TestUIIconSetIsCompleteAndLocal",
     "TestVersionedApplicationStylesheetIncludesSupporterStyles",
@@ -45518,7 +45530,7 @@
     "TestWaitForHLSFileFollowsThePublishedVODTimeline",
     "TestWebBetaBadgeAppearsInSharedBrowserHeader"
   ],
-  "removal_count": 47,
+  "removal_count": 53,
   "verification": [
     {
       "command": "gofmt -w <five touched retained Go files>",
@@ -45599,8 +45611,8 @@
     "TestConfigurationTransactionRejectsSemanticallyInvalidRecoveryWithoutSideEffects"
   ],
   "review_summary": {
-    "semantic_review_complete": 678,
-    "candidate_evidence_complete": 47,
+    "semantic_review_complete": 672,
+    "candidate_evidence_complete": 53,
     "inventory_only_retained_pending_semantic_review": 111,
     "test_and_boundary_review_pending_full_owner": 1
   }

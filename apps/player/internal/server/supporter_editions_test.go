@@ -3,7 +3,6 @@ package server_test
 import (
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"strings"
 	"testing"
 	"time"
@@ -48,22 +47,3 @@ func TestThreeEditionCollectionAndVisibility(t *testing.T) {
 }
 
 // Opt-in loopback preview uses synthetic signed certificates and temporary storage.
-func TestPreviewThreeEditionSupporter(t *testing.T) {
-	if os.Getenv("KINOSAIL_SUPPORTER_PREVIEW") != "1" {
-		t.Skip("optional browser preview")
-	}
-	signer := newSupporterSigner(t)
-	upstream := httptest.NewServer(http.HandlerFunc(signer.handler))
-	defer upstream.Close()
-	handler, token := supporterServer(t, t.TempDir(), signer, upstream)
-	activateThreeEditions(t, handler, token, signer)
-	preview := &http.Server{Addr: "127.0.0.1:8933", ReadHeaderTimeout: 5 * time.Second, Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		r.Header.Set("Authorization", "Bearer "+token)
-		handler.ServeHTTP(w, r)
-	})}
-	t.Cleanup(func() { _ = preview.Close() })
-	t.Log("preview: http://127.0.0.1:8933/supporter")
-	if err := preview.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		t.Fatal(err)
-	}
-}
