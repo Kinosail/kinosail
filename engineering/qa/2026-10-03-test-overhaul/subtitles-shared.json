@@ -9,8 +9,8 @@
   "reviewed": 954,
   "pending": 0,
   "decisions": {
-    "R": 832,
-    "D": 71,
+    "R": 830,
+    "D": 73,
     "F": 50,
     "C": 1
   },
@@ -44,6 +44,109 @@
       "artifact": ".verification/test-overhaul/subtitles-ui-http-6c9781",
       "source": "parent root executed and reported17passed31.7s",
       "boundary": "Three genuine real-CLI-server journeys: review/defaults/manualtiming, admin/plaincanvas, history clear/empty/responsive. Fourteen exported-template layout fixtures are isolated browser fixtures, not genuine E2E."
+    },
+    {
+      "sha": "d94c435a1686458b4d74dc86fa4821e253573f8c",
+      "pr_head_sha": "694cf408ecc021d83af3f6c0d64df058a3bdacd7",
+      "workflow_run_id": 37150700625,
+      "workflow_url": "https://github.com/Kinosail/kinosail/actions/runs/37150700625",
+      "artifact_id": 11283707915,
+      "artifact_url": "https://github.com/Kinosail/kinosail/actions/runs/37150700625/artifacts/11283707915",
+      "durable_receipt": "engineering/qa/2026-10-03-test-overhaul/promoted-e2e-keeper-receipts.json",
+      "command": [
+        "./scripts/test-container.sh"
+      ],
+      "working_directory": "apps/subtitles",
+      "environment": {
+        "CI": "true",
+        "CONTAINER_ENGINE": "docker",
+        "KINOSAIL_BROWSER_TEST": "1",
+        "KINOSAIL_BROWSER_MATRIX": "",
+        "KINOSAIL_BROWSER_PROJECT": "chromium",
+        "KINOSAIL_BROWSER_SMOKE": "1",
+        "KINOSAIL_BROWSER_WORKERS": "1",
+        "KINOSAIL_TEST_IMAGE": "localhost/kinosail-subtitles:d94c435a1686458b4d74dc86fa4821e253573f8c",
+        "KINOSAIL_TEST_IMAGE_READY": "1"
+      },
+      "tools": [
+        {
+          "command": [
+            "go",
+            "version"
+          ],
+          "exitCode": 0,
+          "stdout": "go version go1.27.0 linux/amd64",
+          "stderr": "go: downloading go1.27.0 (linux/amd64)"
+        },
+        {
+          "command": [
+            "node",
+            "--version"
+          ],
+          "exitCode": 0,
+          "stdout": "v26.10.0",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "pnpm",
+            "--version"
+          ],
+          "exitCode": 0,
+          "stdout": "11.22.0",
+          "stderr": ""
+        }
+      ],
+      "platform": {
+        "system": "Linux",
+        "release": "6.17.0-1022-azure",
+        "machine": "x86_64",
+        "python": "3.12.3"
+      },
+      "container": {
+        "command": [
+          "docker",
+          "image",
+          "inspect",
+          "--format",
+          "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}",
+          "localhost/kinosail-subtitles:d94c435a1686458b4d74dc86fa4821e253573f8c"
+        ],
+        "exitCode": 0,
+        "stdout": "sha256:da597d87d2ed0263ec222849a75dca010f7cb28ff2de9374c1cb7771784c50a2 d94c435a1686458b4d74dc86fa4821e253573f8c",
+        "stderr": ""
+      },
+      "source_status": "clean before and after; exactRevisionProof=true/sourceUnchanged=true",
+      "result_summary": {
+        "startTime": "2026-10-03T20:15:33.764Z",
+        "duration": 31287.952999999998,
+        "expected": 30,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "manifest_sha256": "622e5a2eeec8267c040603705971a6a59f50662eda789619d18f8872398a52a9",
+      "results_sha256": "68e1612ce850c29b62e48fa35bfa52d374848819870c522e0fb4a97ceeb38de5",
+      "sha256sums_sha256": "24368c3572df3f02b37d46a561d0a7df87008d30f3189a08eb753c730eefd036",
+      "available_listed_checksums_verified": 50,
+      "missing_checksum_members": [
+        "browser-results/.last-run.json"
+      ],
+      "archive_complete": false,
+      "archive_transport_sha256": "1aeab2f7e7a4e04e2572876d29a2b7dd643fc739f54bf37d96f46d23363cf78e",
+      "limit": "ZIP transport digest identifies the downloaded bytes. All50 available listed members match; hidden .last-run.json was omitted, so archive completeness/checksum closure is not claimed. Successful test outcomes and9 screenshots are individually present and hashed. No passing run after these Go deletions claimed.",
+      "boundary": "Two named live browser journeys authenticate to the actual isolated populated application Server and use its settings/asset APIs. Other selected browser fixtures are not counted as genuine E2E equivalence for these removals.",
+      "screenshot_sha256": {
+        "browser-results/subtitle-dashboard-Twenty--0678f-ble-at-the-preference-limit-chromium/1024-twenty-subtitle-languages.png": "8829801be7e7b80512292d3081f5e2f9d970a08e2e1d035b3acc373d85f6da79",
+        "browser-results/subtitle-dashboard-Twenty--0678f-ble-at-the-preference-limit-chromium/1440-twenty-subtitle-languages.png": "b10784cb8234dec6b4490e90b0e734ab1a51e5614a374c83af200c550c078b14",
+        "browser-results/subtitle-dashboard-Twenty--0678f-ble-at-the-preference-limit-chromium/320-twenty-subtitle-languages.png": "0f7c7962ad272f4c99dca6b2c03879df4a262d9c138d3ce0916809999899413d",
+        "browser-results/subtitle-dashboard-Twenty--0678f-ble-at-the-preference-limit-chromium/390-twenty-subtitle-languages.png": "6eab6c2c4bde395e1934511865f19cd24c834879e6c1eeeba7ddf13c7b28cfc4",
+        "browser-results/subtitle-dashboard-Twenty--0678f-ble-at-the-preference-limit-chromium/twenty-subtitle-languages-forced-colors.png": "f0208f519ae3a3e8d6745ee0da69b38c570cdcab56bd4b1daed72da7ec126256",
+        "browser-results/test-instance-Supporter-pa-c1451-adges-with-accessible-names-chromium/1440-supporter-badges.png": "d22af011ec0ee8354cf17310a6f9d36b13753189213a95d1c0e8a8abe5360493",
+        "browser-results/test-instance-Supporter-pa-c1451-adges-with-accessible-names-chromium/320-supporter-badges.png": "25d42ce91775f8de107d8e8bcf12d8434f7620d0d53798ce19bb8a62f95308a8",
+        "browser-results/test-instance-Supporter-pa-c1451-adges-with-accessible-names-chromium/320-supporter-forced-colors.png": "e3f5d3fb6710b54843549fc32f7d578d360063b1c3b13c56d0c6685a75334c27",
+        "browser-results/test-instance-Supporter-pa-c1451-adges-with-accessible-names-chromium/390-supporter-badges.png": "f301278acaaa607a2923d3feaa93612ca4b2f3d9623e8d5b45879dbcce5d826c"
+      }
     }
   ],
   "ci_routing": "All Subtitles .go test changes select Subtitles quick Go; internal/server also selects populated browser suites. Shared package changes select both apps. Required checks unchanged.",
@@ -31113,8 +31216,8 @@
       "line": 151,
       "test": "TestSubtitleSettingsAPIRendersEverySavedLanguageAtTheLimit",
       "baseline_file_sha256": "3a5d57648acf3c24b2337f82913ba2db0548ec1bde55203547f5562ca44dd71e",
-      "decision": "R",
-      "audit_status": "reviewed",
+      "decision": "D",
+      "audit_status": "reviewed; implemented after genuine CI keeper passed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
       "credible_failure": "Exact twenty-language array is replayed by a stronger genuine browser preference-limit journey; this Go assertion checks only the first three API values, twenty HTML rows and the limit message.",
       "production_owner": "apps/subtitles/internal/database/database.go; apps/subtitles/internal/server/application_init.go; apps/subtitles/internal/server/database.go; apps/subtitles/internal/server/settings.go; apps/subtitles/internal/server/settings_actions.go; apps/subtitles/internal/server/settings_http.go; apps/subtitles/internal/server/settings_json.go; apps/subtitles/internal/server/settings_playback.go; apps/subtitles/internal/server/settings_playback_defaults.go; apps/subtitles/internal/server/settings_playback_flags.go; apps/subtitles/internal/server/settings_routes.go; apps/subtitles/internal/server/settings_subtitles.go; apps/subtitles/internal/server/settings_updates.go; apps/subtitles/internal/server/subtitle_coverage.go; apps/subtitles/internal/server/subtitle_dashboard.go; apps/subtitles/internal/server/subtitle_dashboard.html; apps/subtitles/internal/server/subtitle_dashboard_item.html; apps/subtitles/internal/server/subtitle_dashboard_projection.go; apps/subtitles/internal/server/subtitle_dashboard_query.go; apps/subtitles/internal/server/subtitle_dashboard_template.go; apps/subtitles/internal/server/subtitle_facts.go; apps/subtitles/internal/server/subtitle_history_ledger.go; apps/subtitles/internal/server/subtitle_ledger.go; apps/subtitles/internal/server/subtitle_maintenance.go; apps/subtitles/internal/server/subtitle_operations.go; apps/subtitles/internal/server/subtitle_provider.go; apps/subtitles/internal/server/subtitle_provider_languages.go; apps/subtitles/internal/server/subtitle_upgrade.go; apps/subtitles/internal/settingsstate/settings.go; apps/subtitles/internal/subtitlelanguage/catalog.go",
@@ -31137,18 +31240,26 @@
       ],
       "remaining_proof": [
         {
-          "kind": "deletion_candidate_genuine_keeper_pending_run",
-          "reference": "Keeper subtitle-dashboard-provider-tests.ts:Twenty long language choices remain usable at the preference limit saves this exact array via API, reloads twenty rows, checks long variant names/limit disabled guidance and reorders at four viewport sizes with screenshots/Axe. Root must supply successful genuine execution receipt; source mapping alone is not validation. GET ordered-list projection remains in API language keepers."
+          "kind": "genuine_E2E_passed",
+          "path": "apps/subtitles/e2e/subtitle-dashboard-provider-tests.ts",
+          "scenario": "Twenty long language choices remain usable at the preference limit",
+          "mapping": "Actual authenticated PUT saves the same exact20-language array; reload shows20 rows and long regional names, provider/local guidance, disabled add controls and limit explanation; keyboard reorder changes first language. Four widths/Axe/forced-colors screenshots."
+        },
+        {
+          "kind": "retained_app_API_boundary",
+          "path": "apps/subtitles/internal/server/api_subtitle_settings_test.go",
+          "scenario": "TestSubtitleLanguageAPIRejectsInvalidInputWithoutChangingSettings; TestSubtitleLanguageAPISingularUpdatePreservesSecondaryPreferences",
+          "mapping": "Actual GET settings ordered-array decoding and rejection/no-state-change,21-language limit and singular secondary-preservation remain."
         }
       ],
-      "coverage_gap": "Keeper subtitle-dashboard-provider-tests.ts:Twenty long language choices remain usable at the preference limit saves this exact array via API, reloads twenty rows, checks long variant names/limit disabled guidance and reorders at four viewport sizes with screenshots/Axe. Root must supply successful genuine execution receipt; source mapping alone is not validation. GET ordered-list projection remains in API language keepers.",
+      "coverage_gap": "Live journey proves UI list count/limit/reorder with the same array; retained API fixtures independently decode ordered response. No claim that browser asserts every20 GET JSON values; standalone exact English limit-message literal is not retained as a separate guard.",
       "history": [
         "9d10883b42dcf2dc47c92721fcc3d712d41d89bf Keep administration plain and landscape search reachable",
         "72b80575e1f809129a6ef08402aa4764f5c8860e Explain subtitle history changes and upgrade evidence",
         "64841f2e5627c0804f8ee5044df91244bc102f58 Record subtitle changes in History"
       ],
-      "risk": "Provisionally retained pending genuine preference-limit execution receipt",
-      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server -run '^TestSubtitleSettingsAPIRendersEverySavedLanguageAtTheLimit$'",
+      "risk": "Low: successful stronger actual app journey plus ordered API/security boundaries remain; no arbitrary-language/provider/persistence failure equivalence claimed.",
+      "validation_command": "cd apps/subtitles && ./scripts/test-container.sh (exact CI environment/image revision in verification run37150700625)",
       "audit_reviewer": "/root/frontend_native",
       "audit_packet_sha256": "78ba4b6107a783a075df2adf672dda6c3365fc7bfe85c376c46647e73dd48eb3",
       "declaration_sha256": "e630d328b8c2efed1dcc6bcd31f13f268cd67e83b3866bcf4c0ca54f003acce1",
@@ -31182,7 +31293,35 @@
         "Test": "TestSubtitleSettingsAPIRendersEverySavedLanguageAtTheLimit",
         "Elapsed": 0.57
       },
-      "final_declaration": "apps/subtitles/internal/server/subtitle_dashboard_test.go::TestSubtitleSettingsAPIRendersEverySavedLanguageAtTheLimit"
+      "independent_removal_review": {
+        "reviewer": "/root",
+        "status": "approved after full candidate and genuine keeper source review; actual passed results inspected",
+        "owner_review": "/root/subtitles_shared independently re-read complete candidate/helper, actual API/asset owner, live keeper/login/API helpers and ZIP exact result/checksum data before removing."
+      },
+      "genuine_e2e_execution_evidence": {
+        "source_sha": "d94c435a1686458b4d74dc86fa4821e253573f8c",
+        "pr_head_sha": "694cf408ecc021d83af3f6c0d64df058a3bdacd7",
+        "workflow_run_id": 37150700625,
+        "artifact_id": 11283707915,
+        "artifact_url": "https://github.com/Kinosail/kinosail/actions/runs/37150700625/artifacts/11283707915",
+        "manifest_sha256": "622e5a2eeec8267c040603705971a6a59f50662eda789619d18f8872398a52a9",
+        "results_sha256": "68e1612ce850c29b62e48fa35bfa52d374848819870c522e0fb4a97ceeb38de5",
+        "browser": "chromium",
+        "status": "passed",
+        "retry": 0,
+        "archive_complete": false,
+        "evidence_details": "verification entry workflow_run_id37150700625/artifact11283707915 and engineering/qa/2026-10-03-test-overhaul/promoted-e2e-keeper-receipts.json",
+        "scenario": "Twenty long language choices remain usable at the preference limit",
+        "duration_ms": 5012,
+        "screenshot_sha256": {
+          "browser-results/subtitle-dashboard-Twenty--0678f-ble-at-the-preference-limit-chromium/1024-twenty-subtitle-languages.png": "8829801be7e7b80512292d3081f5e2f9d970a08e2e1d035b3acc373d85f6da79",
+          "browser-results/subtitle-dashboard-Twenty--0678f-ble-at-the-preference-limit-chromium/1440-twenty-subtitle-languages.png": "b10784cb8234dec6b4490e90b0e734ab1a51e5614a374c83af200c550c078b14",
+          "browser-results/subtitle-dashboard-Twenty--0678f-ble-at-the-preference-limit-chromium/320-twenty-subtitle-languages.png": "0f7c7962ad272f4c99dca6b2c03879df4a262d9c138d3ce0916809999899413d",
+          "browser-results/subtitle-dashboard-Twenty--0678f-ble-at-the-preference-limit-chromium/390-twenty-subtitle-languages.png": "6eab6c2c4bde395e1934511865f19cd24c834879e6c1eeeba7ddf13c7b28cfc4",
+          "browser-results/subtitle-dashboard-Twenty--0678f-ble-at-the-preference-limit-chromium/twenty-subtitle-languages-forced-colors.png": "f0208f519ae3a3e8d6745ee0da69b38c570cdcab56bd4b1daed72da7ec126256"
+        }
+      },
+      "production_or_support_deletion_unlocked": "Only this existing declaration; all shared dashboard/request helpers retain callers."
     },
     {
       "file": "apps/subtitles/internal/server/subtitle_dashboard_test.go",
@@ -40219,11 +40358,33 @@
       "line": 12,
       "test": "TestSupporterBadgeArtworkIsAvailableForEveryLevel",
       "baseline_file_sha256": "826b1e7d58d987b74d113c1382ea4a2349ba1b7272a3653d83278305e59d83ff",
-      "decision": "R",
-      "audit_status": "reviewed",
+      "decision": "D",
+      "audit_status": "reviewed; implemented after genuine CI keeper passed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
       "credible_failure": "Twenty actual positive asset routes/HTML references/Content-Type/XML product titles repeat broader genuine real Supporter gallery delivery; invalid asset admission remains separate keeper.",
-      "production_owner": null,
+      "production_owner": [
+        "apps/subtitles/internal/server/supporter.go",
+        "apps/subtitles/internal/server/supporter_http.go",
+        "apps/subtitles/internal/server/supporter_share.go",
+        "apps/subtitles/internal/server/supporter_badges.go",
+        "apps/subtitles/internal/server/supporter_template.go",
+        "apps/subtitles/internal/server/assets.go",
+        "packages/supporter/service.go",
+        "packages/supporter/certificate.go",
+        "packages/supporter/status.go",
+        "packages/supporter/state.go",
+        "packages/supporter/model.go",
+        "packages/supporter/validation.go",
+        "packages/supporter/editions.go",
+        "apps/subtitles/internal/server/server.go",
+        "apps/subtitles/internal/server/api.go",
+        "apps/subtitles/internal/server/profiles.go",
+        "apps/subtitles/internal/server/profiles_storage.go",
+        "apps/subtitles/internal/server/auth_remote_routes.go",
+        "apps/subtitles/internal/server/settings.go",
+        "apps/subtitles/internal/server/settings_routes.go",
+        "apps/subtitles/internal/server/assets.go"
+      ],
       "non_test_callers": [
         "server.go:newSupporterProgram/registerSupporter/actual API registration",
         "supporter.go:operationMu activation/status and actual settings Save callbacks",
@@ -40233,21 +40394,39 @@
       ],
       "remaining_proof": [
         {
-          "kind": "retained_contract_or_documented_gap",
-          "reference": "apps/subtitles/internal/server/supporter_artwork_test.go::TestSupporterBadgeArtworkIsAvailableForEveryLevel"
+          "kind": "genuine_E2E_passed",
+          "path": "apps/subtitles/e2e/test-instance-supporter-tests.ts",
+          "scenario": "Supporter page loads twenty distinct badges with accessible names",
+          "mapping": "Actual authenticated /supporter shows both10-level families/four elite levels,20 browser-decoded images with Subtitles alt names, HTTP200/SVG type and10 distinct artworks per family; three widths/Axe/forced-colors screenshots."
+        },
+        {
+          "kind": "retained_asset_admission_boundary",
+          "path": "apps/subtitles/internal/server/supporter_artwork_test.go",
+          "scenario": "TestSupporterBadgeArtworkRejectsInvalidNames",
+          "mapping": "Invalid rank/family/oversized asset names still404."
+        },
+        {
+          "kind": "retained_actual_certificate_and_localization_contract",
+          "path": "apps/subtitles/internal/server/supporter_share_internal_test.go",
+          "scenario": "TestSupporterShareCertificatesUseEveryGallerySilhouette"
+        },
+        {
+          "kind": "retained_product_localization",
+          "path": "apps/subtitles/internal/server/supporter_test.go",
+          "scenario": "TestSupporterBadgeFamiliesUseSpanishAndArabicCatalogs"
         }
       ],
-      "coverage_gap": "Proposed duplicate deletion remains unapproved until root supplies fresh genuine gallery execution receipt; all20 certificate embedding guards differ from asset HTTP route. Genuine test-instance-supporter-tests.ts:Supporter page loads twenty distinct badges with accessible names checks both ten-badge families, real loaded image dimensions/accessible product alt names, real requested SVG types/distinct artwork and screenshots/Axe at1440/390/320. Internal TestSupporterShareCertificatesUseEveryGallerySilhouette covers every actual SVG integration; standalone SVG title literal is minor metadata, not independent important runtime failure. Source mapping requires root genuine run receipt before equivalence claim; synthetic failed-artwork fixture is not substitute.",
+      "coverage_gap": "Live journey guards decoded artwork/HTTP type/status and distinctness within each family; it does not assert the exact20 family/rank src URL matrix or standalone XML title substring. Those minor source/metadata assertions are intentionally removed. Invalid-name admission, actual certificate integration and localization remain distinct keepers. No synthetic populated-certificate page or physical-device equivalence claimed.",
       "history": [
         "b26ad51fd0f257b250b50b3c1f19eeefd8097b65 Keep supporter artwork route tests focused",
         "8e6a4a8768b1296eafa1db1acd34fc9aad8cf516 Match Subtitles supporter badges to Player and link Polar offers"
       ],
-      "risk": "Preserve actual asset route exception pending exact genuine E2E proof.",
-      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server -run '^TestSupporterBadgeArtworkIsAvailableForEveryLevel$'",
+      "risk": "Low: stronger actual gallery asset delivery passed; minor exact-URL/XML-title metadata assertions disclosed rather than falsely equated.",
+      "validation_command": "cd apps/subtitles && ./scripts/test-container.sh (exact CI environment/image revision in verification run37150700625)",
       "end_line": 30,
       "name": "TestSupporterBadgeArtworkIsAvailableForEveryLevel",
       "kind": "Test",
-      "remaining_proof_or_gap": "Genuine test-instance-supporter-tests.ts:Supporter page loads twenty distinct badges with accessible names checks both ten-badge families, real loaded image dimensions/accessible product alt names, real requested SVG types/distinct artwork and screenshots/Axe at1440/390/320. Internal TestSupporterShareCertificatesUseEveryGallerySilhouette covers every actual SVG integration; standalone SVG title literal is minor metadata, not independent important runtime failure. Source mapping requires root genuine run receipt before equivalence claim; synthetic failed-artwork fixture is not substitute.",
+      "remaining_proof_or_gap": "Live journey guards decoded artwork/HTTP type/status and distinctness within each family; it does not assert the exact20 family/rank src URL matrix or standalone XML title substring. Those minor source/metadata assertions are intentionally removed. Invalid-name admission, actual certificate integration and localization remain distinct keepers. No synthetic populated-certificate page or physical-device equivalence claimed.",
       "owner_groups": [
         "supporter"
       ],
@@ -40325,8 +40504,34 @@
       ],
       "baseline_name_ambiguity": null,
       "new_isolated_tests_added": false,
-      "production_or_support_deletion_unlocked": "none; shared wrappers/modules have real callers",
-      "final_declaration": "apps/subtitles/internal/server/supporter_artwork_test.go::TestSupporterBadgeArtworkIsAvailableForEveryLevel"
+      "production_or_support_deletion_unlocked": "Dead checkSupporterBadgeAsset test helper and encoding/xml,strconv imports only; invalid-name test remains unchanged.",
+      "independent_removal_review": {
+        "reviewer": "/root",
+        "status": "approved after full candidate and genuine keeper source review; actual passed results inspected",
+        "owner_review": "/root/subtitles_shared independently re-read complete candidate/helper, actual API/asset owner, live keeper/login/API helpers and ZIP exact result/checksum data before removing."
+      },
+      "genuine_e2e_execution_evidence": {
+        "source_sha": "d94c435a1686458b4d74dc86fa4821e253573f8c",
+        "pr_head_sha": "694cf408ecc021d83af3f6c0d64df058a3bdacd7",
+        "workflow_run_id": 37150700625,
+        "artifact_id": 11283707915,
+        "artifact_url": "https://github.com/Kinosail/kinosail/actions/runs/37150700625/artifacts/11283707915",
+        "manifest_sha256": "622e5a2eeec8267c040603705971a6a59f50662eda789619d18f8872398a52a9",
+        "results_sha256": "68e1612ce850c29b62e48fa35bfa52d374848819870c522e0fb4a97ceeb38de5",
+        "browser": "chromium",
+        "status": "passed",
+        "retry": 0,
+        "archive_complete": false,
+        "evidence_details": "verification entry workflow_run_id37150700625/artifact11283707915 and engineering/qa/2026-10-03-test-overhaul/promoted-e2e-keeper-receipts.json",
+        "scenario": "Supporter page loads twenty distinct badges with accessible names",
+        "duration_ms": 3238,
+        "screenshot_sha256": {
+          "browser-results/test-instance-Supporter-pa-c1451-adges-with-accessible-names-chromium/1440-supporter-badges.png": "d22af011ec0ee8354cf17310a6f9d36b13753189213a95d1c0e8a8abe5360493",
+          "browser-results/test-instance-Supporter-pa-c1451-adges-with-accessible-names-chromium/320-supporter-badges.png": "25d42ce91775f8de107d8e8bcf12d8434f7620d0d53798ce19bb8a62f95308a8",
+          "browser-results/test-instance-Supporter-pa-c1451-adges-with-accessible-names-chromium/320-supporter-forced-colors.png": "e3f5d3fb6710b54843549fc32f7d578d360063b1c3b13c56d0c6685a75334c27",
+          "browser-results/test-instance-Supporter-pa-c1451-adges-with-accessible-names-chromium/390-supporter-badges.png": "f301278acaaa607a2923d3feaa93612ca4b2f3d9623e8d5b45879dbcce5d826c"
+        }
+      }
     },
     {
       "file": "apps/subtitles/internal/server/supporter_artwork_test.go",
@@ -44859,11 +45064,11 @@
       "packet_sha256": "78ba4b6107a783a075df2adf672dda6c3365fc7bfe85c376c46647e73dd48eb3",
       "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
       "summary": {
-        "R": 99,
+        "R": 98,
         "F": 6,
-        "D": 3
+        "D": 4
       },
-      "verification": "All108 current declaration hashes and baseline file hashes verified; source/test bodies,helpers,owners/callers/history read by exclusive delegate; 105 baseline pass, fixture producer skip,2benchunrun. One candidate20languages kept until genuine E2E receipt."
+      "verification": "All108 current declaration hashes and baseline file hashes verified; source/test bodies,helpers,owners/callers/history read by exclusive delegate; 105 baseline pass, fixture producer skip,2benchunrun. One candidate20languages kept until genuine E2E receipt. Previously provisional20-language keeper passed genuine CIrun37150700625; corresponding Go duplicate nowD."
     }
   ],
   "semantic_packet_receipts": [
@@ -44873,17 +45078,18 @@
       "sha256": "a75d3b1dbf8b9c8230df2d9a5878606bcbe11447c7b9512b6042a4f92729f334",
       "declarations": 92,
       "accepted_decisions": {
-        "R": 80,
+        "R": 79,
         "F": 6,
-        "D": 6
+        "D": 7
       },
-      "restored_primary": "TestVersionedApplicationStylesheetIncludesSupporterStyles"
+      "restored_primary": "TestVersionedApplicationStylesheetIncludesSupporterStyles",
+      "genuine_keeper_receipt": "Supporter20 gallery passed real CIrun37150700625 before duplicate declaration/helper deletion."
     }
   ],
   "completion_note": "All954 original declarations received semantic source/helper/owner/caller/history/E2E review; packet delegations independently owned and named. Retained F rows preserve useful assertion contracts while documenting exact false-control/platform/unrun gaps; no equivalence or unrun execution invented.",
   "final_source_inventory": {
-    "retained_original_declarations": 883,
-    "deleted_original_declarations": 71,
+    "retained_original_declarations": 881,
+    "deleted_original_declarations": 73,
     "existing_declarations_renamed_for_honest_scope": {
       "TestStrongPublicSessionAndPasskeyViewAreIsolated": "TestStrongPublicSessionCookieAndPasskeyInventoryShape",
       "TestOfflineDownloadsReserveCapacityForPlayback": "TestOfflineDownloadsStartOnlyOneEncoderWhileWorkIsPending",
