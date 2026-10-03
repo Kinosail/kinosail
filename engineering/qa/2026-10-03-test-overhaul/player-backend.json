@@ -13117,11 +13117,11 @@
       "end_line": 38,
       "sha256": "66e4662f3a6a90c8928a047d8ee8231abd04cefd3e65bce38e618dfbd30165e8",
       "path": "apps/player/internal/server/branding_test.go",
-      "decision": "C",
+      "decision": "R",
       "review_status": "semantic_review_complete",
-      "reason": "Exacttitle/productliteral probe acrossHome/Login/Setup/manifest supplies mostlybrandingconstraints ratherthan important complexbug detection.",
+      "reason": "Actual generated Web App manifest name/short_name and Login/Setup identity can drift independently from browser fixture installation manifest.",
       "category": "presentation_removal_candidate_pending_independent_review",
-      "credible_failure": "Exacttitle/productliteral probe acrossHome/Login/Setup/manifest supplies mostlybrandingconstraints ratherthan important complexbug detection.",
+      "credible_failure": "Actual generated Web App manifest name/short_name and Login/Setup identity can drift independently from browser fixture installation manifest.",
       "production_owner": [
         "apps/player/internal/server/server.go:homeHTML",
         "apps/player/internal/server/auth.go:setupHTML/profileLoginHTML",
@@ -13131,20 +13131,21 @@
         "ActualappHTTPsurfaces renderapp/sharedtemplates/assets."
       ],
       "remaining_proof": [
-        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+        "Retain this declaration: independent frontend review found unique actual app projection/asset/identity boundary."
       ],
-      "coverage_limit": "GenuineOwnerwizard/Login/manifest/install runsactualsurfaces; exactold/newbranding/title stringsremain unassertedcosmetic gap.",
+      "coverage_limit": "Genuine actual Install/request success and mocked install E2E do not assert precise generated identity fields; keep whole app identity contract.",
       "history": [
         "e4a4570a71170c1f468e7dda65322419d1722ea0 Label web Player beta in app and repository",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "risk": "Retains observable failure existing E2E does not establish.",
       "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "test_limit": "ProposedD only; rootindependentreview requested before removal. Source retainedatthiscommit.",
-      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared. Root conveyed independent frontend review retaining this exact whole declaration.",
+      "implementation_status": "Retained; earlier removal candidate rejected by independent review."
     },
     {
       "name": "TestWebBetaBadgeAppearsInSharedBrowserHeader",
@@ -13152,11 +13153,11 @@
       "end_line": 50,
       "sha256": "ed9fc381d6c053642351b38de16a48139a468d195eba93d7c5336afac0dffc09",
       "path": "apps/player/internal/server/branding_test.go",
-      "decision": "C",
-      "review_status": "semantic_review_complete",
-      "reason": "Oneexact class+BETAstring acrossHome/Settings mainlyforcescurrentbadgecopy/presentation.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "Remove a current-copy/class/count policy smoke probe with no important distinct bug boundary.",
       "category": "presentation_removal_candidate_pending_independent_review",
-      "credible_failure": "Oneexact class+BETAstring acrossHome/Settings mainlyforcescurrentbadgecopy/presentation.",
+      "credible_failure": "Only exact Beta span class/text/count on two header pages; losing this incidental label is not an important uncovered complex feature failure.",
       "production_owner": [
         "apps/player/internal/server/server.go:appHeader"
       ],
@@ -13164,20 +13165,21 @@
         "ActualappHTTPsurfaces renderapp/sharedtemplates/assets."
       ],
       "remaining_proof": [
-        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+        "Actual strict supported-HTTP happy/UI Server receipt6c9781e2605dc947c4c09e07bb6edfcc8911d42c renders Home and Settings; exact Beta text/count intentionally not a separate regression contract."
       ],
-      "coverage_limit": "GenuineOwnerSetup/settings journey rendersheader; exactBetaone-count is incidentalcopy/markup gap, noclaimedassertionequivalence.",
+      "coverage_limit": "No genuine E2E asserts exact Beta badge/count; accepted presentation gap, no equivalent coverage claim.",
       "history": [
         "e4a4570a71170c1f468e7dda65322419d1722ea0 Label web Player beta in app and repository",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "risk": "Low; redundant smoke/presentation constraint removed while stronger actual feature boundaries remain.",
       "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "test_limit": "ProposedD only; rootindependentreview requested before removal. Source retainedatthiscommit.",
-      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared. Independent frontend reviewer retained three unique presentation cases and approved this removal; root message2026-10-03.",
+      "implementation_status": "Removed after full body/owner comparison and independent frontend review returned through root; exact baseline declaration SHA guard passed."
     },
     {
       "name": "TestLetterJumpBucketsStayUniqueWithPunctuatedTitles",
@@ -14471,11 +14473,11 @@
       "end_line": 20,
       "sha256": "c4caa27704f981a60a8ad93aedbd95a4d5a8a3e0638fbc2196a8cad24fb8aaa0",
       "path": "apps/player/internal/server/cinema_asset_test.go",
-      "decision": "C",
+      "decision": "R",
       "review_status": "semantic_review_complete",
-      "reason": "Exact1920x1080JPEGconfig is anincidentalstaticassetdimension constraint; genuinehappy checksrealservedcachedshell asset.",
+      "reason": "Actual delivered asset must decode as expected JPEG landscape image, retaining nonempty valid raster/dimensions rather than HTTP200 corrupt bytes.",
       "category": "presentation_removal_candidate_pending_independent_review",
-      "credible_failure": "Exact1920x1080JPEGconfig is anincidentalstaticassetdimension constraint; genuinehappy checksrealservedcachedshell asset.",
+      "credible_failure": "Actual delivered asset must decode as expected JPEG landscape image, retaining nonempty valid raster/dimensions rather than HTTP200 corrupt bytes.",
       "production_owner": [
         "apps/player/internal/server/assets.go:cinemaBackdrop/server.go assetroute"
       ],
@@ -14483,19 +14485,20 @@
         "ActualappHTTPsurfaces renderapp/sharedtemplates/assets."
       ],
       "remaining_proof": [
-        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+        "Retain this declaration: independent frontend review found unique actual app projection/asset/identity boundary."
       ],
-      "coverage_limit": "Genuinehappy-path-complete checkscinema cachepresence+OK andselfhostedimage delivery; doesnotdecodeJPEGdimensions. BrokenJPEGdecodegap explicitlypendingindependent review.",
+      "coverage_limit": "Genuine shell-cache request asserts OK/cache presence, not JPEG decoding; keep whole test including expected dimensions.",
       "history": [
         "1af0abe182c6f4d8630ede2ca94c94e7a6fdd828 Use the approved CinemaSail artwork across Kinosail surfaces"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "risk": "Retains observable failure existing E2E does not establish.",
       "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "test_limit": "ProposedD only; rootindependentreview requested before removal. Source retainedatthiscommit.",
-      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared. Root conveyed independent frontend review retaining this exact whole declaration.",
+      "implementation_status": "Retained; earlier removal candidate rejected by independent review."
     },
     {
       "name": "TestCollectionCardEscapesMetadataNameAsOneRouteSegment",
@@ -19042,11 +19045,11 @@
       "end_line": 43,
       "sha256": "169eb1af358d070e063c2e85b09b1e21df772f09264b652059e73a23c3cc573f",
       "path": "apps/player/internal/server/last_light_test.go",
-      "decision": "C",
-      "review_status": "semantic_review_complete",
-      "reason": "GenericHomefeature/indexedID/heading/CSSversion andnohero filteredbrowse replay stronger feature/play/compact/sourcecontent projectionguards.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "Remove coarse Home/indexed-feature markup replay; stronger app feature/media-selection and empty/artless branch keepers remain.",
       "category": "presentation_removal_candidate_pending_independent_review",
-      "credible_failure": "GenericHomefeature/indexedID/heading/CSSversion andnohero filteredbrowse replay stronger feature/play/compact/sourcecontent projectionguards.",
+      "credible_failure": "Generic feature/title/ID/current stylesheet presence duplicates stronger app projections and actual populated browser Home.",
       "production_owner": [
         "apps/player/internal/server/server.go:homeHTML/homeShelfCard",
         "apps/player/internal/server/home.go:homeSource/showHome",
@@ -19061,21 +19064,25 @@
         "ActualappHTTPsurfaces renderapp/sharedtemplates/assets."
       ],
       "remaining_proof": [
-        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+        "apps/player/internal/server/item_details_test.go:TestFeaturedMovieAndShelfOpenPlayer",
+        "apps/player/internal/server/home_compact_test.go:TestCompactHomeKeepsFeaturedResumeOutOfShelf",
+        "apps/player/internal/server/last_light_test.go:TestLastLightEmptyHomeHasNoInventedFeature + TestHomeWithoutArtworkStartsWithTheLibrary",
+        "Actual populated genuine browser Home/media journey; CSS version literal has no separate behavioral contract."
       ],
-      "coverage_limit": "ActualpopulatedmediaHome journey plusretainedFeaturedMovieAndShelfOpenPlayer/CompactHome/empty-art branches; CSSversionliteral gapincidental.",
+      "coverage_limit": "Retained stronger actual feature/player/artless/empty branches; coarse raw source tokens are not asserted identically by E2E.",
       "history": [
         "98972d7c073d77314c41503002ea27708ce9d69b Fix mobile player control targets and touch auto-hide",
         "38335baa6ffccddbe8cc0ac1fdf37424100a8192 Reconcile launch fixes and retain QA lifecycle and cache regressions",
         "104c7a78665230b7503639dc928b9580272d3e6b Keep Safari gesture recovery usable after queued media events"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "risk": "Low; redundant smoke/presentation constraint removed while stronger actual feature boundaries remain.",
       "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "test_limit": "ProposedD only; rootindependentreview requested before removal. Source retainedatthiscommit.",
-      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared. Independent frontend reviewer retained three unique presentation cases and approved this removal; root message2026-10-03.",
+      "implementation_status": "Removed after full body/owner comparison and independent frontend review returned through root; exact baseline declaration SHA guard passed."
     },
     {
       "name": "TestLastLightEmptyHomeHasNoInventedFeature",
@@ -23008,11 +23015,11 @@
       "end_line": 32,
       "sha256": "59e32655c087370509544aeeb0bb5c42bb617b316df7a2845a24550604cdb9ec",
       "path": "apps/player/internal/server/media_info_test.go",
-      "decision": "C",
+      "decision": "R",
       "review_status": "semantic_review_complete",
-      "reason": "SimpleMediaInformation/MP4/5B fixture addsmainly literaldisclosure/samplefilesize projection.",
+      "reason": "Actual rendered player must expose media container and file-size facts; correct API facts can coexist with missing/misbound template disclosure.",
       "category": "presentation_removal_candidate_pending_independent_review",
-      "credible_failure": "SimpleMediaInformation/MP4/5B fixture addsmainly literaldisclosure/samplefilesize projection.",
+      "credible_failure": "Actual rendered player must expose media container and file-size facts; correct API facts can coexist with missing/misbound template disclosure.",
       "production_owner": [
         "apps/player/internal/server/player.go:playerHTML/buildPlayerData",
         "packages/playerweb/player_data.go:PlayerData"
@@ -23021,19 +23028,20 @@
         "ActualappHTTPsurfaces renderapp/sharedtemplates/assets."
       ],
       "remaining_proof": [
-        "Retain this important observable boundary; ordinary genuine browser happy-paths and source-shared unit keepers do not establish its full app-specific condition."
+        "Retain this declaration: independent frontend review found unique actual app projection/asset/identity boundary."
       ],
-      "coverage_limit": "Actualmedia journey opensplayer and API mediafactsguards remain; exact5B anddisclosureliteral notassertedgenuine E2E. Pendingindependent review.",
+      "coverage_limit": "Current genuine player flow and API media-facts guards do not assert the displayed facts; keep actual rendered template boundary.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
+      "risk": "Retains observable failure existing E2E does not establish.",
       "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
       "baseline_result": "pass",
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "test_limit": "ProposedD only; rootindependentreview requested before removal. Source retainedatthiscommit.",
-      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared."
+      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared. Root conveyed independent frontend review retaining this exact whole declaration.",
+      "implementation_status": "Retained; earlier removal candidate rejected by independent review."
     },
     {
       "name": "TestItemPlaybackPreferencesIsolationRemovalAndPersistenceFailure",
@@ -45397,6 +45405,7 @@
     "TestDesktopRailSeparatesUtilitiesFromAccount",
     "TestDirectPlayerDoesNotRestartTheSourceSelectedByHTML",
     "TestHardwareSupportAcceptsAutomaticAndKnownBackends",
+    "TestLastLightHomeUsesRealLibraryArtwork",
     "TestLibraryNavigationKeepsEveryDestinationInMainWithCompactOverflow",
     "TestLoginReturnRejectsExternalAndAmbiguousTargets",
     "TestNavigationPagesRefreshCachedAssets",
@@ -45421,7 +45430,8 @@
     "TestVersionedApplicationStylesheetIncludesSupporterStyles",
     "TestViewerCanBrowseAlbumTracksInOrder",
     "TestViewerCanOpenHome",
-    "TestViewerCanSearchLibrary"
+    "TestViewerCanSearchLibrary",
+    "TestWebBetaBadgeAppearsInSharedBrowserHeader"
   ],
   "semantic_audit_complete": false,
   "implemented_removals": [
@@ -45435,6 +45445,7 @@
     "TestDesktopRailSeparatesUtilitiesFromAccount",
     "TestDirectPlayerDoesNotRestartTheSourceSelectedByHTML",
     "TestHardwareSupportAcceptsAutomaticAndKnownBackends",
+    "TestLastLightHomeUsesRealLibraryArtwork",
     "TestLibraryNavigationKeepsEveryDestinationInMainWithCompactOverflow",
     "TestLoginReturnRejectsExternalAndAmbiguousTargets",
     "TestNavigationPagesRefreshCachedAssets",
@@ -45459,9 +45470,10 @@
     "TestVersionedApplicationStylesheetIncludesSupporterStyles",
     "TestViewerCanBrowseAlbumTracksInOrder",
     "TestViewerCanOpenHome",
-    "TestViewerCanSearchLibrary"
+    "TestViewerCanSearchLibrary",
+    "TestWebBetaBadgeAppearsInSharedBrowserHeader"
   ],
-  "removal_count": 35,
+  "removal_count": 37,
   "verification": [
     {
       "command": "gofmt -w <five touched retained Go files>",
@@ -45542,8 +45554,8 @@
     "TestConfigurationTransactionRejectsSemanticallyInvalidRecoveryWithoutSideEffects"
   ],
   "review_summary": {
-    "semantic_review_complete": 690,
-    "candidate_evidence_complete": 35,
+    "semantic_review_complete": 688,
+    "candidate_evidence_complete": 37,
     "inventory_only_retained_pending_semantic_review": 111,
     "test_and_boundary_review_pending_full_owner": 1
   }
