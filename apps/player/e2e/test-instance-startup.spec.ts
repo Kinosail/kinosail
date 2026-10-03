@@ -39,9 +39,9 @@ test('bounded startup preparation preserves the exact stream and playback priori
     }
     return total;
   }
-  const cacheDirectory = async (name: string) => join(run, 'cache', (await readdir(join(run, 'cache'))).find(value => value.startsWith(id(name)))!);
-  async function initHashes(name: string) {
-    const directory = await cacheDirectory(name);
+  const cacheDirectory = async (name: string, token = '') => join(run, 'cache', (await readdir(join(run, 'cache'))).find(value => value.startsWith(id(name)) && value.includes(token))!);
+  async function initHashes(name: string, token = '') {
+    const directory = await cacheDirectory(name, token);
     const hashes: Record<string, string> = {};
     for (const rendition of await readdir(directory)) {
       if (rendition.startsWith('.')) continue;
@@ -161,24 +161,33 @@ test('bounded startup preparation preserves the exact stream and playback priori
   const settings = {quality: 'speed', codec: 'auto', accelerator: 'none', toneMap: true};
   expect((await page.request.put('/api/v1/settings/transcoder', {headers, data: settings})).ok()).toBe(true);
   const transcode = await (await page.request.get(`/api/v1/items/${id('Invalidation')}/playback?videoCodecs=h264`)).json();
-  const burnSource = source(transcode).replace('-s0-none-', '-s0-external-');
+  const burnSupported = process.env.KINOSAIL_STARTUP_BURN_SUPPORTED === '1';
+  const burnSource = burnSupported ? source(transcode).replace('-s0-none-', '-s0-external-') : source(transcode);
+  const transcodeToken = burnSource.split('/')[4];
   expect((await prepare('Invalidation', burnSource)).status()).toBe(202);
   await expect.poll(async () => {
-    try { return Object.keys(await initHashes('Invalidation')).length; } catch { return 0; }
+    try { return Object.keys(await initHashes('Invalidation', transcodeToken)).length; } catch { return 0; }
   }, {timeout: 20_000, intervals: [100]}).toBeGreaterThan(0);
+  await expect.poll(async () => {
+    try { return (await readFile(join(await cacheDirectory('Invalidation', transcodeToken), 'index.m3u8'))).length; } catch { return 0; }
+  }, {timeout: 20_000, intervals: [50]}).toBeGreaterThan(0);
+  const partialInit = await initHashes('Invalidation', transcodeToken);
   expect((await page.request.delete(`/api/v1/items/${id('Invalidation')}/playback-prepare`, {headers})).status()).toBe(204);
   await page.waitForTimeout(600);
   expect((await prepare('Invalidation', burnSource)).status()).toBe(202);
   await expect.poll(async () => (await prepare('Invalidation', burnSource)).json(), {timeout: 30_000}).toMatchObject({state: 'ready'});
-  const burnDirectories = (await readdir(join(run, 'cache'))).filter(value => value.startsWith(id('Invalidation')) && value.includes('-external-'));
+  const burnDirectories = (await readdir(join(run, 'cache'))).filter(value => value.startsWith(id('Invalidation')) && value.includes(transcodeToken));
   expect(burnDirectories).toHaveLength(1);
   const burnDirectory = join(run, 'cache', burnDirectories[0]);
   const readBurnVersion = () => readFile(join(burnDirectory, 'index.m3u8'), 'utf8');
+  expect(await initHashes('Invalidation', transcodeToken)).toEqual(partialInit);
+  if (burnSupported) {
   const subtitleVersion = await readBurnVersion();
   await utimes(join(run, 'media', 'Invalidation.en.srt'), changed, changed);
   expect(await (await prepare('Invalidation', burnSource)).json()).toMatchObject({state: 'queued'});
   await expect.poll(async () => (await prepare('Invalidation', burnSource)).json(), {timeout: 30_000}).toMatchObject({state: 'ready'});
   expect(await readBurnVersion()).not.toBe(subtitleVersion);
+  } else receipts.push({name: 'burn-in-subtitle-invalidation', result: 'not run: host FFmpeg lacks subtitles filter'});
   const settingsVersion = await readBurnVersion();
   expect((await page.request.put('/api/v1/settings/transcoder', {headers, data: {...settings, quality: 'quality'}})).ok()).toBe(true);
   expect(await (await prepare('Invalidation', burnSource)).json()).toMatchObject({state: 'queued'});
