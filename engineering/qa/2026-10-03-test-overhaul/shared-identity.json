@@ -19,11 +19,11 @@
     "baseline_test_lines": 66475,
     "declarations": 1900,
     "decisions": {
-      "R": 1335,
+      "R": 1350,
       "D": 64,
       "F": 47,
-      "unreviewed": 431,
-      "C": 23
+      "C": 23,
+      "unreviewed": 416
     },
     "removed_declarations": 64,
     "removed_test_lines": 1138,
@@ -857,6 +857,9 @@
         "remaining_pending": 2,
         "entry_evidence": "Complete semantic body/owner/caller/failure/history and actual-versus-fixture E2E evidence per declaration; D candidates independently reviewed before edits."
       }
+    },
+    "casting": {
+      "semantic_review": "All15 complete; actual receiver protocol failures named; browser presentation and mocked remote media distinguished."
     }
   },
   "test_support_inventory": {
@@ -13947,9 +13950,9 @@
       "owner_group": "casting",
       "body_sha256": "a436f9b55bd4b1aa300af5aedc643671f3e6507fc0186fa195fed4ae735e3398",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Important SSRF, stale credential, bounded parser or receiver control regression remains unproved by real browser flow.",
       "validation_command": "cd packages && go test ./casting",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.153695-06:00",
@@ -13957,7 +13960,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/casting",
         "Test": "TestRendererDescriptionRequiresSupportedSameDeviceControl",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Valid AVTransport versions must produce correctly bound opaque renderer authority and usable trimmed label.",
+      "reason": "Retain distinct receiver protocol/security boundary absent from genuine browser receiver-picker journey.",
+      "remaining_coverage": "Actual GET/XML versions 1/2/3 produce same-host service/control and TTL; UI-only browser journey misses receiver discovery parsing.",
+      "production_owner": [
+        "packages/casting/request.go",
+        "packages/casting/renderers.go",
+        "packages/casting/transport.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/casting.go::register and NewRenderers local-only bounded client",
+        "apps/player/internal/server/casting_start.go::apiCastStart",
+        "apps/player/internal/server/casting_controls.go::apiCastCommand"
+      ],
+      "history": [
+        "3061af1cd083cfc5848d42c038b478d5e573142b Restore static gates and offline regression contracts"
+      ],
+      "gap": "apps/player/e2e/test-instance-production.spec.ts receiver-picker uses actual app/local media but only presents/focuses controls; never discovers or invokes a DLNA receiver. player-experience-fixture.ts installs setContent markup, fake media state and remote callbacks: frontend fixture only, not casting backend E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "Complete 455LOC test bodies/local helpers and569LOC casting production read; app constructors/command routes and actual picker test plus synthetic media fixture inspected. No Go candidate execution."
     },
     {
       "file": "packages/casting/description_test.go",
@@ -13967,9 +13989,9 @@
       "owner_group": "casting",
       "body_sha256": "d42a80fa074243651c8aa9f34d0d5b2f068aa189d4d31a0beb45c31d56b985ff",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Important SSRF, stale credential, bounded parser or receiver control regression remains unproved by real browser flow.",
       "validation_command": "cd packages && go test ./casting",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.153891-06:00",
@@ -13977,7 +13999,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/casting",
         "Test": "TestRendererDescriptionsRejectMalformedAndUnsafeDevices",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Malformed/overlarge service inventory, unsupported protocol or foreign control URL must not publish a remotely controllable receiver.",
+      "reason": "Retain distinct receiver protocol/security boundary absent from genuine browser receiver-picker journey.",
+      "remaining_coverage": "XML/name/service-count/type/control matrix; one description request without following malicious control; true browser no receiver response injection.",
+      "production_owner": [
+        "packages/casting/request.go",
+        "packages/casting/renderers.go",
+        "packages/casting/transport.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/casting.go::register and NewRenderers local-only bounded client",
+        "apps/player/internal/server/casting_start.go::apiCastStart",
+        "apps/player/internal/server/casting_controls.go::apiCastCommand"
+      ],
+      "history": [
+        "3061af1cd083cfc5848d42c038b478d5e573142b Restore static gates and offline regression contracts"
+      ],
+      "gap": "apps/player/e2e/test-instance-production.spec.ts receiver-picker uses actual app/local media but only presents/focuses controls; never discovers or invokes a DLNA receiver. player-experience-fixture.ts installs setContent markup, fake media state and remote callbacks: frontend fixture only, not casting backend E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "Complete 455LOC test bodies/local helpers and569LOC casting production read; app constructors/command routes and actual picker test plus synthetic media fixture inspected. No Go candidate execution."
     },
     {
       "file": "packages/casting/description_test.go",
@@ -13987,9 +14028,9 @@
       "owner_group": "casting",
       "body_sha256": "ac1acae7a097b50b7e860f450556c8355b3dc81d58dfe6835984a6631ecd72ef",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Important SSRF, stale credential, bounded parser or receiver control regression remains unproved by real browser flow.",
       "validation_command": "cd packages && go test ./casting",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.154383-06:00",
@@ -13997,7 +14038,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/casting",
         "Test": "TestDescribeLocationsOmitsFailedDevicesAndHonorsCancellation",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "One failed receiver must not discard another valid receiver; pre-cancelled scan must propagate context cancellation.",
+      "reason": "Retain distinct receiver protocol/security boundary absent from genuine browser receiver-picker journey.",
+      "remaining_coverage": "One valid and one malformed XML survive independently; cancellation yields no results/context error. No worker concurrency bound assertion claimed.",
+      "production_owner": [
+        "packages/casting/request.go",
+        "packages/casting/renderers.go",
+        "packages/casting/transport.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/casting.go::register and NewRenderers local-only bounded client",
+        "apps/player/internal/server/casting_start.go::apiCastStart",
+        "apps/player/internal/server/casting_controls.go::apiCastCommand"
+      ],
+      "history": [
+        "3061af1cd083cfc5848d42c038b478d5e573142b Restore static gates and offline regression contracts"
+      ],
+      "gap": "apps/player/e2e/test-instance-production.spec.ts receiver-picker uses actual app/local media but only presents/focuses controls; never discovers or invokes a DLNA receiver. player-experience-fixture.ts installs setContent markup, fake media state and remote callbacks: frontend fixture only, not casting backend E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "Complete 455LOC test bodies/local helpers and569LOC casting production read; app constructors/command routes and actual picker test plus synthetic media fixture inspected. No Go candidate execution."
     },
     {
       "file": "packages/casting/description_test.go",
@@ -14007,9 +14067,9 @@
       "owner_group": "casting",
       "body_sha256": "ecfc97e86e3973106d8df06d4a7089f8a773ab5facebbf013983954c76d929f3",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Important SSRF, stale credential, bounded parser or receiver control regression remains unproved by real browser flow.",
       "validation_command": "cd packages && go test ./casting",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.154405-06:00",
@@ -14017,7 +14077,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/casting",
         "Test": "TestDiscoveryPrunesExpiredDevicesAndBoundsResults",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Discovery publication must remain bounded and sorted despite excess receivers, and transport outage must not leave scan busy forever.",
+      "reason": "Retain distinct receiver protocol/security boundary absent from genuine browser receiver-picker journey.",
+      "remaining_coverage": "65 discovered capped to64 and sorted; later outage produces unavailable and resets scanning. Expired ID omission is not independently isolated by cardinality.",
+      "production_owner": [
+        "packages/casting/request.go",
+        "packages/casting/renderers.go",
+        "packages/casting/transport.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/casting.go::register and NewRenderers local-only bounded client",
+        "apps/player/internal/server/casting_start.go::apiCastStart",
+        "apps/player/internal/server/casting_controls.go::apiCastCommand"
+      ],
+      "history": [
+        "3061af1cd083cfc5848d42c038b478d5e573142b Restore static gates and offline regression contracts"
+      ],
+      "gap": "apps/player/e2e/test-instance-production.spec.ts receiver-picker uses actual app/local media but only presents/focuses controls; never discovers or invokes a DLNA receiver. player-experience-fixture.ts installs setContent markup, fake media state and remote callbacks: frontend fixture only, not casting backend E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "Complete 455LOC test bodies/local helpers and569LOC casting production read; app constructors/command routes and actual picker test plus synthetic media fixture inspected. No Go candidate execution."
     },
     {
       "file": "packages/casting/renderers_test.go",
@@ -14027,9 +14106,9 @@
       "owner_group": "casting",
       "body_sha256": "a98b4e8ecb2f8ace2ac9617498548a2b1179712d5bb3e2c7974de56438364c25",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Important SSRF, stale credential, bounded parser or receiver control regression remains unproved by real browser flow.",
       "validation_command": "cd packages && go test ./casting",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.154424-06:00",
@@ -14037,7 +14116,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/casting",
         "Test": "TestDiscoveryPinsDescriptionAndControlToLocalResponder",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Untrusted SSDP LOCATION/control can otherwise send owner requests to public/loopback/link-local or another device/port.",
+      "reason": "Retain distinct receiver protocol/security boundary absent from genuine browser receiver-picker journey.",
+      "remaining_coverage": "Positive same responder description and controls plus malicious LOCATION/control matrix. localDial loopback err-only may also fail from connection refusal: no isolated loopback dial assertion claimed.",
+      "production_owner": [
+        "packages/casting/request.go",
+        "packages/casting/renderers.go",
+        "packages/casting/transport.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/casting.go::register and NewRenderers local-only bounded client",
+        "apps/player/internal/server/casting_start.go::apiCastStart",
+        "apps/player/internal/server/casting_controls.go::apiCastCommand"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "apps/player/e2e/test-instance-production.spec.ts receiver-picker uses actual app/local media but only presents/focuses controls; never discovers or invokes a DLNA receiver. player-experience-fixture.ts installs setContent markup, fake media state and remote callbacks: frontend fixture only, not casting backend E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "Complete 455LOC test bodies/local helpers and569LOC casting production read; app constructors/command routes and actual picker test plus synthetic media fixture inspected. No Go candidate execution."
     },
     {
       "file": "packages/casting/renderers_test.go",
@@ -14047,9 +14145,9 @@
       "owner_group": "casting",
       "body_sha256": "6569ca439a9b9f14da0f21beb5daa53abdbee2cfebbecd4593e24696ff1df1d3",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Important SSRF, stale credential, bounded parser or receiver control regression remains unproved by real browser flow.",
       "validation_command": "cd packages && go test ./casting",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.154523-06:00",
@@ -14057,7 +14155,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/casting",
         "Test": "TestLoadValidatesBeforeNetworkAndEscapesMetadata",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Invalid source/position must make zero SOAP requests; query ampersands must not corrupt DIDL source XML.",
+      "reason": "Retain distinct receiver protocol/security boundary absent from genuine browser receiver-picker journey.",
+      "remaining_coverage": "Actual fake transport counts zero invalid requests and three valid SOAP actions; checks source ampersand escaping. Escaped title itself is not separately asserted.",
+      "production_owner": [
+        "packages/casting/request.go",
+        "packages/casting/renderers.go",
+        "packages/casting/transport.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/casting.go::register and NewRenderers local-only bounded client",
+        "apps/player/internal/server/casting_start.go::apiCastStart",
+        "apps/player/internal/server/casting_controls.go::apiCastCommand"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "apps/player/e2e/test-instance-production.spec.ts receiver-picker uses actual app/local media but only presents/focuses controls; never discovers or invokes a DLNA receiver. player-experience-fixture.ts installs setContent markup, fake media state and remote callbacks: frontend fixture only, not casting backend E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "Complete 455LOC test bodies/local helpers and569LOC casting production read; app constructors/command routes and actual picker test plus synthetic media fixture inspected. No Go candidate execution."
     },
     {
       "file": "packages/casting/renderers_test.go",
@@ -14067,9 +14184,9 @@
       "owner_group": "casting",
       "body_sha256": "b939f5637dfa2bc291f7ec1c8822dd70a2260de266843bd80e8a4ede69c6d0e3",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Important SSRF, stale credential, bounded parser or receiver control regression remains unproved by real browser flow.",
       "validation_command": "cd packages && go test ./casting",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.154731-06:00",
@@ -14077,7 +14194,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/casting",
         "Test": "TestRendererResponsesAreBoundedAndExpiredIDsCannotControl",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Oversized description can exhaust memory; stale opaque renderer ID must not retain network authority; discovery throttle must avoid repeated scans.",
+      "reason": "Retain distinct receiver protocol/security boundary absent from genuine browser receiver-picker journey.",
+      "remaining_coverage": "Actual bounded description rejection and expired command rejection, exact scan count; browser picker has no oversized response/expiry proof.",
+      "production_owner": [
+        "packages/casting/request.go",
+        "packages/casting/renderers.go",
+        "packages/casting/transport.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/casting.go::register and NewRenderers local-only bounded client",
+        "apps/player/internal/server/casting_start.go::apiCastStart",
+        "apps/player/internal/server/casting_controls.go::apiCastCommand"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "apps/player/e2e/test-instance-production.spec.ts receiver-picker uses actual app/local media but only presents/focuses controls; never discovers or invokes a DLNA receiver. player-experience-fixture.ts installs setContent markup, fake media state and remote callbacks: frontend fixture only, not casting backend E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "Complete 455LOC test bodies/local helpers and569LOC casting production read; app constructors/command routes and actual picker test plus synthetic media fixture inspected. No Go candidate execution."
     },
     {
       "file": "packages/casting/renderers_test.go",
@@ -14087,9 +14223,9 @@
       "owner_group": "casting",
       "body_sha256": "6ba733ea842502bc03a5cd3ba94b244fc298d26d588ca011b509ca17aa27910b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Important SSRF, stale credential, bounded parser or receiver control regression remains unproved by real browser flow.",
       "validation_command": "cd packages && go test ./casting",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.154749-06:00",
@@ -14097,7 +14233,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/casting",
         "Test": "TestTransportTimesRejectMalformedAndOutOfRange",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Malformed/nonfinite/overflow TV timing must not poison playback duration or seek state.",
+      "reason": "Retain distinct receiver protocol/security boundary absent from genuine browser receiver-picker journey.",
+      "remaining_coverage": "Clock malformed matrix and accepted fractional 3723.5 boundary; browser happy playback is local media.",
+      "production_owner": [
+        "packages/casting/request.go",
+        "packages/casting/renderers.go",
+        "packages/casting/transport.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/casting.go::register and NewRenderers local-only bounded client",
+        "apps/player/internal/server/casting_start.go::apiCastStart",
+        "apps/player/internal/server/casting_controls.go::apiCastCommand"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "apps/player/e2e/test-instance-production.spec.ts receiver-picker uses actual app/local media but only presents/focuses controls; never discovers or invokes a DLNA receiver. player-experience-fixture.ts installs setContent markup, fake media state and remote callbacks: frontend fixture only, not casting backend E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "Complete 455LOC test bodies/local helpers and569LOC casting production read; app constructors/command routes and actual picker test plus synthetic media fixture inspected. No Go candidate execution."
     },
     {
       "file": "packages/casting/renderers_test.go",
@@ -14107,9 +14262,9 @@
       "owner_group": "casting",
       "body_sha256": "6343ebe8e7e46de0ccccf3d89f27f7d2153f797de4cfb7f67202c6cac33e7491",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Important SSRF, stale credential, bounded parser or receiver control regression remains unproved by real browser flow.",
       "validation_command": "cd packages && go test ./casting",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.154774-06:00",
@@ -14117,7 +14272,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/casting",
         "Test": "TestRendererPortsAreBoundedBeforeNetwork",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Invalid LOCATION port must be rejected before any description HTTP request; boundary ports must remain accepted.",
+      "reason": "Retain distinct receiver protocol/security boundary absent from genuine browser receiver-picker journey.",
+      "remaining_coverage": "Rejected invalid ports with zero network events; ports 0/80/65535/00080 accepted and observed requests.",
+      "production_owner": [
+        "packages/casting/request.go",
+        "packages/casting/renderers.go",
+        "packages/casting/transport.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/casting.go::register and NewRenderers local-only bounded client",
+        "apps/player/internal/server/casting_start.go::apiCastStart",
+        "apps/player/internal/server/casting_controls.go::apiCastCommand"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "apps/player/e2e/test-instance-production.spec.ts receiver-picker uses actual app/local media but only presents/focuses controls; never discovers or invokes a DLNA receiver. player-experience-fixture.ts installs setContent markup, fake media state and remote callbacks: frontend fixture only, not casting backend E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "Complete 455LOC test bodies/local helpers and569LOC casting production read; app constructors/command routes and actual picker test plus synthetic media fixture inspected. No Go candidate execution."
     },
     {
       "file": "packages/casting/request_test.go",
@@ -14127,9 +14301,9 @@
       "owner_group": "casting",
       "body_sha256": "c22a17ed0843e0d32b08126135adc8b3b1b2e329bfa5ba18d1279659b9e5c990",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Important SSRF, stale credential, bounded parser or receiver control regression remains unproved by real browser flow.",
       "validation_command": "cd packages && go test ./casting",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.155191-06:00",
@@ -14137,7 +14311,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/casting",
         "Test": "TestStartRejectsInvalidInputs",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Protocol/device/session/item validation blocks ambiguous receiver or traversal before creating a playback credential; nonfinite/unbounded resume and oversized token rejection preserve authorization isolation.",
+      "reason": "Retain distinct receiver protocol/security boundary absent from genuine browser receiver-picker journey.",
+      "remaining_coverage": "Accepted Google Cast/DLNA positive controls, malformed protocol/item/session/position/token matrix; actual receiver-picker browser journey only opens UI.",
+      "production_owner": [
+        "packages/casting/request.go",
+        "packages/casting/renderers.go",
+        "packages/casting/transport.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/casting.go::register and NewRenderers local-only bounded client",
+        "apps/player/internal/server/casting_start.go::apiCastStart",
+        "apps/player/internal/server/casting_controls.go::apiCastCommand"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "apps/player/e2e/test-instance-production.spec.ts receiver-picker uses actual app/local media but only presents/focuses controls; never discovers or invokes a DLNA receiver. player-experience-fixture.ts installs setContent markup, fake media state and remote callbacks: frontend fixture only, not casting backend E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "Complete 455LOC test bodies/local helpers and569LOC casting production read; app constructors/command routes and actual picker test plus synthetic media fixture inspected. No Go candidate execution."
     },
     {
       "file": "packages/casting/request_test.go",
@@ -14147,9 +14340,9 @@
       "owner_group": "casting",
       "body_sha256": "ae666dc121a96d534ac41ac2d8b64c5ec917a55dce95f5c17f4ab9573df9b04f",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Important SSRF, stale credential, bounded parser or receiver control regression remains unproved by real browser flow.",
       "validation_command": "cd packages && go test ./casting",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.155221-06:00",
@@ -14157,7 +14350,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/casting",
         "Test": "TestCommandsRejectMissingConflictingAndUnboundedValues",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Conflicting command fields or absent/invalid seek must not send an unintended remote operation.",
+      "reason": "Retain distinct receiver protocol/security boundary absent from genuine browser receiver-picker journey.",
+      "remaining_coverage": "Fixed action command positives and missing/extra/nonfinite/bounded positions; actual browser does not operate a DLNA receiver.",
+      "production_owner": [
+        "packages/casting/request.go",
+        "packages/casting/renderers.go",
+        "packages/casting/transport.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/casting.go::register and NewRenderers local-only bounded client",
+        "apps/player/internal/server/casting_start.go::apiCastStart",
+        "apps/player/internal/server/casting_controls.go::apiCastCommand"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "gap": "apps/player/e2e/test-instance-production.spec.ts receiver-picker uses actual app/local media but only presents/focuses controls; never discovers or invokes a DLNA receiver. player-experience-fixture.ts installs setContent markup, fake media state and remote callbacks: frontend fixture only, not casting backend E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "Complete 455LOC test bodies/local helpers and569LOC casting production read; app constructors/command routes and actual picker test plus synthetic media fixture inspected. No Go candidate execution."
     },
     {
       "file": "packages/casting/transport_test.go",
@@ -14167,9 +14379,9 @@
       "owner_group": "casting",
       "body_sha256": "b418112a043e486ae990c0852a1a7cedeb6fd31783bf9c05c65616775a139c6b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Important SSRF, stale credential, bounded parser or receiver control regression remains unproved by real browser flow.",
       "validation_command": "cd packages && go test ./casting",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.155426-06:00",
@@ -14177,7 +14389,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/casting",
         "Test": "TestRendererPollingNormalizesStateAndRedactsSource",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "TV transport states and timing must map reliably while source credential query is omitted from public status; only success renews availability.",
+      "reason": "Retain distinct receiver protocol/security boundary absent from genuine browser receiver-picker journey.",
+      "remaining_coverage": "Five states, token removal, elapsed3723.5/duration7200, two SOAP actions and TTL extension.",
+      "production_owner": [
+        "packages/casting/request.go",
+        "packages/casting/renderers.go",
+        "packages/casting/transport.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/casting.go::register and NewRenderers local-only bounded client",
+        "apps/player/internal/server/casting_start.go::apiCastStart",
+        "apps/player/internal/server/casting_controls.go::apiCastCommand"
+      ],
+      "history": [
+        "3061af1cd083cfc5848d42c038b478d5e573142b Restore static gates and offline regression contracts"
+      ],
+      "gap": "apps/player/e2e/test-instance-production.spec.ts receiver-picker uses actual app/local media but only presents/focuses controls; never discovers or invokes a DLNA receiver. player-experience-fixture.ts installs setContent markup, fake media state and remote callbacks: frontend fixture only, not casting backend E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "Complete 455LOC test bodies/local helpers and569LOC casting production read; app constructors/command routes and actual picker test plus synthetic media fixture inspected. No Go candidate execution."
     },
     {
       "file": "packages/casting/transport_test.go",
@@ -14187,9 +14418,9 @@
       "owner_group": "casting",
       "body_sha256": "9e5d229cca0883aad6eac3a216b262b5392ecf858eb4a4b4920e4f9d4c4d877e",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Important SSRF, stale credential, bounded parser or receiver control regression remains unproved by real browser flow.",
       "validation_command": "cd packages && go test ./casting",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.155658-06:00",
@@ -14197,7 +14428,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/casting",
         "Test": "TestRendererPollingRejectsInvalidResponsesWithoutRenewal",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Network/XML/unknown-state/invalid-time failures must not renew stale receiver authority.",
+      "reason": "Retain distinct receiver protocol/security boundary absent from genuine browser receiver-picker journey.",
+      "remaining_coverage": "Seven stage-specific failures preserve expiry; unknown ID proves zero network invocation.",
+      "production_owner": [
+        "packages/casting/request.go",
+        "packages/casting/renderers.go",
+        "packages/casting/transport.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/casting.go::register and NewRenderers local-only bounded client",
+        "apps/player/internal/server/casting_start.go::apiCastStart",
+        "apps/player/internal/server/casting_controls.go::apiCastCommand"
+      ],
+      "history": [
+        "3061af1cd083cfc5848d42c038b478d5e573142b Restore static gates and offline regression contracts"
+      ],
+      "gap": "apps/player/e2e/test-instance-production.spec.ts receiver-picker uses actual app/local media but only presents/focuses controls; never discovers or invokes a DLNA receiver. player-experience-fixture.ts installs setContent markup, fake media state and remote callbacks: frontend fixture only, not casting backend E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "Complete 455LOC test bodies/local helpers and569LOC casting production read; app constructors/command routes and actual picker test plus synthetic media fixture inspected. No Go candidate execution."
     },
     {
       "file": "packages/casting/transport_test.go",
@@ -14207,9 +14457,9 @@
       "owner_group": "casting",
       "body_sha256": "6ca157de81720e0a61e10ca8628d84c37e63e8fe2ddbcb84fbe25b24d2b34059",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Important SSRF, stale credential, bounded parser or receiver control regression remains unproved by real browser flow.",
       "validation_command": "cd packages && go test ./casting",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.155762-06:00",
@@ -14217,7 +14467,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/casting",
         "Test": "TestRendererLoadStopsAfterFailedResume",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Failed resume after SetURI+Play must send Stop to avoid unexpected playback; audio source must use correct DIDL class.",
+      "reason": "Retain distinct receiver protocol/security boundary absent from genuine browser receiver-picker journey.",
+      "remaining_coverage": "Exact SetURI/Play/Seek/Stop failure sequence and successful three action sequence plus audio class.",
+      "production_owner": [
+        "packages/casting/request.go",
+        "packages/casting/renderers.go",
+        "packages/casting/transport.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/casting.go::register and NewRenderers local-only bounded client",
+        "apps/player/internal/server/casting_start.go::apiCastStart",
+        "apps/player/internal/server/casting_controls.go::apiCastCommand"
+      ],
+      "history": [
+        "3061af1cd083cfc5848d42c038b478d5e573142b Restore static gates and offline regression contracts"
+      ],
+      "gap": "apps/player/e2e/test-instance-production.spec.ts receiver-picker uses actual app/local media but only presents/focuses controls; never discovers or invokes a DLNA receiver. player-experience-fixture.ts installs setContent markup, fake media state and remote callbacks: frontend fixture only, not casting backend E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "Complete 455LOC test bodies/local helpers and569LOC casting production read; app constructors/command routes and actual picker test plus synthetic media fixture inspected. No Go candidate execution."
     },
     {
       "file": "packages/casting/transport_test.go",
@@ -14227,9 +14496,9 @@
       "owner_group": "casting",
       "body_sha256": "562f84c59ab695e14dae553ad80ddd4af024cc63f5ef384e5364e442d7220fdb",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Important SSRF, stale credential, bounded parser or receiver control regression remains unproved by real browser flow.",
       "validation_command": "cd packages && go test ./casting",
       "baseline_event": {
         "Time": "2026-10-03T10:35:26.156075-06:00",
@@ -14237,7 +14506,26 @@
         "Package": "github.com/MikeO7/kinosail/packages/casting",
         "Test": "TestRendererCommandsUseFixedActions",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Remote commands must map to exact allowed SOAP actions with one request, preventing wrong playback control.",
+      "reason": "Retain distinct receiver protocol/security boundary absent from genuine browser receiver-picker journey.",
+      "remaining_coverage": "Real transport request/action table for play/pause/stop/seek; synthetic web media API remote fixture is not receiver integration.",
+      "production_owner": [
+        "packages/casting/request.go",
+        "packages/casting/renderers.go",
+        "packages/casting/transport.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/casting.go::register and NewRenderers local-only bounded client",
+        "apps/player/internal/server/casting_start.go::apiCastStart",
+        "apps/player/internal/server/casting_controls.go::apiCastCommand"
+      ],
+      "history": [
+        "3061af1cd083cfc5848d42c038b478d5e573142b Restore static gates and offline regression contracts"
+      ],
+      "gap": "apps/player/e2e/test-instance-production.spec.ts receiver-picker uses actual app/local media but only presents/focuses controls; never discovers or invokes a DLNA receiver. player-experience-fixture.ts installs setContent markup, fake media state and remote callbacks: frontend fixture only, not casting backend E2E.",
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "source_read_evidence": "Complete 455LOC test bodies/local helpers and569LOC casting production read; app constructors/command routes and actual picker test plus synthetic media fixture inspected. No Go candidate execution."
     },
     {
       "file": "packages/catalog/browse_access_test.go",
