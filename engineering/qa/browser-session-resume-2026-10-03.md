@@ -70,6 +70,8 @@ All 34 checks per app passed with installed Chrome and Playwright WebKit.
 The retained passkey fixtures return 401 for unauthenticated session checks and declare UTF-8 explicitly.
 The retained held-navigation status check observes DOM mutations before navigation can freeze the document.
 Its assertion still requires the exact success text while the destination remains unavailable.
+The populated Player journey classifies only the same-origin `/api/v1/me` 401 on `/login` as an expected probe.
+Every other resource failure or script error remains fatal to the journey.
 The populated-server `@smoke` journey also verifies a closed tab and saved login return in required CI.
 Authentication trace, video, and screenshot capture are disabled for that journey.
 
