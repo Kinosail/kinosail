@@ -127,7 +127,7 @@ async function rollbackChecks(app) {
   const reset=await snapshot(app); expect(reset.compatibleSettingsSHA256).toBe(before.compatibleSettingsSHA256);
   expect(reset.unrelatedDataSHA256).toEqual(before.unrelatedDataSHA256);
   for(const session of reset.sessions.filter(value=>value.channel==='public')) expect(session.expiresAt-session.createdAt).toBeLessThanOrEqual(8*3600);
-  expect((await api(app.owner,'/api/v1/sessions','DELETE')).status).toBe(200);
+  expect((await api(app.owner,'/api/v1/sessions','DELETE')).status).toBe(204);
   expect((await api(app.owner,'/api/v1/session','DELETE')).status).toBe(204);
   await stop(app); app.legacy=true; start(app); await ready(app);
   await me(app,valid,401,'pre-feature binary cannot reuse rollback-revoked session');

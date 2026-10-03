@@ -7,7 +7,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-const reviewedRouteInventorySHA256 = "1f85989c0b3490a54822c036055d59d63326f9dee4b99a8c1e59b1ea7206f936"
+const reviewedRouteInventorySHA256 = "67f2c2fda10bbba30d7440eeb1e846ed95f25aa61cb0b1779baaea6ab79559ca"
 
 var explicitlyAnonymousRoutes = routeSet(
 	"GET /static/public-login.js", "POST /auth/quick-connect", "POST /auth/quick-connect/token", "POST /auth/quick-connect/cancel",
@@ -132,7 +132,7 @@ var sessionOnlyAPIRoutes = routeSet(
 )
 
 func TestEveryRegisteredRouteHasReviewedAnonymousAccess(t *testing.T) {
-	authRoutesContract().ReviewedAnonymousAccess(t, 464, reviewedRouteInventorySHA256, func(t *testing.T, data string) http.Handler {
+	authRoutesContract().ReviewedAnonymousAccess(t, 468, reviewedRouteInventorySHA256, func(t *testing.T, data string) http.Handler {
 		return New(Config{DataDir: data, RequireAuth: true, Configuration: jellyfinRouteConfiguration(t, data)})
 	})
 }
