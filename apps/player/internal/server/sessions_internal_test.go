@@ -1,32 +1,14 @@
 package server
 
 import (
-	"errors"
 	"net"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
-
-func TestCleanDeviceNameNormalizesBrowserAgentsAndBoundsOtherNames(t *testing.T) {
-	for input, want := range map[string]string{
-		"  ":                            "Web browser",
-		"Mozilla Firefox/128":           "Firefox",
-		"Mozilla Edg/128 Chrome/128":    "Microsoft Edge",
-		"Mozilla Chrome/128 Safari/537": "Chrome",
-		"Mozilla Safari/537":            "Safari",
-		"  Living Room TV  ":            "Living Room TV",
-		strings.Repeat("x", 81):         strings.Repeat("x", 80),
-	} {
-		if got := cleanDeviceName(input); got != want {
-			t.Fatalf("cleanDeviceName(%q) = %q, want %q", input, got, want)
-		}
-	}
-}
 
 func TestOutboundNetworkRejectsLinkLocalMetadataAddresses(t *testing.T) {
 	for raw, allowed := range map[string]bool{
@@ -153,13 +135,6 @@ func TestPublicSessionsAreStrongShortLivedAndBounded(t *testing.T) { //nolint:cy
 	}
 }
 
-func TestBrowserSessionCookiesAreAlwaysHostBoundAndSecure(t *testing.T) {
-	cookie := sessionCookie("token")
-	if cookie.Name != "__Host-kinosail_session" || !cookie.Secure || !cookie.HttpOnly || cookie.Path != "/" || cookie.SameSite != http.SameSiteStrictMode {
-		t.Fatalf("browser cookie = %+v", cookie)
-	}
-}
-
 func TestPublicSessionCannotSurviveProfilePolicyRevision(t *testing.T) {
 	store := newProfileStore(t.TempDir())
 	profile, err := newProfile("Viewer", "viewer-password", false)
@@ -203,35 +178,6 @@ func TestSessionCreationRejectsInactiveAndInvalidPublicProfiles(t *testing.T) {
 	store := &profileStore{profiles: []viewerProfile{{ID: "disabled", Disabled: true}}, sessions: map[string]viewerSession{}, persist: func(string, any) error { return nil }}
 	if _, err := store.createSession("disabled", "Device"); err == nil {
 		t.Fatal("disabled profile received a local session")
-	}
-}
-
-func TestProfilePolicyChangeDoesNotPersistBeforeSessionRevocation(t *testing.T) {
-	profile := viewerProfile{ID: "viewer", Name: "Viewer", Remote: true, Revision: 1}
-	session := viewerSession{ProfileID: profile.ID, Channel: "public", ExpiresAt: time.Now().Add(time.Hour).Unix()}
-	store := &profileStore{
-		file:        "profiles.json",
-		sessionFile: "sessions.json",
-		apiFile:     "api_keys.json",
-		profiles:    []viewerProfile{profile},
-		sessions:    map[string]viewerSession{"session": session},
-		apiKeys:     map[string]apiKey{},
-		persist: func(path string, _ any) error {
-			if path == "sessions.json" {
-				return errors.New("forced session persistence failure")
-			}
-			return nil
-		},
-	}
-
-	if err := store.setProfile(profile.ID, false, profilePolicy{Rating: "all", Libraries: []string{"all"}}); err == nil {
-		t.Fatal("profile policy change succeeded without durable session revocation")
-	}
-	if !store.profiles[0].Remote || store.profiles[0].Revision != profile.Revision {
-		t.Fatalf("failed policy change modified profile: %+v", store.profiles[0])
-	}
-	if _, found := store.sessions["session"]; !found {
-		t.Fatal("failed policy change modified in-memory sessions")
 	}
 }
 

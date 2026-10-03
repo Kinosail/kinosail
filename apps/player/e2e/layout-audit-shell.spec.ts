@@ -73,7 +73,7 @@ test("signed-in application pages retain the navigation shell", async ({ page },
 	await expect(page.getByRole("navigation", { name: "Main navigation" })).toHaveCount(0);
 });
 
-test("Owner settings search finds a setting across task families", async ({ page }, testInfo) => {
+test("Owner settings search finds a setting across task families", { tag: "@smoke" }, async ({ page }, testInfo) => {
 	test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated public test instance");
 	await login(page);
 	for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }, { width: 320, height: 800 }]) {

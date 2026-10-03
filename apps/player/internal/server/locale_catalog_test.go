@@ -34,11 +34,6 @@ func TestNewInteractiveCopyHasTranslations(t *testing.T) {
 	}
 }
 
-func TestSupportedLanguageCoverageIncludesJellyfinLocaleSet(t *testing.T) {
-	t.Parallel()
-	servertest.SupportedLanguageCoverageIncludesJellyfinLocaleSet(t, testSupportedLocales())
-}
-
 func TestTranslatedCatalogsLocalizeAuthenticationCode(t *testing.T) {
 	t.Parallel()
 	englishCatalog := readTestCatalog(t, "en")

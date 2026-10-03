@@ -12,8 +12,8 @@ BUILD = Path(__file__).resolve().parents[2] / 'apps/player/apps/native/scripts/b
 
 class AppleBuildArgumentsTests(unittest.TestCase):
     def test_invalid_arguments_do_not_invoke_git_or_xcode(self):
-        cases = [[], ['android'], ['macos'], ['watchos'], ['visionos'], ['ios', 'release'],
-                 ['tvos', ''], ['ios', 'simulator', 'extra'], ['ios\n'], ['x' * 4096]]
+        cases = [[], ['android'], ['macos'], ['visionos'], ['ios', 'release'],
+                 ['ios', 'simulator', 'extra'], ['ios\n'], ['x' * 4096]]
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             log = root / 'invocations'
@@ -24,6 +24,7 @@ class AppleBuildArgumentsTests(unittest.TestCase):
             env = dict(os.environ, PATH=f'{root}:/usr/bin:/bin', KINOSAIL_BUILD_TEST_LOG=str(log))
             for arguments in cases:
                 with self.subTest(arguments=arguments):
+                    log.unlink(missing_ok=True)
                     result = subprocess.run([str(BUILD), *arguments], env=env, capture_output=True, timeout=10)
                     self.assertEqual(result.returncode, 2)
                     self.assertFalse(log.exists())

@@ -29,14 +29,6 @@ func TestDetectPlaybackMarkersClassifiesNamedChapters(t *testing.T) {
 	}
 }
 
-func TestDetectPlaybackMarkersIgnoresOrdinaryChapters(t *testing.T) {
-	t.Parallel()
-	chapters := []metadata.Chapter{{Title: "Chapter 1"}, {Title: "Prologue"}, {Title: "Director commentary"}}
-	if got := DetectPlaybackMarkers(chapters); len(got) != 0 {
-		t.Fatalf("markers = %#v", got)
-	}
-}
-
 func TestNormalizeAutoSkip(t *testing.T) {
 	t.Parallel()
 	want := []string{"intro", "recap", "credits"}

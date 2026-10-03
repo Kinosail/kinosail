@@ -1,0 +1,85 @@
+{
+  "schema": 1,
+  "purpose": "Exact existing assertion repairs/consolidation; no new isolated declarations. Unknown future body changes fail integrity verification.",
+  "analysis_receipts": {
+    "subtitles_pipeline": {
+      "path": "engineering/qa/2026-10-03-test-overhaul/subtitles-pipeline-failure-analysis.md",
+      "sha256": "9078a6dc8b0a554ad76f23a0f9078eb60ef1b00ba04bf41923663aad59898896",
+      "analysis_commit": "a2666703aca057aa4c72f597450bd90b455d6038",
+      "repair_commit": "b248f865e7083f07bcb229848b070153ecf97075",
+      "validation_receipt": "engineering/qa/2026-10-03-test-overhaul/controls/subtitles-pipeline-controls.json"
+    },
+    "watchrooms": {
+      "path": "engineering/qa/2026-10-03-test-overhaul/shared-identity.json",
+      "json_path": [
+        "failure_analysis_first",
+        "watchrooms_socket_closure"
+      ],
+      "analysis_keys": [
+        "scope",
+        "owners",
+        "dependency_source_read",
+        "failure_modes",
+        "existing_proof_and_gap",
+        "planned_existing_assertion_repair",
+        "control"
+      ],
+      "sha256": "366da19ba4d13941a2b8c7af2950bf8ca82f22056e3c968e7f233cb64f4c6f56",
+      "analysis_commit": "d116cb4fcf66beb3c20ffa3ff0c14d867bb7280d",
+      "repair_commit": "00ae768f0e16f26a2fa1f075bb33b9eda6baa55f",
+      "helper_path": "packages/watchrooms/http_lifecycle_test.go",
+      "helper_file_sha256": "0828f86eeede08a106450da68755c3069eeb5c356328cc3b5cc961b52b0ac535",
+      "validation_receipt": "engineering/qa/2026-10-03-test-overhaul/watchrooms-control/run-metadata.json"
+    }
+  },
+  "body_changes": [
+    {
+      "file": "apps/subtitles/internal/server/remote_security_audit_internal_test.go",
+      "name": "TestRemoteSecurityMutationsHaveStableAuditActions",
+      "baseline_body_sha256": "01b70ad26d20a042019a14b3ae201bc100c57fda18287d5d3bfd7356a2cfcb23",
+      "candidate_body_sha256": "7b71403a41556a9b510ef65f75754f53fb5dcf5b2f9ed6062db7118f878b9e32",
+      "kind": "reviewed_consolidation",
+      "review": "Root independently read shared static/dynamic audit map/tests: five duplicate API rows removed, unique /settings/remote/kill web row retained."
+    },
+    {
+      "file": "apps/subtitles/internal/server/subsource_provider_internal_test.go",
+      "name": "TestSubSourceRejectsUnsafeOrAmbiguousResults",
+      "baseline_body_sha256": "22ab0c82a1b8eddcd5cad11cc5a4f35735c160e3ed56ec3c112e2d02f80de6c5",
+      "candidate_body_sha256": "5f265978e5188c11a3a1dd6169fded4fa963904e950a1c4ef4918623f35bfaa4",
+      "kind": "failure_analysis_before_assertion_repair",
+      "analysis_group": "subtitles_pipeline"
+    },
+    {
+      "file": "apps/subtitles/internal/server/subtitle_excellence_internal_test.go",
+      "name": "TestSubtitleCleanupPreservesSpokenURLsAndRepeatedDialogue",
+      "baseline_body_sha256": "996b278cbd2e270beed82a3f3c50d9b7f2249930bc1a3b4605219d14f481b5c8",
+      "candidate_body_sha256": "08165914f61ba4172a786517e0844fd5a6dd82b73d4927da7a07803b7b2bb1d8",
+      "kind": "failure_analysis_before_assertion_repair",
+      "analysis_group": "subtitles_pipeline"
+    },
+    {
+      "file": "apps/subtitles/internal/server/subtitle_sync_behavior_internal_test.go",
+      "name": "TestSynchronizeCandidateRejectsPreservedSubtitle",
+      "baseline_body_sha256": "f7cb1bba926776ac1ee3ba13fdbc3161cbd786e1f7adde95ddce1ab9efdf6877",
+      "candidate_body_sha256": "636ad4441140a4aff7245523aedbc292e1ae40a6803c962e51838e2cfe8e2285",
+      "kind": "failure_analysis_before_assertion_repair",
+      "analysis_group": "subtitles_pipeline"
+    },
+    {
+      "file": "packages/watchrooms/http_test.go",
+      "name": "TestHTTPWebSocketPreservesLeaderAndValidationRules",
+      "baseline_body_sha256": "d58b78303306cf092562fef3036d85abecbdc77a8766046dc7cd783ea4372124",
+      "candidate_body_sha256": "577dd250831cc8918ebef94a6a776460dba19046511203b464b346284b14a8e6",
+      "kind": "failure_analysis_before_assertion_repair",
+      "analysis_group": "watchrooms"
+    },
+    {
+      "file": "packages/watchrooms/http_test.go",
+      "name": "TestHTTPJoinAndAccessFailuresCloseConnections",
+      "baseline_body_sha256": "177d8df3f2d332e09bdf1002ef40aedc143e70412c9a79b2c6ff9942b83674a9",
+      "candidate_body_sha256": "bf0aecd34395638c164e0ddf27a0e8142b82843bf68ade23c0e4ce132f0ef1f6",
+      "kind": "failure_analysis_before_assertion_repair",
+      "analysis_group": "watchrooms"
+    }
+  ]
+}

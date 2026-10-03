@@ -1,0 +1,4047 @@
+{
+  "schema": "kinosail-complete-ci-e2e-archives-v1",
+  "workflowRun": 37153629848,
+  "prHead": "3885906a5508ef497c2775d547f3321ccc69d63d",
+  "testedCheckout": "39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+  "overallWorkflowConclusion": "failure: CodeQL findings policy, being repaired independently by startup owner; no overall green claim",
+  "archiveCount": 6,
+  "allArchiveMemberChecksumsVerified": true,
+  "systemSourceLimitation": "All four system manifests record pre-existing untracked .cache/ from Trivy and exactRevisionProof:false. Tracked source patch is empty, source unchanged and tested image revision recorded; do not claim clean checkout proof. Move Trivy cache into runner.temp before final system evidence.",
+  "scope": "Browser and system E2E jobs passed independently. Chromium suites mix genuine Server journeys with named fixture cases; no blanket E2E equivalence. Supported browser loopbackHTTP uses no certificate bypass; system curl HTTPS checks retain existing certificate bypass. No physical-device or deployment claim.",
+  "reproduction": "Download each linked ZIP; extract into a fresh directory; run shasum -a 256 -c SHA256SUMS. Exact command/env/tools/source/container/inputs remain in each manifest.",
+  "artifacts": [
+    {
+      "artifactId": 11285092537,
+      "name": "subtitles-ubuntu-24.04-arm-system-e2e-39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+      "artifactURL": "https://github.com/Kinosail/kinosail/actions/runs/37153629848/artifacts/11285092537",
+      "zipSHA256": "d371d29f5c99e053d6bb1bbe7ffc7fccbd28d1a36ac511647efa92bfc1a9908c",
+      "zipBytes": 2519,
+      "checksumVerification": {
+        "members": 2,
+        "allPassed": true,
+        "missingMembers": []
+      },
+      "manifest": {
+        "schemaVersion": 1,
+        "revision": "39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+        "sourceStatus": {
+          "command": [
+            "git",
+            "status",
+            "--porcelain",
+            "--untracked-files=normal"
+          ],
+          "exitCode": 0,
+          "stdout": "?? .cache/",
+          "stderr": ""
+        },
+        "trackedPatchSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "command": [
+          "./scripts/test-container.sh"
+        ],
+        "workingDirectory": "apps/subtitles",
+        "startedUTC": "2026-10-03T21:04:50.397398+00:00",
+        "environment": {
+          "CI": "true",
+          "CONTAINER_ENGINE": "docker",
+          "KINOSAIL_TEST_IMAGE": "localhost/kinosail-subtitles:39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+          "KINOSAIL_TEST_IMAGE_READY": "1"
+        },
+        "platform": {
+          "system": "Linux",
+          "release": "6.17.0-1022-azure",
+          "machine": "aarch64",
+          "python": "3.12.3"
+        },
+        "tools": [
+          {
+            "command": [
+              "go",
+              "version"
+            ],
+            "exitCode": 0,
+            "stdout": "go version go1.27.0 linux/arm64",
+            "stderr": "go: downloading go1.27.0 (linux/arm64)"
+          },
+          {
+            "command": [
+              "node",
+              "--version"
+            ],
+            "exitCode": 0,
+            "stdout": "v22.23.3",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "pnpm",
+              "--version"
+            ],
+            "error": "FileNotFoundError"
+          }
+        ],
+        "inputs": {
+          "apps/player/e2e/pnpm-lock.yaml": "b3151e08c2af7e480d7f6f5aeafb2a230e92c9dd5aaf18dfcd787ee71c8ba655",
+          "apps/player/e2e/playwright.config.ts": "628d3a62d9b3e2fba1bc43f3cd58979acadf22c083e3559c73c4f750a97cc0b3",
+          "apps/player/scripts/generate-test-media.sh": "6e1ee7f3746d2cbd5ca23263fd67e2460fcde882a76b1a3cc354b64585e7b34f",
+          "apps/player/scripts/test-container.sh": "cccac572df1a37fbea72cdff6aa68547a8d9e41cd628fdf3ce836f246b12175a",
+          "apps/subtitles/e2e/pnpm-lock.yaml": "b3151e08c2af7e480d7f6f5aeafb2a230e92c9dd5aaf18dfcd787ee71c8ba655",
+          "apps/subtitles/e2e/playwright.config.ts": "3faad3cedaaeab4ba50aa78926da3076d8fadcd2aa3752806a4dbb7088d144a2",
+          "apps/subtitles/scripts/generate-test-media.sh": "39a4cb408586b5084b2b03c391bfd5678c7e3ea5d4737674e4b1caa8e309a1e2",
+          "apps/subtitles/scripts/test-container.sh": "54109ed54933c79656580d7628207ee837f94e2089c66d318cb6e72499a60107",
+          "scripts/ci/run-populated-settings.py": "1887445160faaeb569dfa5df9544c3ec7c6395a5d1c43e1c65b3883271091366",
+          "scripts/ci/test-container-transport.sh": "8da7af2267fd117b259fb70983fba0b76d036c7de2415f9f68e6f4707dbbb13c"
+        },
+        "testData": "Disposable generated media and UI fixtures; see hashed generators and command log.",
+        "container": {
+          "command": [
+            "docker",
+            "image",
+            "inspect",
+            "--format",
+            "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}",
+            "localhost/kinosail-subtitles:39204bc9c84961b3e74f4a68a2d28ce25d790bca"
+          ],
+          "exitCode": 0,
+          "stdout": "sha256:c77d45156cd4fcd9e5ff9a40b814f5e83806207751377c8c0e9f54db988f9476 39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+          "stderr": ""
+        },
+        "commandExitCode": 0,
+        "finalRevision": {
+          "command": [
+            "git",
+            "rev-parse",
+            "HEAD"
+          ],
+          "exitCode": 0,
+          "stdout": "39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+          "stderr": ""
+        },
+        "finalSourceStatus": {
+          "command": [
+            "git",
+            "status",
+            "--porcelain",
+            "--untracked-files=normal"
+          ],
+          "exitCode": 0,
+          "stdout": "?? .cache/",
+          "stderr": ""
+        },
+        "finalTrackedPatchSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sourceUnchanged": true,
+        "exactRevisionProof": false,
+        "finishedUTC": "2026-10-03T21:05:44.953684+00:00",
+        "exitCode": 0,
+        "result": "passed",
+        "evidence": {
+          "command.log": "864f6f1df3fc8b893fa1734dea02a6eb63d3e5639cad63d0cbc9f0624d596c53"
+        }
+      },
+      "browserResults": [],
+      "evidence": [
+        {
+          "path": "command.log",
+          "sha256": "864f6f1df3fc8b893fa1734dea02a6eb63d3e5639cad63d0cbc9f0624d596c53"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "40b9348282c2e31b6a0badee889a97858014455d0346a72b6c4f21677de005b3"
+        }
+      ]
+    },
+    {
+      "artifactId": 11285077824,
+      "name": "player-chromium-e2e-39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+      "artifactURL": "https://github.com/Kinosail/kinosail/actions/runs/37153629848/artifacts/11285077824",
+      "zipSHA256": "d9ab00362a39b065fddd454d56f9bfcbd232ccc091148bb5c38fcd604172bee8",
+      "zipBytes": 5090334,
+      "checksumVerification": {
+        "members": 163,
+        "allPassed": true,
+        "missingMembers": []
+      },
+      "manifest": {
+        "schemaVersion": 1,
+        "revision": "39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+        "sourceStatus": {
+          "command": [
+            "git",
+            "status",
+            "--porcelain",
+            "--untracked-files=normal"
+          ],
+          "exitCode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        "trackedPatchSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "command": [
+          "./scripts/test-container.sh"
+        ],
+        "workingDirectory": "apps/player",
+        "startedUTC": "2026-10-03T21:05:42.847591+00:00",
+        "environment": {
+          "CI": "true",
+          "CONTAINER_ENGINE": "docker",
+          "KINOSAIL_BROWSER_TEST": "1",
+          "KINOSAIL_BROWSER_MATRIX": "",
+          "KINOSAIL_BROWSER_PROJECT": "chromium",
+          "KINOSAIL_BROWSER_SMOKE": "1",
+          "KINOSAIL_BROWSER_WORKERS": "3",
+          "KINOSAIL_TEST_IMAGE": "localhost/kinosail-player:39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+          "KINOSAIL_TEST_IMAGE_READY": "1"
+        },
+        "platform": {
+          "system": "Linux",
+          "release": "6.17.0-1022-azure",
+          "machine": "x86_64",
+          "python": "3.12.3"
+        },
+        "tools": [
+          {
+            "command": [
+              "go",
+              "version"
+            ],
+            "exitCode": 0,
+            "stdout": "go version go1.27.0 linux/amd64",
+            "stderr": "go: downloading go1.27.0 (linux/amd64)"
+          },
+          {
+            "command": [
+              "node",
+              "--version"
+            ],
+            "exitCode": 0,
+            "stdout": "v26.10.0",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "pnpm",
+              "--version"
+            ],
+            "exitCode": 0,
+            "stdout": "11.22.0",
+            "stderr": ""
+          }
+        ],
+        "inputs": {
+          "apps/player/e2e/pnpm-lock.yaml": "b3151e08c2af7e480d7f6f5aeafb2a230e92c9dd5aaf18dfcd787ee71c8ba655",
+          "apps/player/e2e/playwright.config.ts": "628d3a62d9b3e2fba1bc43f3cd58979acadf22c083e3559c73c4f750a97cc0b3",
+          "apps/player/scripts/generate-test-media.sh": "6e1ee7f3746d2cbd5ca23263fd67e2460fcde882a76b1a3cc354b64585e7b34f",
+          "apps/player/scripts/test-container.sh": "cccac572df1a37fbea72cdff6aa68547a8d9e41cd628fdf3ce836f246b12175a",
+          "apps/subtitles/e2e/pnpm-lock.yaml": "b3151e08c2af7e480d7f6f5aeafb2a230e92c9dd5aaf18dfcd787ee71c8ba655",
+          "apps/subtitles/e2e/playwright.config.ts": "3faad3cedaaeab4ba50aa78926da3076d8fadcd2aa3752806a4dbb7088d144a2",
+          "apps/subtitles/scripts/generate-test-media.sh": "39a4cb408586b5084b2b03c391bfd5678c7e3ea5d4737674e4b1caa8e309a1e2",
+          "apps/subtitles/scripts/test-container.sh": "54109ed54933c79656580d7628207ee837f94e2089c66d318cb6e72499a60107",
+          "scripts/ci/run-populated-settings.py": "1887445160faaeb569dfa5df9544c3ec7c6395a5d1c43e1c65b3883271091366",
+          "scripts/ci/test-container-transport.sh": "8da7af2267fd117b259fb70983fba0b76d036c7de2415f9f68e6f4707dbbb13c"
+        },
+        "testData": "Disposable generated media and UI fixtures; see hashed generators and command log.",
+        "container": {
+          "command": [
+            "docker",
+            "image",
+            "inspect",
+            "--format",
+            "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}",
+            "localhost/kinosail-player:39204bc9c84961b3e74f4a68a2d28ce25d790bca"
+          ],
+          "exitCode": 0,
+          "stdout": "sha256:def71a28fba77df2e58676af84f5a88a48f3ffde1de55fd180f7fad4f3be985d 39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+          "stderr": ""
+        },
+        "commandExitCode": 0,
+        "finalRevision": {
+          "command": [
+            "git",
+            "rev-parse",
+            "HEAD"
+          ],
+          "exitCode": 0,
+          "stdout": "39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+          "stderr": ""
+        },
+        "finalSourceStatus": {
+          "command": [
+            "git",
+            "status",
+            "--porcelain",
+            "--untracked-files=normal"
+          ],
+          "exitCode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        "finalTrackedPatchSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sourceUnchanged": true,
+        "exactRevisionProof": true,
+        "finishedUTC": "2026-10-03T21:07:45.382942+00:00",
+        "exitCode": 0,
+        "result": "passed",
+        "evidence": {
+          "browser-results-chromium/.last-run.json": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903",
+          "browser-results-chromium/card-highlights-cards-keep-47868-ghlights-at-1440px-in-light-chromium/attachments/environment-json-f4ce59bbb4414bdca4b7f4c85f53717176be0707.json": "b9530b4d9262ecf131e57be6a26b3b2b5dde4df18de929c70db9aa8d18c5eb1c",
+          "browser-results-chromium/card-highlights-cards-keep-47868-ghlights-at-1440px-in-light-chromium/card-highlights-forced-colors.png": "98a0a779e323e8ce7acc9f7a0df29f1217cfa6a85103c8db41392ae313f94367",
+          "browser-results-chromium/card-highlights-cards-keep-47868-ghlights-at-1440px-in-light-chromium/card-highlights.png": "b33f4f21f6dfc9505124f696670321ccf626306b291e49965c6ba1f30d972759",
+          "browser-results-chromium/card-highlights-cards-keep-47868-ghlights-at-1440px-in-light-chromium/environment.json": "b9530b4d9262ecf131e57be6a26b3b2b5dde4df18de929c70db9aa8d18c5eb1c",
+          "browser-results-chromium/card-highlights-cards-keep-58ba2-ighlights-at-390px-in-light-chromium/attachments/environment-json-797be91e0ed62f356cf3c2d3d3302960e407bc25.json": "b936d2bfb90596e2c3b488f57338b4f6b7ea5e842daa3186599113fa74f58186",
+          "browser-results-chromium/card-highlights-cards-keep-58ba2-ighlights-at-390px-in-light-chromium/card-highlights-forced-colors.png": "d31e01f6530859fd064285e56475ff6efa44f2579027523288a5a770e1dec16a",
+          "browser-results-chromium/card-highlights-cards-keep-58ba2-ighlights-at-390px-in-light-chromium/card-highlights.png": "cd04d968b28a657b065f4c45442c59fa46b2aaf6c55e3a251176d5891c7b9898",
+          "browser-results-chromium/card-highlights-cards-keep-58ba2-ighlights-at-390px-in-light-chromium/environment.json": "b936d2bfb90596e2c3b488f57338b4f6b7ea5e842daa3186599113fa74f58186",
+          "browser-results-chromium/card-highlights-cards-keep-b31c2-ighlights-at-1440px-in-dark-chromium/attachments/environment-json-9fea3e4c769af1e65841c40655ebe212af7f9b76.json": "b0c36e0d3fab2c4775b28866b19bc18cdbe509e8cc6e4749431efd7c5b2240ec",
+          "browser-results-chromium/card-highlights-cards-keep-b31c2-ighlights-at-1440px-in-dark-chromium/card-highlights-forced-colors.png": "98a0a779e323e8ce7acc9f7a0df29f1217cfa6a85103c8db41392ae313f94367",
+          "browser-results-chromium/card-highlights-cards-keep-b31c2-ighlights-at-1440px-in-dark-chromium/card-highlights.png": "9b42589bb999b5aaad15e5139e5f1e5869fb0a075f7501770efcddb335d2be7e",
+          "browser-results-chromium/card-highlights-cards-keep-b31c2-ighlights-at-1440px-in-dark-chromium/environment.json": "b0c36e0d3fab2c4775b28866b19bc18cdbe509e8cc6e4749431efd7c5b2240ec",
+          "browser-results-chromium/card-highlights-cards-keep-d377d-highlights-at-390px-in-dark-chromium/attachments/environment-json-acb98606ea55374b6e6d559765f8b72dd2edc701.json": "36a396dfa34251f4103bef06412284dd5cd23f4a222adc5a3a5797dff59fa8cb",
+          "browser-results-chromium/card-highlights-cards-keep-d377d-highlights-at-390px-in-dark-chromium/card-highlights-forced-colors.png": "d31e01f6530859fd064285e56475ff6efa44f2579027523288a5a770e1dec16a",
+          "browser-results-chromium/card-highlights-cards-keep-d377d-highlights-at-390px-in-dark-chromium/card-highlights.png": "1a836d759c4c578963390e6b5691d2a1d76443dc81a2c600afa55b0d5e157c54",
+          "browser-results-chromium/card-highlights-cards-keep-d377d-highlights-at-390px-in-dark-chromium/environment.json": "36a396dfa34251f4103bef06412284dd5cd23f4a222adc5a3a5797dff59fa8cb",
+          "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/attachments/direct-1440-retry-receipt-795e1720375ad61fc692927df5b97cf21c8c0835.json": "30f55e67f726ba150625494a30ffee9383a9d67d7dc0db3aa5e4a6d4d9225296",
+          "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/attachments/direct-390-retry-receipt-2c7ff3e18c6c587237e76e3b963d247aaa9db458.json": "3bdbcd63799cc73ee826eccea039531b6764675fb1fee5ad336260a5e9774308",
+          "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/direct-1440-failed.png": "06e042e8cabba71320272f8825af95f5b094c8b491e3c44bd23d6f66612be028",
+          "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/direct-1440-final.png": "8ee4ddfef3235ca82e83653ab206b00e7c94482ba7ead765b604ba8f14d71298",
+          "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/direct-1440-loaded.png": "187713c723b4fb41663c055692b2555c6f7c7125e65739309ed74efadd3e14e8",
+          "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/direct-1440-pending.png": "7c189b4bce8a936beb6fd2e34424532ebb4b37993fca1e85585dc3fa455690e9",
+          "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/direct-1440-recovered.png": "82ac34aa1145b93099c0a3009ad7abfa021b30ad51b95096b03d7894b82e3a28",
+          "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/direct-1440-retry-receipt.json": "30f55e67f726ba150625494a30ffee9383a9d67d7dc0db3aa5e4a6d4d9225296",
+          "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/direct-390-failed.png": "ce6d0c5eb5377c43b6fc23b4019a39ce29b73deb31b447eac767b4d03db0206a",
+          "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/direct-390-final.png": "4639028781b7b9dd77bd1326626543f97db27d879314a3b03296b8994c15f074",
+          "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/direct-390-loaded.png": "4793e2dfee834e7eaa5dd81aeb678615699fa4661721735c8ef49187e19c3232",
+          "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/direct-390-pending.png": "f5b359684712a255e9df6766c7c0b183b14515e171b0a98785679106b95ddfd3",
+          "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/direct-390-recovered.png": "4bfebfcb64a68bbcee58e9429a36e4f7e84f8e55dc4cdd13babe9465e53c90dd",
+          "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/direct-390-retry-receipt.json": "3bdbcd63799cc73ee826eccea039531b6764675fb1fee5ad336260a5e9774308",
+          "browser-results-chromium/home-stack-layout-Home-med-4f8d2-ithout-horizontal-scrolling-chromium/home-shelves-1440.png": "848932424c89debd1098efc9870d5d51921e76118286401b4c6773f27e673142",
+          "browser-results-chromium/home-stack-layout-Home-med-4f8d2-ithout-horizontal-scrolling-chromium/home-shelves-390.png": "08375c5fe292272db4399524ba5cfe529f9f99cc3a42f894fb7f77aa5640d59d",
+          "browser-results-chromium/home-stack-layout-Home-med-4f8d2-ithout-horizontal-scrolling-chromium/home-shelves-768.png": "2583198d1b7b34b7d6b813601e23f04a82a6b5dfad27189aab51a6e1b42541f6",
+          "browser-results-chromium/htmx-migration-HTMX-204-le-0a2a0-tent-usable-at-1920px-smoke-chromium/204-recovered.png": "d2060911318e85f722ec4df4bc31c0bac705287c127634d2d8acf32d9de05fa5",
+          "browser-results-chromium/htmx-migration-HTMX-204-le-4134f-tent-usable-at-1440px-smoke-chromium/204-recovered.png": "652a836ffda8a1197e8826a1df809bf5226ca9147472e4cbf9004b0a99efc629",
+          "browser-results-chromium/htmx-migration-HTMX-204-le-eb955-ntent-usable-at-390px-smoke-chromium/204-recovered.png": "cc3f831826b1f3c12db289fd4178c689be744ca8d510bf9e774316ec78378701",
+          "browser-results-chromium/htmx-migration-HTMX-400-le-1a7dc-tent-usable-at-1920px-smoke-chromium/400-recovered.png": "db0921730cb44bfe1b126b2d54357831ffdf41b383fd295b4b368fcb4fecba83",
+          "browser-results-chromium/htmx-migration-HTMX-400-le-6e595-ntent-usable-at-390px-smoke-chromium/400-recovered.png": "11d06f4c706fa2ef7fbc2bb376b3abd5a9355b8975c1b4fe28c869e7e6182292",
+          "browser-results-chromium/htmx-migration-HTMX-400-le-749f9-tent-usable-at-1440px-smoke-chromium/400-recovered.png": "ef926349dbf2c8904397cabacaad565d4effd7e230198fbb84df2e0afd950d5c",
+          "browser-results-chromium/htmx-migration-HTMX-500-le-2b12b-tent-usable-at-1440px-smoke-chromium/500-recovered.png": "16e9d400166602e695178c5fc8e4a59efad5ffc0489342fe4b904e9e8b9f715c",
+          "browser-results-chromium/htmx-migration-HTMX-500-le-cafd0-ntent-usable-at-390px-smoke-chromium/500-recovered.png": "f7ec90403d9210f682dca99305c1352700a85c10ce3dd7b42768aa7b7aaa51b3",
+          "browser-results-chromium/htmx-migration-HTMX-500-le-d3b09-tent-usable-at-1920px-smoke-chromium/500-recovered.png": "d2060911318e85f722ec4df4bc31c0bac705287c127634d2d8acf32d9de05fa5",
+          "browser-results-chromium/htmx-migration-HTMX-abort--992d7-tent-usable-at-1440px-smoke-chromium/abort-recovered.png": "8a2fffb88dd3217a04bb57bde2d96523c894d34909ee97a5adbab62ba9bd269f",
+          "browser-results-chromium/htmx-migration-HTMX-abort--b3256-tent-usable-at-1920px-smoke-chromium/abort-recovered.png": "ec5c2c2dc97034f5e94ae88af669c1bfa1d75ae6c8574a5b0efae5de1207df6e",
+          "browser-results-chromium/htmx-migration-HTMX-abort--e6232-ntent-usable-at-390px-smoke-chromium/abort-recovered.png": "2c39b747b63540d483e2750bbcd9277e27932ed6d4bef5b4cb0e1e6566274148",
+          "browser-results-chromium/htmx-migration-HTMX-delays-bfd06-pending-content-inert-smoke-chromium/delayed-pending.png": "9b92132ace51e593fc068a4833ddbe96f5cfc2799020843fb475cc53ad196ea0",
+          "browser-results-chromium/htmx-migration-HTMX-networ-040d8-tent-usable-at-1440px-smoke-chromium/network-recovered.png": "8a2fffb88dd3217a04bb57bde2d96523c894d34909ee97a5adbab62ba9bd269f",
+          "browser-results-chromium/htmx-migration-HTMX-networ-40711-tent-usable-at-1920px-smoke-chromium/network-recovered.png": "ec5c2c2dc97034f5e94ae88af669c1bfa1d75ae6c8574a5b0efae5de1207df6e",
+          "browser-results-chromium/htmx-migration-HTMX-networ-92749-ntent-usable-at-390px-smoke-chromium/network-recovered.png": "2c39b747b63540d483e2750bbcd9277e27932ed6d4bef5b4cb0e1e6566274148",
+          "browser-results-chromium/htmx-migration-HTMX-replac-41b0c-ending-work-at-1440px-smoke-chromium/1440-Empty-pending.png": "af03fee5ea357c00ae7ba38fc61d6135177e442e55a06cafe6273567a7c946e2",
+          "browser-results-chromium/htmx-migration-HTMX-replac-41b0c-ending-work-at-1440px-smoke-chromium/1440-Empty.png": "5d70f407037f80026d7533e5912d029f2ba4fdde49707d42699b0922ac02fded",
+          "browser-results-chromium/htmx-migration-HTMX-replac-41b0c-ending-work-at-1440px-smoke-chromium/1440-Loaded-pending.png": "af03fee5ea357c00ae7ba38fc61d6135177e442e55a06cafe6273567a7c946e2",
+          "browser-results-chromium/htmx-migration-HTMX-replac-41b0c-ending-work-at-1440px-smoke-chromium/1440-Loaded.png": "e564af60c36839265418e998415da7116190058c83ca3daf9d8e986351ee52a6",
+          "browser-results-chromium/htmx-migration-HTMX-replac-94efb-pending-work-at-390px-smoke-chromium/390-Empty-pending.png": "6c6f00cfa28c9138a857c87e500bfc7ee1a6cfe48201a95137c35821e4e8595a",
+          "browser-results-chromium/htmx-migration-HTMX-replac-94efb-pending-work-at-390px-smoke-chromium/390-Empty.png": "ee00c4686964ee19c4320dabcf6d097f3394c3b18906228a8a34785b79b0e45e",
+          "browser-results-chromium/htmx-migration-HTMX-replac-94efb-pending-work-at-390px-smoke-chromium/390-Loaded-pending.png": "6c6f00cfa28c9138a857c87e500bfc7ee1a6cfe48201a95137c35821e4e8595a",
+          "browser-results-chromium/htmx-migration-HTMX-replac-94efb-pending-work-at-390px-smoke-chromium/390-Loaded.png": "43c6ef84981b62f3b7a1d595ed817eb717fde509090122fb31e422e0ab68db2d",
+          "browser-results-chromium/htmx-migration-HTMX-replac-d516f-ending-work-at-1920px-smoke-chromium/1920-Empty-pending.png": "0f7a4ac1610e4711665d59dddc2b51588e1910d99d96197898f1c86fbbbca31e",
+          "browser-results-chromium/htmx-migration-HTMX-replac-d516f-ending-work-at-1920px-smoke-chromium/1920-Empty.png": "3ecdb93c1720b44d5447d54152b10474601cd71a64e6b224d0da0bd8c9d586b1",
+          "browser-results-chromium/htmx-migration-HTMX-replac-d516f-ending-work-at-1920px-smoke-chromium/1920-Loaded-pending.png": "0f7a4ac1610e4711665d59dddc2b51588e1910d99d96197898f1c86fbbbca31e",
+          "browser-results-chromium/htmx-migration-HTMX-replac-d516f-ending-work-at-1920px-smoke-chromium/1920-Loaded.png": "524f1b75fe15bb99b081127821307aabf07d4a86aa819649aff0aa07430b2d5d",
+          "browser-results-chromium/htmx-migration-HTMX-timeou-0dda3-ntent-usable-at-390px-smoke-chromium/timeout-recovered.png": "2c39b747b63540d483e2750bbcd9277e27932ed6d4bef5b4cb0e1e6566274148",
+          "browser-results-chromium/htmx-migration-HTMX-timeou-464c7-tent-usable-at-1440px-smoke-chromium/timeout-recovered.png": "8a2fffb88dd3217a04bb57bde2d96523c894d34909ee97a5adbab62ba9bd269f",
+          "browser-results-chromium/htmx-migration-HTMX-timeou-aa686-tent-usable-at-1920px-smoke-chromium/timeout-recovered.png": "ec5c2c2dc97034f5e94ae88af669c1bfa1d75ae6c8574a5b0efae5de1207df6e",
+          "browser-results-chromium/media-title-truncation-med-689a4-titles-to-two-visible-lines-chromium/titles-1440.png": "cd018674b1b09aa9d7dfcd4aeea30c03bb97b562c54a5bc230a5e2caa738c3c3",
+          "browser-results-chromium/media-title-truncation-med-689a4-titles-to-two-visible-lines-chromium/titles-390.png": "a1ff2aa2e502390ba0ec5f979365453e57cac4265a87ef14299cf5735083431a",
+          "browser-results-chromium/player-apple-launch-Apple--8e486-or-starts-muted-preparation-chromium/apple-launch-receipt.json": "a20e57b4d70f996142794810b9e41424a06ce914d0f3e09177344b50b67fed4d",
+          "browser-results-chromium/player-apple-launch-Apple--8e486-or-starts-muted-preparation-chromium/attachments/apple-launch-receipt-a72b2068e70cbd8a3dbac169e936316333935515.json": "a20e57b4d70f996142794810b9e41424a06ce914d0f3e09177344b50b67fed4d",
+          "browser-results-chromium/player-apple-launch-Apple--91558-lay-without-inline-fallback-chromium/apple-launch-receipt.json": "a20e57b4d70f996142794810b9e41424a06ce914d0f3e09177344b50b67fed4d",
+          "browser-results-chromium/player-apple-launch-Apple--91558-lay-without-inline-fallback-chromium/attachments/apple-launch-receipt-945c58f3bce0f61ad48bdd04ebf645d12af336d9.json": "a20e57b4d70f996142794810b9e41424a06ce914d0f3e09177344b50b67fed4d",
+          "browser-results-chromium/player-apple-launch-Apple--95647-keeps-Apple-Play-accessible-chromium/apple-launch-receipt.json": "a20e57b4d70f996142794810b9e41424a06ce914d0f3e09177344b50b67fed4d",
+          "browser-results-chromium/player-apple-launch-Apple--95647-keeps-Apple-Play-accessible-chromium/attachments/apple-launch-receipt-6e059a044317ba31d5b68ac764d6d323a21b99e6.json": "a20e57b4d70f996142794810b9e41424a06ce914d0f3e09177344b50b67fed4d",
+          "browser-results-chromium/player-apple-launch-Apple--b85b0-uses-and-next-Play-reenters-chromium/apple-launch-receipt.json": "a20e57b4d70f996142794810b9e41424a06ce914d0f3e09177344b50b67fed4d",
+          "browser-results-chromium/player-apple-launch-Apple--b85b0-uses-and-next-Play-reenters-chromium/attachments/apple-launch-receipt-cf03f648b00008c67054c0f60d2c03ee44bafb04.json": "a20e57b4d70f996142794810b9e41424a06ce914d0f3e09177344b50b67fed4d",
+          "browser-results-chromium/player-apple-launch-Apple--c4364-lay-without-inline-fallback-chromium/apple-launch-receipt.json": "a20e57b4d70f996142794810b9e41424a06ce914d0f3e09177344b50b67fed4d",
+          "browser-results-chromium/player-apple-launch-Apple--c4364-lay-without-inline-fallback-chromium/attachments/apple-launch-receipt-3f59b2b78924547ef452533aee37be599f311d41.json": "a20e57b4d70f996142794810b9e41424a06ce914d0f3e09177344b50b67fed4d",
+          "browser-results-chromium/player-apple-launch-Apple--da5eb-ts-no-custom-theater-errors-chromium/apple-launch-receipt.json": "a20e57b4d70f996142794810b9e41424a06ce914d0f3e09177344b50b67fed4d",
+          "browser-results-chromium/player-apple-launch-Apple--da5eb-ts-no-custom-theater-errors-chromium/attachments/apple-launch-receipt-066b5d1dd7cc36c74be30db526d9e6d40ac7a485.json": "a20e57b4d70f996142794810b9e41424a06ce914d0f3e09177344b50b67fed4d",
+          "browser-results-chromium/player-compatible-intent-c-e6636-ring-resumed-autoplay-smoke-chromium/intent-receipt.json": "3ecef397222588b32cb3e7944b6ae0b431da803798c65129dbf95beae15b8510",
+          "browser-results-chromium/player-control-targets-bla-df7cf-g-playback-at-390x844-smoke-chromium/tap-controls-settings.png": "6ade366c8cfa0617eac0a639d501b992f0cd2c43f45ea38b25e813b71e7829f1",
+          "browser-results-chromium/player-control-targets-bla-eee28-g-playback-at-844x390-smoke-chromium/tap-controls-settings.png": "cdbefc1189ccba9cb439e5506c13bc6ab38b72fba982c436b6ccd1530e44f7c2",
+          "browser-results-chromium/player-experience-status-a-194ec-s-without-completion-events-chromium/1440-pending-seek.png": "8fa34f327f7a6dc4d7dfb352f8065c5416019e8d2fab8f494aa8ab785edf0c99",
+          "browser-results-chromium/player-experience-status-a-194ec-s-without-completion-events-chromium/1440-resumed-seek.png": "20703eb1ca749481c843086a3006233595c16a80dd703cc5443ec524a03704be",
+          "browser-results-chromium/player-experience-status-a-194ec-s-without-completion-events-chromium/390-pending-seek.png": "7a981d97b73609666820356b90a63818ce53d78e8860a8aa75ad2333cf73d73c",
+          "browser-results-chromium/player-experience-status-a-194ec-s-without-completion-events-chromium/390-resumed-seek.png": "146703c7434f14d10eaee6b826725083de342643ba675090b073a1e2017dfcc6",
+          "browser-results-chromium/player-experience-status-a-d8b03-s-without-completion-events-chromium/1440-pending-seek.png": "d3950081686e2fbd65a1a0895686e812c05a04bf4bbec147fd490636d5e3b3e0",
+          "browser-results-chromium/player-experience-status-a-d8b03-s-without-completion-events-chromium/1440-resumed-seek.png": "28bfaf59b02d543891cd46aa8a1d5be60ecf87decfa54436c2071383819e580d",
+          "browser-results-chromium/player-experience-status-a-d8b03-s-without-completion-events-chromium/390-pending-seek.png": "7a981d97b73609666820356b90a63818ce53d78e8860a8aa75ad2333cf73d73c",
+          "browser-results-chromium/player-experience-status-a-d8b03-s-without-completion-events-chromium/390-resumed-seek.png": "fad61124606ec1838392bdf69718ba023f45c50c218095cb264debfca1ed4a6e",
+          "browser-results-chromium/player-native-seek-gap-nat-04994-ter-an-hour-long-seek-smoke-chromium/paused-seek-readiness.png": "c41eda9ee3b9bc5b323a50c5680ffea389930b38db02e07bc3db64259f404656",
+          "browser-results-chromium/player-native-seek-gap-nat-c79ed-ter-a-paused-far-seek-smoke-chromium/paused-seek-readiness.png": "c41eda9ee3b9bc5b323a50c5680ffea389930b38db02e07bc3db64259f404656",
+          "browser-results-chromium/player-touch-fullscreen-to-37c50-serves-fullscreen-on-resume-chromium/attachments/fullscreen-receipt-d0c9af23fc627fc5de53bee2d0843f01b2b34852.json": "73dd2b80465999220a6f551084dec144048cb0a3f4fac642023111c9487e7568",
+          "browser-results-chromium/player-touch-fullscreen-to-37c50-serves-fullscreen-on-resume-chromium/fullscreen-receipt.json": "73dd2b80465999220a6f551084dec144048cb0a3f4fac642023111c9487e7568",
+          "browser-results-chromium/player-touch-fullscreen-to-62520-ble-media-states-at-844x390-chromium/attachments/fullscreen-receipt-6520d9eba929e6558dd12f3afc0b31d5bbfa3f27.json": "f3f27bff0799620daa9b98c01da641cccd94327ff4f996097a4bf4e12e720102",
+          "browser-results-chromium/player-touch-fullscreen-to-62520-ble-media-states-at-844x390-chromium/fullscreen-failed.png": "511742f0da47e5ce8eb18e8098be5fc7a5cc5070e13aa3e2475043c4b18cdb4a",
+          "browser-results-chromium/player-touch-fullscreen-to-62520-ble-media-states-at-844x390-chromium/fullscreen-loaded.png": "46208f6ffc9df9efc7b6008b2055532d410d2c3fd455e5d6c529b31437819d88",
+          "browser-results-chromium/player-touch-fullscreen-to-62520-ble-media-states-at-844x390-chromium/fullscreen-pending.png": "09ce6d767a2066661b01d225aaab5f3274d632796fe2300b89f662d6b432ef05",
+          "browser-results-chromium/player-touch-fullscreen-to-62520-ble-media-states-at-844x390-chromium/fullscreen-receipt.json": "f3f27bff0799620daa9b98c01da641cccd94327ff4f996097a4bf4e12e720102",
+          "browser-results-chromium/player-touch-fullscreen-to-62520-ble-media-states-at-844x390-chromium/fullscreen-settings.png": "74e85cfaa69d11d0d8c7c406fb8707068620379d38bf4a4e81fd103f24731974",
+          "browser-results-chromium/player-touch-fullscreen-to-702f3-llscreen-APIs-are-available-chromium/attachments/fullscreen-receipt-8b34e887e464b9cd90cc5134aa2bd47faf6288a9.json": "8df644753365ec3588906a4992d75247c016be0b58fd3778838c2bf445630bcb",
+          "browser-results-chromium/player-touch-fullscreen-to-702f3-llscreen-APIs-are-available-chromium/fullscreen-receipt.json": "8df644753365ec3588906a4992d75247c016be0b58fd3778838c2bf445630bcb",
+          "browser-results-chromium/player-touch-fullscreen-to-be3a6-e-media-states-at-1920x1080-chromium/attachments/fullscreen-receipt-ad17e23e94fe383be3b142307833646b3ac49f40.json": "709c60fcfad21c874419a177643fdf99fb90c39bd58def26d99bcf51b1fc3fd0",
+          "browser-results-chromium/player-touch-fullscreen-to-be3a6-e-media-states-at-1920x1080-chromium/fullscreen-failed.png": "fd150e547207decb08c794cf770194fbc36689f027cf9b20797c3a463c065c30",
+          "browser-results-chromium/player-touch-fullscreen-to-be3a6-e-media-states-at-1920x1080-chromium/fullscreen-loaded.png": "d1f27aa2ab3149cdac7375d3e9eee3b4e0ba4ea0e9d323fe1a5efdf83077dc43",
+          "browser-results-chromium/player-touch-fullscreen-to-be3a6-e-media-states-at-1920x1080-chromium/fullscreen-pending.png": "ec952099f59452b32a64efdaeb5ffe422573ecc6616b796a70b1db9f34960894",
+          "browser-results-chromium/player-touch-fullscreen-to-be3a6-e-media-states-at-1920x1080-chromium/fullscreen-receipt.json": "709c60fcfad21c874419a177643fdf99fb90c39bd58def26d99bcf51b1fc3fd0",
+          "browser-results-chromium/player-touch-fullscreen-to-be3a6-e-media-states-at-1920x1080-chromium/fullscreen-settings.png": "384704a8a89878c23c7055c198a3a08a71e1eb5b717da799c297c2097616678a",
+          "browser-results-chromium/player-touch-fullscreen-to-c80bd-llscreen-APIs-are-available-chromium/attachments/fullscreen-receipt-b9b6e5e54861f88447914587ccc77adbe8831d61.json": "57688bc4fd5f2e1556e3be0cf073d1e297b876ae6b5936a2a31a524880e3e450",
+          "browser-results-chromium/player-touch-fullscreen-to-c80bd-llscreen-APIs-are-available-chromium/fullscreen-receipt.json": "57688bc4fd5f2e1556e3be0cf073d1e297b876ae6b5936a2a31a524880e3e450",
+          "browser-results-chromium/player-touch-fullscreen-to-da907-ble-media-states-at-390x844-chromium/attachments/fullscreen-receipt-d10554704ecf34650f6cce929f03f1cf917fd389.json": "bda58a67aa5f5d7b80485590de00f1ae62800e544d76465d649c755aa47e4717",
+          "browser-results-chromium/player-touch-fullscreen-to-da907-ble-media-states-at-390x844-chromium/fullscreen-failed.png": "ca73c85e6b7de8560b1884b1bac1175bf0f22ab30ee315bf8113f913fd77495b",
+          "browser-results-chromium/player-touch-fullscreen-to-da907-ble-media-states-at-390x844-chromium/fullscreen-loaded.png": "59d3457ee046c8363a26b82c4ed5de398ffbd1ee0d7869977ad22bae98614115",
+          "browser-results-chromium/player-touch-fullscreen-to-da907-ble-media-states-at-390x844-chromium/fullscreen-pending.png": "31889f98cb63baf860f4861c9d686da9720c0c345d077aa84a2875441cc74ad6",
+          "browser-results-chromium/player-touch-fullscreen-to-da907-ble-media-states-at-390x844-chromium/fullscreen-receipt.json": "bda58a67aa5f5d7b80485590de00f1ae62800e544d76465d649c755aa47e4717",
+          "browser-results-chromium/player-touch-fullscreen-to-da907-ble-media-states-at-390x844-chromium/fullscreen-settings.png": "e8eff08790838c1ef806f601e9ecc9fc7cc6042892c80e2df68c482fab36213e",
+          "browser-results-chromium/player-touch-fullscreen-to-eded1-le-media-states-at-1440x900-chromium/attachments/fullscreen-receipt-edc52fec6bc6a652a8fd575ef7e2a76ca9667c78.json": "8df8b551389bc24ecd73858319d94df7acc4b5f94e52dedcc9f75478f98200a0",
+          "browser-results-chromium/player-touch-fullscreen-to-eded1-le-media-states-at-1440x900-chromium/fullscreen-failed.png": "47b01facddcd4d4604bfd8623d4c6198400d3bcff26c6228f895ceb11ea15bfa",
+          "browser-results-chromium/player-touch-fullscreen-to-eded1-le-media-states-at-1440x900-chromium/fullscreen-loaded.png": "389351fa02007c94522a5c488fbc5aef25671d52525b67f32585c8b038b9cca6",
+          "browser-results-chromium/player-touch-fullscreen-to-eded1-le-media-states-at-1440x900-chromium/fullscreen-pending.png": "db8e8b657c50358c510890aa344657accbf003ae307ebde2f49e537e867b7a9c",
+          "browser-results-chromium/player-touch-fullscreen-to-eded1-le-media-states-at-1440x900-chromium/fullscreen-receipt.json": "8df8b551389bc24ecd73858319d94df7acc4b5f94e52dedcc9f75478f98200a0",
+          "browser-results-chromium/player-touch-fullscreen-to-eded1-le-media-states-at-1440x900-chromium/fullscreen-settings.png": "b37775b32997ed44f8c9116e31e84d5ef0e455480343594d68dcec6d93c94eb3",
+          "browser-results-chromium/player-touch-fullscreen-to-ee878-ay-despite-resumed-autoplay-chromium/attachments/fullscreen-receipt-0aafd07077786c649d38e547f172da450352a200.json": "69b8b35c53affa585f4bab9967db875cdc0609144f174920b7144d595ff6e91d",
+          "browser-results-chromium/player-touch-fullscreen-to-ee878-ay-despite-resumed-autoplay-chromium/fullscreen-receipt.json": "69b8b35c53affa585f4bab9967db875cdc0609144f174920b7144d595ff6e91d",
+          "browser-results-chromium/player-touch-fullscreen-to-f0b21-s-waits-for-a-fresh-gesture-chromium/attachments/fullscreen-receipt-32ba0a9c0a2145a948bf97a20069e0ea3819518a.json": "4ca0dc8bac305a69f761f8dea782dad1cc81819e080c16cdfa36149d912a7568",
+          "browser-results-chromium/player-touch-fullscreen-to-f0b21-s-waits-for-a-fresh-gesture-chromium/fullscreen-receipt.json": "4ca0dc8bac305a69f761f8dea782dad1cc81819e080c16cdfa36149d912a7568",
+          "browser-results-chromium/player-touch-fullscreen-to-ff0e1-lay-retains-inline-playback-chromium/attachments/fullscreen-receipt-adad2cfc1418dd99d2f30c0cdf6642e521d69e60.json": "9c3ff47cd55b478b20803e8af5f2b19db00e6989ed78781369f8d5f9aaaf7662",
+          "browser-results-chromium/player-touch-fullscreen-to-ff0e1-lay-retains-inline-playback-chromium/fullscreen-receipt.json": "9c3ff47cd55b478b20803e8af5f2b19db00e6989ed78781369f8d5f9aaaf7662",
+          "browser-results-chromium/skeleton-layout-Player-loa-11403-ter-Home-geometry-at-1440px-chromium/1440-loaded.png": "10047cad8b6d52129e93471fede82e04f80ebcd4ab1648385c027a958f2ad2b7",
+          "browser-results-chromium/skeleton-layout-Player-loa-11403-ter-Home-geometry-at-1440px-chromium/1440-pending.png": "a25e41937252a7d55bca97dd58d6acfbe2510829526d56133e7ed8d311bb7d4d",
+          "browser-results-chromium/skeleton-layout-Player-loa-cf7b6-ster-Home-geometry-at-390px-chromium/390-loaded.png": "ed5d7657413a100db331affe9d82f270dcd5ac2291e7197ca22be080482fc7cf",
+          "browser-results-chromium/skeleton-layout-Player-loa-cf7b6-ster-Home-geometry-at-390px-chromium/390-pending.png": "0aca3c88a77d4c05e48c6603f79da07689c0711dfa05c50e3c5aeab03f184db5",
+          "command.log": "bc819aaebc049c31fa6e30d2c8ebbc79d1ba56bb120744ec94dee382fe149854",
+          "html-report/data/184596dc22fb2523e0713416e780111b37d41c63.json": "8df8b551389bc24ecd73858319d94df7acc4b5f94e52dedcc9f75478f98200a0",
+          "html-report/data/24e85bd837c1a5ea2c6041892461ca7ce99183d8.json": "8df644753365ec3588906a4992d75247c016be0b58fd3778838c2bf445630bcb",
+          "html-report/data/43eefcef2c3b8c115e9c7d0ce58a56d4e7e09bf1.json": "b9530b4d9262ecf131e57be6a26b3b2b5dde4df18de929c70db9aa8d18c5eb1c",
+          "html-report/data/449ac67a9c898aa870a54c8d2ec9f21dbd955354.json": "709c60fcfad21c874419a177643fdf99fb90c39bd58def26d99bcf51b1fc3fd0",
+          "html-report/data/4cec2afda3678811a106f909579432ed95a5cf39.json": "36a396dfa34251f4103bef06412284dd5cd23f4a222adc5a3a5797dff59fa8cb",
+          "html-report/data/6732ccb30cefdab3c87e27a6f8c6bb8dba88bee7.json": "4ca0dc8bac305a69f761f8dea782dad1cc81819e080c16cdfa36149d912a7568",
+          "html-report/data/6cc036cb3b5b543b2532a6ddfe84dbdda078bd30.json": "30f55e67f726ba150625494a30ffee9383a9d67d7dc0db3aa5e4a6d4d9225296",
+          "html-report/data/82de8b4bdc3929f56cb1a3ec2af8c2a45b5ba93a.json": "f3f27bff0799620daa9b98c01da641cccd94327ff4f996097a4bf4e12e720102",
+          "html-report/data/9895850539212e24d51e0844c3229b53abe63a0d.json": "3bdbcd63799cc73ee826eccea039531b6764675fb1fee5ad336260a5e9774308",
+          "html-report/data/acd271520abbcb22ae73b2be4502469c3bd5d9f0.json": "69b8b35c53affa585f4bab9967db875cdc0609144f174920b7144d595ff6e91d",
+          "html-report/data/ca66b7fde6054dd49c8125eec460707860cbd95d.json": "b936d2bfb90596e2c3b488f57338b4f6b7ea5e842daa3186599113fa74f58186",
+          "html-report/data/dc0c9a2486f17d1de489c0859816e2f46c822822.json": "73dd2b80465999220a6f551084dec144048cb0a3f4fac642023111c9487e7568",
+          "html-report/data/e29341f2fbb1f742e89342705361d5d183337535.json": "bda58a67aa5f5d7b80485590de00f1ae62800e544d76465d649c755aa47e4717",
+          "html-report/data/e33777e0ab1b5b31d7a3bc899171a7a47d2a6e16.json": "57688bc4fd5f2e1556e3be0cf073d1e297b876ae6b5936a2a31a524880e3e450",
+          "html-report/data/e7a7111ffbc53a6b6d5cc956e04d20c5d8adead4.json": "a20e57b4d70f996142794810b9e41424a06ce914d0f3e09177344b50b67fed4d",
+          "html-report/data/f725790550f80b91565ed7208b87bbbea9fe64e5.json": "9c3ff47cd55b478b20803e8af5f2b19db00e6989ed78781369f8d5f9aaaf7662",
+          "html-report/data/f99fd0cc02f5c408e0046eedeb7ec657c7d0ef35.json": "b0c36e0d3fab2c4775b28866b19bc18cdbe509e8cc6e4749431efd7c5b2240ec",
+          "html-report/index.html": "b061bf33216673c4e060138f848b326b1b5522eb2b97c6d48cbd16fdbc52fa77",
+          "results-chromium.json": "c04547d6cf71519667c85c3a4cfe8bff93d83925696eccd2adcbe5dedac971a5",
+          "settings-chromium/browser-results/.last-run.json": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903",
+          "settings-chromium/browser-results/layout-audit-shell-Owner-s-f8b31-etting-across-task-families-chromium/1440-settings-search-cleared.png": "0efc48b63f05233c7c0baafdb08a50fc85ce85690e0a525ac7e09a8a68f3e85f",
+          "settings-chromium/browser-results/layout-audit-shell-Owner-s-f8b31-etting-across-task-families-chromium/1440-settings-search-results.png": "d37cadf2e50a88330713bac7885a1ffd125f73505e9d40679faec216b3829e2b",
+          "settings-chromium/browser-results/layout-audit-shell-Owner-s-f8b31-etting-across-task-families-chromium/320-settings-search-cleared.png": "7db84e4aa7b2918d1a3891864a73d02e892f29eced22eff90b523712dfe774cd",
+          "settings-chromium/browser-results/layout-audit-shell-Owner-s-f8b31-etting-across-task-families-chromium/320-settings-search-results.png": "f0676976e73ce051a0a2d622cfe0e137d60ba49961e3e0e32ec0914f5fa609ec",
+          "settings-chromium/browser-results/layout-audit-shell-Owner-s-f8b31-etting-across-task-families-chromium/390-settings-search-cleared.png": "c32f0ad1c5bb25f31544b5ad20f810a24757dbcad637357d160ee30797d29887",
+          "settings-chromium/browser-results/layout-audit-shell-Owner-s-f8b31-etting-across-task-families-chromium/390-settings-search-results.png": "12b3d82d635a35ca3747b4ca6fa8c6ea11cba22a95b1f476be21a1dec40814bf",
+          "settings-chromium/html-chromium/index.html": "79413d574c604e0adf9909dc1167ad5a2f59e084187ae6f2dbe162ff15748c03",
+          "settings-chromium/results-chromium.json": "b0c3b07fd68225c9fcee6090edc09880147c884fb75eb65046965fb34f0dfa4f",
+          "settings-chromium/setup-and-run.json": "61874b754576c96a5b45cf09dd8a1e69a0f91eb074f65f6875ec2f6dc8b579eb"
+        }
+      },
+      "browserResults": [
+        {
+          "path": "results-chromium.json",
+          "stats": {
+            "startTime": "2026-10-03T21:06:17.196Z",
+            "duration": 67379.975,
+            "expected": 63,
+            "skipped": 21,
+            "unexpected": 0,
+            "flaky": 0
+          },
+          "specs": [
+            {
+              "title": "cards keep complete hover and keyboard highlights at 390px in dark",
+              "file": "card-highlights.spec.ts",
+              "line": 43,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 9239,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "cards keep complete hover and keyboard highlights at 390px in light",
+              "file": "card-highlights.spec.ts",
+              "line": 43,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 9363,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "cards keep complete hover and keyboard highlights at 1440px in dark",
+              "file": "card-highlights.spec.ts",
+              "line": 43,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 14661,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "cards keep complete hover and keyboard highlights at 1440px in light",
+              "file": "card-highlights.spec.ts",
+              "line": 43,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 14587,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Owner can set up, create a passkey, find, play, resume, curate, install, and sign back in",
+              "file": "happy-path.spec.ts",
+              "line": 8,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 54014,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Home media shelves wrap down the page without horizontal scrolling",
+              "file": "home-stack-layout.spec.ts",
+              "line": 10,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 1135,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "HTMX delays visual placeholders while keeping pending content inert @smoke",
+              "file": "htmx-journeys.ts",
+              "line": 45,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 1212,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "HTMX clears a fast 200 response before delayed placeholders appear @smoke",
+              "file": "htmx-journeys.ts",
+              "line": 71,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 659,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "HTMX clears a fast 500 response before delayed placeholders appear @smoke",
+              "file": "htmx-journeys.ts",
+              "line": 71,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 787,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "HTMX replaces loaded and empty content after pending work at 390px @smoke",
+              "file": "htmx-journeys.ts",
+              "line": 84,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 1698,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "HTMX replaces loaded and empty content after pending work at 1440px @smoke",
+              "file": "htmx-journeys.ts",
+              "line": 84,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 1824,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "HTMX replaces loaded and empty content after pending work at 1920px @smoke",
+              "file": "htmx-journeys.ts",
+              "line": 84,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 2145,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "HTMX 400 leaves loaded content usable at 390px @smoke",
+              "file": "htmx-journeys.ts",
+              "line": 121,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 1060,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "HTMX 500 leaves loaded content usable at 390px @smoke",
+              "file": "htmx-journeys.ts",
+              "line": 121,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 1084,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "HTMX 204 leaves loaded content usable at 390px @smoke",
+              "file": "htmx-journeys.ts",
+              "line": 121,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 760,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "HTMX network leaves loaded content usable at 390px @smoke",
+              "file": "htmx-journeys.ts",
+              "line": 121,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 1099,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "HTMX abort leaves loaded content usable at 390px @smoke",
+              "file": "htmx-journeys.ts",
+              "line": 121,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 976,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "HTMX timeout leaves loaded content usable at 390px @smoke",
+              "file": "htmx-journeys.ts",
+              "line": 121,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 1704,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "HTMX 400 leaves loaded content usable at 1440px @smoke",
+              "file": "htmx-journeys.ts",
+              "line": 121,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 1072,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "HTMX 500 leaves loaded content usable at 1440px @smoke",
+              "file": "htmx-journeys.ts",
+              "line": 121,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 986,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "HTMX 204 leaves loaded content usable at 1440px @smoke",
+              "file": "htmx-journeys.ts",
+              "line": 121,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 879,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "HTMX network leaves loaded content usable at 1440px @smoke",
+              "file": "htmx-journeys.ts",
+              "line": 121,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 899,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "HTMX abort leaves loaded content usable at 1440px @smoke",
+              "file": "htmx-journeys.ts",
+              "line": 121,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 787,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "HTMX timeout leaves loaded content usable at 1440px @smoke",
+              "file": "htmx-journeys.ts",
+              "line": 121,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 2041,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "HTMX 400 leaves loaded content usable at 1920px @smoke",
+              "file": "htmx-journeys.ts",
+              "line": 121,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 876,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "HTMX 500 leaves loaded content usable at 1920px @smoke",
+              "file": "htmx-journeys.ts",
+              "line": 121,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 867,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "HTMX 204 leaves loaded content usable at 1920px @smoke",
+              "file": "htmx-journeys.ts",
+              "line": 121,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 843,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "HTMX network leaves loaded content usable at 1920px @smoke",
+              "file": "htmx-journeys.ts",
+              "line": 121,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 861,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "HTMX abort leaves loaded content usable at 1920px @smoke",
+              "file": "htmx-journeys.ts",
+              "line": 121,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 915,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "HTMX timeout leaves loaded content usable at 1920px @smoke",
+              "file": "htmx-journeys.ts",
+              "line": 121,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 1511,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "HTMX keeps the newer result when an older request finishes last @smoke",
+              "file": "htmx-journeys.ts",
+              "line": 144,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 513,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Owner settings search finds a setting across task families",
+              "file": "layout-audit-shell.spec.ts",
+              "line": 76,
+              "tests": [
+                {
+                  "status": "skipped",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "skipped",
+                      "duration": 262,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "media cards keep long titles to two visible lines",
+              "file": "media-title-truncation.spec.ts",
+              "line": 10,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 1123,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "blocked autoplay leaves one Play control that starts compatible video from saved progress",
+              "file": "playback-startup.spec.ts",
+              "line": 51,
+              "tests": [
+                {
+                  "status": "skipped",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "skipped",
+                      "duration": 0,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "blocked autoplay leaves one Play control that starts automatic video from saved progress",
+              "file": "playback-startup.spec.ts",
+              "line": 51,
+              "tests": [
+                {
+                  "status": "skipped",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "skipped",
+                      "duration": 0,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "cold metadata never hides Play or starts muted preparation",
+              "file": "player-apple-launch.spec.ts",
+              "line": 19,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 843,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "ready Play opens Apple, dismissal pauses and next Play reenters",
+              "file": "player-apple-launch.spec.ts",
+              "line": 41,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 1121,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "limited in-band Apple playback emits no custom theater errors",
+              "file": "player-apple-launch.spec.ts",
+              "line": 61,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 605,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "metadata-only resume seek keeps Apple Play accessible",
+              "file": "player-apple-launch.spec.ts",
+              "line": 70,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 632,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "fullscreen rejection restores Play without inline fallback",
+              "file": "player-apple-launch.spec.ts",
+              "line": 84,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 675,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "play rejection restores Play without inline fallback",
+              "file": "player-apple-launch.spec.ts",
+              "line": 84,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 800,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "compatible attachment respects Pause during resumed autoplay @smoke",
+              "file": "player-compatible-intent.spec.ts",
+              "line": 39,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 854,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "custom controls hide after touch Play without requiring blur @smoke",
+              "file": "player-control-targets.spec.ts",
+              "line": 43,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 976,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "custom controls hide after mouse Play without requiring blur @smoke",
+              "file": "player-control-targets.spec.ts",
+              "line": 43,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 915,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "blank-area taps toggle controls without changing playback at 390x844 @smoke",
+              "file": "player-control-targets.spec.ts",
+              "line": 70,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 1660,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "blank-area taps toggle controls without changing playback at 844x390 @smoke",
+              "file": "player-control-targets.spec.ts",
+              "line": 70,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 1460,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "advancing playback clears seeking at 45s without completion events",
+              "file": "player-experience-status.spec.ts",
+              "line": 116,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 1822,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "advancing playback clears seeking at 5s without completion events",
+              "file": "player-experience-status.spec.ts",
+              "line": 116,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 1795,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "a direct format error before script initialization prepares video conversion automatically",
+              "file": "player-initial-error.spec.ts",
+              "line": 6,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 522,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "native seek readiness preserves pause with first frame after a paused far seek @smoke",
+              "file": "player-native-seek-gap.spec.ts",
+              "line": 12,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 639,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "native seek readiness preserves pause with a fractional frame after an hour-long seek @smoke",
+              "file": "player-native-seek-gap.spec.ts",
+              "line": 12,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 697,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "limited native fullscreen fallback uses touch Play and preserves fullscreen on resume",
+              "file": "player-touch-fullscreen.spec.ts",
+              "line": 15,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 1117,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "limited native fullscreen fallback rejection after touch Play retains inline playback",
+              "file": "player-touch-fullscreen.spec.ts",
+              "line": 53,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 1182,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "touch custom playback waits for Play despite resumed autoplay",
+              "file": "player-touch-fullscreen.spec.ts",
+              "line": 66,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 1228,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "limited native fullscreen preserves limited in-band choices when both fullscreen APIs are available",
+              "file": "player-touch-fullscreen.spec.ts",
+              "line": 73,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 3497,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "limited native fullscreen readiness failure with both fullscreen APIs waits for a fresh gesture",
+              "file": "player-touch-fullscreen.spec.ts",
+              "line": 129,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 1128,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "touch fullscreen fills the viewport and keeps stable media states at 390x844",
+              "file": "player-touch-fullscreen.spec.ts",
+              "line": 158,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 2909,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "touch fullscreen fills the viewport and keeps stable media states at 844x390",
+              "file": "player-touch-fullscreen.spec.ts",
+              "line": 158,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 2987,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "touch fullscreen fills the viewport and keeps stable media states at 1440x900",
+              "file": "player-touch-fullscreen.spec.ts",
+              "line": 158,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 3050,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "touch fullscreen fills the viewport and keeps stable media states at 1920x1080",
+              "file": "player-touch-fullscreen.spec.ts",
+              "line": 158,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 3171,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "limited native fullscreen keeps the container when both fullscreen APIs are available",
+              "file": "player-touch-fullscreen.spec.ts",
+              "line": 117,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 2621,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "administration uses a plain canvas while dark media browsing retains CinemaSail",
+              "file": "polish-shell.spec.ts",
+              "line": 21,
+              "tests": [
+                {
+                  "status": "skipped",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "skipped",
+                      "duration": 0,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "landscape search stays reachable before and after focus on signed-in pages",
+              "file": "polish-shell.spec.ts",
+              "line": 35,
+              "tests": [
+                {
+                  "status": "skipped",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "skipped",
+                      "duration": 0,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "long Server names preserve landscape header controls",
+              "file": "polish-shell.spec.ts",
+              "line": 70,
+              "tests": [
+                {
+                  "status": "skipped",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "skipped",
+                      "duration": 0,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "TMDB connection instructions remain readable without horizontal scrolling",
+              "file": "polish-shell.spec.ts",
+              "line": 93,
+              "tests": [
+                {
+                  "status": "skipped",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "skipped",
+                      "duration": 0,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "accepted browser session resumes before any passkey offer @smoke",
+              "file": "session-resume.spec.ts",
+              "line": 8,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 343,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "settings search crosses levels and preserves unsaved preferences",
+              "file": "settings-discovery.spec.ts",
+              "line": 4,
+              "tests": [
+                {
+                  "status": "skipped",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "skipped",
+                      "duration": 399,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "TMDB instructions stay readable at 390px @smoke",
+              "file": "setup-and-skip-navigation.spec.ts",
+              "line": 11,
+              "tests": [
+                {
+                  "status": "skipped",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "skipped",
+                      "duration": 374,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "show skip link moves keyboard focus to the main content at 1440px @smoke",
+              "file": "setup-and-skip-navigation.spec.ts",
+              "line": 33,
+              "tests": [
+                {
+                  "status": "skipped",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "skipped",
+                      "duration": 428,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "show skip link moves keyboard focus to the main content at 390px @smoke",
+              "file": "setup-and-skip-navigation.spec.ts",
+              "line": 33,
+              "tests": [
+                {
+                  "status": "skipped",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "skipped",
+                      "duration": 365,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "show actions stay compact with long episode titles at 320px",
+              "file": "show-action-layout.spec.ts",
+              "line": 14,
+              "tests": [
+                {
+                  "status": "skipped",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "skipped",
+                      "duration": 416,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "show actions stay compact with long episode titles at 390px",
+              "file": "show-action-layout.spec.ts",
+              "line": 14,
+              "tests": [
+                {
+                  "status": "skipped",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "skipped",
+                      "duration": 313,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "show actions stay compact with long episode titles at 720px",
+              "file": "show-action-layout.spec.ts",
+              "line": 14,
+              "tests": [
+                {
+                  "status": "skipped",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "skipped",
+                      "duration": 527,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "show actions stay compact with long episode titles at 1024px",
+              "file": "show-action-layout.spec.ts",
+              "line": 14,
+              "tests": [
+                {
+                  "status": "skipped",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "skipped",
+                      "duration": 388,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "show actions stay compact with long episode titles at 1440px",
+              "file": "show-action-layout.spec.ts",
+              "line": 14,
+              "tests": [
+                {
+                  "status": "skipped",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "skipped",
+                      "duration": 303,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "show actions stay compact with long episode titles at 1920px",
+              "file": "show-action-layout.spec.ts",
+              "line": 14,
+              "tests": [
+                {
+                  "status": "skipped",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "skipped",
+                      "duration": 380,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Player loading keeps poster Home geometry at 390px",
+              "file": "skeleton-layout.spec.ts",
+              "line": 12,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 2100,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Player loading keeps backdrop Home geometry at 390px",
+              "file": "skeleton-layout.spec.ts",
+              "line": 12,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 1991,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Player loading keeps poster Home geometry at 1440px",
+              "file": "skeleton-layout.spec.ts",
+              "line": 12,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 2232,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Player loading keeps backdrop Home geometry at 1440px",
+              "file": "skeleton-layout.spec.ts",
+              "line": 12,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 1849,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "@smoke direct-only playback retries one failed media request",
+              "file": "test-instance-direct-retry.spec.ts",
+              "line": 12,
+              "tests": [
+                {
+                  "status": "skipped",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "skipped",
+                      "duration": 0,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "@smoke direct-only playback retries one failed media request",
+              "file": "test-instance-direct-retry.spec.ts",
+              "line": 12,
+              "tests": [
+                {
+                  "status": "skipped",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "skipped",
+                      "duration": 0,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "@smoke native playback seeks and retains controls on a populated title",
+              "file": "test-instance-playback.spec.ts",
+              "line": 6,
+              "tests": [
+                {
+                  "status": "skipped",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "skipped",
+                      "duration": 0,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "closing a signed-in tab resumes its saved login URL @smoke",
+              "file": "test-instance-session-persistence.spec.ts",
+              "line": 8,
+              "tests": [
+                {
+                  "status": "skipped",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "skipped",
+                      "duration": 100,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "path": "settings-chromium/results-chromium.json",
+          "stats": {
+            "startTime": "2026-10-03T21:07:33.174Z",
+            "duration": 11943.233999999999,
+            "expected": 2,
+            "skipped": 0,
+            "unexpected": 0,
+            "flaky": 0
+          },
+          "specs": [
+            {
+              "title": "Owner settings search finds a setting across task families",
+              "file": "layout-audit-shell.spec.ts",
+              "line": 76,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 6695,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "settings search crosses levels and preserves unsaved preferences",
+              "file": "settings-discovery.spec.ts",
+              "line": 4,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 4157,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "path": "browser-results-chromium/.last-run.json",
+          "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+        },
+        {
+          "path": "browser-results-chromium/card-highlights-cards-keep-47868-ghlights-at-1440px-in-light-chromium/attachments/environment-json-f4ce59bbb4414bdca4b7f4c85f53717176be0707.json",
+          "sha256": "b9530b4d9262ecf131e57be6a26b3b2b5dde4df18de929c70db9aa8d18c5eb1c"
+        },
+        {
+          "path": "browser-results-chromium/card-highlights-cards-keep-47868-ghlights-at-1440px-in-light-chromium/card-highlights-forced-colors.png",
+          "sha256": "98a0a779e323e8ce7acc9f7a0df29f1217cfa6a85103c8db41392ae313f94367"
+        },
+        {
+          "path": "browser-results-chromium/card-highlights-cards-keep-47868-ghlights-at-1440px-in-light-chromium/card-highlights.png",
+          "sha256": "b33f4f21f6dfc9505124f696670321ccf626306b291e49965c6ba1f30d972759"
+        },
+        {
+          "path": "browser-results-chromium/card-highlights-cards-keep-47868-ghlights-at-1440px-in-light-chromium/environment.json",
+          "sha256": "b9530b4d9262ecf131e57be6a26b3b2b5dde4df18de929c70db9aa8d18c5eb1c"
+        },
+        {
+          "path": "browser-results-chromium/card-highlights-cards-keep-58ba2-ighlights-at-390px-in-light-chromium/attachments/environment-json-797be91e0ed62f356cf3c2d3d3302960e407bc25.json",
+          "sha256": "b936d2bfb90596e2c3b488f57338b4f6b7ea5e842daa3186599113fa74f58186"
+        },
+        {
+          "path": "browser-results-chromium/card-highlights-cards-keep-58ba2-ighlights-at-390px-in-light-chromium/card-highlights-forced-colors.png",
+          "sha256": "d31e01f6530859fd064285e56475ff6efa44f2579027523288a5a770e1dec16a"
+        },
+        {
+          "path": "browser-results-chromium/card-highlights-cards-keep-58ba2-ighlights-at-390px-in-light-chromium/card-highlights.png",
+          "sha256": "cd04d968b28a657b065f4c45442c59fa46b2aaf6c55e3a251176d5891c7b9898"
+        },
+        {
+          "path": "browser-results-chromium/card-highlights-cards-keep-58ba2-ighlights-at-390px-in-light-chromium/environment.json",
+          "sha256": "b936d2bfb90596e2c3b488f57338b4f6b7ea5e842daa3186599113fa74f58186"
+        },
+        {
+          "path": "browser-results-chromium/card-highlights-cards-keep-b31c2-ighlights-at-1440px-in-dark-chromium/attachments/environment-json-9fea3e4c769af1e65841c40655ebe212af7f9b76.json",
+          "sha256": "b0c36e0d3fab2c4775b28866b19bc18cdbe509e8cc6e4749431efd7c5b2240ec"
+        },
+        {
+          "path": "browser-results-chromium/card-highlights-cards-keep-b31c2-ighlights-at-1440px-in-dark-chromium/card-highlights-forced-colors.png",
+          "sha256": "98a0a779e323e8ce7acc9f7a0df29f1217cfa6a85103c8db41392ae313f94367"
+        },
+        {
+          "path": "browser-results-chromium/card-highlights-cards-keep-b31c2-ighlights-at-1440px-in-dark-chromium/card-highlights.png",
+          "sha256": "9b42589bb999b5aaad15e5139e5f1e5869fb0a075f7501770efcddb335d2be7e"
+        },
+        {
+          "path": "browser-results-chromium/card-highlights-cards-keep-b31c2-ighlights-at-1440px-in-dark-chromium/environment.json",
+          "sha256": "b0c36e0d3fab2c4775b28866b19bc18cdbe509e8cc6e4749431efd7c5b2240ec"
+        },
+        {
+          "path": "browser-results-chromium/card-highlights-cards-keep-d377d-highlights-at-390px-in-dark-chromium/attachments/environment-json-acb98606ea55374b6e6d559765f8b72dd2edc701.json",
+          "sha256": "36a396dfa34251f4103bef06412284dd5cd23f4a222adc5a3a5797dff59fa8cb"
+        },
+        {
+          "path": "browser-results-chromium/card-highlights-cards-keep-d377d-highlights-at-390px-in-dark-chromium/card-highlights-forced-colors.png",
+          "sha256": "d31e01f6530859fd064285e56475ff6efa44f2579027523288a5a770e1dec16a"
+        },
+        {
+          "path": "browser-results-chromium/card-highlights-cards-keep-d377d-highlights-at-390px-in-dark-chromium/card-highlights.png",
+          "sha256": "1a836d759c4c578963390e6b5691d2a1d76443dc81a2c600afa55b0d5e157c54"
+        },
+        {
+          "path": "browser-results-chromium/card-highlights-cards-keep-d377d-highlights-at-390px-in-dark-chromium/environment.json",
+          "sha256": "36a396dfa34251f4103bef06412284dd5cd23f4a222adc5a3a5797dff59fa8cb"
+        },
+        {
+          "path": "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/attachments/direct-1440-retry-receipt-795e1720375ad61fc692927df5b97cf21c8c0835.json",
+          "sha256": "30f55e67f726ba150625494a30ffee9383a9d67d7dc0db3aa5e4a6d4d9225296"
+        },
+        {
+          "path": "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/attachments/direct-390-retry-receipt-2c7ff3e18c6c587237e76e3b963d247aaa9db458.json",
+          "sha256": "3bdbcd63799cc73ee826eccea039531b6764675fb1fee5ad336260a5e9774308"
+        },
+        {
+          "path": "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/direct-1440-failed.png",
+          "sha256": "06e042e8cabba71320272f8825af95f5b094c8b491e3c44bd23d6f66612be028"
+        },
+        {
+          "path": "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/direct-1440-final.png",
+          "sha256": "8ee4ddfef3235ca82e83653ab206b00e7c94482ba7ead765b604ba8f14d71298"
+        },
+        {
+          "path": "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/direct-1440-loaded.png",
+          "sha256": "187713c723b4fb41663c055692b2555c6f7c7125e65739309ed74efadd3e14e8"
+        },
+        {
+          "path": "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/direct-1440-pending.png",
+          "sha256": "7c189b4bce8a936beb6fd2e34424532ebb4b37993fca1e85585dc3fa455690e9"
+        },
+        {
+          "path": "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/direct-1440-recovered.png",
+          "sha256": "82ac34aa1145b93099c0a3009ad7abfa021b30ad51b95096b03d7894b82e3a28"
+        },
+        {
+          "path": "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/direct-1440-retry-receipt.json",
+          "sha256": "30f55e67f726ba150625494a30ffee9383a9d67d7dc0db3aa5e4a6d4d9225296"
+        },
+        {
+          "path": "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/direct-390-failed.png",
+          "sha256": "ce6d0c5eb5377c43b6fc23b4019a39ce29b73deb31b447eac767b4d03db0206a"
+        },
+        {
+          "path": "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/direct-390-final.png",
+          "sha256": "4639028781b7b9dd77bd1326626543f97db27d879314a3b03296b8994c15f074"
+        },
+        {
+          "path": "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/direct-390-loaded.png",
+          "sha256": "4793e2dfee834e7eaa5dd81aeb678615699fa4661721735c8ef49187e19c3232"
+        },
+        {
+          "path": "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/direct-390-pending.png",
+          "sha256": "f5b359684712a255e9df6766c7c0b183b14515e171b0a98785679106b95ddfd3"
+        },
+        {
+          "path": "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/direct-390-recovered.png",
+          "sha256": "4bfebfcb64a68bbcee58e9429a36e4f7e84f8e55dc4cdd13babe9465e53c90dd"
+        },
+        {
+          "path": "browser-results-chromium/happy-path-Owner-can-set-u-9060d-te-install-and-sign-back-in-chromium/direct-390-retry-receipt.json",
+          "sha256": "3bdbcd63799cc73ee826eccea039531b6764675fb1fee5ad336260a5e9774308"
+        },
+        {
+          "path": "browser-results-chromium/home-stack-layout-Home-med-4f8d2-ithout-horizontal-scrolling-chromium/home-shelves-1440.png",
+          "sha256": "848932424c89debd1098efc9870d5d51921e76118286401b4c6773f27e673142"
+        },
+        {
+          "path": "browser-results-chromium/home-stack-layout-Home-med-4f8d2-ithout-horizontal-scrolling-chromium/home-shelves-390.png",
+          "sha256": "08375c5fe292272db4399524ba5cfe529f9f99cc3a42f894fb7f77aa5640d59d"
+        },
+        {
+          "path": "browser-results-chromium/home-stack-layout-Home-med-4f8d2-ithout-horizontal-scrolling-chromium/home-shelves-768.png",
+          "sha256": "2583198d1b7b34b7d6b813601e23f04a82a6b5dfad27189aab51a6e1b42541f6"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-204-le-0a2a0-tent-usable-at-1920px-smoke-chromium/204-recovered.png",
+          "sha256": "d2060911318e85f722ec4df4bc31c0bac705287c127634d2d8acf32d9de05fa5"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-204-le-4134f-tent-usable-at-1440px-smoke-chromium/204-recovered.png",
+          "sha256": "652a836ffda8a1197e8826a1df809bf5226ca9147472e4cbf9004b0a99efc629"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-204-le-eb955-ntent-usable-at-390px-smoke-chromium/204-recovered.png",
+          "sha256": "cc3f831826b1f3c12db289fd4178c689be744ca8d510bf9e774316ec78378701"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-400-le-1a7dc-tent-usable-at-1920px-smoke-chromium/400-recovered.png",
+          "sha256": "db0921730cb44bfe1b126b2d54357831ffdf41b383fd295b4b368fcb4fecba83"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-400-le-6e595-ntent-usable-at-390px-smoke-chromium/400-recovered.png",
+          "sha256": "11d06f4c706fa2ef7fbc2bb376b3abd5a9355b8975c1b4fe28c869e7e6182292"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-400-le-749f9-tent-usable-at-1440px-smoke-chromium/400-recovered.png",
+          "sha256": "ef926349dbf2c8904397cabacaad565d4effd7e230198fbb84df2e0afd950d5c"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-500-le-2b12b-tent-usable-at-1440px-smoke-chromium/500-recovered.png",
+          "sha256": "16e9d400166602e695178c5fc8e4a59efad5ffc0489342fe4b904e9e8b9f715c"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-500-le-cafd0-ntent-usable-at-390px-smoke-chromium/500-recovered.png",
+          "sha256": "f7ec90403d9210f682dca99305c1352700a85c10ce3dd7b42768aa7b7aaa51b3"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-500-le-d3b09-tent-usable-at-1920px-smoke-chromium/500-recovered.png",
+          "sha256": "d2060911318e85f722ec4df4bc31c0bac705287c127634d2d8acf32d9de05fa5"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-abort--992d7-tent-usable-at-1440px-smoke-chromium/abort-recovered.png",
+          "sha256": "8a2fffb88dd3217a04bb57bde2d96523c894d34909ee97a5adbab62ba9bd269f"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-abort--b3256-tent-usable-at-1920px-smoke-chromium/abort-recovered.png",
+          "sha256": "ec5c2c2dc97034f5e94ae88af669c1bfa1d75ae6c8574a5b0efae5de1207df6e"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-abort--e6232-ntent-usable-at-390px-smoke-chromium/abort-recovered.png",
+          "sha256": "2c39b747b63540d483e2750bbcd9277e27932ed6d4bef5b4cb0e1e6566274148"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-delays-bfd06-pending-content-inert-smoke-chromium/delayed-pending.png",
+          "sha256": "9b92132ace51e593fc068a4833ddbe96f5cfc2799020843fb475cc53ad196ea0"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-networ-040d8-tent-usable-at-1440px-smoke-chromium/network-recovered.png",
+          "sha256": "8a2fffb88dd3217a04bb57bde2d96523c894d34909ee97a5adbab62ba9bd269f"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-networ-40711-tent-usable-at-1920px-smoke-chromium/network-recovered.png",
+          "sha256": "ec5c2c2dc97034f5e94ae88af669c1bfa1d75ae6c8574a5b0efae5de1207df6e"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-networ-92749-ntent-usable-at-390px-smoke-chromium/network-recovered.png",
+          "sha256": "2c39b747b63540d483e2750bbcd9277e27932ed6d4bef5b4cb0e1e6566274148"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-replac-41b0c-ending-work-at-1440px-smoke-chromium/1440-Empty-pending.png",
+          "sha256": "af03fee5ea357c00ae7ba38fc61d6135177e442e55a06cafe6273567a7c946e2"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-replac-41b0c-ending-work-at-1440px-smoke-chromium/1440-Empty.png",
+          "sha256": "5d70f407037f80026d7533e5912d029f2ba4fdde49707d42699b0922ac02fded"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-replac-41b0c-ending-work-at-1440px-smoke-chromium/1440-Loaded-pending.png",
+          "sha256": "af03fee5ea357c00ae7ba38fc61d6135177e442e55a06cafe6273567a7c946e2"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-replac-41b0c-ending-work-at-1440px-smoke-chromium/1440-Loaded.png",
+          "sha256": "e564af60c36839265418e998415da7116190058c83ca3daf9d8e986351ee52a6"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-replac-94efb-pending-work-at-390px-smoke-chromium/390-Empty-pending.png",
+          "sha256": "6c6f00cfa28c9138a857c87e500bfc7ee1a6cfe48201a95137c35821e4e8595a"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-replac-94efb-pending-work-at-390px-smoke-chromium/390-Empty.png",
+          "sha256": "ee00c4686964ee19c4320dabcf6d097f3394c3b18906228a8a34785b79b0e45e"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-replac-94efb-pending-work-at-390px-smoke-chromium/390-Loaded-pending.png",
+          "sha256": "6c6f00cfa28c9138a857c87e500bfc7ee1a6cfe48201a95137c35821e4e8595a"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-replac-94efb-pending-work-at-390px-smoke-chromium/390-Loaded.png",
+          "sha256": "43c6ef84981b62f3b7a1d595ed817eb717fde509090122fb31e422e0ab68db2d"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-replac-d516f-ending-work-at-1920px-smoke-chromium/1920-Empty-pending.png",
+          "sha256": "0f7a4ac1610e4711665d59dddc2b51588e1910d99d96197898f1c86fbbbca31e"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-replac-d516f-ending-work-at-1920px-smoke-chromium/1920-Empty.png",
+          "sha256": "3ecdb93c1720b44d5447d54152b10474601cd71a64e6b224d0da0bd8c9d586b1"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-replac-d516f-ending-work-at-1920px-smoke-chromium/1920-Loaded-pending.png",
+          "sha256": "0f7a4ac1610e4711665d59dddc2b51588e1910d99d96197898f1c86fbbbca31e"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-replac-d516f-ending-work-at-1920px-smoke-chromium/1920-Loaded.png",
+          "sha256": "524f1b75fe15bb99b081127821307aabf07d4a86aa819649aff0aa07430b2d5d"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-timeou-0dda3-ntent-usable-at-390px-smoke-chromium/timeout-recovered.png",
+          "sha256": "2c39b747b63540d483e2750bbcd9277e27932ed6d4bef5b4cb0e1e6566274148"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-timeou-464c7-tent-usable-at-1440px-smoke-chromium/timeout-recovered.png",
+          "sha256": "8a2fffb88dd3217a04bb57bde2d96523c894d34909ee97a5adbab62ba9bd269f"
+        },
+        {
+          "path": "browser-results-chromium/htmx-migration-HTMX-timeou-aa686-tent-usable-at-1920px-smoke-chromium/timeout-recovered.png",
+          "sha256": "ec5c2c2dc97034f5e94ae88af669c1bfa1d75ae6c8574a5b0efae5de1207df6e"
+        },
+        {
+          "path": "browser-results-chromium/media-title-truncation-med-689a4-titles-to-two-visible-lines-chromium/titles-1440.png",
+          "sha256": "cd018674b1b09aa9d7dfcd4aeea30c03bb97b562c54a5bc230a5e2caa738c3c3"
+        },
+        {
+          "path": "browser-results-chromium/media-title-truncation-med-689a4-titles-to-two-visible-lines-chromium/titles-390.png",
+          "sha256": "a1ff2aa2e502390ba0ec5f979365453e57cac4265a87ef14299cf5735083431a"
+        },
+        {
+          "path": "browser-results-chromium/player-apple-launch-Apple--8e486-or-starts-muted-preparation-chromium/apple-launch-receipt.json",
+          "sha256": "a20e57b4d70f996142794810b9e41424a06ce914d0f3e09177344b50b67fed4d"
+        },
+        {
+          "path": "browser-results-chromium/player-apple-launch-Apple--8e486-or-starts-muted-preparation-chromium/attachments/apple-launch-receipt-a72b2068e70cbd8a3dbac169e936316333935515.json",
+          "sha256": "a20e57b4d70f996142794810b9e41424a06ce914d0f3e09177344b50b67fed4d"
+        },
+        {
+          "path": "browser-results-chromium/player-apple-launch-Apple--91558-lay-without-inline-fallback-chromium/apple-launch-receipt.json",
+          "sha256": "a20e57b4d70f996142794810b9e41424a06ce914d0f3e09177344b50b67fed4d"
+        },
+        {
+          "path": "browser-results-chromium/player-apple-launch-Apple--91558-lay-without-inline-fallback-chromium/attachments/apple-launch-receipt-945c58f3bce0f61ad48bdd04ebf645d12af336d9.json",
+          "sha256": "a20e57b4d70f996142794810b9e41424a06ce914d0f3e09177344b50b67fed4d"
+        },
+        {
+          "path": "browser-results-chromium/player-apple-launch-Apple--95647-keeps-Apple-Play-accessible-chromium/apple-launch-receipt.json",
+          "sha256": "a20e57b4d70f996142794810b9e41424a06ce914d0f3e09177344b50b67fed4d"
+        },
+        {
+          "path": "browser-results-chromium/player-apple-launch-Apple--95647-keeps-Apple-Play-accessible-chromium/attachments/apple-launch-receipt-6e059a044317ba31d5b68ac764d6d323a21b99e6.json",
+          "sha256": "a20e57b4d70f996142794810b9e41424a06ce914d0f3e09177344b50b67fed4d"
+        },
+        {
+          "path": "browser-results-chromium/player-apple-launch-Apple--b85b0-uses-and-next-Play-reenters-chromium/apple-launch-receipt.json",
+          "sha256": "a20e57b4d70f996142794810b9e41424a06ce914d0f3e09177344b50b67fed4d"
+        },
+        {
+          "path": "browser-results-chromium/player-apple-launch-Apple--b85b0-uses-and-next-Play-reenters-chromium/attachments/apple-launch-receipt-cf03f648b00008c67054c0f60d2c03ee44bafb04.json",
+          "sha256": "a20e57b4d70f996142794810b9e41424a06ce914d0f3e09177344b50b67fed4d"
+        },
+        {
+          "path": "browser-results-chromium/player-apple-launch-Apple--c4364-lay-without-inline-fallback-chromium/apple-launch-receipt.json",
+          "sha256": "a20e57b4d70f996142794810b9e41424a06ce914d0f3e09177344b50b67fed4d"
+        },
+        {
+          "path": "browser-results-chromium/player-apple-launch-Apple--c4364-lay-without-inline-fallback-chromium/attachments/apple-launch-receipt-3f59b2b78924547ef452533aee37be599f311d41.json",
+          "sha256": "a20e57b4d70f996142794810b9e41424a06ce914d0f3e09177344b50b67fed4d"
+        },
+        {
+          "path": "browser-results-chromium/player-apple-launch-Apple--da5eb-ts-no-custom-theater-errors-chromium/apple-launch-receipt.json",
+          "sha256": "a20e57b4d70f996142794810b9e41424a06ce914d0f3e09177344b50b67fed4d"
+        },
+        {
+          "path": "browser-results-chromium/player-apple-launch-Apple--da5eb-ts-no-custom-theater-errors-chromium/attachments/apple-launch-receipt-066b5d1dd7cc36c74be30db526d9e6d40ac7a485.json",
+          "sha256": "a20e57b4d70f996142794810b9e41424a06ce914d0f3e09177344b50b67fed4d"
+        },
+        {
+          "path": "browser-results-chromium/player-compatible-intent-c-e6636-ring-resumed-autoplay-smoke-chromium/intent-receipt.json",
+          "sha256": "3ecef397222588b32cb3e7944b6ae0b431da803798c65129dbf95beae15b8510"
+        },
+        {
+          "path": "browser-results-chromium/player-control-targets-bla-df7cf-g-playback-at-390x844-smoke-chromium/tap-controls-settings.png",
+          "sha256": "6ade366c8cfa0617eac0a639d501b992f0cd2c43f45ea38b25e813b71e7829f1"
+        },
+        {
+          "path": "browser-results-chromium/player-control-targets-bla-eee28-g-playback-at-844x390-smoke-chromium/tap-controls-settings.png",
+          "sha256": "cdbefc1189ccba9cb439e5506c13bc6ab38b72fba982c436b6ccd1530e44f7c2"
+        },
+        {
+          "path": "browser-results-chromium/player-experience-status-a-194ec-s-without-completion-events-chromium/1440-pending-seek.png",
+          "sha256": "8fa34f327f7a6dc4d7dfb352f8065c5416019e8d2fab8f494aa8ab785edf0c99"
+        },
+        {
+          "path": "browser-results-chromium/player-experience-status-a-194ec-s-without-completion-events-chromium/1440-resumed-seek.png",
+          "sha256": "20703eb1ca749481c843086a3006233595c16a80dd703cc5443ec524a03704be"
+        },
+        {
+          "path": "browser-results-chromium/player-experience-status-a-194ec-s-without-completion-events-chromium/390-pending-seek.png",
+          "sha256": "7a981d97b73609666820356b90a63818ce53d78e8860a8aa75ad2333cf73d73c"
+        },
+        {
+          "path": "browser-results-chromium/player-experience-status-a-194ec-s-without-completion-events-chromium/390-resumed-seek.png",
+          "sha256": "146703c7434f14d10eaee6b826725083de342643ba675090b073a1e2017dfcc6"
+        },
+        {
+          "path": "browser-results-chromium/player-experience-status-a-d8b03-s-without-completion-events-chromium/1440-pending-seek.png",
+          "sha256": "d3950081686e2fbd65a1a0895686e812c05a04bf4bbec147fd490636d5e3b3e0"
+        },
+        {
+          "path": "browser-results-chromium/player-experience-status-a-d8b03-s-without-completion-events-chromium/1440-resumed-seek.png",
+          "sha256": "28bfaf59b02d543891cd46aa8a1d5be60ecf87decfa54436c2071383819e580d"
+        },
+        {
+          "path": "browser-results-chromium/player-experience-status-a-d8b03-s-without-completion-events-chromium/390-pending-seek.png",
+          "sha256": "7a981d97b73609666820356b90a63818ce53d78e8860a8aa75ad2333cf73d73c"
+        },
+        {
+          "path": "browser-results-chromium/player-experience-status-a-d8b03-s-without-completion-events-chromium/390-resumed-seek.png",
+          "sha256": "fad61124606ec1838392bdf69718ba023f45c50c218095cb264debfca1ed4a6e"
+        },
+        {
+          "path": "browser-results-chromium/player-native-seek-gap-nat-04994-ter-an-hour-long-seek-smoke-chromium/paused-seek-readiness.png",
+          "sha256": "c41eda9ee3b9bc5b323a50c5680ffea389930b38db02e07bc3db64259f404656"
+        },
+        {
+          "path": "browser-results-chromium/player-native-seek-gap-nat-c79ed-ter-a-paused-far-seek-smoke-chromium/paused-seek-readiness.png",
+          "sha256": "c41eda9ee3b9bc5b323a50c5680ffea389930b38db02e07bc3db64259f404656"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-37c50-serves-fullscreen-on-resume-chromium/attachments/fullscreen-receipt-d0c9af23fc627fc5de53bee2d0843f01b2b34852.json",
+          "sha256": "73dd2b80465999220a6f551084dec144048cb0a3f4fac642023111c9487e7568"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-37c50-serves-fullscreen-on-resume-chromium/fullscreen-receipt.json",
+          "sha256": "73dd2b80465999220a6f551084dec144048cb0a3f4fac642023111c9487e7568"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-62520-ble-media-states-at-844x390-chromium/attachments/fullscreen-receipt-6520d9eba929e6558dd12f3afc0b31d5bbfa3f27.json",
+          "sha256": "f3f27bff0799620daa9b98c01da641cccd94327ff4f996097a4bf4e12e720102"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-62520-ble-media-states-at-844x390-chromium/fullscreen-failed.png",
+          "sha256": "511742f0da47e5ce8eb18e8098be5fc7a5cc5070e13aa3e2475043c4b18cdb4a"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-62520-ble-media-states-at-844x390-chromium/fullscreen-loaded.png",
+          "sha256": "46208f6ffc9df9efc7b6008b2055532d410d2c3fd455e5d6c529b31437819d88"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-62520-ble-media-states-at-844x390-chromium/fullscreen-pending.png",
+          "sha256": "09ce6d767a2066661b01d225aaab5f3274d632796fe2300b89f662d6b432ef05"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-62520-ble-media-states-at-844x390-chromium/fullscreen-receipt.json",
+          "sha256": "f3f27bff0799620daa9b98c01da641cccd94327ff4f996097a4bf4e12e720102"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-62520-ble-media-states-at-844x390-chromium/fullscreen-settings.png",
+          "sha256": "74e85cfaa69d11d0d8c7c406fb8707068620379d38bf4a4e81fd103f24731974"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-702f3-llscreen-APIs-are-available-chromium/attachments/fullscreen-receipt-8b34e887e464b9cd90cc5134aa2bd47faf6288a9.json",
+          "sha256": "8df644753365ec3588906a4992d75247c016be0b58fd3778838c2bf445630bcb"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-702f3-llscreen-APIs-are-available-chromium/fullscreen-receipt.json",
+          "sha256": "8df644753365ec3588906a4992d75247c016be0b58fd3778838c2bf445630bcb"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-be3a6-e-media-states-at-1920x1080-chromium/attachments/fullscreen-receipt-ad17e23e94fe383be3b142307833646b3ac49f40.json",
+          "sha256": "709c60fcfad21c874419a177643fdf99fb90c39bd58def26d99bcf51b1fc3fd0"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-be3a6-e-media-states-at-1920x1080-chromium/fullscreen-failed.png",
+          "sha256": "fd150e547207decb08c794cf770194fbc36689f027cf9b20797c3a463c065c30"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-be3a6-e-media-states-at-1920x1080-chromium/fullscreen-loaded.png",
+          "sha256": "d1f27aa2ab3149cdac7375d3e9eee3b4e0ba4ea0e9d323fe1a5efdf83077dc43"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-be3a6-e-media-states-at-1920x1080-chromium/fullscreen-pending.png",
+          "sha256": "ec952099f59452b32a64efdaeb5ffe422573ecc6616b796a70b1db9f34960894"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-be3a6-e-media-states-at-1920x1080-chromium/fullscreen-receipt.json",
+          "sha256": "709c60fcfad21c874419a177643fdf99fb90c39bd58def26d99bcf51b1fc3fd0"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-be3a6-e-media-states-at-1920x1080-chromium/fullscreen-settings.png",
+          "sha256": "384704a8a89878c23c7055c198a3a08a71e1eb5b717da799c297c2097616678a"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-c80bd-llscreen-APIs-are-available-chromium/attachments/fullscreen-receipt-b9b6e5e54861f88447914587ccc77adbe8831d61.json",
+          "sha256": "57688bc4fd5f2e1556e3be0cf073d1e297b876ae6b5936a2a31a524880e3e450"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-c80bd-llscreen-APIs-are-available-chromium/fullscreen-receipt.json",
+          "sha256": "57688bc4fd5f2e1556e3be0cf073d1e297b876ae6b5936a2a31a524880e3e450"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-da907-ble-media-states-at-390x844-chromium/attachments/fullscreen-receipt-d10554704ecf34650f6cce929f03f1cf917fd389.json",
+          "sha256": "bda58a67aa5f5d7b80485590de00f1ae62800e544d76465d649c755aa47e4717"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-da907-ble-media-states-at-390x844-chromium/fullscreen-failed.png",
+          "sha256": "ca73c85e6b7de8560b1884b1bac1175bf0f22ab30ee315bf8113f913fd77495b"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-da907-ble-media-states-at-390x844-chromium/fullscreen-loaded.png",
+          "sha256": "59d3457ee046c8363a26b82c4ed5de398ffbd1ee0d7869977ad22bae98614115"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-da907-ble-media-states-at-390x844-chromium/fullscreen-pending.png",
+          "sha256": "31889f98cb63baf860f4861c9d686da9720c0c345d077aa84a2875441cc74ad6"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-da907-ble-media-states-at-390x844-chromium/fullscreen-receipt.json",
+          "sha256": "bda58a67aa5f5d7b80485590de00f1ae62800e544d76465d649c755aa47e4717"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-da907-ble-media-states-at-390x844-chromium/fullscreen-settings.png",
+          "sha256": "e8eff08790838c1ef806f601e9ecc9fc7cc6042892c80e2df68c482fab36213e"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-eded1-le-media-states-at-1440x900-chromium/attachments/fullscreen-receipt-edc52fec6bc6a652a8fd575ef7e2a76ca9667c78.json",
+          "sha256": "8df8b551389bc24ecd73858319d94df7acc4b5f94e52dedcc9f75478f98200a0"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-eded1-le-media-states-at-1440x900-chromium/fullscreen-failed.png",
+          "sha256": "47b01facddcd4d4604bfd8623d4c6198400d3bcff26c6228f895ceb11ea15bfa"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-eded1-le-media-states-at-1440x900-chromium/fullscreen-loaded.png",
+          "sha256": "389351fa02007c94522a5c488fbc5aef25671d52525b67f32585c8b038b9cca6"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-eded1-le-media-states-at-1440x900-chromium/fullscreen-pending.png",
+          "sha256": "db8e8b657c50358c510890aa344657accbf003ae307ebde2f49e537e867b7a9c"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-eded1-le-media-states-at-1440x900-chromium/fullscreen-receipt.json",
+          "sha256": "8df8b551389bc24ecd73858319d94df7acc4b5f94e52dedcc9f75478f98200a0"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-eded1-le-media-states-at-1440x900-chromium/fullscreen-settings.png",
+          "sha256": "b37775b32997ed44f8c9116e31e84d5ef0e455480343594d68dcec6d93c94eb3"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-ee878-ay-despite-resumed-autoplay-chromium/attachments/fullscreen-receipt-0aafd07077786c649d38e547f172da450352a200.json",
+          "sha256": "69b8b35c53affa585f4bab9967db875cdc0609144f174920b7144d595ff6e91d"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-ee878-ay-despite-resumed-autoplay-chromium/fullscreen-receipt.json",
+          "sha256": "69b8b35c53affa585f4bab9967db875cdc0609144f174920b7144d595ff6e91d"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-f0b21-s-waits-for-a-fresh-gesture-chromium/attachments/fullscreen-receipt-32ba0a9c0a2145a948bf97a20069e0ea3819518a.json",
+          "sha256": "4ca0dc8bac305a69f761f8dea782dad1cc81819e080c16cdfa36149d912a7568"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-f0b21-s-waits-for-a-fresh-gesture-chromium/fullscreen-receipt.json",
+          "sha256": "4ca0dc8bac305a69f761f8dea782dad1cc81819e080c16cdfa36149d912a7568"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-ff0e1-lay-retains-inline-playback-chromium/attachments/fullscreen-receipt-adad2cfc1418dd99d2f30c0cdf6642e521d69e60.json",
+          "sha256": "9c3ff47cd55b478b20803e8af5f2b19db00e6989ed78781369f8d5f9aaaf7662"
+        },
+        {
+          "path": "browser-results-chromium/player-touch-fullscreen-to-ff0e1-lay-retains-inline-playback-chromium/fullscreen-receipt.json",
+          "sha256": "9c3ff47cd55b478b20803e8af5f2b19db00e6989ed78781369f8d5f9aaaf7662"
+        },
+        {
+          "path": "browser-results-chromium/skeleton-layout-Player-loa-11403-ter-Home-geometry-at-1440px-chromium/1440-loaded.png",
+          "sha256": "10047cad8b6d52129e93471fede82e04f80ebcd4ab1648385c027a958f2ad2b7"
+        },
+        {
+          "path": "browser-results-chromium/skeleton-layout-Player-loa-11403-ter-Home-geometry-at-1440px-chromium/1440-pending.png",
+          "sha256": "a25e41937252a7d55bca97dd58d6acfbe2510829526d56133e7ed8d311bb7d4d"
+        },
+        {
+          "path": "browser-results-chromium/skeleton-layout-Player-loa-cf7b6-ster-Home-geometry-at-390px-chromium/390-loaded.png",
+          "sha256": "ed5d7657413a100db331affe9d82f270dcd5ac2291e7197ca22be080482fc7cf"
+        },
+        {
+          "path": "browser-results-chromium/skeleton-layout-Player-loa-cf7b6-ster-Home-geometry-at-390px-chromium/390-pending.png",
+          "sha256": "0aca3c88a77d4c05e48c6603f79da07689c0711dfa05c50e3c5aeab03f184db5"
+        },
+        {
+          "path": "command.log",
+          "sha256": "bc819aaebc049c31fa6e30d2c8ebbc79d1ba56bb120744ec94dee382fe149854"
+        },
+        {
+          "path": "html-report/data/184596dc22fb2523e0713416e780111b37d41c63.json",
+          "sha256": "8df8b551389bc24ecd73858319d94df7acc4b5f94e52dedcc9f75478f98200a0"
+        },
+        {
+          "path": "html-report/data/24e85bd837c1a5ea2c6041892461ca7ce99183d8.json",
+          "sha256": "8df644753365ec3588906a4992d75247c016be0b58fd3778838c2bf445630bcb"
+        },
+        {
+          "path": "html-report/data/43eefcef2c3b8c115e9c7d0ce58a56d4e7e09bf1.json",
+          "sha256": "b9530b4d9262ecf131e57be6a26b3b2b5dde4df18de929c70db9aa8d18c5eb1c"
+        },
+        {
+          "path": "html-report/data/449ac67a9c898aa870a54c8d2ec9f21dbd955354.json",
+          "sha256": "709c60fcfad21c874419a177643fdf99fb90c39bd58def26d99bcf51b1fc3fd0"
+        },
+        {
+          "path": "html-report/data/4cec2afda3678811a106f909579432ed95a5cf39.json",
+          "sha256": "36a396dfa34251f4103bef06412284dd5cd23f4a222adc5a3a5797dff59fa8cb"
+        },
+        {
+          "path": "html-report/data/6732ccb30cefdab3c87e27a6f8c6bb8dba88bee7.json",
+          "sha256": "4ca0dc8bac305a69f761f8dea782dad1cc81819e080c16cdfa36149d912a7568"
+        },
+        {
+          "path": "html-report/data/6cc036cb3b5b543b2532a6ddfe84dbdda078bd30.json",
+          "sha256": "30f55e67f726ba150625494a30ffee9383a9d67d7dc0db3aa5e4a6d4d9225296"
+        },
+        {
+          "path": "html-report/data/82de8b4bdc3929f56cb1a3ec2af8c2a45b5ba93a.json",
+          "sha256": "f3f27bff0799620daa9b98c01da641cccd94327ff4f996097a4bf4e12e720102"
+        },
+        {
+          "path": "html-report/data/9895850539212e24d51e0844c3229b53abe63a0d.json",
+          "sha256": "3bdbcd63799cc73ee826eccea039531b6764675fb1fee5ad336260a5e9774308"
+        },
+        {
+          "path": "html-report/data/acd271520abbcb22ae73b2be4502469c3bd5d9f0.json",
+          "sha256": "69b8b35c53affa585f4bab9967db875cdc0609144f174920b7144d595ff6e91d"
+        },
+        {
+          "path": "html-report/data/ca66b7fde6054dd49c8125eec460707860cbd95d.json",
+          "sha256": "b936d2bfb90596e2c3b488f57338b4f6b7ea5e842daa3186599113fa74f58186"
+        },
+        {
+          "path": "html-report/data/dc0c9a2486f17d1de489c0859816e2f46c822822.json",
+          "sha256": "73dd2b80465999220a6f551084dec144048cb0a3f4fac642023111c9487e7568"
+        },
+        {
+          "path": "html-report/data/e29341f2fbb1f742e89342705361d5d183337535.json",
+          "sha256": "bda58a67aa5f5d7b80485590de00f1ae62800e544d76465d649c755aa47e4717"
+        },
+        {
+          "path": "html-report/data/e33777e0ab1b5b31d7a3bc899171a7a47d2a6e16.json",
+          "sha256": "57688bc4fd5f2e1556e3be0cf073d1e297b876ae6b5936a2a31a524880e3e450"
+        },
+        {
+          "path": "html-report/data/e7a7111ffbc53a6b6d5cc956e04d20c5d8adead4.json",
+          "sha256": "a20e57b4d70f996142794810b9e41424a06ce914d0f3e09177344b50b67fed4d"
+        },
+        {
+          "path": "html-report/data/f725790550f80b91565ed7208b87bbbea9fe64e5.json",
+          "sha256": "9c3ff47cd55b478b20803e8af5f2b19db00e6989ed78781369f8d5f9aaaf7662"
+        },
+        {
+          "path": "html-report/data/f99fd0cc02f5c408e0046eedeb7ec657c7d0ef35.json",
+          "sha256": "b0c36e0d3fab2c4775b28866b19bc18cdbe509e8cc6e4749431efd7c5b2240ec"
+        },
+        {
+          "path": "html-report/index.html",
+          "sha256": "b061bf33216673c4e060138f848b326b1b5522eb2b97c6d48cbd16fdbc52fa77"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "1188e686ac03211fcea6cbe93918478155fa2e41e5932307f4faf51c8e9b085a"
+        },
+        {
+          "path": "results-chromium.json",
+          "sha256": "c04547d6cf71519667c85c3a4cfe8bff93d83925696eccd2adcbe5dedac971a5"
+        },
+        {
+          "path": "settings-chromium/browser-results/.last-run.json",
+          "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+        },
+        {
+          "path": "settings-chromium/browser-results/layout-audit-shell-Owner-s-f8b31-etting-across-task-families-chromium/1440-settings-search-cleared.png",
+          "sha256": "0efc48b63f05233c7c0baafdb08a50fc85ce85690e0a525ac7e09a8a68f3e85f"
+        },
+        {
+          "path": "settings-chromium/browser-results/layout-audit-shell-Owner-s-f8b31-etting-across-task-families-chromium/1440-settings-search-results.png",
+          "sha256": "d37cadf2e50a88330713bac7885a1ffd125f73505e9d40679faec216b3829e2b"
+        },
+        {
+          "path": "settings-chromium/browser-results/layout-audit-shell-Owner-s-f8b31-etting-across-task-families-chromium/320-settings-search-cleared.png",
+          "sha256": "7db84e4aa7b2918d1a3891864a73d02e892f29eced22eff90b523712dfe774cd"
+        },
+        {
+          "path": "settings-chromium/browser-results/layout-audit-shell-Owner-s-f8b31-etting-across-task-families-chromium/320-settings-search-results.png",
+          "sha256": "f0676976e73ce051a0a2d622cfe0e137d60ba49961e3e0e32ec0914f5fa609ec"
+        },
+        {
+          "path": "settings-chromium/browser-results/layout-audit-shell-Owner-s-f8b31-etting-across-task-families-chromium/390-settings-search-cleared.png",
+          "sha256": "c32f0ad1c5bb25f31544b5ad20f810a24757dbcad637357d160ee30797d29887"
+        },
+        {
+          "path": "settings-chromium/browser-results/layout-audit-shell-Owner-s-f8b31-etting-across-task-families-chromium/390-settings-search-results.png",
+          "sha256": "12b3d82d635a35ca3747b4ca6fa8c6ea11cba22a95b1f476be21a1dec40814bf"
+        },
+        {
+          "path": "settings-chromium/html-chromium/index.html",
+          "sha256": "79413d574c604e0adf9909dc1167ad5a2f59e084187ae6f2dbe162ff15748c03"
+        },
+        {
+          "path": "settings-chromium/results-chromium.json",
+          "sha256": "b0c3b07fd68225c9fcee6090edc09880147c884fb75eb65046965fb34f0dfa4f"
+        },
+        {
+          "path": "settings-chromium/setup-and-run.json",
+          "sha256": "61874b754576c96a5b45cf09dd8a1e69a0f91eb074f65f6875ec2f6dc8b579eb"
+        }
+      ]
+    },
+    {
+      "artifactId": 11284683597,
+      "name": "player-ubuntu-24.04-system-e2e-39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+      "artifactURL": "https://github.com/Kinosail/kinosail/actions/runs/37153629848/artifacts/11284683597",
+      "zipSHA256": "83f3e6ab71657295d1252a000adda4f9ef5981d332136dd85ecc6c96bc10239c",
+      "zipBytes": 2520,
+      "checksumVerification": {
+        "members": 2,
+        "allPassed": true,
+        "missingMembers": []
+      },
+      "manifest": {
+        "schemaVersion": 1,
+        "revision": "39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+        "sourceStatus": {
+          "command": [
+            "git",
+            "status",
+            "--porcelain",
+            "--untracked-files=normal"
+          ],
+          "exitCode": 0,
+          "stdout": "?? .cache/",
+          "stderr": ""
+        },
+        "trackedPatchSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "command": [
+          "./scripts/test-container.sh"
+        ],
+        "workingDirectory": "apps/player",
+        "startedUTC": "2026-10-03T21:05:35.993939+00:00",
+        "environment": {
+          "CI": "true",
+          "CONTAINER_ENGINE": "docker",
+          "KINOSAIL_TEST_IMAGE": "localhost/kinosail-player:39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+          "KINOSAIL_TEST_IMAGE_READY": "1"
+        },
+        "platform": {
+          "system": "Linux",
+          "release": "6.17.0-1022-azure",
+          "machine": "x86_64",
+          "python": "3.12.3"
+        },
+        "tools": [
+          {
+            "command": [
+              "go",
+              "version"
+            ],
+            "exitCode": 0,
+            "stdout": "go version go1.27.0 linux/amd64",
+            "stderr": "go: downloading go1.27.0 (linux/amd64)"
+          },
+          {
+            "command": [
+              "node",
+              "--version"
+            ],
+            "exitCode": 0,
+            "stdout": "v22.23.3",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "pnpm",
+              "--version"
+            ],
+            "error": "FileNotFoundError"
+          }
+        ],
+        "inputs": {
+          "apps/player/e2e/pnpm-lock.yaml": "b3151e08c2af7e480d7f6f5aeafb2a230e92c9dd5aaf18dfcd787ee71c8ba655",
+          "apps/player/e2e/playwright.config.ts": "628d3a62d9b3e2fba1bc43f3cd58979acadf22c083e3559c73c4f750a97cc0b3",
+          "apps/player/scripts/generate-test-media.sh": "6e1ee7f3746d2cbd5ca23263fd67e2460fcde882a76b1a3cc354b64585e7b34f",
+          "apps/player/scripts/test-container.sh": "cccac572df1a37fbea72cdff6aa68547a8d9e41cd628fdf3ce836f246b12175a",
+          "apps/subtitles/e2e/pnpm-lock.yaml": "b3151e08c2af7e480d7f6f5aeafb2a230e92c9dd5aaf18dfcd787ee71c8ba655",
+          "apps/subtitles/e2e/playwright.config.ts": "3faad3cedaaeab4ba50aa78926da3076d8fadcd2aa3752806a4dbb7088d144a2",
+          "apps/subtitles/scripts/generate-test-media.sh": "39a4cb408586b5084b2b03c391bfd5678c7e3ea5d4737674e4b1caa8e309a1e2",
+          "apps/subtitles/scripts/test-container.sh": "54109ed54933c79656580d7628207ee837f94e2089c66d318cb6e72499a60107",
+          "scripts/ci/run-populated-settings.py": "1887445160faaeb569dfa5df9544c3ec7c6395a5d1c43e1c65b3883271091366",
+          "scripts/ci/test-container-transport.sh": "8da7af2267fd117b259fb70983fba0b76d036c7de2415f9f68e6f4707dbbb13c"
+        },
+        "testData": "Disposable generated media and UI fixtures; see hashed generators and command log.",
+        "container": {
+          "command": [
+            "docker",
+            "image",
+            "inspect",
+            "--format",
+            "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}",
+            "localhost/kinosail-player:39204bc9c84961b3e74f4a68a2d28ce25d790bca"
+          ],
+          "exitCode": 0,
+          "stdout": "sha256:def71a28fba77df2e58676af84f5a88a48f3ffde1de55fd180f7fad4f3be985d 39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+          "stderr": ""
+        },
+        "commandExitCode": 0,
+        "finalRevision": {
+          "command": [
+            "git",
+            "rev-parse",
+            "HEAD"
+          ],
+          "exitCode": 0,
+          "stdout": "39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+          "stderr": ""
+        },
+        "finalSourceStatus": {
+          "command": [
+            "git",
+            "status",
+            "--porcelain",
+            "--untracked-files=normal"
+          ],
+          "exitCode": 0,
+          "stdout": "?? .cache/",
+          "stderr": ""
+        },
+        "finalTrackedPatchSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sourceUnchanged": true,
+        "exactRevisionProof": false,
+        "finishedUTC": "2026-10-03T21:06:35.807103+00:00",
+        "exitCode": 0,
+        "result": "passed",
+        "evidence": {
+          "command.log": "30db4fc84d14fb1a7a7493c9e33156e517df50dbf94066b3728c5b3725e5310e"
+        }
+      },
+      "browserResults": [],
+      "evidence": [
+        {
+          "path": "command.log",
+          "sha256": "30db4fc84d14fb1a7a7493c9e33156e517df50dbf94066b3728c5b3725e5310e"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "e1618e14d954939ec665e9cf75e88e2e020f017a28cb3e38d0d81c528d9136fa"
+        }
+      ]
+    },
+    {
+      "artifactId": 11284274651,
+      "name": "subtitles-chromium-e2e-39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+      "artifactURL": "https://github.com/Kinosail/kinosail/actions/runs/37153629848/artifacts/11284274651",
+      "zipSHA256": "7fdb9d722647255e721782d7224b8e79ed5fe193e7bb608dd9bffc26b598d445",
+      "zipBytes": 16027623,
+      "checksumVerification": {
+        "members": 51,
+        "allPassed": true,
+        "missingMembers": []
+      },
+      "manifest": {
+        "schemaVersion": 1,
+        "revision": "39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+        "sourceStatus": {
+          "command": [
+            "git",
+            "status",
+            "--porcelain",
+            "--untracked-files=normal"
+          ],
+          "exitCode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        "trackedPatchSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "command": [
+          "./scripts/test-container.sh"
+        ],
+        "workingDirectory": "apps/subtitles",
+        "startedUTC": "2026-10-03T21:05:21.945951+00:00",
+        "environment": {
+          "CI": "true",
+          "CONTAINER_ENGINE": "docker",
+          "KINOSAIL_BROWSER_TEST": "1",
+          "KINOSAIL_BROWSER_MATRIX": "",
+          "KINOSAIL_BROWSER_PROJECT": "chromium",
+          "KINOSAIL_BROWSER_SMOKE": "1",
+          "KINOSAIL_BROWSER_WORKERS": "1",
+          "KINOSAIL_TEST_IMAGE": "localhost/kinosail-subtitles:39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+          "KINOSAIL_TEST_IMAGE_READY": "1"
+        },
+        "platform": {
+          "system": "Linux",
+          "release": "6.17.0-1022-azure",
+          "machine": "x86_64",
+          "python": "3.12.3"
+        },
+        "tools": [
+          {
+            "command": [
+              "go",
+              "version"
+            ],
+            "exitCode": 0,
+            "stdout": "go version go1.27.0 linux/amd64",
+            "stderr": "go: downloading go1.27.0 (linux/amd64)"
+          },
+          {
+            "command": [
+              "node",
+              "--version"
+            ],
+            "exitCode": 0,
+            "stdout": "v26.10.0",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "pnpm",
+              "--version"
+            ],
+            "exitCode": 0,
+            "stdout": "11.22.0",
+            "stderr": ""
+          }
+        ],
+        "inputs": {
+          "apps/player/e2e/pnpm-lock.yaml": "b3151e08c2af7e480d7f6f5aeafb2a230e92c9dd5aaf18dfcd787ee71c8ba655",
+          "apps/player/e2e/playwright.config.ts": "628d3a62d9b3e2fba1bc43f3cd58979acadf22c083e3559c73c4f750a97cc0b3",
+          "apps/player/scripts/generate-test-media.sh": "6e1ee7f3746d2cbd5ca23263fd67e2460fcde882a76b1a3cc354b64585e7b34f",
+          "apps/player/scripts/test-container.sh": "cccac572df1a37fbea72cdff6aa68547a8d9e41cd628fdf3ce836f246b12175a",
+          "apps/subtitles/e2e/pnpm-lock.yaml": "b3151e08c2af7e480d7f6f5aeafb2a230e92c9dd5aaf18dfcd787ee71c8ba655",
+          "apps/subtitles/e2e/playwright.config.ts": "3faad3cedaaeab4ba50aa78926da3076d8fadcd2aa3752806a4dbb7088d144a2",
+          "apps/subtitles/scripts/generate-test-media.sh": "39a4cb408586b5084b2b03c391bfd5678c7e3ea5d4737674e4b1caa8e309a1e2",
+          "apps/subtitles/scripts/test-container.sh": "54109ed54933c79656580d7628207ee837f94e2089c66d318cb6e72499a60107",
+          "scripts/ci/run-populated-settings.py": "1887445160faaeb569dfa5df9544c3ec7c6395a5d1c43e1c65b3883271091366",
+          "scripts/ci/test-container-transport.sh": "8da7af2267fd117b259fb70983fba0b76d036c7de2415f9f68e6f4707dbbb13c"
+        },
+        "testData": "Disposable generated media and UI fixtures; see hashed generators and command log.",
+        "container": {
+          "command": [
+            "docker",
+            "image",
+            "inspect",
+            "--format",
+            "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}",
+            "localhost/kinosail-subtitles:39204bc9c84961b3e74f4a68a2d28ce25d790bca"
+          ],
+          "exitCode": 0,
+          "stdout": "sha256:f9c3050935453889fdf7860c3c0e2f806b161245a2d2b32bdd646450fa441036 39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+          "stderr": ""
+        },
+        "commandExitCode": 0,
+        "finalRevision": {
+          "command": [
+            "git",
+            "rev-parse",
+            "HEAD"
+          ],
+          "exitCode": 0,
+          "stdout": "39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+          "stderr": ""
+        },
+        "finalSourceStatus": {
+          "command": [
+            "git",
+            "status",
+            "--porcelain",
+            "--untracked-files=normal"
+          ],
+          "exitCode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        "finalTrackedPatchSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sourceUnchanged": true,
+        "exactRevisionProof": true,
+        "finishedUTC": "2026-10-03T21:07:56.054434+00:00",
+        "exitCode": 0,
+        "result": "passed",
+        "evidence": {
+          "browser-results/.last-run.json": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903",
+          "browser-results/polish-shell-administratio-b41b8-orkspace-retains-CinemaSail-chromium/1440--account.png": "3219edbe26806f6aa5676b0550deeee6d306bad2170ace587608d7d2c6ac1c28",
+          "browser-results/polish-shell-administratio-b41b8-orkspace-retains-CinemaSail-chromium/1440--quick-connect.png": "22a49a28a6b3b90147675ac2624564e69ae7ebe886452f858141fcfb4c469652",
+          "browser-results/polish-shell-administratio-b41b8-orkspace-retains-CinemaSail-chromium/1440--settings-configuration.png": "231a497504231d3ef562faf00699c41c919028357b033de38a510f0c3b17d60c",
+          "browser-results/polish-shell-administratio-b41b8-orkspace-retains-CinemaSail-chromium/1440--settings.png": "b4402bb4abfe1f874d2f783817ecf5969e3a22856ffe502a8452e4605c1e68e4",
+          "browser-results/polish-shell-administratio-b41b8-orkspace-retains-CinemaSail-chromium/390--account.png": "fb45c32c5ba3fff1686f3f20132eed4b8ba5efd9cfdb415a9c05faa734f99ef9",
+          "browser-results/polish-shell-administratio-b41b8-orkspace-retains-CinemaSail-chromium/390--quick-connect.png": "4d9e9cd8a3fcde4a252ef2625ef7f613275614c3265196045ed89fc6fabded8b",
+          "browser-results/polish-shell-administratio-b41b8-orkspace-retains-CinemaSail-chromium/390--settings-configuration.png": "fc901646ac8950dcd713fe4e3de955c0734a6e722c129aed33a6f7192ead1dc2",
+          "browser-results/polish-shell-administratio-b41b8-orkspace-retains-CinemaSail-chromium/390--settings.png": "29f1c8aae9bd11ccbfde30c535a0a656a84e0c9abdab90def2f73a8cc063cb2c",
+          "browser-results/subtitle-dashboard-Twenty--0678f-ble-at-the-preference-limit-chromium/1024-twenty-subtitle-languages.png": "8829801be7e7b80512292d3081f5e2f9d970a08e2e1d035b3acc373d85f6da79",
+          "browser-results/subtitle-dashboard-Twenty--0678f-ble-at-the-preference-limit-chromium/1440-twenty-subtitle-languages.png": "b10784cb8234dec6b4490e90b0e734ab1a51e5614a374c83af200c550c078b14",
+          "browser-results/subtitle-dashboard-Twenty--0678f-ble-at-the-preference-limit-chromium/320-twenty-subtitle-languages.png": "0f7c7962ad272f4c99dca6b2c03879df4a262d9c138d3ce0916809999899413d",
+          "browser-results/subtitle-dashboard-Twenty--0678f-ble-at-the-preference-limit-chromium/390-twenty-subtitle-languages.png": "6eab6c2c4bde395e1934511865f19cd24c834879e6c1eeeba7ddf13c7b28cfc4",
+          "browser-results/subtitle-dashboard-Twenty--0678f-ble-at-the-preference-limit-chromium/twenty-subtitle-languages-forced-colors.png": "f0208f519ae3a3e8d6745ee0da69b38c570cdcab56bd4b1daed72da7ec126256",
+          "browser-results/subtitle-dashboard-subtitl-4922d-eps-manual-timing-exclusive-chromium/1440-subtitle-review-empty.png": "525ccc17203b7d9886576c0c6f53381de1912de8322b4e998f7dd6b97587422a",
+          "browser-results/subtitle-dashboard-subtitl-4922d-eps-manual-timing-exclusive-chromium/1440-subtitle-review-failed.png": "f5bf6fb5942c083392554b358d379e9e19be745a08e43d0b18857c85c56bcc14",
+          "browser-results/subtitle-dashboard-subtitl-4922d-eps-manual-timing-exclusive-chromium/1440-subtitle-review-loaded.png": "582fd875dfaf79ec08505959ef83bd04c0a79e882d84b6cf0aeda5444292033e",
+          "browser-results/subtitle-dashboard-subtitl-4922d-eps-manual-timing-exclusive-chromium/1440-subtitle-review-pending.png": "b894fd0969f87715da1ea86ca1d219e29eb75b5891e5116a755ba6980dc67dbc",
+          "browser-results/subtitle-dashboard-subtitl-4922d-eps-manual-timing-exclusive-chromium/390-subtitle-review-empty.png": "5a889dc114db7b8cf2c0358bd25ff10b05b9deda3226b65fb250ac26ec522b63",
+          "browser-results/subtitle-dashboard-subtitl-4922d-eps-manual-timing-exclusive-chromium/390-subtitle-review-failed.png": "0a838cff9f7a5d89e12f2bb184dfe02370593a96e35cf27e928c66592ffb6679",
+          "browser-results/subtitle-dashboard-subtitl-4922d-eps-manual-timing-exclusive-chromium/390-subtitle-review-loaded.png": "d2981f67497d49c5d1659d1e6573f68998ffd3fe972c42cf536ab556b2f90c55",
+          "browser-results/subtitle-dashboard-subtitl-4922d-eps-manual-timing-exclusive-chromium/390-subtitle-review-pending.png": "0c716f561b508507abbef9818c5336b4b66e0cfa68b988397f43c92b727b7e79",
+          "browser-results/subtitle-history-history-e-ccdc2-res-and-older-records-smoke-chromium/history-1024-dark.png": "065e116e7c9f566848ae9a99bf0ab502cfdb944a80b55509b11f6007e4ed291d",
+          "browser-results/subtitle-history-history-e-ccdc2-res-and-older-records-smoke-chromium/history-1024-light.png": "9146f14297747737c2d94c4a328ff98a88667f3beee438bb2c3c2050ebf63192",
+          "browser-results/subtitle-history-history-e-ccdc2-res-and-older-records-smoke-chromium/history-1440-dark.png": "657c653304c5424c6bc1fc2b439c4fb200e9fad1af298d7e350de9f61d1b37c0",
+          "browser-results/subtitle-history-history-e-ccdc2-res-and-older-records-smoke-chromium/history-1440-light.png": "a7685d12011f363ff5605f53b1d784213a79d6c3b9e6f9b36af0ab994a669356",
+          "browser-results/subtitle-history-history-e-ccdc2-res-and-older-records-smoke-chromium/history-320-dark.png": "bb85d3dabc04f3f4676d4de63c49f7ea47ac9bee4ce06ef827c83f045828c20c",
+          "browser-results/subtitle-history-history-e-ccdc2-res-and-older-records-smoke-chromium/history-320-light.png": "5329172bbdf8a03d5d6e7016316de0164cbd8292e0cbcca75194f748d39c90eb",
+          "browser-results/subtitle-history-history-e-ccdc2-res-and-older-records-smoke-chromium/history-390-dark.png": "3342b97a11a155722403cd2f7295542dcb17245e40a26ce440f3b03112f39481",
+          "browser-results/subtitle-history-history-e-ccdc2-res-and-older-records-smoke-chromium/history-390-light.png": "1c3af85e0150ceb95649b8f10705f5102f0c4a9e393451a1494a935796cfa645",
+          "browser-results/subtitle-inspector-layout--5a62c-eview-states-fit-390px-dark-chromium/empty.png": "f290a4cc812b8d880195fa5d4bd6cf7fe5e69fcfa1b9a749c56fcf9fe44c8685",
+          "browser-results/subtitle-inspector-layout--5a62c-eview-states-fit-390px-dark-chromium/failed.png": "17ef342b225434fdd39a1f7190a99ea4fc7ebb9551618b8a61f8bd5a5567278b",
+          "browser-results/subtitle-inspector-layout--5a62c-eview-states-fit-390px-dark-chromium/loaded.png": "68e3b7f72acb700780b78cdb8c06d34b8e092a1bffab6d6a8ad2451e75dfa79b",
+          "browser-results/subtitle-inspector-layout--5a62c-eview-states-fit-390px-dark-chromium/pending.png": "556a1e91b04c23c69dbf9b4a946d19204c08b7a0dc47dc63872cfd5b5c428b62",
+          "browser-results/subtitle-inspector-layout--7924c-view-states-fit-1440px-dark-chromium/empty.png": "49d04ae7902225f1ea6ff551f6772ff650ea7ad5fa2c179b95c543b256a377f8",
+          "browser-results/subtitle-inspector-layout--7924c-view-states-fit-1440px-dark-chromium/failed.png": "2062799616500c5980b8a07becd2d87ffbe3ced3b7110c8835994f1846d22bea",
+          "browser-results/subtitle-inspector-layout--7924c-view-states-fit-1440px-dark-chromium/loaded.png": "2b0814229bbf2327f1039b4fc4d9f041286976df086b4cd91655d27d4c35cbfe",
+          "browser-results/subtitle-inspector-layout--7924c-view-states-fit-1440px-dark-chromium/pending.png": "dce066e5a73814ff271613bb8e693864e052bb8264168e2756d687725307a504",
+          "browser-results/supporter-badge-layout-bad-67ac7-work-fails-at-390px-in-dark-chromium/badges-390-dark-failed-artwork.png": "f6066fbd1846a20d45c73358fe5162c91370431065c1e5814f65e5e676dbcf1c",
+          "browser-results/test-instance-Supporter-pa-c1451-adges-with-accessible-names-chromium/1440-supporter-badges.png": "d22af011ec0ee8354cf17310a6f9d36b13753189213a95d1c0e8a8abe5360493",
+          "browser-results/test-instance-Supporter-pa-c1451-adges-with-accessible-names-chromium/320-supporter-badges.png": "25d42ce91775f8de107d8e8bcf12d8434f7620d0d53798ce19bb8a62f95308a8",
+          "browser-results/test-instance-Supporter-pa-c1451-adges-with-accessible-names-chromium/320-supporter-forced-colors.png": "e3f5d3fb6710b54843549fc32f7d578d360063b1c3b13c56d0c6685a75334c27",
+          "browser-results/test-instance-Supporter-pa-c1451-adges-with-accessible-names-chromium/390-supporter-badges.png": "f301278acaaa607a2923d3feaa93612ca4b2f3d9623e8d5b45879dbcce5d826c",
+          "browser-results/test-instance-Viewer-MFA-e-fc4e0--neutral-instructions-smoke-chromium/viewer-mfa-required.png": "a8f7832d81d1c74ea68ab3f551d6c8439663c4f99a63c78afa89827365283163",
+          "browser-results/test-instance-session-pers-9dea9-s-its-saved-login-URL-smoke-chromium/attachments/session-persistence-fbe67bef31a207ecccbcce3779841091219630ef.json": "d972e51c5d415d1dc25cfb87ee159cd5e4662fb2a3b7366b4a2b36a8448570cf",
+          "browser-results/test-instance-session-pers-9dea9-s-its-saved-login-URL-smoke-chromium/session-persistence.json": "d972e51c5d415d1dc25cfb87ee159cd5e4662fb2a3b7366b4a2b36a8448570cf",
+          "command.log": "919aad39b194e0ac49ee3f9ea203d629e039370b3c58de048ba58d734b427031",
+          "html-report/data/bc21e3fa3732eb83f25dd699c3e3cca0f35c0e0d.json": "d972e51c5d415d1dc25cfb87ee159cd5e4662fb2a3b7366b4a2b36a8448570cf",
+          "html-report/index.html": "7788846262c03f629f8d193e10ba8dfd332d11dc533d9c0214e57cec3aa333c0",
+          "results-chromium.json": "32aefdbb2e6597ab72c9569488740dfd24f60d6ded8bc62d3769b49970fc7edc"
+        }
+      },
+      "browserResults": [
+        {
+          "path": "results-chromium.json",
+          "stats": {
+            "startTime": "2026-10-03T21:07:02.890Z",
+            "duration": 52814.217,
+            "expected": 30,
+            "skipped": 0,
+            "unexpected": 0,
+            "flaky": 0
+          },
+          "specs": [
+            {
+              "title": "administration uses a plain canvas while the dark subtitle workspace retains CinemaSail",
+              "file": "polish-shell.spec.ts",
+              "line": 15,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 3562,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "accepted browser session resumes before any passkey offer @smoke",
+              "file": "session-resume.spec.ts",
+              "line": 8,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 292,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Owner sees real coverage, wanted files, and a focused setup path",
+              "file": "subtitle-dashboard-language-tests.ts",
+              "line": 131,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 1270,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Twenty long language choices remain usable at the preference limit",
+              "file": "subtitle-dashboard-provider-tests.ts",
+              "line": 6,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 8344,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "review starts with sync and cleanup and keeps manual timing exclusive",
+              "file": "subtitle-defaults-tests.ts",
+              "line": 10,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 11314,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "history explains new files, automatic upgrades, manual edits, restores, and older records @smoke",
+              "file": "subtitle-history.spec.ts",
+              "line": 29,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 9742,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "inspector shell and review states fit 1440px dark",
+              "file": "subtitle-inspector-layout.spec.ts",
+              "line": 12,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 3264,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "inspector shell and review states fit 390px dark",
+              "file": "subtitle-inspector-layout.spec.ts",
+              "line": 12,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 2304,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "apply locks editing until the reviewed language operation settles",
+              "file": "subtitle-inspector-races.spec.ts",
+              "line": 11,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 11,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "restore locks editing until the reviewed language operation settles",
+              "file": "subtitle-inspector-races.spec.ts",
+              "line": 11,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 9,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "failed save unlocks controls and preserves the user's text",
+              "file": "subtitle-inspector-races.spec.ts",
+              "line": 33,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 2,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "older inspect failure cannot replace the newer language's success",
+              "file": "subtitle-inspector-races.spec.ts",
+              "line": 43,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 2,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "older preview failure does not overwrite a newer language",
+              "file": "subtitle-inspector-races.spec.ts",
+              "line": 53,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 2,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "draft observation retries a transient error and settles when ready",
+              "file": "subtitle-inspector-races.spec.ts",
+              "line": 62,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 4,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "pagehide discards an in-flight running draft and pageshow starts one chain",
+              "file": "subtitle-inspector-races.spec.ts",
+              "line": 73,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 2,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "pagehide discards an in-flight failed draft and pageshow starts one chain",
+              "file": "subtitle-inspector-races.spec.ts",
+              "line": 73,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 2,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "a superseded draft response cannot regress the current state or polling",
+              "file": "subtitle-inspector-races.spec.ts",
+              "line": 84,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 2,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "pageshow preserves previously appended cue pages",
+              "file": "subtitle-inspector-races.spec.ts",
+              "line": 92,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 6,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "switching language hides the previous draft and cannot discard newer corrections",
+              "file": "subtitle-inspector-races.spec.ts",
+              "line": 104,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 2,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "late start failure cannot replace another language's preview status",
+              "file": "subtitle-inspector-races.spec.ts",
+              "line": 120,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 2,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "late cancel failure cannot replace another language's preview status",
+              "file": "subtitle-inspector-races.spec.ts",
+              "line": 120,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 2,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "late draft start success preserves the new language's reviewed correction",
+              "file": "subtitle-inspector-races.spec.ts",
+              "line": 131,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 3,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "pagehide ignores a pending draft start failure",
+              "file": "subtitle-inspector-races.spec.ts",
+              "line": 146,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 2,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "pagehide ignores a pending draft cancel failure",
+              "file": "subtitle-inspector-races.spec.ts",
+              "line": 146,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 1,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "an obsolete start completion cannot enable Generate during a newer start",
+              "file": "subtitle-inspector-races.spec.ts",
+              "line": 156,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 2,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "a draft start settling after pageshow reconciles an earlier idle observation",
+              "file": "subtitle-inspector-races.spec.ts",
+              "line": 168,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 4,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "badge descriptions stay inside their cells when artwork fails at 390px in dark",
+              "file": "supporter-badge-layout.spec.ts",
+              "line": 8,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 898,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "closing a signed-in tab resumes its saved login URL @smoke",
+              "file": "test-instance-session-persistence.spec.ts",
+              "line": 8,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 852,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Supporter page loads twenty distinct badges with accessible names",
+              "file": "test-instance-supporter-tests.ts",
+              "line": 8,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 5188,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Viewer MFA enrollment gives account-neutral instructions @smoke",
+              "file": "test-instance.spec.ts",
+              "line": 11,
+              "tests": [
+                {
+                  "status": "expected",
+                  "project": "chromium",
+                  "results": [
+                    {
+                      "status": "passed",
+                      "duration": 1886,
+                      "retry": 0
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "path": "browser-results/.last-run.json",
+          "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+        },
+        {
+          "path": "browser-results/polish-shell-administratio-b41b8-orkspace-retains-CinemaSail-chromium/1440--account.png",
+          "sha256": "3219edbe26806f6aa5676b0550deeee6d306bad2170ace587608d7d2c6ac1c28"
+        },
+        {
+          "path": "browser-results/polish-shell-administratio-b41b8-orkspace-retains-CinemaSail-chromium/1440--quick-connect.png",
+          "sha256": "22a49a28a6b3b90147675ac2624564e69ae7ebe886452f858141fcfb4c469652"
+        },
+        {
+          "path": "browser-results/polish-shell-administratio-b41b8-orkspace-retains-CinemaSail-chromium/1440--settings-configuration.png",
+          "sha256": "231a497504231d3ef562faf00699c41c919028357b033de38a510f0c3b17d60c"
+        },
+        {
+          "path": "browser-results/polish-shell-administratio-b41b8-orkspace-retains-CinemaSail-chromium/1440--settings.png",
+          "sha256": "b4402bb4abfe1f874d2f783817ecf5969e3a22856ffe502a8452e4605c1e68e4"
+        },
+        {
+          "path": "browser-results/polish-shell-administratio-b41b8-orkspace-retains-CinemaSail-chromium/390--account.png",
+          "sha256": "fb45c32c5ba3fff1686f3f20132eed4b8ba5efd9cfdb415a9c05faa734f99ef9"
+        },
+        {
+          "path": "browser-results/polish-shell-administratio-b41b8-orkspace-retains-CinemaSail-chromium/390--quick-connect.png",
+          "sha256": "4d9e9cd8a3fcde4a252ef2625ef7f613275614c3265196045ed89fc6fabded8b"
+        },
+        {
+          "path": "browser-results/polish-shell-administratio-b41b8-orkspace-retains-CinemaSail-chromium/390--settings-configuration.png",
+          "sha256": "fc901646ac8950dcd713fe4e3de955c0734a6e722c129aed33a6f7192ead1dc2"
+        },
+        {
+          "path": "browser-results/polish-shell-administratio-b41b8-orkspace-retains-CinemaSail-chromium/390--settings.png",
+          "sha256": "29f1c8aae9bd11ccbfde30c535a0a656a84e0c9abdab90def2f73a8cc063cb2c"
+        },
+        {
+          "path": "browser-results/subtitle-dashboard-Twenty--0678f-ble-at-the-preference-limit-chromium/1024-twenty-subtitle-languages.png",
+          "sha256": "8829801be7e7b80512292d3081f5e2f9d970a08e2e1d035b3acc373d85f6da79"
+        },
+        {
+          "path": "browser-results/subtitle-dashboard-Twenty--0678f-ble-at-the-preference-limit-chromium/1440-twenty-subtitle-languages.png",
+          "sha256": "b10784cb8234dec6b4490e90b0e734ab1a51e5614a374c83af200c550c078b14"
+        },
+        {
+          "path": "browser-results/subtitle-dashboard-Twenty--0678f-ble-at-the-preference-limit-chromium/320-twenty-subtitle-languages.png",
+          "sha256": "0f7c7962ad272f4c99dca6b2c03879df4a262d9c138d3ce0916809999899413d"
+        },
+        {
+          "path": "browser-results/subtitle-dashboard-Twenty--0678f-ble-at-the-preference-limit-chromium/390-twenty-subtitle-languages.png",
+          "sha256": "6eab6c2c4bde395e1934511865f19cd24c834879e6c1eeeba7ddf13c7b28cfc4"
+        },
+        {
+          "path": "browser-results/subtitle-dashboard-Twenty--0678f-ble-at-the-preference-limit-chromium/twenty-subtitle-languages-forced-colors.png",
+          "sha256": "f0208f519ae3a3e8d6745ee0da69b38c570cdcab56bd4b1daed72da7ec126256"
+        },
+        {
+          "path": "browser-results/subtitle-dashboard-subtitl-4922d-eps-manual-timing-exclusive-chromium/1440-subtitle-review-empty.png",
+          "sha256": "525ccc17203b7d9886576c0c6f53381de1912de8322b4e998f7dd6b97587422a"
+        },
+        {
+          "path": "browser-results/subtitle-dashboard-subtitl-4922d-eps-manual-timing-exclusive-chromium/1440-subtitle-review-failed.png",
+          "sha256": "f5bf6fb5942c083392554b358d379e9e19be745a08e43d0b18857c85c56bcc14"
+        },
+        {
+          "path": "browser-results/subtitle-dashboard-subtitl-4922d-eps-manual-timing-exclusive-chromium/1440-subtitle-review-loaded.png",
+          "sha256": "582fd875dfaf79ec08505959ef83bd04c0a79e882d84b6cf0aeda5444292033e"
+        },
+        {
+          "path": "browser-results/subtitle-dashboard-subtitl-4922d-eps-manual-timing-exclusive-chromium/1440-subtitle-review-pending.png",
+          "sha256": "b894fd0969f87715da1ea86ca1d219e29eb75b5891e5116a755ba6980dc67dbc"
+        },
+        {
+          "path": "browser-results/subtitle-dashboard-subtitl-4922d-eps-manual-timing-exclusive-chromium/390-subtitle-review-empty.png",
+          "sha256": "5a889dc114db7b8cf2c0358bd25ff10b05b9deda3226b65fb250ac26ec522b63"
+        },
+        {
+          "path": "browser-results/subtitle-dashboard-subtitl-4922d-eps-manual-timing-exclusive-chromium/390-subtitle-review-failed.png",
+          "sha256": "0a838cff9f7a5d89e12f2bb184dfe02370593a96e35cf27e928c66592ffb6679"
+        },
+        {
+          "path": "browser-results/subtitle-dashboard-subtitl-4922d-eps-manual-timing-exclusive-chromium/390-subtitle-review-loaded.png",
+          "sha256": "d2981f67497d49c5d1659d1e6573f68998ffd3fe972c42cf536ab556b2f90c55"
+        },
+        {
+          "path": "browser-results/subtitle-dashboard-subtitl-4922d-eps-manual-timing-exclusive-chromium/390-subtitle-review-pending.png",
+          "sha256": "0c716f561b508507abbef9818c5336b4b66e0cfa68b988397f43c92b727b7e79"
+        },
+        {
+          "path": "browser-results/subtitle-history-history-e-ccdc2-res-and-older-records-smoke-chromium/history-1024-dark.png",
+          "sha256": "065e116e7c9f566848ae9a99bf0ab502cfdb944a80b55509b11f6007e4ed291d"
+        },
+        {
+          "path": "browser-results/subtitle-history-history-e-ccdc2-res-and-older-records-smoke-chromium/history-1024-light.png",
+          "sha256": "9146f14297747737c2d94c4a328ff98a88667f3beee438bb2c3c2050ebf63192"
+        },
+        {
+          "path": "browser-results/subtitle-history-history-e-ccdc2-res-and-older-records-smoke-chromium/history-1440-dark.png",
+          "sha256": "657c653304c5424c6bc1fc2b439c4fb200e9fad1af298d7e350de9f61d1b37c0"
+        },
+        {
+          "path": "browser-results/subtitle-history-history-e-ccdc2-res-and-older-records-smoke-chromium/history-1440-light.png",
+          "sha256": "a7685d12011f363ff5605f53b1d784213a79d6c3b9e6f9b36af0ab994a669356"
+        },
+        {
+          "path": "browser-results/subtitle-history-history-e-ccdc2-res-and-older-records-smoke-chromium/history-320-dark.png",
+          "sha256": "bb85d3dabc04f3f4676d4de63c49f7ea47ac9bee4ce06ef827c83f045828c20c"
+        },
+        {
+          "path": "browser-results/subtitle-history-history-e-ccdc2-res-and-older-records-smoke-chromium/history-320-light.png",
+          "sha256": "5329172bbdf8a03d5d6e7016316de0164cbd8292e0cbcca75194f748d39c90eb"
+        },
+        {
+          "path": "browser-results/subtitle-history-history-e-ccdc2-res-and-older-records-smoke-chromium/history-390-dark.png",
+          "sha256": "3342b97a11a155722403cd2f7295542dcb17245e40a26ce440f3b03112f39481"
+        },
+        {
+          "path": "browser-results/subtitle-history-history-e-ccdc2-res-and-older-records-smoke-chromium/history-390-light.png",
+          "sha256": "1c3af85e0150ceb95649b8f10705f5102f0c4a9e393451a1494a935796cfa645"
+        },
+        {
+          "path": "browser-results/subtitle-inspector-layout--5a62c-eview-states-fit-390px-dark-chromium/empty.png",
+          "sha256": "f290a4cc812b8d880195fa5d4bd6cf7fe5e69fcfa1b9a749c56fcf9fe44c8685"
+        },
+        {
+          "path": "browser-results/subtitle-inspector-layout--5a62c-eview-states-fit-390px-dark-chromium/failed.png",
+          "sha256": "17ef342b225434fdd39a1f7190a99ea4fc7ebb9551618b8a61f8bd5a5567278b"
+        },
+        {
+          "path": "browser-results/subtitle-inspector-layout--5a62c-eview-states-fit-390px-dark-chromium/loaded.png",
+          "sha256": "68e3b7f72acb700780b78cdb8c06d34b8e092a1bffab6d6a8ad2451e75dfa79b"
+        },
+        {
+          "path": "browser-results/subtitle-inspector-layout--5a62c-eview-states-fit-390px-dark-chromium/pending.png",
+          "sha256": "556a1e91b04c23c69dbf9b4a946d19204c08b7a0dc47dc63872cfd5b5c428b62"
+        },
+        {
+          "path": "browser-results/subtitle-inspector-layout--7924c-view-states-fit-1440px-dark-chromium/empty.png",
+          "sha256": "49d04ae7902225f1ea6ff551f6772ff650ea7ad5fa2c179b95c543b256a377f8"
+        },
+        {
+          "path": "browser-results/subtitle-inspector-layout--7924c-view-states-fit-1440px-dark-chromium/failed.png",
+          "sha256": "2062799616500c5980b8a07becd2d87ffbe3ced3b7110c8835994f1846d22bea"
+        },
+        {
+          "path": "browser-results/subtitle-inspector-layout--7924c-view-states-fit-1440px-dark-chromium/loaded.png",
+          "sha256": "2b0814229bbf2327f1039b4fc4d9f041286976df086b4cd91655d27d4c35cbfe"
+        },
+        {
+          "path": "browser-results/subtitle-inspector-layout--7924c-view-states-fit-1440px-dark-chromium/pending.png",
+          "sha256": "dce066e5a73814ff271613bb8e693864e052bb8264168e2756d687725307a504"
+        },
+        {
+          "path": "browser-results/supporter-badge-layout-bad-67ac7-work-fails-at-390px-in-dark-chromium/badges-390-dark-failed-artwork.png",
+          "sha256": "f6066fbd1846a20d45c73358fe5162c91370431065c1e5814f65e5e676dbcf1c"
+        },
+        {
+          "path": "browser-results/test-instance-Supporter-pa-c1451-adges-with-accessible-names-chromium/1440-supporter-badges.png",
+          "sha256": "d22af011ec0ee8354cf17310a6f9d36b13753189213a95d1c0e8a8abe5360493"
+        },
+        {
+          "path": "browser-results/test-instance-Supporter-pa-c1451-adges-with-accessible-names-chromium/320-supporter-badges.png",
+          "sha256": "25d42ce91775f8de107d8e8bcf12d8434f7620d0d53798ce19bb8a62f95308a8"
+        },
+        {
+          "path": "browser-results/test-instance-Supporter-pa-c1451-adges-with-accessible-names-chromium/320-supporter-forced-colors.png",
+          "sha256": "e3f5d3fb6710b54843549fc32f7d578d360063b1c3b13c56d0c6685a75334c27"
+        },
+        {
+          "path": "browser-results/test-instance-Supporter-pa-c1451-adges-with-accessible-names-chromium/390-supporter-badges.png",
+          "sha256": "f301278acaaa607a2923d3feaa93612ca4b2f3d9623e8d5b45879dbcce5d826c"
+        },
+        {
+          "path": "browser-results/test-instance-Viewer-MFA-e-fc4e0--neutral-instructions-smoke-chromium/viewer-mfa-required.png",
+          "sha256": "a8f7832d81d1c74ea68ab3f551d6c8439663c4f99a63c78afa89827365283163"
+        },
+        {
+          "path": "browser-results/test-instance-session-pers-9dea9-s-its-saved-login-URL-smoke-chromium/attachments/session-persistence-fbe67bef31a207ecccbcce3779841091219630ef.json",
+          "sha256": "d972e51c5d415d1dc25cfb87ee159cd5e4662fb2a3b7366b4a2b36a8448570cf"
+        },
+        {
+          "path": "browser-results/test-instance-session-pers-9dea9-s-its-saved-login-URL-smoke-chromium/session-persistence.json",
+          "sha256": "d972e51c5d415d1dc25cfb87ee159cd5e4662fb2a3b7366b4a2b36a8448570cf"
+        },
+        {
+          "path": "command.log",
+          "sha256": "919aad39b194e0ac49ee3f9ea203d629e039370b3c58de048ba58d734b427031"
+        },
+        {
+          "path": "html-report/data/bc21e3fa3732eb83f25dd699c3e3cca0f35c0e0d.json",
+          "sha256": "d972e51c5d415d1dc25cfb87ee159cd5e4662fb2a3b7366b4a2b36a8448570cf"
+        },
+        {
+          "path": "html-report/index.html",
+          "sha256": "7788846262c03f629f8d193e10ba8dfd332d11dc533d9c0214e57cec3aa333c0"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "7a6c056c1d78e2f877a1ce2ad35b2d0c39346de0af29c926a8574d042434c2ec"
+        },
+        {
+          "path": "results-chromium.json",
+          "sha256": "32aefdbb2e6597ab72c9569488740dfd24f60d6ded8bc62d3769b49970fc7edc"
+        }
+      ]
+    },
+    {
+      "artifactId": 11284209457,
+      "name": "player-ubuntu-24.04-arm-system-e2e-39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+      "artifactURL": "https://github.com/Kinosail/kinosail/actions/runs/37153629848/artifacts/11284209457",
+      "zipSHA256": "8cc1103f3b9fd02e891d0be466158cb451cce331ee0693182b00761eceacf336",
+      "zipBytes": 2516,
+      "checksumVerification": {
+        "members": 2,
+        "allPassed": true,
+        "missingMembers": []
+      },
+      "manifest": {
+        "schemaVersion": 1,
+        "revision": "39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+        "sourceStatus": {
+          "command": [
+            "git",
+            "status",
+            "--porcelain",
+            "--untracked-files=normal"
+          ],
+          "exitCode": 0,
+          "stdout": "?? .cache/",
+          "stderr": ""
+        },
+        "trackedPatchSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "command": [
+          "./scripts/test-container.sh"
+        ],
+        "workingDirectory": "apps/player",
+        "startedUTC": "2026-10-03T21:04:11.357380+00:00",
+        "environment": {
+          "CI": "true",
+          "CONTAINER_ENGINE": "docker",
+          "KINOSAIL_TEST_IMAGE": "localhost/kinosail-player:39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+          "KINOSAIL_TEST_IMAGE_READY": "1"
+        },
+        "platform": {
+          "system": "Linux",
+          "release": "6.17.0-1022-azure",
+          "machine": "aarch64",
+          "python": "3.12.3"
+        },
+        "tools": [
+          {
+            "command": [
+              "go",
+              "version"
+            ],
+            "exitCode": 0,
+            "stdout": "go version go1.27.0 linux/arm64",
+            "stderr": "go: downloading go1.27.0 (linux/arm64)"
+          },
+          {
+            "command": [
+              "node",
+              "--version"
+            ],
+            "exitCode": 0,
+            "stdout": "v22.23.3",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "pnpm",
+              "--version"
+            ],
+            "error": "FileNotFoundError"
+          }
+        ],
+        "inputs": {
+          "apps/player/e2e/pnpm-lock.yaml": "b3151e08c2af7e480d7f6f5aeafb2a230e92c9dd5aaf18dfcd787ee71c8ba655",
+          "apps/player/e2e/playwright.config.ts": "628d3a62d9b3e2fba1bc43f3cd58979acadf22c083e3559c73c4f750a97cc0b3",
+          "apps/player/scripts/generate-test-media.sh": "6e1ee7f3746d2cbd5ca23263fd67e2460fcde882a76b1a3cc354b64585e7b34f",
+          "apps/player/scripts/test-container.sh": "cccac572df1a37fbea72cdff6aa68547a8d9e41cd628fdf3ce836f246b12175a",
+          "apps/subtitles/e2e/pnpm-lock.yaml": "b3151e08c2af7e480d7f6f5aeafb2a230e92c9dd5aaf18dfcd787ee71c8ba655",
+          "apps/subtitles/e2e/playwright.config.ts": "3faad3cedaaeab4ba50aa78926da3076d8fadcd2aa3752806a4dbb7088d144a2",
+          "apps/subtitles/scripts/generate-test-media.sh": "39a4cb408586b5084b2b03c391bfd5678c7e3ea5d4737674e4b1caa8e309a1e2",
+          "apps/subtitles/scripts/test-container.sh": "54109ed54933c79656580d7628207ee837f94e2089c66d318cb6e72499a60107",
+          "scripts/ci/run-populated-settings.py": "1887445160faaeb569dfa5df9544c3ec7c6395a5d1c43e1c65b3883271091366",
+          "scripts/ci/test-container-transport.sh": "8da7af2267fd117b259fb70983fba0b76d036c7de2415f9f68e6f4707dbbb13c"
+        },
+        "testData": "Disposable generated media and UI fixtures; see hashed generators and command log.",
+        "container": {
+          "command": [
+            "docker",
+            "image",
+            "inspect",
+            "--format",
+            "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}",
+            "localhost/kinosail-player:39204bc9c84961b3e74f4a68a2d28ce25d790bca"
+          ],
+          "exitCode": 0,
+          "stdout": "sha256:7df435f6c4e4ecf42ac8be6b6c7b8c182fc9e44991b9c3590348db7a703272e3 39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+          "stderr": ""
+        },
+        "commandExitCode": 0,
+        "finalRevision": {
+          "command": [
+            "git",
+            "rev-parse",
+            "HEAD"
+          ],
+          "exitCode": 0,
+          "stdout": "39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+          "stderr": ""
+        },
+        "finalSourceStatus": {
+          "command": [
+            "git",
+            "status",
+            "--porcelain",
+            "--untracked-files=normal"
+          ],
+          "exitCode": 0,
+          "stdout": "?? .cache/",
+          "stderr": ""
+        },
+        "finalTrackedPatchSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sourceUnchanged": true,
+        "exactRevisionProof": false,
+        "finishedUTC": "2026-10-03T21:04:56.320620+00:00",
+        "exitCode": 0,
+        "result": "passed",
+        "evidence": {
+          "command.log": "864f6f1df3fc8b893fa1734dea02a6eb63d3e5639cad63d0cbc9f0624d596c53"
+        }
+      },
+      "browserResults": [],
+      "evidence": [
+        {
+          "path": "command.log",
+          "sha256": "864f6f1df3fc8b893fa1734dea02a6eb63d3e5639cad63d0cbc9f0624d596c53"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "5250100930c8c18a520e74e87309457a526e978f22ff157640809fe3b68c2b94"
+        }
+      ]
+    },
+    {
+      "artifactId": 11284099771,
+      "name": "subtitles-ubuntu-24.04-system-e2e-39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+      "artifactURL": "https://github.com/Kinosail/kinosail/actions/runs/37153629848/artifacts/11284099771",
+      "zipSHA256": "a70b56b08e2d9384d289aeed4c1fe13698e839ac8afa7eb03a15f04791d9615b",
+      "zipBytes": 2520,
+      "checksumVerification": {
+        "members": 2,
+        "allPassed": true,
+        "missingMembers": []
+      },
+      "manifest": {
+        "schemaVersion": 1,
+        "revision": "39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+        "sourceStatus": {
+          "command": [
+            "git",
+            "status",
+            "--porcelain",
+            "--untracked-files=normal"
+          ],
+          "exitCode": 0,
+          "stdout": "?? .cache/",
+          "stderr": ""
+        },
+        "trackedPatchSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "command": [
+          "./scripts/test-container.sh"
+        ],
+        "workingDirectory": "apps/subtitles",
+        "startedUTC": "2026-10-03T21:05:25.776273+00:00",
+        "environment": {
+          "CI": "true",
+          "CONTAINER_ENGINE": "docker",
+          "KINOSAIL_TEST_IMAGE": "localhost/kinosail-subtitles:39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+          "KINOSAIL_TEST_IMAGE_READY": "1"
+        },
+        "platform": {
+          "system": "Linux",
+          "release": "6.17.0-1022-azure",
+          "machine": "x86_64",
+          "python": "3.12.3"
+        },
+        "tools": [
+          {
+            "command": [
+              "go",
+              "version"
+            ],
+            "exitCode": 0,
+            "stdout": "go version go1.27.0 linux/amd64",
+            "stderr": "go: downloading go1.27.0 (linux/amd64)"
+          },
+          {
+            "command": [
+              "node",
+              "--version"
+            ],
+            "exitCode": 0,
+            "stdout": "v22.23.3",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "pnpm",
+              "--version"
+            ],
+            "error": "FileNotFoundError"
+          }
+        ],
+        "inputs": {
+          "apps/player/e2e/pnpm-lock.yaml": "b3151e08c2af7e480d7f6f5aeafb2a230e92c9dd5aaf18dfcd787ee71c8ba655",
+          "apps/player/e2e/playwright.config.ts": "628d3a62d9b3e2fba1bc43f3cd58979acadf22c083e3559c73c4f750a97cc0b3",
+          "apps/player/scripts/generate-test-media.sh": "6e1ee7f3746d2cbd5ca23263fd67e2460fcde882a76b1a3cc354b64585e7b34f",
+          "apps/player/scripts/test-container.sh": "cccac572df1a37fbea72cdff6aa68547a8d9e41cd628fdf3ce836f246b12175a",
+          "apps/subtitles/e2e/pnpm-lock.yaml": "b3151e08c2af7e480d7f6f5aeafb2a230e92c9dd5aaf18dfcd787ee71c8ba655",
+          "apps/subtitles/e2e/playwright.config.ts": "3faad3cedaaeab4ba50aa78926da3076d8fadcd2aa3752806a4dbb7088d144a2",
+          "apps/subtitles/scripts/generate-test-media.sh": "39a4cb408586b5084b2b03c391bfd5678c7e3ea5d4737674e4b1caa8e309a1e2",
+          "apps/subtitles/scripts/test-container.sh": "54109ed54933c79656580d7628207ee837f94e2089c66d318cb6e72499a60107",
+          "scripts/ci/run-populated-settings.py": "1887445160faaeb569dfa5df9544c3ec7c6395a5d1c43e1c65b3883271091366",
+          "scripts/ci/test-container-transport.sh": "8da7af2267fd117b259fb70983fba0b76d036c7de2415f9f68e6f4707dbbb13c"
+        },
+        "testData": "Disposable generated media and UI fixtures; see hashed generators and command log.",
+        "container": {
+          "command": [
+            "docker",
+            "image",
+            "inspect",
+            "--format",
+            "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}",
+            "localhost/kinosail-subtitles:39204bc9c84961b3e74f4a68a2d28ce25d790bca"
+          ],
+          "exitCode": 0,
+          "stdout": "sha256:f9c3050935453889fdf7860c3c0e2f806b161245a2d2b32bdd646450fa441036 39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+          "stderr": ""
+        },
+        "commandExitCode": 0,
+        "finalRevision": {
+          "command": [
+            "git",
+            "rev-parse",
+            "HEAD"
+          ],
+          "exitCode": 0,
+          "stdout": "39204bc9c84961b3e74f4a68a2d28ce25d790bca",
+          "stderr": ""
+        },
+        "finalSourceStatus": {
+          "command": [
+            "git",
+            "status",
+            "--porcelain",
+            "--untracked-files=normal"
+          ],
+          "exitCode": 0,
+          "stdout": "?? .cache/",
+          "stderr": ""
+        },
+        "finalTrackedPatchSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sourceUnchanged": true,
+        "exactRevisionProof": false,
+        "finishedUTC": "2026-10-03T21:06:38.855644+00:00",
+        "exitCode": 0,
+        "result": "passed",
+        "evidence": {
+          "command.log": "30db4fc84d14fb1a7a7493c9e33156e517df50dbf94066b3728c5b3725e5310e"
+        }
+      },
+      "browserResults": [],
+      "evidence": [
+        {
+          "path": "command.log",
+          "sha256": "30db4fc84d14fb1a7a7493c9e33156e517df50dbf94066b3728c5b3725e5310e"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "e0d726593c29ae06bedbbffeb793c0ea359b471c06df749e0d2ea737baa2de1c"
+        }
+      ]
+    }
+  ]
+}

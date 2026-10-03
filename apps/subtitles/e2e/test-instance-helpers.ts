@@ -53,7 +53,7 @@ export async function removeViewer(page: Page, id: string) {
 }
 
 export async function newViewerPage(browser: Browser, baseURL: string): Promise<Page> {
-  const context = await browser.newContext({ baseURL, ignoreHTTPSErrors: true });
+  const context = await browser.newContext({ baseURL, ignoreHTTPSErrors: false });
   await context.addInitScript(() => Object.defineProperty(PublicKeyCredential, "isConditionalMediationAvailable", { value: async () => false }));
   return context.newPage();
 }

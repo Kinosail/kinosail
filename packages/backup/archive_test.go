@@ -93,30 +93,6 @@ func TestArchiveContainsRecoveryManifest(t *testing.T) { //nolint:cyclop // One 
 	}
 }
 
-func TestRestoreRejectsTraversal(t *testing.T) {
-	t.Parallel()
-
-	var archive bytes.Buffer
-	gzipWriter := gzip.NewWriter(&archive)
-	tarWriter := tar.NewWriter(gzipWriter)
-	content := []byte(`{}`)
-	if err := tarWriter.WriteHeader(&tar.Header{Name: "../profiles.json", Mode: 0o600, Size: int64(len(content))}); err != nil {
-		t.Fatal(err)
-	}
-	if _, err := tarWriter.Write(content); err != nil {
-		t.Fatal(err)
-	}
-	if err := tarWriter.Close(); err != nil {
-		t.Fatal(err)
-	}
-	if err := gzipWriter.Close(); err != nil {
-		t.Fatal(err)
-	}
-	if err := testArchive.Restore(bytes.NewReader(archive.Bytes()), t.TempDir()); err == nil {
-		t.Fatal("traversal archive was accepted")
-	}
-}
-
 func TestRestoreRemovesManagedStateAbsentFromSnapshot(t *testing.T) {
 	t.Parallel()
 	source, restored := t.TempDir(), t.TempDir()

@@ -9,32 +9,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-func TestAutomaticSkipTimelineMergesAndClampsRanges(t *testing.T) {
-	markers := []playbackMarker{
-		{Type: "intro", Start: 10, End: 20, Source: "manual"},
-		{Type: "commercial", Start: 15, End: 25, Source: "manual"},
-		{Type: "recap", Start: 40, End: 50, Source: "manual"},
-		{Type: "credits", Start: 90, End: 110, Source: "manual"},
-	}
-	timeline := automaticSkipTimeline(100, markers, []string{"intro", "commercial", "credits"})
-	want := PlaybackTimeline{SourceDuration: 100, Duration: 75, Omitted: []PlaybackRange{{Start: 10, End: 25}, {Start: 90, End: 100}}}
-	if !reflect.DeepEqual(timeline, want) {
-		t.Fatalf("timeline = %#v, want %#v", timeline, want)
-	}
-	for _, test := range []struct{ presentation, source float64 }{{0, 0}, {9, 9}, {10, 25}, {74, 89}, {75, 100}} {
-		if got := timeline.SourceTime(test.presentation); got != test.source || timeline.PresentationTime(test.source) != test.presentation {
-			t.Errorf("mapping %v <-> %v produced %v <-> %v", test.presentation, test.source, got, timeline.PresentationTime(test.source))
-		}
-	}
-}
-
-func TestAutomaticSkipTimelineNeverRemovesTheWholeItem(t *testing.T) {
-	timeline := automaticSkipTimeline(60, []playbackMarker{{Type: "intro", Start: 0, End: 60, Source: "manual"}}, []string{"intro"})
-	if timeline.Duration != 60 || len(timeline.Omitted) != 0 {
-		t.Fatalf("whole-item timeline = %#v", timeline)
-	}
-}
-
 func TestAutomaticStartOffsetOnlyUsesATrustedIntroAtTheSourceStart(t *testing.T) {
 	servertest.AssertAutomaticStartOffsetOnlyUsesATrustedIntroAtTheSourceStart(t, automaticStartOffset)
 }

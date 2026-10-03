@@ -1,0 +1,33 @@
+{
+  "source_head": "f614fe6182920868dbbab8aca804533830293631",
+  "working_tree_status": [
+    " M engineering/qa/2026-10-03-test-overhaul/audit.md"
+  ],
+  "scope": "Receipt and exact read-only checker/ledger/upstream addition inputs from reconciled root source; baseline JSON receipt hash is inside the run receipt.",
+  "artifacts": [
+    {
+      "input_path": "engineering/qa/2026-10-03-test-overhaul/shared-identity.json",
+      "sha256": "dbaf38c276f4561e9c32e030f1b87ead40e8632669351fbece47b674a2e0b74b",
+      "bytes": 8440176,
+      "source": "root reconciled checkout"
+    },
+    {
+      "input_path": "engineering/qa/2026-10-03-test-overhaul/verify_shared_ledger.py",
+      "sha256": "0479442589e48ec755924f8a02cd89740df45c8cdece5ade04b74b02d1d5224c",
+      "bytes": 11483,
+      "source": "root reconciled checkout"
+    },
+    {
+      "input_path": "packages/identitycore/session_cookie_issuance_boundary_test.go",
+      "sha256": "f0bd2de5ff6cda8f3fe5efa1b0550385b91e17ce490c30dd5c7856bbd3c50beb",
+      "bytes": 1584,
+      "source": "root reconciled checkout"
+    },
+    {
+      "input_path": "engineering/qa/2026-10-03-test-overhaul/shared-ledger-reconciled-root-integrity.json",
+      "sha256": "db26d438ec460affd3503ead43e06f98b6f759a1a20d2efd48351c50130cef61",
+      "bytes": 3664,
+      "source": "this saved receipt"
+    }
+  ]
+}

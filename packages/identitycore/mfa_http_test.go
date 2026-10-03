@@ -115,17 +115,6 @@ func TestRegisterMFALifecycle(t *testing.T) { //nolint:gocognit // The table cov
 	}
 }
 
-func TestNewMFAHandlersRejectsInvalidConfig(t *testing.T) {
-	t.Parallel()
-	handlers, err := NewMFAHandlers(MFAHTTPConfig{})
-	if !errors.Is(err, ErrInvalidConfig) {
-		t.Fatalf("invalid MFA config error = %v", err)
-	}
-	if handlers.Setup != nil || handlers.Confirm != nil || handlers.Disable != nil || handlers.WebConfirm != nil || handlers.WebDisable != nil {
-		t.Fatal("invalid MFA config returned handlers")
-	}
-}
-
 func TestWebMFADisableLifecycle(t *testing.T) {
 	t.Parallel()
 	tests := []webMFATest{

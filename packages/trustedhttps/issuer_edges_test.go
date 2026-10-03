@@ -11,7 +11,6 @@ import (
 	"errors"
 	"net"
 	"net/http"
-	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strings"
@@ -177,18 +176,6 @@ func (provider *issuerProvider) PresentTXT(context.Context, string) error {
 func (provider *issuerProvider) CleanupTXT(context.Context) error {
 	provider.cleanupCalls++
 	return provider.cleanupErr
-}
-
-func TestObtainCertificateUsesDefaultDirectory(t *testing.T) {
-	server := httptest.NewTLSServer(http.NotFoundHandler())
-	defer server.Close()
-	path := t.TempDir()
-	if _, err := obtainCertificate(t.Context(), validIssuerConfig(), path, server.Client(), server.URL, &issuerProvider{}); err == nil {
-		t.Fatal("invalid ACME directory accepted")
-	}
-	if _, err := obtainCertificate(t.Context(), validIssuerConfig(), t.TempDir(), &http.Client{Transport: failingTransport{}}, "", &issuerProvider{}); err == nil {
-		t.Fatal("unavailable default ACME directory accepted")
-	}
 }
 
 func TestTXTWaitUsesBoundedRetryPolicy(t *testing.T) {

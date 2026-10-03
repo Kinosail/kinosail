@@ -1,0 +1,68 @@
+{
+  "source_sha": "d16e13722258a8f72c3736585146e07ed2519392",
+  "upstream_sha": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+  "files": [
+    {
+      "file": "apps/player/apps/native/Tests/PlaybackMediaJourneys.swift",
+      "sha256": "0125ec0ec6a98eff48a87e76f9cb0da83c9bed4d69a09b67c56f76218268c7ab",
+      "upstream_sha256": "0125ec0ec6a98eff48a87e76f9cb0da83c9bed4d69a09b67c56f76218268c7ab",
+      "exact_upstream_blob_preserved": true,
+      "declarations": [
+        "coldAndPreparedPlaybackDecodeResumeSeekPauseAndRepeat"
+      ]
+    },
+    {
+      "file": "apps/player/apps/native/Tests/PlaybackStartupFixture.swift",
+      "sha256": "99b2a5ec44b98a1b7e64a8f2251c7360dd1d677dc6b0bea9e951ca8a5b71cc29",
+      "upstream_sha256": "99b2a5ec44b98a1b7e64a8f2251c7360dd1d677dc6b0bea9e951ca8a5b71cc29",
+      "exact_upstream_blob_preserved": true,
+      "declarations": []
+    },
+    {
+      "file": "apps/player/apps/native/Tests/PlaybackStartupJourneys.swift",
+      "sha256": "fed0f37922675f041967084f9f6cd5ffd06e3104806a53bfe5a226dfac1241f1",
+      "upstream_sha256": "fed0f37922675f041967084f9f6cd5ffd06e3104806a53bfe5a226dfac1241f1",
+      "exact_upstream_blob_preserved": true,
+      "declarations": [
+        "cancelledStartPreservesActivePlaybackWithoutRequests",
+        "terminalDenialDoesNotRepeatNegotiation",
+        "cancelledPreparationReturnsPromptly",
+        "backgroundPreparationCannotSupersedeActiveStartup",
+        "latePreparationCannotClearNewerSameTitle"
+      ]
+    },
+    {
+      "file": "apps/player/e2e/player-compatible-intent.spec.ts",
+      "sha256": "2e1d6131e744fb640169bfe34f59c621f4e96814a799b7e36869e0d18380f519",
+      "upstream_sha256": "2e1d6131e744fb640169bfe34f59c621f4e96814a799b7e36869e0d18380f519",
+      "exact_upstream_blob_preserved": true,
+      "declarations": [
+        "compatible attachment respects Pause during resumed autoplay @smoke"
+      ]
+    },
+    {
+      "file": "apps/player/e2e/test-instance-startup.spec.ts",
+      "sha256": "0e621bc1f8fe768fa9838f43d0159546085d62c31bcf99ec7d28917c70893dc2",
+      "upstream_sha256": "0e621bc1f8fe768fa9838f43d0159546085d62c31bcf99ec7d28917c70893dc2",
+      "exact_upstream_blob_preserved": true,
+      "declarations": [
+        "bounded startup preparation preserves the exact stream and playback priority"
+      ]
+    },
+    {
+      "file": "apps/player/e2e/player-native-seek-gap.spec.ts",
+      "sha256": "96c49bdf512d1ab763a7be87885846c0f97b81919d76dc35c7b400f7a3072af9",
+      "upstream_sha256": "96c49bdf512d1ab763a7be87885846c0f97b81919d76dc35c7b400f7a3072af9",
+      "exact_upstream_blob_preserved": true,
+      "declarations": []
+    },
+    {
+      "file": "apps/player/e2e/static-sources.ts",
+      "sha256": "63912fbc134bd00ea2f235c7848043faa07d9818f42e6234ad7061019176964e",
+      "upstream_sha256": "63912fbc134bd00ea2f235c7848043faa07d9818f42e6234ad7061019176964e",
+      "exact_upstream_blob_preserved": true,
+      "declarations": []
+    }
+  ],
+  "scope": "Exact upstream blob preservation; no runtime/E2E-equivalence claim. Existing seek-gap fixture now identifies Apple vendor and static fixture includes capabilities script; all old test declarations retained."
+}

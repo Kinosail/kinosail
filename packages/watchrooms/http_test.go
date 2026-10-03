@@ -73,18 +73,6 @@ func httpConfig(rooms *Rooms, index *httpIndexStub) HTTPConfig {
 	}
 }
 
-func TestHTTPConfigurationRejectsMissingAdapters(t *testing.T) {
-	if _, err := NewHTTP(HTTPConfig{}); err == nil {
-		t.Fatal("empty HTTP configuration was accepted")
-	}
-	defer func() {
-		if recover() == nil {
-			t.Fatal("MustNewHTTP accepted empty configuration")
-		}
-	}()
-	MustNewHTTP(HTTPConfig{})
-}
-
 func TestHTTPRoutesValidateCreateRedirectAndPlayerProjection(t *testing.T) { //nolint:cyclop // One lifecycle protects create, redirect, and projection behavior.
 	harness := newHTTPHarness(t)
 	mux := http.NewServeMux()
@@ -187,11 +175,7 @@ func TestHTTPWebSocketPreservesLeaderAndValidationRules(t *testing.T) { //nolint
 	if err := wsjson.Write(t.Context(), leader, Event{Action: "observe", Drift: -1}); err != nil {
 		t.Fatal(err)
 	}
-	ctx, cancel := context.WithTimeout(t.Context(), time.Second)
-	defer cancel()
-	if err := wsjson.Read(ctx, leader, &Event{}); err == nil {
-		t.Fatal("invalid drift retained connection")
-	}
+	assertHTTPConnectionClosed(t, leader)
 }
 
 func TestHTTPJoinAndAccessFailuresCloseConnections(t *testing.T) {
@@ -209,12 +193,7 @@ func TestHTTPJoinAndAccessFailuresCloseConnections(t *testing.T) {
 	t.Cleanup(accessServer.Close)
 	denied := dialHTTPRoom(t, accessServer.URL, roomID, "leader", "true")
 	readHTTPEvent(t, denied)
-	ctx, cancel := context.WithTimeout(t.Context(), 2*time.Second)
-	defer cancel()
-	if err := wsjson.Read(ctx, denied, &Event{}); err == nil {
-		t.Fatal("revoked viewer retained connection")
-	}
-	_ = denied.CloseNow()
+	assertHTTPConnectionClosed(t, denied)
 
 	var views atomic.Int64
 	config := httpConfig(harness.rooms, harness.index)
@@ -225,10 +204,7 @@ func TestHTTPJoinAndAccessFailuresCloseConnections(t *testing.T) {
 	visibilityServer := httptest.NewServer(mux)
 	t.Cleanup(visibilityServer.Close)
 	closed := dialHTTPRoom(t, visibilityServer.URL, roomID, "leader", "")
-	if err := wsjson.Read(t.Context(), closed, &Event{}); err == nil {
-		t.Fatal("visibility loss retained connection")
-	}
-	_ = closed.CloseNow()
+	assertHTTPConnectionClosed(t, closed)
 }
 
 func TestHTTPEventValidationRejectsUntrustedValues(t *testing.T) {

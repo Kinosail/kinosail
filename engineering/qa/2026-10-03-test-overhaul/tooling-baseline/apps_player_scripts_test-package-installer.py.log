@@ -1,0 +1,20 @@
+Prepared unsigned installer: /var/folders/39/bvv1ssmd5l7fc4610c5nh5j80000gn/T/tmpss8lauu7/release/kinosail-player-install.tar.gz
+usage: package-installer.py [-h] destination
+package-installer.py: error: missing or non-regular installer input: README.md
+usage: package-installer.py [-h] destination
+package-installer.py: error: missing or non-regular installer input: README.md
+usage: package-installer.py [-h] destination
+package-installer.py: error: missing or non-regular installer input: README.md
+..usage: package-installer.py [-h] destination
+package-installer.py: error: destination must not already exist
+.usage: package-installer.py [-h] destination
+package-installer.py: error: the following arguments are required: destination
+usage: package-installer.py [-h] destination
+package-installer.py: error: the following arguments are required: destination
+usage: package-installer.py [-h] destination
+package-installer.py: error: unrecognized arguments: extra
+.
+----------------------------------------------------------------------
+Ran 4 tests in 0.029s
+
+OK

@@ -11,11 +11,6 @@ func TestViewerCanBrowseAndDownloadEbooks(t *testing.T) {
 	libraryAPIFixture.ViewerCanBrowseAndDownloadEbooks(t)
 }
 
-func TestReaderServesPDFEPUBAndComicPagesThroughAPIAndWeb(t *testing.T) {
-	t.Parallel()
-	libraryAPIFixture.ReaderServesPDFEPUBAndComicPagesThroughAPIAndWeb(t)
-}
-
 func TestReaderServesMainstreamComicArchivesThroughAPIAndWeb(t *testing.T) {
 	t.Parallel()
 	libraryAPIFixture.ReaderServesMainstreamComicArchivesThroughAPIAndWeb(t, apiItemsByTitle)

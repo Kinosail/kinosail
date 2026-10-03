@@ -165,7 +165,7 @@ export async function verifyAuthenticatedDirectRetryWidths(authenticatedPage: Pa
   if (!browser) throw new Error("direct retry needs the existing test browser");
   const storageState = await authenticatedPage.context().storageState();
   for (const viewport of directRetryViewports) {
-    const context = await browser.newContext({baseURL: info.project.use.baseURL, ignoreHTTPSErrors: true,
+    const context = await browser.newContext({baseURL: info.project.use.baseURL, ignoreHTTPSErrors: false,
       storageState, viewport, hasTouch: viewport.width === 390});
     try {
       const page = await context.newPage();

@@ -1,0 +1,240 @@
+{
+  "schema": "kinosail-independent-final-smart-search-review-v1",
+  "reviewer": "frontend_native",
+  "source_sha": "3885906a5508ef497c2775d547f3321ccc69d63d",
+  "previous_full_review_sha": "d16e13722258a8f72c3736585146e07ed2519392",
+  "outcome": "approve SmartSearch D and final integrity; no source-review blocker",
+  "removed_test": {
+    "file": "apps/player/internal/server/settings_search_test.go",
+    "name": "TestSettingsExposeSmartSearch",
+    "decision": "D",
+    "baseline_wrapper_sha256": "05beb39bc10986b8e28d60d6a2f81fc89db3da68baf349b022d7daf6a12b38ef",
+    "scope": "Three-line wrapper and unused import only; no product or E2E code changed."
+  },
+  "semantic_review": {
+    "read": "Complete wrapper, real-handler factory, shared helper, retained bookmark guard, two genuine browser keeper bodies/login/config, exact execution receipt and source/provenance diffs.",
+    "assertions": "Four raw HTML substrings, five whole-bundle JS substrings, three CSS selector substrings; no status assertion or runtime search/failure injection.",
+    "important_failures": "Actual existing authenticated browser journeys exercise search binding/index, results/groups, Basic to Advanced/hash/focus navigation, no match/Escape/slash, unsaved preference preservation and responsive Axe/layout.",
+    "honest_limit": "Exact incidental help copy, implementation symbol spellings and CSS recipe are intentionally retired, not equated to exact browser assertions. Whole-bundle createElement presence is not a complete safe-rendering guard; browser malicious-looking no-match query is not arbitrary-injection security proof."
+  },
+  "preserved_direct_boundaries": {
+    "bookmark_file": "apps/player/internal/server/settings_search_test.go",
+    "bookmark": "TestSettingsBookmarksFollowTheRenderedSectionOrder",
+    "bookmark_body_sha256": "96cd1e2a17f27adfa95fbb0ee9353cb9591f630084ec53f6236bcf4f64355b64",
+    "bookmark_body_equals_previous": true,
+    "shared_helper": "packages/servertest/settings_search.go",
+    "helper_sha256": "8be42be03732548e1c1cd02d31f92645344e0d7f408ecade34a552b10192b468",
+    "helper_equals_previous": true,
+    "Subtitles_caller": "apps/subtitles/internal/server/settings_search_test.go",
+    "caller_sha256": "dde3676d2d5f9688cf25427ce57200fad75eaa965951df6d6b69ece3294bf2d0",
+    "caller_equals_previous": true
+  },
+  "genuine_execution_receipt": {
+    "file": "engineering/qa/2026-10-03-test-overhaul/player-settings-real-keeper-receipt.json",
+    "sha256": "73bd0cc63f9c5e331cb2bccb83dbc8ec3d92ac8e25e41915461cc526f0ae5377",
+    "run": 37152840238,
+    "artifact_id": 11284717115,
+    "artifact_url": "https://github.com/Kinosail/kinosail/actions/runs/37152840238/artifacts/11284717115",
+    "archive_sha256": "e97ede347fae0a8eb328dec570e33335cc352f99741c62707a9c415587f5c852",
+    "tested_checkout_sha": "66db3a7d176e14cb8777e8a715f94ba7be2c034b",
+    "PR_head_sha": "b0b5497d2017931a13da86e2e2816b404a847f56",
+    "journeys": [
+      {
+        "title": "Owner settings search finds a setting across task families",
+        "file": "layout-audit-shell.spec.ts",
+        "line": 76,
+        "tests": [
+          {
+            "status": "expected",
+            "projectName": "chromium",
+            "results": [
+              {
+                "status": "passed",
+                "duration": 6194,
+                "retry": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "settings search crosses levels and preserves unsaved preferences",
+        "file": "settings-discovery.spec.ts",
+        "line": 4,
+        "tests": [
+          {
+            "status": "expected",
+            "projectName": "chromium",
+            "results": [
+              {
+                "status": "passed",
+                "duration": 4066,
+                "retry": 0
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "owner_preparation": {
+      "command": [
+        "pnpm",
+        "--dir",
+        "e2e",
+        "test",
+        "settings-discovery.spec.ts",
+        "layout-audit-shell.spec.ts",
+        "--grep=@smoke",
+        "--workers=1"
+      ],
+      "urlScheme": "http",
+      "ownerSetup": "API MFA confirmed; onboarding complete",
+      "sourceRevision": "66db3a7d176e14cb8777e8a715f94ba7be2c034b",
+      "helperSHA256": "1887445160faaeb569dfa5df9544c3ec7c6395a5d1c43e1c65b3883271091366",
+      "browserCertificateBypasses": "disabled",
+      "selection": "two existing populated search journeys",
+      "journeys": {
+        "passed": [
+          "Owner settings search finds a setting across task families",
+          "settings search crosses levels and preserves unsaved preferences"
+        ],
+        "resultsSHA256": "a0b54a7dda81666be42710f00b71f5207c5954ef0dfef9d5a4cdc22e70784cc3"
+      },
+      "exitCode": 0
+    },
+    "parent_archive_verification": {
+      "everyMemberChecksumVerified": true,
+      "members": 163,
+      "missingMembers": [],
+      "sourceUnchanged": true,
+      "exactRevisionProof": true,
+      "bothHTMLReportsPresent": true
+    },
+    "workflow_overall_conclusion": "packages failure from unused import; browser job independently passed",
+    "review_boundary": "Reviewer read/hash-verified committed receipt and expected/passed/retry0 outcomes; coordinator verified163 archive checksum members and both HTML reports. No reviewer rerun/download. GitHub tested merge object unavailable locally; current keepers match recorded PR head, config/preparation hashes match manifest. Final CI/merge verification remains required."
+  },
+  "keeper_source_receipts": [
+    {
+      "file": "apps/player/e2e/settings-discovery.spec.ts",
+      "sha256": "d765950ba4aea3bf7a772620933e759bfef4da011be35a20c646f12847245eb4",
+      "equals_PR_head": true,
+      "matches_manifest_input": null
+    },
+    {
+      "file": "apps/player/e2e/layout-audit-shell.spec.ts",
+      "sha256": "d133c9f0e66d28e0d1128d52651b731a107a4f2cb797b785fee8bd4d0e5818f8",
+      "equals_PR_head": true,
+      "matches_manifest_input": null
+    },
+    {
+      "file": "apps/player/e2e/layout-audit-helpers.ts",
+      "sha256": "891c842533c36f85eae91c62d7aeba098f13717fbc9386574704cb40b7c1e00e",
+      "equals_PR_head": true,
+      "matches_manifest_input": null
+    },
+    {
+      "file": "apps/player/e2e/playwright.config.ts",
+      "sha256": "628d3a62d9b3e2fba1bc43f3cd58979acadf22c083e3559c73c4f750a97cc0b3",
+      "equals_PR_head": true,
+      "matches_manifest_input": true
+    },
+    {
+      "file": "scripts/ci/run-populated-settings.py",
+      "sha256": "1887445160faaeb569dfa5df9544c3ec7c6395a5d1c43e1c65b3883271091366",
+      "equals_PR_head": true,
+      "matches_manifest_input": true
+    }
+  ],
+  "global_inventory": {
+    "Go_baseline_decisions": {
+      "R": 3214,
+      "D": 239,
+      "F": 174,
+      "C": 64
+    },
+    "Go_current_declarations": 3454,
+    "Go_D_present": 0,
+    "Go_R_F_missing": 0,
+    "Go_pending": 0,
+    "Go_C_physically_retained": 64,
+    "other_rows": 1116,
+    "other_decisions": {
+      "R": 1095,
+      "D": 10,
+      "F": 10,
+      "C": 1
+    },
+    "other_D_present": 0,
+    "other_R_F_missing": 0,
+    "other_baseline_unresolved": 0,
+    "implemented_removals": 249,
+    "count_boundary": "239 unique Go plus10 other; overlapping owner rows deduplicated, sub-audit packets and retained C candidates not counted as deletions."
+  },
+  "retained_body_check": {
+    "compared": 3452,
+    "extraction_gaps": [],
+    "changes_from_original_baseline": 14,
+    "changed_body_hashes_match_previous_manual_review": true,
+    "previous_review_receipt": "d16e13722258a8f72c3736585146e07ed2519392/receipt.json",
+    "latest_delta": "SmartSearch wrapper/import plus shared unused imports; no retained executable assertion changes."
+  },
+  "resolved_provenance": {
+    "file": "engineering/qa/2026-10-03-test-overhaul/controls/upstream-source-provenance.json",
+    "file_sha256": "8f50c204ff51734c819e6950a28287c5295f1147b725386b0d36b617d491ca80",
+    "upstream_sha": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+    "entries_checked": 21,
+    "all_pinned_file_hashes_match": true,
+    "all_current_blobs_equal_upstream": true,
+    "all_named_Go_body_metadata_hashes_match": true,
+    "boundary": "New Go/native/startup/support/failure-analysis sources preserved; earlier fixture/platform/opt-in limits remain, no new native runtime claim."
+  },
+  "named_keeper_resolution": "Three overlapping-owner function-regex warnings resolve to actual CLI.Run t.Run subtest TestMCPStdioCommandConnectsAsSoleOwner, executed by both retained app TestCLIContract; no physical keeper gap.",
+  "deterministic_report_reproduction": [
+    {
+      "generator": "engineering/qa/2026-10-03-test-overhaul/independent-review/inventory-go.py",
+      "generator_sha256": "5563b826e6fa13a28f4f797cf6adfc36ab9f4e4cecd94cec8312e8e8e80a7920",
+      "report_sha256": "6f0f9edf3d768f7ea6f6e04ecf99ddcd620bc7baaa98b9a27a93a506b252ba3f",
+      "command": [
+        "python3",
+        "engineering/qa/2026-10-03-test-overhaul/independent-review/inventory-go.py",
+        "3885906a5508ef497c2775d547f3321ccc69d63d",
+        "--repo",
+        ".",
+        "--output",
+        "/tmp/frontend-final-go-inventory.json"
+      ],
+      "note": "From repo root containing exact reviewed commit; ignores dirty worktree. JSON digest must match. Full repeat reports not copied into Git."
+    },
+    {
+      "generator": "engineering/qa/2026-10-03-test-overhaul/independent-review/inventory-other.py",
+      "generator_sha256": "649e96199b7bcdf693d361dbf50d2cb53cd10ea6ed6f225f1b0d265de952e632",
+      "report_sha256": "b25a49cc350f8d8ebb94d724ce56c06afac1b3d03d0e3a0c33fca8b8c891b358",
+      "command": [
+        "python3",
+        "engineering/qa/2026-10-03-test-overhaul/independent-review/inventory-other.py",
+        "3885906a5508ef497c2775d547f3321ccc69d63d",
+        "--repo",
+        ".",
+        "--output",
+        "/tmp/frontend-final-other-inventory.json"
+      ],
+      "note": "From repo root containing exact reviewed commit; ignores dirty worktree. JSON digest must match. Full repeat reports not copied into Git."
+    },
+    {
+      "generator": "engineering/qa/2026-10-03-test-overhaul/independent-review/retained-go-bodies.py",
+      "generator_sha256": "2240453680463e089fbd22dcc92e596a768240bc78ab0b7af898cc24b2279b02",
+      "report_sha256": "384c6439acadac61cd22ccdee6e771b5fe18313445ebad44776fd09bef0c5697",
+      "command": [
+        "python3",
+        "engineering/qa/2026-10-03-test-overhaul/independent-review/retained-go-bodies.py",
+        "3885906a5508ef497c2775d547f3321ccc69d63d",
+        "--repo",
+        ".",
+        "--output",
+        "/tmp/frontend-final-retained-go-bodies.json"
+      ],
+      "note": "From repo root containing exact reviewed commit; ignores dirty worktree. JSON digest must match. Full repeat reports not copied into Git."
+    }
+  ],
+  "execution": "Read-only Git/source/hash/JSON review; no builds/browser/container/lint/install or isolated tests added. Only compact review record changed in reviewer checkout."
+}

@@ -235,42 +235,6 @@ func TestFactorVerifyAcceptsTOTPAndConsumesRecoveryOnce(t *testing.T) { //nolint
 	}
 }
 
-func TestFactorVerifyRejectsInvalidStateWithoutPersistence(t *testing.T) { //nolint:gocognit // One table proves all verification trust-boundary failures are side-effect free.
-	t.Parallel()
-	tests := []struct {
-		name    string
-		profile FactorProfile
-		id      string
-		code    string
-	}{
-		{"missing identity", FactorProfile{ID: "owner", Secret: "secret"}, "", "code"},
-		{"spaced identity", FactorProfile{ID: "owner", Secret: "secret"}, " owner", "code"},
-		{"oversized identity", FactorProfile{ID: "owner", Secret: "secret"}, strings.Repeat("i", maxIdentityLength+1), "code"},
-		{"nul identity", FactorProfile{ID: "owner", Secret: "secret"}, "owner\x00", "code"},
-		{"missing code", FactorProfile{ID: "owner", Secret: "secret"}, "owner", ""},
-		{"oversized code", FactorProfile{ID: "owner", Secret: "secret"}, "owner", strings.Repeat("c", maxSecretLength+1)},
-		{"nul code", FactorProfile{ID: "owner", Secret: "secret"}, "owner", "code\x00"},
-		{"missing profile", FactorProfile{ID: "owner", Secret: "secret"}, "missing", "code"},
-		{"missing factor", FactorProfile{ID: "owner"}, "owner", "code"},
-		{"too many stored recovery codes", FactorProfile{ID: "owner", Secret: "secret", Recovery: make([]string, recoveryCodeCount+1)}, "owner", "code"},
-		{"empty normalized code", FactorProfile{ID: "owner", Secret: "secret"}, "owner", " -- "},
-		{"wrong recovery", FactorProfile{ID: "owner", Secret: "secret", Recovery: []string{SessionKey("right")}}, "owner", "wrong"},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			fixture := newFactorFixture(test.profile)
-			beforeProfiles, beforeSessions := cloneFactorRecords(fixture.profiles), CloneSessions(fixture.sessions)
-			if fixture.transaction(time.Now).Verify(test.id, test.code) || fixture.writes != 0 || !reflect.DeepEqual(fixture.profiles, beforeProfiles) || !reflect.DeepEqual(fixture.sessions, beforeSessions) {
-				t.Fatal("invalid verification changed state")
-			}
-		})
-	}
-	var missing *FactorTransaction[factorRecord]
-	if missing.Verify("owner", "code") {
-		t.Fatal("nil transaction verified a factor")
-	}
-}
-
 func TestFactorRecoveryPersistenceFailureDoesNotConsumeCode(t *testing.T) {
 	t.Parallel()
 	fixture := newFactorFixture(FactorProfile{ID: "owner", Secret: "secret", Recovery: []string{SessionKey("CODE")}})

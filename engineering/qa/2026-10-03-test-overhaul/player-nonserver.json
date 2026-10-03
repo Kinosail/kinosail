@@ -1,0 +1,2066 @@
+{
+  "schema_version": 1,
+  "base_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+  "scope": [
+    "apps/player/cmd/kinosail/**/*_test.go",
+    "apps/player/internal/**/*_test.go excluding internal/server"
+  ],
+  "scope_complete": true,
+  "declaration_count": 50,
+  "file_count": 23,
+  "counts": {
+    "R": 45,
+    "D": 5
+  },
+  "review_mode": "Completed semantic review and parent-authorized five test removals in separate tooling checkout. No production/support edits, new isolated tests or new test execution; parent owns serial affected-package validation.",
+  "basis": "All fifty actual test bodies read, including actual commandtest/configurationtest/servertest helper dispatch and production app/schema/storage/transport/adapters; explicit endpoint/secret/migration/rollback/cancellation boundaries contrasted with actual container/browser assertions. Naming is not the decision rule.",
+  "files": [
+    {
+      "path": "apps/player/cmd/kinosail/config_command_test.go",
+      "base_sha256": "17e6a6b8d635c237d3a67ebf53a1f9c24a11dc581f69b6e212951a8967ede349",
+      "declarations": 1,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ]
+    },
+    {
+      "path": "apps/player/cmd/kinosail/coverage_edges_test.go",
+      "base_sha256": "d4e34f9251343a0e2bd38e27580f1dc14eece46e76b5c9f43b6e140a3296c708",
+      "declarations": 2,
+      "history": [
+        "148cf8317def71e026d111f05ce7e802612e983c Remove legacy viewer WireGuard access",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ]
+    },
+    {
+      "path": "apps/player/cmd/kinosail/healthcheck_test.go",
+      "base_sha256": "ec2f7b19e881612d773f663e306d983fbc07dcec7a1bdb5a99e5f11f4b7320b3",
+      "declarations": 1,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ]
+    },
+    {
+      "path": "apps/player/cmd/kinosail/main_test.go",
+      "base_sha256": "14597a70e0c648769e16f5017423b87675f51e438efd4fc838ece0c47d5aa498",
+      "declarations": 2,
+      "history": [
+        "375ce3b1e97e37ea9c88cbad262f2644eb4b4582 Stabilize hosted tooling and expand runtime regression coverage",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ]
+    },
+    {
+      "path": "apps/player/cmd/kinosail/mcp_stdio_edges_unix_test.go",
+      "base_sha256": "e16d4575c592196529e2373c9bf517eb7d1113e809f7f9055b3e89a5ad14e16e",
+      "declarations": 1,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ]
+    },
+    {
+      "path": "apps/player/cmd/kinosail/tls_health_test.go",
+      "base_sha256": "a4b500545d10f5005afdd3dce19cc89628d8d6dc8c85b80291ac2fc40a21bee4",
+      "declarations": 2,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ]
+    },
+    {
+      "path": "apps/player/cmd/kinosail/tls_server_test.go",
+      "base_sha256": "5c254d9e9d1ae5cd5b37dfe1c51cb8e789515f6271c5bcfaeb3eea171c661d14",
+      "declarations": 2,
+      "history": [
+        "62fab178daec7ebdf158246d920dff8dd56160d9 Fix no-op deployment cleanup and authenticated browser history",
+        "375ce3b1e97e37ea9c88cbad262f2644eb4b4582 Stabilize hosted tooling and expand runtime regression coverage",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ]
+    },
+    {
+      "path": "apps/player/cmd/kinosail/tls_test.go",
+      "base_sha256": "31341653f2a1c4166909db97785ae95d69644b5efacc1910397e3d1777d61418",
+      "declarations": 4,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ]
+    },
+    {
+      "path": "apps/player/cmd/kinosail/update_test.go",
+      "base_sha256": "f6e7f44c9f7678b8d3b6e98b33c6677a603b278f5257a082538f0a7a7fb259b7",
+      "declarations": 5,
+      "history": [
+        "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ]
+    },
+    {
+      "path": "apps/player/internal/backup/adapter_test.go",
+      "base_sha256": "906b42395aa93ad95adf2dcd478eeb2f8290c83a2ff3a9f5cae85e05472571e1",
+      "declarations": 1,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ]
+    },
+    {
+      "path": "apps/player/internal/backup/sqlite_test.go",
+      "base_sha256": "afd275ffab1bcee6478b677e065773a2d21b49c761c2780df98297200320d3c2",
+      "declarations": 1,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ]
+    },
+    {
+      "path": "apps/player/internal/configuration/configuration_test.go",
+      "base_sha256": "d9d9a3c52a0b9de72b43b11d5ca2e6b38e88f3bb5c05c4dec6101b289b360858",
+      "declarations": 2,
+      "history": [
+        "03c7b4ad5e50e79d47fbeffbe4003aec2e6ad208 Prepare Player Supporter for production checkout (#65)",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ]
+    },
+    {
+      "path": "apps/player/internal/configuration/coverage_edges_internal_test.go",
+      "base_sha256": "36458d97d8d9417be4f3e613ddc9850a4d219699577ad7099535a463b6efa667",
+      "declarations": 1,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ]
+    },
+    {
+      "path": "apps/player/internal/configuration/google_cast_test.go",
+      "base_sha256": "4b104b5075d7950c27e21b1545aef637b0bc3086964bedcdb6446a8544717715",
+      "declarations": 2,
+      "history": [
+        "3a9cc8fa80d6c233524d7510311979b8d986edd4 Guard Cast teardown and simplify validation tests",
+        "ca343a0cd8bde5882e76afc57e4be0fcb1fc0bf4 Add broad receiver casting support for Player"
+      ]
+    },
+    {
+      "path": "apps/player/internal/configuration/mcp_test.go",
+      "base_sha256": "a1b8ad70d8e087c6aaac505d2d34a609dded5d0dd5c3a57a0b9838717dce6919",
+      "declarations": 2,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ]
+    },
+    {
+      "path": "apps/player/internal/configuration/mutation_internal_test.go",
+      "base_sha256": "6b2262191729b43360dd8e0bbc35101f7c240fa8704b9956bba80bdbcbc9fb6b",
+      "declarations": 6,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ]
+    },
+    {
+      "path": "apps/player/internal/configuration/oidc_test.go",
+      "base_sha256": "9319bdb3e4d4287d27e846246434dac9bc07bb5d03b91a5948a2863b3cdc88e4",
+      "declarations": 2,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ]
+    },
+    {
+      "path": "apps/player/internal/configuration/oidc_validation_internal_test.go",
+      "base_sha256": "a09b27f959498af6364e974a1f5b7dba1c8286a0cc079827ba0e361baffada85",
+      "declarations": 2,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ]
+    },
+    {
+      "path": "apps/player/internal/configuration/saml_test.go",
+      "base_sha256": "fa6af6539d503c7ceaea2dfeca945cd3b172fe111828f228922626cc5d53afe7",
+      "declarations": 4,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ]
+    },
+    {
+      "path": "apps/player/internal/configuration/scim_test.go",
+      "base_sha256": "5dbe9f7f7915704c73cb3a97daf4b5e8c123e41634979858ecad66256a5d08d2",
+      "declarations": 4,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ]
+    },
+    {
+      "path": "apps/player/internal/configuration/subtitle_retirement_test.go",
+      "base_sha256": "01340e2befa1a3c28e411e77a4860856a8e5f63ef7fa82d6c678d9b788a6022f",
+      "declarations": 1,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ]
+    },
+    {
+      "path": "apps/player/internal/configuration/validation_rules_coverage_test.go",
+      "base_sha256": "0019c579d11bf651a3eab508aaec41564624445656eff1085258f5286e0c63a4",
+      "declarations": 1,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ]
+    },
+    {
+      "path": "apps/player/internal/database/adapter_test.go",
+      "base_sha256": "b68edf10ed8f130e4de7800509a4286e77d99c920ba27313a5c80b7202c8d457",
+      "declarations": 1,
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "name": "TestConfigurationCommandValidatesAndSummarizesSources",
+      "line": 10,
+      "end_line": 12,
+      "sha256": "b9d17af364587d1a72fd73d21fa16a3561a4d8152f93c304f5c0ddfca7628ee3",
+      "path": "apps/player/cmd/kinosail/config_command_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "CLI adapter miscounts source provenance or reports valid for missing YAML; actual config CLI invokes real Load with YAML, GUI and environment and checks all three counts plus missing-file/unknown-command rejection.",
+      "category": "pending",
+      "credible_failure": "CLI adapter miscounts source provenance or reports valid for missing YAML; actual config CLI invokes real Load with YAML, GUI and environment and checks all three counts plus missing-file/unknown-command rejection.",
+      "production_owner": [
+        "apps/player/cmd/kinosail/main.go:main/command/run/configuredServerConfig",
+        "apps/player/cmd/kinosail/config_command.go",
+        "packages/appcli/configuration.go:BindConfigurationCommand/ConfigurationCommand"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:main -> appcli.Execute with app-bound command/configuration/server/MCP functions; production binary and container health/update/recovery entrypoints"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Populated app/browser tests do not invoke config validate CLI source counts or a missing named configuration file.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "process_or_configuration_cli_boundary"
+    },
+    {
+      "name": "TestCommandConfigurationEdges",
+      "line": 10,
+      "end_line": 12,
+      "sha256": "be692f868b6a66a682277a978968ceba1313ad6beecdb08a67f25a6b30ba4e2d",
+      "path": "apps/player/cmd/kinosail/coverage_edges_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Explicit deployment auth origin or secure remote mode fails to survive actual app Load/configuredAuthURL; canonical origin drives CSRF/passkey/auth routing. Zero-snapshot fallback alone is synthetic, but configured explicit/remote values are production inputs.",
+      "category": "pending",
+      "credible_failure": "Explicit deployment auth origin or secure remote mode fails to survive actual app Load/configuredAuthURL; canonical origin drives CSRF/passkey/auth routing. Zero-snapshot fallback alone is synthetic, but configured explicit/remote values are production inputs.",
+      "production_owner": [
+        "apps/player/cmd/kinosail/main.go:main/command/run/configuredServerConfig",
+        "apps/player/cmd/kinosail/auth_url.go:configuredAuthURL",
+        "packages/appcli/command.go:TrustedHTTPS"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:main -> appcli.Execute with app-bound command/configuration/server/MCP functions; production binary and container health/update/recovery entrypoints"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Browser fixtures use local test auth origins and do not exercise operator remote.mode=https plus DuckDNS domain/token wiring.",
+      "history": [
+        "148cf8317def71e026d111f05ce7e802612e983c Remove legacy viewer WireGuard access",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "process_or_configuration_cli_boundary"
+    },
+    {
+      "name": "TestLoadConfigurationFindsDefaultFile",
+      "line": 14,
+      "end_line": 16,
+      "sha256": "4ba0dc3dbc9e837392880eaecf1bf3d65eb85d2a87e89e762f1382a66ee3bf30",
+      "path": "apps/player/cmd/kinosail/coverage_edges_test.go",
+      "decision": "D",
+      "review_status": "semantic_review_complete",
+      "reason": "Writes only version1 empty YAML then asserts env-derived paths.data; would still pass if default YAML discovery were removed, so it cannot establish advertised contract.",
+      "category": "pending",
+      "credible_failure": "Writes only version1 empty YAML then asserts env-derived paths.data; would still pass if default YAML discovery were removed, so it cannot establish advertised contract.",
+      "production_owner": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:main -> appcli.Execute with app-bound command/configuration/server/MCP functions; production binary and container health/update/recovery entrypoints"
+      ],
+      "remaining_proof": [
+        "TestConfigurationCommandValidatesAndSummarizesSources; TestSharedConfigurationContract; actual discovery gap recorded"
+      ],
+      "coverage_limit": "No existing proof of default-file discovery with a meaningful YAML override is claimed; loadConfigurationPath gap remains. Public config source tests do prove explicit-file and source loading.",
+      "history": [
+        "148cf8317def71e026d111f05ce7e802612e983c Remove legacy viewer WireGuard access",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; removes only this audited existing test declaration. Shared primary-owner and real CLI process keepers remain.",
+      "risk": "No independent important assertion lost; remaining gap explicitly stated.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "removal_status": "implemented_in_tooling_owner_checkout_after_parent_transfer"
+    },
+    {
+      "name": "TestHealthcheckUsesConfiguredAuthHost",
+      "line": 9,
+      "end_line": 11,
+      "sha256": "6510bcef64b9d40e7e9dde8c004904b9d2a559a1f1bc21056106157b93eef40c",
+      "path": "apps/player/cmd/kinosail/healthcheck_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Real CLI healthcheck fails behind canonical configured HTTPS Host even while service is healthy; child process uses actual app main and HTTP server, canonical media.home Host, and launches separate healthcheck command.",
+      "category": "pending",
+      "credible_failure": "Real CLI healthcheck fails behind canonical configured HTTPS Host even while service is healthy; child process uses actual app main and HTTP server, canonical media.home Host, and launches separate healthcheck command.",
+      "production_owner": [
+        "apps/player/cmd/kinosail/main.go:main/command/run/configuredServerConfig",
+        "packages/servertransport/server.go:Serve/ConfigureCertificates/CheckHealth",
+        "packages/appcli/command.go:healthcheck/TrustedHTTPS"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:main -> appcli.Execute with app-bound command/configuration/server/MCP functions; production binary and container health/update/recovery entrypoints"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Local container health checks use their loopback/test auth configuration; this dedicated alternate DNS host in a real child is not a populated-browser assertion.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "process_or_configuration_cli_boundary"
+    },
+    {
+      "name": "TestCLIContract",
+      "line": 13,
+      "end_line": 20,
+      "sha256": "f211c75fbe0baf959c1acc1de86db7059cba5eaa166e2530c4975a00d1d528bb",
+      "path": "apps/player/cmd/kinosail/main_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Bound app CLI loses encrypted recovery including secrets, accepts damaged verify input, starts canceled MCP, exposes weak proxy capabilities, changes streaming-safe HTTP/HTTP2 limits or logs client address. Shared helper exercises actual app command, database, configured server and real MCP child.",
+      "category": "pending",
+      "credible_failure": "Bound app CLI loses encrypted recovery including secrets, accepts damaged verify input, starts canceled MCP, exposes weak proxy capabilities, changes streaming-safe HTTP/HTTP2 limits or logs client address. Shared helper exercises actual app command, database, configured server and real MCP child.",
+      "production_owner": [
+        "apps/player/cmd/kinosail/main.go:main/command/run/configuredServerConfig",
+        "packages/appcli/{application,command}.go",
+        "apps/player/internal/backup/backup.go",
+        "packages/servertransport/server.go",
+        "apps/player/internal/server/mcp_stdio.go",
+        "packages/mcpgateway/stdio*.go"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:main -> appcli.Execute with app-bound command/configuration/server/MCP functions; production binary and container health/update/recovery entrypoints"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Browser backup success cannot prove damaged CLI archive rejection, private recovery bytes, stdio lifecycle, HTTP/HTTP2 slow-client policy or log redaction. Thirteen helper subscenarios remain one inventory declaration, with concrete security/recovery keepers.",
+      "history": [
+        "375ce3b1e97e37ea9c88cbad262f2644eb4b4582 Stabilize hosted tooling and expand runtime regression coverage",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "process_or_configuration_cli_boundary"
+    },
+    {
+      "name": "TestCommandLineHelperProcess",
+      "line": 22,
+      "end_line": 27,
+      "sha256": "6a2374ac845c640538f3d04aff5b42e067c90fe02d2f9d57662f4bbd6d94fced",
+      "path": "apps/player/cmd/kinosail/main_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Removing helper disables actual app main execution used by TLS, entrypoint, version/error and stdio process contracts. This is executable test support, not independent product proof.",
+      "category": "pending",
+      "credible_failure": "Removing helper disables actual app main execution used by TLS, entrypoint, version/error and stdio process contracts. This is executable test support, not independent product proof.",
+      "production_owner": [
+        "apps/player/cmd/kinosail/main.go:main/command/run/configuredServerConfig",
+        "apps/player/cmd/kinosail/main.go:main (invoked by harness)"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:main -> appcli.Execute with app-bound command/configuration/server/MCP functions; production binary and container health/update/recovery entrypoints"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Necessary child entrypoint for retained process journeys; do not claim the bare helper body catches a user bug independently.",
+      "history": [
+        "375ce3b1e97e37ea9c88cbad262f2644eb4b4582 Stabilize hosted tooling and expand runtime regression coverage",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass as inert harness parent; actual child executions exercised by other retained process tests",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "test_harness_support"
+    },
+    {
+      "name": "TestConfiguredMCPBindsBothStdioPaths",
+      "line": 12,
+      "end_line": 14,
+      "sha256": "bedd962f65f257ddac3d64e20075571b9735b409474177e800950e42dd7ec31a",
+      "path": "apps/player/cmd/kinosail/mcp_stdio_edges_unix_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Canceled direct or relay path executes socat/replaces process or reports success; fixture binds actual server.ServeMCPStdio/OpenMCPStdioRelay and provides an executor that fails if called.",
+      "category": "pending",
+      "credible_failure": "Canceled direct or relay path executes socat/replaces process or reports success; fixture binds actual server.ServeMCPStdio/OpenMCPStdioRelay and provides an executor that fails if called.",
+      "production_owner": [
+        "apps/player/cmd/kinosail/main.go:main/command/run/configuredServerConfig",
+        "apps/player/cmd/kinosail/mcp_stdio_unix.go",
+        "apps/player/internal/server/mcp_stdio.go",
+        "packages/mcpgateway/stdio_command_unix.go"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:main -> appcli.Execute with app-bound command/configuration/server/MCP functions; production binary and container health/update/recovery entrypoints"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Real 12-relay system smoke exercises availability/capacity but not cancellation before either branch and no executor side effect.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "process_or_configuration_cli_boundary"
+    },
+    {
+      "name": "TestHealthCheckCoversHTTPHTTPSAndCanonicalHost",
+      "line": 14,
+      "end_line": 54,
+      "sha256": "4cc1d744cc8af9329228a9a71beef0aa798ae098f46a15827ca23328cdf61242",
+      "path": "apps/player/cmd/kinosail/tls_health_test.go",
+      "decision": "D",
+      "review_status": "semantic_review_complete",
+      "reason": "Calls shared servertransport.CheckHealth directly rather than any Player CLI adapter; same real protocol/host/invalid/unreachable matrix already in primary owner TestCheckHealthCoversProtocolsAndInputFailures.",
+      "category": "pending",
+      "credible_failure": "Calls shared servertransport.CheckHealth directly rather than any Player CLI adapter; same real protocol/host/invalid/unreachable matrix already in primary owner TestCheckHealthCoversProtocolsAndInputFailures.",
+      "production_owner": [
+        "packages/servertransport/server.go:CheckHealth"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:main -> appcli.Execute with app-bound command/configuration/server/MCP functions; production binary and container health/update/recovery entrypoints"
+      ],
+      "remaining_proof": [
+        "packages/servertransport/server_test.go:TestCheckHealthCoversProtocolsAndInputFailures; Player TestHealthcheckUsesConfiguredAuthHost"
+      ],
+      "coverage_limit": "Security boundary retained in shared primary owner and actual Player configured-host child process; fixture is not browser E2E.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; removes only this audited existing test declaration. Shared primary-owner and real CLI process keepers remain.",
+      "risk": "No independent important assertion lost; remaining gap explicitly stated.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "removal_status": "implemented_in_tooling_owner_checkout_after_parent_transfer"
+    },
+    {
+      "name": "TestConfiguredMCPServerUsesOnlyTheDataDirectory",
+      "line": 56,
+      "end_line": 65,
+      "sha256": "28f285e6728e5916b31c23ac2288b0ff9516556da5a5d39cfd12eb3e1ba8de12",
+      "path": "apps/player/cmd/kinosail/tls_health_test.go",
+      "decision": "D",
+      "review_status": "semantic_review_complete",
+      "reason": "Only compares one field of one-line mapping to same configured paths.data; does not assert other config fields are empty, as title claims. Actual CLI stdio connects to app host in the env-selected data dir and lists Owner tools.",
+      "category": "pending",
+      "credible_failure": "Only compares one field of one-line mapping to same configured paths.data; does not assert other config fields are empty, as title claims. Actual CLI stdio connects to app host in the env-selected data dir and lists Owner tools.",
+      "production_owner": [
+        "apps/player/cmd/kinosail/main.go:configuredMCPServerConfig"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:main -> appcli.Execute with app-bound command/configuration/server/MCP functions; production binary and container health/update/recovery entrypoints"
+      ],
+      "remaining_proof": [
+        "Player TestCLIContract/TestMCPStdioCommandConnectsAsSoleOwner; packages/commandtest/mcp.go:MCPOwner"
+      ],
+      "coverage_limit": "Retained TestCLIContract/MCPOwner goes through main/serveConfiguredMCP/current configuredMCPServerConfig and real transport socket; stronger process boundary, not browser E2E.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; removes only this audited existing test declaration. Shared primary-owner and real CLI process keepers remain.",
+      "risk": "No independent important assertion lost; remaining gap explicitly stated.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "removal_status": "implemented_in_tooling_owner_checkout_after_parent_transfer"
+    },
+    {
+      "name": "TestCommandLineServesCompatibleHTTPSByDefault",
+      "line": 19,
+      "end_line": 102,
+      "sha256": "d4f205ea92d19d5fecf16d5fdf458eb82556acce922806e8d1b2c5310cc5e7de",
+      "path": "apps/player/cmd/kinosail/tls_server_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual default CLI server admits TLS1.1/CBC/plain HTTP, rejects required TLS1.2 AEAD compatibility, generates wrongly trusted/long-lived or mismatched-host certificates, or writes CA/leaf material with nonprivate permissions.",
+      "category": "pending",
+      "credible_failure": "Actual default CLI server admits TLS1.1/CBC/plain HTTP, rejects required TLS1.2 AEAD compatibility, generates wrongly trusted/long-lived or mismatched-host certificates, or writes CA/leaf material with nonprivate permissions.",
+      "production_owner": [
+        "apps/player/cmd/kinosail/main.go:main/command/run/configuredServerConfig",
+        "packages/servertransport/server.go:Serve/ConfigureCertificates/CheckHealth",
+        "packages/appcli/command.go:healthcheck/TrustedHTTPS"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:main -> appcli.Execute with app-bound command/configuration/server/MCP functions; production binary and container health/update/recovery entrypoints"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Browser ignoreHTTPSErrors and ordinary TLS1.3 health checks cannot prove obsolete-protocol rejection, exact cipher compatibility, explicit CA trust, extra SANs or0600 private material. FFmpeg discovery is stubbed; transport and app process are real.",
+      "history": [
+        "62fab178daec7ebdf158246d920dff8dd56160d9 Fix no-op deployment cleanup and authenticated browser history",
+        "375ce3b1e97e37ea9c88cbad262f2644eb4b4582 Stabilize hosted tooling and expand runtime regression coverage",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "process_or_configuration_cli_boundary"
+    },
+    {
+      "name": "TestCommandLineCanDisableTLS",
+      "line": 104,
+      "end_line": 130,
+      "sha256": "cff69790aed8c3491beca3202c3c509f336fd169e03dd1388dc78dd8284bc42f",
+      "path": "apps/player/cmd/kinosail/tls_server_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Explicit operator TLS=false still accepts HTTPS, fails HTTP healthcheck or creates certificate/private material despite disabled TLS; actual main child and healthcheck are executed.",
+      "category": "pending",
+      "credible_failure": "Explicit operator TLS=false still accepts HTTPS, fails HTTP healthcheck or creates certificate/private material despite disabled TLS; actual main child and healthcheck are executed.",
+      "production_owner": [
+        "apps/player/cmd/kinosail/main.go:main/command/run/configuredServerConfig",
+        "packages/servertransport/server.go:Serve/ConfigureCertificates/CheckHealth",
+        "packages/appcli/command.go:healthcheck/TrustedHTTPS"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:main -> appcli.Execute with app-bound command/configuration/server/MCP functions; production binary and container health/update/recovery entrypoints"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Populated browser/container E2E uses enabled TLS; no existing real disabled-TLS deployment journey.",
+      "history": [
+        "62fab178daec7ebdf158246d920dff8dd56160d9 Fix no-op deployment cleanup and authenticated browser history",
+        "375ce3b1e97e37ea9c88cbad262f2644eb4b4582 Stabilize hosted tooling and expand runtime regression coverage",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "process_or_configuration_cli_boundary"
+    },
+    {
+      "name": "TestTrustedDuckDNSCertificateIsSelectedOnlyForItsSNI",
+      "line": 26,
+      "end_line": 72,
+      "sha256": "1a868d37b9f5f10036c853831a765cdc67b005dae69ab87120c46225a986b59d",
+      "path": "apps/player/cmd/kinosail/tls_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Trusted DuckDNS identity is served for unrelated SNI instead of local fallback or correct trusted SNI cannot obtain its valid leaf; appcli.TrustedHTTPS and actual TLS config GetCertificate use real generated cert material.",
+      "category": "pending",
+      "credible_failure": "Trusted DuckDNS identity is served for unrelated SNI instead of local fallback or correct trusted SNI cannot obtain its valid leaf; appcli.TrustedHTTPS and actual TLS config GetCertificate use real generated cert material.",
+      "production_owner": [
+        "apps/player/cmd/kinosail/main.go:main/command/run/configuredServerConfig",
+        "packages/servertransport/server.go:Serve/ConfigureCertificates/CheckHealth",
+        "packages/appcli/command.go:healthcheck/TrustedHTTPS"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:main -> appcli.Execute with app-bound command/configuration/server/MCP functions; production binary and container health/update/recovery entrypoints"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Local browser journeys do not supply trusted DuckDNS cert and probe both canonical and unrelated TLS SNI; no real external DNS-provider coverage claimed.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "process_or_configuration_cli_boundary"
+    },
+    {
+      "name": "TestTrustedDuckDNSBecomesCanonicalAuthOrigin",
+      "line": 85,
+      "end_line": 101,
+      "sha256": "fadedc2fb99827d991a14f8bb23014da0c005ae7177b332a2f5e3b44ca0b8f6e",
+      "path": "apps/player/cmd/kinosail/tls_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Configured trusted DuckDNS host yields wrong auth scheme/port and breaks CSRF/passkeys; actual app Load plus configuredAuthURL prove443 omission and nonstandard port retention.",
+      "category": "pending",
+      "credible_failure": "Configured trusted DuckDNS host yields wrong auth scheme/port and breaks CSRF/passkeys; actual app Load plus configuredAuthURL prove443 omission and nonstandard port retention.",
+      "production_owner": [
+        "apps/player/cmd/kinosail/main.go:main/command/run/configuredServerConfig",
+        "apps/player/cmd/kinosail/auth_url.go:configuredAuthURL",
+        "packages/appcli/command.go:TrustedHTTPS"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:main -> appcli.Execute with app-bound command/configuration/server/MCP functions; production binary and container health/update/recovery entrypoints"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "No populated DuckDNS-backed deployment exercises both443 and nonstandard canonical origins.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "process_or_configuration_cli_boundary"
+    },
+    {
+      "name": "TestTLSCertificateCommandExportsOnlyPublicCertificate",
+      "line": 103,
+      "end_line": 120,
+      "sha256": "d525065a614bd0fc7c53013ab213d81d9ac94602f38f3a0f2cb24b52d33cd53b",
+      "path": "apps/player/cmd/kinosail/tls_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "CLI tls-certificate exposes PRIVATE KEY, exports leaf instead of local CA or creates a new CA each invocation; command uses real persisted certificate and parsed X509CA assertion.",
+      "category": "pending",
+      "credible_failure": "CLI tls-certificate exposes PRIVATE KEY, exports leaf instead of local CA or creates a new CA each invocation; command uses real persisted certificate and parsed X509CA assertion.",
+      "production_owner": [
+        "apps/player/cmd/kinosail/main.go:main/command/run/configuredServerConfig",
+        "packages/servertransport/server.go:Serve/ConfigureCertificates/CheckHealth",
+        "packages/appcli/command.go:healthcheck/TrustedHTTPS"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:main -> appcli.Execute with app-bound command/configuration/server/MCP functions; production binary and container health/update/recovery entrypoints"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Browser trust bypass cannot prove public certificate export secrecy/persistence; exporter is not exercised by existing container/browser journey.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "process_or_configuration_cli_boundary"
+    },
+    {
+      "name": "TestCommandLineServesOwnerSuppliedRSACertificateToCompatibilityClient",
+      "line": 122,
+      "end_line": 162,
+      "sha256": "bdca6b969165825a03e89d561a4bb84210c4f5b629e2553c0490b9ea09c63157",
+      "path": "apps/player/cmd/kinosail/tls_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual owner RSA cert fails TLS1.2 AEAD client or startup substitutes default authority; real process serves a generated owner cert trusted by test root pool and must not create tls-ca.pem.",
+      "category": "pending",
+      "credible_failure": "Actual owner RSA cert fails TLS1.2 AEAD client or startup substitutes default authority; real process serves a generated owner cert trusted by test root pool and must not create tls-ca.pem.",
+      "production_owner": [
+        "apps/player/cmd/kinosail/main.go:main/command/run/configuredServerConfig",
+        "packages/servertransport/server.go:Serve/ConfigureCertificates/CheckHealth",
+        "packages/appcli/command.go:healthcheck/TrustedHTTPS"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:main -> appcli.Execute with app-bound command/configuration/server/MCP functions; production binary and container health/update/recovery entrypoints"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Generated default EC/TLS1.3 browser environment does not exercise supplied RSA cert and exact TLS1.2 compatibility boundary.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "process_or_configuration_cli_boundary"
+    },
+    {
+      "name": "TestUpdateCommandsExposeAVersionedAdapterContract",
+      "line": 38,
+      "end_line": 40,
+      "sha256": "d2da8390912809eb08909f44ec8287fe8d8ab1f75de7bafc0380685789c772c9",
+      "path": "apps/player/cmd/kinosail/update_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Real app update plan omits signature/backup/rollback/defer-playing/secret-recovery protections, wrong state/config schema or product signature identity, or fails to persist automatic setting/report.",
+      "category": "pending",
+      "credible_failure": "Real app update plan omits signature/backup/rollback/defer-playing/secret-recovery protections, wrong state/config schema or product signature identity, or fails to persist automatic setting/report.",
+      "production_owner": [
+        "apps/player/cmd/kinosail/main.go:main/command/run/configuredServerConfig",
+        "packages/updatecontrol/command.go:BindCommand",
+        "apps/player/cmd/kinosail/main.go:openUpdateDatabase",
+        "apps/player/internal/database/database.go"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:main -> appcli.Execute with app-bound command/configuration/server/MCP functions; production binary and container health/update/recovery entrypoints"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Browser update display/local system smoke does not validate complete release adapter plan and private recovery requirements from app-bound database.",
+      "history": [
+        "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "process_or_configuration_cli_boundary"
+    },
+    {
+      "name": "TestUpdateArtifactCommandSelectsVerifiedManifestEntry",
+      "line": 42,
+      "end_line": 44,
+      "sha256": "ca1d79a2a582ed10a37b0b5a7410171ef4d24a9d6408c87ed44f0613ff9bb6c1",
+      "path": "apps/player/cmd/kinosail/update_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "App-bound release adapter chooses wrong platform artifact or emits installation JSON for malformed/incompatible state schema/unsupported platform manifest; output must stay empty on rejection.",
+      "category": "pending",
+      "credible_failure": "App-bound release adapter chooses wrong platform artifact or emits installation JSON for malformed/incompatible state schema/unsupported platform manifest; output must stay empty on rejection.",
+      "production_owner": [
+        "apps/player/cmd/kinosail/main.go:main/command/run/configuredServerConfig",
+        "packages/updatecontrol/command.go:BindCommand",
+        "apps/player/cmd/kinosail/main.go:openUpdateDatabase",
+        "apps/player/internal/database/database.go"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:main -> appcli.Execute with app-bound command/configuration/server/MCP functions; production binary and container health/update/recovery entrypoints"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "No existing browser journey supplies verified multi-platform manifest and checks incompatible migration rejection with no output; package-level parser tests cannot prove app policy binding.",
+      "history": [
+        "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "process_or_configuration_cli_boundary"
+    },
+    {
+      "name": "TestUpdatePlanPinsManifestForPendingTarget",
+      "line": 46,
+      "end_line": 48,
+      "sha256": "f4b8830bc59393a3fdcc06e802bc65b873d097667744fbf83b63bf1cbebf3ed4",
+      "path": "apps/player/cmd/kinosail/update_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Persisted requested version produces wrong product tag/manifest/signature URLs or signature identity, admitting mismatched release provenance.",
+      "category": "pending",
+      "credible_failure": "Persisted requested version produces wrong product tag/manifest/signature URLs or signature identity, admitting mismatched release provenance.",
+      "production_owner": [
+        "apps/player/cmd/kinosail/main.go:main/command/run/configuredServerConfig",
+        "packages/updatecontrol/command.go:BindCommand",
+        "apps/player/cmd/kinosail/main.go:openUpdateDatabase",
+        "apps/player/internal/database/database.go"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:main -> appcli.Execute with app-bound command/configuration/server/MCP functions; production binary and container health/update/recovery entrypoints"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Current runtime E2E uses built test image and does not exercise persisted pending version plus Player release URLs.",
+      "history": [
+        "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "process_or_configuration_cli_boundary"
+    },
+    {
+      "name": "TestUpdateReportCommandRejectsUntrustedInput",
+      "line": 50,
+      "end_line": 52,
+      "sha256": "ab9e675d36b93a80fdd74ba9b186114aa3f99d15edcfc5699d3768f4f45c0b05",
+      "path": "apps/player/cmd/kinosail/update_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Unknown/trailing/oversized external update report is admitted or mutates automatic/request state; real app command+database checks post-rejection plan.",
+      "category": "pending",
+      "credible_failure": "Unknown/trailing/oversized external update report is admitted or mutates automatic/request state; real app command+database checks post-rejection plan.",
+      "production_owner": [
+        "apps/player/cmd/kinosail/main.go:main/command/run/configuredServerConfig",
+        "packages/updatecontrol/command.go:BindCommand",
+        "apps/player/cmd/kinosail/main.go:openUpdateDatabase",
+        "apps/player/internal/database/database.go"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:main -> appcli.Execute with app-bound command/configuration/server/MCP functions; production binary and container health/update/recovery entrypoints"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Happy-path browser/current container run never feeds malformed installer reports or proves report rejection leaves plan untouched.",
+      "history": [
+        "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "process_or_configuration_cli_boundary"
+    },
+    {
+      "name": "TestUpdateCommandsReportUnavailableOrCorruptStorage",
+      "line": 54,
+      "end_line": 83,
+      "sha256": "300724b7a55fe90bd310e5644e4397d715cc84d66e1197c90cc66e98739f76c8",
+      "path": "apps/player/cmd/kinosail/update_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "App-bound update command succeeds without data dir or over file-as-dir/corrupt settings shape, obscuring unsafe update state.",
+      "category": "pending",
+      "credible_failure": "App-bound update command succeeds without data dir or over file-as-dir/corrupt settings shape, obscuring unsafe update state.",
+      "production_owner": [
+        "apps/player/cmd/kinosail/main.go:main/command/run/configuredServerConfig",
+        "packages/updatecontrol/command.go:BindCommand",
+        "apps/player/cmd/kinosail/main.go:openUpdateDatabase",
+        "apps/player/internal/database/database.go"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:main -> appcli.Execute with app-bound command/configuration/server/MCP functions; production binary and container health/update/recovery entrypoints"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Populated server starts with valid disposable DB; no malformed on-disk update settings or unavailable storage command journey.",
+      "history": [
+        "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "process_or_configuration_cli_boundary"
+    },
+    {
+      "name": "TestBackupAdapterContract",
+      "line": 9,
+      "end_line": 11,
+      "sha256": "7d8e7ccfb6c48efb6ccbc786fdb4b9d9ef8125660836b1c7b196f14e2893d18b",
+      "path": "apps/player/internal/backup/adapter_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "App WriteEncrypted or VerifyAuto accidentally binds plain archive service and wrong passphrase succeeds; real app adapter persists encrypted fixture and rejects wrong key. Command binding must produce archive bytes.",
+      "category": "pending",
+      "credible_failure": "App WriteEncrypted or VerifyAuto accidentally binds plain archive service and wrong passphrase succeeds; real app adapter persists encrypted fixture and rejects wrong key. Command binding must produce archive bytes.",
+      "production_owner": [
+        "apps/player/internal/backup/backup.go",
+        "packages/backup/{command,archive,encrypted}.go",
+        "apps/player/internal/database/database.go"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:command appcli.Bind(backup.Command,updateCommand,version)",
+        "apps/player/internal/server backup API and scheduled backup service use actual app-bound archive/database configuration"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Browser automatic backup uses valid key; no existing populated journey checks wrong passphrase through app-bound encrypted adapter. Shared backup wrong-key tests use package service configuration and cannot by themselves establish app wrapper binding.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "isolated_app_boundary"
+    },
+    {
+      "name": "TestSQLiteBackupContract",
+      "line": 10,
+      "end_line": 14,
+      "sha256": "fc6a9eb129922665a38014a8fa84bdb88f36875203e0f0e44bc3032f7f679f1c",
+      "path": "apps/player/internal/backup/sqlite_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Logical SQLite export loses settings/playlists/3MiB metadata or restore retains stale DB, backs up symlink/directory, or changes settings before rejecting directory destination. Uses actual Player DB/Open/Write/Restore.",
+      "category": "pending",
+      "credible_failure": "Logical SQLite export loses settings/playlists/3MiB metadata or restore retains stale DB, backs up symlink/directory, or changes settings before rejecting directory destination. Uses actual Player DB/Open/Write/Restore.",
+      "production_owner": [
+        "apps/player/internal/backup/backup.go",
+        "packages/backup/{command,archive,encrypted}.go",
+        "apps/player/internal/database/database.go"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:command appcli.Bind(backup.Command,updateCommand,version)",
+        "apps/player/internal/server backup API and scheduled backup service use actual app-bound archive/database configuration"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Browser backup success does not compare full logical docs/large metadata, symlink rejection or no-replacement on invalid DB target; private filesystem fixture is not browser E2E.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "isolated_app_boundary"
+    },
+    {
+      "name": "TestSharedConfigurationContract",
+      "line": 10,
+      "end_line": 14,
+      "sha256": "1ac03cc68b1ab7efa7b1b17b873af0a5a07a964696bb4dc53cfb30f060e22387",
+      "path": "apps/player/internal/configuration/configuration_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "App schema/loader admits public secret files, ambiguous/unknown YAML or secret-in-regular storage; loses source precedence/redaction; persisted invalid codec/accelerator/HTTPS configuration changes files; managed/source/clone/secret-file behavior is wrong. All18 helper subscenarios call real Player Load/Set/Delete and public projections.",
+      "category": "pending",
+      "credible_failure": "App schema/loader admits public secret files, ambiguous/unknown YAML or secret-in-regular storage; loses source precedence/redaction; persisted invalid codec/accelerator/HTTPS configuration changes files; managed/source/clone/secret-file behavior is wrong. All18 helper subscenarios call real Player Load/Set/Delete and public projections.",
+      "production_owner": [
+        "apps/player/internal/configuration/load.go:loadConfiguration/validateConfiguredSnapshot",
+        "apps/player/internal/configuration/validation_rules.go:configurationValidators"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath -> configuration.Load",
+        "apps/player/internal/server/settings_configuration.go:configuration.Set/Delete",
+        "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Populated GUI paths cannot exercise env/YAML/private-file mode matrix, strict deployment parsing, clone isolation or cross-field operator config; these owner-adapter contracts execute current app schema rather than mocked snapshots.",
+      "history": [
+        "03c7b4ad5e50e79d47fbeffbe4003aec2e6ad208 Prepare Player Supporter for production checkout (#65)",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "isolated_app_boundary"
+    },
+    {
+      "name": "TestPlayerSupporterProductionDefaultsAndExplicitOverride",
+      "line": 16,
+      "end_line": 34,
+      "sha256": "53e23e60906157f9b1d1e176ee74cea566dedfe7d25fb608150a1f3c394930f4",
+      "path": "apps/player/internal/configuration/configuration_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Player loader drops production activation/support defaults or overwrites explicit safe operator override, breaking supporter activation routing; actual app Load checks source provenance and overridden values.",
+      "category": "pending",
+      "credible_failure": "Player loader drops production activation/support defaults or overwrites explicit safe operator override, breaking supporter activation routing; actual app Load checks source provenance and overridden values.",
+      "production_owner": [
+        "apps/player/internal/configuration/load.go:loadConfiguration/validateConfiguredSnapshot",
+        "apps/player/internal/configuration/validation_rules.go:configurationValidators",
+        "apps/player/internal/configuration/supporter.go",
+        "apps/player/internal/configuration/configuration.go:specs"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath -> configuration.Load",
+        "apps/player/internal/server/settings_configuration.go:configuration.Set/Delete",
+        "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Existing supporter E2E uses disposable provider/activation fixture; it cannot validate production-default wiring. Constants changed together are outside this check, recorded limitation.",
+      "history": [
+        "03c7b4ad5e50e79d47fbeffbe4003aec2e6ad208 Prepare Player Supporter for production checkout (#65)",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "isolated_app_boundary"
+    },
+    {
+      "name": "TestStoredConfigurationValidationEdges",
+      "line": 9,
+      "end_line": 27,
+      "sha256": "4e81645d331532b579389e39fc8e98f56a00c99be3eb54111486867225632086",
+      "path": "apps/player/internal/configuration/coverage_edges_internal_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Unreadable stored config silently becomes empty, incomplete stored OIDC or SCIM expiry-only state is accepted, or coupled SAML can be changed individually; real app validators/readJSON are used.",
+      "category": "pending",
+      "credible_failure": "Unreadable stored config silently becomes empty, incomplete stored OIDC or SCIM expiry-only state is accepted, or coupled SAML can be changed individually; real app validators/readJSON are used.",
+      "production_owner": [
+        "apps/player/internal/configuration/load.go:loadConfiguration/validateConfiguredSnapshot",
+        "apps/player/internal/configuration/validation_rules.go:configurationValidators"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath -> configuration.Load",
+        "apps/player/internal/server/settings_configuration.go:configuration.Set/Delete",
+        "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Browser valid-state journeys do not manufacture stored partial identity/provisioning state or inaccessible config parent. Some cases overlap public mutation guards but partial stored policy paths remain app-specific.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "isolated_app_boundary"
+    },
+    {
+      "name": "TestGoogleCastAppIDRejectsInvalidValuesBeforePersistence",
+      "line": 12,
+      "end_line": 29,
+      "sha256": "de3ce64c5d1a08420d14c4babeb7fa5d1e26cc010305ed44fe4df4a2968c0e65",
+      "path": "apps/player/internal/configuration/google_cast_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Invalid short/long/nonhex/whitespace/newline Cast receiver IDs enter app config or write configuration.json; bad deployment env also admitted. Real Set and Load test rejection before persistence.",
+      "category": "configuration boundary",
+      "credible_failure": "Invalid short/long/nonhex/whitespace/newline Cast receiver IDs enter app config or write configuration.json; bad deployment env also admitted. Real Set and Load test rejection before persistence.",
+      "production_owner": [
+        "apps/player/internal/configuration/load.go:loadConfiguration/validateConfiguredSnapshot",
+        "apps/player/internal/configuration/validation_rules.go:configurationValidators"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath -> configuration.Load",
+        "apps/player/internal/server/settings_configuration.go:configuration.Set/Delete",
+        "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Browser receiver-picker response fixtures and native Cast chooser do not feed malicious deployment receiver IDs or assert absent persisted file.",
+      "history": [
+        "3a9cc8fa80d6c233524d7510311979b8d986edd4 Guard Cast teardown and simplify validation tests",
+        "ca343a0cd8bde5882e76afc57e4be0fcb1fc0bf4 Add broad receiver casting support for Player"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewed_assertions": "Six malformed/oversizedhex IDs reject with absent configuration.json; bad environment ID rejects Load.",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "isolated_app_boundary"
+    },
+    {
+      "name": "TestGoogleCastAppIDPreservesValidValueAfterInvalidReplacement",
+      "line": 31,
+      "end_line": 49,
+      "sha256": "9374ce257c32bd755a57a6851fc971031e9dfa23aeb4c28e21e6995a89cd5968",
+      "path": "apps/player/internal/configuration/google_cast_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Rejected receiver-ID replacement overwrites valid configuration, breaking future casting; actual save/load/rejection/load state comparison.",
+      "category": "configuration boundary",
+      "credible_failure": "Rejected receiver-ID replacement overwrites valid configuration, breaking future casting; actual save/load/rejection/load state comparison.",
+      "production_owner": [
+        "apps/player/internal/configuration/load.go:loadConfiguration/validateConfiguredSnapshot",
+        "apps/player/internal/configuration/validation_rules.go:configurationValidators",
+        "apps/player/internal/configuration/mutation.go:configurationMutation/readStoredConfiguration/storedConfigurationTransaction",
+        "packages/configurationcore/{mutation,pair,transaction}.go"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath -> configuration.Load",
+        "apps/player/internal/server/settings_configuration.go:configuration.Set/Delete",
+        "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Browser picker success does not inject bad config replacement and verify persisted prior receiver ID survives.",
+      "history": [
+        "3a9cc8fa80d6c233524d7510311979b8d986edd4 Guard Cast teardown and simplify validation tests",
+        "ca343a0cd8bde5882e76afc57e4be0fcb1fc0bf4 Add broad receiver casting support for Player"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewed_assertions": "Saves lowercase deadbeef, rejects invalid! replacement, reloads same prior ID.",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "isolated_app_boundary"
+    },
+    {
+      "name": "TestMCPConfigurationRequiresTheCompleteOAuthResource",
+      "line": 10,
+      "end_line": 20,
+      "sha256": "c0de71dd46b0846af33a7b0520e6396181b35a610f23c47af939aa4f81f84807",
+      "path": "apps/player/internal/configuration/mcp_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "App Load stops applying shared complete OAuth-resource validator and accepts partial MCP authorization configuration; test passes actual env values through app schema.",
+      "category": "pending",
+      "credible_failure": "App Load stops applying shared complete OAuth-resource validator and accepts partial MCP authorization configuration; test passes actual env values through app schema.",
+      "production_owner": [
+        "apps/player/internal/configuration/load.go:loadConfiguration/validateConfiguredSnapshot",
+        "apps/player/internal/configuration/validation_rules.go:configurationValidators"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath -> configuration.Load",
+        "apps/player/internal/server/settings_configuration.go:configuration.Set/Delete",
+        "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "MCP production smoke uses stdio and browser journeys do not enable external OAuth resource with incomplete five-field configuration.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "isolated_app_boundary"
+    },
+    {
+      "name": "TestMCPConfigurationRequiresSecureCanonicalURLs",
+      "line": 22,
+      "end_line": 34,
+      "sha256": "4795014973e08c19a47154e6ce2f81b8dbe125fc9be4cae01c263bf5a63e9969",
+      "path": "apps/player/internal/configuration/mcp_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "App Load ignores shared HTTPS/canonical-resource validator and accepts public HTTP resource endpoint; protects external bearer transport/authorization resource.",
+      "category": "pending",
+      "credible_failure": "App Load ignores shared HTTPS/canonical-resource validator and accepts public HTTP resource endpoint; protects external bearer transport/authorization resource.",
+      "production_owner": [
+        "apps/player/internal/configuration/load.go:loadConfiguration/validateConfiguredSnapshot",
+        "apps/player/internal/configuration/validation_rules.go:configurationValidators"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath -> configuration.Load",
+        "apps/player/internal/server/settings_configuration.go:configuration.Set/Delete",
+        "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Shared ValidateMCP table catches owner logic bugs but uses testSnapshot, so cannot establish Player loader invokes it; no existing populated MCP OAuth insecure-deployment journey.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "isolated_app_boundary"
+    },
+    {
+      "name": "TestConfigurationMutationHelpersRejectInvalidBoundaries",
+      "line": 13,
+      "end_line": 49,
+      "sha256": "5f3f634d80aa5663f56f90f32dcde5f9f1cd68cd089fb9a14cb465a82195a175",
+      "path": "apps/player/internal/configuration/mutation_internal_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Public Set/Delete/SCIM mutate file-as-data-dir or wrongly admit unknown keys/secret placement; actual app mutation adapters and validated Pair prevent unsafe storage.",
+      "category": "configuration storage",
+      "credible_failure": "Public Set/Delete/SCIM mutate file-as-data-dir or wrongly admit unknown keys/secret placement; actual app mutation adapters and validated Pair prevent unsafe storage.",
+      "production_owner": [
+        "apps/player/internal/configuration/load.go:loadConfiguration/validateConfiguredSnapshot",
+        "apps/player/internal/configuration/validation_rules.go:configurationValidators",
+        "apps/player/internal/configuration/mutation.go:configurationMutation/readStoredConfiguration/storedConfigurationTransaction",
+        "packages/configurationcore/{mutation,pair,transaction}.go"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath -> configuration.Load",
+        "apps/player/internal/server/settings_configuration.go:configuration.Set/Delete",
+        "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Browser normal writable dirs do not expose filesystem invalid paths or direct secret/public map corruption before mutation.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewed_assertions": "All four mutation entry points reject regular-file directory; unknown/public-secret key placement rejected; no-op persist returns nil.",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "isolated_app_boundary"
+    },
+    {
+      "name": "TestConfigurationTransactionRecoversPairedFiles",
+      "line": 51,
+      "end_line": 74,
+      "sha256": "554e774eb2696bc6749523e360b25ed017a44cb9aba7e885a77cc3b0de1eb52a",
+      "path": "apps/player/internal/configuration/mutation_internal_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Crash journal recovery loses either public/secret map or fails to remove completed journal; actual app transaction object injects parser+semantic validator and readStoredConfiguration recovers actual files.",
+      "category": "configuration recovery",
+      "credible_failure": "Crash journal recovery loses either public/secret map or fails to remove completed journal; actual app transaction object injects parser+semantic validator and readStoredConfiguration recovers actual files.",
+      "production_owner": [
+        "apps/player/internal/configuration/load.go:loadConfiguration/validateConfiguredSnapshot",
+        "apps/player/internal/configuration/validation_rules.go:configurationValidators",
+        "apps/player/internal/configuration/mutation.go:configurationMutation/readStoredConfiguration/storedConfigurationTransaction",
+        "packages/configurationcore/{mutation,pair,transaction}.go"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath -> configuration.Load",
+        "apps/player/internal/server/settings_configuration.go:configuration.Set/Delete",
+        "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "No current E2E crashes between paired file commit stages or replays app-specific journal on startup.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewed_assertions": "Writes recovery journal with Recovered name and secret, reads pair, checks both exact bytes and removed journal.",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "isolated_app_boundary"
+    },
+    {
+      "name": "TestConfigurationTransactionRejectsInvalidRecoveryState",
+      "line": 76,
+      "end_line": 112,
+      "sha256": "8ddf48d7c1155b2ea4c5d2d6984a1bd3c3471bc8d920cc57cfd5baab65b83467",
+      "path": "apps/player/internal/configuration/mutation_internal_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Malformed/incomplete/nonregular journal is treated as complete or invalid child path is written/removed; app journal uses real private file IO and parser.",
+      "category": "configuration recovery",
+      "credible_failure": "Malformed/incomplete/nonregular journal is treated as complete or invalid child path is written/removed; app journal uses real private file IO and parser.",
+      "production_owner": [
+        "apps/player/internal/configuration/load.go:loadConfiguration/validateConfiguredSnapshot",
+        "apps/player/internal/configuration/validation_rules.go:configurationValidators",
+        "apps/player/internal/configuration/mutation.go:configurationMutation/readStoredConfiguration/storedConfigurationTransaction",
+        "packages/configurationcore/{mutation,pair,transaction}.go"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath -> configuration.Load",
+        "apps/player/internal/server/settings_configuration.go:configuration.Set/Delete",
+        "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Normal E2E does not manufacture corrupt/private journal files or directories; helper catches fail-closed state before recovery.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewed_assertions": "MalformedJSON, missingsecrets, regular-file parent and directory journal each rejected; nonempty directory preserved.",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "isolated_app_boundary"
+    },
+    {
+      "name": "TestConfigurationTransactionRejectsSemanticallyInvalidRecoveryWithoutSideEffects",
+      "line": 114,
+      "end_line": 158,
+      "sha256": "f63374fc9720cae74a2f51b8640457f523f80515dd38509f175bfde0bd9def71",
+      "path": "apps/player/internal/configuration/mutation_internal_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Unknown/secret-in-regular/invalid-expiration journal overwrites existing public or private state and discards recovery marker before semantic rejection; compares unchanged bytes+retained marker.",
+      "category": "configuration recovery",
+      "credible_failure": "Unknown/secret-in-regular/invalid-expiration journal overwrites existing public or private state and discards recovery marker before semantic rejection; compares unchanged bytes+retained marker.",
+      "production_owner": [
+        "apps/player/internal/configuration/load.go:loadConfiguration/validateConfiguredSnapshot",
+        "apps/player/internal/configuration/validation_rules.go:configurationValidators",
+        "apps/player/internal/configuration/mutation.go:configurationMutation/readStoredConfiguration/storedConfigurationTransaction",
+        "packages/configurationcore/{mutation,pair,transaction}.go"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath -> configuration.Load",
+        "apps/player/internal/server/settings_configuration.go:configuration.Set/Delete",
+        "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Browser and container restart fixtures do not inject hostile journal and prove both old files untouched; strong data-loss/security boundary unique to app validators.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewed_assertions": "Unknown key, secret in public document and badexpiry journal; requires both Before/old documents unchanged and marker remains.",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "isolated_app_boundary"
+    },
+    {
+      "name": "TestConfigurationMutationRejectsNullPersistedMaps",
+      "line": 160,
+      "end_line": 182,
+      "sha256": "5ee1ef0d93e6a40dc52aae6223148333d5aceea0ad3f3311c0bc08da147d0d96",
+      "path": "apps/player/internal/configuration/mutation_internal_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "SCIM mutation converts null persisted secrets into empty/new map and silently discards old config; rejects and compares original public/private bytes.",
+      "category": "configuration data loss",
+      "credible_failure": "SCIM mutation converts null persisted secrets into empty/new map and silently discards old config; rejects and compares original public/private bytes.",
+      "production_owner": [
+        "apps/player/internal/configuration/load.go:loadConfiguration/validateConfiguredSnapshot",
+        "apps/player/internal/configuration/validation_rules.go:configurationValidators",
+        "apps/player/internal/configuration/mutation.go:configurationMutation/readStoredConfiguration/storedConfigurationTransaction",
+        "packages/configurationcore/{mutation,pair,transaction}.go"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath -> configuration.Load",
+        "apps/player/internal/server/settings_configuration.go:configuration.Set/Delete",
+        "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "No populated journey corrupts secret JSON to null before update; parser+mutation data preservation is independent app risk.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewed_assertions": "Public Before name + secretsnull; SetSCIM rejects and exact byte comparison preserves both.",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "isolated_app_boundary"
+    },
+    {
+      "name": "TestConfigurationTransactionRecoverySurvivesTargetFailure",
+      "line": 184,
+      "end_line": 203,
+      "sha256": "041ed011dd2f61494a1ed8cdd3191edbd55221c9655f293371dff22d2878e03e",
+      "path": "apps/player/internal/configuration/mutation_internal_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Failed journal recovery over directory removes marker or cannot replay after target repaired; exercises both public and secret target failure then successful read.",
+      "category": "configuration recovery",
+      "credible_failure": "Failed journal recovery over directory removes marker or cannot replay after target repaired; exercises both public and secret target failure then successful read.",
+      "production_owner": [
+        "apps/player/internal/configuration/load.go:loadConfiguration/validateConfiguredSnapshot",
+        "apps/player/internal/configuration/validation_rules.go:configurationValidators",
+        "apps/player/internal/configuration/mutation.go:configurationMutation/readStoredConfiguration/storedConfigurationTransaction",
+        "packages/configurationcore/{mutation,pair,transaction}.go"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath -> configuration.Load",
+        "apps/player/internal/server/settings_configuration.go:configuration.Set/Delete",
+        "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Existing E2E has no injected filesystem write failure midway through recovery or repair/retry lifecycle.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewed_assertions": "Both public/secret target directories individually cause failure; removing each directory permits successful next recovery.",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "isolated_app_boundary"
+    },
+    {
+      "name": "TestOIDCConfigurationRequiresOneCompleteSafeSet",
+      "line": 13,
+      "end_line": 47,
+      "sha256": "5abcb54fb865ab2f3daa503519b0be52813e5a005603c742bfd8a08436bf6c66",
+      "path": "apps/player/internal/configuration/oidc_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "App Load admits incomplete/HTTP/userinfo/query/fragment/unbounded client/secret or unsafe claim values; production federation validation is wired through actual env/schema.",
+      "category": "pending",
+      "credible_failure": "App Load admits incomplete/HTTP/userinfo/query/fragment/unbounded client/secret or unsafe claim values; production federation validation is wired through actual env/schema.",
+      "production_owner": [
+        "apps/player/internal/configuration/load.go:loadConfiguration/validateConfiguredSnapshot",
+        "apps/player/internal/configuration/validation_rules.go:configurationValidators",
+        "apps/player/internal/configuration/{oidc,saml}.go",
+        "packages/federation/settings.go"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath -> configuration.Load",
+        "apps/player/internal/server/settings_configuration.go:configuration.Set/Delete",
+        "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "No genuine external IdP E2E deployment or malformed operator-config matrix; shared federation tests alone do not establish app validation wiring.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "isolated_app_boundary"
+    },
+    {
+      "name": "TestOIDCConfigurationChangesAtomically",
+      "line": 49,
+      "end_line": 89,
+      "sha256": "b6cb0cf3fe3eb94f112396df53e7b044807b31f1705f7696b5e8d8d91e075a1f",
+      "path": "apps/player/internal/configuration/oidc_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Invalid redirect/claim changes existing public or private OIDC config, individual issuer mutation bypasses coupled update or delete leaves client secret/issuer; actual files before/after plus Load.",
+      "category": "pending",
+      "credible_failure": "Invalid redirect/claim changes existing public or private OIDC config, individual issuer mutation bypasses coupled update or delete leaves client secret/issuer; actual files before/after plus Load.",
+      "production_owner": [
+        "apps/player/internal/configuration/load.go:loadConfiguration/validateConfiguredSnapshot",
+        "apps/player/internal/configuration/validation_rules.go:configurationValidators",
+        "apps/player/internal/configuration/mutation.go:configurationMutation/readStoredConfiguration/storedConfigurationTransaction",
+        "packages/configurationcore/{mutation,pair,transaction}.go",
+        "apps/player/internal/configuration/{oidc,saml}.go",
+        "packages/federation/settings.go"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath -> configuration.Load",
+        "apps/player/internal/server/settings_configuration.go:configuration.Set/Delete",
+        "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Browser success/fixture IdP does not inject malformed coupled replacement and compare two persisted files or individual setting bypass.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "isolated_app_boundary"
+    },
+    {
+      "name": "TestValidOIDCURLAllowsOnlyTrustedEndpointForms",
+      "line": 10,
+      "end_line": 26,
+      "sha256": "eb31e0381b59df5c353061121b13f6312a0f3a72c979942c2164f392857d246c",
+      "path": "apps/player/internal/configuration/oidc_validation_internal_test.go",
+      "decision": "D",
+      "review_status": "semantic_review_complete",
+      "reason": "Replays federation.ValidIdentityURL directly with no app adapter. TrustedURL same endpoint grammar and empty URL rejection remain primary-owner tests; public app Load/Set validate unsafe URL forms.",
+      "category": "pending",
+      "credible_failure": "Replays federation.ValidIdentityURL directly with no app adapter. TrustedURL same endpoint grammar and empty URL rejection remain primary-owner tests; public app Load/Set validate unsafe URL forms.",
+      "production_owner": [
+        "packages/federation/settings.go:ValidIdentityURL"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath -> configuration.Load",
+        "apps/player/internal/server/settings_configuration.go:configuration.Set/Delete",
+        "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
+      ],
+      "remaining_proof": [
+        "packages/federation/oidc_test.go:TestOIDCConfigurationAndValueValidation; coverage_edge_test.go:TestProtocolHelpersRejectRemainingMalformedValues; Player TestOIDCConfigurationRequiresOneCompleteSafeSet"
+      ],
+      "coverage_limit": "Shared federation/TestOIDCConfigurationAndValueValidation includes HTTPS/localhost/127.0.0.1/HTTP/userinfo/query/fragment, and public OIDC/SAML Load tests plus atomic mutation guard. No real IdP E2E claimed.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; removes only this audited existing test declaration. Shared primary-owner and real CLI process keepers remain.",
+      "risk": "No independent important assertion lost; remaining gap explicitly stated.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "removal_status": "implemented_in_tooling_owner_checkout_after_parent_transfer"
+    },
+    {
+      "name": "TestValidRemoteTokenRejectsWrongLengthAndCharacters",
+      "line": 28,
+      "end_line": 40,
+      "sha256": "9ac7c5b78c213632826d703164f6bf80a2180b4916a60321b7e4eb3b6633329c",
+      "path": "apps/player/internal/configuration/oidc_validation_internal_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Independent reviewer found unique ASCII colon rejection. Canonical shared table rejects exclamation and Unicode only; a widened ASCII range could accept colon yet pass primary matrix. Existing test restores this trusted credential grammar boundary.",
+      "category": "retained_credential_grammar_boundary",
+      "credible_failure": "Independent reviewer found unique ASCII colon rejection. Canonical shared table rejects exclamation and Unicode only; a widened ASCII range could accept colon yet pass primary matrix. Existing test restores this trusted credential grammar boundary.",
+      "production_owner": [
+        "apps/player/internal/configuration/remote.go:validRemoteToken; packages/validation/validation.go:ValidRemoteToken"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath -> configuration.Load",
+        "apps/player/internal/server/settings_configuration.go:configuration.Set/Delete",
+        "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
+      ],
+      "remaining_proof": [
+        "This exact restored baseline test covers colon. Shared TestRemoteTokenValidation covers other punctuation/Unicode and boundary length."
+      ],
+      "coverage_limit": "Real E2E does not assert malformed remote-token grammar.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; this declaration is retained.",
+      "risk": "Retain important trusted credential colon boundary; real E2E omits malformed credentials.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "removal_status": "restored_after_independent_review",
+      "audit_status": "evidence_complete",
+      "implementation": "Restored exact baseline declaration after independent review; no new isolated declaration.",
+      "review_resolution": "Frontend independent review of3298e906; original test restored in follow-up commit."
+    },
+    {
+      "name": "TestSAMLMetadataConfigurationRequiresTrustedBoundedURL",
+      "line": 20,
+      "end_line": 41,
+      "sha256": "72c928f605fd7086cc12b489091b34fd4d7dd71e9f902fceec6f4fd96d9619e9",
+      "path": "apps/player/internal/configuration/saml_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "App Load admits insecure/credential/fragment/oversized SAML metadata source or rejects explicit localhost dev source; actual schema public loader.",
+      "category": "pending",
+      "credible_failure": "App Load admits insecure/credential/fragment/oversized SAML metadata source or rejects explicit localhost dev source; actual schema public loader.",
+      "production_owner": [
+        "apps/player/internal/configuration/load.go:loadConfiguration/validateConfiguredSnapshot",
+        "apps/player/internal/configuration/validation_rules.go:configurationValidators",
+        "apps/player/internal/configuration/{oidc,saml}.go",
+        "packages/federation/settings.go"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath -> configuration.Load",
+        "apps/player/internal/server/settings_configuration.go:configuration.Set/Delete",
+        "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "No current populated E2E supplies malformed SAML provider URL through deployment config; external real IdP unavailable.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "isolated_app_boundary"
+    },
+    {
+      "name": "TestSAMLConfigurationAcceptsOneURLOrDownloadedMetadataDocument",
+      "line": 43,
+      "end_line": 72,
+      "sha256": "eac90a40a52225db08edbf4d72eddfa8ca2616d9f7fbc98836c460495b9641ee",
+      "path": "apps/player/internal/configuration/saml_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "App Load accepts conflicting sources, malformed/certless/untrusted/binding-invalid metadata or unsafe identity attribute, causing trust failure; actual signed-certificate fixture and parser.",
+      "category": "pending",
+      "credible_failure": "App Load accepts conflicting sources, malformed/certless/untrusted/binding-invalid metadata or unsafe identity attribute, causing trust failure; actual signed-certificate fixture and parser.",
+      "production_owner": [
+        "apps/player/internal/configuration/load.go:loadConfiguration/validateConfiguredSnapshot",
+        "apps/player/internal/configuration/validation_rules.go:configurationValidators",
+        "apps/player/internal/configuration/{oidc,saml}.go",
+        "packages/federation/settings.go"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath -> configuration.Load",
+        "apps/player/internal/server/settings_configuration.go:configuration.Set/Delete",
+        "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "No browser journey drives unsafe provider XML/certificate/binding matrix through app env config; isolated XML is explicit fixture.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "isolated_app_boundary"
+    },
+    {
+      "name": "TestStoredSAMLConfigurationRejectsConflictingSources",
+      "line": 74,
+      "end_line": 90,
+      "sha256": "b98735ea87f5af8123eb18c3ab3189f5ff0bf2964cd7ed67f526285d00437e01",
+      "path": "apps/player/internal/configuration/saml_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Unrelated valid GUI mutation commits already-conflicting stored URL+XML provider sources; real configuration.json and Set reject poisoned prior state.",
+      "category": "pending",
+      "credible_failure": "Unrelated valid GUI mutation commits already-conflicting stored URL+XML provider sources; real configuration.json and Set reject poisoned prior state.",
+      "production_owner": [
+        "apps/player/internal/configuration/load.go:loadConfiguration/validateConfiguredSnapshot",
+        "apps/player/internal/configuration/validation_rules.go:configurationValidators",
+        "apps/player/internal/configuration/{oidc,saml}.go",
+        "packages/federation/settings.go"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath -> configuration.Load",
+        "apps/player/internal/server/settings_configuration.go:configuration.Set/Delete",
+        "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Environment Load conflict test is a different caller; no E2E corrupts existing stored provider then attempts unrelated write.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "isolated_app_boundary"
+    },
+    {
+      "name": "TestSAMLConfigurationChangesMetadataSourceAtomically",
+      "line": 92,
+      "end_line": 123,
+      "sha256": "792e96f63b0e8a74cb2c8fee6e6eae1413a491dd9012d7f9fbf9eb2a95d7f51e",
+      "path": "apps/player/internal/configuration/saml_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Switch URL to XML leaves old source, invalid conflicting/claim update modifies saved XML or delete leaves metadata; actual app SetSAML/Load/DeleteSAML use paired maps.",
+      "category": "pending",
+      "credible_failure": "Switch URL to XML leaves old source, invalid conflicting/claim update modifies saved XML or delete leaves metadata; actual app SetSAML/Load/DeleteSAML use paired maps.",
+      "production_owner": [
+        "apps/player/internal/configuration/load.go:loadConfiguration/validateConfiguredSnapshot",
+        "apps/player/internal/configuration/validation_rules.go:configurationValidators",
+        "apps/player/internal/configuration/mutation.go:configurationMutation/readStoredConfiguration/storedConfigurationTransaction",
+        "packages/configurationcore/{mutation,pair,transaction}.go",
+        "apps/player/internal/configuration/{oidc,saml}.go",
+        "packages/federation/settings.go"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath -> configuration.Load",
+        "apps/player/internal/server/settings_configuration.go:configuration.Set/Delete",
+        "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "No genuine external SAML E2E nor browser file-byte/state assertion for rejected compound replacement.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "isolated_app_boundary"
+    },
+    {
+      "name": "TestSCIMTokenIsValidatedAndRedacted",
+      "line": 13,
+      "end_line": 48,
+      "sha256": "5b02c619829df77d4b1bbe76fbb9102c4d89fa1b853a76781b5cb52d45f6cb98",
+      "path": "apps/player/internal/configuration/scim_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "App deployment loader accepts malformed token, exposes secret through Public or enables incomplete expiry policy; checks token length/control inputs and expired stored-load semantics.",
+      "category": "pending",
+      "credible_failure": "App deployment loader accepts malformed token, exposes secret through Public or enables incomplete expiry policy; checks token length/control inputs and expired stored-load semantics.",
+      "production_owner": [
+        "apps/player/internal/configuration/load.go:loadConfiguration/validateConfiguredSnapshot",
+        "apps/player/internal/configuration/validation_rules.go:configurationValidators",
+        "apps/player/internal/configuration/scim.go",
+        "apps/player/internal/configuration/remote.go:validSCIMToken",
+        "packages/configurationcore/mutation.go:SetSCIM"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath -> configuration.Load",
+        "apps/player/internal/server/settings_configuration.go:configuration.Set/Delete",
+        "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Populated SCIM fixture successes do not establish secret public projection and env incomplete-token matrix; actual app Load boundary matters.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "isolated_app_boundary"
+    },
+    {
+      "name": "TestSCIMConfigurationMutationsValidateTheCompletePair",
+      "line": 50,
+      "end_line": 100,
+      "sha256": "0365faac83238a7ee3c347159f7f15c1f11638776c702aff3e72a076629e8eef",
+      "path": "apps/player/internal/configuration/scim_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Invalid token/expiry or per-key mutation writes either config file or replaces valid pair; complete SetSCIM/DeleteSCIM validation and unchanged Load after rejection.",
+      "category": "pending",
+      "credible_failure": "Invalid token/expiry or per-key mutation writes either config file or replaces valid pair; complete SetSCIM/DeleteSCIM validation and unchanged Load after rejection.",
+      "production_owner": [
+        "apps/player/internal/configuration/load.go:loadConfiguration/validateConfiguredSnapshot",
+        "apps/player/internal/configuration/validation_rules.go:configurationValidators",
+        "apps/player/internal/configuration/mutation.go:configurationMutation/readStoredConfiguration/storedConfigurationTransaction",
+        "packages/configurationcore/{mutation,pair,transaction}.go",
+        "apps/player/internal/configuration/scim.go",
+        "apps/player/internal/configuration/remote.go:validSCIMToken",
+        "packages/configurationcore/mutation.go:SetSCIM"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath -> configuration.Load",
+        "apps/player/internal/server/settings_configuration.go:configuration.Set/Delete",
+        "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Browser normal provisioning cannot prove absent files for rejected initial pair and unchanged persisted old values after hostile replacement.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "isolated_app_boundary"
+    },
+    {
+      "name": "TestSCIMConfigurationLoadsFromYAML",
+      "line": 102,
+      "end_line": 120,
+      "sha256": "8a5783b221c85102b07136ce2b8e0328e31754bb28e67b5f515089f31b87dab3",
+      "path": "apps/player/internal/configuration/scim_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Secret-file YAML SCIM bootstrap loses token/expiry/source or resolves token_file relative to wrong directory; actual private file and YAML through app Load.",
+      "category": "pending",
+      "credible_failure": "Secret-file YAML SCIM bootstrap loses token/expiry/source or resolves token_file relative to wrong directory; actual private file and YAML through app Load.",
+      "production_owner": [
+        "apps/player/internal/configuration/load.go:loadConfiguration/validateConfiguredSnapshot",
+        "apps/player/internal/configuration/validation_rules.go:configurationValidators",
+        "apps/player/internal/configuration/scim.go",
+        "apps/player/internal/configuration/remote.go:validSCIMToken",
+        "packages/configurationcore/mutation.go:SetSCIM"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath -> configuration.Load",
+        "apps/player/internal/server/settings_configuration.go:configuration.Set/Delete",
+        "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Browser uses env/disposable setup, not operator YAML token_file bootstrap; provenance/relative-secret-path remains unproved by GUI E2E.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "isolated_app_boundary"
+    },
+    {
+      "name": "TestConfigurationMutationsSerializeAcrossThePair",
+      "line": 122,
+      "end_line": 153,
+      "sha256": "0eace7e4815e5d69d0515b59a4ec28c4d5feba71e2e35c064154a4b530455017",
+      "path": "apps/player/internal/configuration/scim_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Concurrent SCIM paired commits and retention single writes clobber one family or leave temp files; twelve actual concurrent public mutations must all succeed and final Load retains both.",
+      "category": "pending",
+      "credible_failure": "Concurrent SCIM paired commits and retention single writes clobber one family or leave temp files; twelve actual concurrent public mutations must all succeed and final Load retains both.",
+      "production_owner": [
+        "apps/player/internal/configuration/load.go:loadConfiguration/validateConfiguredSnapshot",
+        "apps/player/internal/configuration/validation_rules.go:configurationValidators",
+        "apps/player/internal/configuration/mutation.go:configurationMutation/readStoredConfiguration/storedConfigurationTransaction",
+        "packages/configurationcore/{mutation,pair,transaction}.go"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath -> configuration.Load",
+        "apps/player/internal/server/settings_configuration.go:configuration.Set/Delete",
+        "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Sequential browser/admin operations and container smoke do not exercise interleaving independent single/paired commits; shared Pair tests alone cannot establish shared app mutation mutex.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "isolated_app_boundary"
+    },
+    {
+      "name": "TestLoadIgnoresRetiredSubtitleProviderConfiguration",
+      "line": 12,
+      "end_line": 34,
+      "sha256": "cbd980f91dd221847ea7c2ab29232156d8af72e4a9d352126b13aa7c579aa327",
+      "path": "apps/player/internal/configuration/subtitle_retirement_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Upgrade with retired SubDL public/secret/YAML keys bricks Player startup or leaks old provider fields into active config; actual legacy files+YAML need not resolve nonexistent retired secret file.",
+      "category": "pending",
+      "credible_failure": "Upgrade with retired SubDL public/secret/YAML keys bricks Player startup or leaks old provider fields into active config; actual legacy files+YAML need not resolve nonexistent retired secret file.",
+      "production_owner": [
+        "apps/player/internal/configuration/load.go:loadConfiguration/validateConfiguredSnapshot",
+        "apps/player/internal/configuration/validation_rules.go:configurationValidators",
+        "apps/player/internal/configuration/configuration.go:retiredConfigurationKey/discardRetiredConfiguration",
+        "packages/configurationcore/yaml.go"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath -> configuration.Load",
+        "apps/player/internal/server/settings_configuration.go:configuration.Set/Delete",
+        "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Fresh disposable E2E starts without removed historical provider settings; migration compatibility gap is real.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "isolated_app_boundary"
+    },
+    {
+      "name": "TestValidationRuleRemainingBranches",
+      "line": 5,
+      "end_line": 29,
+      "sha256": "a12e215b43fad79b95285a22e87055a20085d0379df47d3acc90c1edc69d76e2",
+      "path": "apps/player/internal/configuration/validation_rules_coverage_test.go",
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "reason": "Zero/malformed positive-duration config accepts invalid audit/playback retention or malformed configured subtitle base escapes language validation. Several accepted/unknown-kind cases are branch coverage only, but real rejection cases protect app retention/input policy.",
+      "category": "pending",
+      "credible_failure": "Zero/malformed positive-duration config accepts invalid audit/playback retention or malformed configured subtitle base escapes language validation. Several accepted/unknown-kind cases are branch coverage only, but real rejection cases protect app retention/input policy.",
+      "production_owner": [
+        "apps/player/internal/configuration/load.go:loadConfiguration/validateConfiguredSnapshot",
+        "apps/player/internal/configuration/validation_rules.go:configurationValidators"
+      ],
+      "non_test_callers": [
+        "apps/player/cmd/kinosail/main.go:loadConfigurationPath -> configuration.Load",
+        "apps/player/internal/server/settings_configuration.go:configuration.Set/Delete",
+        "apps/player/internal/server/settings_{scim,oidc,saml}_storage.go bind respective atomic configuration methods"
+      ],
+      "remaining_proof": [
+        "Retain this declaration and the actual helper assertions described in credible_failure; no populated E2E equivalence asserted."
+      ],
+      "coverage_limit": "Current E2E does not supply zero/malformed retention or invalid base code through all configuration sources. Public configuration suite tests backup.retention, not logging duration validators; no equivalence claimed.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "Retained concrete important production boundary missed by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer",
+      "layer": "isolated_app_boundary"
+    },
+    {
+      "name": "TestPlayerDatabaseAdapterUsesConfiguredDocuments",
+      "line": 9,
+      "end_line": 30,
+      "sha256": "80da48f0674b678aef46ee61ca821943aa104a7a8aedd724ac386f166b2b6b6c",
+      "path": "apps/player/internal/database/adapter_test.go",
+      "decision": "D",
+      "review_status": "semantic_review_complete",
+      "reason": "Mutates exported Documents, compares config.Documents to same mutable value and opens/closes empty stores. Never writes custom legacy JSON or verifies import; cannot prove migration contract.",
+      "category": "Identity copier and assertion-free opens",
+      "credible_failure": "Mutates exported Documents, compares config.Documents to same mutable value and opens/closes empty stores. Never writes custom legacy JSON or verifies import; cannot prove migration contract.",
+      "production_owner": [
+        "apps/player/internal/database/database.go:config/Open/OpenContext"
+      ],
+      "non_test_callers": [
+        "Player server durable profiles/settings/catalog operations and backup openUpdateDatabase paths -> database.Open/OpenContext -> documentdb"
+      ],
+      "remaining_proof": [
+        "packages/documentdb database migrations and Player config independence; Player TestSQLiteBackupContract"
+      ],
+      "coverage_limit": "Keep shared documentdb migration/admission/security/concurrency tests plus actual app SQLiteBackupContract real documents; no custom Documents legacy-import proof claimed.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "production_or_support_deletion_unlocked": "None; evidence-only handoff. Existing database test removed by Player owner; other candidates require owner implementation.",
+      "risk": "No independent important assertion lost; remaining gap explicitly stated.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/backup ./internal/configuration ./internal/database",
+      "baseline_result": "pass (parent exact-base JSON event; no new execution by this read-only reviewer)",
+      "removal_status": "implemented_by_player_owner",
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewer": "tooling owner after root read-only scope transfer"
+    }
+  ],
+  "e2e_surface_read": [
+    "apps/player/scripts/test-container.sh",
+    "apps/player/e2e/happy-path-complete.ts",
+    "apps/player/e2e/ui-happy-paths.spec.ts",
+    "apps/player/e2e/test-instance-production.spec.ts",
+    "apps/player/e2e/layout-audit-configuration.spec.ts"
+  ],
+  "limitations": [
+    "No new command/package/container test execution in this read-only transfer. Parent pinned-base Go suite supplied baseline pass evidence.",
+    "Process TLS/CLI tests execute real main with FFmpeg discovery stub and disposable data; they are not populated-browser proof.",
+    "TestCLIContract and TestSharedConfigurationContract each group many existing subtests; retained boundary descriptions identify important subcases and do not endorse all contained branch-only cases as independently useful.",
+    "Default YAML discovery with meaningful content has a coverage gap; removed empty-file test would not catch lost discovery.",
+    "Five additional D rows implemented after explicit parent transfer; root integrates and runs serial affected packages. Existing database D belongs to Player owner."
+  ],
+  "read_dependencies": [
+    "packages/commandtest/{cli,entrypoint,configuration,healthcheck,mcp,transport,stdio_binding_unix,update,backup}.go",
+    "packages/configurationtest/{contract,configuration,behavior,transcoding}.go",
+    "packages/servertest/backup.go",
+    "apps/player/cmd/kinosail/{main,config_command,auth_url,mcp_stdio_unix}.go",
+    "apps/player/internal/configuration/{load,parse,mutation,validation_rules,remote,oidc,saml,scim}.go",
+    "apps/player/internal/backup/backup.go",
+    "apps/player/internal/database/database.go",
+    "packages/configurationcore/{mcp,mutation,pair,transaction}.go",
+    "packages/federation/{settings,oidc_test}.go",
+    "packages/validation/validation_test.go",
+    "packages/servertransport/{server,server_test}.go",
+    "packages/backup/{command,behavior_test}.go"
+  ],
+  "implemented_new_removals": [
+    "TestLoadConfigurationFindsDefaultFile",
+    "TestHealthCheckCoversHTTPHTTPSAndCanonicalHost",
+    "TestConfiguredMCPServerUsesOnlyTheDataDirectory",
+    "TestValidOIDCURLAllowsOnlyTrustedEndpointForms"
+  ],
+  "verification": [
+    {
+      "command": "gofmt -w apps/player/cmd/kinosail/coverage_edges_test.go",
+      "result": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    },
+    {
+      "command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./cmd/kinosail ./internal/configuration",
+      "result": "not run here; parent serial validation owns execution"
+    },
+    {
+      "command": "GOCACHE=/tmp/kinosail-testing-go-cache make -C apps/player verify-changed BASE=876b771a7dd0aef5e65957fcee87add0312535e8",
+      "result": "run after integration source commit; parent serial validation owns execution"
+    }
+  ]
+}

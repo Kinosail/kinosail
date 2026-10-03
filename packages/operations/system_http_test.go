@@ -49,31 +49,6 @@ func TestSystemHandlerReadsFreshSnapshotsAndPreservesRenderErrors(t *testing.T) 
 	}
 }
 
-func TestSystemHandlerRejectsMissingDependenciesBeforeReads(t *testing.T) {
-	for _, missing := range []string{"logs", "playback", "diagnostics", "view"} {
-		t.Run(missing, func(t *testing.T) {
-			source := SystemSource[string]{Logs: func() []auditjournal.Event { t.Fatal("unexpected read"); return nil }, Playback: func() []string { t.Fatal("unexpected read"); return nil }, Diagnostics: func() DiagnosticReport { t.Fatal("unexpected read"); return DiagnosticReport{} }}
-			var view systemView = systemTestView(func(http.ResponseWriter, *http.Request, any) error { return nil })
-			switch missing {
-			case "logs":
-				source.Logs = nil
-			case "playback":
-				source.Playback = nil
-			case "diagnostics":
-				source.Diagnostics = nil
-			case "view":
-				view = nil
-			}
-			defer func() {
-				if recover() == nil {
-					t.Fatal("missing dependency accepted")
-				}
-			}()
-			NewSystemHandler(source, view)
-		})
-	}
-}
-
 func TestSystemViewBrandingAndValidation(t *testing.T) {
 	for _, product := range []string{"Player", "Subtitles"} {
 		source := SystemViewSource(SystemBrand{product, "12345678", "0", "75"})

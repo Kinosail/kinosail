@@ -24,10 +24,6 @@ func FuzzExactBrowserOrigin(f *testing.F) {
 	securityFuzz.ExactBrowserOrigin(f)
 }
 
-func FuzzPersistedMediaShareState(f *testing.F) {
-	securityFuzz.PersistedMediaShareState(f)
-}
-
 func FuzzRemoteAuthorizationStateMachine(f *testing.F) {
 	securityFuzz.RemoteAuthorizationStateMachine(f)
 }

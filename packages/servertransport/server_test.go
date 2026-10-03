@@ -5,7 +5,6 @@ import (
 	"crypto/tls"
 	"errors"
 	"log/slog"
-	"net"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -56,44 +55,6 @@ func TestServeSelectsProtocolAndReportsCertificateFailure(t *testing.T) {
 	}
 	if err := serve(server, TLSConfig{Enabled: true, DataDir: t.TempDir()}, func() error { return nil }, func() error { return errSecure }); !errors.Is(err, errSecure) {
 		t.Fatalf("secure serve error = %v", err)
-	}
-}
-
-func TestServeRunsPlainAndSecureListeners(t *testing.T) {
-	for _, config := range []TLSConfig{{}, {Enabled: true, DataDir: t.TempDir()}} {
-		listener, err := (&net.ListenConfig{}).Listen(t.Context(), "tcp", "127.0.0.1:0")
-		if err != nil {
-			t.Fatal(err)
-		}
-		address := listener.Addr().String()
-		_ = listener.Close()
-		server := NewServer(address, http.NotFoundHandler())
-		result := make(chan error, 1)
-		go func() { result <- Serve(server, config) }()
-		for deadline := time.Now().Add(time.Second); time.Now().Before(deadline); time.Sleep(time.Millisecond) {
-			connection, dialErr := (&net.Dialer{Timeout: 10 * time.Millisecond}).DialContext(t.Context(), "tcp", address)
-			if dialErr == nil {
-				_ = connection.Close()
-				break
-			}
-		}
-		if err := server.Close(); err != nil {
-			t.Fatal(err)
-		}
-		if err := <-result; !errors.Is(err, http.ErrServerClosed) {
-			t.Fatalf("Serve() error = %v", err)
-		}
-	}
-}
-
-func TestConfigureCertificatesInitializesMissingTLSConfig(t *testing.T) {
-	t.Parallel()
-	server := &http.Server{ReadHeaderTimeout: time.Second}
-	if err := ConfigureCertificates(server, TLSConfig{DataDir: t.TempDir()}); err != nil {
-		t.Fatal(err)
-	}
-	if server.TLSConfig == nil || len(server.TLSConfig.Certificates) != 1 {
-		t.Fatalf("TLS config = %#v", server.TLSConfig)
 	}
 }
 

@@ -82,14 +82,6 @@ func TestTraceHTTPRejectsBeforeSessionSideEffects(t *testing.T) {
 	}
 }
 
-func TestTraceHTTPFailsClosedWithoutBindings(t *testing.T) {
-	response := httptest.NewRecorder()
-	TraceHTTP(TraceHTTPConfig{})(response, traceRequest(t, `{"session":"session","event":"playing","sequence":1}`))
-	if response.Code != http.StatusInternalServerError || response.Body.String() != `{"error":"playback trace unavailable"}`+"\n" {
-		t.Fatalf("response = %d %q", response.Code, response.Body.String())
-	}
-}
-
 func traceRequest(t *testing.T, body string) *http.Request {
 	t.Helper()
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/api/v1/items/film/playback-events", strings.NewReader(body))

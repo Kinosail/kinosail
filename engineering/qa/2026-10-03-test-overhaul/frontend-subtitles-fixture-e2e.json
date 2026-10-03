@@ -1,0 +1,1854 @@
+{
+  "schema_version": 1,
+  "scope": "Subtitles-specific synthetic Playwright/Node-VM declarations. Shared Player/Subtitles player/HTMX twin fixtures recorded in frontend-player-e2e audit. Genuine live journeys remain coordinator-owned.",
+  "baseline_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+  "vm_run_base_sha": "372b6e8eb",
+  "vm_run_working_tree_changes": "Baseline VM run performed at372b6e8eb; final18 run after loading.spec.ts deletion. Final run at dirty tree is not claimed as pristine SHA E2E receipt. Production JS/fixtures unchanged.",
+  "inventory_command": "cd apps/subtitles/e2e && ../../../scripts/tooling/gate-shell.sh -c 'exec node node_modules/@playwright/test/cli.js test \"$@\"' -- --list --reporter=json",
+  "environment": {
+    "os": "macOS27.0 arm64",
+    "node": "26.8.2",
+    "playwright": "1.63.0",
+    "dependency_source": "read-only pre-existing node_modules symlink; no installs",
+    "browser": "none for21/18 VM runs"
+  },
+  "counts": {
+    "runtime_cases": 74,
+    "declaration_locations": 41,
+    "R": 71,
+    "D": 3
+  },
+  "files": {
+    "conditional-states.spec.ts": {
+      "path": "apps/subtitles/e2e/conditional-states.spec.ts",
+      "sha256": "058887f0caba92c792d96a2670b061fcc4707402d9fc7cef95796da8aa8529d0",
+      "lines": 108,
+      "history": "b6288a481debfbfd52ff1b2085d6b190f5ec6d04 Stop metadata retry feedback and contain failed badge artwork",
+      "owner_refs": [
+        "apps/subtitles/internal/server/server.go",
+        "scripts/testing/fixture-document.ts"
+      ],
+      "non_test_callers": [
+        "apps/subtitles/internal/server/server.go (HTML/appHeader/appMobileMore)",
+        "apps/subtitles/internal/server/server.go:207 (GET supporter script)",
+        "apps/subtitles/internal/server/server.go:209 (GET badge asset)"
+      ],
+      "baseline_status": "not_run: browser/template/seed execution assigned to coordinator; source inspection and Playwright --list only",
+      "validation_command": "pnpm --dir apps/subtitles/e2e test conditional-states.spec.ts --workers=1",
+      "final_status": "not_run: final actual browser proof pending coordinator"
+    },
+    "more-menu-contrast.spec.ts": {
+      "path": "apps/subtitles/e2e/more-menu-contrast.spec.ts",
+      "sha256": "580ae1456bbfbd959d40980b17c1e531351d2f8315afad616b8207b8efe7804c",
+      "lines": 36,
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "owner_refs": [
+        "apps/subtitles/internal/server/server.go"
+      ],
+      "non_test_callers": [
+        "apps/subtitles/internal/server/server.go (HTML/appHeader/appMobileMore)",
+        "apps/subtitles/internal/server/server.go:207 (GET supporter script)",
+        "apps/subtitles/internal/server/server.go:209 (GET badge asset)"
+      ],
+      "baseline_status": "not_run: browser/template/seed execution assigned to coordinator; source inspection and Playwright --list only",
+      "validation_command": "pnpm --dir apps/subtitles/e2e test more-menu-contrast.spec.ts --workers=1",
+      "final_status": "not_run: final actual browser proof pending coordinator"
+    },
+    "passkeys.spec.ts": {
+      "path": "apps/subtitles/e2e/passkeys.spec.ts",
+      "sha256": "cd83af626ccb86d134778262c692caf3f76be06ab7a7d024fab0c33c8b641ebf",
+      "lines": 114,
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "owner_refs": [
+        "packages/webassets/static/passkeys.js",
+        "apps/subtitles/internal/server/assets.go"
+      ],
+      "non_test_callers": [
+        "apps/subtitles/internal/server/assets.go:76 (webassets.Passkeys)",
+        "apps/subtitles/internal/server/auth_login.go (login HTML loads passkeys.js)"
+      ],
+      "baseline_status": "not_run: browser/template/seed execution assigned to coordinator; source inspection and Playwright --list only",
+      "validation_command": "pnpm --dir apps/subtitles/e2e test passkeys.spec.ts --workers=1",
+      "final_status": "not_run: final actual browser proof pending coordinator"
+    },
+    "subtitle-history.spec.ts": {
+      "path": "apps/subtitles/e2e/subtitle-history.spec.ts",
+      "sha256": "4426e42a7771d5cfda328c1b8a2ad1fba2df7ebf32fd4fcff2e2f346f645feb5",
+      "lines": 124,
+      "history": "063adf240875c99f8e3fb3a3c7d0d3209cc582d0 Reuse the loaded history while checking responsive themes",
+      "owner_refs": [
+        "apps/subtitles/internal/server/subtitle_history.go",
+        "apps/subtitles/internal/server/static/subtitle-status.js"
+      ],
+      "non_test_callers": [
+        "apps/subtitles/internal/server/assets.go:24 (embedded subtitle-status)",
+        "apps/subtitles/internal/server/assets.go:26 (embedded inspector)",
+        "apps/subtitles/internal/server/server.go:205 (GET inspector script)",
+        "apps/subtitles/internal/server/subtitle_dashboard.go:124 (GET status script)",
+        "apps/subtitles/internal/server/subtitle_inspector.go:5 (inspector HTML script element)"
+      ],
+      "baseline_status": "not_run: browser/template/seed execution assigned to coordinator; source inspection and Playwright --list only",
+      "validation_command": "pnpm --dir apps/subtitles/e2e test subtitle-history.spec.ts --workers=1",
+      "final_status": "not_run: final actual browser proof pending coordinator"
+    },
+    "subtitle-inspector-layout.spec.ts": {
+      "path": "apps/subtitles/e2e/subtitle-inspector-layout.spec.ts",
+      "sha256": "2aa0adf72bb7627f4050da4390380e9f0fc46af6e479a58b74a9942761c48b63",
+      "lines": 81,
+      "history": "4f4b87fb86517c94f5098ad0c05cc156eba4f00e Keep WebKit subtitle inspector controls inside narrow layouts",
+      "owner_refs": [
+        "apps/subtitles/internal/server/subtitle_inspector.go",
+        "apps/subtitles/internal/server/static/subtitle-inspector.js",
+        "apps/subtitles/internal/server/static/subtitle-inspector.css"
+      ],
+      "non_test_callers": [
+        "apps/subtitles/internal/server/assets.go:24 (embedded subtitle-status)",
+        "apps/subtitles/internal/server/assets.go:26 (embedded inspector)",
+        "apps/subtitles/internal/server/server.go:205 (GET inspector script)",
+        "apps/subtitles/internal/server/subtitle_dashboard.go:124 (GET status script)",
+        "apps/subtitles/internal/server/subtitle_inspector.go:5 (inspector HTML script element)"
+      ],
+      "baseline_status": "not_run: browser/template/seed execution assigned to coordinator; source inspection and Playwright --list only",
+      "validation_command": "pnpm --dir apps/subtitles/e2e test subtitle-inspector-layout.spec.ts --workers=1",
+      "final_status": "not_run: final actual browser proof pending coordinator"
+    },
+    "subtitle-inspector-loading.spec.ts": {
+      "path": "apps/subtitles/e2e/subtitle-inspector-loading.spec.ts",
+      "sha256": "3af71899d8e4610a163326120f03ee78cbc9bed4dd0d6510fce8e77132010327",
+      "lines": 53,
+      "history": "e13cc28c1702c4610798c2ca47b9081958e88e04 Run inspector race regressions in the container smoke suite",
+      "owner_refs": [
+        "apps/subtitles/internal/server/static/subtitle-inspector.js",
+        "apps/subtitles/scripts/test-container.sh"
+      ],
+      "non_test_callers": [
+        "apps/subtitles/internal/server/assets.go:24 (embedded subtitle-status)",
+        "apps/subtitles/internal/server/assets.go:26 (embedded inspector)",
+        "apps/subtitles/internal/server/server.go:205 (GET inspector script)",
+        "apps/subtitles/internal/server/subtitle_dashboard.go:124 (GET status script)",
+        "apps/subtitles/internal/server/subtitle_inspector.go:5 (inspector HTML script element)"
+      ],
+      "baseline_status": "pass:21 VM tests across loading/races",
+      "validation_command": "pnpm --dir apps/subtitles/e2e test subtitle-inspector-races.spec.ts --workers=1",
+      "final_status": "deleted3 after21-case baseline; remaining races18 pass"
+    },
+    "subtitle-inspector-races.spec.ts": {
+      "path": "apps/subtitles/e2e/subtitle-inspector-races.spec.ts",
+      "sha256": "5f7b0d25fd0bb2e3f10eb626b91e552f6d154a721e34b0c30403868dafd81402",
+      "lines": 183,
+      "history": "9316c86ff8040ecac713f4aff8f185ca6c914e94 Reconcile subtitle draft actions across interrupted views",
+      "owner_refs": [
+        "apps/subtitles/internal/server/static/subtitle-inspector.js"
+      ],
+      "non_test_callers": [
+        "apps/subtitles/internal/server/assets.go:24 (embedded subtitle-status)",
+        "apps/subtitles/internal/server/assets.go:26 (embedded inspector)",
+        "apps/subtitles/internal/server/server.go:205 (GET inspector script)",
+        "apps/subtitles/internal/server/subtitle_dashboard.go:124 (GET status script)",
+        "apps/subtitles/internal/server/subtitle_inspector.go:5 (inspector HTML script element)"
+      ],
+      "baseline_status": "pass:21 VM tests across loading/races",
+      "validation_command": "pnpm --dir apps/subtitles/e2e test subtitle-inspector-races.spec.ts --workers=1",
+      "final_status": "pass18 VM cases; no browser runtime in this file"
+    },
+    "subtitle-inspector-scroll.spec.ts": {
+      "path": "apps/subtitles/e2e/subtitle-inspector-scroll.spec.ts",
+      "sha256": "3455fd504a2fd482cc24cfe60104a43d7fbad7598c089600b5f977f1235600af",
+      "lines": 43,
+      "history": "95019e2ad241212664c81ed7e7cf937edef8b668 Load paged library and subtitle results on scroll",
+      "owner_refs": [
+        "apps/subtitles/internal/server/static/subtitle-inspector.js"
+      ],
+      "non_test_callers": [
+        "apps/subtitles/internal/server/assets.go:24 (embedded subtitle-status)",
+        "apps/subtitles/internal/server/assets.go:26 (embedded inspector)",
+        "apps/subtitles/internal/server/server.go:205 (GET inspector script)",
+        "apps/subtitles/internal/server/subtitle_dashboard.go:124 (GET status script)",
+        "apps/subtitles/internal/server/subtitle_inspector.go:5 (inspector HTML script element)"
+      ],
+      "baseline_status": "not_run: browser/template/seed execution assigned to coordinator; source inspection and Playwright --list only",
+      "validation_command": "pnpm --dir apps/subtitles/e2e test subtitle-inspector-scroll.spec.ts --workers=1",
+      "final_status": "not_run: final actual browser proof pending coordinator"
+    },
+    "subtitle-status.spec.ts": {
+      "path": "apps/subtitles/e2e/subtitle-status.spec.ts",
+      "sha256": "c88c88af31f13fa2ed28a8cb0a669905c75e08475047e4543409cf80daca889d",
+      "lines": 113,
+      "history": "b5921cb6110d36bcdf812f580fcebbe8e718baeb Polish Subtitles library and settings UX at scale",
+      "owner_refs": [
+        "apps/subtitles/internal/server/static/subtitle-status.js",
+        "apps/subtitles/internal/server/subtitle_dashboard.go"
+      ],
+      "non_test_callers": [
+        "apps/subtitles/internal/server/assets.go:24 (embedded subtitle-status)",
+        "apps/subtitles/internal/server/assets.go:26 (embedded inspector)",
+        "apps/subtitles/internal/server/server.go:205 (GET inspector script)",
+        "apps/subtitles/internal/server/subtitle_dashboard.go:124 (GET status script)",
+        "apps/subtitles/internal/server/subtitle_inspector.go:5 (inspector HTML script element)"
+      ],
+      "baseline_status": "not_run: browser/template/seed execution assigned to coordinator; source inspection and Playwright --list only",
+      "validation_command": "pnpm --dir apps/subtitles/e2e test subtitle-status.spec.ts --workers=1",
+      "final_status": "not_run: final actual browser proof pending coordinator"
+    },
+    "supporter-badge-layout.spec.ts": {
+      "path": "apps/subtitles/e2e/supporter-badge-layout.spec.ts",
+      "sha256": "b7fa30b3d272af62d02f18603fff62d4f4ded9fac09f6fe4198d2e0fa8b428d2",
+      "lines": 34,
+      "history": "b6288a481debfbfd52ff1b2085d6b190f5ec6d04 Stop metadata retry feedback and contain failed badge artwork",
+      "owner_refs": [
+        "apps/subtitles/internal/server/server.go",
+        "apps/subtitles/internal/server/supporter_badges.go",
+        "scripts/testing/fixture-document.ts"
+      ],
+      "non_test_callers": [
+        "apps/subtitles/internal/server/server.go (HTML/appHeader/appMobileMore)",
+        "apps/subtitles/internal/server/server.go:207 (GET supporter script)",
+        "apps/subtitles/internal/server/server.go:209 (GET badge asset)"
+      ],
+      "baseline_status": "not_run: browser/template/seed execution assigned to coordinator; source inspection and Playwright --list only",
+      "validation_command": "pnpm --dir apps/subtitles/e2e test supporter-badge-layout.spec.ts --workers=1",
+      "final_status": "not_run: final actual browser proof pending coordinator"
+    },
+    "test-instance-supporter-tests.ts": {
+      "path": "apps/subtitles/e2e/test-instance-supporter-tests.ts",
+      "sha256": "4794e12e3795d163de9f668572c0a5e992dd53718cdffb2b41ef2603e581d057",
+      "lines": 158,
+      "history": "2e17a6dca36c187927f3ad1f7a68cc67d3391296 Preserve supporter recognition across refresh and browser navigation",
+      "owner_refs": [
+        "packages/webassets/static/supporter.js",
+        "apps/subtitles/internal/server/server.go",
+        "apps/subtitles/internal/server/supporter_badges.go"
+      ],
+      "non_test_callers": [
+        "apps/subtitles/internal/server/server.go (HTML/appHeader/appMobileMore)",
+        "apps/subtitles/internal/server/server.go:207 (GET supporter script)",
+        "apps/subtitles/internal/server/server.go:209 (GET badge asset)"
+      ],
+      "baseline_status": "not_run: browser/template/seed execution assigned to coordinator; source inspection and Playwright --list only",
+      "validation_command": "pnpm --dir apps/subtitles/e2e test test-instance-supporter-tests.ts --workers=1",
+      "final_status": "not_run: final actual browser proof pending coordinator"
+    }
+  },
+  "declarations": [
+    {
+      "path": "apps/subtitles/e2e/conditional-states.spec.ts",
+      "line": 18,
+      "test": "conditional and transient UI states fit the 1440px viewport",
+      "decision": "R",
+      "boundary": "browser-template-fixture",
+      "credible_failure": "13 exported conditional production-template states across five widths: inaccessible transient setup/approval controls, clipped fields/icons, or unusable entitlement layouts are not visited by the ordinary happy journey.",
+      "assertions": [
+        "expect(stylesheet.ok()).toBeTruthy();",
+        "await expect(page.locator(\"main\")).toBeVisible();",
+        "await expect(page.locator(\".family-living-standard .badge-level.current\")).toContainText(\"Yours\");",
+        "await expect(page.getByLabel(\"Subscriber service marks\").locator(\"span\")).toHaveCount(6);",
+        "await expect(page.getByText(\"Complete Fleet · Living\")).toBeVisible();",
+        "await expect(page.locator(\".family-living-standard .badge-level.current\")).toContainText(\"Archived\");",
+        "await expect(page.locator(\".owned-grant.is-archived\")).toContainText(\"Active through\");",
+        "await expect(page.getByLabel(\"Subscriber service marks\").locator(\"span\")).toHaveCount(4);",
+        "expect(failures).toEqual([]);"
+      ],
+      "history_ref": "conditional-states.spec.ts",
+      "validation_ref": "conditional-states.spec.ts",
+      "remaining_proof_or_gap": "13 exported conditional production-template states across five widths: inaccessible transient setup/approval controls, clipped fields/icons, or unusable entitlement layouts are not visited by the ordinary happy journey."
+    },
+    {
+      "path": "apps/subtitles/e2e/conditional-states.spec.ts",
+      "line": 18,
+      "test": "conditional and transient UI states fit the 1024px viewport",
+      "decision": "R",
+      "boundary": "browser-template-fixture",
+      "credible_failure": "13 exported conditional production-template states across five widths: inaccessible transient setup/approval controls, clipped fields/icons, or unusable entitlement layouts are not visited by the ordinary happy journey.",
+      "assertions": [
+        "expect(stylesheet.ok()).toBeTruthy();",
+        "await expect(page.locator(\"main\")).toBeVisible();",
+        "await expect(page.locator(\".family-living-standard .badge-level.current\")).toContainText(\"Yours\");",
+        "await expect(page.getByLabel(\"Subscriber service marks\").locator(\"span\")).toHaveCount(6);",
+        "await expect(page.getByText(\"Complete Fleet · Living\")).toBeVisible();",
+        "await expect(page.locator(\".family-living-standard .badge-level.current\")).toContainText(\"Archived\");",
+        "await expect(page.locator(\".owned-grant.is-archived\")).toContainText(\"Active through\");",
+        "await expect(page.getByLabel(\"Subscriber service marks\").locator(\"span\")).toHaveCount(4);",
+        "expect(failures).toEqual([]);"
+      ],
+      "history_ref": "conditional-states.spec.ts",
+      "validation_ref": "conditional-states.spec.ts",
+      "remaining_proof_or_gap": "13 exported conditional production-template states across five widths: inaccessible transient setup/approval controls, clipped fields/icons, or unusable entitlement layouts are not visited by the ordinary happy journey."
+    },
+    {
+      "path": "apps/subtitles/e2e/conditional-states.spec.ts",
+      "line": 18,
+      "test": "conditional and transient UI states fit the 720px viewport",
+      "decision": "R",
+      "boundary": "browser-template-fixture",
+      "credible_failure": "13 exported conditional production-template states across five widths: inaccessible transient setup/approval controls, clipped fields/icons, or unusable entitlement layouts are not visited by the ordinary happy journey.",
+      "assertions": [
+        "expect(stylesheet.ok()).toBeTruthy();",
+        "await expect(page.locator(\"main\")).toBeVisible();",
+        "await expect(page.locator(\".family-living-standard .badge-level.current\")).toContainText(\"Yours\");",
+        "await expect(page.getByLabel(\"Subscriber service marks\").locator(\"span\")).toHaveCount(6);",
+        "await expect(page.getByText(\"Complete Fleet · Living\")).toBeVisible();",
+        "await expect(page.locator(\".family-living-standard .badge-level.current\")).toContainText(\"Archived\");",
+        "await expect(page.locator(\".owned-grant.is-archived\")).toContainText(\"Active through\");",
+        "await expect(page.getByLabel(\"Subscriber service marks\").locator(\"span\")).toHaveCount(4);",
+        "expect(failures).toEqual([]);"
+      ],
+      "history_ref": "conditional-states.spec.ts",
+      "validation_ref": "conditional-states.spec.ts",
+      "remaining_proof_or_gap": "13 exported conditional production-template states across five widths: inaccessible transient setup/approval controls, clipped fields/icons, or unusable entitlement layouts are not visited by the ordinary happy journey."
+    },
+    {
+      "path": "apps/subtitles/e2e/conditional-states.spec.ts",
+      "line": 18,
+      "test": "conditional and transient UI states fit the 390px viewport",
+      "decision": "R",
+      "boundary": "browser-template-fixture",
+      "credible_failure": "13 exported conditional production-template states across five widths: inaccessible transient setup/approval controls, clipped fields/icons, or unusable entitlement layouts are not visited by the ordinary happy journey.",
+      "assertions": [
+        "expect(stylesheet.ok()).toBeTruthy();",
+        "await expect(page.locator(\"main\")).toBeVisible();",
+        "await expect(page.locator(\".family-living-standard .badge-level.current\")).toContainText(\"Yours\");",
+        "await expect(page.getByLabel(\"Subscriber service marks\").locator(\"span\")).toHaveCount(6);",
+        "await expect(page.getByText(\"Complete Fleet · Living\")).toBeVisible();",
+        "await expect(page.locator(\".family-living-standard .badge-level.current\")).toContainText(\"Archived\");",
+        "await expect(page.locator(\".owned-grant.is-archived\")).toContainText(\"Active through\");",
+        "await expect(page.getByLabel(\"Subscriber service marks\").locator(\"span\")).toHaveCount(4);",
+        "expect(failures).toEqual([]);"
+      ],
+      "history_ref": "conditional-states.spec.ts",
+      "validation_ref": "conditional-states.spec.ts",
+      "remaining_proof_or_gap": "13 exported conditional production-template states across five widths: inaccessible transient setup/approval controls, clipped fields/icons, or unusable entitlement layouts are not visited by the ordinary happy journey."
+    },
+    {
+      "path": "apps/subtitles/e2e/conditional-states.spec.ts",
+      "line": 18,
+      "test": "conditional and transient UI states fit the 320px viewport",
+      "decision": "R",
+      "boundary": "browser-template-fixture",
+      "credible_failure": "13 exported conditional production-template states across five widths: inaccessible transient setup/approval controls, clipped fields/icons, or unusable entitlement layouts are not visited by the ordinary happy journey.",
+      "assertions": [
+        "expect(stylesheet.ok()).toBeTruthy();",
+        "await expect(page.locator(\"main\")).toBeVisible();",
+        "await expect(page.locator(\".family-living-standard .badge-level.current\")).toContainText(\"Yours\");",
+        "await expect(page.getByLabel(\"Subscriber service marks\").locator(\"span\")).toHaveCount(6);",
+        "await expect(page.getByText(\"Complete Fleet · Living\")).toBeVisible();",
+        "await expect(page.locator(\".family-living-standard .badge-level.current\")).toContainText(\"Archived\");",
+        "await expect(page.locator(\".owned-grant.is-archived\")).toContainText(\"Active through\");",
+        "await expect(page.getByLabel(\"Subscriber service marks\").locator(\"span\")).toHaveCount(4);",
+        "expect(failures).toEqual([]);"
+      ],
+      "history_ref": "conditional-states.spec.ts",
+      "validation_ref": "conditional-states.spec.ts",
+      "remaining_proof_or_gap": "13 exported conditional production-template states across five widths: inaccessible transient setup/approval controls, clipped fields/icons, or unusable entitlement layouts are not visited by the ordinary happy journey."
+    },
+    {
+      "path": "apps/subtitles/e2e/more-menu-contrast.spec.ts",
+      "line": 3,
+      "test": "compact More menu keeps a solid reading surface",
+      "decision": "R",
+      "boundary": "browser-css-fixture",
+      "credible_failure": "Computed solid menu reading surface in dark/light; existing real rail journeys prove navigation/geometry but do not assert both menu surface colors.",
+      "assertions": [
+        "expect(stylesheet.ok()).toBeTruthy();",
+        "await expect.poll(background).toBe(\"rgb(13, 17, 19)\");",
+        "await expect.poll(background).toBe(\"rgb(255, 255, 255)\");"
+      ],
+      "history_ref": "more-menu-contrast.spec.ts",
+      "validation_ref": "more-menu-contrast.spec.ts",
+      "remaining_proof_or_gap": "Computed solid menu reading surface in dark/light; existing real rail journeys prove navigation/geometry but do not assert both menu surface colors."
+    },
+    {
+      "path": "apps/subtitles/e2e/passkeys.spec.ts",
+      "line": 36,
+      "test": "a declined conditional passkey offer stays silent",
+      "decision": "R",
+      "boundary": "browser-auth-failure-fixture",
+      "credible_failure": "Controlled browser credential dismissal/insecure context/421 origin or delayed navigation, and requirement/offer routes; real happy path uses a successful virtual authenticator and does not force these distinct outcomes.",
+      "assertions": [
+        "await expect(page.locator(\"input[autocomplete='username webauthn']\")).toBeVisible();",
+        "await expect(page.getByRole(\"status\")).toBeEmpty();"
+      ],
+      "history_ref": "passkeys.spec.ts",
+      "validation_ref": "passkeys.spec.ts",
+      "remaining_proof_or_gap": "Controlled browser credential dismissal/insecure context/421 origin or delayed navigation, and requirement/offer routes; real happy path uses a successful virtual authenticator and does not force these distinct outcomes."
+    },
+    {
+      "path": "apps/subtitles/e2e/passkeys.spec.ts",
+      "line": 43,
+      "test": "a returning passkey browser opens the chooser and falls back silently when dismissed",
+      "decision": "R",
+      "boundary": "browser-auth-failure-fixture",
+      "credible_failure": "Controlled browser credential dismissal/insecure context/421 origin or delayed navigation, and requirement/offer routes; real happy path uses a successful virtual authenticator and does not force these distinct outcomes.",
+      "assertions": [
+        "await expect.poll(() => page.evaluate(() => (window as typeof window & { passkeyMediations: string[] }).passkeyMediations)).toEqual([\"modal\", \"conditional\"]);",
+        "await expect(page.getByRole(\"status\")).toBeEmpty();"
+      ],
+      "history_ref": "passkeys.spec.ts",
+      "validation_ref": "passkeys.spec.ts",
+      "remaining_proof_or_gap": "Controlled browser credential dismissal/insecure context/421 origin or delayed navigation, and requirement/offer routes; real happy path uses a successful virtual authenticator and does not force these distinct outcomes."
+    },
+    {
+      "path": "apps/subtitles/e2e/passkeys.spec.ts",
+      "line": 51,
+      "test": "a successful explicit passkey sign-in reaches the requested page",
+      "decision": "R",
+      "boundary": "browser-auth-failure-fixture",
+      "credible_failure": "Controlled browser credential dismissal/insecure context/421 origin or delayed navigation, and requirement/offer routes; real happy path uses a successful virtual authenticator and does not force these distinct outcomes.",
+      "assertions": [
+        "await expect(page).toHaveURL(`${origin}/`);"
+      ],
+      "history_ref": "passkeys.spec.ts",
+      "validation_ref": "passkeys.spec.ts",
+      "remaining_proof_or_gap": "Controlled browser credential dismissal/insecure context/421 origin or delayed navigation, and requirement/offer routes; real happy path uses a successful virtual authenticator and does not force these distinct outcomes."
+    },
+    {
+      "path": "apps/subtitles/e2e/passkeys.spec.ts",
+      "line": 59,
+      "test": "successful required passkey enrollment leaves the requirement page",
+      "decision": "R",
+      "boundary": "browser-auth-failure-fixture",
+      "credible_failure": "Controlled browser credential dismissal/insecure context/421 origin or delayed navigation, and requirement/offer routes; real happy path uses a successful virtual authenticator and does not force these distinct outcomes.",
+      "assertions": [
+        "await expect(page).toHaveURL(`${origin}/`);"
+      ],
+      "history_ref": "passkeys.spec.ts",
+      "validation_ref": "passkeys.spec.ts",
+      "remaining_proof_or_gap": "Controlled browser credential dismissal/insecure context/421 origin or delayed navigation, and requirement/offer routes; real happy path uses a successful virtual authenticator and does not force these distinct outcomes."
+    },
+    {
+      "path": "apps/subtitles/e2e/passkeys.spec.ts",
+      "line": 66,
+      "test": "successful offered enrollment continues to the requested page",
+      "decision": "R",
+      "boundary": "browser-auth-failure-fixture",
+      "credible_failure": "Controlled browser credential dismissal/insecure context/421 origin or delayed navigation, and requirement/offer routes; real happy path uses a successful virtual authenticator and does not force these distinct outcomes.",
+      "assertions": [
+        "await expect(page).toHaveURL(`${origin}/?view=movies`);",
+        "await expect.poll(() => page.evaluate(() => localStorage.getItem(\"kinosail-passkey\"))).toBe(\"1\");"
+      ],
+      "history_ref": "passkeys.spec.ts",
+      "validation_ref": "passkeys.spec.ts",
+      "remaining_proof_or_gap": "Controlled browser credential dismissal/insecure context/421 origin or delayed navigation, and requirement/offer routes; real happy path uses a successful virtual authenticator and does not force these distinct outcomes."
+    },
+    {
+      "path": "apps/subtitles/e2e/passkeys.spec.ts",
+      "line": 74,
+      "test": "an insecure passkey page explains how to recover",
+      "decision": "R",
+      "boundary": "browser-auth-failure-fixture",
+      "credible_failure": "Controlled browser credential dismissal/insecure context/421 origin or delayed navigation, and requirement/offer routes; real happy path uses a successful virtual authenticator and does not force these distinct outcomes.",
+      "assertions": [
+        "await expect(page.getByRole(\"status\")).toHaveText(\"Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.\");",
+        "await expect(page.getByRole(\"status\")).toHaveText(\"Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.\");"
+      ],
+      "history_ref": "passkeys.spec.ts",
+      "validation_ref": "passkeys.spec.ts",
+      "remaining_proof_or_gap": "Controlled browser credential dismissal/insecure context/421 origin or delayed navigation, and requirement/offer routes; real happy path uses a successful virtual authenticator and does not force these distinct outcomes."
+    },
+    {
+      "path": "apps/subtitles/e2e/passkeys.spec.ts",
+      "line": 88,
+      "test": "a passkey origin response sends the browser to the configured address",
+      "decision": "R",
+      "boundary": "browser-auth-failure-fixture",
+      "credible_failure": "Controlled browser credential dismissal/insecure context/421 origin or delayed navigation, and requirement/offer routes; real happy path uses a successful virtual authenticator and does not force these distinct outcomes.",
+      "assertions": [
+        "await expect(page).toHaveURL(\"https://media.example:38128/account\");"
+      ],
+      "history_ref": "passkeys.spec.ts",
+      "validation_ref": "passkeys.spec.ts",
+      "remaining_proof_or_gap": "Controlled browser credential dismissal/insecure context/421 origin or delayed navigation, and requirement/offer routes; real happy path uses a successful virtual authenticator and does not force these distinct outcomes."
+    },
+    {
+      "path": "apps/subtitles/e2e/passkeys.spec.ts",
+      "line": 97,
+      "test": "a verified passkey reports success while the destination is still loading",
+      "decision": "R",
+      "boundary": "browser-auth-failure-fixture",
+      "credible_failure": "Controlled browser credential dismissal/insecure context/421 origin or delayed navigation, and requirement/offer routes; real happy path uses a successful virtual authenticator and does not force these distinct outcomes.",
+      "assertions": [
+        "await expect(page.getByRole(\"status\")).toHaveText(\"Signed in. Opening your library…\");",
+        "await expect(page).toHaveURL(`${origin}/`);"
+      ],
+      "history_ref": "passkeys.spec.ts",
+      "validation_ref": "passkeys.spec.ts",
+      "remaining_proof_or_gap": "Controlled browser credential dismissal/insecure context/421 origin or delayed navigation, and requirement/offer routes; real happy path uses a successful virtual authenticator and does not force these distinct outcomes."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-history.spec.ts",
+      "line": 29,
+      "test": "history explains new files, automatic upgrades, manual edits, restores, and older records @smoke",
+      "decision": "R",
+      "boundary": "browser-template-failure-fixture",
+      "credible_failure": "Eight fixture records must explain add/upgrade/hash evidence/embedded/restore/manual/v2/v3 uncertainty accurately and remain usable/accessibly laid out in both themes/four widths.",
+      "assertions": [
+        "await expect(rows).toHaveCount(8);",
+        "await expect(rows.nth(0)).toContainText(\"Added a new subtitle file\");",
+        "await expect(rows.nth(1)).toContainText(\"Upgraded\");",
+        "await expect(rows.nth(1)).toContainText(\"improved by 20 points\");",
+        "await expect(rows.nth(1)).toContainText(\"72 → 92 / 100\");",
+        "await expect(rows.nth(1)).toContainText(\"75% → 100%\");",
+        "await expect(rows.nth(1)).toContainText(\"SubDL → SubSource\");",
+        "await expect(rows.nth(2)).toContainText(\"exact file-hash match\");",
+        "await expect(rows.nth(2)).toContainText(\"no verified match score\");",
+        "await expect(rows.nth(3)).toContainText(\"Copied an embedded text track\");",
+        "await expect(rows.nth(4)).toContainText(\"recovery copy\");",
+        "await expect(rows.nth(5)).toContainText(\"Saved manually\");",
+        "await expect(rows.nth(6)).toContainText(\"Recorded\");",
+        "await expect(rows.nth(6)).toContainText(\"reason for this earlier change was not recorded\");",
+        "await expect(rows.nth(7)).toContainText(\"whether it added or replaced a file was not recorded\");",
+        "await expect(page.locator(\"#subtitle-loading\")).toBeHidden();",
+        "await expectNoHorizontalOverflow(page);",
+        "expect(geometry).toEqual({ display: \"grid\", separated: true });",
+        "expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);"
+      ],
+      "history_ref": "subtitle-history.spec.ts",
+      "validation_ref": "subtitle-history.spec.ts",
+      "remaining_proof_or_gap": "Production history fixtures include legacy migration/change reasons and network/cache failure states not present in the single actual sidecar happy journey."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-history.spec.ts",
+      "line": 67,
+      "test": "a browser with the previous immutable stylesheet receives the new history layout",
+      "decision": "R",
+      "boundary": "browser-template-failure-fixture",
+      "credible_failure": "A browser with warmed immutable cinema9 CSS must request the new CSS version and render the actual grid history instead of stale layout.",
+      "assertions": [
+        "expect(oldStylesheetRequests).toBeGreaterThanOrEqual(1);",
+        "await expect(page.locator('link[rel=\"stylesheet\"]').first()).not.toHaveAttribute(\"href\", \"/static/app.css?v=cinema-9\");",
+        "expect(oldStylesheetRequests).toBe(warmedRequests);",
+        "await expect(page.locator(\".subtitle-history-row\").first()).toHaveCSS(\"display\", \"grid\");"
+      ],
+      "history_ref": "subtitle-history.spec.ts",
+      "validation_ref": "subtitle-history.spec.ts",
+      "remaining_proof_or_gap": "Production history fixtures include legacy migration/change reasons and network/cache failure states not present in the single actual sidecar happy journey."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-history.spec.ts",
+      "line": 84,
+      "test": "history keeps loaded changes during pending and failed navigation and clears them for empty results",
+      "decision": "R",
+      "boundary": "browser-template-failure-fixture",
+      "credible_failure": "Pending/503 history navigation must preserve8 loaded rows/geometry, expose retry, clear busy; success-empty must remove old rows and loading overlays.",
+      "assertions": [
+        "await expect(page.locator(\"#main\")).toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.locator(\"#subtitle-feedback\")).toContainText(\"Loading history\");",
+        "await expect(page.locator(\".subtitle-history-row\")).toHaveCount(8);",
+        "expect((await page.locator(\".subtitle-history-row\").first().boundingBox())?.height).toBe(before?.height);",
+        "await expect(page.locator(\"#subtitle-feedback\")).toContainText(\"Could not load this view\");",
+        "await expect(page.locator(\"#main\")).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.locator(\".subtitle-history-row\")).toHaveCount(8);",
+        "await expect(page.getByRole(\"heading\", { name: \"No subtitle changes yet.\" })).toBeVisible();",
+        "await expect(page.locator(\".subtitle-history-row\")).toHaveCount(0);",
+        "await expect(page.locator(\"#subtitle-feedback\")).toBeHidden();",
+        "await expect(page.locator(\"#subtitle-loading\")).toBeHidden();",
+        "await expect(page.getByRole(\"alert\")).toContainText(\"Subtitle history is unavailable\");",
+        "await expect(page.locator(\"#subtitle-loading\")).toBeHidden();"
+      ],
+      "history_ref": "subtitle-history.spec.ts",
+      "validation_ref": "subtitle-history.spec.ts",
+      "remaining_proof_or_gap": "Production history fixtures include legacy migration/change reasons and network/cache failure states not present in the single actual sidecar happy journey."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-layout.spec.ts",
+      "line": 12,
+      "test": "inspector shell and review states fit 1920px dark",
+      "decision": "R",
+      "boundary": "browser-template-failure-fixture",
+      "credible_failure": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey.",
+      "assertions": [
+        "await expect(status).toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(status).toHaveText(\"Current subtitle loaded. Preview a change before saving.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(2);",
+        "await expect(page.getByRole(\"heading\", { name: \"Arrival\", exact: true })).toBeVisible();",
+        "expect(layout.header.width).toBeCloseTo(viewport.width, 0);",
+        "expect(layout.header.height).toBeLessThanOrEqual(100);",
+        "expect(layout.title.top).toBeGreaterThanOrEqual(layout.header.bottom);",
+        "expect(layout.overflow, JSON.stringify(layout.offenders)).toBeLessThanOrEqual(1);",
+        "expect(layout.video.height).toBeGreaterThanOrEqual(Math.min(layout.video.width * 9 / 16, viewport.height * .6) - 2);",
+        "expect(layout.video.height).toBeCloseTo(pendingVideo!.height, 0);",
+        "if (viewport.width > 1100) expect(layout.main.left).toBeGreaterThanOrEqual(layout.nav.right);",
+        "if (viewport.width <= 900) expect(layout.nav.bottom).toBeCloseTo(viewport.height, 0);",
+        "await expect(page.getByRole(\"link\", { name: \"History\", exact: true })).toBeVisible();",
+        "await expect(page.getByRole(\"link\", { name: \"Library\", exact: true })).toHaveAttribute(\"aria-current\", \"page\");",
+        "expect(results.violations).toEqual([]);",
+        "await expect(status).toHaveText(nextState === \"empty\" ? \"Choose a subtitle file to begin.\" : \"Subtitle details are unavailable. Reload and try again.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.getByRole(\"button\", { name: \"Save reviewed subtitle\" })).toBeDisabled();",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(0);",
+        "await expect(page.locator(\".subtitle-topbar h1\")).toBeInViewport();",
+        "expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);",
+        "expect(writes).toEqual([]);"
+      ],
+      "history_ref": "subtitle-inspector-layout.spec.ts",
+      "validation_ref": "subtitle-inspector-layout.spec.ts",
+      "remaining_proof_or_gap": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-layout.spec.ts",
+      "line": 12,
+      "test": "inspector shell and review states fit 1440px dark",
+      "decision": "R",
+      "boundary": "browser-template-failure-fixture",
+      "credible_failure": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey.",
+      "assertions": [
+        "await expect(status).toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(status).toHaveText(\"Current subtitle loaded. Preview a change before saving.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(2);",
+        "await expect(page.getByRole(\"heading\", { name: \"Arrival\", exact: true })).toBeVisible();",
+        "expect(layout.header.width).toBeCloseTo(viewport.width, 0);",
+        "expect(layout.header.height).toBeLessThanOrEqual(100);",
+        "expect(layout.title.top).toBeGreaterThanOrEqual(layout.header.bottom);",
+        "expect(layout.overflow, JSON.stringify(layout.offenders)).toBeLessThanOrEqual(1);",
+        "expect(layout.video.height).toBeGreaterThanOrEqual(Math.min(layout.video.width * 9 / 16, viewport.height * .6) - 2);",
+        "expect(layout.video.height).toBeCloseTo(pendingVideo!.height, 0);",
+        "if (viewport.width > 1100) expect(layout.main.left).toBeGreaterThanOrEqual(layout.nav.right);",
+        "if (viewport.width <= 900) expect(layout.nav.bottom).toBeCloseTo(viewport.height, 0);",
+        "await expect(page.getByRole(\"link\", { name: \"History\", exact: true })).toBeVisible();",
+        "await expect(page.getByRole(\"link\", { name: \"Library\", exact: true })).toHaveAttribute(\"aria-current\", \"page\");",
+        "expect(results.violations).toEqual([]);",
+        "await expect(status).toHaveText(nextState === \"empty\" ? \"Choose a subtitle file to begin.\" : \"Subtitle details are unavailable. Reload and try again.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.getByRole(\"button\", { name: \"Save reviewed subtitle\" })).toBeDisabled();",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(0);",
+        "await expect(page.locator(\".subtitle-topbar h1\")).toBeInViewport();",
+        "expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);",
+        "expect(writes).toEqual([]);"
+      ],
+      "history_ref": "subtitle-inspector-layout.spec.ts",
+      "validation_ref": "subtitle-inspector-layout.spec.ts",
+      "remaining_proof_or_gap": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-layout.spec.ts",
+      "line": 12,
+      "test": "inspector shell and review states fit 1024px dark",
+      "decision": "R",
+      "boundary": "browser-template-failure-fixture",
+      "credible_failure": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey.",
+      "assertions": [
+        "await expect(status).toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(status).toHaveText(\"Current subtitle loaded. Preview a change before saving.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(2);",
+        "await expect(page.getByRole(\"heading\", { name: \"Arrival\", exact: true })).toBeVisible();",
+        "expect(layout.header.width).toBeCloseTo(viewport.width, 0);",
+        "expect(layout.header.height).toBeLessThanOrEqual(100);",
+        "expect(layout.title.top).toBeGreaterThanOrEqual(layout.header.bottom);",
+        "expect(layout.overflow, JSON.stringify(layout.offenders)).toBeLessThanOrEqual(1);",
+        "expect(layout.video.height).toBeGreaterThanOrEqual(Math.min(layout.video.width * 9 / 16, viewport.height * .6) - 2);",
+        "expect(layout.video.height).toBeCloseTo(pendingVideo!.height, 0);",
+        "if (viewport.width > 1100) expect(layout.main.left).toBeGreaterThanOrEqual(layout.nav.right);",
+        "if (viewport.width <= 900) expect(layout.nav.bottom).toBeCloseTo(viewport.height, 0);",
+        "await expect(page.getByRole(\"link\", { name: \"History\", exact: true })).toBeVisible();",
+        "await expect(page.getByRole(\"link\", { name: \"Library\", exact: true })).toHaveAttribute(\"aria-current\", \"page\");",
+        "expect(results.violations).toEqual([]);",
+        "await expect(status).toHaveText(nextState === \"empty\" ? \"Choose a subtitle file to begin.\" : \"Subtitle details are unavailable. Reload and try again.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.getByRole(\"button\", { name: \"Save reviewed subtitle\" })).toBeDisabled();",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(0);",
+        "await expect(page.locator(\".subtitle-topbar h1\")).toBeInViewport();",
+        "expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);",
+        "expect(writes).toEqual([]);"
+      ],
+      "history_ref": "subtitle-inspector-layout.spec.ts",
+      "validation_ref": "subtitle-inspector-layout.spec.ts",
+      "remaining_proof_or_gap": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-layout.spec.ts",
+      "line": 12,
+      "test": "inspector shell and review states fit 720px dark",
+      "decision": "R",
+      "boundary": "browser-template-failure-fixture",
+      "credible_failure": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey.",
+      "assertions": [
+        "await expect(status).toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(status).toHaveText(\"Current subtitle loaded. Preview a change before saving.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(2);",
+        "await expect(page.getByRole(\"heading\", { name: \"Arrival\", exact: true })).toBeVisible();",
+        "expect(layout.header.width).toBeCloseTo(viewport.width, 0);",
+        "expect(layout.header.height).toBeLessThanOrEqual(100);",
+        "expect(layout.title.top).toBeGreaterThanOrEqual(layout.header.bottom);",
+        "expect(layout.overflow, JSON.stringify(layout.offenders)).toBeLessThanOrEqual(1);",
+        "expect(layout.video.height).toBeGreaterThanOrEqual(Math.min(layout.video.width * 9 / 16, viewport.height * .6) - 2);",
+        "expect(layout.video.height).toBeCloseTo(pendingVideo!.height, 0);",
+        "if (viewport.width > 1100) expect(layout.main.left).toBeGreaterThanOrEqual(layout.nav.right);",
+        "if (viewport.width <= 900) expect(layout.nav.bottom).toBeCloseTo(viewport.height, 0);",
+        "await expect(page.getByRole(\"link\", { name: \"History\", exact: true })).toBeVisible();",
+        "await expect(page.getByRole(\"link\", { name: \"Library\", exact: true })).toHaveAttribute(\"aria-current\", \"page\");",
+        "expect(results.violations).toEqual([]);",
+        "await expect(status).toHaveText(nextState === \"empty\" ? \"Choose a subtitle file to begin.\" : \"Subtitle details are unavailable. Reload and try again.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.getByRole(\"button\", { name: \"Save reviewed subtitle\" })).toBeDisabled();",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(0);",
+        "await expect(page.locator(\".subtitle-topbar h1\")).toBeInViewport();",
+        "expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);",
+        "expect(writes).toEqual([]);"
+      ],
+      "history_ref": "subtitle-inspector-layout.spec.ts",
+      "validation_ref": "subtitle-inspector-layout.spec.ts",
+      "remaining_proof_or_gap": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-layout.spec.ts",
+      "line": 12,
+      "test": "inspector shell and review states fit 568px dark",
+      "decision": "R",
+      "boundary": "browser-template-failure-fixture",
+      "credible_failure": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey.",
+      "assertions": [
+        "await expect(status).toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(status).toHaveText(\"Current subtitle loaded. Preview a change before saving.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(2);",
+        "await expect(page.getByRole(\"heading\", { name: \"Arrival\", exact: true })).toBeVisible();",
+        "expect(layout.header.width).toBeCloseTo(viewport.width, 0);",
+        "expect(layout.header.height).toBeLessThanOrEqual(100);",
+        "expect(layout.title.top).toBeGreaterThanOrEqual(layout.header.bottom);",
+        "expect(layout.overflow, JSON.stringify(layout.offenders)).toBeLessThanOrEqual(1);",
+        "expect(layout.video.height).toBeGreaterThanOrEqual(Math.min(layout.video.width * 9 / 16, viewport.height * .6) - 2);",
+        "expect(layout.video.height).toBeCloseTo(pendingVideo!.height, 0);",
+        "if (viewport.width > 1100) expect(layout.main.left).toBeGreaterThanOrEqual(layout.nav.right);",
+        "if (viewport.width <= 900) expect(layout.nav.bottom).toBeCloseTo(viewport.height, 0);",
+        "await expect(page.getByRole(\"link\", { name: \"History\", exact: true })).toBeVisible();",
+        "await expect(page.getByRole(\"link\", { name: \"Library\", exact: true })).toHaveAttribute(\"aria-current\", \"page\");",
+        "expect(results.violations).toEqual([]);",
+        "await expect(status).toHaveText(nextState === \"empty\" ? \"Choose a subtitle file to begin.\" : \"Subtitle details are unavailable. Reload and try again.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.getByRole(\"button\", { name: \"Save reviewed subtitle\" })).toBeDisabled();",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(0);",
+        "await expect(page.locator(\".subtitle-topbar h1\")).toBeInViewport();",
+        "expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);",
+        "expect(writes).toEqual([]);"
+      ],
+      "history_ref": "subtitle-inspector-layout.spec.ts",
+      "validation_ref": "subtitle-inspector-layout.spec.ts",
+      "remaining_proof_or_gap": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-layout.spec.ts",
+      "line": 12,
+      "test": "inspector shell and review states fit 390px dark",
+      "decision": "R",
+      "boundary": "browser-template-failure-fixture",
+      "credible_failure": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey.",
+      "assertions": [
+        "await expect(status).toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(status).toHaveText(\"Current subtitle loaded. Preview a change before saving.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(2);",
+        "await expect(page.getByRole(\"heading\", { name: \"Arrival\", exact: true })).toBeVisible();",
+        "expect(layout.header.width).toBeCloseTo(viewport.width, 0);",
+        "expect(layout.header.height).toBeLessThanOrEqual(100);",
+        "expect(layout.title.top).toBeGreaterThanOrEqual(layout.header.bottom);",
+        "expect(layout.overflow, JSON.stringify(layout.offenders)).toBeLessThanOrEqual(1);",
+        "expect(layout.video.height).toBeGreaterThanOrEqual(Math.min(layout.video.width * 9 / 16, viewport.height * .6) - 2);",
+        "expect(layout.video.height).toBeCloseTo(pendingVideo!.height, 0);",
+        "if (viewport.width > 1100) expect(layout.main.left).toBeGreaterThanOrEqual(layout.nav.right);",
+        "if (viewport.width <= 900) expect(layout.nav.bottom).toBeCloseTo(viewport.height, 0);",
+        "await expect(page.getByRole(\"link\", { name: \"History\", exact: true })).toBeVisible();",
+        "await expect(page.getByRole(\"link\", { name: \"Library\", exact: true })).toHaveAttribute(\"aria-current\", \"page\");",
+        "expect(results.violations).toEqual([]);",
+        "await expect(status).toHaveText(nextState === \"empty\" ? \"Choose a subtitle file to begin.\" : \"Subtitle details are unavailable. Reload and try again.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.getByRole(\"button\", { name: \"Save reviewed subtitle\" })).toBeDisabled();",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(0);",
+        "await expect(page.locator(\".subtitle-topbar h1\")).toBeInViewport();",
+        "expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);",
+        "expect(writes).toEqual([]);"
+      ],
+      "history_ref": "subtitle-inspector-layout.spec.ts",
+      "validation_ref": "subtitle-inspector-layout.spec.ts",
+      "remaining_proof_or_gap": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-layout.spec.ts",
+      "line": 12,
+      "test": "inspector shell and review states fit 320px dark",
+      "decision": "R",
+      "boundary": "browser-template-failure-fixture",
+      "credible_failure": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey.",
+      "assertions": [
+        "await expect(status).toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(status).toHaveText(\"Current subtitle loaded. Preview a change before saving.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(2);",
+        "await expect(page.getByRole(\"heading\", { name: \"Arrival\", exact: true })).toBeVisible();",
+        "expect(layout.header.width).toBeCloseTo(viewport.width, 0);",
+        "expect(layout.header.height).toBeLessThanOrEqual(100);",
+        "expect(layout.title.top).toBeGreaterThanOrEqual(layout.header.bottom);",
+        "expect(layout.overflow, JSON.stringify(layout.offenders)).toBeLessThanOrEqual(1);",
+        "expect(layout.video.height).toBeGreaterThanOrEqual(Math.min(layout.video.width * 9 / 16, viewport.height * .6) - 2);",
+        "expect(layout.video.height).toBeCloseTo(pendingVideo!.height, 0);",
+        "if (viewport.width > 1100) expect(layout.main.left).toBeGreaterThanOrEqual(layout.nav.right);",
+        "if (viewport.width <= 900) expect(layout.nav.bottom).toBeCloseTo(viewport.height, 0);",
+        "await expect(page.getByRole(\"link\", { name: \"History\", exact: true })).toBeVisible();",
+        "await expect(page.getByRole(\"link\", { name: \"Library\", exact: true })).toHaveAttribute(\"aria-current\", \"page\");",
+        "expect(results.violations).toEqual([]);",
+        "await expect(status).toHaveText(nextState === \"empty\" ? \"Choose a subtitle file to begin.\" : \"Subtitle details are unavailable. Reload and try again.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.getByRole(\"button\", { name: \"Save reviewed subtitle\" })).toBeDisabled();",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(0);",
+        "await expect(page.locator(\".subtitle-topbar h1\")).toBeInViewport();",
+        "expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);",
+        "expect(writes).toEqual([]);"
+      ],
+      "history_ref": "subtitle-inspector-layout.spec.ts",
+      "validation_ref": "subtitle-inspector-layout.spec.ts",
+      "remaining_proof_or_gap": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-layout.spec.ts",
+      "line": 12,
+      "test": "inspector shell and review states fit 1920px light",
+      "decision": "R",
+      "boundary": "browser-template-failure-fixture",
+      "credible_failure": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey.",
+      "assertions": [
+        "await expect(status).toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(status).toHaveText(\"Current subtitle loaded. Preview a change before saving.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(2);",
+        "await expect(page.getByRole(\"heading\", { name: \"Arrival\", exact: true })).toBeVisible();",
+        "expect(layout.header.width).toBeCloseTo(viewport.width, 0);",
+        "expect(layout.header.height).toBeLessThanOrEqual(100);",
+        "expect(layout.title.top).toBeGreaterThanOrEqual(layout.header.bottom);",
+        "expect(layout.overflow, JSON.stringify(layout.offenders)).toBeLessThanOrEqual(1);",
+        "expect(layout.video.height).toBeGreaterThanOrEqual(Math.min(layout.video.width * 9 / 16, viewport.height * .6) - 2);",
+        "expect(layout.video.height).toBeCloseTo(pendingVideo!.height, 0);",
+        "if (viewport.width > 1100) expect(layout.main.left).toBeGreaterThanOrEqual(layout.nav.right);",
+        "if (viewport.width <= 900) expect(layout.nav.bottom).toBeCloseTo(viewport.height, 0);",
+        "await expect(page.getByRole(\"link\", { name: \"History\", exact: true })).toBeVisible();",
+        "await expect(page.getByRole(\"link\", { name: \"Library\", exact: true })).toHaveAttribute(\"aria-current\", \"page\");",
+        "expect(results.violations).toEqual([]);",
+        "await expect(status).toHaveText(nextState === \"empty\" ? \"Choose a subtitle file to begin.\" : \"Subtitle details are unavailable. Reload and try again.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.getByRole(\"button\", { name: \"Save reviewed subtitle\" })).toBeDisabled();",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(0);",
+        "await expect(page.locator(\".subtitle-topbar h1\")).toBeInViewport();",
+        "expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);",
+        "expect(writes).toEqual([]);"
+      ],
+      "history_ref": "subtitle-inspector-layout.spec.ts",
+      "validation_ref": "subtitle-inspector-layout.spec.ts",
+      "remaining_proof_or_gap": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-layout.spec.ts",
+      "line": 12,
+      "test": "inspector shell and review states fit 1440px light",
+      "decision": "R",
+      "boundary": "browser-template-failure-fixture",
+      "credible_failure": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey.",
+      "assertions": [
+        "await expect(status).toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(status).toHaveText(\"Current subtitle loaded. Preview a change before saving.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(2);",
+        "await expect(page.getByRole(\"heading\", { name: \"Arrival\", exact: true })).toBeVisible();",
+        "expect(layout.header.width).toBeCloseTo(viewport.width, 0);",
+        "expect(layout.header.height).toBeLessThanOrEqual(100);",
+        "expect(layout.title.top).toBeGreaterThanOrEqual(layout.header.bottom);",
+        "expect(layout.overflow, JSON.stringify(layout.offenders)).toBeLessThanOrEqual(1);",
+        "expect(layout.video.height).toBeGreaterThanOrEqual(Math.min(layout.video.width * 9 / 16, viewport.height * .6) - 2);",
+        "expect(layout.video.height).toBeCloseTo(pendingVideo!.height, 0);",
+        "if (viewport.width > 1100) expect(layout.main.left).toBeGreaterThanOrEqual(layout.nav.right);",
+        "if (viewport.width <= 900) expect(layout.nav.bottom).toBeCloseTo(viewport.height, 0);",
+        "await expect(page.getByRole(\"link\", { name: \"History\", exact: true })).toBeVisible();",
+        "await expect(page.getByRole(\"link\", { name: \"Library\", exact: true })).toHaveAttribute(\"aria-current\", \"page\");",
+        "expect(results.violations).toEqual([]);",
+        "await expect(status).toHaveText(nextState === \"empty\" ? \"Choose a subtitle file to begin.\" : \"Subtitle details are unavailable. Reload and try again.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.getByRole(\"button\", { name: \"Save reviewed subtitle\" })).toBeDisabled();",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(0);",
+        "await expect(page.locator(\".subtitle-topbar h1\")).toBeInViewport();",
+        "expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);",
+        "expect(writes).toEqual([]);"
+      ],
+      "history_ref": "subtitle-inspector-layout.spec.ts",
+      "validation_ref": "subtitle-inspector-layout.spec.ts",
+      "remaining_proof_or_gap": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-layout.spec.ts",
+      "line": 12,
+      "test": "inspector shell and review states fit 1024px light",
+      "decision": "R",
+      "boundary": "browser-template-failure-fixture",
+      "credible_failure": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey.",
+      "assertions": [
+        "await expect(status).toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(status).toHaveText(\"Current subtitle loaded. Preview a change before saving.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(2);",
+        "await expect(page.getByRole(\"heading\", { name: \"Arrival\", exact: true })).toBeVisible();",
+        "expect(layout.header.width).toBeCloseTo(viewport.width, 0);",
+        "expect(layout.header.height).toBeLessThanOrEqual(100);",
+        "expect(layout.title.top).toBeGreaterThanOrEqual(layout.header.bottom);",
+        "expect(layout.overflow, JSON.stringify(layout.offenders)).toBeLessThanOrEqual(1);",
+        "expect(layout.video.height).toBeGreaterThanOrEqual(Math.min(layout.video.width * 9 / 16, viewport.height * .6) - 2);",
+        "expect(layout.video.height).toBeCloseTo(pendingVideo!.height, 0);",
+        "if (viewport.width > 1100) expect(layout.main.left).toBeGreaterThanOrEqual(layout.nav.right);",
+        "if (viewport.width <= 900) expect(layout.nav.bottom).toBeCloseTo(viewport.height, 0);",
+        "await expect(page.getByRole(\"link\", { name: \"History\", exact: true })).toBeVisible();",
+        "await expect(page.getByRole(\"link\", { name: \"Library\", exact: true })).toHaveAttribute(\"aria-current\", \"page\");",
+        "expect(results.violations).toEqual([]);",
+        "await expect(status).toHaveText(nextState === \"empty\" ? \"Choose a subtitle file to begin.\" : \"Subtitle details are unavailable. Reload and try again.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.getByRole(\"button\", { name: \"Save reviewed subtitle\" })).toBeDisabled();",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(0);",
+        "await expect(page.locator(\".subtitle-topbar h1\")).toBeInViewport();",
+        "expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);",
+        "expect(writes).toEqual([]);"
+      ],
+      "history_ref": "subtitle-inspector-layout.spec.ts",
+      "validation_ref": "subtitle-inspector-layout.spec.ts",
+      "remaining_proof_or_gap": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-layout.spec.ts",
+      "line": 12,
+      "test": "inspector shell and review states fit 720px light",
+      "decision": "R",
+      "boundary": "browser-template-failure-fixture",
+      "credible_failure": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey.",
+      "assertions": [
+        "await expect(status).toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(status).toHaveText(\"Current subtitle loaded. Preview a change before saving.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(2);",
+        "await expect(page.getByRole(\"heading\", { name: \"Arrival\", exact: true })).toBeVisible();",
+        "expect(layout.header.width).toBeCloseTo(viewport.width, 0);",
+        "expect(layout.header.height).toBeLessThanOrEqual(100);",
+        "expect(layout.title.top).toBeGreaterThanOrEqual(layout.header.bottom);",
+        "expect(layout.overflow, JSON.stringify(layout.offenders)).toBeLessThanOrEqual(1);",
+        "expect(layout.video.height).toBeGreaterThanOrEqual(Math.min(layout.video.width * 9 / 16, viewport.height * .6) - 2);",
+        "expect(layout.video.height).toBeCloseTo(pendingVideo!.height, 0);",
+        "if (viewport.width > 1100) expect(layout.main.left).toBeGreaterThanOrEqual(layout.nav.right);",
+        "if (viewport.width <= 900) expect(layout.nav.bottom).toBeCloseTo(viewport.height, 0);",
+        "await expect(page.getByRole(\"link\", { name: \"History\", exact: true })).toBeVisible();",
+        "await expect(page.getByRole(\"link\", { name: \"Library\", exact: true })).toHaveAttribute(\"aria-current\", \"page\");",
+        "expect(results.violations).toEqual([]);",
+        "await expect(status).toHaveText(nextState === \"empty\" ? \"Choose a subtitle file to begin.\" : \"Subtitle details are unavailable. Reload and try again.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.getByRole(\"button\", { name: \"Save reviewed subtitle\" })).toBeDisabled();",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(0);",
+        "await expect(page.locator(\".subtitle-topbar h1\")).toBeInViewport();",
+        "expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);",
+        "expect(writes).toEqual([]);"
+      ],
+      "history_ref": "subtitle-inspector-layout.spec.ts",
+      "validation_ref": "subtitle-inspector-layout.spec.ts",
+      "remaining_proof_or_gap": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-layout.spec.ts",
+      "line": 12,
+      "test": "inspector shell and review states fit 568px light",
+      "decision": "R",
+      "boundary": "browser-template-failure-fixture",
+      "credible_failure": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey.",
+      "assertions": [
+        "await expect(status).toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(status).toHaveText(\"Current subtitle loaded. Preview a change before saving.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(2);",
+        "await expect(page.getByRole(\"heading\", { name: \"Arrival\", exact: true })).toBeVisible();",
+        "expect(layout.header.width).toBeCloseTo(viewport.width, 0);",
+        "expect(layout.header.height).toBeLessThanOrEqual(100);",
+        "expect(layout.title.top).toBeGreaterThanOrEqual(layout.header.bottom);",
+        "expect(layout.overflow, JSON.stringify(layout.offenders)).toBeLessThanOrEqual(1);",
+        "expect(layout.video.height).toBeGreaterThanOrEqual(Math.min(layout.video.width * 9 / 16, viewport.height * .6) - 2);",
+        "expect(layout.video.height).toBeCloseTo(pendingVideo!.height, 0);",
+        "if (viewport.width > 1100) expect(layout.main.left).toBeGreaterThanOrEqual(layout.nav.right);",
+        "if (viewport.width <= 900) expect(layout.nav.bottom).toBeCloseTo(viewport.height, 0);",
+        "await expect(page.getByRole(\"link\", { name: \"History\", exact: true })).toBeVisible();",
+        "await expect(page.getByRole(\"link\", { name: \"Library\", exact: true })).toHaveAttribute(\"aria-current\", \"page\");",
+        "expect(results.violations).toEqual([]);",
+        "await expect(status).toHaveText(nextState === \"empty\" ? \"Choose a subtitle file to begin.\" : \"Subtitle details are unavailable. Reload and try again.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.getByRole(\"button\", { name: \"Save reviewed subtitle\" })).toBeDisabled();",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(0);",
+        "await expect(page.locator(\".subtitle-topbar h1\")).toBeInViewport();",
+        "expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);",
+        "expect(writes).toEqual([]);"
+      ],
+      "history_ref": "subtitle-inspector-layout.spec.ts",
+      "validation_ref": "subtitle-inspector-layout.spec.ts",
+      "remaining_proof_or_gap": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-layout.spec.ts",
+      "line": 12,
+      "test": "inspector shell and review states fit 390px light",
+      "decision": "R",
+      "boundary": "browser-template-failure-fixture",
+      "credible_failure": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey.",
+      "assertions": [
+        "await expect(status).toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(status).toHaveText(\"Current subtitle loaded. Preview a change before saving.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(2);",
+        "await expect(page.getByRole(\"heading\", { name: \"Arrival\", exact: true })).toBeVisible();",
+        "expect(layout.header.width).toBeCloseTo(viewport.width, 0);",
+        "expect(layout.header.height).toBeLessThanOrEqual(100);",
+        "expect(layout.title.top).toBeGreaterThanOrEqual(layout.header.bottom);",
+        "expect(layout.overflow, JSON.stringify(layout.offenders)).toBeLessThanOrEqual(1);",
+        "expect(layout.video.height).toBeGreaterThanOrEqual(Math.min(layout.video.width * 9 / 16, viewport.height * .6) - 2);",
+        "expect(layout.video.height).toBeCloseTo(pendingVideo!.height, 0);",
+        "if (viewport.width > 1100) expect(layout.main.left).toBeGreaterThanOrEqual(layout.nav.right);",
+        "if (viewport.width <= 900) expect(layout.nav.bottom).toBeCloseTo(viewport.height, 0);",
+        "await expect(page.getByRole(\"link\", { name: \"History\", exact: true })).toBeVisible();",
+        "await expect(page.getByRole(\"link\", { name: \"Library\", exact: true })).toHaveAttribute(\"aria-current\", \"page\");",
+        "expect(results.violations).toEqual([]);",
+        "await expect(status).toHaveText(nextState === \"empty\" ? \"Choose a subtitle file to begin.\" : \"Subtitle details are unavailable. Reload and try again.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.getByRole(\"button\", { name: \"Save reviewed subtitle\" })).toBeDisabled();",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(0);",
+        "await expect(page.locator(\".subtitle-topbar h1\")).toBeInViewport();",
+        "expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);",
+        "expect(writes).toEqual([]);"
+      ],
+      "history_ref": "subtitle-inspector-layout.spec.ts",
+      "validation_ref": "subtitle-inspector-layout.spec.ts",
+      "remaining_proof_or_gap": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-layout.spec.ts",
+      "line": 12,
+      "test": "inspector shell and review states fit 320px light",
+      "decision": "R",
+      "boundary": "browser-template-failure-fixture",
+      "credible_failure": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey.",
+      "assertions": [
+        "await expect(status).toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(status).toHaveText(\"Current subtitle loaded. Preview a change before saving.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(2);",
+        "await expect(page.getByRole(\"heading\", { name: \"Arrival\", exact: true })).toBeVisible();",
+        "expect(layout.header.width).toBeCloseTo(viewport.width, 0);",
+        "expect(layout.header.height).toBeLessThanOrEqual(100);",
+        "expect(layout.title.top).toBeGreaterThanOrEqual(layout.header.bottom);",
+        "expect(layout.overflow, JSON.stringify(layout.offenders)).toBeLessThanOrEqual(1);",
+        "expect(layout.video.height).toBeGreaterThanOrEqual(Math.min(layout.video.width * 9 / 16, viewport.height * .6) - 2);",
+        "expect(layout.video.height).toBeCloseTo(pendingVideo!.height, 0);",
+        "if (viewport.width > 1100) expect(layout.main.left).toBeGreaterThanOrEqual(layout.nav.right);",
+        "if (viewport.width <= 900) expect(layout.nav.bottom).toBeCloseTo(viewport.height, 0);",
+        "await expect(page.getByRole(\"link\", { name: \"History\", exact: true })).toBeVisible();",
+        "await expect(page.getByRole(\"link\", { name: \"Library\", exact: true })).toHaveAttribute(\"aria-current\", \"page\");",
+        "expect(results.violations).toEqual([]);",
+        "await expect(status).toHaveText(nextState === \"empty\" ? \"Choose a subtitle file to begin.\" : \"Subtitle details are unavailable. Reload and try again.\");",
+        "await expect(status).not.toHaveAttribute(\"aria-busy\", \"true\");",
+        "await expect(page.getByRole(\"button\", { name: \"Save reviewed subtitle\" })).toBeDisabled();",
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(0);",
+        "await expect(page.locator(\".subtitle-topbar h1\")).toBeInViewport();",
+        "expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);",
+        "expect(writes).toEqual([]);"
+      ],
+      "history_ref": "subtitle-inspector-layout.spec.ts",
+      "validation_ref": "subtitle-inspector-layout.spec.ts",
+      "remaining_proof_or_gap": "Full production inspector markup+assets with pending/loaded/empty/503 APIs at seven widths and two themes: saving must remain disabled on failures, busy must clear, video geometry and inspector controls must fit. This is a stronger browser contract, not a live server journey."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-loading.spec.ts",
+      "line": 8,
+      "test": "container smoke suite includes inspector race regressions",
+      "decision": "D",
+      "boundary": "node-vm-extracted-function",
+      "credible_failure": "Extracted private load() and source-only test selection assertions are duplicated by full-template browser and actual request-holding journeys, or do not observe product behavior.",
+      "assertions": [
+        "expect(selectedFiles).toContain(\"subtitle-inspector-races.spec.ts\");"
+      ],
+      "history_ref": "subtitle-inspector-loading.spec.ts",
+      "validation_ref": "subtitle-inspector-loading.spec.ts",
+      "remaining_proof_or_gap": "apps/subtitles/scripts/test-container.sh keeps subtitle-inspector-races.spec.ts; actual CI runner selection/result JSON and18 retained race cases are execution evidence.",
+      "detected_failure": "Only detects a literal filename missing from the browser_args text; no product owner executes.",
+      "remaining_proof": "apps/subtitles/scripts/test-container.sh keeps subtitle-inspector-races.spec.ts; actual CI runner selection/result JSON and18 retained race cases are execution evidence.",
+      "contract_gap": "No production contract in the source grep. Runner selection is verified by run manifest, not duplicated test text.",
+      "assertion_map": [
+        "selectedFiles toContain subtitle-inspector-races.spec.ts -> actual runner test selection/report"
+      ],
+      "unlocked_support_deletion": "Whole53-line loading.spec.ts, extracted-source load slice, fake status/context fixture; no production seam.",
+      "risk": "low; stronger complete-script/template assertions remain, real run proof pending coordinator"
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-loading.spec.ts",
+      "line": 34,
+      "test": "inspector status stays one line while details load and settles after success",
+      "decision": "D",
+      "boundary": "node-vm-extracted-function",
+      "credible_failure": "Extracted private load() and source-only test selection assertions are duplicated by full-template browser and actual request-holding journeys, or do not observe product behavior.",
+      "assertions": [
+        "expect(view.status.textContent).toBe(\"Loading subtitle details…\");",
+        "expect(view.attributes.get(\"aria-busy\")).toBe(\"true\");",
+        "expect(view.classes.has(\"request-skeleton\")).toBe(false);",
+        "expect(view.attributes.has(\"aria-busy\")).toBe(false);",
+        "expect(view.status.textContent).toBe(\"Choose a subtitle file to begin.\");"
+      ],
+      "history_ref": "subtitle-inspector-loading.spec.ts",
+      "validation_ref": "subtitle-inspector-loading.spec.ts",
+      "remaining_proof_or_gap": "subtitle-inspector-layout.spec.ts:12 full production DOM+script pending aria-busy/loaded/empty state, cleared busy, screenshots/geometry; subtitle-defaults-tests.ts:10 actual inspect request held then loaded and French empty.",
+      "detected_failure": "Private extracted load() could stop marking busy or fail to clear busy after empty successful response; class absence checks only the fake initial status classes.",
+      "remaining_proof": "subtitle-inspector-layout.spec.ts:12 full production DOM+script pending aria-busy/loaded/empty state, cleared busy, screenshots/geometry; subtitle-defaults-tests.ts:10 actual inspect request held then loaded and French empty.",
+      "contract_gap": "Explicit request-skeleton class absence retired as a cosmetic implementation detail; full rendered pending/loaded geometry is retained. Full-template fixture is not live E2E.",
+      "assertion_map": [
+        "Loading details/busy true -> template pending aria-busy; live held inspect",
+        "busy absent/null empty label -> template loaded+empty assertions; live empty recovery",
+        "request-skeleton class false -> discarded cosmetic class implementation assertion"
+      ],
+      "unlocked_support_deletion": "Whole53-line loading.spec.ts, extracted-source load slice, fake status/context fixture; no production seam.",
+      "risk": "low; stronger complete-script/template assertions remain, real run proof pending coordinator"
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-loading.spec.ts",
+      "line": 46,
+      "test": "inspector clears busy state after a failed request",
+      "decision": "D",
+      "boundary": "node-vm-extracted-function",
+      "credible_failure": "Extracted private load() and source-only test selection assertions are duplicated by full-template browser and actual request-holding journeys, or do not observe product behavior.",
+      "assertions": [
+        "await pending.then(() => { throw new Error(\"Request unexpectedly succeeded\"); }, error => expect(error.message).toBe(\"unavailable\"));",
+        "expect(view.attributes.has(\"aria-busy\")).toBe(false);",
+        "expect(view.classes.has(\"request-skeleton\")).toBe(false);"
+      ],
+      "history_ref": "subtitle-inspector-loading.spec.ts",
+      "validation_ref": "subtitle-inspector-loading.spec.ts",
+      "remaining_proof_or_gap": "subtitle-inspector-layout.spec.ts:12 full production script with503 response asserts failed message, busy cleared, Save disabled,0 cues, no overflow/screenshots.",
+      "detected_failure": "Private extracted load() could leave aria-busy on after rejection; fake request message propagation is uncaught-function behavior.",
+      "remaining_proof": "subtitle-inspector-layout.spec.ts:12 full production script with503 response asserts failed message, busy cleared, Save disabled,0 cues, no overflow/screenshots.",
+      "contract_gap": "No genuine live503 inspector-details journey claimed. Retained stronger full-template browser failure injection is the primary contract;18 complete-script races retain stale failure handling.",
+      "assertion_map": [
+        "reject Error unavailable -> full browser API503 message",
+        "busy absent -> template failed no aria-busy true",
+        "request-skeleton false -> discarded cosmetic class implementation assertion"
+      ],
+      "unlocked_support_deletion": "Whole53-line loading.spec.ts, extracted-source load slice, fake status/context fixture; no production seam.",
+      "risk": "low; stronger complete-script/template assertions remain, real run proof pending coordinator"
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-races.spec.ts",
+      "line": 11,
+      "test": "apply locks editing until the reviewed language operation settles",
+      "decision": "R",
+      "boundary": "node-vm-complete-script-failure-fixture",
+      "credible_failure": "Pending apply must lock controls/language through completion and restore prior disabled states; changing language could apply reviewed text to the wrong file.",
+      "assertions": [
+        "expect(JSON.parse(request.options.body).language).toBe(\"en\");",
+        "for (const control of view.form.querySelectorAll()) expect(control.disabled).toBe(true);",
+        "expect(view.node(\"restore-subtitle\").disabled).toBe(true);",
+        "expect(view.node(\"apply-subtitle\").disabled).toBe(true);",
+        "expect(view.form.elements.language.disabled).toBe(false);",
+        "expect(view.form.elements.text.disabled).toBe(false);",
+        "expect(view.form.elements.encoding.disabled).toBe(true);",
+        "expect(view.node(\"restore-subtitle\").disabled).toBe(false);",
+        "expect(view.node(\"apply-subtitle\").disabled).toBe(true);",
+        "expect(view.exports.every(link => new URL(link.href).searchParams.get(\"language\") === \"en\")).toBe(true);"
+      ],
+      "history_ref": "subtitle-inspector-races.spec.ts",
+      "validation_ref": "subtitle-inspector-races.spec.ts",
+      "remaining_proof_or_gap": "Controlled late responses, lifecycle and draft timers can discard or overwrite a newer reviewed correction or create duplicate polling; real subtitle-defaults journey does not force out-of-order English/French responses or hidden-page completions."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-races.spec.ts",
+      "line": 11,
+      "test": "restore locks editing until the reviewed language operation settles",
+      "decision": "R",
+      "boundary": "node-vm-complete-script-failure-fixture",
+      "credible_failure": "Pending restore must lock controls/language through completion and restore prior disabled states; changing language could apply reviewed text to the wrong file.",
+      "assertions": [
+        "expect(JSON.parse(request.options.body).language).toBe(\"en\");",
+        "for (const control of view.form.querySelectorAll()) expect(control.disabled).toBe(true);",
+        "expect(view.node(\"restore-subtitle\").disabled).toBe(true);",
+        "expect(view.node(\"apply-subtitle\").disabled).toBe(true);",
+        "expect(view.form.elements.language.disabled).toBe(false);",
+        "expect(view.form.elements.text.disabled).toBe(false);",
+        "expect(view.form.elements.encoding.disabled).toBe(true);",
+        "expect(view.node(\"restore-subtitle\").disabled).toBe(false);",
+        "expect(view.node(\"apply-subtitle\").disabled).toBe(true);",
+        "expect(view.exports.every(link => new URL(link.href).searchParams.get(\"language\") === \"en\")).toBe(true);"
+      ],
+      "history_ref": "subtitle-inspector-races.spec.ts",
+      "validation_ref": "subtitle-inspector-races.spec.ts",
+      "remaining_proof_or_gap": "Controlled late responses, lifecycle and draft timers can discard or overwrite a newer reviewed correction or create duplicate polling; real subtitle-defaults journey does not force out-of-order English/French responses or hidden-page completions."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-races.spec.ts",
+      "line": 33,
+      "test": "failed save unlocks controls and preserves the user's text",
+      "decision": "R",
+      "boundary": "node-vm-complete-script-failure-fixture",
+      "credible_failure": "Rejected save must unlock editing and preserve typed correction rather than discard it.",
+      "assertions": [
+        "expect(view.form.elements.text.value).toBe(\"keep this correction\");",
+        "expect(view.form.elements.text.disabled).toBe(false);",
+        "expect(view.node(\"inspector-status\").textContent).toBe(\"Save failed\");"
+      ],
+      "history_ref": "subtitle-inspector-races.spec.ts",
+      "validation_ref": "subtitle-inspector-races.spec.ts",
+      "remaining_proof_or_gap": "Controlled late responses, lifecycle and draft timers can discard or overwrite a newer reviewed correction or create duplicate polling; real subtitle-defaults journey does not force out-of-order English/French responses or hidden-page completions."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-races.spec.ts",
+      "line": 43,
+      "test": "older inspect failure cannot replace the newer language's success",
+      "decision": "R",
+      "boundary": "node-vm-complete-script-failure-fixture",
+      "credible_failure": "A stale failed English request must not overwrite French successful status or leave the current inspector busy.",
+      "assertions": [
+        "expect(view.node(\"inspector-status\").textContent).toBe(status);",
+        "expect(view.node(\"inspector-status\").attrs[\"aria-busy\"]).toBeUndefined();"
+      ],
+      "history_ref": "subtitle-inspector-races.spec.ts",
+      "validation_ref": "subtitle-inspector-races.spec.ts",
+      "remaining_proof_or_gap": "Controlled late responses, lifecycle and draft timers can discard or overwrite a newer reviewed correction or create duplicate polling; real subtitle-defaults journey does not force out-of-order English/French responses or hidden-page completions."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-races.spec.ts",
+      "line": 53,
+      "test": "older preview failure does not overwrite a newer language",
+      "decision": "R",
+      "boundary": "node-vm-complete-script-failure-fixture",
+      "credible_failure": "Late failed preview must not replace a more recent language result.",
+      "assertions": [
+        "expect(view.node(\"inspector-status\").textContent).toBe(status);"
+      ],
+      "history_ref": "subtitle-inspector-races.spec.ts",
+      "validation_ref": "subtitle-inspector-races.spec.ts",
+      "remaining_proof_or_gap": "Controlled late responses, lifecycle and draft timers can discard or overwrite a newer reviewed correction or create duplicate polling; real subtitle-defaults journey does not force out-of-order English/French responses or hidden-page completions."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-races.spec.ts",
+      "line": 62,
+      "test": "draft observation retries a transient error and settles when ready",
+      "decision": "R",
+      "boundary": "node-vm-complete-script-failure-fixture",
+      "credible_failure": "Transient observation errors must retry one bounded chain and stop once ready instead of abandoning a running draft or duplicate polling.",
+      "assertions": [
+        "expect(view.timers.size).toBe(1);",
+        "expect(view.node(\"draft-status\").textContent).toContain(\"Retrying\");",
+        "expect(view.node(\"start-draft\").disabled).toBe(true);",
+        "expect(view.timers.size).toBe(0); expect(view.node(\"review-draft\").hidden).toBe(false); expect(view.node(\"start-draft\").disabled).toBe(false);"
+      ],
+      "history_ref": "subtitle-inspector-races.spec.ts",
+      "validation_ref": "subtitle-inspector-races.spec.ts",
+      "remaining_proof_or_gap": "Controlled late responses, lifecycle and draft timers can discard or overwrite a newer reviewed correction or create duplicate polling; real subtitle-defaults journey does not force out-of-order English/French responses or hidden-page completions."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-races.spec.ts",
+      "line": 73,
+      "test": "pagehide discards an in-flight running draft and pageshow starts one chain",
+      "decision": "R",
+      "boundary": "node-vm-complete-script-failure-fixture",
+      "credible_failure": "Hidden-page draft response must not restart timers; repeated pageshow must start exactly one current observation chain.",
+      "assertions": [
+        "await flush(); expect(view.timers.size).toBe(0);",
+        "expect(view.requests.length).toBe(count);",
+        "view.respond(fresh, view.draft(\"running\")); await flush(); expect(view.timers.size).toBe(1);"
+      ],
+      "history_ref": "subtitle-inspector-races.spec.ts",
+      "validation_ref": "subtitle-inspector-races.spec.ts",
+      "remaining_proof_or_gap": "Controlled late responses, lifecycle and draft timers can discard or overwrite a newer reviewed correction or create duplicate polling; real subtitle-defaults journey does not force out-of-order English/French responses or hidden-page completions."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-races.spec.ts",
+      "line": 73,
+      "test": "pagehide discards an in-flight failed draft and pageshow starts one chain",
+      "decision": "R",
+      "boundary": "node-vm-complete-script-failure-fixture",
+      "credible_failure": "Hidden-page draft failure must not restart timers; repeated pageshow must start exactly one current observation chain.",
+      "assertions": [
+        "await flush(); expect(view.timers.size).toBe(0);",
+        "expect(view.requests.length).toBe(count);",
+        "view.respond(fresh, view.draft(\"running\")); await flush(); expect(view.timers.size).toBe(1);"
+      ],
+      "history_ref": "subtitle-inspector-races.spec.ts",
+      "validation_ref": "subtitle-inspector-races.spec.ts",
+      "remaining_proof_or_gap": "Controlled late responses, lifecycle and draft timers can discard or overwrite a newer reviewed correction or create duplicate polling; real subtitle-defaults journey does not force out-of-order English/French responses or hidden-page completions."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-races.spec.ts",
+      "line": 84,
+      "test": "a superseded draft response cannot regress the current state or polling",
+      "decision": "R",
+      "boundary": "node-vm-complete-script-failure-fixture",
+      "credible_failure": "Late English running state must not regress the newer French ready state or restart its old polling.",
+      "assertions": [
+        "expect(view.node(\"draft-status\").textContent).toBe(\"ready\"); expect(view.timers.size).toBe(0);"
+      ],
+      "history_ref": "subtitle-inspector-races.spec.ts",
+      "validation_ref": "subtitle-inspector-races.spec.ts",
+      "remaining_proof_or_gap": "Controlled late responses, lifecycle and draft timers can discard or overwrite a newer reviewed correction or create duplicate polling; real subtitle-defaults journey does not force out-of-order English/French responses or hidden-page completions."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-races.spec.ts",
+      "line": 92,
+      "test": "pageshow preserves previously appended cue pages",
+      "decision": "R",
+      "boundary": "node-vm-complete-script-failure-fixture",
+      "credible_failure": "Page lifecycle reconciliation must not erase already appended cue review rows.",
+      "assertions": [
+        "expect(view.node(\"subtitle-cues\").children).toHaveLength(120);",
+        "expect(view.node(\"subtitle-cues\").children).toHaveLength(120);",
+        "expect(view.node(\"cue-page\").textContent).toBe(\"120 of 120 cues shown\");"
+      ],
+      "history_ref": "subtitle-inspector-races.spec.ts",
+      "validation_ref": "subtitle-inspector-races.spec.ts",
+      "remaining_proof_or_gap": "Controlled late responses, lifecycle and draft timers can discard or overwrite a newer reviewed correction or create duplicate polling; real subtitle-defaults journey does not force out-of-order English/French responses or hidden-page completions."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-races.spec.ts",
+      "line": 104,
+      "test": "switching language hides the previous draft and cannot discard newer corrections",
+      "decision": "R",
+      "boundary": "node-vm-complete-script-failure-fixture",
+      "credible_failure": "A stale Review draft action must not discard typed correction for another language.",
+      "assertions": [
+        "expect(view.node(\"review-draft\").hidden).toBe(true);",
+        "expect(view.node(\"cancel-draft\").hidden).toBe(true);",
+        "expect(view.form.elements.text.value).toBe(\"New French corrections\");",
+        "expect(view.requests.length).toBe(requests);",
+        "expect(view.node(\"review-draft\").hidden).toBe(false);"
+      ],
+      "history_ref": "subtitle-inspector-races.spec.ts",
+      "validation_ref": "subtitle-inspector-races.spec.ts",
+      "remaining_proof_or_gap": "Controlled late responses, lifecycle and draft timers can discard or overwrite a newer reviewed correction or create duplicate polling; real subtitle-defaults journey does not force out-of-order English/French responses or hidden-page completions."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-races.spec.ts",
+      "line": 120,
+      "test": "late start failure cannot replace another language's preview status",
+      "decision": "R",
+      "boundary": "node-vm-complete-script-failure-fixture",
+      "credible_failure": "Late start failure from old language must not overwrite current preview status or disable the reviewed Save action.",
+      "assertions": [
+        "expect(view.node(\"inspector-status\").textContent).toBe(status);",
+        "expect(view.node(\"apply-subtitle\").disabled).toBe(false);"
+      ],
+      "history_ref": "subtitle-inspector-races.spec.ts",
+      "validation_ref": "subtitle-inspector-races.spec.ts",
+      "remaining_proof_or_gap": "Controlled late responses, lifecycle and draft timers can discard or overwrite a newer reviewed correction or create duplicate polling; real subtitle-defaults journey does not force out-of-order English/French responses or hidden-page completions."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-races.spec.ts",
+      "line": 120,
+      "test": "late cancel failure cannot replace another language's preview status",
+      "decision": "R",
+      "boundary": "node-vm-complete-script-failure-fixture",
+      "credible_failure": "Late cancel failure from old language must not overwrite current preview status or disable the reviewed Save action.",
+      "assertions": [
+        "expect(view.node(\"inspector-status\").textContent).toBe(status);",
+        "expect(view.node(\"apply-subtitle\").disabled).toBe(false);"
+      ],
+      "history_ref": "subtitle-inspector-races.spec.ts",
+      "validation_ref": "subtitle-inspector-races.spec.ts",
+      "remaining_proof_or_gap": "Controlled late responses, lifecycle and draft timers can discard or overwrite a newer reviewed correction or create duplicate polling; real subtitle-defaults journey does not force out-of-order English/French responses or hidden-page completions."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-races.spec.ts",
+      "line": 131,
+      "test": "late draft start success preserves the new language's reviewed correction",
+      "decision": "R",
+      "boundary": "node-vm-complete-script-failure-fixture",
+      "credible_failure": "Old English start completion must not refresh/erase a newer French correction or disable its enabled Save action.",
+      "assertions": [
+        "expect(view.node(\"apply-subtitle\").disabled).toBe(false);",
+        "expect(view.form.elements.text.value).toBe(\"Reviewed French correction\");",
+        "expect(view.requests).toHaveLength(requestCount);"
+      ],
+      "history_ref": "subtitle-inspector-races.spec.ts",
+      "validation_ref": "subtitle-inspector-races.spec.ts",
+      "remaining_proof_or_gap": "Controlled late responses, lifecycle and draft timers can discard or overwrite a newer reviewed correction or create duplicate polling; real subtitle-defaults journey does not force out-of-order English/French responses or hidden-page completions."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-races.spec.ts",
+      "line": 146,
+      "test": "pagehide ignores a pending draft start failure",
+      "decision": "R",
+      "boundary": "node-vm-complete-script-failure-fixture",
+      "credible_failure": "A pending start draft failure after pagehide must leave status and polling unchanged.",
+      "assertions": [
+        "expect(view.node(\"inspector-status\").textContent).toBe(status);",
+        "expect(view.timers.size).toBe(0);"
+      ],
+      "history_ref": "subtitle-inspector-races.spec.ts",
+      "validation_ref": "subtitle-inspector-races.spec.ts",
+      "remaining_proof_or_gap": "Controlled late responses, lifecycle and draft timers can discard or overwrite a newer reviewed correction or create duplicate polling; real subtitle-defaults journey does not force out-of-order English/French responses or hidden-page completions."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-races.spec.ts",
+      "line": 146,
+      "test": "pagehide ignores a pending draft cancel failure",
+      "decision": "R",
+      "boundary": "node-vm-complete-script-failure-fixture",
+      "credible_failure": "A pending cancel draft failure after pagehide must leave status and polling unchanged.",
+      "assertions": [
+        "expect(view.node(\"inspector-status\").textContent).toBe(status);",
+        "expect(view.timers.size).toBe(0);"
+      ],
+      "history_ref": "subtitle-inspector-races.spec.ts",
+      "validation_ref": "subtitle-inspector-races.spec.ts",
+      "remaining_proof_or_gap": "Controlled late responses, lifecycle and draft timers can discard or overwrite a newer reviewed correction or create duplicate polling; real subtitle-defaults journey does not force out-of-order English/French responses or hidden-page completions."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-races.spec.ts",
+      "line": 156,
+      "test": "an obsolete start completion cannot enable Generate during a newer start",
+      "decision": "R",
+      "boundary": "node-vm-complete-script-failure-fixture",
+      "credible_failure": "Old start failure must not enable Generate while another start owns the current language action, avoiding duplicate jobs.",
+      "assertions": [
+        "expect(button.disabled).toBe(true);",
+        "expect(button.disabled).toBe(true);",
+        "expect(view.timers.size).toBe(1);"
+      ],
+      "history_ref": "subtitle-inspector-races.spec.ts",
+      "validation_ref": "subtitle-inspector-races.spec.ts",
+      "remaining_proof_or_gap": "Controlled late responses, lifecycle and draft timers can discard or overwrite a newer reviewed correction or create duplicate polling; real subtitle-defaults journey does not force out-of-order English/French responses or hidden-page completions."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-races.spec.ts",
+      "line": 168,
+      "test": "a draft start settling after pageshow reconciles an earlier idle observation",
+      "decision": "R",
+      "boundary": "node-vm-complete-script-failure-fixture",
+      "credible_failure": "Lifecycle observation may report idle before a pending start settles; completion must reconcile running state with exactly one poll while keeping reviewed Save enabled.",
+      "assertions": [
+        "expect(button.disabled).toBe(true);",
+        "expect(view.requests.length).toBe(count + 1);",
+        "expect(view.node(\"draft-status\").textContent).toBe(\"running\");",
+        "expect(button.disabled).toBe(true);",
+        "expect(view.node(\"apply-subtitle\").disabled).toBe(false);",
+        "expect(view.timers.size).toBe(1);"
+      ],
+      "history_ref": "subtitle-inspector-races.spec.ts",
+      "validation_ref": "subtitle-inspector-races.spec.ts",
+      "remaining_proof_or_gap": "Controlled late responses, lifecycle and draft timers can discard or overwrite a newer reviewed correction or create duplicate polling; real subtitle-defaults journey does not force out-of-order English/French responses or hidden-page completions."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-scroll.spec.ts",
+      "line": 22,
+      "test": "long cue and draft-word reviews load as the reader scrolls",
+      "decision": "R",
+      "boundary": "browser-dom-observer-fixture",
+      "credible_failure": "Actual browser IntersectionObserver must expose all85 cue rows/210 draft words without manual page controls, preventing inaccessible content beyond page one.",
+      "assertions": [
+        "await expect(page.locator(\".subtitle-cue-row\")).toHaveCount(40);",
+        "for (const selector of [\"#next-cues\", \"#previous-cues\", \"#more-draft-words\"]) await expect(page.locator(selector)).toBeHidden();",
+        "await expect.poll(async () => {",
+        "await expect(page.locator(\"#draft-words button\")).toHaveCount(100);",
+        "await expect.poll(async () => {"
+      ],
+      "history_ref": "subtitle-inspector-scroll.spec.ts",
+      "validation_ref": "subtitle-inspector-scroll.spec.ts",
+      "remaining_proof_or_gap": "85 cues/210 draft words prove actual IntersectionObserver paging exposes all rows while scrolling; real fixture has only two cues and no long generated draft."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-status.spec.ts",
+      "line": 35,
+      "test": "background completion offers refresh without closing file details",
+      "decision": "R",
+      "boundary": "browser-dom-network-fixture",
+      "credible_failure": "Polling completion must notify rather than replace a view under the user; opened file details must survive explicit refresh.",
+      "assertions": [
+        "await expect(page.getByText(\"Library updated\")).toBeVisible();",
+        "expect(requests.pages).toBe(1);",
+        "await expect(page.locator(\"details\")).toHaveAttribute(\"open\", \"\");",
+        "await expect.poll(() => requests.pages).toBe(2);",
+        "await expect(page.locator(\"details\")).toHaveAttribute(\"open\", \"\");"
+      ],
+      "history_ref": "subtitle-status.spec.ts",
+      "validation_ref": "subtitle-status.spec.ts",
+      "remaining_proof_or_gap": "Forced 503/write failures, invalid coverage and clock/history boundaries keep an existing view/details/query intact and do not repeat writes; actual journey does not force each of these failures."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-status.spec.ts",
+      "line": 47,
+      "test": "live search retains the query and paging supports browser back",
+      "decision": "R",
+      "boundary": "browser-dom-network-fixture",
+      "credible_failure": "Search debounce replacement must preserve focus and the query across pagination/browser back, preventing loss of the user's current task.",
+      "assertions": [
+        "await expect(page).toHaveURL(/q=Arrival/);",
+        "await expect(page.getByLabel(\"Search\", { exact: true })).toBeFocused();",
+        "await expect(page.getByRole(\"heading\")).toHaveText(\"Page 2\");",
+        "await expect(page.getByLabel(\"Search\", { exact: true })).toHaveValue(\"Arrival\");"
+      ],
+      "history_ref": "subtitle-status.spec.ts",
+      "validation_ref": "subtitle-status.spec.ts",
+      "remaining_proof_or_gap": "Forced 503/write failures, invalid coverage and clock/history boundaries keep an existing view/details/query intact and do not repeat writes; actual journey does not force each of these failures."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-status.spec.ts",
+      "line": 59,
+      "test": "failed navigation preserves the current view and exposes a retry",
+      "decision": "R",
+      "boundary": "browser-dom-network-fixture",
+      "credible_failure": "503 must leave loaded Page1 visible and retry the intended Page2 destination rather than clearing content.",
+      "assertions": [
+        "await expect(page.getByRole(\"status\")).toContainText(\"Could not load\");",
+        "await expect(page.getByRole(\"heading\")).toHaveText(\"Page 1\");",
+        "await expect(page.getByRole(\"heading\")).toHaveText(\"Page 2\");"
+      ],
+      "history_ref": "subtitle-status.spec.ts",
+      "validation_ref": "subtitle-status.spec.ts",
+      "remaining_proof_or_gap": "Forced 503/write failures, invalid coverage and clock/history boundaries keep an existing view/details/query intact and do not repeat writes; actual journey does not force each of these failures."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-status.spec.ts",
+      "line": 70,
+      "test": "scrolling keeps one bounded page and explicit navigation replaces it",
+      "decision": "R",
+      "boundary": "browser-dom-network-fixture",
+      "credible_failure": "Merely scrolling must not auto-append/load another bounded inventory page; explicit navigation replaces content once and back restores it.",
+      "assertions": [
+        "await expect(page.getByRole(\"link\", { name: \"Next\" })).toBeVisible();",
+        "expect(pageRequests).toBe(0);",
+        "await expect(page).toHaveURL(/page=2/);",
+        "await expect(page.locator(\".subtitle-file\")).toHaveCount(1);",
+        "await expect(page.locator(\".subtitle-file summary\")).toHaveText(\"Beta\");",
+        "expect(pageRequests).toBe(1);",
+        "await expect(page.locator(\".subtitle-file summary\")).toHaveText(\"Arrival\");"
+      ],
+      "history_ref": "subtitle-status.spec.ts",
+      "validation_ref": "subtitle-status.spec.ts",
+      "remaining_proof_or_gap": "Forced 503/write failures, invalid coverage and clock/history boundaries keep an existing view/details/query intact and do not repeat writes; actual journey does not force each of these failures."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-status.spec.ts",
+      "line": 91,
+      "test": "actions keep details open and a failed write is never retried automatically",
+      "decision": "R",
+      "boundary": "browser-dom-network-fixture",
+      "credible_failure": "A failed mutation must never be replayed by the read-retry or background poll; duplicate writes can consume provider quota or overwrite state.",
+      "assertions": [
+        "await expect(page.getByRole(\"status\")).toHaveText(\"Completed\");",
+        "await expect(page.locator(\"details\")).toHaveAttribute(\"open\", \"\");",
+        "await expect(page.getByRole(\"status\")).toContainText(\"Could not confirm\");",
+        "expect(requests.writes).toBe(2);"
+      ],
+      "history_ref": "subtitle-status.spec.ts",
+      "validation_ref": "subtitle-status.spec.ts",
+      "remaining_proof_or_gap": "Forced 503/write failures, invalid coverage and clock/history boundaries keep an existing view/details/query intact and do not repeat writes; actual journey does not force each of these failures."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-status.spec.ts",
+      "line": 106,
+      "test": "malformed coverage null cannot trigger an update",
+      "decision": "R",
+      "boundary": "browser-dom-network-fixture",
+      "credible_failure": "Coverage field null must not be accepted as a nonnegative safe integer or expose a false update. Actual server/API happy journey emits valid counts.",
+      "assertions": [
+        "await expect.poll(() => requests.checks).toBe(1);",
+        "expect(requests.pages).toBe(1);",
+        "await expect(page.locator(\"#subtitle-update\")).toBeHidden();"
+      ],
+      "history_ref": "subtitle-status.spec.ts",
+      "validation_ref": "subtitle-status.spec.ts",
+      "remaining_proof_or_gap": "Forced 503/write failures, invalid coverage and clock/history boundaries keep an existing view/details/query intact and do not repeat writes; actual journey does not force each of these failures."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-status.spec.ts",
+      "line": 106,
+      "test": "malformed coverage \"0\" cannot trigger an update",
+      "decision": "R",
+      "boundary": "browser-dom-network-fixture",
+      "credible_failure": "Coverage field \"0\" must not be accepted as a nonnegative safe integer or expose a false update. Actual server/API happy journey emits valid counts.",
+      "assertions": [
+        "await expect.poll(() => requests.checks).toBe(1);",
+        "expect(requests.pages).toBe(1);",
+        "await expect(page.locator(\"#subtitle-update\")).toBeHidden();"
+      ],
+      "history_ref": "subtitle-status.spec.ts",
+      "validation_ref": "subtitle-status.spec.ts",
+      "remaining_proof_or_gap": "Forced 503/write failures, invalid coverage and clock/history boundaries keep an existing view/details/query intact and do not repeat writes; actual journey does not force each of these failures."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-status.spec.ts",
+      "line": 106,
+      "test": "malformed coverage -1 cannot trigger an update",
+      "decision": "R",
+      "boundary": "browser-dom-network-fixture",
+      "credible_failure": "Coverage field -1 must not be accepted as a nonnegative safe integer or expose a false update. Actual server/API happy journey emits valid counts.",
+      "assertions": [
+        "await expect.poll(() => requests.checks).toBe(1);",
+        "expect(requests.pages).toBe(1);",
+        "await expect(page.locator(\"#subtitle-update\")).toBeHidden();"
+      ],
+      "history_ref": "subtitle-status.spec.ts",
+      "validation_ref": "subtitle-status.spec.ts",
+      "remaining_proof_or_gap": "Forced 503/write failures, invalid coverage and clock/history boundaries keep an existing view/details/query intact and do not repeat writes; actual journey does not force each of these failures."
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-status.spec.ts",
+      "line": 106,
+      "test": "malformed coverage 0.5 cannot trigger an update",
+      "decision": "R",
+      "boundary": "browser-dom-network-fixture",
+      "credible_failure": "Coverage field 0.5 must not be accepted as a nonnegative safe integer or expose a false update. Actual server/API happy journey emits valid counts.",
+      "assertions": [
+        "await expect.poll(() => requests.checks).toBe(1);",
+        "expect(requests.pages).toBe(1);",
+        "await expect(page.locator(\"#subtitle-update\")).toBeHidden();"
+      ],
+      "history_ref": "subtitle-status.spec.ts",
+      "validation_ref": "subtitle-status.spec.ts",
+      "remaining_proof_or_gap": "Forced 503/write failures, invalid coverage and clock/history boundaries keep an existing view/details/query intact and do not repeat writes; actual journey does not force each of these failures."
+    },
+    {
+      "path": "apps/subtitles/e2e/supporter-badge-layout.spec.ts",
+      "line": 8,
+      "test": "badge descriptions stay inside their cells when artwork fails at 1440px in light",
+      "decision": "R",
+      "boundary": "browser-template-artwork-failure-fixture",
+      "credible_failure": "Every artwork request fails: descriptions must stay within cells in two themes/five widths. Actual supporter journey proves successful artwork only.",
+      "assertions": [
+        "expect(stylesheet.ok()).toBeTruthy();",
+        "await expect(badges).toHaveCount(20);",
+        "await expect.poll(() => badges.locator(\"img\").evaluateAll(images => images.every(image => image instanceof HTMLImageElement && image.complete && image.naturalWidth === 0))).toBe(true);",
+        "expect(overflow).toEqual([]);",
+        "expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);"
+      ],
+      "history_ref": "supporter-badge-layout.spec.ts",
+      "validation_ref": "supporter-badge-layout.spec.ts",
+      "remaining_proof_or_gap": "Every artwork request fails: descriptions must stay within cells in two themes/five widths. Actual supporter journey proves successful artwork only."
+    },
+    {
+      "path": "apps/subtitles/e2e/supporter-badge-layout.spec.ts",
+      "line": 8,
+      "test": "badge descriptions stay inside their cells when artwork fails at 1024px in light",
+      "decision": "R",
+      "boundary": "browser-template-artwork-failure-fixture",
+      "credible_failure": "Every artwork request fails: descriptions must stay within cells in two themes/five widths. Actual supporter journey proves successful artwork only.",
+      "assertions": [
+        "expect(stylesheet.ok()).toBeTruthy();",
+        "await expect(badges).toHaveCount(20);",
+        "await expect.poll(() => badges.locator(\"img\").evaluateAll(images => images.every(image => image instanceof HTMLImageElement && image.complete && image.naturalWidth === 0))).toBe(true);",
+        "expect(overflow).toEqual([]);",
+        "expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);"
+      ],
+      "history_ref": "supporter-badge-layout.spec.ts",
+      "validation_ref": "supporter-badge-layout.spec.ts",
+      "remaining_proof_or_gap": "Every artwork request fails: descriptions must stay within cells in two themes/five widths. Actual supporter journey proves successful artwork only."
+    },
+    {
+      "path": "apps/subtitles/e2e/supporter-badge-layout.spec.ts",
+      "line": 8,
+      "test": "badge descriptions stay inside their cells when artwork fails at 720px in light",
+      "decision": "R",
+      "boundary": "browser-template-artwork-failure-fixture",
+      "credible_failure": "Every artwork request fails: descriptions must stay within cells in two themes/five widths. Actual supporter journey proves successful artwork only.",
+      "assertions": [
+        "expect(stylesheet.ok()).toBeTruthy();",
+        "await expect(badges).toHaveCount(20);",
+        "await expect.poll(() => badges.locator(\"img\").evaluateAll(images => images.every(image => image instanceof HTMLImageElement && image.complete && image.naturalWidth === 0))).toBe(true);",
+        "expect(overflow).toEqual([]);",
+        "expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);"
+      ],
+      "history_ref": "supporter-badge-layout.spec.ts",
+      "validation_ref": "supporter-badge-layout.spec.ts",
+      "remaining_proof_or_gap": "Every artwork request fails: descriptions must stay within cells in two themes/five widths. Actual supporter journey proves successful artwork only."
+    },
+    {
+      "path": "apps/subtitles/e2e/supporter-badge-layout.spec.ts",
+      "line": 8,
+      "test": "badge descriptions stay inside their cells when artwork fails at 390px in light",
+      "decision": "R",
+      "boundary": "browser-template-artwork-failure-fixture",
+      "credible_failure": "Every artwork request fails: descriptions must stay within cells in two themes/five widths. Actual supporter journey proves successful artwork only.",
+      "assertions": [
+        "expect(stylesheet.ok()).toBeTruthy();",
+        "await expect(badges).toHaveCount(20);",
+        "await expect.poll(() => badges.locator(\"img\").evaluateAll(images => images.every(image => image instanceof HTMLImageElement && image.complete && image.naturalWidth === 0))).toBe(true);",
+        "expect(overflow).toEqual([]);",
+        "expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);"
+      ],
+      "history_ref": "supporter-badge-layout.spec.ts",
+      "validation_ref": "supporter-badge-layout.spec.ts",
+      "remaining_proof_or_gap": "Every artwork request fails: descriptions must stay within cells in two themes/five widths. Actual supporter journey proves successful artwork only."
+    },
+    {
+      "path": "apps/subtitles/e2e/supporter-badge-layout.spec.ts",
+      "line": 8,
+      "test": "badge descriptions stay inside their cells when artwork fails at 320px in light",
+      "decision": "R",
+      "boundary": "browser-template-artwork-failure-fixture",
+      "credible_failure": "Every artwork request fails: descriptions must stay within cells in two themes/five widths. Actual supporter journey proves successful artwork only.",
+      "assertions": [
+        "expect(stylesheet.ok()).toBeTruthy();",
+        "await expect(badges).toHaveCount(20);",
+        "await expect.poll(() => badges.locator(\"img\").evaluateAll(images => images.every(image => image instanceof HTMLImageElement && image.complete && image.naturalWidth === 0))).toBe(true);",
+        "expect(overflow).toEqual([]);",
+        "expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);"
+      ],
+      "history_ref": "supporter-badge-layout.spec.ts",
+      "validation_ref": "supporter-badge-layout.spec.ts",
+      "remaining_proof_or_gap": "Every artwork request fails: descriptions must stay within cells in two themes/five widths. Actual supporter journey proves successful artwork only."
+    },
+    {
+      "path": "apps/subtitles/e2e/supporter-badge-layout.spec.ts",
+      "line": 8,
+      "test": "badge descriptions stay inside their cells when artwork fails at 1440px in dark",
+      "decision": "R",
+      "boundary": "browser-template-artwork-failure-fixture",
+      "credible_failure": "Every artwork request fails: descriptions must stay within cells in two themes/five widths. Actual supporter journey proves successful artwork only.",
+      "assertions": [
+        "expect(stylesheet.ok()).toBeTruthy();",
+        "await expect(badges).toHaveCount(20);",
+        "await expect.poll(() => badges.locator(\"img\").evaluateAll(images => images.every(image => image instanceof HTMLImageElement && image.complete && image.naturalWidth === 0))).toBe(true);",
+        "expect(overflow).toEqual([]);",
+        "expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);"
+      ],
+      "history_ref": "supporter-badge-layout.spec.ts",
+      "validation_ref": "supporter-badge-layout.spec.ts",
+      "remaining_proof_or_gap": "Every artwork request fails: descriptions must stay within cells in two themes/five widths. Actual supporter journey proves successful artwork only."
+    },
+    {
+      "path": "apps/subtitles/e2e/supporter-badge-layout.spec.ts",
+      "line": 8,
+      "test": "badge descriptions stay inside their cells when artwork fails at 1024px in dark",
+      "decision": "R",
+      "boundary": "browser-template-artwork-failure-fixture",
+      "credible_failure": "Every artwork request fails: descriptions must stay within cells in two themes/five widths. Actual supporter journey proves successful artwork only.",
+      "assertions": [
+        "expect(stylesheet.ok()).toBeTruthy();",
+        "await expect(badges).toHaveCount(20);",
+        "await expect.poll(() => badges.locator(\"img\").evaluateAll(images => images.every(image => image instanceof HTMLImageElement && image.complete && image.naturalWidth === 0))).toBe(true);",
+        "expect(overflow).toEqual([]);",
+        "expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);"
+      ],
+      "history_ref": "supporter-badge-layout.spec.ts",
+      "validation_ref": "supporter-badge-layout.spec.ts",
+      "remaining_proof_or_gap": "Every artwork request fails: descriptions must stay within cells in two themes/five widths. Actual supporter journey proves successful artwork only."
+    },
+    {
+      "path": "apps/subtitles/e2e/supporter-badge-layout.spec.ts",
+      "line": 8,
+      "test": "badge descriptions stay inside their cells when artwork fails at 720px in dark",
+      "decision": "R",
+      "boundary": "browser-template-artwork-failure-fixture",
+      "credible_failure": "Every artwork request fails: descriptions must stay within cells in two themes/five widths. Actual supporter journey proves successful artwork only.",
+      "assertions": [
+        "expect(stylesheet.ok()).toBeTruthy();",
+        "await expect(badges).toHaveCount(20);",
+        "await expect.poll(() => badges.locator(\"img\").evaluateAll(images => images.every(image => image instanceof HTMLImageElement && image.complete && image.naturalWidth === 0))).toBe(true);",
+        "expect(overflow).toEqual([]);",
+        "expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);"
+      ],
+      "history_ref": "supporter-badge-layout.spec.ts",
+      "validation_ref": "supporter-badge-layout.spec.ts",
+      "remaining_proof_or_gap": "Every artwork request fails: descriptions must stay within cells in two themes/five widths. Actual supporter journey proves successful artwork only."
+    },
+    {
+      "path": "apps/subtitles/e2e/supporter-badge-layout.spec.ts",
+      "line": 8,
+      "test": "badge descriptions stay inside their cells when artwork fails at 390px in dark",
+      "decision": "R",
+      "boundary": "browser-template-artwork-failure-fixture",
+      "credible_failure": "Every artwork request fails: descriptions must stay within cells in two themes/five widths. Actual supporter journey proves successful artwork only.",
+      "assertions": [
+        "expect(stylesheet.ok()).toBeTruthy();",
+        "await expect(badges).toHaveCount(20);",
+        "await expect.poll(() => badges.locator(\"img\").evaluateAll(images => images.every(image => image instanceof HTMLImageElement && image.complete && image.naturalWidth === 0))).toBe(true);",
+        "expect(overflow).toEqual([]);",
+        "expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);"
+      ],
+      "history_ref": "supporter-badge-layout.spec.ts",
+      "validation_ref": "supporter-badge-layout.spec.ts",
+      "remaining_proof_or_gap": "Every artwork request fails: descriptions must stay within cells in two themes/five widths. Actual supporter journey proves successful artwork only."
+    },
+    {
+      "path": "apps/subtitles/e2e/supporter-badge-layout.spec.ts",
+      "line": 8,
+      "test": "badge descriptions stay inside their cells when artwork fails at 320px in dark",
+      "decision": "R",
+      "boundary": "browser-template-artwork-failure-fixture",
+      "credible_failure": "Every artwork request fails: descriptions must stay within cells in two themes/five widths. Actual supporter journey proves successful artwork only.",
+      "assertions": [
+        "expect(stylesheet.ok()).toBeTruthy();",
+        "await expect(badges).toHaveCount(20);",
+        "await expect.poll(() => badges.locator(\"img\").evaluateAll(images => images.every(image => image instanceof HTMLImageElement && image.complete && image.naturalWidth === 0))).toBe(true);",
+        "expect(overflow).toEqual([]);",
+        "expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);"
+      ],
+      "history_ref": "supporter-badge-layout.spec.ts",
+      "validation_ref": "supporter-badge-layout.spec.ts",
+      "remaining_proof_or_gap": "Every artwork request fails: descriptions must stay within cells in two themes/five widths. Actual supporter journey proves successful artwork only."
+    },
+    {
+      "path": "apps/subtitles/e2e/test-instance-supporter-tests.ts",
+      "line": 46,
+      "test": "Supporter populated page shares a social PNG with safe fallbacks",
+      "decision": "R",
+      "boundary": "browser-template-share-failure-fixture",
+      "credible_failure": "PNG conversion must produce1200x630 file, suppress duplicate sharing, recover share rejection with download, cancel silently, and handle absent share API; real catalogue has no signed grant.",
+      "assertions": [
+        "await expect(page.locator(\".owned-grant.is-active\").first()).toContainText(\"Rosetta Crown\");",
+        "await expect(page.locator(\".subtitle-masterwork\")).toContainText(\"Perfect Sync\");",
+        "await expect(page.locator(\".subtitle-masterwork\")).toContainText(\"Rosetta Ascendant\");",
+        "await expect(page.locator(\".badge-level.collected\")).toHaveCount(17);",
+        "await expect(page.getByLabel(\"Subscriber service marks\").locator(\"span\")).toHaveCount(6);",
+        "await expect(page.getByText(\"Complete Fleet · Living\")).toBeVisible();",
+        "await expect(share).toBeDisabled();",
+        "await expect(shareStatus).toHaveText(\"Preparing share image…\");",
+        "await expect.poll(() => page.evaluate(() => (window as Window & { __shareEvidence?: object }).__shareEvidence)).toEqual({",
+        "await expect(shareStatus).toHaveText(\"Certificate shared.\");",
+        "await expect(share).toBeEnabled();",
+        "await expect(livingGrant.getByRole(\"link\", { name: \"Download SVG certificate\" })).toHaveAttribute(\"href\", certificatePath);",
+        "expect((await failedShareDownload).suggestedFilename()).toBe(\"kinosail-subtitles-living-standard-legacy.png\");",
+        "await expect(shareStatus).toHaveText(\"PNG certificate download started.\");",
+        "await expect(share).toBeEnabled();",
+        "await expect(shareStatus).toHaveText(\"\");",
+        "await expect(share).toBeEnabled();",
+        "expect(download.suggestedFilename()).toBe(\"kinosail-subtitles-living-standard-legacy.png\");",
+        "await expect(shareStatus).toHaveText(\"PNG certificate download started.\");"
+      ],
+      "history_ref": "test-instance-supporter-tests.ts",
+      "validation_ref": "test-instance-supporter-tests.ts",
+      "remaining_proof_or_gap": "Active/archive production-template grants, navigator.share failure/cancellation/no API, and PNG conversion are not exercised by the unowned real supporter catalogue journey."
+    },
+    {
+      "path": "apps/subtitles/e2e/test-instance-supporter-tests.ts",
+      "line": 122,
+      "test": "Supporter populated archive never implies an active entitlement",
+      "decision": "R",
+      "boundary": "browser-template-share-failure-fixture",
+      "credible_failure": "Archived populated entitlement must display Archived/Active through and four marks, never Yours; real empty catalogue cannot expose this misleading status.",
+      "assertions": [
+        "await expect(archived).toContainText(\"Active through\");",
+        "await expect(page.locator(\".family-living-standard .badge-level.current\")).toContainText(\"Archived\");",
+        "await expect(page.getByLabel(\"Subscriber service marks\").locator(\"span\")).toHaveCount(4);",
+        "await expect(page.locator(\".family-living-standard .badge-level.current\")).not.toContainText(\"Yours\");"
+      ],
+      "history_ref": "test-instance-supporter-tests.ts",
+      "validation_ref": "test-instance-supporter-tests.ts",
+      "remaining_proof_or_gap": "Active/archive production-template grants, navigator.share failure/cancellation/no API, and PNG conversion are not exercised by the unowned real supporter catalogue journey."
+    }
+  ],
+  "isolated_validation": {
+    "baseline": {
+      "command": "KINOSAIL_E2E_VIDEO=off KINOSAIL_E2E_OUTPUT_DIR=/tmp/frontend-native-subtitles-baseline ../../../scripts/tooling/gate-shell.sh -c 'exec node node_modules/@playwright/test/cli.js test \"$@\"' -- subtitle-inspector-loading.spec.ts subtitle-inspector-races.spec.ts --workers=1",
+      "working_directory": "apps/subtitles/e2e",
+      "passed": 21,
+      "failed": 0,
+      "log": "frontend-subtitles-vm-baseline.log",
+      "log_sha256": "50528460e4ee1346cd989d10a266907c6bc01bd89b393d2f38d8dd8d9f9066b7"
+    },
+    "final": {
+      "command": "KINOSAIL_E2E_VIDEO=off KINOSAIL_E2E_OUTPUT_DIR=/tmp/frontend-native-subtitles-final ../../../scripts/tooling/gate-shell.sh -c 'exec node node_modules/@playwright/test/cli.js test \"$@\"' -- subtitle-inspector-races.spec.ts --workers=1",
+      "working_directory": "apps/subtitles/e2e",
+      "passed": 18,
+      "failed": 0,
+      "log": "frontend-subtitles-vm-final.log",
+      "log_sha256": "b24ab60bd31c4dc1700b7831d12d3c91dbb34b00edfa78f415122f78135ccfed"
+    }
+  },
+  "proof_gaps": [
+    "Full-template inspector14 cases and live subtitle-defaults E2E runtime are delegated to coordinator, not run in this slice.",
+    "Synthetic route/template/VM contracts are not asserted equivalent to live end-to-end coverage.",
+    "No physical Safari/WebAuthn hardware testing here."
+  ],
+  "runner_reconciliation": "Coordinator owns test-container.sh browser_args removal of deleted loading filename; inspector-races remains selected."
+}

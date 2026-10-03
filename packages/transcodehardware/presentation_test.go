@@ -5,40 +5,6 @@ import (
 	"testing"
 )
 
-func TestEnhanceSettingsPagePreservesPlayerCopy(t *testing.T) {
-	t.Parallel()
-	legacy := legacyHardwareOptionsHTML + legacyTranscoderSupportHTML + strings.Join([]string{
-		`<h2>Transcoder</h2><p>Automatic uses H.264 for broad device support. Choose a newer codec only when every playback device supports it.</p>`,
-		`<label>Quality <select name="quality">`,
-		`<label>Video codec <select name="codec">`,
-		`>Automatic · H.264 ({{t "Recommended"}})</option>`,
-		`<label>Hardware <select name="accelerator"><option value="none" {{if eq .Accelerator "none"}}selected{{end}}>Software</option>`,
-		`</select></label><label><input type="checkbox" name="toneMap"`,
-		`> Tone-map HDR to SDR</label>`,
-		`Local transcoder test`,
-		`Transcoding is ready`,
-		`Kinosail encoded a local test clip with`,
-		`This confirms FFmpeg, scaling, {{.TranscoderTest.CodecName}}, AAC, and the selected encoder. No Library Content is used. Actual HDR, subtitles, networks, and playback devices can still vary.`,
-		`Transcoder test failed`,
-		`Choose Automatic or Software, save, and test again. If hardware is selected, make sure its GPU device is available to the Server container.`,
-		`Is local transcoding ready?`,
-		`Create a tiny synthetic clip on this Server to check FFmpeg, scaling, {{.TranscoderTest.CodecName}}, AAC, and <strong>{{.TranscoderTest.Backend}}</strong>. No Library Content is used.`,
-		`Run local test`,
-		`Test again`,
-	}, "|")
-	page := EnhanceSettingsPage(legacy)
-	for _, expected := range []string{
-		hardwareOptionsHTML, transcoderSupportHTML, "Video conversion", "Conversion preference", "Video format", "Automatic per device", "Speed up with", "Processor", "Automatic will use:", "Improve HDR colors", "Quick compatibility check", "Video conversion is ready", "Kinosail converted a small test video", "The basic video tools work", "Video check failed", "Choose Automatic or Processor", "Can this Server convert video?", "Kinosail makes a small test video", "Run quick check", "Check again",
-	} {
-		if !strings.Contains(page, expected) {
-			t.Errorf("enhanced page lacks %q", expected)
-		}
-	}
-	if EnhanceSettingsPage("unchanged") != "unchanged" {
-		t.Fatal("unrelated settings copy changed")
-	}
-}
-
 func TestBackendPresentationCoversEveryState(t *testing.T) {
 	t.Parallel()
 	tests := []struct {

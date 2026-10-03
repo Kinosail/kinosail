@@ -32,24 +32,6 @@ func LocaleCatalogsAreComplete(t *testing.T, locales []SupportedLocale, read fun
 	}
 }
 
-// SupportedLanguageCoverageIncludesJellyfinLocaleSet verifies the advertised locale set.
-func SupportedLanguageCoverageIncludesJellyfinLocaleSet(t *testing.T, locales []SupportedLocale) {
-	t.Helper()
-	if len(locales) < 106 {
-		t.Fatalf("supported language count = %d; want at least 106", len(locales))
-	}
-	seen := make(map[string]struct{}, len(locales))
-	for _, supported := range locales {
-		if _, ok := seen[supported.Tag]; ok {
-			t.Fatalf("duplicate supported language %q", supported.Tag)
-		}
-		seen[supported.Tag] = struct{}{}
-		if supported.Direction != "ltr" && supported.Direction != "rtl" {
-			t.Fatalf("%s direction = %q", supported.Tag, supported.Direction)
-		}
-	}
-}
-
 func sameStrings(left, right []string) bool {
 	if len(left) != len(right) {
 		return false

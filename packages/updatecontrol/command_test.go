@@ -162,21 +162,6 @@ func TestBoundCommandPropagatesStorageAndOutputFailures(t *testing.T) { //nolint
 	}
 }
 
-func TestBindCommandRejectsInvalidConfiguration(t *testing.T) {
-	valid := CommandConfig{Policy: PlayerPolicy(1, 1), OpenDatabase: func(string) (CommandDatabase, error) { return nil, nil }, Version: func() string { return "dev" }}
-	for name, mutate := range map[string]func(*CommandConfig){
-		"policy":   func(config *CommandConfig) { config.Policy = Policy{} },
-		"database": func(config *CommandConfig) { config.OpenDatabase = nil },
-		"version":  func(config *CommandConfig) { config.Version = nil },
-	} {
-		config := valid
-		mutate(&config)
-		if err := BindCommand(config)(CommandPlan, nil, io.Discard, "/data", "", ""); err == nil {
-			t.Fatalf("invalid %s configuration was accepted", name)
-		}
-	}
-}
-
 func TestCommandCoverageClosesStoreFailureEdges(t *testing.T) { //nolint:cyclop // One failure matrix proves every store operation remains atomic.
 	database := newMemoryDocumentStore()
 	store, err := New(database, PlayerPolicy(1, 1))

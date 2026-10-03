@@ -1,0 +1,115 @@
+#!/usr/bin/env python3
+"""Prepare a disposable MFA Owner, then run existing real settings journeys."""
+import argparse
+import base64
+import hashlib
+import hmac
+import json
+import os
+from pathlib import Path
+import struct
+import subprocess
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--url', required=True)
+parser.add_argument('--output', type=Path, required=True)
+parser.add_argument('command', nargs=argparse.REMAINDER)
+args = parser.parse_args()
+url = urllib.parse.urlsplit(args.url)
+if url.scheme != 'http' or url.hostname not in ('localhost', '127.0.0.1') or url.username or url.password or url.path or url.query or url.fragment:
+    parser.error('requires the fresh supported loopback HTTP test Server')
+command = args.command[1:] if args.command[:1] == ['--'] else args.command
+if not command:
+    parser.error('requires a browser command')
+args.output.mkdir(parents=True, exist_ok=False)
+receipt = {'command': command, 'urlScheme': url.scheme, 'ownerSetup': 'pending',
+           'sourceRevision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+           'helperSHA256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+           'browserCertificateBypasses': 'disabled', 'selection': 'two existing populated search journeys'}
+
+
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, request, file, code, message, headers, new_url):
+        return None
+
+
+opener = urllib.request.build_opener(NoRedirect)
+
+
+def call(path, method, body=None, token='', expected=200):
+    headers = {'Content-Type': 'application/json'}
+    if token:
+        headers['Authorization'] = 'Bearer ' + token
+    request = urllib.request.Request(args.url + path, data=json.dumps(body).encode() if body is not None else None,
+                                     headers=headers, method=method)
+    try:
+        with opener.open(request, timeout=10) as response:
+            if response.status != expected:
+                raise RuntimeError('Unexpected Owner preparation HTTP status')
+            content = response.read()
+            return json.loads(content) if response.headers.get_content_type() == 'application/json' else None
+    except urllib.error.HTTPError as error:
+        if expected == error.code == 303 and error.headers.get('Location') == '/':
+            error.close()
+            return None
+        raise RuntimeError(f'Owner preparation {path} returned HTTP {error.code}') from None
+
+
+def verify_results(path):
+    results = json.loads(path.read_text())
+    wanted = {'settings search crosses levels and preserves unsaved preferences',
+              'Owner settings search finds a setting across task families'}
+    found = []
+
+    def walk(suite):
+        for spec in suite.get('specs', []):
+            if spec['title'] in wanted:
+                tests = spec['tests']
+                if not tests or any(test['status'] != 'expected' or not test['results'] or
+                                    any(result['status'] != 'passed' for result in test['results']) for test in tests):
+                    raise RuntimeError('A required populated settings journey did not pass')
+                found.append(spec['title'])
+        for child in suite.get('suites', []):
+            walk(child)
+
+    for suite in results['suites']:
+        walk(suite)
+    if set(found) != wanted or len(found) != 2:
+        raise RuntimeError('Both required populated settings journeys must execute')
+    return {'passed': found, 'resultsSHA256': hashlib.sha256(path.read_bytes()).hexdigest()}
+
+
+exit_code = 1
+try:
+    owner = call('/api/v1/setup', 'POST', {'name': 'Owner', 'password': 'test-instance-password', 'totp': True}, expected=201)
+    secret = owner['totp']['secret']
+    digest = hmac.new(base64.b32decode(secret), struct.pack('>Q', int(time.time() / 30)), hashlib.sha1).digest()
+    offset = digest[-1] & 15
+    code = f'{(struct.unpack(">I", digest[offset:offset + 4])[0] & 0x7fffffff) % 1000000:06d}'
+    if call('/api/v1/me/mfa', 'PUT', {'code': code}, owner['token']) != {'enabled': True}:
+        raise RuntimeError('Owner MFA confirmation was not enabled')
+    call('/onboarding/finish', 'GET', token=owner['token'], expected=303)
+    receipt['ownerSetup'] = 'API MFA confirmed; onboarding complete'
+    project = os.environ.get('KINOSAIL_BROWSER_PROJECT', 'chromium')
+    env = dict(os.environ, KINOSAIL_TEST_INSTANCE='1', KINOSAIL_TEST_TOTP_SECRET=secret,
+               KINOSAIL_E2E_URL=args.url, KINOSAIL_E2E_ARTIFACT_DIR=str(args.output),
+               KINOSAIL_E2E_OUTPUT_DIR=str(args.output / 'browser-results'), KINOSAIL_BROWSER_WORKERS='1',
+               PLAYWRIGHT_HTML_OUTPUT_DIR=str(args.output / f'html-{project}'),
+               PLAYWRIGHT_JSON_OUTPUT_FILE=str(args.output / f'results-{project}.json'))
+    exit_code = subprocess.run(command, env=env, check=False).returncode
+    if exit_code == 0:
+        receipt['journeys'] = verify_results(args.output / f'results-{project}.json')
+except (RuntimeError, KeyError, OSError, ValueError) as error:
+    # Setup response bodies and credentials are deliberately absent from diagnostics.
+    receipt['errorClass'] = type(error).__name__
+    print('Populated settings preparation or verification failed; inspect the private E2E artifact.', flush=True)
+    exit_code = 1
+finally:
+    receipt['exitCode'] = exit_code
+    (args.output / 'setup-and-run.json').write_text(json.dumps(receipt, indent=2) + '\n')
+raise SystemExit(exit_code)

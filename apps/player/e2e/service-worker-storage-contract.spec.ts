@@ -34,13 +34,6 @@ test("uncached private artwork is delivered before cache maintenance finishes", 
 	expect(result).toEqual({first: "image", writes: 1, body: "image"});
 });
 
-test("service worker selects offline chunks through the target job index", async () => {
-	expect(serviceWorkerSource).toContain('indexedDB.open(offlineDatabase, 4)');
-	expect(serviceWorkerSource).toContain('chunks.createIndex("jobRange", ["jobID", "offset"])');
-	expect(serviceWorkerSource).toContain('request = index.get([jobID, offset])');
-	expect(serviceWorkerSource).not.toContain('store.getAll())).filter((chunk) => chunk.jobID === job.id)');
-});
-
 test("service worker streams verified IndexedDB chunks with backpressure", async ({ page }) => {
 	await page.route("https://kinosail.test/", (route) => route.fulfill({ contentType: "text/html", body: "<!doctype html><title>Offline stream contract</title>" }));
 	await page.goto("https://kinosail.test/");

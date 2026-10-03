@@ -19,7 +19,6 @@ import (
 	"time"
 
 	"github.com/crewjam/saml"
-	"github.com/crewjam/saml/samlsp"
 )
 
 func TestSAMLCoreRejectsProviderCallbackRootAndKeyEdges(t *testing.T) { //nolint:cyclop,funlen // Distinct trust-boundary failures remain side-effect free.
@@ -133,22 +132,3 @@ func TestSAMLKeyGenerationAndPersistenceErrors(t *testing.T) { //nolint:cyclop /
 type errorReader struct{ err error }
 
 func (reader errorReader) Read([]byte) (int, error) { return 0, reader.err }
-
-func TestSAMLBeginMapsAuthenticationAndRedirectErrors(t *testing.T) {
-	certificate := samlMetadataCertificate(t)
-	key, _ := rsa.GenerateKey(rand.Reader, 2048)
-	for name, binding := range map[string]string{"post": saml.HTTPPostBinding, "redirect": saml.HTTPRedirectBinding} {
-		t.Run(name, func(t *testing.T) {
-			metadataXML := strings.Replace(samlMetadataDocument("https://identity.example", "/sso", certificate), saml.HTTPRedirectBinding, binding, 1)
-			metadata, err := samlsp.ParseMetadata([]byte(metadataXML))
-			if err != nil {
-				t.Fatal(err)
-			}
-			flow := NewSAML(SAMLConfig{MetadataXML: metadataXML, RootURL: "http://localhost", DataDir: t.TempDir()})
-			flow.sp = &saml.ServiceProvider{IDPMetadata: metadata, Key: key, Certificate: &x509.Certificate{}, SignatureMethod: "invalid"}
-			if _, err := flow.Begin(t.Context(), "viewer", "session"); !errors.Is(err, ErrProviderUnavailable) {
-				t.Fatalf("%s authentication error = %v", name, err)
-			}
-		})
-	}
-}

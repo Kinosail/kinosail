@@ -57,7 +57,6 @@ tar -xzf "$output/kinosail-core-v1.2.3-$host_os-$host_arch.tar.gz" -C "$output/h
 [[ "$("$output/host/kinosail" version)" == v1.2.3 ]]
 "$output/host/kinosail" update-artifact <"$output/kinosail-release.json" | grep -Fq "kinosail-core-v1.2.3-$host_os-$host_arch.tar.gz"
 python3 "$(dirname "$0")/test-native-contract.py" "$output/host/native-installation.json"
-"$(dirname "$0")/test-native-contract.sh"
 archive_script="$(dirname "$0")/package-native-archive.py"
 if python3 "$archive_script" rar "$output/invalid" "$output/host/kinosail" "$output/kinosail-native-installation.json" LICENSE THIRD_PARTY_NOTICES.md >/dev/null 2>&1; then
 	printf 'archive helper accepted an unknown format\n' >&2

@@ -1,0 +1,105 @@
+{
+  "schema": "kinosail-independent-e2e-harness-review-v1",
+  "reviewer": "frontend_native",
+  "source_head_at_read": "75b6981748b42f94a510aac872396ca44e614247",
+  "source_mode": "Working tree: proposed uncommitted harness changes. File hashes below identify exact reviewed contents; no clean-SHA execution claim.",
+  "outcome": "approve harness structure and live search proof selection; explicit setup receipt response/redirect checks recommended before claiming all preparation outcomes. Actual execution and downloaded archive completeness still required.",
+  "failure_analysis_precedes_implementation": "Read artifact-failure-analysis.md populated journey and hidden-upload sections before reviewing helper. This review adds no isolated tests.",
+  "findings": [
+    {
+      "boundary": "fresh-install versus prepared state",
+      "evidence": "test-container.sh runs its unchanged existing browser suite first, then start_fresh_server destroys disposable container/state volumes and creates fresh ones before each project helper. KINOSAIL_TEST_INSTANCE is confined to helper child env; fresh-install suite is not misclassified as prepared."
+    },
+    {
+      "boundary": "actual API and browser identity",
+      "evidence": "POST /api/v1/setup totp:true uses Owner and test-instance-password matching layout-audit-helpers.login. Setup returns pending enrollment and recent session; PUT /api/v1/me/mfa calls confirm+MarkStrong; auth.owner GET /onboarding/finish writes OnboardingPending=false and redirects root. Existing test-instance.sh uses same setup+MFA endpoints and credentials with API onboarding disable. Generated TOTP secret passed only to child env, not receipt/log."
+    },
+    {
+      "boundary": "genuine search proof",
+      "evidence": "Selected unchanged settings-discovery and layout-audit-shell @smoke tests visit actual /settings after real browser password/MFA login. They exercise index/search results, Basic\u2192Advanced/hash/focus navigation, unsaved input preservation, no-results/Escape, groups and actual Axe/layout/screenshot checks at 1440/390/320. No setContent/route mocking for these journeys. Removed/retained source assertions require exact per-row comparison; passing browser selection alone does not justify every search test deletion."
+    },
+    {
+      "boundary": "skip/flaky/selection false green",
+      "evidence": "verify_results recursively requires both existing exact titles exactly once, nonempty tests and results, expected test status and every attempt passed. Missing/skipped/failed/interrupted/retry-failed outcomes cannot certify success even if command exits zero. Browser project selected via inline environment; serial workers=1 avoids shared Server name writes."
+    },
+    {
+      "boundary": "artifact overwrite and upload completeness",
+      "evidence": "settings-project output is newly created with exist_ok=False, nested under outer private artifact directory. Child config directs JSON/HTML/screenshots/browser output to this separate directory. Outer recorder hashes all nested regular evidence and setup-and-run.json after completion and retains command failures. include-hidden-files:true only on the two existing E2E artifact upload roots includes .last-run.json; uploader success still needs downloaded checksum-member verification."
+    },
+    {
+      "boundary": "supported transport and credentials",
+      "evidence": "Helper rejects all schemes except loopback HTTP and URLs containing userinfo/path/query/fragment. Test browser config retains ignoreHTTPSErrors:false; no browser certificate flags added. Existing curl --insecure text is unchanged and browser branch URL is HTTP. Synthetic credentials may occur in private traces; complete real environment/auth state is not dumped."
+    }
+  ],
+  "hardening_requested": [
+    {
+      "boundary": "setup outcome truthfulness",
+      "evidence": "call currently accepts any successful status and follows redirects; ignored MFA JSON could someday say enabled:false, and owner finish redirect to /login could return200. Current production implementations return201 setup,200 enabled:true confirm,303 root finish. Require exact expected response/redirect or explicit state read before writing API MFA confirmed; onboarding complete. Real selected journeys make current search proof valid if they pass, but preparation receipt assertions should directly bind intended outcomes."
+    }
+  ],
+  "remaining_required_evidence": [
+    "New CI run at committed exact source: both selected Player search titles expected/passed, no skipped/flaky/retry-failed result.",
+    "Outer manifest exactRevisionProof and tested image revision correspond to CI source.",
+    "Download repaired upload and verify every SHA256SUMS member including .last-run.json and populated setup/result files.",
+    "Retain SmartSearch candidate until actual keeper execution and concrete per-assertion coverage review."
+  ],
+  "execution": "Source-only review; no local builds, Podman/Docker, browser run or lint.",
+  "reviewed_files": [
+    {
+      "file": "scripts/ci/run-populated-settings.py",
+      "sha256": "aa6fa33fac937f3f094404793c13f866c69d3da9e9fc19e470aad90a1ccbc136"
+    },
+    {
+      "file": "apps/player/scripts/test-container.sh",
+      "sha256": "5a08feb71dada11f6dde923cc3dcf27c5e183e45e805de22aabc6b5ac550d64e"
+    },
+    {
+      "file": ".github/workflows/app.yml",
+      "sha256": "f43bcc4d4fd7fd81187490840c1a79064d693113e3e36f990d43780000437446"
+    },
+    {
+      "file": "engineering/qa/2026-10-03-test-overhaul/artifact-failure-analysis.md",
+      "sha256": "ccc3aee3f53107731cd4c7e771710c3b8a0ec489efccfbccde08aea7cca8b17b"
+    },
+    {
+      "file": "scripts/ci/e2e-artifact.py",
+      "sha256": "aae4615ef6068671be8be429fe18f4f867da9190e8defd57f4767430be977345"
+    },
+    {
+      "file": "apps/player/e2e/settings-discovery.spec.ts",
+      "sha256": "d765950ba4aea3bf7a772620933e759bfef4da011be35a20c646f12847245eb4"
+    },
+    {
+      "file": "apps/player/e2e/layout-audit-shell.spec.ts",
+      "sha256": "d133c9f0e66d28e0d1128d52651b731a107a4f2cb797b785fee8bd4d0e5818f8"
+    },
+    {
+      "file": "apps/player/e2e/layout-audit-helpers.ts",
+      "sha256": "891c842533c36f85eae91c62d7aeba098f13717fbc9386574704cb40b7c1e00e"
+    },
+    {
+      "file": "apps/player/e2e/playwright.config.ts",
+      "sha256": "628d3a62d9b3e2fba1bc43f3cd58979acadf22c083e3559c73c4f750a97cc0b3"
+    },
+    {
+      "file": "apps/player/scripts/test-instance.sh",
+      "sha256": "1e4f6de145fd88f5b162cca9549f43506a42489f0eb09514da2529e5cb59d755"
+    },
+    {
+      "file": "apps/player/internal/server/auth_setup.go",
+      "sha256": "2a863e8f39731259dda200fcbe65bd20d4cccbcd77f2d18465e302dc4024c91d"
+    },
+    {
+      "file": "apps/player/internal/server/mfa.go",
+      "sha256": "7d3ed83ecca5196117e3b3e11386a9c06628d3c6cee9dfa09a62baddfbea30fb"
+    },
+    {
+      "file": "packages/identitycore/handlers.go",
+      "sha256": "8a487fbab9ccb9d842c2b943e1952e25bd897a96e21098f3b471237b7819734d"
+    },
+    {
+      "file": "apps/player/internal/server/settings_http.go",
+      "sha256": "8be3becd44d99c36aa68e438edce2e6c638fdc5e9c17a7720300c6a40df425a9"
+    }
+  ]
+}

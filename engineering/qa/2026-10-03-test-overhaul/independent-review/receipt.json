@@ -1,0 +1,239 @@
+{
+  "schema": "kinosail-independent-integrated-review-v1",
+  "reviewer": "frontend_native",
+  "source_sha": "694cf408ecc021d83af3f6c0d64df058a3bdacd7",
+  "baseline_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+  "outcome": "approve physical removal/keeper integrity and retained-body assertion changes; runtime validation remains required",
+  "environment": {
+    "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+    "python": "3.14.7",
+    "mode": "read-only exact git show/ls-tree; no builds/browser/native device actions"
+  },
+  "scope": {
+    "go_owner_ledgers": [
+      "player-backend.json",
+      "subtitles-shared.json",
+      "shared-identity.json",
+      "player-nonserver.json"
+    ],
+    "other_owner_ledgers": [
+      "frontend-native.json including embedded Android ledger",
+      "frontend-player-fixture-e2e.json",
+      "frontend-subtitles-fixture-e2e.json",
+      "tooling.json"
+    ],
+    "deduplication": "Go overlapping owner rows deduplicated by exact file/current_name; no sub-audit packet decisions counted as extra declarations."
+  },
+  "go": {
+    "tracked_test_files": 1233,
+    "current_declarations": 3457,
+    "decision_counts": {
+      "R": 3216,
+      "D": 236,
+      "F": 174,
+      "C": 65
+    },
+    "D_still_present": 0,
+    "R_F_missing": 0,
+    "pending": 0,
+    "C_physically_retained": 65,
+    "overlap_disagreements": [],
+    "new_upstream_declarations_preserved": [
+      {
+        "file": "apps/player/internal/server/hls_bandwidth_delivery_test.go",
+        "name": "TestRealBlackIntroHLSBandwidthSurvivesCachedMasterReuse",
+        "line": 26
+      },
+      {
+        "file": "packages/identitycore/session_cookie_issuance_boundary_test.go",
+        "name": "TestCookieIssuancePreservesPersistedExpiryAcrossSecondBoundary",
+        "line": 11
+      }
+    ]
+  },
+  "frontend_native_tooling": {
+    "rows": 1116,
+    "decision_counts": {
+      "R": 1095,
+      "D": 10,
+      "F": 10,
+      "C": 1
+    },
+    "D_still_present": 0,
+    "R_F_missing": 0,
+    "baseline_unresolved": 0,
+    "explicit_keeper_failures": []
+  },
+  "retained_go_bodies": {
+    "compared": 3455,
+    "extraction_gaps": [],
+    "changed_count": 12,
+    "manual_review": [
+      {
+        "file": "apps/player/internal/server/passkeys_test.go",
+        "name": "TestPasskeyCeremoniesAreLocalAndServerSide",
+        "current_name": "TestPasskeyCeremoniesAreLocalAndServerSide",
+        "decision": "R",
+        "baseline_body_sha256": "ee007905172fbfd1cd1379a31aa77b4a9c924491c8b506ba377799261ec8da63",
+        "current_body_sha256": "6b1611c424a5ec60c0c2b59df03d9fecd4b446c740d2e12541352d35db8a97c3",
+        "review": "approve",
+        "evidence": "Only passkeys.js asset version 15\u219216 follows preserved upstream auth451; assertion behavior unchanged."
+      },
+      {
+        "file": "apps/player/internal/server/passkeys_test.go",
+        "name": "TestPasskeyLoginIsAvailableFromSignInPage",
+        "current_name": "TestPasskeyLoginIsAvailableFromSignInPage",
+        "decision": "R",
+        "baseline_body_sha256": "50517b7255330a578e6f9345d822cd95a8843cb7fab4ae1b5ae9fcfad8469ddb",
+        "current_body_sha256": "67388e987b0acc25de2b6790f56400592dee8355d4c10a119a13afc5dc0bb7c6",
+        "review": "approve",
+        "evidence": "Only passkeys.js asset version 15\u219216 follows preserved upstream auth451; assertion behavior unchanged."
+      },
+      {
+        "file": "apps/subtitles/internal/server/passkey_lifecycle_internal_test.go",
+        "name": "TestPasskeyRemovalRequiresRecentStrongAuthentication",
+        "current_name": "TestPasskeyRemovalRequiresSessionAndValidIdentifier",
+        "decision": "F",
+        "baseline_body_sha256": "ac7f48c36398e01e4790a20b6455cdc86f52e6a74b2989c491a7710e719c9cd1",
+        "current_body_sha256": "40833973dbcda7e9566b0c43958a4530c2af4a3a28fffbb14eaf21ae885bc271",
+        "review": "approve",
+        "evidence": "Explicit honest declaration rename and explanatory nolint comment only; executable assertions unchanged."
+      },
+      {
+        "file": "apps/subtitles/internal/server/passkeys_test.go",
+        "name": "TestPasskeyCeremoniesAreLocalAndServerSide",
+        "current_name": "TestPasskeyCeremoniesAreLocalAndServerSide",
+        "decision": "R",
+        "baseline_body_sha256": "a1c41697c16b29c93fd998e82e5390abda5278b22cfcbb7c9facd458f3796466",
+        "current_body_sha256": "950624f0610cc3ca2539f1ba8bf698b354ef03532c3fcb5486826cc33025e1d8",
+        "review": "approve",
+        "evidence": "Only passkeys.js asset version 15\u219216 follows preserved upstream auth451; assertion behavior unchanged."
+      },
+      {
+        "file": "apps/subtitles/internal/server/passkeys_test.go",
+        "name": "TestPasskeyLoginIsAvailableFromSignInPage",
+        "current_name": "TestPasskeyLoginIsAvailableFromSignInPage",
+        "decision": "R",
+        "baseline_body_sha256": "50517b7255330a578e6f9345d822cd95a8843cb7fab4ae1b5ae9fcfad8469ddb",
+        "current_body_sha256": "67388e987b0acc25de2b6790f56400592dee8355d4c10a119a13afc5dc0bb7c6",
+        "review": "approve",
+        "evidence": "Only passkeys.js asset version 15\u219216 follows preserved upstream auth451; assertion behavior unchanged."
+      },
+      {
+        "file": "apps/subtitles/internal/server/remote_access_security_test.go",
+        "name": "TestOwnerKillSwitchFailsPublicAccessClosedAndPersists",
+        "current_name": "TestOwnerCanPersistAndResetPublicKillSwitch",
+        "decision": "F",
+        "baseline_body_sha256": "824db12d2664c215f409223ac4ba7fbbaea1fa7d4bc603549383dc806b856003",
+        "current_body_sha256": "8727f785e655f4dcfa435b2f810987c07a1696cc5bd38e03281eecfdc125b79a",
+        "review": "approve",
+        "evidence": "Explicit honest declaration rename and explanatory nolint comment only; executable assertions unchanged."
+      },
+      {
+        "file": "apps/subtitles/internal/server/remote_security_audit_internal_test.go",
+        "name": "TestRemoteSecurityMutationsHaveStableAuditActions",
+        "current_name": "TestRemoteSecurityMutationsHaveStableAuditActions",
+        "decision": "C",
+        "baseline_body_sha256": "01b70ad26d20a042019a14b3ae201bc100c57fda18287d5d3bfd7356a2cfcb23",
+        "current_body_sha256": "7b71403a41556a9b510ef65f75754f53fb5dcf5b2f9ed6062db7118f878b9e32",
+        "review": "approve",
+        "evidence": "Four exact API method/path/action classification rows removed; all four remain in packages/auditjournal/classification_test.go::TestDynamicAuditActionsCoverEveryRouteFamily. App auditAction delegates directly to Classify with an override map containing no affected path. Two unique app paths (bare media-shares/claim and web /settings/remote/kill) remain. This proves isolated classification coverage, not emitted-event or browser E2E equivalence."
+      },
+      {
+        "file": "apps/subtitles/internal/server/subsource_provider_internal_test.go",
+        "name": "TestSubSourceRejectsUnsafeOrAmbiguousResults",
+        "current_name": "TestSubSourceRejectsUnsafeOrAmbiguousResults",
+        "decision": "F",
+        "baseline_body_sha256": "22ab0c82a1b8eddcd5cad11cc5a4f35735c160e3ed56ec3c112e2d02f80de6c5",
+        "current_body_sha256": "5f265978e5188c11a3a1dd6169fded4fa963904e950a1c4ef4918623f35bfaa4",
+        "review": "approve",
+        "evidence": "Adds valid positive control, correct language and pagination, valid 50-row boundary then 51-row rejection; previously preempted negative fixtures are strengthened."
+      },
+      {
+        "file": "apps/subtitles/internal/server/subtitle_excellence_internal_test.go",
+        "name": "TestSubtitleCleanupPreservesSpokenURLsAndRepeatedDialogue",
+        "current_name": "TestSubtitleCleanupPreservesSpokenURLsAndRepeatedDialogue",
+        "decision": "F",
+        "baseline_body_sha256": "996b278cbd2e270beed82a3f3c50d9b7f2249930bc1a3b4605219d14f481b5c8",
+        "current_body_sha256": "08165914f61ba4172a786517e0844fd5a6dd82b73d4927da7a07803b7b2bb1d8",
+        "review": "approve",
+        "evidence": "Adds exact text assertions for each retained spoken URL/repeated-dialogue cue; existing count/duplicate assertions preserved."
+      },
+      {
+        "file": "apps/subtitles/internal/server/subtitle_sync_behavior_internal_test.go",
+        "name": "TestSynchronizeCandidateRejectsPreservedSubtitle",
+        "current_name": "TestSynchronizeCandidateRejectsPreservedSubtitle",
+        "decision": "F",
+        "baseline_body_sha256": "f7cb1bba926776ac1ee3ba13fdbc3161cbd786e1f7adde95ddce1ab9efdf6877",
+        "current_body_sha256": "636ad4441140a4aff7245523aedbc292e1ae40a6803c962e51838e2cfe8e2285",
+        "review": "approve",
+        "evidence": "Adds valid correctable synthetic speech control, exact timing-mismatch error for Preserve, and aligned Preserve byte/evidence positive control. Old empty-input generic-error false positive is replaced with the actual intended boundary."
+      },
+      {
+        "file": "packages/watchrooms/http_test.go",
+        "name": "TestHTTPWebSocketPreservesLeaderAndValidationRules",
+        "current_name": "TestHTTPWebSocketPreservesLeaderAndValidationRules",
+        "decision": "F",
+        "baseline_body_sha256": "d58b78303306cf092562fef3036d85abecbdc77a8766046dc7cd783ea4372124",
+        "current_body_sha256": "577dd250831cc8918ebef94a6a776460dba19046511203b464b346284b14a8e6",
+        "review": "approve",
+        "evidence": "Replaces any-read-error acceptance with assertHTTPConnectionClosed. Independently read helper in http_lifecycle_test.go: fails deadline/context expiry, requires WebSocket close status or EOF/UnexpectedEOF/net.ErrClosed, closes client after proof. Real peer-closure protection strengthened."
+      },
+      {
+        "file": "packages/watchrooms/http_test.go",
+        "name": "TestHTTPJoinAndAccessFailuresCloseConnections",
+        "current_name": "TestHTTPJoinAndAccessFailuresCloseConnections",
+        "decision": "F",
+        "baseline_body_sha256": "177d8df3f2d332e09bdf1002ef40aedc143e70412c9a79b2c6ff9942b83674a9",
+        "current_body_sha256": "bf0aecd34395638c164e0ddf27a0e8142b82843bf68ade23c0e4ce132f0ef1f6",
+        "review": "approve",
+        "evidence": "Replaces any-read-error acceptance with assertHTTPConnectionClosed. Independently read helper in http_lifecycle_test.go: fails deadline/context expiry, requires WebSocket close status or EOF/UnexpectedEOF/net.ErrClosed, closes client after proof. Real peer-closure protection strengthened."
+      }
+    ]
+  },
+  "named_keeper_resolution": [
+    {
+      "reported_reference": "TestMCPStdioCommandConnectsAsSoleOwner",
+      "resolution": "Actual subtest in packages/commandtest/cli.go::CLI.Run, executed by both app cmd/kinosail/main_test.go::TestCLIContract; function-name regex cannot resolve t.Run. Read complete owner/caller/subtest, actual child stdio sole-owner data-dir proof retained. Duplicate Player overlapping ledger reference counts once semantically."
+    },
+    {
+      "reported_reference": "TestResetKillIsStrictAndRemovesOnlyTheKillMarker",
+      "resolution": "Stale deleted helper name. Retained packages/remoteaccess/recovery_test.go::TestResetRequiresStopAndRestartsCurrentManager proves real stopped/kill/reset manager restart and reopen readiness; retained Player remote_access_security_test.go::TestOwnerKillSwitchFailsPublicAccessClosedAndPersists proves registered owner API reset204, Starting status, marker absence plus prior kill/restart/public closed/local access. Full bodies read; no unique app route protection lost. Tooling owner confirmed correction."
+    }
+  ],
+  "independence_and_limits": [
+    "This final review independently checks cross-owner physical removal/keeper presence and all retained Go body differences. It is not a fresh semantic review of every deleted declaration; full owner semantic ledgers and complementary tooling independent review remain the decision evidence.",
+    "Own frontend removals receive physical verification here; prior independent tooling/root reviews supply semantic independence.",
+    "R and F physically remain; every C remains physically present. No unresolved candidate is counted as implemented deletion.",
+    "Fixture/mocked/source assertion protection is described as isolated proof, never as genuine browser E2E equivalence.",
+    "Baseline ordinary Go terminal statuses originate in parent exact876 JSON logs. No new runtime result is fabricated by this inventory.",
+    "No tests, production code, workflows, required checks, deployment, TLS policy or other dirty work altered by this final review."
+  ],
+  "artifact_receipts": [
+    {
+      "file": "inventory-go.py",
+      "sha256": "5563b826e6fa13a28f4f797cf6adfc36ab9f4e4cecd94cec8312e8e8e80a7920"
+    },
+    {
+      "file": "inventory-other.py",
+      "sha256": "649e96199b7bcdf693d361dbf50d2cb53cd10ea6ed6f225f1b0d265de952e632"
+    },
+    {
+      "file": "retained-go-bodies.py",
+      "sha256": "2240453680463e089fbd22dcc92e596a768240bc78ab0b7af898cc24b2279b02"
+    },
+    {
+      "file": "go-inventory.json",
+      "sha256": "8c79429e5675f312898e017d4ede66ecf75eac421337516452731c4325ccc0ab"
+    },
+    {
+      "file": "other-inventory.json",
+      "sha256": "f882fdf074144b66b4d1de1085af017df796362b2da873ab557a25e048d59bdc"
+    },
+    {
+      "file": "retained-go-bodies.json",
+      "sha256": "69609cfd60021a1c88f5bc4d715951b4073d4e448c84ce9fbb9a6873602cfb1c"
+    }
+  ],
+  "reproduce": "See README.md for exact commands; scripts read commit blobs and ignore worktree changes."
+}

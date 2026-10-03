@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { login } from "./layout-audit-helpers";
 
-test("settings search crosses levels and preserves unsaved preferences", async ({ page }) => {
+test("settings search crosses levels and preserves unsaved preferences", { tag: "@smoke" }, async ({ page }) => {
  test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated test instance");
  await login(page);
  await page.goto("/settings");

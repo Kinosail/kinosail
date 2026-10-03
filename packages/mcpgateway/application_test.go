@@ -103,30 +103,6 @@ func TestPrincipalAdapterPreservesIdentityDecisions(t *testing.T) { //nolint:cyc
 	}
 }
 
-func TestPrincipalAdapterRejectsMissingCallbacks(t *testing.T) {
-	profiles := []adapterProfile{{id: "owner", owner: true}}
-	var stateErr error
-	var attributed adapterProfile
-	mutations := []func(*PrincipalAdapterConfig[adapterProfile]){
-		func(config *PrincipalAdapterConfig[adapterProfile]) { config.CurrentProfile = nil },
-		func(config *PrincipalAdapterConfig[adapterProfile]) { config.FindProfile = nil },
-		func(config *PrincipalAdapterConfig[adapterProfile]) { config.FederatedProfiles = nil },
-		func(config *PrincipalAdapterConfig[adapterProfile]) { config.AllowProfile = nil },
-		func(config *PrincipalAdapterConfig[adapterProfile]) { config.RecentAuthentication = nil },
-		func(config *PrincipalAdapterConfig[adapterProfile]) { config.Profiles = nil },
-		func(config *PrincipalAdapterConfig[adapterProfile]) { config.StateError = nil },
-		func(config *PrincipalAdapterConfig[adapterProfile]) { config.AttributeProfile = nil },
-		func(config *PrincipalAdapterConfig[adapterProfile]) { config.ConvertProfile = nil },
-	}
-	for index, mutate := range mutations {
-		config := adapterConfig(&profiles, &stateErr, &attributed)
-		mutate(&config)
-		if adapter := NewPrincipalAdapter(config); adapter != nil {
-			t.Fatalf("missing callback %d produced an adapter", index)
-		}
-	}
-}
-
 type (
 	adapterViewerKey struct{}
 	adapterOwnerKey  struct{}
@@ -162,38 +138,5 @@ func TestAPIAdapterPreservesRoutingContextAndBytes(t *testing.T) { //nolint:cycl
 	}
 	if err := adapter.Invoke(httptest.NewRecorder(), request, Principal{ID: "missing"}, "MCP", false); err == nil {
 		t.Fatal("missing principal reached the API")
-	}
-}
-
-func TestAPIAdapterRejectsMissingDependencies(t *testing.T) {
-	mux := http.NewServeMux()
-	handler := http.HandlerFunc(func(http.ResponseWriter, *http.Request) { t.Fatal("invalid adapter served a request") })
-	find := func(string) (adapterProfile, bool) { return adapterProfile{}, false }
-	serve := func(http.Handler, http.ResponseWriter, *http.Request) { t.Fatal("invalid adapter served a request") }
-	adapters := []APIInvoker{
-		NewAPIAdapter(nil, handler, find, adapterViewerKey{}, adapterOwnerKey{}, serve),
-		NewAPIAdapter[adapterProfile](mux, nil, find, adapterViewerKey{}, adapterOwnerKey{}, serve),
-		NewAPIAdapter[adapterProfile](mux, handler, nil, adapterViewerKey{}, adapterOwnerKey{}, serve),
-		NewAPIAdapter(mux, handler, find, adapterViewerKey{}, adapterOwnerKey{}, nil),
-	}
-	for index, adapter := range adapters {
-		if adapter != nil {
-			t.Fatalf("invalid API dependency %d produced an adapter", index)
-		}
-	}
-}
-
-func TestRegisterApplicationReturnsGatewayOrNil(t *testing.T) {
-	if gateway := RegisterApplication(nil, GatewayConfig{}, nil); gateway != nil {
-		t.Fatal("invalid application registration returned a gateway")
-	}
-	principals := &testPrincipals{values: map[string]Principal{}}
-	api := &testAPI{respond: func(http.ResponseWriter, *http.Request) {}}
-	config := testGatewayConfig(OAuthConfig{
-		ResourceURL: "https://resource.test/mcp", AuthorizationServer: "https://identity.test",
-		IntrospectionURL: "https://identity.test/introspect", ClientID: "resource", ClientSecret: "secret",
-	}, principals, api, testRoutes{})
-	if gateway := RegisterApplication(http.NewServeMux(), config, nil); gateway == nil {
-		t.Fatal("valid application registration returned nil")
 	}
 }

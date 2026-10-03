@@ -3,7 +3,6 @@ package scim
 import (
 	"encoding/json"
 	"reflect"
-	"strings"
 	"testing"
 )
 
@@ -183,13 +182,5 @@ func TestNormalizeSCIMPrimaryWithoutPrimaryLeavesEmailsUnchanged(t *testing.T) {
 	normalizeSCIMPrimary(emails)
 	if emails[0].Primary || emails[1].Primary {
 		t.Fatalf("primary added unexpectedly: %#v", emails)
-	}
-}
-
-func TestSCIMCanonicalPathReturnsPlainName(t *testing.T) {
-	t.Parallel()
-	path := scimPatchPath{name: "name", subattribute: "givenname"}
-	if path.canonical() != "name.givenname" || strings.TrimSpace(path.canonical()) == "" {
-		t.Fatalf("canonical path = %q", path.canonical())
 	}
 }

@@ -1,0 +1,282 @@
+{
+  "run_id": 37150700625,
+  "pr_head_sha": "694cf408ecc021d83af3f6c0d64df058a3bdacd7",
+  "workflow_url": "https://github.com/Kinosail/kinosail/actions/runs/37150700625",
+  "limitation": "Uploader omitted hidden .last-run.json; available evidence hashes verified, archive is incomplete. Repaired upload must pass a new complete checksum verification. Player search cases were selected but SKIPPED because KINOSAIL_TEST_INSTANCE was unset; they do not prove coverage.",
+  "artifacts": [
+    {
+      "archive_sha256": "5a6e4f79f53b4dd75e663108d0e82ca72fe60c244c02b1527b9e9ba0efa7fafd",
+      "artifact_id": 11283762936,
+      "artifact_url": "https://github.com/Kinosail/kinosail/actions/runs/37150700625/artifacts/11283762936",
+      "source_revision": "d94c435a1686458b4d74dc86fa4821e253573f8c",
+      "sourceUnchanged": true,
+      "exactRevisionProof": true,
+      "command": [
+        "./scripts/test-container.sh"
+      ],
+      "environment": {
+        "CI": "true",
+        "CONTAINER_ENGINE": "docker",
+        "KINOSAIL_BROWSER_TEST": "1",
+        "KINOSAIL_BROWSER_MATRIX": "",
+        "KINOSAIL_BROWSER_PROJECT": "chromium",
+        "KINOSAIL_BROWSER_SMOKE": "1",
+        "KINOSAIL_BROWSER_WORKERS": "3",
+        "KINOSAIL_TEST_IMAGE": "localhost/kinosail-player:d94c435a1686458b4d74dc86fa4821e253573f8c",
+        "KINOSAIL_TEST_IMAGE_READY": "1"
+      },
+      "tools": [
+        {
+          "command": [
+            "go",
+            "version"
+          ],
+          "exitCode": 0,
+          "stdout": "go version go1.27.0 linux/amd64",
+          "stderr": "go: downloading go1.27.0 (linux/amd64)"
+        },
+        {
+          "command": [
+            "node",
+            "--version"
+          ],
+          "exitCode": 0,
+          "stdout": "v26.10.0",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "pnpm",
+            "--version"
+          ],
+          "exitCode": 0,
+          "stdout": "11.22.0",
+          "stderr": ""
+        }
+      ],
+      "platform": {
+        "system": "Linux",
+        "release": "6.17.0-1022-azure",
+        "machine": "x86_64",
+        "python": "3.12.3"
+      },
+      "container": {
+        "command": [
+          "docker",
+          "image",
+          "inspect",
+          "--format",
+          "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}",
+          "localhost/kinosail-player:d94c435a1686458b4d74dc86fa4821e253573f8c"
+        ],
+        "exitCode": 0,
+        "stdout": "sha256:88e344caf4eb02a0e926ece3e647a7e28a82b38722dfcbff67bbd1dd3fd5c476 d94c435a1686458b4d74dc86fa4821e253573f8c",
+        "stderr": ""
+      },
+      "testData": "Disposable generated media and UI fixtures; see hashed generators and command log.",
+      "stats": {
+        "startTime": "2026-10-03T20:16:09.563Z",
+        "duration": 44467.391,
+        "expected": 62,
+        "skipped": 21,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "available_checksums_verified": 151,
+      "missing_checksum_members": [
+        "browser-results-chromium/.last-run.json"
+      ],
+      "manifest_sha256": "a25f8a5fb568272e99da3b8e917288d26efefd89c7dd4083d1a98b24cb68f819",
+      "results_sha256": "79f3efb3d370ba17b7aa652b266bb1875e314cff57e2f3e3a2ad9256307fc3e7",
+      "keeper_results": [
+        {
+          "file": "layout-audit-shell.spec.ts",
+          "title": "Owner settings search finds a setting across task families",
+          "statuses": [
+            "skipped"
+          ],
+          "results": [
+            {
+              "status": "skipped",
+              "duration": 199,
+              "retry": 0,
+              "annotations": [
+                {
+                  "type": "skip",
+                  "description": "requires the populated public test instance",
+                  "location": {
+                    "file": "/home/runner/work/kinosail/kinosail/apps/player/e2e/layout-audit-shell.spec.ts",
+                    "line": 77,
+                    "column": 7
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "settings-discovery.spec.ts",
+          "title": "settings search crosses levels and preserves unsaved preferences",
+          "statuses": [
+            "skipped"
+          ],
+          "results": [
+            {
+              "status": "skipped",
+              "duration": 177,
+              "retry": 0,
+              "annotations": [
+                {
+                  "type": "skip",
+                  "description": "requires the populated test instance",
+                  "location": {
+                    "file": "/home/runner/work/kinosail/kinosail/apps/player/e2e/settings-discovery.spec.ts",
+                    "line": 5,
+                    "column": 7
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "screenshot_names": []
+    },
+    {
+      "archive_sha256": "1aeab2f7e7a4e04e2572876d29a2b7dd643fc739f54bf37d96f46d23363cf78e",
+      "artifact_id": 11283707915,
+      "artifact_url": "https://github.com/Kinosail/kinosail/actions/runs/37150700625/artifacts/11283707915",
+      "source_revision": "d94c435a1686458b4d74dc86fa4821e253573f8c",
+      "sourceUnchanged": true,
+      "exactRevisionProof": true,
+      "command": [
+        "./scripts/test-container.sh"
+      ],
+      "environment": {
+        "CI": "true",
+        "CONTAINER_ENGINE": "docker",
+        "KINOSAIL_BROWSER_TEST": "1",
+        "KINOSAIL_BROWSER_MATRIX": "",
+        "KINOSAIL_BROWSER_PROJECT": "chromium",
+        "KINOSAIL_BROWSER_SMOKE": "1",
+        "KINOSAIL_BROWSER_WORKERS": "1",
+        "KINOSAIL_TEST_IMAGE": "localhost/kinosail-subtitles:d94c435a1686458b4d74dc86fa4821e253573f8c",
+        "KINOSAIL_TEST_IMAGE_READY": "1"
+      },
+      "tools": [
+        {
+          "command": [
+            "go",
+            "version"
+          ],
+          "exitCode": 0,
+          "stdout": "go version go1.27.0 linux/amd64",
+          "stderr": "go: downloading go1.27.0 (linux/amd64)"
+        },
+        {
+          "command": [
+            "node",
+            "--version"
+          ],
+          "exitCode": 0,
+          "stdout": "v26.10.0",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "pnpm",
+            "--version"
+          ],
+          "exitCode": 0,
+          "stdout": "11.22.0",
+          "stderr": ""
+        }
+      ],
+      "platform": {
+        "system": "Linux",
+        "release": "6.17.0-1022-azure",
+        "machine": "x86_64",
+        "python": "3.12.3"
+      },
+      "container": {
+        "command": [
+          "docker",
+          "image",
+          "inspect",
+          "--format",
+          "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}",
+          "localhost/kinosail-subtitles:d94c435a1686458b4d74dc86fa4821e253573f8c"
+        ],
+        "exitCode": 0,
+        "stdout": "sha256:da597d87d2ed0263ec222849a75dca010f7cb28ff2de9374c1cb7771784c50a2 d94c435a1686458b4d74dc86fa4821e253573f8c",
+        "stderr": ""
+      },
+      "testData": "Disposable generated media and UI fixtures; see hashed generators and command log.",
+      "stats": {
+        "startTime": "2026-10-03T20:15:33.764Z",
+        "duration": 31287.952999999998,
+        "expected": 30,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "available_checksums_verified": 50,
+      "missing_checksum_members": [
+        "browser-results/.last-run.json"
+      ],
+      "manifest_sha256": "622e5a2eeec8267c040603705971a6a59f50662eda789619d18f8872398a52a9",
+      "results_sha256": "68e1612ce850c29b62e48fa35bfa52d374848819870c522e0fb4a97ceeb38de5",
+      "keeper_results": [
+        {
+          "file": "subtitle-dashboard-provider-tests.ts",
+          "title": "Twenty long language choices remain usable at the preference limit",
+          "statuses": [
+            "expected"
+          ],
+          "results": [
+            {
+              "status": "passed",
+              "duration": 5012,
+              "retry": 0,
+              "annotations": [
+                {
+                  "type": "serial",
+                  "location": {
+                    "file": "/home/runner/work/kinosail/kinosail/apps/subtitles/e2e/subtitle-dashboard.spec.ts",
+                    "line": 0,
+                    "column": 0
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "test-instance-supporter-tests.ts",
+          "title": "Supporter page loads twenty distinct badges with accessible names",
+          "statuses": [
+            "expected"
+          ],
+          "results": [
+            {
+              "status": "passed",
+              "duration": 3238,
+              "retry": 0,
+              "annotations": []
+            }
+          ]
+        }
+      ],
+      "screenshot_names": [
+        "browser-results/subtitle-dashboard-Twenty--0678f-ble-at-the-preference-limit-chromium/1024-twenty-subtitle-languages.png",
+        "browser-results/subtitle-dashboard-Twenty--0678f-ble-at-the-preference-limit-chromium/1440-twenty-subtitle-languages.png",
+        "browser-results/subtitle-dashboard-Twenty--0678f-ble-at-the-preference-limit-chromium/320-twenty-subtitle-languages.png",
+        "browser-results/subtitle-dashboard-Twenty--0678f-ble-at-the-preference-limit-chromium/390-twenty-subtitle-languages.png",
+        "browser-results/subtitle-dashboard-Twenty--0678f-ble-at-the-preference-limit-chromium/twenty-subtitle-languages-forced-colors.png",
+        "browser-results/test-instance-Supporter-pa-c1451-adges-with-accessible-names-chromium/1440-supporter-badges.png",
+        "browser-results/test-instance-Supporter-pa-c1451-adges-with-accessible-names-chromium/320-supporter-badges.png",
+        "browser-results/test-instance-Supporter-pa-c1451-adges-with-accessible-names-chromium/390-supporter-badges.png"
+      ]
+    }
+  ]
+}

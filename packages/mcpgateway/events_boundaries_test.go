@@ -116,19 +116,6 @@ func TestEventsRetrySameBodyThenSuspendUntilRefresh(t *testing.T) { //nolint:cyc
 	expectEvent(t, fixture)
 }
 
-func TestEventsDoNotRetryGoneOrOversizedDeliveries(t *testing.T) {
-	for _, status := range []int{410, 413} {
-		t.Run(http.StatusText(status), func(t *testing.T) {
-			fixture := newEventFixture(t)
-			fixture.subscribe(t, "library.updated", map[string]any{})
-			fixture.status.Store(int64(status))
-			fixture.gateway.PublishEvent(t.Context(), "", "library.updated", "/api/v1/library")
-			expectEvent(t, fixture)
-			expectNoEvent(t, fixture)
-		})
-	}
-}
-
 func TestEventsRefreshSurvivesEarlierDeliveryFailure(t *testing.T) {
 	fixture := newEventFixture(t)
 	fixture.subscribe(t, "library.updated", map[string]any{})

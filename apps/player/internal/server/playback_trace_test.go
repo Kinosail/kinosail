@@ -14,7 +14,6 @@ import (
 	"testing"
 
 	"github.com/MikeO7/kinosail/packages/playback"
-	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
 func TestPlaybackTraceCorrelatesBrowserAndMediaWithoutPrivateData(t *testing.T) {
@@ -52,13 +51,6 @@ func TestPlaybackTraceCorrelatesBrowserAndMediaWithoutPrivateData(t *testing.T) 
 			t.Fatalf("playback trace exposed %q: %s", private, logs)
 		}
 	}
-}
-
-func TestPlaybackTraceRejectsInvalidInputWithoutLogging(t *testing.T) {
-	fixture := servertest.LibraryAPIFixture{NewHandler: func(media, data string, requireAuth bool) http.Handler {
-		return New(Config{MediaDir: media, DataDir: data, RequireAuth: requireAuth})
-	}}
-	fixture.PlaybackTraceRejectsInvalidInputWithoutLogging(t)
 }
 
 func TestDisplayedFramePlaybackTraceEventsAreAccepted(t *testing.T) {

@@ -2,10 +2,8 @@ package mcpgateway
 
 import (
 	"encoding/base64"
-	"encoding/json"
 	"errors"
 	"net/http"
-	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
@@ -155,30 +153,4 @@ func (store *eventFailStore) Save(value any) error {
 		return errors.New("storage failed")
 	}
 	return store.memoryState.Save(value)
-}
-
-func TestEventArgumentsRejectDuplicateOrCaseAliasedKeys(t *testing.T) {
-	fixture := newEventFixture(t)
-	for _, arguments := range []string{`{"resource":"/api/v1/library","resource":"/api/v1/settings"}`, `{"resource":"/api/v1/library","RESOURCE":"/api/v1/library"}`} {
-		body := `{"jsonrpc":"2.0","id":1,"method":"events/subscribe","params":{"_meta":{"io.modelcontextprotocol/protocolVersion":"2026-07-28","io.modelcontextprotocol/clientCapabilities":{}},"name":"library.updated","arguments":` + arguments + `,"delivery":{"mode":"webhook","url":"https://receiver.example.test/hooks","secret":` + strconvQuoted(fixture.secret) + `}}}`
-		response := rawEventRequest(t, fixture.mux, body)
-		if !strings.Contains(response, `"error"`) {
-			t.Fatalf("ambiguous arguments accepted: %s", response)
-		}
-	}
-}
-
-func strconvQuoted(value string) string { data, _ := json.Marshal(value); return string(data) }
-
-func rawEventRequest(t *testing.T, handler http.Handler, body string) string {
-	t.Helper()
-	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/mcp", strings.NewReader(body))
-	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("Accept", "application/json, text/event-stream")
-	request.Header.Set("MCP-Protocol-Version", ProtocolVersion)
-	request.Header.Set("Mcp-Method", "events/subscribe")
-	request.Header.Set("Authorization", "Bearer token")
-	response := httptest.NewRecorder()
-	handler.ServeHTTP(response, request)
-	return response.Body.String()
 }

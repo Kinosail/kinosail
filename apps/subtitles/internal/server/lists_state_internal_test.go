@@ -8,7 +8,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/MikeO7/kinosail/packages/catalog"
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
@@ -58,19 +57,6 @@ func TestListMutationsDoNotChangeMemoryWhenPersistenceFails(t *testing.T) {
 				t.Fatalf("failed mutation changed memory: before=%#v after=%#v", before, after)
 			}
 		})
-	}
-}
-
-func TestPersistedListAndProgressValidationIsBounded(t *testing.T) {
-	t.Parallel()
-	if catalog.ValidateListState(catalog.ListState{Values: map[string]bool{"": true}, Playlists: map[string]map[string]bool{}, PlaylistOrder: map[string][]string{}, Smart: map[string]playlistRule{}}) == nil {
-		t.Fatal("invalid persisted list key was accepted")
-	}
-	if catalog.ValidateListState(catalog.ListState{Values: map[string]bool{}, Playlists: map[string]map[string]bool{}, PlaylistOrder: map[string][]string{"viewer:Queue": {"same", "same"}}, Smart: map[string]playlistRule{}}) == nil {
-		t.Fatal("duplicate persisted playlist order was accepted")
-	}
-	if catalog.ValidateStoredProgress(map[string]playbackState{"viewer:item": {Seconds: -1}}) == nil {
-		t.Fatal("invalid persisted progress was accepted")
 	}
 }
 

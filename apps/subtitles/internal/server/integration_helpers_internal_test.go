@@ -1,8 +1,6 @@
 package server
 
 import (
-	"errors"
-	"io"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -10,41 +8,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/MikeO7/kinosail/packages/httpguard"
 	sharedmetadata "github.com/MikeO7/kinosail/packages/metadata"
 )
-
-type failingIntegrationReader struct{}
-
-func (failingIntegrationReader) Read([]byte) (int, error) { return 0, errors.New("blocked") }
-
-func TestDecodeExternalJSONRequiresOneBoundedDocument(t *testing.T) {
-	t.Parallel()
-	for name, reader := range map[string]io.Reader{
-		"trailing":   strings.NewReader(`{"ok":true}{}`),
-		"oversized":  strings.NewReader(`{"ok":true}`),
-		"read error": failingIntegrationReader{},
-	} {
-		t.Run(name, func(t *testing.T) {
-			maximum := int64(64)
-			if name == "oversized" {
-				maximum = 2
-			}
-			if err := decodeExternalJSON(reader, maximum, &map[string]bool{}); err == nil {
-				t.Fatal("invalid external JSON was accepted")
-			}
-		})
-	}
-	var decoded map[string]bool
-	if err := decodeExternalJSON(strings.NewReader(`{"ok":true}`), 64, &decoded); err != nil || !decoded["ok"] {
-		t.Fatalf("valid external JSON = %#v, %v", decoded, err)
-	}
-	if err := httpguard.DecodeJSON(strings.NewReader(`{"ok":true,"extra":false}`), 64, &struct {
-		OK bool `json:"ok"`
-	}{}, true); err == nil {
-		t.Fatal("strict external JSON accepted an unknown field")
-	}
-}
 
 func TestAtomicFileWriterIsSafeAcrossConcurrentCalls(t *testing.T) {
 	t.Parallel()

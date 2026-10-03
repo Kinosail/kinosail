@@ -1,0 +1,89 @@
+{
+  "schema": "kinosail-independent-e2e-harness-approval-v1",
+  "reviewer": "frontend_native",
+  "source_sha": "8a1327a62e9a77b65c960e25a74963cef426cc69",
+  "outcome": "approve repaired harness source; prior HTML overwrite blocker resolved",
+  "supersedes": "Initial source review and overwrite addendum remain historical evidence. This committed-source review closes both the report isolation blocker and preparation-outcome hardening request.",
+  "resolved_findings": [
+    {
+      "finding": "Inherited HTML output erases first-run report",
+      "resolution": "Child env explicitly sets PLAYWRIGHT_HTML_OUTPUT_DIR to settings-project/html-project and PLAYWRIGHT_JSON_OUTPUT_FILE to settings-project/results-project.json. Installed Playwright1.63 environment precedence now selects separate paths. Fresh-install report remains under outer html-report; child HTML clear only touches its own folder."
+    },
+    {
+      "finding": "Redirect or ignored response can overclaim MFA/onboarding completion",
+      "resolution": "NoRedirect stops redirect following. Setup requires201; MFA requires200 with enabled:true; finish requires303 with exactly Location:/. Other statuses/redirects raise failure before writing completed setup. Registered production setup/MFA/owner finish bodies independently read and match sequence."
+    }
+  ],
+  "preserved_boundaries": [
+    "Unchanged fresh-install suite must succeed before prepared Owner run, with separate fresh disposable state for each browser project.",
+    "Exact two existing live search journeys run with matching synthetic Owner/TOTP, prepared-instance flag and one worker; no route/setContent mocks in these cases.",
+    "Recursive result check demands both titles exactly once and every attempt passed; skipped/missing/flaky/failed attempts cannot certify success.",
+    "Loopback supported HTTP only; ignoreHTTPSErrors remains false and no browser bypass flag added.",
+    "New separate output directory, safe synthetic credentials, command failure propagation, outer nested evidence checksums and private artifact-only hidden file upload remain intact.",
+    "Recorder input hashes now include preparation helper and shared transport script; moved expect_status retains status/body checking and adds required media_dir guard."
+  ],
+  "remaining_validation": [
+    "Execute committed CI and inspect both required title outcomes; source approval alone is not execution proof.",
+    "Download upload and verify every SHA256SUMS member including hidden .last-run.json, first-run report and prepared run reports/results/setup receipt.",
+    "Physical/removal/retained-body global inventory is intentionally held until coordinator supplies source checkpoint reconciled with newer origin/main."
+  ],
+  "scope_limits": "Source-only review. No builds, containers, browsers, lint or isolated testing additions by reviewer. No production/required-check changes by reviewer. SmartSearch remains retained pending actual successful proof.",
+  "reviewed_files": [
+    {
+      "file": "scripts/ci/run-populated-settings.py",
+      "sha256": "1887445160faaeb569dfa5df9544c3ec7c6395a5d1c43e1c65b3883271091366"
+    },
+    {
+      "file": "apps/player/scripts/test-container.sh",
+      "sha256": "cccac572df1a37fbea72cdff6aa68547a8d9e41cd628fdf3ce836f246b12175a"
+    },
+    {
+      "file": ".github/workflows/app.yml",
+      "sha256": "f43bcc4d4fd7fd81187490840c1a79064d693113e3e36f990d43780000437446"
+    },
+    {
+      "file": "scripts/ci/e2e-artifact.py",
+      "sha256": "61dfa64b0b675dd67e9e8c31c4e5e99ceecc63eb88d69a4b453a60a06c86d76a"
+    },
+    {
+      "file": "scripts/ci/test-container-transport.sh",
+      "sha256": "8da7af2267fd117b259fb70983fba0b76d036c7de2415f9f68e6f4707dbbb13c"
+    },
+    {
+      "file": "engineering/qa/2026-10-03-test-overhaul/artifact-failure-analysis.md",
+      "sha256": "2616913cad469a1c1c4706311f79c9fe3a9ca20be2cb4c46b4ffbefc4b384f81"
+    },
+    {
+      "file": "apps/player/e2e/playwright.config.ts",
+      "sha256": "628d3a62d9b3e2fba1bc43f3cd58979acadf22c083e3559c73c4f750a97cc0b3"
+    },
+    {
+      "file": "apps/player/e2e/settings-discovery.spec.ts",
+      "sha256": "d765950ba4aea3bf7a772620933e759bfef4da011be35a20c646f12847245eb4"
+    },
+    {
+      "file": "apps/player/e2e/layout-audit-shell.spec.ts",
+      "sha256": "d133c9f0e66d28e0d1128d52651b731a107a4f2cb797b785fee8bd4d0e5818f8"
+    },
+    {
+      "file": "apps/player/e2e/layout-audit-helpers.ts",
+      "sha256": "891c842533c36f85eae91c62d7aeba098f13717fbc9386574704cb40b7c1e00e"
+    },
+    {
+      "file": "apps/player/internal/server/auth_setup.go",
+      "sha256": "2a863e8f39731259dda200fcbe65bd20d4cccbcd77f2d18465e302dc4024c91d"
+    },
+    {
+      "file": "apps/player/internal/server/mfa.go",
+      "sha256": "7d3ed83ecca5196117e3b3e11386a9c06628d3c6cee9dfa09a62baddfbea30fb"
+    },
+    {
+      "file": "packages/identitycore/handlers.go",
+      "sha256": "8a487fbab9ccb9d842c2b943e1952e25bd897a96e21098f3b471237b7819734d"
+    },
+    {
+      "file": "apps/player/internal/server/settings_http.go",
+      "sha256": "8be3becd44d99c36aa68e438edce2e6c638fdc5e9c17a7720300c6a40df425a9"
+    }
+  ]
+}

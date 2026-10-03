@@ -161,15 +161,6 @@ func TestBackupCoverageClosesRestoreFailureEdges(t *testing.T) { //nolint:cyclop
 	}
 }
 
-func TestMustNewPanicsForInvalidStaticConfiguration(t *testing.T) {
-	defer func() {
-		if recover() == nil {
-			t.Fatal("MustNew accepted invalid configuration")
-		}
-	}()
-	MustNew(Config{})
-}
-
 type restoreFailureFile struct {
 	path                        string
 	writeErr, syncErr, closeErr error

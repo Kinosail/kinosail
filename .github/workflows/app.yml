@@ -168,6 +168,7 @@ jobs:
       - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
         with:
           image-ref: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
+          cache-dir: ${{ runner.temp }}/trivy-${{ inputs.app }}-${{ matrix.runner }}
           severity: CRITICAL,HIGH
           ignore-unfixed: true
           exit-code: "1"
@@ -177,7 +178,16 @@ jobs:
           CONTAINER_ENGINE: docker
           KINOSAIL_TEST_IMAGE: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
           KINOSAIL_TEST_IMAGE_READY: "1"
-        run: ./scripts/test-container.sh
+        run: python3 ../../scripts/ci/e2e-artifact.py --output "${{ runner.temp }}/${{ inputs.app }}-${{ matrix.runner }}-system-e2e-artifact" -- ./scripts/test-container.sh
+      - name: Keep verifiable system E2E artifact
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: ${{ inputs.app }}-${{ matrix.runner }}-system-e2e-${{ github.sha }}
+          path: ${{ runner.temp }}/${{ inputs.app }}-${{ matrix.runner }}-system-e2e-artifact
+          retention-days: 30
+          if-no-files-found: error
+          include-hidden-files: true
   browser:
     name: ${{ inputs.app }} populated browser (${{ matrix.engine }})
     if: fromJSON(inputs.plan)[inputs.app]
@@ -231,10 +241,10 @@ jobs:
           KINOSAIL_BROWSER_PROJECT: ${{ matrix.engine }}
           KINOSAIL_BROWSER_SMOKE: ${{ !fromJSON(inputs.plan).deep && '1' || '' }}
           KINOSAIL_BROWSER_WORKERS: ${{ inputs.app == 'player' && '3' || '1' }}
-          KINOSAIL_E2E_OUTPUT_DIR: ${{ runner.temp }}/${{ inputs.app }}-${{ matrix.engine }}-browser-results
+          KINOSAIL_E2E_OUTPUT_DIR: ${{ runner.temp }}/${{ inputs.app }}-${{ matrix.engine }}-e2e-artifact/browser-results
           KINOSAIL_TEST_IMAGE: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
           KINOSAIL_TEST_IMAGE_READY: "1"
-        run: ./scripts/test-container.sh
+        run: python3 ../../scripts/ci/e2e-artifact.py --output "${{ runner.temp }}/${{ inputs.app }}-${{ matrix.engine }}-e2e-artifact" -- ./scripts/test-container.sh
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         if: inputs.app == 'player' && matrix.engine == 'chromium'
         with:
@@ -267,24 +277,15 @@ jobs:
             .verification/startup/*/results/**/startup-measurements.json
           retention-days: 7
           if-no-files-found: error
-      - name: Keep Player fullscreen evidence
-        if: always() && inputs.app == 'player'
+      - name: Keep verifiable E2E artifact
+        if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: player-${{ matrix.engine }}-fullscreen-evidence
-          path: ${{ runner.temp }}/player-${{ matrix.engine }}-browser-results*/player-touch-fullscreen-*
-          retention-days: 7
-          if-no-files-found: ignore
-      - name: Keep browser failure evidence
-        if: failure()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
-        with:
-          name: ${{ inputs.app }}-${{ matrix.engine }}-browser-failures
-          path: |
-            ${{ runner.temp }}/${{ inputs.app }}-${{ matrix.engine }}-browser-results
-            ${{ runner.temp }}/${{ inputs.app }}-${{ matrix.engine }}-browser-results-${{ matrix.engine }}
-          retention-days: 7
-          if-no-files-found: ignore
+          name: ${{ inputs.app }}-${{ matrix.engine }}-e2e-${{ github.sha }}
+          path: ${{ runner.temp }}/${{ inputs.app }}-${{ matrix.engine }}-e2e-artifact
+          retention-days: 30
+          if-no-files-found: error
+          include-hidden-files: true
 
   required:
     name: ${{ inputs.app }} suite complete

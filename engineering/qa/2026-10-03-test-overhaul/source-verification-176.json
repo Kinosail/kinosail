@@ -1,0 +1,518 @@
+{
+  "schema": "kinosail-final-source-verification-v1",
+  "sourceRevision": "176b9ddc83e15f59f72102243ad56cf1bad17c4a",
+  "upstreamMain": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+  "baseline": "876b771a7dd0aef5e65957fcee87add0312535e8",
+  "utc": "2026-10-03T23:09:06.903308+00:00",
+  "environment": {
+    "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+    "python": "3.14.7",
+    "git": "git version 2.54.0 (Apple Git-157)"
+  },
+  "commands": [
+    {
+      "name": "global",
+      "command": [
+        "python3",
+        "engineering/qa/2026-10-03-test-overhaul/controls/verify-go-audit-integrity.py",
+        "--root",
+        ".",
+        "--output",
+        "/tmp/final-go-audit-integrity-176.json"
+      ],
+      "exitCode": 0,
+      "commandReceiptSHA256": "5fcd2713d2054bb4b00e87ab3cd79e0d3f23597c45e46062c192cbd11386686a",
+      "result": {
+        "checkout_sha": "176b9ddc83e15f59f72102243ad56cf1bad17c4a",
+        "original_declarations": 3691,
+        "actual_declarations": 3456,
+        "upstream_added": [
+          {
+            "file": "apps/player/internal/server/hls_bandwidth_delivery_test.go",
+            "name": "TestRealBlackIntroHLSBandwidthSurvivesCachedMasterReuse",
+            "body_sha256": "22179b202a6f61d4133768112922ae7b5daca8c6646c7ac2d2f87a4fc1a5c001"
+          },
+          {
+            "file": "packages/identitycore/session_cookie_issuance_boundary_test.go",
+            "name": "TestCookieIssuancePreservesPersistedExpiryAcrossSecondBoundary",
+            "body_sha256": "175cedd1a344d6a7f438fd432e5b6fb35469bc5f34d42745ddcdb9d3e404e03e"
+          },
+          {
+            "file": "packages/playback/hls_recipe_enums_test.go",
+            "name": "TestHLSRecipeEnumCacheIdentity",
+            "body_sha256": "fb7216e87eb0dece83c58044bad2599e2cdf2b813035a93bd003f34214a68841"
+          },
+          {
+            "file": "packages/playback/hls_recipe_enums_test.go",
+            "name": "TestHLSRecipeRejectsUntrustedEnums",
+            "body_sha256": "8100f64115ad9cd6fbe5158b19045dad7de2f412180511a2b151af5c8ad182a2"
+          }
+        ],
+        "upstream_changed": [
+          {
+            "file": "apps/player/internal/server/auth_all_routes_test.go",
+            "name": "TestEveryRegisteredRouteHasReviewedAnonymousAccess",
+            "body_sha256": "422ca8d22b9ce16a8b5af644196ac2d6ac247a6036533f87adf257e1543cbeb8"
+          },
+          {
+            "file": "apps/player/internal/server/passkeys_test.go",
+            "name": "TestPasskeyCeremoniesAreLocalAndServerSide",
+            "body_sha256": "6b1611c424a5ec60c0c2b59df03d9fecd4b446c740d2e12541352d35db8a97c3"
+          },
+          {
+            "file": "apps/player/internal/server/passkeys_test.go",
+            "name": "TestPasskeyLoginIsAvailableFromSignInPage",
+            "body_sha256": "67388e987b0acc25de2b6790f56400592dee8355d4c10a119a13afc5dc0bb7c6"
+          },
+          {
+            "file": "apps/player/internal/server/remote_browser_login_test.go",
+            "name": "TestPublicBrowserQuickConnectEndToEndBoundary",
+            "body_sha256": "4cfee42f0863e555c99059677979eb84e8464509f36ded2625a3d4538c061695"
+          },
+          {
+            "file": "apps/player/internal/server/trusted_https_test.go",
+            "name": "TestTrustedHTTPSWizardDefaultsToDuckDNSAndSupportsDeSEC",
+            "body_sha256": "d5f10d9e6844b3cd9c03b3bd8e32433fb15b3f81b9837391027813083033b54b"
+          },
+          {
+            "file": "apps/subtitles/internal/server/auth_all_routes_test.go",
+            "name": "TestEveryRegisteredRouteHasReviewedAnonymousAccess",
+            "body_sha256": "5c78216810b763bd0806b6e1f8eda35abe8a788f56c71cbf9b1f6109516e8ce3"
+          },
+          {
+            "file": "apps/subtitles/internal/server/passkeys_test.go",
+            "name": "TestPasskeyCeremoniesAreLocalAndServerSide",
+            "body_sha256": "950624f0610cc3ca2539f1ba8bf698b354ef03532c3fcb5486826cc33025e1d8"
+          },
+          {
+            "file": "apps/subtitles/internal/server/passkeys_test.go",
+            "name": "TestPasskeyLoginIsAvailableFromSignInPage",
+            "body_sha256": "67388e987b0acc25de2b6790f56400592dee8355d4c10a119a13afc5dc0bb7c6"
+          },
+          {
+            "file": "apps/subtitles/internal/server/remote_browser_login_test.go",
+            "name": "TestPublicBrowserQuickConnectEndToEndBoundary",
+            "body_sha256": "ceaa30304e4eabad4a02b6b849b1f4981e227a0a0fe420635ea09b7a2d50ec31"
+          },
+          {
+            "file": "packages/identitycore/sessions_test.go",
+            "name": "TestActivePublicAndSessionCopies",
+            "body_sha256": "20f96b02dc2ef5b4a1e287056c40adf0dea2e8227b4e3b708eb6762a7fc29061"
+          }
+        ],
+        "changed_assertions": [
+          {
+            "file": "apps/player/internal/server/auth_all_routes_test.go",
+            "name": "TestEveryRegisteredRouteHasReviewedAnonymousAccess",
+            "kind": "pinned_upstream_change",
+            "baseline_body_sha256": "a003582b185610b5d5185a5f8b188e969a1d76edc6108d9332784254ca32a901",
+            "candidate_body_sha256": "422ca8d22b9ce16a8b5af644196ac2d6ac247a6036533f87adf257e1543cbeb8"
+          },
+          {
+            "file": "apps/player/internal/server/passkeys_test.go",
+            "name": "TestPasskeyCeremoniesAreLocalAndServerSide",
+            "kind": "pinned_upstream_change",
+            "baseline_body_sha256": "ee007905172fbfd1cd1379a31aa77b4a9c924491c8b506ba377799261ec8da63",
+            "candidate_body_sha256": "6b1611c424a5ec60c0c2b59df03d9fecd4b446c740d2e12541352d35db8a97c3"
+          },
+          {
+            "file": "apps/player/internal/server/passkeys_test.go",
+            "name": "TestPasskeyLoginIsAvailableFromSignInPage",
+            "kind": "pinned_upstream_change",
+            "baseline_body_sha256": "50517b7255330a578e6f9345d822cd95a8843cb7fab4ae1b5ae9fcfad8469ddb",
+            "candidate_body_sha256": "67388e987b0acc25de2b6790f56400592dee8355d4c10a119a13afc5dc0bb7c6"
+          },
+          {
+            "file": "apps/player/internal/server/remote_browser_login_test.go",
+            "name": "TestPublicBrowserQuickConnectEndToEndBoundary",
+            "kind": "pinned_upstream_change",
+            "baseline_body_sha256": "72116ad46cec9784a8f2b8a363fbcd3a72c8ec99bb770e4b746c83ae2b24716a",
+            "candidate_body_sha256": "4cfee42f0863e555c99059677979eb84e8464509f36ded2625a3d4538c061695"
+          },
+          {
+            "file": "apps/player/internal/server/trusted_https_test.go",
+            "name": "TestTrustedHTTPSWizardDefaultsToDuckDNSAndSupportsDeSEC",
+            "kind": "pinned_upstream_change",
+            "baseline_body_sha256": "9defcec32b0cf94068abcff8c214b23f1b996ac94a1a0c5abd489512c71a6f1f",
+            "candidate_body_sha256": "d5f10d9e6844b3cd9c03b3bd8e32433fb15b3f81b9837391027813083033b54b"
+          },
+          {
+            "file": "apps/subtitles/internal/server/auth_all_routes_test.go",
+            "name": "TestEveryRegisteredRouteHasReviewedAnonymousAccess",
+            "kind": "pinned_upstream_change",
+            "baseline_body_sha256": "08a85f38eeeb2df78e9f8c240317d2a7c333fdfbacad89418a1c1fcc6bc420ec",
+            "candidate_body_sha256": "5c78216810b763bd0806b6e1f8eda35abe8a788f56c71cbf9b1f6109516e8ce3"
+          },
+          {
+            "file": "apps/subtitles/internal/server/passkey_lifecycle_internal_test.go",
+            "name": "TestPasskeyRemovalRequiresRecentStrongAuthentication",
+            "kind": "existing_name_and_comment_correction_only",
+            "baseline_body_sha256": "ac7f48c36398e01e4790a20b6455cdc86f52e6a74b2989c491a7710e719c9cd1",
+            "candidate_body_sha256": "40833973dbcda7e9566b0c43958a4530c2af4a3a28fffbb14eaf21ae885bc271"
+          },
+          {
+            "file": "apps/subtitles/internal/server/passkeys_test.go",
+            "name": "TestPasskeyCeremoniesAreLocalAndServerSide",
+            "kind": "pinned_upstream_change",
+            "baseline_body_sha256": "a1c41697c16b29c93fd998e82e5390abda5278b22cfcbb7c9facd458f3796466",
+            "candidate_body_sha256": "950624f0610cc3ca2539f1ba8bf698b354ef03532c3fcb5486826cc33025e1d8"
+          },
+          {
+            "file": "apps/subtitles/internal/server/passkeys_test.go",
+            "name": "TestPasskeyLoginIsAvailableFromSignInPage",
+            "kind": "pinned_upstream_change",
+            "baseline_body_sha256": "50517b7255330a578e6f9345d822cd95a8843cb7fab4ae1b5ae9fcfad8469ddb",
+            "candidate_body_sha256": "67388e987b0acc25de2b6790f56400592dee8355d4c10a119a13afc5dc0bb7c6"
+          },
+          {
+            "file": "apps/subtitles/internal/server/remote_access_security_test.go",
+            "name": "TestOwnerKillSwitchFailsPublicAccessClosedAndPersists",
+            "kind": "existing_name_and_comment_correction_only",
+            "baseline_body_sha256": "824db12d2664c215f409223ac4ba7fbbaea1fa7d4bc603549383dc806b856003",
+            "candidate_body_sha256": "8727f785e655f4dcfa435b2f810987c07a1696cc5bd38e03281eecfdc125b79a"
+          },
+          {
+            "file": "apps/subtitles/internal/server/remote_browser_login_test.go",
+            "name": "TestPublicBrowserQuickConnectEndToEndBoundary",
+            "kind": "pinned_upstream_change",
+            "baseline_body_sha256": "c31ee13790f10a6ca7243f50997f01152207e66accf3e98ecf64d7e8ce4a8a6a",
+            "candidate_body_sha256": "ceaa30304e4eabad4a02b6b849b1f4981e227a0a0fe420635ea09b7a2d50ec31"
+          },
+          {
+            "file": "apps/subtitles/internal/server/remote_security_audit_internal_test.go",
+            "name": "TestRemoteSecurityMutationsHaveStableAuditActions",
+            "kind": "reviewed_consolidation",
+            "baseline_body_sha256": "01b70ad26d20a042019a14b3ae201bc100c57fda18287d5d3bfd7356a2cfcb23",
+            "candidate_body_sha256": "7b71403a41556a9b510ef65f75754f53fb5dcf5b2f9ed6062db7118f878b9e32"
+          },
+          {
+            "file": "apps/subtitles/internal/server/subsource_provider_internal_test.go",
+            "name": "TestSubSourceRejectsUnsafeOrAmbiguousResults",
+            "kind": "failure_analysis_before_assertion_repair",
+            "baseline_body_sha256": "22ab0c82a1b8eddcd5cad11cc5a4f35735c160e3ed56ec3c112e2d02f80de6c5",
+            "candidate_body_sha256": "5f265978e5188c11a3a1dd6169fded4fa963904e950a1c4ef4918623f35bfaa4"
+          },
+          {
+            "file": "apps/subtitles/internal/server/subtitle_excellence_internal_test.go",
+            "name": "TestSubtitleCleanupPreservesSpokenURLsAndRepeatedDialogue",
+            "kind": "failure_analysis_before_assertion_repair",
+            "baseline_body_sha256": "996b278cbd2e270beed82a3f3c50d9b7f2249930bc1a3b4605219d14f481b5c8",
+            "candidate_body_sha256": "08165914f61ba4172a786517e0844fd5a6dd82b73d4927da7a07803b7b2bb1d8"
+          },
+          {
+            "file": "apps/subtitles/internal/server/subtitle_sync_behavior_internal_test.go",
+            "name": "TestSynchronizeCandidateRejectsPreservedSubtitle",
+            "kind": "failure_analysis_before_assertion_repair",
+            "baseline_body_sha256": "f7cb1bba926776ac1ee3ba13fdbc3161cbd786e1f7adde95ddce1ab9efdf6877",
+            "candidate_body_sha256": "636ad4441140a4aff7245523aedbc292e1ae40a6803c962e51838e2cfe8e2285"
+          },
+          {
+            "file": "packages/identitycore/sessions_test.go",
+            "name": "TestActivePublicAndSessionCopies",
+            "kind": "pinned_upstream_change",
+            "baseline_body_sha256": "b1dcab0331c1542387761d9026a57a48982756fe3e7b9a6c68d00a830d056381",
+            "candidate_body_sha256": "20f96b02dc2ef5b4a1e287056c40adf0dea2e8227b4e3b708eb6762a7fc29061"
+          },
+          {
+            "file": "packages/watchrooms/http_test.go",
+            "name": "TestHTTPWebSocketPreservesLeaderAndValidationRules",
+            "kind": "failure_analysis_before_assertion_repair",
+            "baseline_body_sha256": "d58b78303306cf092562fef3036d85abecbdc77a8766046dc7cd783ea4372124",
+            "candidate_body_sha256": "577dd250831cc8918ebef94a6a776460dba19046511203b464b346284b14a8e6"
+          },
+          {
+            "file": "packages/watchrooms/http_test.go",
+            "name": "TestHTTPJoinAndAccessFailuresCloseConnections",
+            "kind": "failure_analysis_before_assertion_repair",
+            "baseline_body_sha256": "177d8df3f2d332e09bdf1002ef40aedc143e70412c9a79b2c6ff9942b83674a9",
+            "candidate_body_sha256": "bf0aecd34395638c164e0ddf27a0e8142b82843bf68ade23c0e4ce132f0ef1f6"
+          }
+        ],
+        "stale_keeper_references": [],
+        "errors": []
+      }
+    },
+    {
+      "name": "subtitles",
+      "command": [
+        "python3",
+        "engineering/qa/2026-10-03-test-overhaul/controls/verify-subtitles-dispositions.py",
+        "--root",
+        "."
+      ],
+      "exitCode": 0,
+      "commandReceiptSHA256": "6feda015363f923268891f38c973d690404890f25fbbde133cf8ec9f67b500dc",
+      "result": {
+        "upstream_checks": [
+          {
+            "file": "apps/subtitles/internal/server/passkeys_test.go",
+            "name": "TestPasskeyCeremoniesAreLocalAndServerSide",
+            "body_sha256": "950624f0610cc3ca2539f1ba8bf698b354ef03532c3fcb5486826cc33025e1d8",
+            "file_sha256": "d180c917183db21d7e873f9083e4cdad6a4bf55b2cabad9a8a9012b9df934c74",
+            "preserved_exact": true
+          },
+          {
+            "file": "apps/subtitles/internal/server/passkeys_test.go",
+            "name": "TestPasskeyLoginIsAvailableFromSignInPage",
+            "body_sha256": "67388e987b0acc25de2b6790f56400592dee8355d4c10a119a13afc5dc0bb7c6",
+            "file_sha256": "d180c917183db21d7e873f9083e4cdad6a4bf55b2cabad9a8a9012b9df934c74",
+            "preserved_exact": true
+          },
+          {
+            "file": "apps/subtitles/internal/server/remote_browser_login_test.go",
+            "name": "TestPublicBrowserQuickConnectEndToEndBoundary",
+            "body_sha256": "ceaa30304e4eabad4a02b6b849b1f4981e227a0a0fe420635ea09b7a2d50ec31",
+            "file_sha256": "dfe1f12e1b2ed5a0c47f66eadadfccab605092636a17bdfb2fde97350ebf50b8",
+            "preserved_exact": true
+          },
+          {
+            "file": "apps/subtitles/internal/server/auth_all_routes_test.go",
+            "name": "TestEveryRegisteredRouteHasReviewedAnonymousAccess",
+            "body_sha256": "5c78216810b763bd0806b6e1f8eda35abe8a788f56c71cbf9b1f6109516e8ce3",
+            "file_sha256": "7e77222d61021ef6fa4c2bcfb94f3a0f3bb75a0fe2a2727c41c7ae25c0a67a2b",
+            "preserved_exact": true
+          },
+          {
+            "file": "apps/player/internal/server/hls_bandwidth_delivery_test.go",
+            "name": "TestRealBlackIntroHLSBandwidthSurvivesCachedMasterReuse",
+            "body_sha256": "22179b202a6f61d4133768112922ae7b5daca8c6646c7ac2d2f87a4fc1a5c001",
+            "file_sha256": "6e91e117060039137b2916d13e8a87ee257f65ca2e1dae92cdee0f58afe34df6",
+            "preserved_exact": true
+          },
+          {
+            "file": "packages/identitycore/session_cookie_issuance_boundary_test.go",
+            "name": "TestCookieIssuancePreservesPersistedExpiryAcrossSecondBoundary",
+            "body_sha256": "175cedd1a344d6a7f438fd432e5b6fb35469bc5f34d42745ddcdb9d3e404e03e",
+            "file_sha256": "f0bd2de5ff6cda8f3fe5efa1b0550385b91e17ce490c30dd5c7856bbd3c50beb",
+            "preserved_exact": true
+          },
+          {
+            "file": "packages/playback/hls_recipe_enums_test.go",
+            "name": "TestHLSRecipeEnumCacheIdentity",
+            "body_sha256": "fb7216e87eb0dece83c58044bad2599e2cdf2b813035a93bd003f34214a68841",
+            "file_sha256": "37452c4ee895172df1bb297bf4077ded2e1854e95c3fe2b405cc46a399fa8283",
+            "preserved_exact": true
+          },
+          {
+            "file": "packages/playback/hls_recipe_enums_test.go",
+            "name": "TestHLSRecipeRejectsUntrustedEnums",
+            "body_sha256": "8100f64115ad9cd6fbe5158b19045dad7de2f412180511a2b151af5c8ad182a2",
+            "file_sha256": "37452c4ee895172df1bb297bf4077ded2e1854e95c3fe2b405cc46a399fa8283",
+            "preserved_exact": true
+          }
+        ],
+        "ledger_sha256": "ab70349843c0a29b0cf568331f263200e2a21f2d47ca7b8c8573b8625a90a762",
+        "ledger_base_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "checkout_sha": "176b9ddc83e15f59f72102243ad56cf1bad17c4a",
+        "decisions": {
+          "R": 830,
+          "D": 73,
+          "F": 50,
+          "C": 1
+        },
+        "expected_retained": 881,
+        "actual_retained": 881,
+        "errors": []
+      }
+    },
+    {
+      "name": "player",
+      "command": [
+        "python3",
+        "engineering/qa/2026-10-03-test-overhaul/verify-player-audit.py",
+        "--checkout",
+        ".",
+        "--output",
+        "/tmp/final-player-audit-integrity-176.json"
+      ],
+      "exitCode": 0,
+      "commandReceiptSHA256": "4f34adc1bbdeac7575125b938ce797c6313437942e378e8b746fe1e306aa84c1",
+      "result": {
+        "schema": "kinosail-player-audit-verification-v1",
+        "result": "pass",
+        "revision": "176b9ddc83e15f59f72102243ad56cf1bad17c4a",
+        "base_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "checkout": "/Users/mikeo/Documents/Codex/2026-10-03/task/kinosail",
+        "ledger_sha256": "3bcd142e5bc8888a4f8970bbc18a2ba6a8855249f02298c3d973e5c7d8c6cc8b",
+        "verifier_sha256": "a3fef78dbcf7d4bb33f3dfb96e82013f064b7dca8f4d57717624f4fc9f2ab850",
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "engineering/qa/2026-10-03-test-overhaul/verify-player-audit.py",
+          "--checkout",
+          ".",
+          "--output",
+          "/tmp/final-player-audit-integrity-176.json"
+        ],
+        "environment": {
+          "python": "3.14.7",
+          "platform": "macOS-27.0-arm64-arm-64bit-Mach-O"
+        },
+        "counts": {
+          "original_files": 351,
+          "original_declarations": 837,
+          "current_files": 343,
+          "current_declarations": 774,
+          "decisions": {
+            "R": 716,
+            "D": 64,
+            "F": 57
+          },
+          "upstream_rows": 6,
+          "upstream_fixture_files": 3,
+          "preserved_C_names": []
+        },
+        "scope": "Inventory/body integrity, actual removals/preservation and exact keeper-name existence. Semantic quality and product execution remain evidenced by ledger reviewers and root run artifacts.",
+        "errors": []
+      }
+    },
+    {
+      "name": "shared",
+      "command": [
+        "python3",
+        "engineering/qa/2026-10-03-test-overhaul/verify_shared_ledger.py",
+        "--require-review-receipts",
+        "--require-upstream-additions"
+      ],
+      "exitCode": 0,
+      "commandReceiptSHA256": "5c3c21e6f84967357258c3c9bbbc4b882f2b7e88c3e81015682381a3ea049555",
+      "result": {
+        "source_head": "176b9ddc83e15f59f72102243ad56cf1bad17c4a",
+        "working_tree_status": [],
+        "baseline_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+        "baseline_files_verified": 530,
+        "baseline_declarations_verified": 1900,
+        "retained_bodies_unchanged": 1795,
+        "existing_assertion_repairs_with_prior_failure_analysis": [
+          {
+            "file": "packages/watchrooms/http_test.go",
+            "name": "TestHTTPWebSocketPreservesLeaderAndValidationRules",
+            "validated_candidate_sha": "f3d2a1ceba474101ab0a0477d21299e43f741a3a"
+          },
+          {
+            "file": "packages/watchrooms/http_test.go",
+            "name": "TestHTTPJoinAndAccessFailuresCloseConnections",
+            "validated_candidate_sha": "f3d2a1ceba474101ab0a0477d21299e43f741a3a"
+          }
+        ],
+        "retained_bodies_with_verified_upstream_signature_adaptation": [
+          {
+            "file": "packages/identitycore/sessions_test.go",
+            "name": "TestActivePublicAndSessionCopies",
+            "preserved_at_upstream_main": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+            "body_sha256": "20f96b02dc2ef5b4a1e287056c40adf0dea2e8227b4e3b708eb6762a7fc29061"
+          }
+        ],
+        "removed_declarations_absent": 102,
+        "removed_test_lines": 1975,
+        "upstream_additions_preserved_unchanged": [
+          {
+            "file": "packages/identitycore/session_cookie_issuance_boundary_test.go",
+            "name": "TestCookieIssuancePreservesPersistedExpiryAcrossSecondBoundary"
+          },
+          {
+            "file": "packages/playback/hls_recipe_enums_test.go",
+            "name": "TestHLSRecipeEnumCacheIdentity"
+          },
+          {
+            "file": "packages/playback/hls_recipe_enums_test.go",
+            "name": "TestHLSRecipeRejectsUntrustedEnums"
+          }
+        ],
+        "upstream_additions_absent_in_older_isolated_checkout": [],
+        "dead_support_helpers_verified_absent": [
+          {
+            "file": "packages/servertest/ui_icons.go",
+            "name": "UIIconSetIsCompleteAndLocal"
+          },
+          {
+            "file": "packages/servertest/ui_icons.go",
+            "name": "ProductionUITemplatesAvoidMixedGlyphIcons"
+          },
+          {
+            "file": "packages/servertest/password_manager.go",
+            "name": "PasswordFieldsOfferAccessibleRevealControls"
+          },
+          {
+            "file": "packages/servertest/assets.go",
+            "name": "AssertBrandLogo"
+          },
+          {
+            "file": "packages/servertest/shortcuts.go",
+            "name": "ApplicationPagesExposeSharedKeyboardShortcuts"
+          },
+          {
+            "file": "packages/commandtest/child.go",
+            "name": "CoveredChild"
+          },
+          {
+            "file": "packages/servertest/locale_catalog.go",
+            "name": "SupportedLanguageCoverageIncludesJellyfinLocaleSet"
+          },
+          {
+            "file": "packages/servertest/qa_permission_edges.go",
+            "name": "AssertAPIKeyPermissionsHonorScopeAndRouteClassification"
+          }
+        ],
+        "production_seam_cleanup_verified": [
+          {
+            "path": "packages/trustedhttps/provider.go",
+            "sha256": "289a1420952c4eeb452f6f34eb6c76e2c6d2933fab544c5b993d15a16c548c41",
+            "removed_lines": 1
+          }
+        ],
+        "decisions": {
+          "R": 1668,
+          "D": 102,
+          "F": 67,
+          "C": 63
+        },
+        "removals_without_structured_review_receipt": [],
+        "baseline_event_receipt": null,
+        "execution": "Read-only source/audit integrity verification; no Go or browser execution"
+      }
+    },
+    {
+      "name": "file-cap",
+      "command": [
+        "make",
+        "max-loc"
+      ],
+      "exitCode": 0,
+      "output": "No output; source-only Python file-cap check passed."
+    }
+  ],
+  "limits": "Read-only source/ledger verification and file-cap check; no Go or browser execution. Required hosted E2E evidence remains separate.",
+  "globalDetails": {
+    "reportSHA256": "044e7fae9ec1f00ec97b4a4a1b2a9d587bf06aae57c20c0fe2ff10233a4a96a3",
+    "counts": {
+      "player-backend.json": {
+        "R": 716,
+        "D": 64,
+        "F": 57
+      },
+      "subtitles-shared.json": {
+        "R": 830,
+        "D": 73,
+        "F": 50,
+        "C": 1
+      },
+      "shared-identity.json": {
+        "R": 1668,
+        "D": 102,
+        "F": 67,
+        "C": 63
+      }
+    },
+    "verifiedKeeperReferences": 374,
+    "protectedUpstreamFiles": 150,
+    "staleReferences": 0,
+    "errors": []
+  },
+  "sharedPacketSerialization": {
+    "ownerCommit": "3f6a62eb01d0e58bd4e4634b7e9ee58ff3b31cbe",
+    "ownerSHA256": "fbbce85d8875caa0309bf7429166164f669b22b72ff3896f555bc23f2b46ab79",
+    "rootSHA256": "ccdacf939d156ae2bf7ef27ce8061b8512f560ac0d112c5af0609b146708bca0",
+    "parsedJSONIdentical": true,
+    "reason": "Preserve existing ASCII escape spelling and avoid unrelated row rewrites."
+  }
+}

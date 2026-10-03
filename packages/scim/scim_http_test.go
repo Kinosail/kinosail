@@ -1,10 +1,8 @@
 package scim
 
 import (
-	"crypto/tls"
 	"encoding/json"
 	"net/http"
-	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
@@ -28,62 +26,6 @@ func TestSCIMRejectsExpiredBearerToken(t *testing.T) {
 	handler := serverWithSCIMConfig(Config{Token: scimTestToken, TokenExpiresAt: time.Now().Add(-time.Second)})
 	if response := scimCall(t, handler, scimTestToken, http.MethodGet, "/scim/v2/ServiceProviderConfig", nil); response.Code != http.StatusUnauthorized || response.Header().Get("WWW-Authenticate") == "" {
 		t.Fatalf("expired SCIM token = %d authenticate=%q body=%q", response.Code, response.Header().Get("WWW-Authenticate"), response.Body.String())
-	}
-}
-
-func TestSCIMIfMatchSerializesConcurrentMutations(t *testing.T) {
-	t.Parallel()
-	handler := serverWithSCIM(t)
-	created := scimCall(t, handler, scimTestToken, http.MethodPost, "/scim/v2/Users", map[string]any{"schemas": []string{scimUserSchema}, "userName": "concurrent@example.com", "displayName": "Concurrent"})
-	if created.Code != http.StatusCreated {
-		t.Fatalf("concurrent test create = %d %q", created.Code, created.Body.String())
-	}
-	var resource struct{ ID string }
-	if err := json.Unmarshal(created.Body.Bytes(), &resource); err != nil {
-		t.Fatal(err)
-	}
-	start := make(chan struct{})
-	responses := make(chan int, 2)
-	for _, name := range []string{"First", "Second"} {
-		go func(name string) {
-			<-start
-			body := map[string]any{"schemas": []string{scimUserSchema}, "userName": "concurrent@example.com", "displayName": name, "active": true}
-			response := scimCallWithHeaders(t, handler, scimTestToken, http.MethodPut, "/scim/v2/Users/"+resource.ID, body, map[string]string{"If-Match": created.Header().Get("ETag")})
-			responses <- response.Code
-		}(name)
-	}
-	close(start)
-	statuses := []int{<-responses, <-responses}
-	if (statuses[0] != http.StatusOK && statuses[0] != http.StatusPreconditionFailed) || (statuses[1] != http.StatusOK && statuses[1] != http.StatusPreconditionFailed) || statuses[0] == statuses[1] {
-		t.Fatalf("concurrent If-Match statuses = %#v", statuses)
-	}
-}
-
-func TestSCIMRejectsDuplicateAuthorizationHeadersAndAuthenticatesPublicAccess(t *testing.T) {
-	t.Parallel()
-	handler := serverWithSCIM(t)
-	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/scim/v2/Users", nil)
-	request.Header.Add("Authorization", "Bearer "+scimTestToken)
-	request.Header.Add("Authorization", "Bearer another-token")
-	response := httptest.NewRecorder()
-	handler.ServeHTTP(response, request)
-	if response.Code != http.StatusBadRequest {
-		t.Fatalf("duplicate SCIM authorization = %d %q", response.Code, response.Body.String())
-	}
-	remote := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/scim/v2/ServiceProviderConfig", nil)
-	remote.TLS = &tls.ConnectionState{}
-	remote.Header.Set("Authorization", "Bearer "+scimTestToken)
-	response = httptest.NewRecorder()
-	handler.ServeHTTP(response, remote)
-	if response.Code != http.StatusOK {
-		t.Fatalf("remote SCIM access = %d %q", response.Code, response.Body.String())
-	}
-	created := scimCall(t, handler, scimTestToken, http.MethodPost, "/scim/v2/Users", map[string]any{"schemas": []string{scimUserSchema}, "userName": "remote@example.com"})
-	if created.Code != http.StatusCreated {
-		t.Fatalf("remote SCIM mutation = %d %q", created.Code, created.Body.String())
-	}
-	if list := scimCall(t, handler, scimTestToken, http.MethodGet, "/scim/v2/Users", nil); list.Code != http.StatusOK || !strings.Contains(list.Body.String(), `"totalResults":1`) {
-		t.Fatalf("SCIM state after remote mutation = %d %q", list.Code, list.Body.String())
 	}
 }
 

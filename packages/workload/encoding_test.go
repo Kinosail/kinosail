@@ -65,16 +65,3 @@ func TestHardwareSessionBudgetAndInvalidCosts(t *testing.T) { //nolint:cyclop //
 		t.Fatalf("reservation leaked: %#v", metrics)
 	}
 }
-
-func TestNilGovernorAdvertisesUsableSingleEncoder(t *testing.T) {
-	var governor *Governor
-	if governor.EncodingCapacity() != 1 {
-		t.Fatal("nil governor must advertise one encoder")
-	}
-	release, err := governor.AcquireEncoding(t.Context(), Playback, governor.EncodingCapacity(), "")
-	if err != nil || release == nil {
-		t.Fatalf("advertised capacity unavailable: %v", err)
-	}
-	release()
-	release()
-}

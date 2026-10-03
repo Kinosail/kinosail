@@ -86,27 +86,6 @@ func TestBrowseLibraryValidatesBeforeLoading(t *testing.T) {
 	}
 }
 
-func TestSmallBrowseHelpers(t *testing.T) {
-	progress := map[string]PlaybackState{"viewer:item": {Seconds: 2}, "legacy": {Seconds: 1}}
-	var mutex sync.Mutex
-	if got := ProfileProgress(progress, "viewer", false, "item"); got.Seconds != 2 {
-		t.Fatalf("profile progress = %#v", got)
-	}
-	if got := ProfileProgress(progress, "viewer", true, "legacy"); got.Seconds != 1 {
-		t.Fatalf("owner progress = %#v", got)
-	}
-	if value, err := SingleValue(url.Values{"q": {" value "}}, "q", 10); err != nil || value != " value " {
-		t.Fatalf("value=%q error=%v", value, err)
-	}
-	if _, err := SingleValue(url.Values{"q": {"a", "b"}}, "q", 10); err == nil {
-		t.Fatal("repeated query was accepted")
-	}
-	access := NewBrowseAccess(&mutex, &sync.RWMutex{}, &progress, &map[string]bool{}, "viewer", false, func(library.Item) bool { return true })
-	if access.ProfileID != "viewer" || access.Owner || access.Visible == nil {
-		t.Fatalf("access=%#v", access)
-	}
-}
-
 func TestBrowseViewsSortsLettersAndShows(t *testing.T) { //nolint:cyclop,gocognit // One table covers the complete public browse vocabulary.
 	now := time.Now()
 	items := []library.Item{

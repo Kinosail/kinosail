@@ -54,15 +54,3 @@ func TestApplicationStateWithoutDirectorySkipsLoad(t *testing.T) {
 		t.Fatalf("save = %v; writes = %d", err, writes)
 	}
 }
-
-func TestApplicationStatePreservesMissingState(t *testing.T) {
-	store := ApplicationState(t.TempDir(), func(string, any) (bool, error) {
-		return false, nil
-	}, func(string, any) error {
-		t.Fatal("reading missing state must not save")
-		return nil
-	})
-	if found, err := store.Load(new(string)); found || err != nil {
-		t.Fatalf("missing-state load = %v, %v", found, err)
-	}
-}

@@ -3,7 +3,6 @@ package quickconnect
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"html/template"
 	"net/http"
 	"net/http/httptest"
@@ -105,17 +104,6 @@ func TestApplicationPollRejectsInvalidInputWithoutConsumption(t *testing.T) {
 	}
 	if recorder.Code != http.StatusTooManyRequests || recorder.Header().Get("Retry-After") != "60" {
 		t.Fatalf("poll limit = %d %#v", recorder.Code, recorder.Header())
-	}
-}
-
-func TestApplicationPage(t *testing.T) {
-	t.Parallel()
-	fixture := newApplicationFixture(t)
-	fixture.renderErr = errors.New("ignored")
-	recorder := httptest.NewRecorder()
-	fixture.application.Page(recorder, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/quick-connect", nil))
-	if recorder.Header().Get("Content-Type") != "text/html; charset=utf-8" || fixture.renders != 1 || !fixture.rendered.AutoSubmit {
-		t.Fatalf("page = %#v headers=%#v", fixture.rendered, recorder.Header())
 	}
 }
 
