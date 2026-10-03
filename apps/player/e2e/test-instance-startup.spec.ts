@@ -37,6 +37,10 @@ test('bounded startup preparation preserves the exact stream and playback priori
   const plan = async (name: string) => (await (await page.request.get(`/api/v1/items/${id(name)}/playback${negotiatedQuery}`)).json());
   const source = (value: {compatible: string}, resume = 0) => value.compatible.replace('/index.m3u8', `${resume ? '-o' + Math.floor(resume * 10) * 100 : ''}/index.m3u8`);
   const receipts: object[] = [];
+  async function record(value: object) {
+    receipts.push(value);
+    await writeFile(info.outputPath('startup-measurements.json'), JSON.stringify(receipts, null, 2));
+  }
   async function bytes(path: string): Promise<number> {
     let total = 0;
     for (const name of await readdir(path)) {
@@ -101,7 +105,7 @@ test('bounded startup preparation preserves the exact stream and playback priori
   await page.evaluate(() => localStorage.setItem('kinosail.playback-policy-v2', 'compatible'));
   await page.goto('/?q=Cold');
   const cold = await moving('Cold');
-  receipts.push({name: 'cold', ...cold});
+  await record({name: 'cold', ...cold});
   await page.locator('video').evaluate(media => media.pause());
   await page.goto('/?q=Warm');
   await page.unroute('**/playback-prepare');
@@ -116,7 +120,7 @@ test('bounded startup preparation preserves the exact stream and playback priori
   const originalInit = await initHashes('Warm');
   expect(Object.keys(originalInit).length).toBeGreaterThan(0);
   const warm = await moving('Warm');
-  receipts.push({name: 'warm', ...warm});
+  await record({name: 'warm', ...warm});
   expect(warm.cache).toContain('warm');
   expect(warm.position).toBeGreaterThanOrEqual(12.3);
   expect(warm.position).toBeLessThan(16);
@@ -145,7 +149,7 @@ test('bounded startup preparation preserves the exact stream and playback priori
   expect((await readdir(join(run, 'cache'))).sort()).toEqual(beforeRejected);
   await page.evaluate(() => localStorage.setItem('kinosail.playback-policy-v2', 'direct-first'));
   const directPlayback = await moving('Direct');
-  receipts.push({name: 'direct-first', ...directPlayback});
+  await record({name: 'direct-first', ...directPlayback});
   expect(await page.locator('video').evaluate(media => media.currentSrc)).toContain(`/media/${id('Direct')}`);
   expect((await readdir(join(run, 'cache'))).some(value => value.startsWith(id('Direct')))).toBe(false);
   await page.locator('video').evaluate(media => media.pause());
@@ -162,16 +166,24 @@ test('bounded startup preparation preserves the exact stream and playback priori
   const adopted = await moving('Adopt');
   await expect.poll(() => page.locator('video').evaluate(media => media.currentTime), {timeout: 25_000}).toBeGreaterThan(14);
   expect(await initHashes('Adopt')).toEqual(adoptedInit);
-  receipts.push({name: 'adopted-active-preparation', ...adopted});
+  await record({name: 'adopted-active-preparation', ...adopted});
   expect((await prepare('Compete', source(await plan('Compete')))).status()).toBe(202);
   await page.waitForTimeout(1500);
   expect((await readdir(join(run, 'cache'))).some(value => value.startsWith(id('Compete')))).toBe(false);
+  await page.locator('video').evaluate(media => media.pause());
+  await page.route('**/playback-prepare', route => route.abort());
+  await page.goto('/?q=Compete');
+  await page.waitForLoadState('networkidle');
+  // Keep admission closed without new media GETs clearing the queue under test.
+  const queueTrace = (sequence: number, event: string, paused: boolean) => page.request.post(`/api/v1/items/${id('Compete')}/playback-events`, {headers, data: {session: 'startup-queue-bound', sequence, event, paused}});
+  expect((await queueTrace(1, 'play-request', false)).status()).toBe(204);
   const competePlan = await plan('Compete');
+  expect((await prepare('Compete', source(competePlan))).status()).toBe(202);
   expect((await prepare('Compete', source(competePlan, 20))).status()).toBe(202);
   expect((await prepare('Compete', source(competePlan, 30))).status()).toBe(202);
   expect((await prepare('Compete', source(competePlan, 40))).status()).toBe(429);
   expect((await page.request.delete(`/api/v1/items/${id('Compete')}/playback-prepare`, {headers})).status()).toBe(204);
-  await page.locator('video').evaluate(media => media.pause());
+  expect((await queueTrace(2, 'pause', true)).status()).toBe(204);
   await page.goto('/?q=Invalidation');
   await page.route('**/playback-prepare', route => route.abort());
   const staleSource = source(await plan('Invalidation'));
@@ -214,7 +226,7 @@ test('bounded startup preparation preserves the exact stream and playback priori
   expect(await (await prepare('Invalidation', burnSource)).json()).toMatchObject({state: 'queued'});
   await expect.poll(async () => (await prepare('Invalidation', burnSource)).json(), {timeout: 30_000}).toMatchObject({state: 'ready'});
   expect(await readBurnVersion()).not.toBe(subtitleVersion);
-  } else receipts.push({name: 'burn-in-subtitle-invalidation', result: 'not run: host FFmpeg lacks subtitles filter'});
+  } else await record({name: 'burn-in-subtitle-invalidation', result: 'not run: host FFmpeg lacks subtitles filter'});
   const settingsVersion = await readBurnVersion();
   expect((await page.request.put('/api/v1/settings/transcoder', {headers, data: {...settings, quality: 'quality'}})).ok()).toBe(true);
   expect(await (await prepare('Invalidation', burnSource)).json()).toMatchObject({state: 'queued'});
@@ -240,7 +252,7 @@ test('bounded startup preparation preserves the exact stream and playback priori
   const resources = JSON.parse(await readFile(join(run, 'resources.json'), 'utf8'));
   expect(resources.peakSpeculativeFFmpeg).toBeLessThanOrEqual(1);
   expect(resources.peakFFmpeg).toBeLessThanOrEqual(2);
-  receipts.push({name: 'resource-bounds', ...resources});
+  await record({name: 'resource-bounds', ...resources});
   const logs = await readFile(join(run, 'server.log'), 'utf8');
   expect(logs).toContain('HLS startup preparation');
   expect(logs).not.toContain('secret');
