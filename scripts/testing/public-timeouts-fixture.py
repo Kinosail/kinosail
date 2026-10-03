@@ -18,7 +18,7 @@ now = int(time.time())
 count = 0
 if operation == 'snapshot':
     safe = [{'channel': x.get('channel',''), 'createdAt': x.get('createdAt'), 'expiresAt': x.get('expiresAt'), 'inactiveSeconds': x.get('inactiveSeconds')} for x in sessions.values() if x['profileId']==values['viewerID']]
-    print(json.dumps({'sessions':safe,'policies':{k:v for k,v in settings.items() if 'Session' in k or 'session' in k}}))
+    print(json.dumps({'requiredMFA':settings.get('requireMfa'),'sessions':safe,'policies':{k:v for k,v in settings.items() if 'Session' in k or 'session' in k}}))
     connection.close()
     raise SystemExit(0)
 if operation == 'deny-write':

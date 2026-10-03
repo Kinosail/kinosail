@@ -2,7 +2,7 @@ export function extraJourneys(deps) {
 const {api,expect,record,fixture,signIn,me,save,stop,start,ready,spawnSync,settingsPath,join,evidence}=deps;
 async function configUI(app) {
   const page=app.owner; app.lastpage=page;
-  for(const width of [1440,1024,390,320]) {
+  for(const width of [1920,1440,1024,390,320]) {
     await page.setViewportSize({width,height:900}); const response=await page.goto(app.url+'/settings#security');
     if(response) expect(response.status()).toBe(200);
     const section=page.locator('#session-timeouts'); await expect(section).toBeVisible();
@@ -75,5 +75,43 @@ async function atomicChecks(app) {
     }).then(response=>response.status)));
   }); expect(responses).toEqual(Array(8).fill(200)); record(app,'concurrent MFA and timeout Save complete');
 }
-return {configUI,legacyChecks,admissionChecks,atomicChecks};
+async function uiStates(app) {
+  const page=app.owner; app.lastpage=page;
+  await page.goto(app.url+'/settings#security');
+  const section=page.locator('#session-timeouts'), form=section.locator('[data-timeout-access="public"]');
+  const loaded=await section.boundingBox();
+  let pending, resume;
+  const seen=new Promise(resolve=>pending=resolve), release=new Promise(resolve=>resume=resolve);
+  await page.route(app.url+'/settings/public-session-timeouts',async route=>{pending(); await release; await route.continue();});
+  const saved=page.waitForURL(app.url+'/settings#security');
+  const clicked=form.getByRole('button',{name:'Save public timeouts'}).click();
+  await seen; expect(await section.boundingBox()).toEqual(loaded);
+  await page.screenshot({path:join(evidence,app.name+'-settings-pending.png'),fullPage:true});
+  resume(); await clicked; await saved; await page.unroute(app.url+'/settings/public-session-timeouts');
+  await expect(section).toBeVisible(); record(app,'pending Save keeps loaded control geometry');
+  await fixture(app,'deny-write',{});
+  const failed=page.waitForResponse(response=>response.url()===app.url+'/settings/public-session-timeouts'&&response.request().method()==='POST');
+  await form.getByRole('button',{name:'Save public timeouts'}).click();
+  expect((await failed).status()).toBe(500);
+  await expect(page.locator('main')).toContainText('could not save session timeouts');
+  await page.screenshot({path:join(evidence,app.name+'-settings-failed.png'),fullPage:true});
+  await fixture(app,'allow-write',{}); await page.goto(app.url+'/settings#security');
+  await expect(form.getByLabel('Always after')).toHaveValue('8760');
+  record(app,'failed form Save retains policy and recovers loaded controls');
+}
+async function enableMFAConcurrency(app) {
+  expect((await api(app.owner,'/api/v1/settings/mfa','PUT',{required:false})).status).toBe(200);
+  const responses=await app.owner.evaluate(async()=>{
+    const csrf=document.querySelector('meta[name="kinosail-csrf"]').content;
+    return Promise.all(Array.from({length:8},(_,i)=>fetch(i%2?'/api/v1/settings/mfa':'/api/v1/settings/public-session-timeouts',{
+      signal:AbortSignal.timeout(5000),method:'PUT',headers:{'Content-Type':'application/json','X-Kinosail-CSRF':csrf},
+      body:JSON.stringify(i%2?{required:true}:{inactiveHours:8,absoluteHours:24})
+    }).then(response=>({mfa:!!(i%2),status:response.status}))));
+  });
+  expect(responses.some(value=>value.mfa&&value.status===200)).toBe(true);
+  for(const response of responses) expect([200,401,403]).toContain(response.status);
+  const after=await snapshot(app); expect(after.requiredMFA).toBe(true); expect(after.sessions).toEqual([]);
+  record(app,'disabled to enabled MFA concurrent timeout Save completes and revokes sessions',{statuses:responses});
+}
+return {configUI,legacyChecks,admissionChecks,atomicChecks,uiStates,enableMFAConcurrency};
 }

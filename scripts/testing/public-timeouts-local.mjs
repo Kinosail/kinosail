@@ -160,7 +160,7 @@ async function permissionChecks(app,local,pub) {
   const before=(await api(app.owner,'/api/v1/settings')).body;
   for(const client of [local,pub]) for(const publicAccess of [false,true]) {
     const response=await api(client.page,settingsPath(publicAccess),'PUT',{inactiveHours:1,absoluteHours:4});
-    expect(response.status).toBe(client===pub?404:403); record(app,'Viewer settings denied',{publicSession:client===pub,publicPolicy:publicAccess,status:response.status});
+    expect(response.status).toBe(client===pub&&app.name==='player'?404:403); record(app,'Viewer settings denied',{publicSession:client===pub,publicPolicy:publicAccess,status:response.status});
   }
   expect((await api(app.owner,settingsPath(true),'PUT',{inactiveHours:1,absoluteHours:4},false)).status).toBe(403);
   record(app,'missing CSRF denied');
@@ -202,6 +202,9 @@ async function transitionChecks(app) {
   await me(app,pub,200,'public session accepted after 33 days within one year');
   await save(app,true,1,4); await me(app,pub,401,'tightening past absolute removes old session');
   await save(app,true,8760,8760); await me(app,pub,401,'raising does not resurrect removed session'); await pub.ctx.close();
+  await save(app,true,1,4); const unobserved=await signIn(app,true);
+  await fixture(app,'boundary',{viewerID:app.viewerID,channel:'public',mode:'absolute',inactive:1,absolute:4,margin:0,preserveCeilings:true});
+  await save(app,true,8760,8760); await me(app,unobserved,401,'raising removes unobserved already-expired session'); await unobserved.ctx.close();
   await save(app,true,1,4); const pinned=await signIn(app,true);
   await save(app,true,8760,8760); await me(app,pinned,200,'raising preserves still-valid session');
   await fixture(app,'boundary',{viewerID:app.viewerID,channel:'public',mode:'idle',inactive:1,absolute:4,margin:0,preserveCeilings:true});
@@ -210,7 +213,7 @@ async function transitionChecks(app) {
   await save(app,true,1,4); await me(app,valid,200,'tightening preserves still-valid session'); await valid.ctx.close();
 }
 const {extraJourneys}=await import('./public-timeouts-journeys.mjs');
-const {configUI,legacyChecks,admissionChecks,atomicChecks}=extraJourneys({api,expect,record,fixture,signIn,me,save,stop,start,ready,spawnSync,settingsPath,join,evidence});
+const {configUI,legacyChecks,admissionChecks,atomicChecks,uiStates,enableMFAConcurrency}=extraJourneys({api,expect,record,fixture,signIn,me,save,stop,start,ready,spawnSync,settingsPath,join,evidence});
 try {
   await mkdir(join(state,'media'));
   for(const [name,cookie] of [['player','__Host-kinosail_player_session'],['subtitles','__Host-kinosail_subtitles_session']]) {
@@ -223,7 +226,7 @@ try {
     await setup(app); const settings=await api(app.owner,'/api/v1/settings'); expect(settings.status).toBe(200);
     expect(settings.body.publicSessionInactiveHours).toBe(.25); expect(settings.body.publicSessionAbsoluteHours).toBe(8);
     expect(settings.body.publicSessionTimeoutsConfigured).toBe(false); record(app,'legacy effective public defaults');
-    await configUI(app); await viewer(app);
+    await configUI(app); await uiStates(app); await viewer(app);
     const local=await signIn(app,false), pub=await signIn(app,true);
     await permissionChecks(app,local,pub);
     await stop(app); start(app); await ready(app);
@@ -231,7 +234,7 @@ try {
     expect(persisted.publicSessionInactiveHours).toBe(8760); expect(persisted.sessionInactiveHours).toBe(.25);
     await me(app,local,200,'private persists across restart'); await me(app,pub,200,'public persists across restart');
     record(app,'independent settings persist across server restart'); await local.ctx.close(); await pub.ctx.close();
-    await boundaryChecks(app); await transitionChecks(app); await atomicChecks(app); await legacyChecks(app); await admissionChecks(app);
+    await boundaryChecks(app); await transitionChecks(app); await atomicChecks(app); await legacyChecks(app); await admissionChecks(app); await enableMFAConcurrency(app);
   }
   receipt.result='passed';
 } catch(error) { receipt.error=String(error.message).slice(0,700); for(const app of apps) if(app.lastpage&&!app.lastpage.isClosed()) { await app.lastpage.screenshot({path:join(evidence,app.name+'-failure.png')}); receipt.failureUI=(await app.lastpage.locator('main').innerText().catch(()=> '')).slice(0,1500); } }
