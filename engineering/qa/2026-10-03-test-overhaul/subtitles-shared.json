@@ -6,11 +6,11 @@
   "files": 379,
   "declarations": 954,
   "test_loc": 28832,
-  "reviewed": 140,
-  "pending": 814,
+  "reviewed": 155,
+  "pending": 799,
   "decisions": {
-    "R": 108,
-    "D": 31,
+    "R": 122,
+    "D": 32,
     "F": 1,
     "C": 0
   },
@@ -2783,85 +2783,110 @@
       "line": 134,
       "test": "TestEveryRegisteredRouteHasReviewedAnonymousAccess",
       "baseline_file_sha256": "3b8d9ff2af70309327e88f98440f983a0103cbd35a8fb78614292772e2f25db7",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Each source-discovered registered route must enforce explicit anonymous/capability classification. Adding an accidentally public admin route is an important authorization regression beyond the small populated browser route subset.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,profiles_access,api_keys}.go; packages/identitycore/{http,proxy,access,profile}.go",
+      "non_test_callers": "Server New/protectApplicationTransport/security/authentication.protect and all registered web/API routes; settings/showItem rendered status and size",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/auth_all_routes_test.go:TestEveryRegisteredRouteHasReviewedAnonymousAccess"
+        }
+      ],
+      "coverage_gap": "Retain independent named security/status/formatting failure. Route inventory is source AST discovery plus real httptest handler requests, not a started process; matrix tests use Config without SubtitleApp:true. Missing-resource bodies may produce400/404 after auth; these tests prove auth boundaries, not successful feature execution.",
+      "history": "d3d9cf3fe920adb391410c1af1d6a40be18c3c2c Add dependency thanks across active apps and remove retired Dashboard references",
+      "risk": "Security/status exception kept. Copied route classification is independent reviewed policy, not an automatic low-signal deletion.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./transcodehardware"
     },
     {
       "file": "apps/subtitles/internal/server/auth_all_routes_test.go",
       "line": 140,
       "test": "TestEveryProtectedRouteAcceptsOwnerAndRejectsInvalidOrRevokedSessions",
       "baseline_file_sha256": "3b8d9ff2af70309327e88f98440f983a0103cbd35a8fb78614292772e2f25db7",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "A protected route may bypass middleware for malformed/revoked Bearer credentials; full route matrix pairs positive Owner with denial evidence rather than browser normal owner-only traffic.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,profiles_access,api_keys}.go; packages/identitycore/{http,proxy,access,profile}.go",
+      "non_test_callers": "Server New/protectApplicationTransport/security/authentication.protect and all registered web/API routes; settings/showItem rendered status and size",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/auth_all_routes_test.go:TestEveryProtectedRouteAcceptsOwnerAndRejectsInvalidOrRevokedSessions"
+        }
+      ],
+      "coverage_gap": "Retain independent named security/status/formatting failure. Route inventory is source AST discovery plus real httptest handler requests, not a started process; matrix tests use Config without SubtitleApp:true. Missing-resource bodies may produce400/404 after auth; these tests prove auth boundaries, not successful feature execution.",
+      "history": "d3d9cf3fe920adb391410c1af1d6a40be18c3c2c Add dependency thanks across active apps and remove retired Dashboard references",
+      "risk": "Security/status exception kept. Copied route classification is independent reviewed policy, not an automatic low-signal deletion.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./transcodehardware"
     },
     {
       "file": "apps/subtitles/internal/server/auth_all_routes_test.go",
       "line": 144,
       "test": "TestEveryProtectedRouteEnforcesOwnerAndViewerRoles",
       "baseline_file_sha256": "3b8d9ff2af70309327e88f98440f983a0103cbd35a8fb78614292772e2f25db7",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "One route may omit Owner wrapper and admit Viewer; normal Owner E2E cannot detect that bypass across all routes.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,profiles_access,api_keys}.go; packages/identitycore/{http,proxy,access,profile}.go",
+      "non_test_callers": "Server New/protectApplicationTransport/security/authentication.protect and all registered web/API routes; settings/showItem rendered status and size",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/auth_all_routes_test.go:TestEveryProtectedRouteEnforcesOwnerAndViewerRoles"
+        }
+      ],
+      "coverage_gap": "Retain independent named security/status/formatting failure. Route inventory is source AST discovery plus real httptest handler requests, not a started process; matrix tests use Config without SubtitleApp:true. Missing-resource bodies may produce400/404 after auth; these tests prove auth boundaries, not successful feature execution.",
+      "history": "d3d9cf3fe920adb391410c1af1d6a40be18c3c2c Add dependency thanks across active apps and remove retired Dashboard references",
+      "risk": "Security/status exception kept. Copied route classification is independent reviewed policy, not an automatic low-signal deletion.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./transcodehardware"
     },
     {
       "file": "apps/subtitles/internal/server/auth_all_routes_test.go",
       "line": 148,
       "test": "TestEveryProtectedRouteEnforcesViewerSchedule",
       "baseline_file_sha256": "3b8d9ff2af70309327e88f98440f983a0103cbd35a8fb78614292772e2f25db7",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Authenticated out-of-hours viewer must fail across every protected route; browser smoke does not create zero-width schedules or exercise denied media/API access.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,profiles_access,api_keys}.go; packages/identitycore/{http,proxy,access,profile}.go",
+      "non_test_callers": "Server New/protectApplicationTransport/security/authentication.protect and all registered web/API routes; settings/showItem rendered status and size",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/auth_all_routes_test.go:TestEveryProtectedRouteEnforcesViewerSchedule"
+        }
+      ],
+      "coverage_gap": "Retain independent named security/status/formatting failure. Route inventory is source AST discovery plus real httptest handler requests, not a started process; matrix tests use Config without SubtitleApp:true. Missing-resource bodies may produce400/404 after auth; these tests prove auth boundaries, not successful feature execution.",
+      "history": "d3d9cf3fe920adb391410c1af1d6a40be18c3c2c Add dependency thanks across active apps and remove retired Dashboard references",
+      "risk": "Security/status exception kept. Copied route classification is independent reviewed policy, not an automatic low-signal deletion.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./transcodehardware"
     },
     {
       "file": "apps/subtitles/internal/server/auth_all_routes_test.go",
       "line": 152,
       "test": "TestEveryProtectedRouteEnforcesExactAPIKeyScopes",
       "baseline_file_sha256": "3b8d9ff2af70309327e88f98440f983a0103cbd35a8fb78614292772e2f25db7",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "A route may map to the wrong library/write/stream/download/admin scope or accept keys on session-only account endpoints; populated browser uses cookies rather than scoped API keys.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,profiles_access,api_keys}.go; packages/identitycore/{http,proxy,access,profile}.go",
+      "non_test_callers": "Server New/protectApplicationTransport/security/authentication.protect and all registered web/API routes; settings/showItem rendered status and size",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/auth_all_routes_test.go:TestEveryProtectedRouteEnforcesExactAPIKeyScopes"
+        }
+      ],
+      "coverage_gap": "Retain independent named security/status/formatting failure. Route inventory is source AST discovery plus real httptest handler requests, not a started process; matrix tests use Config without SubtitleApp:true. Missing-resource bodies may produce400/404 after auth; these tests prove auth boundaries, not successful feature execution.",
+      "history": "d3d9cf3fe920adb391410c1af1d6a40be18c3c2c Add dependency thanks across active apps and remove retired Dashboard references",
+      "risk": "Security/status exception kept. Copied route classification is independent reviewed policy, not an automatic low-signal deletion.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./transcodehardware"
     },
     {
       "file": "apps/subtitles/internal/server/auth_content_rating_test.go",
@@ -2885,51 +2910,66 @@
       "line": 9,
       "test": "TestEveryProtectedRouteEnforcesBrowserSessionRolesAndRevocation",
       "baseline_file_sha256": "6077ea41dfba33aa32e3678c237fe303b2d0b2618505ce8345d3e2fa2c3e2bbf",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Cookie middleware/token extraction could bypass role or revoked-session policy while Bearer test remains green; route matrix exercises actual cookies with Owner/Viewer/malformed/revoked pairs.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,profiles_access,api_keys}.go; packages/identitycore/{http,proxy,access,profile}.go",
+      "non_test_callers": "Server New/protectApplicationTransport/security/authentication.protect and all registered web/API routes; settings/showItem rendered status and size",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/auth_cookie_routes_test.go:TestEveryProtectedRouteEnforcesBrowserSessionRolesAndRevocation"
+        }
+      ],
+      "coverage_gap": "Retain independent named security/status/formatting failure. Route inventory is source AST discovery plus real httptest handler requests, not a started process; matrix tests use Config without SubtitleApp:true. Missing-resource bodies may produce400/404 after auth; these tests prove auth boundaries, not successful feature execution.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Security/status exception kept. Copied route classification is independent reviewed policy, not an automatic low-signal deletion.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./transcodehardware"
     },
     {
       "file": "apps/subtitles/internal/server/auth_cross_origin_routes_test.go",
       "line": 9,
       "test": "TestEveryMutatingRouteRejectsCrossOriginRequests",
       "baseline_file_sha256": "2cd25f3d8907b11d4d21a5564f5b27ae7e681f331d27981f16f6c5f33859f099",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "An app mutation route might sit outside security middleware and admit malicious Origin; populated browser sends same-origin traffic.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,profiles_access,api_keys}.go; packages/identitycore/{http,proxy,access,profile}.go",
+      "non_test_callers": "Server New/protectApplicationTransport/security/authentication.protect and all registered web/API routes; settings/showItem rendered status and size",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/auth_cross_origin_routes_test.go:TestEveryMutatingRouteRejectsCrossOriginRequests"
+        }
+      ],
+      "coverage_gap": "Retain independent named security/status/formatting failure. Route inventory is source AST discovery plus real httptest handler requests, not a started process; matrix tests use Config without SubtitleApp:true. Missing-resource bodies may produce400/404 after auth; these tests prove auth boundaries, not successful feature execution.",
+      "history": "ee9b4e6b5333eae424766844c2ba22be1be7ca1b Strengthen negative API security contracts",
+      "risk": "Security/status exception kept. Copied route classification is independent reviewed policy, not an automatic low-signal deletion.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./transcodehardware"
     },
     {
       "file": "apps/subtitles/internal/server/auth_head_routes_test.go",
       "line": 9,
       "test": "TestEveryGetEndpointAppliesTheSameAuthorizationToHead",
       "baseline_file_sha256": "bcae486263894d1990cf18c9256cdd5df5f95f6685ea18e823474e65173ea532",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Go implicit HEAD matching may omit GET authorization/Owner roles/key scopes for one endpoint; browser journeys issue GET rather than HEAD security probes.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,profiles_access,api_keys}.go; packages/identitycore/{http,proxy,access,profile}.go",
+      "non_test_callers": "Server New/protectApplicationTransport/security/authentication.protect and all registered web/API routes; settings/showItem rendered status and size",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/auth_head_routes_test.go:TestEveryGetEndpointAppliesTheSameAuthorizationToHead"
+        }
+      ],
+      "coverage_gap": "Retain independent named security/status/formatting failure. Route inventory is source AST discovery plus real httptest handler requests, not a started process; matrix tests use Config without SubtitleApp:true. Missing-resource bodies may produce400/404 after auth; these tests prove auth boundaries, not successful feature execution.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Security/status exception kept. Copied route classification is independent reviewed policy, not an automatic low-signal deletion.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./transcodehardware"
     },
     {
       "file": "apps/subtitles/internal/server/auth_login_error_test.go",
@@ -3005,51 +3045,66 @@
       "line": 12,
       "test": "TestPublicRoutePolicyIsExactAndDefaultsProtected",
       "baseline_file_sha256": "ebb2349f3fd006748c2b6f6d839944d117d6e6d60c2e1a98ad53d202f8145b62",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Anonymous policy must remain default deny for protected and unlisted patterns and deny playback stream absent capability. This direct policy guard covers unknown-pattern defaults as well as live routes.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,profiles_access,api_keys}.go; packages/identitycore/{http,proxy,access,profile}.go",
+      "non_test_callers": "Server New/protectApplicationTransport/security/authentication.protect and all registered web/API routes; settings/showItem rendered status and size",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/auth_policy_internal_test.go:TestPublicRoutePolicyIsExactAndDefaultsProtected"
+        }
+      ],
+      "coverage_gap": "Retain independent named security/status/formatting failure. Route inventory is source AST discovery plus real httptest handler requests, not a started process; matrix tests use Config without SubtitleApp:true. Missing-resource bodies may produce400/404 after auth; these tests prove auth boundaries, not successful feature execution.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Security/status exception kept. Copied route classification is independent reviewed policy, not an automatic low-signal deletion.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./transcodehardware"
     },
     {
       "file": "apps/subtitles/internal/server/auth_policy_internal_test.go",
       "line": 38,
       "test": "TestViewerRemotePolicyUsesServerRequestContext",
       "baseline_file_sha256": "ebb2349f3fd006748c2b6f6d839944d117d6e6d60c2e1a98ad53d202f8145b62",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Forged X-Kinosail-Remote header must not select trusted public-listener viewer policy; server.Remote context must. Browser happy path does not spoof the trust marker.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,profiles_access,api_keys}.go; packages/identitycore/{http,proxy,access,profile}.go",
+      "non_test_callers": "Server New/protectApplicationTransport/security/authentication.protect and all registered web/API routes; settings/showItem rendered status and size",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/auth_policy_internal_test.go:TestViewerRemotePolicyUsesServerRequestContext"
+        }
+      ],
+      "coverage_gap": "Retain independent named security/status/formatting failure. Route inventory is source AST discovery plus real httptest handler requests, not a started process; matrix tests use Config without SubtitleApp:true. Missing-resource bodies may produce400/404 after auth; these tests prove auth boundaries, not successful feature execution.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Security/status exception kept. Copied route classification is independent reviewed policy, not an automatic low-signal deletion.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./transcodehardware"
     },
     {
       "file": "apps/subtitles/internal/server/auth_policy_internal_test.go",
       "line": 53,
       "test": "TestAnonymousRequestsReachOnlyExplicitPublicRoutes",
       "baseline_file_sha256": "ebb2349f3fd006748c2b6f6d839944d117d6e6d60c2e1a98ad53d202f8145b62",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Missing vs invalid playback/DLNA capabilities and unregistered asset/path must give precise401/404 or setup redirect outcomes; broad inventory only checks auth classification and does not enforce these exact safe statuses.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,profiles_access,api_keys}.go; packages/identitycore/{http,proxy,access,profile}.go",
+      "non_test_callers": "Server New/protectApplicationTransport/security/authentication.protect and all registered web/API routes; settings/showItem rendered status and size",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/auth_policy_internal_test.go:TestAnonymousRequestsReachOnlyExplicitPublicRoutes"
+        }
+      ],
+      "coverage_gap": "Retain independent named security/status/formatting failure. Route inventory is source AST discovery plus real httptest handler requests, not a started process; matrix tests use Config without SubtitleApp:true. Missing-resource bodies may produce400/404 after auth; these tests prove auth boundaries, not successful feature execution.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Security/status exception kept. Copied route classification is independent reviewed policy, not an automatic low-signal deletion.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./transcodehardware"
     },
     {
       "file": "apps/subtitles/internal/server/auth_policy_internal_test.go",
@@ -3073,17 +3128,22 @@
       "line": 9,
       "test": "TestEveryProtectedRouteRejectsARevokedAPIKey",
       "baseline_file_sha256": "7210521a8ffc46c63e0eac1f7771ed8cac8026c3eee34af57a22995fddb780cb",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App key revocation must reject the revoked key at every protected route; normal browser session path never exercises API credentials.",
+      "production_owner": "apps/subtitles/internal/server/{auth,auth_remote_routes,security,profiles_access,api_keys}.go; packages/identitycore/{http,proxy,access,profile}.go",
+      "non_test_callers": "Server New/protectApplicationTransport/security/authentication.protect and all registered web/API routes; settings/showItem rendered status and size",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/auth_revoked_routes_test.go:TestEveryProtectedRouteRejectsARevokedAPIKey"
+        }
+      ],
+      "coverage_gap": "Retain independent named security/status/formatting failure. Route inventory is source AST discovery plus real httptest handler requests, not a started process; matrix tests use Config without SubtitleApp:true. Missing-resource bodies may produce400/404 after auth; these tests prove auth boundaries, not successful feature execution.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Security/status exception kept. Copied route classification is independent reviewed policy, not an automatic low-signal deletion.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./transcodehardware"
     },
     {
       "file": "apps/subtitles/internal/server/auth_stepup_internal_test.go",
@@ -9370,51 +9430,66 @@
       "line": 9,
       "test": "TestDLNALabelExplainsUnconfiguredAndConfiguredStates",
       "baseline_file_sha256": "c00a7e7a5d8208ec9b36d3aebb1bbeaab90dc78bac1c4e74c31793fe6cc853d3",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App settings token getter may miswire status and show Enabled for a configured URL without token or Disabled after activation; no genuine E2E asserts the DLNA label transition.",
+      "production_owner": "apps/subtitles/internal/server/{settings_dlna_http,player}.go with settings.dlnaToken; shared settings.DLNALabel",
+      "non_test_callers": "Server New/protectApplicationTransport/security/authentication.protect and all registered web/API routes; settings/showItem rendered status and size",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/qa_coverage_edges_test.go:TestDLNALabelExplainsUnconfiguredAndConfiguredStates"
+        }
+      ],
+      "coverage_gap": "Retain independent named security/status/formatting failure. Route inventory is source AST discovery plus real httptest handler requests, not a started process; matrix tests use Config without SubtitleApp:true. Missing-resource bodies may produce400/404 after auth; these tests prove auth boundaries, not successful feature execution.",
+      "history": "fd33c6add73c17d185cb465abb995e3fe5e67611 test: remove redundant Subtitles and Dashboard assertions",
+      "risk": "Security/status exception kept. Copied route classification is independent reviewed policy, not an automatic low-signal deletion.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./transcodehardware"
     },
     {
       "file": "apps/subtitles/internal/server/qa_coverage_edges_test.go",
       "line": 14,
       "test": "TestHardwareSupportAcceptsAutomaticAndKnownBackends",
       "baseline_file_sha256": "c00a7e7a5d8208ec9b36d3aebb1bbeaab90dc78bac1c4e74c31793fe6cc853d3",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Direct aliased Capabilities.Supports(auto,known Supported,missing) replay; no app adaptation or app production Supports caller exists.",
+      "production_owner": "packages/transcodehardware/capabilities.go:Capabilities.Supports; app hardware.go type alias",
+      "non_test_callers": "Shared capabilities public Supports method; Subtitles has no non-test Supports call, alias used elsewhere for Resolve/Backend/Codec evidence",
+      "remaining_proof": [
+        {
+          "kind": "isolated_primary_owner",
+          "reference": "packages/transcodehardware/capabilities_test.go:TestCapabilityLookupAndEncoderResolution"
+        }
+      ],
+      "coverage_gap": "No hardware-detection E2E equivalence claimed. Shared primary exactly preserves Supports auto/known/missing matrix and broader encoder resolution.",
+      "history": "fd33c6add73c17d185cb465abb995e3fe5e67611 test: remove redundant Subtitles and Dashboard assertions",
+      "risk": "Low direct shared-owner duplicate; no production edits. Shared helper deletion waits both apps callers gone.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./transcodehardware"
     },
     {
       "file": "apps/subtitles/internal/server/qa_coverage_edges_test.go",
       "line": 19,
       "test": "TestPlayerFormattingUsesStableHumanReadableBoundaries",
       "baseline_file_sha256": "c00a7e7a5d8208ec9b36d3aebb1bbeaab90dc78bac1c4e74c31793fe6cc853d3",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App byteSize used for item file size and cache display must label B/KB/MB/GB magnitudes correctly; current populated journeys do not assert those sizes. oneOf portion is incidental private-helper replay, retained declaration owns independent byte-size behavior.",
+      "production_owner": "apps/subtitles/internal/server/{settings_dlna_http,player}.go with settings.dlnaToken; shared settings.DLNALabel",
+      "non_test_callers": "Server New/protectApplicationTransport/security/authentication.protect and all registered web/API routes; settings/showItem rendered status and size",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_handler_or_policy",
+          "reference": "apps/subtitles/internal/server/qa_coverage_edges_test.go:TestPlayerFormattingUsesStableHumanReadableBoundaries"
+        }
+      ],
+      "coverage_gap": "Retain independent named security/status/formatting failure. Route inventory is source AST discovery plus real httptest handler requests, not a started process; matrix tests use Config without SubtitleApp:true. Missing-resource bodies may produce400/404 after auth; these tests prove auth boundaries, not successful feature execution.",
+      "history": "fd33c6add73c17d185cb465abb995e3fe5e67611 test: remove redundant Subtitles and Dashboard assertions",
+      "risk": "Security/status exception kept. Copied route classification is independent reviewed policy, not an automatic low-signal deletion.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server; GOCACHE=/tmp/kinosail-testing-go-cache go -C packages test -count=1 ./transcodehardware"
     },
     {
       "file": "apps/subtitles/internal/server/qa_permission_edges_test.go",
