@@ -14647,22 +14647,39 @@
       "sha256": "07067fd0d44772e4ab790c6a0244cd1fe0c3d8acd7e8d5cd5ef5b8ca51a0a874",
       "path": "apps/player/internal/server/library_api_titles_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual app query/ranking binding admits an excluded fifth result, misorders exact/article/title matches, loses punctuation-empty behavior or normalized filename matching.",
+      "category": "core_actual_app_boundary_retained",
+      "credible_failure": "Actual app query/ranking binding admits an excluded fifth result, misorders exact/article/title matches, loses punctuation-empty behavior or normalized filename matching.",
+      "production_owner": [
+        "apps/player/internal/server/server.go:New/newApplication/registerFiles/showHome routing",
+        "apps/player/internal/server/home.go:showHome/Browse",
+        "packages/home/handler.go:NewHandler",
+        "apps/player/internal/server/browse.go:browseLibrary",
+        "packages/catalog/index_order.go:BrowseLibrary",
+        "packages/servertest/library_api_titles.go:KnownTitleSearchRanksLikelyMatchesAcrossAPIAndWeb"
+      ],
+      "non_test_callers": [
+        "Real app composition binds browser/API Home/watch/media/subtitle/health/manual-scan/progress endpoints; scanned library and request Viewer callbacks select actual sources/state."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_HTTP_fixture",
+          "path": "apps/player/internal/server/library_api_titles_test.go",
+          "scenario": "TestKnownTitleSearchRanksLikelyMatchesAcrossAPIAndWeb"
+        }
+      ],
+      "coverage_limit": "Concrete five-file fixture protects app API/web assembly plus rank/count; populated browser journeys do not assert this query/result table.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no new isolated tests.",
+      "risk": "Preserves important app protocol, routing, security or persistence projection boundary omitted by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Initial observable app HTTP regression; retains distinct exact input/output absent from populated E2E.",
+      "review_provenance": "Full declaration and relevant production operation/entry/callers, helper when used, file history and comparison with existing populated browser/owner tests read by Player owner. No child execution."
     },
     {
       "name": "TestExplicitSortTitleControlsBrowseWithoutChangingDisplayTitle",
@@ -14671,22 +14688,40 @@
       "sha256": "e9f633b7d8d7093fd2c22d12f722d1bf27ac2a98fcf29a08ca2f853c59ebc1c6",
       "path": "apps/player/internal/server/library_api_titles_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "App NFO sorttitle is ignored during G-letter browse or leaks into display title, admitting unrelated Home item.",
+      "category": "core_actual_app_boundary_retained",
+      "credible_failure": "App NFO sorttitle is ignored during G-letter browse or leaks into display title, admitting unrelated Home item.",
+      "production_owner": [
+        "apps/player/internal/server/server.go:New/newApplication/registerFiles/showHome routing",
+        "apps/player/internal/server/home.go:showHome/Browse",
+        "packages/home/handler.go:NewHandler",
+        "apps/player/internal/server/browse.go:browseLibrary",
+        "packages/catalog/index_order.go:BrowseLibrary",
+        "packages/library/library.go:scanItemWithRelative",
+        "packages/servertest/library_api_titles.go:ExplicitSortTitleControlsBrowseWithoutChangingDisplayTitle"
+      ],
+      "non_test_callers": [
+        "Real app composition binds browser/API Home/watch/media/subtitle/health/manual-scan/progress endpoints; scanned library and request Viewer callbacks select actual sources/state."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_HTTP_fixture",
+          "path": "apps/player/internal/server/library_api_titles_test.go",
+          "scenario": "TestExplicitSortTitleControlsBrowseWithoutChangingDisplayTitle"
+        }
+      ],
+      "coverage_limit": "Populated media E2E does not use explicit sorttitle Grinch, The in letterG lookup.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no new isolated tests.",
+      "risk": "Preserves important app protocol, routing, security or persistence projection boundary omitted by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Initial observable app HTTP regression; retains distinct exact input/output absent from populated E2E.",
+      "review_provenance": "Full declaration and relevant production operation/entry/callers, helper when used, file history and comparison with existing populated browser/owner tests read by Player owner. No child execution."
     },
     {
       "name": "TestReleaseFilenameUsesHumanTitleInAPIAndWeb",
@@ -14695,22 +14730,41 @@
       "sha256": "6efc0faa0a8416f4faca2f7dab18149ab1cce98fabaf508fe07103109324b8a5",
       "path": "apps/player/internal/server/library_api_titles_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Complex release filename yields metadata clutter in API/watch header, wrong year/title, or breaks escaped apostrophe rendering.",
+      "category": "core_actual_app_boundary_retained",
+      "credible_failure": "Complex release filename yields metadata clutter in API/watch header, wrong year/title, or breaks escaped apostrophe rendering.",
+      "production_owner": [
+        "apps/player/internal/server/server.go:New/newApplication/registerFiles/showHome routing",
+        "apps/player/internal/server/home.go:showHome/Browse",
+        "packages/home/handler.go:NewHandler",
+        "apps/player/internal/server/browse.go:browseLibrary",
+        "packages/catalog/index_order.go:BrowseLibrary",
+        "packages/library/library.go:scanItemWithRelative/movie",
+        "apps/player/internal/server/player.go:watch",
+        "packages/servertest/library_api_titles.go:ReleaseFilenameUsesHumanTitleInAPIAndWeb"
+      ],
+      "non_test_callers": [
+        "Real app composition binds browser/API Home/watch/media/subtitle/health/manual-scan/progress endpoints; scanned library and request Viewer callbacks select actual sources/state."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_HTTP_fixture",
+          "path": "apps/player/internal/server/library_api_titles_test.go",
+          "scenario": "TestReleaseFilenameUsesHumanTitleInAPIAndWeb"
+        }
+      ],
+      "coverage_limit": "App end-to-end projection of raw release filename without NFO is absent from generated populated fixtures; canonical scan protects parse only.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no new isolated tests.",
+      "risk": "Preserves important app protocol, routing, security or persistence projection boundary omitted by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Initial observable app HTTP regression; retains distinct exact input/output absent from populated E2E.",
+      "review_provenance": "Full declaration and relevant production operation/entry/callers, helper when used, file history and comparison with existing populated browser/owner tests read by Player owner. No child execution."
     },
     {
       "name": "TestLibraryFindDoesNotCopyTheLibrary",
@@ -24464,23 +24518,52 @@
       "end_line": 43,
       "sha256": "5d4e76f24f0474a9e207a069889dbe25161a2d6d2b88032ff73b6a05fac8ad27",
       "path": "apps/player/internal/server/server_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "Only verifies a default app root returns200 and contains the product name, without checking usable content. Stronger actual Home/browser journeys and default app contracts already fail for broken routing/rendering.",
+      "category": "coarse_app_smoke_duplicate",
+      "credible_failure": "Only verifies a default app root returns200 and contains the product name, without checking usable content. Stronger actual Home/browser journeys and default app contracts already fail for broken routing/rendering.",
+      "production_owner": [
+        "apps/player/internal/server/server.go:New/newApplication/registerFiles/showHome routing",
+        "apps/player/internal/server/home.go:showHome/Browse",
+        "packages/home/handler.go:NewHandler",
+        "apps/player/internal/server/browse.go:browseLibrary",
+        "packages/catalog/index_order.go:BrowseLibrary"
+      ],
+      "non_test_callers": [
+        "GET /{$} binds showHome on the real app ServeMux; browser/native clients access the same index/home projection."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "genuine_populated_browser_E2E",
+          "path": "apps/player/e2e/test-instance-library.spec.ts",
+          "scenario": "public test instance exercises every media section and local TMDB metadata",
+          "mapping": "Login opens real Go Home, requires three Home grouping headings, and follows real media navigation."
+        },
+        {
+          "kind": "genuine_populated_browser_E2E",
+          "path": "apps/player/e2e/masthead-spacing.spec.ts",
+          "scenario": "Home keeps continued titles and navigation reachable",
+          "mapping": "Actual Home content/navigation/action/geometry at seven viewport widths with screenshots."
+        },
+        {
+          "kind": "retained_actual_default_app_HTTP_fixture",
+          "path": "apps/player/internal/server/server_test.go",
+          "scenario": "TestResponsesCarryBrowserSecurityPolicy; TestHealthReportsReady",
+          "mapping": "Default no-media app composition and actual response contracts remain exercised."
+        }
+      ],
+      "coverage_limit": "No meaningful independent assertion is lost. Exact product-name substring and empty-default200 smoke are weaker than usable real Home behavior; the browser fixture uses populated/authenticated configuration, while retained default app fixtures preserve default composition.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "Delete declaration; io import disappears after Home smoke removal. No production seam or shared helper is removed.",
+      "risk": "Low; independently review exact assertions against the named remaining keepers.",
+      "validation_command": "Root full Player Go suite and populated browser Home/library journeys with repeatable artifact.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Initial-commit coarse smoke; richer retained app/browser coverage now provides stronger observable contracts.",
+      "review_provenance": "Full declaration, relevant actual composition/home/browse owner, stronger keeper complete helper and fixture.NewHandler, source normalization and relevant browser scenarios read by Player owner. No child Go/browser execution."
     },
     {
       "name": "TestViewerCanOpenPlayer",
@@ -24489,22 +24572,34 @@
       "sha256": "bfe38ddce966d727ca56213408cb90884f01f689a93f8adf38847463919044b6",
       "path": "apps/player/internal/server/server_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Watch-page composition accidentally includes Main navigation or loses its video element for an unprobed file.",
+      "category": "core_actual_app_boundary_retained",
+      "credible_failure": "Watch-page composition accidentally includes Main navigation or loses its video element for an unprobed file.",
+      "production_owner": [
+        "apps/player/internal/server/player.go:watch/playerHTML/buildPlayerData"
+      ],
+      "non_test_callers": [
+        "Real app composition binds browser/API Home/watch/media/subtitle/health/manual-scan/progress endpoints; scanned library and request Viewer callbacks select actual sources/state."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_HTTP_fixture",
+          "path": "apps/player/internal/server/server_test.go",
+          "scenario": "TestViewerCanOpenPlayer"
+        }
+      ],
+      "coverage_limit": "Actual no-auth app watch route and page layout; populated native playback tests assert usable video but do not assert Main navigation absence.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no new isolated tests.",
+      "risk": "Preserves important app protocol, routing, security or persistence projection boundary omitted by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Initial observable app HTTP regression; retains distinct exact input/output absent from populated E2E.",
+      "review_provenance": "Full declaration and relevant production operation/entry/callers, helper when used, file history and comparison with existing populated browser/owner tests read by Player owner. No child execution."
     },
     {
       "name": "TestUnknownPlayerStartsDirectWithCompatibleFallback",
@@ -24512,23 +24607,37 @@
       "end_line": 86,
       "sha256": "a388b919e49b42385348ac702646ca9571b46ef379ef33e27a59dea7384dba99",
       "path": "apps/player/internal/server/server_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "reason": "Unknown/unprobed MP4 is routed directly without exposing a compatible HLS fallback, or direct/adaptive URLs are omitted from actual watch HTML.",
+      "category": "core_actual_app_boundary_retained_with_limit",
+      "credible_failure": "Unknown/unprobed MP4 is routed directly without exposing a compatible HLS fallback, or direct/adaptive URLs are omitted from actual watch HTML.",
+      "production_owner": [
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackSources",
+        "packages/playerweb/player_data.go:NewPlayerData",
+        "apps/player/internal/server/player.go:buildPlayerData"
+      ],
+      "non_test_callers": [
+        "Real app composition binds browser/API Home/watch/media/subtitle/health/manual-scan/progress endpoints; scanned library and request Viewer callbacks select actual sources/state."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_HTTP_fixture",
+          "path": "apps/player/internal/server/server_test.go",
+          "scenario": "TestUnknownPlayerStartsDirectWithCompatibleFallback"
+        }
+      ],
+      "coverage_limit": "Zero-byte unprobed MP4 input is not exercised by populated playback. The canPlayType string presence cannot prove runtime negotiation, and this test does not decode a movie.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no new isolated tests.",
+      "risk": "Preserves important app protocol, routing, security or persistence projection boundary omitted by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Initial observable app HTTP regression; retains distinct exact input/output absent from populated E2E.",
+      "review_provenance": "Full declaration and relevant production operation/entry/callers, helper when used, file history and comparison with existing populated browser/owner tests read by Player owner. No child execution."
     },
     {
       "name": "TestAdaptivePlayerUsesInBandStartupMeasurementAndSeamlessQualityControls",
@@ -24586,22 +24695,35 @@
       "sha256": "1147cc97f1fe12889e5b8a9c4d71eae380b5a12e416131a558f5f28dc8afb587",
       "path": "apps/player/internal/server/server_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "App media route loses Range semantics or serves the wrong byte slice; bytes2-5 must return206 and exact2345.",
+      "category": "core_actual_app_boundary_retained",
+      "credible_failure": "App media route loses Range semantics or serves the wrong byte slice; bytes2-5 must return206 and exact2345.",
+      "production_owner": [
+        "apps/player/internal/server/files.go:registerFiles/serveFile",
+        "packages/playback/file_delivery.go:LibraryFileHandler"
+      ],
+      "non_test_callers": [
+        "Real app composition binds browser/API Home/watch/media/subtitle/health/manual-scan/progress endpoints; scanned library and request Viewer callbacks select actual sources/state."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_HTTP_fixture",
+          "path": "apps/player/internal/server/server_test.go",
+          "scenario": "TestViewerCanStreamMediaRange"
+        }
+      ],
+      "coverage_limit": "Live seeking verifies media decoding but not exact requested bytes. Canonical playback file_delivery_test has full file/download denial tests but no Range assertion.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no new isolated tests.",
+      "risk": "Preserves important app protocol, routing, security or persistence projection boundary omitted by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Initial observable app HTTP regression; retains distinct exact input/output absent from populated E2E.",
+      "review_provenance": "Full declaration and relevant production operation/entry/callers, helper when used, file history and comparison with existing populated browser/owner tests read by Player owner. No child execution."
     },
     {
       "name": "TestViewerCanUseSidecarSubtitles",
@@ -24610,22 +24732,36 @@
       "sha256": "45eb25637728345f073af26443ffdccae52accc0b2728b6a6180590bb8afba87",
       "path": "apps/player/internal/server/server_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual app sidecar SRT route fails to normalize CRLF/comma time separators into playable WebVTT, omit track, or return incorrect text/vtt.",
+      "category": "core_actual_app_boundary_retained",
+      "credible_failure": "Actual app sidecar SRT route fails to normalize CRLF/comma time separators into playable WebVTT, omit track, or return incorrect text/vtt.",
+      "production_owner": [
+        "apps/player/internal/server/files.go:serveSubtitle",
+        "apps/player/internal/server/playback_http.go:playbackSubtitleChoices",
+        "packages/playback/subtitle_delivery.go:LibrarySubtitleHandler/ServeSubtitle/normalizeSubtitle"
+      ],
+      "non_test_callers": [
+        "Real app composition binds browser/API Home/watch/media/subtitle/health/manual-scan/progress endpoints; scanned library and request Viewer callbacks select actual sources/state."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_HTTP_fixture",
+          "path": "apps/player/internal/server/server_test.go",
+          "scenario": "TestViewerCanUseSidecarSubtitles"
+        }
+      ],
+      "coverage_limit": "Existing populated subtitle preference tests use valid generated tracks and do not assert this CRLF SRT conversion payload.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no new isolated tests.",
+      "risk": "Preserves important app protocol, routing, security or persistence projection boundary omitted by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Initial observable app HTTP regression; retains distinct exact input/output absent from populated E2E.",
+      "review_provenance": "Full declaration and relevant production operation/entry/callers, helper when used, file history and comparison with existing populated browser/owner tests read by Player owner. No child execution."
     },
     {
       "name": "TestViewerCanSeeSidecarArtwork",
@@ -24633,23 +24769,38 @@
       "end_line": 175,
       "sha256": "e4f06cc41b2d6a9e77d8cecbf1ae1a8529f2d6d09103ee2ab75007a13108419f",
       "path": "apps/player/internal/server/server_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "reason": "Scanned local jpg sidecar is not projected to Home/art URL or wrong source bytes are served through real visible-item lookup.",
+      "category": "core_actual_app_boundary_retained_with_limit",
+      "credible_failure": "Scanned local jpg sidecar is not projected to Home/art URL or wrong source bytes are served through real visible-item lookup.",
+      "production_owner": [
+        "packages/library/library.go:scanItemWithRelative",
+        "apps/player/internal/server/files.go:serveArtwork",
+        "packages/playback/file_delivery.go:ArtworkPath/LibraryFileHandler",
+        "packages/home/handler.go:NewHandler"
+      ],
+      "non_test_callers": [
+        "Real app composition binds browser/API Home/watch/media/subtitle/health/manual-scan/progress endpoints; scanned library and request Viewer callbacks select actual sources/state."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_HTTP_fixture",
+          "path": "apps/player/internal/server/server_test.go",
+          "scenario": "TestViewerCanSeeSidecarArtwork"
+        }
+      ],
+      "coverage_limit": "Uses literal poster bytes rather than a decodable JPG: protects source association/routing only. Live artwork geometry uses generated valid/local metadata fixtures and does not prove this raw sidecar fallback input.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no new isolated tests.",
+      "risk": "Preserves important app protocol, routing, security or persistence projection boundary omitted by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Initial observable app HTTP regression; retains distinct exact input/output absent from populated E2E.",
+      "review_provenance": "Full declaration and relevant production operation/entry/callers, helper when used, file history and comparison with existing populated browser/owner tests read by Player owner. No child execution."
     },
     {
       "name": "TestViewerCanResumePlayback",
@@ -24658,22 +24809,37 @@
       "sha256": "fc3f5453c4609b33d14080293f3245c9e315188830e5f91f40e7c7341dfbd98a",
       "path": "apps/player/internal/server/server_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "POST web progress stores seconds but watch HTML loses data-start42 through app profile/store/render projection.",
+      "category": "core_actual_app_boundary_retained",
+      "credible_failure": "POST web progress stores seconds but watch HTML loses data-start42 through app profile/store/render projection.",
+      "production_owner": [
+        "apps/player/internal/server/player.go:registerPlayer/buildPlayerData",
+        "apps/player/internal/server/progress.go:newProgressStore",
+        "packages/catalog/progress_http.go:ProgressHTTPHandlers.Save",
+        "packages/catalog/progress_request_store.go:SetRevision/Get"
+      ],
+      "non_test_callers": [
+        "Real app composition binds browser/API Home/watch/media/subtitle/health/manual-scan/progress endpoints; scanned library and request Viewer callbacks select actual sources/state."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_HTTP_fixture",
+          "path": "apps/player/internal/server/server_test.go",
+          "scenario": "TestViewerCanResumePlayback"
+        }
+      ],
+      "coverage_limit": "Retained actual web form\u2192watch binding. Home resume browser tests seed API seconds1 and layout; native seek does not reload this form-written42 position. Test does not prove persistence across process restart.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no new isolated tests.",
+      "risk": "Preserves important app protocol, routing, security or persistence projection boundary omitted by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Initial observable app HTTP regression; retains distinct exact input/output absent from populated E2E.",
+      "review_provenance": "Full declaration and relevant production operation/entry/callers, helper when used, file history and comparison with existing populated browser/owner tests read by Player owner. No child execution."
     },
     {
       "name": "TestHealthReportsReady",
@@ -24682,22 +24848,35 @@
       "sha256": "8acdc49b492b63be08ddfd9814851d646f73af2bb0a5fa67cd01cadca2396f02",
       "path": "apps/player/internal/server/server_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Default app health route changes readiness status200 or wire JSON status:ok expected by process/container health clients.",
+      "category": "core_actual_app_boundary_retained",
+      "credible_failure": "Default app health route changes readiness status200 or wire JSON status:ok expected by process/container health clients.",
+      "production_owner": [
+        "apps/player/internal/server/server_health.go:health",
+        "apps/player/internal/server/server.go:newApplication"
+      ],
+      "non_test_callers": [
+        "Real app composition binds browser/API Home/watch/media/subtitle/health/manual-scan/progress endpoints; scanned library and request Viewer callbacks select actual sources/state."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_HTTP_fixture",
+          "path": "apps/player/internal/server/server_test.go",
+          "scenario": "TestHealthReportsReady"
+        }
+      ],
+      "coverage_limit": "Browser journeys do not assert the exact default health JSON wire response; non-server CLI tests exercise configured serving but their health predicates differ.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no new isolated tests.",
+      "risk": "Preserves important app protocol, routing, security or persistence projection boundary omitted by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Initial observable app HTTP regression; retains distinct exact input/output absent from populated E2E.",
+      "review_provenance": "Full declaration and relevant production operation/entry/callers, helper when used, file history and comparison with existing populated browser/owner tests read by Player owner. No child execution."
     },
     {
       "name": "TestResponsesCarryBrowserSecurityPolicy",
@@ -24706,22 +24885,35 @@
       "sha256": "11430573a0277d03de691966e4965fcb3df20399b66686acf0e1376680838b8f",
       "path": "apps/player/internal/server/server_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "App transport stops emitting restrictive default-src self or nosniff on actual Home response.",
+      "category": "core_actual_app_boundary_retained",
+      "credible_failure": "App transport stops emitting restrictive default-src self or nosniff on actual Home response.",
+      "production_owner": [
+        "apps/player/internal/server/security.go:security/protectApplicationTransport",
+        "packages/identitycore/http.go:Security"
+      ],
+      "non_test_callers": [
+        "Real app composition binds browser/API Home/watch/media/subtitle/health/manual-scan/progress endpoints; scanned library and request Viewer callbacks select actual sources/state."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_HTTP_fixture",
+          "path": "apps/player/internal/server/server_test.go",
+          "scenario": "TestResponsesCarryBrowserSecurityPolicy"
+        }
+      ],
+      "coverage_limit": "Real browser security assertions on reader iframe target frame policy, not the default Home CSP/nosniff contract.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no new isolated tests.",
+      "risk": "Preserves important app protocol, routing, security or persistence projection boundary omitted by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Initial observable app HTTP regression; retains distinct exact input/output absent from populated E2E.",
+      "review_provenance": "Full declaration and relevant production operation/entry/callers, helper when used, file history and comparison with existing populated browser/owner tests read by Player owner. No child execution."
     },
     {
       "name": "TestViewerCanBrowseScannedLibrary",
@@ -24730,22 +24922,36 @@
       "sha256": "e5287d59700458f420dde376c1e0b760264112cf3a172c1caf6b6fe4df980a88",
       "path": "apps/player/internal/server/server_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Fallback title from untagged dotted The.Matrix.mp4 is rendered with release delimiters rather than The Matrix.",
+      "category": "core_actual_app_boundary_retained",
+      "credible_failure": "Fallback title from untagged dotted The.Matrix.mp4 is rendered with release delimiters rather than The Matrix.",
+      "production_owner": [
+        "packages/library/library.go:scanItemWithRelative/clean/movie",
+        "packages/home/handler.go:NewHandler",
+        "apps/player/internal/server/home.go:showHome"
+      ],
+      "non_test_callers": [
+        "Real app composition binds browser/API Home/watch/media/subtitle/health/manual-scan/progress endpoints; scanned library and request Viewer callbacks select actual sources/state."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_HTTP_fixture",
+          "path": "apps/player/internal/server/server_test.go",
+          "scenario": "TestViewerCanBrowseScannedLibrary"
+        }
+      ],
+      "coverage_limit": "Actual no-NFO raw filename fallback reaches Home. Populated library fixtures mostly use NFO titles; shared rich scan uses episodic dotted names and complex release cases rather than this ordinary dotted movie input.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no new isolated tests.",
+      "risk": "Preserves important app protocol, routing, security or persistence projection boundary omitted by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Initial observable app HTTP regression; retains distinct exact input/output absent from populated E2E.",
+      "review_provenance": "Full declaration and relevant production operation/entry/callers, helper when used, file history and comparison with existing populated browser/owner tests read by Player owner. No child execution."
     },
     {
       "name": "TestViewerCanSearchLibrary",
@@ -24753,23 +24959,46 @@
       "end_line": 256,
       "sha256": "2364432d99758d7311fb1bda6f355de9028b318bb852c6b3cacac693a8cc68c5",
       "path": "apps/player/internal/server/server_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "Two-item positive/negative substring probe replays the actual Home search path already checked by the richer exact-result/rank/API-and-web keeper and shared normalization contracts.",
+      "category": "coarse_app_smoke_duplicate",
+      "credible_failure": "Two-item positive/negative substring probe replays the actual Home search path already checked by the richer exact-result/rank/API-and-web keeper and shared normalization contracts.",
+      "production_owner": [
+        "apps/player/internal/server/server.go:New/newApplication/registerFiles/showHome routing",
+        "apps/player/internal/server/home.go:showHome/Browse",
+        "packages/home/handler.go:NewHandler",
+        "apps/player/internal/server/browse.go:browseLibrary",
+        "packages/catalog/index_order.go:BrowseLibrary"
+      ],
+      "non_test_callers": [
+        "GET /{$} binds showHome on the real app ServeMux; browser/native clients access the same index/home projection."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_HTTP_fixture",
+          "path": "apps/player/internal/server/library_api_titles_test.go",
+          "scenario": "TestKnownTitleSearchRanksLikelyMatchesAcrossAPIAndWeb",
+          "mapping": "Real app scans five distinct title files, asserts exact four-result API list/rank, normalized wall+e positive/punctuation negative, and four-result web count/rank/search-clear hook; omitted query/filtering would produce five instead of four."
+        },
+        {
+          "kind": "retained_canonical_isolated_search_normalization",
+          "path": "packages/catalog/search_sort_test.go",
+          "scenario": "TestSearchTextNormalizesASCIIAndUnicodeMetadata; TestSearchSortingPreservesRelevanceAndTieBreaks",
+          "mapping": "Shared query/title normalization including mixed-case ASCII and Unicode casefold remains independently asserted."
+        }
+      ],
+      "coverage_limit": "No browser search equivalence is asserted. Stronger keeper is an actual Go-handler fixture. Existing query normalization owner guards lowercase input; Home uses the same browse operation for this default view and movies view.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "Delete declaration; io import disappears after Home smoke removal. No production seam or shared helper is removed.",
+      "risk": "Low; independently review exact assertions against the named remaining keepers.",
+      "validation_command": "Root full Player Go suite and populated browser Home/library journeys with repeatable artifact.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Initial-commit coarse smoke; richer retained app/browser coverage now provides stronger observable contracts.",
+      "review_provenance": "Full declaration, relevant actual composition/home/browse owner, stronger keeper complete helper and fixture.NewHandler, source normalization and relevant browser scenarios read by Player owner. No child Go/browser execution."
     },
     {
       "name": "TestOwnerCanManuallySyncLibrary",
@@ -24778,22 +25007,36 @@
       "sha256": "19125903cb7ca0e665f2ddc17a50419861c6a829085527d5a93593993320fa5e",
       "path": "apps/player/internal/server/server_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Running app POST /scan fails to refresh a newly-created file, loses Sync control or redirect response.",
+      "category": "core_actual_app_boundary_retained",
+      "credible_failure": "Running app POST /scan fails to refresh a newly-created file, loses Sync control or redirect response.",
+      "production_owner": [
+        "apps/player/internal/server/server.go:POST /scan route",
+        "packages/catalog/scan.go:StorageRefresh/Scan",
+        "packages/catalog/http.go:RescanHandler"
+      ],
+      "non_test_callers": [
+        "Real app composition binds browser/API Home/watch/media/subtitle/health/manual-scan/progress endpoints; scanned library and request Viewer callbacks select actual sources/state."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_actual_app_HTTP_fixture",
+          "path": "apps/player/internal/server/server_test.go",
+          "scenario": "TestOwnerCanManuallySyncLibrary"
+        }
+      ],
+      "coverage_limit": "Actual filesystem addition after app creation and explicit manual re-scan missing from populated E2E; does not prove auto watcher/interval behavior.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; no new isolated tests.",
+      "risk": "Preserves important app protocol, routing, security or persistence projection boundary omitted by current E2E.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Initial observable app HTTP regression; retains distinct exact input/output absent from populated E2E.",
+      "review_provenance": "Full declaration and relevant production operation/entry/callers, helper when used, file history and comparison with existing populated browser/owner tests read by Player owner. No child execution."
     },
     {
       "name": "TestBrowserSessionCookieIsolatedFromSiblingApp",
@@ -28639,7 +28882,9 @@
     "TestStepUpReturnsToKnownOwnerPage",
     "TestSupportedLanguageCoverageIncludesJellyfinLocaleSet",
     "TestUIIconSetIsCompleteAndLocal",
-    "TestVersionedApplicationStylesheetIncludesSupporterStyles"
+    "TestVersionedApplicationStylesheetIncludesSupporterStyles",
+    "TestViewerCanOpenHome",
+    "TestViewerCanSearchLibrary"
   ],
   "semantic_audit_complete": false,
   "implemented_removals": [
@@ -28668,9 +28913,11 @@
     "TestStepUpReturnsToKnownOwnerPage",
     "TestSupportedLanguageCoverageIncludesJellyfinLocaleSet",
     "TestUIIconSetIsCompleteAndLocal",
-    "TestVersionedApplicationStylesheetIncludesSupporterStyles"
+    "TestVersionedApplicationStylesheetIncludesSupporterStyles",
+    "TestViewerCanOpenHome",
+    "TestViewerCanSearchLibrary"
   ],
-  "removal_count": 26,
+  "removal_count": 28,
   "verification": [
     {
       "command": "gofmt -w <five touched retained Go files>",
@@ -28703,6 +28950,10 @@
     {
       "command": "gofmt -w apps/player/internal/server/assets_test.go; git diff --check",
       "result": "passed; navigation CSS recipe inventory batch; execution delegated root."
+    },
+    {
+      "command": "gofmt -w apps/player/internal/server/server_test.go; git diff --check",
+      "result": "passed; core smoke consolidation batch; Go/E2E execution delegated root."
     }
   ],
   "retention_examples": [
@@ -28715,9 +28966,9 @@
     "TestConfigurationTransactionRejectsSemanticallyInvalidRecoveryWithoutSideEffects"
   ],
   "review_summary": {
-    "semantic_review_complete": 166,
-    "candidate_evidence_complete": 26,
-    "inventory_only_retained_pending_semantic_review": 641,
+    "semantic_review_complete": 179,
+    "candidate_evidence_complete": 28,
+    "inventory_only_retained_pending_semantic_review": 626,
     "test_and_boundary_review_pending_full_owner": 4
   }
 }
