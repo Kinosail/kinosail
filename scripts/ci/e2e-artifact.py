@@ -50,7 +50,7 @@ def main():
     safe_keys = ("CI", "CONTAINER_ENGINE", "KINOSAIL_BROWSER_TEST", "KINOSAIL_BROWSER_MATRIX",
                  "KINOSAIL_BROWSER_PROJECT", "KINOSAIL_BROWSER_SMOKE", "KINOSAIL_BROWSER_WORKERS",
                  "KINOSAIL_E2E_WORKERS", "KINOSAIL_E2E_VIDEO", "KINOSAIL_TEST_INSTANCE",
-                 "KINOSAIL_TEST_IMAGE", "KINOSAIL_TEST_IMAGE_READY", "PLAYWRIGHT_CHANNEL")
+                 "KINOSAIL_TEST_IMAGE", "KINOSAIL_TEST_IMAGE_READY", "PLAYWRIGHT_CHANNEL", "GOCACHE")
     receipt = {
         "schemaVersion": 1, "revision": revision["stdout"],
         "sourceStatus": status, "trackedPatchSHA256": hashlib.sha256(patch.stdout).hexdigest(),

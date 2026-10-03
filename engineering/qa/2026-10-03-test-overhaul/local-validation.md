@@ -11,14 +11,20 @@ Playwright dependencies, Chrome and FFmpeg are required. No container engine is
 used by this route. Build serially with adequate free disk space:
 
 ```sh
-GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player build -o ../../.verification/test-overhaul/kinosail-player ./cmd/kinosail
+GOCACHE=/tmp/kinosail-testing-go-cache python3 scripts/ci/e2e-artifact.py --output .verification/test-overhaul/build-player -- go -C apps/player build -o ../../.verification/test-overhaul/build-player/kinosail ./cmd/kinosail
 python3 scripts/ci/e2e-artifact.py --output .verification/test-overhaul/player-preservation-NEW -- python3 engineering/qa/2026-10-03-test-overhaul/run-populated-local-e2e.py "$PWD" player player-state-NEW ui-happy-paths.spec.ts title-jump-first-paint.spec.ts --grep 'Dark is the default|populated mobile library'
-GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles build -o ../../.verification/test-overhaul/kinosail-subtitles ./cmd/kinosail
+python3 scripts/ci/e2e-artifact.py --output .verification/test-overhaul/player-happy-NEW -- python3 engineering/qa/2026-10-03-test-overhaul/run-populated-local-e2e.py "$PWD" player player-happy-state-NEW --setup-in-browser happy-path.spec.ts
+GOCACHE=/tmp/kinosail-testing-go-cache python3 scripts/ci/e2e-artifact.py --output .verification/test-overhaul/build-subtitles -- go -C apps/subtitles build -o ../../.verification/test-overhaul/build-subtitles/kinosail ./cmd/kinosail
 KINOSAIL_UI_FIXTURE_DIR="$PWD/.verification/test-overhaul/ui-fixtures-subtitles" GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test ./internal/server -run '^TestWriteUIStateFixturesSubtitleInspector$' -count=1
 python3 scripts/ci/e2e-artifact.py --output .verification/test-overhaul/subtitles-preservation-NEW -- python3 engineering/qa/2026-10-03-test-overhaul/run-populated-local-e2e.py "$PWD" subtitles subtitles-state-NEW subtitle-dashboard.spec.ts polish-shell.spec.ts subtitle-inspector-layout.spec.ts --grep 'review starts with sync|administration uses a plain canvas|inspector shell and review states'
 ```
 
-The runner creates synthetic media and an MFA Owner through the real HTTP API.
+The runner creates synthetic media and an MFA Owner through the real HTTP API;
+`--setup-in-browser` leaves fresh installation onboarding to the browser journey.
+It requires a successful build receipt for the same clean source revision and
+matches the exact binary checksum before launch. Choose a fresh build output
+directory when rebuilding, then place its receipt/binary under `build-player`
+or `build-subtitles` for the runner.
 It records exact FFmpeg commands, source and binary hashes, tool versions, fixture
 hashes, a copied runner/config, server logs, results and screenshots. The outer
 recorder rejects source changes during a run and hashes every evidence file.
