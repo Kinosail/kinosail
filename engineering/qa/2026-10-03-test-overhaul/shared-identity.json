@@ -19,16 +19,16 @@
     "baseline_test_lines": 66475,
     "declarations": 1900,
     "decisions": {
-      "R": 1405,
-      "D": 78,
+      "R": 1439,
+      "D": 79,
       "F": 49,
       "C": 24,
-      "unreviewed": 344
+      "unreviewed": 309
     },
-    "removed_declarations": 78,
-    "removed_test_lines": 1403,
-    "final_declarations": 1822,
-    "final_test_lines": 65072,
+    "removed_declarations": 79,
+    "removed_test_lines": 1437,
+    "final_declarations": 1821,
+    "final_test_lines": 65038,
     "removed_support_helpers": 6,
     "removed_support_files": 3,
     "removed_support_lines": 141
@@ -259,7 +259,8 @@
         "packages/transcodehardware/probe.go",
         "packages/transcodehardware/verification.go"
       ],
-      "e2e": "Populated HLS playback uses actual initialization media. It is complementary to retained process-backed fake-FFmpeg/platform tests and injected verified-operation failures; no exhaustive physical GPU claim."
+      "e2e": "Populated HLS playback uses actual initialization media. It is complementary to retained process-backed fake-FFmpeg/platform tests and injected verified-operation failures; no exhaustive physical GPU claim.",
+      "full_semantic_review": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently."
     },
     "credentials": {
       "owners": [
@@ -82649,8 +82650,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "324e41997651c13691e43ba3e4e6af1e3663f472de85be147ac0dbb7a6ebc303",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -82659,7 +82660,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestBackendDeviceRequiresMatchingHardwareKind",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "A CUDA control/uvm node or mismatched DRM device could be converted into an encoder device index and fail playback; verifies NVIDIA numeric index12 and rejects control/uvm/cross-kind/software/empty.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "375ce3b1e97e37ea9c88cbad262f2644eb4b4582 Stabilize hosted tooling and expand runtime regression coverage"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "A CUDA control/uvm node or mismatched DRM device could be converted into an encoder device index and fail playback; verifies NVIDIA numeric index12 and rejects control/uvm/cross-kind/software/empty."
     },
     {
       "file": "packages/transcodehardware/capabilities_test.go",
@@ -82883,8 +82914,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "a0688845d3cb0dee02ecbeea96710683780eee224fa5fdabd8fb1eff440ba50c",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "D",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -82893,7 +82924,42 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestEnhanceSettingsPagePreservesPlayerCopy",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "No distinct important failure: concatenates production legacy constants and copied prose, then checks the current replacement constants/prose as substrings; it cannot prove actual application template construction or rendering.",
+      "remaining_coverage": "Genuine apps/player/e2e/layout-audit-shell.spec.ts::transcoder support stays concise and accessible navigates actual /settings#transcoder, selects Video format, expands Video compatibility, opens technical details, verifies panels/layout/Axe and produces screenshots. Real handler TestOwnerCanRunLocalTranscoderCheckThroughWebAndAPI asserts rendered ready/Check again/basic tools; TestLocalTranscoderCheckReturnsActionableFailure asserts rendered failed/Processor/Video compatibility. Exact cosmetic vocabulary of every old fragment is not asserted by genuine E2E; no equivalent GPU filtering proof claimed.",
+      "reason": "Fixture copies/replacement-string identity have no additional important rendered behavior beyond live page and actual handler keepers; remove the source-shape replay.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "Full candidate and exact named keeper bodies/owners/callers reviewed before deletion."
+      },
+      "implementation_status": "removed; final validation awaits serial root suite"
     },
     {
       "file": "packages/transcodehardware/presentation_test.go",
@@ -82903,8 +82969,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "10d2ed8dd24a70cdf8a94139fbd8c00d3085ee49f49074b7186e879b199d502e",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -82913,7 +82979,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestBackendPresentationCoversEveryState",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Detected but unverified hardware could be shown as Smoke check passed, falsely claiming the owner has a usable conversion path. Passed verification must show passed; detected-only needs setup; supported absent requires unavailable. Friendly-name fragments supplement this trust state boundary.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "Detected but unverified hardware could be shown as Smoke check passed, falsely claiming the owner has a usable conversion path. Passed verification must show passed; detected-only needs setup; supported absent requires unavailable. Friendly-name fragments supplement this trust state boundary."
     },
     {
       "file": "packages/transcodehardware/presentation_test.go",
@@ -82923,8 +83019,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "d5cd61bd6fdbeaac8f49f5979b8de9db676b7d00db90ac29ed9b2f6b2ff61101",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -82933,7 +83029,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestCodecPresentationCoversEveryState",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "An unsupported VVC format or a supported-but-unusable H264 encoder could be displayed as Available/Recommended, suggesting an unusable conversion choice. Exact format status distinction is not exercised by the ordinary software-H264 E2E. Reasons/names supplement the unsupported/unusable states.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "An unsupported VVC format or a supported-but-unusable H264 encoder could be displayed as Available/Recommended, suggesting an unusable conversion choice. Exact format status distinction is not exercised by the ordinary software-H264 E2E. Reasons/names supplement the unsupported/unusable states."
     },
     {
       "file": "packages/transcodehardware/probe_test.go",
@@ -82943,8 +83069,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "814023d23dda666e9552e57cdddcee058c0ff7a912c7e8dfc502b46abd758ba6",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -82953,7 +83079,38 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestHardwareDefinitionsMatchPlayerPlatforms",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Incorrect OS/architecture admission could offer QSV on Arm, Windows-only AMF/MF on Linux, or miss native VideoToolbox/FreeBSD VAAPI; test covers platform policy rather than mere string inventory. Actual browser runs on one Linux container and misses other platform matrices.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "54cb4aae50047a60a9db70ac817dff43ea8d8cda Handle leading HLS timestamps and enforce FFmpeg probe output limits",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "Incorrect OS/architecture admission could offer QSV on Arm, Windows-only AMF/MF on Linux, or miss native VideoToolbox/FreeBSD VAAPI; test covers platform policy rather than mere string inventory. Actual browser runs on one Linux container and misses other platform matrices."
     },
     {
       "file": "packages/transcodehardware/probe_test.go",
@@ -82963,8 +83120,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "690f630bf377ae5dc2bff96ee409e9e8e382e0d9a72dfb8ba0e57beae1ce8f85",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -82973,7 +83130,38 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestProbePlatformDefaultsEachMissingField",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "A missing GOOS or GOARCH override could remain empty and suppress all hardware definitions in native installs; also preserves provided linux/arm64 independently. Ordinary browser software startup does not prove host GPU discovery when one override is missing.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "54cb4aae50047a60a9db70ac817dff43ea8d8cda Handle leading HLS timestamps and enforce FFmpeg probe output limits",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "A missing GOOS or GOARCH override could remain empty and suppress all hardware definitions in native installs; also preserves provided linux/arm64 independently. Ordinary browser software startup does not prove host GPU discovery when one override is missing."
     },
     {
       "file": "packages/transcodehardware/probe_test.go",
@@ -82983,8 +83171,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "c0ae45c9f121e0d1da514099a3707eb2a9bd547de8957c002da4caae95fbba4b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -82993,7 +83181,38 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestProbeDiscoversPortableBackendsAndCodecs",
         "Elapsed": 0.15
-      }
+      },
+      "credible_failure": "V4L2 device path or native Windows ARM MF encoder list could be lost despite complete discovered capabilities; VVC must remain unusable even when listed. Uses shell capability evidence and injected device permission, not actual platform/decoder E2E.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "54cb4aae50047a60a9db70ac817dff43ea8d8cda Handle leading HLS timestamps and enforce FFmpeg probe output limits",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "V4L2 device path or native Windows ARM MF encoder list could be lost despite complete discovered capabilities; VVC must remain unusable even when listed. Uses shell capability evidence and injected device permission, not actual platform/decoder E2E."
     },
     {
       "file": "packages/transcodehardware/probe_test.go",
@@ -83003,8 +83222,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "4d33e7dfd57cbe4e6b8d8fc8af612b489064f5895c7a368ed63ef1c2e40e67a5",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83013,7 +83232,38 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestPortableBackendDeviceRequirements",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Requiring Linux NVIDIA nodes on Windows or accepting absent nodes on Linux would disable working native CUDA or select unusable Linux CUDA; explicit positive and negative device policy is absent single-host E2E.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "54cb4aae50047a60a9db70ac817dff43ea8d8cda Handle leading HLS timestamps and enforce FFmpeg probe output limits",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "Requiring Linux NVIDIA nodes on Windows or accepting absent nodes on Linux would disable working native CUDA or select unusable Linux CUDA; explicit positive and negative device policy is absent single-host E2E."
     },
     {
       "file": "packages/transcodehardware/probe_test.go",
@@ -83023,8 +83273,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "32f65efdc188fcfaf12db7eabe5ea33e01a32eb979873ebfbec60124925a0863",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83033,7 +83283,38 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestProbeRequiresCompleteAccessibleHardware",
         "Elapsed": 0.16
-      }
+      },
+      "credible_failure": "Denied DRM access or missing one of Rockchip render/dma_heap/mpp/rga interfaces could still authorize hardware conversion. Positive complete Rockchip and Asahi relevance controls prevent generic fail-closed pass.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "54cb4aae50047a60a9db70ac817dff43ea8d8cda Handle leading HLS timestamps and enforce FFmpeg probe output limits",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "Denied DRM access or missing one of Rockchip render/dma_heap/mpp/rga interfaces could still authorize hardware conversion. Positive complete Rockchip and Asahi relevance controls prevent generic fail-closed pass."
     },
     {
       "file": "packages/transcodehardware/probe_test.go",
@@ -83043,8 +83324,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "63e469cf6b17e5137e04bf3f8fd76754250bd8f10533a26119d7e445d46f6ff7",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83053,7 +83334,38 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestProbeSoftwareStatesAndDefaults",
         "Elapsed": 0.28
-      }
+      },
+      "credible_failure": "Detection disabled, missing/unlaunchable FFmpeg, and libx264rgb-only output must not advertise usable software encoder readiness; valid libx264 distinguishes command failure from supported encoder absence. Real browser has working configured FFmpeg, no installation-failure matrix.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "54cb4aae50047a60a9db70ac817dff43ea8d8cda Handle leading HLS timestamps and enforce FFmpeg probe output limits",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "Detection disabled, missing/unlaunchable FFmpeg, and libx264rgb-only output must not advertise usable software encoder readiness; valid libx264 distinguishes command failure from supported encoder absence. Real browser has working configured FFmpeg, no installation-failure matrix."
     },
     {
       "file": "packages/transcodehardware/probe_test.go",
@@ -83063,8 +83375,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "6d00002a7ee92b879e3edc2de8431b4c50c69f3b3b2130b8d7a7200751019cbd",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83073,7 +83385,38 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestHardwareMessagesCoverEveryState",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Unverified device/encoder discovery could be reported Ready rather than Ready to test, or a missing-device state mislabeled as missing FFmpeg, misleading the owner about whether explicit verification or device access is needed. Browser only sees a successfully checked software path; textual reason/action presence alone is supplementary and does not prove a fix action.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "54cb4aae50047a60a9db70ac817dff43ea8d8cda Handle leading HLS timestamps and enforce FFmpeg probe output limits",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "Unverified device/encoder discovery could be reported Ready rather than Ready to test, or a missing-device state mislabeled as missing FFmpeg, misleading the owner about whether explicit verification or device access is needed. Browser only sees a successfully checked software path; textual reason/action presence alone is supplementary and does not prove a fix action."
     },
     {
       "file": "packages/transcodehardware/probe_test.go",
@@ -83128,8 +83471,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "a208fe3f7caa82c905fb29f4c884ff1dcc1eaf79f343c086f28e4e9e5dfebc46",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83138,7 +83481,38 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestDeviceDiscoveryAndBoundedProbeOutput",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Directory discovery could skip required DMA heap or select unreadable/nonexistent device; bounded process writer must consume all bytes without retaining overflow or failing child writes. Actual temporary filesystem plus capped writer proves precise6-kind discovery and truncation, not hardware access on real device.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "54cb4aae50047a60a9db70ac817dff43ea8d8cda Handle leading HLS timestamps and enforce FFmpeg probe output limits",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "Directory discovery could skip required DMA heap or select unreadable/nonexistent device; bounded process writer must consume all bytes without retaining overflow or failing child writes. Actual temporary filesystem plus capped writer proves precise6-kind discovery and truncation, not hardware access on real device."
     },
     {
       "file": "packages/transcodehardware/probe_test.go",
@@ -83148,8 +83522,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "f3eb9f3c09143270ae83e718b48e46eb3c079d8df0abf46c1977b887715f1cac",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83158,7 +83532,38 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestFFmpegCapabilitiesBoundsProcessOutput",
         "Elapsed": 0.14
-      }
+      },
+      "credible_failure": "Malicious/buggy FFmpeg capability output beyond256KiB could be retained, causing memory growth or accepting an encoder outside the approved prefix. Shell emits a post-limit encoder, which must be excluded; fake executable is not decoder E2E.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "54cb4aae50047a60a9db70ac817dff43ea8d8cda Handle leading HLS timestamps and enforce FFmpeg probe output limits",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "Malicious/buggy FFmpeg capability output beyond256KiB could be retained, causing memory growth or accepting an encoder outside the approved prefix. Shell emits a post-limit encoder, which must be excluded; fake executable is not decoder E2E."
     },
     {
       "file": "packages/transcodehardware/probe_test.go",
@@ -83168,8 +83573,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "1d1048f2ce35ed49e56330de034a5e48c8413388a2ca0b812b8732631878fc2b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83178,7 +83583,38 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestLinuxHardwarePlatformChecksBothLocations",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "An Asahi device tree available only under /sys could be missed, causing incorrect GPU availability advice; non-Apple positive content must not misclassify. Host hardware-platform call is smoke only; injected secondary-location read proves classification.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "54cb4aae50047a60a9db70ac817dff43ea8d8cda Handle leading HLS timestamps and enforce FFmpeg probe output limits",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "An Asahi device tree available only under /sys could be missed, causing incorrect GPU availability advice; non-Apple positive content must not misclassify. Host hardware-platform call is smoke only; injected secondary-location read proves classification."
     },
     {
       "file": "packages/transcodehardware/probe_test.go",
@@ -83188,8 +83624,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "4812345f40e3d2509ccad848c48054a9fc84b61892974604b046b2cc576ecc4a",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83198,7 +83634,38 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestDeviceKindsRejectLookalikes",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Lookalike /dev/video-card or bare /dev/video could be treated as V4L2 numbered device, selecting an unrelated control node; exact negative paths are absent the discovered device directory positive keeper and genuine E2E.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "54cb4aae50047a60a9db70ac817dff43ea8d8cda Handle leading HLS timestamps and enforce FFmpeg probe output limits",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "Lookalike /dev/video-card or bare /dev/video could be treated as V4L2 numbered device, selecting an unrelated control node; exact negative paths are absent the discovered device directory positive keeper and genuine E2E."
     },
     {
       "file": "packages/transcodehardware/selection_store_test.go",
@@ -83208,8 +83675,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "31e5b0a1b9cb7c91c7ea7f2f43f18902b251f2d696f2f381ab295fc1f70e2582",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83218,7 +83685,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestSelectionStateValidatesBeforePersistence",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Managed settings or oversized invalid quality must be rejected before Save, selected state, or last check mutates. Browser ordinary editable save does not inject validation/storage barriers.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "Managed settings or oversized invalid quality must be rejected before Save, selected state, or last check mutates. Browser ordinary editable save does not inject validation/storage barriers."
     },
     {
       "file": "packages/transcodehardware/selection_store_test.go",
@@ -83228,8 +83725,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "836b4c080b96b10dcf18b1a899d1d4d04b10ceffdc62798da5bc7bd584c9176d",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83238,7 +83735,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestSelectionStatePersistsBeforeCommit",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Failed Save could commit new conversion policy or discard a previous passed result despite durable failure; checks rollback and successful save sees normalized selection before clearing check. Fake Save seam is intentional durable boundary, not disk E2E.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "Failed Save could commit new conversion policy or discard a previous passed result despite durable failure; checks rollback and successful save sees normalized selection before clearing check. Fake Save seam is intentional durable boundary, not disk E2E."
     },
     {
       "file": "packages/transcodehardware/selection_store_test.go",
@@ -83248,8 +83775,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "2ce83b500c1c783203cc286d2b2fc948787d2a42bc9dae80a2fc9417db3e2294",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83258,7 +83785,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestSelectionStateReconcilesAndReads",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Unavailable explicitly configured accelerator could be silently reset, or failed repair Save could commit auto; supported choice should avoid writes and automatic repair preserve check. Also public state settings/preferred-codec read adapters must use committed policy.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "Unavailable explicitly configured accelerator could be silently reset, or failed repair Save could commit auto; supported choice should avoid writes and automatic repair preserve check. Also public state settings/preferred-codec read adapters must use committed policy."
     },
     {
       "file": "packages/transcodehardware/selection_store_test.go",
@@ -83268,8 +83825,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "6494f374de5ffd95fb1f30d0d8f7eb09990dbb71061ce7232a437b3c003b6db9",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83278,7 +83835,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestSelectionJSONAndConfigurationSources",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Configuration source classification could treat yaml/gui explicit choices as defaults and silently overwrite them during unavailable hardware reconciliation; round-trip Selection JSON protects persisted field names used by both embedded app settings. Actual E2E does not restart alternate explicitly sourced configurations.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "Configuration source classification could treat yaml/gui explicit choices as defaults and silently overwrite them during unavailable hardware reconciliation; round-trip Selection JSON protects persisted field names used by both embedded app settings. Actual E2E does not restart alternate explicitly sourced configurations."
     },
     {
       "file": "packages/transcodehardware/settings_test.go",
@@ -83288,8 +83875,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "2ee571c980e409ff0d7c374438219b1808766d51d2006b069d20fc9f03f884ed",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83298,7 +83885,38 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestSelectionNormalizationAndAcceleratorCatalog",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Valid supported accelerator IDs, especially native-platform options, could be rejected by the settings validator even when discovered; empty default normalization must remain auto, magic/oversized IDs fail. Actual browser selects only current-host formats and misses valid accelerator acceptance matrix.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "945ddf2e5fbda8ff536fb7f02c5ab7578a31cab9 Add verified hardware HDR tone mapping with stage-specific recovery",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "Valid supported accelerator IDs, especially native-platform options, could be rejected by the settings validator even when discovered; empty default normalization must remain auto, magic/oversized IDs fail. Actual browser selects only current-host formats and misses valid accelerator acceptance matrix."
     },
     {
       "file": "packages/transcodehardware/settings_test.go",
@@ -83308,8 +83926,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "d0197d35841df094c512a24e7e37369a7cf703efa92252d1af55b67918113f5c",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83318,7 +83936,38 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestValidateSelectionPreservesPlayerPolicyAndNoInputMutation",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Unavailable codec/backend could persist as a valid owner selection; invalid quality/codec/accelerator reject in defined order with no partial result or mutating caller input. E2E does not submit unavailable platform-specific matrix.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "945ddf2e5fbda8ff536fb7f02c5ab7578a31cab9 Add verified hardware HDR tone mapping with stage-specific recovery",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "Unavailable codec/backend could persist as a valid owner selection; invalid quality/codec/accelerator reject in defined order with no partial result or mutating caller input. E2E does not submit unavailable platform-specific matrix."
     },
     {
       "file": "packages/transcodehardware/settings_test.go",
@@ -83328,8 +83977,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "53e30ac0c76a824c43a8a13fedf10e9fd04d2e06fa44489c84afa833269a38a7",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83338,7 +83987,38 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestReconcileSelectionPreservesExplicitChoicesAndRepairsDefaults",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Restart on changed capabilities could silently discard explicit unavailable user/env choices or fail to repair defaults; keeps quality/HDR policy and emits error for each explicitly sourced missing choice. No genuine browser restart/source matrix.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "945ddf2e5fbda8ff536fb7f02c5ab7578a31cab9 Add verified hardware HDR tone mapping with stage-specific recovery",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "Restart on changed capabilities could silently discard explicit unavailable user/env choices or fail to repair defaults; keeps quality/HDR policy and emits error for each explicitly sourced missing choice. No genuine browser restart/source matrix."
     },
     {
       "file": "packages/transcodehardware/settings_test.go",
@@ -83348,8 +84028,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "ed92c975e0caae6300d2512913e63aecf918f2471abd42dec64db17a45400f16",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83358,7 +84038,38 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestSettingsResolvesPlayerProfilesAndErrors",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Quality policy/device resolution could use wrong preset/CRF/encoder/DRM path or share caches between HDR policies; unavailable encoder/codec must return no partial settings. Single software E2E cannot prove QSV profile/device or missing encoder.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "945ddf2e5fbda8ff536fb7f02c5ab7578a31cab9 Add verified hardware HDR tone mapping with stage-specific recovery",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "Quality policy/device resolution could use wrong preset/CRF/encoder/DRM path or share caches between HDR policies; unavailable encoder/codec must return no partial settings. Single software E2E cannot prove QSV profile/device or missing encoder."
     },
     {
       "file": "packages/transcodehardware/tonemap_test.go",
@@ -83368,8 +84079,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "1d74e1133e526bd6ba490b54a0b4fa4ba3c64fc308a6e68f98cc2f82da3dd455",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83378,7 +84089,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestToneMappingRequiresMatchingDeviceCodecHDRAndFramePath",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "HDR tone mapping could be enabled using evidence for another device, codec, HDR format, or hardware frame path, causing wrong colors/failed conversion; separate HLG software-filter denial and missing evidence protect actual typed matching boundary.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "945ddf2e5fbda8ff536fb7f02c5ab7578a31cab9 Add verified hardware HDR tone mapping with stage-specific recovery"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "HDR tone mapping could be enabled using evidence for another device, codec, HDR format, or hardware frame path, causing wrong colors/failed conversion; separate HLG software-filter denial and missing evidence protect actual typed matching boundary."
     },
     {
       "file": "packages/transcodehardware/tonemap_test.go",
@@ -83388,8 +84129,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "a1718b4e55626808270465374f81744d45f5ccbbf2a2c1f9be05413180d47942",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83398,7 +84139,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestToneMapFailureKeepsEncoderAndOtherFormats",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "One HDR10 processing failure could disable the CUDA encoder or independently verified HLG, change cache/color policy, or re-enable failed tone mapping on fallback; recorded failure must quarantine only matching operation.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "945ddf2e5fbda8ff536fb7f02c5ab7578a31cab9 Add verified hardware HDR tone mapping with stage-specific recovery"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "One HDR10 processing failure could disable the CUDA encoder or independently verified HLG, change cache/color policy, or re-enable failed tone mapping on fallback; recorded failure must quarantine only matching operation."
     },
     {
       "file": "packages/transcodehardware/tonemap_test.go",
@@ -83408,8 +84179,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "fa9f4833f073b6412f46db9750be63b41b170e22f3acfec82be311361eb86566",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83418,7 +84189,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestToneMapStartupDoesNotReuseSDRResults",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "A generic SDR passed callback could certify four untested HDR/frame-path operations; requires each check report the requested tone-map/HDR identity before promotion and checks4independent invocations. Callback is injected, not a real HDR decode proof.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "945ddf2e5fbda8ff536fb7f02c5ab7578a31cab9 Add verified hardware HDR tone mapping with stage-specific recovery"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "A generic SDR passed callback could certify four untested HDR/frame-path operations; requires each check report the requested tone-map/HDR identity before promotion and checks4independent invocations. Callback is injected, not a real HDR decode proof."
     },
     {
       "file": "packages/transcodehardware/tonemap_test.go",
@@ -83428,8 +84229,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "a6c73ef13852c2a0ec7f90d8ce3ea7ec9e64a155ac2791d496cfbb964a0b011b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83438,7 +84239,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestToneMapFailureClassificationPreservesStorageErrors",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "No-space storage failures containing GPU filter terms could be classified as hardware retry, spending scarce CPU/GPU and hiding data-loss errors; independent tonemap_cuda/opencl/qsv positive evidence with storage negative prefixes.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "945ddf2e5fbda8ff536fb7f02c5ab7578a31cab9 Add verified hardware HDR tone mapping with stage-specific recovery"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "No-space storage failures containing GPU filter terms could be classified as hardware retry, spending scarce CPU/GPU and hiding data-loss errors; independent tonemap_cuda/opencl/qsv positive evidence with storage negative prefixes."
     },
     {
       "file": "packages/transcodehardware/tonemap_test.go",
@@ -83448,8 +84279,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "7afbe27bfda64bdbde15adb541538de4ce5791c646d3919ddf274c93e0f321b4",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83458,7 +84289,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestOptionalToneMapFailureCannotConsumeCodecVerificationBudget",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Cancelling/failing optional HDR checks could run before HEVC/AV1 baselines and remove usable codecs; callback cancellation after tone-map stage requires both baselines seen and preserved. Does not measure actual wall-clock budget, proves ordering and canceled-stage retention.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "945ddf2e5fbda8ff536fb7f02c5ab7578a31cab9 Add verified hardware HDR tone mapping with stage-specific recovery"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "Cancelling/failing optional HDR checks could run before HEVC/AV1 baselines and remove usable codecs; callback cancellation after tone-map stage requires both baselines seen and preserved. Does not measure actual wall-clock budget, proves ordering and canceled-stage retention."
     },
     {
       "file": "packages/transcodehardware/tonemap_test.go",
@@ -83468,8 +84329,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "5149cde95c8619e4473efb15c9c9d1fd8b64eb3553060d9a10ee2a484827af46",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83478,7 +84339,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestRockchipToneMapEvidenceUsesAccessibleRenderDevice",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Rockchip backend device evidence could collapse to default device identity instead of the explicit accessible DRM render node, preventing matching HDR checks or sharing the wrong GPU budget. Other retained BackendDevice test covers direct conversion, but this tests backendDevices operation candidates.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "945ddf2e5fbda8ff536fb7f02c5ab7578a31cab9 Add verified hardware HDR tone mapping with stage-specific recovery"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "Rockchip backend device evidence could collapse to default device identity instead of the explicit accessible DRM render node, preventing matching HDR checks or sharing the wrong GPU budget. Other retained BackendDevice test covers direct conversion, but this tests backendDevices operation candidates."
     },
     {
       "file": "packages/transcodehardware/verification_test.go",
@@ -83488,8 +84379,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "3a7109c45e833e014a0a736230c6a2236c0683e85e93e40a3c860f66a98b0612",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83498,7 +84389,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestVerificationDoesNotPromoteAnEncoderListing",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Listed QSV/AV1 could become selectable despite failed execution; verified VAAPI/software success must override initial selection and prioritize all H264 baselines before optional codecs. Injected checks prove admission, not actual GPU execution.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "Listed QSV/AV1 could become selectable despite failed execution; verified VAAPI/software success must override initial selection and prioritize all H264 baselines before optional codecs. Injected checks prove admission, not actual GPU execution."
     },
     {
       "file": "packages/transcodehardware/verification_test.go",
@@ -83508,8 +84429,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "b4e297c53df6e016750b0da0ea727ede82836b5294f798c5471a299361b3501e",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83518,7 +84439,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestPreferredDecodeIsCheckedBeforeOptionalCodecBudgetExpires",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Expensive optional codec check cancellation could prevent verified preferred CUDA H264 decode evidence and choose incorrect frame path; canceled HEVC must stay unsupported. Counts actual decode check before cancellation.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "Expensive optional codec check cancellation could prevent verified preferred CUDA H264 decode evidence and choose incorrect frame path; canceled HEVC must stay unsupported. Counts actual decode check before cancellation."
     },
     {
       "file": "packages/transcodehardware/verification_test.go",
@@ -83528,8 +84479,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "9edcd9d68ce5834c63e1ce8d911074e0c43249fc93cea7b6844967221a86aa6a",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83538,7 +84489,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestFailedDeviceEvidenceIsSharedAndExpires",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Failed operation could remain selectable through another capability copy, or successful explicit recheck/expired quarantine could never recover support. Shared verification owner and expiry/exact recheck evidence are not browser scenarios.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "Failed operation could remain selectable through another capability copy, or successful explicit recheck/expired quarantine could never recover support. Shared verification owner and expiry/exact recheck evidence are not browser scenarios."
     },
     {
       "file": "packages/transcodehardware/verification_test.go",
@@ -83548,8 +84529,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "4557af5de5820166d6dcbee951aac7920b50ba009040674ac9f97521a731e007",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83558,7 +84539,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestDecodeRecoveryPreservesEncodingAndPolicyCache",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Decode-only failure could discard healthy encoder or change playback cache, forcing client/cache inconsistency; full encode failure falls backsoftware with unchanged policy cache, while quality/accelerator/HDR choice must change cache.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "Decode-only failure could discard healthy encoder or change playback cache, forcing client/cache inconsistency; full encode failure falls backsoftware with unchanged policy cache, while quality/accelerator/HDR choice must change cache."
     },
     {
       "file": "packages/transcodehardware/verification_test.go",
@@ -83568,8 +84579,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "cadfb0f6d52fee96c9cdcdf08780473e3cf6a2f937bd6cc1e29dc06075cc249b",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83578,7 +84589,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestRecoveryClassifiesFailureAndNeverChangesNegotiatedCodec",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Storage/input/network failures could authorize hardware retry; AV1 negotiation could fall back to expensive software or change codec; two APIs of same DRM device must share resource budget. Browser ordinary playback does not inject failure classification or overloaded GPU.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "Storage/input/network failures could authorize hardware retry; AV1 negotiation could fall back to expensive software or change codec; two APIs of same DRM device must share resource budget. Browser ordinary playback does not inject failure classification or overloaded GPU."
     },
     {
       "file": "packages/transcodehardware/verification_test.go",
@@ -83588,8 +84629,8 @@
       "owner_group": "transcodehardware",
       "body_sha256": "d83badea76e686f240cc5119f2380d115acffb841eef8e9ac0a7b7249b791899",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
+      "decision": "R",
+      "audit_status": "reviewed",
       "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
       "validation_command": "cd packages && go test ./transcodehardware",
       "baseline_event": {
@@ -83598,7 +84639,37 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestChangedExecutableInvalidatesEvidenceUntilExplicitCheck",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Replacing configured FFmpeg could retain passed evidence for different executable and start unsupported conversion; actual file replacement invalidates until successful explicit recheck. Fixture is executable metadata file, not decoding, but durable trust identity is concrete.",
+      "remaining_coverage": "Genuine Player populated settings journey only renders/selects ordinary settings on its current host; it does not supply this hardware, failure, or configuration matrix. Shell/fake-check fixtures are isolated seam proofs, not real GPU E2E.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "auditor": "/root/subtitles_shared/shared_identity",
+      "production_owner": [
+        "packages/transcodehardware/probe.go",
+        "packages/transcodehardware/backends.go",
+        "packages/transcodehardware/capabilities.go",
+        "packages/transcodehardware/settings.go",
+        "packages/transcodehardware/selection_store.go",
+        "packages/transcodehardware/presentation.go",
+        "packages/transcodehardware/verification.go",
+        "packages/transcodehardware/verification_formats.go",
+        "packages/transcodehardware/tonemap.go",
+        "packages/transcodehardware/recovery.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/application_init.go::initializeApplication/probeHardware",
+        "apps/subtitles/internal/server/application_init.go::probeHardware",
+        "both apps internal/server/settings.go::transcoderState, settings_transcoder.go::setTranscoder/reconcileHardwareSelection",
+        "both apps internal/server/transcoder_selection.go::transcodingFor/preferredVideoCodec",
+        "both apps internal/server/settings_choices.go::enhanceSettingsPage/video_codecs.go::enhanceTranscoderPage",
+        "both apps internal/server/hls_recovery.go::retrySoftwareHLSEncode",
+        "both apps internal/server/downloads.go/hls_presentation.go::DeviceKey"
+      ],
+      "gap": "Genuine settings browser journey exercises current-host ordinary selection and rendered support panel, not native Windows/macOS/FreeBSD hardware, GPU permission failure, callback cancellation, HDR frame paths, executable replacement, write rollback, recovery/quarantine, or bounded command output. Shell/injected-check/template snippets explicitly isolated fixtures; no real GPU E2E claim. Synthetic legacy copy removal leaves exhaustive cosmetic copy vocabulary without an E2E assertion.",
+      "source_read_evidence": "Full35remaining declaration bodies and all helpers read, all10production files full read (1272LOC), complete relevant both-app hardware/settings/recovery adapters and Player actual transcode-check keeper bodies read. Full Player layout-audit-shell.spec.ts and Subtitles settings/workflow transcoder journey read; actual navigation is KINOSAIL_TEST_INSTANCE gated with screenshots, no mock media/GPU substitution. Per-file git history from baseline ledger preserved. No Go execution in this audit batch; baseline terminal pass events retained independently.",
+      "reason": "Replacing configured FFmpeg could retain passed evidence for different executable and start unsupported conversion; actual file replacement invalidates until successful explicit recheck. Fixture is executable metadata file, not decoding, but durable trust identity is concrete."
     },
     {
       "file": "packages/transcodepolicy/check_coordinator_test.go",
