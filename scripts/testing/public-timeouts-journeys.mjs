@@ -4,7 +4,7 @@ async function configUI(app) {
   const page=app.owner; app.lastpage=page;
   for(const width of [1440,1024,390,320]) {
     await page.setViewportSize({width,height:900}); const response=await page.goto(app.url+'/settings#security');
-    expect(response.status()).toBe(200);
+    if(response) expect(response.status()).toBe(200);
     const section=page.locator('#session-timeouts'); await expect(section).toBeVisible();
     for(const access of ['private','public']) {
       const form=section.locator(`[data-timeout-access="${access}"]`);

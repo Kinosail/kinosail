@@ -21,3 +21,7 @@ Private browser defaults are 15 minutes inactive and 8 hours absolute. Public is
 ## Verification planned before code
 
 Real native Go Server processes plus real Chrome, disposable synthetic Owners/Viewers and virtual WebAuthn. Owner selects public/private forms; verify public/private persisted fields, invalid input without effects, Viewer/public/stale Owner/CSRF denials, restart persistence, cookie issuance, exact and before-boundary idle/absolute/ExpiresAt rejection independently per channel, tightening/raising/no resurrection, legacy defaults and customized-private cap cases. Capture responsive populated Settings renders and accessibility. Receipt records revision, diff hash, commands, binaries, fixture rules, environment and results; no TLS bypass. Browser HTTP is loopback only. No physical Safari or deployment claim.
+
+## Rollback boundary
+
+Saving public settings adds persisted fields. Pre-feature Subtitles binaries reject these fields through their strict settings validator. Roll back with a compatible binary or restore a pre-change backup through the supported stopped-server workflow. Do not edit live state to remove fields. Player and Subtitles startup does not write public defaults.

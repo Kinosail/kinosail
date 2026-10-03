@@ -35,3 +35,5 @@ Owner administration, strong authentication, profile restrictions, and session r
 
 The Owner API uses `PUT /api/v1/settings/session-timeouts` for private access and `PUT /api/v1/settings/public-session-timeouts` for public access.
 Both accept `inactiveHours` and `absoluteHours`. Read effective limits and `publicSessionTimeoutsConfigured` from `GET /api/v1/settings`.
+
+Inactivity limits apply to browser sessions. Other public clients use the absolute limit.
