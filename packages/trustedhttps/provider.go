@@ -84,7 +84,7 @@ func newDNSProvider(config Config, client *http.Client, endpoints providerEndpoi
 		if err != nil {
 			return nil, errors.New("deSEC API address must be an HTTPS URL")
 		}
-		return &deSECProvider{config: config, client: client, endpoint: endpoint, lookupIP: endpoints.lookupIP, marshal: func(payload deSECPayload) ([]byte, error) { return json.Marshal(payload) }}, nil
+		return &deSECProvider{config: config, client: client, endpoint: endpoint, lookupIP: endpoints.lookupIP}, nil
 	default:
 		return nil, errors.New("trusted HTTPS provider is not supported")
 	}
@@ -126,7 +126,6 @@ type deSECProvider struct {
 	client   *http.Client
 	endpoint *url.URL
 	lookupIP func(context.Context, string) ([]net.IP, error)
-	marshal  func(deSECPayload) ([]byte, error)
 }
 
 type deSECPayload struct {
@@ -158,7 +157,7 @@ func (provider *deSECProvider) put(ctx context.Context, subname, recordType stri
 	if subname == "@" {
 		canonicalSubname = ""
 	}
-	body, err := provider.marshal(deSECPayload{Subname: canonicalSubname, Type: recordType, TTL: 3600, Records: records})
+	body, err := json.Marshal(deSECPayload{Subname: canonicalSubname, Type: recordType, TTL: 3600, Records: records})
 	if err != nil {
 		return errors.New("create deSEC request")
 	}

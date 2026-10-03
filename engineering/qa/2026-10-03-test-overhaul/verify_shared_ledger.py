@@ -5,6 +5,8 @@ Run from any checkout containing the original baseline Git objects:
   python3 engineering/qa/2026-10-03-test-overhaul/verify_shared_ledger.py
 Optional original Go JSON receipt verification:
   ... --baseline-events .verification/test-overhaul/baseline/packages-go.jsonl
+After reconciling newer main, require its separately recorded upstream additions:
+  ... --require-upstream-additions
 
 This verifies audit/source integrity; it does not execute or replace product tests.
 """
@@ -69,6 +71,7 @@ def main():
     parser.add_argument("--baseline-events", type=pathlib.Path)
     parser.add_argument("--allow-pending", action="store_true")
     parser.add_argument("--require-review-receipts", action="store_true")
+    parser.add_argument("--require-upstream-additions", action="store_true")
     args = parser.parse_args()
     root = pathlib.Path(__file__).resolve().parents[3]
     ledger = json.loads((pathlib.Path(__file__).parent / "shared-identity.json").read_text())
@@ -91,8 +94,30 @@ def main():
             content = candidate.read_text()
             final_lines += len(content.splitlines())
             current.update(declarations(path, content))
+    additions = ledger.get("preserved_upstream_additions", [])
+    addition_paths = {entry["file"] for entry in additions}
+    assert not addition_paths.intersection(files), "Upstream addition duplicates baseline file"
+    preserved_upstream, absent_upstream = {}, []
+    for entry in additions:
+        candidate = root / entry["file"]
+        if not candidate.exists():
+            absent_upstream.append({"file": entry["file"], "name": entry["name"]})
+            continue
+        content = candidate.read_text()
+        assert hashlib.sha256(content.encode()).hexdigest() == entry["file_sha256"], entry["file"]
+        parsed = declarations(entry["file"], content)
+        key = (entry["file"], entry["name"])
+        assert parsed[key]["body_sha256"] == entry["body_sha256"], key
+        assert parsed[key]["kind"] == entry["kind"], key
+        assert parsed[key]["line"] == entry["line"], key
+        preserved_upstream.update(parsed)
+    assert set(preserved_upstream) == {(entry["file"], entry["name"]) for entry in additions
+                                      if (root / entry["file"]).exists()}, "Unlisted upstream declaration"
+    if args.require_upstream_additions:
+        assert not absent_upstream, ("Upstream additions missing after reconciliation", absent_upstream)
     tracked = git("ls-files", "packages").splitlines()
-    new_files = [path for path in tracked if path.endswith("_test.go") and path not in files]
+    new_files = [path for path in tracked if path.endswith("_test.go")
+                 and path not in files and path not in addition_paths]
     assert not new_files, ("New test files outside baseline ledger", new_files)
     rows = {(row["file"], row["name"]): row for row in ledger["declarations"]}
     assert len(rows) == len(ledger["declarations"]), "Duplicate ledger rows"
@@ -130,6 +155,29 @@ def main():
         assert "unreviewed" not in decisions and ledger["audit_complete"], "Audit still pending"
     if args.require_review_receipts:
         assert not missing_review_receipts, ("Missing structured independent-review receipts", missing_review_receipts)
+        assert ledger["independent_removal_review_complete"], "Final independent review incomplete"
+
+    support_cleanup = []
+    for entry in ledger["test_support_inventory"]["removed_helpers"]:
+        source = git("show", base + ":" + entry["file"])
+        pattern = re.compile(r"^func " + re.escape(entry["name"]) + r"\(", re.MULTILINE)
+        match = pattern.search(source)
+        assert match, (entry["name"], "original support helper missing")
+        body = source[match.start():declaration_end(source, match.start())]
+        assert hashlib.sha256(body.encode()).hexdigest() == entry["baseline_body_sha256"], entry["name"]
+        candidate = root / entry["file"]
+        assert not candidate.exists() or not pattern.search(candidate.read_text()), entry["name"]
+        support_cleanup.append({"file": entry["file"], "name": entry["name"]})
+    assert len(support_cleanup) == ledger["counts"]["removed_support_helpers"]
+
+    production_cleanup = []
+    for entry in ledger.get("production_seam_cleanup", []):
+        original_source = git("show", base + ":" + entry["path"])
+        assert hashlib.sha256(original_source.encode()).hexdigest() == entry["baseline_sha256"], entry["path"]
+        source = (root / entry["path"]).read_bytes()
+        assert hashlib.sha256(source).hexdigest() == entry["candidate_sha256"], entry["path"]
+        production_cleanup.append({"path": entry["path"], "sha256": entry["candidate_sha256"],
+                                   "removed_lines": entry["removed_lines"]})
 
     receipt = None
     if args.baseline_events:
@@ -158,6 +206,11 @@ def main():
         "existing_assertion_repairs_with_prior_failure_analysis": repaired_bodies,
         "removed_declarations_absent": decisions.get("D", 0),
         "removed_test_lines": source_lines - final_lines,
+        "upstream_additions_preserved_unchanged": [{"file": key[0], "name": key[1]}
+                                                  for key in preserved_upstream],
+        "upstream_additions_absent_in_older_isolated_checkout": absent_upstream,
+        "dead_support_helpers_verified_absent": support_cleanup,
+        "production_seam_cleanup_verified": production_cleanup,
         "decisions": decisions,
         "removals_without_structured_review_receipt": missing_review_receipts,
         "baseline_event_receipt": receipt,

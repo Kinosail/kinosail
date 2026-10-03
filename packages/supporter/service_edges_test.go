@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"errors"
+	"net/http"
 	"reflect"
 	"testing"
 	"time"
@@ -84,5 +85,16 @@ func TestActivateAndSaveReturnsCommittedState(t *testing.T) {
 	})
 	if err != nil || saves != 1 || next.PatronOrder == nil || status.PatronOrder == nil {
 		t.Fatalf("ActivateAndSave = %#v, %#v, %d, %v", next, status, saves, err)
+	}
+}
+
+func TestWrappedErrorPresentationAndCustomClientTimeout(t *testing.T) {
+	if got := invalid("specific failure").Error(); got != "specific failure" {
+		t.Fatalf("wrapped error = %q", got)
+	}
+	client := &http.Client{Timeout: time.Second}
+	service, err := New(Config{App: App{ID: "kino-player", Name: "Kinosail Player", Audience: "com.kinosail.player", MasterworkName: "Full Sail"}, HTTPClient: client})
+	if err != nil || service.client.Timeout != time.Second {
+		t.Fatalf("custom client = %#v, %v", service, err)
 	}
 }

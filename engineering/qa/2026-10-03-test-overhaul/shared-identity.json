@@ -2,14 +2,14 @@
   "schema_version": 1,
   "scope": "All version-controlled packages/**/*.go Test/Benchmark/Fuzz declarations in *_test.go at the pinned baseline; browser/JS/scripts/app tests excluded. Test-only Go support inventory preserved.",
   "baseline_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
-  "audit_complete": false,
-  "audit_limit": "Package audit is ongoing: only reviewed declarations have semantic verdicts. F/C rows from read-only auditors preserve distinct useful existing assertions/measurements and name precise remaining gaps; only watchrooms F rows have repaired/red-control/final-green claims.",
+  "audit_complete": true,
+  "audit_limit": "All 1900 baseline Test/Benchmark/Fuzz declarations have full semantic verdicts, and every102 final D has structured independent cutover review. Two proposed deletions were restored unchanged after review found unique public isolation and configurable HTTP deadline contracts. An upstream main cookie-expiry regression is separately recorded/preserved unchanged; its48line additive file is outside the older1900 counts. F/C rows retain useful assertions and exact limitations; no C consolidation was implemented. Non-test support inventory is explicitly separate, with cleanup limited to proven dead callers.",
   "environment": {
     "checkout": "/Users/mikeo/Documents/Codex/2026-10-03/task/shared-identity",
     "branch": "test-overhaul-shared-identity",
     "os": "macOS",
     "go_module_requirement": "go 1.27",
-    "build_coordination": "Baseline validated by root; no Go build/test run by this package agent. Parent serializes integrated candidate validation after storage recovery."
+    "build_coordination": "Root ran the exact baseline package suite. This agent ran only the authorized serial Watch Together original/control/repaired focused experiment, with its own exact candidate SHA and recorded dirty mutant patch. Root serializes full integrated candidate suites; latest shared audit commit itself has no Go/browser run claim."
   },
   "inventory_command": "git ls-tree -r --name-only 876b771a7dd0aef5e65957fcee87add0312535e8 -- packages; git grep -nE '^func (Test|Benchmark|Fuzz)[[:alnum:]_]*\\(' 876b771a7dd0aef5e65957fcee87add0312535e8 -- 'packages/*_test.go'",
   "reproduce_body_checksums": "Read each baseline file with git show BASE:path; SHA-256 each complete declaration from func through its matched closing brace, ignoring braces in Go strings/comments while scanning.",
@@ -19,18 +19,20 @@
     "baseline_test_lines": 66475,
     "declarations": 1900,
     "decisions": {
-      "R": 1666,
-      "D": 104,
+      "R": 1668,
+      "D": 102,
       "F": 67,
       "C": 63
     },
-    "removed_declarations": 104,
-    "removed_test_lines": 1991,
-    "final_declarations": 1796,
-    "final_test_lines": 64484,
-    "removed_support_helpers": 7,
+    "removed_declarations": 102,
+    "removed_test_lines": 1971,
+    "final_declarations": 1798,
+    "final_test_lines": 64504,
+    "removed_support_helpers": 8,
     "removed_support_files": 3,
-    "removed_support_lines": 159
+    "removed_support_lines": 176,
+    "final_test_files": 523,
+    "upstream_preserved_additions": 1
   },
   "focused_validation_command": "cd packages && go test ./apihttp ./validation ./hlsmanifest ./transcodepolicy ./transcodehardware",
   "validation_results": {
@@ -56,7 +58,11 @@
         "not_run": 13
       }
     },
-    "candidate": "not_run_parent_serializes",
+    "candidate": {
+      "status": "latest_shared_source_not_run_by_this_agent",
+      "authority": "Root owns integrated candidate required Go, app, browser, container and native checks; use its exact revision receipts.",
+      "focused_watchrooms_receipt": "engineering/qa/2026-10-03-test-overhaul/watchrooms-control/run-metadata.json"
+    },
     "format": {
       "status": "passed",
       "command": "gofmt -w packages/validation/validation_test.go packages/hlsmanifest/vod_test.go packages/transcodepolicy/policy_edges_test.go packages/transcodehardware/capabilities_test.go packages/transcodehardware/probe_test.go; gofmt -w packages/servertest/assets.go packages/servertest/password_manager.go packages/operations/metadata_test.go packages/operations/system_http_test.go; gofmt -w packages/downloads/manager_test.go packages/workload/governor_test.go packages/workload/encoding_test.go packages/routeinventory/inventory_test.go"
@@ -115,6 +121,17 @@
       "control": "Disable only monitorAccess media-visibility predicate in a recorded dirty mutant. Run original TestHTTPAccessMonitorClosesInvisibleRoom (expected false pass), apply existing assertion repair, rerun same mutant (expected red), restore owner exactly and run entire watchrooms package (expected green).",
       "execution_authority": "Root explicitly authorized this bounded serial focused watchrooms run with shared warmGOCACHE on2026-10-03; no broader Go builds/containers.",
       "execution_status": "completed: original clean baseline pass; original compiling visibility-disabled mutant false pass; repaired assertion behavioral red on same mutant; restored owner clean candidate f3d2a1ceba474101ab0a0477d21299e43f741a3a all16 pass"
+    },
+    "deSEC_test_seam_cleanup": {
+      "new_isolated_tests": false,
+      "analysis_written_before_production_edit": true,
+      "failure_modes": [
+        "Wrong field/path/TTL/address/TXT quoting or authorization placement could break DNS update or leak token; retained outbound TLS HTTP assertions decode and inspect the actual request.",
+        "A DNS resolution, transport, response read, or rejected status error could be hidden; retained real owner failure assertions remain.",
+        "Replacing a fixed string/int/string-slice payload marshal with direct identical json.Marshal cannot introduce an unsupported type or cycle; no surviving caller needs marshal replacement.",
+        "Private-key crypto.Signer marshaling can genuinely fail and retains its separate live injection seam."
+      ],
+      "edit": "Remove only DeSEC private marshal field/constructor wrapper and call json.Marshal directly; no replacement isolated declaration or assertion."
     }
   },
   "owner_groups": {
@@ -1224,6 +1241,27 @@
         },
         "remaining_coverage": "packages/localization/localization_test.go#TestSupportedLanguagesUsePlayerOrderAndDirections remains canonical actual owner count/unique/names/order/directions; both apps retain actual catalog/locale HTTP and cookie wiring guards.",
         "gap": "No E2E equality claim; removed helper no longer had callers."
+      },
+      {
+        "file": "packages/servertest/qa_permission_edges.go",
+        "name": "AssertAPIKeyPermissionsHonorScopeAndRouteClassification",
+        "decision": "D",
+        "audit_status": "reviewed",
+        "baseline_body_sha256": "75d9590eafb522427e58a4da6e8e84c8bed3591a2391a6c075ee85f29dbd3edf",
+        "credible_failure": "Dead test-only helper after both app direct shared-profile scope/route fixture wrappers are removed; no independently executable declaration or production seam is deleted.",
+        "caller_evidence": {
+          "checkout": "/Users/mikeo/Documents/Codex/2026-10-03/task/kinosail",
+          "sha": "326e89af40fc11a40bddc3b6544143c7e1e36bf9",
+          "working_tree": "clean",
+          "command": "rg -n -g '*.go' 'AssertAPIKeyPermissionsHonorScopeAndRouteClassification|HLSDiagnosticPreservesCauseAndKeepsOnlyRecentOutput' apps packages",
+          "result": "API-key helper occurs only at comment/declaration, no app or package calls. HLS diagnostic still has Subtitles caller and is preserved."
+        },
+        "remaining_coverage": [
+          "packages/identitycore/profile_test.go::TestProfileFactorAndScopePolicy",
+          "packages/identitycore/access_test.go::TestMFAAndAPIKeyPolicies",
+          "Retained real app API-key profile scope/route authorization matrices; app owners record those boundaries."
+        ],
+        "gap": "No E2E equivalence claimed for dead helper. Adjacent actual passkey handler/service-unavailable helper remains unchanged."
       }
     ],
     "unreviewed_preserved": "All other support inventory is preserved without complete semantic classification; removals are restricted to helpers with no integrated app callers.",
@@ -8939,6 +8977,22 @@
         "Package": "github.com/MikeO7/kinosail/packages/apihttp",
         "Test": "TestRegisterPreservesPlayerAPIRouteOrder",
         "Elapsed": 0
+      },
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "53a9386d375f851d19ff690b7fca4d869a366a931261335760a84eb83d385a6d",
+        "comparison": "The original records exactly five mocked registration callbacks in one order and a fake Foundation GET returning204. None of the five production registration groups reads another group's state. Reordering these independent registrations is behavior preserving; TestRouting alone does not exercise apihttp.Register. Real populated library, MFA/settings, Quick Connect, download and supporter routes provide application registration evidence, without proving an arbitrary mock call order.",
+        "gaps": "No remaining isolated assertion pins the five callback order or the fake204 status; neither is an important observable contract in the inspected composition.",
+        "remaining_coverage_exact_refs": [
+          "packages/apihttp/api_test.go:75#TestRouting"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/apihttp/register_test.go::TestRegisterPreservesPlayerAPIRouteOrder",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
       }
     },
     {
@@ -9650,7 +9704,25 @@
         "apps/player/cmd/kinosail/config_command_test.go:TestConfigurationCommandValidatesAndSummarizesSources",
         "apps/subtitles/cmd/kinosail/config_command_test.go:TestConfigurationCommandValidatesAndSummarizesSources",
         "packages/appcli/configuration_test.go:TestBoundConfigurationCommandAdaptsTypedSnapshots"
-      ]
+      ],
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "226f719caef4a8c369b04bf83e46faa70be0bc76019ec876a9d211486d520445",
+        "comparison": "Original fake validator returns counts1/2/3/4 and checks the formatted sentence and selected path. The surviving typed-snapshot adapter verifies literal source counts and loader error propagation. Both real app command tests call ConfigurationCommandSources, which loads a temporary YAML file, UI override and environment override, then checks the real source summary and missing-file/unknown-command failures.",
+        "gaps": "No browser test claims CLI coverage. The exact artificial1/2/3/4 summary sentence is no longer pinned; real source adaptation and command outcomes remain.",
+        "remaining_coverage_exact_refs": [
+          "apps/player/cmd/kinosail/config_command_test.go:10#TestConfigurationCommandValidatesAndSummarizesSources",
+          "apps/subtitles/cmd/kinosail/config_command_test.go:10#TestConfigurationCommandValidatesAndSummarizesSources",
+          "packages/appcli/configuration_test.go:43#TestBoundConfigurationCommandAdaptsTypedSnapshots"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/appcli/configuration_test.go::TestConfigurationCommand",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/appcli/configuration_test.go",
@@ -9734,7 +9806,23 @@
       "remaining_coverage": [
         "packages/commandtest/configuration.go:ConfigurationCommandSources called by both apps",
         "packages/appcli/configuration_test.go:TestBoundConfigurationCommandAdaptsTypedSnapshots"
-      ]
+      ],
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "547f0be2457227c935f46234b0029aefbec4097b09480fb552ae4409e4304fa7",
+        "comparison": "Original manually constructed records repeat UI entries and an unknown source, asserting a four-field count. The surviving typed-snapshot keeper exercises the same generic counter through BindTypedConfigurationCommand; both app command contracts load actual file/UI/environment sources. Actual adapter source values come from the four configured enum values.",
+        "gaps": "The synthetic unknown source and repeated-UI counter examples are not separately asserted. No production adapter supplying an unknown enum was found.",
+        "remaining_coverage_exact_refs": [
+          "packages/appcli/configuration_test.go:43#TestBoundConfigurationCommandAdaptsTypedSnapshots"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/appcli/configuration_test.go::TestCountConfigurationSources",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/appcli/configuration_test.go",
@@ -9819,7 +9907,23 @@
       "reason": "Exact same healthcheck invalid endpoint and valid tls-certificate cases are covered by TestBuiltInTransportCommandsPropagateErrors, which additionally requires actual certificate output.",
       "remaining_coverage": [
         "packages/appcli/command_test.go:TestBuiltInTransportCommandsPropagateErrors"
-      ]
+      ],
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "61b993e0b3409cd84e1ee1547fa54f78690743752818c1c36711fc26f43f0d58",
+        "comparison": "Original builtin cases check invalid healthcheck failure and nonempty trust-anchor success only through nil-error status, discarding output. TestBuiltInTransportCommandsPropagateErrors keeps both paths and also checks the trust-anchor output, while real app subprocess health checks exercise the command against running transport.",
+        "gaps": "No unique useful original assertion is lost; no claim of browser CLI execution.",
+        "remaining_coverage_exact_refs": [
+          "packages/appcli/command_test.go:85#TestBuiltInTransportCommandsPropagateErrors"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/appcli/coverage_edges_test.go::TestBuiltInCommandRemainingEdges",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/appcli/coverage_edges_test.go",
@@ -9866,7 +9970,25 @@
         "packages/appcli/command_test.go:TestRunUsesSharedLifecycleAndToleratesOptionalManagerFailures",
         "packages/appcli/command_test.go:TestAccessConfigurationUsesPlayerPolicy",
         "packages/appcli/command_test.go:TestRemoteAndShutdownFailuresCompleteLifecycle"
-      ]
+      ],
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "5d4dcf3a7bafa7b52b48e919957c369076f2891fb5df1bee2fe88aa33ccd5a00",
+        "comparison": "Original valid remote access callback observes the same optional-manager creation used by TestRunUsesSharedLifecycleAndToleratesOptionalManagerFailures, then waits20ms against an occupied listener without checking the listener result. Trusted HTTPS config Encode plus manager construction adds no active TLS or certificate assertion. Surviving lifecycle tests check manager callbacks, injected TLS config, serve/shutdown outcomes; TestAccessConfigurationUsesPlayerPolicy verifies real parsed policy.",
+        "gaps": "The occupied-listener20ms coverage probe had no assertion of its claimed outcome. Actual remote serve errors and shutdown completion remain independently asserted.",
+        "remaining_coverage_exact_refs": [
+          "packages/appcli/command_test.go:104#TestRunUsesSharedLifecycleAndToleratesOptionalManagerFailures",
+          "packages/appcli/command_test.go:174#TestAccessConfigurationUsesPlayerPolicy",
+          "packages/appcli/command_test.go:194#TestRemoteAndShutdownFailuresCompleteLifecycle"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/appcli/coverage_edges_test.go::TestAccessManagerAndTrustedHTTPSInitialization",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/appcli/owner_recovery_test.go",
@@ -9950,7 +10072,23 @@
       "remaining_coverage": [
         "packages/publicgateway/gateway_test.go:actual publicgateway owner validation remains",
         "apps/player/cmd/kinosail/main.go:actual main passes all bound Application callbacks and os.Getenv"
-      ]
+      ],
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "6b063d28c0179482140b03c23850d500e2dff4e35093f7096d938cd4ecec6a5a",
+        "comparison": "All original invocations pass an empty Application. Thus an invalid-Application failure satisfies every asserted nonnil error even if public-gateway dispatch incorrectly moves after application validation. It observes neither Load nor Run. Surviving publicgateway.TestHostnameBoundary checks the actual hostname policy; current real mains supply bound callbacks and getenv. This is not a keeper for gateway-before-private-load precedence.",
+        "gaps": "Dispatch precedence before application loading remains an explicit unproved contract: the removed input never established it. No transfer or new test is claimed.",
+        "remaining_coverage_exact_refs": [
+          "packages/publicgateway/boundaries_test.go:15#TestHostnameBoundary"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/appcli/owner_recovery_test.go::TestPublicGatewayRejectsInvalidInvocationBeforeApplicationLoading",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/appcli/server_config_test.go",
@@ -15119,7 +15257,25 @@
       "callers": [
         "apps/{player,subtitles}/internal/server/library and libraryIndex Browse use shared catalog; smartplaylist uses Filter/Sort; progress projection uses shared history"
       ],
-      "gap": "Public Player populated title jump verifies one ASCII B toggle; actual Subtitles happy search checks Arrival/missing and playback watched/ContinueWatching. None tests Unicode/large-key ties, shared-storage aliasing, cancelled locks or malformed query matrix."
+      "gap": "Public Player populated title jump verifies one ASCII B toggle; actual Subtitles happy search checks Arrival/missing and playback watched/ContinueWatching. None tests Unicode/large-key ties, shared-storage aliasing, cancelled locks or malformed query matrix.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "79567272d74fbb978f403a6559cc688562176d42c9a6117763ac49b42a90012c",
+        "comparison": "Original NewBrowseAccess field echoes, profile progress examples and duplicate query check repeat stronger public BrowseAccess/RequestProgressStore and ParseBrowse boundaries. Surviving tests assert caller references survive, fresh view state, profile-specific versus Owner legacy progress, and invalid repeated query rejection. The raw SingleValue whitespace echo is the only unmatched literal.",
+        "gaps": "No separate remaining assertion pins SingleValue returning raw surrounding whitespace; this helper echo does not establish an important distinct defect.",
+        "remaining_coverage_exact_refs": [
+          "packages/catalog/browse_access_test.go:15#TestBrowseAccessPreservesCallerReferencesAndFreshViewState",
+          "packages/catalog/progress_request_store_test.go:87#TestRequestProgressStoreProjectsViewerState",
+          "packages/catalog/catalog_test.go:16#TestBrowseValidatesBeforeSelectionAndBuildsStablePages"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/catalog/catalog_test.go::TestSmallBrowseHelpers",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/catalog/catalog_test.go",
@@ -16090,7 +16246,23 @@
       "callers": [
         "apps/{player,subtitles}/internal/server/server.go creates catalog.NewIndex; settings_library_http.go/api_admin.go UpdateRoots; album.go builds MustDetailSources and NewDetailHTTP"
       ],
-      "gap": "Exact singular/plural grammar is intentionally unverified after removal. Player test-instance-library.spec.ts:52 reaches an album, then track, then audio on the populated real server. The retained AlbumHandler test checks projection, first-track default and read/render faults; it does not assert this copy."
+      "gap": "Exact singular/plural grammar is intentionally unverified after removal. Player test-instance-library.spec.ts:52 reaches an album, then track, then audio on the populated real server. The retained AlbumHandler test checks projection, first-track default and read/render faults; it does not assert this copy.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "799de739ad7832ec488f21856ca3c5cced7afc1196cc566ee186ad8ec7ef9fe8",
+        "comparison": "Original parses generated album HTML and checks exact paragraphs1 track/2 tracks. Surviving AlbumHandler keeper checks visible actual item projection, track sorting, first playable link and failure/not-found handling. Real populated browser journey opens an album and its actual audio track. History b35a79a introduced this singular grammar fix; removal does not pretend to preserve its exact text assertion.",
+        "gaps": "Exact singular/plural grammar is no longer pinned. This is a small presentation-copy guard, not an album selection, authorization or playback boundary.",
+        "remaining_coverage_exact_refs": [
+          "packages/catalog/detail_http_test.go:80#TestAlbumHandlerProjectsAndReportsResults"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/catalog/detail_http_test.go::TestAlbumTrackCountUsesSingularAndPlural",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/catalog/detail_http_test.go",
@@ -18831,7 +19003,26 @@
       "callers": [
         "apps/{player,subtitles}/internal/server/library and libraryIndex Browse use shared catalog; smartplaylist uses Filter/Sort; progress projection uses shared history"
       ],
-      "gap": "Public Player populated title jump verifies one ASCII B toggle; actual Subtitles happy search checks Arrival/missing and playback watched/ContinueWatching. None tests Unicode/large-key ties, shared-storage aliasing, cancelled locks or malformed query matrix."
+      "gap": "Public Player populated title jump verifies one ASCII B toggle; actual Subtitles happy search checks Arrival/missing and playback watched/ContinueWatching. None tests Unicode/large-key ties, shared-storage aliasing, cancelled locks or malformed query matrix.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "35554fa47fbba0a5ebf933cc4eae54082ee041fbf5e1483e4186fbd5f0e8f881",
+        "comparison": "Original private searchText literals normalize ASCII punctuation and Unicode. Public MetadataSearch keepers exercise matching through every field, NFKD compatibility values, large/surrogate/control inputs and retained boundaries; the ranking/filter keeper checks Unicode normalized order and filter isolation. Dependency x/text v0.42.0 norm.String/NFKD source was read.",
+        "gaps": "Private normalized intermediate strings are not all pinned verbatim; public field matching and ranking preserve the important search outcomes. Real browser library proof does not replace Unicode edge controls.",
+        "remaining_coverage_exact_refs": [
+          "packages/catalog/coverage_browse_letters_final_test.go:85#TestCoverageSearchUnicodeRankingAndFilterIsolation",
+          "packages/catalog/search_metadata_test.go:10#TestMetadataSearchPreservesFieldBoundariesAndNormalization",
+          "packages/catalog/search_metadata_test.go:31#TestMetadataSearchNormalizesEveryUnicodeField",
+          "packages/catalog/search_metadata_test.go:53#TestMetadataSearchPreservesLargeAndCompatibilityValues"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/catalog/search_sort_test.go::TestSearchTextNormalizesASCIIAndUnicodeMetadata",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/catalog/sort_storage_test.go",
@@ -20445,7 +20636,21 @@
         "Other still-used commandtest CLI/MCP/entrypoint subprocess helpers remain unchanged."
       ],
       "gap": "Unused exact-test child/coverage/environment construction has no independent app regression protection. No coverage requirement or CI check is weakened; no app subprocess assertion is removed.",
-      "unlocked_deletion": "packages/commandtest/child.go:CoveredChild unused test-support helper."
+      "unlocked_deletion": "packages/commandtest/child.go:CoveredChild unused test-support helper.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "015f07dcc33343140c12fdaa324f80511a12a3cb3cfb53ec3c62b4a194064ce2",
+        "comparison": "Original CoveredChild test checks exact escaped -test.run target, inherited argument propagation and coverage directory forwarding. Baseline git grep finds CoveredChild only in its own implementation and three companion declarations. The unused helper and its paired tests are removed together; actual commandtest CLI/MCP subprocess mechanisms use different live helpers.",
+        "gaps": "No retained test checks the deleted unused helper's argument builder. No production or other test caller requires that helper.",
+        "remaining_coverage_exact_refs": [],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/commandtest/child_test.go::TestCoveredChildUsesExactTargetAndPropagatesCoverage",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/commandtest/child_test.go",
@@ -20479,7 +20684,21 @@
         "Other still-used commandtest CLI/MCP/entrypoint subprocess helpers remain unchanged."
       ],
       "gap": "Unused exact-test child/coverage/environment construction has no independent app regression protection. No coverage requirement or CI check is weakened; no app subprocess assertion is removed.",
-      "unlocked_deletion": "packages/commandtest/child.go:CoveredChild unused test-support helper."
+      "unlocked_deletion": "packages/commandtest/child.go:CoveredChild unused test-support helper.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "8abf3894ee8e20147e45d2ccd09407c60babb3b4c22c720ed56d2e3594eb984d",
+        "comparison": "Original sets an inherited CHILD_VALUE and checks the CoveredChild helper overrides it by launching its paired fixture. Both helper and sole fixture consumer are retired. Actual app subprocess tests retain their own explicit env construction and do not call this helper.",
+        "gaps": "The deleted helper's last-value environment merge is no longer tested because the helper has no surviving caller.",
+        "remaining_coverage_exact_refs": [],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/commandtest/child_test.go::TestCoveredChildEnvironmentOverridesInheritedValue",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/commandtest/child_test.go",
@@ -20513,7 +20732,21 @@
         "Other still-used commandtest CLI/MCP/entrypoint subprocess helpers remain unchanged."
       ],
       "gap": "Unused exact-test child/coverage/environment construction has no independent app regression protection. No coverage requirement or CI check is weakened; no app subprocess assertion is removed.",
-      "unlocked_deletion": "packages/commandtest/child.go:CoveredChild unused test-support helper."
+      "unlocked_deletion": "packages/commandtest/child.go:CoveredChild unused test-support helper.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "1bffd0c773db9bcc1c46d1d3b9a85362021d5ad361400ece2ddba133583df851",
+        "comparison": "Original is a required subprocess fixture for the two removed CoveredChild parents: it prints CHILD_VALUE only when COVERED_CHILD_TEST=1 and otherwise returns without assertion. Baseline grep identifies those parents as its only callers, and none survives; fixture retirement follows their dead-support removal.",
+        "gaps": "No independent fixture contract remains after its only parent tests and CoveredChild helper are removed.",
+        "remaining_coverage_exact_refs": [],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/commandtest/child_test.go::TestCoveredChildProcess",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/configurationcore/application_fields_test.go",
@@ -25385,7 +25618,26 @@
         "apps/player/e2e/test-instance-offline.spec.ts:offline download stops before transfer when device storage is full"
       ],
       "gap": "The exact os.IsNotExist identity for this redundant missing-input private copy assertion is no longer pinned by that declaration; callers only propagate the failure. Browser720p readiness/checksum/transfer does not prove every encoding argument or advancing offline playback. The real decoder test covers compatible copy only; unsupported source/track and reservation/hardware failure tests remain. No backend proof inferred from /__offline-lifecycle-test fixtures.",
-      "unlocked_deletion": "No production code or shared helper removed."
+      "unlocked_deletion": "No production code or shared helper removed.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "b3fed6217a73f037a9bcad4ece1a7e559835a4f0598be4125a129651486faec9",
+        "comparison": "Original encode invokes /usr/bin/true with a nonexistent media path and checks only nil error, never arguments or output; the second branch checks a missing source yields os.IsNotExist. Surviving original-copy keeper verifies exact bytes/private permissions, missing and nonregular sources, invalid targets and cancellation. Reservation keeper observes actual manager completion and exactly one governor reservation; compatible-video keeper uses real FFmpeg output when available. The original encode success could pass with all encoder arguments dropped.",
+        "gaps": "No FFmpeg argument contract existed in the removed success assertion. The exact missing-copy sentinel is not the main keeper assertion, but concrete missing-source/no-output failures remain. Real populated720p preparation/download is partial system evidence; synthetic offline lifecycle routes are not encoder evidence.",
+        "remaining_coverage_exact_refs": [
+          "packages/downloads/reservation_test.go:18#TestDownloadsReserveExactlyOneSlot",
+          "packages/downloads/copy_video_test.go:14#TestCompatibleDownloadCopiesVideoWithoutEncoderOptions",
+          "packages/downloads/copy_original_test.go:11#TestOriginalDownloadCopyIsPrivateAndRejectsInvalidSource",
+          "packages/downloads/transcoding_test.go:31#TestCopyAndIntegrityReportFileFailures"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/downloads/manager_test.go::TestEncodeBuildsVideoCommandAndReportsCopyErrors",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/downloads/manifest_api_test.go",
@@ -31644,6 +31896,24 @@
         "Package": "github.com/MikeO7/kinosail/packages/hlsmanifest",
         "Test": "TestObservedVODPrefixRequiresASegment",
         "Elapsed": 0
+      },
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "66d4032c62a72ebd7612d18b59d014cb5e69a053357f552fb2d863783da16c81",
+        "comparison": "Original private observedVODPrefix directly returns false for empty EVENT and true for a segment. Public CompleteVOD guarded-manifest keeper preserves empty input without fabricating a timeline, and cadence/completed-timeline plus single-segment-limit keepers assert actual projection output. Refactoring the internal predicate can preserve all observable output.",
+        "gaps": "The private boolean for a bare empty prefix is not separately asserted; public no-invented-timeline and single-segment projection contracts remain.",
+        "remaining_coverage_exact_refs": [
+          "packages/hlsmanifest/vod_test.go:9#TestCompleteVODPreservesGuardedManifests",
+          "packages/hlsmanifest/vod_test.go:70#TestCompleteVODUsesPlayerCadenceAndCompletedTimeline",
+          "packages/hlsmanifest/vod_test.go:54#TestCompleteVODAllowsSegmentLimit"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/hlsmanifest/vod_test.go::TestObservedVODPrefixRequiresASegment",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
       }
     },
     {
@@ -33142,7 +33412,31 @@
         "status": "approved",
         "evidence": "Complete candidate bodies and referenced keepers/protocol owners read before removal; proposed BulkMetadataHTML and SearchRank D independently challenged and corrected to R. No browser equivalence inferred from synthetic fixtures."
       },
-      "implementation_status": "removed"
+      "implementation_status": "removed",
+      "independent_removal_review": {
+        "reviewer": "/root",
+        "status": "approved after complete pinned baseline original bodies, surviving keeper bodies and production/callers read",
+        "initial_classification_independent": true,
+        "evidence": "Placeholder function outputs never execute an app view; template runtime clone overrides functions. Retained CSRF execution guard asserts actual POST token fields and anonymous no-token content.",
+        "execution": "Read-only review; no new isolated assertion or runtime control claimed."
+      },
+      "prior_classifier_cutover_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": false,
+        "implementer_independent": true,
+        "original_body_sha256": "da1c0699ec4ece2bb0663e3bbfa3d40acd8402bcda06945ccf1d7267f4a9481b",
+        "comparison": "Original executes the unbound placeholder functions and requires empty strings. Runtime templates clone and overwrite them with request-scoped funcs. Surviving CSRF execution keeper verifies real repeated POST token fields/meta; anonymous-template keeper verifies absence of session markers. Neither asserts the placeholder directly; production uses it only during parsing.",
+        "gaps": "The pre-execution placeholder return literal is not pinned; executing it is outside the inspected application template path. This row was previously classified by this reviewer; root independently approved it.",
+        "remaining_coverage_exact_refs": [
+          "packages/httpguard/csrf_template_test.go:12#TestCSRFTemplateSourceAndExecution",
+          "packages/httpguard/csrf_anonymous_test.go:10#TestAnonymousTemplatesDoNotRenderSessionTokens"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/httpguard/csrf_template_test.go::TestCSRFParseFunctionsRemainSafeBeforeExecution",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/httpguard/csrf_template_test.go",
@@ -33487,7 +33781,30 @@
         "status": "approved",
         "evidence": "Complete candidate bodies and referenced keepers/protocol owners read before removal; proposed BulkMetadataHTML and SearchRank D independently challenged and corrected to R. No browser equivalence inferred from synthetic fixtures."
       },
-      "implementation_status": "removed"
+      "implementation_status": "removed",
+      "independent_removal_review": {
+        "reviewer": "/root",
+        "status": "approved after complete pinned baseline original bodies, surviving keeper bodies and production/callers read",
+        "initial_classification_independent": true,
+        "evidence": "Valid-bool adapter replay repeats canonical apihttp ReadJSON valid populated struct plus unknown-field400 through the same adapter; canonical bounded/unsafe-document keepers stay.",
+        "execution": "Read-only review; no new isolated assertion or runtime control claimed."
+      },
+      "prior_classifier_cutover_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": false,
+        "implementer_independent": true,
+        "original_body_sha256": "ba5fa41495a281c72ca9254e0bea5bf6bdb10f989264848ac78a4170a8cf7101",
+        "comparison": "Original calls DecodeRequestJSON with one valid strict object and requires the decoded bool. apihttp.TestReadJSONAndResponses passes a valid struct through ReadJSON, which calls DecodeRequestJSON, and asserts the literal Name plus unknown-field rejection. This is the same strict request path, distinct from DecodeJSON/DecodeUniqueJSON confusion.",
+        "gaps": "No distinct valid strict-request decoding assertion is lost. Previously classified by this reviewer; fresh independent root receipt is recorded separately.",
+        "remaining_coverage_exact_refs": [
+          "packages/apihttp/api_test.go:13#TestReadJSONAndResponses"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/httpguard/httpguard_test.go::TestDecodeRequestJSONAcceptsOneStrictObject",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/httpguard/httpguard_test.go",
@@ -35580,7 +35897,31 @@
         "status": "approved",
         "evidence": "Complete candidate bodies and referenced keepers/protocol owners read before removal; proposed BulkMetadataHTML and SearchRank D independently challenged and corrected to R. No browser equivalence inferred from synthetic fixtures."
       },
-      "implementation_status": "removed"
+      "implementation_status": "removed",
+      "independent_removal_review": {
+        "reviewer": "/root",
+        "status": "approved after complete pinned baseline original bodies, surviving keeper bodies and production/callers read",
+        "initial_classification_independent": true,
+        "evidence": "Invalid-state matrix is preempted without valid RFC6238 or recovery matching state. Retained valid TOTP, recovery one-use and failure-persistence contracts stay; exact eleven-recovery matching gap disclosed.",
+        "execution": "Read-only review; no new isolated assertion or runtime control claimed."
+      },
+      "prior_classifier_cutover_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": false,
+        "implementer_independent": true,
+        "original_body_sha256": "8c7cab57af7cde284acef499e05d9d11b3ff50fea51282c5832b7b44bfab8996",
+        "comparison": "Original invalid-factor matrix uses malformed/absent secrets and nonmatching recovery values; the11-recovery case never supplies an otherwise matching recovery code. Surviving VerifyAtomic keeper uses a valid RFC TOTP and a matching normalized recovery value, checks one-use replay denial/no additional write and unchanged sessions. Recovery persistence-failure keeper checks otherwise valid matching recovery is not consumed on failed persistence.",
+        "gaps": "No otherwise-matching11-recovery rejection proof survives, and the removed11-code input did not isolate that guard. Nil transaction defense and several malformed-state details are not comprehensively covered by real E2E. Prior classification disclosed; root separately approved this exact limitation.",
+        "remaining_coverage_exact_refs": [
+          "packages/identitycore/factor_transaction_test.go:215#TestFactorVerifyAcceptsTOTPAndConsumesRecoveryOnce",
+          "packages/identitycore/factor_transaction_test.go:238#TestFactorRecoveryPersistenceFailureDoesNotConsumeCode"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/identitycore/factor_transaction_test.go::TestFactorVerifyRejectsInvalidStateWithoutPersistence",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/identitycore/factor_transaction_test.go",
@@ -35947,7 +36288,30 @@
         "status": "approved",
         "evidence": "Complete candidate bodies and referenced keepers/protocol owners read before removal; proposed BulkMetadataHTML and SearchRank D independently challenged and corrected to R. No browser equivalence inferred from synthetic fixtures."
       },
-      "implementation_status": "removed"
+      "implementation_status": "removed",
+      "independent_removal_review": {
+        "reviewer": "/root",
+        "status": "approved after complete pinned baseline original bodies, surviving keeper bodies and production/callers read",
+        "initial_classification_independent": true,
+        "evidence": "Static omitted-adapter probe repeats stronger retained exact eleven omissions all-handlers-nil/no-events matrix plus valid config; both real app factories bind literal callbacks.",
+        "execution": "Read-only review; no new isolated assertion or runtime control claimed."
+      },
+      "prior_classifier_cutover_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": false,
+        "implementer_independent": true,
+        "original_body_sha256": "3b7bbcbdc92487a300b67de40b7d9a6b0acacf7048264a98b57207cd767ca43e",
+        "comparison": "Original omits eleven MFA callbacks separately and requires constructor failure/no use. Retained MFADisableConfigurationFailsClosedBeforeCallbacks uses the same eleven omissions, asserts ErrInvalidConfig/all returned handlers nil/no callback events and also validates a complete config. Both real app MFA factories bind concrete callbacks.",
+        "gaps": "No unique original omitted-dependency assertion is lost; neither matrix individually omits RecentlyAuthenticated. Previously classified here; root fresh receipt supplies independence.",
+        "remaining_coverage_exact_refs": [
+          "packages/identitycore/handlers_mfa_disable_test.go:82#TestMFADisableConfigurationFailsClosedBeforeCallbacks"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/identitycore/handlers_config_test.go::TestMFAHTTPConfigurationRequiresEveryDependency",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/identitycore/handlers_mfa_disable_test.go",
@@ -37071,7 +37435,30 @@
         "status": "approved",
         "evidence": "Complete candidate bodies and referenced keepers/protocol owners read before removal; proposed BulkMetadataHTML and SearchRank D independently challenged and corrected to R. No browser equivalence inferred from synthetic fixtures."
       },
-      "implementation_status": "removed"
+      "implementation_status": "removed",
+      "independent_removal_review": {
+        "reviewer": "/root",
+        "status": "approved after complete pinned baseline original bodies, surviving keeper bodies and production/callers read",
+        "initial_classification_independent": true,
+        "evidence": "Static omitted-adapter probe repeats stronger retained exact eleven omissions all-handlers-nil/no-events matrix plus valid config; both real app factories bind literal callbacks.",
+        "execution": "Read-only review; no new isolated assertion or runtime control claimed."
+      },
+      "prior_classifier_cutover_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": false,
+        "implementer_independent": true,
+        "original_body_sha256": "56389ad51b56f064a2daca5c4cb62bc26487777c8c185e85d397c3ba02e438b5",
+        "comparison": "Original calls NewMFAHandlers with an entirely empty config and checks nonnil error. Surviving eleven-dependency keeper checks exact ErrInvalidConfig, every returned handler nil, no callback events and a valid complete config. It exercises more specific missing-dependency controls than the all-empty shortcut.",
+        "gaps": "No unique useful empty-config assertion is lost. Prior classification by this reviewer disclosed; root separately re-read and approved.",
+        "remaining_coverage_exact_refs": [
+          "packages/identitycore/handlers_mfa_disable_test.go:82#TestMFADisableConfigurationFailsClosedBeforeCallbacks"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/identitycore/mfa_http_test.go::TestNewMFAHandlersRejectsInvalidConfig",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/identitycore/mfa_http_test.go",
@@ -72347,7 +72734,7 @@
         "Elapsed": 0
       },
       "credible_failure": "All negative diskfixtures use schema1 while current3, so unknown/stale cases fail for unrelatedschema; allzero oversizeddata also failsJSON.",
-      "remaining_coverage": "Delete ineffective matrix; TestOldProbeCacheCannotRetainRejectedFacts isolatesoldschema2 withvalidJSON; TestCachedScanFacts uses actualschema3 changedversion and positives. Honest gap: disk unknownfield-beforeacceptance and oversize-beforeparse bound not independently proved here.",
+      "remaining_coverage": "Removed ineffective matrix. packages/mediaprobe/duration_cache_test.go::TestOldProbeCacheCannotRetainRejectedFacts isolates actual schema2 with valid JSON. packages/mediaprobe/cached_scan_facts_test.go::TestCachedScanFactsUsesScanVersionWithoutReadingMedia exercises actual schema3 cached hits/restart/changed-version rejections without probing. Honest gap: disk unknown-field-before-acceptance and oversize-before-parse bounds are not independently proved here.",
       "history": [
         "6269227117f165cb9c4b1e635b9194171af9f1c9 Stabilize fake FFmpeg fixture publication (#210)",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
@@ -79028,7 +79415,23 @@
       "callers": [
         "apps/{player,subtitles}/internal/server/{metadata_provider,metadata_provider_tmdb,metadata_bulk}.go load/validate/apply/merge records, ownerroutes bulk edits andprovider JSON/image; server.go chapterprovider"
       ],
-      "gap": "Private chapter identity table directly rejects missing Show/Episode and bad/zero TVDB values; empty TVDB shares parsing rejection. The candidate test asserts only a nil result from default external provider, without observing network absence. No browser invalid-identity or no-network equivalence is claimed."
+      "gap": "Private chapter identity table directly rejects missing Show/Episode and bad/zero TVDB values; empty TVDB shares parsing rejection. The candidate test asserts only a nil result from default external provider, without observing network absence. No browser invalid-identity or no-network equivalence is claimed.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "af1c7b25bf35822a82953e187a840e311a295ebe5123f82ff4659a51820ce951",
+        "comparison": "Original missing-TVDB item calls Chapters against default provider and asserts only nil chapters, with no HTTP counter. The retained chapter boundary keeper directly rejects absent/invalid episode identity and preserves local chapters. Even if the public identity guard were removed, a lookup returning no chapters could satisfy the old test; it did not independently prove no network side effect.",
+        "gaps": "The public missing-TVDB-before-network contract is not isolated by a surviving request counter, and it was not isolated by this original either. Browser playback chapter navigation is not a proof of provider admission ordering.",
+        "remaining_coverage_exact_refs": [
+          "packages/metadata/chapters_edges_test.go:16#TestChapterPresentationAndLookupBoundaries"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/metadata/chapters_test.go::TestChapterProviderReturnsNoDataWithoutTVDBEpisodeIdentity",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/metadata/config_test.go",
@@ -83959,7 +84362,25 @@
         "apps/player/e2e/test-instance-library.spec.ts:media artwork keeps its intended ratio in the populated library"
       ],
       "gap": "No E2E equivalence for deliberately nil method values or nil contexts. Missing-callback guard and exact error-copy enforcement under programmer misuse are intentionally no longer pinned; runtime dependencies still have failure-injection tests.",
-      "unlocked_deletion": "No production seam or shared fixture helper removed."
+      "unlocked_deletion": "No production seam or shared fixture helper removed.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "2fbe262d42386da89c89bb2f0d39a7b42b77e4e7a928726c0963215b3430f26f",
+        "comparison": "Original nil-context and omitted callback matrix asserts static invalid-config errors before callback execution. Production adapters bind literal nonnil operations from metadata store/index/provider. Surviving refresh keepers check actual partial success plus ordered failures, bounded concurrency, cancellation stopping new launch, draining started work and discarding completed results after cancellation.",
+        "gaps": "The exact missing-adapter/nil-context constructor-defense matrix is no longer pinned; actual cancellation, partial writes and refresh side effects remain protected. Populated metadata task browser evidence does not cover failure injection.",
+        "remaining_coverage_exact_refs": [
+          "packages/operations/metadata_test.go:107#TestRefreshMetadataPreservesPartialSuccessAndFailureOrder",
+          "packages/operations/metadata_concurrency_test.go:14#TestRefreshMetadataBoundsConcurrencyAndStopsOnCancellation",
+          "packages/operations/metadata_test.go:189#TestRefreshMetadataDiscardsCompletedWorkAfterCancellation"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/operations/metadata_test.go::TestRefreshMetadataRejectsIncompleteDependenciesWithoutSideEffects",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/operations/metadata_test.go",
@@ -84562,7 +84983,24 @@
         "apps/subtitles/e2e/happy-path.spec.ts:Owner can set up, create a passkey, find, play, resume, curate, install, and sign back in"
       ],
       "gap": "No equivalence claimed for deliberately invalid constructor input. Early-versus-request-time panic under programmer misuse is no distinct important production failure for the complete static app wiring.",
-      "unlocked_deletion": "No production seam or shared fixture helper removed."
+      "unlocked_deletion": "No production seam or shared fixture helper removed.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "af3d76e88fe0c952c7da92aacdb65a86ccc190807970c4175a193a82964c598a",
+        "comparison": "Original omits constructor dependencies and checks panic before reads. Actual app factories always bind logs/playback/diagnostics/view dependencies. Surviving SystemHandler keeper calls the real handler twice, verifies fresh snapshots/read counts and propagated render failure; branding/validation keeper remains for source contract.",
+        "gaps": "The impossible-in-current-composition missing-adapter panic matrix is not independently repeated. No claim that browser diagnostics replaces this static constructor defense.",
+        "remaining_coverage_exact_refs": [
+          "packages/operations/system_http_test.go:20#TestSystemHandlerReadsFreshSnapshotsAndPreservesRenderErrors",
+          "packages/operations/system_http_test.go:52#TestSystemViewBrandingAndValidation"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/operations/system_http_test.go::TestSystemHandlerRejectsMissingDependenciesBeforeReads",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/operations/system_http_test.go",
@@ -100722,7 +101160,24 @@
         "packages/routeinventory/inventory_test.go:TestDiscoverIncludesAppSharedAndExplicitRoutes"
       ],
       "gap": "No independent contract lost: retained richer matrix tests all named rejecting branches, while public discovery fixtures prove accepted source registration/skip/sort/dedupe. Synthetic AST examples are not app E2E.",
-      "unlocked_deletion": "No production or support seam removed."
+      "unlocked_deletion": "No production or support seam removed.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "f9247bf150d5fd1111a1140ad299884a8319283c25ac9907ac3e38c077816276",
+        "comparison": "Original duplicates over-2048 inventory rejection, invalid glob, non-call/literal route AST branches. Surviving InventoryRemainingParserAndCardinalityEdges covers invalid glob/cardinality and AST shapes; DiscoverIncludesAppSharedAndExplicitRoutes checks public mixed-app/shared routes, sorting/deduplication and test-file exclusion. Baseline helper writeRouteSource only creates parse fixtures.",
+        "gaps": "No useful unique shape contract is lost; nil/nonliteral AST variants reach the same rejection branch. This static QA discovery tool is called by servertest and the routeinventory command, not the runtime router.",
+        "remaining_coverage_exact_refs": [
+          "packages/routeinventory/coverage_edges_test.go:10#TestInventoryRemainingParserAndCardinalityEdges",
+          "packages/routeinventory/inventory_test.go:11#TestDiscoverIncludesAppSharedAndExplicitRoutes"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/routeinventory/inventory_test.go::TestRouteDiscoveryCoversRejectedSourceShapes",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/routeinventory/inventory_test.go",
@@ -104330,7 +104785,27 @@
         "apps/player/cmd/kinosail/tls_server_test.go:TestCommandLineCanDisableTLS",
         "apps/subtitles/cmd/kinosail/tls_server_test.go:corresponding real process keepers",
         "packages/servertransport/server_test.go:TestServeSelectsProtocolAndReportsCertificateFailure"
-      ]
+      ],
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "fca3e2765f1f6112091defe424a1a00c9c1aff2ecb59a87ab7516657b99a7723",
+        "comparison": "Original dial loop never fails if it never connects, then closes the server and accepts ErrServerClosed. Returning ErrServerClosed without starting a listener can pass. Real app subprocess TLS keepers assert health200 through TLS1.2/1.3, reject unsafe protocols/ciphers/HTTP, and TLS-disabled keeper asserts real HTTP200 plus HTTPS rejection/no certificate file. Their helper launches actual main, not a mock server.",
+        "gaps": "The removed loop supplied no independent listener-start proof. Real subprocess readiness is stronger; no new process run or browser run was executed by this reviewer.",
+        "remaining_coverage_exact_refs": [
+          "apps/player/cmd/kinosail/tls_server_test.go:19#TestCommandLineServesCompatibleHTTPSByDefault",
+          "apps/player/cmd/kinosail/tls_server_test.go:104#TestCommandLineCanDisableTLS",
+          "apps/subtitles/cmd/kinosail/tls_server_test.go:18#TestCommandLineServesCompatibleHTTPSByDefault",
+          "apps/subtitles/cmd/kinosail/tls_server_test.go:103#TestCommandLineCanDisableTLS",
+          "packages/servertransport/server_test.go:46#TestServeSelectsProtocolAndReportsCertificateFailure"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/servertransport/server_test.go::TestServeRunsPlainAndSecureListeners",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/servertransport/server_test.go",
@@ -104376,7 +104851,24 @@
         "packages/servertransport/server_test.go:TestNewServerAppliesSharedTransportLimits",
         "apps/player/cmd/kinosail/main.go:newConfiguredHTTPServerWithAccess uses NewServer",
         "apps/subtitles/cmd/kinosail/main.go:newConfiguredHTTPServerWithAccess uses NewServer"
-      ]
+      ],
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "fe33dd3e0ff5318063af90614ae25c117762b06f070a9a07f18e84471c6f9d23",
+        "comparison": "Original supplies a raw http.Server with nil TLSConfig and checks ConfigureCertificates creates one certificate. Both real app CLI factories and inspected access/gateway owners use NewServer, whose transport limits and initialized TLS config remain asserted. ConfigureCertificates keeper verifies trusted SNI versus local fallback certificate identities.",
+        "gaps": "Raw externally constructed nil-TLSConfig initialization is no longer separately pinned; no inspected application caller uses that branch. Actual certificate selection/security and app process transport remain tested.",
+        "remaining_coverage_exact_refs": [
+          "packages/servertransport/tls_test.go:189#TestConfigureCertificatesSelectsTrustedSNIAndLocalFallback",
+          "packages/servertransport/server_test.go:15#TestNewServerAppliesSharedTransportLimits"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/servertransport/server_test.go::TestConfigureCertificatesInitializesMissingTLSConfig",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/servertransport/server_test.go",
@@ -106440,7 +106932,25 @@
         "packages/supporter/validation_test.go:TestEmptyDerivativeStatusAndFingerprintUseSharedPolicy",
         "packages/supporter/legacy_edges_test.go:TestV2TimeProfilesRejectInvalidInputAndAcceptSubtitlesExpiry",
         "packages/supporter/certificate_edges_test.go:TestCurrentCertificatePredicatesRejectInvalidSignedValues"
-      ]
+      ],
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "5141f0aaa7bbd86d94b8e984fc41c033a7ea6b77ed01156bffcb6c9cacb0d478",
+        "comparison": "Original Name empty/free fallback literals and strictTime(not-a-time) repeat public free-status and retained signed-time predicate failures. Surviving certificate/legacy time keepers check malformed signed values, V2 profile constraints and valid Subtitles expiry; actual default status retains the free projection.",
+        "gaps": "Exact private display helper literals are not all separately pinned; browser badge/title evidence is presentation coverage only and not signed-time validation.",
+        "remaining_coverage_exact_refs": [
+          "packages/supporter/validation_test.go:85#TestEmptyDerivativeStatusAndFingerprintUseSharedPolicy",
+          "packages/supporter/legacy_edges_test.go:63#TestV2TimeProfilesRejectInvalidInputAndAcceptSubtitlesExpiry",
+          "packages/supporter/certificate_edges_test.go:64#TestCurrentCertificatePredicatesRejectInvalidSignedValues"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/supporter/input_json_edges_test.go::TestDisplayAndStrictTimeFallbacks",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/supporter/legacy_edges_test.go",
@@ -106992,7 +107502,25 @@
         "packages/supporter/validation_test.go:TestConfigurationAndEndpointValidation",
         "packages/supporter/provider_test.go:TestProviderResponsesFailClosedWithoutStateChange",
         "packages/supporter/service_test.go:TestActivationRejectsInputsAndProviderFailuresWithoutStateChange"
-      ]
+      ],
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "1bb9c48c9e85ae5327dd8751f0de9718b42daf55459f6371351554d79097b0fc",
+        "comparison": "Original directly mutates private service.endpoint to : then calls send, requiring ErrInvalid. New rejects malformed external endpoints before a Service can have that value, and there is no production endpoint setter. Surviving Config/endpoint keeper asserts the actual URL trust policy; actual provider response/transport failures retain unchanged-state checks.",
+        "gaps": "The corrupted-internal-endpoint send branch is no longer pinned. No legitimate production entry point was found that constructs this private value.",
+        "remaining_coverage_exact_refs": [
+          "packages/supporter/validation_test.go:10#TestConfigurationAndEndpointValidation",
+          "packages/supporter/provider_test.go:13#TestProviderResponsesFailClosedWithoutStateChange",
+          "packages/supporter/service_test.go:170#TestActivationRejectsInputsAndProviderFailuresWithoutStateChange"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/supporter/provider_edges_test.go::TestSendRejectsMalformedInternalEndpointBeforeNetwork",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/supporter/provider_edges_test.go",
@@ -107407,9 +107935,9 @@
       "owner_group": "supporter",
       "body_sha256": "012186b6c3d98a4af029fa43239bc262527e5ab281053420e6da4c577a1bf523",
       "baseline_result": "pass",
-      "decision": "D",
+      "decision": "R",
       "audit_status": "reviewed",
-      "risk": "Remove only low-impact getter/redundant/synthetic or missing-data probe; crypto, real signed provider and failure boundaries retained.",
+      "risk": "Retain original unchanged unique network deadline configuration guard; no new isolated test or assertion added.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.324489-06:00",
@@ -107439,14 +107967,32 @@
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "gap": "Custom nonzero timeout copy and exact synthetic specific-failure string are no longer asserted; real default timeout/redirect refusal and provider error classes remain. No equivalent browser failure test claimed.",
+      "gap": "This observes configured client timeout preservation, not a wall-clock transport timeout; provider fixtures supply zero-timeout server.Client values and genuine browser journeys do not inject a shorter HTTP deadline. Error-string check is supplementary.",
       "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
-      "credible_failure": "Literal error message and copied client Timeout echo have no distinct important application behavior. Both real command compositions leave SupporterConfig.HTTPClient nil; injected app clients are test-only provider adapters.",
+      "credible_failure": "New could overwrite a supplied one-second HTTP client timeout with its ten-second default, silently ignoring the caller configured shorter network deadline. This declaration supplies a nonzero timeout and reads the configured owner client.",
       "reason": "Literal error message and copied client Timeout echo have no distinct important application behavior. Both real command compositions leave SupporterConfig.HTTPClient nil; injected app clients are test-only provider adapters.",
       "remaining_coverage": [
-        "packages/supporter/service_edges_test.go:TestServiceDefaultsAndPreparationFailurePaths",
-        "packages/supporter/provider_test.go:TestProviderResponsesFailClosedWithoutStateChange"
-      ]
+        "packages/supporter/service_edges_test.go::TestWrappedErrorPresentationAndCustomClientTimeout retains the exact original supplied-timeout assertion."
+      ],
+      "evidence": "Independent cutover review found unique supplied-timeout contract; surviving ServiceDefaultsAndPreparationFailurePaths exercises zero-timeout default only. Both app SupporterConfig adapters forward the HTTPClient field.",
+      "unlocked_deletion": "None; proposed deletion retracted after independent review.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "retract",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "012186b6c3d98a4af029fa43239bc262527e5ab281053420e6da4c577a1bf523",
+        "comparison": "Original preserves supplied Config.HTTPClient Timeout1s in New and checks one wrapped message literal. Surviving defaults keeper asserts10s only for unspecified timeout, and provider tests use server.Client() with Timeout0. Both application SupporterConfig adapters forward HTTPClient. Hard-coding10s would ignore a shorter configured network deadline while all named keepers pass. Retract D: retain original unchanged for the useful configurable-timeout assertion.",
+        "gaps": "No surviving keeper or real E2E proves a supplied nonzero timeout is retained. This test verifies the client configuration, not an actual wall-clock timeout. Root/parent agreed restoration.",
+        "remaining_coverage_exact_refs": [
+          "packages/supporter/service_edges_test.go:13#TestServiceDefaultsAndPreparationFailurePaths",
+          "packages/supporter/provider_test.go:13#TestProviderResponsesFailClosedWithoutStateChange"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/supporter/service_edges_test.go::TestWrappedErrorPresentationAndCustomClientTimeout",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/supporter/service_entropy_test.go",
@@ -108049,7 +108595,24 @@
       "remaining_coverage": [
         "packages/supporter/service_test.go:TestActivationUsesConfiguredPublicKeyStorage",
         "packages/supporter/service_edges_test.go:TestActivateAndSaveReturnsCommittedState"
-      ]
+      ],
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "69240f9e1f6c73c1bcdf9a1c659da29b4970fdd2bdafdb9bbf2f35fb7ff3713f",
+        "comparison": "Original directly validates completely empty state without preparation. Real activation first calls Prepare to create an installation identity before Validate. Surviving first-activation and ActivateAndSave keepers start with State{}, use real signed provider fixtures and assert committed state/status.",
+        "gaps": "Direct empty-state Validate success is no longer independently pinned; actual empty-installation activation and persistence outcomes remain covered.",
+        "remaining_coverage_exact_refs": [
+          "packages/supporter/service_test.go:108#TestActivationUsesConfiguredPublicKeyStorage",
+          "packages/supporter/service_edges_test.go:75#TestActivateAndSaveReturnsCommittedState"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/supporter/state_edges_test.go::TestEmptyStateIsValid",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/supporter/status_edges_test.go",
@@ -108099,7 +108662,25 @@
         "packages/supporter/legacy_test.go:TestLegacyCertificatesUseTheSharedStatusAndCertificateInterface",
         "packages/supporter/legacy_test.go:TestMalformedLegacyCertificateAndUnicodeFailClosed",
         "packages/supporter/legacy_edges_test.go:TestLegacyMigrationCanPopulateLivingStandard"
-      ]
+      ],
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "f19f57076980acfee827f76d0051071d58693de74963d59cab8f11ad951bd228",
+        "comparison": "Original unmigrated state has ActivationID=invalid and lacks valid certificate/signature material, then requires no badges. It still passes if both legacy fallback readers are deleted. Surviving legacy keepers use valid signed Player/Subtitles records, verify actual status/certificate interface, malformed Unicode denial and LivingStandard migration.",
+        "gaps": "The synthetic invalid-ID shortcut is no longer separately asserted. Actual valid historical recognition and malformed signed input remain the useful owner contracts.",
+        "remaining_coverage_exact_refs": [
+          "packages/supporter/legacy_test.go:13#TestLegacyCertificatesUseTheSharedStatusAndCertificateInterface",
+          "packages/supporter/legacy_test.go:44#TestMalformedLegacyCertificateAndUnicodeFailClosed",
+          "packages/supporter/legacy_edges_test.go:79#TestLegacyMigrationCanPopulateLivingStandard"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/supporter/status_edges_test.go::TestStatusChecksUnmigratedLegacyAgainstBothFamilies",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/supporter/status_edges_test.go",
@@ -108379,9 +108960,9 @@
       "owner_group": "supporter",
       "body_sha256": "91ea020bba8a4fdddcf2d3c28287003745d02ce5fe7317395d534bf9e414b3ee",
       "baseline_result": "pass",
-      "decision": "D",
+      "decision": "R",
       "audit_status": "reviewed",
-      "risk": "Remove only low-impact getter/redundant/synthetic or missing-data probe; crypto, real signed provider and failure boundaries retained.",
+      "risk": "Retain original unchanged public isolation guard; no new isolated test or assertion added.",
       "validation_command": "cd packages && go test ./supporter",
       "baseline_event": {
         "Time": "2026-10-03T10:35:32.334502-06:00",
@@ -108411,15 +108992,31 @@
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "gap": "Exported Tiers slice-copy guarantee and exact NorthStar display/unknown fallback literals lose direct coverage. No production writer or important data-loss/security failure identified; real chooser coverage does not prove aliasing.",
+      "gap": "Both current app callers read their captured tier slices, so present app mutation risk is lower; browser badge/title journeys do not mutate returned public API slices and cannot prove isolation.",
       "source_read_evidence": "All complete supporter test/helper bodies and production package files, both application supporter composition files, relevant caller blocks and actual-versus-fixture browser sources read.",
-      "credible_failure": "Cloned slice mutation and tier/name literal echoes exercise no actual caller mutation: both apps capture Tiers at initialization then only iterate/index it. Actual real browser chooser requires every level artwork/title while signed owner tests require rank semantics.",
+      "credible_failure": "Returning the process-wide tier catalog instead of an isolated copy lets a caller mutate the canonical ordered names; subsequent Tiers/Rank/Name operations may then observe corrupted tier policy. The test directly mutates one returned slice and observes a fresh public result.",
       "reason": "Cloned slice mutation and tier/name literal echoes exercise no actual caller mutation: both apps capture Tiers at initialization then only iterate/index it. Actual real browser chooser requires every level artwork/title while signed owner tests require rank semantics.",
       "remaining_coverage": [
-        "apps/player/e2e/test-instance-supporter.spec.ts:Every supporter level shows its artwork and title (real route)",
-        "apps/subtitles/e2e/test-instance-supporter-tests.ts:Supporter page loads twenty distinct badges with accessible names (real route)",
-        "packages/supporter/service_test.go:TestActivationBuildsBothBadgesAndStatus"
-      ]
+        "packages/supporter/validation_test.go::TestTierCatalogIsIsolated retains the exact original mutation assertion."
+      ],
+      "evidence": "Independent cutover review found a unique public API isolation assertion. Tiers explicitly documents isolated copy; no surviving keeper or genuine browser journey exercises returned-slice aliasing.",
+      "unlocked_deletion": "None; proposed deletion retracted after independent review.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "retract",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "91ea020bba8a4fdddcf2d3c28287003745d02ce5fe7317395d534bf9e414b3ee",
+        "comparison": "Original mutates the returned Tiers slice and checks a subsequent call still starts with friend. The public owner explicitly documents an isolated copy and uses slices.Clone. Real app callers capture their own slice; surviving signed badge/status and browser title tests only read it and cannot catch return-of-global-slice aliasing. Retract D: retain original unchanged for the unique public isolation contract.",
+        "gaps": "No other keeper or real E2E proves isolation. Immediate app callers do not mutate today, but the independently meaningful documented public API assertion must remain. Root/parent agreed restoration.",
+        "remaining_coverage_exact_refs": [
+          "packages/supporter/service_test.go:150#TestActivationBuildsBothBadgesAndStatus"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/supporter/validation_test.go::TestTierCatalogIsIsolated",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/supporter/validation_test.go",
@@ -108639,6 +109236,24 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestCodecCapabilitiesPreservePlayerPolicy",
         "Elapsed": 0
+      },
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "93043212bab7349e6a42ff68fc420c93fa9ba0c8a02d4b0aa31fc73c39d077b6",
+        "comparison": "Original checks six capability rows, usable detected H264 and unusable absent AV1. Shared transcodepolicy public keeper asserts the complete literal readiness map including VVC/AV2/VP9; hardware probe keeper obtains capabilities from actual executable listing fixture, and verification keeper refuses to promote a listed failed encoder. These preserve useful portable policy and hardware evidence boundaries.",
+        "gaps": "The wrapper's copied row count is not separately pinned; browser playback cannot replace hardware failure-injection/verification controls, which remain.",
+        "remaining_coverage_exact_refs": [
+          "packages/transcodepolicy/policy_test.go:73#TestCapabilitiesUsePlayerReadinessPolicy",
+          "packages/transcodehardware/probe_test.go:50#TestProbeDiscoversPortableBackendsAndCodecs",
+          "packages/transcodehardware/verification_test.go:14#TestVerificationDoesNotPromoteAnEncoderListing"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/transcodehardware/capabilities_test.go::TestCodecCapabilitiesPreservePlayerPolicy",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
       }
     },
     {
@@ -108683,6 +109298,22 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestHLSCodecsPreservePlayerManifestValues",
         "Elapsed": 0
+      },
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "6ba1e23ad085d51db108325c103f1f3fdb1009facd28dbbfec5f1cf2481098dc",
+        "comparison": "Original freezes seven guessed codec strings from HLSCodecs. Both app callers pass those guesses into WriteMaster, but the actual master path constructs each variant from parsed initialization media and ignores guess content except input bounds. Retained MasterUsesActualInitializationInsteadOfGuesses supplies independent HEVC/Opus/HLG MP4 description bytes and requires literal actual codecs/dimensions/range; corrupt media blocks publication.",
+        "gaps": "Exact legacy guess strings are not pinned. The retained MP4 fixture is a binary-description fixture, not playable media or browser encoder proof; actual manifest metadata is independently asserted.",
+        "remaining_coverage_exact_refs": [
+          "packages/playback/transcoding_regression_test.go:81#TestMasterUsesActualInitializationInsteadOfGuesses"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/transcodehardware/capabilities_test.go::TestHLSCodecsPreservePlayerManifestValues",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
       }
     },
     {
@@ -108728,6 +109359,24 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestEncoderForIsReadOnly",
         "Elapsed": 0
+      },
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "15c0d822b8626343f9ff3b1ff77412327bfecc6372a275122fc41e2008f2bcdd",
+        "comparison": "Original EncoderFor reads one existing map key and one missing key; it never observes map state to prove read-only behavior. CapabilityLookupAndEncoderResolution checks encoder/fallback outcomes, and verification/failure evidence tests explicitly clear failed device availability and restore after expiry.",
+        "gaps": "The direct missing-map-key empty literal is not separately pinned. The original name's no-mutation promise was not asserted.",
+        "remaining_coverage_exact_refs": [
+          "packages/transcodehardware/capabilities_test.go:7#TestCapabilityLookupAndEncoderResolution",
+          "packages/transcodehardware/verification_test.go:14#TestVerificationDoesNotPromoteAnEncoderListing",
+          "packages/transcodehardware/verification_test.go:67#TestFailedDeviceEvidenceIsSharedAndExpires"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/transcodehardware/capabilities_test.go::TestEncoderForIsReadOnly",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
       }
     },
     {
@@ -109285,6 +109934,23 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodehardware",
         "Test": "TestEmptyHardwareRequirementIsSatisfied",
         "Elapsed": 0
+      },
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "5cc7576c6184c5c255748670cf9f454573c75884568d05bb52d59e4b19bcd20d",
+        "comparison": "Original calls hasDevices with no requested names, exercising an empty loop that returns true. Production RKMPP discovery supplies all four required device names; public probe keepers reject incomplete/inaccessible devices and accept the complete accessible requirement.",
+        "gaps": "The empty-argument helper case is no longer pinned; no production zero-device requirement caller was found.",
+        "remaining_coverage_exact_refs": [
+          "packages/transcodehardware/probe_test.go:97#TestProbeRequiresCompleteAccessibleHardware",
+          "packages/transcodehardware/probe_test.go:72#TestPortableBackendDeviceRequirements"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/transcodehardware/probe_test.go::TestEmptyHardwareRequirementIsSatisfied",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
       }
     },
     {
@@ -111084,6 +111750,23 @@
         "Package": "github.com/MikeO7/kinosail/packages/transcodepolicy",
         "Test": "TestCapabilitiesExplainUndetectedVVC",
         "Elapsed": 0
+      },
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "66ea1e11ccb6be93afbe2ecb97afa9d8177863b7b1df7a60974e6e324dd82007",
+        "comparison": "Original loops capability rows and checks VVC reason contains libvvenc only if a VVC row appears; omitting VVC entirely passes. Shared readiness keeper requires a VVC row with explicit detection/support/use status, and probe keeper checks actual detected-but-unsupported VVC with a nonempty reason.",
+        "gaps": "Exact undetected-VVC display wording is not pinned; actual presence and unusable policy remain protected, and the removed loop did not ensure row presence.",
+        "remaining_coverage_exact_refs": [
+          "packages/transcodepolicy/policy_test.go:73#TestCapabilitiesUsePlayerReadinessPolicy",
+          "packages/transcodehardware/probe_test.go:50#TestProbeDiscoversPortableBackendsAndCodecs"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/transcodepolicy/policy_edges_test.go::TestCapabilitiesExplainUndetectedVVC",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
       }
     },
     {
@@ -117226,6 +117909,23 @@
         "Package": "github.com/MikeO7/kinosail/packages/validation",
         "Test": "TestAllRunes",
         "Elapsed": 0
+      },
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "73839ea5d2b3e01525c38c92479333eda108f4d618b8c7cf78334eb6a93ac75b",
+        "comparison": "Original allRunes uses a single x and callbacks always true/false, duplicating loop mechanics. Public remote token keeper exercises32/128 length endpoints, lowercase/uppercase/digit/dash/underscore acceptance and punctuation/Unicode denial. SCIM token keeper exercises32/256 and visible-ASCII versus whitespace policy. Actual remoteaccess/SCIM configuration uses these exported boundaries.",
+        "gaps": "No separate arbitrary-predicate helper example remains; actual trust-boundary grammar contracts keep their independent controls.",
+        "remaining_coverage_exact_refs": [
+          "packages/validation/validation_test.go:43#TestRemoteTokenValidation",
+          "packages/validation/validation_test.go:60#TestSCIMTokenValidation"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/validation/validation_test.go::TestAllRunes",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
       }
     },
     {
@@ -121945,7 +122645,24 @@
         "apps/player/e2e/test-instance-offline.spec.ts:real two-browser Watch Together journey",
         "packages/watchrooms/http_test.go:TestHTTPRoutesValidateCreateRedirectAndPlayerProjection",
         "packages/watchrooms/http_test.go:TestHTTPWebSocketPreservesLeaderAndValidationRules"
-      ]
+      ],
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "18c62841b38756ec9c078a6679933b802b6360e5d38a2e715569a6c6633255cf",
+        "comparison": "Original all-empty HTTPConfig and MustNewHTTP panic are static composition checks. Both application factories construct nonnil Rooms/index/identity/CanView/reauthorize/error/not-found adapters. Retained HTTP route keeper checks actual invalid create with no room, successful create/redirect/projection; WebSocket keeper checks leader and validation behavior on real websocket transport. Populated two-browser journey uses actual rooms and reconnect metrics, without route fulfillment.",
+        "gaps": "The constructor all-nil defense is not independently pinned after removal. Real browser synchronization is positive system evidence, while retained Go controls own denied/invalid cases.",
+        "remaining_coverage_exact_refs": [
+          "packages/watchrooms/http_test.go:76#TestHTTPRoutesValidateCreateRedirectAndPlayerProjection",
+          "packages/watchrooms/http_test.go:140#TestHTTPWebSocketPreservesLeaderAndValidationRules"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/watchrooms/http_test.go::TestHTTPConfigurationRejectsMissingAdapters",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/watchrooms/http_test.go",
@@ -122692,7 +123409,24 @@
         "packages/workload/encoding_test.go:TestHardwareSessionBudgetAndInvalidCosts"
       ],
       "gap": "No direct nil-governor advertisement/acquisition assertion remains; this optional fallback is not exercised by either real server. No E2E equivalence claimed.",
-      "unlocked_deletion": "No production or support seam removed."
+      "unlocked_deletion": "No production or support seam removed.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "5f4c803fc16f635fd1af9821bd10c9f571b73f0ddc896b55d76da269d48f037d",
+        "comparison": "Original nil Governor advertises capacity1, acquires via that value and double-releases a noop. Actual both composition roots always create a real Governor from HeavyCapacity before HLS/download/scan use. Retained atomic-cost keeper now uses EncodingCapacity for a full reservation and checks cancellation/capacity/idempotent release; hardware keeper protects device serialization and invalid costs.",
+        "gaps": "The optional nil-governor fallback is not separately pinned. All inspected application callers receive a nonnil process governor; genuine active reservation boundaries remain.",
+        "remaining_coverage_exact_refs": [
+          "packages/workload/encoding_test.go:10#TestEncodingCostIsReservedAtomically",
+          "packages/workload/encoding_test.go:39#TestHardwareSessionBudgetAndInvalidCosts"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/workload/encoding_test.go::TestNilGovernorAdvertisesUsableSingleEncoder",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/workload/governor_test.go",
@@ -122887,7 +123621,25 @@
         "packages/workload/encoding_test.go:TestEncodingCostIsReservedAtomically"
       ],
       "gap": "Nil-governor fallback and intentionally zero constructor capacity no longer have direct assertions; no browser equivalence claimed for synthetic optional governor construction. Real server composition cannot produce either value.",
-      "unlocked_deletion": "No production or support seam removed."
+      "unlocked_deletion": "No production or support seam removed.",
+      "independent_removal_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity/identity_security_audit",
+        "status": "approved",
+        "initial_classification_independent": true,
+        "implementer_independent": true,
+        "original_body_sha256": "b1ff5e8a284c21ac744a2a9ae879802320b2c728d54ffc041ceb9fcb23aea665",
+        "comparison": "Original nil Acquire returns noop and New(0).Metrics clamps capacities to1. Actual app roots call New(HeavyCapacity), which retained processor-policy keeper bounds to1..3. Surviving governor and atomic encoder keepers assert playback reserve, background exclusion, cancellation, metrics and release behavior with valid live governors.",
+        "gaps": "Nil fallback and externally requested zero-capacity clamp are no longer separately pinned. No current application path constructs either; actual process capacity and reservation contracts remain.",
+        "remaining_coverage_exact_refs": [
+          "packages/workload/governor_test.go:143#TestHeavyCapacityTracksAvailableProcessors",
+          "packages/workload/governor_test.go:122#TestGovernorReservesTwoHeavySlotsForPlayback",
+          "packages/workload/encoding_test.go:10#TestEncodingCostIsReservedAtomically"
+        ],
+        "artifact": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+        "artifact_sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+        "artifact_key": "packages/workload/governor_test.go::TestNilGovernorAndMinimumCapacity",
+        "execution": "Read-only body/owner/caller/history comparison; exact original baseline terminal event only, no new Go or browser run."
+      }
     },
     {
       "file": "packages/workload/governor_test.go",
@@ -123001,7 +123753,10 @@
     "additional_subset": [
       "identitycore:redirects_test.go+session_http_test.go",
       "downloads:manager/transcoding/copy_original/copy_video/reservation/tracks_test.go"
-    ]
+    ],
+    "final_status": "Complete:1900 semantic declarations;102 final removed declarations independently reviewed; two formerD restored original unchanged.",
+    "final_reviewed_declarations": 1900,
+    "final_pending_declarations": 0
   },
   "parallel_auditors": {
     "/root/subtitles_shared/shared_identity/identity_security_audit": {
@@ -123065,7 +123820,40 @@
         "fresh_install": "apps/player/e2e/test-instance-first-install.spec.ts:8-76 real setup, WebAuthn virtual authenticator or TOTP, playback, sign-out/sign-in; gated KINOSAIL_FRESH_INSTALL=1. Source mapping only; not run here.",
         "timeouts": "apps/{player,subtitles}/e2e/session-timeouts.spec.ts:20 checks settings/options/accessibility after login; it never changes settings or waits for expiry.",
         "fixture_only": "apps/{player,subtitles}/e2e/passkeys.spec.ts:9-31 route.fulfill begin/register/me and inject navigator.credentials; UI behavior only, no identitycore server proof."
-      }
+      },
+      "final_candidate_resolutions": [
+        {
+          "file": "packages/httpguard/csrf_template_test.go",
+          "name": "TestCSRFParseFunctionsRemainSafeBeforeExecution",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/httpguard/httpguard_test.go",
+          "name": "TestDecodeRequestJSONAcceptsOneStrictObject",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/identitycore/factor_transaction_test.go",
+          "name": "TestFactorVerifyRejectsInvalidStateWithoutPersistence",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/identitycore/handlers_config_test.go",
+          "name": "TestMFAHTTPConfigurationRequiresEveryDependency",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/identitycore/mfa_http_test.go",
+          "name": "TestNewMFAHandlersRejectsInvalidConfig",
+          "final_decision": "D",
+          "review_receipt": true
+        }
+      ],
+      "integration_status": "All declarations semantically integrated; historical candidate rows retain original packet provenance, while final declarations and resolution map are authoritative. No source execution inferred from read-only packet."
     },
     "/root/tooling": {
       "path": "/tmp/kinosail-catalog-metadata-audit.json",
@@ -123117,7 +123905,34 @@
       "e2e_evidence": {
         "genuine": "apps/player/e2e/ui-happy-paths.spec.ts:89 owner creates/reads/adds/removes/deletes one playlist and one custom collection; curation-count.spec.ts verifies 0/1/2 displayed counts against populated real server. No fault injection, cross-viewer, imported exclusions, large cardinality, provider/concurrency or malformed forms asserted. Subtitles happy-path.spec.ts:236-283 real Arrival/missing search, media playback POSTprogress, ContinueWatching after pause, watched toggle/removal are also actual proof, without exact saved-label/revision/fault/foreignViewer assertions. Player test-instance-library.spec.ts:20 normal all-media views, local generatedTMDBplot, album\u2192track\u2192audio, PDF/EPUB/comic reader; :198 creates one smart Example/video playlist and routeaccess without exact selectedIDs/kindmix/sort assertions.",
         "fixture": "Browser page.route/setContent/media-event fixtures are browser component tests; not equivalent to backend/shared contracts."
-      }
+      },
+      "final_candidate_resolutions": [
+        {
+          "file": "packages/catalog/catalog_test.go",
+          "name": "TestSmallBrowseHelpers",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/catalog/detail_http_test.go",
+          "name": "TestAlbumTrackCountUsesSingularAndPlural",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/catalog/search_sort_test.go",
+          "name": "TestSearchTextNormalizesASCIIAndUnicodeMetadata",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/metadata/chapters_test.go",
+          "name": "TestChapterProviderReturnsNoDataWithoutTVDBEpisodeIdentity",
+          "final_decision": "D",
+          "review_receipt": true
+        }
+      ],
+      "integration_status": "All declarations semantically integrated; historical candidate rows retain original packet provenance, while final declarations and resolution map are authoritative. No source execution inferred from read-only packet."
     },
     "/root": {
       "path": "/tmp/kinosail-durable-state-audit.json",
@@ -123135,7 +123950,9 @@
         "apps/subtitles/e2e/subtitle-dashboard.spec.ts",
         "apps/player/scripts/test-container.sh",
         "apps/subtitles/scripts/test-container.sh"
-      ]
+      ],
+      "final_candidate_resolutions": [],
+      "integration_status": "All declarations semantically integrated; historical candidate rows retain original packet provenance, while final declarations and resolution map are authoritative. No source execution inferred from read-only packet."
     },
     "/root/subtitles_shared/shared_identity/identity_security_audit:federation,passkeys,remoteaccess,scim": {
       "path": "/tmp/kinosail-federated-authority-audit.json",
@@ -123595,7 +124412,64 @@
           "executed_by_auditor": false
         }
       },
-      "execution": "No candidate execution; exact original baseline terminal event only."
+      "execution": "No candidate execution; exact original baseline terminal event only.",
+      "final_candidate_resolutions": [
+        {
+          "file": "packages/federation/saml_coverage_test.go",
+          "name": "TestSAMLBeginMapsAuthenticationAndRedirectErrors",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/federation/saml_metadata_test.go",
+          "name": "TestRemoteSAMLMetadataRejectsMalformedAddressAndTransportFailure",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/remoteaccess/cardinality_test.go",
+          "name": "TestNewRejectsMultipleDependencySetsBeforeFiles",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/remoteaccess/manager_internal_test.go",
+          "name": "TestKillAndResetRejectUnavailableOrUnremovableMarkers",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/remoteaccess/readiness_test.go",
+          "name": "TestNewReadinessHandlerRejectsMissingDependencies",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/remoteaccess/reset_kill_test.go",
+          "name": "TestResetKillIsStrictAndRemovesOnlyTheKillMarker",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/scim/scim_http_test.go",
+          "name": "TestSCIMIfMatchSerializesConcurrentMutations",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/scim/scim_http_test.go",
+          "name": "TestSCIMRejectsDuplicateAuthorizationHeadersAndAuthenticatesPublicAccess",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/scim/scim_patch_edges_test.go",
+          "name": "TestSCIMCanonicalPathReturnsPlainName",
+          "final_decision": "D",
+          "review_receipt": true
+        }
+      ],
+      "integration_status": "All declarations semantically integrated; historical candidate rows retain original packet provenance, while final declarations and resolution map are authoritative. No source execution inferred from read-only packet."
     },
     "/root/tooling:downloads": {
       "path": "/tmp/kinosail-downloads-audit.json",
@@ -123831,7 +124705,22 @@
           "assertions": "Synthetic HTML/routes/job replies and browser lifecycle/storage controls. Not genuine shared download-manager E2E."
         }
       ],
-      "execution": "No candidate execution; exact original baseline terminal event only."
+      "execution": "No candidate execution; exact original baseline terminal event only.",
+      "final_candidate_resolutions": [
+        {
+          "file": "packages/downloads/access_test.go",
+          "name": "TestRequestAccessFailsClosedWithoutBindings",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/downloads/manager_edges_test.go",
+          "name": "TestManagerDefaultsAndSaveValidation",
+          "final_decision": "D",
+          "review_receipt": true
+        }
+      ],
+      "integration_status": "All declarations semantically integrated; historical candidate rows retain original packet provenance, while final declarations and resolution map are authoritative. No source execution inferred from read-only packet."
     },
     "/root:auditjournal,backup,configurationcore,owneraccess": {
       "path": "/tmp/kinosail-durable-state-audit.json",
@@ -124069,7 +124958,40 @@
         "apps/player/scripts/test-container.sh",
         "apps/subtitles/scripts/test-container.sh"
       ],
-      "execution": "No candidate execution; exact original baseline terminal event only."
+      "execution": "No candidate execution; exact original baseline terminal event only.",
+      "final_candidate_resolutions": [
+        {
+          "file": "packages/backup/archive_test.go",
+          "name": "TestRestoreRejectsTraversal",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/backup/behavior_test.go",
+          "name": "TestWriteAutoSelectsEncryptedOrPlainArchive",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/backup/command_test.go",
+          "name": "TestBoundCommandRejectsInvalidCommandsBeforeEffects",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/backup/operations_coverage_test.go",
+          "name": "TestMustNewPanicsForInvalidStaticConfiguration",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/backup/service_test.go",
+          "name": "TestNewRejectsInvalidConfigurationWithoutOpeningDatabase",
+          "final_decision": "D",
+          "review_receipt": true
+        }
+      ],
+      "integration_status": "All declarations semantically integrated; historical candidate rows retain original packet provenance, while final declarations and resolution map are authoritative. No source execution inferred from read-only packet."
     },
     "/root/frontend_native:markers,viewing": {
       "path": "/tmp/kinosail-markers-viewing-audit.json",
@@ -124647,7 +125569,58 @@
           "Native fullscreen/startup regressions and new Apple Safari startup work were preserved; no deployment or browser TLS bypass performed."
         ]
       },
-      "execution": "No candidate execution; exact original baseline terminal event only."
+      "execution": "No candidate execution; exact original baseline terminal event only.",
+      "final_candidate_resolutions": [
+        {
+          "file": "packages/markers/admin_coverage_test.go",
+          "name": "TestAdminFormSaveAndRemoveLifecycle",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/markers/admin_coverage_test.go",
+          "name": "TestAdminMarkerFormHelperBoundaries",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/markers/admin_test.go",
+          "name": "TestMarkerFormHelpers",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/markers/batch_regression_test.go",
+          "name": "TestFailedGroupDoesNotBlockOtherLibraries",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/markers/markers_test.go",
+          "name": "TestDetectPlaybackMarkersIgnoresOrdinaryChapters",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/markers/schedule_test.go",
+          "name": "TestScheduleRejectsMissingAdapters",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/markers/state_coverage_test.go",
+          "name": "TestMarkerStateValidFile",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/viewing/manager_test.go",
+          "name": "TestManagerRestoresAndSchedulesDurableState",
+          "final_decision": "D",
+          "review_receipt": true
+        }
+      ],
+      "integration_status": "All declarations semantically integrated; historical candidate rows retain original packet provenance, while final declarations and resolution map are authoritative. No source execution inferred from read-only packet."
     },
     "/root/subtitles_shared/shared_identity/identity_security_audit:quickconnect,trustedhttps": {
       "path": "/tmp/kinosail-quick-trusted-audit.json",
@@ -125156,7 +126129,58 @@
           "missing": "Provider DNS backend update, deSEC backend, actual ACME authority/chain trust, persistence error/cache renewal/expiry/retry and owner tunnel privateIP no-publication."
         }
       },
-      "execution": "No candidate execution; exact original baseline terminal event only."
+      "execution": "No candidate execution; exact original baseline terminal event only.",
+      "final_candidate_resolutions": [
+        {
+          "file": "packages/quickconnect/http_flow_test.go",
+          "name": "TestApplicationPage",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/quickconnect/quickconnect_test.go",
+          "name": "TestNumericCodeUsesSixDigits",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/trustedhttps/config_test.go",
+          "name": "TestConfigAcceptsLocalHostnameAddress",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/trustedhttps/issuer_edges_test.go",
+          "name": "TestObtainCertificateUsesDefaultDirectory",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/trustedhttps/manager_additional_test.go",
+          "name": "TestPublicOperationsRejectMultipleDependencySetsBeforeSideEffects",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/trustedhttps/manager_edges_test.go",
+          "name": "TestManagerDefaultDependenciesAndNilReceiver",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/trustedhttps/provider_edges_test.go",
+          "name": "TestCheckAndProviderConstructionRejectInvalidBoundaries",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/trustedhttps/provider_edges_test.go",
+          "name": "TestDeSECPayloadFailureStopsBeforeRequest",
+          "final_decision": "D",
+          "review_receipt": true
+        }
+      ],
+      "integration_status": "All declarations semantically integrated; historical candidate rows retain original packet provenance, while final declarations and resolution map are authoritative. No source execution inferred from read-only packet."
     },
     "/root:playback,transcodepolicy": {
       "path": "/tmp/kinosail-playback-policy-audit.json",
@@ -125355,7 +126379,28 @@
         ".verification/test-overhaul/player-happy-http-6c9781/manifest.json",
         ".verification/test-overhaul/player-ui-http-6c9781/manifest.json"
       ],
-      "execution": "No candidate execution; exact original baseline terminal event only."
+      "execution": "No candidate execution; exact original baseline terminal event only.",
+      "final_candidate_resolutions": [
+        {
+          "file": "packages/playback/hls_path_edges_test.go",
+          "name": "TestVariantReadyRejectsFreshSymlink",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/playback/trace_http_test.go",
+          "name": "TestTraceHTTPFailsClosedWithoutBindings",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/transcodepolicy/check_coordinator_test.go",
+          "name": "TestCheckHandlerRunsAndRedirects",
+          "final_decision": "D",
+          "review_receipt": true
+        }
+      ],
+      "integration_status": "All declarations semantically integrated; historical candidate rows retain original packet provenance, while final declarations and resolution map are authoritative. No source execution inferred from read-only packet."
     },
     "/root:catalogapi,library,updatecontrol": {
       "path": "/tmp/root-runtime-library-audit.json",
@@ -125638,7 +126683,46 @@
         }
       ],
       "e2e_evidence": null,
-      "execution": "No candidate execution; exact original baseline terminal event only."
+      "execution": "No candidate execution; exact original baseline terminal event only.",
+      "final_candidate_resolutions": [
+        {
+          "file": "packages/catalogapi/library_test.go",
+          "name": "TestLibraryRejectsIncompleteConfiguration",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/updatecontrol/checker_test.go",
+          "name": "TestRequestAvailableRequiresManagerAndCompletedAvailableCheck",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/updatecontrol/command_test.go",
+          "name": "TestBindCommandRejectsInvalidConfiguration",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/updatecontrol/control_test.go",
+          "name": "TestNewRejectsInvalidPolicyBeforeLoadingState",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/updatecontrol/github_test.go",
+          "name": "TestNewGitHubCheckerRejectsInvalidAdaptersBeforeNetworkAccess",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/updatecontrol/http_test.go",
+          "name": "TestNewHTTPHandlersRejectsMissingAdaptersBeforeEffects",
+          "final_decision": "D",
+          "review_receipt": true
+        }
+      ],
+      "integration_status": "All declarations semantically integrated; historical candidate rows retain original packet provenance, while final declarations and resolution map are authoritative. No source execution inferred from read-only packet."
     },
     "/root/subtitles_shared/shared_identity/identity_security_audit:mcpgateway,mediashares,publicgateway": {
       "path": "/tmp/kinosail-gateway-shares-audit.json",
@@ -128874,7 +129958,204 @@
           "missing": "No actual browser OAuth registration/approve/PKCE/token/refresh/replay/tool authority or STDIO/webhook events. MCP SDK/Unix/TLS tests are actual isolated protocol boundaries, not browser E2E."
         }
       },
-      "execution": "No candidate execution. Original baseline receipts only; optional diagnostics/unrun Linux explicit."
+      "execution": "No candidate execution. Original baseline receipts only; optional diagnostics/unrun Linux explicit.",
+      "final_candidate_resolutions": [
+        {
+          "file": "packages/mcpgateway/application_profile_state_final_test.go",
+          "name": "TestProfilePrincipalsRejectIncompleteStateWithoutCallbacks",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/mcpgateway/application_state_test.go",
+          "name": "TestApplicationStatePreservesMissingState",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/mcpgateway/application_test.go",
+          "name": "TestPrincipalAdapterRejectsMissingCallbacks",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/mcpgateway/application_test.go",
+          "name": "TestAPIAdapterRejectsMissingDependencies",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/mcpgateway/application_test.go",
+          "name": "TestRegisterApplicationReturnsGatewayOrNil",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/mcpgateway/connections_authorize_edges_test.go",
+          "name": "TestMetadataClientRejectsUnavailableAndInvalidDocuments",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/mcpgateway/events_boundaries_test.go",
+          "name": "TestEventsDoNotRetryGoneOrOversizedDeliveries",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/mcpgateway/events_lifecycle_test.go",
+          "name": "TestEventArgumentsRejectDuplicateOrCaseAliasedKeys",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/mcpgateway/gateway_edges_test.go",
+          "name": "TestRegisterBuiltInOAuthAndRouteInventory",
+          "final_decision": "R",
+          "review_receipt": false
+        },
+        {
+          "file": "packages/mcpgateway/gateway_edges_test.go",
+          "name": "TestProtocolMiddlewarePropagatesHandlerError",
+          "final_decision": "R",
+          "review_receipt": false
+        },
+        {
+          "file": "packages/mcpgateway/gateway_test.go",
+          "name": "TestGatewayRejectsInvalidConfigurationAndProtocolWithoutEffects",
+          "final_decision": "R",
+          "review_receipt": false
+        },
+        {
+          "file": "packages/mcpgateway/stdio_binding_unix_test.go",
+          "name": "TestBoundStdioCommandRejectsMissingOperations",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/mcpgateway/stdio_command_unix_test.go",
+          "name": "TestRunStdioCommandRejectsInvalidDependencies",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/mediashares/http_test.go",
+          "name": "TestRegisterRejectsMissingDependencies",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/mediashares/mutation_delivery_test.go",
+          "name": "TestDeliveryAuthorizationChecksEveryCondition",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/mediashares/mutation_dependencies_test.go",
+          "name": "TestDependencyValidationRequiresEveryAdapter",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/publicgateway/certificate_client_test.go",
+          "name": "TestCertificateClientRejectsNameAndMissingContext",
+          "final_decision": "D",
+          "review_receipt": true
+        },
+        {
+          "file": "packages/publicgateway/certificate_client_test.go",
+          "name": "TestCertificateClientRejectsInvalidRPCResponses",
+          "final_decision": "D",
+          "review_receipt": true
+        }
+      ],
+      "integration_status": "All declarations semantically integrated; historical candidate rows retain original packet provenance, while final declarations and resolution map are authoritative. No source execution inferred from read-only packet."
     }
+  },
+  "semantic_audit_complete": true,
+  "independent_removal_review_complete": true,
+  "decision_legend": {
+    "R": "Retained existing declaration with a concrete important regression or contract not sufficiently guarded by the current genuine E2E corpus.",
+    "D": "Removed declaration after reading the full body, helpers, owner, callers and actual remaining assertions; lost copy/detail or ineffective-control gaps are explicit per row.",
+    "F": "Retained important existing assertions with a named masked or incomplete subcase. Only the separately documented Watch Together closure assertions were repaired; other limitations remain disclosed.",
+    "C": "Retained unchanged useful assertions considered for possible future consolidation, or optional diagnostic benchmarks. No assertion transfer, consolidation or performance threshold was implemented or claimed."
+  },
+  "production_seam_cleanup": [
+    {
+      "path": "packages/trustedhttps/provider.go",
+      "seam": "deSECProvider.marshal",
+      "authority": "Root explicitly requested removal of the now-dead DeSEC marshal injection seam after complete caller/test comparison.",
+      "baseline_sha256": "560ef174f43fd13e1c7292636cee9b54457e036ac91bd14f04059e9c77f90fd7",
+      "candidate_sha256": "289a1420952c4eeb452f6f34eb6c76e2c6d2933fab544c5b993d15a16c548c41",
+      "removed_lines": 1,
+      "reason": "Only constructor supplies a closure calling json.Marshal for fixed deSECPayload strings/int/[]string; put is sole consumer and no surviving test replaces the field. Original injected marshal-error declaration was already removed. Call json.Marshal directly, keeping request generation/error handling unchanged.",
+      "caller_evidence": {
+        "integration_sha": "326e89af40fc11a40bddc3b6544143c7e1e36bf9",
+        "command": "rg -n -g '*.go' '\\.marshal\\b|marshal:|deSECProvider\\{' packages apps",
+        "result": "Private DeSEC closure initialization and put invocation only. Separate trustedhttps identity crypto.Signer marshal injection remains live and unchanged."
+      },
+      "remaining_coverage": [
+        "TestDeSECProviderUpdatesAddressWithPrivateAuthorization",
+        "TestDeSECProviderManagesTXTWithPrivateAuthorization",
+        "TestDeSECProviderRejectsResolutionAndAcceptsCleanupNotFound",
+        "TestProviderErrorsNeverExposeToken",
+        "TestProviderResponseHandlesTransportBodyAndStatusFailures"
+      ],
+      "history": [
+        "52fc46756 Initial commit"
+      ],
+      "risk": "No externally reachable serialization change; fixed schema has no unsupported/cyclic/custom marshal values. Existing JSON error handling remains. Required candidate checks owned by root, not run by this agent.",
+      "independent_review": {
+        "reviewer": "/root",
+        "status": "approved after complete original production file, exact proposed patch and all current marshal/deSECProvider caller read",
+        "evidence": "Identical literal strings/int/[]string JSON serialization and retained error translation; separate live identity crypto.Signer marshal fault hooks preserved.",
+        "execution": "Source inspection only; no Go run claimed."
+      }
+    }
+  ],
+  "preserved_upstream_additions": [
+    {
+      "file": "packages/identitycore/session_cookie_issuance_boundary_test.go",
+      "name": "TestCookieIssuancePreservesPersistedExpiryAcrossSecondBoundary",
+      "kind": "Test",
+      "line": 11,
+      "body_sha256": "175cedd1a344d6a7f438fd432e5b6fb35469bc5f34d42745ddcdb9d3e404e03e",
+      "file_sha256": "f0bd2de5ff6cda8f3fe5efa1b0550385b91e17ce490c30dd5c7856bbd3c50beb",
+      "file_lines": 48,
+      "introduced_by": "ed0728dd38261eb467ca6cf42a4d1f1ce143e3e6",
+      "authority": "Root identified upstream main PR450 new declaration and explicitly requested preservation; not authored or changed by this testing-overhaul package agent.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "credible_failure": "A clock second elapses while session persistence completes; restarting cookie lifetime after persistence can extend cookie expiry/MaxAge beyond stored session expiry. Existing test advances the fixture clock in persistence and compares actual issued cookie against durable state for local, public and public-grant kinds.",
+      "production_owner": [
+        "packages/identitycore/session_requests.go::signIn/SignInPublicGrant/issuedBrowserCookie",
+        "packages/identitycore/sessions.go::create"
+      ],
+      "callers": [
+        "apps/player/internal/server/sessions.go::profileStore.sessionModule -> identitycore.NewRequestSessions",
+        "apps/subtitles/internal/server/sessions.go::profileStore.sessionModule -> identitycore.NewRequestSessions"
+      ],
+      "remaining_coverage": "Original upstream declaration remains unchanged in integration. Baseline1900 audit counts stay scoped to the older pinned inventory; this additive48line file is reported separately.",
+      "gap": "Browser E2E does not control a second crossing inside persistence. Source review only here; upstream/root exact SHA execution receipts remain separate from baseline and focused Watch Together proof.",
+      "independent_review": {
+        "reviewer": "/root/subtitles_shared/shared_identity",
+        "status": "complete original new test, newSessionFixture, create/persist/session cookie owner and actual app construction read; preserve unchanged"
+      },
+      "execution": "No execution by this agent; not present in older own isolated clone, must be checked with --require-upstream-additions in reconciled integration."
+    }
+  ],
+  "independent_review_artifact": {
+    "path": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+    "sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e",
+    "bytes": 1465773,
+    "counts": {
+      "reviewed": 40,
+      "fresh_initial_classification_independent": 35,
+      "prior_classifier_disclosed_with_root_independent_receipt": 5,
+      "approved_removals": 38,
+      "retracted_removals_restored_R": 2,
+      "pending": 0
+    },
+    "five_prior_classifier_rows": "Strict independent root receipts remain authoritative; child non-implementer cutover recheck and prior classification disclosed per row."
   }
 }

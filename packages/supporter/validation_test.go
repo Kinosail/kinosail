@@ -74,6 +74,14 @@ func TestStateValidationAndPreparationRejectMalformedState(t *testing.T) {
 	}
 }
 
+func TestTierCatalogIsIsolated(t *testing.T) {
+	first := Tiers()
+	first[0] = "changed"
+	if Tiers()[0] != "friend" || Rank("northstar") != 9 || Name("northstar") != "North Star" || Name("unknown") != "Free" {
+		t.Fatal("tier catalog changed")
+	}
+}
+
 func TestEmptyDerivativeStatusAndFingerprintUseSharedPolicy(t *testing.T) { //nolint:cyclop // One test covers the related empty derivative contract.
 	service, err := New(Config{App: App{
 		ID: "kino-subtitles", Name: "Kinosail Subtitles", Audience: "com.kinosail.subtitles", MasterworkName: "Perfect Sync",
