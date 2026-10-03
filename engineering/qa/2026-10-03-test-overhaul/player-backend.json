@@ -45023,36 +45023,120 @@
       "end_line": 16,
       "sha256": "05beb39bc10986b8e28d60d6a2f81fc89db3da68baf349b022d7daf6a12b38ef",
       "path": "apps/player/internal/server/settings_search_test.go",
-      "decision": "C",
-      "review_status": "semantic_review_complete",
-      "reason": "Source-fragment assembly replay; genuine settings search executes stronger result construction, alias/no-match selection, keyboard and focus on actual rendered page.",
-      "category": "important_app_owned_boundary",
-      "credible_failure": "Source-fragment assembly replay; genuine settings search executes stronger result construction, alias/no-match selection, keyboard and focus on actual rendered page.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "The shared helper checks assembled HTML/JavaScript/CSS fragments only. Two existing genuine browser journeys now passed on the exact tested revision and exercise the important search behavior on actual rendered settings.",
+      "category": "source_fragment_replay_with_genuine_browser_keeper",
+      "credible_failure": "Missing search markup or delivered JS/style assembly could break search. Actual browser results, cross-level navigation, no-match handling, keyboard focus, unsaved preferences and responsive accessibility/layout expose that important failure; this wrapper does not execute those behaviors.",
       "production_owner": [
-        "apps/player/internal/server/server.go:appMobileMore",
-        "packages/servertest/settings_search.go"
+        "apps/player/internal/server/settings_search.go:addSettingsSearch",
+        "apps/player/internal/server/settings_http.go:settingsView/showSettings/registerSettings",
+        "apps/player/internal/server/assets.go:pwaSettingsJS/pwaJS/mainBundle",
+        "packages/webassets/static/pwa-settings.js",
+        "packages/webassets/static/player-app.css"
       ],
       "non_test_callers": [
-        "actual registered home/settings use local template and shared JS"
+        "settingsView assembles addSettingsSearch(settingsHTML) into the registered /settings page",
+        "mainBundle delivers pwaSettingsJS through /static/main.kinosail.bundle.js; /static/app.css delivers shared settings-search styles"
       ],
       "remaining_proof": [
         "apps/player/e2e/settings-discovery.spec.ts::settings search crosses levels and preserves unsaved preferences",
         "apps/player/e2e/layout-audit-shell.spec.ts::Owner settings search finds a setting across task families"
       ],
-      "coverage_limit": "Exact search help copy and CSS class inventory incidental. Genuine source read, child did not run; parent fresh keeper execution required.",
+      "coverage_limit": "Exact incidental help copy, JavaScript symbols and CSS class inventory are intentionally retired; no identical microcopy/pixel assertion equivalence claimed. Source-fragment checks do not execute search or prove focus, escaping, unsaved state or layout. Shared helper and Subtitles caller remain; Player bookmarks and no-JavaScript section contract remain.",
       "history": [
         "63fcddeddd8ae8b0503dbc2618ee713fb5d355ef Make Player settings a focused Basic and Advanced workspace",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "Important failure/data loss/security or media-delivery boundary existing genuine E2E misses.",
-      "validation_command": "Root full Player Go suite; FFmpeg/Chromium tool-dependent cases require installed runtime. Child executes no builds/tests.",
+      "production_or_support_deletion_unlocked": "Only the now-unused servertest import in this Player test file; shared helper remains called by Subtitles.",
+      "risk": "Low: whole-wrapper source assembly replay has no unique important failure injection or runtime property beyond the verified genuine search keepers. Final integration Go/CI validation remains root-owned.",
+      "validation_command": "Root receipt: ./scripts/test-container.sh; prepared populated server: pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts --grep=@smoke --workers=1. No child Go/browser execution.",
       "baseline_result": "pass",
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
       "test_limit": "",
-      "review_provenance": "Complete declaration/helper and tested owner methods read; actual entry/caller and original body hash/history inspected; precise genuine-versus-routed browser coverage compared.",
-      "proposed_decision": "D",
-      "implementation_status": "Source held for parent independent review; no mutation yet."
+      "review_provenance": "Complete original wrapper, shared helper, actual app handler/template/asset owners, callers/history and both genuine browser test bodies reviewed. Parent and frontend_native independently approved after first-attempt receipt verification.",
+      "implementation_status": "Removed only the three-line wrapper and now-unused import; final integrated source and required CI verification pending root.",
+      "test_support": [
+        "packages/servertest/settings_search.go::SettingsExposeSmartSearch"
+      ],
+      "genuine_e2e_receipt": {
+        "path": "engineering/qa/2026-10-03-test-overhaul/player-settings-real-keeper-receipt.json",
+        "sha256": "73bd0cc63f9c5e331cb2bccb83dbc8ec3d92ac8e25e41915461cc526f0ae5377",
+        "receipt_commit": "742708a6d",
+        "workflow_run": 37152840238,
+        "job_id": 111290248818,
+        "pr_head": "b0b5497d2017931a13da86e2e2816b404a847f56",
+        "tested_checkout": "66db3a7d176e14cb8777e8a715f94ba7be2c034b",
+        "artifact_id": 11284717115,
+        "artifact_url": "https://github.com/Kinosail/kinosail/actions/runs/37152840238/artifacts/11284717115",
+        "zip_sha256": "e97ede347fae0a8eb328dec570e33335cc352f99741c62707a9c415587f5c852",
+        "verification": {
+          "everyMemberChecksumVerified": true,
+          "members": 163,
+          "missingMembers": [],
+          "sourceUnchanged": true,
+          "exactRevisionProof": true,
+          "bothHTMLReportsPresent": true
+        },
+        "commands": [
+          "pnpm",
+          "--dir",
+          "e2e",
+          "test",
+          "settings-discovery.spec.ts",
+          "layout-audit-shell.spec.ts",
+          "--grep=@smoke",
+          "--workers=1"
+        ],
+        "journeys": [
+          {
+            "title": "Owner settings search finds a setting across task families",
+            "file": "layout-audit-shell.spec.ts",
+            "line": 76,
+            "tests": [
+              {
+                "status": "expected",
+                "projectName": "chromium",
+                "results": [
+                  {
+                    "status": "passed",
+                    "duration": 6194,
+                    "retry": 0
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "settings search crosses levels and preserves unsaved preferences",
+            "file": "settings-discovery.spec.ts",
+            "line": 4,
+            "tests": [
+              {
+                "status": "expected",
+                "projectName": "chromium",
+                "results": [
+                  {
+                    "status": "passed",
+                    "duration": 4066,
+                    "retry": 0
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "browser_certificate_bypasses": "disabled",
+        "owner_preparation": "API MFA confirmed; onboarding complete",
+        "overall_workflow_limit": "packages failure from unused import; browser job independently passed"
+      },
+      "independent_review": {
+        "reviewers": [
+          "root",
+          "frontend_native"
+        ],
+        "verdict": "D approved after complete wrapper/helper/actual keeper comparison and exact receipt validation; preserve bookmark/no-JS guard and Subtitles helper caller."
+      }
     },
     {
       "name": "TestSettingsBookmarksFollowTheRenderedSectionOrder",
@@ -51522,6 +51606,7 @@
     "TestReaderServesPDFEPUBAndComicPagesThroughAPIAndWeb",
     "TestRemoteAccessWebKillAndReset",
     "TestSCIMRehydrationRejectsAmbiguousDeletedProfiles",
+    "TestSettingsExposeSmartSearch",
     "TestSingleTitleBucketDoesNotRenderAJumpControl",
     "TestStepUpReturnsToKnownOwnerPage",
     "TestStrongPublicSessionAndPasskeyViewAreIsolated",
@@ -51584,6 +51669,7 @@
     "TestReaderServesPDFEPUBAndComicPagesThroughAPIAndWeb",
     "TestRemoteAccessWebKillAndReset",
     "TestSCIMRehydrationRejectsAmbiguousDeletedProfiles",
+    "TestSettingsExposeSmartSearch",
     "TestSingleTitleBucketDoesNotRenderAJumpControl",
     "TestStepUpReturnsToKnownOwnerPage",
     "TestStrongPublicSessionAndPasskeyViewAreIsolated",
@@ -51596,7 +51682,7 @@
     "TestWaitForHLSFileFollowsThePublishedVODTimeline",
     "TestWebBetaBadgeAppearsInSharedBrowserHeader"
   ],
-  "removal_count": 59,
+  "removal_count": 60,
   "verification": [
     {
       "command": "gofmt -w <five touched retained Go files>",
@@ -51705,6 +51791,14 @@
         "DELETE /api/v1/items/{id}/playback-prepare"
       ],
       "result": "Complete changed declaration/fixture/helper/actual route/owner comparison; current bodies and all security/provider assertions retained. No builds."
+    },
+    {
+      "kind": "genuine_settings_search_keeper_receipt",
+      "path": "engineering/qa/2026-10-03-test-overhaul/player-settings-real-keeper-receipt.json",
+      "sha256": "73bd0cc63f9c5e331cb2bccb83dbc8ec3d92ac8e25e41915461cc526f0ae5377",
+      "tested_checkout": "66db3a7d176e14cb8777e8a715f94ba7be2c034b",
+      "result": "Two prepared genuine search journeys passed first attempt (6194ms/4066ms); all163 archive member checksums verified, both separate HTML reports present, source unchanged and exactRevisionProof true. Overall workflow packages failure is separately recorded; final CI rerun root-owned.",
+      "execution_owner": "Root CI/browser artifact; Player child only reads pinned receipt and source facts."
     }
   ],
   "retention_examples": [
@@ -51717,8 +51811,8 @@
     "TestConfigurationTransactionRejectsSemanticallyInvalidRecoveryWithoutSideEffects"
   ],
   "review_summary": {
-    "semantic_review_complete": 778,
-    "candidate_evidence_complete": 59
+    "semantic_review_complete": 777,
+    "candidate_evidence_complete": 60
   },
   "upstream_reconciliation": {
     "reviewed_upstream_main_sha": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
@@ -52044,7 +52138,7 @@
       "Original837 body hashes remain pinned to876b771a7. Upstream449 adds one Player real-media HLS regression;451 changes two passkey bundle assertions;452 changes route-inventory and trusted-HTTPS declarations/fixtures. All are retained.",
       "Pinned current upstream main5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c includes startup452 and AppleTV454. Only auth_all_routes_test.go and trusted_https_test.go changed in the Player Go test scope since prior reviewed e8eca5f76; AppleTV/native/browser/shared additions are owned by their parallel auditors.",
       "Upstream450 added shared identitycore TestCookieIssuancePreservesPersistedExpiryAcrossSecondBoundary; no Player declaration named TestPasskeyCookieTracksIssuedSessionLifetime exists.",
-      "SmartSearch remains C with source body preserved until root passes the two prepared genuine settings-search E2E journeys. No execution receipt or consolidation completion is fabricated.",
+      "SmartSearch conditional hold completed: both genuine prepared search journeys passed first attempt at66db3a7d176e14cb8777e8a715f94ba7be2c034b. Wrapper is D after root/frontend independent review; exact receipt/hash is in the declaration row. Original baseline body hash remains unchanged.",
       "No child Go/browser/native build or deployment; metadata-only update. Root owns exact-final-SHA suites and snapshots."
     ],
     "file_updates": [
@@ -52141,9 +52235,9 @@
   },
   "decision_summary": {
     "R": 716,
-    "D": 63,
+    "D": 64,
     "F": 57,
-    "C": 1
+    "C": 0
   },
   "decision_definitions": {
     "R": "Retained important independent failure boundary missed by actual E2E.",
@@ -52153,14 +52247,12 @@
   },
   "source_removal_summary": {
     "original_declarations": 837,
-    "own_implemented_removals": 59,
+    "own_implemented_removals": 60,
     "external_nonserver_removals": 4,
-    "total_original_D_decisions": 63,
-    "retained_or_source_preserved": 774,
+    "total_original_D_decisions": 64,
+    "retained_or_source_preserved": 773,
     "unreviewed_declarations": 0,
-    "source_preserved_C_names": [
-      "TestSettingsExposeSmartSearch"
-    ],
+    "source_preserved_C_names": [],
     "new_upstream_retained_declarations": 1,
     "changed_upstream_retained_declarations": 4
   },
@@ -52168,6 +52260,7 @@
     "command": "python3 engineering/qa/2026-10-03-test-overhaul/verify-player-audit.py --checkout <integration-checkout> --revision <exact-reviewed-SHA> --output <artifact-path>",
     "verifier": "engineering/qa/2026-10-03-test-overhaul/verify-player-audit.py",
     "report": "engineering/qa/2026-10-03-test-overhaul/player-audit-verification.json",
-    "limits": "The checker verifies pinned inventory/body hashes, original removals, kept/changed upstream declarations and exact remaining keeper-name existence. Semantic claims are the reviewed ledger; Go/browser execution and reproducible live E2E artifacts belong to root and are separate."
+    "limits": "The checker verifies pinned inventory/body hashes, original removals, kept/changed upstream declarations and exact remaining keeper-name existence. Semantic claims are the reviewed ledger; Go/browser execution and reproducible live E2E artifacts belong to root and are separate.",
+    "current_status": "Historical checked reports remain pinned to their exact earlier ledger/source SHAs. After this final removal, root must rerun the verifier against the integrated exact SHA (expected774 current declarations:773 original retained plus1 upstream new). No new passing verifier result is claimed in this child commit."
   }
 }
