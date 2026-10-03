@@ -4,17 +4,19 @@ import test from 'node:test';
 import vm from 'node:vm';
 
 function fixture() {
-  const listeners = new Map();
+  const listeners = new Map(), timers = new Map();
+  let timer = 0;
   const source = readFileSync(new URL('./static/pwa.js', import.meta.url), 'utf8');
   const start = source.indexOf('const loadingRequests');
   const end = source.indexOf('document.body.addEventListener("htmx:before:request", (event)', start);
   vm.runInNewContext(source.slice(start, end), {
+    window: { setTimeout(handler) { const id = ++timer; timers.set(id, handler); return id; }, clearTimeout(id) { timers.delete(id); } },
     document: { body: { addEventListener(name, listener) { listeners.set(name, listener); } } },
   });
   const attrs = new Map();
   const classes = new Set();
   const target = {
-    inert: false,
+    inert: false, isConnected: true,
     getAttribute: name => attrs.get(name) ?? null,
     setAttribute: (name, value) => attrs.set(name, value),
     removeAttribute: name => attrs.delete(name),
@@ -22,17 +24,19 @@ function fixture() {
     classList: { add: name => classes.add(name), remove: name => classes.delete(name) },
   };
   const emit = (name, ctx) => listeners.get(name)({ detail: { ctx: Object.assign(ctx, { target }) } });
-  return { target, classes, emit };
+  return { target, classes, emit, flush() { for (const [id, handler] of timers) { timers.delete(id); handler(); } } };
 }
 
 for (const completion of ['htmx:finally:request']) {
   test(`${completion} restores content only after all pending requests finish`, () => {
-    const { target, classes, emit } = fixture();
+    const { target, classes, emit, flush } = fixture();
     const first = {}, second = {};
     emit('htmx:before:request', first);
     emit('htmx:before:request', second);
     assert.equal(target.inert, true);
     assert.equal(target.getAttribute('aria-busy'), 'true');
+    assert.equal(classes.has('request-skeleton'), false);
+    flush();
     emit(completion, first);
     emit('htmx:finally:request', first); // Duplicate completion must not clear a newer request.
     assert.equal(classes.has('request-skeleton'), true);
@@ -53,3 +57,14 @@ test('restores a pre-existing busy and inert state', () => {
   assert.equal(target.inert, true);
   assert.equal(target.getAttribute('aria-busy'), 'false');
 });
+
+for (const disconnected of [false, true]) {
+  test(`delayed loading skeleton does not reappear after ${disconnected ? 'disconnection' : 'completion'}`, () => {
+    const { target, classes, emit, flush } = fixture(), request = {};
+    emit('htmx:before:request', request);
+    if (disconnected) target.isConnected = false;
+    else emit('htmx:finally:request', request);
+    flush();
+    assert.equal(classes.has('request-skeleton'), false);
+  });
+}

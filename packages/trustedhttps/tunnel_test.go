@@ -33,9 +33,12 @@ func TestTunnelCertificateRenewsWithoutPublishingPrivateAddress(t *testing.T) {
 
 func TestTunnelCertificateRejectsInvalidConfigurationBeforeFiles(t *testing.T) {
 	for _, input := range []struct{ domain, token, address string }{
-		{"", testToken, "10.92.0.1"}, {"BAD DOMAIN", testToken, "10.92.0.1"},
-		{"family", "", "10.92.0.1"}, {"family", "short", "10.92.0.1"},
-		{"family", testToken, "8.8.8.8"}, {"family", testToken, "not-an-address"},
+		{"", testToken, "10.92.0.1"},
+		{"BAD DOMAIN", testToken, "10.92.0.1"},
+		{"family", "", "10.92.0.1"},
+		{"family", "short", "10.92.0.1"},
+		{"family", testToken, "8.8.8.8"},
+		{"family", testToken, "not-an-address"},
 	} {
 		dir := t.TempDir()
 		if _, err := NewTunnelCertificate(input.domain, input.token, input.address, dir); err == nil {

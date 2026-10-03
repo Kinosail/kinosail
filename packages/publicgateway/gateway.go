@@ -20,10 +20,12 @@ import (
 	"golang.org/x/crypto/acme"
 )
 
-const Directory = "/public-transport"
-const HTTPPath = Directory + "/http.sock"
-const CertificatePath = Directory + "/certificate.sock"
-const ClientAddressHeader = "X-Kinosail-Public-Client"
+const (
+	Directory           = "/public-transport"
+	HTTPPath            = Directory + "/http.sock"
+	CertificatePath     = Directory + "/certificate.sock"
+	ClientAddressHeader = "X-Kinosail-Public-Client"
+)
 
 // Run opens exactly one public listener before installing a process-wide network
 // filter. Failure to install the filter closes the listener without serving.

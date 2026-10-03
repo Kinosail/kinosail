@@ -91,7 +91,7 @@ func unsafeCrossOrigin(request *http.Request) bool { //nolint:cyclop // Browser 
 }
 
 func browserSessionCookie(request *http.Request) bool {
-	cookie, _ := request.Cookie("__Host-kinosail_session")
+	cookie := httpguard.BrowserSessionCookie(request)
 	return cookie != nil
 }
 
@@ -115,5 +115,5 @@ func canonicalOriginHost(host, scheme string) string {
 }
 
 func protectApplicationTransport(auth *authentication, config Config, pattern func(*http.Request) string, handler http.Handler) http.Handler {
-	return trustedProxy(config.ProxyToken, allowedHost(config.AuthURL, config.Configuration.Strings("tls.hosts"), observeRequests(auth.audit, pattern, tripwirePublic(auth.audit, publicRequestLimits(handler)))))
+	return httpguard.WithSessionCookieName(trustedProxy(config.ProxyToken, allowedHost(config.AuthURL, config.Configuration.Strings("tls.hosts"), observeRequests(auth.audit, pattern, tripwirePublic(auth.audit, publicRequestLimits(handler))))), "__Host-kinosail_player_session")
 }

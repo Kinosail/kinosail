@@ -5,6 +5,7 @@ import (
 	"encoding/xml"
 	"errors"
 	"io"
+	"math"
 	"strconv"
 	"strings"
 	"time"
@@ -155,7 +156,7 @@ func parseTTMLTime(value string) (time.Duration, bool) {
 		if err != nil || !(number >= 0 && number <= float64(36*time.Hour)/float64(unit)) {
 			return 0, false
 		}
-		return time.Duration(number * float64(unit)), true
+		return time.Duration(math.Round(number * float64(unit))), true
 	}
 	return parseSubtitleTime(value)
 }

@@ -7,8 +7,10 @@ import (
 	"strings"
 )
 
-type managementDeviceKey struct{}
-type managementDevice struct{ profileID, publicKey string }
+type (
+	managementDeviceKey struct{}
+	managementDevice    struct{ profileID, publicKey string }
+)
 
 // WithManagementDevice is called only after a private tunnel verifies its peer.
 // No HTTP adapter derives these values from headers, cookies, or query parameters.
@@ -23,6 +25,7 @@ func ManagementProfileID(r *http.Request) string {
 	value, _ := r.Context().Value(managementDeviceKey{}).(managementDevice)
 	return value.profileID
 }
+
 func ManagementDeviceKey(r *http.Request) string {
 	if r == nil {
 		return ""

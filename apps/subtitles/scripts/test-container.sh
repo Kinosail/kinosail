@@ -189,7 +189,7 @@ grep -qi "^content-security-policy: default-src 'self'" <<<"$headers"
 grep -qi '^x-content-type-options: nosniff' <<<"$headers"
 
 curl --fail --silent --insecure --cookie-jar "$media_dir/cookies" --data 'name=Owner&password=test-instance-password&totp=true' "$url/setup" --output "$media_dir/setup"
-session="$(awk '$6 == "__Host-kinosail_session" { print $7 }' "$media_dir/cookies" | tail -1)"
+session="$(awk '$6 == "__Host-kinosail_subtitles_session" { print $7 }' "$media_dir/cookies" | tail -1)"
 [[ -n "$session" ]]
 csrf="$(printf 'kinosail-csrf\0%s' "$session" | openssl dgst -sha256 -binary | openssl base64 -A | tr '+/' '-_' | tr -d '=')"
 [[ "$csrf" =~ ^[A-Za-z0-9_-]{43}$ ]]
@@ -205,7 +205,7 @@ expect_status 303 --cookie "$media_dir/cookies" --header "Origin: $url" --header
 if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
   fixture_dir="$mcp_dir/ui-fixtures"
   KINOSAIL_UI_FIXTURE_DIR="$fixture_dir" go test ./internal/server -run TestWriteUIStateFixtures -count=1
-  browser_args=(polish-shell.spec.ts subtitle-dashboard.spec.ts subtitle-history.spec.ts subtitle-inspector-loading.spec.ts subtitle-inspector-layout.spec.ts supporter-badge-layout.spec.ts test-instance.spec.ts)
+  browser_args=(polish-shell.spec.ts subtitle-dashboard.spec.ts subtitle-history.spec.ts subtitle-inspector-loading.spec.ts subtitle-inspector-races.spec.ts subtitle-inspector-layout.spec.ts supporter-badge-layout.spec.ts test-instance.spec.ts)
   if [[ "${KINOSAIL_BROWSER_SMOKE:-}" == "1" ]]; then browser_args+=(--grep=@smoke); fi
   KINOSAIL_TEST_INSTANCE=1 KINOSAIL_UI_FIXTURE_DIR="$fixture_dir" KINOSAIL_E2E_MEDIA_DIR="$media_dir" KINOSAIL_TEST_TOTP_SECRET="$secret" KINOSAIL_E2E_URL="$url" KINOSAIL_E2E_OUTPUT_DIR="${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}" pnpm --dir e2e test "${browser_args[@]}" --workers="${KINOSAIL_E2E_WORKERS:-1}"
   exit

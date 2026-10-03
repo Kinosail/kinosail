@@ -5,6 +5,12 @@ import { expect, test } from "@playwright/test";
 const source = readFileSync(new URL("../internal/server/static/subtitle-inspector.js", import.meta.url), "utf8");
 const loadSource = source.slice(source.indexOf("  async function load() {"), source.indexOf("  async function input() {"));
 
+test("container smoke suite includes inspector race regressions", { tag: "@smoke" }, () => {
+  const script = readFileSync(new URL("../scripts/test-container.sh", import.meta.url), "utf8");
+  const selectedFiles = script.match(/browser_args=\(([^)]*)\)/)?.[1].split(/\s+/);
+  expect(selectedFiles).toContain("subtitle-inspector-races.spec.ts");
+});
+
 function fixture() {
   const attributes = new Map<string, string>();
   const classes = new Set<string>();

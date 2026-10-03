@@ -19,8 +19,8 @@ func TestKillHTTPResultPaths(t *testing.T) {
 	}{
 		{"missing", func(*testing.T) *Manager { return nil }, func() error { return nil }, http.StatusConflict},
 		{"kill failure", func(*testing.T) *Manager { manager, _ := New(Config{}); return manager }, func() error { return nil }, http.StatusConflict},
-		{"revoke failure", func(t *testing.T) *Manager { return activeManager(t) }, func() error { return errors.New("revoke failed") }, http.StatusInternalServerError},
-		{"success", func(t *testing.T) *Manager { return activeManager(t) }, func() error { return nil }, http.StatusSeeOther},
+		{"revoke failure", activeManager, func() error { return errors.New("revoke failed") }, http.StatusInternalServerError},
+		{"success", activeManager, func() error { return nil }, http.StatusSeeOther},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
