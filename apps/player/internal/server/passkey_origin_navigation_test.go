@@ -219,7 +219,7 @@ func setupOwnerAtOrigin(t *testing.T, handler http.Handler) *http.Cookie {
 	response := httptest.NewRecorder()
 	handler.ServeHTTP(response, request)
 	for _, cookie := range response.Result().Cookies() {
-		if cookie.Name == "__Host-kinosail_session" {
+		if cookie.Name == "__Host-kinosail_player_session" {
 			return cookie
 		}
 	}

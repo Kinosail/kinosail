@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/MikeO7/kinosail/packages/httpguard"
 )
 
 var (
@@ -79,7 +81,7 @@ func sessionToken(request *http.Request, query QuerySessionToken) (string, strin
 			return token, source
 		}
 	}
-	if cookie, _ := request.Cookie("__Host-kinosail_session"); cookie != nil {
+	if cookie := httpguard.BrowserSessionCookie(request); cookie != nil {
 		return cookie.Value, "kinosail-session-cookie"
 	}
 	return "", "none"
@@ -150,10 +152,16 @@ func CleanDeviceName(name string) string {
 	return name[:min(len(name), 80)]
 }
 
-func SessionCookie(token string) *http.Cookie {
-	return &http.Cookie{Name: "__Host-kinosail_session", Value: token, Path: "/", HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode}
+func SessionCookie(token string, requests ...*http.Request) *http.Cookie {
+	var request *http.Request
+	if len(requests) > 0 {
+		request = requests[0]
+	}
+	return &http.Cookie{Name: httpguard.SessionCookieName(request), Value: token, Path: "/", HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode}
 }
 
-func PublicSessionCookie(token string, now time.Time) *http.Cookie {
-	return &http.Cookie{Name: "__Host-kinosail_session", Value: token, Path: "/", MaxAge: 8 * 60 * 60, Expires: now.Add(8 * time.Hour), HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode}
+func PublicSessionCookie(token string, now time.Time, requests ...*http.Request) *http.Cookie {
+	cookie := SessionCookie(token, requests...) //nolint:gosec // SessionCookie always sets Secure, HttpOnly, and Strict SameSite.
+	cookie.MaxAge, cookie.Expires = 8*60*60, now.Add(8*time.Hour)
+	return cookie
 }

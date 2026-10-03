@@ -189,7 +189,7 @@ grep -qi "^content-security-policy: default-src 'self'" <<<"$headers"
 grep -qi '^x-content-type-options: nosniff' <<<"$headers"
 
 curl --fail --silent --insecure --cookie-jar "$media_dir/cookies" --data 'name=Owner&password=test-instance-password&totp=true' "$url/setup" --output "$media_dir/setup"
-session="$(awk '$6 == "__Host-kinosail_session" { print $7 }' "$media_dir/cookies" | tail -1)"
+session="$(awk '$6 == "__Host-kinosail_subtitles_session" { print $7 }' "$media_dir/cookies" | tail -1)"
 [[ -n "$session" ]]
 csrf="$(printf 'kinosail-csrf\0%s' "$session" | openssl dgst -sha256 -binary | openssl base64 -A | tr '+/' '-_' | tr -d '=')"
 [[ "$csrf" =~ ^[A-Za-z0-9_-]{43}$ ]]
