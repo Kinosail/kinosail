@@ -20771,22 +20771,37 @@
       "sha256": "b7804a97264919153610a200d45f1818c89558edcb58c09ee9c781dc8b0a6df1",
       "path": "apps/player/internal/server/playback_plan_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Shared decision matrix loses HDR tone-map/preserved color, image-subtitle burn-in, selected AV1 preference, unknown facts conversion or mode/allowed/reason agreement across13media/client/policy cases.",
+      "category": "isolated_media_policy_or_adapter_retained",
+      "credible_failure": "Shared decision matrix loses HDR tone-map/preserved color, image-subtitle burn-in, selected AV1 preference, unknown facts conversion or mode/allowed/reason agreement across13media/client/policy cases.",
+      "production_owner": [
+        "packages/servertest/playback_plan_contract.go:PlaybackPlanFixture",
+        "packages/playback/plan.go:Decide",
+        "packages/playback/qualities.go:AdaptiveQualities",
+        "packages/playback/video_geometry.go:DisplayDimensions/FitDimensions"
+      ],
+      "non_test_callers": [
+        "Player actual watch/API/Jellyfin/HLS selection invokes shared media/timeline policy and app projection; HLS rendition/input generation calls videoArguments. Pure fixture tests call shared functions directly and are identified as such."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_media_policy_or_app_callback",
+          "path": "apps/player/internal/server/playback_plan_test.go",
+          "scenario": "TestDecidePlaybackGoldenPlans"
+        }
+      ],
+      "coverage_limit": "No app callback: this is a pure shared policy contract, not Player wiring. Canonical plan_test covers many ordered modes but omits this exact color/AV1/unknown-facts matrix. Live E2E uses generated H264/AAC sources, not this matrix.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained exact unique assertion/input; no new isolated tests.",
+      "risk": "Preserves important codec/trust/timeline/hardware boundary omitted by generated populated E2E.",
+      "validation_command": "Root Player full Go suite and shared playback/transcodepolicy/markers package tests; existing genuine populated playback journeys.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Original media policy regression; transcoder wrappers updated in ab3bcda8953d28d058fcbd9361a00378c1e0518c to preserve explicit hardware decoding policy.",
+      "review_provenance": "Full declaration and shared helper, actual implementation of the tested policy/projection and entry/callers, canonical overlapping tests, history and E2E fixture input limits inspected. No child Go/browser execution."
     },
     {
       "name": "TestDirectFirstHasNoImplicitBitrateLimit",
@@ -20795,22 +20810,37 @@
       "sha256": "f0f025b41286983f5469e948e0fc40dd5b5eb880984b0795534d24d460b9abb3",
       "path": "apps/player/internal/server/playback_plan_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "120Mbit4K direct-first source gains an implicit bitrate cap or explicit20Mbit limit fails to select conversion with bitrate reason.",
+      "category": "isolated_media_policy_or_adapter_retained",
+      "credible_failure": "120Mbit4K direct-first source gains an implicit bitrate cap or explicit20Mbit limit fails to select conversion with bitrate reason.",
+      "production_owner": [
+        "packages/servertest/playback_plan_contract.go:PlaybackPlanFixture",
+        "packages/playback/plan.go:Decide",
+        "packages/playback/qualities.go:AdaptiveQualities",
+        "packages/playback/video_geometry.go:DisplayDimensions/FitDimensions"
+      ],
+      "non_test_callers": [
+        "Player actual watch/API/Jellyfin/HLS selection invokes shared media/timeline policy and app projection; HLS rendition/input generation calls videoArguments. Pure fixture tests call shared functions directly and are identified as such."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_media_policy_or_app_callback",
+          "path": "apps/player/internal/server/playback_plan_test.go",
+          "scenario": "TestDirectFirstHasNoImplicitBitrateLimit"
+        }
+      ],
+      "coverage_limit": "Pure shared decision contract with direct120Mbit and explicit cap inputs absent from populated browser generated sources; no app wiring proof.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained exact unique assertion/input; no new isolated tests.",
+      "risk": "Preserves important codec/trust/timeline/hardware boundary omitted by generated populated E2E.",
+      "validation_command": "Root Player full Go suite and shared playback/transcodepolicy/markers package tests; existing genuine populated playback journeys.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Original media policy regression; transcoder wrappers updated in ab3bcda8953d28d058fcbd9361a00378c1e0518c to preserve explicit hardware decoding policy.",
+      "review_provenance": "Full declaration and shared helper, actual implementation of the tested policy/projection and entry/callers, canonical overlapping tests, history and E2E fixture input limits inspected. No child Go/browser execution."
     },
     {
       "name": "TestCompatibilityUsesSupportedAlternateAudio",
@@ -20819,22 +20849,37 @@
       "sha256": "661a3ff26f161fd7b4a45921354573ba70270a700a98255b3cac03f92c361526",
       "path": "apps/player/internal/server/playback_plan_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Shared compatible audio policy chooses TrueHD default and converts audio when a supported AC3 alternative can remux unchanged.",
+      "category": "isolated_media_policy_or_adapter_retained",
+      "credible_failure": "Shared compatible audio policy chooses TrueHD default and converts audio when a supported AC3 alternative can remux unchanged.",
+      "production_owner": [
+        "packages/servertest/playback_plan_contract.go:PlaybackPlanFixture",
+        "packages/playback/plan.go:Decide",
+        "packages/playback/qualities.go:AdaptiveQualities",
+        "packages/playback/video_geometry.go:DisplayDimensions/FitDimensions"
+      ],
+      "non_test_callers": [
+        "Player actual watch/API/Jellyfin/HLS selection invokes shared media/timeline policy and app projection; HLS rendition/input generation calls videoArguments. Pure fixture tests call shared functions directly and are identified as such."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_media_policy_or_app_callback",
+          "path": "apps/player/internal/server/playback_plan_test.go",
+          "scenario": "TestCompatibilityUsesSupportedAlternateAudio"
+        }
+      ],
+      "coverage_limit": "Canonical product policy keeper checks alternate AAC during video conversion, not exact AC3/remux/AudioCodec outcome. Populated fixture is simple AAC audio, not this pair; no app callback.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained exact unique assertion/input; no new isolated tests.",
+      "risk": "Preserves important codec/trust/timeline/hardware boundary omitted by generated populated E2E.",
+      "validation_command": "Root Player full Go suite and shared playback/transcodepolicy/markers package tests; existing genuine populated playback journeys.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Original media policy regression; transcoder wrappers updated in ab3bcda8953d28d058fcbd9361a00378c1e0518c to preserve explicit hardware decoding policy.",
+      "review_provenance": "Full declaration and shared helper, actual implementation of the tested policy/projection and entry/callers, canonical overlapping tests, history and E2E fixture input limits inspected. No child Go/browser execution."
     },
     {
       "name": "TestPlaybackPresentationNamesEveryTransformPrecisely",
@@ -20843,22 +20888,35 @@
       "sha256": "0d20c7e76975c40a4f56d2a73c0bbc3be8e587fb10b233035991bc17bfb772d3",
       "path": "apps/player/internal/server/playback_presentation_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "App-owned presentation calls conversion audio-only when video is being converted or misstates remux/bitrate/codec transformations to the Viewer.",
+      "category": "isolated_media_policy_or_adapter_retained",
+      "credible_failure": "App-owned presentation calls conversion audio-only when video is being converted or misstates remux/bitrate/codec transformations to the Viewer.",
+      "production_owner": [
+        "apps/player/internal/server/player_playback.go:playbackPresentation/playbackModeLabel",
+        "packages/servertest/playback_presentation_contract.go"
+      ],
+      "non_test_callers": [
+        "Player actual watch/API/Jellyfin/HLS selection invokes shared media/timeline policy and app projection; HLS rendition/input generation calls videoArguments. Pure fixture tests call shared functions directly and are identified as such."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_media_policy_or_app_callback",
+          "path": "apps/player/internal/server/playback_presentation_test.go",
+          "scenario": "TestPlaybackPresentationNamesEveryTransformPrecisely"
+        }
+      ],
+      "coverage_limit": "Five semantic user descriptions cover direct/remux/audio/video/explicit-limit transformations. Populated E2E does not assert all app labels/descriptions; this invokes actual app function rather than fixed shared alias.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained exact unique assertion/input; no new isolated tests.",
+      "risk": "Preserves important codec/trust/timeline/hardware boundary omitted by generated populated E2E.",
+      "validation_command": "Root Player full Go suite and shared playback/transcodepolicy/markers package tests; existing genuine populated playback journeys.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Original media policy regression; transcoder wrappers updated in ab3bcda8953d28d058fcbd9361a00378c1e0518c to preserve explicit hardware decoding policy.",
+      "review_provenance": "Full declaration and shared helper, actual implementation of the tested policy/projection and entry/callers, canonical overlapping tests, history and E2E fixture input limits inspected. No child Go/browser execution."
     },
     {
       "name": "TestAdaptiveQualitiesPreserveSourceShapeWithoutUpscaling",
@@ -20867,22 +20925,37 @@
       "sha256": "fbb02199856173fe2dd80888fa87dd2047d606eac7ac1cdf4fe886767924cf19",
       "path": "apps/player/internal/server/playback_qualities_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Portrait1080x1920 media produces distorted/upscaled/odd dimensions instead of a top606x1080 and valid portrait ladder.",
+      "category": "isolated_media_policy_or_adapter_retained",
+      "credible_failure": "Portrait1080x1920 media produces distorted/upscaled/odd dimensions instead of a top606x1080 and valid portrait ladder.",
+      "production_owner": [
+        "packages/servertest/playback_plan_contract.go:PlaybackPlanFixture",
+        "packages/playback/plan.go:Decide",
+        "packages/playback/qualities.go:AdaptiveQualities",
+        "packages/playback/video_geometry.go:DisplayDimensions/FitDimensions"
+      ],
+      "non_test_callers": [
+        "Player actual watch/API/Jellyfin/HLS selection invokes shared media/timeline policy and app projection; HLS rendition/input generation calls videoArguments. Pure fixture tests call shared functions directly and are identified as such."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_media_policy_or_app_callback",
+          "path": "apps/player/internal/server/playback_qualities_test.go",
+          "scenario": "TestAdaptiveQualitiesPreserveSourceShapeWithoutUpscaling"
+        }
+      ],
+      "coverage_limit": "Pure shared planner boundary; canonical helpers have landscape small/capped inputs. Actual E2E ladder choices do not check a portrait source dimension matrix.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained exact unique assertion/input; no new isolated tests.",
+      "risk": "Preserves important codec/trust/timeline/hardware boundary omitted by generated populated E2E.",
+      "validation_command": "Root Player full Go suite and shared playback/transcodepolicy/markers package tests; existing genuine populated playback journeys.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Original media policy regression; transcoder wrappers updated in ab3bcda8953d28d058fcbd9361a00378c1e0518c to preserve explicit hardware decoding policy.",
+      "review_provenance": "Full declaration and shared helper, actual implementation of the tested policy/projection and entry/callers, canonical overlapping tests, history and E2E fixture input limits inspected. No child Go/browser execution."
     },
     {
       "name": "TestAdaptiveQualitiesUseConventionalTierForCroppedVideo",
@@ -20891,22 +20964,37 @@
       "sha256": "31fc2ebc65f16df6de00ab3ddf7a141887e1115803ed96c7a2ea502b698a97a8",
       "path": "apps/player/internal/server/playback_qualities_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Cropped1920x804 source loses conventional360/432/540/720/1080 tier names or the original1920x804 top rendition.",
+      "category": "isolated_media_policy_or_adapter_retained",
+      "credible_failure": "Cropped1920x804 source loses conventional360/432/540/720/1080 tier names or the original1920x804 top rendition.",
+      "production_owner": [
+        "packages/servertest/playback_plan_contract.go:PlaybackPlanFixture",
+        "packages/playback/plan.go:Decide",
+        "packages/playback/qualities.go:AdaptiveQualities",
+        "packages/playback/video_geometry.go:DisplayDimensions/FitDimensions"
+      ],
+      "non_test_callers": [
+        "Player actual watch/API/Jellyfin/HLS selection invokes shared media/timeline policy and app projection; HLS rendition/input generation calls videoArguments. Pure fixture tests call shared functions directly and are identified as such."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_media_policy_or_app_callback",
+          "path": "apps/player/internal/server/playback_qualities_test.go",
+          "scenario": "TestAdaptiveQualitiesUseConventionalTierForCroppedVideo"
+        }
+      ],
+      "coverage_limit": "Pure shared planner boundary; canonical cropped1920x800 with100k cap checks one bitrate/even output, not this complete tier ladder. Populated E2E source is uncropped.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained exact unique assertion/input; no new isolated tests.",
+      "risk": "Preserves important codec/trust/timeline/hardware boundary omitted by generated populated E2E.",
+      "validation_command": "Root Player full Go suite and shared playback/transcodepolicy/markers package tests; existing genuine populated playback journeys.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Original media policy regression; transcoder wrappers updated in ab3bcda8953d28d058fcbd9361a00378c1e0518c to preserve explicit hardware decoding policy.",
+      "review_provenance": "Full declaration and shared helper, actual implementation of the tested policy/projection and entry/callers, canonical overlapping tests, history and E2E fixture input limits inspected. No child Go/browser execution."
     },
     {
       "name": "TestAdaptiveQualitiesMatchFFmpegEvenRounding",
@@ -20915,22 +21003,37 @@
       "sha256": "04d2e05533468d9e5b805b92db32533c3bbb0931155181d55e47b55f81206780",
       "path": "apps/player/internal/server/playback_qualities_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "1920x960 source dimensions use truncation instead of FFmpeg even rounding, yielding an advertised ladder inconsistent with encoded678x340,814x408,1018x510,1358x680,1920x960.",
+      "category": "isolated_media_policy_or_adapter_retained",
+      "credible_failure": "1920x960 source dimensions use truncation instead of FFmpeg even rounding, yielding an advertised ladder inconsistent with encoded678x340,814x408,1018x510,1358x680,1920x960.",
+      "production_owner": [
+        "packages/servertest/playback_plan_contract.go:PlaybackPlanFixture",
+        "packages/playback/plan.go:Decide",
+        "packages/playback/qualities.go:AdaptiveQualities",
+        "packages/playback/video_geometry.go:DisplayDimensions/FitDimensions"
+      ],
+      "non_test_callers": [
+        "Player actual watch/API/Jellyfin/HLS selection invokes shared media/timeline policy and app projection; HLS rendition/input generation calls videoArguments. Pure fixture tests call shared functions directly and are identified as such."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_media_policy_or_app_callback",
+          "path": "apps/player/internal/server/playback_qualities_test.go",
+          "scenario": "TestAdaptiveQualitiesMatchFFmpegEvenRounding"
+        }
+      ],
+      "coverage_limit": "No real FFmpeg execution here. Exact dimensions protect manifest/planner contract omitted by generated source E2E; owner uses Math.Round to evenDimension after aspect fit.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained exact unique assertion/input; no new isolated tests.",
+      "risk": "Preserves important codec/trust/timeline/hardware boundary omitted by generated populated E2E.",
+      "validation_command": "Root Player full Go suite and shared playback/transcodepolicy/markers package tests; existing genuine populated playback journeys.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Original media policy regression; transcoder wrappers updated in ab3bcda8953d28d058fcbd9361a00378c1e0518c to preserve explicit hardware decoding policy.",
+      "review_provenance": "Full declaration and shared helper, actual implementation of the tested policy/projection and entry/callers, canonical overlapping tests, history and E2E fixture input limits inspected. No child Go/browser execution."
     },
     {
       "name": "TestAutomaticSkipTimelineMergesAndClampsRanges",
@@ -20938,23 +21041,44 @@
       "end_line": 29,
       "sha256": "7fa95b60cc454baffcf7e3b3c9d9f0fabba6e18673347f067586d610b8c154f5",
       "path": "apps/player/internal/server/playback_timeline_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "Player names are direct aliases of shared playback.TimelineForAutomaticSkip. The shared normalization keeper reproduces merge/clamp and whole-item preservation with more invalid/untrusted markers; shared mapping keeper has the identical five-position table.",
+      "category": "direct_canonical_timeline_alias_replay",
+      "credible_failure": "Merge/clamp/whole-item or source\u2194presentation conversion regression; the named canonical keeper catches all original observable assertions without invoking app-local policy.",
+      "production_owner": [
+        "apps/player/internal/server/playback_timeline.go:automaticSkipTimeline alias",
+        "packages/playback/timeline.go:TimelineForAutomaticSkip",
+        "packages/playback/model.go:Timeline.SourceTime/PresentationTime"
+      ],
+      "non_test_callers": [
+        "Player jellyfin_progress.go:jellyfinPlaybackSourceTime and player_playback.go automatic-skip planning/progress use the shared timeline implementation; alias remains used by real Jellyfin progress flow."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_canonical_isolated_timeline_boundary",
+          "path": "packages/playback/timeline_test.go",
+          "scenario": "TestAutomaticSkipTimelineNormalizesTrustedRanges",
+          "mapping": "Same100-duration intro10-20+commercial15-25+credits90-110\u2192omitted10-25,90-100/duration75; includes invalid/outside/untrusted markers and same whole60-duration omission rejected."
+        },
+        {
+          "kind": "retained_canonical_isolated_time_mapping",
+          "path": "packages/playback/plan_test.go",
+          "scenario": "TestTimelineMapsBothDirections",
+          "mapping": "Identical0\u21920,9\u21929,10\u219225,74\u219289,75\u2192100 bidirectional table."
+        }
+      ],
+      "coverage_limit": "No genuine E2E equivalence asserted; canonical isolated boundary remains necessary for numeric/trust edge cases. App policy and web/API/real FFmpeg automatic-skip fixtures remain.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "Delete declarations only; alias has production caller and stays. reflect stays for other meaningful assertions.",
+      "risk": "Low with exact canonical assertion mapping and independently reviewed keepers.",
+      "validation_command": "Root Player full Go suite and shared playback package tests; existing real FFmpeg and populated playback journeys.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Initial copied alias replay predates current consolidated canonical matrix; no app-owned callback or state is exercised.",
+      "review_provenance": "Full test, alias/caller proof, full canonical timeline/model operation and both keeper bodies, relevant app wrapper/web fixture, history and live browser scope read by Player owner. No child builds."
     },
     {
       "name": "TestAutomaticSkipTimelineNeverRemovesTheWholeItem",
@@ -20962,23 +21086,44 @@
       "end_line": 36,
       "sha256": "7fecddafbda3eb924950f88289f4b5c375f5cf49e706296e69a8a2f21aa52793",
       "path": "apps/player/internal/server/playback_timeline_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "Player names are direct aliases of shared playback.TimelineForAutomaticSkip. The shared normalization keeper reproduces merge/clamp and whole-item preservation with more invalid/untrusted markers; shared mapping keeper has the identical five-position table.",
+      "category": "direct_canonical_timeline_alias_replay",
+      "credible_failure": "Merge/clamp/whole-item or source\u2194presentation conversion regression; the named canonical keeper catches all original observable assertions without invoking app-local policy.",
+      "production_owner": [
+        "apps/player/internal/server/playback_timeline.go:automaticSkipTimeline alias",
+        "packages/playback/timeline.go:TimelineForAutomaticSkip",
+        "packages/playback/model.go:Timeline.SourceTime/PresentationTime"
+      ],
+      "non_test_callers": [
+        "Player jellyfin_progress.go:jellyfinPlaybackSourceTime and player_playback.go automatic-skip planning/progress use the shared timeline implementation; alias remains used by real Jellyfin progress flow."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_canonical_isolated_timeline_boundary",
+          "path": "packages/playback/timeline_test.go",
+          "scenario": "TestAutomaticSkipTimelineNormalizesTrustedRanges",
+          "mapping": "Same100-duration intro10-20+commercial15-25+credits90-110\u2192omitted10-25,90-100/duration75; includes invalid/outside/untrusted markers and same whole60-duration omission rejected."
+        },
+        {
+          "kind": "retained_canonical_isolated_time_mapping",
+          "path": "packages/playback/plan_test.go",
+          "scenario": "TestTimelineMapsBothDirections",
+          "mapping": "Identical0\u21920,9\u21929,10\u219225,74\u219289,75\u2192100 bidirectional table."
+        }
+      ],
+      "coverage_limit": "No genuine E2E equivalence asserted; canonical isolated boundary remains necessary for numeric/trust edge cases. App policy and web/API/real FFmpeg automatic-skip fixtures remain.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "Delete declarations only; alias has production caller and stays. reflect stays for other meaningful assertions.",
+      "risk": "Low with exact canonical assertion mapping and independently reviewed keepers.",
+      "validation_command": "Root Player full Go suite and shared playback package tests; existing real FFmpeg and populated playback journeys.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Initial copied alias replay predates current consolidated canonical matrix; no app-owned callback or state is exercised.",
+      "review_provenance": "Full test, alias/caller proof, full canonical timeline/model operation and both keeper bodies, relevant app wrapper/web fixture, history and live browser scope read by Player owner. No child builds."
     },
     {
       "name": "TestAutomaticStartOffsetOnlyUsesATrustedIntroAtTheSourceStart",
@@ -20987,22 +21132,39 @@
       "sha256": "b7aec390a5895a33dffeaf49e49936e5b57c20719613ca0c872f23a9aa2f5193",
       "path": "apps/player/internal/server/playback_timeline_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Trusted intro beginning at1s or unreviewed recurrence/unsafe sibling advances playback automatically instead of only trusted source-start intro; resume42 or disabled preference is overwritten.",
+      "category": "isolated_media_policy_or_adapter_retained",
+      "credible_failure": "Trusted intro beginning at1s or unreviewed recurrence/unsafe sibling advances playback automatically instead of only trusted source-start intro; resume42 or disabled preference is overwritten.",
+      "production_owner": [
+        "apps/player/internal/server/playback_timeline.go",
+        "packages/playback/timeline.go",
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "packages/servertest/playback_timeline_contract.go",
+        "packages/servertest/playback_web_timeline_contract.go",
+        "apps/player/internal/server/playback_timeline_fixture_test.go:webPlaybackTimeline binding"
+      ],
+      "non_test_callers": [
+        "Player actual watch/API/Jellyfin/HLS selection invokes shared media/timeline policy and app projection; HLS rendition/input generation calls videoArguments. Pure fixture tests call shared functions directly and are identified as such."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_media_policy_or_app_callback",
+          "path": "apps/player/internal/server/playback_timeline_test.go",
+          "scenario": "TestAutomaticStartOffsetOnlyUsesATrustedIntroAtTheSourceStart"
+        }
+      ],
+      "coverage_limit": "Alias helper is shared but ten-case table includes later-intro and recurrence/disabled combinations absent from canonical AutomaticStart table. Browser marker editor does not exercise trust matrices.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained exact unique assertion/input; no new isolated tests.",
+      "risk": "Preserves important codec/trust/timeline/hardware boundary omitted by generated populated E2E.",
+      "validation_command": "Root Player full Go suite and shared playback/transcodepolicy/markers package tests; existing genuine populated playback journeys.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Original media policy regression; transcoder wrappers updated in ab3bcda8953d28d058fcbd9361a00378c1e0518c to preserve explicit hardware decoding policy.",
+      "review_provenance": "Full declaration and shared helper, actual implementation of the tested policy/projection and entry/callers, canonical overlapping tests, history and E2E fixture input limits inspected. No child Go/browser execution."
     },
     {
       "name": "TestAutomaticSkipNeverRemovesUnreviewedDetectedCredits",
@@ -21011,22 +21173,39 @@
       "sha256": "6a2d590a9ff18acefd436e51c0ce6cfbbaedb3927d2d63f5c046f1fbcba17547",
       "path": "apps/player/internal/server/playback_timeline_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Empty/visual/model/recurrence credits are removed automatically or exposed as auto-skip despite no manual review; confirmed manual credits must remove80-100.",
+      "category": "isolated_media_policy_or_adapter_retained",
+      "credible_failure": "Empty/visual/model/recurrence credits are removed automatically or exposed as auto-skip despite no manual review; confirmed manual credits must remove80-100.",
+      "production_owner": [
+        "apps/player/internal/server/playback_timeline.go",
+        "packages/playback/timeline.go",
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "packages/servertest/playback_timeline_contract.go",
+        "packages/servertest/playback_web_timeline_contract.go",
+        "apps/player/internal/server/playback_timeline_fixture_test.go:webPlaybackTimeline binding"
+      ],
+      "non_test_callers": [
+        "Player actual watch/API/Jellyfin/HLS selection invokes shared media/timeline policy and app projection; HLS rendition/input generation calls videoArguments. Pure fixture tests call shared functions directly and are identified as such."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_media_policy_or_app_callback",
+          "path": "apps/player/internal/server/playback_timeline_test.go",
+          "scenario": "TestAutomaticSkipNeverRemovesUnreviewedDetectedCredits"
+        }
+      ],
+      "coverage_limit": "Four untrusted source values specifically for credits plus manual positive are not all in the canonical timeline table; real browser uses manual edited markers.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained exact unique assertion/input; no new isolated tests.",
+      "risk": "Preserves important codec/trust/timeline/hardware boundary omitted by generated populated E2E.",
+      "validation_command": "Root Player full Go suite and shared playback/transcodepolicy/markers package tests; existing genuine populated playback journeys.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Original media policy regression; transcoder wrappers updated in ab3bcda8953d28d058fcbd9361a00378c1e0518c to preserve explicit hardware decoding policy.",
+      "review_provenance": "Full declaration and shared helper, actual implementation of the tested policy/projection and entry/callers, canonical overlapping tests, history and E2E fixture input limits inspected. No child Go/browser execution."
     },
     {
       "name": "TestWebPlaybackOffersButDoesNotAutoSkipUnreviewedCredits",
@@ -21035,22 +21214,39 @@
       "sha256": "3ee5cf1415d912628d3707ef6e3e9a2c9bf86544a566d48b97a74b046892cf79",
       "path": "apps/player/internal/server/playback_timeline_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "App applyPlayback loses visual credits marker or exposes auto-skip/server timeline without review.",
+      "category": "isolated_media_policy_or_adapter_retained",
+      "credible_failure": "App applyPlayback loses visual credits marker or exposes auto-skip/server timeline without review.",
+      "production_owner": [
+        "apps/player/internal/server/playback_timeline.go",
+        "packages/playback/timeline.go",
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "packages/servertest/playback_timeline_contract.go",
+        "packages/servertest/playback_web_timeline_contract.go",
+        "apps/player/internal/server/playback_timeline_fixture_test.go:webPlaybackTimeline binding"
+      ],
+      "non_test_callers": [
+        "Player actual watch/API/Jellyfin/HLS selection invokes shared media/timeline policy and app projection; HLS rendition/input generation calls videoArguments. Pure fixture tests call shared functions directly and are identified as such."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_media_policy_or_app_callback",
+          "path": "apps/player/internal/server/playback_timeline_test.go",
+          "scenario": "TestWebPlaybackOffersButDoesNotAutoSkipUnreviewedCredits"
+        }
+      ],
+      "coverage_limit": "Actual app settings/viewer/projection callback: shared timeline cannot catch broken app binding. Browser editing manual markers omits visual credits input.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained exact unique assertion/input; no new isolated tests.",
+      "risk": "Preserves important codec/trust/timeline/hardware boundary omitted by generated populated E2E.",
+      "validation_command": "Root Player full Go suite and shared playback/transcodepolicy/markers package tests; existing genuine populated playback journeys.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Original media policy regression; transcoder wrappers updated in ab3bcda8953d28d058fcbd9361a00378c1e0518c to preserve explicit hardware decoding policy.",
+      "review_provenance": "Full declaration and shared helper, actual implementation of the tested policy/projection and entry/callers, canonical overlapping tests, history and E2E fixture input limits inspected. No child Go/browser execution."
     },
     {
       "name": "TestWebPlaybackStartsAfterATrustedOpeningWithoutTranscoding",
@@ -21059,22 +21255,39 @@
       "sha256": "5896511311d944abc881b76e61365b953e497a8a762cc42f954637256c5bad9b",
       "path": "apps/player/internal/server/playback_timeline_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual app applyPlayback converts a no-transcode Viewer or resets resume42 while projecting a trusted source-start intro20s.",
+      "category": "isolated_media_policy_or_adapter_retained",
+      "credible_failure": "Actual app applyPlayback converts a no-transcode Viewer or resets resume42 while projecting a trusted source-start intro20s.",
+      "production_owner": [
+        "apps/player/internal/server/playback_timeline.go",
+        "packages/playback/timeline.go",
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "packages/servertest/playback_timeline_contract.go",
+        "packages/servertest/playback_web_timeline_contract.go",
+        "apps/player/internal/server/playback_timeline_fixture_test.go:webPlaybackTimeline binding"
+      ],
+      "non_test_callers": [
+        "Player actual watch/API/Jellyfin/HLS selection invokes shared media/timeline policy and app projection; HLS rendition/input generation calls videoArguments. Pure fixture tests call shared functions directly and are identified as such."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_media_policy_or_app_callback",
+          "path": "apps/player/internal/server/playback_timeline_test.go",
+          "scenario": "TestWebPlaybackStartsAfterATrustedOpeningWithoutTranscoding"
+        }
+      ],
+      "coverage_limit": "Concrete app settings/Viewer callback and data-start projection distinct from pure timeline; generated browser sources do not carry fingerprinted source-start intro markers.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained exact unique assertion/input; no new isolated tests.",
+      "risk": "Preserves important codec/trust/timeline/hardware boundary omitted by generated populated E2E.",
+      "validation_command": "Root Player full Go suite and shared playback/transcodepolicy/markers package tests; existing genuine populated playback journeys.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Original media policy regression; transcoder wrappers updated in ab3bcda8953d28d058fcbd9361a00378c1e0518c to preserve explicit hardware decoding policy.",
+      "review_provenance": "Full declaration and shared helper, actual implementation of the tested policy/projection and entry/callers, canonical overlapping tests, history and E2E fixture input limits inspected. No child Go/browser execution."
     },
     {
       "name": "TestAutomaticPlaybackKeepsSkipMarkersOnTheDirectTimeline",
@@ -21083,22 +21296,39 @@
       "sha256": "8c80e421dda9381579906c7ecd945acdb56569b57c1afd4bfbf45518eb78db7e",
       "path": "apps/player/internal/server/playback_timeline_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Actual automatic app projection rewrites source duration/markers/admin markers onto shortened HLS timeline instead of keeping direct100s and trustedintro available.",
+      "category": "isolated_media_policy_or_adapter_retained",
+      "credible_failure": "Actual automatic app projection rewrites source duration/markers/admin markers onto shortened HLS timeline instead of keeping direct100s and trustedintro available.",
+      "production_owner": [
+        "apps/player/internal/server/playback_timeline.go",
+        "packages/playback/timeline.go",
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "packages/servertest/playback_timeline_contract.go",
+        "packages/servertest/playback_web_timeline_contract.go",
+        "apps/player/internal/server/playback_timeline_fixture_test.go:webPlaybackTimeline binding"
+      ],
+      "non_test_callers": [
+        "Player actual watch/API/Jellyfin/HLS selection invokes shared media/timeline policy and app projection; HLS rendition/input generation calls videoArguments. Pure fixture tests call shared functions directly and are identified as such."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_media_policy_or_app_callback",
+          "path": "apps/player/internal/server/playback_timeline_test.go",
+          "scenario": "TestAutomaticPlaybackKeepsSkipMarkersOnTheDirectTimeline"
+        }
+      ],
+      "coverage_limit": "App configured intro/credits preference and Owner callback with trust distinction absent from plain shared planner tests; live playback sources lack fingerprint+visual marker pair.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained exact unique assertion/input; no new isolated tests.",
+      "risk": "Preserves important codec/trust/timeline/hardware boundary omitted by generated populated E2E.",
+      "validation_command": "Root Player full Go suite and shared playback/transcodepolicy/markers package tests; existing genuine populated playback journeys.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Original media policy regression; transcoder wrappers updated in ab3bcda8953d28d058fcbd9361a00378c1e0518c to preserve explicit hardware decoding policy.",
+      "review_provenance": "Full declaration and shared helper, actual implementation of the tested policy/projection and entry/callers, canonical overlapping tests, history and E2E fixture input limits inspected. No child Go/browser execution."
     },
     {
       "name": "TestJellyfinOnlyExposesAutoEligibleMarkers",
@@ -21107,22 +21337,35 @@
       "sha256": "7dd0c971e67487e69fe58f1cb32f6876daf51b76cab4fe8344ab1f656d37640b",
       "path": "apps/player/internal/server/playback_timeline_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Shared Jellyfin segments omit authoritative fingerprint intro or expose unreviewed visual credits.",
+      "category": "isolated_media_policy_or_adapter_retained",
+      "credible_failure": "Shared Jellyfin segments omit authoritative fingerprint intro or expose unreviewed visual credits.",
+      "production_owner": [
+        "packages/markers/jellyfin.go:JellyfinSegments",
+        "apps/player/internal/server/jellyfin.go:Jellyfin MediaSegments registration"
+      ],
+      "non_test_callers": [
+        "Player actual watch/API/Jellyfin/HLS selection invokes shared media/timeline policy and app projection; HLS rendition/input generation calls videoArguments. Pure fixture tests call shared functions directly and are identified as such."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_media_policy_or_app_callback",
+          "path": "apps/player/internal/server/playback_timeline_test.go",
+          "scenario": "TestJellyfinOnlyExposesAutoEligibleMarkers"
+        }
+      ],
+      "coverage_limit": "Pure marker boundary. Canonical Jellyfin marker test checks chapter intro/manual credits/visual recap, not fingerprint intro plus visual credits; current E2E is browser playback, not Jellyfin MediaSegments.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained exact unique assertion/input; no new isolated tests.",
+      "risk": "Preserves important codec/trust/timeline/hardware boundary omitted by generated populated E2E.",
+      "validation_command": "Root Player full Go suite and shared playback/transcodepolicy/markers package tests; existing genuine populated playback journeys.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Original media policy regression; transcoder wrappers updated in ab3bcda8953d28d058fcbd9361a00378c1e0518c to preserve explicit hardware decoding policy.",
+      "review_provenance": "Full declaration and shared helper, actual implementation of the tested policy/projection and entry/callers, canonical overlapping tests, history and E2E fixture input limits inspected. No child Go/browser execution."
     },
     {
       "name": "TestAutomaticSkipFallbackPreservesNoTranscodePolicy",
@@ -21131,22 +21374,39 @@
       "sha256": "3fbf276f8a8fb3092a15d45542bdd9beb903c47db93ba50115bb0b3a87865c34",
       "path": "apps/player/internal/server/playback_timeline_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "App automatic-skip wrapper returns non-direct playback for a Viewer without transcode when an intro removal is configured.",
+      "category": "isolated_media_policy_or_adapter_retained",
+      "credible_failure": "App automatic-skip wrapper returns non-direct playback for a Viewer without transcode when an intro removal is configured.",
+      "production_owner": [
+        "apps/player/internal/server/playback_timeline.go",
+        "packages/playback/timeline.go",
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "packages/servertest/playback_timeline_contract.go",
+        "packages/servertest/playback_web_timeline_contract.go",
+        "apps/player/internal/server/playback_timeline_fixture_test.go:webPlaybackTimeline binding"
+      ],
+      "non_test_callers": [
+        "Player actual watch/API/Jellyfin/HLS selection invokes shared media/timeline policy and app projection; HLS rendition/input generation calls videoArguments. Pure fixture tests call shared functions directly and are identified as such."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_media_policy_or_app_callback",
+          "path": "apps/player/internal/server/playback_timeline_test.go",
+          "scenario": "TestAutomaticSkipFallbackPreservesNoTranscodePolicy"
+        }
+      ],
+      "coverage_limit": "Shared canonical automatic-skip test checks MarkerMode unavailable but does not independently assert direct Mode for this policy. App wrapper called explicitly; no live no-transcode+marker input.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained exact unique assertion/input; no new isolated tests.",
+      "risk": "Preserves important codec/trust/timeline/hardware boundary omitted by generated populated E2E.",
+      "validation_command": "Root Player full Go suite and shared playback/transcodepolicy/markers package tests; existing genuine populated playback journeys.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Original media policy regression; transcoder wrappers updated in ab3bcda8953d28d058fcbd9361a00378c1e0518c to preserve explicit hardware decoding policy.",
+      "review_provenance": "Full declaration and shared helper, actual implementation of the tested policy/projection and entry/callers, canonical overlapping tests, history and E2E fixture input limits inspected. No child Go/browser execution."
     },
     {
       "name": "TestAutomaticSkipCopiesVideoOnlyAtRandomAccessBoundaries",
@@ -21155,22 +21415,39 @@
       "sha256": "7e00655213bb0d2c9b0ae6137c96f342e3424f84226adc43f9db664f43b0211d",
       "path": "apps/player/internal/server/playback_timeline_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "App automatic-skip callback produces a50s aligned timeline but incorrect audio-transcode/remux reason or copies unaligned video instead of converting it.",
+      "category": "isolated_media_policy_or_adapter_retained",
+      "credible_failure": "App automatic-skip callback produces a50s aligned timeline but incorrect audio-transcode/remux reason or copies unaligned video instead of converting it.",
+      "production_owner": [
+        "apps/player/internal/server/playback_timeline.go",
+        "packages/playback/timeline.go",
+        "apps/player/internal/server/player_playback.go:applyPlayback/applyPlaybackTimeline",
+        "packages/servertest/playback_timeline_contract.go",
+        "packages/servertest/playback_web_timeline_contract.go",
+        "apps/player/internal/server/playback_timeline_fixture_test.go:webPlaybackTimeline binding"
+      ],
+      "non_test_callers": [
+        "Player actual watch/API/Jellyfin/HLS selection invokes shared media/timeline policy and app projection; HLS rendition/input generation calls videoArguments. Pure fixture tests call shared functions directly and are identified as such."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_media_policy_or_app_callback",
+          "path": "apps/player/internal/server/playback_timeline_test.go",
+          "scenario": "TestAutomaticSkipCopiesVideoOnlyAtRandomAccessBoundaries"
+        }
+      ],
+      "coverage_limit": "Canonical planner checks modes/reasons on same point matrix but does not assert aligned duration50 through actual app wrapper. Retained until final shared layer review confirms complete redundant coverage.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained exact unique assertion/input; no new isolated tests.",
+      "risk": "Preserves important codec/trust/timeline/hardware boundary omitted by generated populated E2E.",
+      "validation_command": "Root Player full Go suite and shared playback/transcodepolicy/markers package tests; existing genuine populated playback journeys.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Original media policy regression; transcoder wrappers updated in ab3bcda8953d28d058fcbd9361a00378c1e0518c to preserve explicit hardware decoding policy.",
+      "review_provenance": "Full declaration and shared helper, actual implementation of the tested policy/projection and entry/callers, canonical overlapping tests, history and E2E fixture input limits inspected. No child Go/browser execution."
     },
     {
       "name": "TestAutomaticSkipRecipeRoundTripsManyRanges",
@@ -21179,22 +21456,35 @@
       "sha256": "b8a798069b0d51b8a2c8eb350cbe026e6d7eb927fd7506fe3640e71225082cfa",
       "path": "apps/player/internal/server/playback_timeline_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "App-local\u2194shared HLS recipe projection truncates or drops a12range automatic-skip token, codec/audio/subtitle/offset fields.",
+      "category": "isolated_media_policy_or_adapter_retained",
+      "credible_failure": "App-local\u2194shared HLS recipe projection truncates or drops a12range automatic-skip token, codec/audio/subtitle/offset fields.",
+      "production_owner": [
+        "apps/player/internal/server/hls_plan.go:sharedHLSRecipe/localHLSRecipe/hlsPolicy",
+        "packages/playback/hls_recipe.go:HLSRecipe.Token/ParseHLSRecipe"
+      ],
+      "non_test_callers": [
+        "Player actual watch/API/Jellyfin/HLS selection invokes shared media/timeline policy and app projection; HLS rendition/input generation calls videoArguments. Pure fixture tests call shared functions directly and are identified as such."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_media_policy_or_app_callback",
+          "path": "apps/player/internal/server/playback_timeline_test.go",
+          "scenario": "TestAutomaticSkipRecipeRoundTripsManyRanges"
+        }
+      ],
+      "coverage_limit": "Canonical recipe tests cover one/two valid ranges and129 rejected ranges, not this positive12range app projection. Live E2E has few manually-created markers.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained exact unique assertion/input; no new isolated tests.",
+      "risk": "Preserves important codec/trust/timeline/hardware boundary omitted by generated populated E2E.",
+      "validation_command": "Root Player full Go suite and shared playback/transcodepolicy/markers package tests; existing genuine populated playback journeys.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Original media policy regression; transcoder wrappers updated in ab3bcda8953d28d058fcbd9361a00378c1e0518c to preserve explicit hardware decoding policy.",
+      "review_provenance": "Full declaration and shared helper, actual implementation of the tested policy/projection and entry/callers, canonical overlapping tests, history and E2E fixture input limits inspected. No child Go/browser execution."
     },
     {
       "name": "TestJellyfinPlannedHLSFileAcceptsValidatedClientBitrate",
@@ -21203,22 +21493,36 @@
       "sha256": "5b2f10717d32a42c5d82619d9fbc76453b0ef11deda1b1899c27798c80ff9cdd",
       "path": "apps/player/internal/server/playback_timeline_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "App HLS policy accidentally uses canonical100Mbit limit, rejecting validated356617565client bitrate, or accepts bitrate above1e12 limit.",
+      "category": "isolated_media_policy_or_adapter_retained",
+      "credible_failure": "App HLS policy accidentally uses canonical100Mbit limit, rejecting validated356617565client bitrate, or accepts bitrate above1e12 limit.",
+      "production_owner": [
+        "apps/player/internal/server/hls_plan.go:plannedHLSFile/hlsPolicy",
+        "packages/playback/hls_recipe.go:PlannedHLSFile/ParseHLSRecipe",
+        "apps/player/internal/server/jellyfin_bitrate.go:maxJellyfinStreamingBitrate"
+      ],
+      "non_test_callers": [
+        "Player actual watch/API/Jellyfin/HLS selection invokes shared media/timeline policy and app projection; HLS rendition/input generation calls videoArguments. Pure fixture tests call shared functions directly and are identified as such."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_media_policy_or_app_callback",
+          "path": "apps/player/internal/server/playback_timeline_test.go",
+          "scenario": "TestJellyfinPlannedHLSFileAcceptsValidatedClientBitrate"
+        }
+      ],
+      "coverage_limit": "Actual app policy+route parser binding; canonical shared recipe policy100Mbit cannot prove Player1e12 ceiling. Browser E2E does not supply Jellyfin high bitrate tokens.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained exact unique assertion/input; no new isolated tests.",
+      "risk": "Preserves important codec/trust/timeline/hardware boundary omitted by generated populated E2E.",
+      "validation_command": "Root Player full Go suite and shared playback/transcodepolicy/markers package tests; existing genuine populated playback journeys.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Original media policy regression; transcoder wrappers updated in ab3bcda8953d28d058fcbd9361a00378c1e0518c to preserve explicit hardware decoding policy.",
+      "review_provenance": "Full declaration and shared helper, actual implementation of the tested policy/projection and entry/callers, canonical overlapping tests, history and E2E fixture input limits inspected. No child Go/browser execution."
     },
     {
       "name": "TestPlaybackTraceCorrelatesBrowserAndMediaWithoutPrivateData",
@@ -27818,23 +28122,39 @@
       "sha256": "c7fa0935b675d30f97e631492da9a60deaa1a04dda6ffa0955b7b3b756cccd68",
       "path": "apps/player/internal/server/transcoder_backends_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Eight hardware encoder paths enable unrequested hardware decoding or omit upload/encoder/rate-control switches needed for safe software-frame encoding.",
+      "category": "isolated_media_policy_or_adapter_retained",
+      "credible_failure": "Eight hardware encoder paths enable unrequested hardware decoding or omit upload/encoder/rate-control switches needed for safe software-frame encoding.",
+      "production_owner": [
+        "apps/player/internal/server/transcoder.go:videoArguments",
+        "packages/transcodepolicy/arguments.go:VideoArguments/encoderArguments",
+        "packages/transcodepolicy/frames.go:frameArguments/softwareFrameFilters/qsvDevice",
+        "packages/transcodepolicy/codecs.go:DefaultEncoder",
+        "packages/servertest/transcoder_backends.go"
+      ],
+      "non_test_callers": [
+        "Player actual watch/API/Jellyfin/HLS selection invokes shared media/timeline policy and app projection; HLS rendition/input generation calls videoArguments. Pure fixture tests call shared functions directly and are identified as such."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_media_policy_or_app_callback",
+          "path": "apps/player/internal/server/transcoder_backends_test.go",
+          "scenario": "TestEveryHardwareBackendHasAnFFmpegRecipe"
+        }
+      ],
+      "coverage_limit": "Canonical hardware backend recipe sets HardwareDecode=true; this distinct false-default matrix catches accidental decoding. Live mac/browser software FFmpeg cannot exercise eight GPU platforms.",
       "history": [
         "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained exact unique assertion/input; no new isolated tests.",
+      "risk": "Preserves important codec/trust/timeline/hardware boundary omitted by generated populated E2E.",
+      "validation_command": "Root Player full Go suite and shared playback/transcodepolicy/markers package tests; existing genuine populated playback journeys.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Original media policy regression; transcoder wrappers updated in ab3bcda8953d28d058fcbd9361a00378c1e0518c to preserve explicit hardware decoding policy.",
+      "review_provenance": "Full declaration and shared helper, actual implementation of the tested policy/projection and entry/callers, canonical overlapping tests, history and E2E fixture input limits inspected. No child Go/browser execution."
     },
     {
       "name": "TestRKMPPToneMappingUsesSoftwareDecodeAndFilterBeforeHardwareEncode",
@@ -27843,23 +28163,39 @@
       "sha256": "bc972bbee821ace2e0ca822ecbb6af7adb83f7dc586f86a1daf840c9faefa5de",
       "path": "apps/player/internal/server/transcoder_backends_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "RKMPP SDR conversion bypasses CPU zscale/hable/yuv420p path, adds rkmpp/drm frames, or omits CQP/qp_init22 making default hardware encoding fail.",
+      "category": "isolated_media_policy_or_adapter_retained",
+      "credible_failure": "RKMPP SDR conversion bypasses CPU zscale/hable/yuv420p path, adds rkmpp/drm frames, or omits CQP/qp_init22 making default hardware encoding fail.",
+      "production_owner": [
+        "apps/player/internal/server/transcoder.go:videoArguments",
+        "packages/transcodepolicy/arguments.go:VideoArguments/encoderArguments",
+        "packages/transcodepolicy/frames.go:frameArguments/softwareFrameFilters/qsvDevice",
+        "packages/transcodepolicy/codecs.go:DefaultEncoder",
+        "packages/servertest/transcoder_backends.go"
+      ],
+      "non_test_callers": [
+        "Player actual watch/API/Jellyfin/HLS selection invokes shared media/timeline policy and app projection; HLS rendition/input generation calls videoArguments. Pure fixture tests call shared functions directly and are identified as such."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_media_policy_or_app_callback",
+          "path": "apps/player/internal/server/transcoder_backends_test.go",
+          "scenario": "TestRKMPPToneMappingUsesSoftwareDecodeAndFilterBeforeHardwareEncode"
+        }
+      ],
+      "coverage_limit": "Canonical ToneMappingAndCompatibility protects CPU/filter/encoder but omits explicit RKMPP CQP/qp_init rate-control assertions. No RKMPP hardware in live mac E2E.",
       "history": [
         "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained exact unique assertion/input; no new isolated tests.",
+      "risk": "Preserves important codec/trust/timeline/hardware boundary omitted by generated populated E2E.",
+      "validation_command": "Root Player full Go suite and shared playback/transcodepolicy/markers package tests; existing genuine populated playback journeys.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Original media policy regression; transcoder wrappers updated in ab3bcda8953d28d058fcbd9361a00378c1e0518c to preserve explicit hardware decoding policy.",
+      "review_provenance": "Full declaration and shared helper, actual implementation of the tested policy/projection and entry/callers, canonical overlapping tests, history and E2E fixture input limits inspected. No child Go/browser execution."
     },
     {
       "name": "TestIntelBackendsUseTheDetectedRenderDevice",
@@ -27868,23 +28204,39 @@
       "sha256": "1ccd2ac4a23adc7585aecd397385a57c54c9f50e6b215540527af374a213a3f6",
       "path": "apps/player/internal/server/transcoder_backends_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Default software-frame QSV/VAAPI encoder initialization ignores selected /dev/dri/renderD129 and uses wrong GPU/device.",
+      "category": "isolated_media_policy_or_adapter_retained",
+      "credible_failure": "Default software-frame QSV/VAAPI encoder initialization ignores selected /dev/dri/renderD129 and uses wrong GPU/device.",
+      "production_owner": [
+        "apps/player/internal/server/transcoder.go:videoArguments",
+        "packages/transcodepolicy/arguments.go:VideoArguments/encoderArguments",
+        "packages/transcodepolicy/frames.go:frameArguments/softwareFrameFilters/qsvDevice",
+        "packages/transcodepolicy/codecs.go:DefaultEncoder",
+        "packages/servertest/transcoder_backends.go"
+      ],
+      "non_test_callers": [
+        "Player actual watch/API/Jellyfin/HLS selection invokes shared media/timeline policy and app projection; HLS rendition/input generation calls videoArguments. Pure fixture tests call shared functions directly and are identified as such."
+      ],
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_media_policy_or_app_callback",
+          "path": "apps/player/internal/server/transcoder_backends_test.go",
+          "scenario": "TestIntelBackendsUseTheDetectedRenderDevice"
+        }
+      ],
+      "coverage_limit": "Canonical device table tests QSV custom device and CUDA/HDR paths, not both QSV/VAAPI normal encode-only paths. Live mac E2E cannot prove Linux selected-device recipes.",
       "history": [
         "ab3bcda8953d28d058fcbd9361a00378c1e0518c Restore enabled quality gates and current browser contracts",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "None; retained exact unique assertion/input; no new isolated tests.",
+      "risk": "Preserves important codec/trust/timeline/hardware boundary omitted by generated populated E2E.",
+      "validation_command": "Root Player full Go suite and shared playback/transcodepolicy/markers package tests; existing genuine populated playback journeys.",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_interpretation": "Original media policy regression; transcoder wrappers updated in ab3bcda8953d28d058fcbd9361a00378c1e0518c to preserve explicit hardware decoding policy.",
+      "review_provenance": "Full declaration and shared helper, actual implementation of the tested policy/projection and entry/callers, canonical overlapping tests, history and E2E fixture input limits inspected. No child Go/browser execution."
     },
     {
       "name": "TestOwnerCanRunLocalTranscoderCheckThroughWebAndAPI",
@@ -28858,6 +29210,8 @@
   ],
   "proposed_removals": [
     "TestApplicationPagesExposeSharedKeyboardShortcuts",
+    "TestAutomaticSkipTimelineMergesAndClampsRanges",
+    "TestAutomaticSkipTimelineNeverRemovesTheWholeItem",
     "TestBrandUsesFoldedPlayLogo",
     "TestBrowserSessionCookiesAreAlwaysHostBoundAndSecure",
     "TestCleanDeviceNameNormalizesBrowserAgentsAndBoundsOtherNames",
@@ -28889,6 +29243,8 @@
   "semantic_audit_complete": false,
   "implemented_removals": [
     "TestApplicationPagesExposeSharedKeyboardShortcuts",
+    "TestAutomaticSkipTimelineMergesAndClampsRanges",
+    "TestAutomaticSkipTimelineNeverRemovesTheWholeItem",
     "TestBrandUsesFoldedPlayLogo",
     "TestBrowserSessionCookiesAreAlwaysHostBoundAndSecure",
     "TestCleanDeviceNameNormalizesBrowserAgentsAndBoundsOtherNames",
@@ -28917,7 +29273,7 @@
     "TestViewerCanOpenHome",
     "TestViewerCanSearchLibrary"
   ],
-  "removal_count": 28,
+  "removal_count": 30,
   "verification": [
     {
       "command": "gofmt -w <five touched retained Go files>",
@@ -28954,6 +29310,10 @@
     {
       "command": "gofmt -w apps/player/internal/server/server_test.go; git diff --check",
       "result": "passed; core smoke consolidation batch; Go/E2E execution delegated root."
+    },
+    {
+      "command": "gofmt -w apps/player/internal/server/playback_timeline_test.go; git diff --check",
+      "result": "passed; direct timeline replay batch; root executes Go/E2E."
     }
   ],
   "retention_examples": [
@@ -28966,9 +29326,9 @@
     "TestConfigurationTransactionRejectsSemanticallyInvalidRecoveryWithoutSideEffects"
   ],
   "review_summary": {
-    "semantic_review_complete": 179,
-    "candidate_evidence_complete": 28,
-    "inventory_only_retained_pending_semantic_review": 626,
+    "semantic_review_complete": 199,
+    "candidate_evidence_complete": 30,
+    "inventory_only_retained_pending_semantic_review": 604,
     "test_and_boundary_review_pending_full_owner": 4
   }
 }
