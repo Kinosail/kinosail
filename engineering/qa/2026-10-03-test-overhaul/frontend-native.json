@@ -23,9 +23,9 @@
     "swift_removed": 0,
     "node_remaining_runtime_cases": 130,
     "android_declarations": 158,
-    "android_removed": 2,
-    "android_retained": 156,
-    "removed_total_runtime_or_declarations": 3
+    "android_removed": 1,
+    "android_retained": 157,
+    "removed_total_runtime_or_declarations": 2
   },
   "files": {
     "apps/player/apps/native/RemoteUITests/RemoteAudioBufferingTests.swift": {
@@ -16104,8 +16104,8 @@
       "fresh_runtime": "not_run; parent prohibited heavy Gradle/emulator work due critically full disk"
     },
     "decisions": {
-      "R": 156,
-      "D": 2
+      "R": 157,
+      "D": 1
     },
     "files": [
       {
@@ -16282,7 +16282,8 @@
         ],
         "baseline_runtime": "not run in current audit; disk pressure restricts Gradle/emulator work",
         "final_lines": 0,
-        "final_sha256": null
+        "final_sha256": "553a294d5c27da5a3197f0fa467d60001e160ff4b724783162d2deeaa11bbb17",
+        "final_status": "retained unchanged after independent review; native runtime unrun"
       },
       {
         "path": "apps/player/apps/android/app/src/test/java/com/kinosail/player/core/CatalogApiTest.kt",
@@ -18087,9 +18088,9 @@
         "line": 14,
         "name": "playerThemeCanCreateCastButton",
         "id": "com.kinosail.player.core.CastButtonThemeTest.playerThemeCanCreateCastButton",
-        "decision": "D",
+        "decision": "R",
         "layer": "unit_or_robolectric_isolation",
-        "credible_failure": "MediaRouteButton construction crashes under Theme.Kinosail. Constructor-only probe; retained CastChooserTest exercises the same constructor and dialog on MobileActivity with the manifest theme.",
+        "credible_failure": "MediaRouteButton construction can throw under Theme.Kinosail after native theme/resource changes, crashing the real PlaybackScreen Cast action. Construction itself is the assertion: an exception fails this test.",
         "production_owner_paths": [
           "apps/player/apps/android/app/src/main/java/com/kinosail/player/core/PlaybackScreen.kt"
         ],
@@ -18107,16 +18108,16 @@
             "5ca263e55be1761971f26d43b94f919469c83046 Keep Android sessions, catalog and playback through outages"
           ]
         },
-        "proof_or_gap": "Covered more strongly by retained CastChooserTest; native fixture/instrumentation, not Server E2E. CI no longer has cheap unit constructor proof; instrumentation must be run separately.",
+        "proof_or_gap": "Independent required-CI native constructor/resource boundary. CastChooserTest is stronger instrumentation but not selected by required app.yml Android job, and browser E2E cannot construct Android views.",
         "remaining_proof": {
           "path": "apps/player/apps/android/app/src/androidTest/java/com/kinosail/player/mobile/CastChooserTest.kt",
           "declaration": "castChooserOpensUnderPhoneTheme",
-          "relationship": "same MediaRouteButton constructor using manifest Theme.Kinosail plus actual chooser/dialog assertions; fixture/native stronger boundary, not genuine E2E",
+          "relationship": "Stronger optional instrumentation at native UI boundary, but absent from required CI; not equivalent execution coverage.",
           "proof": "app manifest application theme points to Theme.Kinosail; retained test constructs MediaRouteButton(phone), CastButtonFactory.setUpMediaRouteButton, asserts showDialog and chooser.dialog.isShowing",
           "current_execution": "not run; historical phone instrumentation suite passed in prior parity packet; CI does not run instrumentation"
         },
-        "risk": "No unique assertion lost; keeper maintenance/CI routing limitations explicitly recorded.",
-        "production_or_support_deletion_unlocked": "none; test-only file removed",
+        "risk": "Retained after independent review: dropping a CI-executed constructor guard would remove automatic protection for a platform-only crash.",
+        "production_or_support_deletion_unlocked": "none; original test restored unchanged",
         "validation_command": "apps/player/apps/android/gradlew -p apps/player/apps/android :app:testDebugUnitTest --tests com.kinosail.player.core.CastButtonThemeTest",
         "baseline_status": {
           "current_run": "not_run_disk_constraint",
@@ -18128,7 +18129,7 @@
             "scope": "historical source-compatible unit baseline; Android tree identical at 39ef73fba and pinned 876b771a7, not a new run"
           }
         },
-        "final_status": "removed per ledger; static retained proof/body preservation passed; runtime not run"
+        "final_status": "retained original body unchanged; fresh runtime not run"
       },
       {
         "path": "apps/player/apps/android/app/src/test/java/com/kinosail/player/core/CatalogApiTest.kt",
@@ -27043,7 +27044,7 @@
       },
       {
         "command": "python3 /tmp/android-audit-verify.py --repo REPO --ledger /tmp/frontend-native-android.json",
-        "result": "passed; 48 files, 156 retained declarations (142 unit, 14 instrumentation), every retained body unchanged and Android production unchanged",
+        "result": "Prior156 retained body check passed before review; final157 includes restored original CastButtonTheme constructor body. Updated static body check required and recorded in review correction.",
         "exit_code": 0,
         "artifact": "/tmp/android-audit-verify.json",
         "verifier_sha256": "3e7665a8caf93b01a4b6223010abebacfceebf883de298d72f6257ee7bd77c38",
@@ -27066,24 +27067,30 @@
       }
     ],
     "followups": [
-      "Run 142 retained unit declarations via CI/local Gradle once storage permits.",
-      "Run CastChooserTest on isolated Android device; required CI omits instrumentation so constructor proof moves outside its quick loop.",
+      "Run143 retained unit declarations via CI/local Gradle once storage permits.",
+      "Run CastChooserTest on isolated Android device; required CI retains CastButtonTheme constructor crash guard and still omits actual chooser instrumentation.",
       "Run opt-in genuine LivePlaybackOverlayTest and export PNG/semantics/result artifact on final merged SHA when native emulator/Server environment is available.",
       "Native reader/photo/paired Wear/Cast/PiP/TV server E2E gaps require future owner-boundary work; current audit does not fabricate equivalence."
     ],
     "final": {
-      "files": 48,
-      "declarations": 156,
-      "unit_declarations": 142,
+      "files": 49,
+      "declarations": 157,
+      "unit_declarations": 143,
       "instrumentation_declarations": 14,
-      "test_loc": 3601,
-      "removed_declarations": 2,
-      "removed_test_loc": 24,
+      "test_loc": 3620,
+      "removed_declarations": 1,
+      "removed_test_loc": 5,
       "production_loc_delta": 0,
       "support_loc_delta": 0,
-      "patch": "/tmp/android-audit.patch",
-      "patch_sha256": "b8ae154e9e54c1ed26795056cd435adc5b570f14c2093ecfafe9dc4fbe31ec40",
-      "git_status": "two task-owned paths dirty, no commit or push; patch delivered for parent integration"
+      "git_status": "Integrated code includes only Reader known-count spinner duplicate deletion; original CastButtonTheme constructor test restored after independent review."
+    },
+    "independent_review_correction": {
+      "reviewer": "/root/tooling",
+      "coordinator": "/root",
+      "test": "CastButtonThemeTest.playerThemeCanCreateCastButton",
+      "result": "Restore R: constructor throwing is meaningful assertion, important native theme crash untested by browser E2E; stronger CastChooser instrumentation does not execute in required CI.",
+      "restored_body_sha256": "553a294d5c27da5a3197f0fa467d60001e160ff4b724783162d2deeaa11bbb17",
+      "validation": "git show baseline:path byte-equal restored path;157R declarations counted in ledger; all other retained bodies unchanged from prior verified156 result."
     }
   }
 }
