@@ -134,7 +134,7 @@ const startAdaptive = async (resume = false) => {
     negotiation = negotiateStream(generation);
   }
   // Load the decoder adapter alongside negotiation, only after compatible playback was selected.
-  const needsHls = typeof Hls === "undefined" && !player.canPlayType("application/vnd.apple.mpegurl");
+  const needsHls = typeof Hls === "undefined" && window.kinosailPlaybackCapabilities.needsAdapter(player);
   const adapter = needsHls ? loadHls() : Promise.resolve(true);
   const [, adapterLoaded] = await Promise.all([negotiation, adapter]);
   if (generation !== adaptiveGeneration) return;

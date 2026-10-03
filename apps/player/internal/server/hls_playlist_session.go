@@ -52,13 +52,17 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 		}
 		writer.Header().Set("Content-Type", "video/mp4")
 	}
+	manager.adoptRecipeFile(request, key, path)
 	//nolint:gosec // G703: filepath.Localize and hlsFile reject non-local and unknown paths above.
+	http.ServeFile(writer, request, path)
+}
+
+func (manager *hlsManager) adoptRecipeFile(request *http.Request, key, path string) {
 	if request.Method == http.MethodGet {
 		if _, err := os.Stat(path); err == nil {
 			manager.startup.playback(key)
 		}
 	}
-	http.ServeFile(writer, request, path)
 }
 
 func (manager *hlsManager) recipePlaylistStart(writer http.ResponseWriter, request *http.Request, item library.Item) (int, float64, bool) {

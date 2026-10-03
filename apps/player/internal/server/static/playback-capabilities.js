@@ -6,6 +6,9 @@ window.kinosailPlaybackCapabilities = (() => {
     ["vp9", 'video/mp4; codecs="vp09.00.10.08"'],
     ["h264", 'video/mp4; codecs="avc1.64002a"'],
   ];
+  // Safari keeps its native HLS path. Chromium's HLS canPlayType result alone
+  // does not establish the compatible-stream decoder used by this player.
+  const needsAdapter = element => !navigator.vendor.includes("Apple") && typeof MediaSource !== "undefined" || !element.canPlayType("application/vnd.apple.mpegurl");
   const positive = (value, fallback) => Number.isFinite(Number(value)) && Number(value) > 0 ? Number(value) : fallback;
   const video = (facts, contentType, compatible = false) => {
     const width = positive(facts.width, 1920), height = positive(facts.height, 1080);
@@ -15,7 +18,7 @@ window.kinosailPlaybackCapabilities = (() => {
       bitrate: compatible ? Math.min(bitrate, 6128000) : bitrate, framerate: compatible ? Math.min(framerate, 60) : framerate};
   };
   async function supports(element, facts, [codec, contentType]) {
-    const mediaSource = (typeof Hls !== "undefined" && Hls.isSupported()) || !element.canPlayType("application/vnd.apple.mpegurl");
+    const mediaSource = needsAdapter(element) || (typeof Hls !== "undefined" && Hls.isSupported());
     try {
       if (navigator.mediaCapabilities?.decodingInfo) {
         const result = await navigator.mediaCapabilities.decodingInfo({type: mediaSource ? "media-source" : "file", video: video(facts, contentType, true)});
@@ -32,5 +35,5 @@ window.kinosailPlaybackCapabilities = (() => {
   };
   const initialCompatible = (policy, mode, type, direct, planned) => policy === "compatible" || !direct ||
     audioIncompatible(policy, mode) || !planned && policy === "direct-first" && appleMatroska(type);
-  return {codecs, video, supports, audioIncompatible, appleMatroska, policy, initialCompatible};
+  return {codecs, video, supports, needsAdapter, audioIncompatible, appleMatroska, policy, initialCompatible};
 })();

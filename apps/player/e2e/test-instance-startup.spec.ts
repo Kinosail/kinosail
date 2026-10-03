@@ -23,6 +23,11 @@ test('bounded startup preparation preserves the exact stream and playback priori
   await page.getByRole('link', {name: 'Continue to household setup'}).click();
   await page.getByRole('link', {name: 'Continue to optional viewing history'}).click();
   await page.getByRole('link', {name: 'Finish and open Library'}).click();
+  // Retain the old immutable URL in this browser's cache across the upgrade.
+  await page.route('**/static/theme.js?v=electric-2', route => route.fulfill({contentType: 'text/javascript', headers: {'Cache-Control': 'public, max-age=31536000, immutable'}, body: 'window.legacyStartupTheme = true;'}));
+  await page.addScriptTag({url: '/static/theme.js?v=electric-2'});
+  await page.goto('/');
+  expect(await page.locator('script[src^="/static/theme.js?v="]').getAttribute('src')).toMatch(/\?v=[a-f0-9]{64}$/);
   const items = (await (await page.request.get('/api/v1/library')).json()).items;
   const id = (name: string) => items.find((item: {title: string}) => item.title === name).id;
   const headers = {...await csrf(), Origin: process.env.KINOSAIL_E2E_URL!};
@@ -92,7 +97,7 @@ test('bounded startup preparation preserves the exact stream and playback priori
   for (const name of ['Cold', 'Warm']) {
     expect((await page.request.put(`/api/v1/items/${id(name)}/progress`, {headers, data: {seconds: 12.3}})).ok()).toBe(true);
   }
-  expect((await page.request.put('/api/v1/settings/playback', {headers, data: {mode: 'compatible', autoplay: true, subtitles: 'en', autoSkip: []}})).ok()).toBe(true);
+  expect((await page.request.put('/api/v1/settings/playback', {headers, data: {mode: 'automatic', autoplay: true, subtitles: 'on', autoSkip: []}})).ok()).toBe(true);
   await page.evaluate(() => localStorage.setItem('kinosail.playback-policy-v2', 'compatible'));
   const cold = await moving('Cold');
   receipts.push({name: 'cold', ...cold});

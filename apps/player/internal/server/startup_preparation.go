@@ -4,8 +4,6 @@ import (
 	"context"
 	"log/slog"
 	"net/http"
-	"os"
-	"path/filepath"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -60,7 +58,7 @@ func newStartupPreparation(hls *hlsManager, auth *authentication, limit int64) *
 	return &startupPreparation{hls: hls, auth: auth, limit: limit, active: make(map[string]startupSession)}
 }
 
-func (startup *startupPreparation) enqueue(value startupRequest) string {
+func (startup *startupPreparation) enqueue(ctx context.Context, value startupRequest) string {
 	if !value.direct && startup.hls.startupWindowReady(value.item, value.recipe) {
 		return "ready"
 	}
@@ -82,12 +80,12 @@ func (startup *startupPreparation) enqueue(value startupRequest) string {
 	startup.queue = append(startup.queue, value)
 	if !startup.running {
 		startup.running = true
-		go startup.run()
+		go startup.run(context.WithoutCancel(ctx))
 	}
 	return "queued"
 }
 
-func (startup *startupPreparation) run() {
+func (startup *startupPreparation) run(ctx context.Context) {
 	ticker := time.NewTicker(200 * time.Millisecond)
 	defer ticker.Stop()
 	for {
@@ -103,7 +101,7 @@ func (startup *startupPreparation) run() {
 		}
 		startup.mu.Unlock()
 		if startup.idle() {
-			startup.next()
+			startup.next(ctx)
 		}
 		select {
 		case <-startup.hls.ctx.Done():
@@ -139,9 +137,9 @@ func (startup *startupPreparation) idleLocked() bool {
 	return !playing && startup.directRequests == 0 && now.Sub(startup.lastMedia) >= 2*time.Second
 }
 
-func (startup *startupPreparation) next() {
+func (startup *startupPreparation) next(parent context.Context) { //nolint:contextcheck // Each queued request retains its own trusted authorization scope, rather than inheriting the first request that started this worker.
 	startup.mu.Lock()
-	if len(startup.queue) == 0 || !startup.idleLocked() {
+	if parent.Err() != nil || len(startup.queue) == 0 || !startup.idleLocked() {
 		startup.mu.Unlock()
 		return
 	}
@@ -160,16 +158,8 @@ func (startup *startupPreparation) next() {
 		startup.current, startup.cancel = nil, nil
 		startup.mu.Unlock()
 	}()
-	request := value.request.Clone(ctx)
-	viewer, authenticated := startup.auth.identity(request)
-	if !authenticated || viewer.ID != value.viewer || startup.auth.viewerAccess(viewer, request, "POST /api/v1/items/{id}/playback-prepare") != identitycore.Allowed {
-		slog.InfoContext(ctx, "HLS startup preparation", "request_id", requestActivityID(ctx), "state", "authorization-expired")
-		return
-	}
-	request = request.WithContext(context.WithValue(ctx, viewerContextKey{}, viewer))
-	item, found := visibleItem(request, startup.hls.index, value.item.ID)
-	if !found || !viewer.Permits("stream", true) || !value.direct && !hlsAllowed(request) {
-		slog.InfoContext(ctx, "HLS startup preparation", "request_id", requestActivityID(ctx), "state", "permission-changed")
+	item, allowed := startup.authorizedItem(ctx, value)
+	if !allowed {
 		return
 	}
 	if value.direct {
@@ -181,6 +171,22 @@ func (startup *startupPreparation) next() {
 		return
 	}
 	startup.hls.prepareStartupWindow(ctx, item, value.recipe, value.encoding)
+}
+
+func (startup *startupPreparation) authorizedItem(ctx context.Context, value startupRequest) (library.Item, bool) {
+	request := value.request.Clone(ctx)
+	viewer, authenticated := startup.auth.identity(request)
+	if !authenticated || viewer.ID != value.viewer || startup.auth.viewerAccess(viewer, request, "POST /api/v1/items/{id}/playback-prepare") != identitycore.Allowed {
+		slog.InfoContext(ctx, "HLS startup preparation", "request_id", requestActivityID(ctx), "state", "authorization-expired")
+		return library.Item{}, false
+	}
+	request = request.WithContext(context.WithValue(ctx, viewerContextKey{}, viewer))
+	item, found := visibleItem(request, startup.hls.index, value.item.ID)
+	if !found || !viewer.Permits("stream", true) || !value.direct && !hlsAllowed(request) {
+		slog.InfoContext(ctx, "HLS startup preparation", "request_id", requestActivityID(ctx), "state", "permission-changed")
+		return library.Item{}, false
+	}
+	return item, true
 }
 
 func (startup *startupPreparation) cancelItem(viewer, id string) {
@@ -216,7 +222,7 @@ func (startup *startupPreparation) playback(key string) {
 	if job := startup.hls.jobs[key]; job != nil && job.preparation != nil {
 		job.preparation.adopted.Store(true)
 	}
-	_ = os.Remove(filepath.Join(startup.hls.cache, key, ".startup")) //nolint:gosec // key is a validated stream cache identity.
+	startup.hls.startupMarker(key, false)
 	startup.hls.mu.Unlock()
 }
 
@@ -247,13 +253,11 @@ func (startup *startupPreparation) observe(request *http.Request, event playback
 	if event.Sequence <= state.sequence {
 		return
 	}
-	switch event.Event {
-	case "pause", "ended", "session-end", "play-request", "playing", "first-moving-frame", "heartbeat":
-	default:
+	playing, valid := startupPlayingEvent(event)
+	if !valid {
 		return
 	}
-	state = startupSession{expires: time.Now().Add(35 * time.Second), sequence: event.Sequence,
-		playing: event.Event == "play-request" || !event.Paused && event.Event != "ended" && event.Event != "session-end" && event.Event != "pause"}
+	state = startupSession{expires: time.Now().Add(35 * time.Second), sequence: event.Sequence, playing: playing}
 	if _, exists := startup.active[session]; exists || len(startup.active) < 64 {
 		startup.active[session] = state
 	} else if state.playing {
@@ -264,5 +268,18 @@ func (startup *startupPreparation) observe(request *http.Request, event playback
 		if startup.cancel != nil {
 			startup.cancel()
 		}
+	}
+}
+
+func startupPlayingEvent(event playback.TraceEvent) (bool, bool) {
+	switch event.Event {
+	case "pause", "ended", "session-end":
+		return false, true
+	case "play-request":
+		return true, true
+	case "playing", "first-moving-frame", "heartbeat":
+		return !event.Paused, true
+	default:
+		return false, false
 	}
 }

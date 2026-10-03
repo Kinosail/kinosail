@@ -17,6 +17,7 @@ for (const scenario of [
     </div><div data-quality-control hidden><select data-quality></select><span data-quality-state></span></div>
   </body></html>`);
   await page.evaluate((mode) => {
+    if (mode === "native") Object.defineProperty(navigator, "vendor", {configurable: true, value: "Apple Computer, Inc."});
     const video = document.querySelector("video")!;
     let time = 0, ready = 4, paused = true, source = "", start = 0, count = 1;
     // Keep the native timeline adapter in use while controlling decoder events.

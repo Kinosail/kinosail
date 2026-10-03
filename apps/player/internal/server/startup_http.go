@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
@@ -33,38 +34,46 @@ func (api apiServices) preparePlayback(writer http.ResponseWriter, request *http
 	if !readJSON(writer, request, &input) {
 		return
 	}
-	value := startupRequest{request: request, item: item, viewer: currentViewer(request).ID}
-	value.direct = input.Source == "/media/"+item.ID
-	value.key = "direct:" + item.ID
-	if !value.direct {
-		prefix := "/hls/" + item.ID + "/"
-		recipe, file, valid := plannedHLSFile(strings.TrimPrefix(input.Source, prefix))
-		if len(input.Source) > 2048 || !strings.HasPrefix(input.Source, prefix) || !valid || file != "index.m3u8" {
-			apiError(writer, errors.New("playback preparation source is invalid"), http.StatusBadRequest)
-			return
-		}
-		if !hlsAllowed(request) {
-			hlsForbidden(writer, request)
-			return
-		}
-		facts := mediaFactsFor(item, api.probe.facts(request.Context(), item))
-		resolved, err := playback.ResolveHLSSource(sharedHLSRecipe(recipe), facts, item.Subtitles)
-		if err != nil || recipe.offset > 0 && !validHLSOffset(recipe.offset, facts.Duration) {
-			apiError(writer, errors.New("playback preparation recipe is invalid"), http.StatusBadRequest)
-			return
-		}
-		value.recipe = localHLSRecipe(resolved)
-		value.key = hlsRecipeKey(item.ID, value.recipe)
+	value, valid := api.startupSource(writer, request, item, input.Source)
+	if !valid {
+		return
 	}
 	if api.hls.cache == "" && !value.direct {
 		apiError(writer, errors.New("compatible playback is not configured"), http.StatusServiceUnavailable)
 		return
 	}
-	state := api.hls.startup.enqueue(value)
+	state := api.hls.startup.enqueue(request.Context(), value)
 	status := http.StatusAccepted
 	if state == "busy" {
 		status = http.StatusTooManyRequests
 	}
 	writer.Header().Set("Cache-Control", "no-store")
 	writeJSON(writer, map[string]string{"state": state}, status)
+}
+
+func (api apiServices) startupSource(writer http.ResponseWriter, request *http.Request, item library.Item, source string) (startupRequest, bool) {
+	value := startupRequest{request: request, item: item, viewer: currentViewer(request).ID, key: "direct:" + item.ID}
+	value.direct = source == "/media/"+item.ID
+	if value.direct {
+		return value, true
+	}
+	prefix := "/hls/" + item.ID + "/"
+	recipe, file, valid := plannedHLSFile(strings.TrimPrefix(source, prefix))
+	if len(source) > 2048 || !strings.HasPrefix(source, prefix) || !valid || file != "index.m3u8" {
+		apiError(writer, errors.New("playback preparation source is invalid"), http.StatusBadRequest)
+		return value, false
+	}
+	if !hlsAllowed(request) {
+		hlsForbidden(writer, request)
+		return value, false
+	}
+	facts := mediaFactsFor(item, api.probe.facts(request.Context(), item))
+	resolved, err := playback.ResolveHLSSource(sharedHLSRecipe(recipe), facts, item.Subtitles)
+	if err != nil || recipe.offset > 0 && !validHLSOffset(recipe.offset, facts.Duration) {
+		apiError(writer, errors.New("playback preparation recipe is invalid"), http.StatusBadRequest)
+		return value, false
+	}
+	value.recipe = localHLSRecipe(resolved)
+	value.key = hlsRecipeKey(item.ID, value.recipe)
+	return value, true
 }

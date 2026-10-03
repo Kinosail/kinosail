@@ -15,17 +15,22 @@ func (startup *startupPreparation) cacheHeadroom(ctx context.Context) bool {
 	if err != nil || size+(64<<20) >= startup.limit || ctx.Err() != nil {
 		return false
 	}
+	speculative, valid := startup.speculativeCacheBytes(ctx)
+	return valid && speculative+(64<<20) < 256<<20
+}
+
+func (startup *startupPreparation) speculativeCacheBytes(ctx context.Context) (int64, bool) {
 	entries, err := os.ReadDir(startup.hls.cache)
 	if os.IsNotExist(err) {
-		return true
+		return 0, true
 	}
 	if err != nil || len(entries) > 4096 {
-		return false
+		return 0, false
 	}
 	var speculative int64
 	for _, entry := range entries {
 		if ctx.Err() != nil {
-			return false
+			return 0, false
 		}
 		if !entry.IsDir() || !playback.HLSCacheDirectory(entry.Name(), hlsPolicy()) {
 			continue
@@ -35,5 +40,5 @@ func (startup *startupPreparation) cacheHeadroom(ctx context.Context) bool {
 			speculative += startupDirectoryBytes(directory)
 		}
 	}
-	return speculative+(64<<20) < 256<<20
+	return speculative, true
 }

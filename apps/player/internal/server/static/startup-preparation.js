@@ -63,7 +63,7 @@
       if (source.startsWith(`/hls/${id}/p/`)) {
         const resume = result.start;
         if (Number.isFinite(resume) && resume >= 0.1 && resume < result.duration) source = source.replace(/\/index\.m3u8$/, `-o${Math.floor(resume * 10) * 100}/index.m3u8`);
-        if (!video.canPlayType("application/vnd.apple.mpegurl")) fetch("/static/hls.min.js?v=1.7.1", {signal, cache: "force-cache"}).catch(() => {});
+        if (capabilities.needsAdapter(video)) fetch("/static/hls.min.js?v=1.7.1", {signal, cache: "force-cache"}).catch(() => {});
       }
       active.add(id);
       await fetch(`/api/v1/items/${id}/playback-prepare`, {method: "POST", headers: headers(), body: JSON.stringify({source}), signal, credentials: "same-origin", redirect: "error"});
