@@ -1,12 +1,10 @@
 package updatecontrol
 
 import (
-	"context"
 	"errors"
 	"io"
 	"net/http"
 	"strings"
-	"sync/atomic"
 	"testing"
 )
 

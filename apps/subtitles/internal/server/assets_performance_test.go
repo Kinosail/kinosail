@@ -2,11 +2,12 @@ package server_test
 
 import (
 	"bytes"
-	"github.com/MikeO7/kinosail/packages/webassets"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	"github.com/MikeO7/kinosail/packages/webassets"
 )
 
 func TestLibraryPrioritizesVisibleArtworkWithoutLayoutShift(t *testing.T) {
