@@ -47,19 +47,10 @@ let hlsLoader;
 let streamNegotiated = false;
 let destroyed = false;
 let pendingResume;
-const mediaPositive = (value, fallback) => {
-  const number = Number(value);
-  return Number.isFinite(number) && number > 0 ? number : fallback;
-};
-const mediaVideo = (contentType, compatible = false) => {
-  const width = mediaPositive(player.dataset.mediaWidth, 1920);
-  const height = mediaPositive(player.dataset.mediaHeight, 1080);
-  const bitrate = mediaPositive(player.dataset.mediaBitrate, 8000000);
-  const framerate = mediaPositive(player.dataset.mediaFramerate, 30);
-  const scale = compatible ? Math.min(1, 1920 / width, 1080 / height) : 1;
-  return {contentType, width: Math.floor(width * scale), height: Math.floor(height * scale),
-    bitrate: compatible ? Math.min(bitrate, 6128000) : bitrate, framerate: compatible ? Math.min(framerate, 60) : framerate};
-};
+const codecCapabilities = window.kinosailPlaybackCapabilities;
+const playbackMediaFacts = {width: player.dataset.mediaWidth, height: player.dataset.mediaHeight,
+  bitrate: player.dataset.mediaBitrate, framerate: player.dataset.mediaFramerate};
+const mediaVideo = (contentType, compatible = false) => codecCapabilities.video(playbackMediaFacts, contentType, compatible);
 if (player.dataset.directType && navigator.mediaCapabilities?.decodingInfo) navigator.mediaCapabilities.decodingInfo({type: "file", video: mediaVideo(player.dataset.directType)})
   .then((result) => playbackTrace("capability-direct", result.supported ? result.smooth ? "smooth" : "supported" : "unsupported"))
   .catch(() => {});
@@ -88,22 +79,8 @@ const showPlaybackMode = (compatible, pending = false) => {
   if (playbackReason) playbackReason.textContent = `${label} · ${description}`;
   if (playbackDetail) playbackDetail.textContent = label;
 };
-const codecTypes = [
-  ["av1", 'video/mp4; codecs="av01.0.08M.08"'],
-  ["hevc", 'video/mp4; codecs="hvc1.1.6.L123.B0"'],
-  ["vp9", 'video/mp4; codecs="vp09.00.10.08"'],
-  ["h264", 'video/mp4; codecs="avc1.64002a"'],
-];
-const supportsCodec = async ([codec, contentType]) => {
-  const mediaSourcePlayback = (typeof Hls !== "undefined" && Hls.isSupported()) || !player.canPlayType("application/vnd.apple.mpegurl");
-  try {
-    if (navigator.mediaCapabilities?.decodingInfo) {
-      const result = await navigator.mediaCapabilities.decodingInfo({type: mediaSourcePlayback ? "media-source" : "file", video: mediaVideo(contentType, true)});
-      return result.supported && result.smooth && (codec === "h264" || result.powerEfficient);
-    }
-  } catch (_) {}
-  return mediaSourcePlayback ? typeof MediaSource !== "undefined" && MediaSource.isTypeSupported(contentType) : player.canPlayType(contentType) !== "";
-};
+const codecTypes = codecCapabilities.codecs;
+const supportsCodec = (codec) => codecCapabilities.supports(player, playbackMediaFacts, codec);
 const negotiateStream = async (generation) => {
   if (!stream || !player.dataset.playbackApi) return;
   // These plans copy the original video (or contain only audio). Detecting

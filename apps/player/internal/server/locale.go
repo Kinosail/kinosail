@@ -1,9 +1,11 @@
 package server
 
 import (
+	"crypto/sha256"
 	"embed"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/fs"
 	"net/http"
 	"net/url"
@@ -76,6 +78,10 @@ type localizedTemplate = *localization.TemplateSet
 
 func newLocalizedTemplate(name, source string) *localization.TemplateSet {
 	source = strings.ReplaceAll(source, `/static/main.kinosail.bundle.js?v=12-htmx4`, `/static/main.kinosail.bundle.js?v=32-htmx4`)
+	themeSource := fmt.Sprintf("/static/theme.js?v=%x", sha256.Sum256(themeJS))
+	for _, version := range []string{"electric-1", "electric-2"} {
+		source = strings.ReplaceAll(source, "/static/theme.js?v="+version, themeSource)
+	}
 	source = strings.Replace(source, `<html lang="en">`, `<html lang="en" data-theme="dark">`, 1)
 	funcs := httpguard.CSRFParseFuncs(uiIcon)
 	funcs["sidebarGroups"] = sidebarGroups

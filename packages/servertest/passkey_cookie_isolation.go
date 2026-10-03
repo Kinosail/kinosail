@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/MikeO7/kinosail/packages/httpguard"
 )
@@ -62,13 +63,23 @@ func AssertPasskeyCookieIsolation(t *testing.T, handler http.Handler, origin, se
 	challenge, _ = passkeyOptions(t, begin, ceremonyName)
 	// Another app starts its own ceremony on the same hostname, on another port.
 	jar.SetCookies(base, []*http.Cookie{{Name: siblingCeremony, Value: "sibling-ceremony-fixture", Path: "/api/v1/passkeys/", Secure: true, HttpOnly: true, SameSite: http.SameSiteStrictMode, MaxAge: 60}})
+	loginStarted := time.Now().Unix()
 	signedIn := call("/api/v1/passkeys/login/finish", device.Assertion(t, challenge, user), "application/json")
+	loginFinished := time.Now().Unix()
 	if signedIn.Code != http.StatusNoContent {
 		t.Fatalf("signed passkey login after sibling ceremony = %d", signedIn.Code)
 	}
 	found := false
 	for _, cookie := range signedIn.Result().Cookies() {
-		if cookie.Name == sessionName && cookie.Secure && cookie.HttpOnly && cookie.SameSite == http.SameSiteStrictMode && cookie.MaxAge == 8*60*60 && !cookie.Expires.IsZero() {
+		expires, remaining := cookie.Expires.Unix(), int64(cookie.MaxAge)
+		if cookie.Name == sessionName {
+			t.Logf("session cookie attributes: secure=%t httpOnly=%t sameSite=%d path=%q domain=%q maxAge=%d expires=%d loginInterval=%d..%d", cookie.Secure, cookie.HttpOnly, cookie.SameSite, cookie.Path, cookie.Domain, cookie.MaxAge, cookie.Expires.Unix(), loginStarted, loginFinished)
+		}
+		// Persistence can cross a second. Remaining lifetime must refer to the
+		// committed expiry instead of restarting eight hours at cookie issuance.
+		if cookie.Name == sessionName && cookie.Secure && cookie.HttpOnly && cookie.SameSite == http.SameSiteStrictMode && cookie.Path == "/" && cookie.Domain == "" && !cookie.Expires.IsZero() &&
+			remaining > 0 && remaining <= 8*60*60 && expires >= loginStarted+8*60*60 && expires <= loginFinished+8*60*60 &&
+			remaining >= expires-loginFinished && remaining <= expires-loginStarted {
 			found = true
 		}
 	}
