@@ -11,6 +11,10 @@ import (
 var (
 	//go:embed static/htmx.min.js
 	htmx []byte
+	//go:embed static/startup-preparation.js
+	startupPreparationJS []byte
+	//go:embed static/playback-capabilities.js
+	playbackCapabilitiesJS []byte
 	//go:embed static/player-subtitles.js
 	playerSubtitlesJS []byte
 	//go:embed static/player.js
@@ -78,9 +82,9 @@ var (
 	pwaNavigationJS     = webassets.PWANavigation
 	pwaSettingsJS       = webassets.PWASettings
 	shortcutsJS         = webassets.Shortcuts
-	themeJS             = joinScripts(webassets.Theme, webassets.ArtworkPalette, webassets.WatchProgress)
+	themeJS             = joinScripts(webassets.Theme, webassets.ArtworkPalette, webassets.WatchProgress, playbackCapabilitiesJS, startupPreparationJS)
 	supporterJS         = joinScripts(webassets.Supporter, supporterAppJS, supporterPlansJS)
-	playerJS            = joinScripts(playerSharedJS, playerSubtitlesJS, playerCoreJS, playerStreamingAdaptiveJS, playerStreamingRecoveryJS, playerStreamingOfflineJS, playerControlsJS, playerDevicesJS, webassets.PlayerTV, playerProgressJS)
+	playerJS            = joinScripts(playbackCapabilitiesJS, playerSharedJS, playerSubtitlesJS, playerCoreJS, playerStreamingAdaptiveJS, playerStreamingRecoveryJS, playerStreamingOfflineJS, playerControlsJS, playerDevicesJS, webassets.PlayerTV, playerProgressJS)
 	downloadsJS         = joinScripts(webassets.OfflineIdentity, webassets.OfflineRuntime, downloadsCoreJS, webassets.DownloadsStorage, downloadsTransferJS, webassets.DownloadsProgress, downloadsUIJS)
 	serviceWorker       = joinScripts(webassets.OfflineRuntime, webassets.OfflineMedia, serviceWorkerApp)
 	pwaJS               = joinScripts(webassets.OfflineIdentity, pwaCoreJS, pwaNavigationJS, pwaSettingsJS, webassets.MobileTabs)

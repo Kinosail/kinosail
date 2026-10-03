@@ -23,6 +23,11 @@ var (
 func (manager *hlsManager) newHLSJob(request context.Context, startNumber int) (context.Context, *hlsJob) {
 	ctx, cancel := context.WithCancelCause(manager.ctx)
 	job := &hlsJob{done: make(chan struct{}), cancel: cancel, activity: make(chan struct{}, 1), startNumber: startNumber, requestID: requestActivityID(request), playbackSession: requestPlaybackSession(request)}
+	if preparation, ok := request.Value(startupEncodingKey{}).(*startupEncoding); ok {
+		job.preparation = preparation
+		ctx = context.WithValue(ctx, startupEncodingKey{}, preparation)
+		go manager.watchStartupCancellation(ctx, request, job)
+	}
 	go watchHLSJob(ctx, job, hlsIdleTimeout)
 	return ctx, job
 }
@@ -114,6 +119,9 @@ func (job *hlsJob) coversSegment(rendition string, segment int) bool {
 }
 
 func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item, recipe hlsRecipe, name string) error { //nolint:cyclop,gocognit,funlen // Replacement and joining must stay atomic for concurrent segment requests.
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 	segment, valid := hlsSegmentNumber(filepath.Base(name))
 	if !valid {
 		return errors.New("HLS segment is invalid")
@@ -144,13 +152,21 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 	if err != nil {
 		return err
 	}
+	if startupActualPlayback(ctx) {
+		manager.startup.playback(key)
+	}
 	for {
 		manager.mu.Lock()
+		if err := ctx.Err(); err != nil {
+			manager.mu.Unlock()
+			return err
+		}
 		if _, err = os.Stat(path); err == nil {
 			manager.mu.Unlock()
 			return nil
 		}
 		job := manager.jobs[key]
+		adoptStartupJob(ctx, job)
 		if job.coversSegment(filepath.Dir(path), segment) {
 			manager.mu.Unlock()
 			return nil

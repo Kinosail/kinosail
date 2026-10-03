@@ -53,6 +53,11 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 		writer.Header().Set("Content-Type", "video/mp4")
 	}
 	//nolint:gosec // G703: filepath.Localize and hlsFile reject non-local and unknown paths above.
+	if request.Method == http.MethodGet {
+		if _, err := os.Stat(path); err == nil {
+			manager.startup.playback(key)
+		}
+	}
 	http.ServeFile(writer, request, path)
 }
 
@@ -69,6 +74,9 @@ func (manager *hlsManager) recipePlaylistStart(writer http.ResponseWriter, reque
 func (manager *hlsManager) waitForRecipeSegment(request *http.Request, item library.Item, recipe hlsRecipe, name, key, path string) bool {
 	manager.keepHLSAlive(key)
 	segmentContext, cancel := context.WithTimeout(request.Context(), 30*time.Second)
+	if request.Method != http.MethodGet {
+		segmentContext = context.WithValue(segmentContext, startupMetadataKey{}, true)
+	}
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 		if err := manager.prepareSegment(segmentContext, item, recipe, name); err != nil {
 			slog.WarnContext(request.Context(), "HLS segment preparation failed", "diagnostic", "[PLAYBACK-HLS]", "request_id", requestActivityID(request.Context()), "error", hlsDiagnostic(err, item.Path))
@@ -232,8 +240,13 @@ func hlsURIWithQuery(uri, query string) string {
 
 func (manager *hlsManager) prepareRecipePlaylist(writer http.ResponseWriter, request *http.Request, item library.Item, recipe hlsRecipe) bool {
 	prepareContext := context.WithValue(manager.ctx, requestActivityKey{}, &requestActivity{id: requestActivityID(request.Context()), playbackSession: requestPlaybackSession(request.Context())})
+	if request.Method != http.MethodGet {
+		prepareContext = context.WithValue(prepareContext, startupMetadataKey{}, true)
+	}
 	prepareContext, cancel := context.WithTimeout(prepareContext, 30*time.Second)
 	defer cancel()
+	started := time.Now()
+	cached := manager.startupWindowReady(item, recipe)
 	if err := manager.prepare(prepareContext, item, recipe); err != nil { //nolint:contextcheck // Playlist preparation uses the Server lifecycle so a disconnected request does not destroy shared output.
 		slog.ErrorContext(request.Context(), "HLS playlist preparation failed", "diagnostic", "[PLAYBACK-HLS]", "request_id", requestActivityID(request.Context()), "mode", recipe.mode, "error", hlsDiagnostic(err, item.Path))
 		status := http.StatusServiceUnavailable
@@ -243,5 +256,11 @@ func (manager *hlsManager) prepareRecipePlaylist(writer http.ResponseWriter, req
 		localizedError(writer, request, err.Error(), status)
 		return false
 	}
+	cacheState := "cold"
+	if cached {
+		cacheState = "warm"
+	}
+	writer.Header().Set("X-Kinosail-Startup-Cache", cacheState)
+	slog.Info("HLS startup", "cache_state", cacheState, "prepare_ms", time.Since(started).Milliseconds())
 	return true
 }
