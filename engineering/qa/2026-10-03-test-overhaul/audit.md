@@ -106,7 +106,8 @@ own HTML, JSON and result directory so it cannot erase the first report.
 Server/FFmpeg reproduction route without containers. Local historical proof is
 pinned to its original clean SHA; it is not fresh-head verification. Supported
 loopback HTTP uses no browser certificate bypass. Separate container system
-checks exercise HTTPS transport; no physical Safari/device or deployment proof
+checks exercise HTTPS transport using curl's existing certificate bypass;
+they do not prove browser certificate trust. No physical Safari/device or deployment proof
 is inferred. Final heavy local builds and `make verify-changed` were unavailable
 under the disk-space and local-container restrictions. Required CI gates remain
 enabled and must pass before merge.
