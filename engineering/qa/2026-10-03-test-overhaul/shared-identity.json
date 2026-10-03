@@ -19,9 +19,9 @@
     "baseline_test_lines": 66475,
     "declarations": 1900,
     "decisions": {
-      "R": 462,
+      "R": 476,
       "D": 17,
-      "unreviewed": 1421
+      "unreviewed": 1407
     },
     "removed_declarations": 17,
     "removed_test_lines": 297,
@@ -584,6 +584,44 @@
         "remaining_pending": 29,
         "entry_evidence": "Complete per-declaration owner/caller/failure/history/actual-vs-fixtureE2E gap follows in declarations. D/F candidates independently reviewed before implementation."
       }
+    },
+    "productapi": {
+      "owners": [
+        "packages/productapi/me.go",
+        "packages/productapi/metadata.go",
+        "packages/productapi/rooms.go"
+      ],
+      "dependencies": [
+        "packages/identitycore/profile.go:Permits",
+        "packages/metadata/record.go:Valid",
+        "packages/httpguard/json.go:EmptyMutationRequest",
+        "packages/apihttp/api.go:WriteJSON/Error",
+        "mime.ParseMediaType",
+        "encoding/json.Decoder"
+      ],
+      "callers": [
+        "apps/player/internal/server/api_product.go",
+        "apps/subtitles/internal/server/api_product.go"
+      ],
+      "e2e": "Actual Player populated library/metadata-provider and two-browser WatchTogether journeys execute valid product API adapters, and genuine setup helpers read/create local Viewer state. They do not inject malformed metadata edits/duplicate fields, all inclusive maximum field bounds, failed save/fetch/refresh, bulk wrapped errors, scoped API-key /me capabilities, invisible room media or exhausted room capacity. Mock services in these retained declarations are owner-boundary failure injection, not app E2E."
+    },
+    "isobmff": {
+      "owners": [
+        "packages/isobmff/initialization.go",
+        "packages/isobmff/sample_entry.go",
+        "packages/isobmff/codecs.go"
+      ],
+      "dependencies": [
+        "packages/servertest/mp4fixture/initialization.go:fixed sample-description bytes, explicitly not playable media",
+        "encoding/binary.BigEndian",
+        "math/bits.Reverse32",
+        "io.LimitReader"
+      ],
+      "callers": [
+        "packages/playback/hls_playlist.go:masterVariant",
+        "packages/transcodepolicy/check.go:observedHDRPreserved"
+      ],
+      "e2e": "Actual browser movie playback exercises generated media but does not supply malformed/oversized/deeply nested MP4 boxes, Dolby configuration order, both signed track-header rotations, repeated aspect overflow or every AVC/HEVC/AV1/VP9+HDR/Opus descriptor. mp4fixture source explicitly states its output is sample-description fixtures, not playable media; these tests prove parser/configuration behavior and cannot substitute for realFFmpeg decode or browser advancing playback."
     }
   },
   "test_support_inventory": {
@@ -29441,9 +29479,9 @@
       "owner_group": "isobmff",
       "body_sha256": "804b121d28e3b5856ff0830c38284014904b8a35534071e8633ec1d420121b21",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the independently observed security, protocol or failed-persistence boundary. No new isolated assertion.",
       "validation_command": "cd packages && go test ./isobmff",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.353479-06:00",
@@ -29451,7 +29489,23 @@
         "Package": "github.com/MikeO7/kinosail/packages/isobmff",
         "Test": "TestGeometryRejectsMalformedAndOverflowingAspectWithoutResult",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Reject zero/oversized/truncated pixel aspect and repeated multiplicative overflow without publishing partial tracks or overflowing advertised display geometry.",
+      "production_owner": [
+        "packages/isobmff/initialization.go",
+        "packages/isobmff/sample_entry.go",
+        "packages/isobmff/codecs.go"
+      ],
+      "callers": [
+        "packages/playback/hls_playlist.go:masterVariant",
+        "packages/transcodepolicy/check.go:observedHDRPreserved"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "remaining_coverage": "Retained canonical parser/HTTP owner declaration. Actual complement and fixture limits appear in owner_groups.",
+      "gap": "Actual browser movie playback exercises generated media but does not supply malformed/oversized/deeply nested MP4 boxes, Dolby configuration order, both signed track-header rotations, repeated aspect overflow or every AVC/HEVC/AV1/VP9+HDR/Opus descriptor. mp4fixture source explicitly states its output is sample-description fixtures, not playable media; these tests prove parser/configuration behavior and cannot substitute for realFFmpeg decode or browser advancing playback.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/isobmff/geometry_test.go",
@@ -29461,9 +29515,9 @@
       "owner_group": "isobmff",
       "body_sha256": "5c66ce8d3411fe90ebd7d1fe8052a94646a1209997d56d94970a5b7ed8c94982",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the independently observed security, protocol or failed-persistence boundary. No new isolated assertion.",
       "validation_command": "cd packages && go test ./isobmff",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.353577-06:00",
@@ -29471,7 +29525,23 @@
         "Package": "github.com/MikeO7/kinosail/packages/isobmff",
         "Test": "TestGeometryPreservesAspectAndSignedQuarterTurns",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Apply pixel aspect before both signed90-degree rotations for track header versions0/1 so the observed initialization dimensions match the actual display orientation.",
+      "production_owner": [
+        "packages/isobmff/initialization.go",
+        "packages/isobmff/sample_entry.go",
+        "packages/isobmff/codecs.go"
+      ],
+      "callers": [
+        "packages/playback/hls_playlist.go:masterVariant",
+        "packages/transcodepolicy/check.go:observedHDRPreserved"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "remaining_coverage": "Retained canonical parser/HTTP owner declaration. Actual complement and fixture limits appear in owner_groups.",
+      "gap": "Actual browser movie playback exercises generated media but does not supply malformed/oversized/deeply nested MP4 boxes, Dolby configuration order, both signed track-header rotations, repeated aspect overflow or every AVC/HEVC/AV1/VP9+HDR/Opus descriptor. mp4fixture source explicitly states its output is sample-description fixtures, not playable media; these tests prove parser/configuration behavior and cannot substitute for realFFmpeg decode or browser advancing playback.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/isobmff/geometry_test.go",
@@ -29481,9 +29551,9 @@
       "owner_group": "isobmff",
       "body_sha256": "8554cda67af98e915827dcc2598c3f830ffed2af52b24c2a50e11cea789c0929",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the independently observed security, protocol or failed-persistence boundary. No new isolated assertion.",
       "validation_command": "cd packages && go test ./isobmff",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.35365-06:00",
@@ -29491,7 +29561,23 @@
         "Package": "github.com/MikeO7/kinosail/packages/isobmff",
         "Test": "TestGeometryRejectsUnknownAndTruncatedTrackHeaders",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Unknown/truncated track header versions must fail without returning tracks rather than reading arbitrary offsets or accepting ambiguous rotation.",
+      "production_owner": [
+        "packages/isobmff/initialization.go",
+        "packages/isobmff/sample_entry.go",
+        "packages/isobmff/codecs.go"
+      ],
+      "callers": [
+        "packages/playback/hls_playlist.go:masterVariant",
+        "packages/transcodepolicy/check.go:observedHDRPreserved"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "remaining_coverage": "Retained canonical parser/HTTP owner declaration. Actual complement and fixture limits appear in owner_groups.",
+      "gap": "Actual browser movie playback exercises generated media but does not supply malformed/oversized/deeply nested MP4 boxes, Dolby configuration order, both signed track-header rotations, repeated aspect overflow or every AVC/HEVC/AV1/VP9+HDR/Opus descriptor. mp4fixture source explicitly states its output is sample-description fixtures, not playable media; these tests prove parser/configuration behavior and cannot substitute for realFFmpeg decode or browser advancing playback.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/isobmff/initialization_test.go",
@@ -29501,9 +29587,9 @@
       "owner_group": "isobmff",
       "body_sha256": "39f5029261ef3e44e3645397fc009fb452041f0faa6728005df970f94a2356ae",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the independently observed security, protocol or failed-persistence boundary. No new isolated assertion.",
       "validation_command": "cd packages && go test ./isobmff",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.354314-06:00",
@@ -29511,7 +29597,23 @@
         "Package": "github.com/MikeO7/kinosail/packages/isobmff",
         "Test": "TestActualInitializationCodecAndColor",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Derive independent HLS codec, bit depth, color range and dimensions across AVC/HEVC/AV1/VP9+Aac/Opus from bounded sample-description bytes; fixed fixture boxes are not decoder/video proof.",
+      "production_owner": [
+        "packages/isobmff/initialization.go",
+        "packages/isobmff/sample_entry.go",
+        "packages/isobmff/codecs.go"
+      ],
+      "callers": [
+        "packages/playback/hls_playlist.go:masterVariant",
+        "packages/transcodepolicy/check.go:observedHDRPreserved"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "remaining_coverage": "Retained canonical parser/HTTP owner declaration. Actual complement and fixture limits appear in owner_groups.",
+      "gap": "Actual browser movie playback exercises generated media but does not supply malformed/oversized/deeply nested MP4 boxes, Dolby configuration order, both signed track-header rotations, repeated aspect overflow or every AVC/HEVC/AV1/VP9+HDR/Opus descriptor. mp4fixture source explicitly states its output is sample-description fixtures, not playable media; these tests prove parser/configuration behavior and cannot substitute for realFFmpeg decode or browser advancing playback.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/isobmff/initialization_test.go",
@@ -29521,9 +29623,9 @@
       "owner_group": "isobmff",
       "body_sha256": "2a11e6468160ed1065215ded588f6d80d3c110945c3785e80357b37398709a77",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the independently observed security, protocol or failed-persistence boundary. No new isolated assertion.",
       "validation_command": "cd packages && go test ./isobmff",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.354508-06:00",
@@ -29531,7 +29633,23 @@
         "Package": "github.com/MikeO7/kinosail/packages/isobmff",
         "Test": "TestInitializationRejectsMalformedAndOversizedInput",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Reject oversized/truncated/unsupported/deeply nested/invalid box input without a partial initialization, and read a valid bounded generated-file configuration.",
+      "production_owner": [
+        "packages/isobmff/initialization.go",
+        "packages/isobmff/sample_entry.go",
+        "packages/isobmff/codecs.go"
+      ],
+      "callers": [
+        "packages/playback/hls_playlist.go:masterVariant",
+        "packages/transcodepolicy/check.go:observedHDRPreserved"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "remaining_coverage": "Retained canonical parser/HTTP owner declaration. Actual complement and fixture limits appear in owner_groups.",
+      "gap": "Actual browser movie playback exercises generated media but does not supply malformed/oversized/deeply nested MP4 boxes, Dolby configuration order, both signed track-header rotations, repeated aspect overflow or every AVC/HEVC/AV1/VP9+HDR/Opus descriptor. mp4fixture source explicitly states its output is sample-description fixtures, not playable media; these tests prove parser/configuration behavior and cannot substitute for realFFmpeg decode or browser advancing playback.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/isobmff/initialization_test.go",
@@ -29541,9 +29659,9 @@
       "owner_group": "isobmff",
       "body_sha256": "8ce2e6eedc074340a04e2d6f7dd0eb93e8a9fb616c30d1cd85105ad9e23b3ff9",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the independently observed security, protocol or failed-persistence boundary. No new isolated assertion.",
       "validation_command": "cd packages && go test ./isobmff",
       "baseline_event": {
         "Time": "2026-10-03T10:35:27.354533-06:00",
@@ -29551,7 +29669,23 @@
         "Package": "github.com/MikeO7/kinosail/packages/isobmff",
         "Test": "TestInitializationKeepsDolbyCodecWhenConfigurationOrderChanges",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Later ignored HEVC configuration must not erase a Dolby Vision codec parsed from an earlier Dolby box, avoiding a wrong delivered manifest codec.",
+      "production_owner": [
+        "packages/isobmff/initialization.go",
+        "packages/isobmff/sample_entry.go",
+        "packages/isobmff/codecs.go"
+      ],
+      "callers": [
+        "packages/playback/hls_playlist.go:masterVariant",
+        "packages/transcodepolicy/check.go:observedHDRPreserved"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "remaining_coverage": "Retained canonical parser/HTTP owner declaration. Actual complement and fixture limits appear in owner_groups.",
+      "gap": "Actual browser movie playback exercises generated media but does not supply malformed/oversized/deeply nested MP4 boxes, Dolby configuration order, both signed track-header rotations, repeated aspect overflow or every AVC/HEVC/AV1/VP9+HDR/Opus descriptor. mp4fixture source explicitly states its output is sample-description fixtures, not playable media; these tests prove parser/configuration behavior and cannot substitute for realFFmpeg decode or browser advancing playback.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/jellyfincompat/catalog_test.go",
@@ -44459,9 +44593,9 @@
       "owner_group": "productapi",
       "body_sha256": "6da7afb2f6cd1fff126a5086d0e90126e856de667c2b263d162f1eb26d2659a6",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the independently observed security, protocol or failed-persistence boundary. No new isolated assertion.",
       "validation_command": "cd packages && go test ./productapi",
       "baseline_event": {
         "Time": "2026-10-03T10:35:29.572588-06:00",
@@ -44469,7 +44603,23 @@
         "Package": "github.com/MikeO7/kinosail/packages/productapi",
         "Test": "TestMeProjectsViewerCapabilities",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "API-key download/library scope must not become Owner or stream authority in the actual /me HTTP projection, while full Owner retains permitted capabilities and access-window fields.",
+      "production_owner": [
+        "packages/productapi/me.go",
+        "packages/productapi/metadata.go",
+        "packages/productapi/rooms.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/api_product.go",
+        "apps/subtitles/internal/server/api_product.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "remaining_coverage": "Retained canonical parser/HTTP owner declaration. Actual complement and fixture limits appear in owner_groups.",
+      "gap": "Actual Player populated library/metadata-provider and two-browser WatchTogether journeys execute valid product API adapters, and genuine setup helpers read/create local Viewer state. They do not inject malformed metadata edits/duplicate fields, all inclusive maximum field bounds, failed save/fetch/refresh, bulk wrapped errors, scoped API-key /me capabilities, invisible room media or exhausted room capacity. Mock services in these retained declarations are owner-boundary failure injection, not app E2E.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/productapi/metadata_test.go",
@@ -44479,9 +44629,9 @@
       "owner_group": "productapi",
       "body_sha256": "729fe8b628a680f1a6bac42009ae869a37c5ff6fa7bfbccd66bf2f8d4b745080",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the independently observed security, protocol or failed-persistence boundary. No new isolated assertion.",
       "validation_command": "cd packages && go test ./productapi",
       "baseline_event": {
         "Time": "2026-10-03T10:35:29.578514-06:00",
@@ -44489,7 +44639,23 @@
         "Package": "github.com/MikeO7/kinosail/packages/productapi",
         "Test": "TestEditMetadataValidatesBeforePersistence",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Reject malformed/ambiguous/oversized/unknown inputs and invalid identifiers before any metadata save/provider/refresh side effect, protecting owner-authored state from partial corrupt writes.",
+      "production_owner": [
+        "packages/productapi/me.go",
+        "packages/productapi/metadata.go",
+        "packages/productapi/rooms.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/api_product.go",
+        "apps/subtitles/internal/server/api_product.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "remaining_coverage": "Retained canonical parser/HTTP owner declaration. Actual complement and fixture limits appear in owner_groups.",
+      "gap": "Actual Player populated library/metadata-provider and two-browser WatchTogether journeys execute valid product API adapters, and genuine setup helpers read/create local Viewer state. They do not inject malformed metadata edits/duplicate fields, all inclusive maximum field bounds, failed save/fetch/refresh, bulk wrapped errors, scoped API-key /me capabilities, invisible room media or exhausted room capacity. Mock services in these retained declarations are owner-boundary failure injection, not app E2E.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/productapi/metadata_test.go",
@@ -44499,9 +44665,9 @@
       "owner_group": "productapi",
       "body_sha256": "f35df8c7a0ad8bf291d63dedd8c5b6f0619c6361152dc6b6f08f6c2f86a7c5de",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the independently observed security, protocol or failed-persistence boundary. No new isolated assertion.",
       "validation_command": "cd packages && go test ./productapi",
       "baseline_event": {
         "Time": "2026-10-03T10:35:29.574736-06:00",
@@ -44509,7 +44675,23 @@
         "Package": "github.com/MikeO7/kinosail/packages/productapi",
         "Test": "TestEditMetadataOutcomeOrdering",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Do not refresh after an injected failed save; preserve404/500 distinctions and owner-authored trimmed record on successful save+refresh.",
+      "production_owner": [
+        "packages/productapi/me.go",
+        "packages/productapi/metadata.go",
+        "packages/productapi/rooms.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/api_product.go",
+        "apps/subtitles/internal/server/api_product.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "remaining_coverage": "Retained canonical parser/HTTP owner declaration. Actual complement and fixture limits appear in owner_groups.",
+      "gap": "Actual Player populated library/metadata-provider and two-browser WatchTogether journeys execute valid product API adapters, and genuine setup helpers read/create local Viewer state. They do not inject malformed metadata edits/duplicate fields, all inclusive maximum field bounds, failed save/fetch/refresh, bulk wrapped errors, scoped API-key /me capabilities, invisible room media or exhausted room capacity. Mock services in these retained declarations are owner-boundary failure injection, not app E2E.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/productapi/metadata_test.go",
@@ -44519,9 +44701,9 @@
       "owner_group": "productapi",
       "body_sha256": "278cf4c5f245c8b455823069f804d455f016cde35e871348e484a20fb131bf66",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the independently observed security, protocol or failed-persistence boundary. No new isolated assertion.",
       "validation_command": "cd packages && go test ./productapi",
       "baseline_event": {
         "Time": "2026-10-03T10:35:29.574027-06:00",
@@ -44529,7 +44711,23 @@
         "Package": "github.com/MikeO7/kinosail/packages/productapi",
         "Test": "TestEditMetadataAcceptsExactBoundaries",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Accept valid inclusive maximum lengths for item ID and every editable metadata field instead of rejecting legitimate records at their supported limits.",
+      "production_owner": [
+        "packages/productapi/me.go",
+        "packages/productapi/metadata.go",
+        "packages/productapi/rooms.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/api_product.go",
+        "apps/subtitles/internal/server/api_product.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "remaining_coverage": "Retained canonical parser/HTTP owner declaration. Actual complement and fixture limits appear in owner_groups.",
+      "gap": "Actual Player populated library/metadata-provider and two-browser WatchTogether journeys execute valid product API adapters, and genuine setup helpers read/create local Viewer state. They do not inject malformed metadata edits/duplicate fields, all inclusive maximum field bounds, failed save/fetch/refresh, bulk wrapped errors, scoped API-key /me capabilities, invisible room media or exhausted room capacity. Mock services in these retained declarations are owner-boundary failure injection, not app E2E.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/productapi/metadata_test.go",
@@ -44539,9 +44737,9 @@
       "owner_group": "productapi",
       "body_sha256": "3ab84dbcae3be8224314ba370cf861fe80adafee083a4d67697be6c9916dd6c4",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the independently observed security, protocol or failed-persistence boundary. No new isolated assertion.",
       "validation_command": "cd packages && go test ./productapi",
       "baseline_event": {
         "Time": "2026-10-03T10:35:29.578115-06:00",
@@ -44549,7 +44747,23 @@
         "Package": "github.com/MikeO7/kinosail/packages/productapi",
         "Test": "TestBulkEditMetadataValidatesAndTranslatesOutcomes",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Reject bad query/content/ambiguous JSON before bulk mutation, map wrapped validation errors to400 and storage failure to500, and preserve supplied IDs/patch and updated count on successful transaction.",
+      "production_owner": [
+        "packages/productapi/me.go",
+        "packages/productapi/metadata.go",
+        "packages/productapi/rooms.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/api_product.go",
+        "apps/subtitles/internal/server/api_product.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "remaining_coverage": "Retained canonical parser/HTTP owner declaration. Actual complement and fixture limits appear in owner_groups.",
+      "gap": "Actual Player populated library/metadata-provider and two-browser WatchTogether journeys execute valid product API adapters, and genuine setup helpers read/create local Viewer state. They do not inject malformed metadata edits/duplicate fields, all inclusive maximum field bounds, failed save/fetch/refresh, bulk wrapped errors, scoped API-key /me capabilities, invisible room media or exhausted room capacity. Mock services in these retained declarations are owner-boundary failure injection, not app E2E.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/productapi/metadata_test.go",
@@ -44559,9 +44773,9 @@
       "owner_group": "productapi",
       "body_sha256": "e1f22d3609fdb5e92f868f2d58991c93c11e6d9aa0aa9e972b8595a00caa4ab7",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the independently observed security, protocol or failed-persistence boundary. No new isolated assertion.",
       "validation_command": "cd packages && go test ./productapi",
       "baseline_event": {
         "Time": "2026-10-03T10:35:29.578234-06:00",
@@ -44569,7 +44783,23 @@
         "Package": "github.com/MikeO7/kinosail/packages/productapi",
         "Test": "TestRefreshMetadataValidationAndOrdering",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Reject body/query/invalid media before provider/refresh, and never scan after an injected failed fetch; distinguish missing/nonvideo404 from provider/refresh502 and successful204.",
+      "production_owner": [
+        "packages/productapi/me.go",
+        "packages/productapi/metadata.go",
+        "packages/productapi/rooms.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/api_product.go",
+        "apps/subtitles/internal/server/api_product.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "remaining_coverage": "Retained canonical parser/HTTP owner declaration. Actual complement and fixture limits appear in owner_groups.",
+      "gap": "Actual Player populated library/metadata-provider and two-browser WatchTogether journeys execute valid product API adapters, and genuine setup helpers read/create local Viewer state. They do not inject malformed metadata edits/duplicate fields, all inclusive maximum field bounds, failed save/fetch/refresh, bulk wrapped errors, scoped API-key /me capabilities, invisible room media or exhausted room capacity. Mock services in these retained declarations are owner-boundary failure injection, not app E2E.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/productapi/rooms_test.go",
@@ -44579,9 +44809,9 @@
       "owner_group": "productapi",
       "body_sha256": "bd1149f95f3055412a43253024f87164495af214d7d2e540f262d1e81bc3b1dd",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the independently observed security, protocol or failed-persistence boundary. No new isolated assertion.",
       "validation_command": "cd packages && go test ./productapi",
       "baseline_event": {
         "Time": "2026-10-03T10:35:29.578491-06:00",
@@ -44589,7 +44819,23 @@
         "Package": "github.com/MikeO7/kinosail/packages/productapi",
         "Test": "TestCreateRoomValidatesBeforeSideEffects",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Malformed/ambiguous/oversized room input must not perform visibility lookup, read viewer state or create rooms; reject negative positions before resource allocation.",
+      "production_owner": [
+        "packages/productapi/me.go",
+        "packages/productapi/metadata.go",
+        "packages/productapi/rooms.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/api_product.go",
+        "apps/subtitles/internal/server/api_product.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "remaining_coverage": "Retained canonical parser/HTTP owner declaration. Actual complement and fixture limits appear in owner_groups.",
+      "gap": "Actual Player populated library/metadata-provider and two-browser WatchTogether journeys execute valid product API adapters, and genuine setup helpers read/create local Viewer state. They do not inject malformed metadata edits/duplicate fields, all inclusive maximum field bounds, failed save/fetch/refresh, bulk wrapped errors, scoped API-key /me capabilities, invisible room media or exhausted room capacity. Mock services in these retained declarations are owner-boundary failure injection, not app E2E.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/productapi/rooms_test.go",
@@ -44599,9 +44845,9 @@
       "owner_group": "productapi",
       "body_sha256": "6bbf35ef2af948293ab31d3cf9fa019580b7b1e06b5e7479da9feca80d5166f7",
       "baseline_result": "pass",
-      "decision": null,
-      "audit_status": "unreviewed",
-      "risk": "Unclassified; preserved without a claim of adequate bug-detection value.",
+      "decision": "R",
+      "audit_status": "reviewed",
+      "risk": "Preserve the independently observed security, protocol or failed-persistence boundary. No new isolated assertion.",
       "validation_command": "cd packages && go test ./productapi",
       "baseline_event": {
         "Time": "2026-10-03T10:35:29.577962-06:00",
@@ -44609,7 +44855,23 @@
         "Package": "github.com/MikeO7/kinosail/packages/productapi",
         "Test": "TestCreateRoomPreservesVisibilityAndCapacityOutcomes",
         "Elapsed": 0
-      }
+      },
+      "credible_failure": "Invisible media or photos must not reach room creation, capacity denial must become429, and a successful creation must use selected Viewer/media/position and a valid watch destination.",
+      "production_owner": [
+        "packages/productapi/me.go",
+        "packages/productapi/metadata.go",
+        "packages/productapi/rooms.go"
+      ],
+      "callers": [
+        "apps/player/internal/server/api_product.go",
+        "apps/subtitles/internal/server/api_product.go"
+      ],
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "remaining_coverage": "Retained canonical parser/HTTP owner declaration. Actual complement and fixture limits appear in owner_groups.",
+      "gap": "Actual Player populated library/metadata-provider and two-browser WatchTogether journeys execute valid product API adapters, and genuine setup helpers read/create local Viewer state. They do not inject malformed metadata edits/duplicate fields, all inclusive maximum field bounds, failed save/fetch/refresh, bulk wrapped errors, scoped API-key /me capabilities, invisible room media or exhausted room capacity. Mock services in these retained declarations are owner-boundary failure injection, not app E2E.",
+      "unlocked_deletion": "None."
     },
     {
       "file": "packages/publicgateway/boundaries_test.go",
@@ -57052,7 +57314,9 @@
       "maintenance",
       "routeinventory",
       "commandtest:child",
-      "cmd:routeinventory"
+      "cmd:routeinventory",
+      "productapi",
+      "isobmff"
     ],
     "additional_reviewed_declarations": 41,
     "additional_removals": 2,
