@@ -51693,6 +51693,18 @@
       "command": "python3 engineering/qa/2026-10-03-test-overhaul/verify-player-audit.py --checkout ../kinosail --revision dfb1178728e1591169ca8a2213714fc182bb3714 --output engineering/qa/2026-10-03-test-overhaul/player-audit-verification.json",
       "result": "passed on integration dfb1178728e1591169ca8a2213714fc182bb3714 before metadata-only packaging; final checked report generated after this ledger save",
       "execution_owner": "Player audit child; read-only Git source facts, no product tests or builds"
+    },
+    {
+      "kind": "upstream_Player_metadata_refresh",
+      "upstream_main_sha": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+      "reviewed_integration_sha": "3264b60bcc9766f6c964bb03c9fefcdc7be1d951",
+      "new_changed_Player_declarations_since_previous_appendix": 2,
+      "original_body_hashes_preserved": true,
+      "auth_fixture_new_stream_routes": [
+        "POST /api/v1/items/{id}/playback-prepare",
+        "DELETE /api/v1/items/{id}/playback-prepare"
+      ],
+      "result": "Complete changed declaration/fixture/helper/actual route/owner comparison; current bodies and all security/provider assertions retained. No builds."
     }
   ],
   "retention_examples": [
@@ -51709,11 +51721,11 @@
     "candidate_evidence_complete": 59
   },
   "upstream_reconciliation": {
-    "reviewed_upstream_main_sha": "e8eca5f762822b239cf322065a915c87482fb8b0",
+    "reviewed_upstream_main_sha": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
     "comparison_base_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
-    "declaration_count": 3,
+    "declaration_count": 5,
     "new_declarations": 1,
-    "changed_existing_declarations": 2,
+    "changed_existing_declarations": 4,
     "removed_upstream_declarations": 0,
     "semantic_review_complete": true,
     "rows": [
@@ -51784,7 +51796,8 @@
             "sha256": "0b618774823e66d9850d042ed570b2475353cabe0c4b4991f9e55ef3e2111fac"
           }
         ],
-        "risk": "Important actual retained-cache media delivery regression; preserve complete test."
+        "risk": "Important actual retained-cache media delivery regression; preserve complete test.",
+        "rechecked_at_upstream_main_sha": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c"
       },
       {
         "path": "apps/player/internal/server/passkeys_test.go",
@@ -51841,7 +51854,8 @@
             "sha256": "f65b9e99d41b71198e278fcdfb964f84d59feb7e01e5ecd405f3b18db7c8ab1e"
           }
         ],
-        "risk": "Preserve existing app-specific contract; no new or altered isolated assertion in overhaul."
+        "risk": "Preserve existing app-specific contract; no new or altered isolated assertion in overhaul.",
+        "rechecked_at_upstream_main_sha": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c"
       },
       {
         "path": "apps/player/internal/server/passkeys_test.go",
@@ -51892,15 +51906,238 @@
             "sha256": "fcc0bde4628a3f9ef2996174d0205935ec1d3b76d93b95eb2b5260a0faebe2ba"
           }
         ],
-        "risk": "Preserve existing app-specific contract; no new or altered isolated assertion in overhaul."
+        "risk": "Preserve existing app-specific contract; no new or altered isolated assertion in overhaul.",
+        "rechecked_at_upstream_main_sha": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c"
+      },
+      {
+        "path": "apps/player/internal/server/auth_all_routes_test.go",
+        "name": "TestEveryRegisteredRouteHasReviewedAnonymousAccess",
+        "line": 139,
+        "end_line": 143,
+        "sha256": "d34cf4e74f98ac174a8f2cc3a26bc60ded87400a7cbdaa2c0ced1e5bfb8440b4",
+        "file_sha256": "3909a9c0adb832053f6a5253fd1f7d1d3207c2b5677370ba88c2925ee03ad23f",
+        "change": "updated_upstream_452",
+        "introduced_change_commit": "22d740f57618ef8fa8e9d5253f43067728e0330d",
+        "original_body_sha256": "a003582b185610b5d5185a5f8b188e969a1d76edc6108d9332784254ca32a901",
+        "decision": "R",
+        "review_status": "semantic_review_complete",
+        "category": "upstream_startup_and_content_asset_contract_preserved",
+        "credible_failure": "Retain exact current 480-route reviewed inventory/digest and anonymous denial matrix, including newly registered POST and DELETE /api/v1/items/{id}/playback-prepare. Removing global authorization or failing to review/classify either preparation route is an important admission regression ordinary signed-in browser playback misses.",
+        "production_owner": [
+          "apps/player/internal/server/api_product.go",
+          "apps/player/internal/server/startup_http.go",
+          "apps/player/internal/server/security.go",
+          "apps/player/internal/server/api_keys.go"
+        ],
+        "non_test_callers": [
+          "server.New -> composed authentication and registered product/onboarding/settings handlers -> actual app adapter and shared owner; startup preparation POST/DELETE use stream API-key scope and remain blocked from MCP"
+        ],
+        "remaining_proof": [
+          "Retain this existing declaration at its app-owned boundary, with unchanged companion authorization and trusted-HTTPS keepers. No removal or replacement test is introduced by this metadata-only refresh."
+        ],
+        "coverage_limit": "The fixture substitutes missing resource IDs and generic {} bodies. Positive Owner/Viewer/key cases in companion matrices establish admission, not successful preparation business behavior. No invalid/revoked/scope/schedule browser equivalence or real background encoding proof is inferred from this all-routes matrix.",
+        "history": [
+          "22d740f57618ef8fa8e9d5253f43067728e0330d Prepare bounded exact startup streams while browsing idle titles",
+          "4b7c2e947aaf6ada99e8d007fa468a128e181f2c Define startup preparation failures and synthetic E2E before implementation",
+          "3aeb7d62603addf02b5328888a5a122f5f1ec5b5 Keep merged subtitle guidance and Owner route coverage",
+          "a766afa013dd2af2be50d4310cbbb5d3a2fdfad2 Merge remote-tracking branch 'origin/main' into codex/subtitle-selector-copy"
+        ],
+        "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestEvery(RegisteredRoute|ProtectedRoute)'",
+        "baseline_result": "original_base_body_pass; changed upstream body execution pending root exact-final-SHA suite",
+        "source_receipts": [
+          {
+            "path": "apps/player/internal/server/auth_all_routes_test.go",
+            "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+            "sha256": "3909a9c0adb832053f6a5253fd1f7d1d3207c2b5677370ba88c2925ee03ad23f"
+          },
+          {
+            "path": "apps/player/internal/server/api_product.go",
+            "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+            "sha256": "5c7fadb5fd8e5ed338f92b0165638d2422cfcb2ed3a2a42d199519641d6acbc6"
+          },
+          {
+            "path": "apps/player/internal/server/startup_http.go",
+            "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+            "sha256": "af8afd3fe40367e6af007daadd5b0bb94f58403f6f543ca9dc6719486a918107"
+          },
+          {
+            "path": "apps/player/internal/server/security.go",
+            "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+            "sha256": "c812000aac81ad4a9182aadc0e899b64864e0817dd4db4b8cd10fb964d976d34"
+          },
+          {
+            "path": "apps/player/internal/server/api_keys.go",
+            "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+            "sha256": "3fae0801a3f673f99029ae53b1cfcb8eec6d0308ee5b78f17f805ae646849baa"
+          }
+        ],
+        "risk": "Preserve complete current upstream contract; metadata only, no new isolated assertion.",
+        "rechecked_at_upstream_main_sha": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c"
+      },
+      {
+        "path": "apps/player/internal/server/trusted_https_test.go",
+        "name": "TestTrustedHTTPSWizardDefaultsToDuckDNSAndSupportsDeSEC",
+        "line": 19,
+        "end_line": 53,
+        "sha256": "d5f10d9e6844b3cd9c03b3bd8e32433fb15b3f81b9837391027813083033b54b",
+        "file_sha256": "55c4af4e5eae3ba322eaf454c84e4058873826f69e09bf73c51655bc44f25728",
+        "change": "updated_upstream_452",
+        "introduced_change_commit": "9c81a65b49f3359b100a761ba24a7572059ca5d6",
+        "original_body_sha256": "9defcec32b0cf94068abcff8c214b23f1b996ac94a1a0c5abd489512c71a6f1f",
+        "decision": "R",
+        "review_status": "semantic_review_complete",
+        "category": "upstream_startup_and_content_asset_contract_preserved",
+        "credible_failure": "Retain actual app wizard default-provider contract and API DeSEC normalization/secret redaction, rejected unsupported or incomplete provider switching, and legacy omitted-provider DuckDNS default. Upstream permits the content-versioned theme asset prefix instead of demanding the retired electric-1 literal; no security/provider assertion was removed.",
+        "production_owner": [
+          "apps/player/internal/server/settings_trusted_https.go",
+          "apps/player/internal/server/settings_trusted_https_http.go",
+          "apps/player/internal/server/locale.go",
+          "apps/player/internal/server/assets.go"
+        ],
+        "non_test_callers": [
+          "server.New -> composed authentication and registered product/onboarding/settings handlers -> actual app adapter and shared owner; startup preparation POST/DELETE use stream API-key scope and remain blocked from MCP"
+        ],
+        "remaining_proof": [
+          "Retain this existing declaration at its app-owned boundary, with unchanged companion authorization and trusted-HTTPS keepers. No removal or replacement test is introduced by this metadata-only refresh."
+        ],
+        "coverage_limit": "The new /static/theme.js?v= fragment checks script inclusion, not hash correctness or execution. The Go fixture uses actual app routes and saved settings but does not contact DNS/ACME, establish a TLS listener, or execute browser JavaScript. Existing current-contents script fingerprint keeper complements this rendered-prefix assertion.",
+        "history": [
+          "9c81a65b49f3359b100a761ba24a7572059ca5d6 Accept content-versioned theme asset in existing onboarding contract",
+          "98972d7c073d77314c41503002ea27708ce9d69b Fix mobile player control targets and touch auto-hide",
+          "38335baa6ffccddbe8cc0ac1fdf37424100a8192 Reconcile launch fixes and retain QA lifecycle and cache regressions",
+          "104c7a78665230b7503639dc928b9580272d3e6b Keep Safari gesture recovery usable after queued media events"
+        ],
+        "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestTrustedHTTPSWizardDefaultsToDuckDNSAndSupportsDeSEC$'",
+        "baseline_result": "original_base_body_pass; changed upstream body execution pending root exact-final-SHA suite",
+        "source_receipts": [
+          {
+            "path": "apps/player/internal/server/trusted_https_test.go",
+            "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+            "sha256": "55c4af4e5eae3ba322eaf454c84e4058873826f69e09bf73c51655bc44f25728"
+          },
+          {
+            "path": "apps/player/internal/server/settings_trusted_https.go",
+            "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+            "sha256": "796e0ebf1fdde763a8229a8e6313e9dac4bbc7b8873e439a913dd7859c1cb643"
+          },
+          {
+            "path": "apps/player/internal/server/settings_trusted_https_http.go",
+            "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+            "sha256": "46e853b1aa7d41a77be020a15e82758f61975dc4d455e1afac869e850dc3784f"
+          },
+          {
+            "path": "apps/player/internal/server/locale.go",
+            "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+            "sha256": "2207e1b89769bc01b481f0b02c67650697935276bcf1aeabb2bfa65f343f2a5b"
+          },
+          {
+            "path": "apps/player/internal/server/assets.go",
+            "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+            "sha256": "3dffcf49cdbb98e2b4eda7fc8314a433209b8f0bbf9046feb598447bbedc1366"
+          }
+        ],
+        "risk": "Preserve complete current upstream contract; metadata only, no new isolated assertion.",
+        "rechecked_at_upstream_main_sha": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c"
       }
     ],
     "notes": [
-      "Original 837 ledger hashes remain pinned to base; these rows are a separate appendix so upstream test preservation is reproducible.",
-      "Upstream 450 added packages/identitycore::TestCookieIssuancePreservesPersistedExpiryAcrossSecondBoundary, owned and audited by the shared identity reviewer; no Player declaration named TestPasskeyCookieTracksIssuedSessionLifetime exists.",
-      "No upstream 452 ref is included in this reviewed main snapshot; recompare if main changes before merge.",
-      "All new/changed Player assertions are preserved. Root owns exact-final-SHA Go/FFmpeg/browser execution and evidence; no child builds."
-    ]
+      "Original837 body hashes remain pinned to876b771a7. Upstream449 adds one Player real-media HLS regression;451 changes two passkey bundle assertions;452 changes route-inventory and trusted-HTTPS declarations/fixtures. All are retained.",
+      "Pinned current upstream main5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c includes startup452 and AppleTV454. Only auth_all_routes_test.go and trusted_https_test.go changed in the Player Go test scope since prior reviewed e8eca5f76; AppleTV/native/browser/shared additions are owned by their parallel auditors.",
+      "Upstream450 added shared identitycore TestCookieIssuancePreservesPersistedExpiryAcrossSecondBoundary; no Player declaration named TestPasskeyCookieTracksIssuedSessionLifetime exists.",
+      "SmartSearch remains C with source body preserved until root passes the two prepared genuine settings-search E2E journeys. No execution receipt or consolidation completion is fabricated.",
+      "No child Go/browser/native build or deployment; metadata-only update. Root owns exact-final-SHA suites and snapshots."
+    ],
+    "file_updates": [
+      {
+        "path": "apps/player/internal/server/auth_all_routes_test.go",
+        "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+        "sha256": "3909a9c0adb832053f6a5253fd1f7d1d3207c2b5677370ba88c2925ee03ad23f",
+        "baseline_file_sha256": "b8f0bfb9b78e45b38baab6d11000b803260e9e8bfecb49f171e5088b60b6b26a",
+        "previous_reviewed_file_sha256": "b8f0bfb9b78e45b38baab6d11000b803260e9e8bfecb49f171e5088b60b6b26a",
+        "change": "Reviewed route count478\u2192480, digest3a0c5af7dd78f79c461ef03af7eec76422dfab13afa64923ec7830572cc2f43e\u21926c575040fad77d13d2a48597b4a690d7101a190b0cb54255fd346086ca88e5fb; expectedStreamScopeRoutes now includes POST and DELETE playback-prepare. Four companion authorization bodies are unchanged but consume the new inventory/expected-scope fixture.",
+        "affected_declarations": [
+          {
+            "path": "apps/player/internal/server/auth_all_routes_test.go",
+            "name": "TestEveryRegisteredRouteHasReviewedAnonymousAccess",
+            "line": 139,
+            "end_line": 143,
+            "sha256": "d34cf4e74f98ac174a8f2cc3a26bc60ded87400a7cbdaa2c0ced1e5bfb8440b4",
+            "file_sha256": "3909a9c0adb832053f6a5253fd1f7d1d3207c2b5677370ba88c2925ee03ad23f"
+          },
+          {
+            "path": "apps/player/internal/server/auth_all_routes_test.go",
+            "name": "TestEveryProtectedRouteAcceptsOwnerAndRejectsInvalidOrRevokedSessions",
+            "line": 145,
+            "end_line": 147,
+            "sha256": "676ba91135efd8f6680d068192bae7de803cfa72d89f5112762a3d9b218dfac6",
+            "file_sha256": "3909a9c0adb832053f6a5253fd1f7d1d3207c2b5677370ba88c2925ee03ad23f"
+          },
+          {
+            "path": "apps/player/internal/server/auth_all_routes_test.go",
+            "name": "TestEveryProtectedRouteEnforcesOwnerAndViewerRoles",
+            "line": 149,
+            "end_line": 151,
+            "sha256": "ed548fcefd752ebafe3756bfe14c2ca0c8ff2170e30fb1e7f21385626361642e",
+            "file_sha256": "3909a9c0adb832053f6a5253fd1f7d1d3207c2b5677370ba88c2925ee03ad23f"
+          },
+          {
+            "path": "apps/player/internal/server/auth_all_routes_test.go",
+            "name": "TestEveryProtectedRouteEnforcesViewerSchedule",
+            "line": 153,
+            "end_line": 155,
+            "sha256": "496cff6b47fb7762f7b57cd1626a46926f30a509f8473321b9bc50dadaa6f516",
+            "file_sha256": "3909a9c0adb832053f6a5253fd1f7d1d3207c2b5677370ba88c2925ee03ad23f"
+          },
+          {
+            "path": "apps/player/internal/server/auth_all_routes_test.go",
+            "name": "TestEveryProtectedRouteEnforcesExactAPIKeyScopes",
+            "line": 157,
+            "end_line": 159,
+            "sha256": "4171a98539ffd257900189112344d84cfb956eeed7e2af5ca5d3f77be0fd6c9f",
+            "file_sha256": "3909a9c0adb832053f6a5253fd1f7d1d3207c2b5677370ba88c2925ee03ad23f"
+          }
+        ],
+        "status": "Retain all five declarations and exact current fixture; root executes complete security matrix.",
+        "helper_receipts": [
+          {
+            "path": "packages/servertest/auth_routes.go",
+            "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+            "sha256": "d661f19ae81897c266fd64057d897e5e3efa3915d1ce67685f823c628149f74b"
+          },
+          {
+            "path": "packages/servertest/route_authorization_inventory.go",
+            "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+            "sha256": "b58e925027a96580341e331ca39968c6b953bb60cff23992e174777e3e895f1d"
+          },
+          {
+            "path": "apps/player/internal/server/auth_route_exercise_test.go",
+            "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+            "sha256": "d024a2e9d3ad37b9947f50fe0e59859ea630f14e2d82582c2b606c59a2f5561f"
+          },
+          {
+            "path": "apps/player/internal/server/auth_route_scope_binding_test.go",
+            "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+            "sha256": "a16adca49b9efdf5a4b2667174f1677ab4e5ea35afca74c30a167b523e20553f"
+          },
+          {
+            "path": "apps/player/internal/server/auth_route_fixture_binding_test.go",
+            "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+            "sha256": "f0c0b41f9a6bcaa83769a1d7268559a55ad99aa83241d693adaf3b130eac6021"
+          }
+        ]
+      },
+      {
+        "path": "apps/player/internal/server/trusted_https_test.go",
+        "revision": "5fc3b76d4b9b1cd9775ce9d913ad2a4f894d1e2c",
+        "sha256": "55c4af4e5eae3ba322eaf454c84e4058873826f69e09bf73c51655bc44f25728",
+        "baseline_file_sha256": "16161ce8a489521388e025a0e73ada6edfda4bc62c95ea7b3ef9367fcbe6166d",
+        "previous_reviewed_file_sha256": "16161ce8a489521388e025a0e73ada6edfda4bc62c95ea7b3ef9367fcbe6166d",
+        "change": "One assertion now accepts content-versioned /static/theme.js?v= instead of retired electric-1; all provider/API rejection/redaction checks remain unchanged.",
+        "status": "Retain complete current file; actual TLS/DNS/ACME remains an explicit separate proof boundary."
+      }
+    ],
+    "previous_reviewed_upstream_main_sha": "e8eca5f762822b239cf322065a915c87482fb8b0",
+    "reviewed_integration_sha": "3264b60bcc9766f6c964bb03c9fefcdc7be1d951"
   },
   "decision_summary": {
     "R": 716,
@@ -51925,7 +52162,7 @@
       "TestSettingsExposeSmartSearch"
     ],
     "new_upstream_retained_declarations": 1,
-    "changed_upstream_retained_declarations": 2
+    "changed_upstream_retained_declarations": 4
   },
   "reproduce": {
     "command": "python3 engineering/qa/2026-10-03-test-overhaul/verify-player-audit.py --checkout <integration-checkout> --revision <exact-reviewed-SHA> --output <artifact-path>",

@@ -129,6 +129,10 @@ def main():
     for key, row in updates.items():
         if current.get(key) != row["sha256"]:
             errors.append({"kind": "upstream_declaration_missing_or_changed", "key": key})
+    for update in ledger.get("upstream_reconciliation", {}).get("file_updates", []):
+        if current_files.get(update["path"]) != update["sha256"]:
+            errors.append({"kind": "upstream_fixture_file_missing_or_changed", "path": update["path"],
+                           "wanted_sha256": update["sha256"], "actual_sha256": current_files.get(update["path"])})
     undocumented = set(current) - set(expected) - set(updates)
     if undocumented:
         errors.append({"kind": "upstream_declarations_missing_from_appendix", "keys": sorted(undocumented)})
@@ -157,6 +161,7 @@ def main():
                    "current_files": len(current_files), "current_declarations": len(current),
                    "decisions": dict(collections.Counter(row["decision"] for row in rows)),
                    "upstream_rows": len(appendix),
+                   "upstream_fixture_files": len(ledger.get("upstream_reconciliation", {}).get("file_updates", [])),
                    "preserved_C_names": [row["name"] for row in rows if row["decision"] == "C"]},
         "scope": "Inventory/body integrity, actual removals/preservation and exact keeper-name existence. Semantic quality and product execution remain evidenced by ledger reviewers and root run artifacts.",
         "errors": errors,

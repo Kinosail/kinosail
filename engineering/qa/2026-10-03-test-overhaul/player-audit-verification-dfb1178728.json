@@ -1,18 +1,18 @@
 {
   "schema": "kinosail-player-audit-verification-v1",
   "result": "pass",
-  "revision": "a7eb9a5a97eb58e107ebbc84640e61a4e5a41eb4",
+  "revision": "dfb1178728e1591169ca8a2213714fc182bb3714",
   "base_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
   "checkout": "/Users/mikeo/Documents/Codex/2026-10-03/task/kinosail",
-  "ledger_sha256": "7b4fb72065dcd083b476242d81d7f130ac5b3b3a1cea0cdf655e147a1956f7c8",
-  "verifier_sha256": "a3fef78dbcf7d4bb33f3dfb96e82013f064b7dca8f4d57717624f4fc9f2ab850",
+  "ledger_sha256": "ed9010a40617c62df66fae30eb185150aa40d84b0871200c87f6e11b3a6c17d6",
+  "verifier_sha256": "06b7e3eca37122422dcf3250ca5235acd44e8b016331ea43aec2190307400872",
   "command": [
     "/opt/homebrew/opt/python@3.14/bin/python3.14",
     "engineering/qa/2026-10-03-test-overhaul/verify-player-audit.py",
     "--checkout",
     "../kinosail",
     "--revision",
-    "a7eb9a5a9",
+    "dfb1178728e1591169ca8a2213714fc182bb3714",
     "--output",
     "engineering/qa/2026-10-03-test-overhaul/player-audit-verification.json"
   ],
@@ -31,8 +31,7 @@
       "F": 57,
       "C": 1
     },
-    "upstream_rows": 5,
-    "upstream_fixture_files": 2,
+    "upstream_rows": 3,
     "preserved_C_names": [
       "TestSettingsExposeSmartSearch"
     ]
