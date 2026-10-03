@@ -6,12 +6,12 @@
   "files": 379,
   "declarations": 954,
   "test_loc": 28832,
-  "reviewed": 256,
-  "pending": 698,
+  "reviewed": 280,
+  "pending": 674,
   "decisions": {
-    "R": 213,
-    "D": 38,
-    "F": 5,
+    "R": 232,
+    "D": 40,
+    "F": 8,
     "C": 0
   },
   "verification": [
@@ -1902,17 +1902,22 @@
       "line": 5,
       "test": "TestOwnerIdentityLifecycleAPIRoutes",
       "baseline_file_sha256": "8a792f4fe0ca1486e4d3cad745748f35c8da62f2f1272fe2c39de1a170da30c9",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "API password rotation/profile policy must be projected to new Viewer sessions; scoped library vs admin API keys must expose the correct identity restrictions and lifecycle deletion routes must remain callable. Browser uses Owner cookies rather than these API projections.",
+      "production_owner": "app profiles_http.go; profiles_credentials.go; api_keys.go; auth.go; identitycore/profile_store.go",
+      "non_test_callers": "Server New/startup and registered web/API authentication/settings/media endpoints; startup and public-request policies are actual app adapters",
+      "remaining_proof": [
+        {
+          "kind": "isolated_real_application_handler_or_lifecycle",
+          "reference": "apps/subtitles/internal/server/api_identity_lifecycle_test.go:TestOwnerIdentityLifecycleAPIRoutes"
+        }
+      ],
+      "coverage_gap": "Retain the named concrete boundary absent from successful browser traffic. These real-store/httptest handler fixtures are not genuine started-process browser E2E. Most use Config{SubtitleApp:false}; CLI uses SubtitleApp:true, while tested startup/auth/API/media adapters are composed in both modes. Classic library-root HTML path has no established true-CLI E2E equivalence.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Security, concurrency, durability, protocol or lifecycle exception retained. Timed lifecycle assertions can depend on scheduler load; no deterministic exhaustive lifecycle claim.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_key_test.go",
@@ -2072,68 +2077,88 @@
       "line": 5,
       "test": "TestOwnerCanCreateAnotherOwnerThroughAPI",
       "baseline_file_sha256": "973811d1138262c34f36f2f3b286b7a048fcf9140ba6d164bf2a0ff5be828688",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "New Owner must receive Owner identity yet be denied settings until MFA enrollment, then gain settings access. Web successful second-Owner flow does not prove API creation/status/model or unenrolled Bearer restrictions.",
+      "production_owner": "app profiles_http.go; api.go:apiSessionConfig; profiles_mfa.go; identitycore/profile_store.go",
+      "non_test_callers": "Server New/startup and registered web/API authentication/settings/media endpoints; startup and public-request policies are actual app adapters",
+      "remaining_proof": [
+        {
+          "kind": "isolated_real_application_handler_or_lifecycle",
+          "reference": "apps/subtitles/internal/server/api_owner_enrollment_test.go:TestOwnerCanCreateAnotherOwnerThroughAPI"
+        }
+      ],
+      "coverage_gap": "Retain the named concrete boundary absent from successful browser traffic. These real-store/httptest handler fixtures are not genuine started-process browser E2E. Most use Config{SubtitleApp:false}; CLI uses SubtitleApp:true, while tested startup/auth/API/media adapters are composed in both modes. Classic library-root HTML path has no established true-CLI E2E equivalence.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Security, concurrency, durability, protocol or lifecycle exception retained. Timed lifecycle assertions can depend on scheduler load; no deterministic exhaustive lifecycle claim.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_owner_enrollment_test.go",
       "line": 9,
       "test": "TestOwnerCanChangeProfileTypeThroughAPI",
       "baseline_file_sha256": "973811d1138262c34f36f2f3b286b7a048fcf9140ba6d164bf2a0ff5be828688",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "A previously minted API session must honor promotion with mandatory MFA, then lose admin access on demotion; browser happy path never demotes an authenticated Owner.",
+      "production_owner": "app profiles_http.go; profiles_access.go:setProfile; profiles_mfa.go; identitycore/profile_store.go",
+      "non_test_callers": "Server New/startup and registered web/API authentication/settings/media endpoints; startup and public-request policies are actual app adapters",
+      "remaining_proof": [
+        {
+          "kind": "isolated_real_application_handler_or_lifecycle",
+          "reference": "apps/subtitles/internal/server/api_owner_enrollment_test.go:TestOwnerCanChangeProfileTypeThroughAPI"
+        }
+      ],
+      "coverage_gap": "Retain the named concrete boundary absent from successful browser traffic. These real-store/httptest handler fixtures are not genuine started-process browser E2E. Most use Config{SubtitleApp:false}; CLI uses SubtitleApp:true, while tested startup/auth/API/media adapters are composed in both modes. Classic library-root HTML path has no established true-CLI E2E equivalence.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Security, concurrency, durability, protocol or lifecycle exception retained. Timed lifecycle assertions can depend on scheduler load; no deterministic exhaustive lifecycle claim.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_owner_invariants_test.go",
       "line": 5,
       "test": "TestServerKeepsAtLeastOneOwner",
       "baseline_file_sha256": "52272cf5d4fde15c62664120217d4b98127e797acc8a46f797f55ccc6d86cdc5",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "API demotion of the last Owner must fail and keep its existing token able to administer settings, preventing administrative lockout.",
+      "production_owner": "app profiles_http.go; profiles_access.go:setProfile; identitycore/profile_store.go",
+      "non_test_callers": "Server New/startup and registered web/API authentication/settings/media endpoints; startup and public-request policies are actual app adapters",
+      "remaining_proof": [
+        {
+          "kind": "isolated_real_application_handler_or_lifecycle",
+          "reference": "apps/subtitles/internal/server/api_owner_invariants_test.go:TestServerKeepsAtLeastOneOwner"
+        }
+      ],
+      "coverage_gap": "Retain the named concrete boundary absent from successful browser traffic. These real-store/httptest handler fixtures are not genuine started-process browser E2E. Most use Config{SubtitleApp:false}; CLI uses SubtitleApp:true, while tested startup/auth/API/media adapters are composed in both modes. Classic library-root HTML path has no established true-CLI E2E equivalence.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Security, concurrency, durability, protocol or lifecycle exception retained. Timed lifecycle assertions can depend on scheduler load; no deterministic exhaustive lifecycle claim.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_owner_invariants_test.go",
       "line": 7,
       "test": "TestOwnerCanRemoveAnotherOwnerButNotTheLast",
       "baseline_file_sha256": "52272cf5d4fde15c62664120217d4b98127e797acc8a46f797f55ccc6d86cdc5",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Removing an Owner must revoke both its session and admin API key, remove key inventory, and reject deleting the final Owner. Genuine E2E adds an Owner but does not remove one or replay credentials.",
+      "production_owner": "app profiles_http.go; identitycore/profile_store.go; sessions.go; api_keys.go",
+      "non_test_callers": "Server New/startup and registered web/API authentication/settings/media endpoints; startup and public-request policies are actual app adapters",
+      "remaining_proof": [
+        {
+          "kind": "isolated_real_application_handler_or_lifecycle",
+          "reference": "apps/subtitles/internal/server/api_owner_invariants_test.go:TestOwnerCanRemoveAnotherOwnerButNotTheLast"
+        }
+      ],
+      "coverage_gap": "Retain the named concrete boundary absent from successful browser traffic. These real-store/httptest handler fixtures are not genuine started-process browser E2E. Most use Config{SubtitleApp:false}; CLI uses SubtitleApp:true, while tested startup/auth/API/media adapters are composed in both modes. Classic library-root HTML path has no established true-CLI E2E equivalence.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Security, concurrency, durability, protocol or lifecycle exception retained. Timed lifecycle assertions can depend on scheduler load; no deterministic exhaustive lifecycle claim.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/api_parity_test.go",
@@ -3010,17 +3035,22 @@
       "line": 10,
       "test": "TestPublicPasswordLoginExplainsPasskeyRecoveryWithoutCreatingSession",
       "baseline_file_sha256": "b65cf00ab3e0165eb977e55a08300c0587c6c4a0531e4d3877d331ba42102cca",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Public password submission must be rejected before credential/session access, with HTML recovery guidance, no Set-Cookie and no reflection of submitted password. Public browser fixture tests GET/login visibility but not this deliberate nil-store POST no-side-effects boundary.",
+      "production_owner": "app auth_login.go:login; error_page.go:localizedPageError",
+      "non_test_callers": "Server New/startup and registered web/API authentication/settings/media endpoints; startup and public-request policies are actual app adapters",
+      "remaining_proof": [
+        {
+          "kind": "isolated_real_application_handler_or_lifecycle",
+          "reference": "apps/subtitles/internal/server/auth_login_error_test.go:TestPublicPasswordLoginExplainsPasskeyRecoveryWithoutCreatingSession"
+        }
+      ],
+      "coverage_gap": "Retain the named concrete boundary absent from successful browser traffic. These real-store/httptest handler fixtures are not genuine started-process browser E2E. Most use Config{SubtitleApp:false}; CLI uses SubtitleApp:true, while tested startup/auth/API/media adapters are composed in both modes. Classic library-root HTML path has no established true-CLI E2E equivalence.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Security, concurrency, durability, protocol or lifecycle exception retained. Timed lifecycle assertions can depend on scheduler load; no deterministic exhaustive lifecycle claim.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/auth_owner_contract_test.go",
@@ -4265,17 +4295,22 @@
       "line": 12,
       "test": "TestConfigurationHTTPContract",
       "baseline_file_sha256": "33647caee5ec2d18c66553eba9b085b7a1da221272bbaaed0ba697ce48496b5d",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App environment/YAML configuration projection must lock managed settings without exposing secrets or mutating rejected state; atomic OIDC web/API changes retain omitted secrets, reject incomplete/unknown/oversized/insecure inputs and preserve saved source on reload; TLS default can be durably overridden. Genuine browser uses default/local configuration and does not provide managed secret inputs.",
+      "production_owner": "app settings_configuration.go; settings_oidc_{configuration,http,storage}.go; settings.go:applyConfiguration,editable; internal/configuration; federation/configuration/configuration.go",
+      "non_test_callers": "Server New/startup and registered web/API authentication/settings/media endpoints; startup and public-request policies are actual app adapters",
+      "remaining_proof": [
+        {
+          "kind": "isolated_real_application_handler_or_lifecycle",
+          "reference": "apps/subtitles/internal/server/configuration_test.go:TestConfigurationHTTPContract"
+        }
+      ],
+      "coverage_gap": "Retain the named concrete boundary absent from successful browser traffic. These real-store/httptest handler fixtures are not genuine started-process browser E2E. Most use Config{SubtitleApp:false}; CLI uses SubtitleApp:true, while tested startup/auth/API/media adapters are composed in both modes. Classic library-root HTML path has no established true-CLI E2E equivalence.",
+      "history": "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+      "risk": "Security, concurrency, durability, protocol or lifecycle exception retained. Timed lifecycle assertions can depend on scheduler load; no deterministic exhaustive lifecycle claim.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/credentials_boundary_test.go",
@@ -12347,85 +12382,122 @@
       "line": 19,
       "test": "TestCredentialLoginSuccessResetsOnlyThatAccount",
       "baseline_file_sha256": "f965006f7ccb7f13a22269f4ef59ef82eeb2354c8646c4afd6c48614769745d3",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "F",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Account-specific login bucket must reject the eleventh attempt across distinct source IPs and resume after successful login. Current test never seeds another account; it does not prove that other accounts remain throttled.",
+      "production_owner": "app auth_login.go:allowCredentialLogin,credentialLoginSucceeded",
+      "non_test_callers": "Server New/startup and registered web/API authentication/settings/media endpoints; startup and public-request policies are actual app adapters",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_named_subset",
+          "reference": "apps/subtitles/internal/server/rate_limit_test.go:TestCredentialLoginSuccessResetsItsAccountLimit"
+        }
+      ],
+      "coverage_gap": "Account-specific login bucket must reject the eleventh attempt across distinct source IPs and resume after successful login. Current test never seeds another account; it does not prove that other accounts remain throttled.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Rename only; assertions unchanged and unproven portions remain explicit. No isolated test or assertion added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server",
+      "final_test": "TestCredentialLoginSuccessResetsItsAccountLimit",
+      "failure_analysis": [
+        "Account cap missing or keyed only by IP; current assertions fail.",
+        "Successful login fails to reset its account; current assertions fail.",
+        "Successful login resets every account; current assertions do not detect this because no second account is seeded."
+      ]
     },
     {
       "file": "apps/subtitles/internal/server/rate_limit_test.go",
       "line": 36,
       "test": "TestQuickConnectBoundsPendingRequests",
       "baseline_file_sha256": "f965006f7ccb7f13a22269f4ef59ef82eeb2354c8646c4afd6c48614769745d3",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "An app broker with 1024 pending grants must report HTTP429 for another start request. Browser successful connect does not exhaust pending-memory capacity or exercise error translation.",
+      "production_owner": "app quick_connect.go:newQuickConnect,start; quickconnect/http.go:Start,quickconnect.go:Create",
+      "non_test_callers": "Server New/startup and registered web/API authentication/settings/media endpoints; startup and public-request policies are actual app adapters",
+      "remaining_proof": [
+        {
+          "kind": "isolated_real_application_handler_or_lifecycle",
+          "reference": "apps/subtitles/internal/server/rate_limit_test.go:TestQuickConnectBoundsPendingRequests"
+        }
+      ],
+      "coverage_gap": "Retain the named concrete boundary absent from successful browser traffic. These real-store/httptest handler fixtures are not genuine started-process browser E2E. Most use Config{SubtitleApp:false}; CLI uses SubtitleApp:true, while tested startup/auth/API/media adapters are composed in both modes. Classic library-root HTML path has no established true-CLI E2E equivalence.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Security, concurrency, durability, protocol or lifecycle exception retained. Timed lifecycle assertions can depend on scheduler load; no deterministic exhaustive lifecycle claim.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/rate_limit_test.go",
       "line": 52,
       "test": "TestQuickConnectPollingIsIndependentlyRateLimited",
       "baseline_file_sha256": "f965006f7ccb7f13a22269f4ef59ef82eeb2354c8646c4afd6c48614769745d3",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Request121 from one source must return429/Retry-After60 even with invalid secret, retaining independent poll abuse bound instead of allowing unlimited background requests.",
+      "production_owner": "app quick_connect.go:poll; quickconnect/http.go:Poll",
+      "non_test_callers": "Server New/startup and registered web/API authentication/settings/media endpoints; startup and public-request policies are actual app adapters",
+      "remaining_proof": [
+        {
+          "kind": "isolated_real_application_handler_or_lifecycle",
+          "reference": "apps/subtitles/internal/server/rate_limit_test.go:TestQuickConnectPollingIsIndependentlyRateLimited"
+        }
+      ],
+      "coverage_gap": "Retain the named concrete boundary absent from successful browser traffic. These real-store/httptest handler fixtures are not genuine started-process browser E2E. Most use Config{SubtitleApp:false}; CLI uses SubtitleApp:true, while tested startup/auth/API/media adapters are composed in both modes. Classic library-root HTML path has no established true-CLI E2E equivalence.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Security, concurrency, durability, protocol or lifecycle exception retained. Timed lifecycle assertions can depend on scheduler load; no deterministic exhaustive lifecycle claim.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/rate_limit_test.go",
       "line": 69,
       "test": "TestPublicRequestsHavePerSourceConcurrencyBoundWithoutChangingLAN",
       "baseline_file_sha256": "f965006f7ccb7f13a22269f4ef59ef82eeb2354c8646c4afd6c48614769745d3",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "F",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Sixteen simultaneous same-source public requests block inside handler, while the seventeenth must fail503/Retry-After1. LAN checks are sequential and cannot prove exemption when seventeen requests overlap.",
+      "production_owner": "app tripwire.go:publicRequestLimits; httpguard/public_http.go:LimitPublicRequests",
+      "non_test_callers": "Server New/startup and registered web/API authentication/settings/media endpoints; startup and public-request policies are actual app adapters",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_named_subset",
+          "reference": "apps/subtitles/internal/server/rate_limit_test.go:TestPublicRequestsEnforcePerSourceConcurrencyBound"
+        }
+      ],
+      "coverage_gap": "Sixteen simultaneous same-source public requests block inside handler, while the seventeenth must fail503/Retry-After1. LAN checks are sequential and cannot prove exemption when seventeen requests overlap.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Rename only; assertions unchanged and unproven portions remain explicit. No isolated test or assertion added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server",
+      "final_test": "TestPublicRequestsEnforcePerSourceConcurrencyBound",
+      "failure_analysis": [
+        "Public concurrency bound absent or keyed by ephemeral port; seventeenth request does not get503.",
+        "Public capacity fails to release; follow-up lifetime behavior is not fully covered.",
+        "LAN requests accidentally share the public cap; current seventeen sequential calls do not detect saturation."
+      ]
     },
     {
       "file": "apps/subtitles/internal/server/rate_limit_test.go",
       "line": 114,
       "test": "TestPublicGetAndHeadRejectRequestBodiesBeforeHandlerSideEffects",
       "baseline_file_sha256": "f965006f7ccb7f13a22269f4ef59ef82eeb2354c8646c4afd6c48614769745d3",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Public GET/HEAD request bodies must be rejected400 before app handler side effects; normal browser reads have empty bodies.",
+      "production_owner": "app tripwire.go:publicRequestLimits; security.go:Remote; httpguard/public_http.go:LimitPublicRequests",
+      "non_test_callers": "Server New/startup and registered web/API authentication/settings/media endpoints; startup and public-request policies are actual app adapters",
+      "remaining_proof": [
+        {
+          "kind": "isolated_real_application_handler_or_lifecycle",
+          "reference": "apps/subtitles/internal/server/rate_limit_test.go:TestPublicGetAndHeadRejectRequestBodiesBeforeHandlerSideEffects"
+        }
+      ],
+      "coverage_gap": "Retain the named concrete boundary absent from successful browser traffic. These real-store/httptest handler fixtures are not genuine started-process browser E2E. Most use Config{SubtitleApp:false}; CLI uses SubtitleApp:true, while tested startup/auth/API/media adapters are composed in both modes. Classic library-root HTML path has no established true-CLI E2E equivalence.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Security, concurrency, durability, protocol or lifecycle exception retained. Timed lifecycle assertions can depend on scheduler load; no deterministic exhaustive lifecycle claim.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/readability_test.go",
@@ -13189,7 +13261,7 @@
       "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
       "credible_failure": "Malformed attacker-controlled IP/range bytes must not crash app-bound parser calls. This fuzzer discards return values; it proves crash robustness only, not correct SSRF/range rejection.",
-      "production_owner": "app network.go:allowedOutboundIP; httpguard.ValidPublicRange; mediashares.ValidSingleByteRange",
+      "production_owner": "app security.go:allowedOutboundIP; httpguard.ValidPublicRange; mediashares.ValidSingleByteRange",
       "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
       "remaining_proof": [
         {
@@ -13390,68 +13462,88 @@
       "line": 15,
       "test": "TestServerWithoutLifecycleDoesNotStartBackgroundScans",
       "baseline_file_sha256": "592c8b645a49c3cb5430e2aeacfeed3f2ae50d334182c22dc53880912387a0bb",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "A constructor with nil lifecycle must not begin ongoing scans or filesystem watchers. Test changes real media after the initial scan and checks absence after 20ms with configured 1ms polling. Scheduling delay can limit the negative check; no goroutine-count claim.",
+      "production_owner": "app server.go:newApplication; application_init.go:prepareApplicationConfig; catalog/index.go:Schedule",
+      "non_test_callers": "Server New/startup and registered web/API authentication/settings/media endpoints; startup and public-request policies are actual app adapters",
+      "remaining_proof": [
+        {
+          "kind": "isolated_real_application_handler_or_lifecycle",
+          "reference": "apps/subtitles/internal/server/server_lifecycle_test.go:TestServerWithoutLifecycleDoesNotStartBackgroundScans"
+        }
+      ],
+      "coverage_gap": "Retain the named concrete boundary absent from successful browser traffic. These real-store/httptest handler fixtures are not genuine started-process browser E2E. Most use Config{SubtitleApp:false}; CLI uses SubtitleApp:true, while tested startup/auth/API/media adapters are composed in both modes. Classic library-root HTML path has no established true-CLI E2E equivalence.",
+      "history": "d4f9004eff9665e4efdc5bbf422c8a3a7d6c9333 Stop background work after failed server startup",
+      "risk": "Security, concurrency, durability, protocol or lifecycle exception retained. Timed lifecycle assertions can depend on scheduler load; no deterministic exhaustive lifecycle claim.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/server_lifecycle_test.go",
       "line": 33,
       "test": "TestServerWithoutLifecycleDoesNotStartBackgroundMaintenance",
       "baseline_file_sha256": "592c8b645a49c3cb5430e2aeacfeed3f2ae50d334182c22dc53880912387a0bb",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Nil lifecycle must not start background upkeep and delete cache bytes in a constructor-only caller. One-byte cache limit and 1ms interval make accidental upkeep observable through the retained file.",
+      "production_owner": "app server.go:newApplication,maintenance.go; packages/maintenance/maintenance.go:New",
+      "non_test_callers": "Server New/startup and registered web/API authentication/settings/media endpoints; startup and public-request policies are actual app adapters",
+      "remaining_proof": [
+        {
+          "kind": "isolated_real_application_handler_or_lifecycle",
+          "reference": "apps/subtitles/internal/server/server_lifecycle_test.go:TestServerWithoutLifecycleDoesNotStartBackgroundMaintenance"
+        }
+      ],
+      "coverage_gap": "Retain the named concrete boundary absent from successful browser traffic. These real-store/httptest handler fixtures are not genuine started-process browser E2E. Most use Config{SubtitleApp:false}; CLI uses SubtitleApp:true, while tested startup/auth/API/media adapters are composed in both modes. Classic library-root HTML path has no established true-CLI E2E equivalence.",
+      "history": "d4f9004eff9665e4efdc5bbf422c8a3a7d6c9333 Stop background work after failed server startup",
+      "risk": "Security, concurrency, durability, protocol or lifecycle exception retained. Timed lifecycle assertions can depend on scheduler load; no deterministic exhaustive lifecycle claim.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/server_lifecycle_test.go",
       "line": 51,
       "test": "TestFailedStartupStopsBackgroundMaintenance",
       "baseline_file_sha256": "592c8b645a49c3cb5430e2aeacfeed3f2ae50d334182c22dc53880912387a0bb",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "A malformed download manifest encountered after upkeep starts must cancel startup work and return503, preserving transcode bytes after the first scheduled maintenance delay. Normal E2E only starts healthy storage.",
+      "production_owner": "app server.go:newApplication; server_startup.go:unavailableApplication; maintenance/maintenance.go:schedule",
+      "non_test_callers": "Server New/startup and registered web/API authentication/settings/media endpoints; startup and public-request policies are actual app adapters",
+      "remaining_proof": [
+        {
+          "kind": "isolated_real_application_handler_or_lifecycle",
+          "reference": "apps/subtitles/internal/server/server_lifecycle_test.go:TestFailedStartupStopsBackgroundMaintenance"
+        }
+      ],
+      "coverage_gap": "Retain the named concrete boundary absent from successful browser traffic. These real-store/httptest handler fixtures are not genuine started-process browser E2E. Most use Config{SubtitleApp:false}; CLI uses SubtitleApp:true, while tested startup/auth/API/media adapters are composed in both modes. Classic library-root HTML path has no established true-CLI E2E equivalence.",
+      "history": "d4f9004eff9665e4efdc5bbf422c8a3a7d6c9333 Stop background work after failed server startup",
+      "risk": "Security, concurrency, durability, protocol or lifecycle exception retained. Timed lifecycle assertions can depend on scheduler load; no deterministic exhaustive lifecycle claim.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/server_lifecycle_test.go",
       "line": 82,
       "test": "TestHealthyStartupKeepsBackgroundMaintenance",
       "baseline_file_sha256": "592c8b645a49c3cb5430e2aeacfeed3f2ae50d334182c22dc53880912387a0bb",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Successful startup must retain its managed lifecycle and actually evict an over-limit inactive transcode cache; cancellation applied unconditionally would silently disable upkeep.",
+      "production_owner": "app server.go:newApplication; maintenance.go; maintenance/maintenance.go:schedule; playback/hls_cache.go:PruneHLSCache",
+      "non_test_callers": "Server New/startup and registered web/API authentication/settings/media endpoints; startup and public-request policies are actual app adapters",
+      "remaining_proof": [
+        {
+          "kind": "isolated_real_application_handler_or_lifecycle",
+          "reference": "apps/subtitles/internal/server/server_lifecycle_test.go:TestHealthyStartupKeepsBackgroundMaintenance"
+        }
+      ],
+      "coverage_gap": "Retain the named concrete boundary absent from successful browser traffic. These real-store/httptest handler fixtures are not genuine started-process browser E2E. Most use Config{SubtitleApp:false}; CLI uses SubtitleApp:true, while tested startup/auth/API/media adapters are composed in both modes. Classic library-root HTML path has no established true-CLI E2E equivalence.",
+      "history": "d4f9004eff9665e4efdc5bbf422c8a3a7d6c9333 Stop background work after failed server startup",
+      "risk": "Security, concurrency, durability, protocol or lifecycle exception retained. Timed lifecycle assertions can depend on scheduler load; no deterministic exhaustive lifecycle claim.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/server_test.go",
@@ -13509,68 +13601,95 @@
       "line": 88,
       "test": "TestAdaptivePlayerUsesInBandStartupMeasurementAndSeamlessQualityControls",
       "baseline_file_sha256": "bf11de5bb78469e2203b1cfa0b2ba950a26c1405425f33f24500c3b6f94bf690",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "F",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Subtitles app-local streaming asset must include ABR startup/cap flags, quality event/control wiring and bounded recovery policy. Source-string presence does not prove in-band startup measurement, seamless decoded playback, or actual recovery.",
+      "production_owner": "app assets.go:playerJS, own static/player_streaming_{start,end}.js",
+      "non_test_callers": "Server New/startup and registered web/API authentication/settings/media endpoints; startup and public-request policies are actual app adapters",
+      "remaining_proof": [
+        {
+          "kind": "retained_isolated_named_subset",
+          "reference": "apps/subtitles/internal/server/server_test.go:TestAdaptivePlayerScriptIncludesABRAndRecoveryPolicy"
+        }
+      ],
+      "coverage_gap": "Subtitles app-local streaming asset must include ABR startup/cap flags, quality event/control wiring and bounded recovery policy. Source-string presence does not prove in-band startup measurement, seamless decoded playback, or actual recovery.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Rename only; assertions unchanged and unproven portions remain explicit. No isolated test or assertion added.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server",
+      "final_test": "TestAdaptivePlayerScriptIncludesABRAndRecoveryPolicy",
+      "failure_analysis": [
+        "ABR startup/FPS/player-size flag removed or false: exact emitted asset fragments detect it.",
+        "Quality callbacks omitted: string guard can detect deletion, but cannot prove callbacks execute.",
+        "Network recovery loops unbounded: literal-bound change detected, but comments/unused copied source could false-pass.",
+        "Dynamic HLS quality/seek/recovery broken with unchanged fragments: this guard cannot detect it; runtime fixtures and populated startup tests provide only partial independent evidence."
+      ]
     },
     {
       "file": "apps/subtitles/internal/server/server_test.go",
       "line": 106,
       "test": "TestViewerCanStreamMediaRange",
       "baseline_file_sha256": "bf11de5bb78469e2203b1cfa0b2ba950a26c1405425f33f24500c3b6f94bf690",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "App byte-range media response must be206 and contain exactly requested bytes2\u20135, not the complete file or wrong selected artifact. Actual playback can succeed with already buffered media and does not explicitly assert these exact response bytes.",
+      "production_owner": "app files.go:serveFile,registerFiles; library_index.go; playback/file_delivery.go:LibraryFileHandler",
+      "non_test_callers": "Server New/startup and registered web/API authentication/settings/media endpoints; startup and public-request policies are actual app adapters",
+      "remaining_proof": [
+        {
+          "kind": "isolated_real_application_handler_or_lifecycle",
+          "reference": "apps/subtitles/internal/server/server_test.go:TestViewerCanStreamMediaRange"
+        }
+      ],
+      "coverage_gap": "Retain the named concrete boundary absent from successful browser traffic. These real-store/httptest handler fixtures are not genuine started-process browser E2E. Most use Config{SubtitleApp:false}; CLI uses SubtitleApp:true, while tested startup/auth/API/media adapters are composed in both modes. Classic library-root HTML path has no established true-CLI E2E equivalence.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Security, concurrency, durability, protocol or lifecycle exception retained. Timed lifecycle assertions can depend on scheduler load; no deterministic exhaustive lifecycle claim.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/server_test.go",
       "line": 127,
       "test": "TestViewerCanUseSidecarSubtitles",
       "baseline_file_sha256": "bf11de5bb78469e2203b1cfa0b2ba950a26c1405425f33f24500c3b6f94bf690",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Scanned SRT sidecar must reach the app player track and public subtitle route as text/vtt, with CRLF/comma timing normalized and WEBVTT prefix. Inspector E2E reads/edits SRT through a different API; no equivalent exact delivered WebVTT cue assertion was found.",
+      "production_owner": "app files.go:serveSubtitle; player.go:buildPlayerData; playback/subtitle_delivery.go",
+      "non_test_callers": "Server New/startup and registered web/API authentication/settings/media endpoints; startup and public-request policies are actual app adapters",
+      "remaining_proof": [
+        {
+          "kind": "isolated_real_application_handler_or_lifecycle",
+          "reference": "apps/subtitles/internal/server/server_test.go:TestViewerCanUseSidecarSubtitles"
+        }
+      ],
+      "coverage_gap": "Retain the named concrete boundary absent from successful browser traffic. These real-store/httptest handler fixtures are not genuine started-process browser E2E. Most use Config{SubtitleApp:false}; CLI uses SubtitleApp:true, while tested startup/auth/API/media adapters are composed in both modes. Classic library-root HTML path has no established true-CLI E2E equivalence.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Security, concurrency, durability, protocol or lifecycle exception retained. Timed lifecycle assertions can depend on scheduler load; no deterministic exhaustive lifecycle claim.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/server_test.go",
       "line": 154,
       "test": "TestViewerCanSeeSidecarArtwork",
       "baseline_file_sha256": "bf11de5bb78469e2203b1cfa0b2ba950a26c1405425f33f24500c3b6f94bf690",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Scanned sidecar artwork link must deliver the selected bytes through app /art/{id}; fallback placeholder/backdrop images can leave a painted page when sidecar selection is wrong. No exact sidecar response byte E2E proof found.",
+      "production_owner": "app files.go:registerFiles,serveFile; playback/file_delivery.go:ArtworkPath,LibraryFileHandler",
+      "non_test_callers": "Server New/startup and registered web/API authentication/settings/media endpoints; startup and public-request policies are actual app adapters",
+      "remaining_proof": [
+        {
+          "kind": "isolated_real_application_handler_or_lifecycle",
+          "reference": "apps/subtitles/internal/server/server_test.go:TestViewerCanSeeSidecarArtwork"
+        }
+      ],
+      "coverage_gap": "Retain the named concrete boundary absent from successful browser traffic. These real-store/httptest handler fixtures are not genuine started-process browser E2E. Most use Config{SubtitleApp:false}; CLI uses SubtitleApp:true, while tested startup/auth/API/media adapters are composed in both modes. Classic library-root HTML path has no established true-CLI E2E equivalence.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Security, concurrency, durability, protocol or lifecycle exception retained. Timed lifecycle assertions can depend on scheduler load; no deterministic exhaustive lifecycle claim.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/server_test.go",
@@ -13611,34 +13730,44 @@
       "line": 221,
       "test": "TestHealthReportsReady",
       "baseline_file_sha256": "bf11de5bb78469e2203b1cfa0b2ba950a26c1405425f33f24500c3b6f94bf690",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Literal healthy status/body assertion is exactly repeated by genuine container/CLI readiness loops; retained healthy/failed-startup and cmd TLS subprocess tests protect app health registration/status. No JSON-format loss is accepted.",
+      "production_owner": "app server_health.go:health or auth_login.go:setup/auth_setup.go:createFirstOwner",
+      "non_test_callers": "Server New/startup and registered web/API authentication/settings/media endpoints; startup and public-request policies are actual app adapters",
+      "remaining_proof": [
+        {
+          "kind": "genuine_started_process_e2e",
+          "reference": "apps/subtitles/scripts/test-container.sh:start_server; scripts/test-instance.sh:wait_ready"
+        }
+      ],
+      "coverage_gap": "Started-process health exact-body proof remains in existing container/instance scripts; this campaign has not executed container builds. No new E2E equivalence claimed for setup page cosmetic absence; retained stronger app setup input/concurrency contract and actual CLI API setup protect required-code regression.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Low literal healthy-body/success-only replay removal; no policy or runtime changes.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/server_test.go",
       "line": 233,
       "test": "TestResponsesCarryBrowserSecurityPolicy",
       "baseline_file_sha256": "bf11de5bb78469e2203b1cfa0b2ba950a26c1405425f33f24500c3b6f94bf690",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Actual home response must retain self-only CSP default-src and nosniff. Broad HTTPSecurity fixture checks other CSP fragments but not these exact policies; successful browser navigation does not verify MIME-sniffing prevention.",
+      "production_owner": "app server.go:newApplication; security.go:security; identitycore/http.go",
+      "non_test_callers": "Server New/startup and registered web/API authentication/settings/media endpoints; startup and public-request policies are actual app adapters",
+      "remaining_proof": [
+        {
+          "kind": "isolated_real_application_handler_or_lifecycle",
+          "reference": "apps/subtitles/internal/server/server_test.go:TestResponsesCarryBrowserSecurityPolicy"
+        }
+      ],
+      "coverage_gap": "Retain the named concrete boundary absent from successful browser traffic. These real-store/httptest handler fixtures are not genuine started-process browser E2E. Most use Config{SubtitleApp:false}; CLI uses SubtitleApp:true, while tested startup/auth/API/media adapters are composed in both modes. Classic library-root HTML path has no established true-CLI E2E equivalence.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Security, concurrency, durability, protocol or lifecycle exception retained. Timed lifecycle assertions can depend on scheduler load; no deterministic exhaustive lifecycle claim.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/server_test.go",
@@ -13919,7 +14048,7 @@
       "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
       "credible_failure": "SSRF app callback must reject metadata/link-local/private/CGNAT/IPv4-mapped-private addresses; changing the adapter to integration-network policy would admit private targets while shared primary remains green.",
-      "production_owner": "identitycore/network.go; app network.go:allowedOutboundIP and hardenedClient",
+      "production_owner": "identitycore/network.go; app security.go:allowedOutboundIP and hardenedHTTPClient",
       "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
       "remaining_proof": [
         {
@@ -13941,7 +14070,7 @@
       "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
       "credible_failure": "DNS answers containing any loopback/private address or no addresses must fail closed through the app callback; public IPv4+IPv6 remains usable.",
-      "production_owner": "app network.go:allowedOutboundIP; identitycore/network.go:AllowedResolvedAddress",
+      "production_owner": "app security.go:allowedOutboundIP; identitycore/network.go:AllowedResolvedAddress",
       "non_test_callers": "Server New registers actual authentication/settings/API/passkey/public login handlers; session/profile stores bind callbacks used by those handlers",
       "remaining_proof": [
         {
@@ -14803,34 +14932,44 @@
       "line": 13,
       "test": "TestSetupCapabilityContract",
       "baseline_file_sha256": "b7d5cb5895b1958f2d4a766f647adad0ffb7fe8f1eaf13e97868c08ac558c39f",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "R",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Eight concurrent actual API setup attempts must create exactly one Owner and return seven conflicts. Invalid duplicate/removed/unknown setup fields and oversized bodies must leave initialization available for a subsequent valid web/API setup.",
+      "production_owner": "app auth_login.go:setup,validSetupForm; auth_setup.go:createFirstOwner; api.go:createAPISetup; identitycore/profile_store.go:AddOwner",
+      "non_test_callers": "Server New/startup and registered web/API authentication/settings/media endpoints; startup and public-request policies are actual app adapters",
+      "remaining_proof": [
+        {
+          "kind": "isolated_real_application_handler_or_lifecycle",
+          "reference": "apps/subtitles/internal/server/setup_capability_test.go:TestSetupCapabilityContract"
+        }
+      ],
+      "coverage_gap": "Retain the named concrete boundary absent from successful browser traffic. These real-store/httptest handler fixtures are not genuine started-process browser E2E. Most use Config{SubtitleApp:false}; CLI uses SubtitleApp:true, while tested startup/auth/API/media adapters are composed in both modes. Classic library-root HTML path has no established true-CLI E2E equivalence.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Security, concurrency, durability, protocol or lifecycle exception retained. Timed lifecycle assertions can depend on scheduler load; no deterministic exhaustive lifecycle claim.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/setup_capability_test.go",
       "line": 19,
       "test": "TestFirstOwnerSetupNeedsNoServerCode",
       "baseline_file_sha256": "b7d5cb5895b1958f2d4a766f647adad0ffb7fe8f1eaf13e97868c08ac558c39f",
-      "decision": null,
-      "audit_status": "pending",
+      "decision": "D",
+      "audit_status": "reviewed",
       "baseline_result": "pass (parent baseline JSON event; verification command/log recorded)",
-      "credible_failure": null,
-      "production_owner": null,
-      "non_test_callers": null,
-      "remaining_proof": [],
-      "coverage_gap": "Not audited yet; no deletion authorized by this row.",
-      "history": null,
-      "risk": null,
-      "validation_command": null
+      "credible_failure": "Valid no-code web/API setup is repeated after each rejected legacy/removed/unknown-field input in the stronger setup contract. Real test-instance API setup also submits no Server code. Removed passive absence-of-label probe adds no important failure beyond mandatory-input acceptance.",
+      "production_owner": "app server_health.go:health or auth_login.go:setup/auth_setup.go:createFirstOwner",
+      "non_test_callers": "Server New/startup and registered web/API authentication/settings/media endpoints; startup and public-request policies are actual app adapters",
+      "remaining_proof": [
+        {
+          "kind": "isolated_application_concurrency_and_input_contract",
+          "reference": "apps/subtitles/internal/server/setup_capability_test.go:TestSetupCapabilityContract; packages/servertest/setup_capability.go"
+        }
+      ],
+      "coverage_gap": "Started-process health exact-body proof remains in existing container/instance scripts; this campaign has not executed container builds. No new E2E equivalence claimed for setup page cosmetic absence; retained stronger app setup input/concurrency contract and actual CLI API setup protect required-code regression.",
+      "history": "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit",
+      "risk": "Low literal healthy-body/success-only replay removal; no policy or runtime changes.",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/subtitles test -count=1 ./internal/server"
     },
     {
       "file": "apps/subtitles/internal/server/shortcuts_test.go",

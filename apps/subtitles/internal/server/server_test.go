@@ -85,7 +85,7 @@ func TestUnknownPlayerStartsDirectWithCompatibleFallback(t *testing.T) {
 	}
 }
 
-func TestAdaptivePlayerUsesInBandStartupMeasurementAndSeamlessQualityControls(t *testing.T) {
+func TestAdaptivePlayerScriptIncludesABRAndRecoveryPolicy(t *testing.T) {
 	t.Parallel()
 	handler := server.New(server.Config{})
 	script := httptest.NewRecorder()
@@ -215,18 +215,6 @@ func TestViewerCanFindContinuedMedia(t *testing.T) {
 
 	if !strings.Contains(homeResponse.Body.String(), "Continue watching") || !strings.Contains(homeResponse.Body.String(), "Resume at 1m") {
 		t.Fatalf("home = %q", homeResponse.Body.String())
-	}
-}
-
-func TestHealthReportsReady(t *testing.T) {
-	t.Parallel()
-
-	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/healthz", nil)
-	response := httptest.NewRecorder()
-	server.New(server.Config{}).ServeHTTP(response, request)
-
-	if response.Code != http.StatusOK || response.Body.String() != "{\"status\":\"ok\"}\n" {
-		t.Fatalf("health = %d %q", response.Code, response.Body.String())
 	}
 }
 
