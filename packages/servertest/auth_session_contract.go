@@ -48,10 +48,10 @@ func assertOneYearBrowserSessionAfterRestart(t *testing.T, fixture LibraryAPIFix
 	if err := json.Unmarshal(fixture.StoredState(t, dataDir, "profiles.json"), &enrolled); err != nil || len(enrolled) != 1 {
 		t.Fatalf("owner enrollment = %v, count = %d", err, len(enrolled))
 	}
+	started := time.Now()
 	ownerCookie = fixture.SignIn(t, handler, "/login", "name=Mike&password=correct+horse+battery+staple&code="+TestTOTP(t, enrolled[0].TOTPSecret, time.Now()))
-	if ownerCookie.MaxAge != 365*24*60*60 || time.Until(ownerCookie.Expires) < 365*24*time.Hour-time.Minute {
-		t.Fatalf("one-year browser cookie lifetime = %d, expiry = %v", ownerCookie.MaxAge, ownerCookie.Expires)
-	}
+	finished := time.Now()
+	AssertIssuedCookieLifetime(t, ownerCookie, 365*24*time.Hour, started, finished, fixture.StoredState(t, dataDir, "sessions.json"))
 	handler = fixture.NewHandler("", dataDir, true)
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil)
 	request.AddCookie(ownerCookie)

@@ -15,6 +15,7 @@ class WorkflowSecurityTests(unittest.TestCase):
         self.assertIn('run: python3 apps/player/scripts/test-startup-local.py', app)
         self.assertIn('KINOSAIL_STARTUP_BROWSER_CHANNEL: chromium', app)
         self.assertIn('name: player-startup-boundary-evidence', app)
+        self.assertIn('include-hidden-files: true', app)
         self.assertIn('.verification/startup/*/receipt.json', app)
         self.assertIn('.verification/startup/*/results/**/startup-measurements.json', app)
         self.assertNotIn('.verification/startup/**\n', app)

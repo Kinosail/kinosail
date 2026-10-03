@@ -254,6 +254,7 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: player-startup-boundary-evidence
+          include-hidden-files: true
           path: |
             .verification/startup/*/receipt.json
             .verification/startup/*/resources.json

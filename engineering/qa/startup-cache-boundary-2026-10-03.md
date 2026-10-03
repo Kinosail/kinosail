@@ -39,3 +39,35 @@ Authentication/configuration files, backups, raw browser traces, and logs are ex
 Host free space fell below 1 GiB. The parent explicitly held further local Player builds and app verification.
 The prior startup media artifact remains preserved. No fresh local media or app-gate success is claimed.
 Exact-source hosted public E2E, CodeQL, findings policy, and fetched-main verification remain pending.
+
+## Retained CI failures and pre-code followup analysis
+
+Fresh PR Go analysis `1886961860` reports zero results on merge `676b80a140a4d3ef7c1fb3dbf56e6cc7847a95e9` (head `0ff2f0276`).
+The protected merge remains blocked by retained authentication checks, which must also pass.
+
+The cookie inventory identified three real-clock issuance assertions affected by PR450:
+
+- `packages/servertest/auth_session_contract.go`: one-year login expects exactly 31,536,000 remaining seconds; CI observed 31,535,999.
+- `apps/player/internal/server/remote_browser_login_test.go`: public Quick Connect issuance expects exactly 28,800 remaining seconds.
+- `apps/subtitles/internal/server/remote_browser_login_test.go`: the same real-clock public issuance expectation.
+
+PR450 derives remaining lifetime from committed whole-second `ExpiresAt` after persistence.
+Preserve equality to that persisted expiry, exact persisted lifetime, public cap, request interval, and cookie security attributes.
+Pure cookie factories and fixed-clock `identitycore` tests have valid exact-duration assertions; preserve those tests.
+The repaired passkey isolation helper already checks the request interval and expiry; leave it unchanged.
+
+Browser artifact `11285515551` identifies the unexpected request as GET `/api/v1/items/{id}/playback`, with no query or body.
+It starts at 50,047 ms, after POST `/logout` at 50,026 ms, before the old page finishes navigation.
+The existing narrow `/api/v1/me` login-probe exception is unrelated and remains unchanged.
+The pre-change sign-out browser journeys reproduce pending/active speculation and failed/cancelled sign-out races.
+Cancel and disable speculation synchronously on same-origin logout form submission, without later authenticated cancellation requests.
+Failed full-page logout reloads an authenticated document; cancelled submission can recover through reload or retry.
+A cached document after sign-out must reload before restoring preparation. Preserve ordinary playback and strict console error checks.
+
+All four sign-out lifecycle cases failed before the client repair and passed afterward (14.1 seconds).
+The post-change cases cover pending work, active preparation, failed logout followed by retry, and cancelled submit followed by reload and retry.
+No API request or authenticated cancellation occurs after the synthetic session is revoked.
+Previously authorized server work retains its existing deadline; sign-out sends no cancellation request that could race session revocation.
+The browser fixture models authentication. Real-server populated browser CI remains required.
+Local new Player builds and app checks remain held; the shared test-support helper compiled without building either app.
+The composed browser-script lint passed with zero errors and warnings. All 50 CI contracts, refreshed architecture checks, actionlint, and source caps passed again.
