@@ -26,7 +26,9 @@
     "removed_declarations": 8,
     "removed_test_lines": 136,
     "final_declarations": 1892,
-    "final_test_lines": 66339
+    "final_test_lines": 66339,
+    "removed_support_helpers": 4,
+    "removed_support_files": 1
   },
   "focused_validation_command": "cd packages && go test ./apihttp ./validation ./hlsmanifest ./transcodepolicy ./transcodehardware",
   "validation_results": {
@@ -292,7 +294,7 @@
     }
   },
   "test_support_inventory": {
-    "audit_status": "unreviewed_preserved",
+    "audit_status": "partial_review_with_explicit_dead_helper_cleanup",
     "files": [
       "packages/commandtest/backup.go",
       "packages/commandtest/child.go",
@@ -477,7 +479,78 @@
       "packages/servertest/ui_icons.go",
       "packages/servertest/webauthn_challenge.go",
       "packages/servertest/webauthn_device.go"
-    ]
+    ],
+    "removed_helpers": [
+      {
+        "file": "packages/servertest/ui_icons.go",
+        "name": "UIIconSetIsCompleteAndLocal",
+        "decision": "D",
+        "audit_status": "reviewed",
+        "baseline_body_sha256": "c4fdf368047eb38f6375cb61c39895adc27d7a17536430286130830a87c62a88",
+        "credible_failure": "Helper only supplies the low-signal assertion already audited and removed by the app owner; no remaining app or package caller exists in the integrated revision.",
+        "caller_evidence": {
+          "checkout": "/Users/mikeo/Documents/Codex/2026-10-03/task/kinosail",
+          "sha": "836de4c70ce6d34268cd4b6653d80d33b389ad13",
+          "working_tree": "clean",
+          "command": "rg -n '\\b(UIIconSetIsCompleteAndLocal|ProductionUITemplatesAvoidMixedGlyphIcons|PasswordFieldsOfferAccessibleRevealControls|AssertBrandLogo|ApplicationPagesExposeSharedKeyboardShortcuts)\\(' --glob '*.go'",
+          "result": "UIIconSetIsCompleteAndLocal occurs only at its declaration, with no references; shortcut helper still has a Player caller and is preserved."
+        },
+        "remaining_coverage": "App owner ledgers map their removed wrappers to browser verification; this support cleanup removes no independently executable Test/Benchmark/Fuzz declaration. AssertInstallableWebApp and all other still-used helpers remain.",
+        "gap": "Local isolated shared checkout still has baseline app wrappers; validation must run after integrating app-removal commits before this support commit. No production seam removed."
+      },
+      {
+        "file": "packages/servertest/ui_icons.go",
+        "name": "ProductionUITemplatesAvoidMixedGlyphIcons",
+        "decision": "D",
+        "audit_status": "reviewed",
+        "baseline_body_sha256": "0130f6bc41230c60d2a1e40f69d620dd0d18e170bd14869f370fce273f94309b",
+        "credible_failure": "Helper only supplies the low-signal assertion already audited and removed by the app owner; no remaining app or package caller exists in the integrated revision.",
+        "caller_evidence": {
+          "checkout": "/Users/mikeo/Documents/Codex/2026-10-03/task/kinosail",
+          "sha": "836de4c70ce6d34268cd4b6653d80d33b389ad13",
+          "working_tree": "clean",
+          "command": "rg -n '\\b(UIIconSetIsCompleteAndLocal|ProductionUITemplatesAvoidMixedGlyphIcons|PasswordFieldsOfferAccessibleRevealControls|AssertBrandLogo|ApplicationPagesExposeSharedKeyboardShortcuts)\\(' --glob '*.go'",
+          "result": "ProductionUITemplatesAvoidMixedGlyphIcons occurs only at its declaration, with no references; shortcut helper still has a Player caller and is preserved."
+        },
+        "remaining_coverage": "App owner ledgers map their removed wrappers to browser verification; this support cleanup removes no independently executable Test/Benchmark/Fuzz declaration. AssertInstallableWebApp and all other still-used helpers remain.",
+        "gap": "Local isolated shared checkout still has baseline app wrappers; validation must run after integrating app-removal commits before this support commit. No production seam removed."
+      },
+      {
+        "file": "packages/servertest/password_manager.go",
+        "name": "PasswordFieldsOfferAccessibleRevealControls",
+        "decision": "D",
+        "audit_status": "reviewed",
+        "baseline_body_sha256": "1e8bbedab4e547e12547cf708487109d66bcde51a04131d0c724f8323d3acdc2",
+        "credible_failure": "Helper only supplies the low-signal assertion already audited and removed by the app owner; no remaining app or package caller exists in the integrated revision.",
+        "caller_evidence": {
+          "checkout": "/Users/mikeo/Documents/Codex/2026-10-03/task/kinosail",
+          "sha": "836de4c70ce6d34268cd4b6653d80d33b389ad13",
+          "working_tree": "clean",
+          "command": "rg -n '\\b(UIIconSetIsCompleteAndLocal|ProductionUITemplatesAvoidMixedGlyphIcons|PasswordFieldsOfferAccessibleRevealControls|AssertBrandLogo|ApplicationPagesExposeSharedKeyboardShortcuts)\\(' --glob '*.go'",
+          "result": "PasswordFieldsOfferAccessibleRevealControls occurs only at its declaration, with no references; shortcut helper still has a Player caller and is preserved."
+        },
+        "remaining_coverage": "App owner ledgers map their removed wrappers to browser verification; this support cleanup removes no independently executable Test/Benchmark/Fuzz declaration. AssertInstallableWebApp and all other still-used helpers remain.",
+        "gap": "Local isolated shared checkout still has baseline app wrappers; validation must run after integrating app-removal commits before this support commit. No production seam removed."
+      },
+      {
+        "file": "packages/servertest/assets.go",
+        "name": "AssertBrandLogo",
+        "decision": "D",
+        "audit_status": "reviewed",
+        "baseline_body_sha256": "86f6be9f8d528e04e15f226dab4f5486d1fc886bcf124db151fc2220e35e8159",
+        "credible_failure": "Helper only supplies the low-signal assertion already audited and removed by the app owner; no remaining app or package caller exists in the integrated revision.",
+        "caller_evidence": {
+          "checkout": "/Users/mikeo/Documents/Codex/2026-10-03/task/kinosail",
+          "sha": "836de4c70ce6d34268cd4b6653d80d33b389ad13",
+          "working_tree": "clean",
+          "command": "rg -n '\\b(UIIconSetIsCompleteAndLocal|ProductionUITemplatesAvoidMixedGlyphIcons|PasswordFieldsOfferAccessibleRevealControls|AssertBrandLogo|ApplicationPagesExposeSharedKeyboardShortcuts)\\(' --glob '*.go'",
+          "result": "AssertBrandLogo occurs only at its declaration, with no references; shortcut helper still has a Player caller and is preserved."
+        },
+        "remaining_coverage": "App owner ledgers map their removed wrappers to browser verification; this support cleanup removes no independently executable Test/Benchmark/Fuzz declaration. AssertInstallableWebApp and all other still-used helpers remain.",
+        "gap": "Local isolated shared checkout still has baseline app wrappers; validation must run after integrating app-removal commits before this support commit. No production seam removed."
+      }
+    ],
+    "unreviewed_preserved": "All other support inventory is preserved without complete semantic classification; removals are restricted to helpers with no integrated app callers."
   },
   "files": [
     {

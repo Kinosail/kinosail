@@ -123,28 +123,6 @@ func PasskeyLoginSupportsPasswordManagerAutofill(t *testing.T, passkeysJS []byte
 	}
 }
 
-// PasswordFieldsOfferAccessibleRevealControls runs the corresponding app regression contract.
-func PasswordFieldsOfferAccessibleRevealControls(t *testing.T, themeJS, appCSS []byte) {
-	t.Parallel()
-	for _, want := range []string{
-		`input[type="password"]`,
-		`button.type = "button"`,
-		`button.setAttribute("aria-label", "Show secret")`,
-		`button.setAttribute("aria-pressed", "false")`,
-		`input.type = shown ? "password" : "text"`,
-		`button.setAttribute("aria-label", shown ? "Show secret" : "Hide secret")`,
-	} {
-		if !strings.Contains(string(themeJS), want) {
-			t.Errorf("password controls script missing %q", want)
-		}
-	}
-	for _, want := range []string{".password-control", ".password-toggle", ".password-toggle[aria-pressed=true]"} {
-		if !strings.Contains(string(appCSS), want) {
-			t.Errorf("password controls styles missing %q", want)
-		}
-	}
-}
-
 // CopyControlsReportClipboardFallback runs the corresponding app regression contract.
 func CopyControlsReportClipboardFallback(t *testing.T, themeJS []byte) {
 	t.Parallel()
