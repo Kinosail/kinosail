@@ -5455,23 +5455,36 @@
       "sha256": "de3ce64c5d1a08420d14c4babeb7fa5d1e26cc010305ed44fe4df4a2968c0e65",
       "path": "apps/player/internal/configuration/google_cast_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Retain an important failure boundary existing genuine E2E does not inject. Six malformed/oversizedhex IDs reject with absent configuration.json; bad environment ID rejects Load.",
+      "category": "configuration boundary",
+      "credible_failure": "Bad receiver IDs must not be persisted or accepted from deployment environment.",
+      "production_owner": [
+        "apps/player/internal/configuration/validation_rules.go:validCastAppID",
+        "apps/player/internal/configuration/mutation.go:Set",
+        "apps/player/internal/configuration/load.go"
+      ],
+      "non_test_callers": [
+        "casting receiver configuration via Load; settings configuration writes"
+      ],
+      "remaining_proof": [
+        {
+          "path": "apps/player/internal/configuration/google_cast_test.go",
+          "scenario": "TestGoogleCastAppIDRejectsInvalidValuesBeforePersistence",
+          "kind": "retained isolated test; not genuine E2E"
+        }
+      ],
+      "coverage_limit": "Current live first-install, playback, library, settings and offline journeys do not inject the described storage failure, journal corruption, rejected configuration matrix or blocked-write interleaving. No E2E equivalence claim.",
       "history": [
         "3a9cc8fa80d6c233524d7510311979b8d986edd4 Guard Cast teardown and simplify validation tests",
         "ca343a0cd8bde5882e76afc57e4be0fcb1fc0bf4 Add broad receiver casting support for Player"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "important security/concurrency/data-loss or configuration boundary",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewed_assertions": "Six malformed/oversizedhex IDs reject with absent configuration.json; bad environment ID rejects Load."
     },
     {
       "name": "TestGoogleCastAppIDPreservesValidValueAfterInvalidReplacement",
@@ -5480,23 +5493,36 @@
       "sha256": "9374ce257c32bd755a57a6851fc971031e9dfa23aeb4c28e21e6995a89cd5968",
       "path": "apps/player/internal/configuration/google_cast_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Retain an important failure boundary existing genuine E2E does not inject. Saves lowercase deadbeef, rejects invalid! replacement, reloads same prior ID.",
+      "category": "configuration boundary",
+      "credible_failure": "Rejected receiver-ID replacement must preserve a prior usable receiverID across a fresh Load.",
+      "production_owner": [
+        "apps/player/internal/configuration/validation_rules.go:validCastAppID",
+        "apps/player/internal/configuration/mutation.go:Set",
+        "apps/player/internal/configuration/load.go"
+      ],
+      "non_test_callers": [
+        "casting receiver configuration via Load; settings configuration writes"
+      ],
+      "remaining_proof": [
+        {
+          "path": "apps/player/internal/configuration/google_cast_test.go",
+          "scenario": "TestGoogleCastAppIDPreservesValidValueAfterInvalidReplacement",
+          "kind": "retained isolated test; not genuine E2E"
+        }
+      ],
+      "coverage_limit": "Current live first-install, playback, library, settings and offline journeys do not inject the described storage failure, journal corruption, rejected configuration matrix or blocked-write interleaving. No E2E equivalence claim.",
       "history": [
         "3a9cc8fa80d6c233524d7510311979b8d986edd4 Guard Cast teardown and simplify validation tests",
         "ca343a0cd8bde5882e76afc57e4be0fcb1fc0bf4 Add broad receiver casting support for Player"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "important security/concurrency/data-loss or configuration boundary",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewed_assertions": "Saves lowercase deadbeef, rejects invalid! replacement, reloads same prior ID."
     },
     {
       "name": "TestMCPConfigurationRequiresTheCompleteOAuthResource",
@@ -5553,22 +5579,34 @@
       "sha256": "5f3f634d80aa5663f56f90f32dcde5f9f1cd68cd089fb9a14cb465a82195a175",
       "path": "apps/player/internal/configuration/mutation_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Retain an important failure boundary existing genuine E2E does not inject. All four mutation entry points reject regular-file directory; unknown/public-secret key placement rejected; no-op persist returns nil.",
+      "category": "configuration storage",
+      "credible_failure": "Regular-file data directory and invalid key placement must be rejected before corrupting paired configuration.",
+      "production_owner": [
+        "apps/player/internal/configuration/mutation.go:configurationMutation,readStoredConfiguration,validateStoredConfiguration",
+        "packages/configurationcore/pair.go"
+      ],
+      "non_test_callers": [
+        "configuration.Set/Delete/SetSCIM/DeleteSCIM; cmd loadConfiguration and settings storage adapters"
+      ],
+      "remaining_proof": [
+        {
+          "path": "apps/player/internal/configuration/mutation_internal_test.go",
+          "scenario": "TestConfigurationMutationHelpersRejectInvalidBoundaries",
+          "kind": "retained isolated test; not genuine E2E"
+        }
+      ],
+      "coverage_limit": "Current live first-install, playback, library, settings and offline journeys do not inject the described storage failure, journal corruption, rejected configuration matrix or blocked-write interleaving. No E2E equivalence claim.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "important security/concurrency/data-loss or configuration boundary",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewed_assertions": "All four mutation entry points reject regular-file directory; unknown/public-secret key placement rejected; no-op persist returns nil."
     },
     {
       "name": "TestConfigurationTransactionRecoversPairedFiles",
@@ -5577,22 +5615,34 @@
       "sha256": "554e774eb2696bc6749523e360b25ed017a44cb9aba7e885a77cc3b0de1eb52a",
       "path": "apps/player/internal/configuration/mutation_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Retain an important failure boundary existing genuine E2E does not inject. Writes recovery journal with Recovered name and secret, reads pair, checks both exact bytes and removed journal.",
+      "category": "configuration recovery",
+      "credible_failure": "Crash journal recovery must restore both public and secret documents and retire the journal.",
+      "production_owner": [
+        "apps/player/internal/configuration/mutation.go:readStoredConfiguration",
+        "packages/configurationcore/transaction.go:Recover"
+      ],
+      "non_test_callers": [
+        "configuration load/mutation paths invoking readStoredConfiguration"
+      ],
+      "remaining_proof": [
+        {
+          "path": "apps/player/internal/configuration/mutation_internal_test.go",
+          "scenario": "TestConfigurationTransactionRecoversPairedFiles",
+          "kind": "retained isolated test; not genuine E2E"
+        }
+      ],
+      "coverage_limit": "Current live first-install, playback, library, settings and offline journeys do not inject the described storage failure, journal corruption, rejected configuration matrix or blocked-write interleaving. No E2E equivalence claim.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "important security/concurrency/data-loss or configuration boundary",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewed_assertions": "Writes recovery journal with Recovered name and secret, reads pair, checks both exact bytes and removed journal."
     },
     {
       "name": "TestConfigurationTransactionRejectsInvalidRecoveryState",
@@ -5601,22 +5651,34 @@
       "sha256": "8ddf48d7c1155b2ea4c5d2d6984a1bd3c3471bc8d920cc57cfd5baab65b83467",
       "path": "apps/player/internal/configuration/mutation_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Retain an important failure boundary existing genuine E2E does not inject. MalformedJSON, missingsecrets, regular-file parent and directory journal each rejected; nonempty directory preserved.",
+      "category": "configuration recovery",
+      "credible_failure": "Malformed/incomplete journal or directory journal must fail closed; legitimate absent-journal removal must succeed.",
+      "production_owner": [
+        "apps/player/internal/configuration/mutation.go:readStoredConfiguration",
+        "packages/configurationcore/transaction.go:Write,Recover,Remove"
+      ],
+      "non_test_callers": [
+        "configuration load/mutation paths invoking readStoredConfiguration"
+      ],
+      "remaining_proof": [
+        {
+          "path": "apps/player/internal/configuration/mutation_internal_test.go",
+          "scenario": "TestConfigurationTransactionRejectsInvalidRecoveryState",
+          "kind": "retained isolated test; not genuine E2E"
+        }
+      ],
+      "coverage_limit": "Current live first-install, playback, library, settings and offline journeys do not inject the described storage failure, journal corruption, rejected configuration matrix or blocked-write interleaving. No E2E equivalence claim.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "important security/concurrency/data-loss or configuration boundary",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewed_assertions": "MalformedJSON, missingsecrets, regular-file parent and directory journal each rejected; nonempty directory preserved."
     },
     {
       "name": "TestConfigurationTransactionRejectsSemanticallyInvalidRecoveryWithoutSideEffects",
@@ -5625,22 +5687,34 @@
       "sha256": "f63374fc9720cae74a2f51b8640457f523f80515dd38509f175bfde0bd9def71",
       "path": "apps/player/internal/configuration/mutation_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Retain an important failure boundary existing genuine E2E does not inject. Unknown key, secret in public document and badexpiry journal; requires both Before/old documents unchanged and marker remains.",
+      "category": "configuration recovery",
+      "credible_failure": "Invalid recovery content must not overwrite either existing document or discard the recovery marker.",
+      "production_owner": [
+        "apps/player/internal/configuration/mutation.go:validateStoredConfiguration",
+        "packages/configurationcore/transaction.go:read,Recover"
+      ],
+      "non_test_callers": [
+        "configuration load/mutation paths invoking readStoredConfiguration"
+      ],
+      "remaining_proof": [
+        {
+          "path": "apps/player/internal/configuration/mutation_internal_test.go",
+          "scenario": "TestConfigurationTransactionRejectsSemanticallyInvalidRecoveryWithoutSideEffects",
+          "kind": "retained isolated test; not genuine E2E"
+        }
+      ],
+      "coverage_limit": "Current live first-install, playback, library, settings and offline journeys do not inject the described storage failure, journal corruption, rejected configuration matrix or blocked-write interleaving. No E2E equivalence claim.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "important security/concurrency/data-loss or configuration boundary",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewed_assertions": "Unknown key, secret in public document and badexpiry journal; requires both Before/old documents unchanged and marker remains."
     },
     {
       "name": "TestConfigurationMutationRejectsNullPersistedMaps",
@@ -5649,22 +5723,35 @@
       "sha256": "5ee1ef0d93e6a40dc52aae6223148333d5aceea0ad3f3311c0bc08da147d0d96",
       "path": "apps/player/internal/configuration/mutation_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Retain an important failure boundary existing genuine E2E does not inject. Public Before name + secretsnull; SetSCIM rejects and exact byte comparison preserves both.",
+      "category": "configuration data loss",
+      "credible_failure": "A null secrets document must block an SCIM pair update while preserving both original documents.",
+      "production_owner": [
+        "apps/player/internal/configuration/parse.go:parseJSON",
+        "apps/player/internal/configuration/mutation.go:readStoredConfiguration",
+        "packages/configurationcore/transaction.go"
+      ],
+      "non_test_callers": [
+        "SetSCIM from settings_scim_storage.go and public configuration callers"
+      ],
+      "remaining_proof": [
+        {
+          "path": "apps/player/internal/configuration/mutation_internal_test.go",
+          "scenario": "TestConfigurationMutationRejectsNullPersistedMaps",
+          "kind": "retained isolated test; not genuine E2E"
+        }
+      ],
+      "coverage_limit": "Current live first-install, playback, library, settings and offline journeys do not inject the described storage failure, journal corruption, rejected configuration matrix or blocked-write interleaving. No E2E equivalence claim.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "important security/concurrency/data-loss or configuration boundary",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewed_assertions": "Public Before name + secretsnull; SetSCIM rejects and exact byte comparison preserves both."
     },
     {
       "name": "TestConfigurationTransactionRecoverySurvivesTargetFailure",
@@ -5673,22 +5760,34 @@
       "sha256": "041ed011dd2f61494a1ed8cdd3191edbd55221c9655f293371dff22d2878e03e",
       "path": "apps/player/internal/configuration/mutation_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Retain an important failure boundary existing genuine E2E does not inject. Both public/secret target directories individually cause failure; removing each directory permits successful next recovery.",
+      "category": "configuration recovery",
+      "credible_failure": "Recovery blocked by a directory target must leave a usable journal so recovery succeeds after target repair.",
+      "production_owner": [
+        "apps/player/internal/configuration/mutation.go:readStoredConfiguration",
+        "packages/configurationcore/transaction.go:Recover"
+      ],
+      "non_test_callers": [
+        "configuration load/mutation paths invoking readStoredConfiguration"
+      ],
+      "remaining_proof": [
+        {
+          "path": "apps/player/internal/configuration/mutation_internal_test.go",
+          "scenario": "TestConfigurationTransactionRecoverySurvivesTargetFailure",
+          "kind": "retained isolated test; not genuine E2E"
+        }
+      ],
+      "coverage_limit": "Current live first-install, playback, library, settings and offline journeys do not inject the described storage failure, journal corruption, rejected configuration matrix or blocked-write interleaving. No E2E equivalence claim.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "important security/concurrency/data-loss or configuration boundary",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewed_assertions": "Both public/secret target directories individually cause failure; removing each directory permits successful next recovery."
     },
     {
       "name": "TestOIDCConfigurationRequiresOneCompleteSafeSet",
@@ -8108,22 +8207,34 @@
       "sha256": "2174c9d438ce5c8e3264814cffe019282cd1fa9f992fd6bab2cdfaba6303b5f0",
       "path": "apps/player/internal/server/auth_atomicity_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Retain an important failure boundary existing genuine E2E does not inject. Injects the first settings write failure, checks HTTP500 and no profiles, then retries for201.",
+      "category": "auth atomicity",
+      "credible_failure": "A settings persistence failure must not publish the first Owner; retry must subsequently create that Owner.",
+      "production_owner": [
+        "apps/player/internal/server/auth_setup.go:createFirstOwner,commitFirstOwner",
+        "apps/player/internal/server/auth_state.go:persistSettingsAnd"
+      ],
+      "non_test_callers": [
+        "createAPISetup and web setup createOwner"
+      ],
+      "remaining_proof": [
+        {
+          "path": "apps/player/internal/server/auth_atomicity_internal_test.go",
+          "scenario": "TestAPISetupSettingsFailureDoesNotClaimFirstOwner",
+          "kind": "retained isolated test; not genuine E2E"
+        }
+      ],
+      "coverage_limit": "Current live first-install, playback, library, settings and offline journeys do not inject the described storage failure, journal corruption, rejected configuration matrix or blocked-write interleaving. No E2E equivalence claim.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "important security/concurrency/data-loss or configuration boundary",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewed_assertions": "Injects the first settings write failure, checks HTTP500 and no profiles, then retries for201."
     },
     {
       "name": "TestAPISetupOwnerFailureRollsBackSettingsAndMFAEnrollment",
@@ -8132,22 +8243,34 @@
       "sha256": "def019ce3db4045e1e8e07a8066cd636c273dd74b924381a21448a7c3df4e34c",
       "path": "apps/player/internal/server/auth_atomicity_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Retain an important failure boundary existing genuine E2E does not inject. Injects profile persistence failure; checks HTTP500, no Owner, no in-memory/persisted onboarding and PendingCount0.",
+      "category": "auth atomicity",
+      "credible_failure": "Failure persisting the Owner after settings succeeds must restore onboarding settings and discard pending MFA enrollment.",
+      "production_owner": [
+        "apps/player/internal/server/auth_setup.go:createOwner,commitFirstOwner",
+        "apps/player/internal/server/auth_state.go:persistSettingsAnd"
+      ],
+      "non_test_callers": [
+        "createAPISetup and web setup createOwner"
+      ],
+      "remaining_proof": [
+        {
+          "path": "apps/player/internal/server/auth_atomicity_internal_test.go",
+          "scenario": "TestAPISetupOwnerFailureRollsBackSettingsAndMFAEnrollment",
+          "kind": "retained isolated test; not genuine E2E"
+        }
+      ],
+      "coverage_limit": "Current live first-install, playback, library, settings and offline journeys do not inject the described storage failure, journal corruption, rejected configuration matrix or blocked-write interleaving. No E2E equivalence claim.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "important security/concurrency/data-loss or configuration boundary",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewed_assertions": "Injects profile persistence failure; checks HTTP500, no Owner, no in-memory/persisted onboarding and PendingCount0."
     },
     {
       "name": "TestAPIRequireMFASettingsFailureKeepsActiveSessions",
@@ -8156,22 +8279,34 @@
       "sha256": "2f0c38b0d295bbcc7d6a1d30db4f70e5fe434a3b79d14b41de3c2818a4a0ab58",
       "path": "apps/player/internal/server/auth_atomicity_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Retain an important failure boundary existing genuine E2E does not inject. Injects settings persist failure; checks HTTP500, false requireMFA, resolves both original session tokens.",
+      "category": "auth atomicity",
+      "credible_failure": "Failure saving an MFA requirement must preserve the old policy and active sessions.",
+      "production_owner": [
+        "apps/player/internal/server/auth.go:setRequireMFA",
+        "apps/player/internal/server/auth_state.go:persistSettingsAnd"
+      ],
+      "non_test_callers": [
+        "settings_actions.go:apiMFARequirement,saveMFARequirement"
+      ],
+      "remaining_proof": [
+        {
+          "path": "apps/player/internal/server/auth_atomicity_internal_test.go",
+          "scenario": "TestAPIRequireMFASettingsFailureKeepsActiveSessions",
+          "kind": "retained isolated test; not genuine E2E"
+        }
+      ],
+      "coverage_limit": "Current live first-install, playback, library, settings and offline journeys do not inject the described storage failure, journal corruption, rejected configuration matrix or blocked-write interleaving. No E2E equivalence claim.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "important security/concurrency/data-loss or configuration boundary",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewed_assertions": "Injects settings persist failure; checks HTTP500, false requireMFA, resolves both original session tokens."
     },
     {
       "name": "TestAPIRequireMFASessionFailureRollsBackRequirement",
@@ -8180,22 +8315,34 @@
       "sha256": "a8bb737ed9a70fe87eb5b9c7d5a104a79c30eb6d1e00a9a2fbfffdb578db7543",
       "path": "apps/player/internal/server/auth_atomicity_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Retain an important failure boundary existing genuine E2E does not inject. Settings write succeeds then session persistence fails; checksHTTP500, memory/durable RequireMFAfalse and one original session.",
+      "category": "auth atomicity",
+      "credible_failure": "Failure saving revoked sessions must restore the durable MFA requirement and preserve sessions.",
+      "production_owner": [
+        "apps/player/internal/server/auth.go:setRequireMFA",
+        "apps/player/internal/server/auth_state.go:persistSettingsAnd"
+      ],
+      "non_test_callers": [
+        "settings_actions.go:apiMFARequirement,saveMFARequirement"
+      ],
+      "remaining_proof": [
+        {
+          "path": "apps/player/internal/server/auth_atomicity_internal_test.go",
+          "scenario": "TestAPIRequireMFASessionFailureRollsBackRequirement",
+          "kind": "retained isolated test; not genuine E2E"
+        }
+      ],
+      "coverage_limit": "Current live first-install, playback, library, settings and offline journeys do not inject the described storage failure, journal corruption, rejected configuration matrix or blocked-write interleaving. No E2E equivalence claim.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "important security/concurrency/data-loss or configuration boundary",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewed_assertions": "Settings write succeeds then session persistence fails; checksHTTP500, memory/durable RequireMFAfalse and one original session."
     },
     {
       "name": "TestAuthStateMutationsUseOneLockOrder",
@@ -8204,22 +8351,35 @@
       "sha256": "040b16c0d309a008ed2608ba4973adde15c700ba617190f912bc5222c8792d4f",
       "path": "apps/player/internal/server/auth_atomicity_internal_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Retain an important failure boundary existing genuine E2E does not inject. Runs50 concurrent pairs, times out after2seconds, requires one profile and MFAenabled.",
+      "category": "auth concurrency",
+      "credible_failure": "Concurrent first-Owner creation and MFA requirement mutation must not deadlock or lose policy/profile state.",
+      "production_owner": [
+        "apps/player/internal/server/auth_setup.go:commitFirstOwner",
+        "apps/player/internal/server/auth.go:setRequireMFA",
+        "apps/player/internal/server/auth_state.go:persistSettingsAnd"
+      ],
+      "non_test_callers": [
+        "createOwner; apiMFARequirement,saveMFARequirement"
+      ],
+      "remaining_proof": [
+        {
+          "path": "apps/player/internal/server/auth_atomicity_internal_test.go",
+          "scenario": "TestAuthStateMutationsUseOneLockOrder",
+          "kind": "retained isolated test; not genuine E2E"
+        }
+      ],
+      "coverage_limit": "Current live first-install, playback, library, settings and offline journeys do not inject the described storage failure, journal corruption, rejected configuration matrix or blocked-write interleaving. No E2E equivalence claim.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "important security/concurrency/data-loss or configuration boundary",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewed_assertions": "Runs50 concurrent pairs, times out after2seconds, requires one profile and MFAenabled."
     },
     {
       "name": "TestViewerContentRatingAppliesToBrowseAndMediaRoutes",
@@ -10251,21 +10411,34 @@
       "end_line": 51,
       "sha256": "a1c8e13b4842581c3489fe17919be129d42ee18a822c7fec1f531029a2218e78",
       "path": "apps/player/internal/server/download_concurrency_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "reason": "F retained per parent reconciliation: fake executable blocks outstanding work and observes at most one FFmpeg start, protecting a concrete concurrency limit. The name overstates this as playback reservation: shared Manager currently serializes work independently of the governor, and the test never acquires Playback during background work. It misses wrong-class/removed-admission wiring.",
+      "category": "misleading concurrency assertion",
+      "credible_failure": "A future Manager.work concurrency change starts multiple FFmpeg jobs concurrently rather than at most one background process, exceeding the observed BackgroundCapacity=1.",
+      "production_owner": [
+        "apps/player/internal/server/downloads.go:newDownloadManager",
+        "apps/player/internal/server/downloads_config.go:downloadConfiguration",
+        "packages/downloads/manager.go:work",
+        "packages/workload/governor.go:AcquireEncoding"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/server.go:New"
+      ],
+      "remaining_proof": [
+        {
+          "path": "packages/workload/governor_test.go",
+          "scenario": "TestGovernorReservesHeavyCapacityForPlayback",
+          "kind": "isolated canonical policy test: holdsBackground, admitsPlayback, rejects secondBackground; not an app wiring E2E"
+        }
+      ],
+      "coverage_limit": "No live E2E download-vs-playback admission matrix. Test does not prove Background-vs-Playback wiring; canonical workload governor tests prove policy in isolation. Independent review may assess ownership duplication.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "important concurrency limit retained; app admission wiring gap documented",
+      "validation_command": "Root Player Go and packages/workload suite; no child execution",
       "baseline_result": "pass",
       "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
     },
@@ -19399,22 +19572,35 @@
       "sha256": "0b99d3318a29bef69078a2301f669ff57c2fb5ffaa055e2a0cf540f60fa19c09",
       "path": "apps/player/internal/server/progress_concurrency_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "semantic_review_complete",
+      "reason": "Retain an important failure boundary existing genuine E2E does not inject. Blocks injected persistence with channels; read must return old0within25ms; releasing write publishes42.",
+      "category": "progress concurrency",
+      "credible_failure": "A blocked progress write must not block a read or expose uncommitted42seconds; accepted write must subsequently publish42.",
+      "production_owner": [
+        "apps/player/internal/server/progress.go:newProgressStore",
+        "packages/catalog/progress_request_store.go:Get,SetRevision",
+        "packages/catalog/progress.go:ProgressStorage.Update"
+      ],
+      "non_test_callers": [
+        "HTTP progress handlers, media_progress_sync.go, catalog browse access"
+      ],
+      "remaining_proof": [
+        {
+          "path": "apps/player/internal/server/progress_concurrency_test.go",
+          "scenario": "TestProgressReadsRemainResponsiveAndCommittedWhileStateIsPersisted",
+          "kind": "retained isolated test; not genuine E2E"
+        }
+      ],
+      "coverage_limit": "Current live first-install, playback, library, settings and offline journeys do not inject the described storage failure, journal corruption, rejected configuration matrix or blocked-write interleaving. No E2E equivalence claim.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "important security/concurrency/data-loss or configuration boundary",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewed_assertions": "Blocks injected persistence with channels; read must return old0within25ms; releasing write publishes42."
     },
     {
       "name": "TestWebProgressRejectsOversizedSession",
@@ -19653,25 +19839,44 @@
       "end_line": 22,
       "sha256": "fe9fc3dc8be2f5b2e0998728275e8e66fbf941975944e2f4c152630918ff6fef",
       "path": "apps/player/internal/server/qa_coverage_edges_test.go",
-      "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "decision": "D",
+      "review_status": "candidate_evidence_complete",
+      "reason": "Direct replay of aliased shared Capabilities.Supports; canonical shared test already checks automatic, explicitly supported and unknown backend lookup. The Player test has no app binding or delivery assertion.",
+      "category": "duplicate shared owner contract",
+      "credible_failure": "Supports rejects auto, rejects a supported backend or accepts an unknown backend; canonical package test catches all three independently.",
+      "production_owner": [
+        "packages/transcodehardware/capabilities.go:Capabilities.Supports,Backend",
+        "apps/player/internal/server/hardware.go:hardwareCapabilities alias"
+      ],
+      "non_test_callers": [
+        "packages/transcodehardware/settings.go:ValidateSelection; no direct Player production Supports invocation"
+      ],
+      "remaining_proof": [
+        {
+          "path": "packages/transcodehardware/capabilities_test.go",
+          "scenario": "TestCapabilityLookupAndEncoderResolution",
+          "kind": "isolated canonical shared owner; not genuine E2E; same auto/supported/unknown lookup contract plus encoder-resolution outcomes"
+        },
+        {
+          "path": "apps/player/internal/server/hardware_capabilities_test.go",
+          "scenario": "TestHardwareCapabilitiesDriveAutomaticSelectionAndVisibleFallback",
+          "kind": "isolated HTTP/temporary FFmpeg app fixture; not genuine E2E; app selection/HLS/settings wiring remains"
+        }
+      ],
+      "coverage_limit": "Real test-instance browser journeys do not emulate the hardware backend matrix. The isolated canonical hardware keeper is retained; no E2E equivalence claim.",
       "history": [
         "cb848a17a9d460e1dfe1e3d901e79410d1485054 Remove duplicate and unreachable test coverage",
         "3061af1cd083cfc5848d42c038b478d5e573142b Restore static gates and offline regression contracts",
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
-      "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "production_or_support_deletion_unlocked": "Shared AssertHardwareSupportAcceptsAutomaticAndKnownBackends helper may be retired by shared owner only after Subtitles caller is handled.",
+      "risk": "low with shared owner keeper and distinct app delivery fixture retained",
+      "validation_command": "go test ./packages/transcodehardware -run TestCapabilityLookupAndEncoderResolution -count=1; root Player Go suite",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "history_context": "cb848a17a removed adjacent TMDB shared-owner replay; this three-predicate replay survived unchanged. Source alias carries no Player-specific Supports implementation.",
+      "caller_search_command": "rg -n Supports\\( apps/player/internal/server --glob !**/*_test.go",
+      "caller_search_result_before_removal": "No direct Player production calls; type aliases transcodehardware.Capabilities."
     },
     {
       "name": "TestPlayerFormattingUsesStableHumanReadableBoundaries",
@@ -25553,22 +25758,35 @@
       "sha256": "2312a8cfeb5061023ba6894c229638b16b253796d2e8c3928d6dbe55d4441311",
       "path": "apps/player/internal/server/web_ux_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "test_and_boundary_review_pending_full_owner",
+      "reason": "Retain an important failure boundary existing genuine E2E does not inject. Submits <Viewer>, privatepassword andTOTP; escaped safe name remains, neither secret appears; Unauthorized/no-store.",
+      "category": "web secret handling",
+      "credible_failure": "Failed login rendering must escape viewer name, exclude password/TOTP, preserve safe destination and set no-store.",
+      "production_owner": [
+        "apps/player/internal/server/web_error.go:writeWebError,loginErrorView",
+        "apps/player/internal/server/locale.go:newLocalizedTemplate",
+        "packages/identitycore/redirects.go:SafeLoginReturn"
+      ],
+      "non_test_callers": [
+        "localizedError/auth login errors"
+      ],
+      "remaining_proof": [
+        {
+          "path": "apps/player/internal/server/web_ux_test.go",
+          "scenario": "TestWebLoginFailureRetainsSafeNameWithoutSecrets",
+          "kind": "retained isolated test; not genuine E2E"
+        }
+      ],
+      "coverage_limit": "Current live first-install, playback, library, settings and offline journeys do not inject the described storage failure, journal corruption, rejected configuration matrix or blocked-write interleaving. No E2E equivalence claim.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "important security/concurrency/data-loss or configuration boundary",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewed_assertions": "Submits <Viewer>, privatepassword andTOTP; escaped safe name remains, neither secret appears; Unauthorized/no-store."
     },
     {
       "name": "TestWebFailureRejectsUnsafeRecoveryDestinations",
@@ -25577,22 +25795,34 @@
       "sha256": "92fc0ae71aee754fe8e2652f9c6446ecadc58b21912a6c2746011970acf6db39",
       "path": "apps/player/internal/server/web_ux_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "test_and_boundary_review_pending_full_owner",
+      "reason": "Retain an important failure boundary existing genuine E2E does not inject. Offsite, credential-bearing, protocol-relative andoversizedreferrers each yield root recovery and do not echo credentials.",
+      "category": "web origin boundary",
+      "credible_failure": "Error recovery must not turn a referrer into an offsite navigation or leak URL credentials.",
+      "production_owner": [
+        "apps/player/internal/server/web_error.go:writeWebError,webErrorReturnPath",
+        "packages/identitycore/redirects.go:SafeLoginReturn"
+      ],
+      "non_test_callers": [
+        "localizedError form failures"
+      ],
+      "remaining_proof": [
+        {
+          "path": "apps/player/internal/server/web_ux_test.go",
+          "scenario": "TestWebFailureRejectsUnsafeRecoveryDestinations",
+          "kind": "retained isolated test; not genuine E2E"
+        }
+      ],
+      "coverage_limit": "Current live first-install, playback, library, settings and offline journeys do not inject the described storage failure, journal corruption, rejected configuration matrix or blocked-write interleaving. No E2E equivalence claim.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "important security/concurrency/data-loss or configuration boundary",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewed_assertions": "Offsite, credential-bearing, protocol-relative andoversizedreferrers each yield root recovery and do not echo credentials."
     },
     {
       "name": "TestOfflineSyncProfileHeaderRejectsBeforeReadingOrWritingMedia",
@@ -25601,28 +25831,40 @@
       "sha256": "3cd3bb3e9e401251f8edb16fd4a6c3f1f01f99cb7d0d96440d536669cee6df0f",
       "path": "apps/player/internal/server/web_ux_test.go",
       "decision": "R",
-      "review_status": "inventory_only_retained_pending_semantic_review",
-      "reason": "Retained conservatively; full production/history/E2E semantic comparison is pending. No claim of an evidence-complete value verdict.",
-      "category": "pending",
-      "credible_failure": null,
-      "production_owner": [],
-      "non_test_callers": [],
-      "remaining_proof": [],
-      "coverage_limit": "No coverage-equivalence claim; retained until semantic review finishes.",
+      "review_status": "test_and_boundary_review_pending_full_owner",
+      "reason": "Retain an important failure boundary existing genuine E2E does not inject. Four malformedidentityheaders with authenticatedviewer; nildependencies prove rejection precedes any read/write;403.",
+      "category": "offline profile isolation",
+      "credible_failure": "Empty, foreign, duplicated or oversized supplied profile header must reject before catalog/progress access.",
+      "production_owner": [
+        "media_progress_sync.go:syncMediaProgress"
+      ],
+      "non_test_callers": [
+        "api_library.go progress/sync route registration"
+      ],
+      "remaining_proof": [
+        {
+          "path": "apps/player/internal/server/web_ux_test.go",
+          "scenario": "TestOfflineSyncProfileHeaderRejectsBeforeReadingOrWritingMedia",
+          "kind": "retained isolated test; not genuine E2E"
+        }
+      ],
+      "coverage_limit": "Current live first-install, playback, library, settings and offline journeys do not inject the described storage failure, journal corruption, rejected configuration matrix or blocked-write interleaving. No E2E equivalence claim.",
       "history": [
         "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
       ],
       "production_or_support_deletion_unlocked": "None; this batch removes tests only.",
-      "risk": "unknown pending semantic review",
-      "validation_command": "cd apps/player && make test; make test-instance-check",
+      "risk": "important security/concurrency/data-loss or configuration boundary",
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./...",
       "baseline_result": "pass",
-      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl"
+      "baseline_evidence": ".verification/test-overhaul/baseline/player-go.jsonl",
+      "reviewed_assertions": "Four malformedidentityheaders with authenticatedviewer; nildependencies prove rejection precedes any read/write;403."
     }
   ],
   "proposed_removals": [
     "TestApplicationPagesExposeSharedKeyboardShortcuts",
     "TestBrandUsesFoldedPlayLogo",
     "TestDirectPlayerDoesNotRestartTheSourceSelectedByHTML",
+    "TestHardwareSupportAcceptsAutomaticAndKnownBackends",
     "TestNavigationPagesRefreshCachedAssets",
     "TestOfflineDownloadQueueRejectsOverflowBeforeCreatingAJob",
     "TestOfflinePagesUseTheCurrentNavigationBundle",
@@ -25641,6 +25883,7 @@
     "TestApplicationPagesExposeSharedKeyboardShortcuts",
     "TestBrandUsesFoldedPlayLogo",
     "TestDirectPlayerDoesNotRestartTheSourceSelectedByHTML",
+    "TestHardwareSupportAcceptsAutomaticAndKnownBackends",
     "TestNavigationPagesRefreshCachedAssets",
     "TestOfflineDownloadQueueRejectsOverflowBeforeCreatingAJob",
     "TestOfflinePagesUseTheCurrentNavigationBundle",
@@ -25654,7 +25897,7 @@
     "TestUIIconSetIsCompleteAndLocal",
     "TestVersionedApplicationStylesheetIncludesSupporterStyles"
   ],
-  "removal_count": 15,
+  "removal_count": 16,
   "verification": [
     {
       "command": "gofmt -w <five touched retained Go files>",
@@ -25681,5 +25924,11 @@
     "TestOfflineDownloadQueueRejectsOverflowBeforeCreatingAJob",
     "TestServingRejectsMediaReplacedBySymlink",
     "TestConfigurationTransactionRejectsSemanticallyInvalidRecoveryWithoutSideEffects"
-  ]
+  ],
+  "review_summary": {
+    "inventory_only_retained_pending_semantic_review": 800,
+    "semantic_review_complete": 18,
+    "candidate_evidence_complete": 16,
+    "test_and_boundary_review_pending_full_owner": 3
+  }
 }
