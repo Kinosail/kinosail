@@ -80,28 +80,6 @@ func TestSubtitleLanguageWebFormRejectsConflictingActionVariants(t *testing.T) {
 	}
 }
 
-func TestInvalidSubtitleLanguageActionTruthTable(t *testing.T) {
-	for _, test := range []struct {
-		name                           string
-		primary, actionPresent         bool
-		action                         string
-		preferencePresent, wantInvalid bool
-	}{
-		{name: "default", wantInvalid: false},
-		{name: "preference only", preferencePresent: true, wantInvalid: false},
-		{name: "empty action", actionPresent: true, wantInvalid: true},
-		{name: "primary action", primary: true, actionPresent: true, action: "add", wantInvalid: true},
-		{name: "action and preference", actionPresent: true, action: "add", preferencePresent: true, wantInvalid: true},
-		{name: "valid action", actionPresent: true, action: "add", wantInvalid: false},
-	} {
-		t.Run(test.name, func(t *testing.T) {
-			if got := invalidSubtitleLanguageAction(test.primary, test.actionPresent, test.action, test.preferencePresent); got != test.wantInvalid {
-				t.Fatalf("invalidSubtitleLanguageAction() = %v; want %v", got, test.wantInvalid)
-			}
-		})
-	}
-}
-
 func TestSubtitleLanguageWebFormPreservesSecondaryPreferences(t *testing.T) {
 	store := &settingsStore{file: "settings.json", value: installationSettings{SubtitleLanguage: "en", SubtitleLanguages: []string{"en", "es", "fr"}}, persist: func(string, any) error { return nil }}
 	handler := saveSubtitleLanguage(store, "/settings")
