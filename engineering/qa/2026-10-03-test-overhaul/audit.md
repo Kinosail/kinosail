@@ -28,8 +28,9 @@ Overlapping owner sub-audits are counted once. New tests from concurrent main
 changes are preserved separately and do not inflate the baseline audit counts.
 R means an important independent failure boundary. D means an implemented removal.
 F retains an existing weak assertion where deleting it would leave a coverage
-gap. C retains source pending a demonstrated consolidation or genuine keeper.
-No C row counts as a removal. The ledgers explain the gaps rather than claiming
+gap. C records a reviewed consolidation candidate retained for its named failure
+and coverage gap until a demonstrated keeper exists. Every C row has semantic
+review; no C row counts as a removal. The ledgers explain the gaps rather than claiming
 that fixture execution establishes full product equivalence.
 
 ## Why isolated exceptions remain
@@ -118,3 +119,19 @@ they do not prove browser certificate trust. No physical Safari/device or deploy
 is inferred. Final heavy local builds and `make verify-changed` were unavailable
 under the disk-space and local-container restrictions. Required CI gates remain
 enabled and must pass before merge.
+
+## Final upstream reconciliation
+
+Actual main `9d1b158e1a49fd523fb61a3603faafcfa45c1aeb` is preserved.
+The final source check at `176b9ddc83e15f59f72102243ad56cf1bad17c4a`
+verifies 3,456 current Go declarations: 3,452 retained baseline declarations
+and four upstream additions. All four owner/source checkers pass with zero
+errors; 374 keeper references and 150 upstream source files verify.
+`source-verification-176.json` records exact commands, environment and hashes.
+The current independent source and workflow receipts are
+`independent-review/actual-main-9d1b158-source-preservation.json` and
+`workflow-reconciliation-review-fcd139b.json`. Baseline counts stay unchanged.
+Final hosted run/artifact references belong in the PR; passing source checks
+do not establish runtime coverage. Recoverable download removal is recorded
+separately in `recoverable-download-removals.json`, preserving all earlier
+validation receipts and their limitations.
