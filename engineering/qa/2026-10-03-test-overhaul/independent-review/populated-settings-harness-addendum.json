@@ -1,0 +1,18 @@
+{
+  "schema": "kinosail-independent-e2e-harness-review-addendum-v1",
+  "reviewer": "frontend_native",
+  "supersedes_claim": "Initial populated-settings-harness-review.json claimed separate HTML artifact isolation; deeper installed dependency inspection disproves that claim for the initial helper. Initial source approvals for fresh state/API/browser selection/hidden upload remain valid.",
+  "outcome": "block artifact isolation approval until child HTML output env is overridden",
+  "finding": {
+    "severity": "artifact integrity blocker",
+    "trigger": "Outer e2e-artifact.py exports PLAYWRIGHT_HTML_OUTPUT_DIR=<outer>/html-report and helper child env inherits os.environ.",
+    "effect": "Playwright1.63 HTML reporter resolves environment folder before config outputFolder, then removes that directory at every onEnd. Second prepared-settings run deletes the first fresh-install HTML report instead of retaining both. JSON and screenshots are separately directed but do not prove that HTML report survives.",
+    "evidence": "Installed lockfile-matching playwright1.63.0 lib/runner/index.js::_resolveOptions line3447 uses reportFolderFromEnv() ?? config option; onEnd line3473 awaits removeFolders2([this._outputFolder]); reportFolderFromEnv line3506 reads PLAYWRIGHT_HTML_OUTPUT_DIR first.",
+    "fix": "Set child PLAYWRIGHT_HTML_OUTPUT_DIR to args.output / html-<project> (or remove inherited override so exact config folder applies). Bind PLAYWRIGHT_JSON_OUTPUT_FILE to expected results-project.json to avoid an inherited reporter override as well.",
+    "validation_required": "Source-read the repaired child env and actual CI artifacts must contain separate complete first-run and prepared-run reports; downloaded SHA256SUMS must include all files."
+  },
+  "reviewed_helper_sha256": "aa6fa33fac937f3f094404793c13f866c69d3da9e9fc19e470aad90a1ccbc136",
+  "outer_recorder_sha256": "61dfa64b0b675dd67e9e8c31c4e5e99ceecc63eb88d69a4b453a60a06c86d76a",
+  "dependency_source_sha256": "7a2e4e1114d3237d61b87723b4d86a37944c9143f3ce2fb0b2e8867e0c612a5e",
+  "execution": "Dependency/source read only, no build/browser/container/lint or isolated test addition."
+}
