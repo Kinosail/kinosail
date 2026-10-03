@@ -45,6 +45,7 @@ env.update(KINOSAIL_LISTEN=f'127.0.0.1:{port}', KINOSAIL_AUTH_URL=url, KINOSAIL_
            KINOSAIL_CACHE_DIR=str(run / 'cache'), KINOSAIL_BACKUP_DIR=str(run / 'backups'),
            KINOSAIL_BACKUP_KEY='synthetic-startup-key', KINOSAIL_STARTUP_E2E='1',
            KINOSAIL_E2E_URL=url, KINOSAIL_TEST_REVISION=revision,
+           KINOSAIL_STARTUP_BURN_SUPPORTED='1' if ' subtitles ' in subprocess.check_output(['ffmpeg', '-hide_banner', '-filters'], stderr=subprocess.DEVNULL, text=True) else '0',
            KINOSAIL_STARTUP_RUN=str(run), KINOSAIL_E2E_OUTPUT_DIR=str(run / 'results'),
            KINOSAIL_E2E_REPORT=str(run / 'results.json'))
 browser = ['node', 'node_modules/@playwright/test/cli.js', 'test', 'test-instance-startup.spec.ts',
