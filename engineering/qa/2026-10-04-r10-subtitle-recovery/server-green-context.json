@@ -1,0 +1,140 @@
+{
+  "id": "R10",
+  "revision": "6af39f2f9f5ce6836422723051c6eb467ecf84e8",
+  "harness_revision": "7dfe60055f1e86408d69794b870149423d61a007",
+  "product_revision": "e3651e1e016e9d1e165e0d0f37985469456e56a9",
+  "boundary": "Actual Go Server watch/template, composed immutable player asset, copied playable MP4 and Go sidecar handler; disposable wrapper injects only first caption transport stalls",
+  "host": "macOS-27.0-arm64-arm-64bit-Mach-O",
+  "go": "go version go1.27.1 darwin/arm64",
+  "browser": "installed Google Chrome 154.0.8037.97",
+  "playwright": "1.63.0",
+  "node": "26.8.2",
+  "workers": 1,
+  "GOMAXPROCS": 2,
+  "go_parallelism": 1,
+  "video_recording": "off",
+  "passed": 6,
+  "skipped": 0,
+  "unexpected": 0,
+  "flaky": 0,
+  "errors": [],
+  "browser_duration_ms": 12130.776,
+  "go_journey_seconds": 14.29,
+  "go_package_seconds": 19.231,
+  "clock_boundary": "Browser clock fastForward totals 20.1 seconds for deadline, then 25 seconds to reject false later timeout; video time advances through native real-time decoding",
+  "media": {
+    "source_path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r03-progress/.verification/r03-progress/20261004T075204Z/media/R03 Example.mp4",
+    "sha256": "9dbd85e7863d921e209978c8349992e5f8505b0d7ffa468c37b8caf97af3f0a4",
+    "bytes": 396548,
+    "original_preserved": true,
+    "encoders_or_probes_executed": false
+  },
+  "inputs": {
+    "apps/player/internal/server/static/player-subtitles.js": "cbd2e1afb58d508736504e9e03b9878f7385533b6a59dd1c9656cc870a6e790f",
+    "apps/player/internal/server/player.go": "72a8d18da5ad10f4f2f716cff0dcf6369e29670aea2dab35f647e261ddbe3542",
+    "apps/player/e2e/player-subtitles-recovery.spec.ts": "254d3769ecf206ad729fb6875b5502da4b251b2e8a008b813acd5099fd18e339",
+    "apps/player/e2e/player-subtitles-loading.spec.ts": "38dcca7181863d827a256bead2da569309a89eb30a8ac0f50445df4068aaf7ac",
+    "apps/player/e2e/player-subtitles-lifecycle.spec.ts": "918a961da8e28f28e8a929b0101f09d99740dc3b50f30bac2a63aea90ca6a84e",
+    "apps/player/e2e/player-subtitles-recovery-fixture.ts": "1eb9fe39fdbaffb058ef5df978acc0f901829674f415e989ae5a60393cab1515",
+    "apps/player/internal/server/subtitle_recovery_browser_test.go": "8d92bc3cb1f9d0cf945f93b8a52af054f2fe9fd59c9bf405bec27764ba1c2d7c",
+    "apps/player/e2e/playwright.config.ts": "628d3a62d9b3e2fba1bc43f3cd58979acadf22c083e3559c73c4f750a97cc0b3"
+  },
+  "cases": [
+    {
+      "title": "real Server: stalled caption headers reaches a deadline and keyboard Retry at 390px",
+      "status": "passed",
+      "duration_ms": 1100,
+      "receipts": {
+        "served-player-bundle-identity": {
+          "version": "0ff9a9da7c93d26ef3a756f46c9f98fb72a23bd08d75491a2873743e31579b51",
+          "checksum": "0ff9a9da7c93d26ef3a756f46c9f98fb72a23bd08d75491a2873743e31579b51"
+        },
+        "transport-at-deadline": {
+          "calls": 1,
+          "closed": 1
+        }
+      }
+    },
+    {
+      "title": "real Server: stalled caption body reaches a deadline and keyboard Retry at 390px",
+      "status": "passed",
+      "duration_ms": 1017,
+      "receipts": {
+        "served-player-bundle-identity": {
+          "version": "0ff9a9da7c93d26ef3a756f46c9f98fb72a23bd08d75491a2873743e31579b51",
+          "checksum": "0ff9a9da7c93d26ef3a756f46c9f98fb72a23bd08d75491a2873743e31579b51"
+        },
+        "transport-at-deadline": {
+          "calls": 1,
+          "closed": 1
+        }
+      }
+    },
+    {
+      "title": "real Server: stalled caption headers reaches a deadline and keyboard Retry at 1440px",
+      "status": "passed",
+      "duration_ms": 1165,
+      "receipts": {
+        "served-player-bundle-identity": {
+          "version": "0ff9a9da7c93d26ef3a756f46c9f98fb72a23bd08d75491a2873743e31579b51",
+          "checksum": "0ff9a9da7c93d26ef3a756f46c9f98fb72a23bd08d75491a2873743e31579b51"
+        },
+        "transport-at-deadline": {
+          "calls": 1,
+          "closed": 1
+        }
+      }
+    },
+    {
+      "title": "real Server: stalled caption body reaches a deadline and keyboard Retry at 1440px",
+      "status": "passed",
+      "duration_ms": 1141,
+      "receipts": {
+        "served-player-bundle-identity": {
+          "version": "0ff9a9da7c93d26ef3a756f46c9f98fb72a23bd08d75491a2873743e31579b51",
+          "checksum": "0ff9a9da7c93d26ef3a756f46c9f98fb72a23bd08d75491a2873743e31579b51"
+        },
+        "transport-at-deadline": {
+          "calls": 1,
+          "closed": 1
+        }
+      }
+    },
+    {
+      "title": "real Server: stalled caption headers reaches a deadline and keyboard Retry at 1920px",
+      "status": "passed",
+      "duration_ms": 1279,
+      "receipts": {
+        "served-player-bundle-identity": {
+          "version": "0ff9a9da7c93d26ef3a756f46c9f98fb72a23bd08d75491a2873743e31579b51",
+          "checksum": "0ff9a9da7c93d26ef3a756f46c9f98fb72a23bd08d75491a2873743e31579b51"
+        },
+        "transport-at-deadline": {
+          "calls": 1,
+          "closed": 1
+        }
+      }
+    },
+    {
+      "title": "real Server: stalled caption body reaches a deadline and keyboard Retry at 1920px",
+      "status": "passed",
+      "duration_ms": 1292,
+      "receipts": {
+        "served-player-bundle-identity": {
+          "version": "0ff9a9da7c93d26ef3a756f46c9f98fb72a23bd08d75491a2873743e31579b51",
+          "checksum": "0ff9a9da7c93d26ef3a756f46c9f98fb72a23bd08d75491a2873743e31579b51"
+        },
+        "transport-at-deadline": {
+          "calls": 1,
+          "closed": 1
+        }
+      }
+    }
+  ],
+  "remaining_limits": [
+    "actual BFCache admission/navigation",
+    "WebKit/Firefox and physical devices",
+    "probe/marker/discovery availability (disabled disposable fixture; expected startup warnings)",
+    "required full integration and hosted gates, PR and merge ancestry"
+  ]
+}

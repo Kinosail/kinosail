@@ -3,8 +3,9 @@
 Status: tested in the isolated browser. Deadline runtime RED is confirmed
 twice, and the separate caption restore RED is repeated twice. The affected
 isolated suite passed 12 / 12 at `e3651e1e`, with no skipped, failed or flaky
-cases and no errors, in 12.0 seconds. Real Go-rendered playback proof is queued
-with the integration owner. No merge or deployment is claimed.
+cases and no errors, in 12.0 seconds. The real Go-rendered playable-video journey also passed all six cases at
+`6af39f2f`: 0 skipped, unexpected, flaky or errors; browser 12.1 seconds and
+Go package 19.231 seconds. No merge or deployment is claimed.
 
 The selected caption could remain at “Loading subtitles…” indefinitely when
 headers or a VTT body stopped arriving. Both independent real-HTTP isolated
@@ -41,6 +42,12 @@ Android, Apple, deployments and PiP/miniplayer are unchanged.
   verified to decompress to the original bytes before compression.
 - `product-browser-lint.log` and `lifecycle-browser-lint.log`: 0 errors and 0 warnings.
 - `isolated-green-context.json`: exact tested product/test hashes and all 12 results.
+- `server-green-context.json`: six real Server results, actual served bundle
+  receipts, transport closure receipts, environment and media hash.
+- `server-green.log.gz`: actual Go test and request/playback diagnostics.
+- `server-green/`: 24 screenshots covering both stalls and all three widths.
+  Twelve body-state screenshots were inspected in one responsive batch; see
+  `visual-review.md`.
 - `product-max-loc.log`: passed, with no output.
 - `evidence-gitleaks.log`: no leaks found in retained evidence.
 - `artifact-sha256.json`: current artifact hashes; refreshed at final handoff.
@@ -70,18 +77,26 @@ actual BFCache admission or browser navigation behavior.
 
 ## Remaining verification boundaries
 
-The isolated shell runs the actual caption loader over a real local HTTP peer,
-but does not establish Go rendering, composed-asset delivery, media decode or
-production transport behavior. The scheduled `TestSubtitleRecoveryBrowserJourney`
-will copy the authorized fictional 12-second R03 video into temporary media
-alongside synthetic captions, render through the actual Go Server, attest its
-served asset token against its bytes and play real video. The original fixture
-is preserved; no probe, encoder or deployment runs.
+The isolated shell runs the actual caption loader over a real local HTTP peer.
+The completed `TestSubtitleRecoveryBrowserJourney` additionally copies the
+authorized fictional 12-second R03 video into temporary media with synthetic
+captions, renders through the actual Go Server, attests the served asset token
+against its bytes and plays real video. All six token/byte receipts match
+`0ff9a9da7c93d26ef3a756f46c9f98fb72a23bd08d75491a2873743e31579b51`.
+Each deadline receipt observes one caption request and one closed request.
+Recovered active cues appear over real advancing video. Off is preserved during
+pending work and after recovery; source/pause state remains unchanged.
+The original fixture is preserved. No probe, encoder or deployment executes.
+The configured unavailable probes explain expected marker-duration/discovery
+startup warnings; probe, marker and device availability are not established.
+Actual BFCache admission/navigation, WebKit, Firefox and physical devices remain
+unverified locally. Deadline timing uses deterministic browser clock control,
+while video frames advance through native real-time decoding.
 
 Independent source/evidence review is clear at product `e3651e1e`, with the
 stronger Go-only harness rechecked at `7dfe6005`; see `independent-review.md`.
 Required CI hook, `make verify-changed`, `make test-instance-check`, final
 protected checks, PR, merge and fetched ancestry are owned by the integration
-owner. Final populated evidence review remains pending. `test-container.sh` remains untouched during R03 integration.
+owner. Final populated evidence review is requested at this exact checkpoint. `test-container.sh` remains untouched during R03 integration.
 
-MAIN: NO — awaiting real Server proof, independent review and integration.
+MAIN: NO — awaiting final evidence review, required integration/hosted gates and merge ancestry.
