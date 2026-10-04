@@ -45,18 +45,27 @@ func assertSubtitleMergedSources(t *testing.T, review subtitlePairingAPIReview, 
 		t.Fatalf("long source/proposed/comparison counts = %d/%d/%d", len(review.Current.Cues), len(review.Proposed.Cues), len(review.Comparison))
 	}
 	group := review.Comparison[0]
-	if group.Kind != "merged" || len(group.Current) != count || len(group.Proposed) != 1 || group.Proposed[0] != 0 {
-		t.Fatalf("long merged source mapping has incomplete identities: kind=%q current=%d proposed=%v", group.Kind, len(group.Current), group.Proposed)
-	}
+	assertSubtitleMergedGroup(t, group, count)
 	for index, source := range group.Current {
-		cue := review.Current.Cues[index]
-		if source != index || cue.Start != float64(index) || cue.End != float64(index+1) || cue.Text != "Repeated dialogue" {
-			t.Fatalf("source cue %d lost its identity/time/text: mapping=%d cue=%+v", index, source, cue)
-		}
+		assertSubtitleMergedSource(t, review.Current.Cues[index], index, source)
 	}
 	proposed := review.Proposed.Cues[0]
 	if proposed.Start != 0 || proposed.End != float64(count) || proposed.Text != "Repeated dialogue" {
 		t.Fatalf("long proposed dialogue = %+v", proposed)
+	}
+}
+
+func assertSubtitleMergedGroup(t *testing.T, group subtitlePairingComparison, count int) {
+	t.Helper()
+	if group.Kind != "merged" || len(group.Current) != count || len(group.Proposed) != 1 || group.Proposed[0] != 0 {
+		t.Fatalf("long merged source mapping has incomplete identities: kind=%q current=%d proposed=%v", group.Kind, len(group.Current), group.Proposed)
+	}
+}
+
+func assertSubtitleMergedSource(t *testing.T, cue subtitlePairingCue, index, source int) {
+	t.Helper()
+	if source != index || cue.Start != float64(index) || cue.End != float64(index+1) || cue.Text != "Repeated dialogue" {
+		t.Fatalf("source cue %d lost its identity/time/text: mapping=%d cue=%+v", index, source, cue)
 	}
 }
 
