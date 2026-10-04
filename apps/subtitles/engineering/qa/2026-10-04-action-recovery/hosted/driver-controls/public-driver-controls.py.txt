@@ -61,9 +61,18 @@ def control(source, output, name):
     else:
         evidence = root / "safe-results"
         command += ["--output", str(evidence)]
+    if name == "permission-denied":
+        command = [sys.executable, "-c", "import os,runpy,sys; os.killpg=lambda *a: (_ for _ in ()).throw(PermissionError('fictional control')); sys.argv=['apps/subtitles/scripts/campaign-r06-public.py','--output',sys.argv[1]]; runpy.run_path(sys.argv[0],run_name='__main__')", str(evidence)]
     started = time.monotonic()
+    group_absent_before_cleanup = None
     try:
         result = subprocess.run(command, cwd=root, env=env, capture_output=True, timeout=105)
+        if (root / "fake-go-started").exists():
+            try:
+                os.killpg(int((root / "fake-go-started").read_text()), 0)
+                group_absent_before_cleanup = False
+            except ProcessLookupError:
+                group_absent_before_cleanup = True
     finally:
         # Only a PID recorded by this control's fake executable is eligible.
         if (root / "fake-go-started").exists():
@@ -84,11 +93,19 @@ def control(source, output, name):
     elif name == "private-sentinel":
         assert result.returncode == 0 and receipt["classification"] == "focused-public-protocol-green"
         assert receipt["ownedProcessExited"] and receipt["ownedGroupSettled"]
+        assert group_absent_before_cleanup
     elif name == "leader-exit-held-stdout":
         assert result.returncode != 0 and receipt["stopReason"] == "external-timeout"
         assert 89 <= time.monotonic() - started <= 102
         assert receipt["ownedProcessExited"]
         assert receipt["ownedGroupSettled"]
+        assert group_absent_before_cleanup
+    elif name == "permission-denied":
+        assert result.returncode != 0 and receipt["classification"] == "incomplete-or-failed"
+        assert receipt["exitCode"] == 0 and receipt["ownedProcessExited"]
+        assert not receipt["ownedGroupSettled"] and receipt["settlementFailureClass"] == "PermissionError"
+        assert receipt["stopReason"] == "process-settlement-failure"
+        assert receipt["sourcesUnchanged"] and receipt["trackedTreeUnchanged"] and receipt["R16Preserved"]
     elif name == "tracked-drift":
         assert result.returncode != 0 and not receipt["trackedTreeUnchanged"]
     else:
@@ -108,7 +125,7 @@ def main():
     args.output.mkdir(exist_ok=False)
     cases = ["default-output", "hosted-missing-revision", "hosted-wrong-revision", "private-sentinel",
              "package-fail-pass", "package-duplicate", "invalid-action", "missing-action", "boolean-test",
-             "boolean-elapsed", "missing-elapsed", "tracked-drift", "leader-exit-held-stdout"]
+             "boolean-elapsed", "missing-elapsed", "tracked-drift", "permission-denied", "leader-exit-held-stdout"]
     records = [control(args.source.resolve(), args.output, name) for name in cases]
     (args.output / "control-receipt.json").write_text(json.dumps({"boundary": "fictional-only; source prepared before driver correction", "cases": records}, indent=2) + "\n")
 
