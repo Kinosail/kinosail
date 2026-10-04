@@ -33,26 +33,9 @@ func TestDownloadPauseBrowserJourney(t *testing.T) {
 		t.Fatal(err)
 	}
 	handler := server.New(server.Config{Lifecycle: t.Context(), MediaDir: media, DataDir: t.TempDir(), CacheDir: t.TempDir(), FFmpeg: "/unavailable-download-fixture", FFprobe: "/unavailable-download-fixture"})
-	libraryResponse := httptest.NewRecorder()
-	handler.ServeHTTP(libraryResponse, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/library", nil))
-	var library struct {
-		Items []struct{ ID, Title string }
-	}
-	if libraryResponse.Code != http.StatusOK || json.Unmarshal(libraryResponse.Body.Bytes(), &library) != nil || len(library.Items) != 1 || library.Items[0].Title != "Fictional Range Fixture" {
-		t.Fatal("disposable public Library fixture was not populated")
-	}
-	prepared := httptest.NewRecorder()
-	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/api/v1/items/"+library.Items[0].ID+"/downloads", strings.NewReader(`{"quality":"original"}`))
-	request.Header.Set("Content-Type", "application/json")
-	handler.ServeHTTP(prepared, request)
-	var job struct {
-		ID string `json:"id"`
-	}
-	if prepared.Code != http.StatusAccepted || json.Unmarshal(prepared.Body.Bytes(), &job) != nil || job.ID == "" {
-		t.Fatalf("public original preparation = %d", prepared.Code)
-	}
-	waitDownloadPausePrepared(t, handler, job.ID, fixture)
-	peer := &downloadPausePeer{handler: handler, job: job.ID}
+	job := prepareDownloadPauseJob(t, handler)
+	waitDownloadPausePrepared(t, handler, job, fixture)
+	peer := &downloadPausePeer{handler: handler, job: job}
 	web := httptest.NewServer(peer)
 	t.Cleanup(web.Close)
 	project := os.Getenv("KINOSAIL_BROWSER_PROJECT")
@@ -72,6 +55,29 @@ func TestDownloadPauseBrowserJourney(t *testing.T) {
 	if err := command.Run(); err != nil {
 		t.Fatal(err)
 	}
+}
+
+func prepareDownloadPauseJob(t *testing.T, handler http.Handler) string {
+	t.Helper()
+	libraryResponse := httptest.NewRecorder()
+	handler.ServeHTTP(libraryResponse, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/library", nil))
+	var library struct {
+		Items []struct{ ID, Title string }
+	}
+	if libraryResponse.Code != http.StatusOK || json.Unmarshal(libraryResponse.Body.Bytes(), &library) != nil || len(library.Items) != 1 || library.Items[0].Title != "Fictional Range Fixture" {
+		t.Fatal("disposable public Library fixture was not populated")
+	}
+	prepared := httptest.NewRecorder()
+	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/api/v1/items/"+library.Items[0].ID+"/downloads", strings.NewReader(`{"quality":"original"}`))
+	request.Header.Set("Content-Type", "application/json")
+	handler.ServeHTTP(prepared, request)
+	var job struct {
+		ID string `json:"id"`
+	}
+	if prepared.Code != http.StatusAccepted || json.Unmarshal(prepared.Body.Bytes(), &job) != nil || job.ID == "" {
+		t.Fatalf("public original preparation = %d", prepared.Code)
+	}
+	return job.ID
 }
 
 func waitDownloadPausePrepared(t *testing.T, handler http.Handler, job string, fixture []byte) {
@@ -141,6 +147,10 @@ func (peer *downloadPausePeer) ServeHTTP(writer http.ResponseWriter, request *ht
 		peer.handler.ServeHTTP(writer, request)
 		return
 	}
+	peer.serveHeldRange(writer, request, generation)
+}
+
+func (peer *downloadPausePeer) serveHeldRange(writer http.ResponseWriter, request *http.Request, generation int) {
 	// Obtain headers and bytes from the real Go range handler, then hold its body.
 	response := httptest.NewRecorder()
 	peer.handler.ServeHTTP(response, request)
