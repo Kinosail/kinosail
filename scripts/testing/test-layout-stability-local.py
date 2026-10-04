@@ -30,7 +30,7 @@ os.link(media / "Layout Example.en.srt", media / "Layout Example.fr.srt")
 results = {}
 initial_diff_hash = hashlib.sha256(subprocess.check_output(["git", "diff", "HEAD"], cwd=root)).hexdigest()
 initial_scripts = {name: hashlib.sha256((root / "scripts/testing" / name).read_bytes()).hexdigest()
-                   for name in ["test-layout-stability-local.py", "layout-stability-local.mjs", "layout-stability-flows.mjs"]}
+                   for name in ["test-layout-stability-local.py", "layout-stability-local.mjs", "layout-stability-flows.mjs", "layout-stability-bookmarks.mjs", "layout-stability-subtitle-search.mjs"]}
 settings = {key: value for key, value in os.environ.items() if key.startswith("KINOSAIL_LAYOUT_")}
 def write_receipt():
     final_revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()

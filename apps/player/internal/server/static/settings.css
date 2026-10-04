@@ -21,6 +21,7 @@
 .settings-shell:has([data-settings-organized]) .settings-flow>section>p{max-width:65ch;font-size:.9rem;line-height:1.6}
 .settings-shell:has([data-settings-organized]) .settings-flow label{font-size:.9rem;line-height:1.5;color:var(--text)}
 .settings-shell .settings-flow select{overflow:hidden;text-overflow:ellipsis}
+.settings-shell .settings-flow .status{display:inline-block;max-width:100%;overflow-wrap:anywhere}
 .settings-shell:has([data-settings-organized]) .settings-flow form{max-width:44rem}
 .settings-shell:has([data-settings-organized]) .settings-flow button{justify-self:start;min-height:44px;padding:.65rem 1rem}
 .settings-shell:has([data-settings-organized]) .settings-search-results a{grid-template-columns:1fr;gap:.2rem;padding:.75rem;font-size:.9rem}

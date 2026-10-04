@@ -1,12 +1,16 @@
 // Real HTMX bodies; only the explicitly labelled transport failure is injected.
+import {measureSubtitleSearch} from "./layout-stability-subtitle-search.mjs";
 export async function measureFlows(browser, options, watchPath, inspectorPath, results = [], probe = {}) {
   probe.stage = "HTMX-search";
   for (const viewport of [{width:390,height:844},{width:1440,height:900}]) {
     const context = await browser.newContext({...options,viewport,ignoreHTTPSErrors:false,reducedMotion:"reduce",serviceWorkers:"block"});
     const page = await context.newPage();
     await page.goto(inspectorPath ? "/?view=library" : "/?view=movies");
+    if (inspectorPath) {await measureSubtitleSearch(page,viewport,results,probe);await context.close();continue;}
     const search = page.locator(".app-header input[name=q]");
-    if (!await search.count()) {results.push({viewport,flow:"HTMX search",result:"not present"});await context.close();continue;}
+    const searchPresent=Boolean(await search.count()), searchVisible=searchPresent&&await search.isVisible(), htmxLoaded=await page.evaluate(()=>typeof window.htmx!=="undefined");
+    const htmxSearch=searchPresent&&await search.evaluate(n=>n.getAttribute("hx-get")==="/"&&n.getAttribute("hx-target")==="#main"&&Boolean(n.getAttribute("hx-trigger")));
+    if (!searchVisible||!htmxLoaded||!htmxSearch) {results.push({viewport,flow:"HTMX search",result:"not active on this surface",searchPresent,searchVisible,htmxLoaded,htmxSearch});await context.close();continue;}
     let fail = false;
     await page.route("**/*",async route=>{
       const request=route.request(),url=new URL(request.url());
@@ -120,15 +124,15 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
       probe.stage="inspector-language-refresh-focus";await editor.reload();await editor.waitForFunction(()=>!document.querySelector('#subtitle-edit-form button[type="submit"]').disabled);
       const language=editor.locator('select[name="language"]');const alternate=await language.evaluate((n,mode)=>[...n.options].find(option=>option.value&&option.value!==n.value&&(mode!=="retain-scroll"||option.value==="fr"))?.value,mode);
       if(!alternate)throw new Error("Synthetic inspector needs an alternate language");
-      const originalScroll=await editor.evaluate(()=>scrollY),workspaceBefore=await editor.locator(".subtitle-inspector-workspace").boundingBox();
+      const originalScroll=await editor.evaluate(()=>scrollY),workspaceBefore=await editor.locator(".subtitle-inspector-workspace").boundingBox(),statusBefore=await editor.locator("#inspector-status").boundingBox();
       await language.focus();await language.selectOption(alternate);await editor.waitForFunction(()=>document.querySelector("#inspector-status")?.getAttribute("aria-busy")==="true");
       if(mode==="tab-away")await editor.keyboard.press("Tab");
       if(mode==="retain-scroll")await editor.evaluate(()=>scrollTo({top:Math.max(0,document.documentElement.scrollHeight-innerHeight-160),behavior:"instant"}));
       const selectorOffscreen=await language.evaluate(n=>{const r=n.getBoundingClientRect();return r.bottom<=0||r.top>=innerHeight;});
-      const scrollBefore=await editor.evaluate(()=>scrollY),focus=await editor.evaluateHandle(()=>document.activeElement);await editor.waitForFunction(()=>document.querySelector("#inspector-status")?.getAttribute("aria-busy")!=="true");
+      const scrollBefore=await editor.evaluate(()=>scrollY),statusPending=await editor.locator("#inspector-status").boundingBox(),focus=await editor.evaluateHandle(()=>document.activeElement);await editor.waitForFunction(()=>document.querySelector("#inspector-status")?.getAttribute("aria-busy")!=="true");
       const focusRetained=mode==="tab-away"?await editor.evaluate(n=>n===document.activeElement,focus):await language.evaluate(n=>n===document.activeElement);await focus.dispose();
-      const scrollAfter=await editor.evaluate(()=>scrollY),workspaceAfter=await editor.locator(".subtitle-inspector-workspace").boundingBox();
-      results.push({flow:mode==="retain-scroll"?"inspector-language-refresh-preserve-scroll":mode==="tab-away"?"inspector-language-refresh-tab-away":"inspector-language-refresh-focus",focusRetained,originalScroll,scrollBefore,scrollAfter,selectorOffscreen,workspaceBefore,workspaceAfter,scrollRetained:mode!=="retain-scroll"||Boolean(Math.abs(scrollAfter-scrollBefore)<=1&&Math.abs(scrollBefore-originalScroll)>1&&selectorOffscreen&&workspaceBefore&&workspaceAfter&&Math.abs(workspaceBefore.height-workspaceAfter.height)<=1)});
+      const scrollAfter=await editor.evaluate(()=>scrollY),workspaceAfter=await editor.locator(".subtitle-inspector-workspace").boundingBox(),statusAfter=await editor.locator("#inspector-status").boundingBox();
+      results.push({flow:mode==="retain-scroll"?"inspector-language-refresh-preserve-scroll":mode==="tab-away"?"inspector-language-refresh-tab-away":"inspector-language-refresh-focus",focusRetained,originalScroll,scrollBefore,scrollAfter,selectorOffscreen,workspaceBefore,workspaceAfter,statusBefore,statusPending,statusAfter,scrollRetained:mode!=="retain-scroll"||Boolean(Math.abs(scrollAfter-scrollBefore)<=1&&Math.abs(scrollBefore-originalScroll)>1&&selectorOffscreen&&workspaceBefore&&workspaceAfter&&Math.abs(workspaceBefore.height-workspaceAfter.height)<=1&&statusBefore&&statusPending&&statusAfter&&Math.abs(statusBefore.height-statusPending.height)<=1&&Math.abs(statusBefore.height-statusAfter.height)<=1)});
     }
     await editing.close();
   }

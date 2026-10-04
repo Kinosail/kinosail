@@ -3,6 +3,7 @@ import {writeFile} from "node:fs/promises";
 import {join} from "node:path";
 import {createHmac} from "node:crypto";
 import {measureFlows} from "./layout-stability-flows.mjs";
+import {bookmarkSnapshot} from "./layout-stability-bookmarks.mjs";
 const require = createRequire(new URL("../../apps/player/e2e/package.json", import.meta.url));
 const {chromium, webkit, firefox} = require("@playwright/test");
 const AxeBuilder = require("@axe-core/playwright").default;
@@ -102,6 +103,7 @@ if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of [app==="player"?"/sett
   if(path.startsWith("/settings"))for(const viewport of [{width:320,height:800},{width:844,height:390}])cases.push({viewport,path,variant:"text-200",scale:"200%"});
 }
 if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of ["/settings#%61ccess","/settings#%E0%A4%A"])cases.push({viewport:{width:390,height:844},path,variant:"fragment"});
+if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of routes.filter(path=>path.startsWith("/settings#")))for(const viewport of [{width:390,height:844},{width:320,height:800}])cases.push({viewport,path,variant:"slow-css",scale:viewport.width===320?"200%":undefined});
 if(process.env.KINOSAIL_LAYOUT_VARIANTS&&app==="player")cases.push({viewport:{width:390,height:844},path:"/settings#access",variant:"saved-mobile-tabs",scale:"200%",savedTabs:true});
 if(process.env.KINOSAIL_LAYOUT_APPLE_SHIM)cases.push({viewport:{width:768,height:1024},path:`/watch/${item.id}?playback=direct`,variant:"desktop-UA-iPad-shim",apple:true});
 try {
@@ -122,17 +124,19 @@ try {
     // Delay real response bytes, without substituting mock markup or media.
     await page.route("**/*", async route => {
       const request = route.request(), url = new URL(request.url());
-      if (url.pathname.endsWith(".woff2") || (url.pathname.endsWith(".js")&&!url.pathname.endsWith("/theme.js")) || /\/api\/v1\/subtitle-library\/[^/]+\/inspect/.test(url.pathname) || request.resourceType() === "image") {
+      if ((variant==="slow-css"&&request.resourceType()==="stylesheet") || url.pathname.endsWith(".woff2") || (url.pathname.endsWith(".js")&&!url.pathname.endsWith("/theme.js")) || /\/api\/v1\/subtitle-library\/[^/]+\/inspect/.test(url.pathname) || request.resourceType() === "image") {
         const response = await route.fetch();
-        await new Promise(resolve => setTimeout(resolve, 1200));
+        await new Promise(resolve => setTimeout(resolve, variant==="slow-css"&&request.resourceType()==="script"?2400:1200));
         await route.fulfill({response});
       } else await route.continue();
     });
     const name = `${viewport.width}-${variant}-${path.replace(/[^a-z0-9]+/gi, "-")}`;
     const response=await page.goto(path, {waitUntil: "commit"});
     await page.locator("body").waitFor({state: "visible"});
+    if(variant==="slow-css") {await page.waitForFunction(()=>[...document.querySelectorAll('link[rel~="stylesheet"]')].every(link=>link.sheet));await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));}
     await page.waitForTimeout(200);
     const initialState = await page.evaluate(inspect);
+    initialState.bookmark = await page.evaluate(bookmarkSnapshot);
     const initialBoxes=await page.evaluate(()=>window.layoutAudit.frames.at(-1)?.boxes||[]);
     if (engine === "chromium") {
       // CDP captures pixels without Playwright's font-readiness hook, which can
@@ -152,9 +156,12 @@ try {
     const unattributedCLS=cls(entries.filter(e=>!e.sources?.some(s=>s.node)));
     const moved=boxesChanged(initialBoxes,audit.frames.at(-1)?.boxes||[]);
     const finalState=await page.evaluate(inspect);
+    finalState.bookmark=await page.evaluate(bookmarkSnapshot);
     const categoryStable=!initialState.category||JSON.stringify(initialState.sections)===JSON.stringify(finalState.sections);
     const timeoutsPresent=!["/settings#session-timeouts","/settings#security"].includes(path)||[initialState,finalState].every(s=>s.timeouts?.anchorPresent&&s.timeouts.visible&&JSON.stringify(s.timeouts.access)==='["private","public"]');
-    reports.push({viewport,path,variant,scaleApplied:!scale||finalState.rootScale===scale,status:response.status(),unexpected,aggregateUnexpected,identifiedDOMCLS,unattributedCLS,moved,categoryStable,timeoutsPresent,initialState,finalState,...audit});
+    const bookmarkRequired=routes.filter(route=>route.startsWith("/settings#")).includes(path)||(app==="player"&&path==="/settings#%61ccess");
+    const bookmarkVisible=[initialState,finalState].every(s=>bookmarkRequired?Boolean(s.bookmark?.resolved&&s.bookmark.visible):!s.bookmark?.resolved||s.bookmark.visible);
+    reports.push({viewport,path,variant,scaleApplied:!scale||finalState.rootScale===scale,status:response.status(),unexpected,aggregateUnexpected,identifiedDOMCLS,unattributedCLS,moved,categoryStable,timeoutsPresent,bookmarkRequired,bookmarkVisible,initialState,finalState,...audit});
     console.log(JSON.stringify({viewport: viewport.width, path, unexpected, overflow: audit.overflow,
       sources: audit.shifts.flatMap(shift => shift.sources.map(source => source.node))}));
     if (engine === "chromium") {
@@ -180,5 +187,5 @@ try {
     result: "measurement", command: "python3 scripts/testing/test-layout-stability-local.py", data: "Synthetic media and account; delayed real font/bundle/image responses", reports,flows}, null, 2));
   await browser.close();
 }
-if (process.env.KINOSAIL_LAYOUT_ENFORCE && reports.some(report => report.identifiedDOMCLS > 0.001 || report.overflow > 1 || !report.categoryStable || !report.timeoutsPresent || !report.scaleApplied || report.moved.length>0)) process.exitCode = 1;
-if(flows.some(f=>f.pendingStable===false||f.focusRetained===false||f.scrollRetained===false||f.settled?.inert||f.settled?.skeleton||f.stable===false||f.overflow>1))process.exitCode=1;
+if (process.env.KINOSAIL_LAYOUT_ENFORCE && reports.some(report => report.identifiedDOMCLS > 0.001 || report.overflow > 1 || !report.categoryStable || !report.timeoutsPresent || !report.bookmarkVisible || !report.scaleApplied || report.moved.length>0)) process.exitCode = 1;
+if(flows.some(f=>f.pendingStable===false||f.failureRetainsContent===false||f.focusRetained===false||f.scrollRetained===false||f.settled?.inert||f.settled?.skeleton||f.stable===false||f.overflow>1))process.exitCode=1;
