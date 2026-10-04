@@ -4,10 +4,12 @@ import {measureSubtitleBackground} from "./layout-stability-subtitle-background.
 export async function measureFlows(browser, options, watchPath, inspectorPath, results = [], probe = {}) {
   probe.stage = "HTMX-search";
   for (const viewport of [{width:390,height:844},{width:1440,height:900},...(inspectorPath?[{width:320,height:800}]:[])]) {
+    probe.stage="library-journey-navigation";
     const context = await browser.newContext({...options,viewport,ignoreHTTPSErrors:false,reducedMotion:"reduce",serviceWorkers:"block"});
     const page = await context.newPage();
     if(inspectorPath&&viewport.width===320)await context.addInitScript(()=>{const apply=()=>{if(!document.documentElement)return false;document.documentElement.style.fontSize="200%";return true;};if(!apply()){const observer=new MutationObserver(()=>{if(apply())observer.disconnect();});observer.observe(document,{childList:true});}});
-    await page.goto(inspectorPath ? "/?view=library" : "/?view=movies");
+    await page.goto(inspectorPath ? "/?view=library" : "/?view=movies",{waitUntil:"domcontentloaded"});
+    probe.stage="HTMX-search";
     if (inspectorPath) {await measureSubtitleSearch(page,viewport,results,probe);await context.close();continue;}
     const search = page.locator(".app-header input[name=q]");
     const searchPresent=Boolean(await search.count()), searchVisible=searchPresent&&await search.isVisible(), htmxLoaded=await page.evaluate(()=>typeof window.htmx!=="undefined");

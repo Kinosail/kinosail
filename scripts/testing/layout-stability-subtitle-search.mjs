@@ -10,6 +10,13 @@ export async function measureSubtitleSearch(page, viewport, results, probe) {
   }));
   const unchanged = (before, after) => before.every((first, index) => first.present && after[index]?.present &&
     ["x", first.pinned ? "y" : "documentY", "width", "height"].every(key => Math.abs(first[key] - after[index][key]) <= 1));
+  if(viewport.width===320){
+    const file=page.locator(".subtitle-file").first(),summary=file.locator(":scope>summary");
+    await summary.click();
+    const open=await file.evaluate(node=>node.open),detail=await file.locator(".subtitle-file-detail").boundingBox(),overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+    results.push({flow:"subtitle-library-disclosure-open",viewport,open,detail,overflow,stable:Boolean(open&&detail&&detail.width&&overflow<=1)});
+    await summary.click();if(await file.evaluate(node=>node.open))throw new Error("Library disclosure did not close");
+  }
   let fail = false;
   await page.route("**/*", async route => {
     const request = route.request(), url = new URL(request.url());
