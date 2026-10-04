@@ -1,0 +1,186 @@
+{
+  "config": {
+    "argv": [
+      "/opt/homebrew/Cellar/node/26.8.2/bin/node",
+      "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/node_modules/@playwright/test/cli.js",
+      "test",
+      "subtitle-pairing-native.spec.ts",
+      "--project=chromium",
+      "--workers=1",
+      "--timeout=30000"
+    ],
+    "configFile": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/playwright.config.ts",
+    "rootDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-cue-pairing/evidence/native-green/results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "open": "never",
+          "outputFolder": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/../engineering/qa/2026-10-04-cue-pairing/evidence/native-green/html-all"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/../engineering/qa/2026-10-04-cue-pairing/evidence/native-green/results-all.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "subtitle-pairing-native.spec.ts",
+      "file": "subtitle-pairing-native.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "native Server pairs dialogue with playable media at 390px",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7673,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T09:54:40.971Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "native-verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJib3VuZGFyeSI6Im5hdGl2ZSBsb29wYmFjayBTdWJ0aXRsZXMgU2VydmVyOyBhY3R1YWwgSFRNTCwgYXNzZXRzLCBBUEksIHByb2JlIGFuZCBwbGF5YWJsZSBtZWRpYTsgYXV0aC1kaXNhYmxlZCBkaXNwb3NhYmxlIGluc3RhbGxhdGlvbjsgb25seSBHRVQgYW5kIHByZXZpZXcgUE9TVCBwZXJtaXR0ZWQ7IG5vIHByb3ZpZGVyIGNyZWRlbnRpYWxzLCBlbmNvZGVyLCBTYXZlIG9yIGRlcGxveW1lbnQiLCJjbGlwU0hBMjU2IjoiOWRiZDg1ZTc4NjNkOTIxZTIwOTk3OGM4MzQ5OTkyZTVmODUwNWIwZDdmZmE0NjhjMzdiOGNhZjk3YWYzZjBhNCIsImlkIjoiOGU1MzdmODg5NzI0NGY5OCIsInJldmlzaW9uIjoiNTE1YmE1YjM5OTc5ODhiZTMwNjZhMDJhNjY3N2FkZjNhODY1YWI3MiIsInNpZGVjYXJTSEEyNTYiOiJlYjNiZGUxNGNhY2M1OWQ1MTczMDViNGRjYzkzZTFiNzJiN2VhYjA5OTY2NmEzNmIxZTIxNjU4M2U5MzcyYWE0IiwidXJsIjoiaHR0cDovLzEyNy4wLjAuMTo0OTkzNCIsIndpZHRoIjozOTAsImJyb3dzZXIiOiJjaHJvbWl1bSIsImJyb3dzZXJWZXJzaW9uIjoiMTU0LjAuODAzNy45NyIsImNvbW1hbmQiOiJwbGF5d3JpZ2h0IHRlc3Qgc3VidGl0bGUtcGFpcmluZy1uYXRpdmUuc3BlYy50cyAtLXdvcmtlcnM9MSIsInJvdXRpbmciOiJubyBQbGF5d3JpZ2h0IHJvdXRlczsgYWN0dWFsIGxvb3BiYWNrIEhUTUwsIGFzc2V0cywgaW5zcGVjdCwgcHJldmlldywgYW5kIG1lZGlhIHJlc3BvbnNlcyJ9"
+                    },
+                    {
+                      "name": "native-transport-and-integrity",
+                      "contentType": "application/json",
+                      "body": "eyJyZXF1ZXN0cyI6W3sibWV0aG9kIjoiR0VUIiwicGF0aCI6Ii9zdWJ0aXRsZXMvaW5zcGVjdC84ZTUzN2Y4ODk3MjQ0Zjk4In0seyJtZXRob2QiOiJHRVQiLCJwYXRoIjoiL3N0YXRpYy90aGVtZS5qcyJ9LHsibWV0aG9kIjoiR0VUIiwicGF0aCI6Ii9zdGF0aWMvYXBwLmNzcyJ9LHsibWV0aG9kIjoiR0VUIiwicGF0aCI6Ii9zdGF0aWMvc3VidGl0bGUtaW5zcGVjdG9yLmNzcyJ9LHsibWV0aG9kIjoiR0VUIiwicGF0aCI6Ii9zdGF0aWMvc3VidGl0bGUtaW5zcGVjdG9yLmpzIn0seyJtZXRob2QiOiJHRVQiLCJwYXRoIjoiL3N0YXRpYy9tYWluLmtpbm9zYWlsLmJ1bmRsZS5qcyJ9LHsibWV0aG9kIjoiR0VUIiwicGF0aCI6Ii9zdGF0aWMvaWNvbi5zdmcifSx7Im1ldGhvZCI6IkdFVCIsInBhdGgiOiIvc3RhdGljL2NpbmVtYS1iYWNrZHJvcC5qcGcifSx7Im1ldGhvZCI6IkdFVCIsInBhdGgiOiIvc3RhdGljL2ljb24uc3ZnIn0seyJtZXRob2QiOiJHRVQiLCJwYXRoIjoiL3N0YXRpYy9tYW5yb3BlLndvZmYyIn0seyJtZXRob2QiOiJHRVQiLCJwYXRoIjoiL2FwaS92MS9zdWJ0aXRsZS1saWJyYXJ5LzhlNTM3Zjg4OTcyNDRmOTgvaW5zcGVjdCJ9LHsibWV0aG9kIjoiR0VUIiwicGF0aCI6Ii9hcGkvdjEvc3VidGl0bGUtbGlicmFyeS84ZTUzN2Y4ODk3MjQ0Zjk4L2RyYWZ0In0seyJtZXRob2QiOiJHRVQiLCJwYXRoIjoiL21lZGlhLzhlNTM3Zjg4OTcyNDRmOTgifSx7Im1ldGhvZCI6IlBPU1QiLCJwYXRoIjoiL2FwaS92MS9zdWJ0aXRsZS1saWJyYXJ5LzhlNTM3Zjg4OTcyNDRmOTgvcHJldmlldyJ9LHsibWV0aG9kIjoiUE9TVCIsInBhdGgiOiIvYXBpL3YxL3N1YnRpdGxlLWxpYnJhcnkvOGU1MzdmODg5NzI0NGY5OC9wcmV2aWV3In1dLCJtZWRpYSI6W3sic3RhdHVzIjoyMDYsImNvbnRlbnRSYW5nZSI6ImJ5dGVzIDAtMzk2NTQ3LzM5NjU0OCJ9XSwicmVqZWN0ZWRNdXRhdGlvbnMiOlt7ImFjdGlvbiI6ImFwcGx5Iiwic3RhdHVzIjo0MDV9LHsiYWN0aW9uIjoicmVzdG9yZSIsInN0YXR1cyI6NDA1fV0sImluc3RhbGxlZFN1YnRpdGxlVW5jaGFuZ2VkIjp0cnVlLCJyZWNvdmVyeVNpZGVjYXJBYnNlbnQiOnRydWUsImRpcmVjdFBsYXliYWNrRHVyYXRpb24iOjEyfQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "c9d045c796e5451b82b7-47037ccd2903813b4eb9",
+          "file": "subtitle-pairing-native.spec.ts",
+          "line": 11,
+          "column": 3
+        },
+        {
+          "title": "native Server pairs dialogue with playable media at 1440px",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6552,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T09:54:49.001Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "native-verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJib3VuZGFyeSI6Im5hdGl2ZSBsb29wYmFjayBTdWJ0aXRsZXMgU2VydmVyOyBhY3R1YWwgSFRNTCwgYXNzZXRzLCBBUEksIHByb2JlIGFuZCBwbGF5YWJsZSBtZWRpYTsgYXV0aC1kaXNhYmxlZCBkaXNwb3NhYmxlIGluc3RhbGxhdGlvbjsgb25seSBHRVQgYW5kIHByZXZpZXcgUE9TVCBwZXJtaXR0ZWQ7IG5vIHByb3ZpZGVyIGNyZWRlbnRpYWxzLCBlbmNvZGVyLCBTYXZlIG9yIGRlcGxveW1lbnQiLCJjbGlwU0hBMjU2IjoiOWRiZDg1ZTc4NjNkOTIxZTIwOTk3OGM4MzQ5OTkyZTVmODUwNWIwZDdmZmE0NjhjMzdiOGNhZjk3YWYzZjBhNCIsImlkIjoiOGU1MzdmODg5NzI0NGY5OCIsInJldmlzaW9uIjoiNTE1YmE1YjM5OTc5ODhiZTMwNjZhMDJhNjY3N2FkZjNhODY1YWI3MiIsInNpZGVjYXJTSEEyNTYiOiJlYjNiZGUxNGNhY2M1OWQ1MTczMDViNGRjYzkzZTFiNzJiN2VhYjA5OTY2NmEzNmIxZTIxNjU4M2U5MzcyYWE0IiwidXJsIjoiaHR0cDovLzEyNy4wLjAuMTo0OTkzNCIsIndpZHRoIjoxNDQwLCJicm93c2VyIjoiY2hyb21pdW0iLCJicm93c2VyVmVyc2lvbiI6IjE1NC4wLjgwMzcuOTciLCJjb21tYW5kIjoicGxheXdyaWdodCB0ZXN0IHN1YnRpdGxlLXBhaXJpbmctbmF0aXZlLnNwZWMudHMgLS13b3JrZXJzPTEiLCJyb3V0aW5nIjoibm8gUGxheXdyaWdodCByb3V0ZXM7IGFjdHVhbCBsb29wYmFjayBIVE1MLCBhc3NldHMsIGluc3BlY3QsIHByZXZpZXcsIGFuZCBtZWRpYSByZXNwb25zZXMifQ=="
+                    },
+                    {
+                      "name": "native-transport-and-integrity",
+                      "contentType": "application/json",
+                      "body": "eyJyZXF1ZXN0cyI6W3sibWV0aG9kIjoiR0VUIiwicGF0aCI6Ii9zdWJ0aXRsZXMvaW5zcGVjdC84ZTUzN2Y4ODk3MjQ0Zjk4In0seyJtZXRob2QiOiJHRVQiLCJwYXRoIjoiL3N0YXRpYy90aGVtZS5qcyJ9LHsibWV0aG9kIjoiR0VUIiwicGF0aCI6Ii9zdGF0aWMvYXBwLmNzcyJ9LHsibWV0aG9kIjoiR0VUIiwicGF0aCI6Ii9zdGF0aWMvc3VidGl0bGUtaW5zcGVjdG9yLmNzcyJ9LHsibWV0aG9kIjoiR0VUIiwicGF0aCI6Ii9zdGF0aWMvc3VidGl0bGUtaW5zcGVjdG9yLmpzIn0seyJtZXRob2QiOiJHRVQiLCJwYXRoIjoiL3N0YXRpYy9tYWluLmtpbm9zYWlsLmJ1bmRsZS5qcyJ9LHsibWV0aG9kIjoiR0VUIiwicGF0aCI6Ii9zdGF0aWMvaWNvbi5zdmcifSx7Im1ldGhvZCI6IkdFVCIsInBhdGgiOiIvYXBpL3YxL3N1YnRpdGxlLWxpYnJhcnkvOGU1MzdmODg5NzI0NGY5OC9pbnNwZWN0In0seyJtZXRob2QiOiJHRVQiLCJwYXRoIjoiL2FwaS92MS9zdWJ0aXRsZS1saWJyYXJ5LzhlNTM3Zjg4OTcyNDRmOTgvZHJhZnQifSx7Im1ldGhvZCI6IkdFVCIsInBhdGgiOiIvc3RhdGljL2NpbmVtYS1iYWNrZHJvcC5qcGcifSx7Im1ldGhvZCI6IkdFVCIsInBhdGgiOiIvc3RhdGljL2ljb24uc3ZnIn0seyJtZXRob2QiOiJHRVQiLCJwYXRoIjoiL3N0YXRpYy9tYW5yb3BlLndvZmYyIn0seyJtZXRob2QiOiJHRVQiLCJwYXRoIjoiL21lZGlhLzhlNTM3Zjg4OTcyNDRmOTgifSx7Im1ldGhvZCI6IkdFVCIsInBhdGgiOiIvbWVkaWEvOGU1MzdmODg5NzI0NGY5OCJ9LHsibWV0aG9kIjoiUE9TVCIsInBhdGgiOiIvYXBpL3YxL3N1YnRpdGxlLWxpYnJhcnkvOGU1MzdmODg5NzI0NGY5OC9wcmV2aWV3In0seyJtZXRob2QiOiJQT1NUIiwicGF0aCI6Ii9hcGkvdjEvc3VidGl0bGUtbGlicmFyeS84ZTUzN2Y4ODk3MjQ0Zjk4L3ByZXZpZXcifV0sIm1lZGlhIjpbeyJzdGF0dXMiOjIwNiwiY29udGVudFJhbmdlIjoiYnl0ZXMgMC0zOTY1NDcvMzk2NTQ4In0seyJzdGF0dXMiOjIwNiwiY29udGVudFJhbmdlIjoiYnl0ZXMgMzkzMjE2LTM5NjU0Ny8zOTY1NDgifV0sInJlamVjdGVkTXV0YXRpb25zIjpbeyJhY3Rpb24iOiJhcHBseSIsInN0YXR1cyI6NDA1fSx7ImFjdGlvbiI6InJlc3RvcmUiLCJzdGF0dXMiOjQwNX1dLCJpbnN0YWxsZWRTdWJ0aXRsZVVuY2hhbmdlZCI6dHJ1ZSwicmVjb3ZlcnlTaWRlY2FyQWJzZW50Ijp0cnVlLCJkaXJlY3RQbGF5YmFja0R1cmF0aW9uIjoxMn0="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "c9d045c796e5451b82b7-cce8afb1e0a9ec2f48ab",
+          "file": "subtitle-pairing-native.spec.ts",
+          "line": 11,
+          "column": 3
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-04T09:54:40.661Z",
+    "duration": 20593.859,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

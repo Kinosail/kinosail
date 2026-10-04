@@ -1,0 +1,9 @@
+
+Running 2 tests using 1 worker
+
+(node:37150) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › subtitle-pairing-native.spec.ts:11:3 › native Server pairs dialogue with playable media at 390px (7.7s)
+  ✓  2 [chromium] › subtitle-pairing-native.spec.ts:11:3 › native Server pairs dialogue with playable media at 1440px (6.6s)
+
+  2 passed (20.6s)

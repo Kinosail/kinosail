@@ -1,0 +1,16 @@
+{
+  "command": [
+    "go",
+    "build",
+    "-p",
+    "1",
+    "-o",
+    ".verification/r07-pairing/native-fixture",
+    ".verification/r07-pairing/native-fixture.go"
+  ],
+  "revision": "9b53cebf6961a1d6aee51e2ffa2c970481f785f1",
+  "sourceSHA256": "18ddef69cdbf083a24440f90653bad4dd4be6978318e7bda8c47680c81636bcb",
+  "exit": 0,
+  "elapsedSeconds": 1.764,
+  "boundSeconds": 30
+}
