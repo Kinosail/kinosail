@@ -154,7 +154,7 @@ class Q09ProofTests(unittest.TestCase):
                     patch.dict(os.environ, {'GITHUB_SHA': revision}):
                 self.assertEqual(self.driver.main(), 1)
             self.assertEqual(observed, [package])
-            self.assertEqual((observed[0] / '../../e2e').resolve(), e2e)
+            self.assertEqual((observed[0] / '../../e2e').resolve(), e2e.resolve())
 
 
 if __name__ == '__main__':
