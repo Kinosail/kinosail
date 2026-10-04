@@ -20,6 +20,9 @@ title, artist, album, track, artwork, and stream. No ClientItem keys are added.
   saving. A manual queue action must not bypass current progress ownership.
 - Offline and receiver playback have separate ownership. A local queue action must
   not replace a receiver-owned source or write its progress.
+- Watch Together holds the original media identity in its WebSocket closure.
+  Keep in-page queue changes disabled in a room. Existing room selection loads
+  the full current-item page and stays authoritative for shared playback.
 - A delayed or malformed queue response can arrive after a profile/item change,
   contain an unauthorized empty stream, or contain unsafe URLs or unbounded tags.
   Validate before source, metadata, or queue side effects; use safe text APIs.

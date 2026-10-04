@@ -176,7 +176,7 @@ test("overlapping queue actions authorize and advance only once", async ({page})
   expect(writes).toBe(1);
 });
 
-for (const boundary of ["missing artwork", "unsupported system metadata", "cast owner"]) {
+for (const boundary of ["missing artwork", "unsupported system metadata", "cast owner", "room owner"]) {
   test(`queue preserves truthful local ownership with ${boundary}`, async ({page}) => {
     await openAudio(page, "");
     if (boundary === "missing artwork") await page.route("https://audio.test/api/v1/items/next", route => route.fulfill({json: {
@@ -185,8 +185,9 @@ for (const boundary of ["missing artwork", "unsupported system metadata", "cast 
     if (boundary === "unsupported system metadata") await page.evaluate(() => Object.defineProperty(window, "MediaMetadata", {value: undefined}));
     await startQueue(page);
     if (boundary === "cast owner") await page.locator("audio").evaluate(audio => audio.dataset.castActive = "true");
+    if (boundary === "room owner") await page.locator("audio").evaluate(audio => audio.dataset.room = "existing-room");
     await page.getByRole("button", {name: "Next track", exact: true}).click();
-    if (boundary === "cast owner") {
+    if (boundary === "cast owner" || boundary === "room owner") {
       await expect(page.locator("audio")).toHaveAttribute("data-progress", "/progress/track");
       await expect(page.locator(".title-block h1")).toHaveText("First track");
     } else {
