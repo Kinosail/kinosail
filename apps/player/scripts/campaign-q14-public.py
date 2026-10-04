@@ -145,10 +145,23 @@ def manifest(revision):
                   "apps/player/scripts/campaign_q14_admission.py", "apps/player/scripts/test_campaign_q14_public.py",
                   "apps/player/go.mod", "apps/player/go.sum", "packages/go.mod", "packages/go.sum",
                   ".github/workflows/layout-stability.yml",
+                  "packages/webassets/static/pwa-browse-return.js",
+                  "packages/webassets/static/pwa-library.js", "packages/webassets/static/pwa-navigation.js",
+                  "packages/webassets/webassets.go", "apps/player/internal/server/locale.go",
+                  "apps/subtitles/internal/server/locale.go", "apps/player/internal/server/player.go",
+                  "apps/player/internal/server/browse_return_contract_test.go",
+                  "apps/player/e2e/browse-return-safety.spec.ts",
+                  "apps/player/e2e/browse-return-home.spec.ts",
                   "engineering/qa/2026-10-04-q14-browse-return/direct-cli-preparation-context.json"})
+    catalogs = list((ROOT / "apps/player/internal/server/locales").glob("active.*.json"))
+    if len(catalogs) != 108 or any(path.is_symlink() or not path.is_file() for path in catalogs):
+        raise ValueError("active catalog source prerequisite")
+    paths.update(str(path.relative_to(ROOT)) for path in catalogs)
     sources = {name: {"bytes": (ROOT / name).stat().st_size, "sha256": sha((ROOT / name).read_bytes())} for name in sorted(paths)}
     canonical = "".join(f"{name}\t{entry['sha256']}\n" for name, entry in sources.items()).encode()
-    return {"revision": revision, "recipe": "UTF-8 sorted path<TAB>lowercase SHA-256<LF>, trailing LF", "canonicalSHA256": sha(canonical), "sources": sources}
+    return {"revision": revision, "trackedTree": git("rev-parse", "HEAD^{tree}"),
+            "boundary": "Selected input hashes plus Git tree identity; no dependency-cache byte claim.",
+            "recipe": "UTF-8 sorted path<TAB>lowercase SHA-256<LF>, trailing LF", "canonicalSHA256": sha(canonical), "sources": sources}
 
 
 def main():

@@ -187,5 +187,60 @@ class CompileTests(unittest.TestCase):
                 self.assertIsNone(self.compile_fake(mutation)[2])
 
 
+class SourceTests(unittest.TestCase):
+    # The public journey cannot detect a omitted provenance input. These controls
+    # cover the new loader/catalog inclusion gap independently of browser results.
+    def fixture(self, root):
+        qa = root / 'engineering/qa/2026-10-04-q14-browse-return'
+        qa.mkdir(parents=True)
+        (qa / 'direct-cli-preparation-context.json').write_text('{"sources": []}')
+        names = {
+            str(PATH.relative_to(DRIVER.ROOT)), DRIVER.CLIP, 'go.work', 'go.work.sum',
+            'apps/player/e2e/browse-return-proof-reporter.ts',
+            'apps/player/scripts/campaign_q14_admission.py',
+            'apps/player/scripts/test_campaign_q14_public.py',
+            'apps/player/go.mod', 'apps/player/go.sum', 'packages/go.mod', 'packages/go.sum',
+            '.github/workflows/layout-stability.yml',
+            'packages/webassets/static/pwa-browse-return.js',
+            'packages/webassets/static/pwa-library.js', 'packages/webassets/static/pwa-navigation.js',
+            'packages/webassets/webassets.go', 'apps/player/internal/server/locale.go',
+            'apps/player/internal/server/player.go', 'apps/subtitles/internal/server/locale.go',
+            'apps/player/internal/server/browse_return_contract_test.go',
+            'apps/player/e2e/browse-return-safety.spec.ts',
+            'apps/player/e2e/browse-return-home.spec.ts',
+        }
+        for name in names:
+            path = root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text('fictional pinned input')
+        catalogs = []
+        for index in range(108):
+            name = f'apps/player/internal/server/locales/active.fixture{index:03}.json'
+            path = root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text('[]')
+            catalogs.append(name)
+        return qa, catalogs
+
+    def test_loader_and_every_active_catalog_are_bound_to_the_git_tree(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            qa, catalogs = self.fixture(root)
+            with mock.patch.object(DRIVER, 'ROOT', root), mock.patch.object(DRIVER, 'QA', qa), mock.patch.object(DRIVER, 'git', return_value='a' * 40), mock.patch.object(DRIVER, '__file__', str(root / 'apps/player/scripts/campaign-q14-public.py')):
+                value = DRIVER.manifest('b' * 40)
+            self.assertEqual(value['trackedTree'], 'a' * 40)
+            for name in [*catalogs, 'packages/webassets/static/pwa-browse-return.js', 'apps/player/e2e/browse-return-safety.spec.ts']:
+                self.assertIn(name, value['sources'])
+
+    def test_missing_active_catalog_is_rejected_before_runtime(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            qa, catalogs = self.fixture(root)
+            (root / catalogs[-1]).unlink()
+            with mock.patch.object(DRIVER, 'ROOT', root), mock.patch.object(DRIVER, 'QA', qa), mock.patch.object(DRIVER, 'git', return_value='a' * 40), mock.patch.object(DRIVER, '__file__', str(root / 'apps/player/scripts/campaign-q14-public.py')):
+                with self.assertRaises(ValueError):
+                    DRIVER.manifest('b' * 40)
+
+
 if __name__ == "__main__":
     unittest.main()
