@@ -117,7 +117,12 @@ and source/fixture static validation, and a mode that never invokes Go. Source
 review found dispatch, provenance, output-validation, and process-settlement
 gaps before any hosted execution. Thirteen fictional public-driver controls
 were prepared at `d8f5d08ce52a8a61f6ea3664182298d947b9a3df` before correcting
-those paths. They are source text under `driver-controls/` and remain unrun.
+those paths. They are source text under `driver-controls/`. Root executed
+12 controls at `f723fa6f`: ten passed, while the normal-success and tracked-drift
+controls failed at the driver's process boundary. The 90-second descendant
+control was not run in that attempt. These are driver failures, not product
+failures. The failed receipts and small fixtures remain preserved under
+`.verification/r06-fake-admission-f723/` in the campaign workspace.
 They use a small disposable Git fixture and a fictional Go event executable;
 their results cannot establish product GREEN. The real Go program is never
 invoked by that fixture. The 26 public
@@ -139,6 +144,14 @@ Duplicate package terminals, missing or malformed used fields, and unknown
 named-test actions prevent GREEN. Failed tests export only fixed phase hints
 and an allowlisted test filename/line when available. Unknown assertions stay
 `unclassified-inconclusive`; discarded private output cannot prove their exact
-cause. The owned process group is killed before reaping its leader, including
-when a departed leader leaves a descendant holding stdout. These new guards
-have source controls but no executed runtime evidence yet.
+cause. The current process repair uses nonblocking reads and preserves a normal
+exit through a natural wait within the remaining 90-second execution bound.
+It then proves the complete owned group absent. A deadline still stops that
+group when a departed leader leaves a descendant holding stdout. Settlement
+allows up to three seconds to reap the leader and four seconds to confirm the
+group has stopped; those cleanup bounds are recorded separately. Permission
+failures export a fixed failure class and incomplete status, with source and
+R16 integrity fields retained. Fourteen fictional controls now include
+independent group-absence checks before control cleanup and injected signal
+permission failure. The strengthened controls precede this repair; their
+new runtime execution remains pending. No actual Go has run under this driver.
