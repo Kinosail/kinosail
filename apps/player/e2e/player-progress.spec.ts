@@ -1,9 +1,14 @@
 import { expect, test, type Page, type Route } from "@playwright/test";
 import { readFile } from "node:fs/promises";
+import {execFileSync} from "node:child_process";
+import {createHash} from "node:crypto";
 
 // Isolated HTTP failure/ordering coverage; see engineering/qa/2026-10-04-r03-progress.
-const source = await readFile(new URL("../../../packages/webassets/static/player-progress.js", import.meta.url), "utf8");
-const queueSource = await readFile(new URL("../../../packages/webassets/static/player-audio-queue.js", import.meta.url), "utf8");
+const frozenRevision = process.env.KINOSAIL_PROGRESS_FROZEN_REVISION;
+if (frozenRevision && !/^[a-f0-9]{40}$/.test(frozenRevision)) throw new Error("Frozen progress source must name an exact commit.");
+const source = frozenRevision ? execFileSync("git", ["show", `${frozenRevision}:packages/webassets/static/player-progress.js`], {encoding: "utf8"}) :
+  await readFile(new URL("../../../packages/webassets/static/player-progress.js", import.meta.url), "utf8");
+const queueSource = frozenRevision ? "" : await readFile(new URL("../../../packages/webassets/static/player-audio-queue.js", import.meta.url), "utf8");
 const failure = "Your latest position is not saved. Retry while this page is open.";
 const requests: Array<{ body: URLSearchParams; route: Route }> = [];
 let status = 204;
@@ -269,16 +274,23 @@ test("audio queue does not drop a failed watched save when it advances", async (
 });
 
 test("audio queue saves a new-track pause while final watched continuation still settles", async ({page}, testInfo) => {
-  await page.waitForFunction("audioQueue.length === 1");
-  await page.evaluate(() => Object.assign(window, {holdQueuePlay: true}));
-  await page.locator("video").dispatchEvent("ended");
-  await expect(page.locator("video")).toHaveAttribute("data-progress", "/progress/next");
-  await page.waitForFunction("typeof window.finishQueuePlay === 'function'");
-  await pauseAt(page, 3);
-  await page.evaluate(() => (window as Window & {finishQueuePlay(): void}).finishQueuePlay());
-  await testInfo.attach("queued-new-track-pause", {body: JSON.stringify(await page.evaluate("({progressPath: player.dataset.progress, pendingSeconds: pendingProgress?.seconds, pendingRevision: pendingProgress?.revision, flightSettled: progressFlight === undefined})")), contentType: "application/json"});
-  await expect.poll(() => requests.length, {timeout: 1500}).toBe(2);
-  expect(new URL(requests[1].route.request().url()).pathname).toBe("/progress/next");
-  expect(requests[1].body.get("seconds")).toBe("3");
-  expect(requests[1].body.get("watched")).toBeNull();
+  await testInfo.attach("progress-source-provenance", {body: JSON.stringify({revision: frozenRevision || "working-tree",
+    senderAndQueueSHA256: createHash("sha256").update(source + queueSource).digest("hex")}), contentType: "application/json"});
+  try {
+    await page.waitForFunction("audioQueue.length === 1");
+    await page.evaluate(() => Object.assign(window, {holdQueuePlay: true}));
+    await page.locator("video").dispatchEvent("ended");
+    await expect(page.locator("video")).toHaveAttribute("data-progress", "/progress/next");
+    await expect.poll(() => page.locator("video").evaluate((media: HTMLVideoElement) => new URL(media.src).pathname)).toBe("/media/next");
+    await page.waitForFunction("typeof window.finishQueuePlay === 'function'");
+    await pauseAt(page, 3);
+    await page.evaluate(() => (window as Window & {finishQueuePlay(): void}).finishQueuePlay());
+    await testInfo.attach("queued-new-track-pause", {body: JSON.stringify(await page.evaluate("({progressPath: player.dataset.progress, pendingSeconds: pendingProgress?.seconds, pendingRevision: pendingProgress?.revision, flightSettled: progressFlight === undefined})")), contentType: "application/json"});
+    await expect.poll(() => requests.length, {timeout: 1500}).toBe(2);
+    expect(new URL(requests[1].route.request().url()).pathname).toBe("/progress/next");
+    expect(requests[1].body.get("seconds")).toBe("3");
+    expect(requests[1].body.get("watched")).toBeNull();
+  } finally {
+    await page.evaluate(() => (window as Window & {finishQueuePlay?: () => void}).finishQueuePlay?.()).catch(() => {});
+  }
 });
