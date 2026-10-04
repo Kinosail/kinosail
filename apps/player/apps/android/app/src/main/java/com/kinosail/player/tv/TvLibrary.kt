@@ -20,6 +20,7 @@ import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.tv.material3.*
@@ -89,15 +90,23 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
             } else if (destination == "settings") {
                 TvSettings(viewer, connection::signOut)
             } else {
-                if (destination == "search") Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    OutlinedTextField(catalog.searchInput, onValueChange = { if (it.length <= 512) catalog.searchInput = it },
-                        label = { androidx.compose.material3.Text(interfaceText("Search library")) }, singleLine = true,
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                        keyboardActions = KeyboardActions(onSearch = { catalog.search(); keyboard?.hide() }),
-                        colors = OutlinedTextFieldDefaults.colors(focusedTextColor = KinoColor.text, unfocusedTextColor = KinoColor.text,
-                            focusedLabelColor = KinoColor.signal, unfocusedLabelColor = KinoColor.muted,
-                            focusedBorderColor = KinoColor.signal, unfocusedBorderColor = KinoColor.muted), modifier = Modifier.weight(1f))
-                    Button(onClick = { catalog.search(); keyboard?.hide() }) { Text(interfaceText("Search")) }
+                if (destination == "search") {
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        OutlinedTextField(catalog.searchInput, onValueChange = { if (it.length <= 512) catalog.searchInput = it },
+                            label = { androidx.compose.material3.Text(interfaceText("Search library")) }, singleLine = true,
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                            keyboardActions = KeyboardActions(onSearch = { catalog.search(); keyboard?.hide() }),
+                            colors = OutlinedTextFieldDefaults.colors(focusedTextColor = KinoColor.text, unfocusedTextColor = KinoColor.text,
+                                focusedLabelColor = KinoColor.signal, unfocusedLabelColor = KinoColor.muted,
+                                focusedBorderColor = KinoColor.signal, unfocusedBorderColor = KinoColor.muted), modifier = Modifier.weight(1f))
+                        Button(onClick = { catalog.search(); keyboard?.hide() }) { Text(interfaceText("Search")) }
+                        Button(onClick = { catalog.clearSearch(); keyboard?.hide() }) { Text(interfaceText("Clear search")) }
+                    }
+                    state.resultQuery?.let { query ->
+                        Text("${interfaceText("Results")}: ${state.total}" + if (query.isEmpty()) "" else " · “$query”",
+                            color = KinoColor.text, maxLines = 2, overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
+                    }
                 }
                 if ((state.failedOffset ?: 0) == 0 || state.connectionExpired) {
                     state.notice?.let { Text(it, color = KinoColor.text, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }

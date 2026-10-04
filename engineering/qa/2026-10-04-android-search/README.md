@@ -1,7 +1,8 @@
 # Q03 Android search feedback: test-first plan
 
 Canonical item: Q03 / AND-Q04. Reliability R09/R13 are the preceding batch.
-This document records preparation only; Q03 production changes are not made.
+Q03 acceptance RED is confirmed; the narrow production implementation is now
+present and scheduled candidate GREEN verification is pending.
 Baseline: frozen recovery candidate `47bcc64c8d737b1249498ea402e41788d781507b`,
 with origin/main `50fd82f329c651258245451a55b8fff8dfa9adec` reconciled.
 R09/R13 subsequently merged in PR #466. The queued Q03 baseline branch is
@@ -55,6 +56,39 @@ not yet compiled or run. The earlier smaller inactive draft remains outside the
 application source set as preparation history and is not runtime evidence.
 Runtime availability and benefit remain unverified until baseline and candidate
 native journeys execute.
+
+## Acceptance RED before production edits
+
+At exact test-first commit `2f2f9acd41ee4926e3d8ff496ae5b381d1fcc7a6`,
+the bounded run completed in 28 seconds: 16 executed, eight R09 controls passed,
+eight Q03 checks failed, zero errors or skips. All failures were intended missing
+feature assertions after native Search/IME and public HTTP/model transitions:
+six absent submitted-count summaries and two independent absent Clear controls
+on phone and TV. No prerequisite or harness failure occurred. Subsequent
+assertions blocked by each first intended failure are not counted as reached proof.
+
+The production Android tree was unchanged from merged main `d440fb05ede` during
+RED. The receipt pins six production/test source hashes, two XML files, the log
+and ten PNG/semantics artifacts: `task-2/android-search-red/receipt.json`, SHA-256
+`8b0673193cef49c5dc212609b32bd0b487ec9d9cf0468c3f8d73ca977dca36f2`.
+Phone and TV submitted-search baseline captures were inspected and show no
+Clear control or result summary. Query field, Server response totals and rows
+were successfully reached; these captures do not prove physical input or ranking.
+
+## Candidate behavior
+
+The model records the query of a successful current-generation result, and Clear
+uses the existing validated explicit search action with an empty input. Native
+phone/tablet and TV controls show that submitted query and Server total with a
+polite live region; unsent edits keep the prior label. Clear stays composed so
+TV focus can remain on the actual control. The count uses readable native theme
+colors and two bounded display lines. No query history, Server API change,
+authentication relaxation, settings mutation or media work is introduced.
+
+The existing translation lookup is retained; new Results/Clear search keys use
+its English fallback where absent from generated catalogs. Physical TalkBack,
+actual TV remote input, populated Server search ranking, large-text/RTL and other
+language renders remain separately named verification boundaries.
 
 The synthetic HTTP stand-in adds query-specific total, failure and gate
 controls for those journeys. Keep its responses valid JSON for Unicode and quoted

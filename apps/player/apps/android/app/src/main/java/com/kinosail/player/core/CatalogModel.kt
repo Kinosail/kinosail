@@ -24,6 +24,7 @@ data class CatalogState(
     val notice: String? = null,
     val failedOffset: Int? = null,
     val connectionExpired: Boolean = false,
+    val resultQuery: String? = null,
     val selected: CatalogItem? = null,
     val view: String = "all",
     val listed: Boolean? = null,
@@ -93,6 +94,8 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
         state = CatalogState(loading = true, view = activeView)
         viewModelScope.launch { fetch(attempt, 0) }
     }
+
+    fun clearSearch() { searchInput = ""; search() }
 
     fun changeView(view: String) {
         require(LIBRARY_VIEWS.any { it.first == view }) { "Invalid library view." }
@@ -249,7 +252,8 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
                 throw IllegalArgumentException("The Server returned a duplicate library item.")
             }
             state = state.copy(items = if (offset == 0) page.items else state.items + page.items,
-                total = page.total, loading = false, notice = null, failedOffset = null, connectionExpired = false)
+                total = page.total, loading = false, notice = null, failedOffset = null,
+                connectionExpired = false, resultQuery = activeQuery)
             if (offset == 0 && activeQuery.isEmpty()) this.viewer?.let { identity ->
                 withContext(Dispatchers.IO) {
                     runCatching { sessions.saveCatalog(saved.server, identity, "library-$activeView", page) }
