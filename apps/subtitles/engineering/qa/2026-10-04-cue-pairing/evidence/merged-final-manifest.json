@@ -1,0 +1,787 @@
+{
+  "backlogID": "R07",
+  "testedRevision": "de6d487af024db89dae6eb8841d2dfb1d58bca9e",
+  "testOnlyRedRevision": "cf86bbcb68bab46a3eef48dfd0f701d9d5f9d5cc",
+  "implementationRevision": "8f06acbb24cd9dad3aca79d9cda987731bc94d19",
+  "baselineForSourceInventory": "50fd82f32",
+  "lintComparisonRevision": "af5dc2c30606499bb54a16661abc4a72afaddcfe",
+  "goPassedCases": 19,
+  "apiSourceIdentities": 10000,
+  "actualServerScriptSHA256": "7ee624211c718f2e7693d1e73e2e205e9f5dcff2584cc7d7560ce1485f96360a",
+  "results": {
+    "merged-browser-green": {
+      "startTime": "2026-10-04T10:54:45.520Z",
+      "duration": 27120.426,
+      "expected": 5,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "merged-native-green": {
+      "startTime": "2026-10-04T10:56:55.801Z",
+      "duration": 20840.326,
+      "expected": 2,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    }
+  },
+  "longGroupMetrics": [
+    {
+      "attachment": "long-group-initial-render",
+      "case": "long merged comparison bounds rendering and reaches the last source at 390px",
+      "data": {
+        "revision": "de6d487af024db89dae6eb8841d2dfb1d58bca9e",
+        "width": 390,
+        "metrics": {
+          "seekButtons": 3,
+          "elements": 17,
+          "textBytes": 203
+        },
+        "sourceCount": 10000,
+        "boundary": "isolated renderer; actual public Go 10,000-cue inspect/preview/assets; media aborted; no browser performance timing claim"
+      }
+    },
+    {
+      "attachment": "long-group-expanded-render",
+      "case": "long merged comparison bounds rendering and reaches the last source at 390px",
+      "data": {
+        "revision": "de6d487af024db89dae6eb8841d2dfb1d58bca9e",
+        "width": 390,
+        "sourcePage": "500",
+        "seekButtons": 21
+      }
+    },
+    {
+      "attachment": "long-group-initial-render",
+      "case": "long merged comparison bounds rendering and reaches the last source at 1440px",
+      "data": {
+        "revision": "de6d487af024db89dae6eb8841d2dfb1d58bca9e",
+        "width": 1440,
+        "metrics": {
+          "seekButtons": 3,
+          "elements": 17,
+          "textBytes": 203
+        },
+        "sourceCount": 10000,
+        "boundary": "isolated renderer; actual public Go 10,000-cue inspect/preview/assets; media aborted; no browser performance timing claim"
+      }
+    },
+    {
+      "attachment": "long-group-expanded-render",
+      "case": "long merged comparison bounds rendering and reaches the last source at 1440px",
+      "data": {
+        "revision": "de6d487af024db89dae6eb8841d2dfb1d58bca9e",
+        "width": 1440,
+        "sourcePage": "500",
+        "seekButtons": 21
+      }
+    }
+  ],
+  "nativeTransport": [
+    {
+      "attachment": "native-transport-and-integrity",
+      "case": "native Server pairs dialogue with playable media at 390px",
+      "data": {
+        "requests": [
+          {
+            "method": "GET",
+            "path": "/subtitles/inspect/8e537f8897244f98"
+          },
+          {
+            "method": "GET",
+            "path": "/static/theme.js"
+          },
+          {
+            "method": "GET",
+            "path": "/static/app.css"
+          },
+          {
+            "method": "GET",
+            "path": "/static/subtitle-inspector.css"
+          },
+          {
+            "method": "GET",
+            "path": "/static/subtitle-inspector.js"
+          },
+          {
+            "method": "GET",
+            "path": "/static/main.kinosail.bundle.js"
+          },
+          {
+            "method": "GET",
+            "path": "/static/icon.svg"
+          },
+          {
+            "method": "GET",
+            "path": "/static/cinema-backdrop.jpg"
+          },
+          {
+            "method": "GET",
+            "path": "/static/icon.svg"
+          },
+          {
+            "method": "GET",
+            "path": "/static/manrope.woff2"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/subtitle-library/8e537f8897244f98/inspect"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/subtitle-library/8e537f8897244f98/draft"
+          },
+          {
+            "method": "GET",
+            "path": "/media/8e537f8897244f98"
+          },
+          {
+            "method": "GET",
+            "path": "/media/8e537f8897244f98"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/subtitle-library/8e537f8897244f98/preview"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/subtitle-library/8e537f8897244f98/preview"
+          }
+        ],
+        "media": [
+          {
+            "status": 206,
+            "contentRange": "bytes 0-396547/396548"
+          },
+          {
+            "status": 206,
+            "contentRange": "bytes 393216-396547/396548"
+          }
+        ],
+        "rejectedMutations": [
+          {
+            "action": "apply",
+            "status": 405
+          },
+          {
+            "action": "restore",
+            "status": 405
+          }
+        ],
+        "installedSubtitleUnchanged": true,
+        "recoverySidecarAbsent": true,
+        "directPlaybackDuration": 12
+      }
+    },
+    {
+      "attachment": "native-transport-and-integrity",
+      "case": "native Server pairs dialogue with playable media at 1440px",
+      "data": {
+        "requests": [
+          {
+            "method": "GET",
+            "path": "/subtitles/inspect/8e537f8897244f98"
+          },
+          {
+            "method": "GET",
+            "path": "/static/theme.js"
+          },
+          {
+            "method": "GET",
+            "path": "/static/app.css"
+          },
+          {
+            "method": "GET",
+            "path": "/static/subtitle-inspector.css"
+          },
+          {
+            "method": "GET",
+            "path": "/static/subtitle-inspector.js"
+          },
+          {
+            "method": "GET",
+            "path": "/static/main.kinosail.bundle.js"
+          },
+          {
+            "method": "GET",
+            "path": "/static/icon.svg"
+          },
+          {
+            "method": "GET",
+            "path": "/static/cinema-backdrop.jpg"
+          },
+          {
+            "method": "GET",
+            "path": "/static/icon.svg"
+          },
+          {
+            "method": "GET",
+            "path": "/static/manrope.woff2"
+          },
+          {
+            "method": "GET",
+            "path": "/media/8e537f8897244f98"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/subtitle-library/8e537f8897244f98/inspect"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/subtitle-library/8e537f8897244f98/draft"
+          },
+          {
+            "method": "GET",
+            "path": "/media/8e537f8897244f98"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/subtitle-library/8e537f8897244f98/preview"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/subtitle-library/8e537f8897244f98/preview"
+          }
+        ],
+        "media": [
+          {
+            "status": 206,
+            "contentRange": "bytes 0-396547/396548"
+          },
+          {
+            "status": 206,
+            "contentRange": "bytes 393216-396547/396548"
+          }
+        ],
+        "rejectedMutations": [
+          {
+            "action": "apply",
+            "status": 405
+          },
+          {
+            "action": "restore",
+            "status": 405
+          }
+        ],
+        "installedSubtitleUnchanged": true,
+        "recoverySidecarAbsent": true,
+        "directPlaybackDuration": 12
+      }
+    }
+  ],
+  "r16Scope": {
+    "revision": "de6d487af024db89dae6eb8841d2dfb1d58bca9e",
+    "boundary": "exact committed Go compilation view; owned R16 prep preserved outside package for lint then restored byte-for-byte in finally",
+    "exit": 0,
+    "restored": true,
+    "preservedR16SHA256": {
+      "subtitle_maintenance_test.go": "f26e00b3f914130793b72c5187b546244ed4d47222380743899f02aa9f7993fb",
+      "subtitle_dashboard_revision_test.go": "c0111e937ade97838c3422b89de5a56089efd3e289828598147860615ddd7de6"
+    }
+  },
+  "lintAttempts": [
+    {
+      "log": "evidence/merged-lint-green.log.gz",
+      "exit": 1,
+      "classification": "R16 prerequisite: golangci rereads physical source paths despite Go overlay"
+    },
+    {
+      "log": "evidence/merged-lint-committed-green.log.gz",
+      "exit": 1,
+      "classification": "task-caused cyclop 16 > 10; assertion-only helper repair preserves checks"
+    },
+    {
+      "log": "evidence/merged-lint-final-green.log.gz",
+      "exit": 0,
+      "classification": "0 issues; 16.995 seconds; no timeout"
+    }
+  ],
+  "integrity": {
+    "installedSubtitleUnchanged": true,
+    "recoverySidecarAbsent": true
+  },
+  "boundaries": [
+    "19 Node VM logic cases are synthetic-DOM logic proof",
+    "5 isolated Chromium cases use actual Go HTML/assets/API output; media aborted except separate synthetic scrolling control",
+    "10,000-cue last-page seeks are isolated renderer evidence; synthetic timing exceeds approved 12-second native clip",
+    "2 native ordinary cases use actual loopback Server/probe/media with no routes; auth disabled, GET/preview-only guard; no provider credentials or encoder",
+    "Full container/app gate remains locally unverified: Podman unavailable; required protected checks/independent review/merge/ancestry remain with root",
+    "Raw logs, earlier intermediate fixtures, duplicate HTML reports, source overlays, binaries and all disposable files remain preserved locally; no cleanup"
+  ],
+  "sourceFiles": [
+    {
+      "path": "apps/subtitles/docs/reference/api.md",
+      "bytes": 4369,
+      "sha256": "493b538e16d6d2bdac62530096233a9e37cc575a4e1e8d50e4465ecaa6d68688"
+    },
+    {
+      "path": "apps/subtitles/docs/user-guide/index.md",
+      "bytes": 3340,
+      "sha256": "c62bac2ad16c853695e81a7ca0ba1c6047def385f42440e572b39b3f33afcd44"
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-race-fixture.ts",
+      "bytes": 4846,
+      "sha256": "f28674b7b838a724b3899f0e567ae744148bf3b39770f523f235de77ca1fd8d5"
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-races.spec.ts",
+      "bytes": 14294,
+      "sha256": "119bd52848c91d3631cc8feffae85dd04a46de26253fd1ce6a7e28494909c948"
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-scroll.spec.ts",
+      "bytes": 4107,
+      "sha256": "eba4b17d74365df96c50378c4a481e8da25d02d831a50ad8675f0add9014727f"
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-merged-group.spec.ts",
+      "bytes": 5793,
+      "sha256": "ca0f0beb32fcf86e3da01b63eb04b68b11cb916936c14b3845cc165e71eaef5f"
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-pairing-journey.ts",
+      "bytes": 3652,
+      "sha256": "fedbcd7f1d580069c86c47786d151ead28df9d9527deb56b6735ade2bcb6109c"
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-pairing-native.spec.ts",
+      "bytes": 3820,
+      "sha256": "afc6b089cee0b86d0fd068c0afb0a2a999f6aa9ef253193daec7604b504913dd"
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-pairing.spec.ts",
+      "bytes": 3778,
+      "sha256": "956a98428d7d9561676af453170ee356b177fe7f6bdaf31cba866e67d614c9ba"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_openapi.json",
+      "bytes": 50869,
+      "sha256": "b8518b6ed2049f49eff6dc9c112e7c4d6b6671009d83da149c6effa17693a275"
+    },
+    {
+      "path": "apps/subtitles/internal/server/assets.go",
+      "bytes": 5674,
+      "sha256": "bfbecbed116bb8c6b4a16d08f43a1a7c75dc5844b7e8729305b85cef53d7cd17"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/subtitle-inspector.js",
+      "bytes": 23419,
+      "sha256": "e8a65f4c7486828ebafb99d576724e448255a9fdb74c96dadac4716bc2a19bd0"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/subtitle-source-cues.js",
+      "bytes": 4116,
+      "sha256": "2b388f3a13435318744e28f7f67658b87c7da32dfa98061d8090964e1c6aa991"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_clean.go",
+      "bytes": 7887,
+      "sha256": "72b937f0f8d4d6cfa84395bdde0de9be7272d26e583765ea2c7e6edfa09241ba"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_conversion.go",
+      "bytes": 4614,
+      "sha256": "0ed6b966a053ba6e71d8660305690133a9b040d386046643cb2d2a8848603c44"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_draft_tool_test.go",
+      "bytes": 5869,
+      "sha256": "8995b4107b8fa2acd1d8d9e5407b5f6ac85194209a0980f81d92963160c56f3d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_edit.go",
+      "bytes": 12076,
+      "sha256": "ff7b8b86def21a253d4d8f126f6f7f78b60a65f595829b37dd00ee9f38009305"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_inspector.go",
+      "bytes": 9617,
+      "sha256": "44073fe3f050ec5df90595167c21c3693eca724d9681ec6c34a5e6b6df3796ca"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_review.go",
+      "bytes": 10471,
+      "sha256": "1962d56b50b090731369ea87b9b55df0dd31525e472fa2604f582af89bc2d5af"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_review_merged_group_test.go",
+      "bytes": 3038,
+      "sha256": "8eafc3883f90af2dbb33c0e54dc66610df67fe1406bd1ec388f7896eefa1cd52"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_review_pairing.go",
+      "bytes": 2566,
+      "sha256": "57f68cd43619769d62c33e72efcbf2d1bb12474aa23f4edf17d3aeaf4662216d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_review_pairing_test.go",
+      "bytes": 6821,
+      "sha256": "f05f80e3d730f567e623c1241e0be2ce371ad93ae4de338c122a195113f1ee27"
+    },
+    {
+      "path": "apps/subtitles/scripts/test-container.sh",
+      "bytes": 14768,
+      "sha256": "13f96d10e1b40ec0e5dee93121190d93b538546111c8d000ec59cc90e99e8bc3"
+    },
+    {
+      "path": "apps/subtitles/scripts/test-instance.sh",
+      "bytes": 6224,
+      "sha256": "3db2011fd969443bdcf6480194b3767e5338a5fdf44ceed16ad73b3710d210a1"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "evidence/merged-api-control.log.gz",
+      "bytes": 296,
+      "sha256": "f5367f3b4e6b5a683507b64bdba2811490ee6c084f32cec10c78ea9abf9cc6ec"
+    },
+    {
+      "path": "evidence/merged-api-final-green.log.gz",
+      "bytes": 1679,
+      "sha256": "8ef7bded3428b5ccb3a59c52a7d2428f3eb0fce3edb41fdadb54f5798eb9aff7"
+    },
+    {
+      "path": "evidence/merged-api-final-green.log.json",
+      "bytes": 639,
+      "sha256": "2e51bdef597f862be8a23fac641dd18569abf831c1ac413dbf14f38b1cf7091d"
+    },
+    {
+      "path": "evidence/merged-api-green.log.gz",
+      "bytes": 1684,
+      "sha256": "b7d35e4fb7f835b008cab94e217d0b73025bb5fd00f2c4305e1e46e3d7ac1867"
+    },
+    {
+      "path": "evidence/merged-api-green.log.json",
+      "bytes": 634,
+      "sha256": "0408c040d87c40a462ffa170372399166b216734bffae7969b57ffd5c9fbedf5"
+    },
+    {
+      "path": "evidence/merged-baseline-manifest.json",
+      "bytes": 6201,
+      "sha256": "eaac5d7610aa3b0c381d2adb0acff8240508ca17911af5b787428e5950e345b4"
+    },
+    {
+      "path": "evidence/merged-browser-green/results/subtitle-merged-group-long-25577-es-the-last-source-at-390px-chromium/long-group-bounded.png",
+      "bytes": 72383,
+      "sha256": "873bcaefc3406dbbfb6a6bd61fcd6a25eefbe88b82c2154e4faa866459fbdc66"
+    },
+    {
+      "path": "evidence/merged-browser-green/results/subtitle-merged-group-long-a0320-s-the-last-source-at-1440px-chromium/long-group-bounded.png",
+      "bytes": 105449,
+      "sha256": "6e5f1826899181c09abfcb12bdec1ff08e1803419f42169474c442ac622bfd61"
+    },
+    {
+      "path": "evidence/merged-browser-green/results/subtitle-pairing-cleanup-c-b8631-the-same-dialogue-at-1440px-chromium/actual-cleanup.png",
+      "bytes": 290936,
+      "sha256": "165063af30551159dd56809b9fe5de7cbd06fe202cdd5b3921b65c84adbe1214"
+    },
+    {
+      "path": "evidence/merged-browser-green/results/subtitle-pairing-cleanup-c-b8631-the-same-dialogue-at-1440px-chromium/paired-cleanup.png",
+      "bytes": 283811,
+      "sha256": "6a85477a94430585a2964588126216dce95d13c4a1d04e5d61deaae4f543624b"
+    },
+    {
+      "path": "evidence/merged-browser-green/results/subtitle-pairing-cleanup-c-b8631-the-same-dialogue-at-1440px-chromium/unpaired-import.png",
+      "bytes": 308426,
+      "sha256": "6c3e5e38ca7b215d1507bcd4d13ece6de3ba2e9d37ad6e9c713faaeba43b7dcb"
+    },
+    {
+      "path": "evidence/merged-browser-green/results/subtitle-pairing-cleanup-compares-the-same-dialogue-at-390px-chromium/actual-cleanup.png",
+      "bytes": 245906,
+      "sha256": "a75e979680d3d37b62070a725adbc488c8c4c2b550c2fc29c9a77ff756089957"
+    },
+    {
+      "path": "evidence/merged-browser-green/results/subtitle-pairing-cleanup-compares-the-same-dialogue-at-390px-chromium/paired-cleanup.png",
+      "bytes": 242018,
+      "sha256": "b88e8b1123632b68854f3da350726449f9b3cea0cbdde02a705c045390450085"
+    },
+    {
+      "path": "evidence/merged-browser-green/results/subtitle-pairing-cleanup-compares-the-same-dialogue-at-390px-chromium/unpaired-import.png",
+      "bytes": 265368,
+      "sha256": "715ccde35d41798b413b46be99ce0f180f9d5dba2fab26c4070994bfdba3355d"
+    },
+    {
+      "path": "evidence/merged-browser-green/results-all.json",
+      "bytes": 14805,
+      "sha256": "04202d059daa6291929696841b53f630e134af618e9d026f1587955b3f37aac2"
+    },
+    {
+      "path": "evidence/merged-browser-green.log.gz",
+      "bytes": 407,
+      "sha256": "22b100029e88d634e650718826425d2347133730a6e939f4d8e9bae2871b2217"
+    },
+    {
+      "path": "evidence/merged-browser-green.log.json",
+      "bytes": 434,
+      "sha256": "358753577363bb135a23d14610c5d799bd835e4f0f001bbdcc19a30872522f53"
+    },
+    {
+      "path": "evidence/merged-browser-red.log.gz",
+      "bytes": 1166,
+      "sha256": "d9ddf0605525798e3b9474681660e37c870ec8ffdd66c38cbfbc90d50d4590d2"
+    },
+    {
+      "path": "evidence/merged-existing-controls.log.gz",
+      "bytes": 85,
+      "sha256": "1a6bd72916ac402da5518205027e8e6203ef1b803b8e2391b822b22e7f5b14ab"
+    },
+    {
+      "path": "evidence/merged-final-fixtures/app.css",
+      "bytes": 233733,
+      "sha256": "64a462e0fe63550251ed8202858a489fa5ad6154d4c83d2f95ef0f946657f567"
+    },
+    {
+      "path": "evidence/merged-final-fixtures/icon.svg",
+      "bytes": 232,
+      "sha256": "6a73058828809eea809a36b74b49a2fe15bebb0ddd57d70920562de30ad19227"
+    },
+    {
+      "path": "evidence/merged-final-fixtures/manrope.woff2",
+      "bytes": 53776,
+      "sha256": "d021a35e139087c179d032e509327fc2dfdbf2c33b6156d25143e004d939da87"
+    },
+    {
+      "path": "evidence/merged-final-fixtures/subtitle-inspector.css",
+      "bytes": 3181,
+      "sha256": "865a91d20bc24c371c02c9e294eaf7159931806a59a9472235f79e68b97b3b20"
+    },
+    {
+      "path": "evidence/merged-final-fixtures/subtitle-inspector.js",
+      "bytes": 27535,
+      "sha256": "7ee624211c718f2e7693d1e73e2e205e9f5dcff2584cc7d7560ce1485f96360a"
+    },
+    {
+      "path": "evidence/merged-final-fixtures/subtitle-merged/app.css",
+      "bytes": 233733,
+      "sha256": "64a462e0fe63550251ed8202858a489fa5ad6154d4c83d2f95ef0f946657f567"
+    },
+    {
+      "path": "evidence/merged-final-fixtures/subtitle-merged/icon.svg",
+      "bytes": 232,
+      "sha256": "6a73058828809eea809a36b74b49a2fe15bebb0ddd57d70920562de30ad19227"
+    },
+    {
+      "path": "evidence/merged-final-fixtures/subtitle-merged/manrope.woff2",
+      "bytes": 53776,
+      "sha256": "d021a35e139087c179d032e509327fc2dfdbf2c33b6156d25143e004d939da87"
+    },
+    {
+      "path": "evidence/merged-final-fixtures/subtitle-merged/subtitle-inspector.css",
+      "bytes": 3181,
+      "sha256": "865a91d20bc24c371c02c9e294eaf7159931806a59a9472235f79e68b97b3b20"
+    },
+    {
+      "path": "evidence/merged-final-fixtures/subtitle-merged/subtitle-inspector.js",
+      "bytes": 27535,
+      "sha256": "7ee624211c718f2e7693d1e73e2e205e9f5dcff2584cc7d7560ce1485f96360a"
+    },
+    {
+      "path": "evidence/merged-final-fixtures/subtitle-merged/subtitle-pairing-cleanup.json",
+      "bytes": 577661,
+      "sha256": "773730523b5be6c64d9fa050f6a67c3daa39090cd7dbbd87a7e002ca4032b750"
+    },
+    {
+      "path": "evidence/merged-final-fixtures/subtitle-merged/subtitle-pairing-import.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/merged-final-fixtures/subtitle-merged/subtitle-pairing.html",
+      "bytes": 28486,
+      "sha256": "096e1f2fd3098b0f99f18f3097eddc736e87e578af6ae40bfc4de5fe79665931"
+    },
+    {
+      "path": "evidence/merged-final-fixtures/subtitle-merged/subtitle-pairing.json",
+      "bytes": 528345,
+      "sha256": "50b1168686d4a26d49d28e89442fd5e324799191cba06b7f91907ea0de194f22"
+    },
+    {
+      "path": "evidence/merged-final-fixtures/subtitle-merged/theme.js",
+      "bytes": 19978,
+      "sha256": "717bfa9383ced4b3be057cdc9e1dc63592738132fea6f2367975222c9cb5bb98"
+    },
+    {
+      "path": "evidence/merged-final-fixtures/subtitle-pairing-cleanup.json",
+      "bytes": 1345,
+      "sha256": "a60d1ffd0131a334b17d26660dd6e4728e61f3a0fa48f4f58d0522a2cd87455a"
+    },
+    {
+      "path": "evidence/merged-final-fixtures/subtitle-pairing-import.json",
+      "bytes": 1415,
+      "sha256": "d05756cdc6ff2179ae0c8309438d5a34c3b29a8f617dce3a0bf115e8bbe0dafa"
+    },
+    {
+      "path": "evidence/merged-final-fixtures/subtitle-pairing.html",
+      "bytes": 19610,
+      "sha256": "f8d3532e5115e28702aafed509cbd8672c353726754b0314899402481b00ef09"
+    },
+    {
+      "path": "evidence/merged-final-fixtures/subtitle-pairing.json",
+      "bytes": 772,
+      "sha256": "1e5ddf7c8da7aa90233f03a69cbda17e2a9814beb33e45f89c18fbbc57eff55a"
+    },
+    {
+      "path": "evidence/merged-final-fixtures/theme.js",
+      "bytes": 19978,
+      "sha256": "717bfa9383ced4b3be057cdc9e1dc63592738132fea6f2367975222c9cb5bb98"
+    },
+    {
+      "path": "evidence/merged-lint-committed-green.log.gz",
+      "bytes": 206,
+      "sha256": "4cf0a44c7cdb9505100a3a06efe6bc238e4e31f037c434159b1475ce3ba9a713"
+    },
+    {
+      "path": "evidence/merged-lint-committed-green.log.json",
+      "bytes": 304,
+      "sha256": "77068577bd50dceb92db23c5ff96ae8163e5def906a4e956d9b8840e079abf31"
+    },
+    {
+      "path": "evidence/merged-lint-committed-scope.json",
+      "bytes": 554,
+      "sha256": "fa07ece86c596edba8bc9c7dedfd735959bcaa5323c18f733f406394676c8013"
+    },
+    {
+      "path": "evidence/merged-lint-final-green.log.gz",
+      "bytes": 30,
+      "sha256": "bafcb04d67f6157ff3d4a1fdf228afd2df6cc6d786c61642c1125b1fe879e728"
+    },
+    {
+      "path": "evidence/merged-lint-final-green.log.json",
+      "bytes": 300,
+      "sha256": "68bc7ee14c12e61cc7df497e0937f3986b9d6fac604b7f3cd93fdb61fa658e60"
+    },
+    {
+      "path": "evidence/merged-lint-final-scope.json",
+      "bytes": 482,
+      "sha256": "2651592c2b6704a6f87a45e08a73cbba1f2c2b44e878784cee79d783bb20ddcf"
+    },
+    {
+      "path": "evidence/merged-lint-green.log.gz",
+      "bytes": 213,
+      "sha256": "872689bad54c60497415af17a8a58963b52311652516514ce732ba1e7982441b"
+    },
+    {
+      "path": "evidence/merged-lint-green.log.json",
+      "bytes": 294,
+      "sha256": "61b821c7ed0a142143c98aad5b7ab218029c0943871a8e2852375eb16d786ef6"
+    },
+    {
+      "path": "evidence/merged-logic-bundle-green.log.gz",
+      "bytes": 2764,
+      "sha256": "c4dc1fe1b56787f88f1d241f72500fa92a2292b5b6e8c26a98488f260b0784d8"
+    },
+    {
+      "path": "evidence/merged-logic-bundle-retry-green.log.gz",
+      "bytes": 1382,
+      "sha256": "1f2f4301fe3c2553dbc098c7ffa297ed968c9658649f9bd4b984e14f73d666fc"
+    },
+    {
+      "path": "evidence/merged-logic-expanded-green.log.gz",
+      "bytes": 891,
+      "sha256": "b98ad88a45dacd99751ef3c72e9333abbe8a11ed6984043e3881d64335dbc404"
+    },
+    {
+      "path": "evidence/merged-logic-final-green.log.gz",
+      "bytes": 889,
+      "sha256": "3bbdcfd147f040260aa366744ec42c6befb3e8635c19dafa888ec51cf563679d"
+    },
+    {
+      "path": "evidence/merged-logic-green.log.gz",
+      "bytes": 832,
+      "sha256": "38d8dad2d4c6d5900e5429407923487885bdb0adab6632e43083f80d19312926"
+    },
+    {
+      "path": "evidence/merged-native-build-context.json",
+      "bytes": 513,
+      "sha256": "1d8c213344cebf7e21f5b8c10667a73fd2e01ec195505b1a2aa766b41afb47cc"
+    },
+    {
+      "path": "evidence/merged-native-build.log.gz",
+      "bytes": 20,
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "path": "evidence/merged-native-build.log.json",
+      "bytes": 350,
+      "sha256": "88927317b6dd9558c60fb8d653aa9383327e2dda4857925f502e754d42645bce"
+    },
+    {
+      "path": "evidence/merged-native-data-manifest.json",
+      "bytes": 1048,
+      "sha256": "d4d1e90819918b290e23d4ea2dbc26f2ba7e297a47de82097c1592e765325e1a"
+    },
+    {
+      "path": "evidence/merged-native-green/results/subtitle-pairing-native-na-59ee3-th-playable-media-at-1440px-chromium/actual-cleanup.png",
+      "bytes": 874153,
+      "sha256": "627c54a4f50d8af5975255091b6026639687eed02a97c185749c58a75bcd8ad1"
+    },
+    {
+      "path": "evidence/merged-native-green/results/subtitle-pairing-native-na-59ee3-th-playable-media-at-1440px-chromium/paired-cleanup.png",
+      "bytes": 932816,
+      "sha256": "23688214a0d6f090c59d34bc9b06ae8b5dce45eee7eb66e69f03f6af18e3cee0"
+    },
+    {
+      "path": "evidence/merged-native-green/results/subtitle-pairing-native-na-59ee3-th-playable-media-at-1440px-chromium/unpaired-import.png",
+      "bytes": 972374,
+      "sha256": "96c812549e66ea9cf4193f3f88c68d5a7a082a6debb46ae6e66198193844b913"
+    },
+    {
+      "path": "evidence/merged-native-green/results/subtitle-pairing-native-na-b6288-ith-playable-media-at-390px-chromium/actual-cleanup.png",
+      "bytes": 364765,
+      "sha256": "24b7825c0af2999746675e93620c8266438e68a3e655cf9d8bdc65857b992e5d"
+    },
+    {
+      "path": "evidence/merged-native-green/results/subtitle-pairing-native-na-b6288-ith-playable-media-at-390px-chromium/paired-cleanup.png",
+      "bytes": 374900,
+      "sha256": "8eb0f9bc396053c93b80fd3d9c25a2d0f5c8bf7b982d95cc589f76f51906edcd"
+    },
+    {
+      "path": "evidence/merged-native-green/results/subtitle-pairing-native-na-b6288-ith-playable-media-at-390px-chromium/unpaired-import.png",
+      "bytes": 415694,
+      "sha256": "fab20e1a5bd347adb6c7c1ef1fa8e8815f79c2589026c4650efbd2e833b1d439"
+    },
+    {
+      "path": "evidence/merged-native-green/results-all.json",
+      "bytes": 10979,
+      "sha256": "0922eda8bfde86f24f0b1ef6d423ac273d80a7e6348d95dc741bbec7c93368ca"
+    },
+    {
+      "path": "evidence/merged-native-green.log.gz",
+      "bytes": 295,
+      "sha256": "fc79d842e104a4d06468695140b19ad04d622982be31abac413a45bc864987cf"
+    },
+    {
+      "path": "evidence/merged-native-green.log.json",
+      "bytes": 361,
+      "sha256": "7b67e1d9029ed4d19525c9815e3e81dae4616027d0040b039ccde6b52c24c599"
+    },
+    {
+      "path": "evidence/merged-native-integrity.json",
+      "bytes": 65,
+      "sha256": "732bbeab3fc874bf0762fa9c1ae67955d2dce062ae6634ee7ff4e982cd5f076f"
+    },
+    {
+      "path": "evidence/merged-native-ready.json",
+      "bytes": 526,
+      "sha256": "b214a148095cd6091835622de99844532608ce2b4dcfde79e5268f85fcb839f0"
+    },
+    {
+      "path": "evidence/merged-native-script-receipt.json",
+      "bytes": 375,
+      "sha256": "2b8a955a20bb9d20af8822bba85e49bf05ba7b2f490946e3b70c60fb01348dec"
+    },
+    {
+      "path": "evidence/merged-native-server.log.gz",
+      "bytes": 568,
+      "sha256": "237e20161f79e743f8b62d041a7b99d2fc8f09b4b979ec78170f800beeea3e94"
+    },
+    {
+      "path": "evidence/merged-verification-scope.json",
+      "bytes": 1188,
+      "sha256": "c4ecb9e8ce54e475fc792a44d1dab2b4c202e26062e18e8e6c2a56c322ba7085"
+    }
+  ],
+  "assembledSourceMatchesActualServerScript": true
+}

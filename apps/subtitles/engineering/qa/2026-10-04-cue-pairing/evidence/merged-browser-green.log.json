@@ -1,0 +1,18 @@
+{
+  "command": [
+    "node",
+    "node_modules/@playwright/test/cli.js",
+    "test",
+    "subtitle-merged-group.spec.ts",
+    "subtitle-pairing.spec.ts",
+    "subtitle-inspector-scroll.spec.ts",
+    "--project=chromium",
+    "--workers=1",
+    "--timeout=30000"
+  ],
+  "limitSeconds": 80.0,
+  "seconds": 27.463,
+  "exit": 0,
+  "timedOut": false,
+  "log": "../engineering/qa/2026-10-04-cue-pairing/evidence/merged-browser-green.log"
+}

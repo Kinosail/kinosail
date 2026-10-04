@@ -1,0 +1,16 @@
+{
+  "command": [
+    "node",
+    "node_modules/@playwright/test/cli.js",
+    "test",
+    "subtitle-pairing-native.spec.ts",
+    "--project=chromium",
+    "--workers=1",
+    "--timeout=30000"
+  ],
+  "limitSeconds": 70.0,
+  "seconds": 21.17,
+  "exit": 0,
+  "timedOut": false,
+  "log": "../engineering/qa/2026-10-04-cue-pairing/evidence/merged-native-green.log"
+}

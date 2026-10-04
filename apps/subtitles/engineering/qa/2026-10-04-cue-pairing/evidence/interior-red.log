@@ -1,0 +1,9 @@
+2026/10/04 03:13:36 INFO request request_id=79c6768f20c7fb9ca76e5341 method=POST route="POST /api/v1/subtitle-library/{id}/preview" status=200 duration_ms=4
+--- FAIL: TestSubtitlePreviewDoesNotLoseRemovedCueInsideMergedGroup (0.06s)
+    subtitle_review_pairing_test.go:96: removed credit between merged dialogue was lost: []server_test.subtitlePairingComparison{server_test.subtitlePairingComparison{Current:[]int{0, 2}, Proposed:[]int{0}, Kind:"merged"}, server_test.subtitlePairingComparison{Current:[]int{3}, Proposed:[]int{1}, Kind:"matched"}}
+2026/10/04 03:13:36 INFO request request_id=f756ac77f183bf13fd42a01e method=POST route="POST /api/v1/subtitle-library/{id}/preview" status=200 duration_ms=4
+--- FAIL: TestSubtitlePreviewDoesNotLoseRemovedCueInsideMergedGroup (0.04s)
+    subtitle_review_pairing_test.go:96: removed credit between merged dialogue was lost: []server_test.subtitlePairingComparison{server_test.subtitlePairingComparison{Current:[]int{0, 2}, Proposed:[]int{0}, Kind:"merged"}, server_test.subtitlePairingComparison{Current:[]int{3}, Proposed:[]int{1}, Kind:"matched"}}
+FAIL
+FAIL	github.com/MikeO7/kinosail-subtitles/internal/server	6.333s
+FAIL

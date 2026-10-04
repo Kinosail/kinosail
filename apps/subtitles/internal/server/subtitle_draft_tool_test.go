@@ -121,7 +121,7 @@ func TestSubtitleLanguageEncodingAndRepeatedCueBoundaries(t *testing.T) {
 		}
 	}
 	cues := []subtitleCue{{Start: time.Second, End: 2 * time.Second, Text: "Hello"}, {Start: 2 * time.Second, End: 3 * time.Second, Text: "Hello"}, {Start: 5 * time.Second, End: 6 * time.Second, Text: "Hello"}, {Start: 6 * time.Second, End: 7 * time.Second, Text: "World"}}
-	got, removed := mergeRepeatedSubtitleCues(cues)
+	got, _, removed := mergeRepeatedSubtitleCues(cues, nil)
 	if removed != 1 || len(got) != 3 || got[0].End != 3*time.Second || got[1].Start != 5*time.Second {
 		t.Fatalf("merged: %#v removed=%d", got, removed)
 	}

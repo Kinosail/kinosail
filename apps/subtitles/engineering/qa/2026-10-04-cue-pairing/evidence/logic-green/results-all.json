@@ -1,0 +1,851 @@
+{
+  "config": {
+    "argv": [
+      "/opt/homebrew/Cellar/node/26.8.2/bin/node",
+      "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/node_modules/@playwright/test/cli.js",
+      "test",
+      "subtitle-inspector-races.spec.ts",
+      "--project=chromium",
+      "--workers=1"
+    ],
+    "configFile": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/playwright.config.ts",
+    "rootDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-cue-pairing/evidence/logic-green/results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "open": "never",
+          "outputFolder": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-cue-pairing/evidence/logic-green/html-all"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-cue-pairing/evidence/logic-green/results-all.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "subtitle-inspector-races.spec.ts",
+      "file": "subtitle-inspector-races.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "apply locks editing until the reviewed language operation settles",
+          "ok": true,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 11,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T08:53:59.837Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6IjU0MDkxODZhNWM4ZjMwOWFmMjFkNjZjNWUzM2E5ODQ5ZjJlNTQ1YWQiLCJjb21tYW5kIjoicGxheXdyaWdodCB0ZXN0IHN1YnRpdGxlLWluc3BlY3Rvci1yYWNlcy5zcGVjLnRzIiwiZml4dHVyZSI6IkNvbXBsZXRlIHByb2R1Y3Rpb24gaW5zcGVjdG9yIHNjcmlwdDsgc3ludGhldGljIERPTSwgY29udHJvbGxlZCBFbmdsaXNoL0ZyZW5jaCByZXNwb25zZXMsIGZha2UgdGltZXJzIiwiZW52aXJvbm1lbnQiOiJOb2RlIFZNIGxvZ2ljIHZlcmlmaWNhdGlvbjsgbm8gYnJvd3NlciByZW5kZXJpbmciLCJyZXN1bHQiOiJwYXNzZWQifQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ccf7c083de8a8852b5f4-ba5caaa88df1a162a099",
+          "file": "subtitle-inspector-races.spec.ts",
+          "line": 11,
+          "column": 3
+        },
+        {
+          "title": "restore locks editing until the reviewed language operation settles",
+          "ok": true,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T08:53:59.864Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6IjU0MDkxODZhNWM4ZjMwOWFmMjFkNjZjNWUzM2E5ODQ5ZjJlNTQ1YWQiLCJjb21tYW5kIjoicGxheXdyaWdodCB0ZXN0IHN1YnRpdGxlLWluc3BlY3Rvci1yYWNlcy5zcGVjLnRzIiwiZml4dHVyZSI6IkNvbXBsZXRlIHByb2R1Y3Rpb24gaW5zcGVjdG9yIHNjcmlwdDsgc3ludGhldGljIERPTSwgY29udHJvbGxlZCBFbmdsaXNoL0ZyZW5jaCByZXNwb25zZXMsIGZha2UgdGltZXJzIiwiZW52aXJvbm1lbnQiOiJOb2RlIFZNIGxvZ2ljIHZlcmlmaWNhdGlvbjsgbm8gYnJvd3NlciByZW5kZXJpbmciLCJyZXN1bHQiOiJwYXNzZWQifQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ccf7c083de8a8852b5f4-f27f1ab3b0856562fdb1",
+          "file": "subtitle-inspector-races.spec.ts",
+          "line": 11,
+          "column": 3
+        },
+        {
+          "title": "failed save unlocks controls and preserves the user's text",
+          "ok": true,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T08:53:59.880Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6IjU0MDkxODZhNWM4ZjMwOWFmMjFkNjZjNWUzM2E5ODQ5ZjJlNTQ1YWQiLCJjb21tYW5kIjoicGxheXdyaWdodCB0ZXN0IHN1YnRpdGxlLWluc3BlY3Rvci1yYWNlcy5zcGVjLnRzIiwiZml4dHVyZSI6IkNvbXBsZXRlIHByb2R1Y3Rpb24gaW5zcGVjdG9yIHNjcmlwdDsgc3ludGhldGljIERPTSwgY29udHJvbGxlZCBFbmdsaXNoL0ZyZW5jaCByZXNwb25zZXMsIGZha2UgdGltZXJzIiwiZW52aXJvbm1lbnQiOiJOb2RlIFZNIGxvZ2ljIHZlcmlmaWNhdGlvbjsgbm8gYnJvd3NlciByZW5kZXJpbmciLCJyZXN1bHQiOiJwYXNzZWQifQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ccf7c083de8a8852b5f4-1e0cdfed0895cf5c1506",
+          "file": "subtitle-inspector-races.spec.ts",
+          "line": 33,
+          "column": 1
+        },
+        {
+          "title": "older inspect failure cannot replace the newer language's success",
+          "ok": true,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T08:53:59.885Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6IjU0MDkxODZhNWM4ZjMwOWFmMjFkNjZjNWUzM2E5ODQ5ZjJlNTQ1YWQiLCJjb21tYW5kIjoicGxheXdyaWdodCB0ZXN0IHN1YnRpdGxlLWluc3BlY3Rvci1yYWNlcy5zcGVjLnRzIiwiZml4dHVyZSI6IkNvbXBsZXRlIHByb2R1Y3Rpb24gaW5zcGVjdG9yIHNjcmlwdDsgc3ludGhldGljIERPTSwgY29udHJvbGxlZCBFbmdsaXNoL0ZyZW5jaCByZXNwb25zZXMsIGZha2UgdGltZXJzIiwiZW52aXJvbm1lbnQiOiJOb2RlIFZNIGxvZ2ljIHZlcmlmaWNhdGlvbjsgbm8gYnJvd3NlciByZW5kZXJpbmciLCJyZXN1bHQiOiJwYXNzZWQifQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ccf7c083de8a8852b5f4-437ead19ae3a83cd00cc",
+          "file": "subtitle-inspector-races.spec.ts",
+          "line": 43,
+          "column": 1
+        },
+        {
+          "title": "older preview failure does not overwrite a newer language",
+          "ok": true,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T08:53:59.891Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6IjU0MDkxODZhNWM4ZjMwOWFmMjFkNjZjNWUzM2E5ODQ5ZjJlNTQ1YWQiLCJjb21tYW5kIjoicGxheXdyaWdodCB0ZXN0IHN1YnRpdGxlLWluc3BlY3Rvci1yYWNlcy5zcGVjLnRzIiwiZml4dHVyZSI6IkNvbXBsZXRlIHByb2R1Y3Rpb24gaW5zcGVjdG9yIHNjcmlwdDsgc3ludGhldGljIERPTSwgY29udHJvbGxlZCBFbmdsaXNoL0ZyZW5jaCByZXNwb25zZXMsIGZha2UgdGltZXJzIiwiZW52aXJvbm1lbnQiOiJOb2RlIFZNIGxvZ2ljIHZlcmlmaWNhdGlvbjsgbm8gYnJvd3NlciByZW5kZXJpbmciLCJyZXN1bHQiOiJwYXNzZWQifQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ccf7c083de8a8852b5f4-2682f58e11718b36979d",
+          "file": "subtitle-inspector-races.spec.ts",
+          "line": 53,
+          "column": 1
+        },
+        {
+          "title": "draft observation retries a transient error and settles when ready",
+          "ok": true,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T08:53:59.897Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6IjU0MDkxODZhNWM4ZjMwOWFmMjFkNjZjNWUzM2E5ODQ5ZjJlNTQ1YWQiLCJjb21tYW5kIjoicGxheXdyaWdodCB0ZXN0IHN1YnRpdGxlLWluc3BlY3Rvci1yYWNlcy5zcGVjLnRzIiwiZml4dHVyZSI6IkNvbXBsZXRlIHByb2R1Y3Rpb24gaW5zcGVjdG9yIHNjcmlwdDsgc3ludGhldGljIERPTSwgY29udHJvbGxlZCBFbmdsaXNoL0ZyZW5jaCByZXNwb25zZXMsIGZha2UgdGltZXJzIiwiZW52aXJvbm1lbnQiOiJOb2RlIFZNIGxvZ2ljIHZlcmlmaWNhdGlvbjsgbm8gYnJvd3NlciByZW5kZXJpbmciLCJyZXN1bHQiOiJwYXNzZWQifQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ccf7c083de8a8852b5f4-167b1c3e8e719318501c",
+          "file": "subtitle-inspector-races.spec.ts",
+          "line": 62,
+          "column": 1
+        },
+        {
+          "title": "pagehide discards an in-flight running draft and pageshow starts one chain",
+          "ok": true,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T08:53:59.904Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6IjU0MDkxODZhNWM4ZjMwOWFmMjFkNjZjNWUzM2E5ODQ5ZjJlNTQ1YWQiLCJjb21tYW5kIjoicGxheXdyaWdodCB0ZXN0IHN1YnRpdGxlLWluc3BlY3Rvci1yYWNlcy5zcGVjLnRzIiwiZml4dHVyZSI6IkNvbXBsZXRlIHByb2R1Y3Rpb24gaW5zcGVjdG9yIHNjcmlwdDsgc3ludGhldGljIERPTSwgY29udHJvbGxlZCBFbmdsaXNoL0ZyZW5jaCByZXNwb25zZXMsIGZha2UgdGltZXJzIiwiZW52aXJvbm1lbnQiOiJOb2RlIFZNIGxvZ2ljIHZlcmlmaWNhdGlvbjsgbm8gYnJvd3NlciByZW5kZXJpbmciLCJyZXN1bHQiOiJwYXNzZWQifQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ccf7c083de8a8852b5f4-710f4fc8a3314dc2af3b",
+          "file": "subtitle-inspector-races.spec.ts",
+          "line": 73,
+          "column": 3
+        },
+        {
+          "title": "pagehide discards an in-flight failed draft and pageshow starts one chain",
+          "ok": true,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T08:53:59.912Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6IjU0MDkxODZhNWM4ZjMwOWFmMjFkNjZjNWUzM2E5ODQ5ZjJlNTQ1YWQiLCJjb21tYW5kIjoicGxheXdyaWdodCB0ZXN0IHN1YnRpdGxlLWluc3BlY3Rvci1yYWNlcy5zcGVjLnRzIiwiZml4dHVyZSI6IkNvbXBsZXRlIHByb2R1Y3Rpb24gaW5zcGVjdG9yIHNjcmlwdDsgc3ludGhldGljIERPTSwgY29udHJvbGxlZCBFbmdsaXNoL0ZyZW5jaCByZXNwb25zZXMsIGZha2UgdGltZXJzIiwiZW52aXJvbm1lbnQiOiJOb2RlIFZNIGxvZ2ljIHZlcmlmaWNhdGlvbjsgbm8gYnJvd3NlciByZW5kZXJpbmciLCJyZXN1bHQiOiJwYXNzZWQifQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ccf7c083de8a8852b5f4-df7675ba8de6d3c6d651",
+          "file": "subtitle-inspector-races.spec.ts",
+          "line": 73,
+          "column": 3
+        },
+        {
+          "title": "a superseded draft response cannot regress the current state or polling",
+          "ok": true,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T08:53:59.918Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6IjU0MDkxODZhNWM4ZjMwOWFmMjFkNjZjNWUzM2E5ODQ5ZjJlNTQ1YWQiLCJjb21tYW5kIjoicGxheXdyaWdodCB0ZXN0IHN1YnRpdGxlLWluc3BlY3Rvci1yYWNlcy5zcGVjLnRzIiwiZml4dHVyZSI6IkNvbXBsZXRlIHByb2R1Y3Rpb24gaW5zcGVjdG9yIHNjcmlwdDsgc3ludGhldGljIERPTSwgY29udHJvbGxlZCBFbmdsaXNoL0ZyZW5jaCByZXNwb25zZXMsIGZha2UgdGltZXJzIiwiZW52aXJvbm1lbnQiOiJOb2RlIFZNIGxvZ2ljIHZlcmlmaWNhdGlvbjsgbm8gYnJvd3NlciByZW5kZXJpbmciLCJyZXN1bHQiOiJwYXNzZWQifQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ccf7c083de8a8852b5f4-eca4b22d44eadd46099f",
+          "file": "subtitle-inspector-races.spec.ts",
+          "line": 84,
+          "column": 1
+        },
+        {
+          "title": "pageshow preserves previously appended cue pages",
+          "ok": true,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T08:53:59.927Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6IjU0MDkxODZhNWM4ZjMwOWFmMjFkNjZjNWUzM2E5ODQ5ZjJlNTQ1YWQiLCJjb21tYW5kIjoicGxheXdyaWdodCB0ZXN0IHN1YnRpdGxlLWluc3BlY3Rvci1yYWNlcy5zcGVjLnRzIiwiZml4dHVyZSI6IkNvbXBsZXRlIHByb2R1Y3Rpb24gaW5zcGVjdG9yIHNjcmlwdDsgc3ludGhldGljIERPTSwgY29udHJvbGxlZCBFbmdsaXNoL0ZyZW5jaCByZXNwb25zZXMsIGZha2UgdGltZXJzIiwiZW52aXJvbm1lbnQiOiJOb2RlIFZNIGxvZ2ljIHZlcmlmaWNhdGlvbjsgbm8gYnJvd3NlciByZW5kZXJpbmciLCJyZXN1bHQiOiJwYXNzZWQifQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ccf7c083de8a8852b5f4-1f1c12f2541d7b2abae2",
+          "file": "subtitle-inspector-races.spec.ts",
+          "line": 92,
+          "column": 1
+        },
+        {
+          "title": "switching language hides the previous draft and cannot discard newer corrections",
+          "ok": true,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T08:53:59.933Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6IjU0MDkxODZhNWM4ZjMwOWFmMjFkNjZjNWUzM2E5ODQ5ZjJlNTQ1YWQiLCJjb21tYW5kIjoicGxheXdyaWdodCB0ZXN0IHN1YnRpdGxlLWluc3BlY3Rvci1yYWNlcy5zcGVjLnRzIiwiZml4dHVyZSI6IkNvbXBsZXRlIHByb2R1Y3Rpb24gaW5zcGVjdG9yIHNjcmlwdDsgc3ludGhldGljIERPTSwgY29udHJvbGxlZCBFbmdsaXNoL0ZyZW5jaCByZXNwb25zZXMsIGZha2UgdGltZXJzIiwiZW52aXJvbm1lbnQiOiJOb2RlIFZNIGxvZ2ljIHZlcmlmaWNhdGlvbjsgbm8gYnJvd3NlciByZW5kZXJpbmciLCJyZXN1bHQiOiJwYXNzZWQifQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ccf7c083de8a8852b5f4-ae6c2c3b1c5f0d693082",
+          "file": "subtitle-inspector-races.spec.ts",
+          "line": 104,
+          "column": 1
+        },
+        {
+          "title": "late start failure cannot replace another language's preview status",
+          "ok": true,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T08:53:59.939Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6IjU0MDkxODZhNWM4ZjMwOWFmMjFkNjZjNWUzM2E5ODQ5ZjJlNTQ1YWQiLCJjb21tYW5kIjoicGxheXdyaWdodCB0ZXN0IHN1YnRpdGxlLWluc3BlY3Rvci1yYWNlcy5zcGVjLnRzIiwiZml4dHVyZSI6IkNvbXBsZXRlIHByb2R1Y3Rpb24gaW5zcGVjdG9yIHNjcmlwdDsgc3ludGhldGljIERPTSwgY29udHJvbGxlZCBFbmdsaXNoL0ZyZW5jaCByZXNwb25zZXMsIGZha2UgdGltZXJzIiwiZW52aXJvbm1lbnQiOiJOb2RlIFZNIGxvZ2ljIHZlcmlmaWNhdGlvbjsgbm8gYnJvd3NlciByZW5kZXJpbmciLCJyZXN1bHQiOiJwYXNzZWQifQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ccf7c083de8a8852b5f4-92c52331ef45d146c091",
+          "file": "subtitle-inspector-races.spec.ts",
+          "line": 120,
+          "column": 3
+        },
+        {
+          "title": "late cancel failure cannot replace another language's preview status",
+          "ok": true,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T08:53:59.947Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6IjU0MDkxODZhNWM4ZjMwOWFmMjFkNjZjNWUzM2E5ODQ5ZjJlNTQ1YWQiLCJjb21tYW5kIjoicGxheXdyaWdodCB0ZXN0IHN1YnRpdGxlLWluc3BlY3Rvci1yYWNlcy5zcGVjLnRzIiwiZml4dHVyZSI6IkNvbXBsZXRlIHByb2R1Y3Rpb24gaW5zcGVjdG9yIHNjcmlwdDsgc3ludGhldGljIERPTSwgY29udHJvbGxlZCBFbmdsaXNoL0ZyZW5jaCByZXNwb25zZXMsIGZha2UgdGltZXJzIiwiZW52aXJvbm1lbnQiOiJOb2RlIFZNIGxvZ2ljIHZlcmlmaWNhdGlvbjsgbm8gYnJvd3NlciByZW5kZXJpbmciLCJyZXN1bHQiOiJwYXNzZWQifQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ccf7c083de8a8852b5f4-2adefe9e76b4320ce277",
+          "file": "subtitle-inspector-races.spec.ts",
+          "line": 120,
+          "column": 3
+        },
+        {
+          "title": "late draft start success preserves the new language's reviewed correction",
+          "ok": true,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T08:53:59.952Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6IjU0MDkxODZhNWM4ZjMwOWFmMjFkNjZjNWUzM2E5ODQ5ZjJlNTQ1YWQiLCJjb21tYW5kIjoicGxheXdyaWdodCB0ZXN0IHN1YnRpdGxlLWluc3BlY3Rvci1yYWNlcy5zcGVjLnRzIiwiZml4dHVyZSI6IkNvbXBsZXRlIHByb2R1Y3Rpb24gaW5zcGVjdG9yIHNjcmlwdDsgc3ludGhldGljIERPTSwgY29udHJvbGxlZCBFbmdsaXNoL0ZyZW5jaCByZXNwb25zZXMsIGZha2UgdGltZXJzIiwiZW52aXJvbm1lbnQiOiJOb2RlIFZNIGxvZ2ljIHZlcmlmaWNhdGlvbjsgbm8gYnJvd3NlciByZW5kZXJpbmciLCJyZXN1bHQiOiJwYXNzZWQifQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ccf7c083de8a8852b5f4-3645df2b3e31ac6fa55c",
+          "file": "subtitle-inspector-races.spec.ts",
+          "line": 131,
+          "column": 1
+        },
+        {
+          "title": "pagehide ignores a pending draft start failure",
+          "ok": true,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T08:53:59.958Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6IjU0MDkxODZhNWM4ZjMwOWFmMjFkNjZjNWUzM2E5ODQ5ZjJlNTQ1YWQiLCJjb21tYW5kIjoicGxheXdyaWdodCB0ZXN0IHN1YnRpdGxlLWluc3BlY3Rvci1yYWNlcy5zcGVjLnRzIiwiZml4dHVyZSI6IkNvbXBsZXRlIHByb2R1Y3Rpb24gaW5zcGVjdG9yIHNjcmlwdDsgc3ludGhldGljIERPTSwgY29udHJvbGxlZCBFbmdsaXNoL0ZyZW5jaCByZXNwb25zZXMsIGZha2UgdGltZXJzIiwiZW52aXJvbm1lbnQiOiJOb2RlIFZNIGxvZ2ljIHZlcmlmaWNhdGlvbjsgbm8gYnJvd3NlciByZW5kZXJpbmciLCJyZXN1bHQiOiJwYXNzZWQifQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ccf7c083de8a8852b5f4-9b722b230f6c401a6ad4",
+          "file": "subtitle-inspector-races.spec.ts",
+          "line": 146,
+          "column": 3
+        },
+        {
+          "title": "pagehide ignores a pending draft cancel failure",
+          "ok": true,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T08:53:59.965Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6IjU0MDkxODZhNWM4ZjMwOWFmMjFkNjZjNWUzM2E5ODQ5ZjJlNTQ1YWQiLCJjb21tYW5kIjoicGxheXdyaWdodCB0ZXN0IHN1YnRpdGxlLWluc3BlY3Rvci1yYWNlcy5zcGVjLnRzIiwiZml4dHVyZSI6IkNvbXBsZXRlIHByb2R1Y3Rpb24gaW5zcGVjdG9yIHNjcmlwdDsgc3ludGhldGljIERPTSwgY29udHJvbGxlZCBFbmdsaXNoL0ZyZW5jaCByZXNwb25zZXMsIGZha2UgdGltZXJzIiwiZW52aXJvbm1lbnQiOiJOb2RlIFZNIGxvZ2ljIHZlcmlmaWNhdGlvbjsgbm8gYnJvd3NlciByZW5kZXJpbmciLCJyZXN1bHQiOiJwYXNzZWQifQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ccf7c083de8a8852b5f4-1068a0db2d1a5d2dc34e",
+          "file": "subtitle-inspector-races.spec.ts",
+          "line": 146,
+          "column": 3
+        },
+        {
+          "title": "an obsolete start completion cannot enable Generate during a newer start",
+          "ok": true,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T08:53:59.970Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6IjU0MDkxODZhNWM4ZjMwOWFmMjFkNjZjNWUzM2E5ODQ5ZjJlNTQ1YWQiLCJjb21tYW5kIjoicGxheXdyaWdodCB0ZXN0IHN1YnRpdGxlLWluc3BlY3Rvci1yYWNlcy5zcGVjLnRzIiwiZml4dHVyZSI6IkNvbXBsZXRlIHByb2R1Y3Rpb24gaW5zcGVjdG9yIHNjcmlwdDsgc3ludGhldGljIERPTSwgY29udHJvbGxlZCBFbmdsaXNoL0ZyZW5jaCByZXNwb25zZXMsIGZha2UgdGltZXJzIiwiZW52aXJvbm1lbnQiOiJOb2RlIFZNIGxvZ2ljIHZlcmlmaWNhdGlvbjsgbm8gYnJvd3NlciByZW5kZXJpbmciLCJyZXN1bHQiOiJwYXNzZWQifQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ccf7c083de8a8852b5f4-23c0528d1c1ac924369c",
+          "file": "subtitle-inspector-races.spec.ts",
+          "line": 156,
+          "column": 1
+        },
+        {
+          "title": "a draft start settling after pageshow reconciles an earlier idle observation",
+          "ok": true,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T08:53:59.975Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6IjU0MDkxODZhNWM4ZjMwOWFmMjFkNjZjNWUzM2E5ODQ5ZjJlNTQ1YWQiLCJjb21tYW5kIjoicGxheXdyaWdodCB0ZXN0IHN1YnRpdGxlLWluc3BlY3Rvci1yYWNlcy5zcGVjLnRzIiwiZml4dHVyZSI6IkNvbXBsZXRlIHByb2R1Y3Rpb24gaW5zcGVjdG9yIHNjcmlwdDsgc3ludGhldGljIERPTSwgY29udHJvbGxlZCBFbmdsaXNoL0ZyZW5jaCByZXNwb25zZXMsIGZha2UgdGltZXJzIiwiZW52aXJvbm1lbnQiOiJOb2RlIFZNIGxvZ2ljIHZlcmlmaWNhdGlvbjsgbm8gYnJvd3NlciByZW5kZXJpbmciLCJyZXN1bHQiOiJwYXNzZWQifQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ccf7c083de8a8852b5f4-49eeccf87c5489709766",
+          "file": "subtitle-inspector-races.spec.ts",
+          "line": 168,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-04T08:53:59.561Z",
+    "duration": 430.574,
+    "expected": 18,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

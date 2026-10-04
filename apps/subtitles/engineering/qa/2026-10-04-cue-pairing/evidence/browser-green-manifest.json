@@ -1,0 +1,62 @@
+{
+  "backlog_id": "R07",
+  "tested_revision": "0ab173dd7a7edbf81510d966bd984e0aeb776fd3",
+  "actual_go_outputs": "evidence/green-fixtures-manifest.json",
+  "boundary": "isolated Chromium renderer; actual saved Go HTML/assets/public API outputs; media aborted; no populated native transport",
+  "browser": "Chromium with installed Chrome channel; one worker; video off",
+  "widths": [
+    390,
+    1440
+  ],
+  "passed": 2,
+  "skipped": 0,
+  "flaky": 0,
+  "failed": 0,
+  "artifacts": [
+    {
+      "path": "evidence/browser-green/html-all/index.html",
+      "bytes": 529955,
+      "sha256": "a3aa54aac89174dfbd8634638e10aaa79f719dde9d7159ec386e415e9494bd2b"
+    },
+    {
+      "path": "evidence/browser-green/results/.last-run.json",
+      "bytes": 45,
+      "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+    },
+    {
+      "path": "evidence/browser-green/results/subtitle-pairing-cleanup-c-b8631-the-same-dialogue-at-1440px-chromium/actual-cleanup.png",
+      "bytes": 291364,
+      "sha256": "77558d3aee78f85f0248d0ea2d8eb7386e5261ec89ba51070f2fce0d05eeb138"
+    },
+    {
+      "path": "evidence/browser-green/results/subtitle-pairing-cleanup-c-b8631-the-same-dialogue-at-1440px-chromium/paired-cleanup.png",
+      "bytes": 283811,
+      "sha256": "6a85477a94430585a2964588126216dce95d13c4a1d04e5d61deaae4f543624b"
+    },
+    {
+      "path": "evidence/browser-green/results/subtitle-pairing-cleanup-c-b8631-the-same-dialogue-at-1440px-chromium/unpaired-import.png",
+      "bytes": 308433,
+      "sha256": "e5a298b289145c260978a4620758ee33d20ab77b43d192750a9a2138923c40ed"
+    },
+    {
+      "path": "evidence/browser-green/results/subtitle-pairing-cleanup-compares-the-same-dialogue-at-390px-chromium/actual-cleanup.png",
+      "bytes": 245973,
+      "sha256": "f4ce6bab0461d6592710ebf37ecd617a6742d6899f9831ccabdd394bdd81d140"
+    },
+    {
+      "path": "evidence/browser-green/results/subtitle-pairing-cleanup-compares-the-same-dialogue-at-390px-chromium/paired-cleanup.png",
+      "bytes": 242018,
+      "sha256": "b88e8b1123632b68854f3da350726449f9b3cea0cbdde02a705c045390450085"
+    },
+    {
+      "path": "evidence/browser-green/results/subtitle-pairing-cleanup-compares-the-same-dialogue-at-390px-chromium/unpaired-import.png",
+      "bytes": 260400,
+      "sha256": "9c9b35d422dfe1210beecff5bd995b28e7c1eb8acfd8b63945b54412fae4ce37"
+    },
+    {
+      "path": "evidence/browser-green/results-all.json",
+      "bytes": 9194,
+      "sha256": "f24a61fe549130a840e0266788a6a345b47c79780f0b99af2cdbd0d85c893347"
+    }
+  ]
+}

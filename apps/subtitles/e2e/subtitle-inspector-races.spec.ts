@@ -101,6 +101,31 @@ test("pageshow preserves previously appended cue pages", { tag: "@smoke" }, asyn
   expect(view.node("cue-page").textContent).toBe("120 of 120 cues shown");
 });
 
+test("source expansion and page jumps retain appended comparisons and only one expanded group", { tag: "@smoke" }, async () => {
+  const view = inspectorFixture(true), review: any = view.review("en", "Synthetic merged groups");
+  review.current.cues = Array.from({ length: 861 }, (_, index) => ({ start: index, end: index + 1, text: `Group ${Math.floor(index / 21)}`, warnings: [] }));
+  review.proposed = { cues: Array.from({ length: 41 }, (_, index) => ({ start: index * 21, end: (index + 1) * 21, text: `Group ${index}`, warnings: [] })), quality: {} };
+  review.comparison = Array.from({ length: 41 }, (_, index) => ({ current: Array.from({ length: 21 }, (_, cue) => index * 21 + cue), proposed: [index], kind: "merged" }));
+  view.respond(view.requests[0], review); view.respond(view.requests[1], view.draft()); await flush();
+  expect(view.node("subtitle-cues").children).toHaveLength(40);
+  view.observers.findLast(observer => observer.target?.id === "cue-page" && !observer.disconnected).callback([{ isIntersecting: true }]);
+  const rows = view.node("subtitle-cues").children, first = rows[0].children[0], last = rows[40].children[0];
+  first.isConnected = last.isConnected = true;
+  const seekCount = (column: any) => column.children.filter((node: any) => node.attrs["aria-label"]?.startsWith("Seek ")).length;
+  const toggle = (column: any) => column.children.find((node: any) => node.dataset.sourceToggle !== undefined);
+  expect(rows).toHaveLength(41); expect(seekCount(first)).toBe(2);
+  toggle(first).listeners.click(); expect(seekCount(first)).toBe(20);
+  toggle(last).listeners.click(); expect(seekCount(first)).toBe(2); expect(seekCount(last)).toBe(20);
+  expect(toggle(first).attrs["aria-expanded"]).toBe("false");
+  const input = last.children.at(-1).children[0].children[0]; input.value = "2";
+  input.listeners.keydown({ key: "Enter", preventDefault() {} });
+  expect(seekCount(last)).toBe(1);
+  const finalCue = last.children.find((node: any) => node.attrs["aria-label"] === "Seek Current cue 861: 14:20.000 to 14:21.000");
+  finalCue.listeners.click(); expect(view.node("subtitle-preview-video").currentTime).toBe(859);
+  expect(view.node("subtitle-cues").children).toEqual(rows);
+  toggle(last).listeners.click(); expect(seekCount(last)).toBe(2); expect(toggle(last).attrs["aria-expanded"]).toBe("false");
+});
+
 test("switching language hides the previous draft and cannot discard newer corrections", { tag: "@smoke" }, async () => {
   const view = inspectorFixture(); await view.ready("ready");
   view.changeLanguage("fr");

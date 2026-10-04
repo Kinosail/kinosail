@@ -1,0 +1,57 @@
+{
+  "backlog_id": "R07",
+  "source_receipt": "evidence/pairing-green-context.json",
+  "verification": "actual Server emitted HTML, assets and public API responses from the source-mapped green preview; includes actual shell theme script",
+  "artifacts": [
+    {
+      "path": "evidence/green-fixtures/app.css",
+      "bytes": 233733,
+      "sha256": "64a462e0fe63550251ed8202858a489fa5ad6154d4c83d2f95ef0f946657f567"
+    },
+    {
+      "path": "evidence/green-fixtures/icon.svg",
+      "bytes": 232,
+      "sha256": "6a73058828809eea809a36b74b49a2fe15bebb0ddd57d70920562de30ad19227"
+    },
+    {
+      "path": "evidence/green-fixtures/manrope.woff2",
+      "bytes": 53776,
+      "sha256": "d021a35e139087c179d032e509327fc2dfdbf2c33b6156d25143e004d939da87"
+    },
+    {
+      "path": "evidence/green-fixtures/subtitle-inspector.css",
+      "bytes": 3181,
+      "sha256": "865a91d20bc24c371c02c9e294eaf7159931806a59a9472235f79e68b97b3b20"
+    },
+    {
+      "path": "evidence/green-fixtures/subtitle-inspector.js",
+      "bytes": 24359,
+      "sha256": "e27a0b75f57c173ee230c52478606bfe1f9926e77253e7195b8dc47b29c86f54"
+    },
+    {
+      "path": "evidence/green-fixtures/subtitle-pairing-cleanup.json",
+      "bytes": 1345,
+      "sha256": "a60d1ffd0131a334b17d26660dd6e4728e61f3a0fa48f4f58d0522a2cd87455a"
+    },
+    {
+      "path": "evidence/green-fixtures/subtitle-pairing-import.json",
+      "bytes": 1415,
+      "sha256": "d05756cdc6ff2179ae0c8309438d5a34c3b29a8f617dce3a0bf115e8bbe0dafa"
+    },
+    {
+      "path": "evidence/green-fixtures/subtitle-pairing.html",
+      "bytes": 19610,
+      "sha256": "26f760749ddc490326f568b760b0b48313872f11de1b5271c97a11004297a223"
+    },
+    {
+      "path": "evidence/green-fixtures/subtitle-pairing.json",
+      "bytes": 772,
+      "sha256": "1e5ddf7c8da7aa90233f03a69cbda17e2a9814beb33e45f89c18fbbc57eff55a"
+    },
+    {
+      "path": "evidence/green-fixtures/theme.js",
+      "bytes": 19978,
+      "sha256": "717bfa9383ced4b3be057cdc9e1dc63592738132fea6f2367975222c9cb5bb98"
+    }
+  ]
+}
