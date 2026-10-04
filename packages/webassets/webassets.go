@@ -58,7 +58,10 @@ var (
 	//go:embed static/player-tv.js
 	PlayerTV []byte
 	//go:embed static/player-progress.js
-	PlayerProgress []byte
+	playerProgress []byte
+	//go:embed static/player-audio-queue.js
+	playerAudioQueue []byte
+	PlayerProgress   = append(append([]byte(nil), playerProgress...), playerAudioQueue...)
 	//go:embed static/pwa.js
 	pwaCore []byte
 	//go:embed static/pwa-library.js

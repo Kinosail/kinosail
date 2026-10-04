@@ -1,0 +1,31 @@
+test_fixture_is_generated_before_any_server_scan (scripts.ci.test_audio_queue_journey.AudioQueueJourneyTest.test_fixture_is_generated_before_any_server_scan) ... FAIL
+test_prepared_owner_requires_all_queue_and_existing_journeys (scripts.ci.test_audio_queue_journey.AudioQueueJourneyTest.test_prepared_owner_requires_all_queue_and_existing_journeys) ... FAIL
+
+======================================================================
+FAIL: test_fixture_is_generated_before_any_server_scan (scripts.ci.test_audio_queue_journey.AudioQueueJourneyTest.test_fixture_is_generated_before_any_server_scan)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/scripts/ci/test_audio_queue_journey.py", line 56, in test_fixture_is_generated_before_any_server_scan
+    result = self.invoke("prepare_audio_queue_fixture", media)
+  File "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/scripts/ci/test_audio_queue_journey.py", line 40, in invoke
+    self.assertEqual(result.returncode, 0, result.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 127 != 0 : queue-test: prepare_audio_queue_fixture: command not found
+
+
+======================================================================
+FAIL: test_prepared_owner_requires_all_queue_and_existing_journeys (scripts.ci.test_audio_queue_journey.AudioQueueJourneyTest.test_prepared_owner_requires_all_queue_and_existing_journeys)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/scripts/ci/test_audio_queue_journey.py", line 47, in test_prepared_owner_requires_all_queue_and_existing_journeys
+    self.assertCountEqual(required, EXISTING + TITLES)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Element counts were not equal:
+First has 0, Second has 1:  'real album queue advances source and all Now Playing identity to the fictional second track'
+First has 0, Second has 1:  'real album queue keeps system previous and next current and exposes only fresh current-track actions'
+First has 0, Second has 1:  'mobile R03 progress notice stays hidden after real acknowledgement and reopens only on failure'
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.356s
+
+FAILED (failures=2)

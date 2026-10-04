@@ -1,0 +1,58 @@
+
+Running 50 tests using 1 worker
+
+(node:84574) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/50] [chromium] › player-audio-policy.spec.ts:49:3 › audio keeps its source and queue with saved policy compatible
+[2/50] [chromium] › player-audio-policy.spec.ts:49:3 › audio keeps its source and queue with saved policy direct-first
+[3/50] [chromium] › player-audio-policy.spec.ts:49:3 › audio keeps its source and queue with saved policy direct-only
+[4/50] [chromium] › player-audio-policy.spec.ts:49:3 › audio keeps its source and queue with saved policy unset
+[5/50] [chromium] › player-audio-policy.spec.ts:49:3 › audio keeps its source and queue with saved policy unknown
+[6/50] [chromium] › player-audio-policy.spec.ts:68:1 › Home Assistant state uses the session CSRF token and consumes a command
+[7/50] [chromium] › player-audio-policy.spec.ts:88:3 › queue rejects external stream before progress or Now Playing side effects
+[8/50] [chromium] › player-audio-policy.spec.ts:88:3 › queue rejects missing authorization before progress or Now Playing side effects
+[9/50] [chromium] › player-audio-policy.spec.ts:88:3 › queue rejects wrong profile before progress or Now Playing side effects
+[10/50] [chromium] › player-audio-policy.spec.ts:88:3 › queue rejects wrong item before progress or Now Playing side effects
+[11/50] [chromium] › player-audio-policy.spec.ts:108:1 › manual queue advance retains failed position and waits for Retry before another choice
+[12/50] [chromium] › player-audio-policy.spec.ts:128:1 › queue source load ignores its delayed pause until new metadata belongs to that source
+[13/50] [chromium] › player-audio-policy.spec.ts:146:1 › failed queue source cannot replace its saved position with reset zero before metadata
+[14/50] [chromium] › player-audio-policy.spec.ts:175:1 › late item authorization cannot cross a profile change
+[15/50] [chromium] › player-audio-policy.spec.ts:192:1 › overlapping queue actions authorize and advance only once
+[16/50] [chromium] › player-audio-policy.spec.ts:210:36 › offline queue transition respects its own progress journal: saved
+[17/50] [chromium] › player-audio-policy.spec.ts:210:36 › offline queue transition respects its own progress journal: failed
+[18/50] [chromium] › player-audio-policy.spec.ts:230:1 › failed new artwork clears the previous cover without reverting current metadata
+[19/50] [chromium] › player-audio-policy.spec.ts:242:3 › queue preserves truthful local ownership with missing artwork
+[20/50] [chromium] › player-audio-policy.spec.ts:242:3 › queue preserves truthful local ownership with unsupported system metadata
+[21/50] [chromium] › player-audio-policy.spec.ts:242:3 › queue preserves truthful local ownership with cast owner
+[22/50] [chromium] › player-audio-policy.spec.ts:242:3 › queue preserves truthful local ownership with room owner
+[23/50] [chromium] › player-progress-queue-drain.spec.ts:9:1 › new track pause is dispatched after watched continuation release @smoke
+[24/50] [chromium] › player-progress-queue-drain.spec.ts:59:1 › pagehide dispatches latest position once while retired watched continuation settles @smoke
+[25/50] [chromium] › player-progress.spec.ts:67:55 › failed pause save is visible and retries the same revision: HTTP 503 @smoke
+[26/50] [chromium] › player-progress.spec.ts:67:55 › failed pause save is visible and retries the same revision: network rejection @smoke
+[27/50] [chromium] › player-progress.spec.ts:80:1 › latest pending revision wins over late failures and successes @smoke
+[28/50] [chromium] › player-progress.spec.ts:96:1 › ended failure holds next navigation and offers an explicit continue
+[29/50] [chromium] › player-progress.spec.ts:105:1 › ended Retry saves watched state before next navigation @smoke
+[30/50] [chromium] › player-progress.spec.ts:117:42 › HTTP 401 does not repeat policy or authentication failures
+[31/50] [chromium] › player-progress.spec.ts:117:42 › HTTP 403 does not repeat policy or authentication failures
+[32/50] [chromium] › player-progress.spec.ts:117:42 › HTTP 400 does not repeat policy or authentication failures
+[33/50] [chromium] › player-progress.spec.ts:117:42 › HTTP 404 does not repeat policy or authentication failures
+[34/50] [chromium] › player-progress.spec.ts:128:61 › pending local save cannot cross profile ownership
+[35/50] [chromium] › player-progress.spec.ts:128:61 › pending local save cannot cross item ownership
+[36/50] [chromium] › player-progress.spec.ts:128:61 › pending local save cannot cross cast ownership
+[37/50] [chromium] › player-progress.spec.ts:128:61 › pending local save cannot cross offline ownership
+[38/50] [chromium] › player-progress.spec.ts:144:1 › preparation and cast never emit local progress; offline uses its own journal
+[39/50] [chromium] › player-progress.spec.ts:160:1 › audio track change stays on the page when progress fails
+[40/50] [chromium] › player-progress.spec.ts:169:1 › timeout gives a bounded Retry state without blocking viewing
+[41/50] [chromium] › player-progress.spec.ts:178:1 › periodic, hidden-page and page-close saves inspect failures and preserve latest progress
+[42/50] [chromium] › player-progress.spec.ts:195:1 › HTTP failure diagnostics carry bounded session/revision/request correlation without secrets
+[43/50] [chromium] › player-progress.spec.ts:208:1 › bounded positions reject invalid media time without making a request
+[44/50] [chromium] › player-progress.spec.ts:214:1 › page-close dispatch sends the latest position while an older request is in flight @smoke
+[45/50] [chromium] › player-progress.spec.ts:227:1 › watched failure on the last title survives later pause and hiding events
+[46/50] [chromium] › player-progress.spec.ts:239:1 › ended policy failure still offers Continue without saving
+[47/50] [chromium] › player-progress.spec.ts:250:1 › localized recovery notices use Go-rendered copy
+[48/50] [chromium] › player-progress.spec.ts:257:1 › audio track change cannot mistake an unexpected successful HTTP page for a progress acknowledgement
+[49/50] [chromium] › player-progress.spec.ts:265:1 › audio queue does not drop a failed watched save when it advances
+[50/50] [chromium] › player-progress.spec.ts:278:1 › audio queue saves a new-track pause while final watched continuation still settles
+  50 passed (10.3s)

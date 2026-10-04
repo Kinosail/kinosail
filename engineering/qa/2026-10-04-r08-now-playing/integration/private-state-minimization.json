@@ -1,0 +1,91 @@
+{
+  "purpose": "Genuine removal of unnecessary private-state metadata from published projections. No flagged individual digest is re-encoded, relocated or published elsewhere.",
+  "originalBranch": "codex/qol-audio-queue-reviewed",
+  "originalHead": "e6e088efc9c7ce65a19d8520b6f821ef2c87c8ce",
+  "originalPR": "https://github.com/Kinosail/kinosail/pull/471",
+  "receipts": [
+    {
+      "publishedPath": "engineering/qa/2026-10-04-r08-now-playing/green-native-receipt.json",
+      "originalRevision": "e6e088efc9c7ce65a19d8520b6f821ef2c87c8ce",
+      "originalWholeReceiptSHA256": "e915a3d5208e6ba6f3498d1f06127cfa91685929b3543f64c7087873a95fc4eb",
+      "publishedProjectionSHA256": "303708adb15f7a0ad80bc0488ec0e86352c8a4cbe026b0d9a876942db13b7111",
+      "omittedMetadataCount": 9,
+      "omittedPathNames": [
+        "server-private.log",
+        "config/kinosail.db-shm",
+        "config/kinosail.db-wal",
+        "config/audit_key.json",
+        "config/kinosail.db",
+        "config/audit.jsonl",
+        "backups/kinosail-20261004T111859.272750000Z.backup",
+        "cache/probes/57ffdaf6d9ada218471c8eb2aca9ce86.json",
+        "cache/probes/3ed31473bde9f4c7025e1254a60c3a5b.json"
+      ],
+      "allOtherFieldsUnchanged": true,
+      "privateOriginalPreserved": true
+    },
+    {
+      "publishedPath": "engineering/qa/2026-10-04-r08-now-playing/initial-native-receipt.json",
+      "originalRevision": "e6e088efc9c7ce65a19d8520b6f821ef2c87c8ce",
+      "originalWholeReceiptSHA256": "4e28052c4f91e17cde51c7e7257575b6c4bacb32b1db87bdebddb701446fbe1c",
+      "publishedProjectionSHA256": "d668539b1806b9ec076a72a561e6b5bfe8d2e9d971b2fada3d9ccbeb1f6b412d",
+      "omittedMetadataCount": 9,
+      "omittedPathNames": [
+        "server-private.log",
+        "config/kinosail.db-shm",
+        "config/kinosail.db-wal",
+        "config/audit_key.json",
+        "config/kinosail.db",
+        "config/audit.jsonl",
+        "backups/kinosail-20261004T104138.258841000Z.backup",
+        "cache/probes/57ffdaf6d9ada218471c8eb2aca9ce86.json",
+        "cache/probes/3ed31473bde9f4c7025e1254a60c3a5b.json"
+      ],
+      "allOtherFieldsUnchanged": true,
+      "privateOriginalPreserved": true
+    },
+    {
+      "publishedPath": "engineering/qa/2026-10-04-r08-now-playing/visibility-red-receipt.json",
+      "originalRevision": "e6e088efc9c7ce65a19d8520b6f821ef2c87c8ce",
+      "originalWholeReceiptSHA256": "00adbeb9595791163190ad20a03c5e3e17400191e3a8e13903a3aeb6572b81dc",
+      "publishedProjectionSHA256": "4472ce81e6a3d05bedd6c42ba43918b433491b2c462b2a258c51e3571ce79d93",
+      "omittedMetadataCount": 9,
+      "omittedPathNames": [
+        "server-private.log",
+        "config/kinosail.db-shm",
+        "config/kinosail.db-wal",
+        "config/audit_key.json",
+        "config/kinosail.db",
+        "config/audit.jsonl",
+        "backups/kinosail-20261004T110716.972353000Z.backup",
+        "cache/probes/57ffdaf6d9ada218471c8eb2aca9ce86.json",
+        "cache/probes/3ed31473bde9f4c7025e1254a60c3a5b.json"
+      ],
+      "allOtherFieldsUnchanged": true,
+      "privateOriginalPreserved": true
+    },
+    {
+      "publishedPath": "engineering/qa/2026-10-04-r08-now-playing/red-receipt.json",
+      "originalRevision": "e6e088efc9c7ce65a19d8520b6f821ef2c87c8ce",
+      "originalWholeReceiptSHA256": "05f8e6c1e9a9ef0954d2e15e7eb4f74e4daa745e2b7a283ac87f91ecf7af0492",
+      "publishedProjectionSHA256": "ff49b3e1ed6ae3c736b06e15494d699be163d7b9cfc4c44d839eba996a6fabce",
+      "omittedMetadataCount": 9,
+      "omittedPathNames": [
+        "server-private.log",
+        "config/kinosail.db-shm",
+        "config/kinosail.db-wal",
+        "config/audit_key.json",
+        "config/kinosail.db",
+        "config/audit.jsonl",
+        "backups/kinosail-20261004T091205.369234000Z.backup",
+        "cache/probes/57ffdaf6d9ada218471c8eb2aca9ce86.json",
+        "cache/probes/3ed31473bde9f4c7025e1254a60c3a5b.json"
+      ],
+      "allOtherFieldsUnchanged": true,
+      "privateOriginalPreserved": true
+    }
+  ],
+  "scannerAndIgnoreUnchanged": true,
+  "productionHarnessAndCISourceUnchanged": true,
+  "ancestryBoundary": "The original frozen/executed commits are historical byte-equivalent source evidence, not ancestors of the fresh branch. The final independently reviewed clean commit must be an ancestor after ordinary merge."
+}

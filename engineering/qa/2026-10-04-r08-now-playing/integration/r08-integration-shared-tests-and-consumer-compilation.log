@@ -1,0 +1,44 @@
+ok  	github.com/MikeO7/kinosail/packages/apihttp	0.373s
+ok  	github.com/MikeO7/kinosail/packages/appcli	0.563s
+?   	github.com/MikeO7/kinosail/packages/archivetest	[no test files]
+ok  	github.com/MikeO7/kinosail/packages/auditjournal	0.646s
+ok  	github.com/MikeO7/kinosail/packages/backup	11.148s
+ok  	github.com/MikeO7/kinosail/packages/casting	0.245s
+ok  	github.com/MikeO7/kinosail/packages/catalog	0.650s
+ok  	github.com/MikeO7/kinosail/packages/catalogapi	0.257s
+ok  	github.com/MikeO7/kinosail/packages/cmd/routeinventory	0.324s
+?   	github.com/MikeO7/kinosail/packages/commandtest	[no test files]
+ok  	github.com/MikeO7/kinosail/packages/configurationcore	0.388s
+?   	github.com/MikeO7/kinosail/packages/configurationtest	[no test files]
+ok  	github.com/MikeO7/kinosail/packages/credentials	0.287s
+ok  	github.com/MikeO7/kinosail/packages/dlna	0.220s
+ok  	github.com/MikeO7/kinosail/packages/documentdb	0.789s
+ok  	github.com/MikeO7/kinosail/packages/downloads	4.074s
+ok  	github.com/MikeO7/kinosail/packages/federation	1.590s
+ok  	github.com/MikeO7/kinosail/packages/federation/configuration	0.218s
+ok  	github.com/MikeO7/kinosail/packages/hlsmanifest	0.271s
+ok  	github.com/MikeO7/kinosail/packages/home	0.206s
+ok  	github.com/MikeO7/kinosail/packages/homeassistant	0.230s
+ok  	github.com/MikeO7/kinosail/packages/httpguard	0.256s
+ok  	github.com/MikeO7/kinosail/packages/identitycore	0.457s
+ok  	github.com/MikeO7/kinosail/packages/isobmff	0.160s
+ok  	github.com/MikeO7/kinosail/packages/jellyfincompat	0.233s
+ok  	github.com/MikeO7/kinosail/packages/library	2.016s
+ok  	github.com/MikeO7/kinosail/packages/liveevents	0.226s
+ok  	github.com/MikeO7/kinosail/packages/localization	0.276s
+ok  	github.com/MikeO7/kinosail/packages/maintenance	0.454s
+ok  	github.com/MikeO7/kinosail/packages/markers	0.878s
+ok  	github.com/MikeO7/kinosail/packages/mcpgateway	8.385s
+ok  	github.com/MikeO7/kinosail/packages/mediaprobe	3.273s
+ok  	github.com/MikeO7/kinosail/packages/mediashares	0.264s
+ok  	github.com/MikeO7/kinosail/packages/metadata	0.327s
+ok  	github.com/MikeO7/kinosail/packages/navigation	0.213s
+ok  	github.com/MikeO7/kinosail/packages/operations	0.244s
+ok  	github.com/MikeO7/kinosail/packages/owneraccess	5.987s
+ok  	github.com/MikeO7/kinosail/packages/passkeys	0.240s
+ok  	github.com/MikeO7/kinosail/packages/playback	1.019s
+ok  	github.com/MikeO7/kinosail/packages/playerweb	0.243s
+ok  	github.com/MikeO7/kinosail/packages/privatefile	0.249s
+ok  	github.com/MikeO7/kinosail/packages/productapi	0.254s
+ok  	github.com/MikeO7/kinosail/packages/publicgateway	0.273s
+make: *** [test] Terminated: 15

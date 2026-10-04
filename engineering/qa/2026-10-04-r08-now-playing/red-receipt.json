@@ -1,0 +1,68 @@
+{
+  "revision": "ee2c009cd5a3e49cb920491f674a0b954498c5f7",
+  "sourceSHA256": {
+    "packages/webassets/static/player-progress.js": "036130baca81a79fb17b2807cc886d10b140ed843dca13f2562c7cacbc236ac3",
+    "packages/webassets/static/player-presentation.js": "86f8d7fbdc70413543fb99c06f6b826110a76bb7cfd49ce0d299f9367b883904",
+    "packages/playerweb/player_template.go": "8e94f40660a1bda4f2b435477b813b9c992eafd7fca62d21e0e92fc8ec9c9d42",
+    "apps/player/e2e/test-instance-audio-queue.spec.ts": "1815fb62b3e3b0ce3407fbd530194fec62a204e436d52c68adadffbd3bd26297",
+    "scripts/testing/test-player-audio-queue-local.py": "56db06553e4eafbef2adf6e51e1b62762b9bc2870d403fb613b279fe99d4595c"
+  },
+  "workingDiffSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "command": "GOMAXPROCS=2 python3 scripts/testing/test-player-audio-queue-local.py --red",
+  "environment": "Native Go Kinosail Server; loopback HTTP; one Chromium worker",
+  "data": "Two generated twelve-second WAV tracks, fictional NFO metadata and PNG covers; disposable Owner and TOTP. State preserved.",
+  "boundaries": "No real user data, container, deployment, physical device, or native OS-control panel proof.",
+  "result": "reproduced",
+  "fixtureSHA256": {
+    "01 Lantern.nfo": "5eaba5d5a24ffcc0c28c45b7818b07112ac853e089c4998aaf0d9eeeeb468552",
+    "01 Lantern.png": "8be69672e8013fcb0ecf63e169a4fcc84a9c5b103de14e7f72fabbeaf7db4f6a",
+    "01 Lantern.wav": "38d4fe14e5f89f543e875da3c70ad9b1bfc9f3bf6503216e2266891bd9fcd5fe",
+    "02 Copper.nfo": "037c16f3b69a359f5243170a20d3d6c22f996098f68bc8a50abf46a4ca54f406",
+    "02 Copper.png": "818caffacae2ece1b33f22d59eade6fffb7a65400d287f030b90a14f11ab0f6b",
+    "02 Copper.wav": "c018220a8ab86aa0170ec18fcbaa67849bbfb70a469d0cbde1007e545c7250ff"
+  },
+  "buildInputsSHA256": "a6180f41e2ed944822cf3263ec8315f4793b512556606b15b5af3d698f28f9be",
+  "binarySHA256": "6b8ded6059ec92b15380a1428109fb55d058b57f054340ea5a0425dfc348b846",
+  "sourceInputsUnchangedAfterBuild": true,
+  "browserCommand": [
+    "node",
+    "node_modules/@playwright/test/cli.js",
+    "test",
+    "test-instance-audio-queue.spec.ts",
+    "--project=chromium",
+    "--workers=1",
+    "--repeat-each=2",
+    "--retries=0",
+    "--global-timeout=120000",
+    "--reporter=line,json",
+    "--grep",
+    "real album queue advances source and all Now Playing identity to the fictional second track"
+  ],
+  "browserExitCode": 1,
+  "namedResults": {
+    "real album queue advances source and all Now Playing identity to the fictional second track": [
+      "failed",
+      "failed"
+    ]
+  },
+  "checksums": {
+    "browser.log": "2de42b29ff41818227662b1e0175d997d4167018fe72a80210927cfc8d3ffc12",
+    "build-inputs.json": "a6180f41e2ed944822cf3263ec8315f4793b512556606b15b5af3d698f28f9be",
+    "browser-results.json": "b94cb157a56fc2664792457095828a256ef98f8151d9ff96481e53a8fc0ce3f2",
+    "browser-artifacts/.last-run.json": "84fc0aa4f80b389d77626f98830802397e26fa4c954ed611958b18e5047a2f08",
+    "media/01 Lantern.wav": "38d4fe14e5f89f543e875da3c70ad9b1bfc9f3bf6503216e2266891bd9fcd5fe",
+    "media/02 Copper.png": "818caffacae2ece1b33f22d59eade6fffb7a65400d287f030b90a14f11ab0f6b",
+    "media/01 Lantern.nfo": "5eaba5d5a24ffcc0c28c45b7818b07112ac853e089c4998aaf0d9eeeeb468552",
+    "media/02 Copper.nfo": "037c16f3b69a359f5243170a20d3d6c22f996098f68bc8a50abf46a4ca54f406",
+    "media/01 Lantern.png": "8be69672e8013fcb0ecf63e169a4fcc84a9c5b103de14e7f72fabbeaf7db4f6a",
+    "media/02 Copper.wav": "c018220a8ab86aa0170ec18fcbaa67849bbfb70a469d0cbde1007e545c7250ff",
+    "browser-artifacts/test-instance-audio-queue--cd5da--the-fictional-second-track-chromium-repeat1/test-failed-1.png": "b9e6ca9b7e31475505041a1bb6566bb737dc9ace5485263669ae7c995bfa82fb",
+    "browser-artifacts/test-instance-audio-queue--cd5da--the-fictional-second-track-chromium-repeat1/second-track-before-assertions.png": "26b6c89236bbb58631890053472cda2a1db16c7b8138628f9c62b1699cdff284",
+    "browser-artifacts/test-instance-audio-queue--cd5da--the-fictional-second-track-chromium-repeat1/trace.zip": "cdbd68822ad50bb32ea84b4899120f7814622046b9fa9ed26530cbb868bc2b48",
+    "browser-artifacts/test-instance-audio-queue--cd5da--the-fictional-second-track-chromium-repeat1/error-context.md": "f2f82d7e00e807f2b3022ff78893a2d3f980db425863a9a814965f9619734617",
+    "browser-artifacts/test-instance-audio-queue--cd5da--the-fictional-second-track-chromium/test-failed-1.png": "b5338386677ce0bce4e8520948e585f97bfeedca94da9d9aea0107f097d2b0c5",
+    "browser-artifacts/test-instance-audio-queue--cd5da--the-fictional-second-track-chromium/second-track-before-assertions.png": "e25a1c7f9a1c0f831c31dfe333135f6a8ead7f58e7ee1c31f009c0a04a28fad3",
+    "browser-artifacts/test-instance-audio-queue--cd5da--the-fictional-second-track-chromium/trace.zip": "e5a24876a1e4ae9a4128cc618a915a1c85c4b5decbe3b04120c989f04123bc99",
+    "browser-artifacts/test-instance-audio-queue--cd5da--the-fictional-second-track-chromium/error-context.md": "a6ea47ad405b39edc2a026099a55464c772004102f25f3c8ed3dc4acbfe1a1a6"
+  }
+}

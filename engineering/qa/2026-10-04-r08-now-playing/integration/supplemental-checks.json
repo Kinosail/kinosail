@@ -1,0 +1,41 @@
+{
+  "revision": "e09a67e80d5a0ca8aa6ad5e12c3229b942e8e4e3",
+  "classification": "Separate checks after full affected verifiers stopped at proven unchanged package lint. No verifier skip flag was used.",
+  "results": [
+    {
+      "name": "shared-tests-and-consumer-compilation",
+      "command": [
+        "make",
+        "-C",
+        "packages",
+        "test",
+        "consumer-test"
+      ],
+      "boundSeconds": 60,
+      "exitCode": -15,
+      "timedOut": true,
+      "seconds": 60.01,
+      "log": "r08-integration-shared-tests-and-consumer-compilation-private.log",
+      "logSHA256": "60203c8ff16eccb2ad7c57a4ea581e09351b3e273dec4e132a1243ce1239642c"
+    },
+    {
+      "name": "browser-discovery",
+      "command": [
+        "node",
+        "node_modules/@playwright/test/cli.js",
+        "test",
+        "player-audio-policy.spec.ts",
+        "player-progress.spec.ts",
+        "player-progress-queue-drain.spec.ts",
+        "test-instance-audio-queue.spec.ts",
+        "--list"
+      ],
+      "boundSeconds": 15,
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 0.44,
+      "log": "r08-integration-browser-discovery-private.log",
+      "logSHA256": "7c94336bf08ffe8d127f9219c9f60441fc4bdc9502f87c03c8a97685aa5820d2"
+    }
+  ]
+}

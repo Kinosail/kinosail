@@ -1,0 +1,12 @@
+test_fixture_is_generated_before_any_server_scan (scripts.ci.test_audio_queue_journey.AudioQueueJourneyTest.test_fixture_is_generated_before_any_server_scan) ... ok
+test_prepared_owner_requires_all_queue_and_existing_journeys (scripts.ci.test_audio_queue_journey.AudioQueueJourneyTest.test_prepared_owner_requires_all_queue_and_existing_journeys) ... ok
+test_container_runs_caption_journey_before_general_smoke (scripts.ci.test_caption_journey.CaptionJourneyTest.test_container_runs_caption_journey_before_general_smoke) ... ok
+test_helper_selects_real_server_and_passes_fixture_and_artifact_paths (scripts.ci.test_caption_journey.CaptionJourneyTest.test_helper_selects_real_server_and_passes_fixture_and_artifact_paths) ... ok
+test_defaults_still_require_both_settings_journeys (scripts.ci.test_populated_settings.PopulatedResultsTest.test_defaults_still_require_both_settings_journeys) ... ok
+test_explicit_progress_and_library_journeys_are_required (scripts.ci.test_populated_settings.PopulatedResultsTest.test_explicit_progress_and_library_journeys_are_required) ... ok
+test_explicit_skip_failure_and_duplicate_results_are_rejected (scripts.ci.test_populated_settings.PopulatedResultsTest.test_explicit_skip_failure_and_duplicate_results_are_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.549s
+
+OK

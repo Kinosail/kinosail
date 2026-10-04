@@ -1,0 +1,151 @@
+{
+  "testedRevision": "ab489c148b137377a8400ccca65a5237e12af81f",
+  "resultClass": "prerequisite-valid-mobile-visibility-red",
+  "stats": {
+    "startTime": "2026-10-04T11:07:17.053Z",
+    "duration": 55835.207,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 4,
+    "flaky": 0
+  },
+  "globalErrors": 0,
+  "cases": [
+    {
+      "title": "real album queue advances source and all Now Playing identity to the fictional second track",
+      "status": "failed",
+      "durationMs": 3200,
+      "assertionLocation": {
+        "line": 104,
+        "column": 71
+      },
+      "projections": {
+        "player-content-cache-delivery": {
+          "path": "/static/player.js?v=5f1d72e686f77d6e44d0dd5a61796a5dd24976867769220a1de81dafa29ff215",
+          "sha256": "5f1d72e686f77d6e44d0dd5a61796a5dd24976867769220a1de81dafa29ff215",
+          "cacheControl": "public, max-age=31536000, immutable"
+        },
+        "now-playing-after-real-advance": {
+          "heading": "Copper <Moon> & Harbor",
+          "byline": "Mira Tide \u00b7 R08 Fictional Session \u00b7 Track 2",
+          "accessibleLabel": "Copper <Moon> & Harbor",
+          "documentTitle": "Copper <Moon> & Harbor \u00b7 Kinosail Player",
+          "sourcePath": "/media/31c330f7ead4c950",
+          "progressPath": "/progress/31c330f7ead4c950",
+          "castPath": "/api/v1/items/31c330f7ead4c950/cast",
+          "tracePath": "/api/v1/items/31c330f7ead4c950/playback-events",
+          "sourceSessionMatches": true,
+          "title": "Copper <Moon> & Harbor",
+          "artist": "Mira Tide",
+          "album": "R08 Fictional Session",
+          "artworkPath": "/art/31c330f7ead4c950",
+          "visibleArtworkPath": "/art/31c330f7ead4c950",
+          "metadataTitle": "Copper <Moon> & Harbor",
+          "metadataArtist": "Mira Tide",
+          "metadataAlbum": "R08 Fictional Session",
+          "metadataArtworkPath": "/art/31c330f7ead4c950",
+          "queuePosition": 2,
+          "queueTotal": 2
+        },
+        "viewport-item-actions": {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "originalWatchedVisible": true,
+          "originalListVisible": true,
+          "noticeVisible": true
+        }
+      }
+    },
+    {
+      "title": "real album queue advances source and all Now Playing identity to the fictional second track",
+      "status": "failed",
+      "durationMs": 3096,
+      "assertionLocation": {
+        "line": 104,
+        "column": 71
+      },
+      "projections": {
+        "player-content-cache-delivery": {
+          "path": "/static/player.js?v=5f1d72e686f77d6e44d0dd5a61796a5dd24976867769220a1de81dafa29ff215",
+          "sha256": "5f1d72e686f77d6e44d0dd5a61796a5dd24976867769220a1de81dafa29ff215",
+          "cacheControl": "public, max-age=31536000, immutable"
+        },
+        "now-playing-after-real-advance": {
+          "heading": "Copper <Moon> & Harbor",
+          "byline": "Mira Tide \u00b7 R08 Fictional Session \u00b7 Track 2",
+          "accessibleLabel": "Copper <Moon> & Harbor",
+          "documentTitle": "Copper <Moon> & Harbor \u00b7 Kinosail Player",
+          "sourcePath": "/media/31c330f7ead4c950",
+          "progressPath": "/progress/31c330f7ead4c950",
+          "castPath": "/api/v1/items/31c330f7ead4c950/cast",
+          "tracePath": "/api/v1/items/31c330f7ead4c950/playback-events",
+          "sourceSessionMatches": true,
+          "title": "Copper <Moon> & Harbor",
+          "artist": "Mira Tide",
+          "album": "R08 Fictional Session",
+          "artworkPath": "/art/31c330f7ead4c950",
+          "visibleArtworkPath": "/art/31c330f7ead4c950",
+          "metadataTitle": "Copper <Moon> & Harbor",
+          "metadataArtist": "Mira Tide",
+          "metadataAlbum": "R08 Fictional Session",
+          "metadataArtworkPath": "/art/31c330f7ead4c950",
+          "queuePosition": 2,
+          "queueTotal": 2
+        },
+        "viewport-item-actions": {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "originalWatchedVisible": true,
+          "originalListVisible": true,
+          "noticeVisible": true
+        }
+      }
+    },
+    {
+      "title": "mobile R03 progress notice stays hidden after real acknowledgement and reopens only on failure",
+      "status": "failed",
+      "durationMs": 2557,
+      "assertionLocation": {
+        "line": 139,
+        "column": 24
+      },
+      "projections": {
+        "mobile-progress-after-real-acknowledgement": {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "realAcknowledgementStatus": 204,
+          "noticeVisible": true,
+          "hiddenAttribute": true
+        }
+      }
+    },
+    {
+      "title": "mobile R03 progress notice stays hidden after real acknowledgement and reopens only on failure",
+      "status": "failed",
+      "durationMs": 2541,
+      "assertionLocation": {
+        "line": 139,
+        "column": 24
+      },
+      "projections": {
+        "mobile-progress-after-real-acknowledgement": {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "realAcknowledgementStatus": 204,
+          "noticeVisible": true,
+          "hiddenAttribute": true
+        }
+      }
+    }
+  ],
+  "rawReportSHA256": "f3c49dbc595f9446fea0dd4a06dd5d9285d8e42b8f376037b593827e33a47c64",
+  "classification": "Queue journey uses unrouted canonical Go Server. R03 control is classified isolated 503 injection in Go-backed UI; RED stops after real 204 before routing."
+}

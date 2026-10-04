@@ -1,0 +1,266 @@
+{
+  "revision": "e09a67e80d5a0ca8aa6ad5e12c3229b942e8e4e3",
+  "rawResultsSHA256": "2c5238eaa46d568b7bc1eda2234545137bf8341557390b6a9ec3d7fe625c57bc",
+  "stats": {
+    "startTime": "2026-10-04T13:06:01.154Z",
+    "duration": 10288.854,
+    "expected": 50,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "globalErrors": 0,
+  "cases": [
+    {
+      "title": "audio keeps its source and queue with saved policy compatible",
+      "status": "passed",
+      "durationMS": 308
+    },
+    {
+      "title": "audio keeps its source and queue with saved policy direct-first",
+      "status": "passed",
+      "durationMS": 144
+    },
+    {
+      "title": "audio keeps its source and queue with saved policy direct-only",
+      "status": "passed",
+      "durationMS": 143
+    },
+    {
+      "title": "audio keeps its source and queue with saved policy unset",
+      "status": "passed",
+      "durationMS": 142
+    },
+    {
+      "title": "audio keeps its source and queue with saved policy unknown",
+      "status": "passed",
+      "durationMS": 144
+    },
+    {
+      "title": "Home Assistant state uses the session CSRF token and consumes a command",
+      "status": "passed",
+      "durationMS": 125
+    },
+    {
+      "title": "queue rejects external stream before progress or Now Playing side effects",
+      "status": "passed",
+      "durationMS": 226
+    },
+    {
+      "title": "queue rejects missing authorization before progress or Now Playing side effects",
+      "status": "passed",
+      "durationMS": 261
+    },
+    {
+      "title": "queue rejects wrong profile before progress or Now Playing side effects",
+      "status": "passed",
+      "durationMS": 260
+    },
+    {
+      "title": "queue rejects wrong item before progress or Now Playing side effects",
+      "status": "passed",
+      "durationMS": 265
+    },
+    {
+      "title": "manual queue advance retains failed position and waits for Retry before another choice",
+      "status": "passed",
+      "durationMS": 361
+    },
+    {
+      "title": "queue source load ignores its delayed pause until new metadata belongs to that source",
+      "status": "passed",
+      "durationMS": 260
+    },
+    {
+      "title": "failed queue source cannot replace its saved position with reset zero before metadata",
+      "status": "passed",
+      "durationMS": 309
+    },
+    {
+      "title": "late item authorization cannot cross a profile change",
+      "status": "passed",
+      "durationMS": 260
+    },
+    {
+      "title": "overlapping queue actions authorize and advance only once",
+      "status": "passed",
+      "durationMS": 243
+    },
+    {
+      "title": "offline queue transition respects its own progress journal: saved",
+      "status": "passed",
+      "durationMS": 259
+    },
+    {
+      "title": "offline queue transition respects its own progress journal: failed",
+      "status": "passed",
+      "durationMS": 261
+    },
+    {
+      "title": "failed new artwork clears the previous cover without reverting current metadata",
+      "status": "passed",
+      "durationMS": 257
+    },
+    {
+      "title": "queue preserves truthful local ownership with missing artwork",
+      "status": "passed",
+      "durationMS": 259
+    },
+    {
+      "title": "queue preserves truthful local ownership with unsupported system metadata",
+      "status": "passed",
+      "durationMS": 259
+    },
+    {
+      "title": "queue preserves truthful local ownership with cast owner",
+      "status": "passed",
+      "durationMS": 143
+    },
+    {
+      "title": "queue preserves truthful local ownership with room owner",
+      "status": "passed",
+      "durationMS": 142
+    },
+    {
+      "title": "new track pause is dispatched after watched continuation release",
+      "status": "passed",
+      "durationMS": 123
+    },
+    {
+      "title": "pagehide dispatches latest position once while retired watched continuation settles",
+      "status": "passed",
+      "durationMS": 140
+    },
+    {
+      "title": "failed pause save is visible and retries the same revision: HTTP 503",
+      "status": "passed",
+      "durationMS": 213
+    },
+    {
+      "title": "failed pause save is visible and retries the same revision: network rejection",
+      "status": "passed",
+      "durationMS": 201
+    },
+    {
+      "title": "latest pending revision wins over late failures and successes",
+      "status": "passed",
+      "durationMS": 444
+    },
+    {
+      "title": "ended failure holds next navigation and offers an explicit continue",
+      "status": "passed",
+      "durationMS": 155
+    },
+    {
+      "title": "ended Retry saves watched state before next navigation",
+      "status": "passed",
+      "durationMS": 244
+    },
+    {
+      "title": "HTTP 401 does not repeat policy or authentication failures",
+      "status": "passed",
+      "durationMS": 110
+    },
+    {
+      "title": "HTTP 403 does not repeat policy or authentication failures",
+      "status": "passed",
+      "durationMS": 110
+    },
+    {
+      "title": "HTTP 400 does not repeat policy or authentication failures",
+      "status": "passed",
+      "durationMS": 127
+    },
+    {
+      "title": "HTTP 404 does not repeat policy or authentication failures",
+      "status": "passed",
+      "durationMS": 113
+    },
+    {
+      "title": "pending local save cannot cross profile ownership",
+      "status": "passed",
+      "durationMS": 113
+    },
+    {
+      "title": "pending local save cannot cross item ownership",
+      "status": "passed",
+      "durationMS": 113
+    },
+    {
+      "title": "pending local save cannot cross cast ownership",
+      "status": "passed",
+      "durationMS": 110
+    },
+    {
+      "title": "pending local save cannot cross offline ownership",
+      "status": "passed",
+      "durationMS": 108
+    },
+    {
+      "title": "preparation and cast never emit local progress; offline uses its own journal",
+      "status": "passed",
+      "durationMS": 108
+    },
+    {
+      "title": "audio track change stays on the page when progress fails",
+      "status": "passed",
+      "durationMS": 113
+    },
+    {
+      "title": "timeout gives a bounded Retry state without blocking viewing",
+      "status": "passed",
+      "durationMS": 228
+    },
+    {
+      "title": "periodic, hidden-page and page-close saves inspect failures and preserve latest progress",
+      "status": "passed",
+      "durationMS": 128
+    },
+    {
+      "title": "HTTP failure diagnostics carry bounded session/revision/request correlation without secrets",
+      "status": "passed",
+      "durationMS": 112
+    },
+    {
+      "title": "bounded positions reject invalid media time without making a request",
+      "status": "passed",
+      "durationMS": 111
+    },
+    {
+      "title": "page-close dispatch sends the latest position while an older request is in flight",
+      "status": "passed",
+      "durationMS": 229
+    },
+    {
+      "title": "watched failure on the last title survives later pause and hiding events",
+      "status": "passed",
+      "durationMS": 113
+    },
+    {
+      "title": "ended policy failure still offers Continue without saving",
+      "status": "passed",
+      "durationMS": 157
+    },
+    {
+      "title": "localized recovery notices use Go-rendered copy",
+      "status": "passed",
+      "durationMS": 111
+    },
+    {
+      "title": "audio track change cannot mistake an unexpected successful HTTP page for a progress acknowledgement",
+      "status": "passed",
+      "durationMS": 112
+    },
+    {
+      "title": "audio queue does not drop a failed watched save when it advances",
+      "status": "passed",
+      "durationMS": 244
+    },
+    {
+      "title": "audio queue saves a new-track pause while final watched continuation still settles",
+      "status": "passed",
+      "durationMS": 128
+    }
+  ],
+  "classification": "Isolated rendered fixtures; actual Go source composition, not populated-server proof."
+}
