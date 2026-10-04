@@ -83,9 +83,13 @@ struct PhotoScreen: View {
                     title = item.title; image = UIImage(cgImage: decoded)
                 } catch {
                     if error is CancellationError { throw error }
-                    if !displayedCache { throw error }
+                    if !displayedCache || (error as? ClientError)?.discardsCachedContent == true { throw error }
                 }
-            } catch is CancellationError {} catch { failure = AppSession.message(error) }
+            } catch is CancellationError {} catch {
+                guard !Task.isCancelled else { return }
+                if (error as? ClientError)?.discardsCachedContent == true { image = nil; title = "Photo" }
+                failure = AppSession.message(error)
+            }
         }
     }
 }
