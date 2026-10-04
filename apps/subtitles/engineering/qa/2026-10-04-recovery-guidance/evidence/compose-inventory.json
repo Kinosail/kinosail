@@ -1,0 +1,75 @@
+{
+  "revision": "2e9ede47a",
+  "variants": [
+    {
+      "path": "apps/subtitles/compose.config.yaml",
+      "sha256": "51d58b535e5d26eaf47f8c7b4b6898eeefa2a3223edb73c31530ba9f5b9e933f",
+      "subsource_mappings": []
+    },
+    {
+      "path": "apps/subtitles/compose.gpu.yaml",
+      "sha256": "731050732f53985ec7801beef27110fe91c1d846d3056e2540495ed8f8994cbc",
+      "subsource_mappings": []
+    },
+    {
+      "path": "apps/subtitles/compose.release.yaml",
+      "sha256": "7766ad3200535ff5f7a429e210266afe306a6f0841f95f4c78a006b0cab047d1",
+      "subsource_mappings": [
+        "KINOSAIL_SUBSOURCE_URL: \"${KINOSAIL_SUBSOURCE_URL:-}\"",
+        "KINOSAIL_SUBSOURCE_API_KEY: \"${KINOSAIL_SUBSOURCE_API_KEY:-}\"",
+        "KINOSAIL_SUBSOURCE_API_KEY_FILE: \"${KINOSAIL_SUBSOURCE_API_KEY_FILE:-}\"",
+        "KINOSAIL_SUBSOURCE_PERSONAL_USE: \"${KINOSAIL_SUBSOURCE_PERSONAL_USE:-}\""
+      ]
+    },
+    {
+      "path": "apps/subtitles/compose.remote-https.yaml",
+      "sha256": "32d0c6582f2053864a00a793b0c128d3e7b961b3f37402cb9fc1f39b411138b4",
+      "subsource_mappings": []
+    },
+    {
+      "path": "apps/subtitles/compose.rkmpp.yaml",
+      "sha256": "34bcba3e7f3ea5880b404a253b3b339d74277283b2cb65fd6f3addb6f9ec3cd0",
+      "subsource_mappings": []
+    },
+    {
+      "path": "apps/subtitles/compose.test.yaml",
+      "sha256": "a44dcb388b81d32d16273d34126dcb0b9d4e877ca73b9bbaa02ec385ef76127a",
+      "subsource_mappings": []
+    },
+    {
+      "path": "apps/subtitles/compose.yaml",
+      "sha256": "b5decf345d29635d6af881fd30ea8d008fc65be6ee7883c2cea7a775494a0ff2",
+      "subsource_mappings": [
+        "KINOSAIL_SUBSOURCE_URL: \"${KINOSAIL_SUBSOURCE_URL:-}\"",
+        "KINOSAIL_SUBSOURCE_API_KEY: \"${KINOSAIL_SUBSOURCE_API_KEY:-}\"",
+        "KINOSAIL_SUBSOURCE_API_KEY_FILE: \"${KINOSAIL_SUBSOURCE_API_KEY_FILE:-}\"",
+        "KINOSAIL_SUBSOURCE_PERSONAL_USE: \"${KINOSAIL_SUBSOURCE_PERSONAL_USE:-}\""
+      ]
+    },
+    {
+      "path": "apps/subtitles/packaging/platform-compose.yaml",
+      "sha256": "a4599be72882509f250835af354f3df6af6ac305e808659a40b8315ddabb273e",
+      "subsource_mappings": []
+    },
+    {
+      "path": "catalogs/zimaos/Subtitles/docker-compose.yml",
+      "sha256": "7438cddb96699284a108180ef19923c4b4c63a369e401cded5d5f4ad2746035f",
+      "subsource_mappings": []
+    },
+    {
+      "path": "catalogs/zimaos/Both/docker-compose.yml",
+      "sha256": "54a4828a6176fbad6ae3c9a16b7da323557b8c9db0892e4b96017db368efd62d",
+      "subsource_mappings": []
+    },
+    {
+      "path": "catalogs/truenas/kinosail/templates/docker-compose.yaml",
+      "sha256": "2d69b31c1be784fb06ca2802a88e589e9459d6c58dea23743ddf088183cc18ef",
+      "subsource_mappings": []
+    },
+    {
+      "path": "apps/subtitles/docs/getting-started/install.md",
+      "sha256": "be118cf2d08504a9408c1076990412f65c2d87f410166ad90d9dd8bd0c96ef2e",
+      "subsource_mappings": []
+    }
+  ]
+}
