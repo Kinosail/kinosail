@@ -1,0 +1,33 @@
+{
+  "source_revision": "ed7b926fb05314837b1385825217f1d7db96131f",
+  "product_revision": "bf10089edc79652312db66f52277bcc6fedf3dfd",
+  "scope": "isolated fixture shell with native storage; not Go-rendered delivery",
+  "captures": {
+    "isolated-green/download-pause-isolated-na-6db2a-ues-missing-ranges-at-390px-chromium/opfs-390-offline-failure.png": "6f74f12b5e00a5319a9bd3bf5f62e78b20178d7695f206ad4b08f1040852fe41",
+    "isolated-green/download-pause-isolated-na-6db2a-ues-missing-ranges-at-390px-chromium/opfs-390-paused.png": "c81603e869e4dae3fb9f971da0aeaadc21d76922b519b796111a528047191289",
+    "isolated-green/download-pause-isolated-na-6db2a-ues-missing-ranges-at-390px-chromium/opfs-390-pending.png": "d3d70df6734b0c2944fb719d84f5d73dd5325a4192f24294e916d136e7758b48",
+    "isolated-green/download-pause-isolated-na-6db2a-ues-missing-ranges-at-390px-chromium/opfs-390-ready.png": "e359b1946087d7955606576a71b152b629e98802b7de70c7b79618a6bb771356",
+    "isolated-green/download-pause-isolated-na-cc52b-es-missing-ranges-at-1440px-chromium/indexeddb-1440-offline-failure.png": "8dfe133cd3e104b953e793fdcb8b54aa21497e8b1b5c725707be65fa25ab6e5e",
+    "isolated-green/download-pause-isolated-na-cc52b-es-missing-ranges-at-1440px-chromium/indexeddb-1440-paused.png": "1d6d91fb7911c6a6a357be109a0c57a6fc31658255ed0b9442fe7eb12180f3c6",
+    "isolated-green/download-pause-isolated-na-cc52b-es-missing-ranges-at-1440px-chromium/indexeddb-1440-pending.png": "fe2bb94f8a4272cde6b6a61405405576521398fa8b41766936c2fd7ccb9b51ac",
+    "isolated-green/download-pause-isolated-na-cc52b-es-missing-ranges-at-1440px-chromium/indexeddb-1440-ready.png": "2cc7ee1a6e36427ff5b717a8445d8adfea96154c4858e59ba4321b9f3a3c5787"
+  },
+  "inspected": 8,
+  "states": [
+    "pending",
+    "paused",
+    "offline-failure",
+    "ready"
+  ],
+  "widths": [
+    390,
+    1440
+  ],
+  "observations": [
+    "readable labels and status without overflow",
+    "keyboard Resume focus visible after Pause",
+    "page-open guidance during active transfer",
+    "separate Remove disclosure, never exercised",
+    "Play link visible only after full verification"
+  ]
+}

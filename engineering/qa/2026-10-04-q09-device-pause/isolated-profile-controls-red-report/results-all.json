@@ -1,0 +1,231 @@
+{
+  "config": {
+    "argv": [
+      "/opt/homebrew/Cellar/node/26.8.2/bin/node",
+      "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/node_modules/@playwright/test/cli.js",
+      "test",
+      "download-pause-ownership.spec.ts",
+      "--workers=1",
+      "--project=chromium",
+      "--grep",
+      "same Viewer Profile|changing Viewer Profile"
+    ],
+    "configFile": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/playwright.config.ts",
+    "rootDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/isolated-profile-controls-red",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "open": "never",
+          "outputFolder": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/isolated-profile-controls-red-report/html-all"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/isolated-profile-controls-red-report/results-all.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "download-pause-ownership.spec.ts",
+      "file": "download-pause-ownership.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "same Viewer Profile in another tab preserves the transfer owner until explicit Pause",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 3031,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('[data-download-device-status]')\nExpected substring: \u001b[32m\"Keep this page open\"\u001b[39m\nReceived string:    \u001b[31m\"Download interrupted. Resume to continue where it stopped.\"\u001b[39m\nTimeout: 2000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" locator('[data-download-device-status]') with timeout 2000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-download-device-status]')\u001b[22m\n\u001b[2m    21 × locator resolved to <span role=\"status\" aria-live=\"polite\" data-download-device-status=\"\">Download interrupted. Resume to continue where it…</span>\u001b[22m\n\u001b[2m       - unexpected value \"Download interrupted. Resume to continue where it stopped.\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('[data-download-device-status]')\nExpected substring: \u001b[32m\"Keep this page open\"\u001b[39m\nReceived string:    \u001b[31m\"Download interrupted. Resume to continue where it stopped.\"\u001b[39m\nTimeout: 2000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" locator('[data-download-device-status]') with timeout 2000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-download-device-status]')\u001b[22m\n\u001b[2m    21 × locator resolved to <span role=\"status\" aria-live=\"polite\" data-download-device-status=\"\">Download interrupted. Resume to continue where it…</span>\u001b[22m\n\u001b[2m       - unexpected value \"Download interrupted. Resume to continue where it stopped.\"\u001b[22m\n\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/download-pause-ownership.spec.ts:18:65",
+                    "location": {
+                      "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/download-pause-ownership.spec.ts",
+                      "column": 65,
+                      "line": 18
+                    },
+                    "snippet": "  16 |     await openDownloadPage(second, peer.origin, \"indexeddb\");\n  17 |     await info.attach(\"same-profile-tab-peer\", {body: JSON.stringify(await peer.stats()), contentType: \"application/json\"});\n> 18 |     await expect(page.locator(\"[data-download-device-status]\")).toContainText(\"Keep this page open\", {timeout: 2_000});\n     |                                                                 ^\n  19 |     expect((await peer.stats()).closed).toBe(0);\n  20 |     expect((await inspectDownload(page, served.jobID)).job?.transferID).toBe(retained.job?.transferID);\n  21 |     // Only the owning tab exposes Pause. A status broadcast is not cancellation authority."
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/download-pause-ownership.spec.ts",
+                        "column": 65,
+                        "line": 18
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('[data-download-device-status]')\nExpected substring: \u001b[32m\"Keep this page open\"\u001b[39m\nReceived string:    \u001b[31m\"Download interrupted. Resume to continue where it stopped.\"\u001b[39m\nTimeout: 2000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" locator('[data-download-device-status]') with timeout 2000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-download-device-status]')\u001b[22m\n\u001b[2m    21 × locator resolved to <span role=\"status\" aria-live=\"polite\" data-download-device-status=\"\">Download interrupted. Resume to continue where it…</span>\u001b[22m\n\u001b[2m       - unexpected value \"Download interrupted. Resume to continue where it stopped.\"\u001b[22m\n\n\n  16 |     await openDownloadPage(second, peer.origin, \"indexeddb\");\n  17 |     await info.attach(\"same-profile-tab-peer\", {body: JSON.stringify(await peer.stats()), contentType: \"application/json\"});\n> 18 |     await expect(page.locator(\"[data-download-device-status]\")).toContainText(\"Keep this page open\", {timeout: 2_000});\n     |                                                                 ^\n  19 |     expect((await peer.stats()).closed).toBe(0);\n  20 |     expect((await inspectDownload(page, served.jobID)).job?.transferID).toBe(retained.job?.transferID);\n  21 |     // Only the owning tab exposes Pause. A status broadcast is not cancellation authority.\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/download-pause-ownership.spec.ts:18:65"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T11:16:43.646Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "native-download-environment",
+                      "contentType": "application/json",
+                      "body": "eyJicm93c2VyIjoiY2hyb21pdW0iLCJ2ZXJzaW9uIjoiMTUzLjAuODAxMC4xMiIsInJlcXVlc3RlZENoYW5uZWwiOiIiLCJwcm9qZWN0IjoiY2hyb21pdW0iLCJub2RlIjoidjI2LjguMiIsImlzb2xhdGVkIjp0cnVlfQ=="
+                    },
+                    {
+                      "name": "same-profile-tab-peer",
+                      "contentType": "application/json",
+                      "body": "eyJyYW5nZXMiOlswLDgzODg2MDhdLCJjbG9zZWQiOjEsInJlbW92YWxzIjowfQ=="
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/isolated-profile-controls-red/download-pause-ownership-s-71fad--owner-until-explicit-Pause-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/isolated-profile-controls-red/download-pause-ownership-s-71fad--owner-until-explicit-Pause-chromium/test-failed-2.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/isolated-profile-controls-red/download-pause-ownership-s-71fad--owner-until-explicit-Pause-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/isolated-profile-controls-red/download-pause-ownership-s-71fad--owner-until-explicit-Pause-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/download-pause-ownership.spec.ts",
+                    "column": 65,
+                    "line": 18
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "1620b801a18f26b9fa4a-f9494a6b0dd5408a7f9d",
+          "file": "download-pause-ownership.spec.ts",
+          "line": 8,
+          "column": 1
+        },
+        {
+          "title": "isolated native profile boundary: changing Viewer Profile still cancels the old owner",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1012,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T11:16:47.159Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "native-download-environment",
+                      "contentType": "application/json",
+                      "body": "eyJicm93c2VyIjoiY2hyb21pdW0iLCJ2ZXJzaW9uIjoiMTUzLjAuODAxMC4xMiIsInJlcXVlc3RlZENoYW5uZWwiOiIiLCJwcm9qZWN0IjoiY2hyb21pdW0iLCJub2RlIjoidjI2LjguMiIsImlzb2xhdGVkIjp0cnVlfQ=="
+                    },
+                    {
+                      "name": "changed-profile-cancellation-retention",
+                      "contentType": "application/json",
+                      "body": "eyJzdG9yZWQiOnsiam9iIjp7ImlkIjoiYWFhYWFhYWFhYWFhYWFhYSIsImludGVncml0eVZlcnNpb24iOjIsInByb2ZpbGVJRCI6InByb2ZpbGUiLCJpdGVtSUQiOiJiYmJiYmJiYmJiYmJiYmJiIiwidGl0bGUiOiJGaWN0aW9uYWwgUmFuZ2UgRml4dHVyZSIsInF1YWxpdHkiOiJvcmlnaW5hbCIsImV4dGVuc2lvbiI6Ii5tcDQiLCJzaGEyNTYiOiIyOGM5NTdjMmIxOGY2OTk4ZGM0ZTA2N2U5YjlkMzE2NDk3YzVjMTRkZjFhOTRhZjU1YmRkYWFhNmQzMzQ0NjQ3Iiwic2l6ZSI6MTY3NzcyNDcsInN0b3JhZ2UiOiJpbmRleGVkZGIiLCJwcm9ncmVzc0Jhc2VsaW5lIjp7InNlY29uZHMiOjAsIndhdGNoZWQiOmZhbHNlLCJzZXNzaW9uIjoiIiwicmV2aXNpb24iOjB9LCJ0cmFuc2ZlcklEIjoiY2RjMGE5M2JkYjU1MWNmN2RkODEwMDEyMjk3NmYyOWQiLCJ0cmFuc2ZlclN0YXJ0ZWRBdCI6MTc5MTExMjYwNzU1NS45LCJzdGF0ZSI6Im5lZWRzX2F0dGVudGlvbiIsInJlYWR5T2ZmbGluZSI6ZmFsc2UsImVycm9yIjoiRG93bmxvYWQgaW50ZXJydXB0ZWQuIFJlc3VtZSB0byBjb250aW51ZSB3aGVyZSBpdCBzdG9wcGVkLiIsImJ5dGVzIjo4Mzg4NjA4LCJyZXNlcnZlZEJ5dGVzIjo4Mzg4NjM5fSwiY2h1bmtzIjpbeyJvZmZzZXQiOjAsImxlbmd0aCI6ODM4ODYwOCwic2hhMjU2IjoiYmI5MjliYmRjZTg1ZmRiYzkwM2E0NjNlOTY2MzBhMjVmOGI2ZWY1Yjc2MDkwZTI0Y2Q5MmVhOGZiNDdiMmY2NSIsImFjdHVhbCI6ImJiOTI5YmJkY2U4NWZkYmM5MDNhNDYzZTk2NjMwYTI1ZjhiNmVmNWI3NjA5MGUyNGNkOTJlYThmYjQ3YjJmNjUifV0sImZpbGVTaXplIjo4Mzg4NjA4LCJmaWxlSGFzaCI6ImJiOTI5YmJkY2U4NWZkYmM5MDNhNDYzZTk2NjMwYTI1ZjhiNmVmNWI3NjA5MGUyNGNkOTJlYThmYjQ3YjJmNjUiLCJsb2NrcyI6W119LCJwZWVyIjp7InJhbmdlcyI6WzAsODM4ODYwOF0sImNsb3NlZCI6MSwicmVtb3ZhbHMiOjB9fQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "1620b801a18f26b9fa4a-1f9e0956fd3c1f41728f",
+          "file": "download-pause-ownership.spec.ts",
+          "line": 60,
+          "column": 22
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-04T11:16:43.305Z",
+    "duration": 5003.069,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

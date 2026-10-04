@@ -1,0 +1,55 @@
+{
+  "source_revision": "20611fe1a5b79b2857c9e67c13f8b2662d024a9b",
+  "product_revision": "bf10089edc79652312db66f52277bcc6fedf3dfd",
+  "scope": "actual Go Downloads markup, full composed native browser assets/CSS/fonts, temporary public-API original-quality preparation; deterministic non-playable bytes",
+  "captures": {
+    "server-green/download-pause-real-Server-08edd-es-missing-ranges-at-1440px-chromium/indexeddb-1440-offline-failure.png": "f95f94a3413100f04d5c1545c917539cf5841169a1da0eb1d798d45a23a7fbc5",
+    "server-green/download-pause-real-Server-08edd-es-missing-ranges-at-1440px-chromium/indexeddb-1440-paused.png": "633dad479078152b888d710ec65eb15bff53c2261230c1ffa8f1e824a0c9de14",
+    "server-green/download-pause-real-Server-08edd-es-missing-ranges-at-1440px-chromium/indexeddb-1440-pending.png": "4ff41c645eaa9dcd8e4b9139036a66fd8c067c0de9fe74b9a3cc65bd2c040295",
+    "server-green/download-pause-real-Server-08edd-es-missing-ranges-at-1440px-chromium/indexeddb-1440-ready.png": "6681198eb88685780e1818af6e157b8876e5ab42d13261cb239489a75ca89289",
+    "server-green/download-pause-real-Server-3e4fb-es-missing-ranges-at-1920px-chromium/opfs-1920-offline-failure.png": "eee4fe5e28fb0eb5e8beb81029362a729b8b292e2ed4464e8ba7ba4acd699aab",
+    "server-green/download-pause-real-Server-3e4fb-es-missing-ranges-at-1920px-chromium/opfs-1920-paused.png": "75c42271500f35adcded3be3dae8221bcef7aff2f2d91af9c60d069d40483c96",
+    "server-green/download-pause-real-Server-3e4fb-es-missing-ranges-at-1920px-chromium/opfs-1920-pending.png": "ddea542c6e154a5f406c5af43cfcf22123218377619c9936c8da49436fcaee84",
+    "server-green/download-pause-real-Server-3e4fb-es-missing-ranges-at-1920px-chromium/opfs-1920-ready.png": "97d109c474c59b2d1d25a259ad0103834112c540f1e3979f11b50688d8cecfa0",
+    "server-green/download-pause-real-Server-5a7ca-es-missing-ranges-at-1920px-chromium/indexeddb-1920-offline-failure.png": "eee4fe5e28fb0eb5e8beb81029362a729b8b292e2ed4464e8ba7ba4acd699aab",
+    "server-green/download-pause-real-Server-5a7ca-es-missing-ranges-at-1920px-chromium/indexeddb-1920-paused.png": "75c42271500f35adcded3be3dae8221bcef7aff2f2d91af9c60d069d40483c96",
+    "server-green/download-pause-real-Server-5a7ca-es-missing-ranges-at-1920px-chromium/indexeddb-1920-pending.png": "ddea542c6e154a5f406c5af43cfcf22123218377619c9936c8da49436fcaee84",
+    "server-green/download-pause-real-Server-5a7ca-es-missing-ranges-at-1920px-chromium/indexeddb-1920-ready.png": "97d109c474c59b2d1d25a259ad0103834112c540f1e3979f11b50688d8cecfa0",
+    "server-green/download-pause-real-Server-65f0e-ues-missing-ranges-at-390px-chromium/opfs-390-offline-failure.png": "65d960e5a928dad1d5f602abaac6bd5a0fc403bf0df64d337ce56451bffc13cc",
+    "server-green/download-pause-real-Server-65f0e-ues-missing-ranges-at-390px-chromium/opfs-390-paused.png": "3353bc197a62ed733526157cbf481f6ddeff8d0bffe798d6f7494483c6ad4877",
+    "server-green/download-pause-real-Server-65f0e-ues-missing-ranges-at-390px-chromium/opfs-390-pending.png": "0354d243e4228669853a5811abe11d17be286a4d2fcaa16c9f4f917e8272f053",
+    "server-green/download-pause-real-Server-65f0e-ues-missing-ranges-at-390px-chromium/opfs-390-ready.png": "1b6824f16456de08d7b71e962b3eb1fadb300b6184685719961dd8faf554fc19",
+    "server-green/download-pause-real-Server-66b6f-es-missing-ranges-at-1440px-chromium/opfs-1440-offline-failure.png": "f95f94a3413100f04d5c1545c917539cf5841169a1da0eb1d798d45a23a7fbc5",
+    "server-green/download-pause-real-Server-66b6f-es-missing-ranges-at-1440px-chromium/opfs-1440-paused.png": "633dad479078152b888d710ec65eb15bff53c2261230c1ffa8f1e824a0c9de14",
+    "server-green/download-pause-real-Server-66b6f-es-missing-ranges-at-1440px-chromium/opfs-1440-pending.png": "4ff41c645eaa9dcd8e4b9139036a66fd8c067c0de9fe74b9a3cc65bd2c040295",
+    "server-green/download-pause-real-Server-66b6f-es-missing-ranges-at-1440px-chromium/opfs-1440-ready.png": "6681198eb88685780e1818af6e157b8876e5ab42d13261cb239489a75ca89289",
+    "server-green/download-pause-real-Server-f8fd8-ues-missing-ranges-at-390px-chromium/indexeddb-390-offline-failure.png": "65d960e5a928dad1d5f602abaac6bd5a0fc403bf0df64d337ce56451bffc13cc",
+    "server-green/download-pause-real-Server-f8fd8-ues-missing-ranges-at-390px-chromium/indexeddb-390-paused.png": "3353bc197a62ed733526157cbf481f6ddeff8d0bffe798d6f7494483c6ad4877",
+    "server-green/download-pause-real-Server-f8fd8-ues-missing-ranges-at-390px-chromium/indexeddb-390-pending.png": "0354d243e4228669853a5811abe11d17be286a4d2fcaa16c9f4f917e8272f053",
+    "server-green/download-pause-real-Server-f8fd8-ues-missing-ranges-at-390px-chromium/indexeddb-390-ready.png": "1b6824f16456de08d7b71e962b3eb1fadb300b6184685719961dd8faf554fc19"
+  },
+  "inspected": 24,
+  "states": [
+    "pending",
+    "paused",
+    "offline-failure",
+    "ready"
+  ],
+  "widths": [
+    390,
+    1440,
+    1920
+  ],
+  "observations": [
+    "new Pause/Resume labels and keyboard focus readable at each width",
+    "page-open status is present during active transfer",
+    "Remove stays a separate disclosure and was not exercised",
+    "Play appears only after full verification"
+  ],
+  "limits": [
+    "390px full-page captures retain an incumbent fixed bottom-navigation band crossing later flow content at the recorded scroll position; the existing Play link can intersect it",
+    "no hit-testing proof for every scroll position or confirmed Q09 navigation regression",
+    "no CSS or navigation source change",
+    "no media decoding/device/standalone Subtitles/other-browser/BFCache/profile-account API proof"
+  ]
+}

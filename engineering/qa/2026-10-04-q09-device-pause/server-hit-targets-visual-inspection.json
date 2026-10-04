@@ -1,0 +1,8 @@
+{
+  "source_revision": "7acb6d9a83ec7fa6efcdb67410a586be0c73cfb6",
+  "captures": {
+    "server-hit-targets/download-pause-hit-target--a588e-le-after-explicit-scrolling-chromium/phone-ready-play-pointer.png": "b9f86e204f9d3a619c31542a308366d1905586b080b7eb0ccb82ad7a31cf2328",
+    "server-hit-targets/download-pause-hit-target--a588e-le-after-explicit-scrolling-chromium/test-failed-1.png": "72e9f783cb4ddcd0ab1fd5e69d25b61bcf2be5c595a13c5e65e14babffdf62ba"
+  },
+  "inspection": "Both 390x844 captures inspected. Pause/Resume and first pointer Play were readable. Later failed-case PNG shows focused Play above navigation, which differs from the immediate hit receipt and supports unsettled-scroll timing. No visual persistent overlay or new Q09 layout defect is established. No decoding claim."
+}

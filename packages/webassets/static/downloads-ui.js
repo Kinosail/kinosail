@@ -1,30 +1,3 @@
-async function downloadOfflineJob(button) {
-  const jobID = button.dataset.jobId;
-  const expected = {jobID, itemID: button.dataset.itemId, profileID: currentOfflineProfile(), title: button.dataset.title, quality: button.dataset.quality};
-  if (offlineTransfers.has(jobID)) return;
-  const owner = {controller: new AbortController(), startedAt: offlineNow(), transferID: [...crypto.getRandomValues(new Uint8Array(16))].map((byte) => byte.toString(16).padStart(2, "0")).join("")};
-  offlineTransfers.set(jobID, owner);
-  button.disabled = true;
-  try {
-    if (!/^[0-9a-f]{16}$/.test(expected.jobID) || !offlineItemID.test(expected.itemID || "") || !offlineProfileID.test(expected.profileID) || !expected.title || expected.title.length > 512 || !offlineQualities.has(expected.quality)) throw new Error(offlineMessage("offlineVerificationError", "The download could not be verified"));
-    const response = await fetch(`/api/v1/downloads/${encodeURIComponent(jobID)}`, {credentials: "same-origin", cache: "no-store", redirect: "error", signal: AbortSignal.any([owner.controller.signal, AbortSignal.timeout(15000)])});
-    if (!response.ok) throw new Error(offlineMessage("offlineUnavailable", "The download is no longer available"));
-    const job = await offlineProgressJSON(response);
-    if (!validOfflineManifest(job, expected)) throw new Error(offlineMessage("offlineVerificationError", "The download could not be verified"));
-    await requireOfflineServiceWorker();
-    notifyOffline(jobID, {state: "waiting", error: offlineMessage("offlinePageRequired", "Keep this page open. Interrupted downloads can resume.")});
-    await withOfflineJobLock(jobID, async () => {
-      void navigator.storage?.persist?.().catch(() => {});
-      return withOfflineTransferSlot(() => transferOfflineJob(job, expected, owner), owner.controller.signal);
-    }, true, owner.controller.signal);
-  } catch (error) {
-    notifyOffline(jobID, {state: "needs_attention", error: owner.controller.signal.aborted ? offlineMessage("offlinePaused", "Download interrupted. Resume to continue where it stopped.") : error instanceof Error ? error.message : offlineMessage("offlineVerificationError", "The download could not be verified")});
-  } finally {
-    if (offlineTransfers.get(jobID) === owner) offlineTransfers.delete(jobID);
-    button.disabled = false;
-  }
-}
-
 function bindOfflineRemovalForms() {
   for (const form of document.querySelectorAll('form[action^="/offline-downloads/"][action$="/remove"]')) {
     if (form.dataset.bound) continue;
@@ -63,7 +36,8 @@ async function bindOfflineDownloads() {
   for (const button of document.querySelectorAll("[data-download-device]")) {
     if (button.dataset.bound) continue;
     button.dataset.bound = "true";
-    button.addEventListener("click", () => downloadOfflineJob(button));
+    button.dataset.downloadLabel = button.textContent;
+    button.addEventListener("click", () => controlOfflineDownload(button));
   }
   if (!hasOfflineStorage || !navigator.locks?.request) {
     for (const status of document.querySelectorAll("[data-download-device-status]")) status.textContent = offlineMessage("offlineStorageUnsupported", "This browser cannot store offline media safely");
@@ -161,8 +135,8 @@ const refreshDownloads = async () => {
       for (const oldJob of current.querySelectorAll('[data-download-job]')) {
         const nextJob = [...replacement.querySelectorAll('[data-download-job]')].find((job) => job.dataset.downloadJob === oldJob.dataset.downloadJob);
         if (!nextJob) continue;
-        // Keep in-flight event handlers and disabled buttons attached to their job.
-        if (oldJob.querySelector('[data-download-device]:disabled,form[data-removing="true"]')) nextJob.replaceWith(oldJob);
+        // Preserve Pause and its owner through Server refreshes.
+        if (offlineTransfers.has(oldJob.dataset.downloadJob) || oldJob.querySelector('[data-download-device]:disabled,form[data-removing="true"]')) nextJob.replaceWith(oldJob);
         else if (oldJob.querySelector('details[open]')) nextJob.querySelector('details')?.setAttribute('open', '');
       }
       current.replaceWith(replacement);

@@ -1,0 +1,159 @@
+{
+  "source_revision": "7acb6d9a83ec7fa6efcdb67410a586be0c73cfb6",
+  "product_revision": "bf10089edc79652312db66f52277bcc6fedf3dfd",
+  "stats": {
+    "startTime": "2026-10-04T12:28:30.488Z",
+    "duration": 2661.8379999999997,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  },
+  "runner_errors": [],
+  "classification": "complete single-case supplemental run; unsettled smooth-scroll measurement, not established persistent product failure; original eight-case Go proof remains unchanged",
+  "cases": [
+    {
+      "title": "actual Go phone: fictional download controls and ready Play link remain reachable after explicit scrolling",
+      "status": "failed",
+      "attachments": {
+        "native-download-environment": {
+          "browser": "chromium",
+          "version": "153.0.8010.12",
+          "requestedChannel": "",
+          "project": "chromium",
+          "node": "v26.8.2",
+          "isolated": false
+        },
+        "served-hit-target-bundle": {
+          "jobID": "498d9c4977220569",
+          "bundle": "/static/downloads.js?v=30-htmx4",
+          "checksum": "2fb188e2744fe553afb7c4730d58bb0a3df38c2191c6f20732898a07503a2fc5"
+        },
+        "phone-pause-hit-target": {
+          "box": {
+            "x": 28.984375,
+            "y": 703.859375,
+            "width": 331.984375,
+            "height": 44
+          },
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "scroll": {
+            "x": 0,
+            "y": 32
+          },
+          "centerInViewport": true,
+          "receivesPointer": true,
+          "hitTag": "BUTTON",
+          "hitClass": "mode",
+          "focused": true
+        },
+        "phone-resume-hit-target": {
+          "box": {
+            "x": 28.984375,
+            "y": 497.859375,
+            "width": 331.984375,
+            "height": 44
+          },
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "scroll": {
+            "x": 0,
+            "y": 238
+          },
+          "centerInViewport": true,
+          "receivesPointer": true,
+          "hitTag": "BUTTON",
+          "hitClass": "mode",
+          "focused": true
+        },
+        "phone-play-before-explicit-scroll": {
+          "box": {
+            "x": 28.984375,
+            "y": 557.03125,
+            "width": 331.984375,
+            "height": 44
+          },
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "scroll": {
+            "x": 0,
+            "y": 238
+          },
+          "centerInViewport": true,
+          "receivesPointer": true,
+          "hitTag": "A",
+          "hitClass": "mode",
+          "focused": false
+        },
+        "phone-play-pointer-hit-target": {
+          "box": {
+            "x": 28.984375,
+            "y": 557.03125,
+            "width": 331.984375,
+            "height": 44
+          },
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "scroll": {
+            "x": 0,
+            "y": 238
+          },
+          "centerInViewport": true,
+          "receivesPointer": true,
+          "hitTag": "A",
+          "hitClass": "mode",
+          "focused": true
+        },
+        "phone-play-pointer-navigation": {
+          "pathname": "/offline",
+          "selectedJob": "498d9c4977220569",
+          "decodingClaim": false
+        },
+        "phone-play-keyboard-hit-target": {
+          "box": {
+            "x": 28.984375,
+            "y": 795.03125,
+            "width": 331.984375,
+            "height": 44
+          },
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "scroll": {
+            "x": 0,
+            "y": 0
+          },
+          "centerInViewport": true,
+          "receivesPointer": false,
+          "hitTag": "A",
+          "hitClass": "nav-personal-tab",
+          "focused": true
+        }
+      },
+      "errors": [
+        {
+          "location": {
+            "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/download-pause-hit-target.spec.ts",
+            "column": 76,
+            "line": 59
+          },
+          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoMatchObject\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 1\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[2m    \"centerInViewport\": true,\u001b[22m\n\u001b[2m    \"focused\": true,\u001b[22m\n\u001b[32m-   \"receivesPointer\": true,\u001b[39m\n\u001b[31m+   \"receivesPointer\": false,\u001b[39m\n\u001b[2m  }\u001b[22m\n\n  57 |     await expect(again).toBeVisible();\n  58 |     await centerAndFocus(again);\n> 59 |     expect(await hitTarget(again, \"phone-play-keyboard-hit-target\", info)).toMatchObject({centerInViewport: true, receivesPointer: true, focused: true});\n     |                                                                            ^\n  60 |     await page.keyboard.press(\"Enter\");\n  61 |     await expect(page).toHaveURL(`${peer.origin}/offline?job=${served.jobID}`);\n  62 |     await expect(page.locator(\"[data-offline-library] h2\")).toHaveText(\"Fictional Range Fixture\");\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/download-pause-hit-target.spec.ts:59:76"
+        }
+      ]
+    }
+  ],
+  "trace_network_request_count": 95,
+  "trace_remove_or_delete_requests": [],
+  "failure_boundary": "Pause/Resume pointer hit assertions, resumed final hash, first pointer Play navigation passed. Fresh-page Play received focus; immediate hit measurement saw nav while smooth scrolling was in progress. The keyboard activation and final peer assertions were not reached.",
+  "analysis": "Shipped html scroll-behavior:smooth makes scrollIntoView asynchronous. The later failure PNG shows the focused Play link clear of the nav; trace sampling follows focus within milliseconds. No CSS/markup change is warranted from this run. A bounded stable-geometry observation is needed before repeating every original assertion."
+}

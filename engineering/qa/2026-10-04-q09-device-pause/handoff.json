@@ -1,0 +1,103 @@
+{
+  "id": "Q09",
+  "feature": "Pause a device download without removing it",
+  "status": "tested; independent review clear; integration/required gates pending",
+  "branch": "codex/qol-q09-device-pause",
+  "base_revision": "9b59524ddaadc6ab34c8354d9b139760673d7e40",
+  "product_revision": "bf10089edc79652312db66f52277bcc6fedf3dfd",
+  "reviewed_final_evidence_revision": "2aeb0e64520f05e5f2e77f62305f83235860495c",
+  "source_hash_recipe": "UTF-8 lexically sorted path + TAB + lowercase SHA-256 + LF, including the trailing LF; SHA-256 of these bytes, not JSON serialization",
+  "product_sources": {
+    "file": "prepared-product-checks.json",
+    "key": "sources",
+    "count": 13,
+    "canonical_sha256": "d6c795e44ade6dca78444802faeb9cbca105e8ec43652ca2dc3c0a4da2b87682"
+  },
+  "final_tested_inputs": {
+    "file": "server-hit-targets-stable-context.json",
+    "key": "sources",
+    "count": 27,
+    "canonical_sha256": "e5471cf81ea6f51772764dbd152db7bb7c60fd03128628c8b05fc1561515aeda"
+  },
+  "reviewed_manifest": {
+    "file": "artifact-sha256.json",
+    "entries": 249,
+    "file_sha256": "ec540de23be917b460f9e29bd550937266f623902e348c6094fccdb87bb2957b",
+    "boundary": "exact 2aeb0e64 file before this documentation-only clearance stamp"
+  },
+  "execution": [
+    {
+      "source_revision": "ed7b926fb05314837b1385825217f1d7db96131f",
+      "evidence_revision": "20611fe1a5b79b2857c9e67c13f8b2662d024a9b",
+      "boundary": "isolated real HTTP/native OPFS/IndexedDB/WebLocks/SW; declared Node HTML/font/CSS stand-ins",
+      "passed": 5,
+      "skipped": 0,
+      "flaky": 0,
+      "runner_errors": 0,
+      "receipt": "isolated-green-receipt.json"
+    },
+    {
+      "source_revision": "20611fe1a5b79b2857c9e67c13f8b2662d024a9b",
+      "evidence_revision": "25339d122bd0b8ad88f76aeba8747794b43d9177",
+      "boundary": "actual Go public original preparation/full markup/assets and native OPFS/IndexedDB at 390/1440/1920; same-profile handoff/navigation",
+      "passed": 8,
+      "skipped": 0,
+      "flaky": 0,
+      "runner_errors": 0,
+      "receipt": "server-green-receipt.json"
+    },
+    {
+      "source_revision": "0606ac620a2a8348e9fbf55a239aeca11d28688f",
+      "evidence_revision": "2aeb0e64520f05e5f2e77f62305f83235860495c",
+      "boundary": "actual Go 390px settled pointer/focus and pointer/keyboard fictional Play navigation; native smooth scrolling retained",
+      "passed": 1,
+      "skipped": 0,
+      "flaky": 0,
+      "runner_errors": 0,
+      "receipt": "server-hit-targets-stable-receipt.json"
+    }
+  ],
+  "composed_downloads_asset": {
+    "url": "/static/downloads.js?v=30-htmx4",
+    "bytes": 69737,
+    "sha256": "2fb188e2744fe553afb7c4730d58bb0a3df38c2191c6f20732898a07503a2fc5"
+  },
+  "fixture": {
+    "bytes": 16777247,
+    "sha256": "28c957c2b18f6998dc4e067e9b9d316497c5c14df1a94af55bddaaa6d3344647",
+    "verified_first_block_bytes": 8388608,
+    "resume_range_offsets": [
+      0,
+      8388608,
+      8388608,
+      16777216
+    ],
+    "remove_requests": 0,
+    "playable_media": false
+  },
+  "controls_preserved": [
+    "actual profile changes cancel old owners and retain original profile-bound verified data",
+    "same-profile navigation/revision does not cancel another active tab",
+    "Pause waits native work/locks before Resume",
+    "Resume independently revalidates retained blocks and final full-file digest",
+    "Remove remains separate and is excluded from all fixture actions",
+    "default actual Go runner retains its original eight-case selection",
+    "R10 Player subtitle seam and non-DownloadsUI composition regions preserved"
+  ],
+  "limitations": [
+    "deterministic bytes establish integrity/navigation, not media decoding",
+    "phone hit testing establishes the settled explicitly scrolled position, not every scroll position",
+    "no actual BFCache admission, physical/native app device, WebKit/Firefox or standalone Subtitles runtime claim",
+    "no device/production/encoder/deployment or actual user data deletion",
+    "full required hosted/container gates, affected consumer packages, current-main reconciliation, merge and ancestry are parent-owned and pending"
+  ],
+  "ci": {
+    "go_title": "TestDownloadPauseBrowserJourney",
+    "enable": "KINOSAIL_DOWNLOAD_PAUSE_BROWSER=1",
+    "default_case_count": 8,
+    "supplemental_enable": "KINOSAIL_DOWNLOAD_PAUSE_HIT_TARGETS=1",
+    "supplemental_case_count": 1,
+    "instructions": "Run the two modes as separate opt-in Go invocations with distinct outputs and the selected browser project retained; ordinary skipped Go invocation is not browser proof."
+  },
+  "documentation_stamp": "Only report.md, this handoff.json and artifact-sha256.json changed after the exact reviewed final evidence. Product, tested sources, raw runtime receipts and captures remain byte-identical."
+}

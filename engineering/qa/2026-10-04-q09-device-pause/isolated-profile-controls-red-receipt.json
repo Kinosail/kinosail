@@ -1,0 +1,36 @@
+{
+  "source_revision": "c8749dc978902447c3df84bb66f3111bd7d08c2b",
+  "command": [
+    "pnpm",
+    "exec",
+    "playwright",
+    "test",
+    "download-pause-ownership.spec.ts",
+    "--workers=1",
+    "--project=chromium",
+    "--grep",
+    "same Viewer Profile|changing Viewer Profile"
+  ],
+  "environment_overrides": {
+    "PLAYWRIGHT_CHANNEL": "",
+    "KINOSAIL_DOWNLOAD_PAUSE_ISOLATED": "1",
+    "KINOSAIL_BROWSER_WORKERS": "1",
+    "KINOSAIL_E2E_VIDEO": "off",
+    "KINOSAIL_E2E_OUTPUT_DIR": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/isolated-profile-controls-red",
+    "KINOSAIL_E2E_ARTIFACT_DIR": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/isolated-profile-controls-red-report"
+  },
+  "external_bound_seconds": 35,
+  "elapsed_seconds": 7.315,
+  "exit_code": 1,
+  "timed_out": false,
+  "aggregate_report_completed": true,
+  "stats": {
+    "startTime": "2026-10-04T11:16:43.305Z",
+    "duration": 5003.069,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  },
+  "timestamp_utc": "2026-10-04T11:16:48.367075+00:00"
+}

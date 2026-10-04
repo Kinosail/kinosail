@@ -1,0 +1,209 @@
+{
+  "config": {
+    "argv": [
+      "/opt/homebrew/Cellar/node/26.8.2/bin/node",
+      "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/node_modules/@playwright/test/cli.js",
+      "test",
+      "download-pause-hit-target.spec.ts",
+      "--workers=1",
+      "--project=chromium"
+    ],
+    "configFile": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/playwright.config.ts",
+    "rootDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/server-hit-targets",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "open": "never",
+          "outputFolder": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/server-hit-targets-report/html-all"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/server-hit-targets-report/results-all.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "download-pause-hit-target.spec.ts",
+      "file": "download-pause-hit-target.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "actual Go phone: fictional download controls and ready Play link remain reachable after explicit scrolling",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1994,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoMatchObject\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 1\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[2m    \"centerInViewport\": true,\u001b[22m\n\u001b[2m    \"focused\": true,\u001b[22m\n\u001b[32m-   \"receivesPointer\": true,\u001b[39m\n\u001b[31m+   \"receivesPointer\": false,\u001b[39m\n\u001b[2m  }\u001b[22m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoMatchObject\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 1\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[2m    \"centerInViewport\": true,\u001b[22m\n\u001b[2m    \"focused\": true,\u001b[22m\n\u001b[32m-   \"receivesPointer\": true,\u001b[39m\n\u001b[31m+   \"receivesPointer\": false,\u001b[39m\n\u001b[2m  }\u001b[22m\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/download-pause-hit-target.spec.ts:59:76",
+                    "location": {
+                      "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/download-pause-hit-target.spec.ts",
+                      "column": 76,
+                      "line": 59
+                    },
+                    "snippet": "  57 |     await expect(again).toBeVisible();\n  58 |     await centerAndFocus(again);\n> 59 |     expect(await hitTarget(again, \"phone-play-keyboard-hit-target\", info)).toMatchObject({centerInViewport: true, receivesPointer: true, focused: true});\n     |                                                                            ^\n  60 |     await page.keyboard.press(\"Enter\");\n  61 |     await expect(page).toHaveURL(`${peer.origin}/offline?job=${served.jobID}`);\n  62 |     await expect(page.locator(\"[data-offline-library] h2\")).toHaveText(\"Fictional Range Fixture\");"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/download-pause-hit-target.spec.ts",
+                        "column": 76,
+                        "line": 59
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoMatchObject\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 1\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[2m    \"centerInViewport\": true,\u001b[22m\n\u001b[2m    \"focused\": true,\u001b[22m\n\u001b[32m-   \"receivesPointer\": true,\u001b[39m\n\u001b[31m+   \"receivesPointer\": false,\u001b[39m\n\u001b[2m  }\u001b[22m\n\n  57 |     await expect(again).toBeVisible();\n  58 |     await centerAndFocus(again);\n> 59 |     expect(await hitTarget(again, \"phone-play-keyboard-hit-target\", info)).toMatchObject({centerInViewport: true, receivesPointer: true, focused: true});\n     |                                                                            ^\n  60 |     await page.keyboard.press(\"Enter\");\n  61 |     await expect(page).toHaveURL(`${peer.origin}/offline?job=${served.jobID}`);\n  62 |     await expect(page.locator(\"[data-offline-library] h2\")).toHaveText(\"Fictional Range Fixture\");\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/download-pause-hit-target.spec.ts:59:76"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T12:28:30.847Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "native-download-environment",
+                      "contentType": "application/json",
+                      "body": "eyJicm93c2VyIjoiY2hyb21pdW0iLCJ2ZXJzaW9uIjoiMTUzLjAuODAxMC4xMiIsInJlcXVlc3RlZENoYW5uZWwiOiIiLCJwcm9qZWN0IjoiY2hyb21pdW0iLCJub2RlIjoidjI2LjguMiIsImlzb2xhdGVkIjpmYWxzZX0="
+                    },
+                    {
+                      "name": "served-hit-target-bundle",
+                      "contentType": "application/json",
+                      "body": "eyJqb2JJRCI6IjQ5OGQ5YzQ5NzcyMjA1NjkiLCJidW5kbGUiOiIvc3RhdGljL2Rvd25sb2Fkcy5qcz92PTMwLWh0bXg0IiwiY2hlY2tzdW0iOiIyZmIxODhlMjc0NGZlNTUzYWZiN2M0NzMwZDU4YmIwYTNkZjM4YzIxOTFjNmYyMDczMjg5OGEwNzUwM2EyZmM1In0="
+                    },
+                    {
+                      "name": "phone-pause-hit-target",
+                      "contentType": "application/json",
+                      "body": "eyJib3giOnsieCI6MjguOTg0Mzc1LCJ5Ijo3MDMuODU5Mzc1LCJ3aWR0aCI6MzMxLjk4NDM3NSwiaGVpZ2h0Ijo0NH0sInZpZXdwb3J0Ijp7IndpZHRoIjozOTAsImhlaWdodCI6ODQ0fSwic2Nyb2xsIjp7IngiOjAsInkiOjMyfSwiY2VudGVySW5WaWV3cG9ydCI6dHJ1ZSwicmVjZWl2ZXNQb2ludGVyIjp0cnVlLCJoaXRUYWciOiJCVVRUT04iLCJoaXRDbGFzcyI6Im1vZGUiLCJmb2N1c2VkIjp0cnVlfQ=="
+                    },
+                    {
+                      "name": "phone-resume-hit-target",
+                      "contentType": "application/json",
+                      "body": "eyJib3giOnsieCI6MjguOTg0Mzc1LCJ5Ijo0OTcuODU5Mzc1LCJ3aWR0aCI6MzMxLjk4NDM3NSwiaGVpZ2h0Ijo0NH0sInZpZXdwb3J0Ijp7IndpZHRoIjozOTAsImhlaWdodCI6ODQ0fSwic2Nyb2xsIjp7IngiOjAsInkiOjIzOH0sImNlbnRlckluVmlld3BvcnQiOnRydWUsInJlY2VpdmVzUG9pbnRlciI6dHJ1ZSwiaGl0VGFnIjoiQlVUVE9OIiwiaGl0Q2xhc3MiOiJtb2RlIiwiZm9jdXNlZCI6dHJ1ZX0="
+                    },
+                    {
+                      "name": "phone-play-before-explicit-scroll",
+                      "contentType": "application/json",
+                      "body": "eyJib3giOnsieCI6MjguOTg0Mzc1LCJ5Ijo1NTcuMDMxMjUsIndpZHRoIjozMzEuOTg0Mzc1LCJoZWlnaHQiOjQ0fSwidmlld3BvcnQiOnsid2lkdGgiOjM5MCwiaGVpZ2h0Ijo4NDR9LCJzY3JvbGwiOnsieCI6MCwieSI6MjM4fSwiY2VudGVySW5WaWV3cG9ydCI6dHJ1ZSwicmVjZWl2ZXNQb2ludGVyIjp0cnVlLCJoaXRUYWciOiJBIiwiaGl0Q2xhc3MiOiJtb2RlIiwiZm9jdXNlZCI6ZmFsc2V9"
+                    },
+                    {
+                      "name": "phone-play-pointer-hit-target",
+                      "contentType": "application/json",
+                      "body": "eyJib3giOnsieCI6MjguOTg0Mzc1LCJ5Ijo1NTcuMDMxMjUsIndpZHRoIjozMzEuOTg0Mzc1LCJoZWlnaHQiOjQ0fSwidmlld3BvcnQiOnsid2lkdGgiOjM5MCwiaGVpZ2h0Ijo4NDR9LCJzY3JvbGwiOnsieCI6MCwieSI6MjM4fSwiY2VudGVySW5WaWV3cG9ydCI6dHJ1ZSwicmVjZWl2ZXNQb2ludGVyIjp0cnVlLCJoaXRUYWciOiJBIiwiaGl0Q2xhc3MiOiJtb2RlIiwiZm9jdXNlZCI6dHJ1ZX0="
+                    },
+                    {
+                      "name": "phone-play-pointer-navigation",
+                      "contentType": "application/json",
+                      "body": "eyJwYXRobmFtZSI6Ii9vZmZsaW5lIiwic2VsZWN0ZWRKb2IiOiI0OThkOWM0OTc3MjIwNTY5IiwiZGVjb2RpbmdDbGFpbSI6ZmFsc2V9"
+                    },
+                    {
+                      "name": "phone-play-keyboard-hit-target",
+                      "contentType": "application/json",
+                      "body": "eyJib3giOnsieCI6MjguOTg0Mzc1LCJ5Ijo3OTUuMDMxMjUsIndpZHRoIjozMzEuOTg0Mzc1LCJoZWlnaHQiOjQ0fSwidmlld3BvcnQiOnsid2lkdGgiOjM5MCwiaGVpZ2h0Ijo4NDR9LCJzY3JvbGwiOnsieCI6MCwieSI6MH0sImNlbnRlckluVmlld3BvcnQiOnRydWUsInJlY2VpdmVzUG9pbnRlciI6ZmFsc2UsImhpdFRhZyI6IkEiLCJoaXRDbGFzcyI6Im5hdi1wZXJzb25hbC10YWIiLCJmb2N1c2VkIjp0cnVlfQ=="
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/server-hit-targets/download-pause-hit-target--a588e-le-after-explicit-scrolling-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/server-hit-targets/download-pause-hit-target--a588e-le-after-explicit-scrolling-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/server-hit-targets/download-pause-hit-target--a588e-le-after-explicit-scrolling-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/download-pause-hit-target.spec.ts",
+                    "column": 76,
+                    "line": 59
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "62a6bbf852d8e341a530-6b0469f3268db7b80a74",
+          "file": "download-pause-hit-target.spec.ts",
+          "line": 23,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-04T12:28:30.488Z",
+    "duration": 2661.8379999999997,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

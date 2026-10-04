@@ -1,0 +1,54 @@
+{
+  "source_revision": "bf10089edc79652312db66f52277bcc6fedf3dfd",
+  "commands": [
+    {
+      "command": [
+        "make",
+        "max-loc"
+      ],
+      "exit_code": 0,
+      "stdout": ""
+    },
+    {
+      "command": [
+        "node",
+        "scripts/quality/lint-browser-scripts.mjs"
+      ],
+      "exit_code": 0,
+      "stdout": "Browser scripts: 0 errors, 0 warnings\n"
+    },
+    {
+      "command": [
+        "node",
+        "--test",
+        "scripts/quality/browser-script-bundles.test.mjs"
+      ],
+      "exit_code": 0,
+      "executed": 4,
+      "passed": 4,
+      "skipped": 0
+    }
+  ],
+  "sources": {
+    "apps/player/e2e/static-sources.ts": "8f7a5e194a2fb8c45d3d4ea6338e0010a3e044ffa7ad6e66cb8bfa8c3ca3b54f",
+    "apps/player/internal/server/downloads_boundary_test.go": "9eb95edb2bb07224dae2abe5e04041db412b653a17770503e7192d753ed6672b",
+    "apps/player/internal/server/downloads_http.go": "aaaf98515ec4c702fcd1ba665c6a812b5670f679e87c4f8631a2c24803c77181",
+    "apps/player/internal/server/player.go": "633ed24b29175ce63240708f32d6fc2970e7f2595b22c034037d0392b20ef255",
+    "apps/player/internal/server/static/offline.html": "37507197798c85b2fb992e669242e30ca9e78a516491865ead53080536276eff",
+    "apps/subtitles/internal/server/downloads_boundary_test.go": "8e8981baae391c995b346813cddcfc30c4422cdfd8e36f7a9a4464abfa21dfd4",
+    "apps/subtitles/internal/server/downloads_http.go": "b65e47adce8bea8ca3950d1311d14d23a75701f4ccab51b903c9611c167e6801",
+    "apps/subtitles/internal/server/static/offline.html": "484cb2c4bea8a8ae526b5db07b4d10856af66cb26d677c7442d085528d879904",
+    "packages/webassets/static/downloads-control.js": "3b9e9f0acd10fbb649da8d50f585f689b2402d79dd800fcf800b14faec602c40",
+    "packages/webassets/static/downloads-transfer.js": "d346e53f625c3d0ad4458512559f1b4011ae8f888ad4bf2df3a319e64a0d4dc2",
+    "packages/webassets/static/downloads-ui.js": "9b90285800907f8be8248445467d0bf78dad02c5564a822ef95213296c0547e4",
+    "packages/webassets/static/downloads.js": "97c281b812df6cea7b07a0a507f0e57d32eb2469f1eacc671ed33d4b244e38e2",
+    "packages/webassets/webassets.go": "878a6d56605d589cdfa06d3640490cd6b2abe6f70a0a7cf621dbbc7c78dcea82"
+  },
+  "unrun": [
+    "isolated native browser GREEN",
+    "actual Go-rendered/native storage proof",
+    "affected Go packages",
+    "required hosted/container gate"
+  ],
+  "frozen_r10_player_seam_preserved_except_download_token": true
+}
