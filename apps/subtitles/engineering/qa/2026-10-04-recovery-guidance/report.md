@@ -6,6 +6,8 @@ R19 is confirmed and repaired. A synthetic failed track check renders the unavai
 
 R20 is confirmed and repaired. The provider guide contradicted both source and release Compose. The corrected guide and README distinguish those bases, all additive overlays, minimal platform/catalog manifests, and the inline installation example. The configuration files and their exact values are unchanged. [Compose inventory](evidence/compose-inventory.json) records each checked file and SHA-256.
 
+Independent review identified one additional distributed variant: `apps/player/packaging/platform-compose-both.yaml`, published by `engineering/documentation/build.py` as `install-assets/both.yaml`. Its Subtitles service maps only application directories and has no provider credential mappings. The guide and inventory now explicitly cover this combined installation file. No Player files were changed.
+
 ## Verification
 
 - Red: `GOMAXPROCS=2 go test -p 1 ./internal/server -run '^TestSubtitleUnavailableRecoveryReachesMediaLibraries$' -count=1`, from `apps/subtitles/`. [Result](evidence/r19-red.log): the rendered `/settings#library` does not resolve to Media Libraries.

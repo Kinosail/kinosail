@@ -39,7 +39,7 @@ A Compose `.env` file only supplies interpolation values. Only variables declare
 | `compose.gpu.yaml`, `compose.rkmpp.yaml` | Add device access to a base Compose file. They do not change provider mappings. |
 | `compose.remote-https.yaml` | Adds public HTTPS to a base Compose file. Provider credentials stay with the Server. |
 | `compose.test.yaml` | Adds disposable test data to `compose.yaml`. It retains the base provider mappings. |
-| The Docker Compose example in the installation guide; `apps/subtitles/packaging/platform-compose.yaml`; ZimaOS Subtitles and Both catalogs; the TrueNAS catalog | These minimal installation files do not map provider credentials from `.env`. Configure providers in Owner Settings. For a local Compose installation, an explicit environment or secret mapping is also possible. |
+| The Docker Compose example in the installation guide; `apps/subtitles/packaging/platform-compose.yaml`; `apps/player/packaging/platform-compose-both.yaml` (published as `install-assets/both.yaml`); ZimaOS Subtitles and Both catalogs; the TrueNAS catalog | These minimal installation files do not map provider credentials from `.env`. Configure providers in Owner Settings. For a local Compose installation, an explicit environment or secret mapping is also possible. |
 
 The source and release files map `KINOSAIL_SUBSOURCE_URL`, `KINOSAIL_SUBSOURCE_API_KEY`, `KINOSAIL_SUBSOURCE_API_KEY_FILE`, and `KINOSAIL_SUBSOURCE_PERSONAL_USE`. Set `KINOSAIL_SUBSOURCE_PERSONAL_USE=true` only after accepting the required terms. When using `_FILE`, mount that regular secret file into the Server container. A `.env` path alone does not mount it.
 

@@ -27,4 +27,4 @@ Failure modes considered before editing:
 - Omitting the required personal-use acceptance or secret-file mount requirement.
 - Changing exact configuration names, defaults, or deployment files while correcting prose.
 
-The guide and README are reconciled against every checked-in Subtitles Compose base, overlay, platform manifest, the ZimaOS Subtitles/Both manifests, the TrueNAS shared template, and the inline Docker Compose installation example. This documentation repair changes no configuration values. A behavior-mirroring prose assertion would add little confidence; the recorded manifest inventory is the verification artifact.
+The guide and README are reconciled against every checked-in Subtitles Compose base, overlay, platform manifest, the published Player/Subtitles combined manifest, the ZimaOS Subtitles/Both manifests, the TrueNAS shared template, and the inline Docker Compose installation example. This documentation repair changes no configuration values. A behavior-mirroring prose assertion would add little confidence; the recorded manifest inventory is the verification artifact.
