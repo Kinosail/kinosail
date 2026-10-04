@@ -41,6 +41,9 @@ Android, Apple, deployments and PiP/miniplayer are unchanged.
 - `product-max-loc.log`: passed, with no output.
 - `evidence-gitleaks.log`: no leaks found in retained evidence.
 - `artifact-sha256.json`: current artifact hashes; refreshed at final handoff.
+- Full TypeScript forbidden-type scanning remains red on pre-existing files in
+  this preserved branch, including the frozen R04 fixture which the integration
+  owner repaired separately. No R10 file is reported; full scan green is not claimed.
 
 Baseline failures occur before cancellation and Retry assertions. The test
 teardown closes only held task-owned responses. Product cancellation is not
