@@ -10,13 +10,21 @@ extension SubtitleChoicePolicy {
 }
 
 extension PlaybackSource {
-    static let allowedFields: Set<String> = ["media", "plan", "compatiblePlan", "compatibleLabel", "compatibleDescription", "qualities",
+    static let allowedFields: Set<String> = ["policy", "media", "plan", "compatiblePlan", "compatibleLabel", "compatibleDescription", "qualities",
                                              "directAllowed", "direct", "compatibleDuration", "compatibleProgressToken", "compatible", "download", "directType",
                                              "summary", "duration", "start", "audio", "chapters", "markers", "autoSkip", "subtitles", "next", "downloadNext",
                                              "trickplay", "progressToken", "replayGain", "subtitleLanguage", "subtitlePickerLimited"]
 
-    init(_ raw: JSONValue, itemID: String, server: ServerAddress) throws {
+    static func validatedFields(_ raw: JSONValue) throws -> [String: JSONValue] {
         let value = try raw.object(allowing: Self.allowedFields)
+        if value["policy"] != nil {
+            guard try ["automatic", "direct", "compatible"].contains(value.text("policy", max: 32, required: true)) else { throw ClientError.invalidResponse }
+        }
+        return value
+    }
+
+    init(_ raw: JSONValue, itemID: String, server: ServerAddress) throws {
+        let value = try Self.validatedFields(raw)
         let plan = try Self.plan(value.required("plan"))
         let media = try value.required("media").object(allowing: ["kind", "fileVersion", "container", "bitrate", "duration", "seekable", "video", "audio", "subtitles"])
         let reportedDuration = try value.number("duration")
