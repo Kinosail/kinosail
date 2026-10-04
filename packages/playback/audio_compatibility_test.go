@@ -55,7 +55,7 @@ func TestAudioMasterDescribesOnlyObservedAAC(t *testing.T) { //nolint:cyclop // 
 				t.Fatal(err)
 			}
 			var output []byte
-			err := WriteMaster(filepath.Join(root, "index.m3u8"), "ffmpeg", "", []PlaybackQuality{quality}, false, func(_ string, data []byte) error { output = data; return nil })
+			err := WriteMaster(filepath.Join(root, "index.m3u8"), "ffmpeg", []PlaybackQuality{quality}, false, func(_ string, data []byte) error { output = data; return nil })
 			if sample.valid {
 				if err != nil || !strings.Contains(string(output), "CODECS=\"mp4a.40.2\"\naudio/index.m3u8") || strings.Contains(string(output), "RESOLUTION") || strings.Contains(string(output), "FRAME-RATE") {
 					t.Fatalf("master = %q, error = %v", output, err)
