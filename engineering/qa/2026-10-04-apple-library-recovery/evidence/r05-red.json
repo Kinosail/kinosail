@@ -1,0 +1,173 @@
+{
+  "accepted_by": "independent offline schema validation of original completed run",
+  "artifact_hashes": [
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-red-provenance-120.json",
+      "sha256": "d5926d8cd71fdaebaed8ef92c8273ea5f42032205889fc5575a4fb97e4f834a9"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-red-provenance-120-inputs.json",
+      "sha256": "d85d472bf48e7ca47334e51661e9a97592d8696f5a8ec0bacbb383c4a90f5b51"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-red-provenance-120-build-manifest.json",
+      "sha256": "4f16f48ac36e8d8ed6a11f32100a240a642bc63d3bf2229b62c3a438b6e033e4"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-red-provenance-120-test-tree.json",
+      "sha256": "5dbe91728f8b4e00d48549b0274438bc300d8bd05603363884877d713ffafa28"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-red-provenance-120-test-summary.json",
+      "sha256": "7e755b9b2d2213712c0d03954d605d5204b52c210d456b5bec9d6a32dea1d092"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-red-provenance-120.log",
+      "sha256": "77dc3bcd2d3632352f3bb4b6712323161348f494aa374afa3836e13f8373e109"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-red-provenance-120-product-preservation.json",
+      "sha256": "08e6b9dc45b2672fab72af041889c0890c2fe1f3b2aedad6f4cf1733faf88528"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-red-provenance-120-schema-validation.json",
+      "sha256": "00ef62a6e5ec993146d2d1b00812e85923178d193e426a70e423688cd884d3b7"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-red-provenance-120/photo-503-saved.png",
+      "sha256": "9c9935eee91c19dba755cafd9fff9c4353d0f87a4589a01ed666bb9c6a37cd18"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-red-provenance-120/photo-401-saved.png",
+      "sha256": "9c9935eee91c19dba755cafd9fff9c4353d0f87a4589a01ed666bb9c6a37cd18"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-red-provenance-120/photo-403-settled.png",
+      "sha256": "9c9935eee91c19dba755cafd9fff9c4353d0f87a4589a01ed666bb9c6a37cd18"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-red-provenance-120/photo-401-settled.png",
+      "sha256": "9c9935eee91c19dba755cafd9fff9c4353d0f87a4589a01ed666bb9c6a37cd18"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-red-provenance-120/photo-404-settled.png",
+      "sha256": "9c9935eee91c19dba755cafd9fff9c4353d0f87a4589a01ed666bb9c6a37cd18"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-red-provenance-120/photo-503-settled.png",
+      "sha256": "9c9935eee91c19dba755cafd9fff9c4353d0f87a4589a01ed666bb9c6a37cd18"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-red-provenance-120/photo-403-saved.png",
+      "sha256": "9c9935eee91c19dba755cafd9fff9c4353d0f87a4589a01ed666bb9c6a37cd18"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-red-provenance-120/photo-404-saved.png",
+      "sha256": "9c9935eee91c19dba755cafd9fff9c4353d0f87a4589a01ed666bb9c6a37cd18"
+    }
+  ],
+  "compiled_revision": "2e9ede47aa56f5177b1e994ffd4b1c62f6c445ce",
+  "deadline_seconds": 120,
+  "finding": "R05",
+  "finished": "2026-10-04T09:10:35.867152+00:00",
+  "kind": "safe projection of retained native evidence",
+  "limitations": [
+    "Production SwiftUI PhotoScreen hosted in a task-owned iOS simulator against fictional loopback HTTP.",
+    "Screenshots retain final repetition states; result tree retains both repetitions.",
+    "No physical device, tvOS, real Server, release, installation or deployment claim.",
+    "Private raw logs and signed binaries are retained locally, not included in this publication."
+  ],
+  "native_input_count": 461,
+  "original_receipt_accepted": false,
+  "original_receipt_preserved": true,
+  "original_result_parser_sha256": null,
+  "pending_test_inputs_excluded_from_batch": {
+    "apps/player/apps/native/Tests/DownloadManagerRecoveryJourneys.swift": "edebda48cdcaba28171e6ecf9b5ff020717452ad959ed1ba71ee12a39226287f",
+    "apps/player/apps/native/Tests/LibraryRefreshRecoveryJourneys.swift": "21288d54ed542b67d050ca90f6040a43e2883141967b36a507d718ac5a28da29"
+  },
+  "platform": "iOS",
+  "process_exit_codes": [
+    0,
+    65
+  ],
+  "products_unchanged": true,
+  "runner_sha256": "7755651810ed3750ba4efe7c0b8194ffa9599c8875557fbacb31b386946de04a",
+  "selected_completed_tests": [
+    {
+      "method": "revokedPhotoDisappearsAfterSavedContentWasShown",
+      "result": "Failed",
+      "runs": [
+        {
+          "argument": "401",
+          "repetitions": [
+            {
+              "index": "1",
+              "result": "Failed"
+            },
+            {
+              "index": "2",
+              "result": "Failed"
+            }
+          ],
+          "result": "Failed"
+        },
+        {
+          "argument": "403",
+          "repetitions": [
+            {
+              "index": "1",
+              "result": "Failed"
+            },
+            {
+              "index": "2",
+              "result": "Failed"
+            }
+          ],
+          "result": "Failed"
+        },
+        {
+          "argument": "404",
+          "repetitions": [
+            {
+              "index": "1",
+              "result": "Failed"
+            },
+            {
+              "index": "2",
+              "result": "Failed"
+            }
+          ],
+          "result": "Failed"
+        }
+      ]
+    },
+    {
+      "method": "connectionFailureKeepsTheSavedPhoto",
+      "result": "Passed",
+      "runs": [
+        {
+          "argument": null,
+          "repetitions": [
+            {
+              "index": "1",
+              "result": "Passed"
+            },
+            {
+              "index": "2",
+              "result": "Passed"
+            }
+          ],
+          "result": "Passed"
+        }
+      ]
+    }
+  ],
+  "signed_product_file_count": 93,
+  "signed_product_verified": true,
+  "sources_unchanged": true,
+  "started": "2026-10-04T09:09:03.178887+00:00",
+  "status": "confirmed baseline",
+  "timed_out": false,
+  "validated_result_parser_sha256": "a73143419115982379485440787b9d94b67c628c9c7fbe9a9b0522f99f9ee604",
+  "workspace_revision": "2e9ede47aa56f5177b1e994ffd4b1c62f6c445ce"
+}

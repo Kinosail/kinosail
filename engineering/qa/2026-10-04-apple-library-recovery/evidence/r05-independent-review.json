@@ -1,0 +1,21 @@
+{
+  "finding": "R05",
+  "green_receipt_sha256": "e9e291767b2e762ddd5139d2b963bd422a839f01367a7d54055e106c59e325ae",
+  "limits": [
+    "Source and isolated native evidence review; R11/R17 remain rejected prerequisites.",
+    "Required affected-app checks, PR checks, merge and ancestry are owned by integration parent."
+  ],
+  "outcome": "no findings",
+  "photo_screen_sha256": "9615f40ff3e06b939beefc56a9cce54f63d448d9cddac88ef396c1509085fe87",
+  "review_did_not_run_native_processes": true,
+  "reviewer": "/root/independent_review",
+  "revision": "bc7892d2709356ae06af538dbb77be3e8ff0c190",
+  "scope": "independent source and read-only native artifact review",
+  "verified": [
+    "Minimal PhotoScreen denial/cancellation change preserves existing cache scoping and non-discard failures.",
+    "Original repeated 401/403/404 failures and passing 503 control; original rejected receipt remains byte-exact.",
+    "Fresh signed input/product manifests and exact product file set; eight fresh screenshot hashes.",
+    "Two completed Passed repetitions per 401/403/404 denial and 503 preservation; zero skipped runs.",
+    "All four settled captures: denial removes cached image/private title; 503 retains image/title."
+  ]
+}
