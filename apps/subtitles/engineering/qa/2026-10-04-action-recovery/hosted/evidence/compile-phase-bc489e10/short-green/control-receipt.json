@@ -1,0 +1,157 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "bc489e10e8e10c0b721fa61b79a6b886f7e22cf4",
+  "boundary": "20 short fictional Python driver controls only; no actual Go compiler/test2json/public tests",
+  "seconds": 12.51,
+  "pass": 20,
+  "fail": 0,
+  "unrun": [
+    "leader-exit-held-stdout (90s)",
+    "compile-leader-held-stdout (120s)"
+  ],
+  "driverSHA256": "09b63d6e5c1ebbe8bee5faea1dc6f6a6173736c978058f7d45dab52e7aa24efb",
+  "controlsSHA256": "8317a8e25a633e6a37e2100413b3fa27746b803d2f0d525d798b4714b6624d5f",
+  "fictionalGoSHA256": "4941b25f29dc34151a267ba2ca4c5fa22d2aec053e3b50675a1e5699d86fc9ec",
+  "cases": [
+    {
+      "name": "default-output",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.16,
+      "receiptSHA256": "bfd19330a4c165e97014c69433fdc71f98d355d02766959939ed4e501bc70b9e"
+    },
+    {
+      "name": "hosted-missing-revision",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.079,
+      "receiptSHA256": "c74325d7f147c879f696db5965d2f5ba01778f70bc2e8ffc06016af72bb5cb57"
+    },
+    {
+      "name": "hosted-wrong-revision",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.08,
+      "receiptSHA256": "228df8012067152314e60c21ebe58962029de1b2ad6bbeda65bf40de25013677"
+    },
+    {
+      "name": "private-sentinel",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.744,
+      "receiptSHA256": "fa4faa8a9ff3c91cac56f2aa7b7ef6587054e6df1b1624c389741d06f1f83cfb"
+    },
+    {
+      "name": "package-fail-pass",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.583,
+      "receiptSHA256": "7f1d5f53146928bdff9cee01611f57c9d713bcd605534bc7f9edc63d715cdd65"
+    },
+    {
+      "name": "package-duplicate",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.59,
+      "receiptSHA256": "14256fb3ad60956798a54c67d86b8641fca2690480219e537b3db3079b2f2e07"
+    },
+    {
+      "name": "invalid-action",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.598,
+      "receiptSHA256": "6e771c2ce1fbb95ff541fd56b33384bb7140a4a65cb2d80f18601f92f4575cf7"
+    },
+    {
+      "name": "missing-action",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.584,
+      "receiptSHA256": "cf89a11f193c1895e9121b7ecab54e06d5a88fd44ff4517e5c109a6db086c6c2"
+    },
+    {
+      "name": "boolean-test",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.592,
+      "receiptSHA256": "fd0cbdc6b449c7f85d05a6f42428cd236fcf59bcc5fd20b6ad493287272877fe"
+    },
+    {
+      "name": "boolean-elapsed",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.622,
+      "receiptSHA256": "d1ebc4e3714230cde04e57e5d80bacff83e3f94cc68d547c047612357b552174"
+    },
+    {
+      "name": "missing-elapsed",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.614,
+      "receiptSHA256": "e1f3f4915523bd3d506966dd0780a507bf24b4978dda8a33c03d93bfa054eee6"
+    },
+    {
+      "name": "tracked-drift",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.579,
+      "receiptSHA256": "08a9cde9861e5856b62b39a7adf829cd990c79ec146db79e953afbf43fabb84d"
+    },
+    {
+      "name": "permission-denied",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.607,
+      "receiptSHA256": "18d0b0620c519b932f74c542f8e90e8fb0e4e18b15ae0fcbacb1643e07ff4204"
+    },
+    {
+      "name": "compile-failure",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.328,
+      "receiptSHA256": "a868ab8515110674bc429a559524486e0b207052c67c19ccf417fe0d882a5626"
+    },
+    {
+      "name": "compile-missing-binary",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.403,
+      "receiptSHA256": "c763aeec0a892f01ca11d08590ec919e4234adee7a59b1db2934989db3c62714"
+    },
+    {
+      "name": "compile-symlink-binary",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.42,
+      "receiptSHA256": "408176c49088667556dcd769afd207a389b460291f4e3f553a20c42ab5966d67"
+    },
+    {
+      "name": "compile-source-drift",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.336,
+      "receiptSHA256": "6ea9557227f2489832c08ab0b61e769ee9315193d8d36eb2824ccb84ca0e4f25"
+    },
+    {
+      "name": "compile-stream-is-not-tests",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.437,
+      "receiptSHA256": "d3efff783f95266116036bb9b2dd10674aafe2275a874cff16f400044684b80e"
+    },
+    {
+      "name": "binary-mutated-during-runtime",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.632,
+      "receiptSHA256": "bc4e2f33f8ca6e720633e5d50be16b0086d4f3157a193df794b1772a5cee4af0"
+    },
+    {
+      "name": "test-working-directory",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.603,
+      "receiptSHA256": "c147e8d6cbfa7fbf30c8fddc0d52da8bf23857e23fb8a8072d8bd36441c45108"
+    }
+  ]
+}

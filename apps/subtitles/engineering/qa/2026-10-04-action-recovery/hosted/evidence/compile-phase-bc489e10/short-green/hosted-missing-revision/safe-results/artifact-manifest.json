@@ -1,0 +1,22 @@
+{
+  "artifacts": [
+    {
+      "bytes": 3547,
+      "path": "receipt.json",
+      "present": true,
+      "sha256": "c74325d7f147c879f696db5965d2f5ba01778f70bc2e8ffc06016af72bb5cb57"
+    },
+    {
+      "bytes": 11674,
+      "path": "results.json",
+      "present": true,
+      "sha256": "8e3b64db55e5f789eacdfbcaa004084dff418c980d1be8c476efecbcd40fd38f"
+    },
+    {
+      "bytes": 11306,
+      "path": "source-manifest.json",
+      "present": true,
+      "sha256": "1b4209bc7f94a3bd01f880c4571c78e2259927243c62b2ab60a8ab5ed72ebdb4"
+    }
+  ]
+}

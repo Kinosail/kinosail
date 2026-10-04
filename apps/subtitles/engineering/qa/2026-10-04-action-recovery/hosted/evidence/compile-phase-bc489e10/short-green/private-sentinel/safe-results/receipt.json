@@ -1,0 +1,129 @@
+{
+  "R16After": {
+    "apps/subtitles/internal/server/subtitle_dashboard_revision_test.go": {
+      "present": false
+    },
+    "apps/subtitles/internal/server/subtitle_maintenance_test.go": {
+      "bytes": 10206,
+      "present": true,
+      "sha256": "21659fdc35a9edaa0169d7addebf6f92bc61fca8e40ea364f00c0880ae892bee"
+    }
+  },
+  "R16Before": {
+    "apps/subtitles/internal/server/subtitle_dashboard_revision_test.go": {
+      "present": false
+    },
+    "apps/subtitles/internal/server/subtitle_maintenance_test.go": {
+      "bytes": 10206,
+      "present": true,
+      "sha256": "21659fdc35a9edaa0169d7addebf6f92bc61fca8e40ea364f00c0880ae892bee"
+    }
+  },
+  "R16Preserved": true,
+  "bounds": {
+    "compileSeconds": 120,
+    "externalSeconds": 90,
+    "goSeconds": 80,
+    "groupSettlementSeconds": 4,
+    "leaderReapSeconds": 3
+  },
+  "checkoutRevision": "43054b52b596ef790dde3f5465fff44acf52ca35",
+  "checksumPolicy": "Driver does not override GOSUMDB; normal integrity policy retained.",
+  "classification": "focused-public-protocol-green",
+  "compilation": {
+    "boundSeconds": 120,
+    "exitCode": 0,
+    "goWasLaunched": true,
+    "ownedGroupSettled": true,
+    "ownedProcessExited": true,
+    "seconds": 0.046,
+    "stopReason": null
+  },
+  "compilationComplete": true,
+  "compilationWorkingDirectory": "apps/subtitles",
+  "compiledBinaryAfter": {
+    "bytes": 279,
+    "mode": 448,
+    "present": true,
+    "sha256": "1ba1f3ac21b34b418001090f41ef24ef34e50116b5c1f4ead7aae0b5f0e02842"
+  },
+  "compiledBinaryBefore": {
+    "bytes": 279,
+    "mode": 448,
+    "present": true,
+    "sha256": "1ba1f3ac21b34b418001090f41ef24ef34e50116b5c1f4ead7aae0b5f0e02842"
+  },
+  "compiledBinaryUnchanged": true,
+  "compiledEvidenceLimit": "Compiled executable stays private; digest/size/mode are compared before and after direct execution through Go test2json. 53 pins identify selected protocol inputs only.",
+  "compiledTestBinarySHA256": "1ba1f3ac21b34b418001090f41ef24ef34e50116b5c1f4ead7aae0b5f0e02842",
+  "driver": {
+    "bytes": 15799,
+    "present": true,
+    "sha256": "09b63d6e5c1ebbe8bee5faea1dc6f6a6173736c978058f7d45dab52e7aa24efb"
+  },
+  "endedRevision": "43054b52b596ef790dde3f5465fff44acf52ca35",
+  "entireTrackedTreeAfter": {
+    "excludedPhysicalOverlay": [
+      "apps/subtitles/internal/server/subtitle_maintenance_test.go"
+    ],
+    "sha256": "e6a5d29c7c5925e785fde8b20424291a213e1c5279396d314ece1302e85dbac5",
+    "trackedFileCount": 60
+  },
+  "entireTrackedTreeBefore": {
+    "excludedPhysicalOverlay": [
+      "apps/subtitles/internal/server/subtitle_maintenance_test.go"
+    ],
+    "sha256": "e6a5d29c7c5925e785fde8b20424291a213e1c5279396d314ece1302e85dbac5",
+    "trackedFileCount": 60
+  },
+  "environment": {
+    "GOMAXPROCS": "2",
+    "GOPROXY": "off",
+    "GOTOOLCHAIN": "local",
+    "GOWORK": "repository/go.work"
+  },
+  "exitCode": 0,
+  "expectedHostedRevision": "43054b52b596ef790dde3f5465fff44acf52ca35",
+  "exportPolicy": "Only fixed names/status/counts/phases and source/artifact hashes; no raw Go output or environment dump.",
+  "goToolBinary": {
+    "bytes": 4546,
+    "name": "go",
+    "present": true,
+    "sha256": "4941b25f29dc34151a267ba2ca4c5fa22d2aec053e3b50675a1e5699d86fc9ec"
+  },
+  "goVersion": "go1.27.0",
+  "goWasLaunched": true,
+  "mode": "public-go",
+  "overlay": {
+    "baselineSHA256": "21659fdc35a9edaa0169d7addebf6f92bc61fca8e40ea364f00c0880ae892bee",
+    "exclude": "apps/subtitles/internal/server/subtitle_dashboard_revision_test.go",
+    "replace": "apps/subtitles/internal/server/subtitle_maintenance_test.go",
+    "sha256": "1ea0ee5c11e78da3276289f64660744f5cc0dc12dc23cbba840c7fa96b3d3a8a"
+  },
+  "ownedGroupSettled": true,
+  "ownedProcessExited": true,
+  "productBoundary": "33 public Go contracts only; browser/playback/lint/full required gates/integration/merge remain separate.",
+  "projectionHelper": {
+    "bytes": 5492,
+    "present": true,
+    "sha256": "3c37957c9bf2057cb59337adf99fe483253cea364747fedcbbe3ed3b1f04f6b5"
+  },
+  "protocolSourceSnapshot": "3682759bea98117023a39c97700dce9f4dcde910",
+  "publicRuntimeWasLaunched": true,
+  "publicRuntimeWorkingDirectory": "apps/subtitles/internal/server",
+  "revisionUnchanged": true,
+  "schemaVersion": 1,
+  "scopeSHA256": "be16e9dd161aa1ac0a4a8364220e37b6bb34086474f07cf601d77d493b0f47e9",
+  "seconds": 0.229,
+  "selector": "^(TestSubtitlePreparedRestoreActivatesExactlyOnce|TestSubtitlePreparedMutationRejectsUnknownOrMalformedReceiptBeforeEffects|TestSubtitlePreparedReceiptCannotActivateAnotherAction|TestSubtitlePreparedReceiptRejectsStatusQueriesWithoutConsumingActivation|TestSubtitleExclusiveOperationBlocksAllLegacyWriteAndAudioPathsWithoutEffects|TestSubtitleExclusiveOperationDefersReviewedCleanupWithoutRenamingOrChangingSettings|TestSubtitleRejectedBodyLeavesPreparedReceiptReusableAndLegacyValidationIntact|TestSubtitlePreparedAudioCannotBypassActiveLegacyProviderFetchAdapters|TestSubtitleActionLegacyAudioPublicControl|TestSubtitlePreparedAudioRejectsSecondActivationWithoutStartingAnotherProcess|TestSubtitlePreparedAudioCannotBypassActiveLegacyAnalysis|TestSubtitlePreparedReceiptExpiryCannotReactivateOrChangeFiles|TestSubtitleCompletedReceiptExpiryCannotReplayRestore|TestSubtitleOperationLifecycleDiagnosticsAndMetadataExcludePrivatePayloads|TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects|TestSubtitleOperationCapacityPreservesExistingPreparedReceipts|TestSubtitleOperationPreservesActiveOwnerAndCSRFBoundaries|TestSubtitlePreparedReceiptBecomesUnavailableAfterRealLifecycleRestart|TestSubtitleFailedActivationPersistenceNeverStartsWorkOrResurrectsAfterRestart|TestSubtitleCompletedRestoreOutcomeSurvivesRestartWithoutReplay|TestSubtitleAudioResultsStayBoundedAndUnavailableResultsDoNotRestartWork|TestSubtitleCompletedAudioResultRetainsOwnerBinding|TestSubtitleOperationDeadlineKeepsAdmissionUntilChildPipeAndWaitSettle|TestSubtitleRunningReceiptRestartCannotResumeOrReplayAfterRealChildSettlement|TestSubtitleCorruptOperationRegistryFailsClosedWithoutChangingLegacyOwnerWorkflow|TestSubtitleOperationPreparationPersistenceFailureStartsNoWork|TestConcurrentSubtitleFetchNeverOverwritesSidecar|TestSubtitleMutationsRejectInvalidInputBeforeProviderOrFilesystem|TestSubtitleWebAndBatchMutationsWriteWantedSidecars|TestLocalSubtitleDraftCancellationAndMissingItem|TestSubtitleAutomationStopsDuringCircuitDelay|TestOpenAPIDocumentsEveryVersionedRouteExactlyOnce|TestEveryVersionedAPIRouteHasExactlyOneMCPPolicy)$",
+  "sourceProvenanceHelper": {
+    "bytes": 4705,
+    "present": true,
+    "sha256": "1f0c1a8800c4c3c4d8ea61da0d8be977cdbfc96a5018a82613e2c14ace6f1733"
+  },
+  "sourcesUnchanged": true,
+  "startedUTC": "2026-10-04T20:40:46.522275+00:00",
+  "stopReason": null,
+  "trackedTreeUnchanged": true,
+  "workingDirectory": "apps/subtitles"
+}
