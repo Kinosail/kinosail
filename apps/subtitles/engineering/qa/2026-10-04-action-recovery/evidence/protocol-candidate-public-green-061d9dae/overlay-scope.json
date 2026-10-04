@@ -1,0 +1,15 @@
+{
+  "head": "e78db44709f1d73c39549e77b0874f1cdb94e79d",
+  "boundary": "R06 public Go controls; preserved R16 future tests excluded by compilation overlay without editing physical files",
+  "preservedR16": {
+    "apps/subtitles/internal/server/subtitle_maintenance_test.go": {
+      "sha256": "f26e00b3f914130793b72c5187b546244ed4d47222380743899f02aa9f7993fb",
+      "bytes": 10619
+    },
+    "apps/subtitles/internal/server/subtitle_dashboard_revision_test.go": {
+      "sha256": "c0111e937ade97838c3422b89de5a56089efd3e289828598147860615ddd7de6",
+      "bytes": 4828
+    }
+  },
+  "committedMaintenanceSHA256": "21659fdc35a9edaa0169d7addebf6f92bc61fca8e40ea364f00c0880ae892bee"
+}

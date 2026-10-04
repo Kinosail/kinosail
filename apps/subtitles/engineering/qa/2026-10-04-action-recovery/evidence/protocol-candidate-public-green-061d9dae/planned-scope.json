@@ -1,0 +1,57 @@
+{
+  "head": "061d9daed6cefc03a27b81145df621592e9f1d64",
+  "namedR06Tests": [
+    "TestSubtitlePreparedRestoreActivatesExactlyOnce",
+    "TestSubtitlePreparedMutationRejectsUnknownOrMalformedReceiptBeforeEffects",
+    "TestSubtitlePreparedReceiptCannotActivateAnotherAction",
+    "TestSubtitlePreparedReceiptRejectsStatusQueriesWithoutConsumingActivation",
+    "TestSubtitleExclusiveOperationBlocksAllLegacyWriteAndAudioPathsWithoutEffects",
+    "TestSubtitleExclusiveOperationDefersReviewedCleanupWithoutRenamingOrChangingSettings",
+    "TestSubtitleRejectedBodyLeavesPreparedReceiptReusableAndLegacyValidationIntact",
+    "TestSubtitlePreparedAudioCannotBypassActiveLegacyProviderFetchAdapters",
+    "TestSubtitleActionLegacyAudioPublicControl",
+    "TestSubtitlePreparedAudioRejectsSecondActivationWithoutStartingAnotherProcess",
+    "TestSubtitlePreparedAudioCannotBypassActiveLegacyAnalysis",
+    "TestSubtitlePreparedReceiptExpiryCannotReactivateOrChangeFiles",
+    "TestSubtitleCompletedReceiptExpiryCannotReplayRestore",
+    "TestSubtitleOperationLifecycleDiagnosticsAndMetadataExcludePrivatePayloads",
+    "TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects",
+    "TestSubtitleOperationCapacityPreservesExistingPreparedReceipts",
+    "TestSubtitleOperationPreservesActiveOwnerAndCSRFBoundaries",
+    "TestSubtitlePreparedReceiptBecomesUnavailableAfterRealLifecycleRestart",
+    "TestSubtitleFailedActivationPersistenceNeverStartsWorkOrResurrectsAfterRestart",
+    "TestSubtitleCompletedRestoreOutcomeSurvivesRestartWithoutReplay",
+    "TestSubtitleAudioResultsStayBoundedAndUnavailableResultsDoNotRestartWork",
+    "TestSubtitleCompletedAudioResultRetainsOwnerBinding",
+    "TestSubtitleOperationDeadlineKeepsAdmissionUntilChildPipeAndWaitSettle",
+    "TestSubtitleRunningReceiptRestartCannotResumeOrReplayAfterRealChildSettlement",
+    "TestSubtitleCorruptOperationRegistryFailsClosedWithoutChangingLegacyOwnerWorkflow",
+    "TestSubtitleOperationPreparationPersistenceFailureStartsNoWork"
+  ],
+  "existingControls": [
+    "TestConcurrentSubtitleFetchNeverOverwritesSidecar",
+    "TestSubtitleMutationsRejectInvalidInputBeforeProviderOrFilesystem",
+    "TestSubtitleWebAndBatchMutationsWriteWantedSidecars",
+    "TestLocalSubtitleDraftCancellationAndMissingItem",
+    "TestSubtitleAutomationStopsDuringCircuitDelay",
+    "TestOpenAPIDocumentsEveryVersionedRouteExactlyOnce",
+    "TestEveryVersionedAPIRouteHasExactlyOneMCPPolicy"
+  ],
+  "runPattern": "^(TestSubtitlePreparedRestoreActivatesExactlyOnce|TestSubtitlePreparedMutationRejectsUnknownOrMalformedReceiptBeforeEffects|TestSubtitlePreparedReceiptCannotActivateAnotherAction|TestSubtitlePreparedReceiptRejectsStatusQueriesWithoutConsumingActivation|TestSubtitleExclusiveOperationBlocksAllLegacyWriteAndAudioPathsWithoutEffects|TestSubtitleExclusiveOperationDefersReviewedCleanupWithoutRenamingOrChangingSettings|TestSubtitleRejectedBodyLeavesPreparedReceiptReusableAndLegacyValidationIntact|TestSubtitlePreparedAudioCannotBypassActiveLegacyProviderFetchAdapters|TestSubtitleActionLegacyAudioPublicControl|TestSubtitlePreparedAudioRejectsSecondActivationWithoutStartingAnotherProcess|TestSubtitlePreparedAudioCannotBypassActiveLegacyAnalysis|TestSubtitlePreparedReceiptExpiryCannotReactivateOrChangeFiles|TestSubtitleCompletedReceiptExpiryCannotReplayRestore|TestSubtitleOperationLifecycleDiagnosticsAndMetadataExcludePrivatePayloads|TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects|TestSubtitleOperationCapacityPreservesExistingPreparedReceipts|TestSubtitleOperationPreservesActiveOwnerAndCSRFBoundaries|TestSubtitlePreparedReceiptBecomesUnavailableAfterRealLifecycleRestart|TestSubtitleFailedActivationPersistenceNeverStartsWorkOrResurrectsAfterRestart|TestSubtitleCompletedRestoreOutcomeSurvivesRestartWithoutReplay|TestSubtitleAudioResultsStayBoundedAndUnavailableResultsDoNotRestartWork|TestSubtitleCompletedAudioResultRetainsOwnerBinding|TestSubtitleOperationDeadlineKeepsAdmissionUntilChildPipeAndWaitSettle|TestSubtitleRunningReceiptRestartCannotResumeOrReplayAfterRealChildSettlement|TestSubtitleCorruptOperationRegistryFailsClosedWithoutChangingLegacyOwnerWorkflow|TestSubtitleOperationPreparationPersistenceFailureStartsNoWork|TestConcurrentSubtitleFetchNeverOverwritesSidecar|TestSubtitleMutationsRejectInvalidInputBeforeProviderOrFilesystem|TestSubtitleWebAndBatchMutationsWriteWantedSidecars|TestLocalSubtitleDraftCancellationAndMissingItem|TestSubtitleAutomationStopsDuringCircuitDelay|TestOpenAPIDocumentsEveryVersionedRouteExactlyOnce|TestEveryVersionedAPIRouteHasExactlyOneMCPPolicy)$",
+  "overlay": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/.verification/r06-actions/committed-e78db447/overlay.json",
+  "externalWallLimitSeconds": 90,
+  "goTimeoutSeconds": 80,
+  "sourceOnly": true,
+  "authorization": "reauthorized campaign; execution requires the next explicit parent slot grant",
+  "sourcePins": {
+    "internal/server/subtitle_operation_http.go": "5419620a4b76e29488919ee086607a3258a79c5a7c3a194bef13b2b4546c370c",
+    "internal/server/subtitle_operation.go": "021c251baeda0cd37275e74ee41f0a0b271b333dc5fcdcd9a7483d5e413a984a",
+    "internal/server/subtitle_prepared_operation_test.go": "55452d8add6504db730749a5a5b20062a90f6d5e1715e07eb1d8981823ff5491",
+    "internal/server/subtitle_operation_input_test.go": "8ace678f7c004a3c636c7b78f517940ff8b204ee22f655fd4d8533830b891a20"
+  },
+  "excludedSummaryPreparation": [
+    "engineering/qa/2026-10-04-action-recovery/operation-summary-contract-delta.md",
+    "engineering/qa/2026-10-04-action-recovery/operation-summary-test-prep.go.txt"
+  ],
+  "headroomGiBSourceCheck": 4.5
+}

@@ -36,7 +36,7 @@ func TestSubtitleFailedActivationPersistenceNeverStartsWorkOrResurrectsAfterRest
 	base := "/api/v1/subtitle-library/" + firstSubtitleInventoryID(t, first)
 	prepared := prepareSubtitleOperation(t, first, base, "audio")
 	restoreRegistry := blockSubtitleOperationDurablePath(t, config.DataDir)
-	activation := activateSubtitleOperation(t, first, base+"/audio", `{"language":"en"}`, []string{prepared.ID})
+	activation := activateSubtitleOperationAfterStartup(t, first, base, prepared.ID, target, calls)
 	if activation.Code != http.StatusServiceUnavailable {
 		t.Fatalf("failed activation persistence = %d, want 503 before launch", activation.Code)
 	}

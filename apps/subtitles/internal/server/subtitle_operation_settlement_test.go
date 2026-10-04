@@ -68,7 +68,7 @@ func TestSubtitleRunningReceiptRestartCannotResumeOrReplayAfterRealChildSettleme
 	first := server.New(config)
 	base := "/api/v1/subtitle-library/" + firstSubtitleInventoryID(t, first)
 	prepared := prepareSubtitleOperation(t, first, base, "audio")
-	assertSubtitleOperationAccepted(t, activateSubtitleOperation(t, first, base+"/audio", `{"language":"en"}`, []string{prepared.ID}), prepared.ID)
+	assertSubtitleOperationAccepted(t, activateSubtitleOperationAfterStartup(t, first, base, prepared.ID, target, calls), prepared.ID)
 	pid := waitSubtitleOperationChild(t, child)
 	restoreRegistry := blockSubtitleOperationDurablePath(t, config.DataDir)
 	stopFirst()
