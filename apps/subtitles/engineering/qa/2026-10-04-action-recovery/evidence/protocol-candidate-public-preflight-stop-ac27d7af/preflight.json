@@ -1,0 +1,50 @@
+{
+  "recordedAtUTC": "2026-10-04T16:12:59.243020+00:00",
+  "head": "ac27d7af98624bf333091382aa9a66e9e5a917be",
+  "branch": "codex/qol-subtitles-actions",
+  "status": "preflight-capacity-stop; runner/Go not launched",
+  "planSHA256": "be3bbe376e70a357cab02fd1e0d8f87761f9952a0ef9faab1b75065e553501d8",
+  "runnerSHA256": "3f3d19d2bd616907b72735d9a074fa4ef3640b1ed7dcca5a87ef7d2dfdb3848c",
+  "sourcePins": {
+    "internal/server/subtitle_operation_http.go": "5419620a4b76e29488919ee086607a3258a79c5a7c3a194bef13b2b4546c370c",
+    "internal/server/subtitle_operation.go": "021c251baeda0cd37275e74ee41f0a0b271b333dc5fcdcd9a7483d5e413a984a",
+    "internal/server/subtitle_prepared_operation_test.go": "55452d8add6504db730749a5a5b20062a90f6d5e1715e07eb1d8981823ff5491",
+    "internal/server/subtitle_operation_input_test.go": "8ace678f7c004a3c636c7b78f517940ff8b204ee22f655fd4d8533830b891a20",
+    "internal/server/subtitle_operation_startup_test.go": "1bcd63e960f883ccaa49473c884a115690e0789e7113d549107fa12aed6786e9",
+    "internal/server/subtitle_operation_persistence_test.go": "c3fb61ac79338e122111770e8a49fe73b42c5a1191e678794481771bc57da7d0",
+    "internal/server/subtitle_operation_settlement_test.go": "cfd4cf0824582326659eebadf40fb13d885009de81d8f58377e88644df7deec9"
+  },
+  "headroomGiBObserved": 2.865,
+  "conservativeLocalSafetyFloorGiB": 4.0,
+  "safetyFloorBoundary": "Local conservative preflight choice for the previously prepared bounded batch, not an independently established application memory/disk requirement. The parent grant required stopping if headroom is insufficient.",
+  "processInventory": {
+    "command": "ps -axo pid,ppid,command | rg '([g]o (test|build)|[/]server\\.test|[r]un-candidate-public|[g]olangci|[p]laywright|[g]radle|[x]codebuild)'",
+    "exit": 1,
+    "stdout": "",
+    "meaning": "No matching heavy process; no task-owned process started."
+  },
+  "plannedScope": {
+    "topLevel": 33,
+    "R06": 26,
+    "incumbent": 7,
+    "goTimeoutSeconds": 80,
+    "externalWallLimitSeconds": 90,
+    "offline": true,
+    "GOMAXPROCS": 2,
+    "parallel": 1
+  },
+  "completedTests": 0,
+  "productAcceptance": "No new result; prior061d run remains31 top-level PASS/2early-prerequisiteFAIL with45subtestPASS, not aggregateGREEN.",
+  "R16Preserved": true,
+  "R16Hashes": {
+    "apps/subtitles/internal/server/subtitle_maintenance_test.go": {
+      "sha256": "f26e00b3f914130793b72c5187b546244ed4d47222380743899f02aa9f7993fb",
+      "bytes": 10619
+    },
+    "apps/subtitles/internal/server/subtitle_dashboard_revision_test.go": {
+      "sha256": "c0111e937ade97838c3422b89de5a56089efd3e289828598147860615ddd7de6",
+      "bytes": 4828
+    }
+  },
+  "slot": "RELEASED; all owned processes terminal; no cleanup, repeated execution, archive or binary copies"
+}
