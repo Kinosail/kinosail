@@ -263,7 +263,7 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
                 playback.message?.let { Text(it, color = Color.White,
                     modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
                 if (playback.retryable) {
-                    if (tv) androidx.tv.material3.Button(onClick = { playback.start(item, viewer) },
+                    if (tv) androidx.tv.material3.Button(onClick = { playback.start(item, viewer, tv) },
                         modifier = Modifier.focusRequester(retryFocus)) {
                         androidx.tv.material3.Text(interfaceText("Try again"))
                     } else TextButton(onClick = { playback.start(item, viewer) }) {
