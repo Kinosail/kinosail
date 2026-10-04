@@ -174,6 +174,34 @@ progress writes. Metadata acknowledgment restores normal saves. A recovery move
 skips saving a source that never acquired a usable position; it makes no saved
 claim. Full isolated and actual Server GREEN verification remains pending.
 
+## Initial automated GREEN and mobile visual blocker
+
+At `38b43c3a`, 50 isolated Chromium cases passed in 23.56 seconds. No case skipped,
+failed, or became flaky; no global errors occurred. Every prehashed bundle/test
+input remained unchanged. `isolated-green-receipt.json` records each named result.
+
+The native Go Server also passed both canonical album journeys twice, in 29.74
+browser seconds. The four cases verified current metadata, source/session/progress/
+cast/trace identity, previous/next, cache delivery, and correct item mutation. Its
+Go/embed inventory and source remained stable. `initial-native-receipt.json` is a
+byte-identical receipt; `initial-native-results.json` preserves the safe projections.
+
+Visual inspection then found a blocker at 390 pixels: responsive CSS made hidden
+original item actions and the hidden Retry notice visible again. The pre-viewport
+hidden assertions passed at desktop width. The 1440/1920 renders stayed correct.
+`initial-phone-visible-actions.png` preserves the finding. This initial automated
+pass is not final UI GREEN. Raw receipts, screenshots, and all state stay preserved.
+
+The strengthened actual Server journey checks hidden actions and notice at every
+viewport. A named mobile R03 control uses actual Go HTML/assets and successful
+204 acknowledgments; its later routed 503 is explicitly isolated failure injection.
+Canonical album journeys remain unrouted. `--visibility-red` requires both mobile
+failures twice, after their real source/acknowledgment prerequisites. CSS remains
+unchanged until that valid RED. Its proposed repair scopes only the existing
+mobile primary-action display rule to elements without `hidden`, including the
+exact Subtitles style derivation. Root allocated only matching CSS cache tokens
+and existing version expectations; other composition and CI stay untouched.
+
 ## Ownership
 
 R08 owns `player-progress.js`, `player-presentation.js`, shared Go metadata template
