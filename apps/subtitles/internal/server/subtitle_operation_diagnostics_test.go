@@ -16,7 +16,7 @@ import (
 )
 
 func TestSubtitleOperationLifecycleDiagnosticsAndMetadataExcludePrivatePayloads(t *testing.T) {
-	config, target, _, _ := subtitleOperationAudioConfig(t, false)
+	config, target, calls, _ := subtitleOperationAudioConfig(t, false)
 	handler := server.New(config)
 	base := "/api/v1/subtitle-library/" + firstSubtitleInventoryID(t, handler)
 	before := subtitleActionRead(t, handler, base)
@@ -25,6 +25,7 @@ func TestSubtitleOperationLifecycleDiagnosticsAndMetadataExcludePrivatePayloads(
 	slog.SetDefault(slog.New(slog.NewJSONHandler(&logs, &slog.HandlerOptions{Level: slog.LevelDebug})))
 	t.Cleanup(func() { slog.SetDefault(previous) })
 	private := "R06_PRIVATE_SUBTITLE_PAYLOAD_SENTINEL"
+	assertSubtitleOperationRejectedActionPrivacy(t, handler, base, target, calls, &logs)
 	prepared := prepareSubtitleOperation(t, handler, base, "apply")
 	input, _ := json.Marshal(map[string]any{"language": "en", "fingerprint": before.Fingerprint, "text": "1\n00:00:01,000 --> 00:00:02,000\n" + private + "\n"})
 	assertSubtitleOperationAccepted(t, activateSubtitleOperation(t, handler, base+"/apply", string(input), []string{prepared.ID}), prepared.ID)
@@ -42,6 +43,29 @@ func TestSubtitleOperationLifecycleDiagnosticsAndMetadataExcludePrivatePayloads(
 	assertSubtitleOperationLifecycleLog(t, text, "INFO", "subtitle operation completed", prepared.ID, "apply")
 	assertSubtitleOperationLifecycleLog(t, text, "WARN", "subtitle operation rejected", "", "restore")
 	assertSubtitleOperationPrivateMetadata(t, config.DataDir, []string{private, target, config.DataDir, config.CacheDir, `"text"`, `"waveform"`, `"speech"`})
+}
+
+func assertSubtitleOperationRejectedActionPrivacy(t *testing.T, handler http.Handler, base, target, calls string, logs *subtitleOperationLogCapture) {
+	t.Helper()
+	privateAction := "R06_PRIVATE_ACTION_SENTINEL\nR06_FORGED_ACTION_RECORD"
+	input, err := json.Marshal(map[string]string{"action": privateAction, "item": strings.TrimPrefix(base, "/api/v1/subtitle-library/")})
+	if err != nil {
+		t.Fatal(err)
+	}
+	response := requestJSON(t, handler, http.MethodPost, "/api/v1/subtitle-operations", string(input))
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("diagnostic unsupported-action control = %d", response.Code)
+	}
+	assertSubtitleActionBytes(t, target, []byte(subtitleActionInitial))
+	if _, err := os.Stat(target + ".kinosail.bak"); !os.IsNotExist(err) {
+		t.Fatalf("rejected unsupported action created recovery data: %v", err)
+	}
+	_ = subtitleActionHistory(t, handler, nil, nil)
+	assertSubtitleOperationNoProcess(t, calls)
+	text := logs.String()
+	assertSubtitleOperationPrivateDiagnostics(t, text, []string{privateAction, "R06_PRIVATE_ACTION_SENTINEL", "R06_FORGED_ACTION_RECORD", string(input)})
+	assertSubtitleOperationLifecycleLog(t, text, "WARN", "subtitle operation rejected", "", "prepare")
+	t.Log("unsupported action privacy control: 400, unchanged current, recovery absent, History empty, zero analysis starts, fixed prepare diagnostic")
 }
 
 func assertSubtitleOperationPrivateDiagnostics(t *testing.T, text string, forbidden []string) {
