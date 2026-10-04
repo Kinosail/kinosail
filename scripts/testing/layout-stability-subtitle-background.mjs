@@ -14,8 +14,11 @@ export async function measureSubtitleBackground(browser, options, results, probe
   }));
   const scan = () => page.evaluate(async () => {
     const token=document.querySelector('meta[name="kinosail-csrf"]')?.content;
-    const response=await fetch("/scan",{method:"POST",headers:token?{"X-Kinosail-CSRF":token}:{}});
-    return {ok:response.ok,status:response.status,authorizedLanding:new URL(response.url).pathname==="/"};
+    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),30_000);
+    try {
+      const response=await fetch("/scan",{method:"POST",headers:token?{"X-Kinosail-CSRF":token}:{},signal:controller.signal});
+      return {ok:response.ok,status:response.status,authorizedLanding:new URL(response.url).pathname==="/"};
+    } finally {clearTimeout(timer);}
   });
   let linked = false, countBefore = 0;
   probe.stage = "subtitle-background-discovery";
