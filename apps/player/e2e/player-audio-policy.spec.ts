@@ -161,6 +161,10 @@ test("failed queue source cannot replace its saved position with reset zero befo
   await expect(page.locator("[data-audio-queue-status]")).toHaveAttribute("data-queue-failure", "media");
   await expect(page.getByRole("link", {name: "Current track details and actions", exact: true})).toHaveAttribute("href", "/watch/next");
   await expect(page.getByRole("button", {name: "Previous track", exact: true})).toBeEnabled();
+  await testInfo.attach("failed-source-before-recovery", {body: JSON.stringify(await page.locator("audio").evaluate(audio => ({
+    progressPath: audio.dataset.progress, savedSeconds: Number(audio.dataset.start), mediaSeconds: audio.currentTime,
+    sourcePath: new URL(audio.src).pathname, failure: document.querySelector<HTMLElement>("[data-audio-queue-status]")!.dataset.queueFailure,
+  }))), contentType: "application/json"});
   await page.locator("audio").dispatchEvent("pause");
   await page.getByRole("button", {name: "Previous track", exact: true}).click();
   await expect(page.locator("audio")).toHaveAttribute("data-progress", "/progress/track");
