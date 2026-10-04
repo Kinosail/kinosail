@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"errors"
-	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
@@ -23,6 +22,8 @@ var (
 func (manager *hlsManager) newHLSJob(request context.Context, startNumber int) (context.Context, *hlsJob) {
 	ctx, cancel := context.WithCancelCause(manager.ctx)
 	job := &hlsJob{done: make(chan struct{}), cancel: cancel, activity: make(chan struct{}, 1), startNumber: startNumber, requestID: requestActivityID(request), playbackSession: requestPlaybackSession(request)}
+	job.observation = newHLSObservation(job.requestID, startNumber)
+	ctx = context.WithValue(ctx, hlsObservationKey{}, job.observation)
 	if preparation, ok := request.Value(startupEncodingKey{}).(*startupEncoding); ok {
 		job.preparation = preparation
 		ctx = context.WithValue(ctx, startupEncodingKey{}, preparation)
@@ -232,7 +233,7 @@ type hlsEncodeOutcome struct {
 
 func (manager *hlsManager) encode(ctx context.Context, item library.Item, job *hlsJob, key string, options transcodeSettings, recipe hlsRecipe, startNumber int, preserve bool) {
 	started := time.Now()
-	slog.Info("HLS transcode started", "request_id", job.requestID, "playback_session", job.playbackSession, "mode", recipe.mode, "accelerator", options.Accelerator)
+	job.observation.queued(recipe.mode)
 	directory := filepath.Join(manager.cache, key)
 	manager.prepareHLSEncodeDirectory(job, directory, preserve)
 	outcome := hlsEncodeOutcome{preserve: preserve}
