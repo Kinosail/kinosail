@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"os"
 	"os/exec"
 	"path/filepath"
 	"strconv"
