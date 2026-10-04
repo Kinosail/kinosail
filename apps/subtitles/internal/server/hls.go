@@ -174,6 +174,9 @@ func (manager *hlsManager) encode(item library.Item, job *hlsJob, options transc
 }
 
 func (manager *hlsManager) encodeVariants(item library.Item, directory string, options transcodeSettings, recipe hlsRecipe) error {
+	if err := playback.BindHLSSource(directory, item.Path, options.Cache); err != nil {
+		return err
+	}
 	ctx, cancel := context.WithCancel(manager.ctx)
 	defer cancel()
 	facts := mediaFactsFor(item, manager.probe.inspect(ctx, item))

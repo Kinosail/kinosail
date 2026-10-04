@@ -150,6 +150,9 @@ func (manager *hlsManager) prepare(ctx context.Context, item library.Item, recip
 }
 
 func (manager *hlsManager) encodeVariants(ctx context.Context, item library.Item, directory string, options transcodeSettings, recipe hlsRecipe, startNumber int) error {
+	if err := playback.BindHLSSource(directory, item.Path, options.Cache); err != nil {
+		return err
+	}
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	facts := mediaFactsFor(item, manager.probe.facts(ctx, item))

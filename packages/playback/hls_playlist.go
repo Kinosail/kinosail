@@ -30,7 +30,7 @@ func VariantsReady(source, directory string, qualities []PlaybackQuality) bool {
 
 func VariantReady(source, directory string) bool { //nolint:cyclop // Manifest parsing and asset checks form one readiness decision.
 	playlist := filepath.Join(directory, "index.m3u8")
-	if !Fresh(playlist, source) {
+	if !hlsSourceFresh(playlist, source, "") {
 		return false
 	}
 	manifest, err := ReadHLSPlaylist(playlist)
@@ -118,7 +118,7 @@ func MasterFresh(playlist, source, transcoder string) bool {
 }
 
 func freshMasterManifest(playlist, source, transcoder string) ([]byte, bool) {
-	if !Fresh(playlist, source) {
+	if !hlsSourceFresh(playlist, source, transcoder) {
 		return nil, false
 	}
 	manifest, err := ReadHLSPlaylist(playlist)
