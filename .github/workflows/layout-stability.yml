@@ -132,7 +132,7 @@ jobs:
       - name: Prepare bounded Go dependencies
         env:
           APP: ${{ steps.selection.outputs.app }}
-        run: timeout 120s go -C "apps/$APP" mod download
+        run: timeout 120s bash scripts/ci/prepare-campaign-go.sh "$APP"
       - name: Prepare bounded browser prerequisites
         if: steps.selection.outputs.app == 'player'
         run: |
