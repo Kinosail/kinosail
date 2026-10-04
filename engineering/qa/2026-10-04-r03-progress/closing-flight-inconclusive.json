@@ -1,0 +1,22 @@
+{
+  "revision": "863fd0096b8022890471da2d3987c36d188b1fe7",
+  "senderSHA256": "4689b34cbcf2179e6191645aa99a59c2b3955b1e70abf81aa065525ae1ce2564",
+  "specSHA256": "142d892bad01fe13e24479faffc815811338d15d34b924c2628135b81f0a4fa6",
+  "command": [
+    "node",
+    "node_modules/@playwright/test/cli.js",
+    "test",
+    "player-progress-queue-drain.spec.ts",
+    "--project=chromium",
+    "--workers=1",
+    "--grep",
+    "pagehide dispatches latest"
+  ],
+  "exitCode": -15,
+  "timedOut": true,
+  "seconds": 30.04,
+  "stats": null,
+  "globalErrors": 0,
+  "logSHA256": "05e17793f9f649512ba710cdb635c7f76aac74f8847ec2936c04b1ccb4e415ee",
+  "scope": "Isolated HTTP closing-flight ordering; no Server/media proof."
+}

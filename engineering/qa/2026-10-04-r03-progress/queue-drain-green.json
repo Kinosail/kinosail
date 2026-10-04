@@ -1,0 +1,31 @@
+{
+  "revision": "d72451da6d752e311f12ef7a9daee75f779bb6b7",
+  "senderSHA256": "98d232f651950d97364e50ff1335820962209d97583a3440f295b51fd8cbb0bd",
+  "sourceSHA256": {
+    "apps/player/e2e/player-progress.spec.ts": "24f2f7344f1ed668b1b9c1ddd39fd7eb1634f10d86cb9948a4e503a3702a8213",
+    "apps/player/e2e/player-progress-queue-drain.spec.ts": "92727254d224c8ff2cf09fab3c54bf9f4f2e8865ddf2e8251b87f2715814889a"
+  },
+  "command": [
+    "node",
+    "node_modules/@playwright/test/cli.js",
+    "test",
+    "player-progress.spec.ts",
+    "player-progress-queue-drain.spec.ts",
+    "--project=chromium",
+    "--workers=1"
+  ],
+  "exitCode": 0,
+  "timedOut": false,
+  "seconds": 12.03,
+  "stats": {
+    "startTime": "2026-10-04T10:02:54.947Z",
+    "duration": 11679.339,
+    "expected": 27,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "globalErrors": 0,
+  "logSHA256": "4e0a50597239c38ff3e75f1b6a364c78f7b5216255ecf6dcb090339851fec6c0",
+  "scope": "Isolated HTTP failure/ordering under external hosted-style base URL. Production CSP unchanged."
+}

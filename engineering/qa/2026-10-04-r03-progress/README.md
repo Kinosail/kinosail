@@ -162,6 +162,21 @@ in memory. One intended assertion failed, with zero skips or global errors.
 
 The minimal correction continues the sender loop when the continuation creates
 a newly owned pending position. Its standalone smoke regression requires both
-HTTP dispatches and the correct item, seconds and watched payloads. Fresh GREEN
-and populated Server checks remain required before publishing the final head.
+HTTP dispatches and the correct item, seconds and watched payloads. The corrected candidate passed all 27 focused cases; final protected Server
+checks remain required before merge.
 The isolated media-promise fault is separate from actual Server/media proof.
+
+Independent review identified a superseding page-close flight race in the first
+drain candidate. A test-only assignment initially returned the held Promise and
+timed out; that receipt is preserved as inconclusive. After correcting only the
+synchronization expression, the browser regression reached the intended HTTP
+assertion and observed a duplicate next-track revision. The final guard also
+requires the sender to own the current flight before draining. It preserves the
+closing 403 policy notice and does not repeat the latest position.
+
+At committed `d72451da`, the existing 25 progress cases and both queue ordering
+cases passed together: 27 expected, zero skips, failures, flaky results or global
+errors (`queue-drain-green.json`). The hosted-style external base URL remains
+independent of both isolated synthetic origins; production CSP is unchanged.
+Historical original populated proof remains explicitly pinned to `795641`; the
+new isolated sender proof does not replace final protected populated checks.
