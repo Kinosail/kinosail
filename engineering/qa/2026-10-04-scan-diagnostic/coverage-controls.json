@@ -1,0 +1,48 @@
+{
+  "base_revision": "43fa97d6d4d205d9e0eebabe1603397f96260562",
+  "kind": "test-first static coverage artifact controls",
+  "red": {
+    "controls": 1,
+    "failures": 1,
+    "reason": "missing manual profile evidence steps"
+  },
+  "green": {
+    "controls": 64,
+    "seconds": 2.005,
+    "diagnostic_controls": 9,
+    "exit_code": 0
+  },
+  "checks": {
+    "actionlint": 0,
+    "workflow_validation": 0,
+    "source_cap": 0,
+    "whitespace": 0
+  },
+  "source_inputs": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "17b47ef3de55a13a4e4e5a057508a4f6ec0c677dbdcc5e4b0a1dc5570705e955",
+      "bytes": 17270
+    },
+    {
+      "path": ".github/workflows/app.yml",
+      "sha256": "1d9482f9849d291fd34164adf4030cd0a10e1134cb798bba2a5d86b5bef38606",
+      "bytes": 14000
+    },
+    {
+      "path": "scripts/ci/test-go.sh",
+      "sha256": "c60837bc7921f33bc5dad9db2cbd3b7074970f584e2b912190b944936324eefd",
+      "bytes": 1408
+    },
+    {
+      "path": "scripts/ci/test_coverage_evidence.py",
+      "sha256": "701d875fd42aea8049ce86b90623809d77310c58f7ad350c5dd79018e4719499",
+      "bytes": 1578
+    }
+  ],
+  "limits": [
+    "no local Go/runtime execution",
+    "real hosted profile/report pending",
+    "original deep command,89% requirement and failure are preserved"
+  ]
+}

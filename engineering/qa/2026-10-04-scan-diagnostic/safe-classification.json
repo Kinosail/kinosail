@@ -1,0 +1,108 @@
+{
+  "run": 37217934197,
+  "head": "43fa97d6d4d205d9e0eebabe1603397f96260562",
+  "artifact": 11309167212,
+  "projection_sha256": "fa91b49ceeb47e3081d8e2d5a0ff6fdd776a9d6e6db8b716f8377eda09f69464",
+  "scanner_exit_code": 1,
+  "coverage": "--all",
+  "findings": [
+    {
+      "rule": "generic-api-key",
+      "file": "engineering/qa/2026-10-04-r08-now-playing/green-native-receipt.json",
+      "commit": "d02c9534d2e4a67e34de979f6bfb443d7553b0e5",
+      "line": 75
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "engineering/qa/2026-10-04-r08-now-playing/visibility-red-receipt.json",
+      "commit": "2776f4ce39fc7084ff20cac18e895b7a373fe685",
+      "line": 72
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "engineering/qa/2026-10-04-r08-now-playing/initial-native-receipt.json",
+      "commit": "51cb1a903ac3eb1f4c104a6a76a580a3bd2898bd",
+      "line": 62
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "engineering/qa/2026-10-04-r08-now-playing/red-receipt.json",
+      "commit": "6da6ce46f9ab1589f42774b7713ed28cb2d4e4ff",
+      "line": 55
+    }
+  ],
+  "classification": "independently verified file-checksum false positives in preserved historical QA receipts",
+  "provenance": [
+    "all four exact prior receipt/file/line/artifact hashes match",
+    "each reported value equals the SHA-256 of its own preserved74-byte fictional fixture file",
+    "the checksum differs from the actual decoded stored key",
+    "audit journal source consumes the stored key, not the file checksum"
+  ],
+  "ancestry": [
+    {
+      "rule": "generic-api-key",
+      "file": "engineering/qa/2026-10-04-r08-now-playing/green-native-receipt.json",
+      "commit": "d02c9534d2e4a67e34de979f6bfb443d7553b0e5",
+      "line": 75,
+      "ancestor_of_main": false,
+      "ancestor_of_candidate": false,
+      "containing_refs": [
+        "refs/heads/codex/qol-audio-queue-reviewed",
+        "refs/heads/codex/qol-r08-now-playing",
+        "refs/remotes/origin/codex/qol-audio-queue-reviewed"
+      ]
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "engineering/qa/2026-10-04-r08-now-playing/visibility-red-receipt.json",
+      "commit": "2776f4ce39fc7084ff20cac18e895b7a373fe685",
+      "line": 72,
+      "ancestor_of_main": false,
+      "ancestor_of_candidate": false,
+      "containing_refs": [
+        "refs/heads/codex/qol-audio-queue-reviewed",
+        "refs/heads/codex/qol-r08-now-playing",
+        "refs/remotes/origin/codex/qol-audio-queue-reviewed"
+      ]
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "engineering/qa/2026-10-04-r08-now-playing/initial-native-receipt.json",
+      "commit": "51cb1a903ac3eb1f4c104a6a76a580a3bd2898bd",
+      "line": 62,
+      "ancestor_of_main": false,
+      "ancestor_of_candidate": false,
+      "containing_refs": [
+        "refs/heads/codex/qol-audio-queue-reviewed",
+        "refs/heads/codex/qol-r08-now-playing",
+        "refs/remotes/origin/codex/qol-audio-queue-reviewed"
+      ]
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "engineering/qa/2026-10-04-r08-now-playing/red-receipt.json",
+      "commit": "6da6ce46f9ab1589f42774b7713ed28cb2d4e4ff",
+      "line": 55,
+      "ancestor_of_main": false,
+      "ancestor_of_candidate": false,
+      "containing_refs": [
+        "refs/heads/codex/qol-audio-queue-reviewed",
+        "refs/heads/codex/qol-r08-now-playing",
+        "refs/remotes/origin/codex/qol-audio-queue-reviewed"
+      ]
+    }
+  ],
+  "unchanged": [
+    "scanner version",
+    "detection rules",
+    "configuration",
+    "ignore file",
+    "history",
+    "required failure"
+  ],
+  "limits": [
+    "named old-ref containment proven locally; complete hosted fetched-ref inventory not captured",
+    "classification does not turn the full-history gate green",
+    "no matched value, stored key, raw report or private log appears in this document"
+  ]
+}

@@ -13,6 +13,10 @@ on:
         description: Keep metadata-only full-history scan evidence
         type: boolean
         default: false
+      coverage_diagnostic:
+        description: Keep exact deep Go coverage profiles
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -178,6 +182,7 @@ jobs:
     with:
       app: player
       plan: ${{ needs.plan.outputs.plan }}
+      coverage_diagnostic: ${{ github.event_name == 'workflow_dispatch' && inputs.coverage_diagnostic }}
 
   player-required:
     name: Player checks
@@ -202,6 +207,7 @@ jobs:
     with:
       app: subtitles
       plan: ${{ needs.plan.outputs.plan }}
+      coverage_diagnostic: ${{ github.event_name == 'workflow_dispatch' && inputs.coverage_diagnostic }}
 
   subtitles-required:
     name: Subtitles checks
