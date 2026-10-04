@@ -15,7 +15,7 @@ const reports = [], flows = [], flowProbe = {stage: "not-started"};
 process.once("uncaughtException", async error => {
   const failure = {app, engine, stage: phase, flowStage: flowProbe.stage,
     errorClass: ["TimeoutError", "TypeError", "ReferenceError", "SyntaxError"].includes(error.name) ? error.name : "Error",
-    completedCases: reports.length, completedFlows: flows.length, media: flowProbe.media, loginResponses,
+    completedCases: reports.length, completedFlows: flows.length, media: flowProbe.media, probe: flowProbe.geometry, loginResponses,
     authCookieCount: phase.startsWith("login") && authContext ? await authContext.cookies().then(c=>c.length).catch(()=>undefined) : undefined,
     pageState: activePage ? (new URL(activePage.url()).pathname === "/login" ? "login" : "other") : "not-created"};
   await writeFile(join(run, "failure.json"), JSON.stringify(failure, null, 2));

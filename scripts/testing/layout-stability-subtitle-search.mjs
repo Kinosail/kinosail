@@ -12,10 +12,26 @@ export async function measureSubtitleSearch(page, viewport, results, probe) {
     ["x", first.pinned ? "y" : "documentY", "width", "height"].every(key => Math.abs(first[key] - after[index][key]) <= 1));
   if(viewport.width===320){
     const file=page.locator(".subtitle-file").first(),summary=file.locator(":scope>summary");
-    await summary.click();
+    const clickSummary=async phase=>{
+      probe.stage=phase;await summary.scrollIntoViewIfNeeded();
+      const target=await summary.evaluate(node=>{
+        const rect=node.getBoundingClientRect(),left=Math.max(0,rect.left),right=Math.min(innerWidth,rect.right),top=Math.max(0,rect.top),bottom=Math.min(innerHeight,rect.bottom);
+        const exposed=(x,y)=>Boolean(node.contains(document.elementFromPoint(x,y)));
+        let point;
+        for(const fractionY of [.5,.4,.6,.3,.7,.2,.8,.1,.9])for(const fractionX of [.5,.3,.7]){
+          const x=left+(right-left)*fractionX,y=top+(bottom-top)*fractionY;
+          if(!point&&right>left&&bottom>top&&exposed(x,y))point={x:x-rect.x,y:y-rect.y};
+        }
+        return {rect:rect.toJSON(),point,centerExposed:exposed(rect.x+rect.width/2,rect.y+rect.height/2),header:document.querySelector(".app-header")?.getBoundingClientRect().toJSON(),dock:document.querySelector("[data-subtitle-dock]")?.getBoundingClientRect().toJSON(),viewport:{width:innerWidth,height:innerHeight}};
+      });
+      probe.geometry=target;if(!target.point)throw new Error("Library disclosure has no exposed pointer position");
+      await summary.click({position:target.point});return target;
+    };
+    const interaction=await clickSummary("subtitle-library-disclosure-open");
     const open=await file.evaluate(node=>node.open),detail=await file.locator(".subtitle-file-detail").boundingBox(),overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
-    results.push({flow:"subtitle-library-disclosure-open",viewport,open,detail,overflow,stable:Boolean(open&&detail&&detail.width&&overflow<=1)});
-    await summary.click();if(await file.evaluate(node=>node.open))throw new Error("Library disclosure did not close");
+    results.push({flow:"subtitle-library-disclosure-open",viewport,open,detail,overflow,interaction,stable:Boolean(open&&detail&&detail.width&&overflow<=1)});
+    await clickSummary("subtitle-library-disclosure-close");if(await file.evaluate(node=>node.open))throw new Error("Library disclosure did not close");
+    probe.stage="subtitle-native-search";delete probe.geometry;
   }
   let fail = false;
   await page.route("**/*", async route => {
