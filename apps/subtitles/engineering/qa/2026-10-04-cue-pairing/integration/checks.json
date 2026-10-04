@@ -1,0 +1,126 @@
+{
+  "revision": "79f877e020fc6bf02e77e95092e5fad2b50aa326",
+  "mainBase": "ba527747b09b29c3836529b8de61c7ae877180bc",
+  "results": [
+    {
+      "name": "subtitles-verify-changed",
+      "command": [
+        "make",
+        "-C",
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/apps/subtitles",
+        "verify-changed",
+        "BASE=origin/main"
+      ],
+      "boundSeconds": 90,
+      "exitCode": 2,
+      "timedOut": false,
+      "seconds": 53.56,
+      "log": "integration/r07-integration-subtitles-verify-changed.log",
+      "logSHA256": "6888b8c4436fbea41bd475cc820e3b94b8df4cdc9fd8a05da5ac2b60f8fbcde8",
+      "rawGzip": "integration/r07-integration-subtitles-verify-changed.log.gz"
+    },
+    {
+      "name": "player-verify-changed",
+      "command": [
+        "make",
+        "-C",
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/apps/player",
+        "verify-changed",
+        "BASE=origin/main"
+      ],
+      "boundSeconds": 45,
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 0.44,
+      "log": "integration/r07-integration-player-verify-changed.log",
+      "logSHA256": "40868b4afe48cabfb4a5eb46cf6118f1e8566a591f15867976878e23217fe840",
+      "rawGzip": "integration/r07-integration-player-verify-changed.log.gz"
+    },
+    {
+      "name": "changed-lint",
+      "command": [
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/scripts/tooling/with-go-module.sh",
+        "golangci-lint",
+        "run",
+        "--timeout=75s",
+        "--new-from-rev=origin/main"
+      ],
+      "boundSeconds": 90,
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 48.65,
+      "log": "integration/r07-integration-changed-lint.log",
+      "logSHA256": "e92606b0bf483111dff0a120c315ea165821348f31365020e2468a0059095c47",
+      "rawGzip": "integration/r07-integration-changed-lint.log.gz"
+    },
+    {
+      "name": "test-instance-check",
+      "command": [
+        "make",
+        "-C",
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/apps/subtitles",
+        "test-instance-check"
+      ],
+      "boundSeconds": 15,
+      "exitCode": 2,
+      "timedOut": false,
+      "seconds": 1.91,
+      "log": "integration/r07-integration-test-instance-check.log",
+      "logSHA256": "42e699335baa8cd5b025289eb2e3404ad20fc5f4e108a0bb24d652b5ad7bc483",
+      "rawGzip": "integration/r07-integration-test-instance-check.log.gz"
+    },
+    {
+      "name": "native-build",
+      "command": [
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/scripts/tooling/with-go-module.sh",
+        "go",
+        "build",
+        "-p",
+        "1",
+        "-o",
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/apps/subtitles/.verification/r07-integration/native-fixture",
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/apps/subtitles/.verification/r07-integration/native-fixture.go"
+      ],
+      "boundSeconds": 45,
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 1.32,
+      "log": "integration/r07-integration-native-build.log",
+      "logSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rawGzip": "integration/r07-integration-native-build.log.gz"
+    },
+    {
+      "name": "native-browser",
+      "command": [
+        "node",
+        "node_modules/@playwright/test/cli.js",
+        "test",
+        "subtitle-pairing-native.spec.ts",
+        "--project=chromium",
+        "--workers=1"
+      ],
+      "boundSeconds": 65,
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 12.59,
+      "log": "integration/r07-integration-native-browser.log",
+      "logSHA256": "c47e4a3f805b7ed24ab37c409d36cd05d661a8dc179762da878731c12a303e72",
+      "rawGzip": "integration/r07-integration-native-browser.log.gz"
+    }
+  ],
+  "binarySHA256": "aafc748fd49e4128933eb4286db6a8fd12e4940890dcd8f7b3240b3cfcc18bc7",
+  "fixtureSourceSHA256": "cf2ead8df499f9cd028871d99a30863a9e7a8692ec57a863e0eeb2b604b3283f",
+  "serverExitCode": 0,
+  "serverLogSHA256": "70c7909af1d439ada41b897f31d70914a0a9ee17d18b2fe06b05d2fa414c019a",
+  "integrity": {
+    "installedSubtitleUnchanged": true,
+    "recoverySidecarAbsent": true
+  },
+  "environment": {
+    "GOMAXPROCS": "4",
+    "GOFLAGS": "-p=1",
+    "PLAYWRIGHT_CHANNEL": "",
+    "KINOSAIL_E2E_VIDEO": "off",
+    "KINOSAIL_BROWSER_WORKERS": "1"
+  }
+}
