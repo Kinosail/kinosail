@@ -253,21 +253,21 @@ Call log:
 
 ```ts
   1  | import { expect, test } from "@playwright/test";
-  2  | 
+  2  |
   3  | const origin = process.env.KINOSAIL_LIBRARY_BROWSER_URL;
   4  | test.skip(!origin, "requires TestLibraryPaginationBrowserJourney disposable Go Server");
   5  | test.use({ serviceWorkers: "block" });
-  6  | 
+  6  |
   7  | const showTitles = Array.from({ length: 30 }, (_, position) => `Pagination Show ${String(position + 1).padStart(2, "0")}`);
   8  | const movieTitles = Array.from({ length: 6 }, (_, position) => `Pagination Movie ${String(position + 1).padStart(2, "0")}`);
-  9  | 
+  9  |
   10 | async function loadAll(page: import("@playwright/test").Page) {
   11 | 	await expect.poll(async () => {
   12 | 		if (await page.locator("[data-library-next]").count()) await page.locator("[data-library-status]").scrollIntoViewIfNeeded();
   13 | 		return page.locator("[data-library-status]").textContent();
   14 | 	}, { timeout: 20_000 }).toBe("All titles are loaded.");
   15 | }
-  16 | 
+  16 |
   17 | for (const width of [390, 1440]) {
   18 | 	test(`all Shows remain reachable across real Server pages at ${width}px`, async ({ page }, info) => {
   19 | 		await page.setViewportSize({ width, height: 844 });
@@ -287,7 +287,7 @@ Call log:
   32 | 		await page.screenshot({ path: info.outputPath(`shows-loaded-${width}.png`), fullPage: true });
   33 | 	});
   34 | }
-  35 | 
+  35 |
   36 | test("real Server mixed pages keep both Show and Movie cards", async ({ page }, info) => {
   37 | 	await page.goto(`${origin}/?q=Pagination&limit=4`);
   38 | 	await loadAll(page);
@@ -296,5 +296,5 @@ Call log:
   41 | 	await expect(page.locator("#library .card")).toHaveCount(36);
   42 | 	await page.screenshot({ path: info.outputPath("mixed-loaded.png"), fullPage: true });
   43 | });
-  44 | 
+  44 |
 ```

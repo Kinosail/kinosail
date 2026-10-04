@@ -15,7 +15,7 @@ Running 3 tests using 1 worker
   ✘  3 [chromium] › library-pagination.spec.ts:36:1 › real Server mixed pages keep both Show and Movie cards (646ms)
 
 
-  1) [chromium] › library-pagination.spec.ts:18:2 › all Shows remain reachable across real Server pages at 390px 
+  1) [chromium] › library-pagination.spec.ts:18:2 › all Shows remain reachable across real Server pages at 390px
 
     Error: expect(received).toEqual(expected) // deep equality
 
@@ -78,7 +78,7 @@ Running 3 tests using 1 worker
 
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
-  2) [chromium] › library-pagination.spec.ts:18:2 › all Shows remain reachable across real Server pages at 1440px 
+  2) [chromium] › library-pagination.spec.ts:18:2 › all Shows remain reachable across real Server pages at 1440px
 
     Error: expect(received).toEqual(expected) // deep equality
 
@@ -141,7 +141,7 @@ Running 3 tests using 1 worker
 
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
-  3) [chromium] › library-pagination.spec.ts:36:1 › real Server mixed pages keep both Show and Movie cards 
+  3) [chromium] › library-pagination.spec.ts:36:1 › real Server mixed pages keep both Show and Movie cards
 
     Error: expect(received).toEqual(expected) // deep equality
 
@@ -205,9 +205,9 @@ Running 3 tests using 1 worker
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
   3 failed
-    [chromium] › library-pagination.spec.ts:18:2 › all Shows remain reachable across real Server pages at 390px 
-    [chromium] › library-pagination.spec.ts:18:2 › all Shows remain reachable across real Server pages at 1440px 
-    [chromium] › library-pagination.spec.ts:36:1 › real Server mixed pages keep both Show and Movie cards 
+    [chromium] › library-pagination.spec.ts:18:2 › all Shows remain reachable across real Server pages at 390px
+    [chromium] › library-pagination.spec.ts:18:2 › all Shows remain reachable across real Server pages at 1440px
+    [chromium] › library-pagination.spec.ts:36:1 › real Server mixed pages keep both Show and Movie cards
 --- FAIL: TestLibraryPaginationBrowserJourney (37.49s)
     library_pagination_browser_test.go:43: exit status 1
 FAIL
