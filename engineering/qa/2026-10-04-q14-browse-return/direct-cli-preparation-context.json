@@ -1,0 +1,178 @@
+{
+  "stage": "source-only existing direct CLI preparation; no execution in this phase",
+  "baselineHead": "de2f03fa5b4d01e6f5d9cb6a222292719a16726a",
+  "sourceCount": 31,
+  "sourceCanonicalRecipe": "UTF-8 sorted path<TAB>lowercase SHA-256<LF>, trailing LF",
+  "sourceCanonicalSHA256": "4651219d6447a0d4ded9bd8eba66bdb2c692dbcc8ceda8c154424ffb6034aa45",
+  "sources": {
+    "apps/player/e2e/browse-return-bfcache.spec.ts": "6132c19eed1a5cda2fccd0ff9280476a425f4d7a9c17ca43b18f8eb2cffde58d",
+    "apps/player/e2e/browse-return-cold.spec.ts": "5a9afd3345bd851adef419464905baa9f0ad19daecac3979efecef0bb3e15bdb",
+    "apps/player/e2e/browse-return-helpers.ts": "f44ae37d320662ee55206864c6c6b96f58aa7ca36ae04134648115a2b23ee021",
+    "apps/player/e2e/browse-return.spec.ts": "742486a950692b1ac91a314a895c9c55ff7fdff90e830eebc2040659789dd054",
+    "apps/player/e2e/package.json": "1829525fd62a789fdb1767c89813eaf13394b1a115dbca3f749bb63e22b42e52",
+    "apps/player/e2e/playwright.config.ts": "628d3a62d9b3e2fba1bc43f3cd58979acadf22c083e3559c73c4f750a97cc0b3",
+    "apps/player/e2e/pnpm-lock.yaml": "b3151e08c2af7e480d7f6f5aeafb2a230e92c9dd5aaf18dfcd787ee71c8ba655",
+    "apps/player/internal/server/browse.go": "a13ebeb8994d5e39e721c390a2f2e92f7ca2391b9065f9a35061a27ab60d8c2d",
+    "apps/player/internal/server/browse_return_browser_test.go": "c7e12445402f4e474f33df1f79b218c9c366287d7da71e7ea91f1bddde4b72f5",
+    "apps/player/internal/server/home.go": "ae00ea4bc4e89865b1052c9ecca788419235f9532342932b7bdf345c8e8f9961",
+    "apps/player/internal/server/navigation_shell.go": "f5ccbec12d2b7a6e6069536bc88f05503cb4d08f43f8d138d0c0519cefcee33b",
+    "apps/player/internal/server/player.go": "633ed24b29175ce63240708f32d6fc2970e7f2595b22c034037d0392b20ef255",
+    "apps/player/internal/server/server.go": "75cc2bab9008b353e1210383c873627f3febe5b362db48609cc683ff19ebf582",
+    "apps/player/internal/server/show.go": "2edf91b5be578efd74118e8dfdc8e5f5ab12f065f2f05c1664466b2f2f57f2a0",
+    "engineering/qa/2026-10-04-q14-browse-return/collection-repair-commands.md": "1c31487c92466e2414d621e9c7781e9f7f88334f5a2625beccc9536233886aac",
+    "engineering/qa/2026-10-04-q14-browse-return/collection-repair.md": "4c849a30264a97aad30a7172873954b9f44bc2f8059990c6f87b60a34935cd5b",
+    "engineering/qa/2026-10-04-q14-browse-return/direct-cli-preparation.md": "df3b50cf9486545c28d9e9b6ef89a9b32a0bd3301ffe6e24317b627de9105965",
+    "engineering/qa/2026-10-04-q14-browse-return/failure-analysis.md": "f2c1b768910e2591abbaa4f5a7b314b510597b17003a05fb8153889f580d3251",
+    "engineering/qa/2026-10-04-q14-browse-return/reproduction-commands.md": "69ac42720f054f2242154f9695feac154e204a4eac838148a9795d807fbe08b8",
+    "engineering/qa/2026-10-04-q14-browse-return/run-bounded.py": "e50c195ec39f51a88bc2e30d5fa5570839b5f867f15d59ba50671c21de02c57b",
+    "packages/catalog/browse.go": "5f32935c388ddc040fa4069ce352e1b50bad55d329fa5978b0ff9796ee2575af",
+    "packages/catalog/browse_sort.go": "cbc6c6343910e88f1bb8475f3c9a4796a03a3c1b458906bb5865cf0e8fb2b066",
+    "packages/catalogapi/library.go": "05dbee278a4703a9db5318af71665bbc594d940e366d589d49c4aef0e7e25c78",
+    "packages/home/handler.go": "4a866d2ef6736cd3aa25c264ba3112ff438f070d7f134a0525d9ba5d2669b824",
+    "packages/home/model.go": "43fc39917111628c9e7a77f094dcdda937211edd9049b48b1700127192d89001",
+    "packages/home/projection.go": "1c43989d44f5c7b523a3d72268e0c429111df8f8e401f38b0924c864aae424f4",
+    "packages/identitycore/library_access.go": "ad72ef1578d3b10d6063984a886ba8c4f96a0e01f77182ea89b37aa834594664",
+    "packages/webassets/static/pwa-library.js": "c0a58cb89f0f79890a52bb63912bb3107c8ffef9c0dc85df15a45707a0ee5f2b",
+    "packages/webassets/static/pwa-navigation.js": "076b41044ccd8d0a79664bafa7ac1aea7f9e0efda192615dd2f791e49e63b202",
+    "packages/webassets/static/pwa.js": "e133ab218c2979c81c3defb90170f47574798d33c923983f448b511e71a4e8ad",
+    "packages/webassets/webassets.go": "878a6d56605d589cdfa06d3640490cd6b2abe6f70a0a7cf621dbbc7c78dcea82"
+  },
+  "deltaFromFFA30Source": {
+    "mainSpec": "one terminal LF removed",
+    "goTestOwner": "fixed existing Node Playwright CLI replaces pnpm launcher; selection/one worker/zero retries unchanged",
+    "bfcacheSpec": "two additional final settled peer-count lines, earlier assertions retained"
+  },
+  "originalJourneySourcePreservation": {
+    "primary": {
+      "allOriginalJourneyBodyAndAssertionsRetained": true,
+      "permittedNormalization": "relocated launch configuration/comments; terminal whitespace; BFCache comparison removes only new final peer-count pair",
+      "originalNormalizedSHA256": "a267a08bf799bae7ed04769cf37f6b065ddaf538bad64b731b37556176080ad6"
+    },
+    "cold": {
+      "allOriginalJourneyBodyAndAssertionsRetained": true,
+      "permittedNormalization": "relocated launch configuration/comments; terminal whitespace; BFCache comparison removes only new final peer-count pair",
+      "originalNormalizedSHA256": "6edb3c98e37a91dbabe61194a449c92d8a73f9e83ebd61bc284dc8641695f2b4"
+    },
+    "bfcache": {
+      "allOriginalJourneyBodyAndAssertionsRetained": true,
+      "permittedNormalization": "relocated launch configuration/comments; terminal whitespace; BFCache comparison removes only new final peer-count pair",
+      "originalNormalizedSHA256": "a1a502b9a9902e090abe62c2d2f357e7a59c57ea353785257e655fb7242433b8"
+    },
+    "htmx": {
+      "allOriginalJourneyBodyAndAssertionsRetained": true,
+      "permittedNormalization": "relocated launch configuration/comments; terminal whitespace; BFCache comparison removes only new final peer-count pair",
+      "originalNormalizedSHA256": "37af34fe2ad511547151729d667da0749b14acd90b6231de83fec8c1299d15e8"
+    },
+    "shows": {
+      "allOriginalJourneyBodyAndAssertionsRetained": true,
+      "permittedNormalization": "relocated launch configuration/comments; terminal whitespace; BFCache comparison removes only new final peer-count pair",
+      "originalNormalizedSHA256": "3ebbc02fde25538a6835fc94635a74c18c0eebc64f62554652476694582e2f19"
+    },
+    "search": {
+      "allOriginalJourneyBodyAndAssertionsRetained": true,
+      "permittedNormalization": "relocated launch configuration/comments; terminal whitespace; BFCache comparison removes only new final peer-count pair",
+      "originalNormalizedSHA256": "3bb009f5fb4f709eef1d6fbedd1b8664e0dbbaa62d37af4abf25a591f11fc3b7"
+    }
+  },
+  "readOnlyExecutableInputs": {
+    "/opt/homebrew/Cellar/node/26.8.2/bin/node": {
+      "sha256": "3e401401d90e7f0367b7737a613801242c9a6b2966fb50c2e48eb1c45d701c6a",
+      "bytes": 50288
+    },
+    "/opt/homebrew/Cellar/pnpm/12.4.2/bin/pnpm": {
+      "sha256": "ec5325ec22822ae45305d36f4adc7f01d06ce36a2bea797dbc6e99f564f8ef55",
+      "bytes": 36580368
+    },
+    "/Users/mikeo/Documents/GitHub/kinosail/apps/player/e2e/node_modules/.pnpm/@playwright+test@1.63.0/node_modules/@playwright/test/cli.js": {
+      "sha256": "79e23e6a249176295b8490567daa7717448a75866d6ea6f6b296ff3d23305c69",
+      "bytes": 707
+    },
+    "/Users/mikeo/Documents/GitHub/kinosail/apps/player/e2e/node_modules/.pnpm/@playwright+test@1.63.0/node_modules/@playwright/test/package.json": {
+      "sha256": "5587f932b8979b6889654b60e3c28aeb7ca0abbac00eec8c176c939a16149536",
+      "bytes": 754
+    },
+    "/Users/mikeo/Documents/GitHub/kinosail/apps/player/e2e/node_modules/.pnpm/playwright@1.63.0/node_modules/playwright/package.json": {
+      "sha256": "8bc2ddebe8d9b051b9ecb87d62c6c63877e59d08617f32c3215681ca8bb70998",
+      "bytes": 1359
+    },
+    "/Users/mikeo/Documents/GitHub/kinosail/apps/player/e2e/node_modules/.pnpm/playwright@1.63.0/node_modules/playwright/lib/program.js": {
+      "sha256": "dfbb7bae1431d99d330320040c03f7e9c6681184c8dcb59008a09da7ada0c409",
+      "bytes": 14509
+    },
+    "/Users/mikeo/Documents/GitHub/kinosail/apps/player/e2e/node_modules/.pnpm/playwright@1.63.0/node_modules/playwright/lib/common/index.js": {
+      "sha256": "f4a6b14f5ba21a118b58a6a25eb0b281a3acc4157023b014e0197145056124a4",
+      "bytes": 115517
+    },
+    "/Users/mikeo/Documents/GitHub/kinosail/apps/player/e2e/node_modules/.pnpm/playwright@1.63.0/node_modules/playwright/lib/index.js": {
+      "sha256": "54bf5935cf339938408c656bde958047a1217bf77434acdf75a0c717cddaaeae",
+      "bytes": 36487
+    },
+    "/Users/mikeo/Documents/GitHub/kinosail/apps/player/e2e/node_modules/.pnpm/playwright-core@1.63.0/node_modules/playwright-core/package.json": {
+      "sha256": "f061c58427e47e843e26d201f0a57076c734e57c734ecbbd87d4a23b7a20db9b",
+      "bytes": 876
+    },
+    "/Users/mikeo/Documents/GitHub/kinosail/apps/player/e2e/node_modules/.pnpm/playwright-core@1.63.0/node_modules/playwright-core/lib/coreBundle.js": {
+      "sha256": "549070af3acabb3efcc4f55bfe6210f9f7c2fcf633cf7eaa59bfe60719969171",
+      "bytes": 3477183
+    },
+    "/opt/homebrew/Cellar/pnpm/12.4.2/.brew/pnpm.rb": {
+      "sha256": "c5996242a776b38d4362846fb1db60e312fff5e8b20a9ad4fbf55be8b7885dcd",
+      "bytes": 1664
+    },
+    "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/node_modules/.bin/playwright": {
+      "sha256": "ce28e8283ad3e1f0ed13d9968d15631830addd00dea1b640735e56ffecc78b9e",
+      "bytes": 2399
+    }
+  },
+  "currentLinks": {
+    "node": "/opt/homebrew/Cellar/node/26.8.2/bin/node",
+    "pnpm": "/opt/homebrew/Cellar/pnpm/12.4.2/bin/pnpm",
+    "E2EDependencies": "/Users/mikeo/Documents/GitHub/kinosail/apps/player/e2e/node_modules",
+    "testCLI": "/Users/mikeo/Documents/GitHub/kinosail/apps/player/e2e/node_modules/.pnpm/@playwright+test@1.63.0/node_modules/@playwright/test/cli.js",
+    "playwright": "/Users/mikeo/Documents/GitHub/kinosail/apps/player/e2e/node_modules/.pnpm/playwright@1.63.0/node_modules/playwright",
+    "playwrightCore": "/Users/mikeo/Documents/GitHub/kinosail/apps/player/e2e/node_modules/.pnpm/playwright-core@1.63.0/node_modules/playwright-core"
+  },
+  "launcherDiagnosis": {
+    "observed": "Homebrew pnpm12.4.2 Rust binary versus E2E pnpm11.22.0 pin; installed formula states registry resolution on invocations",
+    "inferredCause": "package-manager registry resolution could explain startup timeout",
+    "causeRuntimeVerified": false,
+    "directCLIStarted": false
+  },
+  "nextPrerequisite": {
+    "argv": [
+      "/opt/homebrew/bin/node",
+      "node_modules/@playwright/test/cli.js",
+      "test",
+      "browse-return.spec.ts",
+      "browse-return-cold.spec.ts",
+      "browse-return-bfcache.spec.ts",
+      "--list",
+      "--workers=1",
+      "--project=chromium"
+    ],
+    "cwd": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e",
+    "environment": {
+      "PLAYWRIGHT_CHANNEL": "",
+      "KINOSAIL_BROWSER_PROJECT": "chromium",
+      "KINOSAIL_BROWSE_RETURN_URL": "http://127.0.0.1:9",
+      "KINOSAIL_BROWSE_RETURN_CASES": "all"
+    },
+    "externalSeconds": 15,
+    "expectedCollectedCases": 9,
+    "executionPermission": "next explicit parent grant required"
+  },
+  "historicalEvidencePreserved": {
+    "initialQ14PreparationEntries": 5,
+    "collectionTimeoutReceiptSHA256": "31344cd9d3828879e4a6aa19785e41719733e2fc70251c477ea4c99542e454ab",
+    "Q09Ref": "1b68c55b8fa176154f2a17052606f71867208308",
+    "Q09ProductUnchanged": 13,
+    "Q09ArtifactEdits": "none"
+  },
+  "unrun": [
+    "direct CLI and collection",
+    "updated harness Go build/test",
+    "browser/native BFCache/public RED",
+    "lint and syntax for current CLI/additional assertion delta",
+    "integration/protected gates"
+  ]
+}

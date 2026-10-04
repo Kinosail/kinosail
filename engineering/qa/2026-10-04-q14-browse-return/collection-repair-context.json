@@ -1,0 +1,140 @@
+{
+  "stage": "source-only collection repair; no fresh Go/lint/collection/browser/encoder/native execution",
+  "priorCheckpoint": "de2f03fa5b4d01e6f5d9cb6a222292719a16726a",
+  "originalPreparationArtifacts": {
+    "entries": 5,
+    "manifestSHA256": "70f5bf02e1371ea0d63359e1d577ee0c5fdd5e8a884ea6c3eae0e31ac6ff1a0b",
+    "allBytePreserved": true
+  },
+  "journeySourcePreservation": {
+    "primary": {
+      "fullBodyBytePreservedExceptMovedLaunchOptions": true,
+      "bodySHA256": "1aca6f74373b0c31f9225f184180d0cc11505bae4cbd76e19ac36d6b85fcce96"
+    },
+    "cold": {
+      "fullBodyBytePreservedExceptMovedLaunchOptions": true,
+      "bodySHA256": "fb735fe75811cb23d0deef0c3971956b1acb0259eb01e2ae14d192b6f36cff2a"
+    },
+    "bfcache": {
+      "fullBodyBytePreservedExceptMovedLaunchOptions": true,
+      "bodySHA256": "11793cff3a3dd34f67eced9e0d1092920aec2aed9a61e4d381adca905de668c3"
+    },
+    "htmx": {
+      "fullBodyBytePreservedExceptMovedLaunchOptions": true,
+      "bodySHA256": "b2f14bef616477a3f3a5ca9aed4b35ed1fe15b1539bf5283a2214b92eae8ca7a"
+    },
+    "shows": {
+      "fullBodyBytePreservedExceptMovedLaunchOptions": true,
+      "bodySHA256": "1623a8480c237baa1dd2a1467c214da45314983add7767d302b13ccb7175c332"
+    },
+    "search": {
+      "fullBodyBytePreservedExceptMovedLaunchOptions": true,
+      "bodySHA256": "3652953714a37a4e879fce750371f94b3ac2bc503004f66cdd4c62f372b9da5b"
+    }
+  },
+  "frozenQ09": {
+    "revision": "1b68c55b8fa176154f2a17052606f71867208308",
+    "product13Unchanged": 13,
+    "artifactCount": 250,
+    "artifactChange": "none; no Q09 edits"
+  },
+  "sourceCanonicalRecipe": "UTF-8 sorted path<TAB>lowercase SHA-256<LF>, trailing LF",
+  "sourceCount": 30,
+  "sourceCanonicalSHA256": "ffa906e39b0c3cb37b238b0184f50923d0852c98a85380287a4bab7a88b591a5",
+  "sources": {
+    "apps/player/e2e/browse-return-bfcache.spec.ts": "664681fa11b17bca1ecc199d406dd6e9cdb614cc1939d03863473ee9335604dd",
+    "apps/player/e2e/browse-return-cold.spec.ts": "5a9afd3345bd851adef419464905baa9f0ad19daecac3979efecef0bb3e15bdb",
+    "apps/player/e2e/browse-return-helpers.ts": "f44ae37d320662ee55206864c6c6b96f58aa7ca36ae04134648115a2b23ee021",
+    "apps/player/e2e/browse-return.spec.ts": "b0f10739ecff7abcbe420bd3fcdcbd1f0df37c27062720c870026f2a2d7c147e",
+    "apps/player/e2e/package.json": "1829525fd62a789fdb1767c89813eaf13394b1a115dbca3f749bb63e22b42e52",
+    "apps/player/e2e/playwright.config.ts": "628d3a62d9b3e2fba1bc43f3cd58979acadf22c083e3559c73c4f750a97cc0b3",
+    "apps/player/e2e/pnpm-lock.yaml": "b3151e08c2af7e480d7f6f5aeafb2a230e92c9dd5aaf18dfcd787ee71c8ba655",
+    "apps/player/internal/server/browse.go": "a13ebeb8994d5e39e721c390a2f2e92f7ca2391b9065f9a35061a27ab60d8c2d",
+    "apps/player/internal/server/browse_return_browser_test.go": "7a4c3245938d6d5a3d118eddc6bdf16ac3bbd6f689bbf03b758a5082ab5aab0d",
+    "apps/player/internal/server/home.go": "ae00ea4bc4e89865b1052c9ecca788419235f9532342932b7bdf345c8e8f9961",
+    "apps/player/internal/server/navigation_shell.go": "f5ccbec12d2b7a6e6069536bc88f05503cb4d08f43f8d138d0c0519cefcee33b",
+    "apps/player/internal/server/player.go": "633ed24b29175ce63240708f32d6fc2970e7f2595b22c034037d0392b20ef255",
+    "apps/player/internal/server/server.go": "75cc2bab9008b353e1210383c873627f3febe5b362db48609cc683ff19ebf582",
+    "apps/player/internal/server/show.go": "2edf91b5be578efd74118e8dfdc8e5f5ab12f065f2f05c1664466b2f2f57f2a0",
+    "engineering/qa/2026-10-04-q14-browse-return/collection-repair-commands.md": "1c31487c92466e2414d621e9c7781e9f7f88334f5a2625beccc9536233886aac",
+    "engineering/qa/2026-10-04-q14-browse-return/collection-repair.md": "4c849a30264a97aad30a7172873954b9f44bc2f8059990c6f87b60a34935cd5b",
+    "engineering/qa/2026-10-04-q14-browse-return/failure-analysis.md": "f2c1b768910e2591abbaa4f5a7b314b510597b17003a05fb8153889f580d3251",
+    "engineering/qa/2026-10-04-q14-browse-return/reproduction-commands.md": "69ac42720f054f2242154f9695feac154e204a4eac838148a9795d807fbe08b8",
+    "engineering/qa/2026-10-04-q14-browse-return/run-bounded.py": "e50c195ec39f51a88bc2e30d5fa5570839b5f867f15d59ba50671c21de02c57b",
+    "packages/catalog/browse.go": "5f32935c388ddc040fa4069ce352e1b50bad55d329fa5978b0ff9796ee2575af",
+    "packages/catalog/browse_sort.go": "cbc6c6343910e88f1bb8475f3c9a4796a03a3c1b458906bb5865cf0e8fb2b066",
+    "packages/catalogapi/library.go": "05dbee278a4703a9db5318af71665bbc594d940e366d589d49c4aef0e7e25c78",
+    "packages/home/handler.go": "4a866d2ef6736cd3aa25c264ba3112ff438f070d7f134a0525d9ba5d2669b824",
+    "packages/home/model.go": "43fc39917111628c9e7a77f094dcdda937211edd9049b48b1700127192d89001",
+    "packages/home/projection.go": "1c43989d44f5c7b523a3d72268e0c429111df8f8e401f38b0924c864aae424f4",
+    "packages/identitycore/library_access.go": "ad72ef1578d3b10d6063984a886ba8c4f96a0e01f77182ea89b37aa834594664",
+    "packages/webassets/static/pwa-library.js": "c0a58cb89f0f79890a52bb63912bb3107c8ffef9c0dc85df15a45707a0ee5f2b",
+    "packages/webassets/static/pwa-navigation.js": "076b41044ccd8d0a79664bafa7ac1aea7f9e0efda192615dd2f791e49e63b202",
+    "packages/webassets/static/pwa.js": "e133ab218c2979c81c3defb90170f47574798d33c923983f448b511e71a4e8ad",
+    "packages/webassets/webassets.go": "878a6d56605d589cdfa06d3640490cd6b2abe6f70a0a7cf621dbbc7c78dcea82"
+  },
+  "readOnlyWorkerFixtureDependencies": {
+    "/Users/mikeo/Documents/Codex/2026-10-03/task-2/kinosail/apps/player/e2e/node_modules/.pnpm/playwright@1.63.0/node_modules/playwright/lib/common/index.js": "f4a6b14f5ba21a118b58a6a25eb0b281a3acc4157023b014e0197145056124a4",
+    "/Users/mikeo/Documents/Codex/2026-10-03/task-2/kinosail/apps/player/e2e/node_modules/.pnpm/playwright@1.63.0/node_modules/playwright/lib/index.js": "54bf5935cf339938408c656bde958047a1217bf77434acdf75a0c717cddaaeae"
+  },
+  "selection": {
+    "primary": {
+      "specs": [
+        "browse-return.spec.ts"
+      ],
+      "cases": 2
+    },
+    "cold": {
+      "specs": [
+        "browse-return-cold.spec.ts"
+      ],
+      "cases": 2
+    },
+    "bfcache": {
+      "specs": [
+        "browse-return-bfcache.spec.ts"
+      ],
+      "cases": 1
+    },
+    "htmx": {
+      "specs": [
+        "browse-return.spec.ts"
+      ],
+      "cases": 1
+    },
+    "shows": {
+      "specs": [
+        "browse-return.spec.ts"
+      ],
+      "cases": 2
+    },
+    "search": {
+      "specs": [
+        "browse-return-cold.spec.ts"
+      ],
+      "cases": 1
+    },
+    "all": {
+      "specs": [
+        "browse-return.spec.ts",
+        "browse-return-cold.spec.ts",
+        "browse-return-bfcache.spec.ts"
+      ],
+      "cases": 9
+    }
+  },
+  "initialBudget": {
+    "primaryRuns": 2,
+    "executionBoundEachSeconds": 75,
+    "shutdownGraceEachSeconds": 5,
+    "maximumReservationSeconds": 160
+  },
+  "pending": [
+    "scheduled syntax/format/collection checks for changed harness",
+    "actual public primary RED twice with complete counts",
+    "separate real native BFCache/cold/HTMX controls",
+    "explicit production implementation grant",
+    "profile/failure/recovery test-first slices",
+    "required integration and protected gates"
+  ]
+}

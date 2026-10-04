@@ -28,51 +28,6 @@ if (selected("primary")) for (const width of [390, 1440]) {
   });
 }
 
-if (selected("cold")) test.describe("native Back without browser cache", () => {
-  // Pinned Playwright already supplies this switch; specifying it documents the
-  // boundary even if a future launcher changes its defaults.
-  test.use({ launchOptions: { args: ["--disable-back-forward-cache"] } });
-  for (const width of [390, 1440]) test(`cold native Back restores later Movie cards at ${width}px`, async ({ page }, info) => {
-    await page.setViewportSize({ width, height: 844 });
-    const { href, before } = await selectMovie(page, info);
-    try {
-      await page.goBack({ waitUntil: "domcontentloaded" });
-      await expect.poll(async () => (await snapshot(page, href)).document.shows.at(-1)?.persisted, { timeout: 1500, message: "cold boundary prerequisite: completed non-persisted pageshow" }).toBe(false);
-      const returned = await record(page, info, "cold-boundary", href);
-      expect(returned.state.document.document, "cold boundary prerequisite: fresh document").not.toBe(before.state.document.document);
-      expect(returned.state.document.shows.at(-1)?.persisted, "cold boundary prerequisite: native pageshow").toBe(false);
-      expect(returned.state.navigation).toContain("back_forward");
-      expect(returned.peer.slice(before.peer.length).some(request => !request.continuation && !request.history), "cold boundary prerequisite: real root document GET").toBe(true);
-      await assertReturn(page, before.state, href);
-    } finally {
-      await record(page, info, "returned", href);
-    }
-  });
-});
-
-if (selected("bfcache")) test.describe("observed native browser cache", () => {
-  // Use cached full Chromium's new headless mode. The pinned headless-shell
-  // default is not itself evidence that normal browser BFCache is admitted.
-  test.use({ channel: "chromium", launchOptions: { ignoreDefaultArgs: ["--disable-back-forward-cache"] } });
-  test("native BFCache preserves loaded Movie DOM without repeated continuation", async ({ page }, info) => {
-    await page.setViewportSize({ width: 1440, height: 844 });
-    const { href, before } = await selectMovie(page, info);
-    const leaving = await (await page.request.get(`${origin}/__browse-return`)).json();
-    try {
-      await page.goBack({ waitUntil: "commit" });
-      await expect.poll(async () => (await snapshot(page, href)).document.shows.at(-1)?.persisted, {
-        timeout: 4000, message: "BFCache prerequisite: observed native persisted pageshow; failure is not product RED",
-      }).toBe(true);
-      const returned = await record(page, info, "native-cache-boundary", href);
-      expect(returned.state.document.document, "BFCache prerequisite: original document retained").toBe(before.state.document.document);
-      expect(returned.peer).toHaveLength(leaving.length);
-      await assertReturn(page, before.state, href);
-    } finally {
-      await record(page, info, "returned", href);
-    }
-  });
-});
-
 if (selected("htmx")) test("HTMX title-letter Back fetches current browse data and restores extent without a native pageshow", async ({ page }, info) => {
   const expected = ["Anchor Movie", ...Array.from({ length: 32 }, (_, position) => `Return Movie ${String(position + 1).padStart(2, "0")}`), "Zeta Movie"];
   await page.setViewportSize({ width: 1440, height: 844 });
@@ -146,39 +101,3 @@ if (selected("shows")) for (const viaDetails of [false, true]) {
     }
   });
 }
-
-if (selected("search")) test.describe("live HTMX search then cold playback Back", () => {
-  test.use({ launchOptions: { args: ["--disable-back-forward-cache"] } });
-  test("live query uses current URL rather than the document's initial browse key", async ({ page }, info) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto(`${origin}/?view=movies&sort=title&limit=4`);
-    const initial = await record(page, info, "original-url", "");
-    await page.locator('form.search input[type="search"]').fill("Return Movie");
-    await expect(page).toHaveURL(/q=Return(?:\+|%20)Movie/);
-    // Search's public form resets scope/offset/limit. The 32-title search result
-    // fits its default 100 limit; this guards the changed-URL key, not extent.
-    const expected = Array.from({ length: 32 }, (_, position) => `Return Movie ${String(position + 1).padStart(2, "0")}`);
-    await expect(page.locator("#library .card h2")).toHaveText(expected);
-    const link = page.locator("#library a.card").filter({ hasText: "Return Movie 25" });
-    const href = (await link.getAttribute("href"))!;
-    await link.scrollIntoViewIfNeeded();
-    await link.focus();
-    await settle(page, href);
-    const before = await record(page, info, "before", href);
-    expect(before.state.document.document).toBe(initial.state.document.document);
-    expect(before.state.values).not.toEqual(initial.state.values);
-    await link.click();
-    await expect(page.locator("body.player-page")).toBeVisible();
-    try {
-      await page.goBack({ waitUntil: "domcontentloaded" });
-      await expect.poll(async () => (await snapshot(page, href)).document.shows.at(-1)?.persisted, { timeout: 1500, message: "cold search prerequisite: completed non-persisted pageshow" }).toBe(false);
-      const returned = await record(page, info, "cold-boundary", href);
-      expect(returned.state.document.document).not.toBe(before.state.document.document);
-      expect(returned.state.document.shows.at(-1)?.persisted).toBe(false);
-      expect(returned.state.navigation).toContain("back_forward");
-      await assertReturn(page, before.state, href, expected);
-    } finally {
-      await record(page, info, "returned", href);
-    }
-  });
-});

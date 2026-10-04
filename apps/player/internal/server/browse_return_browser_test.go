@@ -70,7 +70,18 @@ func TestBrowseReturnBrowserJourney(t *testing.T) {
 	if project == "" {
 		project = "chromium"
 	}
-	command := exec.CommandContext(t.Context(), "pnpm", "exec", "playwright", "test", "browse-return.spec.ts", "--workers=1", "--retries=0", "--project="+project) //nolint:gosec // Fixed command and explicitly disposable local Server.
+	specs := []string{"browse-return.spec.ts"}
+	switch mode {
+	case "cold", "search":
+		specs = []string{"browse-return-cold.spec.ts"}
+	case "bfcache":
+		specs = []string{"browse-return-bfcache.spec.ts"}
+	case "all":
+		specs = append(specs, "browse-return-cold.spec.ts", "browse-return-bfcache.spec.ts")
+	}
+	arguments := append([]string{"node_modules/@playwright/test/cli.js", "test"}, specs...)
+	arguments = append(arguments, "--workers=1", "--retries=0", "--project="+project)
+	command := exec.CommandContext(t.Context(), "node", arguments...) //nolint:gosec // Fixed installed test CLI and explicitly disposable local Server; no package-manager resolution.
 	command.Dir = "../../e2e"
 	command.Env = append(os.Environ(), "KINOSAIL_BROWSE_RETURN_URL="+web.URL, "KINOSAIL_BROWSE_RETURN_CASES="+mode, "KINOSAIL_E2E_URL="+web.URL)
 	command.Stdout, command.Stderr = os.Stdout, os.Stderr
