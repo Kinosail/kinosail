@@ -3,6 +3,7 @@ package main
 
 import (
 	"encoding/json"
+	"io/fs"
 	"os"
 	"path/filepath"
 
@@ -14,8 +15,13 @@ func main() {
 		os.Exit(2)
 	}
 	source, root := os.Args[1], os.Args[2]
+	cache, err := os.OpenRoot(root)
+	if err != nil {
+		os.Exit(2)
+	}
+	defer cache.Close()
 	labels, qualities := []string{}, []playback.PlaybackQuality{}
-	entries, _ := os.ReadDir(root)
+	entries, _ := fs.ReadDir(cache.FS(), ".")
 	for _, entry := range entries {
 		if entry.IsDir() && playback.QualityDirectory(entry.Name()) {
 			labels = append(labels, entry.Name())
@@ -32,7 +38,7 @@ func main() {
 			"manifestBytes": len(manifest),
 		})
 	}
-	_, masterErr := os.Stat(filepath.Join(root, "index.m3u8"))
+	_, masterErr := cache.Stat("index.m3u8")
 	_ = json.NewEncoder(os.Stdout).Encode(map[string]any{
 		"sourceVersion": playback.SourceVersion(source), "variants": variants,
 		"variantsReady": playback.VariantsReady(source, root, qualities), "masterPresent": masterErr == nil,

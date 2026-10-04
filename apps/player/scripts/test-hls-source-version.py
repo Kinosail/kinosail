@@ -12,6 +12,7 @@ import hmac
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import socket
 import struct
@@ -30,7 +31,7 @@ receipt = {'revision': revision, 'command': 'python3 apps/player/scripts/test-hl
 binary, probe = RUN / 'player', RUN / 'readiness'
 fixture = RUN / 'fixture.mkv'
 builds = [['go', '-C', 'apps/player', 'build', '-p=1', '-o', str(binary), './cmd/kinosail'],
-          ['go', '-C', 'apps/player', 'build', '-p=1', '-o', str(probe), './scripts/hls-readiness']]
+          ['go', 'build', '-p=1', '-o', str(probe), './scripts/testing/hls-readiness/main.go']]
 media_command = ['ffmpeg', '-nostdin', '-v', 'error', '-f', 'lavfi', '-i', 'testsrc2=s=640x360:r=24:d=32',
                  '-f', 'lavfi', '-i', 'sine=frequency=440:sample_rate=48000:duration=32',
                  '-c:v', 'libx264', '-threads', '2', '-preset', 'veryfast', '-profile:v', 'high', '-crf', '30',
@@ -64,9 +65,11 @@ def journey(name, source_time):
                KINOSAIL_MEDIA_DIR=str(media), KINOSAIL_CACHE_DIR=str(directory / 'cache'),
                KINOSAIL_BACKUP_DIR=str(directory / 'backups'), KINOSAIL_BACKUP_KEY='synthetic-hls-source-key')
     token = ''
+    response_location = ''
     opener = urllib.request.build_opener(NoRedirect)
 
     def http(path, method='GET', body=None, authenticated=True):
+        nonlocal response_location
         headers = {'Content-Type': 'application/json'}
         if authenticated and token:
             headers['Authorization'] = 'Bearer ' + token
@@ -76,6 +79,7 @@ def journey(name, source_time):
             with opener.open(request, timeout=40) as response:
                 return response.status, response.read()
         except urllib.error.HTTPError as error:
+            response_location = error.headers.get('Location', '')
             status, data = error.code, error.read()
             error.close()
             return status, data
@@ -102,6 +106,13 @@ def journey(name, source_time):
         check(status == 200, 'master_http_' + str(status))
         return data
 
+    def identity(data):
+        # Completion may update measured bandwidth while the same stream stays valid.
+        return tuple(re.sub(r'(?:AVERAGE-)?BANDWIDTH=[0-9]+,?', '', line)
+                     for line in data.decode().splitlines()
+                     if line.startswith(('#KINOSAIL-TRANSCODER:', '#EXT-X-STREAM-INF:'))
+                     or line and not line.startswith('#'))
+
     with (directory / 'server.log').open('w') as log:
         server = subprocess.Popen([str(binary)], cwd=ROOT, env=env, stdout=log, stderr=log)
         try:
@@ -126,7 +137,9 @@ def journey(name, source_time):
             plan = call('/api/v1/items/' + item_id + '/playback?videoCodecs=h264')
             hls = plan['compatible']
             check('/p/a-' in hls, 'fixture_must_use_audio_transcode')
-            check(http(hls, authenticated=False)[0] == 401, 'unauthenticated_hls_denial')
+            denial_status = http(hls, authenticated=False)[0]
+            check(denial_status == 303 and response_location == '/login', 'unauthenticated_hls_denial')
+            case['unauthenticatedHLS'] = {'status': denial_status, 'loginRedirect': True}
             check(not roots(), 'unauthenticated_cache_side_effect')
             preparation = '/api/v1/items/' + item_id + '/playback-prepare'
             check(http(preparation, 'POST', {'source': hls})[0] == 202, 'preparation_accepted')
@@ -147,8 +160,11 @@ def journey(name, source_time):
             root = roots()[0]
             case['exactGoAfterMaster'] = projection(root)
             check(case['exactGoAfterMaster']['variantsReady'], 'exact_go_variants_not_ready')
-            original = digest(root / 'index.m3u8')
-            check(master() == data, 'unchanged_source_cache_reuse')
+            if name == 'future2097':
+                check(all(not v['fresh'] for v in case['exactGoAfterMaster']['variants']), 'generic_fresh_was_relaxed')
+                case['genericTimestampFreshRemainsFalse'] = True
+            original = identity(data)
+            check(identity(master()) == original, 'unchanged_source_cache_reuse')
             rendition = next(line for line in data.decode().splitlines() if line.endswith('/index.m3u8'))
             base = hls.removesuffix('index.m3u8') + rendition.removesuffix('index.m3u8')
             fragments = []
@@ -167,7 +183,7 @@ def journey(name, source_time):
             # Move source mtime backwards: a timestamp-only cache check would accept old output.
             os.utime(source, (315532800, 315532800))
             first_changed = master()
-            check(hashlib.sha256(first_changed).hexdigest() != original, 'backwards_mtime_stale_reuse')
+            check(identity(first_changed) != original, 'backwards_mtime_stale_reuse')
             case['backwardsMtimeInvalidated'] = True
             # Change bytes while retaining exactly that mtime, then join one rebuild twice.
             with source.open('ab') as output:
@@ -175,14 +191,14 @@ def journey(name, source_time):
             os.utime(source, (315532800, 315532800))
             with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
                 rebuilt = list(pool.map(lambda _: master(), range(2)))
-            check(rebuilt[0] == rebuilt[1] and rebuilt[0] != first_changed, 'size_change_concurrent_rebuild')
+            check(identity(rebuilt[0]) == identity(rebuilt[1]) and identity(rebuilt[0]) != identity(first_changed), 'size_change_concurrent_rebuild')
             case['changedSizeInvalidatedAndConcurrentMastersMatch'] = True
             # A stale validated-policy marker must never be returned as the current master.
             current = root / 'index.m3u8'
             previous = current.read_bytes()
             lines = previous.splitlines(keepends=True)
             current.write_bytes(b''.join(b'#KINOSAIL-TRANSCODER:stale\n' if line.startswith(b'#KINOSAIL-TRANSCODER:') else line for line in lines))
-            check(master() == previous, 'stale_policy_master_reuse')
+            check(identity(master()) == identity(previous), 'stale_policy_master_reuse')
             case['staleMasterIdentityRegenerated'] = True
             case['result'] = 'passed'
         except Exception as error:
@@ -213,7 +229,7 @@ except Exception as error:
     receipt['failureClass'] = type(error).__name__
 finally:
     (RUN / 'receipt.json').write_text(json.dumps(receipt, indent=2, allow_nan=False) + '\n')
-    checksums = {str(path.relative_to(ROOT)): digest(path) for path in [Path(__file__), ROOT / 'apps/player/scripts/hls-readiness/main.go']}
+    checksums = {str(path.relative_to(ROOT)): digest(path) for path in [Path(__file__), ROOT / 'scripts/testing/hls-readiness/main.go']}
     checksums['receipt.json'] = digest(RUN / 'receipt.json')
     (RUN / 'SHA256SUMS').write_text(''.join(f'{value}  {key}\n' for key, value in checksums.items()))
     print(json.dumps({'result': receipt['result'], 'cases': receipt['cases'], 'receiptSHA256': checksums['receipt.json']}, allow_nan=False))
