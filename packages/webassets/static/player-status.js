@@ -62,7 +62,10 @@ if (playerStatus) {
         const end = player.buffered.end(index) + playbackTimelineOffset;
         if (start <= player.currentTime && end >= player.currentTime) { position = Math.max(position, start); break; }
       }
-      if (restorePosition && player.readyState && Math.abs(player.currentTime - position) >= 0.1) setPlayerTime(position);
+      if (restorePosition && player.readyState && Math.abs(player.currentTime - position) >= 0.1) {
+        preparationSeek = {source: player.currentSrc || player.src, seconds: position};
+        setPlayerTime(position);
+      }
       player.muted = preparation.muted;
       playbackPreparation = undefined;
     }};
