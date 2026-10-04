@@ -62,7 +62,7 @@ def control(source, output, name):
         evidence = root / "safe-results"
         command += ["--output", str(evidence)]
     if name == "permission-denied":
-        command = [sys.executable, "-c", "import os,runpy,sys; os.killpg=lambda *a: (_ for _ in ()).throw(PermissionError('fictional control')); sys.argv=['apps/subtitles/scripts/campaign-r06-public.py','--output',sys.argv[1]]; runpy.run_path(sys.argv[0],run_name='__main__')", str(evidence)]
+        command = [sys.executable, "-c", "import os,runpy,sys; sys.path.insert(0,'apps/subtitles/scripts'); os.killpg=lambda *a: (_ for _ in ()).throw(PermissionError('fictional control')); sys.argv=['apps/subtitles/scripts/campaign-r06-public.py','--output',sys.argv[1]]; runpy.run_path(sys.argv[0],run_name='__main__')", str(evidence)]
     started = time.monotonic()
     group_absent_before_cleanup = None
     try:
