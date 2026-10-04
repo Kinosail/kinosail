@@ -1,6 +1,6 @@
-# R06 preparation checkpoint
+# R06 action recovery checkpoint
 
-Status: public Save/Restore controls passed; all eight isolated browser deadline cases failed as intended. The production implementation and actual native lost-response proof remain pending.
+Status: implementing. Public Save/Restore controls passed, and all eight isolated browser deadline cases failed as intended. The additive Go receipt implementation is prepared but unverified. Browser recovery and actual native lost-response proof remain pending.
 
 This branch starts at reviewed R07 `95b41857a4e337c2e3e8d335abf3fa4d9a8f6e1b`. R07 production sources are unchanged. R16 preparation is excluded and preserved.
 
@@ -70,3 +70,13 @@ These additions have not run. They reference the approved receipt-only `Config.S
 The child process controls use fictional audio supplied by a real local shell executable. External clock cancellation and actual lifecycle restart are separate tests. Both require running status and exclusive admission to stay held until the application returns after child output and process `Wait`; a failed completion write must expose uncertainty without replay. The delayed child fixture is released and allowed to settle on fixture exit.
 
 Automatic maintenance also needs the shared application admission boundary. Its existing 15-minute throttle remains intact. A short focused run cannot establish the full automatic scheduling interval; that remains an explicit runtime limit alongside source review and the existing lifecycle controls. Draft start/cancel retain their existing explicit job correlation and two-hour bound; no coarse receipt is added.
+
+## Go implementation candidate, not runtime acceptance
+
+The candidate adds three Owner-only public receipt endpoints and opt-in activation on the seven reviewed existing routes. Typed adapters validate the existing request shape before activation. Preparation and the exact body digest/running transition are synced before issuing a receipt or launching work. All current-process prepared validation/busy conflicts remain reusable. Every prior-process prepared ID is discarded; interrupted running work becomes unknown and is never resumed. Completion status records the actual existing application outcome; failed completion persistence exposes uncertainty.
+
+One shared admission boundary counts concurrent legacy work and excludes receipt jobs until it settles. The public manager adapters, older general provider fetch adapters, automatic-sync preview, audio consumers, embedded extraction, provider fetch/upgrade, automatic maintenance, and reviewed cleanup participate. Cleanup's existing opt-in preview, digest, confirmation, renames, and settings behavior are retained. An admission conflict performs none of that work. Draft keeps its existing explicit start/cancel/status workflow and concurrency behavior.
+
+The registry uses strict version-1 JSON, at most 64 receipts and 96 KiB, an installation-root file boundary, `0600` temporary metadata, file sync, rename, and directory sync. Invalid/unreadable registry data fails closed for receipt requests while legacy Owner workflows stay available. Receipt metadata contains no submitted text, raw path, provider output, or audio. At most two bounded transient audio results are retained. Worker admission is released only after application return, including the existing real audio process `Wait`. Browser request cancellation does not cancel a dispatched write; the job follows Server lifecycle and its reviewed operation deadline.
+
+The candidate updates the private Owner/MCP route classifications and OpenAPI document. A lightweight source inventory calculation matched the unchanged 468-route baseline digest before adding the three classified routes; it produced 471 routes and digest `f4ae5a85309bd96129c09c3859bce01d8ab3dad262da39164ae93465f79a6610`. This is source preparation, not execution of the route authorization suite. `make max-loc` and whitespace checks passed. No Go, linter, Chromium, container, provider, or deployment verification has run against this candidate. The 26 public tests were all committed first at `b4d86db0`; no unit test was written after implementation. R16 preparation remains excluded and byte-exact.

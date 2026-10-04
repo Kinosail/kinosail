@@ -94,6 +94,8 @@ type Config struct {
 	TrustedHTTPS        *trustedhttps.Manager
 	Supporter           SupporterConfig
 	SubtitleApp         bool
+
+	SubtitleOperationTime SubtitleOperationTime
 }
 
 // New returns Kinosail's HTTP interface.
@@ -180,6 +182,9 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	settings.subtitleProvider = subtitles
 	backups := newBackupManager(lifecycle, config.DataDir, config.BackupDir, config.BackupKey, config.BackupInterval, config.BackupRetention, workloads)
 	subtitleManager := newSubtitleManager(index, settings, subtitles, probe, backups)
+	subtitleManager.operations = newSubtitleOperations(config)
+	subtitles.admission = subtitleManager.operations.admission
+	subtitles.sync.admission = subtitles.admission
 	if managedLifecycle && config.SubtitleApp {
 		subtitleManager.schedule(config.Lifecycle)
 	}

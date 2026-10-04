@@ -126,6 +126,14 @@ func editSubtitleTiming(document cleanedSubtitle, input subtitleEdit) (cleanedSu
 }
 
 func (manager *subtitleManager) previewSubtitleEdit(request *http.Request, id string, input subtitleEdit) (subtitleReview, cleanedSubtitle, int, error) {
+	if input.AutomaticSync {
+		ctx, settled, err := manager.provider.admission.enter(request.Context())
+		if err != nil {
+			return subtitleReview{}, cleanedSubtitle{}, http.StatusConflict, err
+		}
+		defer settled()
+		request = request.WithContext(ctx)
+	}
 	if err := validateSubtitleEdit(input, false); err != nil {
 		return subtitleReview{}, cleanedSubtitle{}, http.StatusBadRequest, err
 	}

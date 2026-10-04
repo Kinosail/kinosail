@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
@@ -142,6 +143,13 @@ func applySubtitleCleanup(index *libraryIndex, settings *settingsStore, language
 	}
 	if settings == nil {
 		return 0, errors.New("subtitle settings are unavailable")
+	}
+	if provider := settings.subtitleProvider; provider != nil {
+		_, settled, err := provider.admission.enter(context.Background())
+		if err != nil {
+			return 0, err
+		}
+		defer settled()
 	}
 	plan, err := planSubtitleCleanup(index, languages, forced)
 	if err != nil {
