@@ -1,0 +1,13 @@
+VERIFY 10 changed path(s) against origin/main
+PASS max-loc (0s)
+PASS diff-check (0s)
+CACHED shellcheck
+PASS go-compile:internal/server (7s)
+PASS go-focused:internal/server (6s)
+CACHED e2e-list
+FAIL container-native (1s); full log: /Users/mikeo/Documents/Codex/2026-10-04/task-2/.repos/kinosail/.git/kinosail-verify-logs/apps-player/e5c8b199c1065c3ab053ee7d7ca903f978e6cb97c9d5c31f6b3bed7776da2174.log
+Cannot connect to Podman. Please verify your connection to the Linux system using `podman system connection list`, or try `podman machine init` and `podman machine start` to manage a new Linux VM
+Error: unable to connect to Podman socket: Get "http://d/v6.0.2/libpod/_ping": ssh: rejected: connect failed (open failed)
+container test failed at line 87
+make[1]: *** [container-test] Error 125
+make: *** [verify-changed] Error 1

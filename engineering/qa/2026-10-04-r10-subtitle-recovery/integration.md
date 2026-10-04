@@ -43,3 +43,11 @@ integration test-runner binary hash was not captured; committed source and all
 six delivered immutable asset hashes were verified. A separate R08 correction
 tracks the known responsive hidden-action CSS issue; this batch does not change
 that CSS.
+
+## Protected lint repair
+
+The required Player lint job on PR #469 reported cognitive complexity 18 in the disposable caption fixture. The test-only repair extracts the existing fixture setup into a synchronous helper. Mode validation, locking, state resets, generation checks, transport behavior and all assertions remain unchanged. Independent review verified byte-level equivalence before the repair was committed.
+
+At `cc3beadfda7659e34f22dba03856d3019f0265f2`, changed lint passed and all six actual Go caption journeys passed again. Each served asset matched the prior bundle and each stalled transport closed exactly once. The 24 fresh screenshots, source hashes, safe result projection and exact compressed logs are in [the repair evidence](integration/lint-repair/native-proof.json). Committed affected checks passed before their container stage; local Podman remains unavailable. Required hosted checks remain the authority for the complete suites.
+
+Supplementary layout evidence is classified separately. No authentication, security rule, test predicate or timeout was relaxed.
