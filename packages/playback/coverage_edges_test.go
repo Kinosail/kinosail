@@ -137,13 +137,13 @@ func TestHLSPlaylistPublicationAndFreshnessEdges(t *testing.T) { //nolint:cyclop
 	result := make(chan error, 1)
 	result <- nil
 	writeErr := errors.New("write")
-	if err := PublishVariants(t.Context(), source, directory, "ffmpeg", "avc1", []PlaybackQuality{quality}, result, 1, false, func(string, []byte) error { return writeErr }); !errors.Is(err, writeErr) {
+	if err := PublishVariants(t.Context(), source, directory, "ffmpeg", []PlaybackQuality{quality}, result, 1, false, func(string, []byte) error { return writeErr }); !errors.Is(err, writeErr) {
 		t.Fatalf("early publication error = %v", err)
 	}
 	result = make(chan error, 1)
 	result <- nil
 	writes := 0
-	if err := PublishVariants(t.Context(), source, directory, "ffmpeg", "avc1", []PlaybackQuality{quality}, result, 1, false, func(path string, data []byte) error {
+	if err := PublishVariants(t.Context(), source, directory, "ffmpeg", []PlaybackQuality{quality}, result, 1, false, func(path string, data []byte) error {
 		writes++
 		return os.WriteFile(path, data, 0o600)
 	}); err != nil || writes != 2 {

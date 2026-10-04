@@ -78,7 +78,7 @@ func TestSourceSpecificFramesColorAndDisplayGeometry(t *testing.T) { //nolint:cy
 	}
 }
 
-func TestMasterUsesActualInitializationInsteadOfGuesses(t *testing.T) {
+func TestMasterUsesActualInitialization(t *testing.T) {
 	root := t.TempDir()
 	directory := filepath.Join(root, "360p")
 	if err := os.Mkdir(directory, 0o700); err != nil {
@@ -89,7 +89,7 @@ func TestMasterUsesActualInitializationInsteadOfGuesses(t *testing.T) {
 	}
 	var manifest []byte
 	writer := func(_ string, data []byte) error { manifest = append([]byte(nil), data...); return nil }
-	if err := WriteMaster(filepath.Join(root, "index.m3u8"), "encoder", "avc1.64002a,mp4a.40.2", []PlaybackQuality{{Label: "360p", Width: 1920, Height: 1080, Bitrate: 1000000}}, true, writer); err != nil {
+	if err := WriteMaster(filepath.Join(root, "index.m3u8"), "encoder", []PlaybackQuality{{Label: "360p", Width: 1920, Height: 1080, Bitrate: 1000000}}, true, writer); err != nil {
 		t.Fatal(err)
 	}
 	for _, expected := range []string{`CODECS="hvc1.2.6.L120.B0,opus"`, `VIDEO-RANGE=HLG`, `RESOLUTION=640x360`} {
@@ -101,7 +101,7 @@ func TestMasterUsesActualInitializationInsteadOfGuesses(t *testing.T) {
 		t.Fatal(err)
 	}
 	manifest = nil
-	if err := WriteMaster(filepath.Join(root, "index.m3u8"), "encoder", "avc1", []PlaybackQuality{{Label: "360p", Width: 640, Height: 360, Bitrate: 1}}, true, writer); err == nil || manifest != nil {
+	if err := WriteMaster(filepath.Join(root, "index.m3u8"), "encoder", []PlaybackQuality{{Label: "360p", Width: 640, Height: 360, Bitrate: 1}}, true, writer); err == nil || manifest != nil {
 		t.Fatal("invalid initialization was published")
 	}
 }

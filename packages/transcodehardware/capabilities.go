@@ -168,26 +168,6 @@ func (capabilities Capabilities) PreferredCodec(configured, accelerator string, 
 	return ""
 }
 
-// HLSCodecs is a legacy estimate. HLS master publication reads the actual
-// initialization data and never uses this estimate as output evidence.
-func HLSCodecs(videoCodec, audioCodec, mode, outputCodec string, hasAudio bool) string {
-	video := map[string]string{"h264": "avc1.64002a", "hevc": "hvc1", "vp9": "vp09", "av1": "av01"}[videoCodec]
-	if mode == "transcode" || video == "" {
-		video = map[string]string{"h264": "avc1.64002a", "hevc": "hvc1", "vp9": "vp09", "av1": "av01"}[transcodepolicy.NormalizeCodec(outputCodec)]
-	}
-	audio := ""
-	if hasAudio {
-		audio = map[string]string{"aac": "mp4a.40.2", "mp3": "mp4a.6B", "ac3": "ac-3", "eac3": "ec-3", "opus": "opus", "flac": "fLaC"}[audioCodec]
-		if mode != "remux" || audio == "" {
-			audio = "mp4a.40.2"
-		}
-	}
-	if audio != "" {
-		video += "," + audio
-	}
-	return video
-}
-
 func (capabilities Capabilities) CurrentCodecs() []Codec {
 	if capabilities.verification == nil {
 		return capabilities.Codecs

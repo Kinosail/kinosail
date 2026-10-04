@@ -41,7 +41,7 @@ func TestHLSPlaylistLifecycle(t *testing.T) { //nolint:cyclop // One test covers
 	}
 	write := func(path string, data []byte) error { return os.WriteFile(path, data, 0o600) }
 	master := filepath.Join(filepath.Dir(directory), "index.m3u8")
-	if err := WriteMaster(master, "ffmpeg-v1", "avc1.64002a,mp4a.40.2", []PlaybackQuality{quality}, true, write); err != nil {
+	if err := WriteMaster(master, "ffmpeg-v1", []PlaybackQuality{quality}, true, write); err != nil {
 		t.Fatal(err)
 	}
 	if !MasterFresh(master, source, "ffmpeg-v1") || !CacheFresh(master, source, "ffmpeg-v1") {
@@ -76,11 +76,11 @@ func TestHLSPlaylistRejectsIncompleteAndUnsafeInputs(t *testing.T) { //nolint:cy
 	}
 	write := func(string, []byte) error { t.Fatal("invalid master caused a write"); return nil }
 	for _, qualities := range [][]PlaybackQuality{nil, {{Label: "../bad", Width: 1, Height: 1, Bitrate: 1}}, {{Label: "360p", Width: 0, Height: 360, Bitrate: 1}}} {
-		if err := WriteMaster(filepath.Join(root, "master.m3u8"), "ffmpeg", "avc1", qualities, false, write); err == nil {
+		if err := WriteMaster(filepath.Join(root, "master.m3u8"), "ffmpeg", qualities, false, write); err == nil {
 			t.Fatalf("accepted %#v", qualities)
 		}
 	}
-	if err := WriteMaster(filepath.Join(root, "master.m3u8"), "bad\nvalue", "avc1", []PlaybackQuality{{Label: "360p", Width: 640, Height: 360, Bitrate: 1}}, false, write); err == nil {
+	if err := WriteMaster(filepath.Join(root, "master.m3u8"), "bad\nvalue", []PlaybackQuality{{Label: "360p", Width: 640, Height: 360, Bitrate: 1}}, false, write); err == nil {
 		t.Fatal("accepted transcoder header injection")
 	}
 	oversized := filepath.Join(root, "huge.m3u8")
@@ -103,25 +103,25 @@ func TestPublishVariantsCoversSuccessAndFailure(t *testing.T) {
 	quality := PlaybackQuality{Label: "360p", Width: 640, Height: 360, Bitrate: 493_000}
 	results := make(chan error, 1)
 	results <- nil
-	if err := PublishVariants(context.Background(), source, directory, "ffmpeg", "avc1", []PlaybackQuality{quality}, results, 1, false, osWriteFile); err == nil {
+	if err := PublishVariants(context.Background(), source, directory, "ffmpeg", []PlaybackQuality{quality}, results, 1, false, osWriteFile); err == nil {
 		t.Fatal("published without a rendition")
 	}
 	results = make(chan error, 1)
 	results <- errors.New("encode failed")
-	if err := PublishVariants(context.Background(), source, directory, "ffmpeg", "avc1", []PlaybackQuality{quality}, results, 1, false, osWriteFile); err == nil || err.Error() != "encode failed" {
+	if err := PublishVariants(context.Background(), source, directory, "ffmpeg", []PlaybackQuality{quality}, results, 1, false, osWriteFile); err == nil || err.Error() != "encode failed" {
 		t.Fatalf("encode error = %v", err)
 	}
 	closed := make(chan error)
 	close(closed)
-	if err := PublishVariants(context.Background(), source, directory, "ffmpeg", "avc1", []PlaybackQuality{quality}, closed, 1, false, osWriteFile); err == nil {
+	if err := PublishVariants(context.Background(), source, directory, "ffmpeg", []PlaybackQuality{quality}, closed, 1, false, osWriteFile); err == nil {
 		t.Fatal("accepted an early closed result channel")
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
-	if err := PublishVariants(ctx, source, directory, "ffmpeg", "avc1", []PlaybackQuality{quality}, make(chan error), 1, false, osWriteFile); !errors.Is(err, context.Canceled) {
+	if err := PublishVariants(ctx, source, directory, "ffmpeg", []PlaybackQuality{quality}, make(chan error), 1, false, osWriteFile); !errors.Is(err, context.Canceled) {
 		t.Fatalf("cancel error = %v", err)
 	}
-	if err := PublishVariants(context.Background(), source, directory, "ffmpeg", "avc1", []PlaybackQuality{quality}, make(chan error), 0, false, osWriteFile); err == nil {
+	if err := PublishVariants(context.Background(), source, directory, "ffmpeg", []PlaybackQuality{quality}, make(chan error), 0, false, osWriteFile); err == nil {
 		t.Fatal("accepted invalid worker count")
 	}
 }
