@@ -1,0 +1,32 @@
+
+Running 25 tests using 1 worker
+
+(node:25641) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › player-progress.spec.ts:54:55 › failed pause save is visible and retries the same revision: HTTP 503 @smoke (399ms)
+  ✓   2 [chromium] › player-progress.spec.ts:54:55 › failed pause save is visible and retries the same revision: network rejection @smoke (279ms)
+  ✓   3 [chromium] › player-progress.spec.ts:67:1 › latest pending revision wins over late failures and successes @smoke (520ms)
+  ✓   4 [chromium] › player-progress.spec.ts:83:1 › ended failure holds next navigation and offers an explicit continue (275ms)
+  ✓   5 [chromium] › player-progress.spec.ts:92:1 › ended Retry saves watched state before next navigation @smoke (376ms)
+  ✓   6 [chromium] › player-progress.spec.ts:104:42 › HTTP 401 does not repeat policy or authentication failures (237ms)
+  ✓   7 [chromium] › player-progress.spec.ts:104:42 › HTTP 403 does not repeat policy or authentication failures (235ms)
+  ✓   8 [chromium] › player-progress.spec.ts:104:42 › HTTP 400 does not repeat policy or authentication failures (220ms)
+  ✓   9 [chromium] › player-progress.spec.ts:104:42 › HTTP 404 does not repeat policy or authentication failures (219ms)
+  ✓  10 [chromium] › player-progress.spec.ts:115:61 › pending local save cannot cross profile ownership (234ms)
+  ✓  11 [chromium] › player-progress.spec.ts:115:61 › pending local save cannot cross item ownership (237ms)
+  ✓  12 [chromium] › player-progress.spec.ts:115:61 › pending local save cannot cross cast ownership (234ms)
+  ✓  13 [chromium] › player-progress.spec.ts:115:61 › pending local save cannot cross offline ownership (218ms)
+  ✓  14 [chromium] › player-progress.spec.ts:131:1 › preparation and cast never emit local progress; offline uses its own journal (205ms)
+  ✓  15 [chromium] › player-progress.spec.ts:147:1 › audio track change stays on the page when progress fails (215ms)
+  ✓  16 [chromium] › player-progress.spec.ts:156:1 › timeout gives a bounded Retry state without blocking viewing (333ms)
+  ✓  17 [chromium] › player-progress.spec.ts:165:1 › periodic, hidden-page and page-close saves inspect failures and preserve latest progress (215ms)
+  ✓  18 [chromium] › player-progress.spec.ts:182:1 › HTTP failure diagnostics carry bounded session/revision/request correlation without secrets (226ms)
+  ✓  19 [chromium] › player-progress.spec.ts:195:1 › bounded positions reject invalid media time without making a request (213ms)
+  ✓  20 [chromium] › player-progress.spec.ts:201:1 › page-close dispatch sends the latest position while an older request is in flight @smoke (335ms)
+  ✓  21 [chromium] › player-progress.spec.ts:214:1 › watched failure on the last title survives later pause and hiding events (232ms)
+  ✓  22 [chromium] › player-progress.spec.ts:226:1 › ended policy failure still offers Continue without saving (297ms)
+  ✓  23 [chromium] › player-progress.spec.ts:237:1 › localized recovery notices use Go-rendered copy (233ms)
+  ✓  24 [chromium] › player-progress.spec.ts:244:1 › audio track change cannot mistake an unexpected successful HTTP page for a progress acknowledgement (206ms)
+  ✓  25 [chromium] › player-progress.spec.ts:252:1 › audio queue does not drop a failed watched save when it advances (313ms)
+
+  25 passed (11.8s)

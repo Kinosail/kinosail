@@ -1,0 +1,51 @@
+{
+  "environment": "Isolated Chromium, mocked HTTP, synthetic HTTPS origin; not populated Server E2E",
+  "inputs": {
+    "taskRevision": "b8a0c9b51f0f1b6d31a1f39bf948ac89021e0998",
+    "frozenRevision": "6ec0b5c944ad4651e358e9302875c605c615785b",
+    "frozenSenderAndQueueSHA256": "036130baca81a79fb17b2807cc886d10b140ed843dca13f2562c7cacbc236ac3",
+    "testSHA256": "7ab3dfd78aedf5000430cd6f7d7f51dca0ba69d2f47edd2877534ab2cc74a1fd",
+    "environment": "Isolated Chromium, synthetic HTTPS origin, mocked HTTP responses, one worker, video off"
+  },
+  "result": "reproduced-frozen-R03-ordering-defect",
+  "stats": {
+    "startTime": "2026-10-04T09:43:20.038Z",
+    "duration": 12287.544,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  },
+  "cases": [
+    {
+      "title": "audio queue saves a new-track pause while final watched continuation still settles",
+      "status": "failed",
+      "error": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 2\nReceived: 1\n\nCall Log:\n- Timeout 1500ms exceeded while waiting on the predicate",
+      "observed": {
+        "progress-source-provenance": {
+          "revision": "6ec0b5c944ad4651e358e9302875c605c615785b",
+          "senderAndQueueSHA256": "036130baca81a79fb17b2807cc886d10b140ed843dca13f2562c7cacbc236ac3"
+        },
+        "queued-new-track-pause": {
+          "progressPath": "/progress/next",
+          "pendingSeconds": 3,
+          "pendingRevision": 2,
+          "flightSettled": true
+        }
+      }
+    }
+  ],
+  "rawArtifacts": {
+    "results.json": "b38d342c80cc75c9105d2f1aee5f898bd7e7eae821c1bce0f20e17b936f09148",
+    "browser-private.log": "baba205ab8edae5a0fda9d02d22e13a2045092f7a9f4cab3924c783bd7446dc3",
+    "source-inputs.json": "49ee2086e12525ce6a030442f84a3abeee39bb329438d9311975f96b35c74e28",
+    "artifacts/.last-run.json": "d37aa659fd1aa5652eab2bf88f1c9e0cc145fd006d2762d714414c2b43544d2a",
+    "artifacts/player-progress-audio-queu-c461d--continuation-still-settles-chromium/test-failed-1.png": "5c5b7fe5f2657c10dff4e96b1fdaeca2f39643ed6c49a8a005ecec7d02284935",
+    "artifacts/player-progress-audio-queu-c461d--continuation-still-settles-chromium/trace.zip": "4c4b158424da90537b5e3900339c6de72eb1ba2cdacf516612b3e4ebbd080a4c",
+    "artifacts/player-progress-audio-queu-c461d--continuation-still-settles-chromium/error-context.md": "9e898d2859a3c9d652e9a8fc90be551942bcac2f6f88a84cec664506729d3c20"
+  },
+  "excludedAttempt": {
+    "path": ".verification/r08-now-playing/drain-red-20261004T0940",
+    "result": "skipped after global teardown deadline; excluded from defect proof; video was unintentionally enabled"
+  }
+}

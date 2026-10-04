@@ -1,0 +1,205 @@
+{
+  "task": "R03",
+  "testedImplementation": "7956411098dba77931c30cd5966a6e542eae115d",
+  "review": "Integration owner reviewed the exact implementation commit and reported no findings.",
+  "sourceSHA256": {
+    "apps/player/e2e/player-progress.spec.ts": "5c790d61be65388e2a75ca17b088b48e66b1091079f4458bf037a66a39f4660d",
+    "apps/player/e2e/player-seeking.spec.ts": "1b27ef3ee7220c71633f6bdc5fe6ec7d96e13389fa5e3176f93ff33ea2441aa4",
+    "apps/player/e2e/test-instance-progress.spec.ts": "43fb0372b402c859af599bbbc0d522daa2e86032a37f15c09b2e27d8619a5f73",
+    "apps/player/internal/server/static/player-streaming-recovery.js": "7e66f1cfc023fed1f7a00916c0ea2453a94ab688a92028fe7e2597009e757c2f",
+    "packages/playerweb/player_template.go": "8e94f40660a1bda4f2b435477b813b9c992eafd7fca62d21e0e92fc8ec9c9d42",
+    "packages/playerweb/progress_notice.go": "004a9903ae33f3f13bce9df586a6b3d4a56a74c06d07a58020189a9ffb33141c",
+    "packages/webassets/static/player-progress.js": "036130baca81a79fb17b2807cc886d10b140ed843dca13f2562c7cacbc236ac3",
+    "scripts/ci/run-populated-settings.py": "84dbea3dfd8153b0baeb3bf8914789e79e13921ad40ad7056fb5d13c55f5a095",
+    "scripts/ci/test_populated_settings.py": "cc8f494d561520833d8dc74a9d308c5002523d5ccf4ca16b9a1c097caa47cc5f",
+    "scripts/testing/test-player-progress-local.py": "86a4ef01bbcfe449e436ae2cf6e0a1677fd183b06f9f79d1179914c05056ad36"
+  },
+  "checks": {
+    "isolatedLatestChromium": 25,
+    "earlierCombinedChromium": 47,
+    "helperContractTests": 3,
+    "browserLintErrors": 0,
+    "browserLintWarnings": 0,
+    "baselineRealServerRepetitionsPassed": 2,
+    "candidateRealServerRepetitionsPassed": 4,
+    "scopedAxeViolations": 0,
+    "responsiveWidths": [
+      390,
+      1440,
+      1920
+    ],
+    "sourceCap": "passed",
+    "diffCheck": "Implementation-owner working-tree check passed; that did not cover the committed QA diff. Integration owner corrected 10 trailing-whitespace lines and verifies the complete origin/main-to-candidate diff separately."
+  },
+  "limits": "In-page recovery only. Page-close keepalive is best effort. No container, TLS, native client, physical device, Safari or Firefox proof.",
+  "preservedPrivateArtifacts": ".verification/r03-progress (raw traces, fixture credentials and state; do not share)",
+  "evidenceSHA256": {
+    "README.md": "da3e9e19b09512e6758b98edc310bbe60d99494a8dd897b03c8442ec59dcc153",
+    "browser-lint.log": "c3f22b54ffc1b5b24fd84371124e4c134c1ec7609d4c49fe031f96bb46994f91",
+    "ci-helper-green.log": "5279d1fc9a1ced44f9c96da1414ef59e4676f963fbad52e7a1a2903538819b0d",
+    "ci-helper-red.log": "68105b8bebce39e558f4ec47a05dae0a8aa6f9a293105576fbc94daccb952f7e",
+    "ci-origin-green.json": "5ca1e5bddb23f81ffb9c844a810270799cd2c2c4af46b7dc971de798631b5572",
+    "ci-origin-green.log": "e2e4096d1842b25a88777fcf45d8ed09f33eb58183e6b855249e111b19b35f26",
+    "ci-origin-green.log.gz": "5278aa245b5e585dc579af5947924916c93a3c611505ba7c718f7379e6cc1341",
+    "close-red-browser.log": "b15a4b73da27c7aad236d25d49f37318773cb5488c15ccb353238a21738f0d7b",
+    "close-red-browser.log.gz": "b5a966ba85dcb71f1936d3a3233d7e039382b793923d45d379a3cca9cd44c954",
+    "closing-flight-inconclusive.json": "0a040f4d080a3406cd4484af455933a4f80adf68ab50a03333bffdf97b2d8385",
+    "closing-flight-red.json": "4185f911c76efed65f4b9a30e1d67f265c2e017bd6442d86b8911092a2efc12c",
+    "closing-flight-red.log": "a5a877d7228454196e969c12a8ee6560e4ca0ea30f7e9d76e4cbd6b7230e6028",
+    "closing-flight-red.log.gz": "fa46f408105ce70bc26f87e4a778812a10d8951372f3a3fde2dc52a5992af375",
+    "design-detect.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "drain-frozen-red.json": "a3c8499f9812ad110d041dbf1f3f53ec4a704980f2c7d95f1b542a070caba48a",
+    "final-integration-checks-receipt.json": "51d2914a0cc820173a186bcad7af9935185f15318e05bbe443c2ed0d988a7c21",
+    "final-player-baseline-lint-comparison.json": "07db1cab7bd3d52f226c71b7c7ef888f9551259c5f9b2e9dc849a29040f8d77e",
+    "final-subtitles-baseline-lint-comparison.json": "9202f79075a17885d4410793400ae4681d6dbcb3e351dd34b2d0199f51974718",
+    "fresh-native/baseline-browser.log": "2f92d982e78bfbdfb7bf9033e8ad13ca0467d94cd5ab61b03eea3c1d214114ce",
+    "fresh-native/baseline-browser.log.gz": "1dc232044fa240490bd01403b021406da5fedadc7dfce46bd92d6ba238958a89",
+    "fresh-native/baseline-real-server-rejection.png": "3fe80fa174f473065400ae41d0e49d8552440ec9880db53944a5c504c2dac1aa",
+    "fresh-native/candidate-browser.log": "b90fd0d1590da49d90835839e446c4a98ed79d18cf9b7b25bdecd9918ac10222",
+    "fresh-native/candidate-browser.log.gz": "06a45d0f2f9840d1b87e89cd05802e76f5aa586a29ad090c2e2fc50ce69c6bb8",
+    "fresh-native/pending-save.png": "c4a020a91eb0c609d66366f25db16b92bab7a26abfa5223f246f97ecea747159",
+    "fresh-native/real-server-rejection.png": "46233677d4c75dfe6b5e1f2a770550b174e0f7146c2ccf356ea7375450ab5314",
+    "fresh-native/saved.png": "08022d18290fd18a2023cded0dd00255a4c19447d3015b35c61499b4bd6d753a",
+    "fresh-native/unsaved-1440.png": "3e42dc622ba8676fd6bcbd925daa58cb1a486f096331d3374352d9c350897d4f",
+    "fresh-native/unsaved-1920.png": "866dc0568b9c8087ecd1f9d5f111dffb3e3750a75298feed3afd4562277e2de9",
+    "fresh-native/unsaved-390.png": "757b8bd8667ab2e6b0ddd3f524615750ce6e54ad147f3b4338ca8f46f179434d",
+    "fresh-native-proof.json": "f760ad030960f46ff2eddaef7f1b223776efabc4a6b1cac1de1677b70093576a",
+    "native/baseline-browser.log": "c383d1d4290c45f02c8a3f06fcb370115b8e41fee1360f25a9d7d770c1085e74",
+    "native/baseline-real-server-rejection.png": "f4a191d4cf88552a1a1abf4dbf97b86f0392dc3ed1cfbc18778de85318fef64b",
+    "native/candidate-browser.log": "4fefbb60599303c9a07bbfedc80912dd2375568357545a818aac09dd24b5c31d",
+    "native/pending-save.png": "c4a020a91eb0c609d66366f25db16b92bab7a26abfa5223f246f97ecea747159",
+    "native/real-server-rejection.png": "a4ae13d723624c276b2f31384cbbb5481b1d8d1ec330107bc79c7476444136a9",
+    "native/saved.png": "08022d18290fd18a2023cded0dd00255a4c19447d3015b35c61499b4bd6d753a",
+    "native/unsaved-1440.png": "3e42dc622ba8676fd6bcbd925daa58cb1a486f096331d3374352d9c350897d4f",
+    "native/unsaved-1920.png": "866dc0568b9c8087ecd1f9d5f111dffb3e3750a75298feed3afd4562277e2de9",
+    "native/unsaved-390.png": "757b8bd8667ab2e6b0ddd3f524615750ce6e54ad147f3b4338ca8f46f179434d",
+    "native-proof.json": "cf341c21e09ee23b2ace7c63fa199b20125ed4fe74a33a5946d7ffee65504eca",
+    "native-server-proof.log": "328dae94ce5e331aaf515e49ee932b5fc377e1d6c10b391f26113a4d9d346537",
+    "queue-drain-green.json": "9e5bced230baa8d7920587c14468229f506bf378eb7c750c24c0e4e9ca26d10c",
+    "queue-drain-green.log": "4e0a50597239c38ff3e75f1b6a364c78f7b5216255ecf6dcb090339851fec6c0",
+    "queue-drain-green.log.gz": "29f62bbb99ccfca7698fac983c56a7f761d1a5ac6fa70b75e1fd228f3faff3ee",
+    "red-browser.log": "47bb1fa1af26269d45e6eeec8d47cfb982fdb013ed5edf0b2af9f104fa94d0bf",
+    "red-browser.log.gz": "a367457312d159bfa6e655a110ff2427bded4b147e217df81411972025cec4a6",
+    "review-browser.log": "895985806345cb25051eb1fcd81bb25eb12937bc15410d9efe362cec147044a7",
+    "server-progress-diagnostics.json": "be10f8cba35745d8965bbb9dbc259353c08c2d5128839b23215c327d7d895dda",
+    "verified-browser.log": "0f00954726bac3406745bc677472f3bafe9d644e09e6a298e661a6b5023a9b56"
+  },
+  "textEvidencePolicy": "Readable logs remove trailing horizontal whitespace only. Byte-exact original logs from evidence commit 6ec0b5c944ad4651e358e9302875c605c615785b are retained in deterministic gzip archives.",
+  "originalTextEvidence": {
+    "red-browser.log": {
+      "sourceCommit": "6ec0b5c944ad4651e358e9302875c605c615785b",
+      "sha256": "4742e3919d84b6f53e33d4312c90e1dd5f98e16c563caba3bc5ba05dc00a6696",
+      "archive": "red-browser.log.gz",
+      "archiveSHA256": "a367457312d159bfa6e655a110ff2427bded4b147e217df81411972025cec4a6",
+      "readableSHA256": "47bb1fa1af26269d45e6eeec8d47cfb982fdb013ed5edf0b2af9f104fa94d0bf"
+    },
+    "close-red-browser.log": {
+      "sourceCommit": "6ec0b5c944ad4651e358e9302875c605c615785b",
+      "sha256": "c0e66b52fdd8109c675b103dc1116b307ddb007abdcac0d463ed20feb8c20065",
+      "archive": "close-red-browser.log.gz",
+      "archiveSHA256": "b5a966ba85dcb71f1936d3a3233d7e039382b793923d45d379a3cca9cd44c954",
+      "readableSHA256": "b15a4b73da27c7aad236d25d49f37318773cb5488c15ccb353238a21738f0d7b"
+    },
+    "ci-origin-green.log": {
+      "baseCommit": "f2f60a711942f26e90f08b9825229a935c17779b",
+      "testedSpecSHA256": "24f2f7344f1ed668b1b9c1ddd39fd7eb1634f10d86cb9948a4e503a3702a8213",
+      "sha256": "e2e4096d1842b25a88777fcf45d8ed09f33eb58183e6b855249e111b19b35f26",
+      "archive": "ci-origin-green.log.gz",
+      "archiveSHA256": "5278aa245b5e585dc579af5947924916c93a3c611505ba7c718f7379e6cc1341",
+      "readableSHA256": "e2e4096d1842b25a88777fcf45d8ed09f33eb58183e6b855249e111b19b35f26"
+    },
+    "closing-flight-red.log": {
+      "rawSHA256": "1fe4aa0c99b6d300acff93c70b8cb9051c1ac9e81d7fd66fca387a332b6a81a9",
+      "archive": "closing-flight-red.log.gz",
+      "archiveSHA256": "fa46f408105ce70bc26f87e4a778812a10d8951372f3a3fde2dc52a5992af375",
+      "normalization": "Trailing horizontal whitespace only; raw original preserved."
+    },
+    "queue-drain-green.log": {
+      "rawSHA256": "4e0a50597239c38ff3e75f1b6a364c78f7b5216255ecf6dcb090339851fec6c0",
+      "archive": "queue-drain-green.log.gz",
+      "archiveSHA256": "29f62bbb99ccfca7698fac983c56a7f761d1a5ac6fa70b75e1fd228f3faff3ee",
+      "normalization": "Trailing horizontal whitespace only; raw original preserved."
+    }
+  },
+  "integration": {
+    "base": "d440fb05ede52498b08c9a0b53d2ea929a1b584b",
+    "productionSources": "Historical original hashes remain pinned above. Integration overrides include the isolated fixture origin and the confirmed sender drain correction.",
+    "ciHook": {
+      "files": {
+        "apps/player/scripts/test-container.sh": "c9e21457c9ad62726c8bc6950f04ce3243b445a0b1674190ff984896ca2e36f9",
+        "apps/player/scripts/test-browser-journeys.sh": "a0eef1ef5922dcdcb961add62c773cba6acc0c98edc7af1d01220765a6bd9cf4"
+      },
+      "requiredTitles": 4,
+      "retainedLibraryPaginationJourney": true,
+      "extraction": "Focused sourced browser-journey functions preserve required commands and keep the container script below 300 source lines."
+    },
+    "sourceSHA256": {
+      "apps/player/e2e/player-progress.spec.ts": "24f2f7344f1ed668b1b9c1ddd39fd7eb1634f10d86cb9948a4e503a3702a8213",
+      "apps/player/e2e/player-seeking.spec.ts": "1b27ef3ee7220c71633f6bdc5fe6ec7d96e13389fa5e3176f93ff33ea2441aa4",
+      "apps/player/e2e/test-instance-progress.spec.ts": "43fb0372b402c859af599bbbc0d522daa2e86032a37f15c09b2e27d8619a5f73",
+      "apps/player/internal/server/static/player-streaming-recovery.js": "7e66f1cfc023fed1f7a00916c0ea2453a94ab688a92028fe7e2597009e757c2f",
+      "packages/playerweb/player_template.go": "8e94f40660a1bda4f2b435477b813b9c992eafd7fca62d21e0e92fc8ec9c9d42",
+      "packages/playerweb/progress_notice.go": "004a9903ae33f3f13bce9df586a6b3d4a56a74c06d07a58020189a9ffb33141c",
+      "packages/webassets/static/player-progress.js": "98d232f651950d97364e50ff1335820962209d97583a3440f295b51fd8cbb0bd",
+      "scripts/ci/run-populated-settings.py": "84dbea3dfd8153b0baeb3bf8914789e79e13921ad40ad7056fb5d13c55f5a095",
+      "scripts/ci/test_populated_settings.py": "cc8f494d561520833d8dc74a9d308c5002523d5ccf4ca16b9a1c097caa47cc5f",
+      "scripts/testing/test-player-progress-local.py": "86a4ef01bbcfe449e436ae2cf6e0a1677fd183b06f9f79d1179914c05056ad36",
+      "apps/player/e2e/player-progress-queue-drain.spec.ts": "92727254d224c8ff2cf09fab3c54bf9f4f2e8865ddf2e8251b87f2715814889a"
+    },
+    "sourceOverrides": {
+      "apps/player/e2e/player-progress.spec.ts": "Pin isolated fixture origin independently of hosted disposable Server baseURL. Original testedImplementation/sourceSHA256 remain historical; production files unchanged.",
+      "packages/webassets/static/player-progress.js": "After successful watched continuation, drain a newly owned pending progress update before settling the shared flight; confirmed by frozen-source HTTP RED before this change."
+    },
+    "hostedFixtureFailure": {
+      "run": "https://github.com/Kinosail/kinosail/actions/runs/37191647968",
+      "class": "isolated fixture navigated actual Server; real CSP correctly rejected inline scripts",
+      "affectedSmokeCases": 5,
+      "securityPolicy": "unchanged",
+      "candidateRerun": {
+        "passed": 25,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0,
+        "receipt": "ci-origin-green.json"
+      }
+    },
+    "queueDrain": {
+      "candidateCommit": "44ca53af6",
+      "upstreamMinimalCommit": "41fa08d757568c686f7475d9d6959f8c4f2ae946",
+      "regression": "apps/player/e2e/player-progress-queue-drain.spec.ts",
+      "redExpectedFailed": 1,
+      "redSkipped": 0,
+      "green": {
+        "receipt": "queue-drain-green.json",
+        "passed": 27,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0,
+        "globalErrors": 0
+      },
+      "scope": "Isolated media-promise ordering fault; actual HTTP dispatch assertion, not native populated playback proof.",
+      "guardedCandidateCommit": "d72451da6d752e311f12ef7a9daee75f779bb6b7",
+      "supersedingFlightRedCommit": "df47fe8dbd186445153576ae90bb29f121d26044",
+      "supersedingFlightRed": "closing-flight-red.json",
+      "inconclusiveTimeout": "closing-flight-inconclusive.json (excluded; synchronization expression awaited the held promise)",
+      "independentReview": "Exact b402 source/evidence independently cleared; all 11 integration source, ten historical source and 34 evidence hashes plus raw gzip were verified."
+    },
+    "freshNativeProof": {
+      "testedCommit": "b4024370f47e44545e879637b0aa7cc9238f414a",
+      "receipt": "fresh-native-proof.json",
+      "baselinePassed": 2,
+      "baselineCandidateOnlySkipped": 2,
+      "candidatePassed": 4,
+      "candidateSkipped": 0,
+      "workingDiff": "empty",
+      "sameGuardedSource": true
+    },
+    "localCommittedChecks": {
+      "receipt": "final-integration-checks-receipt.json",
+      "sharedTemplateGo": "passed",
+      "player": "94 identical baseline lint findings in 56 unchanged cited sources",
+      "subtitles": "94 identical baseline lint findings in 56 unchanged cited sources",
+      "testInstance": "Existing Podman socket unavailable; no restart or cleanup"
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "revision": "b4024370f47e44545e879637b0aa7cc9238f414a",
+  "workingDiffSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "sourceSHA256": {
+    "packages/webassets/static/player-progress.js": "98d232f651950d97364e50ff1335820962209d97583a3440f295b51fd8cbb0bd",
+    "packages/playerweb/player_template.go": "8e94f40660a1bda4f2b435477b813b9c992eafd7fca62d21e0e92fc8ec9c9d42",
+    "packages/playerweb/progress_notice.go": "004a9903ae33f3f13bce9df586a6b3d4a56a74c06d07a58020189a9ffb33141c",
+    "apps/player/internal/server/static/player-streaming-recovery.js": "7e66f1cfc023fed1f7a00916c0ea2453a94ab688a92028fe7e2597009e757c2f",
+    "apps/player/e2e/player-progress.spec.ts": "24f2f7344f1ed668b1b9c1ddd39fd7eb1634f10d86cb9948a4e503a3702a8213",
+    "apps/player/e2e/test-instance-progress.spec.ts": "43fb0372b402c859af599bbbc0d522daa2e86032a37f15c09b2e27d8619a5f73",
+    "scripts/testing/test-player-progress-local.py": "86a4ef01bbcfe449e436ae2cf6e0a1677fd183b06f9f79d1179914c05056ad36"
+  },
+  "command": "GOMAXPROCS=2 python3 scripts/testing/test-player-progress-local.py",
+  "environment": "Native Go Kinosail Server; loopback HTTP; one Chromium worker",
+  "data": "Disposable synthetic Owner, TOTP, and generated 12-second video. State preserved.",
+  "boundaries": "Browser baseline replays the base progress asset against the same real Server. No production, container, device, physical TV, or TLS deployment proof.",
+  "result": "passed",
+  "runs": [
+    {
+      "phase": "baseline",
+      "command": "node node_modules/@playwright/test/cli.js test test-instance-progress.spec.ts --project=chromium --workers=1 --repeat-each=2 --reporter=line",
+      "exitCode": 0
+    },
+    {
+      "phase": "candidate",
+      "command": "node node_modules/@playwright/test/cli.js test test-instance-progress.spec.ts --project=chromium --workers=1 --repeat-each=2 --reporter=line",
+      "exitCode": 0
+    }
+  ],
+  "fixtureDirectory": ".verification/r03-progress/20261004T101222Z",
+  "privateReceiptSHA256": "288763a5ed848590f98331023694b1d08fd5794345307955c64799738dd934ed",
+  "artifactSHA256": {
+    "fresh-native/baseline-real-server-rejection.png": "3fe80fa174f473065400ae41d0e49d8552440ec9880db53944a5c504c2dac1aa",
+    "fresh-native/pending-save.png": "c4a020a91eb0c609d66366f25db16b92bab7a26abfa5223f246f97ecea747159",
+    "fresh-native/real-server-rejection.png": "46233677d4c75dfe6b5e1f2a770550b174e0f7146c2ccf356ea7375450ab5314",
+    "fresh-native/saved.png": "08022d18290fd18a2023cded0dd00255a4c19447d3015b35c61499b4bd6d753a",
+    "fresh-native/unsaved-1440.png": "3e42dc622ba8676fd6bcbd925daa58cb1a486f096331d3374352d9c350897d4f",
+    "fresh-native/unsaved-1920.png": "866dc0568b9c8087ecd1f9d5f111dffb3e3750a75298feed3afd4562277e2de9",
+    "fresh-native/unsaved-390.png": "757b8bd8667ab2e6b0ddd3f524615750ce6e54ad147f3b4338ca8f46f179434d",
+    "fresh-native/baseline-browser.log": "2f92d982e78bfbdfb7bf9033e8ad13ca0467d94cd5ab61b03eea3c1d214114ce",
+    "fresh-native/candidate-browser.log": "b90fd0d1590da49d90835839e446c4a98ed79d18cf9b7b25bdecd9918ac10222"
+  },
+  "cases": {
+    "baselinePassed": 2,
+    "baselineCandidateOnlySkipped": 2,
+    "candidatePassed": 4,
+    "candidateSkipped": 0
+  },
+  "sourceRelation": "Final guarded sender and isolated-origin correction; exact code source at b4024370."
+}

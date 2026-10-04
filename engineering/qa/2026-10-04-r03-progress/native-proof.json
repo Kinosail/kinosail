@@ -1,0 +1,48 @@
+{
+  "revision": "7956411098dba77931c30cd5966a6e542eae115d",
+  "workingDiffSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "sourceSHA256": {
+    "packages/webassets/static/player-progress.js": "036130baca81a79fb17b2807cc886d10b140ed843dca13f2562c7cacbc236ac3",
+    "packages/playerweb/player_template.go": "8e94f40660a1bda4f2b435477b813b9c992eafd7fca62d21e0e92fc8ec9c9d42",
+    "packages/playerweb/progress_notice.go": "004a9903ae33f3f13bce9df586a6b3d4a56a74c06d07a58020189a9ffb33141c",
+    "apps/player/internal/server/static/player-streaming-recovery.js": "7e66f1cfc023fed1f7a00916c0ea2453a94ab688a92028fe7e2597009e757c2f",
+    "apps/player/e2e/player-progress.spec.ts": "5c790d61be65388e2a75ca17b088b48e66b1091079f4458bf037a66a39f4660d",
+    "apps/player/e2e/test-instance-progress.spec.ts": "43fb0372b402c859af599bbbc0d522daa2e86032a37f15c09b2e27d8619a5f73",
+    "scripts/testing/test-player-progress-local.py": "86a4ef01bbcfe449e436ae2cf6e0a1677fd183b06f9f79d1179914c05056ad36"
+  },
+  "command": "GOMAXPROCS=2 python3 scripts/testing/test-player-progress-local.py",
+  "environment": "Native Go Kinosail Server; loopback HTTP; one Chromium worker",
+  "data": "Disposable synthetic Owner, TOTP, and generated 12-second video. State preserved.",
+  "boundaries": "Browser baseline replays the base progress asset against the same real Server. No production, container, device, physical TV, or TLS deployment proof.",
+  "result": "passed",
+  "runs": [
+    {
+      "phase": "baseline",
+      "command": "node node_modules/@playwright/test/cli.js test test-instance-progress.spec.ts --project=chromium --workers=1 --repeat-each=2 --reporter=line",
+      "exitCode": 0
+    },
+    {
+      "phase": "candidate",
+      "command": "node node_modules/@playwright/test/cli.js test test-instance-progress.spec.ts --project=chromium --workers=1 --repeat-each=2 --reporter=line",
+      "exitCode": 0
+    }
+  ],
+  "fixtureDirectory": ".verification/r03-progress/20261004T075204Z",
+  "privateReceiptSHA256": "42473cfb06b2ccd63aad62f16d878c781c82d26dac21e5c8a70804688cf99d9d",
+  "baselineProgressSHA256": "cbacb65adcbd74e3b7d89bd9ccc53fd101eaff47af9a38ea62f4d22c5df312e3",
+  "artifactSHA256": {
+    "native/baseline-browser.log": "c383d1d4290c45f02c8a3f06fcb370115b8e41fee1360f25a9d7d770c1085e74",
+    "native/baseline-real-server-rejection.png": "f4a191d4cf88552a1a1abf4dbf97b86f0392dc3ed1cfbc18778de85318fef64b",
+    "native/candidate-browser.log": "4fefbb60599303c9a07bbfedc80912dd2375568357545a818aac09dd24b5c31d",
+    "native/pending-save.png": "c4a020a91eb0c609d66366f25db16b92bab7a26abfa5223f246f97ecea747159",
+    "native/real-server-rejection.png": "a4ae13d723624c276b2f31384cbbb5481b1d8d1ec330107bc79c7476444136a9",
+    "native/saved.png": "08022d18290fd18a2023cded0dd00255a4c19447d3015b35c61499b4bd6d753a",
+    "native/unsaved-1440.png": "3e42dc622ba8676fd6bcbd925daa58cb1a486f096331d3374352d9c350897d4f",
+    "native/unsaved-1920.png": "866dc0568b9c8087ecd1f9d5f111dffb3e3750a75298feed3afd4562277e2de9",
+    "native/unsaved-390.png": "757b8bd8667ab2e6b0ddd3f524615750ce6e54ad147f3b4338ca8f46f179434d"
+  },
+  "diagnosticCounts": {
+    "HTTP204": 6,
+    "HTTP400": 4
+  }
+}

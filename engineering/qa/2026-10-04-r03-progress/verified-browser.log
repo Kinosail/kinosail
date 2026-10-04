@@ -1,0 +1,55 @@
+
+Running 47 tests using 1 worker
+
+(node:13294) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/47] [chromium] › player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: HTTP 503
+[2/47] [chromium] › player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: network rejection
+[3/47] [chromium] › player-progress.spec.ts:63:1 › latest pending revision wins over late failures and successes
+[4/47] [chromium] › player-progress.spec.ts:79:1 › ended failure holds next navigation and offers an explicit continue
+[5/47] [chromium] › player-progress.spec.ts:88:1 › ended Retry saves watched state before next navigation
+[6/47] [chromium] › player-progress.spec.ts:100:42 › HTTP 401 does not repeat policy or authentication failures
+[7/47] [chromium] › player-progress.spec.ts:100:42 › HTTP 403 does not repeat policy or authentication failures
+[8/47] [chromium] › player-progress.spec.ts:100:42 › HTTP 400 does not repeat policy or authentication failures
+[9/47] [chromium] › player-progress.spec.ts:100:42 › HTTP 404 does not repeat policy or authentication failures
+[10/47] [chromium] › player-progress.spec.ts:111:61 › pending local save cannot cross profile ownership
+[11/47] [chromium] › player-progress.spec.ts:111:61 › pending local save cannot cross item ownership
+[12/47] [chromium] › player-progress.spec.ts:111:61 › pending local save cannot cross cast ownership
+[13/47] [chromium] › player-progress.spec.ts:111:61 › pending local save cannot cross offline ownership
+[14/47] [chromium] › player-progress.spec.ts:127:1 › preparation and cast never emit local progress; offline uses its own journal
+[15/47] [chromium] › player-progress.spec.ts:143:1 › audio track change stays on the page when progress fails
+[16/47] [chromium] › player-progress.spec.ts:152:1 › timeout gives a bounded Retry state without blocking viewing
+[17/47] [chromium] › player-progress.spec.ts:161:1 › periodic, hidden-page and page-close saves inspect failures and preserve latest progress
+[18/47] [chromium] › player-progress.spec.ts:178:1 › HTTP failure diagnostics carry bounded session/revision/request correlation without secrets
+[19/47] [chromium] › player-progress.spec.ts:192:1 › bounded positions reject invalid media time without making a request
+[20/47] [chromium] › player-progress.spec.ts:198:1 › page-close dispatch sends the latest position while an older request is in flight
+[21/47] [chromium] › player-seeking.spec.ts:5:1 › compatible playback resumes and seeks from the requested HLS window
+[22/47] [chromium] › player-seeking.spec.ts:59:48 › native HLS keeps seeks inside seekable media and rebuilds outside its window
+[23/47] [chromium] › player-seeking.spec.ts:59:48 › native HLS keeps seeks inside buffered media and rebuilds outside its window
+[24/47] [chromium] › player-seeking.spec.ts:120:1 › native HLS keeps a slow first play request alive while the stream loads
+[25/47] [chromium] › player-seeking.spec.ts:138:1 › native HLS offers recovery when the first play never becomes ready
+[26/47] [chromium] › player-seeking.spec.ts:147:1 › seeking to the start before initial metadata does not restore the resume position
+[27/47] [chromium] › player-startup-readiness.spec.ts:12:4 › Safari startup handles a leading frame timestamp
+[28/47] [chromium] › player-startup-readiness.spec.ts:12:4 › Safari startup handles a large unbuffered gap
+[29/47] [chromium] › player-startup-readiness.spec.ts:12:4 › Safari startup handles an insufficient buffer
+[30/47] [chromium] › player-startup-readiness.spec.ts:12:4 › Safari startup handles metadata without future data
+[31/47] [chromium] › player-startup-readiness.spec.ts:28:1 › Safari startup preserves a pause requested before playback starts
+[32/47] [chromium] › player-startup-readiness.spec.ts:37:1 › Safari startup accepts the remaining buffer near the end of a video
+[33/47] [chromium] › player-startup-readiness.spec.ts:49:1 › Safari startup waits after preparation restores a position following blocked autoplay
+[34/47] [chromium] › player-startup-readiness.spec.ts:78:75 › Safari startup waits for a playable buffer after timer
+[35/47] [chromium] › player-startup-readiness.spec.ts:78:75 › Safari startup waits for a playable buffer after blocked autoplay
+[36/47] [chromium] › player-startup-readiness.spec.ts:78:75 › Safari startup waits for a playable buffer after canplay
+[37/47] [chromium] › player-startup-readiness.spec.ts:78:75 › Safari startup waits for a playable buffer after seeked
+[38/47] [chromium] › player-startup-readiness.spec.ts:117:34 › Safari startup keeps the required gesture usable when preloading stops at readyState 1
+[39/47] [chromium] › player-startup-readiness.spec.ts:117:34 › Safari startup keeps the required gesture usable when preloading stops at readyState 3
+[40/47] [chromium] › player-startup-readiness.spec.ts:157:60 › Safari startup prepares muted media without a loading tap or progress save with immediate
+[41/47] [chromium] › player-startup-readiness.spec.ts:157:60 › Safari startup prepares muted media without a loading tap or progress save with queued pause
+[42/47] [chromium] › player-startup-readiness.spec.ts:204:36 › Safari startup shows Play when even muted preparation is rejected at networkState 1
+[43/47] [chromium] › player-startup-readiness.spec.ts:204:36 › Safari startup shows Play when even muted preparation is rejected at networkState 2
+[44/47] [chromium] › player-startup-readiness.spec.ts:231:1 › Safari startup preserves a newer seek while preparing media
+[45/47] [chromium] › player-startup-readiness.spec.ts:252:1 › Safari startup prevents progress saves from overlapping queued pause events
+[46/47] [chromium] › player-startup-readiness.spec.ts:271:44 › Safari startup restores playable media when its first frame is at 20.021
+[47/47] [chromium] › player-startup-readiness.spec.ts:271:44 › Safari startup restores playable media when its first frame is at 21.937
+  47 passed (29.5s)
