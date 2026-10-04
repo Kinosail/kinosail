@@ -1,0 +1,32 @@
+{
+  "base": "0d85c75a5ed2f304a8c657ecc2a06c11dbbcef0a",
+  "scope": "workflow dispatcher and fictional controls only; product drivers remain separate",
+  "test_first": {
+    "tests": 4,
+    "result": "RED",
+    "failures": 11,
+    "errors": 1,
+    "reason": "router and manual proof job absent"
+  },
+  "implemented": {
+    "all_ci_contracts": 59,
+    "result": "PASS",
+    "seconds": 2.052,
+    "actionlint": "PASS",
+    "workflow_validation": "PASS",
+    "max_loc": "PASS",
+    "whitespace": "PASS"
+  },
+  "inputs": {
+    ".github/workflows/ci.yml": "c5acb3ae0c49175daddf0a21110fa7aa2aaf958247bf999a9ca72f907a573c6b",
+    ".github/workflows/app.yml": "d49c86d9bb725cec935d64887489f12ea459515673bbe68f9601508d5ce551b8",
+    ".github/workflows/layout-stability.yml": "2d8cc088ab280d81d227ec49ff3b907378923f31dfb1e3ce6d5d7320c6d3b4be",
+    "scripts/ci/run-campaign-proof.sh": "421abdf380eaa51a9a2197bdedd2e9ca1d08bccff31bd5f9557718b9054e5e2b",
+    "scripts/ci/test_campaign_proof.py": "6b5f60d5a486d15b44d02a6092f705c3fec9c221ea899c8824034344321749a7"
+  },
+  "unexecuted": [
+    "real Go/Node/browser/build/media/native/UI/fixture proof",
+    "normal protected exact-head validation"
+  ],
+  "normal_gate_changes": false
+}
