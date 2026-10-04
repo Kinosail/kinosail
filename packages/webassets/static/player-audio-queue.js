@@ -55,10 +55,10 @@ const queueCurrent = context => queueOwned() && context.profile === progressProf
   context.cursor === queueCursor && context.source === player.src;
 const queuePositionText = () => `${queueStatus?.dataset.trackLabel || "Track"} ${queueCursor + 1} ${queueStatus?.dataset.ofLabel || "of"} ${queueItems.length}`;
 const queueHandlers = () => {
-  try {
-    navigator.mediaSession?.setActionHandler("previoustrack", queueCursor > 0 && queueOwned() ? () => moveAudioQueue(-1) : null);
-    navigator.mediaSession?.setActionHandler("nexttrack", audioQueue.length && queueOwned() ? () => moveAudioQueue(1) : null);
-  } catch (_) { /* The page controls remain usable when system actions are unavailable. */ }
+  for (const [action, handler] of [["previoustrack", queueCursor > 0 && queueOwned() ? () => moveAudioQueue(-1) : null],
+    ["nexttrack", audioQueue.length && queueOwned() ? () => moveAudioQueue(1) : null]]) {
+    try { navigator.mediaSession?.setActionHandler(action, handler); } catch (_) { /* Page controls remain usable. */ }
+  }
 };
 const refreshQueueControls = () => {
   const enabled = queueOwned() && !queueFlight && !queueSourceChanging;
@@ -72,14 +72,15 @@ const reportQueueFailure = error => {
   if (!queueStatus) return;
   const failure = error?.failure || "network", requestID = failure === "progress" ? progressStatus?.dataset.progressRequestId || "" : error?.requestID || queueReadRequestID;
   Object.assign(queueStatus.dataset, {queueFailure: failure,
-    queueOperation: failure === "progress" ? "progress-save" : failure === "playback" ? "playback" : queueItems.length ? "item-read" : "queue-read",
+    queueOperation: failure === "progress" ? "progress-save" : ["playback", "media"].includes(failure) ? "playback" : queueItems.length ? "item-read" : "queue-read",
     queueSession: /^[a-zA-Z0-9_-]{8,64}$/.test(playbackSession) ? playbackSession : "",
     queueRequestId: /^[a-zA-Z0-9_-]{1,64}$/.test(requestID) ? requestID : ""});
   queueStatus.textContent = failure === "authentication" ? "Could not load this track. Reload to sign in again." :
     failure === "ownership" ? "Playback ownership changed. Reload to check this queue." :
     failure === "policy" || failure === "invalid" || failure === "response" ? "Could not load this track. Reload to check access to this queue." :
     failure === "progress" ? "Your position could not be saved. Retry saving, then choose the track again." :
-    failure === "playback" ? "This track is ready. Press Play to start it." : "Could not load this track. Try the track control again.";
+    failure === "media" ? "This track could not play. Open its details to check the file." :
+    failure === "playback" ? "Press Play to start this track." : "Could not load this track. Try the track control again.";
 };
 const clearQueueFailure = () => {
   if (queueStatus) {
@@ -138,7 +139,7 @@ const moveAudioQueue = (delta, saveCurrent = true) => {
       if (saveCurrent && !(await save(player.ended))?.ok) throw queueError("progress");
       if (!queueCurrent(context)) throw queueError("ownership");
       commitAudioQueueItem(item, cursor);
-      try { await requestPlay("queue-advance"); } catch (_) { reportQueueFailure(queueError("playback")); }
+      try { await requestPlay("queue-advance"); } catch (_) { reportQueueFailure(queueError(player.error ? "media" : "playback")); }
       return true;
     } catch (error) { reportQueueFailure(error); return false; }
     finally { if (queueFlight === flight) { queueFlight = undefined; refreshQueueControls(); } }
@@ -170,7 +171,7 @@ const loadAudioQueue = () => {
 queuePrevious?.addEventListener("click", () => moveAudioQueue(-1));
 queueNext?.addEventListener("click", () => moveAudioQueue(1));
 queueRetry?.addEventListener("click", loadAudioQueue);
-player.addEventListener("error", () => { if (queueSourceChanging) { queueSourceChanging = false; reportQueueFailure(queueError("playback")); refreshQueueControls(); } });
+player.addEventListener("error", () => { if (queueSourceChanging) { queueSourceChanging = false; reportQueueFailure(queueError("media")); refreshQueueControls(); } });
 if (player.dataset.queue) {
   new MutationObserver(() => { clearQueueFailure(); refreshQueueControls(); }).observe(player, {attributes: true, attributeFilter: ["data-cast-active", "data-room"]});
   loadAudioQueue();
