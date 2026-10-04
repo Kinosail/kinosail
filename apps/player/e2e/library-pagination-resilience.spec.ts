@@ -126,7 +126,7 @@ test("late Show continuation cannot append after the real HTMX search replacemen
 });
 
 test("without IntersectionObserver the Go pagination link remains an ordinary page fallback", async ({ page }) => {
-	await page.addInitScript(() => { delete (window as typeof window & { IntersectionObserver?: unknown }).IntersectionObserver; });
+	await page.addInitScript(() => { Reflect.deleteProperty(window, "IntersectionObserver"); });
 	await page.goto(pageURL);
 	const next = page.getByRole("link", { name: "Load more" });
 	await expect(next).toBeVisible();
