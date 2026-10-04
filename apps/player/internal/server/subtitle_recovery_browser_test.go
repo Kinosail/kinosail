@@ -72,21 +72,7 @@ type captionFaultPeer struct {
 
 func (peer *captionFaultPeer) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	if request.URL.Path == "/__caption-fixture" {
-		peer.mutex.Lock()
-		defer peer.mutex.Unlock()
-		if request.Method == http.MethodPost {
-			mode := request.URL.Query().Get("mode")
-			if mode != "headers" && mode != "body" && mode != "normal" {
-				http.Error(writer, "Invalid fixture mode", http.StatusBadRequest)
-				return
-			}
-			peer.mode, peer.calls, peer.closed = mode, 0, 0
-			peer.generation++
-		}
-		writer.Header().Set("Content-Type", "application/json")
-		if err := json.NewEncoder(writer).Encode(map[string]int{"calls": peer.calls, "closed": peer.closed}); err != nil {
-			return
-		}
+		peer.serveFixture(writer, request)
 		return
 	}
 	if !strings.HasPrefix(request.URL.Path, "/subtitle/") {
@@ -119,4 +105,22 @@ func (peer *captionFaultPeer) ServeHTTP(writer http.ResponseWriter, request *htt
 		peer.closed++
 	}
 	peer.mutex.Unlock()
+}
+
+func (peer *captionFaultPeer) serveFixture(writer http.ResponseWriter, request *http.Request) {
+	peer.mutex.Lock()
+	defer peer.mutex.Unlock()
+	if request.Method == http.MethodPost {
+		mode := request.URL.Query().Get("mode")
+		if mode != "headers" && mode != "body" && mode != "normal" {
+			http.Error(writer, "Invalid fixture mode", http.StatusBadRequest)
+			return
+		}
+		peer.mode, peer.calls, peer.closed = mode, 0, 0
+		peer.generation++
+	}
+	writer.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(writer).Encode(map[string]int{"calls": peer.calls, "closed": peer.closed}); err != nil {
+		return
+	}
 }
