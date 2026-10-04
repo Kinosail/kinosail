@@ -26,6 +26,7 @@ run.mkdir(parents=True)
 media = args.fixture_only if args.fixture_only else run / 'media'
 media.mkdir()
 title = 'real album queue advances source and all Now Playing identity to the fictional second track'
+action_title = 'real album queue keeps system previous and next current and exposes only fresh current-track actions'
 sources = ['packages/webassets/static/player-progress.js', 'packages/webassets/static/player-presentation.js',
            'packages/playerweb/player_template.go', 'apps/player/e2e/test-instance-audio-queue.spec.ts',
            'scripts/testing/test-player-audio-queue-local.py']
@@ -143,22 +144,26 @@ try:
             receipt['browserExitCode'] = result.returncode
             if any(hashlib.sha256((root / name).read_bytes()).hexdigest() != wanted for name, wanted in receipt['sourceSHA256'].items()):
                 raise RuntimeError('Source or test harness changed while executing the native proof')
+            phase = 'named-browser-result-verification'
+            report = json.loads((run / 'browser-results.json').read_text())
+            def results(suite, name):
+                values = [result for spec in suite.get('specs', []) if spec['title'] == name for test in spec['tests'] for result in test['results']]
+                return values + [result for child in suite.get('suites', []) for result in results(child, name)]
+            named = {name: [case for suite in report['suites'] for case in results(suite, name)]
+                     for name in ([title] if args.red else [title, action_title])}
+            receipt['namedResults'] = {name: [case['status'] for case in cases] for name, cases in named.items()}
             if args.red:
                 phase = 'named-defect-reproduction-verification'
-                report = json.loads((run / 'browser-results.json').read_text())
-                def results(suite):
-                    values = [result for spec in suite.get('specs', []) if spec['title'] == title for test in spec['tests'] for result in test['results']]
-                    return values + [result for child in suite.get('suites', []) for result in results(child)]
-                cases = [result for suite in report['suites'] for result in results(suite)]
+                cases = named[title]
                 if result.returncode == 0 or len(cases) != 2 or any(case['status'] != 'failed' for case in cases):
                     raise RuntimeError('Both pre-fix reproductions must fail after actual queue advance')
                 for case in cases:
                     attached = next(value for value in case['attachments'] if value['name'] == 'now-playing-after-real-advance')
-                    observed = json.loads(Path(attached['path']).read_text())
+                    observed = json.loads(Path(attached['path']).read_text() if attached.get('path') else base64.b64decode(attached['body']))
                     if observed['title'] != 'Copper <Moon> & Harbor' or observed['heading'] != 'Lantern Start' or observed['metadataTitle'] != 'Lantern Start':
                         raise RuntimeError('Pre-fix runtime mismatch was not reproduced')
                 receipt['result'] = 'reproduced'
-            elif result.returncode == 0:
+            elif result.returncode == 0 and all(len(cases) == 2 and all(case['status'] == 'passed' for case in cases) for cases in named.values()):
                 receipt['result'] = 'passed'
             else:
                 raise RuntimeError('Album queue proof failed')
