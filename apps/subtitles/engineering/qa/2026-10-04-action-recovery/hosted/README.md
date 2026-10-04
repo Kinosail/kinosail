@@ -78,8 +78,11 @@ go test -p 1 -parallel 1 -overlay=<generated portable overlay> \
   -count=1 -timeout=80s -json
 ```
 
-The command uses `GOMAXPROCS=2`, `GOPROXY=off`, `GOSUMDB=off`,
-`GOTOOLCHAIN=local`, and the repository's `go.work`. The exact selector and
+The current command uses `GOMAXPROCS=2`, `GOPROXY=off`,
+`GOTOOLCHAIN=local`, and the repository's `go.work`. It does not override
+`GOSUMDB`; normal checksum verification remains active. Historical local
+receipts retain their original environment and are never rewritten.
+The exact selector and
 53 source hashes are published in `protocol-scope.json`. The tracked
 `subtitle-maintenance-baseline.go.txt` is the clean compilation fixture;
 neither dirty R16 original is staged or copied into the published recipe.
@@ -109,12 +112,33 @@ boundary. Browser durable recovery, actual playback/transport, summary
 preservation, lint, full required gates, integration, merge, and fetched
 ancestry remain separate requirements.
 
-The driver has a written failure analysis before implementation, AST and
-source/fixture static validation, and a mode that never invokes Go. Its new
-timeout, interruption, process-group, malformed-output, unknown-name, and
-safe-export controls have not executed. No separate test-first dynamic harness
-controls were prepared or run for those paths. That validation gap must remain
-explicit during source review and hosted evidence assessment. The 26 public
+The initial driver has a written failure analysis before implementation, AST
+and source/fixture static validation, and a mode that never invokes Go. Source
+review found dispatch, provenance, output-validation, and process-settlement
+gaps before any hosted execution. Thirteen fictional public-driver controls
+were prepared at `d8f5d08ce52a8a61f6ea3664182298d947b9a3df` before correcting
+those paths. They are source text under `driver-controls/` and remain unrun.
+They use a small disposable Git fixture and a fictional Go event executable;
+their results cannot establish product GREEN. The real Go program is never
+invoked by that fixture. The 26 public
 operation tests were written before product implementation; their admission,
 durability, Owner/CSRF, audio, restart, expiry, and child/Wait assertions remain
 unchanged in the portable selector.
+
+The repaired driver supplies the exact default artifact output expected by
+root's router. Public execution requires its checkout revision to equal the
+valid `GITHUB_SHA`; source-only mode can run outside GitHub. Before/after
+revision and whole tracked-tree digests detect drift, excluding only the exact
+physical R16 maintenance overlay file, which has separate original hashes.
+The Go tool, driver, and two provenance/projection helpers have byte digests.
+The 53 protocol pins are selected inputs, not every compiled dependency.
+The transient compiled test executable's digest is not captured; the receipt
+states that limitation explicitly.
+
+Duplicate package terminals, missing or malformed used fields, and unknown
+named-test actions prevent GREEN. Failed tests export only fixed phase hints
+and an allowlisted test filename/line when available. Unknown assertions stay
+`unclassified-inconclusive`; discarded private output cannot prove their exact
+cause. The owned process group is killed before reaping its leader, including
+when a departed leader leaves a descendant holding stdout. These new guards
+have source controls but no executed runtime evidence yet.
