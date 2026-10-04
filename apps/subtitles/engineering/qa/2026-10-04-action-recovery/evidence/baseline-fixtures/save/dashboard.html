@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en" dir="ltr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b0d0b">
+<title>Library · Kinosail</title>
+<script src="/static/theme.js?v=717bfa9383ced4b3be057cdc9e1dc63592738132fea6f2367975222c9cb5bb98"></script><link rel="stylesheet" href="/static/app.css?v=cinema-15"><script defer src="/static/subtitle-status.js?v=8"></script>
+<script defer src="/static/main.kinosail.bundle.js?v=19-htmx4"></script></head><body class="library-page subtitle-app subtitle-dashboard"><a class="skip" href="#main">Skip to content</a>
+<header class="app-header">
+<a class="brand-lockup" href="/" data-subtitle-nav><img class="brand-icon" src="/static/icon.svg?v=11" width="36" height="36" alt=""><span class="subtitle-brand-name">Kinosail<small>Subtitle library</small></span><span class="web-beta-badge">Beta</span></a>
+<nav aria-label="Main navigation" data-subtitle-dock>
+<h2 class="subtitle-nav-heading">Subtitles</h2>
+<a href="/?view=summary" data-subtitle-nav >Overview</a>
+<a href="/?view=wanted" data-subtitle-nav >Wanted</a>
+<a href="/?view=library" data-subtitle-nav class="active" aria-current="page">Library</a>
+<a href="/?view=history" data-subtitle-nav >History</a>
+</nav>
+<div class="subtitle-header-settings"><a class="header-link header-supporter" href="/supporter" aria-label="Support Kinosail">Support <span class="supporter-long">Kinosail</span></a><a class="header-link" href="/settings" >Settings</a></div>
+</header>
+<main id="main" class="subtitle-main last-light" tabindex="-1" data-view="library" data-loading-label="Loading library…" data-error-label="Could not load this view. Your current view is still here." data-action-label="Working on subtitles…" data-action-done="Subtitle action completed." data-action-error="Could not confirm this action. Refresh the library before trying again." data-retry-label="Reload view" data-checked-label="checked" data-added-label="added" data-improved-label="improved" data-failed-label="failed">
+<header class="subtitle-page-heading"><div><h1>Library</h1></div><a class="subtitle-text-link" href="/settings#provider">Subtitle preferences <span aria-hidden="true">↗</span></a></header>
+<div class="subtitle-feedback-slot"><div class="subtitle-feedback-reservation" aria-hidden="true" inert>
+<div class="subtitle-feedback">Loading library…</div>
+<div class="subtitle-feedback">Could not load this view. Your current view is still here.<span class="subtitle-feedback-retry">Reload view</span></div>
+<div class="subtitle-feedback">Working on subtitles…</div>
+<div class="subtitle-feedback">Subtitle action completed.</div>
+<div class="subtitle-feedback">Could not confirm this action. Refresh the library before trying again.<span class="subtitle-feedback-retry">Reload view</span></div>
+<div class="subtitle-feedback">Subtitle action completed. Could not load this view. Your current view is still here.<span class="subtitle-feedback-retry">Reload view</span></div>
+<div class="subtitle-feedback"><span data-number>88</span> checked · <span data-number>88</span> added · <span data-number>88</span> improved · <span data-number>88</span> failed</div>
+<div class="subtitle-feedback"><span data-number>88</span> checked · <span data-number>88</span> added · <span data-number>88</span> improved · <span data-number>88</span> failed Could not load this view. Your current view is still here.<span class="subtitle-feedback-retry">Reload view</span></div>
+</div><div class="subtitle-feedback" id="subtitle-feedback" role="status" aria-live="polite" hidden></div></div>
+<div class="subtitle-loading" id="subtitle-loading" role="status">Loading subtitle coverage…</div>
+
+<div id="subtitle-content" data-total="1" data-ready="1" data-wanted="0" data-pending="0" data-unavailable="0">
+
+
+
+
+
+<div class="subtitle-update-slot"><div class="subtitle-update-note subtitle-update-reservation" aria-hidden="true" inert><span>Library updated. Refresh when you’re ready.</span><span class="subtitle-update-action">Refresh</span></div><div class="subtitle-update-note" id="subtitle-update" role="status" hidden><span>Library updated. Refresh when you’re ready.</span><a href="/?view=library" data-subtitle-refresh>Refresh</a></div></div>
+<section class="subtitle-browser" aria-labelledby="subtitle-list-title">
+<header class="subtitle-list-heading"><div><h2 id="subtitle-list-title" tabindex="-1"><span data-number>1</span> file</h2><p>Open any file for its tracks, history, and recovery options.</p></div>
+</header>
+<form class="subtitle-filters" action="/" method="get" role="search" data-subtitle-search>
+<input type="hidden" name="view" value="library">
+<div class="subtitle-search-field"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><label class="sr-only" for="subtitle-search">Search subtitle library</label><input id="subtitle-search" type="search" name="q" value="" maxlength="128" placeholder="Search titles or files" autocomplete="off"><button class="subtitle-search-submit" type="submit" aria-label="Search library"><span aria-hidden="true">→</span></button></div>
+
+<label class="subtitle-filter"><span class="sr-only">Media type</span><select name="kind"><option value="all" selected>All media</option><option value="movie" >Movies</option><option value="episode" >Episodes</option></select></label>
+<label class="subtitle-filter"><span class="sr-only">Subtitle status</span><select name="status"><option value="all" selected>All statuses</option><option value="ready" >Ready</option><option value="wanted" >Wanted</option><option value="checking" >Checking</option><option value="unavailable" >Not checked</option></select></label>
+<label class="subtitle-filter"><span class="sr-only">Sort files</span><select name="sort"><option value="title" selected>Title A–Z</option><option value="modified" >Recently modified</option></select></label><noscript><button class="quiet" type="submit">Apply filters</button></noscript>
+
+</form>
+
+<div class="subtitle-file-list" aria-label="Subtitle files">
+<div class="subtitle-file-columns" aria-hidden="true"><span>Title</span><span>Subtitle status</span><span></span></div>
+
+<details class="subtitle-file" id="subtitle-file-53ae726daeaed3fa" data-file-id="53ae726daeaed3fa">
+<summary>
+<span class="subtitle-file-identity"><span class="subtitle-file-art" aria-hidden="true"><i class=i-shows aria-hidden=true></i></span><span class="subtitle-file-title"><strong>Arrival</strong><small>Movie</small></span></span>
+<span class="subtitle-file-status"><span class="subtitle-state ready">Ready</span><small>Preferred languages covered</small></span>
+<span class="subtitle-file-expand" aria-hidden="true">+</span>
+</summary>
+<div class="subtitle-file-detail">
+<div class="subtitle-file-detail-heading"><span class="subtitle-kicker">File details</span><a class="subtitle-text-link" href="/subtitles/inspect/53ae726daeaed3fa">Open subtitle editor <span aria-hidden="true">↗</span></a></div>
+<dl class="subtitle-file-facts"><div class="subtitle-file-path"><dt>Media file</dt><dd><code>Arrival.mp4</code></dd></div><div><dt>Tracks</dt><dd>en</dd></div><div><dt>Last search</dt><dd>Not searched yet</dd></div><div><dt>Coverage</dt><dd>Preferred subtitle is missing</dd></div></dl>
+
+<div class="subtitle-file-actions">
+
+<form action="/subtitles/manage/53ae726daeaed3fa/replacement" method="post" data-subtitle-action data-api="/api/v1/subtitle-library/53ae726daeaed3fa/replacement"><button class="quiet" name="replaceable" value="false">Keep this version</button></form>
+
+</div>
+
+
+</div></details>
+
+</div>
+<nav class="subtitle-pagination" aria-label="Library pages"><p><strong><span data-number>1</span>–<span data-number>1</span></strong> of <span data-number>1</span> files</p><div><span class="subtitle-page-disabled" aria-disabled="true"><span aria-hidden="true">←</span> Previous</span><span class="subtitle-page-position">Page <span data-number>1</span> of <span data-number>1</span></span><span class="subtitle-page-disabled" aria-disabled="true">Next <span aria-hidden="true">→</span></span></div></nav>
+</section>
+
+
+
+</div></main></body></html>
