@@ -1,0 +1,21 @@
+{
+  "baseline_revision": "9b59524ddaadc6ab34c8354d9b139760673d7e40",
+  "product_revision": "bf10089edc79652312db66f52277bcc6fedf3dfd",
+  "template_constants": {
+    "apps/player/internal/server/downloads_http.go": {
+      "downloadsHTML_unchanged": true,
+      "sha256": "b0bec2b40a8491b7a830312869de0e17cfdf8aeb9b01528952811d194d010aa0"
+    },
+    "apps/subtitles/internal/server/downloads_http.go": {
+      "downloadsHTML_unchanged": true,
+      "sha256": "06bf3f5c6a465a39f7aab95080674cf6e6cea60e530d0de2187a99d5cc790b4b"
+    }
+  },
+  "shared_css_unchanged": {
+    "packages/webassets/static/last-light.css": "88a2bc75f4a0b90824374385f3258a253d08b3ce4e1132006d35bf52436e1d24",
+    "packages/webassets/static/player-app.css": "8435a930c4ec62ba92a797f64f4b816cf3a4e778ba8fb6d1820a6288f94ae17f",
+    "packages/webassets/static/player-stage.css": "4d044e7f8f351b4e1a7620fb26faeae863613a8e1f16bc0572f40773a1637245",
+    "packages/webassets/static/restart-notice.css": "460b669ce25cb508fcf8e9cefb03f13c364f621d92e6cb5e6f6edda13d13af64"
+  },
+  "geometry_scope": "Q09 reuses existing button/link nodes and CSS; ready-state original button label is restored. New phase labels and explicit focus restoration can change scroll position; fixed mobile navigation is incumbent source. This is a source comparison, not historical rendered hit-testing proof."
+}

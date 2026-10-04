@@ -213,7 +213,9 @@ async function removeOfflineJobSafely(id, explicit = false, afterRemove) {
 }
 
 window.addEventListener("kinosail:offline-profile", () => {
-  for (const transfer of offlineTransfers.values()) transfer.controller.abort();
+  for (const transfer of offlineTransfers.values()) {
+    if (transfer.profileID !== activeOfflineProfile()) transfer.controller.abort();
+  }
   for (const media of document.querySelectorAll('[data-offline-library] video, [data-offline-library] audio')) {
     media.pause(); media.removeAttribute("src"); media.load();
   }

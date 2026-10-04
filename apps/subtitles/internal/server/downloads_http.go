@@ -13,7 +13,8 @@ const downloadsHTML = `<!doctype html><html lang="en"><head><meta charset="utf-8
 var downloadsView = newLocalizedTemplate("downloads", downloadsTemplate(downloadsHTML))
 
 func downloadsTemplate(template string) string {
-	template = strings.Replace(template, `/static/downloads.js?v=3-htmx4`, `/static/downloads.js?v=13-htmx4`, 1)
+	template = strings.Replace(template, `/static/downloads.js?v=3-htmx4`, `/static/downloads.js?v=14-htmx4`, 1)
+	template = strings.Replace(template, `data-viewer-profile="{{.Profile}}"`, `data-viewer-profile="{{.Profile}}" data-offline-pause="{{t "Pause download"}}" data-offline-pausing="{{t "Pausing download…"}}" data-offline-user-paused="{{t "Download paused. Resume to continue where it stopped."}}"`, 1)
 	return strings.Replace(template, `{{if .Pending}}hx-get="/offline-downloads" hx-trigger="every 3s" hx-select="#downloads" hx-target="#downloads" hx-swap="outerHTML"{{end}}`, `data-downloads-pending="{{.Pending}}"`, 1)
 }
 

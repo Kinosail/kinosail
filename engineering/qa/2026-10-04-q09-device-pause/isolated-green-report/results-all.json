@@ -1,0 +1,364 @@
+{
+  "config": {
+    "argv": [
+      "/opt/homebrew/Cellar/node/26.8.2/bin/node",
+      "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/node_modules/@playwright/test/cli.js",
+      "test",
+      "download-pause.spec.ts",
+      "download-pause-ownership.spec.ts",
+      "--workers=1",
+      "--project=chromium"
+    ],
+    "configFile": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/playwright.config.ts",
+    "rootDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/isolated-green",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "open": "never",
+          "outputFolder": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/isolated-green-report/html-all"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/isolated-green-report/results-all.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "download-pause-ownership.spec.ts",
+      "file": "download-pause-ownership.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "same Viewer Profile in another tab preserves the transfer owner until explicit Pause",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1807,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T11:36:52.008Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "native-download-environment",
+                      "contentType": "application/json",
+                      "body": "eyJicm93c2VyIjoiY2hyb21pdW0iLCJ2ZXJzaW9uIjoiMTUzLjAuODAxMC4xMiIsInJlcXVlc3RlZENoYW5uZWwiOiIiLCJwcm9qZWN0IjoiY2hyb21pdW0iLCJub2RlIjoidjI2LjguMiIsImlzb2xhdGVkIjp0cnVlfQ=="
+                    },
+                    {
+                      "name": "same-profile-tab-peer",
+                      "contentType": "application/json",
+                      "body": "eyJyYW5nZXMiOlswLDgzODg2MDhdLCJjbG9zZWQiOjAsInJlbW92YWxzIjowfQ=="
+                    },
+                    {
+                      "name": "cross-tab-safe-resume",
+                      "contentType": "application/json",
+                      "body": "eyJzdG9yZWQiOnsiam9iIjp7ImlkIjoiYWFhYWFhYWFhYWFhYWFhYSIsImludGVncml0eVZlcnNpb24iOjIsInByb2ZpbGVJRCI6InByb2ZpbGUiLCJpdGVtSUQiOiJiYmJiYmJiYmJiYmJiYmJiIiwidGl0bGUiOiJGaWN0aW9uYWwgUmFuZ2UgRml4dHVyZSIsInF1YWxpdHkiOiJvcmlnaW5hbCIsImV4dGVuc2lvbiI6Ii5tcDQiLCJzaGEyNTYiOiIyOGM5NTdjMmIxOGY2OTk4ZGM0ZTA2N2U5YjlkMzE2NDk3YzVjMTRkZjFhOTRhZjU1YmRkYWFhNmQzMzQ0NjQ3Iiwic2l6ZSI6MTY3NzcyNDcsInN0b3JhZ2UiOiJpbmRleGVkZGIiLCJwcm9ncmVzc0Jhc2VsaW5lIjp7InNlY29uZHMiOjAsIndhdGNoZWQiOmZhbHNlLCJzZXNzaW9uIjoiIiwicmV2aXNpb24iOjB9LCJ0cmFuc2ZlcklEIjoiNjRhNWFlNmFjNjY1OWI2NTVkMjZmOWQ3MzQ3YjcxYmQiLCJ0cmFuc2ZlclN0YXJ0ZWRBdCI6MTc5MTExMzgxMzUyMS41LCJzdGF0ZSI6InJlYWR5IiwicmVhZHlPZmZsaW5lIjp0cnVlLCJlcnJvciI6IiIsImJ5dGVzIjoxNjc3NzI0N30sImNodW5rcyI6W3sib2Zmc2V0IjowLCJsZW5ndGgiOjgzODg2MDgsInNoYTI1NiI6ImJiOTI5YmJkY2U4NWZkYmM5MDNhNDYzZTk2NjMwYTI1ZjhiNmVmNWI3NjA5MGUyNGNkOTJlYThmYjQ3YjJmNjUiLCJhY3R1YWwiOiJiYjkyOWJiZGNlODVmZGJjOTAzYTQ2M2U5NjYzMGEyNWY4YjZlZjViNzYwOTBlMjRjZDkyZWE4ZmI0N2IyZjY1In0seyJvZmZzZXQiOjgzODg2MDgsImxlbmd0aCI6ODM4ODYwOCwic2hhMjU2IjoiODU0ZWRkNGU4MmZiMmZjZjBkYmFhNWMyMWYyOGNkNmYxZTE0YjZiZDJkOTFjZmE1M2E4NzViOWY5YzliZmZlMiIsImFjdHVhbCI6Ijg1NGVkZDRlODJmYjJmY2YwZGJhYTVjMjFmMjhjZDZmMWUxNGI2YmQyZDkxY2ZhNTNhODc1YjlmOWM5YmZmZTIifSx7Im9mZnNldCI6MTY3NzcyMTYsImxlbmd0aCI6MzEsInNoYTI1NiI6ImEyMmM5MWYwZGQ0ZjI5MWExNWEyNmNiY2Q4NGI0NGM4ODdlZTdkNzFhMTYwOGIxM2ZhZWZjNWIwODQzZTYyNGYiLCJhY3R1YWwiOiJhMjJjOTFmMGRkNGYyOTFhMTVhMjZjYmNkODRiNDRjODg3ZWU3ZDcxYTE2MDhiMTNmYWVmYzViMDg0M2U2MjRmIn1dLCJmaWxlU2l6ZSI6MTY3NzcyNDcsImZpbGVIYXNoIjoiMjhjOTU3YzJiMThmNjk5OGRjNGUwNjdlOWI5ZDMxNjQ5N2M1YzE0ZGYxYTk0YWY1NWJkZGFhYTZkMzM0NDY0NyIsImxvY2tzIjpbXX0sInBlZXIiOnsicmFuZ2VzIjpbMCw4Mzg4NjA4LDgzODg2MDgsMTY3NzcyMTZdLCJjbG9zZWQiOjEsInJlbW92YWxzIjowfX0="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "1620b801a18f26b9fa4a-f9494a6b0dd5408a7f9d",
+          "file": "download-pause-ownership.spec.ts",
+          "line": 8,
+          "column": 1
+        },
+        {
+          "title": "navigation interrupts the transfer and reload offers explicit Resume with verified data",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1355,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T11:36:54.077Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "native-download-environment",
+                      "contentType": "application/json",
+                      "body": "eyJicm93c2VyIjoiY2hyb21pdW0iLCJ2ZXJzaW9uIjoiMTUzLjAuODAxMC4xMiIsInJlcXVlc3RlZENoYW5uZWwiOiIiLCJwcm9qZWN0IjoiY2hyb21pdW0iLCJub2RlIjoidjI2LjguMiIsImlzb2xhdGVkIjp0cnVlfQ=="
+                    },
+                    {
+                      "name": "navigation-verified-resume",
+                      "contentType": "application/json",
+                      "body": "eyJzdG9yZWQiOnsiam9iIjp7ImlkIjoiYWFhYWFhYWFhYWFhYWFhYSIsImludGVncml0eVZlcnNpb24iOjIsInByb2ZpbGVJRCI6InByb2ZpbGUiLCJpdGVtSUQiOiJiYmJiYmJiYmJiYmJiYmJiIiwidGl0bGUiOiJGaWN0aW9uYWwgUmFuZ2UgRml4dHVyZSIsInF1YWxpdHkiOiJvcmlnaW5hbCIsImV4dGVuc2lvbiI6Ii5tcDQiLCJzaGEyNTYiOiIyOGM5NTdjMmIxOGY2OTk4ZGM0ZTA2N2U5YjlkMzE2NDk3YzVjMTRkZjFhOTRhZjU1YmRkYWFhNmQzMzQ0NjQ3Iiwic2l6ZSI6MTY3NzcyNDcsInN0b3JhZ2UiOiJpbmRleGVkZGIiLCJwcm9ncmVzc0Jhc2VsaW5lIjp7InNlY29uZHMiOjAsIndhdGNoZWQiOmZhbHNlLCJzZXNzaW9uIjoiIiwicmV2aXNpb24iOjB9LCJ0cmFuc2ZlcklEIjoiZDNiMzE5YWQzZjcyNTcxODU2ZjFjNWFhZTU1ODc5NDAiLCJ0cmFuc2ZlclN0YXJ0ZWRBdCI6MTc5MTExMzgxNDkwMS43LCJzdGF0ZSI6InJlYWR5IiwicmVhZHlPZmZsaW5lIjp0cnVlLCJlcnJvciI6IiIsImJ5dGVzIjoxNjc3NzI0N30sImNodW5rcyI6W3sib2Zmc2V0IjowLCJsZW5ndGgiOjgzODg2MDgsInNoYTI1NiI6ImJiOTI5YmJkY2U4NWZkYmM5MDNhNDYzZTk2NjMwYTI1ZjhiNmVmNWI3NjA5MGUyNGNkOTJlYThmYjQ3YjJmNjUiLCJhY3R1YWwiOiJiYjkyOWJiZGNlODVmZGJjOTAzYTQ2M2U5NjYzMGEyNWY4YjZlZjViNzYwOTBlMjRjZDkyZWE4ZmI0N2IyZjY1In0seyJvZmZzZXQiOjgzODg2MDgsImxlbmd0aCI6ODM4ODYwOCwic2hhMjU2IjoiODU0ZWRkNGU4MmZiMmZjZjBkYmFhNWMyMWYyOGNkNmYxZTE0YjZiZDJkOTFjZmE1M2E4NzViOWY5YzliZmZlMiIsImFjdHVhbCI6Ijg1NGVkZDRlODJmYjJmY2YwZGJhYTVjMjFmMjhjZDZmMWUxNGI2YmQyZDkxY2ZhNTNhODc1YjlmOWM5YmZmZTIifSx7Im9mZnNldCI6MTY3NzcyMTYsImxlbmd0aCI6MzEsInNoYTI1NiI6ImEyMmM5MWYwZGQ0ZjI5MWExNWEyNmNiY2Q4NGI0NGM4ODdlZTdkNzFhMTYwOGIxM2ZhZWZjNWIwODQzZTYyNGYiLCJhY3R1YWwiOiJhMjJjOTFmMGRkNGYyOTFhMTVhMjZjYmNkODRiNDRjODg3ZWU3ZDcxYTE2MDhiMTNmYWVmYzViMDg0M2U2MjRmIn1dLCJmaWxlU2l6ZSI6MTY3NzcyNDcsImZpbGVIYXNoIjoiMjhjOTU3YzJiMThmNjk5OGRjNGUwNjdlOWI5ZDMxNjQ5N2M1YzE0ZGYxYTk0YWY1NWJkZGFhYTZkMzM0NDY0NyIsImxvY2tzIjpbXX0sInBlZXIiOnsicmFuZ2VzIjpbMCw4Mzg4NjA4LDgzODg2MDgsMTY3NzcyMTZdLCJjbG9zZWQiOjEsInJlbW92YWxzIjowfX0="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "1620b801a18f26b9fa4a-756ca0c2044ede306514",
+          "file": "download-pause-ownership.spec.ts",
+          "line": 38,
+          "column": 1
+        },
+        {
+          "title": "isolated native profile boundary: changing Viewer Profile still cancels the old owner",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 923,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T11:36:55.439Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "native-download-environment",
+                      "contentType": "application/json",
+                      "body": "eyJicm93c2VyIjoiY2hyb21pdW0iLCJ2ZXJzaW9uIjoiMTUzLjAuODAxMC4xMiIsInJlcXVlc3RlZENoYW5uZWwiOiIiLCJwcm9qZWN0IjoiY2hyb21pdW0iLCJub2RlIjoidjI2LjguMiIsImlzb2xhdGVkIjp0cnVlfQ=="
+                    },
+                    {
+                      "name": "changed-profile-cancellation-retention",
+                      "contentType": "application/json",
+                      "body": "eyJzdG9yZWQiOnsiam9iIjp7ImlkIjoiYWFhYWFhYWFhYWFhYWFhYSIsImludGVncml0eVZlcnNpb24iOjIsInByb2ZpbGVJRCI6InByb2ZpbGUiLCJpdGVtSUQiOiJiYmJiYmJiYmJiYmJiYmJiIiwidGl0bGUiOiJGaWN0aW9uYWwgUmFuZ2UgRml4dHVyZSIsInF1YWxpdHkiOiJvcmlnaW5hbCIsImV4dGVuc2lvbiI6Ii5tcDQiLCJzaGEyNTYiOiIyOGM5NTdjMmIxOGY2OTk4ZGM0ZTA2N2U5YjlkMzE2NDk3YzVjMTRkZjFhOTRhZjU1YmRkYWFhNmQzMzQ0NjQ3Iiwic2l6ZSI6MTY3NzcyNDcsInN0b3JhZ2UiOiJpbmRleGVkZGIiLCJwcm9ncmVzc0Jhc2VsaW5lIjp7InNlY29uZHMiOjAsIndhdGNoZWQiOmZhbHNlLCJzZXNzaW9uIjoiIiwicmV2aXNpb24iOjB9LCJ0cmFuc2ZlcklEIjoiNmNmMDAxMGVjNDI1ZTRmZWI5M2ZjMWNmODYyMmJjZTEiLCJ0cmFuc2ZlclN0YXJ0ZWRBdCI6MTc5MTExMzgxNTY4Mi40LCJzdGF0ZSI6Im5lZWRzX2F0dGVudGlvbiIsInJlYWR5T2ZmbGluZSI6ZmFsc2UsImVycm9yIjoiRG93bmxvYWQgaW50ZXJydXB0ZWQuIFJlc3VtZSB0byBjb250aW51ZSB3aGVyZSBpdCBzdG9wcGVkLiIsImJ5dGVzIjo4Mzg4NjA4LCJyZXNlcnZlZEJ5dGVzIjo4Mzg4NjM5fSwiY2h1bmtzIjpbeyJvZmZzZXQiOjAsImxlbmd0aCI6ODM4ODYwOCwic2hhMjU2IjoiYmI5MjliYmRjZTg1ZmRiYzkwM2E0NjNlOTY2MzBhMjVmOGI2ZWY1Yjc2MDkwZTI0Y2Q5MmVhOGZiNDdiMmY2NSIsImFjdHVhbCI6ImJiOTI5YmJkY2U4NWZkYmM5MDNhNDYzZTk2NjMwYTI1ZjhiNmVmNWI3NjA5MGUyNGNkOTJlYThmYjQ3YjJmNjUifV0sImZpbGVTaXplIjo4Mzg4NjA4LCJmaWxlSGFzaCI6ImJiOTI5YmJkY2U4NWZkYmM5MDNhNDYzZTk2NjMwYTI1ZjhiNmVmNWI3NjA5MGUyNGNkOTJlYThmYjQ3YjJmNjUiLCJsb2NrcyI6W119LCJwZWVyIjp7InJhbmdlcyI6WzAsODM4ODYwOF0sImNsb3NlZCI6MSwicmVtb3ZhbHMiOjB9fQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "1620b801a18f26b9fa4a-1f9e0956fd3c1f41728f",
+          "file": "download-pause-ownership.spec.ts",
+          "line": 60,
+          "column": 22
+        }
+      ]
+    },
+    {
+      "title": "download-pause.spec.ts",
+      "file": "download-pause.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "isolated native browser: Pause retains verified opfs blocks and Resume continues missing ranges at 390px",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1363,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T11:36:56.373Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "native-download-environment",
+                      "contentType": "application/json",
+                      "body": "eyJicm93c2VyIjoiY2hyb21pdW0iLCJ2ZXJzaW9uIjoiMTUzLjAuODAxMC4xMiIsInJlcXVlc3RlZENoYW5uZWwiOiIiLCJwcm9qZWN0IjoiY2hyb21pdW0iLCJub2RlIjoidjI2LjguMiIsImlzb2xhdGVkIjp0cnVlfQ=="
+                    },
+                    {
+                      "name": "served-download-bundle",
+                      "contentType": "application/json",
+                      "body": "eyJqb2JJRCI6ImFhYWFhYWFhYWFhYWFhYWEiLCJidW5kbGUiOiIvc3RhdGljL2Rvd25sb2Fkcy5qcz92PWJhc2VsaW5lIiwiY2hlY2tzdW0iOiIyZmIxODhlMjc0NGZlNTUzYWZiN2M0NzMwZDU4YmIwYTNkZjM4YzIxOTFjNmYyMDczMjg5OGEwNzUwM2EyZmM1In0="
+                    },
+                    {
+                      "name": "verified-first-block-before-pause",
+                      "contentType": "application/json",
+                      "body": "eyJqb2IiOnsiaWQiOiJhYWFhYWFhYWFhYWFhYWFhIiwiaW50ZWdyaXR5VmVyc2lvbiI6MiwicHJvZmlsZUlEIjoicHJvZmlsZSIsIml0ZW1JRCI6ImJiYmJiYmJiYmJiYmJiYmIiLCJ0aXRsZSI6IkZpY3Rpb25hbCBSYW5nZSBGaXh0dXJlIiwicXVhbGl0eSI6Im9yaWdpbmFsIiwiZXh0ZW5zaW9uIjoiLm1wNCIsInNoYTI1NiI6IjI4Yzk1N2MyYjE4ZjY5OThkYzRlMDY3ZTliOWQzMTY0OTdjNWMxNGRmMWE5NGFmNTViZGRhYWE2ZDMzNDQ2NDciLCJzaXplIjoxNjc3NzI0Nywic3RvcmFnZSI6Im9wZnMiLCJwcm9ncmVzc0Jhc2VsaW5lIjp7InNlY29uZHMiOjAsIndhdGNoZWQiOmZhbHNlLCJzZXNzaW9uIjoiIiwicmV2aXNpb24iOjB9LCJ0cmFuc2ZlcklEIjoiNTRlYmY3OThlMWEzOTkxMmVhMjEzODRmMWNlN2NjNzIiLCJ0cmFuc2ZlclN0YXJ0ZWRBdCI6MTc5MTExMzgxNjYxNy4yLCJzdGF0ZSI6InRyYW5zZmVycmluZyIsInJlYWR5T2ZmbGluZSI6ZmFsc2UsImVycm9yIjoiIiwiYnl0ZXMiOjgzODg2MDgsInJlc2VydmVkQnl0ZXMiOjgzODg2Mzl9LCJjaHVua3MiOlt7Im9mZnNldCI6MCwibGVuZ3RoIjo4Mzg4NjA4LCJzaGEyNTYiOiJiYjkyOWJiZGNlODVmZGJjOTAzYTQ2M2U5NjYzMGEyNWY4YjZlZjViNzYwOTBlMjRjZDkyZWE4ZmI0N2IyZjY1IiwiYWN0dWFsIjoiYmI5MjliYmRjZTg1ZmRiYzkwM2E0NjNlOTY2MzBhMjVmOGI2ZWY1Yjc2MDkwZTI0Y2Q5MmVhOGZiNDdiMmY2NSJ9XSwiZmlsZVNpemUiOjgzODg2MDgsImZpbGVIYXNoIjoiYmI5MjliYmRjZTg1ZmRiYzkwM2E0NjNlOTY2MzBhMjVmOGI2ZWY1Yjc2MDkwZTI0Y2Q5MmVhOGZiNDdiMmY2NSIsImxvY2tzIjpbImtpbm9zYWlsLW9mZmxpbmUtc2xvdDowIiwia2lub3NhaWwtb2ZmbGluZTphYWFhYWFhYWFhYWFhYWFhIl19"
+                    },
+                    {
+                      "name": "paused-verified-storage-and-peer",
+                      "contentType": "application/json",
+                      "body": "eyJzdG9yZWQiOnsiam9iIjp7ImlkIjoiYWFhYWFhYWFhYWFhYWFhYSIsImludGVncml0eVZlcnNpb24iOjIsInByb2ZpbGVJRCI6InByb2ZpbGUiLCJpdGVtSUQiOiJiYmJiYmJiYmJiYmJiYmJiIiwidGl0bGUiOiJGaWN0aW9uYWwgUmFuZ2UgRml4dHVyZSIsInF1YWxpdHkiOiJvcmlnaW5hbCIsImV4dGVuc2lvbiI6Ii5tcDQiLCJzaGEyNTYiOiIyOGM5NTdjMmIxOGY2OTk4ZGM0ZTA2N2U5YjlkMzE2NDk3YzVjMTRkZjFhOTRhZjU1YmRkYWFhNmQzMzQ0NjQ3Iiwic2l6ZSI6MTY3NzcyNDcsInN0b3JhZ2UiOiJvcGZzIiwicHJvZ3Jlc3NCYXNlbGluZSI6eyJzZWNvbmRzIjowLCJ3YXRjaGVkIjpmYWxzZSwic2Vzc2lvbiI6IiIsInJldmlzaW9uIjowfSwidHJhbnNmZXJJRCI6IjU0ZWJmNzk4ZTFhMzk5MTJlYTIxMzg0ZjFjZTdjYzcyIiwidHJhbnNmZXJTdGFydGVkQXQiOjE3OTExMTM4MTY2MTcuMiwic3RhdGUiOiJuZWVkc19hdHRlbnRpb24iLCJyZWFkeU9mZmxpbmUiOmZhbHNlLCJlcnJvciI6IkRvd25sb2FkIHBhdXNlZC4gUmVzdW1lIHRvIGNvbnRpbnVlIHdoZXJlIGl0IHN0b3BwZWQuIiwiYnl0ZXMiOjgzODg2MDgsInJlc2VydmVkQnl0ZXMiOjgzODg2Mzl9LCJjaHVua3MiOlt7Im9mZnNldCI6MCwibGVuZ3RoIjo4Mzg4NjA4LCJzaGEyNTYiOiJiYjkyOWJiZGNlODVmZGJjOTAzYTQ2M2U5NjYzMGEyNWY4YjZlZjViNzYwOTBlMjRjZDkyZWE4ZmI0N2IyZjY1IiwiYWN0dWFsIjoiYmI5MjliYmRjZTg1ZmRiYzkwM2E0NjNlOTY2MzBhMjVmOGI2ZWY1Yjc2MDkwZTI0Y2Q5MmVhOGZiNDdiMmY2NSJ9XSwiZmlsZVNpemUiOjgzODg2MDgsImZpbGVIYXNoIjoiYmI5MjliYmRjZTg1ZmRiYzkwM2E0NjNlOTY2MzBhMjVmOGI2ZWY1Yjc2MDkwZTI0Y2Q5MmVhOGZiNDdiMmY2NSIsImxvY2tzIjpbXX0sInBlZXIiOnsicmFuZ2VzIjpbMCw4Mzg4NjA4XSwiY2xvc2VkIjoxLCJyZW1vdmFscyI6MH19"
+                    },
+                    {
+                      "name": "resumed-integrity-and-ranges",
+                      "contentType": "application/json",
+                      "body": "eyJzdG9yZWQiOnsiam9iIjp7ImlkIjoiYWFhYWFhYWFhYWFhYWFhYSIsImludGVncml0eVZlcnNpb24iOjIsInByb2ZpbGVJRCI6InByb2ZpbGUiLCJpdGVtSUQiOiJiYmJiYmJiYmJiYmJiYmJiIiwidGl0bGUiOiJGaWN0aW9uYWwgUmFuZ2UgRml4dHVyZSIsInF1YWxpdHkiOiJvcmlnaW5hbCIsImV4dGVuc2lvbiI6Ii5tcDQiLCJzaGEyNTYiOiIyOGM5NTdjMmIxOGY2OTk4ZGM0ZTA2N2U5YjlkMzE2NDk3YzVjMTRkZjFhOTRhZjU1YmRkYWFhNmQzMzQ0NjQ3Iiwic2l6ZSI6MTY3NzcyNDcsInN0b3JhZ2UiOiJvcGZzIiwicHJvZ3Jlc3NCYXNlbGluZSI6eyJzZWNvbmRzIjowLCJ3YXRjaGVkIjpmYWxzZSwic2Vzc2lvbiI6IiIsInJldmlzaW9uIjowfSwidHJhbnNmZXJJRCI6ImIwYTI4ODAwNTFmZTQ5YjBjZGJiNDVkZTg3ZTExNWE2IiwidHJhbnNmZXJTdGFydGVkQXQiOjE3OTExMTM4MTcyMjcuOCwic3RhdGUiOiJyZWFkeSIsInJlYWR5T2ZmbGluZSI6dHJ1ZSwiZXJyb3IiOiIiLCJieXRlcyI6MTY3NzcyNDd9LCJjaHVua3MiOlt7Im9mZnNldCI6MCwibGVuZ3RoIjo4Mzg4NjA4LCJzaGEyNTYiOiJiYjkyOWJiZGNlODVmZGJjOTAzYTQ2M2U5NjYzMGEyNWY4YjZlZjViNzYwOTBlMjRjZDkyZWE4ZmI0N2IyZjY1IiwiYWN0dWFsIjoiYmI5MjliYmRjZTg1ZmRiYzkwM2E0NjNlOTY2MzBhMjVmOGI2ZWY1Yjc2MDkwZTI0Y2Q5MmVhOGZiNDdiMmY2NSJ9LHsib2Zmc2V0Ijo4Mzg4NjA4LCJsZW5ndGgiOjgzODg2MDgsInNoYTI1NiI6Ijg1NGVkZDRlODJmYjJmY2YwZGJhYTVjMjFmMjhjZDZmMWUxNGI2YmQyZDkxY2ZhNTNhODc1YjlmOWM5YmZmZTIiLCJhY3R1YWwiOiI4NTRlZGQ0ZTgyZmIyZmNmMGRiYWE1YzIxZjI4Y2Q2ZjFlMTRiNmJkMmQ5MWNmYTUzYTg3NWI5ZjljOWJmZmUyIn0seyJvZmZzZXQiOjE2Nzc3MjE2LCJsZW5ndGgiOjMxLCJzaGEyNTYiOiJhMjJjOTFmMGRkNGYyOTFhMTVhMjZjYmNkODRiNDRjODg3ZWU3ZDcxYTE2MDhiMTNmYWVmYzViMDg0M2U2MjRmIiwiYWN0dWFsIjoiYTIyYzkxZjBkZDRmMjkxYTE1YTI2Y2JjZDg0YjQ0Yzg4N2VlN2Q3MWExNjA4YjEzZmFlZmM1YjA4NDNlNjI0ZiJ9XSwiZmlsZVNpemUiOjE2Nzc3MjQ3LCJmaWxlSGFzaCI6IjI4Yzk1N2MyYjE4ZjY5OThkYzRlMDY3ZTliOWQzMTY0OTdjNWMxNGRmMWE5NGFmNTViZGRhYWE2ZDMzNDQ2NDciLCJsb2NrcyI6W119LCJwZWVyIjp7InJhbmdlcyI6WzAsODM4ODYwOCw4Mzg4NjA4LDE2Nzc3MjE2XSwiY2xvc2VkIjoxLCJyZW1vdmFscyI6MH19"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "edf17b853bcd12b465d2-bb71ef6c239124243637",
+          "file": "download-pause.spec.ts",
+          "line": 10,
+          "column": 3
+        },
+        {
+          "title": "isolated native browser: Pause retains verified indexeddb blocks and Resume continues missing ranges at 1440px",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1408,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T11:36:57.743Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "native-download-environment",
+                      "contentType": "application/json",
+                      "body": "eyJicm93c2VyIjoiY2hyb21pdW0iLCJ2ZXJzaW9uIjoiMTUzLjAuODAxMC4xMiIsInJlcXVlc3RlZENoYW5uZWwiOiIiLCJwcm9qZWN0IjoiY2hyb21pdW0iLCJub2RlIjoidjI2LjguMiIsImlzb2xhdGVkIjp0cnVlfQ=="
+                    },
+                    {
+                      "name": "served-download-bundle",
+                      "contentType": "application/json",
+                      "body": "eyJqb2JJRCI6ImFhYWFhYWFhYWFhYWFhYWEiLCJidW5kbGUiOiIvc3RhdGljL2Rvd25sb2Fkcy5qcz92PWJhc2VsaW5lIiwiY2hlY2tzdW0iOiIyZmIxODhlMjc0NGZlNTUzYWZiN2M0NzMwZDU4YmIwYTNkZjM4YzIxOTFjNmYyMDczMjg5OGEwNzUwM2EyZmM1In0="
+                    },
+                    {
+                      "name": "verified-first-block-before-pause",
+                      "contentType": "application/json",
+                      "body": "eyJqb2IiOnsiaWQiOiJhYWFhYWFhYWFhYWFhYWFhIiwiaW50ZWdyaXR5VmVyc2lvbiI6MiwicHJvZmlsZUlEIjoicHJvZmlsZSIsIml0ZW1JRCI6ImJiYmJiYmJiYmJiYmJiYmIiLCJ0aXRsZSI6IkZpY3Rpb25hbCBSYW5nZSBGaXh0dXJlIiwicXVhbGl0eSI6Im9yaWdpbmFsIiwiZXh0ZW5zaW9uIjoiLm1wNCIsInNoYTI1NiI6IjI4Yzk1N2MyYjE4ZjY5OThkYzRlMDY3ZTliOWQzMTY0OTdjNWMxNGRmMWE5NGFmNTViZGRhYWE2ZDMzNDQ2NDciLCJzaXplIjoxNjc3NzI0Nywic3RvcmFnZSI6ImluZGV4ZWRkYiIsInByb2dyZXNzQmFzZWxpbmUiOnsic2Vjb25kcyI6MCwid2F0Y2hlZCI6ZmFsc2UsInNlc3Npb24iOiIiLCJyZXZpc2lvbiI6MH0sInRyYW5zZmVySUQiOiI2MmRmYjQ5OWZhYzhiOTk2ZTQzYmVhMTBmNTlmYmZkZSIsInRyYW5zZmVyU3RhcnRlZEF0IjoxNzkxMTEzODE3OTg1LjcsInN0YXRlIjoidHJhbnNmZXJyaW5nIiwicmVhZHlPZmZsaW5lIjpmYWxzZSwiZXJyb3IiOiIiLCJieXRlcyI6ODM4ODYwOCwicmVzZXJ2ZWRCeXRlcyI6ODM4ODYzOX0sImNodW5rcyI6W3sib2Zmc2V0IjowLCJsZW5ndGgiOjgzODg2MDgsInNoYTI1NiI6ImJiOTI5YmJkY2U4NWZkYmM5MDNhNDYzZTk2NjMwYTI1ZjhiNmVmNWI3NjA5MGUyNGNkOTJlYThmYjQ3YjJmNjUiLCJhY3R1YWwiOiJiYjkyOWJiZGNlODVmZGJjOTAzYTQ2M2U5NjYzMGEyNWY4YjZlZjViNzYwOTBlMjRjZDkyZWE4ZmI0N2IyZjY1In1dLCJmaWxlU2l6ZSI6ODM4ODYwOCwiZmlsZUhhc2giOiJiYjkyOWJiZGNlODVmZGJjOTAzYTQ2M2U5NjYzMGEyNWY4YjZlZjViNzYwOTBlMjRjZDkyZWE4ZmI0N2IyZjY1IiwibG9ja3MiOlsia2lub3NhaWwtb2ZmbGluZS1zbG90OjAiLCJraW5vc2FpbC1vZmZsaW5lOmFhYWFhYWFhYWFhYWFhYWEiXX0="
+                    },
+                    {
+                      "name": "paused-verified-storage-and-peer",
+                      "contentType": "application/json",
+                      "body": "eyJzdG9yZWQiOnsiam9iIjp7ImlkIjoiYWFhYWFhYWFhYWFhYWFhYSIsImludGVncml0eVZlcnNpb24iOjIsInByb2ZpbGVJRCI6InByb2ZpbGUiLCJpdGVtSUQiOiJiYmJiYmJiYmJiYmJiYmJiIiwidGl0bGUiOiJGaWN0aW9uYWwgUmFuZ2UgRml4dHVyZSIsInF1YWxpdHkiOiJvcmlnaW5hbCIsImV4dGVuc2lvbiI6Ii5tcDQiLCJzaGEyNTYiOiIyOGM5NTdjMmIxOGY2OTk4ZGM0ZTA2N2U5YjlkMzE2NDk3YzVjMTRkZjFhOTRhZjU1YmRkYWFhNmQzMzQ0NjQ3Iiwic2l6ZSI6MTY3NzcyNDcsInN0b3JhZ2UiOiJpbmRleGVkZGIiLCJwcm9ncmVzc0Jhc2VsaW5lIjp7InNlY29uZHMiOjAsIndhdGNoZWQiOmZhbHNlLCJzZXNzaW9uIjoiIiwicmV2aXNpb24iOjB9LCJ0cmFuc2ZlcklEIjoiNjJkZmI0OTlmYWM4Yjk5NmU0M2JlYTEwZjU5ZmJmZGUiLCJ0cmFuc2ZlclN0YXJ0ZWRBdCI6MTc5MTExMzgxNzk4NS43LCJzdGF0ZSI6Im5lZWRzX2F0dGVudGlvbiIsInJlYWR5T2ZmbGluZSI6ZmFsc2UsImVycm9yIjoiRG93bmxvYWQgcGF1c2VkLiBSZXN1bWUgdG8gY29udGludWUgd2hlcmUgaXQgc3RvcHBlZC4iLCJieXRlcyI6ODM4ODYwOCwicmVzZXJ2ZWRCeXRlcyI6ODM4ODYzOX0sImNodW5rcyI6W3sib2Zmc2V0IjowLCJsZW5ndGgiOjgzODg2MDgsInNoYTI1NiI6ImJiOTI5YmJkY2U4NWZkYmM5MDNhNDYzZTk2NjMwYTI1ZjhiNmVmNWI3NjA5MGUyNGNkOTJlYThmYjQ3YjJmNjUiLCJhY3R1YWwiOiJiYjkyOWJiZGNlODVmZGJjOTAzYTQ2M2U5NjYzMGEyNWY4YjZlZjViNzYwOTBlMjRjZDkyZWE4ZmI0N2IyZjY1In1dLCJmaWxlU2l6ZSI6ODM4ODYwOCwiZmlsZUhhc2giOiJiYjkyOWJiZGNlODVmZGJjOTAzYTQ2M2U5NjYzMGEyNWY4YjZlZjViNzYwOTBlMjRjZDkyZWE4ZmI0N2IyZjY1IiwibG9ja3MiOltdfSwicGVlciI6eyJyYW5nZXMiOlswLDgzODg2MDhdLCJjbG9zZWQiOjEsInJlbW92YWxzIjowfX0="
+                    },
+                    {
+                      "name": "resumed-integrity-and-ranges",
+                      "contentType": "application/json",
+                      "body": "eyJzdG9yZWQiOnsiam9iIjp7ImlkIjoiYWFhYWFhYWFhYWFhYWFhYSIsImludGVncml0eVZlcnNpb24iOjIsInByb2ZpbGVJRCI6InByb2ZpbGUiLCJpdGVtSUQiOiJiYmJiYmJiYmJiYmJiYmJiIiwidGl0bGUiOiJGaWN0aW9uYWwgUmFuZ2UgRml4dHVyZSIsInF1YWxpdHkiOiJvcmlnaW5hbCIsImV4dGVuc2lvbiI6Ii5tcDQiLCJzaGEyNTYiOiIyOGM5NTdjMmIxOGY2OTk4ZGM0ZTA2N2U5YjlkMzE2NDk3YzVjMTRkZjFhOTRhZjU1YmRkYWFhNmQzMzQ0NjQ3Iiwic2l6ZSI6MTY3NzcyNDcsInN0b3JhZ2UiOiJpbmRleGVkZGIiLCJwcm9ncmVzc0Jhc2VsaW5lIjp7InNlY29uZHMiOjAsIndhdGNoZWQiOmZhbHNlLCJzZXNzaW9uIjoiIiwicmV2aXNpb24iOjB9LCJ0cmFuc2ZlcklEIjoiY2NkODU0Mjg3ZDAyNmE0ZGYxOGYyOGM5ZGRhZTZmNTUiLCJ0cmFuc2ZlclN0YXJ0ZWRBdCI6MTc5MTExMzgxODYyMy4zLCJzdGF0ZSI6InJlYWR5IiwicmVhZHlPZmZsaW5lIjp0cnVlLCJlcnJvciI6IiIsImJ5dGVzIjoxNjc3NzI0N30sImNodW5rcyI6W3sib2Zmc2V0IjowLCJsZW5ndGgiOjgzODg2MDgsInNoYTI1NiI6ImJiOTI5YmJkY2U4NWZkYmM5MDNhNDYzZTk2NjMwYTI1ZjhiNmVmNWI3NjA5MGUyNGNkOTJlYThmYjQ3YjJmNjUiLCJhY3R1YWwiOiJiYjkyOWJiZGNlODVmZGJjOTAzYTQ2M2U5NjYzMGEyNWY4YjZlZjViNzYwOTBlMjRjZDkyZWE4ZmI0N2IyZjY1In0seyJvZmZzZXQiOjgzODg2MDgsImxlbmd0aCI6ODM4ODYwOCwic2hhMjU2IjoiODU0ZWRkNGU4MmZiMmZjZjBkYmFhNWMyMWYyOGNkNmYxZTE0YjZiZDJkOTFjZmE1M2E4NzViOWY5YzliZmZlMiIsImFjdHVhbCI6Ijg1NGVkZDRlODJmYjJmY2YwZGJhYTVjMjFmMjhjZDZmMWUxNGI2YmQyZDkxY2ZhNTNhODc1YjlmOWM5YmZmZTIifSx7Im9mZnNldCI6MTY3NzcyMTYsImxlbmd0aCI6MzEsInNoYTI1NiI6ImEyMmM5MWYwZGQ0ZjI5MWExNWEyNmNiY2Q4NGI0NGM4ODdlZTdkNzFhMTYwOGIxM2ZhZWZjNWIwODQzZTYyNGYiLCJhY3R1YWwiOiJhMjJjOTFmMGRkNGYyOTFhMTVhMjZjYmNkODRiNDRjODg3ZWU3ZDcxYTE2MDhiMTNmYWVmYzViMDg0M2U2MjRmIn1dLCJmaWxlU2l6ZSI6MTY3NzcyNDcsImZpbGVIYXNoIjoiMjhjOTU3YzJiMThmNjk5OGRjNGUwNjdlOWI5ZDMxNjQ5N2M1YzE0ZGYxYTk0YWY1NWJkZGFhYTZkMzM0NDY0NyIsImxvY2tzIjpbXX0sInBlZXIiOnsicmFuZ2VzIjpbMCw4Mzg4NjA4LDgzODg2MDgsMTY3NzcyMTZdLCJjbG9zZWQiOjEsInJlbW92YWxzIjowfX0="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "edf17b853bcd12b465d2-62eb4ee2cca21e73a370",
+          "file": "download-pause.spec.ts",
+          "line": 10,
+          "column": 3
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-04T11:36:51.655Z",
+    "duration": 7536.742,
+    "expected": 5,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

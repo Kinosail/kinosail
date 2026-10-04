@@ -1,0 +1,175 @@
+{
+  "config": {
+    "argv": [
+      "/opt/homebrew/Cellar/node/26.8.2/bin/node",
+      "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/node_modules/@playwright/test/cli.js",
+      "test",
+      "download-pause-hit-target.spec.ts",
+      "--workers=1",
+      "--project=chromium"
+    ],
+    "configFile": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/playwright.config.ts",
+    "rootDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/server-hit-targets-stable",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "open": "never",
+          "outputFolder": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/server-hit-targets-stable-report/html-all"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/server-hit-targets-stable-report/results-all.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "download-pause-hit-target.spec.ts",
+      "file": "download-pause-hit-target.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "actual Go phone: fictional download controls and ready Play link remain reachable after explicit scrolling",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3706,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T12:45:01.718Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "native-download-environment",
+                      "contentType": "application/json",
+                      "body": "eyJicm93c2VyIjoiY2hyb21pdW0iLCJ2ZXJzaW9uIjoiMTUzLjAuODAxMC4xMiIsInJlcXVlc3RlZENoYW5uZWwiOiIiLCJwcm9qZWN0IjoiY2hyb21pdW0iLCJub2RlIjoidjI2LjguMiIsImlzb2xhdGVkIjpmYWxzZX0="
+                    },
+                    {
+                      "name": "served-hit-target-bundle",
+                      "contentType": "application/json",
+                      "body": "eyJqb2JJRCI6IjJhMzcwN2NjNWYyNmM2YzYiLCJidW5kbGUiOiIvc3RhdGljL2Rvd25sb2Fkcy5qcz92PTMwLWh0bXg0IiwiY2hlY2tzdW0iOiIyZmIxODhlMjc0NGZlNTUzYWZiN2M0NzMwZDU4YmIwYTNkZjM4YzIxOTFjNmYyMDczMjg5OGEwNzUwM2EyZmM1In0="
+                    },
+                    {
+                      "name": "phone-pause-hit-target",
+                      "contentType": "application/json",
+                      "body": "eyJib3giOnsieCI6MjguOTg0Mzc1LCJ5Ijo0OTcuODU5Mzc1LCJ3aWR0aCI6MzMxLjk4NDM3NSwiaGVpZ2h0Ijo0NH0sInZpZXdwb3J0Ijp7IndpZHRoIjozOTAsImhlaWdodCI6ODQ0fSwic2Nyb2xsIjp7IngiOjAsInkiOjIzOH0sImNlbnRlckluVmlld3BvcnQiOnRydWUsInJlY2VpdmVzUG9pbnRlciI6dHJ1ZSwiaGl0VGFnIjoiQlVUVE9OIiwiaGl0Q2xhc3MiOiJtb2RlIiwiZm9jdXNlZCI6dHJ1ZX0="
+                    },
+                    {
+                      "name": "phone-resume-hit-target",
+                      "contentType": "application/json",
+                      "body": "eyJib3giOnsieCI6MjguOTg0Mzc1LCJ5Ijo0OTcuODU5Mzc1LCJ3aWR0aCI6MzMxLjk4NDM3NSwiaGVpZ2h0Ijo0NH0sInZpZXdwb3J0Ijp7IndpZHRoIjozOTAsImhlaWdodCI6ODQ0fSwic2Nyb2xsIjp7IngiOjAsInkiOjIzOH0sImNlbnRlckluVmlld3BvcnQiOnRydWUsInJlY2VpdmVzUG9pbnRlciI6dHJ1ZSwiaGl0VGFnIjoiQlVUVE9OIiwiaGl0Q2xhc3MiOiJtb2RlIiwiZm9jdXNlZCI6dHJ1ZX0="
+                    },
+                    {
+                      "name": "phone-play-before-explicit-scroll",
+                      "contentType": "application/json",
+                      "body": "eyJib3giOnsieCI6MjguOTg0Mzc1LCJ5Ijo1NTcuMDMxMjUsIndpZHRoIjozMzEuOTg0Mzc1LCJoZWlnaHQiOjQ0fSwidmlld3BvcnQiOnsid2lkdGgiOjM5MCwiaGVpZ2h0Ijo4NDR9LCJzY3JvbGwiOnsieCI6MCwieSI6MjM4fSwiY2VudGVySW5WaWV3cG9ydCI6dHJ1ZSwicmVjZWl2ZXNQb2ludGVyIjp0cnVlLCJoaXRUYWciOiJBIiwiaGl0Q2xhc3MiOiJtb2RlIiwiZm9jdXNlZCI6ZmFsc2V9"
+                    },
+                    {
+                      "name": "phone-play-pointer-hit-target",
+                      "contentType": "application/json",
+                      "body": "eyJib3giOnsieCI6MjguOTg0Mzc1LCJ5Ijo0OTguMDMxMjUsIndpZHRoIjozMzEuOTg0Mzc1LCJoZWlnaHQiOjQ0fSwidmlld3BvcnQiOnsid2lkdGgiOjM5MCwiaGVpZ2h0Ijo4NDR9LCJzY3JvbGwiOnsieCI6MCwieSI6Mjk3fSwiY2VudGVySW5WaWV3cG9ydCI6dHJ1ZSwicmVjZWl2ZXNQb2ludGVyIjp0cnVlLCJoaXRUYWciOiJBIiwiaGl0Q2xhc3MiOiJtb2RlIiwiZm9jdXNlZCI6dHJ1ZX0="
+                    },
+                    {
+                      "name": "phone-play-pointer-navigation",
+                      "contentType": "application/json",
+                      "body": "eyJwYXRobmFtZSI6Ii9vZmZsaW5lIiwic2VsZWN0ZWRKb2IiOiIyYTM3MDdjYzVmMjZjNmM2IiwiZGVjb2RpbmdDbGFpbSI6ZmFsc2V9"
+                    },
+                    {
+                      "name": "phone-play-keyboard-hit-target",
+                      "contentType": "application/json",
+                      "body": "eyJib3giOnsieCI6MjguOTg0Mzc1LCJ5Ijo0OTguMDMxMjUsIndpZHRoIjozMzEuOTg0Mzc1LCJoZWlnaHQiOjQ0fSwidmlld3BvcnQiOnsid2lkdGgiOjM5MCwiaGVpZ2h0Ijo4NDR9LCJzY3JvbGwiOnsieCI6MCwieSI6Mjk3fSwiY2VudGVySW5WaWV3cG9ydCI6dHJ1ZSwicmVjZWl2ZXNQb2ludGVyIjp0cnVlLCJoaXRUYWciOiJBIiwiaGl0Q2xhc3MiOiJtb2RlIiwiZm9jdXNlZCI6dHJ1ZX0="
+                    },
+                    {
+                      "name": "phone-play-keyboard-navigation",
+                      "contentType": "application/json",
+                      "body": "eyJwYXRobmFtZSI6Ii9vZmZsaW5lIiwic2VsZWN0ZWRKb2IiOiIyYTM3MDdjYzVmMjZjNmM2IiwicGVlciI6eyJjbG9zZWQiOjEsInJhbmdlcyI6WzAsODM4ODYwOCw4Mzg4NjA4LDE2Nzc3MjE2XSwicmVtb3ZhbHMiOjB9LCJkZWNvZGluZ0NsYWltIjpmYWxzZX0="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "62a6bbf852d8e341a530-6b0469f3268db7b80a74",
+          "file": "download-pause-hit-target.spec.ts",
+          "line": 35,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-04T12:45:01.374Z",
+    "duration": 4212.279,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

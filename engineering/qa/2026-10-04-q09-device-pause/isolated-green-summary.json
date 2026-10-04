@@ -1,0 +1,586 @@
+{
+  "stats": {
+    "startTime": "2026-10-04T11:36:51.655Z",
+    "duration": 7536.742,
+    "expected": 5,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "runner_errors": [],
+  "cases": [
+    {
+      "title": "same Viewer Profile in another tab preserves the transfer owner until explicit Pause",
+      "status": "expected",
+      "result_statuses": [
+        "passed"
+      ],
+      "receipts": {
+        "native-download-environment": {
+          "browser": "chromium",
+          "version": "153.0.8010.12",
+          "requestedChannel": "",
+          "project": "chromium",
+          "node": "v26.8.2",
+          "isolated": true
+        },
+        "same-profile-tab-peer": {
+          "ranges": [
+            0,
+            8388608
+          ],
+          "closed": 0,
+          "removals": 0
+        },
+        "cross-tab-safe-resume": {
+          "stored": {
+            "job": {
+              "id": "aaaaaaaaaaaaaaaa",
+              "integrityVersion": 2,
+              "profileID": "profile",
+              "itemID": "bbbbbbbbbbbbbbbb",
+              "title": "Fictional Range Fixture",
+              "quality": "original",
+              "extension": ".mp4",
+              "sha256": "28c957c2b18f6998dc4e067e9b9d316497c5c14df1a94af55bddaaa6d3344647",
+              "size": 16777247,
+              "storage": "indexeddb",
+              "progressBaseline": {
+                "seconds": 0,
+                "watched": false,
+                "session": "",
+                "revision": 0
+              },
+              "transferID": "64a5ae6ac6659b655d26f9d7347b71bd",
+              "transferStartedAt": 1791113813521.5,
+              "state": "ready",
+              "readyOffline": true,
+              "error": "",
+              "bytes": 16777247
+            },
+            "chunks": [
+              {
+                "offset": 0,
+                "length": 8388608,
+                "sha256": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65",
+                "actual": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65"
+              },
+              {
+                "offset": 8388608,
+                "length": 8388608,
+                "sha256": "854edd4e82fb2fcf0dbaa5c21f28cd6f1e14b6bd2d91cfa53a875b9f9c9bffe2",
+                "actual": "854edd4e82fb2fcf0dbaa5c21f28cd6f1e14b6bd2d91cfa53a875b9f9c9bffe2"
+              },
+              {
+                "offset": 16777216,
+                "length": 31,
+                "sha256": "a22c91f0dd4f291a15a26cbcd84b44c887ee7d71a1608b13faefc5b0843e624f",
+                "actual": "a22c91f0dd4f291a15a26cbcd84b44c887ee7d71a1608b13faefc5b0843e624f"
+              }
+            ],
+            "fileSize": 16777247,
+            "fileHash": "28c957c2b18f6998dc4e067e9b9d316497c5c14df1a94af55bddaaa6d3344647",
+            "locks": []
+          },
+          "peer": {
+            "ranges": [
+              0,
+              8388608,
+              8388608,
+              16777216
+            ],
+            "closed": 1,
+            "removals": 0
+          }
+        }
+      }
+    },
+    {
+      "title": "navigation interrupts the transfer and reload offers explicit Resume with verified data",
+      "status": "expected",
+      "result_statuses": [
+        "passed"
+      ],
+      "receipts": {
+        "native-download-environment": {
+          "browser": "chromium",
+          "version": "153.0.8010.12",
+          "requestedChannel": "",
+          "project": "chromium",
+          "node": "v26.8.2",
+          "isolated": true
+        },
+        "navigation-verified-resume": {
+          "stored": {
+            "job": {
+              "id": "aaaaaaaaaaaaaaaa",
+              "integrityVersion": 2,
+              "profileID": "profile",
+              "itemID": "bbbbbbbbbbbbbbbb",
+              "title": "Fictional Range Fixture",
+              "quality": "original",
+              "extension": ".mp4",
+              "sha256": "28c957c2b18f6998dc4e067e9b9d316497c5c14df1a94af55bddaaa6d3344647",
+              "size": 16777247,
+              "storage": "indexeddb",
+              "progressBaseline": {
+                "seconds": 0,
+                "watched": false,
+                "session": "",
+                "revision": 0
+              },
+              "transferID": "d3b319ad3f72571856f1c5aae5587940",
+              "transferStartedAt": 1791113814901.7,
+              "state": "ready",
+              "readyOffline": true,
+              "error": "",
+              "bytes": 16777247
+            },
+            "chunks": [
+              {
+                "offset": 0,
+                "length": 8388608,
+                "sha256": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65",
+                "actual": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65"
+              },
+              {
+                "offset": 8388608,
+                "length": 8388608,
+                "sha256": "854edd4e82fb2fcf0dbaa5c21f28cd6f1e14b6bd2d91cfa53a875b9f9c9bffe2",
+                "actual": "854edd4e82fb2fcf0dbaa5c21f28cd6f1e14b6bd2d91cfa53a875b9f9c9bffe2"
+              },
+              {
+                "offset": 16777216,
+                "length": 31,
+                "sha256": "a22c91f0dd4f291a15a26cbcd84b44c887ee7d71a1608b13faefc5b0843e624f",
+                "actual": "a22c91f0dd4f291a15a26cbcd84b44c887ee7d71a1608b13faefc5b0843e624f"
+              }
+            ],
+            "fileSize": 16777247,
+            "fileHash": "28c957c2b18f6998dc4e067e9b9d316497c5c14df1a94af55bddaaa6d3344647",
+            "locks": []
+          },
+          "peer": {
+            "ranges": [
+              0,
+              8388608,
+              8388608,
+              16777216
+            ],
+            "closed": 1,
+            "removals": 0
+          }
+        }
+      }
+    },
+    {
+      "title": "isolated native profile boundary: changing Viewer Profile still cancels the old owner",
+      "status": "expected",
+      "result_statuses": [
+        "passed"
+      ],
+      "receipts": {
+        "native-download-environment": {
+          "browser": "chromium",
+          "version": "153.0.8010.12",
+          "requestedChannel": "",
+          "project": "chromium",
+          "node": "v26.8.2",
+          "isolated": true
+        },
+        "changed-profile-cancellation-retention": {
+          "stored": {
+            "job": {
+              "id": "aaaaaaaaaaaaaaaa",
+              "integrityVersion": 2,
+              "profileID": "profile",
+              "itemID": "bbbbbbbbbbbbbbbb",
+              "title": "Fictional Range Fixture",
+              "quality": "original",
+              "extension": ".mp4",
+              "sha256": "28c957c2b18f6998dc4e067e9b9d316497c5c14df1a94af55bddaaa6d3344647",
+              "size": 16777247,
+              "storage": "indexeddb",
+              "progressBaseline": {
+                "seconds": 0,
+                "watched": false,
+                "session": "",
+                "revision": 0
+              },
+              "transferID": "6cf0010ec425e4feb93fc1cf8622bce1",
+              "transferStartedAt": 1791113815682.4,
+              "state": "needs_attention",
+              "readyOffline": false,
+              "error": "Download interrupted. Resume to continue where it stopped.",
+              "bytes": 8388608,
+              "reservedBytes": 8388639
+            },
+            "chunks": [
+              {
+                "offset": 0,
+                "length": 8388608,
+                "sha256": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65",
+                "actual": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65"
+              }
+            ],
+            "fileSize": 8388608,
+            "fileHash": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65",
+            "locks": []
+          },
+          "peer": {
+            "ranges": [
+              0,
+              8388608
+            ],
+            "closed": 1,
+            "removals": 0
+          }
+        }
+      }
+    },
+    {
+      "title": "isolated native browser: Pause retains verified opfs blocks and Resume continues missing ranges at 390px",
+      "status": "expected",
+      "result_statuses": [
+        "passed"
+      ],
+      "receipts": {
+        "native-download-environment": {
+          "browser": "chromium",
+          "version": "153.0.8010.12",
+          "requestedChannel": "",
+          "project": "chromium",
+          "node": "v26.8.2",
+          "isolated": true
+        },
+        "served-download-bundle": {
+          "jobID": "aaaaaaaaaaaaaaaa",
+          "bundle": "/static/downloads.js?v=baseline",
+          "checksum": "2fb188e2744fe553afb7c4730d58bb0a3df38c2191c6f20732898a07503a2fc5"
+        },
+        "verified-first-block-before-pause": {
+          "job": {
+            "id": "aaaaaaaaaaaaaaaa",
+            "integrityVersion": 2,
+            "profileID": "profile",
+            "itemID": "bbbbbbbbbbbbbbbb",
+            "title": "Fictional Range Fixture",
+            "quality": "original",
+            "extension": ".mp4",
+            "sha256": "28c957c2b18f6998dc4e067e9b9d316497c5c14df1a94af55bddaaa6d3344647",
+            "size": 16777247,
+            "storage": "opfs",
+            "progressBaseline": {
+              "seconds": 0,
+              "watched": false,
+              "session": "",
+              "revision": 0
+            },
+            "transferID": "54ebf798e1a39912ea21384f1ce7cc72",
+            "transferStartedAt": 1791113816617.2,
+            "state": "transferring",
+            "readyOffline": false,
+            "error": "",
+            "bytes": 8388608,
+            "reservedBytes": 8388639
+          },
+          "chunks": [
+            {
+              "offset": 0,
+              "length": 8388608,
+              "sha256": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65",
+              "actual": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65"
+            }
+          ],
+          "fileSize": 8388608,
+          "fileHash": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65",
+          "locks": [
+            "kinosail-offline-slot:0",
+            "kinosail-offline:aaaaaaaaaaaaaaaa"
+          ]
+        },
+        "paused-verified-storage-and-peer": {
+          "stored": {
+            "job": {
+              "id": "aaaaaaaaaaaaaaaa",
+              "integrityVersion": 2,
+              "profileID": "profile",
+              "itemID": "bbbbbbbbbbbbbbbb",
+              "title": "Fictional Range Fixture",
+              "quality": "original",
+              "extension": ".mp4",
+              "sha256": "28c957c2b18f6998dc4e067e9b9d316497c5c14df1a94af55bddaaa6d3344647",
+              "size": 16777247,
+              "storage": "opfs",
+              "progressBaseline": {
+                "seconds": 0,
+                "watched": false,
+                "session": "",
+                "revision": 0
+              },
+              "transferID": "54ebf798e1a39912ea21384f1ce7cc72",
+              "transferStartedAt": 1791113816617.2,
+              "state": "needs_attention",
+              "readyOffline": false,
+              "error": "Download paused. Resume to continue where it stopped.",
+              "bytes": 8388608,
+              "reservedBytes": 8388639
+            },
+            "chunks": [
+              {
+                "offset": 0,
+                "length": 8388608,
+                "sha256": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65",
+                "actual": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65"
+              }
+            ],
+            "fileSize": 8388608,
+            "fileHash": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65",
+            "locks": []
+          },
+          "peer": {
+            "ranges": [
+              0,
+              8388608
+            ],
+            "closed": 1,
+            "removals": 0
+          }
+        },
+        "resumed-integrity-and-ranges": {
+          "stored": {
+            "job": {
+              "id": "aaaaaaaaaaaaaaaa",
+              "integrityVersion": 2,
+              "profileID": "profile",
+              "itemID": "bbbbbbbbbbbbbbbb",
+              "title": "Fictional Range Fixture",
+              "quality": "original",
+              "extension": ".mp4",
+              "sha256": "28c957c2b18f6998dc4e067e9b9d316497c5c14df1a94af55bddaaa6d3344647",
+              "size": 16777247,
+              "storage": "opfs",
+              "progressBaseline": {
+                "seconds": 0,
+                "watched": false,
+                "session": "",
+                "revision": 0
+              },
+              "transferID": "b0a2880051fe49b0cdbb45de87e115a6",
+              "transferStartedAt": 1791113817227.8,
+              "state": "ready",
+              "readyOffline": true,
+              "error": "",
+              "bytes": 16777247
+            },
+            "chunks": [
+              {
+                "offset": 0,
+                "length": 8388608,
+                "sha256": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65",
+                "actual": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65"
+              },
+              {
+                "offset": 8388608,
+                "length": 8388608,
+                "sha256": "854edd4e82fb2fcf0dbaa5c21f28cd6f1e14b6bd2d91cfa53a875b9f9c9bffe2",
+                "actual": "854edd4e82fb2fcf0dbaa5c21f28cd6f1e14b6bd2d91cfa53a875b9f9c9bffe2"
+              },
+              {
+                "offset": 16777216,
+                "length": 31,
+                "sha256": "a22c91f0dd4f291a15a26cbcd84b44c887ee7d71a1608b13faefc5b0843e624f",
+                "actual": "a22c91f0dd4f291a15a26cbcd84b44c887ee7d71a1608b13faefc5b0843e624f"
+              }
+            ],
+            "fileSize": 16777247,
+            "fileHash": "28c957c2b18f6998dc4e067e9b9d316497c5c14df1a94af55bddaaa6d3344647",
+            "locks": []
+          },
+          "peer": {
+            "ranges": [
+              0,
+              8388608,
+              8388608,
+              16777216
+            ],
+            "closed": 1,
+            "removals": 0
+          }
+        }
+      }
+    },
+    {
+      "title": "isolated native browser: Pause retains verified indexeddb blocks and Resume continues missing ranges at 1440px",
+      "status": "expected",
+      "result_statuses": [
+        "passed"
+      ],
+      "receipts": {
+        "native-download-environment": {
+          "browser": "chromium",
+          "version": "153.0.8010.12",
+          "requestedChannel": "",
+          "project": "chromium",
+          "node": "v26.8.2",
+          "isolated": true
+        },
+        "served-download-bundle": {
+          "jobID": "aaaaaaaaaaaaaaaa",
+          "bundle": "/static/downloads.js?v=baseline",
+          "checksum": "2fb188e2744fe553afb7c4730d58bb0a3df38c2191c6f20732898a07503a2fc5"
+        },
+        "verified-first-block-before-pause": {
+          "job": {
+            "id": "aaaaaaaaaaaaaaaa",
+            "integrityVersion": 2,
+            "profileID": "profile",
+            "itemID": "bbbbbbbbbbbbbbbb",
+            "title": "Fictional Range Fixture",
+            "quality": "original",
+            "extension": ".mp4",
+            "sha256": "28c957c2b18f6998dc4e067e9b9d316497c5c14df1a94af55bddaaa6d3344647",
+            "size": 16777247,
+            "storage": "indexeddb",
+            "progressBaseline": {
+              "seconds": 0,
+              "watched": false,
+              "session": "",
+              "revision": 0
+            },
+            "transferID": "62dfb499fac8b996e43bea10f59fbfde",
+            "transferStartedAt": 1791113817985.7,
+            "state": "transferring",
+            "readyOffline": false,
+            "error": "",
+            "bytes": 8388608,
+            "reservedBytes": 8388639
+          },
+          "chunks": [
+            {
+              "offset": 0,
+              "length": 8388608,
+              "sha256": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65",
+              "actual": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65"
+            }
+          ],
+          "fileSize": 8388608,
+          "fileHash": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65",
+          "locks": [
+            "kinosail-offline-slot:0",
+            "kinosail-offline:aaaaaaaaaaaaaaaa"
+          ]
+        },
+        "paused-verified-storage-and-peer": {
+          "stored": {
+            "job": {
+              "id": "aaaaaaaaaaaaaaaa",
+              "integrityVersion": 2,
+              "profileID": "profile",
+              "itemID": "bbbbbbbbbbbbbbbb",
+              "title": "Fictional Range Fixture",
+              "quality": "original",
+              "extension": ".mp4",
+              "sha256": "28c957c2b18f6998dc4e067e9b9d316497c5c14df1a94af55bddaaa6d3344647",
+              "size": 16777247,
+              "storage": "indexeddb",
+              "progressBaseline": {
+                "seconds": 0,
+                "watched": false,
+                "session": "",
+                "revision": 0
+              },
+              "transferID": "62dfb499fac8b996e43bea10f59fbfde",
+              "transferStartedAt": 1791113817985.7,
+              "state": "needs_attention",
+              "readyOffline": false,
+              "error": "Download paused. Resume to continue where it stopped.",
+              "bytes": 8388608,
+              "reservedBytes": 8388639
+            },
+            "chunks": [
+              {
+                "offset": 0,
+                "length": 8388608,
+                "sha256": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65",
+                "actual": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65"
+              }
+            ],
+            "fileSize": 8388608,
+            "fileHash": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65",
+            "locks": []
+          },
+          "peer": {
+            "ranges": [
+              0,
+              8388608
+            ],
+            "closed": 1,
+            "removals": 0
+          }
+        },
+        "resumed-integrity-and-ranges": {
+          "stored": {
+            "job": {
+              "id": "aaaaaaaaaaaaaaaa",
+              "integrityVersion": 2,
+              "profileID": "profile",
+              "itemID": "bbbbbbbbbbbbbbbb",
+              "title": "Fictional Range Fixture",
+              "quality": "original",
+              "extension": ".mp4",
+              "sha256": "28c957c2b18f6998dc4e067e9b9d316497c5c14df1a94af55bddaaa6d3344647",
+              "size": 16777247,
+              "storage": "indexeddb",
+              "progressBaseline": {
+                "seconds": 0,
+                "watched": false,
+                "session": "",
+                "revision": 0
+              },
+              "transferID": "ccd854287d026a4df18f28c9ddae6f55",
+              "transferStartedAt": 1791113818623.3,
+              "state": "ready",
+              "readyOffline": true,
+              "error": "",
+              "bytes": 16777247
+            },
+            "chunks": [
+              {
+                "offset": 0,
+                "length": 8388608,
+                "sha256": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65",
+                "actual": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65"
+              },
+              {
+                "offset": 8388608,
+                "length": 8388608,
+                "sha256": "854edd4e82fb2fcf0dbaa5c21f28cd6f1e14b6bd2d91cfa53a875b9f9c9bffe2",
+                "actual": "854edd4e82fb2fcf0dbaa5c21f28cd6f1e14b6bd2d91cfa53a875b9f9c9bffe2"
+              },
+              {
+                "offset": 16777216,
+                "length": 31,
+                "sha256": "a22c91f0dd4f291a15a26cbcd84b44c887ee7d71a1608b13faefc5b0843e624f",
+                "actual": "a22c91f0dd4f291a15a26cbcd84b44c887ee7d71a1608b13faefc5b0843e624f"
+              }
+            ],
+            "fileSize": 16777247,
+            "fileHash": "28c957c2b18f6998dc4e067e9b9d316497c5c14df1a94af55bddaaa6d3344647",
+            "locks": []
+          },
+          "peer": {
+            "ranges": [
+              0,
+              8388608,
+              8388608,
+              16777216
+            ],
+            "closed": 1,
+            "removals": 0
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,399 @@
+{
+  "isolated-red-2": {
+    "stats": {
+      "startTime": "2026-10-04T11:16:25.566Z",
+      "duration": 6668.438,
+      "expected": 0,
+      "skipped": 0,
+      "unexpected": 2,
+      "flaky": 0
+    },
+    "runner_errors": [],
+    "cases": [
+      {
+        "title": "isolated native browser: Pause retains verified opfs blocks and Resume continues missing ranges at 390px",
+        "status": "unexpected",
+        "result_statuses": [
+          "failed"
+        ],
+        "errors": [
+          "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: 'Pause download', exact: true })\nExpected: enabled\nTimeout: 2000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeEnabled\" getByRole('button', { name: 'Pause download', exact: true }) with timeout 2000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: 'Pause download', exact: true })\u001b[22m\n"
+        ],
+        "receipts": {
+          "native-download-environment": {
+            "browser": "chromium",
+            "version": "153.0.8010.12",
+            "requestedChannel": "",
+            "project": "chromium",
+            "node": "v26.8.2",
+            "isolated": true
+          },
+          "served-download-bundle": {
+            "jobID": "aaaaaaaaaaaaaaaa",
+            "bundle": "/static/downloads.js?v=baseline",
+            "checksum": "34da37e6c1fa624c86dac15a1e06f4efaaf02bae1f5f608d4fafa157a69dc7ef"
+          },
+          "verified-first-block-before-pause": {
+            "job": {
+              "id": "aaaaaaaaaaaaaaaa",
+              "integrityVersion": 2,
+              "profileID": "profile",
+              "itemID": "bbbbbbbbbbbbbbbb",
+              "title": "Fictional Range Fixture",
+              "quality": "original",
+              "extension": ".mp4",
+              "sha256": "28c957c2b18f6998dc4e067e9b9d316497c5c14df1a94af55bddaaa6d3344647",
+              "size": 16777247,
+              "storage": "opfs",
+              "progressBaseline": {
+                "seconds": 0,
+                "watched": false,
+                "session": "",
+                "revision": 0
+              },
+              "transferID": "2a27ab5545975a95529e1d33604d4655",
+              "transferStartedAt": 1791112586404.2,
+              "state": "transferring",
+              "readyOffline": false,
+              "error": "",
+              "bytes": 8388608,
+              "reservedBytes": 8388639
+            },
+            "chunks": [
+              {
+                "offset": 0,
+                "length": 8388608,
+                "sha256": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65",
+                "actual": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65"
+              }
+            ],
+            "fileSize": 8388608,
+            "fileHash": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65",
+            "locks": [
+              "kinosail-offline-slot:0",
+              "kinosail-offline:aaaaaaaaaaaaaaaa"
+            ]
+          }
+        }
+      },
+      {
+        "title": "isolated native browser: Pause retains verified indexeddb blocks and Resume continues missing ranges at 1440px",
+        "status": "unexpected",
+        "result_statuses": [
+          "failed"
+        ],
+        "errors": [
+          "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: 'Pause download', exact: true })\nExpected: enabled\nTimeout: 2000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeEnabled\" getByRole('button', { name: 'Pause download', exact: true }) with timeout 2000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: 'Pause download', exact: true })\u001b[22m\n"
+        ],
+        "receipts": {
+          "native-download-environment": {
+            "browser": "chromium",
+            "version": "153.0.8010.12",
+            "requestedChannel": "",
+            "project": "chromium",
+            "node": "v26.8.2",
+            "isolated": true
+          },
+          "served-download-bundle": {
+            "jobID": "aaaaaaaaaaaaaaaa",
+            "bundle": "/static/downloads.js?v=baseline",
+            "checksum": "34da37e6c1fa624c86dac15a1e06f4efaaf02bae1f5f608d4fafa157a69dc7ef"
+          },
+          "verified-first-block-before-pause": {
+            "job": {
+              "id": "aaaaaaaaaaaaaaaa",
+              "integrityVersion": 2,
+              "profileID": "profile",
+              "itemID": "bbbbbbbbbbbbbbbb",
+              "title": "Fictional Range Fixture",
+              "quality": "original",
+              "extension": ".mp4",
+              "sha256": "28c957c2b18f6998dc4e067e9b9d316497c5c14df1a94af55bddaaa6d3344647",
+              "size": 16777247,
+              "storage": "indexeddb",
+              "progressBaseline": {
+                "seconds": 0,
+                "watched": false,
+                "session": "",
+                "revision": 0
+              },
+              "transferID": "046d829abfa7ee3dcce12726e42fab45",
+              "transferStartedAt": 1791112589632.1,
+              "state": "transferring",
+              "readyOffline": false,
+              "error": "",
+              "bytes": 8388608,
+              "reservedBytes": 8388639
+            },
+            "chunks": [
+              {
+                "offset": 0,
+                "length": 8388608,
+                "sha256": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65",
+                "actual": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65"
+              }
+            ],
+            "fileSize": 8388608,
+            "fileHash": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65",
+            "locks": [
+              "kinosail-offline-slot:0",
+              "kinosail-offline:aaaaaaaaaaaaaaaa"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "isolated-red-3": {
+    "stats": {
+      "startTime": "2026-10-04T11:16:34.494Z",
+      "duration": 6520.607,
+      "expected": 0,
+      "skipped": 0,
+      "unexpected": 2,
+      "flaky": 0
+    },
+    "runner_errors": [],
+    "cases": [
+      {
+        "title": "isolated native browser: Pause retains verified opfs blocks and Resume continues missing ranges at 390px",
+        "status": "unexpected",
+        "result_statuses": [
+          "failed"
+        ],
+        "errors": [
+          "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: 'Pause download', exact: true })\nExpected: enabled\nTimeout: 2000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeEnabled\" getByRole('button', { name: 'Pause download', exact: true }) with timeout 2000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: 'Pause download', exact: true })\u001b[22m\n"
+        ],
+        "receipts": {
+          "native-download-environment": {
+            "browser": "chromium",
+            "version": "153.0.8010.12",
+            "requestedChannel": "",
+            "project": "chromium",
+            "node": "v26.8.2",
+            "isolated": true
+          },
+          "served-download-bundle": {
+            "jobID": "aaaaaaaaaaaaaaaa",
+            "bundle": "/static/downloads.js?v=baseline",
+            "checksum": "34da37e6c1fa624c86dac15a1e06f4efaaf02bae1f5f608d4fafa157a69dc7ef"
+          },
+          "verified-first-block-before-pause": {
+            "job": {
+              "id": "aaaaaaaaaaaaaaaa",
+              "integrityVersion": 2,
+              "profileID": "profile",
+              "itemID": "bbbbbbbbbbbbbbbb",
+              "title": "Fictional Range Fixture",
+              "quality": "original",
+              "extension": ".mp4",
+              "sha256": "28c957c2b18f6998dc4e067e9b9d316497c5c14df1a94af55bddaaa6d3344647",
+              "size": 16777247,
+              "storage": "opfs",
+              "progressBaseline": {
+                "seconds": 0,
+                "watched": false,
+                "session": "",
+                "revision": 0
+              },
+              "transferID": "606b405720a6b19c2021e04a635a871d",
+              "transferStartedAt": 1791112595191.5,
+              "state": "transferring",
+              "readyOffline": false,
+              "error": "",
+              "bytes": 8388608,
+              "reservedBytes": 8388639
+            },
+            "chunks": [
+              {
+                "offset": 0,
+                "length": 8388608,
+                "sha256": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65",
+                "actual": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65"
+              }
+            ],
+            "fileSize": 8388608,
+            "fileHash": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65",
+            "locks": [
+              "kinosail-offline-slot:0",
+              "kinosail-offline:aaaaaaaaaaaaaaaa"
+            ]
+          }
+        }
+      },
+      {
+        "title": "isolated native browser: Pause retains verified indexeddb blocks and Resume continues missing ranges at 1440px",
+        "status": "unexpected",
+        "result_statuses": [
+          "failed"
+        ],
+        "errors": [
+          "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: 'Pause download', exact: true })\nExpected: enabled\nTimeout: 2000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeEnabled\" getByRole('button', { name: 'Pause download', exact: true }) with timeout 2000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: 'Pause download', exact: true })\u001b[22m\n"
+        ],
+        "receipts": {
+          "native-download-environment": {
+            "browser": "chromium",
+            "version": "153.0.8010.12",
+            "requestedChannel": "",
+            "project": "chromium",
+            "node": "v26.8.2",
+            "isolated": true
+          },
+          "served-download-bundle": {
+            "jobID": "aaaaaaaaaaaaaaaa",
+            "bundle": "/static/downloads.js?v=baseline",
+            "checksum": "34da37e6c1fa624c86dac15a1e06f4efaaf02bae1f5f608d4fafa157a69dc7ef"
+          },
+          "verified-first-block-before-pause": {
+            "job": {
+              "id": "aaaaaaaaaaaaaaaa",
+              "integrityVersion": 2,
+              "profileID": "profile",
+              "itemID": "bbbbbbbbbbbbbbbb",
+              "title": "Fictional Range Fixture",
+              "quality": "original",
+              "extension": ".mp4",
+              "sha256": "28c957c2b18f6998dc4e067e9b9d316497c5c14df1a94af55bddaaa6d3344647",
+              "size": 16777247,
+              "storage": "indexeddb",
+              "progressBaseline": {
+                "seconds": 0,
+                "watched": false,
+                "session": "",
+                "revision": 0
+              },
+              "transferID": "a96d3e1562ef39a0c83ea1f88119c6f8",
+              "transferStartedAt": 1791112598410.5,
+              "state": "transferring",
+              "readyOffline": false,
+              "error": "",
+              "bytes": 8388608,
+              "reservedBytes": 8388639
+            },
+            "chunks": [
+              {
+                "offset": 0,
+                "length": 8388608,
+                "sha256": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65",
+                "actual": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65"
+              }
+            ],
+            "fileSize": 8388608,
+            "fileHash": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65",
+            "locks": [
+              "kinosail-offline-slot:0",
+              "kinosail-offline:aaaaaaaaaaaaaaaa"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "isolated-profile-controls-red": {
+    "stats": {
+      "startTime": "2026-10-04T11:16:43.305Z",
+      "duration": 5003.069,
+      "expected": 1,
+      "skipped": 0,
+      "unexpected": 1,
+      "flaky": 0
+    },
+    "runner_errors": [],
+    "cases": [
+      {
+        "title": "same Viewer Profile in another tab preserves the transfer owner until explicit Pause",
+        "status": "unexpected",
+        "result_statuses": [
+          "failed"
+        ],
+        "errors": [
+          "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('[data-download-device-status]')\nExpected substring: \u001b[32m\"Keep this page open\"\u001b[39m\nReceived string:    \u001b[31m\"Download interrupted. Resume to continue where it stopped.\"\u001b[39m\nTimeout: 2000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" locator('[data-download-device-status]') with timeout 2000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-download-device-status]')\u001b[22m\n\u001b[2m    21 \u00d7 locator resolved to <span role=\"status\" aria-live=\"polite\" data-download-device-status=\"\">Download interrupted. Resume to continue where it\u2026</span>\u001b[22m\n\u001b[2m       - unexpected value \"Download interrupted. Resume to continue where it stopped.\"\u001b[22m\n"
+        ],
+        "receipts": {
+          "native-download-environment": {
+            "browser": "chromium",
+            "version": "153.0.8010.12",
+            "requestedChannel": "",
+            "project": "chromium",
+            "node": "v26.8.2",
+            "isolated": true
+          },
+          "same-profile-tab-peer": {
+            "ranges": [
+              0,
+              8388608
+            ],
+            "closed": 1,
+            "removals": 0
+          }
+        }
+      },
+      {
+        "title": "isolated native profile boundary: changing Viewer Profile still cancels the old owner",
+        "status": "expected",
+        "result_statuses": [
+          "passed"
+        ],
+        "errors": [],
+        "receipts": {
+          "native-download-environment": {
+            "browser": "chromium",
+            "version": "153.0.8010.12",
+            "requestedChannel": "",
+            "project": "chromium",
+            "node": "v26.8.2",
+            "isolated": true
+          },
+          "changed-profile-cancellation-retention": {
+            "stored": {
+              "job": {
+                "id": "aaaaaaaaaaaaaaaa",
+                "integrityVersion": 2,
+                "profileID": "profile",
+                "itemID": "bbbbbbbbbbbbbbbb",
+                "title": "Fictional Range Fixture",
+                "quality": "original",
+                "extension": ".mp4",
+                "sha256": "28c957c2b18f6998dc4e067e9b9d316497c5c14df1a94af55bddaaa6d3344647",
+                "size": 16777247,
+                "storage": "indexeddb",
+                "progressBaseline": {
+                  "seconds": 0,
+                  "watched": false,
+                  "session": "",
+                  "revision": 0
+                },
+                "transferID": "cdc0a93bdb551cf7dd8100122976f29d",
+                "transferStartedAt": 1791112607555.9,
+                "state": "needs_attention",
+                "readyOffline": false,
+                "error": "Download interrupted. Resume to continue where it stopped.",
+                "bytes": 8388608,
+                "reservedBytes": 8388639
+              },
+              "chunks": [
+                {
+                  "offset": 0,
+                  "length": 8388608,
+                  "sha256": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65",
+                  "actual": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65"
+                }
+              ],
+              "fileSize": 8388608,
+              "fileHash": "bb929bbdce85fdbc903a463e96630a25f8b6ef5b76090e24cd92ea8fb47b2f65",
+              "locks": []
+            },
+            "peer": {
+              "ranges": [
+                0,
+                8388608
+              ],
+              "closed": 1,
+              "removals": 0
+            }
+          }
+        }
+      }
+    ]
+  }
+}

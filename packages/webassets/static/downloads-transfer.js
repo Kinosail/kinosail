@@ -188,6 +188,7 @@ async function transferOfflineJob(job, expected, owner) {
       signal.throwIfAborted();
       await beginOfflineTransfer(record, previousTransferID);
       admitted = true;
+      if (owner) owner.admitted = true;
     });
     digest = streamingOfflineDigest();
     let networkBytes = 0, networkStart = 0;
@@ -251,7 +252,7 @@ async function transferOfflineJob(job, expected, owner) {
     if (record && admitted) {
       record.state = "needs_attention";
       record.readyOffline = false;
-      record.error = signal.aborted ? offlineMessage("offlinePaused", "Download interrupted. Resume to continue where it stopped.") : error instanceof Error ? error.message : offlineMessage("offlineVerificationError", "The download could not be verified");
+      record.error = signal.aborted ? owner?.paused ? offlineUserPaused() : offlineMessage("offlinePaused", "Download interrupted. Resume to continue where it stopped.") : error instanceof Error ? error.message : offlineMessage("offlineVerificationError", "The download could not be verified");
       await saveOfflineJob(record);
       notifyOffline(job.id, {state: record.state, error: record.error});
     }
