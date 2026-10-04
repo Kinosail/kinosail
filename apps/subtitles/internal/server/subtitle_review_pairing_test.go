@@ -107,7 +107,11 @@ func assertSubtitleUnpairedComparison(t *testing.T, review subtitlePairingAPIRev
 
 func writeSubtitlePairingBrowserFixture(t *testing.T, handler http.Handler, base string, cleanupJSON, importJSON []byte) {
 	t.Helper()
-	dir := os.Getenv("KINOSAIL_UI_FIXTURE_DIR")
+	writeSubtitlePairingBrowserFixtureTo(t, handler, base, os.Getenv("KINOSAIL_UI_FIXTURE_DIR"), cleanupJSON, importJSON)
+}
+
+func writeSubtitlePairingBrowserFixtureTo(t *testing.T, handler http.Handler, base, dir string, cleanupJSON, importJSON []byte) {
+	t.Helper()
 	if dir == "" {
 		return
 	}

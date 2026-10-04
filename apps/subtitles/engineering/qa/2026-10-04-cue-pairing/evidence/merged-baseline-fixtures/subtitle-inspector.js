@@ -14,7 +14,6 @@
   const tracks = { current: video.addTextTrack("subtitles", "Current"), proposed: video.addTextTrack("subtitles", "Proposed") };
   const element = (tag, text, className) => { const node = document.createElement(tag); if (text !== undefined) node.textContent = text; if (className) node.className = className; return node; };
   const time = (seconds) => `${Math.floor(seconds / 60)}:${(seconds % 60).toFixed(3).padStart(6, "0")}`;
-  const sourceCues = window.kinosailSubtitleSourceCues({ element, time, seek: (name, start) => { video.currentTime = Math.max(0, start - 1); document.querySelector(`input[name="preview-track"][value="${name.toLowerCase()}"]`).checked = true; selectTrack(); video.focus(); } });
   async function request(path, input) {
     const options = input === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json", "X-Kinosail-CSRF": document.querySelector('meta[name="kinosail-csrf"]')?.content || "" }, body: JSON.stringify(input) };
     const response = await fetch(base + path, { credentials: "same-origin", ...options });
@@ -64,10 +63,10 @@
     let comparisons = cueComparisons(current, proposed);
     if (document.getElementById("show-flagged").checked) comparisons = comparisons.filter(row => (row.current || []).some(index => current[index]?.warnings?.length) || (row.proposed || []).some(index => proposed[index]?.warnings?.length));
     const pages = Math.max(1, Math.ceil(comparisons.length / 40)); page = Math.min(page, pages - 1);
-    const container = document.getElementById("subtitle-cues"); if (!append) { sourceCues.reset(); container.replaceChildren(); }
+    const container = document.getElementById("subtitle-cues"); if (!append) container.replaceChildren();
     for (const comparison of comparisons.slice(page * 40, (page + 1) * 40)) {
       const row = element("div", undefined, "subtitle-cue-row");
-      row.append(sourceCues.column("Current", comparison.current || [], current, comparison.kind), sourceCues.column("Proposed", comparison.proposed || [], proposed, comparison.kind));
+      row.append(cueColumn("Current", comparison.current || [], current, comparison.kind), cueColumn("Proposed", comparison.proposed || [], proposed, comparison.kind));
       container.append(row);
     }
     const progress = document.getElementById("cue-page"), previous = document.getElementById("previous-cues"), next = document.getElementById("next-cues");
@@ -88,6 +87,21 @@
   function cueComparisons(current, proposed) {
     if (review.proposed && Array.isArray(review.comparison)) return review.comparison;
     return [...current.map((_, index) => ({ current: [index], kind: review.proposed ? "unpaired-current" : "current" })), ...proposed.map((_, index) => ({ proposed: [index], kind: "unpaired-proposed" }))];
+  }
+  function cueColumn(name, indexes, cues, kind) {
+    const column = element("div"), numbers = indexes.map(index => index + 1);
+    column.append(element("small", `${name} · ${numbers.length ? `${numbers.length === 1 ? "cue" : "cues"} ${numbers.join(", ")}` : "no cue"}`));
+    const effect = { removed: "Removed during cleanup", merged: "Merged", "unpaired-current": "Correspondence not verified", "unpaired-proposed": "Correspondence not verified" }[kind];
+    if (effect) column.append(element("small", ` · ${effect}`));
+    for (const index of indexes) {
+      const cue = cues[index]; if (!cue) continue;
+      const seek = element("button", `${time(cue.start)} → ${time(cue.end)}`, "quiet"); seek.type = "button";
+      seek.setAttribute("aria-label", `Seek ${name} cue ${index + 1}: ${time(cue.start)} to ${time(cue.end)}`);
+      seek.addEventListener("click", () => { video.currentTime = Math.max(0, cue.start - 1); document.querySelector(`input[name="preview-track"][value="${name.toLowerCase()}"]`).checked = true; selectTrack(); video.focus(); });
+      column.append(seek, element("p", cue.text), element("small", (cue.warnings || []).join(" · ")));
+    }
+    if (!indexes.length) column.append(element("p", "—"));
+    return column;
   }
   async function load() {
     const ticket = ++revision; status.setAttribute("aria-label", "Loading subtitle details…"); status.setAttribute("aria-busy", "true"); apply.disabled = true; prepared = undefined; form.querySelector('button[type="submit"]').disabled = true;

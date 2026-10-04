@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -24,7 +25,11 @@ func TestWriteUIStateFixturesSubtitleMergedGroupRetainsEverySourceCue(t *testing
 		t.Fatalf("long merged preview = %d %s", response.Code, response.Body.String())
 	}
 	assertSubtitleMergedSources(t, review, count)
-	writeSubtitlePairingBrowserFixture(t, handler, base, response.Body.Bytes(), nil)
+	dir := os.Getenv("KINOSAIL_SUBTITLE_MERGED_FIXTURE_DIR")
+	if root := os.Getenv("KINOSAIL_UI_FIXTURE_DIR"); dir == "" && root != "" {
+		dir = filepath.Join(root, "subtitle-merged")
+	}
+	writeSubtitlePairingBrowserFixtureTo(t, handler, base, dir, response.Body.Bytes(), nil)
 	current, err := os.ReadFile(target)
 	if err != nil || string(current) != initial {
 		t.Fatalf("long preview changed its installed data: %v", err)

@@ -1,0 +1,258 @@
+{
+  "config": {
+    "argv": [
+      "/opt/homebrew/Cellar/node/26.8.2/bin/node",
+      "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/node_modules/@playwright/test/cli.js",
+      "test",
+      "subtitle-merged-group.spec.ts",
+      "--project=chromium",
+      "--workers=1",
+      "--timeout=30000"
+    ],
+    "configFile": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/playwright.config.ts",
+    "rootDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-cue-pairing/evidence/merged-browser-red/results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "open": "never",
+          "outputFolder": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/../engineering/qa/2026-10-04-cue-pairing/evidence/merged-browser-red/html-all"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/../engineering/qa/2026-10-04-cue-pairing/evidence/merged-browser-red/results-all.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "subtitle-merged-group.spec.ts",
+      "file": "subtitle-merged-group.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "long merged comparison bounds rendering and reaches the last source at 390px",
+          "ok": false,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1906,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: <= \u001b[32m80\u001b[39m\nReceived:    \u001b[31m10001\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: <= \u001b[32m80\u001b[39m\nReceived:    \u001b[31m10001\u001b[39m\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-merged-group.spec.ts:38:33",
+                    "location": {
+                      "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-merged-group.spec.ts",
+                      "column": 33,
+                      "line": 38
+                    },
+                    "snippet": "  36 |     const metrics = await page.locator(\"#subtitle-cues\").evaluate(root => ({ seekButtons: root.querySelectorAll('button[aria-label^=\"Seek \"]').length, elements: root.querySelectorAll(\"*\").length, textBytes: root.textContent?.length || 0 }));\n  37 |     await testInfo.attach(\"long-group-initial-render\", { contentType: \"application/json\", body: JSON.stringify({ revision, width, metrics, sourceCount: 10000, boundary: \"isolated renderer; actual public Go 10,000-cue inspect/preview/assets; media aborted; no browser performance timing claim\" }) });\n> 38 |     expect(metrics.seekButtons).toBeLessThanOrEqual(80);\n     |                                 ^\n  39 |     expect(metrics.elements).toBeLessThanOrEqual(1000);\n  40 |     expect(metrics.textBytes).toBeLessThanOrEqual(4000);\n  41 |     await page.getByRole(\"button\", { name: \"Review 10000 Current source cues\", exact: true }).click();"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-merged-group.spec.ts",
+                        "column": 33,
+                        "line": 38
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: <= \u001b[32m80\u001b[39m\nReceived:    \u001b[31m10001\u001b[39m\n\n  36 |     const metrics = await page.locator(\"#subtitle-cues\").evaluate(root => ({ seekButtons: root.querySelectorAll('button[aria-label^=\"Seek \"]').length, elements: root.querySelectorAll(\"*\").length, textBytes: root.textContent?.length || 0 }));\n  37 |     await testInfo.attach(\"long-group-initial-render\", { contentType: \"application/json\", body: JSON.stringify({ revision, width, metrics, sourceCount: 10000, boundary: \"isolated renderer; actual public Go 10,000-cue inspect/preview/assets; media aborted; no browser performance timing claim\" }) });\n> 38 |     expect(metrics.seekButtons).toBeLessThanOrEqual(80);\n     |                                 ^\n  39 |     expect(metrics.elements).toBeLessThanOrEqual(1000);\n  40 |     expect(metrics.textBytes).toBeLessThanOrEqual(4000);\n  41 |     await page.getByRole(\"button\", { name: \"Review 10000 Current source cues\", exact: true }).click();\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-merged-group.spec.ts:38:33"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T10:22:29.101Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "long-group-initial-render",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6ImNmODZiYmNiNjhiYWI0NmEzZWVmNDhkZmQwZjcwMWQ5ZDVmOWQ1Y2MiLCJ3aWR0aCI6MzkwLCJtZXRyaWNzIjp7InNlZWtCdXR0b25zIjoxMDAwMSwiZWxlbWVudHMiOjMwMDEwLCJ0ZXh0Qnl0ZXMiOjQ0NTc4MX0sInNvdXJjZUNvdW50IjoxMDAwMCwiYm91bmRhcnkiOiJpc29sYXRlZCByZW5kZXJlcjsgYWN0dWFsIHB1YmxpYyBHbyAxMCwwMDAtY3VlIGluc3BlY3QvcHJldmlldy9hc3NldHM7IG1lZGlhIGFib3J0ZWQ7IG5vIGJyb3dzZXIgcGVyZm9ybWFuY2UgdGltaW5nIGNsYWltIn0="
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-cue-pairing/evidence/merged-browser-red/results/subtitle-merged-group-long-25577-es-the-last-source-at-390px-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-cue-pairing/evidence/merged-browser-red/results/subtitle-merged-group-long-25577-es-the-last-source-at-390px-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-cue-pairing/evidence/merged-browser-red/results/subtitle-merged-group-long-25577-es-the-last-source-at-390px-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-merged-group.spec.ts",
+                    "column": 33,
+                    "line": 38
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "6c032184c816e44ff4a7-c7fff3a06b3fcf4875fd",
+          "file": "subtitle-merged-group.spec.ts",
+          "line": 10,
+          "column": 3
+        },
+        {
+          "title": "long merged comparison bounds rendering and reaches the last source at 1440px",
+          "ok": false,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1965,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: <= \u001b[32m80\u001b[39m\nReceived:    \u001b[31m10001\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: <= \u001b[32m80\u001b[39m\nReceived:    \u001b[31m10001\u001b[39m\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-merged-group.spec.ts:38:33",
+                    "location": {
+                      "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-merged-group.spec.ts",
+                      "column": 33,
+                      "line": 38
+                    },
+                    "snippet": "  36 |     const metrics = await page.locator(\"#subtitle-cues\").evaluate(root => ({ seekButtons: root.querySelectorAll('button[aria-label^=\"Seek \"]').length, elements: root.querySelectorAll(\"*\").length, textBytes: root.textContent?.length || 0 }));\n  37 |     await testInfo.attach(\"long-group-initial-render\", { contentType: \"application/json\", body: JSON.stringify({ revision, width, metrics, sourceCount: 10000, boundary: \"isolated renderer; actual public Go 10,000-cue inspect/preview/assets; media aborted; no browser performance timing claim\" }) });\n> 38 |     expect(metrics.seekButtons).toBeLessThanOrEqual(80);\n     |                                 ^\n  39 |     expect(metrics.elements).toBeLessThanOrEqual(1000);\n  40 |     expect(metrics.textBytes).toBeLessThanOrEqual(4000);\n  41 |     await page.getByRole(\"button\", { name: \"Review 10000 Current source cues\", exact: true }).click();"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-merged-group.spec.ts",
+                        "column": 33,
+                        "line": 38
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: <= \u001b[32m80\u001b[39m\nReceived:    \u001b[31m10001\u001b[39m\n\n  36 |     const metrics = await page.locator(\"#subtitle-cues\").evaluate(root => ({ seekButtons: root.querySelectorAll('button[aria-label^=\"Seek \"]').length, elements: root.querySelectorAll(\"*\").length, textBytes: root.textContent?.length || 0 }));\n  37 |     await testInfo.attach(\"long-group-initial-render\", { contentType: \"application/json\", body: JSON.stringify({ revision, width, metrics, sourceCount: 10000, boundary: \"isolated renderer; actual public Go 10,000-cue inspect/preview/assets; media aborted; no browser performance timing claim\" }) });\n> 38 |     expect(metrics.seekButtons).toBeLessThanOrEqual(80);\n     |                                 ^\n  39 |     expect(metrics.elements).toBeLessThanOrEqual(1000);\n  40 |     expect(metrics.textBytes).toBeLessThanOrEqual(4000);\n  41 |     await page.getByRole(\"button\", { name: \"Review 10000 Current source cues\", exact: true }).click();\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-merged-group.spec.ts:38:33"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T10:22:42.157Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "long-group-initial-render",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6ImNmODZiYmNiNjhiYWI0NmEzZWVmNDhkZmQwZjcwMWQ5ZDVmOWQ1Y2MiLCJ3aWR0aCI6MTQ0MCwibWV0cmljcyI6eyJzZWVrQnV0dG9ucyI6MTAwMDEsImVsZW1lbnRzIjozMDAxMCwidGV4dEJ5dGVzIjo0NDU3ODF9LCJzb3VyY2VDb3VudCI6MTAwMDAsImJvdW5kYXJ5IjoiaXNvbGF0ZWQgcmVuZGVyZXI7IGFjdHVhbCBwdWJsaWMgR28gMTAsMDAwLWN1ZSBpbnNwZWN0L3ByZXZpZXcvYXNzZXRzOyBtZWRpYSBhYm9ydGVkOyBubyBicm93c2VyIHBlcmZvcm1hbmNlIHRpbWluZyBjbGFpbSJ9"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-cue-pairing/evidence/merged-browser-red/results/subtitle-merged-group-long-a0320-s-the-last-source-at-1440px-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-cue-pairing/evidence/merged-browser-red/results/subtitle-merged-group-long-a0320-s-the-last-source-at-1440px-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-cue-pairing/evidence/merged-browser-red/results/subtitle-merged-group-long-a0320-s-the-last-source-at-1440px-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-merged-group.spec.ts",
+                    "column": 33,
+                    "line": 38
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "6c032184c816e44ff4a7-bbbf3b902abd3023ba7c",
+          "file": "subtitle-merged-group.spec.ts",
+          "line": 10,
+          "column": 3
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-04T10:22:28.851Z",
+    "duration": 26119.492000000002,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

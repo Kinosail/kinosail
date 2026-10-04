@@ -24,7 +24,10 @@ var (
 	//go:embed static/subtitle-status.js
 	subtitleStatusJS []byte
 	//go:embed static/subtitle-inspector.js
-	subtitleInspectorJS []byte
+	subtitleInspectorAppJS []byte
+	//go:embed static/subtitle-source-cues.js
+	subtitleSourceCuesJS []byte
+	subtitleInspectorJS  = append(append([]byte(nil), subtitleSourceCuesJS...), subtitleInspectorAppJS...)
 	//go:embed static/subtitle-inspector.css
 	subtitleInspectorCSS []byte
 	//go:embed static/subtitle-dashboard.css
