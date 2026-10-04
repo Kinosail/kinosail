@@ -125,6 +125,13 @@ struct PlaybackOrientationJourneys {
         try await snapshot(window, name: "portrait-returned")
         window.rootViewController = UIHostingController(rootView: TouchPlaybackView(failure: nil, retry: {}, close: {})
             .environment(session).environment(\.dynamicTypeSize, .accessibility3))
+        // A replacement test host must decode a fresh frame before a loaded capture.
+        try await Task.sleep(for: .milliseconds(200))
+        session.player.presentation.attach(player)
+        session.player.resume()
+        let largeTextStart = player.currentTime().seconds
+        try await until { session.player.presentation.readyForDisplay && player.currentTime().seconds > largeTextStart + 0.1 }
+        session.player.pause()
         try await snapshot(window, name: "loaded-large-text")
         window.rootViewController = UIHostingController(rootView: TouchPlaybackView(failure: "Synthetic playback failure", retry: {}, close: {})
             .environment(session).environment(\.dynamicTypeSize, .accessibility3))
