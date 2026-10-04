@@ -1,0 +1,11 @@
+2026/10/04 01:35:31 INFO request request_id=52e696aa463ea0428941fd17 method=POST route="POST /api/v1/subtitle-library/{id}/preview" status=200 duration_ms=6
+2026/10/04 01:35:31 INFO request request_id=cc4e6dd6a30f41e7d47a8182 method=POST route="POST /api/v1/subtitle-library/{id}/preview" status=200 duration_ms=5
+--- FAIL: TestWriteUIStateFixturesSubtitlePairingPreservesDialogueCorrespondenceThroughCleanup (0.06s)
+    subtitle_review_pairing_test.go:52: cleanup has 0 comparison rows, want 3
+2026/10/04 01:35:31 INFO request request_id=b29b2adaabefb6960836b09a method=POST route="POST /api/v1/subtitle-library/{id}/preview" status=200 duration_ms=5
+2026/10/04 01:35:31 INFO request request_id=cbc477f4f138ba522d7f8329 method=POST route="POST /api/v1/subtitle-library/{id}/preview" status=200 duration_ms=3
+--- FAIL: TestWriteUIStateFixturesSubtitlePairingPreservesDialogueCorrespondenceThroughCleanup (0.04s)
+    subtitle_review_pairing_test.go:52: cleanup has 0 comparison rows, want 3
+FAIL
+FAIL	github.com/MikeO7/kinosail-subtitles/internal/server	6.366s
+FAIL

@@ -19,6 +19,7 @@ type subtitleConversionOptions struct {
 	Encoding      string `json:"encoding"`
 	RemoveCredits bool   `json:"removeCredits"`
 	MergeRepeated bool   `json:"mergeRepeated"`
+	TrackSources  bool   `json:"-"`
 }
 
 var subtitleEncodings = []string{"auto", "utf-8", "utf-16le", "utf-16be", "windows-1252", "windows-1250", "windows-1251", "windows-1253", "windows-1254", "windows-1255", "windows-1256", "windows-874", "shift-jis", "gb18030", "big5", "euc-kr"}
@@ -48,18 +49,16 @@ func convertSubtitle(data []byte, language string, options subtitleConversionOpt
 		return cleanedSubtitle{}, err
 	}
 	cleaned.Original = append([]byte(nil), original...)
+	if options.TrackSources {
+		cleaned.SourceCues = subtitleCueSources(len(cleaned.Cues))
+	}
 	if options.RemoveCredits {
-		for i := range cleaned.Cues {
-			if i < 3 || i >= len(cleaned.Cues)-3 {
-				cleaned.Cues[i].Text = removeSubtitleCredits(cleaned.Cues[i].Text)
-			}
-		}
-		cleaned.Cues = slicesWithoutEmptyCues(cleaned.Cues)
+		cleaned.Cues, cleaned.SourceCues = removeSubtitleEdgeCredits(cleaned.Cues, cleaned.SourceCues)
 		cleaned.Cleanup = append(cleaned.Cleanup, "Removed subtitle credits at the edges")
 	}
 	if options.MergeRepeated {
 		var removed int
-		cleaned.Cues, removed = mergeRepeatedSubtitleCues(cleaned.Cues)
+		cleaned.Cues, cleaned.SourceCues, removed = mergeRepeatedSubtitleCues(cleaned.Cues, cleaned.SourceCues)
 		cleaned.Duplicates += removed
 		cleaned.Cleanup = append(cleaned.Cleanup, "Merged adjacent repeated cues")
 	}

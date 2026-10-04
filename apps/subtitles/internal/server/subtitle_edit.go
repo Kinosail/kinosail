@@ -156,10 +156,12 @@ func (manager *subtitleManager) previewSubtitleEdit(request *http.Request, id st
 		}
 	}
 	options := subtitleConversionOptions{Encoding: input.Encoding, RemoveCredits: input.RemoveCredits, MergeRepeated: input.MergeRepeated}
+	options.TrackSources = subtitleEditUsesCurrentCues(input, review, data)
 	document, err := convertSubtitle(data, input.Language, options)
 	if err != nil {
 		return review, cleanedSubtitle{}, http.StatusBadRequest, err
 	}
+	sources := document.SourceCues
 	if input.Text != "" {
 		edited, editErr := convertSubtitle([]byte(input.Text), input.Language, subtitleConversionOptions{Encoding: "utf-8", RemoveCredits: input.RemoveCredits, MergeRepeated: input.MergeRepeated})
 		if editErr != nil {
@@ -182,6 +184,7 @@ func (manager *subtitleManager) previewSubtitleEdit(request *http.Request, id st
 	}
 	view := reviewSubtitleDocument(document, firstNonempty(document.Synchronization, "Not verified against video"))
 	review.Proposed = &view
+	review.Comparison = subtitleReviewComparison(review.Current, &view, sources)
 	review.Warnings = append(subtitleConversionWarnings(data), document.Cleanup...)
 	return review, document, http.StatusOK, nil
 }

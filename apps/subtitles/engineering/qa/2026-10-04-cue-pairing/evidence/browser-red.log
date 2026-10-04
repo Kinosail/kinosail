@@ -1,0 +1,98 @@
+
+Running 2 tests using 1 worker
+
+(node:87967) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › subtitle-pairing.spec.ts:11:3 › cleanup compares the same dialogue at 390px @smoke (10.7s)
+(node:88155) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [chromium] › subtitle-pairing.spec.ts:11:3 › cleanup compares the same dialogue at 1440px @smoke (10.7s)
+
+
+  1) [chromium] › subtitle-pairing.spec.ts:11:3 › cleanup compares the same dialogue at 390px @smoke 
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  locator('.subtitle-cue-row')
+    Expected: 3
+    Received: 4
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toHaveCount" locator('.subtitle-cue-row') with timeout 10000ms
+      - waiting for locator('.subtitle-cue-row')
+        24 × locator resolved to 4 elements
+           - unexpected value "4"
+
+
+       at subtitle-pairing-journey.ts:13
+
+      11 |   const rows = page.locator(".subtitle-cue-row");
+      12 |   await page.screenshot({ path: testInfo.outputPath("actual-cleanup.png"), fullPage: true });
+    > 13 |   await expect(rows).toHaveCount(3);
+         |                      ^
+      14 |   await expect(rows.nth(0)).toContainText("Removed during cleanup");
+      15 |   await expect(rows.nth(0).locator("div").first()).toContainText("Downloaded from www.example.com");
+      16 |   await expect(rows.nth(1)).toContainText("Merged");
+        at reviewSubtitlePairing (/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-pairing-journey.ts:13:22)
+        at /Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-pairing.spec.ts:36:5
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../engineering/qa/2026-10-04-cue-pairing/evidence/browser-red/results/subtitle-pairing-cleanup-compares-the-same-dialogue-at-390px-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../engineering/qa/2026-10-04-cue-pairing/evidence/browser-red/results/subtitle-pairing-cleanup-compares-the-same-dialogue-at-390px-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../engineering/qa/2026-10-04-cue-pairing/evidence/browser-red/results/subtitle-pairing-cleanup-compares-the-same-dialogue-at-390px-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace ../engineering/qa/2026-10-04-cue-pairing/evidence/browser-red/results/subtitle-pairing-cleanup-compares-the-same-dialogue-at-390px-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › subtitle-pairing.spec.ts:11:3 › cleanup compares the same dialogue at 1440px @smoke 
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  locator('.subtitle-cue-row')
+    Expected: 3
+    Received: 4
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toHaveCount" locator('.subtitle-cue-row') with timeout 10000ms
+      - waiting for locator('.subtitle-cue-row')
+        24 × locator resolved to 4 elements
+           - unexpected value "4"
+
+
+       at subtitle-pairing-journey.ts:13
+
+      11 |   const rows = page.locator(".subtitle-cue-row");
+      12 |   await page.screenshot({ path: testInfo.outputPath("actual-cleanup.png"), fullPage: true });
+    > 13 |   await expect(rows).toHaveCount(3);
+         |                      ^
+      14 |   await expect(rows.nth(0)).toContainText("Removed during cleanup");
+      15 |   await expect(rows.nth(0).locator("div").first()).toContainText("Downloaded from www.example.com");
+      16 |   await expect(rows.nth(1)).toContainText("Merged");
+        at reviewSubtitlePairing (/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-pairing-journey.ts:13:22)
+        at /Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-pairing.spec.ts:36:5
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../engineering/qa/2026-10-04-cue-pairing/evidence/browser-red/results/subtitle-pairing-cleanup-c-b8631-the-same-dialogue-at-1440px-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../engineering/qa/2026-10-04-cue-pairing/evidence/browser-red/results/subtitle-pairing-cleanup-c-b8631-the-same-dialogue-at-1440px-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../engineering/qa/2026-10-04-cue-pairing/evidence/browser-red/results/subtitle-pairing-cleanup-c-b8631-the-same-dialogue-at-1440px-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace ../engineering/qa/2026-10-04-cue-pairing/evidence/browser-red/results/subtitle-pairing-cleanup-c-b8631-the-same-dialogue-at-1440px-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium] › subtitle-pairing.spec.ts:11:3 › cleanup compares the same dialogue at 390px @smoke 
+    [chromium] › subtitle-pairing.spec.ts:11:3 › cleanup compares the same dialogue at 1440px @smoke 

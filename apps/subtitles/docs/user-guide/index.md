@@ -2,7 +2,7 @@
 title: Find and manage subtitles
 description: Read coverage and fetch or upgrade subtitle sidecars.
 section: Use Subtitles
-last_reviewed: 2026-09-27
+last_reviewed: 2026-10-04
 ---
 
 # Find and manage subtitles
@@ -31,6 +31,10 @@ Managed sidecars require a score improvement of at least ten points for the cons
 ## Review uncertain results
 
 Check language, episode, release, and timing when a subtitle is wrong. Optional OCR/transcription creates drafts for review and does not automatically replace sidecars. Review changes before accepting them. See [matching and timing]({{ '/user-guide/playback/' | relative_url }}) and [recovery]({{ '/owner-guide/backups-and-updates/' | relative_url }}).
+
+**Before and after** keeps transformed dialogue beside its source cues. Removed cues stay visible. Merged rows show every source cue and the proposed cue. Each timing button seeks that side's cue.
+
+Imports, generated drafts, independent text edits, and encoding overrides show **Correspondence not verified**. Review both sides separately. Preview keeps the installed file unchanged. Select **Save reviewed subtitle** after checking the text and timing.
 
 ## Keep or restore a sidecar
 

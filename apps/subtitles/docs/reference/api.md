@@ -2,7 +2,7 @@
 title: Subtitle HTTP API
 description: Use bounded subtitle inventory and mutation operations.
 section: Reference
-last_reviewed: 2026-09-27
+last_reviewed: 2026-10-04
 ---
 
 # Subtitle HTTP API
@@ -22,7 +22,7 @@ The web dashboard and HTTP API call the same validated application operations. U
 | `GET /api/v1/subtitle-library/{id}/export` | Export a subtitle in a supported format. |
 | `GET` / `POST /api/v1/subtitle-library/{id}/draft` | Inspect or create a reviewable local draft. |
 | `POST /api/v1/subtitle-library/{id}/audio` | Run the supported local audio-draft operation. |
-| `POST /api/v1/subtitle-library/{id}/preview` | Preview a subtitle edit. |
+| `POST /api/v1/subtitle-library/{id}/preview` | Preview a subtitle edit with source/proposed cue correspondence. |
 | `POST /api/v1/subtitle-library/{id}/apply` | Apply a validated reviewed edit. |
 | `POST /api/v1/subtitles/cleanup/preview` | Preview eligible sidecars for optional hiding. |
 | `POST /api/v1/subtitles/cleanup` | Apply the reviewed cleanup plan. |
@@ -42,6 +42,10 @@ See [API quickstart]({{ '/developer-guide/api-quickstart/' | relative_url }}) an
 Restore accepts `{}` for the configured language or `{"language":"en"}`. Replacement requires a boolean, for example `{"replaceable":false}` to freeze replacement. Provider testing accepts `{}`. Read current inspect/preview/draft schemas from OpenAPI before editing; do not invent stale fingerprints or approval data.
 
 Inspect accepts the `language` query field. Export additionally accepts `format=srt`, `vtt`, or `original`. Duplicate/unknown query fields and invalid values are rejected. Export returns bytes directly to the authenticated client and is not exposed through MCP.
+
+## Preview comparison
+
+Preview reviews include `comparison` rows. Each row has a `kind` and zero-based `current` and/or `proposed` cue indices. Cleanup reports `matched`, `merged`, or `removed`. Imports, drafts, text edits, encoding overrides, or changed source bytes report `unpaired-current` and `unpaired-proposed`; these rows do not claim correspondence. Preview leaves the installed subtitle unchanged.
 
 ## Optional subtitle cleanup
 

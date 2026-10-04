@@ -1,0 +1,257 @@
+{
+  "config": {
+    "argv": [
+      "/opt/homebrew/Cellar/node/26.8.2/bin/node",
+      "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/node_modules/@playwright/test/cli.js",
+      "test",
+      "subtitle-pairing.spec.ts",
+      "--project=chromium",
+      "--workers=1"
+    ],
+    "configFile": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/playwright.config.ts",
+    "rootDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-cue-pairing/evidence/browser-red/results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "open": "never",
+          "outputFolder": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-cue-pairing/evidence/browser-red/html-all"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-cue-pairing/evidence/browser-red/results-all.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "subtitle-pairing.spec.ts",
+      "file": "subtitle-pairing.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "cleanup compares the same dialogue at 390px",
+          "ok": false,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 10711,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('.subtitle-cue-row')\nExpected: \u001b[32m3\u001b[39m\nReceived: \u001b[31m4\u001b[39m\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveCount\" locator('.subtitle-cue-row') with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('.subtitle-cue-row')\u001b[22m\n\u001b[2m    24 × locator resolved to 4 elements\u001b[22m\n\u001b[2m       - unexpected value \"4\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('.subtitle-cue-row')\nExpected: \u001b[32m3\u001b[39m\nReceived: \u001b[31m4\u001b[39m\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveCount\" locator('.subtitle-cue-row') with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('.subtitle-cue-row')\u001b[22m\n\u001b[2m    24 × locator resolved to 4 elements\u001b[22m\n\u001b[2m       - unexpected value \"4\"\u001b[22m\n\n    at reviewSubtitlePairing (/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-pairing-journey.ts:13:22)\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-pairing.spec.ts:36:5",
+                    "location": {
+                      "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-pairing-journey.ts",
+                      "column": 22,
+                      "line": 13
+                    },
+                    "snippet": "\u001b[90m   at \u001b[39msubtitle-pairing-journey.ts:13\n\n  11 |   const rows = page.locator(\".subtitle-cue-row\");\n  12 |   await page.screenshot({ path: testInfo.outputPath(\"actual-cleanup.png\"), fullPage: true });\n> 13 |   await expect(rows).toHaveCount(3);\n     |                      ^\n  14 |   await expect(rows.nth(0)).toContainText(\"Removed during cleanup\");\n  15 |   await expect(rows.nth(0).locator(\"div\").first()).toContainText(\"Downloaded from www.example.com\");\n  16 |   await expect(rows.nth(1)).toContainText(\"Merged\");"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-pairing-journey.ts",
+                        "column": 22,
+                        "line": 13
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('.subtitle-cue-row')\nExpected: \u001b[32m3\u001b[39m\nReceived: \u001b[31m4\u001b[39m\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveCount\" locator('.subtitle-cue-row') with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('.subtitle-cue-row')\u001b[22m\n\u001b[2m    24 × locator resolved to 4 elements\u001b[22m\n\u001b[2m       - unexpected value \"4\"\u001b[22m\n\n\n   at subtitle-pairing-journey.ts:13\n\n  11 |   const rows = page.locator(\".subtitle-cue-row\");\n  12 |   await page.screenshot({ path: testInfo.outputPath(\"actual-cleanup.png\"), fullPage: true });\n> 13 |   await expect(rows).toHaveCount(3);\n     |                      ^\n  14 |   await expect(rows.nth(0)).toContainText(\"Removed during cleanup\");\n  15 |   await expect(rows.nth(0).locator(\"div\").first()).toContainText(\"Downloaded from www.example.com\");\n  16 |   await expect(rows.nth(1)).toContainText(\"Merged\");\n    at reviewSubtitlePairing (/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-pairing-journey.ts:13:22)\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-pairing.spec.ts:36:5"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T08:47:28.708Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6IjU0MDkxODZhNSIsIndpZHRoIjozOTAsImNvbW1hbmQiOiJwbGF5d3JpZ2h0IHRlc3Qgc3VidGl0bGUtcGFpcmluZy5zcGVjLnRzIC0td29ya2Vycz0xIiwiZW52aXJvbm1lbnQiOiJjaHJvbWl1bSIsImJyb3dzZXJWZXJzaW9uIjoiMTU0LjAuODAzNy45NyIsImRhdGEiOiJhY3R1YWwgcmVuZGVyZWQgaW5zcGVjdG9yIGFuZCBBUEkgcHJldmlldyBvdXRwdXRzIGZvciBzeW50aGV0aWMgY3JlZGl0L3JlcGVhdGVkL2xhdGVyIGRpYWxvZ3VlIGFuZCB1bnJlbGF0ZWQgaW1wb3J0IiwiYm91bmRhcnkiOiJpc29sYXRlZCBicm93c2VyIHRyYW5zcG9ydC9yZW5kZXIgZml4dHVyZTsgbm8gcGxheWFibGUgbWVkaWEgb3IgcG9wdWxhdGVkIFNlcnZlciJ9"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-cue-pairing/evidence/browser-red/results/subtitle-pairing-cleanup-compares-the-same-dialogue-at-390px-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-cue-pairing/evidence/browser-red/results/subtitle-pairing-cleanup-compares-the-same-dialogue-at-390px-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-cue-pairing/evidence/browser-red/results/subtitle-pairing-cleanup-compares-the-same-dialogue-at-390px-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-pairing-journey.ts",
+                    "column": 22,
+                    "line": 13
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "fe876a51f951818ac144-efad44845add28419393",
+          "file": "subtitle-pairing.spec.ts",
+          "line": 11,
+          "column": 3
+        },
+        {
+          "title": "cleanup compares the same dialogue at 1440px",
+          "ok": false,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 10727,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('.subtitle-cue-row')\nExpected: \u001b[32m3\u001b[39m\nReceived: \u001b[31m4\u001b[39m\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveCount\" locator('.subtitle-cue-row') with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('.subtitle-cue-row')\u001b[22m\n\u001b[2m    24 × locator resolved to 4 elements\u001b[22m\n\u001b[2m       - unexpected value \"4\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('.subtitle-cue-row')\nExpected: \u001b[32m3\u001b[39m\nReceived: \u001b[31m4\u001b[39m\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveCount\" locator('.subtitle-cue-row') with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('.subtitle-cue-row')\u001b[22m\n\u001b[2m    24 × locator resolved to 4 elements\u001b[22m\n\u001b[2m       - unexpected value \"4\"\u001b[22m\n\n    at reviewSubtitlePairing (/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-pairing-journey.ts:13:22)\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-pairing.spec.ts:36:5",
+                    "location": {
+                      "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-pairing-journey.ts",
+                      "column": 22,
+                      "line": 13
+                    },
+                    "snippet": "\u001b[90m   at \u001b[39msubtitle-pairing-journey.ts:13\n\n  11 |   const rows = page.locator(\".subtitle-cue-row\");\n  12 |   await page.screenshot({ path: testInfo.outputPath(\"actual-cleanup.png\"), fullPage: true });\n> 13 |   await expect(rows).toHaveCount(3);\n     |                      ^\n  14 |   await expect(rows.nth(0)).toContainText(\"Removed during cleanup\");\n  15 |   await expect(rows.nth(0).locator(\"div\").first()).toContainText(\"Downloaded from www.example.com\");\n  16 |   await expect(rows.nth(1)).toContainText(\"Merged\");"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-pairing-journey.ts",
+                        "column": 22,
+                        "line": 13
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('.subtitle-cue-row')\nExpected: \u001b[32m3\u001b[39m\nReceived: \u001b[31m4\u001b[39m\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveCount\" locator('.subtitle-cue-row') with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('.subtitle-cue-row')\u001b[22m\n\u001b[2m    24 × locator resolved to 4 elements\u001b[22m\n\u001b[2m       - unexpected value \"4\"\u001b[22m\n\n\n   at subtitle-pairing-journey.ts:13\n\n  11 |   const rows = page.locator(\".subtitle-cue-row\");\n  12 |   await page.screenshot({ path: testInfo.outputPath(\"actual-cleanup.png\"), fullPage: true });\n> 13 |   await expect(rows).toHaveCount(3);\n     |                      ^\n  14 |   await expect(rows.nth(0)).toContainText(\"Removed during cleanup\");\n  15 |   await expect(rows.nth(0).locator(\"div\").first()).toContainText(\"Downloaded from www.example.com\");\n  16 |   await expect(rows.nth(1)).toContainText(\"Merged\");\n    at reviewSubtitlePairing (/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-pairing-journey.ts:13:22)\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-pairing.spec.ts:36:5"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T08:47:50.454Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6IjU0MDkxODZhNSIsIndpZHRoIjoxNDQwLCJjb21tYW5kIjoicGxheXdyaWdodCB0ZXN0IHN1YnRpdGxlLXBhaXJpbmcuc3BlYy50cyAtLXdvcmtlcnM9MSIsImVudmlyb25tZW50IjoiY2hyb21pdW0iLCJicm93c2VyVmVyc2lvbiI6IjE1NC4wLjgwMzcuOTciLCJkYXRhIjoiYWN0dWFsIHJlbmRlcmVkIGluc3BlY3RvciBhbmQgQVBJIHByZXZpZXcgb3V0cHV0cyBmb3Igc3ludGhldGljIGNyZWRpdC9yZXBlYXRlZC9sYXRlciBkaWFsb2d1ZSBhbmQgdW5yZWxhdGVkIGltcG9ydCIsImJvdW5kYXJ5IjoiaXNvbGF0ZWQgYnJvd3NlciB0cmFuc3BvcnQvcmVuZGVyIGZpeHR1cmU7IG5vIHBsYXlhYmxlIG1lZGlhIG9yIHBvcHVsYXRlZCBTZXJ2ZXIifQ=="
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-cue-pairing/evidence/browser-red/results/subtitle-pairing-cleanup-c-b8631-the-same-dialogue-at-1440px-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-cue-pairing/evidence/browser-red/results/subtitle-pairing-cleanup-c-b8631-the-same-dialogue-at-1440px-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-cue-pairing/evidence/browser-red/results/subtitle-pairing-cleanup-c-b8631-the-same-dialogue-at-1440px-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-pairing-journey.ts",
+                    "column": 22,
+                    "line": 13
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "fe876a51f951818ac144-6d95855cee54f56d5773",
+          "file": "subtitle-pairing.spec.ts",
+          "line": 11,
+          "column": 3
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-04T08:47:28.369Z",
+    "duration": 43589.982,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

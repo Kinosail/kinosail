@@ -48,6 +48,7 @@ type subtitleReview struct {
 	Restorable        bool                    `json:"restorable"`
 	Current           *subtitleReviewDocument `json:"current,omitempty"`
 	Proposed          *subtitleReviewDocument `json:"proposed,omitempty"`
+	Comparison        []subtitleCueComparison `json:"comparison,omitempty"`
 	Warnings          []string                `json:"warnings"`
 	Duration          float64                 `json:"duration"`
 }

@@ -39,6 +39,7 @@ type cleanedSubtitle struct {
 	Data            []byte
 	Original        []byte
 	Cues            []subtitleCue
+	SourceCues      [][]int
 	MaxCPS          float64
 	Duplicates      int
 	Cleanup         []string
@@ -251,15 +252,22 @@ func uniqueSubtitleCues(cues []subtitleCue) ([]subtitleCue, int) {
 	return kept, duplicates
 }
 
-func mergeRepeatedSubtitleCues(cues []subtitleCue) ([]subtitleCue, int) {
+func mergeRepeatedSubtitleCues(cues []subtitleCue, sources [][]int) ([]subtitleCue, [][]int, int) {
 	kept, duplicates := cues[:0], 0
-	for _, cue := range cues {
+	keptSources := sources[:0]
+	for index, cue := range cues {
 		if len(kept) > 0 && cue.Text == kept[len(kept)-1].Text && cue.Start <= kept[len(kept)-1].End+subtitleRepeatGap {
 			kept[len(kept)-1].End = max(kept[len(kept)-1].End, cue.End)
+			if sources != nil {
+				keptSources[len(keptSources)-1] = append(keptSources[len(keptSources)-1], sources[index]...)
+			}
 			duplicates++
 			continue
 		}
 		kept = append(kept, cue)
+		if sources != nil {
+			keptSources = append(keptSources, sources[index])
+		}
 	}
-	return kept, duplicates
+	return kept, keptSources, duplicates
 }
