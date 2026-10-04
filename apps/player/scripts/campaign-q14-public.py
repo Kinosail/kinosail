@@ -128,6 +128,16 @@ def run(command, cwd, environment, seconds, label, command_seconds=None):
     return receipt, report
 
 
+def compile_test_binary(go, environment):
+    binary = PRIVATE / "browse-return.test"
+    command = [go, "test", "-c", "-p", "1", "-o", str(binary), "./internal/server"]
+    phase, _report = run(command, ROOT / "apps/player", environment, 95, "compile", 90)
+    admitted = (phase.get("exitCode") == 0 and not phase.get("timeout") and not phase.get("outputOverflow")
+                and phase.get("ownedGroupStopped") and phase.get("captureSettled")
+                and not binary.is_symlink() and binary.is_file() and 0 < binary.stat().st_size <= 256 * 1024 * 1024)
+    return binary, phase, file_pin(binary) if admitted else None
+
+
 def manifest(revision):
     paths = set(json.loads((QA / "direct-cli-preparation-context.json").read_text())["sources"])
     paths.update({str(Path(__file__).relative_to(ROOT)), CLIP,
@@ -142,9 +152,11 @@ def manifest(revision):
 
 
 def main():
+    os.umask(0o077)
     receipt = {"id": "Q14", "schemaVersion": 1, "phases": [], "result": "prerequisite-blocked",
                "scope": "all-nine collection; repeated actual Go public primary only; no media decoding/BFCache admission",
                "limits": {"collectionSeconds": 15, "collectionIncludingShutdownSeconds": 20,
+                          "compileSeconds": 90, "compileIncludingShutdownSeconds": 95,
                           "primaryGoSeconds": 70, "primaryExternalSeconds": 75, "workers": 1, "retries": 0}}
     results = {"collection": None, "primary": []}
     OUTPUT.mkdir(parents=True, exist_ok=True)
@@ -185,7 +197,7 @@ def main():
                        browser={"name": shell["name"], "revision": shell["revision"], "version": shell.get("browserVersion")})
         environment = dict(os.environ, CI="1", PLAYWRIGHT_CHANNEL="", KINOSAIL_BROWSER_PROJECT="chromium",
                            KINOSAIL_BROWSER_WORKERS="1", KINOSAIL_E2E_VIDEO="off", KINOSAIL_E2E_ARTIFACT_DIR="",
-                           GOMAXPROCS="2", KINOSAIL_BROWSE_RETURN_PROOF="1")
+                           GOMAXPROCS="2", GOPROXY="off", GOTOOLCHAIN="local", KINOSAIL_BROWSE_RETURN_PROOF="1")
         environment.pop("PLAYWRIGHT_JSON_OUTPUT_NAME", None)
         environment.pop("PLAYWRIGHT_JSON_OUTPUT_FILE", None)
         environment.update(KINOSAIL_BROWSE_RETURN_CASES="all", KINOSAIL_BROWSE_RETURN_URL="http://127.0.0.1:9",
@@ -196,12 +208,17 @@ def main():
         results["collection"] = report
         if phase.get("exitCode") != 0 or phase.get("timeout") or not phase.get("ownedGroupStopped") or not phase.get("captureSettled") or not complete(report, True):
             raise ValueError("collection prerequisite")
+        binary, phase, binary_pin = compile_test_binary(go, environment)
+        receipt["phases"].append(phase)
+        if binary_pin is None:
+            raise ValueError("compile prerequisite")
+        receipt["compiledTestBinary"] = {"file": binary.name, **binary_pin}
         environment.update(KINOSAIL_BROWSE_RETURN_BROWSER="1", KINOSAIL_BROWSE_RETURN_CASES="primary", KINOSAIL_BROWSE_RETURN_MEDIA=str(clip))
         environment.pop("KINOSAIL_BROWSE_RETURN_URL", None)
         for repeat in (1, 2):
             environment["KINOSAIL_E2E_OUTPUT_DIR"] = str(PRIVATE / f"primary-{repeat}")
-            command = [go, "test", "-v", "-p", "1", "./internal/server", "-run", "^TestBrowseReturnBrowserJourney$", "-count=1", "-timeout=70s"]
-            phase, report = run(command, ROOT / "apps/player", environment, 75, f"primary-{repeat}")
+            command = [str(binary), "-test.v", "-test.run=^TestBrowseReturnBrowserJourney$", "-test.count=1", "-test.timeout=70s", "-test.parallel=1"]
+            phase, report = run(command, ROOT / "apps/player/internal/server", environment, 75, f"primary-{repeat}")
             receipt["phases"].append(phase)
             results["primary"].append(report)
             if phase.get("timeout") or not phase.get("ownedGroupStopped") or not phase.get("captureSettled") or not complete(report):
@@ -212,7 +229,7 @@ def main():
             expected_boundary = "completed-pass" if passed else "completed-fail"
             if phase.get("goBoundary") != expected_boundary or (passed and phase.get("exitCode") != 0) or (not passed and phase.get("exitCode") == 0):
                 raise ValueError("runner/browser result mismatch")
-        receipt["sourceUnchanged"] = git("rev-parse", "HEAD") == revision and clean_source() and manifest(revision) == inputs
+        receipt["sourceUnchanged"] = git("rev-parse", "HEAD") == revision and clean_source() and manifest(revision) == inputs and file_pin(binary) == binary_pin
         if not receipt["sourceUnchanged"]:
             raise ValueError("source changed during proof")
         passed = all(item["status"] == "passed" for report in results["primary"] for item in report["cases"])

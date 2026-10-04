@@ -5,6 +5,7 @@ import io
 import json
 from pathlib import Path
 import unittest
+import tempfile
 from unittest import mock
 
 PATH = Path(__file__).with_name("campaign-q14-public.py")
@@ -142,6 +143,48 @@ class CaptureTests(unittest.TestCase):
         self.assertTrue(receipt["outputOverflow"])
         self.assertEqual(receipt["outputBytes"], cap + 1)
         self.assertIsNone(accepted)
+
+
+class CompileTests(unittest.TestCase):
+    def compile_fake(self, mutation=None):
+        with tempfile.TemporaryDirectory() as directory:
+            private = Path(directory)
+            calls = []
+            def run(command, cwd, environment, seconds, label, command_seconds):
+                calls.append((command, cwd, seconds, label, command_seconds))
+                binary = Path(command[command.index('-o') + 1])
+                binary.write_bytes(b'fictional-test-binary')
+                phase = {'exitCode': 0, 'ownedGroupStopped': True, 'captureSettled': True, 'outputOverflow': False}
+                if mutation == 'timeout': phase['timeout'] = True
+                if mutation == 'failed': phase['exitCode'] = 1
+                if mutation == 'unsettled': phase['ownedGroupStopped'] = False
+                if mutation == 'empty': binary.write_bytes(b'')
+                if mutation == 'symlink':
+                    target = private / 'target'; binary.rename(target); binary.symlink_to(target)
+                return phase, None
+            with mock.patch.object(DRIVER, 'PRIVATE', private), mock.patch.object(DRIVER, 'run', run):
+                binary, phase, pin = DRIVER.compile_test_binary('fictional-go', {})
+            return binary, phase, pin, calls
+
+    def test_compile_has_its_own_bound_and_actual_binary_identity(self):
+        binary, _, pin, calls = self.compile_fake()
+        self.assertEqual(binary.name, 'browse-return.test')
+        self.assertEqual(pin['bytes'], len(b'fictional-test-binary'))
+        self.assertEqual(pin['sha256'], DRIVER.sha(b'fictional-test-binary'))
+        command, cwd, seconds, label, deadline = calls[0]
+        self.assertEqual(command[:5], ['fictional-go', 'test', '-c', '-p', '1'])
+        self.assertEqual(command[-1], './internal/server')
+        self.assertEqual((cwd, seconds, label, deadline), (DRIVER.ROOT / 'apps/player', 95, 'compile', 90))
+
+    def test_failed_timed_out_or_unsettled_compile_cannot_admit_binary(self):
+        for mutation in ('timeout', 'failed', 'unsettled'):
+            with self.subTest(mutation=mutation):
+                self.assertIsNone(self.compile_fake(mutation)[2])
+
+    def test_empty_or_symlink_executable_cannot_admit_binary(self):
+        for mutation in ('empty', 'symlink'):
+            with self.subTest(mutation=mutation):
+                self.assertIsNone(self.compile_fake(mutation)[2])
 
 
 if __name__ == "__main__":
