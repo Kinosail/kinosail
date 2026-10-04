@@ -1,0 +1,19 @@
+{
+  "command": [
+    "go",
+    "test",
+    "-p",
+    "1",
+    "./internal/server",
+    "-run",
+    "^(TestWriteUIStateFixturesSubtitlePairingPreservesDialogueCorrespondenceThroughCleanup|TestWriteUIStateFixturesSubtitleMergedGroupRetainsEverySourceCue|TestSubtitlePreviewDoesNotLoseRemovedCueInsideMergedGroup|TestSubtitleInspector.*|TestSubtitlePreviewRejectsStaleAndInvalidEditsWithoutWriting|TestSubtitleConverters.*)$",
+    "-count=1",
+    "-timeout=25s",
+    "-v"
+  ],
+  "limitSeconds": 35.0,
+  "seconds": 9.595,
+  "exit": 0,
+  "timedOut": false,
+  "log": "engineering/qa/2026-10-04-cue-pairing/evidence/merged-api-final-green.log"
+}

@@ -1,0 +1,13 @@
+{
+  "revision": "8f06acbb24cd9dad3aca79d9cda987731bc94d19",
+  "boundary": "R16 prepared tests are preserved on disk; Go overlay restores committed maintenance test and removes only the untracked R16 revision test from the compilation view. R07 tests remain present and selected. No production changes are overlaid.",
+  "overlay": {
+    "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/internal/server/subtitle_maintenance_test.go": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/.verification/r07-pairing/committed-8f06acbb/subtitle_maintenance_test.go",
+    "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/internal/server/subtitle_dashboard_revision_test.go": ""
+  },
+  "preservedR16SHA256": {
+    "apps/subtitles/internal/server/subtitle_maintenance_test.go": "f26e00b3f914130793b72c5187b546244ed4d47222380743899f02aa9f7993fb",
+    "apps/subtitles/internal/server/subtitle_dashboard_revision_test.go": "c0111e937ade97838c3422b89de5a56089efd3e289828598147860615ddd7de6"
+  },
+  "committedMaintenanceSHA256": "21659fdc35a9edaa0169d7addebf6f92bc61fca8e40ea364f00c0880ae892bee"
+}

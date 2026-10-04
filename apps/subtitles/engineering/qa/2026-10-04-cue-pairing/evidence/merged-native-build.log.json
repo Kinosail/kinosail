@@ -1,0 +1,16 @@
+{
+  "command": [
+    "go",
+    "build",
+    "-p",
+    "1",
+    "-o",
+    ".verification/r07-pairing/native-fixture-merged-de6d487a",
+    ".verification/r07-pairing/native-fixture.go"
+  ],
+  "limitSeconds": 30.0,
+  "seconds": 1.382,
+  "exit": 0,
+  "timedOut": false,
+  "log": "engineering/qa/2026-10-04-cue-pairing/evidence/merged-native-build.log"
+}

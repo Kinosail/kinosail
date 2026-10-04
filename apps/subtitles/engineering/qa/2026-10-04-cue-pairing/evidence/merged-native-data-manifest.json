@@ -1,0 +1,31 @@
+{
+  "revision": "8f06acbb24cd9dad3aca79d9cda987731bc94d19",
+  "phase": "prepared at 8f06acbb; executed native read/preview-only at de6d487a; clean shutdown verified",
+  "fixture": "apps/subtitles/.verification/r07-pairing/20261004-merged",
+  "files": [
+    {
+      "name": "R07 Example.mp4",
+      "bytes": 396548,
+      "sha256": "9dbd85e7863d921e209978c8349992e5f8505b0d7ffa468c37b8caf97af3f0a4"
+    },
+    {
+      "name": "R07 Example.en.srt",
+      "bytes": 200,
+      "sha256": "eb3bde14cacc59d517305b4dcc93e1b72b7eab099666a36b1e216583e9372aa4"
+    }
+  ],
+  "source": "approved fictional fixture; read-only copy; no encoder or real user data",
+  "executedRevision": "de6d487af024db89dae6eb8841d2dfb1d58bca9e",
+  "verifiedAfterRun": [
+    {
+      "name": "R07 Example.mp4",
+      "bytes": 396548,
+      "sha256": "9dbd85e7863d921e209978c8349992e5f8505b0d7ffa468c37b8caf97af3f0a4"
+    },
+    {
+      "name": "R07 Example.en.srt",
+      "bytes": 200,
+      "sha256": "eb3bde14cacc59d517305b4dcc93e1b72b7eab099666a36b1e216583e9372aa4"
+    }
+  ]
+}
