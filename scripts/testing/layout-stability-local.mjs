@@ -180,4 +180,4 @@ try {
   await browser.close();
 }
 if (process.env.KINOSAIL_LAYOUT_ENFORCE && reports.some(report => report.identifiedDOMCLS > 0.001 || report.overflow > 1 || !report.categoryStable || !report.timeoutsPresent || !report.scaleApplied || report.moved.length>0)) process.exitCode = 1;
-if(flows.some(f=>f.pendingStable===false||f.focusRetained===false||f.settled?.inert||f.settled?.skeleton||f.stable===false||f.overflow>1))process.exitCode=1;
+if(flows.some(f=>f.pendingStable===false||f.focusRetained===false||f.scrollRetained===false||f.settled?.inert||f.settled?.skeleton||f.stable===false||f.overflow>1))process.exitCode=1;

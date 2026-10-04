@@ -26,6 +26,7 @@ subprocess.run(generate, check=True)
 for name in ["Arrival", "A long synthetic title that wraps on small screens", "Gamma"]:
     os.link(media / "Layout Example.mp4", media / (name + ".mp4"))
 (media / "Layout Example.en.srt").write_text("1\n00:00:00,000 --> 00:00:07,500\nSynthetic caption.\n")
+os.link(media / "Layout Example.en.srt", media / "Layout Example.fr.srt")
 results = {}
 initial_diff_hash = hashlib.sha256(subprocess.check_output(["git", "diff", "HEAD"], cwd=root)).hexdigest()
 initial_scripts = {name: hashlib.sha256((root / "scripts/testing" / name).read_bytes()).hexdigest()

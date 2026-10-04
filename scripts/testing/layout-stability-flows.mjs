@@ -60,9 +60,15 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
     await context.addInitScript(()=>{const apply=()=>{if(!document.documentElement)return false;document.documentElement.style.fontSize="200%";return true;};if(!apply()){const observer=new MutationObserver(()=>{if(apply())observer.disconnect();});observer.observe(document,{childList:true});}});
     const page=await context.newPage();await page.goto("/settings#thanks");
     const last=page.locator("main").locator('button:enabled, input:enabled:not([type=hidden]), select:enabled, textarea:enabled, a[href]').last();
-    await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));await last.focus();
-    const control=await last.boundingBox(), tail=await page.locator("#thanks").boundingBox(), dock=await page.locator("[data-subtitle-dock]").boundingBox(), header=await page.locator(".app-header").boundingBox();
-    results.push({flow:"enlarged-dock-end-focus",viewport,control,tail,dock,header,focusRetained:await last.evaluate(n=>n===document.activeElement),stable:Boolean(control&&tail&&dock&&header&&control.y+control.height<=dock.y+1&&tail.y+tail.height<=dock.y+1&&control.y>=header.y+header.height-1)});
+    await last.focus();
+    await page.keyboard.press("Shift+Tab");await page.keyboard.press("Tab");
+    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(resolve)));
+    const control=await last.boundingBox(), dock=await page.locator("[data-subtitle-dock]").boundingBox(), header=await page.locator(".app-header").boundingBox();
+    const focusRetained=await last.evaluate(n=>n===document.activeElement);
+    await page.evaluate(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:"instant"}));
+    const tail=await page.locator("#thanks").boundingBox(), endDock=await page.locator("[data-subtitle-dock]").boundingBox();
+    const reservation=await page.locator("main").evaluate(n=>({paddingBottom:getComputedStyle(n).paddingBottom,dockHeight:document.documentElement.style.getPropertyValue("--subtitle-dock-height"),scrollX,scrollY}));
+    results.push({flow:"enlarged-dock-end-focus",viewport,control,tail,dock,endDock,header,reservation,focusRetained,stable:Boolean(control&&tail&&dock&&endDock&&header&&control.y+control.height<=dock.y+1&&tail.y+tail.height<=endDock.y+1&&control.y>=header.y+header.height-1)});
     await context.close();
   }
   const context = await browser.newContext({...options,viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce"});
@@ -109,13 +115,19 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
     const loadedEnabled=!await preview.isDisabled();
     if(pendingLocked&&loadedEnabled){await file.focus();await file.setInputFiles(payload);}
     results.push({flow:"inspector-edit-during-refresh",pendingLocked,loadedEnabled,stable:pendingLocked&&loadedEnabled});
-    for(const moveAway of [false,true]){
+    for(const mode of ["retain","tab-away","retain-scroll"]){
       probe.stage="inspector-language-refresh-focus";await editor.reload();await editor.waitForFunction(()=>!document.querySelector('#subtitle-edit-form button[type="submit"]').disabled);
-      const language=editor.locator('select[name="language"]');const alternate=await language.evaluate(n=>[...n.options].find(option=>option.value&&option.value!==n.value)?.value);
+      const language=editor.locator('select[name="language"]');const alternate=await language.evaluate((n,mode)=>[...n.options].find(option=>option.value&&option.value!==n.value&&(mode!=="retain-scroll"||option.value==="fr"))?.value,mode);
       if(!alternate)throw new Error("Synthetic inspector needs an alternate language");
+      const originalScroll=await editor.evaluate(()=>scrollY),workspaceBefore=await editor.locator(".subtitle-inspector-workspace").boundingBox();
       await language.focus();await language.selectOption(alternate);await editor.waitForFunction(()=>document.querySelector("#inspector-status")?.getAttribute("aria-busy")==="true");
-      if(moveAway)await editor.keyboard.press("Tab");const focus=await editor.evaluateHandle(()=>document.activeElement);await editor.waitForFunction(()=>document.querySelector("#inspector-status")?.getAttribute("aria-busy")!=="true");
-      const focusRetained=moveAway?await editor.evaluate(n=>n===document.activeElement,focus):await language.evaluate(n=>n===document.activeElement);await focus.dispose();results.push({flow:moveAway?"inspector-language-refresh-tab-away":"inspector-language-refresh-focus",focusRetained});
+      if(mode==="tab-away")await editor.keyboard.press("Tab");
+      if(mode==="retain-scroll")await editor.evaluate(()=>scrollTo({top:document.documentElement.scrollHeight,behavior:"instant"}));
+      const selectorOffscreen=await language.evaluate(n=>{const r=n.getBoundingClientRect();return r.bottom<=0||r.top>=innerHeight;});
+      const scrollBefore=await editor.evaluate(()=>scrollY),focus=await editor.evaluateHandle(()=>document.activeElement);await editor.waitForFunction(()=>document.querySelector("#inspector-status")?.getAttribute("aria-busy")!=="true");
+      const focusRetained=mode==="tab-away"?await editor.evaluate(n=>n===document.activeElement,focus):await language.evaluate(n=>n===document.activeElement);await focus.dispose();
+      const scrollAfter=await editor.evaluate(()=>scrollY),workspaceAfter=await editor.locator(".subtitle-inspector-workspace").boundingBox();
+      results.push({flow:mode==="retain-scroll"?"inspector-language-refresh-preserve-scroll":mode==="tab-away"?"inspector-language-refresh-tab-away":"inspector-language-refresh-focus",focusRetained,originalScroll,scrollBefore,scrollAfter,selectorOffscreen,workspaceBefore,workspaceAfter,scrollRetained:mode!=="retain-scroll"||Boolean(Math.abs(scrollAfter-scrollBefore)<=1&&Math.abs(scrollBefore-originalScroll)>1&&selectorOffscreen&&workspaceBefore&&workspaceAfter&&Math.abs(workspaceBefore.height-workspaceAfter.height)<=1)});
     }
     await editing.close();
   }
