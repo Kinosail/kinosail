@@ -31,6 +31,8 @@ func TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects(t *test
 		{"oversized item", "", `{"action":"restore","item":"` + strings.Repeat("a", 17) + `"}`, http.StatusBadRequest},
 		{"unavailable item", "", `{"action":"restore","item":"ffffffffffffffff"}`, http.StatusNotFound},
 		{"maintenance item", "", `{"action":"maintain","item":"` + item + `"}`, http.StatusBadRequest},
+		{"maintenance explicit null", "", `{"action":"maintain","item":null}`, http.StatusBadRequest},
+		{"Wanted explicit null", "", `{"action":"fetch-wanted","item":null}`, http.StatusBadRequest},
 		{"array", "", `[]`, http.StatusBadRequest},
 		{"empty", "", "", http.StatusBadRequest},
 		{"trailing JSON", "", valid + `{}`, http.StatusBadRequest},
