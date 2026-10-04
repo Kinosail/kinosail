@@ -96,6 +96,11 @@ test("real album queue advances source and all Now Playing identity to the ficti
   expect((await firstState.json()).item.progress.watched).toBe(true);
   for (const viewport of [{width: 390, height: 844}, {width: 1440, height: 900}, {width: 1920, height: 1080}]) {
     await page.setViewportSize(viewport);
+    await testInfo.attach("viewport-item-actions", {body: JSON.stringify({viewport,
+      originalWatchedVisible: await page.locator(`form[action="/watched/${first.id}"]`).isVisible(),
+      originalListVisible: await page.locator(`form[action="/list/${first.id}"]`).isVisible(),
+      noticeVisible: await page.locator("[data-progress-notice]").isVisible(),
+    }), contentType: "application/json"});
     await expect(page.locator(`form[action="/watched/${first.id}"]`)).toBeHidden();
     await expect(page.locator(`form[action="/list/${first.id}"]`)).toBeHidden();
     await expect(page.locator("[data-progress-notice]")).toBeHidden();
@@ -103,6 +108,39 @@ test("real album queue advances source and all Now Playing identity to the ficti
     expect((await new AxeBuilder({page}).include(".title-block").include("[data-audio-queue-controls]").include("[data-current-track-actions]").include(".media-stage").analyze()).violations).toEqual([]);
     await page.screenshot({path: testInfo.outputPath(`second-track-${viewport.width}.png`), fullPage: true});
   }
+});
+
+test("mobile R03 progress notice stays hidden after real acknowledgement and reopens only on failure", {tag: ["@smoke", "@routed-fault"]}, async ({page}, testInfo) => {
+  await login(page);
+  const [first] = await albumTracks(page);
+  await page.setViewportSize({width: 390, height: 844});
+  await page.goto(`/watch/${first.id}`);
+  const media = page.locator("audio"), notice = page.locator("[data-progress-notice]");
+  await expect.poll(() => media.evaluate((audio: HTMLAudioElement) => audio.readyState)).toBeGreaterThanOrEqual(2);
+  const saved = page.waitForResponse(response => new URL(response.url()).pathname === `/progress/${first.id}` && response.request().method() === "POST");
+  await media.evaluate(async (audio: HTMLAudioElement) => {audio.muted = true; audio.currentTime = 1; await audio.play(); audio.pause();});
+  const acknowledgement = await saved;
+  expect(acknowledgement.status()).toBe(204);
+  await testInfo.attach("mobile-progress-after-real-acknowledgement", {body: JSON.stringify({
+    viewport: {width: 390, height: 844}, realAcknowledgementStatus: acknowledgement.status(),
+    noticeVisible: await notice.isVisible(), hiddenAttribute: await notice.getAttribute("hidden") !== null,
+  }), contentType: "application/json"});
+  await expect(notice).toBeHidden();
+  const failureRoute = `**/progress/${first.id}`;
+  await page.route(failureRoute, route => route.fulfill({status: 503, headers: {"X-Request-ID": "qa-mobile-progress-failure"}}));
+  await media.evaluate(async (audio: HTMLAudioElement) => {audio.currentTime = 2; await audio.play(); audio.pause();});
+  await expect(notice).toBeVisible();
+  await expect(page.locator("[data-progress-status]")).toHaveAttribute("data-progress-failure", "server");
+  await expect(page.locator("[data-progress-status]")).toHaveAttribute("data-progress-request-id", "qa-mobile-progress-failure");
+  expect((await new AxeBuilder({page}).include("[data-progress-notice]").analyze()).violations).toEqual([]);
+  await page.screenshot({path: testInfo.outputPath("mobile-progress-failed.png"), fullPage: true});
+  await page.unroute(failureRoute);
+  const retried = page.waitForResponse(response => new URL(response.url()).pathname === `/progress/${first.id}` && response.request().method() === "POST");
+  await page.getByRole("button", {name: "Retry saving position", exact: true}).click();
+  expect((await retried).status()).toBe(204);
+  await expect(notice).toBeHidden();
+  await page.screenshot({path: testInfo.outputPath("mobile-progress-saved.png"), fullPage: true});
+  await testInfo.attach("proof-class", {body: "Go-backed UI with a routed 503 fault; acknowledgements and Retry use the actual Server.", contentType: "text/plain"});
 });
 
 test("real album queue keeps system previous and next current and exposes only fresh current-track actions", {tag: "@smoke"}, async ({page}, testInfo) => {

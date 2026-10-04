@@ -20,6 +20,7 @@ import zlib
 parser = argparse.ArgumentParser(description=__doc__)
 mode = parser.add_mutually_exclusive_group()
 mode.add_argument('--red', action='store_true', help='Require the pre-fix metadata mismatch twice')
+mode.add_argument('--visibility-red', action='store_true', help='Require populated mobile item-action and R03 notice visibility failures twice')
 mode.add_argument('--fixture-only', type=Path, help='Prepare only a new disposable album directory; no Owner or Server setup')
 args = parser.parse_args()
 root = Path(__file__).resolve().parents[2]
@@ -29,15 +30,18 @@ media = args.fixture_only if args.fixture_only else run / 'media'
 media.mkdir()
 title = 'real album queue advances source and all Now Playing identity to the fictional second track'
 action_title = 'real album queue keeps system previous and next current and exposes only fresh current-track actions'
+notice_title = 'mobile R03 progress notice stays hidden after real acknowledgement and reopens only on failure'
 sources = ['packages/webassets/static/player-progress.js', 'packages/webassets/static/player-presentation.js',
            'packages/webassets/static/player-audio-queue.js', 'packages/playerweb/audio_queue_template.go',
            'packages/playerweb/player_template.go', 'apps/player/e2e/test-instance-audio-queue.spec.ts',
            'apps/player/e2e/player-audio-policy.spec.ts', 'apps/player/e2e/player-progress.spec.ts', 'apps/player/e2e/static-sources.ts',
-           'scripts/testing/test-player-audio-queue-local.py']
+           'scripts/testing/test-player-audio-queue-local.py', 'packages/webassets/static/player-app.css',
+           'packages/webassets/static/subtitles-app.css.patch', 'apps/player/internal/server/navigation_shell.go',
+           'apps/subtitles/internal/server/navigation_shell.go']
 revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip()
 receipt = {'revision': revision, 'sourceSHA256': {name: hashlib.sha256((root / name).read_bytes()).hexdigest() for name in sources},
            'workingDiffSHA256': hashlib.sha256(subprocess.check_output(['git', 'diff', 'HEAD'], cwd=root)).hexdigest(),
-           'command': 'GOMAXPROCS=2 python3 scripts/testing/test-player-audio-queue-local.py' + (' --red' if args.red else ' --fixture-only <new-disposable-directory>' if args.fixture_only else ''),
+           'command': 'GOMAXPROCS=2 python3 scripts/testing/test-player-audio-queue-local.py' + (' --red' if args.red else ' --visibility-red' if args.visibility_red else ' --fixture-only <new-disposable-directory>' if args.fixture_only else ''),
            'environment': 'Native Go Kinosail Server; loopback HTTP; one Chromium worker',
            'data': 'Two generated twelve-second WAV tracks, fictional NFO metadata and PNG covers; disposable Owner and TOTP. State preserved.',
            'boundaries': 'No real user data, container, deployment, physical device, or native OS-control panel proof.',
@@ -142,6 +146,8 @@ try:
                        '--project=chromium', '--workers=1', '--repeat-each=2', '--retries=0', '--global-timeout=120000', '--reporter=line,json']
             if args.red:
                 command += ['--grep', title]
+            elif args.visibility_red:
+                command += ['--grep', title + '|' + notice_title]
             receipt['browserCommand'] = command
             phase = 'browser-execution'
             with (run / 'browser.log').open('w') as browser_log:
@@ -154,9 +160,12 @@ try:
             def results(suite, name):
                 values = [result for spec in suite.get('specs', []) if spec['title'] == name for test in spec['tests'] for result in test['results']]
                 return values + [result for child in suite.get('suites', []) for result in results(child, name)]
-            named = {name: [case for suite in report['suites'] for case in results(suite, name)]
-                     for name in ([title] if args.red else [title, action_title])}
+            selected_titles = [title] if args.red else [title, notice_title] if args.visibility_red else [title, action_title, notice_title]
+            named = {name: [case for suite in report['suites'] for case in results(suite, name)] for name in selected_titles}
             receipt['namedResults'] = {name: [case['status'] for case in cases] for name, cases in named.items()}
+            receipt['namedResultClasses'] = {name: 'Go-backed UI with routed 503 fault after real acknowledgment' if name == notice_title else 'Actual Go Server canonical routes' for name in selected_titles}
+            if report.get('errors') or any(report['stats'][name] for name in ['skipped', 'flaky']):
+                raise RuntimeError('Named native proof contains global, skipped, or flaky outcomes')
             if args.red:
                 phase = 'named-defect-reproduction-verification'
                 cases = named[title]
@@ -167,6 +176,22 @@ try:
                     observed = json.loads(Path(attached['path']).read_text() if attached.get('path') else base64.b64decode(attached['body']))
                     if observed['title'] != 'Copper <Moon> & Harbor' or observed['heading'] != 'Lantern Start' or observed['metadataTitle'] != 'Lantern Start':
                         raise RuntimeError('Pre-fix runtime mismatch was not reproduced')
+                receipt['result'] = 'reproduced'
+            elif args.visibility_red:
+                phase = 'named-visibility-defect-verification'
+                if result.returncode == 0 or any(len(cases) != 2 or any(case['status'] != 'failed' for case in cases) for cases in named.values()):
+                    raise RuntimeError('Both mobile visibility failures must reproduce twice')
+                for name, cases in named.items():
+                    for case in cases:
+                        attachment_name = 'viewport-item-actions' if name == title else 'mobile-progress-after-real-acknowledgement'
+                        attached = next(value for value in case['attachments'] if value['name'] == attachment_name)
+                        observed = json.loads(Path(attached['path']).read_text() if attached.get('path') else base64.b64decode(attached['body']))
+                        if observed['viewport']['width'] != 390:
+                            raise RuntimeError('Visibility failure did not reach the mobile viewport')
+                        if name == title and not all(observed[key] for key in ['originalWatchedVisible', 'originalListVisible', 'noticeVisible']):
+                            raise RuntimeError('Original item actions were not exposed at the asserted viewport')
+                        if name == notice_title and not (observed['realAcknowledgementStatus'] == 204 and observed['noticeVisible'] and observed['hiddenAttribute']):
+                            raise RuntimeError('R03 notice failure did not follow a real saved acknowledgement')
                 receipt['result'] = 'reproduced'
             elif result.returncode == 0 and all(len(cases) == 2 and all(case['status'] == 'passed' for case in cases) for cases in named.values()):
                 receipt['result'] = 'passed'
