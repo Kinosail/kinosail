@@ -20,7 +20,7 @@ const HLSBandwidthPolicyMarker = "#KINOSAIL-BANDWIDTH:2"
 
 type AtomicWriter func(string, []byte) error
 
-func PublishVariants(ctx context.Context, source, directory, transcoder, codecs string, qualities []PlaybackQuality, results <-chan error, expected int, independent bool, write AtomicWriter) error { //nolint:cyclop,gocognit // Readiness and worker completion are one bounded coordination loop.
+func PublishVariants(ctx context.Context, source, directory, transcoder string, qualities []PlaybackQuality, results <-chan error, expected int, independent bool, write AtomicWriter) error { //nolint:cyclop,gocognit // Readiness and worker completion are one bounded coordination loop.
 	if expected <= 0 || expected > 64 || write == nil {
 		return errors.New("HLS publication configuration is invalid")
 	}
@@ -29,7 +29,7 @@ func PublishVariants(ctx context.Context, source, directory, transcoder, codecs 
 	completed, published := 0, false
 	for completed < expected {
 		if !published && VariantsReady(source, directory, qualities) {
-			if err := WriteMaster(filepath.Join(directory, "index.m3u8"), transcoder, codecs, qualities, independent, write); err != nil {
+			if err := WriteMaster(filepath.Join(directory, "index.m3u8"), transcoder, qualities, independent, write); err != nil {
 				return err
 			}
 			published = true
@@ -51,7 +51,7 @@ func PublishVariants(ctx context.Context, source, directory, transcoder, codecs 
 	if !VariantsReady(source, directory, qualities) {
 		return errors.New("transcoder produced no playable variants")
 	}
-	return WriteMaster(filepath.Join(directory, "index.m3u8"), transcoder, codecs, qualities, independent, write)
+	return WriteMaster(filepath.Join(directory, "index.m3u8"), transcoder, qualities, independent, write)
 }
 
 func VariantsReady(source, directory string, qualities []PlaybackQuality) bool {
@@ -94,8 +94,8 @@ func VariantReady(source, directory string) bool { //nolint:cyclop // Manifest p
 	return initReady && len(segments) > 0
 }
 
-func WriteMaster(path, transcoder, codecs string, qualities []PlaybackQuality, independent bool, write AtomicWriter) error { //nolint:cyclop // Validation and manifest construction form one atomic publication input.
-	if write == nil || len(qualities) == 0 || len(transcoder) > 1024 || strings.ContainsAny(transcoder, "\r\n") || len(codecs) > 1024 || strings.ContainsAny(codecs, "\r\n\"") {
+func WriteMaster(path, transcoder string, qualities []PlaybackQuality, independent bool, write AtomicWriter) error { //nolint:cyclop // Validation and manifest construction form one atomic publication input.
+	if write == nil || len(qualities) == 0 || len(transcoder) > 1024 || strings.ContainsAny(transcoder, "\r\n") {
 		return errors.New("HLS master playlist input is invalid")
 	}
 	manifest := []byte("#EXTM3U\n#KINOSAIL-TRANSCODER:" + transcoder + "\n" + HLSBandwidthPolicyMarker + "\n#EXT-X-VERSION:7\n")

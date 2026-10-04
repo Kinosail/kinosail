@@ -191,7 +191,7 @@ func (manager *hlsManager) encodeVariants(item library.Item, directory string, o
 		go func() {
 			results <- manager.encodeVariant(ctx, item, directory, quality.Label, strconv.Itoa(quality.Width), strconv.FormatInt((quality.Bitrate-128_000)/1000, 10)+"k", "128k", facts.Duration, options, recipe, window, start)
 		}()
-		return publishVariants(ctx, item.Path, directory, options.Cache, hlsCodecs(facts, recipe, options.Codec), []PlaybackQuality{quality}, results, 1, false)
+		return publishVariants(ctx, item.Path, directory, options.Cache, []PlaybackQuality{quality}, results, 1, false)
 	}
 	width, height := playback.DisplayDimensions(facts.Video)
 	width, height = playback.FitDimensions(width, height, minimumPositiveInt(1920, recipe.width), minimumPositiveInt(1080, recipe.height))
@@ -211,7 +211,7 @@ func (manager *hlsManager) encodeVariants(item library.Item, directory string, o
 	go func() {
 		results <- manager.encodePresentation(ctx, item, directory, options, window, qualities, audioBitrate, start)
 	}()
-	return publishVariants(ctx, item.Path, directory, options.Cache, hlsCodecs(facts, recipe, options.Codec), qualities, results, 1, true)
+	return publishVariants(ctx, item.Path, directory, options.Cache, qualities, results, 1, true)
 }
 
 func sourceQuality(facts MediaFacts, maximum int64) PlaybackQuality {

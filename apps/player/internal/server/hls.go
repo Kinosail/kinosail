@@ -172,7 +172,7 @@ func (manager *hlsManager) encodeVariants(ctx context.Context, item library.Item
 		if startNumber > 0 {
 			return <-results
 		}
-		return publishVariants(ctx, item.Path, directory, options.Cache, hlsCodecs(facts, recipe, options.Codec), []PlaybackQuality{quality}, results, 1, false)
+		return publishVariants(ctx, item.Path, directory, options.Cache, []PlaybackQuality{quality}, results, 1, false)
 	}
 	if err := playback.BindHLSEncoder(directory, options, startNumber > 0); err != nil {
 		return err
@@ -189,7 +189,7 @@ func (manager *hlsManager) encodeVariants(ctx context.Context, item library.Item
 	if startNumber > 0 {
 		return <-results
 	}
-	return publishVariants(ctx, item.Path, directory, options.Cache, hlsCodecs(facts, recipe, options.Codec), qualities, results, 1, true)
+	return publishVariants(ctx, item.Path, directory, options.Cache, qualities, results, 1, true)
 }
 
 func hlsTranscodeQualities(facts MediaFacts, recipe hlsRecipe) []PlaybackQuality {

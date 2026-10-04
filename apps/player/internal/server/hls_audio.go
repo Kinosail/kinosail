@@ -20,5 +20,5 @@ func (manager *hlsManager) encodeAudioVariant(ctx context.Context, item library.
 	if startNumber > 0 {
 		return <-results
 	}
-	return publishVariants(ctx, item.Path, directory, options.Cache, "", []PlaybackQuality{quality}, results, 1, false)
+	return publishVariants(ctx, item.Path, directory, options.Cache, []PlaybackQuality{quality}, results, 1, false)
 }

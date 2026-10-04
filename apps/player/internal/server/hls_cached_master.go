@@ -32,7 +32,7 @@ func refreshCachedVideoHLSMaster(playlist string, facts MediaFacts, recipe hlsRe
 		return writeAtomicFile(path, data)
 	}
 	independent := playback.PlaylistHas(manifest, "#EXT-X-INDEPENDENT-SEGMENTS")
-	return playback.WriteMaster(playlist, identity, "", qualities, independent, write)
+	return playback.WriteMaster(playlist, identity, qualities, independent, write)
 }
 
 func cachedVideoHLSQualities(manifest []byte, available []PlaybackQuality) ([]PlaybackQuality, error) {
