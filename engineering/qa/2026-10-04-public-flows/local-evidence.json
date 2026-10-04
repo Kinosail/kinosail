@@ -1,0 +1,35 @@
+{
+  "base": "d27d55cca01d08ea6b14b24e93d2330c3fca606b",
+  "branch": "codex/personal-e2e-kinosail",
+  "workingTree": "/Users/mikeo/.codex/worktrees/personal-e2e-kinosail/kinosail",
+  "sourceState": "Uncommitted during local runs; use runner report vcs/config digests. Final committed runner awaits hosted verification.",
+  "data": "Disposable 8-second 320x180 H264/AAC movie and two English SRT cues, isolated Owner/MFA and Viewer accounts, unique OS temp data/cache/backups.",
+  "runner": "e2e 0.17.0 / @e2e-dev/web 0.12.0 / Playwright Chromium1243",
+  "environment": {
+    "telemetry": "disabled",
+    "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+    "traces": "off for healthy reruns; earlier task-owned ZIPs removed after ENOSPC; JSON/Markdown/screenshots retained"
+  },
+  "runs": {
+    "rating-red": "2 setup passed, 2 selected tests failed (unknown rating 201); 12 unselected skips",
+    "green": "14 passed, 2 test-expectation failures",
+    "media-first": "19 passed, 2 test-expectation failures, 1 platform scope skip",
+    "final": "APP_UNREACHABLE after ENOSPC; zero tests executed, no runner report",
+    "existing-player-initial": "23 passed, 6 failed: 3 ENOSPC, 3 deterministic HLS assertions",
+    "offline-triage": "3 failed without ENOSPC on unchanged recovery source",
+    "offline-green": "56 passed, 1 active-position failure after first fix",
+    "recovery-final": "57 passed after two minimal recovery fixes"
+  },
+  "inputs": {
+    "scripts/e2e/e2e.config.ts": "898669704a77ddaca415d0730b63b7277a232604d563069b6ff49cb07400d799",
+    "scripts/e2e/tests/helpers.ts": "9d8bd411ee81ef48d3f3c0e3a0181a4b88e10789cd01908960d1df2dbff3ab7f",
+    "scripts/e2e/tests/media-flows.e2e.ts": "b3972538028844ef35e7a0af9c99b180cd43dbfc1a89f9aae08f7c6f84a2ddf9",
+    "scripts/e2e/tests/owner.setup.e2e.ts": "9c3c274e6430fa7d434149bc7010a5a077b90e329813f31344634cb55532996c",
+    "scripts/e2e/tests/public-flows.e2e.ts": "37c2d3c0e4dc23af21412500e90dc35c5f4bf61fa46026a9ab975c089cb90776",
+    "scripts/e2e/fixture.mjs": "3ca9f74be845d1e8f8cecb0c776acae11e3e9f13e504ab14de79a1e57245f09d",
+    "scripts/e2e/pnpm-lock.yaml": "dd93f5183c9f0589375a682544fb587183124dca7fc2c5ba2f91621fd54014bf",
+    "packages/identitycore/profile.go": "a6a9e58ffa582557504b809b151a2166af4fbda93b6446c2b24bf76a5328f3d1",
+    "apps/player/internal/server/static/player.js": "6aaae356abeb1c2ab10ce99670d5a0d75d722996ba19977fdfa8368b3c702c98",
+    "apps/player/internal/server/static/player-streaming-offline.js": "4bc5ba94511de6f4cf4826deeab65fc696608023dadda898bbf7cfbb45f6e23e"
+  }
+}

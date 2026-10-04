@@ -20,6 +20,16 @@ class WorkflowSecurityTests(unittest.TestCase):
         self.assertIn('.verification/startup/*/results/**/startup-measurements.json', app)
         self.assertNotIn('.verification/startup/**\n', app)
 
+    def test_public_flow_runner_is_a_hosted_app_browser_gate(self):
+        app = (WORKFLOWS / 'app.yml').read_text()
+        step = app.split('      - name: Verify public flows with tester-army e2e\n')[1].split('      - name:', 1)[0]
+        self.assertIn("if: matrix.engine == 'chromium'", step)
+        self.assertIn('APP: ${{ inputs.app }}', step)
+        self.assertIn('E2E_TELEMETRY_DISABLED: "1"', step)
+        self.assertIn('run: scripts/e2e/run.sh "$APP"', step)
+        self.assertIn('scripts/e2e/.e2e/runs/', app)
+        self.assertNotIn('continue-on-error:', step)
+
     def test_ci_cannot_silently_bypass_checks(self):
         self.assertFalse((ROOT / '.gates-disabled').exists())
         ci = (WORKFLOWS / 'ci.yml').read_text()

@@ -263,7 +263,7 @@ jobs:
           KINOSAIL_TEST_IMAGE_READY: "1"
         run: python3 ../../scripts/ci/e2e-artifact.py --output "${{ runner.temp }}/${{ inputs.app }}-${{ matrix.engine }}-e2e-artifact" -- ./scripts/test-container.sh
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        if: inputs.app == 'player' && matrix.engine == 'chromium'
+        if: matrix.engine == 'chromium'
         with:
           go-version-file: apps/player/go.mod
           cache-dependency-path: "**/go.sum"
@@ -275,6 +275,27 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends "$RUNNER_TEMP/startup-ffmpeg.deb"
           echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
+      - name: Install public-flow runner
+        if: matrix.engine == 'chromium'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          pnpm --dir scripts/e2e install --frozen-lockfile
+      - name: Verify public flows with tester-army e2e
+        if: matrix.engine == 'chromium'
+        env:
+          APP: ${{ inputs.app }}
+          E2E_TELEMETRY_DISABLED: "1"
+        run: scripts/e2e/run.sh "$APP"
+      - name: Keep public-flow evidence
+        if: always() && matrix.engine == 'chromium'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: ${{ inputs.app }}-public-flow-e2e-${{ github.sha }}
+          include-hidden-files: true
+          path: scripts/e2e/.e2e/runs/
+          retention-days: 30
+          if-no-files-found: error
       - name: Verify bounded startup and request boundary
         if: inputs.app == 'player' && matrix.engine == 'chromium'
         env:
