@@ -16,8 +16,19 @@ for (const stalledBoundary of ["headers", "body"] as const) {
       await expect.poll(async () => (await peer.stats()).calls).toBe(1);
       const before = await page.locator("video").evaluate((video: HTMLVideoElement) => ({source: video.getAttribute("src"), time: video.currentTime, paused: video.paused}));
       await page.screenshot({path: info.outputPath(`${stalledBoundary}-${width}-pending.png`), fullPage: true});
-      await page.clock.fastForward(20_100);
+      if (serverOrigin) {
+        await page.clock.fastForward(5_000);
+        await page.locator("[data-subtitles]").selectOption("off");
+        await expect(page.locator("[data-subtitle-status]")).toBeHidden();
+        await expect(page.locator("[data-subtitle-retry]")).toBeHidden();
+        expect(await page.locator('track[srclang="en"]').evaluate((track: HTMLTrackElement) => track.track.mode)).toBe("disabled");
+        await page.locator("[data-subtitles]").selectOption("0");
+        await expect(page.locator("[data-subtitle-status]")).toHaveText("Loading subtitles…");
+        await expect.poll(async () => (await peer.stats()).calls).toBe(1);
+        await page.clock.fastForward(15_100);
+      } else await page.clock.fastForward(20_100);
       await page.screenshot({ path: info.outputPath(`${stalledBoundary}-after-deadline.png`) });
+      await info.attach("transport-at-deadline", {body: JSON.stringify(await peer.stats()), contentType: "application/json"});
       await expect(page.locator("[data-subtitle-status]")).toContainText("Subtitles unavailable", { timeout: 2_000 });
       await expect(page.locator("[data-subtitle-status]")).toHaveAttribute("data-failure", "timeout");
       if (stalledBoundary === "body") await expect(page.locator("[data-subtitle-status]")).toHaveAttribute("data-request-id", "caption-fixture-1");
