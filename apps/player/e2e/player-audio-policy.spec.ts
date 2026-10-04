@@ -141,6 +141,41 @@ test("queue source load ignores its delayed pause until new metadata belongs to 
   await expect.poll(() => nextWrites.length).toBe(1);
 });
 
+test("late item authorization cannot cross a profile change", async ({page}) => {
+  await openAudio(page, "");
+  let lookup: import("@playwright/test").Route | undefined;
+  const writes: string[] = [];
+  page.on("request", request => {if (new URL(request.url()).pathname.startsWith("/progress/")) writes.push(request.url());});
+  await page.route("https://audio.test/api/v1/items/next", route => {lookup = route;});
+  await startQueue(page);
+  await page.getByRole("button", {name: "Next track", exact: true}).click();
+  await expect.poll(() => !!lookup).toBe(true);
+  await page.evaluate(() => document.body.dataset.viewerProfile = "new-viewer");
+  await lookup!.fulfill({json: {item: queueItem("next"), profileId: "qa-viewer"}});
+  await expect(page.locator("[data-audio-queue-status]")).toHaveAttribute("data-queue-failure", "ownership");
+  await expect(page.locator("audio")).toHaveAttribute("data-progress", "/progress/track");
+  await expect(page.locator(".title-block h1")).toHaveText("First track");
+  expect(writes).toEqual([]);
+});
+
+test("overlapping queue actions authorize and advance only once", async ({page}) => {
+  await openAudio(page, "");
+  let lookup: import("@playwright/test").Route | undefined, lookups = 0, writes = 0;
+  page.on("request", request => {if (new URL(request.url()).pathname.startsWith("/progress/")) writes++;});
+  await page.route("https://audio.test/api/v1/items/next", route => {lookups++; lookup = route;});
+  await startQueue(page);
+  await page.locator("[data-audio-next]").evaluate(button => {
+    button.dispatchEvent(new MouseEvent("click", {bubbles: true}));
+    button.dispatchEvent(new MouseEvent("click", {bubbles: true}));
+  });
+  await expect.poll(() => !!lookup).toBe(true);
+  await lookup!.fulfill({json: {item: queueItem("next"), profileId: "qa-viewer"}});
+  await expect(page.locator("audio")).toHaveAttribute("data-progress", "/progress/next");
+  await expect(page.locator("audio")).toHaveAttribute("data-queue-position", "2");
+  expect(lookups).toBe(1);
+  expect(writes).toBe(1);
+});
+
 for (const boundary of ["missing artwork", "unsupported system metadata", "cast owner"]) {
   test(`queue preserves truthful local ownership with ${boundary}`, async ({page}) => {
     await openAudio(page, "");
