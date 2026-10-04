@@ -50,7 +50,8 @@
         "refs/heads/codex/qol-audio-queue-reviewed",
         "refs/heads/codex/qol-r08-now-playing",
         "refs/remotes/origin/codex/qol-audio-queue-reviewed"
-      ]
+      ],
+      "ancestor_of_diagnostic": false
     },
     {
       "rule": "generic-api-key",
@@ -63,7 +64,8 @@
         "refs/heads/codex/qol-audio-queue-reviewed",
         "refs/heads/codex/qol-r08-now-playing",
         "refs/remotes/origin/codex/qol-audio-queue-reviewed"
-      ]
+      ],
+      "ancestor_of_diagnostic": false
     },
     {
       "rule": "generic-api-key",
@@ -76,7 +78,8 @@
         "refs/heads/codex/qol-audio-queue-reviewed",
         "refs/heads/codex/qol-r08-now-playing",
         "refs/remotes/origin/codex/qol-audio-queue-reviewed"
-      ]
+      ],
+      "ancestor_of_diagnostic": false
     },
     {
       "rule": "generic-api-key",
@@ -89,7 +92,8 @@
         "refs/heads/codex/qol-audio-queue-reviewed",
         "refs/heads/codex/qol-r08-now-playing",
         "refs/remotes/origin/codex/qol-audio-queue-reviewed"
-      ]
+      ],
+      "ancestor_of_diagnostic": false
     }
   ],
   "unchanged": [
@@ -104,5 +108,15 @@
     "named old-ref containment proven locally; complete hosted fetched-ref inventory not captured",
     "classification does not turn the full-history gate green",
     "no matched value, stored key, raw report or private log appears in this document"
-  ]
+  ],
+  "compared_revisions": {
+    "main": "0d85c75a5ed2f304a8c657ecc2a06c11dbbcef0a",
+    "candidate": "100f50ec76c300c6b6bff489172db5c5fba33eab",
+    "diagnostic": "43fa97d6d4d205d9e0eebabe1603397f96260562"
+  },
+  "local_containing_ref_tips": {
+    "refs/heads/codex/qol-audio-queue-reviewed": "e6e088efc9c7ce65a19d8520b6f821ef2c87c8ce",
+    "refs/heads/codex/qol-r08-now-playing": "d02c9534d2e4a67e34de979f6bfb443d7553b0e5",
+    "refs/remotes/origin/codex/qol-audio-queue-reviewed": "e6e088efc9c7ce65a19d8520b6f821ef2c87c8ce"
+  }
 }
