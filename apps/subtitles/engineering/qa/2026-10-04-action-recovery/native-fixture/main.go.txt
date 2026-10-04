@@ -9,6 +9,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -34,6 +35,9 @@ type outcome struct {
 	CurrentSHA256    string `json:"currentSHA256"`
 	RecoverySHA256   string `json:"recoverySHA256"`
 	ResponseWithheld bool   `json:"responseWithheld"`
+	OperationID      string `json:"operationID"`
+	Preparations     int    `json:"preparations"`
+	ActivationStatus int    `json:"activationStatus"`
 }
 
 type fixture struct {
@@ -65,7 +69,7 @@ func run() error {
 		return err
 	}
 	defer func() { _ = host.Close() }()
-	ready := map[string]any{"revision": *revision, "url": url, "id": current.id, "action": *action, "clipSHA256": clipSHA256, "initialSubtitleSHA256": hash([]byte(initialSubtitle)), "beforeCurrentSHA256": fileHash(current.sidecar), "beforeRecoverySHA256": fileHash(current.sidecar + ".kinosail.bak"), "boundary": "actual loopback Go Server, HTML/assets, public inspect/history and fictional playable media; exactly one approved Save or Restore executes before its successful HTTP response is withheld; other mutations rejected; auth-disabled disposable installation; no provider, encoder or deployment"}
+	ready := map[string]any{"revision": *revision, "url": url, "id": current.id, "action": *action, "clipSHA256": clipSHA256, "initialSubtitleSHA256": hash([]byte(initialSubtitle)), "beforeCurrentSHA256": fileHash(current.sidecar), "beforeRecoverySHA256": fileHash(current.sidecar + ".kinosail.bak"), "boundary": "actual loopback Go Server, HTML/assets, public inspect/history and fictional playable media; one public prepared receipt activates exactly one approved Save or Restore; its actual public status confirms completion before only the activation acknowledgment is withheld; other mutations rejected; auth-disabled disposable installation; no provider, encoder or deployment"}
 	if err = writeJSON(filepath.Join(*dir, "ready.json"), ready); err != nil {
 		return err
 	}
@@ -84,7 +88,7 @@ func run() error {
 	current.Lock()
 	result := current.outcome
 	current.Unlock()
-	if result.Count != 1 || !result.Completed || result.Status != successfulStatus(*action) || fileHash(current.sidecar) != result.CurrentSHA256 || fileHash(current.sidecar+".kinosail.bak") != result.RecoverySHA256 {
+	if result.Count != 1 || result.Preparations != 1 || result.ActivationStatus != http.StatusAccepted || !result.Completed || result.Status != successfulStatus(*action) || fileHash(current.sidecar) != result.CurrentSHA256 || fileHash(current.sidecar+".kinosail.bak") != result.RecoverySHA256 {
 		return errors.New("fixture mutation or final current/recovery integrity did not match its recorded single outcome")
 	}
 	if fileHash(filepath.Join(*dir, "media", "R06 Example.mp4")) != clipSHA256 {
@@ -142,12 +146,16 @@ func (f *fixture) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 		f.app.ServeHTTP(writer, request)
 		return
 	}
+	if request.Method == http.MethodPost && request.URL.Path == "/api/v1/subtitle-operations" {
+		f.prepare(writer, request)
+		return
+	}
 	action := "apply"
 	if f.outcome.Action == "restore" {
 		action = "restore"
 	}
 	f.Lock()
-	allowed := request.Method == http.MethodPost && request.URL.Path == base+"/"+action && f.outcome.Count == 0
+	allowed := request.Method == http.MethodPost && request.URL.Path == base+"/"+action && f.outcome.Count == 0 && f.outcome.OperationID != "" && request.Header.Get("X-Kinosail-Operation") == f.outcome.OperationID
 	if allowed {
 		f.outcome.Count++
 	}
@@ -156,16 +164,18 @@ func (f *fixture) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 		http.Error(writer, "fictional fixture permits reads, previews, and one selected mutation only", http.StatusMethodNotAllowed)
 		return
 	}
-	// The public handler performs the actual mutation. Only transport of its completed response is intercepted.
 	response := httptest.NewRecorder()
 	f.app.ServeHTTP(response, request)
 	f.Lock()
-	f.outcome.Completed = true
-	f.outcome.Status = response.Code
-	f.outcome.CurrentSHA256 = fileHash(f.sidecar)
-	f.outcome.RecoverySHA256 = fileHash(f.sidecar + ".kinosail.bak")
-	f.outcome.ResponseWithheld = response.Code == successfulStatus(f.outcome.Action)
-	withheld := f.outcome.ResponseWithheld
+	f.outcome.ActivationStatus = response.Code
+	id := f.outcome.OperationID
+	f.Unlock()
+	if response.Code == http.StatusAccepted {
+		f.observeCompletion(id)
+	}
+	f.Lock()
+	withheld := f.outcome.Completed && f.outcome.Status == successfulStatus(f.outcome.Action)
+	f.outcome.ResponseWithheld = withheld
 	f.Unlock()
 	if withheld {
 		<-request.Context().Done()
@@ -174,6 +184,60 @@ func (f *fixture) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(response.Code)
 	_, _ = writer.Write(response.Body.Bytes())
+}
+
+func (f *fixture) prepare(writer http.ResponseWriter, req *http.Request) {
+	data, err := io.ReadAll(http.MaxBytesReader(writer, req.Body, 1024))
+	var input struct{ Action, Item string }
+	action := "apply"
+	if f.outcome.Action == "restore" {
+		action = "restore"
+	}
+	f.Lock()
+	allowed := err == nil && json.Unmarshal(data, &input) == nil && input.Action == action && input.Item == f.id && f.outcome.Preparations == 0
+	if allowed {
+		f.outcome.Preparations++
+	}
+	f.Unlock()
+	if !allowed {
+		http.Error(writer, "fictional fixture permits one selected preparation only", http.StatusMethodNotAllowed)
+		return
+	}
+	req.Body = io.NopCloser(strings.NewReader(string(data)))
+	response := httptest.NewRecorder()
+	f.app.ServeHTTP(response, req)
+	var receipt struct{ ID string }
+	if response.Code == http.StatusCreated && json.Unmarshal(response.Body.Bytes(), &receipt) == nil && len(receipt.ID) == 64 {
+		f.Lock()
+		f.outcome.OperationID = receipt.ID
+		f.Unlock()
+	}
+	for key, values := range response.Header() {
+		writer.Header()[key] = values
+	}
+	writer.WriteHeader(response.Code)
+	_, _ = writer.Write(response.Body.Bytes())
+}
+
+func (f *fixture) observeCompletion(id string) {
+	deadline := time.Now().Add(5 * time.Second)
+	for time.Now().Before(deadline) {
+		response := request(f.app, http.MethodGet, "/api/v1/subtitle-operations/"+id, "")
+		var receipt struct {
+			State   string
+			Status  int
+			Outcome string
+		}
+		if response.Code == http.StatusOK && json.Unmarshal(response.Body.Bytes(), &receipt) == nil && receipt.State == "completed" {
+			f.Lock()
+			f.outcome.Completed, f.outcome.Status = true, receipt.Status
+			f.outcome.ResponseWithheld = receipt.Status == successfulStatus(f.outcome.Action)
+			f.outcome.CurrentSHA256, f.outcome.RecoverySHA256 = fileHash(f.sidecar), fileHash(f.sidecar+".kinosail.bak")
+			f.Unlock()
+			return
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
 }
 
 func libraryID(app http.Handler) (string, error) {

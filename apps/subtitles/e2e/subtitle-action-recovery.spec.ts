@@ -17,17 +17,30 @@ async function actionFixture(page: Page, testInfo: TestInfo, action: "save" | "r
   const history = JSON.parse(await readFile(`${dir}/${completed ? "history" : "before-history"}.json`, "utf8"));
   const preview = action === "save" ? JSON.parse(await readFile(`${dir}/preview.json`, "utf8")) : null;
   const release: Array<() => void> = [];
-  const requests = { mutations: [] as Array<{ path: string; input: unknown }>, inspections: 0, histories: 0, pages: 0 };
+  const requests = { preparations: [] as unknown[], mutations: [] as Array<{ path: string; input: unknown }>, statuses: 0, inspections: 0, histories: 0, pages: 0 };
+  const operation = { id: "a".repeat(64), action: action === "save" ? "apply" : "restore", item: before.id, state: "prepared", statusURL: `/api/v1/subtitle-operations/${"a".repeat(64)}` };
   const scripts = { inspector: await readFile(`${dir}/subtitle-inspector.js`), dashboard: await readFile(`${dir}/subtitle-status.js`) };
-  await testInfo.attach("verification-context", { contentType: "application/json", body: JSON.stringify({ revision, action, surface, completed, width: page.viewportSize()?.width, command: "playwright test subtitle-action-recovery.spec.ts --workers=1", browserVersion: page.context().browser()?.version(), boundary: "isolated browser transport using actual public Go HTML/assets/Save/Restore reads; POST completion is represented by captured reads, not executed in this browser fixture; media aborted", sourceSHA256: createHash("sha256").update(scripts[surface]).digest("hex"), beforeFingerprint: before.fingerprint, afterFingerprint: after.fingerprint }) });
+  await testInfo.attach("verification-context", { contentType: "application/json", body: JSON.stringify({ revision, action, surface, completed, width: page.viewportSize()?.width, command: "playwright test subtitle-action-recovery.spec.ts --workers=1", browserVersion: page.context().browser()?.version(), boundary: "isolated browser transport using actual public Go HTML/assets/Save/Restore reads; prepared/running/completed receipts are simulated at the transport boundary; POST completion is represented by captured reads, not executed in this browser fixture; media aborted", sourceSHA256: createHash("sha256").update(scripts[surface]).digest("hex"), beforeFingerprint: before.fingerprint, afterFingerprint: after.fingerprint }) });
   await page.clock.install();
   await page.route(`${origin}/**`, async route => {
     const request = route.request(), url = new URL(request.url()), path = url.pathname;
+    if (path === "/api/v1/subtitle-operations") {
+      expect(request.method()).toBe("POST");
+      expect(request.postDataJSON()).toEqual({ action: operation.action, item: operation.item });
+      requests.preparations.push(request.postDataJSON());
+      return route.fulfill({ status: 201, json: operation });
+    }
+    if (path === operation.statusURL) {
+      expect(request.method()).toBe("GET");
+      requests.statuses++;
+      return route.fulfill({ json: completed ? { ...operation, state: "completed", outcome: "success", status: action === "save" ? 200 : 204 } : { ...operation, state: "running" } });
+    }
     if (path.endsWith("/preview")) {
       expect(request.method()).toBe("POST");
       return route.fulfill({ json: preview });
     }
     if (request.method() === "POST") {
+      expect(request.headers()["x-kinosail-operation"]).toBe(operation.id);
       requests.mutations.push({ path, input: request.postDataJSON() });
       await new Promise<void>(resolve => release.push(resolve));
       return route.abort().catch(() => {});
@@ -87,6 +100,8 @@ for (const width of [390, 1440]) {
         await expect(page.locator("#apply-subtitle")).toBeDisabled();
         await page.clock.fastForward(60_000);
         expect(fixture.requests.mutations, "the completed mutation must never be retried automatically").toHaveLength(1);
+        expect(fixture.requests.preparations).toHaveLength(1);
+        expect(fixture.requests.statuses).toBeGreaterThan(0);
         await page.screenshot({ path: testInfo.outputPath(`${action}-reconciled-${width}.png`), fullPage: true });
       } finally { await fixture.finish(); }
     });
@@ -109,6 +124,7 @@ for (const width of [390, 1440]) {
       await expect(page.locator("#main")).toHaveAttribute("data-view", "history");
       await page.clock.fastForward(60_000);
       expect(fixture.requests.mutations, "read-only navigation must not replay Restore").toHaveLength(1);
+      expect(fixture.requests.preparations).toHaveLength(1);
       await page.screenshot({ path: testInfo.outputPath(`restore-unknown-dashboard-${width}.png`), fullPage: true });
     } finally { await fixture.finish(); }
   });
@@ -129,6 +145,7 @@ for (const action of ["save", "restore"] as const) {
       if (action === "save") await expect(page.locator('[name="offset"]')).toHaveValue("0.5");
       await page.clock.fastForward(60_000);
       expect(fixture.requests.mutations).toHaveLength(1);
+      expect(fixture.requests.preparations).toHaveLength(1);
     } finally { await fixture.finish(); }
   });
 }

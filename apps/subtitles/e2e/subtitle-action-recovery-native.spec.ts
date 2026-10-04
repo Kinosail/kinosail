@@ -22,7 +22,7 @@ test(`actual completed subtitle mutation with lost response recovers at ${width}
   const requests: Array<{ method: string; path: string }> = [], media: Array<{ status: number; contentRange?: string }> = [];
   page.on("request", request => requests.push({ method: request.method(), path: new URL(request.url()).pathname }));
   page.on("response", response => { if (new URL(response.url()).pathname.startsWith("/media/")) media.push({ status: response.status(), contentRange: response.headers()["content-range"] }); });
-  await testInfo.attach("native-verification-context", { contentType: "application/json", body: JSON.stringify({ ...manifest, width, browser: testInfo.project.name, browserVersion: page.context().browser()?.version(), command: "playwright test subtitle-action-recovery-native.spec.ts --workers=1", routing: "no Playwright route interception; actual public Go handler commits the selected disposable mutation before the fixture withholds only its HTTP response; browser elapsed time controlled" }) });
+  await testInfo.attach("native-verification-context", { contentType: "application/json", body: JSON.stringify({ ...manifest, width, browser: testInfo.project.name, browserVersion: page.context().browser()?.version(), command: "playwright test subtitle-action-recovery-native.spec.ts --workers=1", routing: "no Playwright route interception; actual public Go preparation, activation and status; selected disposable mutation completion is observed before the fixture withholds only its activation acknowledgment; browser elapsed time controlled" }) });
   await page.setViewportSize({ width, height: 900 });
   await page.clock.install();
   await page.goto(`${manifest.url}/subtitles/inspect/${manifest.id}?language=en`);
@@ -44,6 +44,9 @@ test(`actual completed subtitle mutation with lost response recovers at ${width}
   await expect.poll(async () => (await (await page.request.get(`${manifest.url}/__fixture__/outcome`)).json()).completed).toBe(true);
   const outcome = await (await page.request.get(`${manifest.url}/__fixture__/outcome`)).json();
   expect(outcome.count).toBe(1);
+  expect(outcome.preparations).toBe(1);
+  expect(outcome.activationStatus).toBe(202);
+  expect(outcome.operationID).toMatch(/^[a-f0-9]{64}$/);
   expect(outcome.status).toBe(manifest.action === "save" ? 200 : 204);
   expect(outcome.responseWithheld).toBe(true);
   expect(outcome.currentSHA256).not.toBe(manifest.beforeCurrentSHA256);
@@ -60,15 +63,27 @@ test(`actual completed subtitle mutation with lost response recovers at ${width}
   const history = await (await page.request.get(`${manifest.url}/api/v1/subtitle-library?view=history`)).json();
   expect(history.matched).toBe(manifest.action === "save" ? 1 : 2);
   expect(history.history[0].action).toBe(manifest.action === "save" ? "updated" : "restored");
+  const statusResponse = await page.request.get(`${manifest.url}/api/v1/subtitle-operations/${outcome.operationID}`);
+  expect(statusResponse.status()).toBe(200);
+  expect(statusResponse.headers()["cache-control"]).toBe("private, no-store");
+  const receipt = await statusResponse.json();
+  expect(receipt).toMatchObject({ id: outcome.operationID, state: "completed", outcome: "success", status: outcome.status });
+  const cueTime = manifest.action === "save" ? "0:04.500 to 0:05.500" : "0:04.000 to 0:05.000";
+  await page.getByRole("button", { name: `Seek Current cue 2: ${cueTime}`, exact: true }).click();
+  await expect.poll(() => video.evaluate(video => video.currentTime)).toBe(manifest.action === "save" ? 3.5 : 3);
+  expect(await video.evaluate(video => Array.from(video.textTracks).find(track => track.label === "Current")?.mode)).toBe("showing");
+  expect(await video.evaluate(video => Array.from(video.textTracks).find(track => track.label === "Current")?.cues?.length)).toBe(2);
   await page.clock.fastForward(60_000);
   const final = await (await page.request.get(`${manifest.url}/__fixture__/outcome`)).json();
   expect(final.count).toBe(1);
+  expect(final.preparations).toBe(1);
   expect(hash(await readFile(sidecar))).toBe(outcome.currentSHA256);
   expect(hash(await readFile(sidecar + ".kinosail.bak"))).toBe(outcome.recoverySHA256);
   expect(media.some(response => response.status === 206 && response.contentRange?.endsWith("/396548"))).toBe(true);
   const mutationPath = `/api/v1/subtitle-library/${manifest.id}/${manifest.action === "save" ? "apply" : "restore"}`;
-  expect(requests.filter(request => request.method === "POST" && !request.path.endsWith("/preview"))).toEqual([{ method: "POST", path: mutationPath }]);
-  await testInfo.attach("native-transport-and-integrity", { contentType: "application/json", body: JSON.stringify({ outcome, final, requests, media, rejectedOtherMutationStatus: guard.status(), historyActions: history.history.map((item: { action: string }) => item.action), publicFingerprint: inspection.fingerprint, currentAndRecoveryUnchangedAfterReconciliation: true }) });
+  expect(requests.filter(request => request.method === "POST" && !request.path.endsWith("/preview"))).toEqual([{ method: "POST", path: "/api/v1/subtitle-operations" }, { method: "POST", path: mutationPath }]);
+  expect(requests.some(request => request.method === "GET" && request.path === `/api/v1/subtitle-operations/${outcome.operationID}`)).toBe(true);
+  await testInfo.attach("native-transport-and-integrity", { contentType: "application/json", body: JSON.stringify({ outcome, receipt, final, requests, media, rejectedOtherMutationStatus: guard.status(), historyActions: history.history.map((item: { action: string }) => item.action), publicFingerprint: inspection.fingerprint, currentAndRecoveryUnchangedAfterReconciliation: true, actualCurrentCueSeek: manifest.action === "save" ? 3.5 : 3 }) });
   await page.screenshot({ path: testInfo.outputPath(`${manifest.action}-native-reconciled-${width}.png`), fullPage: true });
 });
 
