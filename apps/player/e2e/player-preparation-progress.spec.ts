@@ -31,4 +31,3 @@ test("Safari startup preparation restore skips queued seeking progress saves but
   await page.getByRole("button", {name: "The answer"}).click();
   await expect.poll(() => writes).toEqual([60]);
 });
-
