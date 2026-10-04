@@ -134,6 +134,17 @@ used video off and finally released the held playback promise. The one-line
 sender drain correction and standalone regression are isolated in `41fa08d7`
 for the integration owner's R03 assessment. GREEN verification is pending.
 
+Independent review identified a second ordering failure in that candidate: a
+pagehide sender can supersede the original sender during suspended continuation.
+The retired sender must recheck flight ownership before draining new progress.
+The standalone browser regression holds the closing HTTP response, releases the
+retired continuation, and requires each latest payload to dispatch exactly once.
+It also requires the closing policy failure and safe request ID to remain visible.
+The first root run hung because the synchronization assignment returned the held
+Promise. That setup timeout is excluded. `1944cc3c` returns `undefined` from the
+assignment while preserving the observable HTTP and policy assertions. Root owns
+the corrected RED replay and production guard; this branch has not run GREEN.
+
 ## Ownership
 
 R08 owns `player-progress.js`, `player-presentation.js`, shared Go metadata template
