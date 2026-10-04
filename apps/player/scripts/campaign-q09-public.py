@@ -227,7 +227,7 @@ def main():
                 command = ['go', 'tool', 'test2json', '-t', '-p', 'github.com/MikeO7/kinosail-player/internal/server',
                            str(binary), '-test.run=^TestDownloadPauseBrowserJourney$', '-test.count=1', '-test.timeout=70s',
                            '-test.parallel=1', '-test.v']
-                cwd, bound = ROOT / 'apps/player', 80
+                cwd, bound = ROOT / 'apps/player/internal/server', 80
             record = {'mode': mode, 'command': command, 'cwd': str(cwd.relative_to(ROOT)),
                       **execute(command, cwd, environment, group / 'command.log', bound)}
             receipt['groups'].append(record)

@@ -7,6 +7,7 @@ import signal
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 DRIVER = ROOT / 'apps/player/scripts/campaign-q09-public.py'
@@ -119,6 +120,41 @@ class Q09ProofTests(unittest.TestCase):
     def test_native_fixture_explicitly_forbids_retry_and_only(self):
         source = (ROOT / 'apps/player/internal/server/download_pause_browser_test.go').read_text()
         self.assertIn('"--retries=0", "--forbid-only"', source)
+
+    def test_real_go_launcher_preserves_package_relative_browser_directory(self):
+        # The public fixture cannot reach Playwright when its test-binary cwd is
+        # the app root. Model admission/commands only; execute no Go or browser.
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            e2e = root / 'apps/player/e2e'; e2e.mkdir(parents=True)
+            package = root / 'apps/player/internal/server'; package.mkdir(parents=True)
+            browser = root / '.cache/ms-playwright/chromium-fictional/chrome-linux/chrome'
+            browser.parent.mkdir(parents=True); browser.write_bytes(b'fictional-browser')
+            observed = []
+            def execute(command, cwd, _environment, log, _bound):
+                log.write_bytes(b'fictional-command')
+                if '-c' in command:
+                    Path(command[command.index('-o') + 1]).write_bytes(b'fictional-test-binary')
+                elif command[0] == 'node':
+                    report = log.parent / 'report/results-chromium.json'
+                    report.parent.mkdir(); report.write_text(json.dumps(self.result()))
+                else:
+                    observed.append(cwd)
+                    raise RuntimeError('fictional stop before real server execution')
+                return {'exitCode': 0, 'timedOut': False, 'ownedGroupSettled': True}
+            revision = '1' * 40
+            def git(*args):
+                return revision.encode() if args == ('rev-parse', 'HEAD') else b''
+            version = type('Version', (), {'stdout': 'fictional-tool'})()
+            with patch.object(self.driver, 'ROOT', root), patch.object(self.driver, 'git', git), \
+                    patch.object(self.driver, 'snapshot', return_value={'fictional': {}}), \
+                    patch.object(self.driver, 'execute', execute), patch.object(self.driver.Path, 'home', return_value=root), \
+                    patch.object(self.driver.shutil, 'which', return_value=sys.executable), \
+                    patch.object(self.driver.subprocess, 'run', return_value=version), \
+                    patch.dict(os.environ, {'GITHUB_SHA': revision}):
+                self.assertEqual(self.driver.main(), 1)
+            self.assertEqual(observed, [package])
+            self.assertEqual((observed[0] / '../../e2e').resolve(), e2e)
 
 
 if __name__ == '__main__':

@@ -72,3 +72,18 @@ and fails on any initial or final source drift. These three controls verify copy
 identity, checksum-writing isolation, both apps and unknown-app rejection;
 they do not prove real Go compilation or product behavior. Fresh hosted proof
 must establish whether ordinary compilation leaves the original source exact.
+
+Run37225980794 at8ed now admits a clean checkout, compiles the test binary in
+64.267 seconds and passes all five isolated browser cases. The Server launcher
+then exits1 in5.476 seconds without its browser report; the phone group is not
+run. Whole-proof acceptance is false, and final source integrity is not reached.
+Private raw runner logs were not uploaded; do not infer a product assertion RED.
+
+The checked-in native fixture runs its fixed browser command in ../../e2e.
+Ordinary go-test supplies apps/player/internal/server as its package directory.
+The driver's direct compiled-binary launcher instead supplied apps/player, so
+that relative browser directory resolves outside the actual e2e folder. A new
+fictional complete-driver control reproduces that mismatch before correction;
+no real Go/browser is launched. Correct only the two compiled-binary execution
+directories to match ordinary go-test. Preserve all14 product assertions and
+timeouts. The exact hosted retry still determines the actual public outcome.
