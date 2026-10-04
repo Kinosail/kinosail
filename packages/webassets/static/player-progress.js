@@ -153,7 +153,13 @@ if (player.readyState) resumeFromSavedProgress();
 else player.addEventListener("loadedmetadata", resumeFromSavedProgress, {once: true});
 player.addEventListener("pause", () => {
   if (preparationPausePending) { preparationPausePending--; return; }
-  save(false);
+  if (player.readyState >= HTMLMediaElement.HAVE_METADATA && !player.ended) save(false);
+});
+player.addEventListener("seeked", () => {
+  const prepared = preparationSeek;
+  preparationSeek = undefined;
+  if (prepared && prepared.source === (player.currentSrc || player.src) && Math.abs(prepared.seconds - player.currentTime) < 0.1) return;
+  if (player.paused && player.readyState >= HTMLMediaElement.HAVE_METADATA && !player.ended) save(false);
 });
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "hidden") {
@@ -176,7 +182,7 @@ player.addEventListener("ended", async () => {
   progressContinuation = player.dataset.queue || player.dataset.next ? continuePlayback : undefined;
   await save(true);
 });
-addEventListener("pagehide", () => {
+player.addEventListener("kinosail:page-exit", () => {
   if (player.readyState >= HTMLMediaElement.HAVE_METADATA && !player.ended) save(false, true);
 });
 setInterval(() => { if (!player.paused) save(); }, 10000);

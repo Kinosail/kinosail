@@ -150,6 +150,7 @@ ln "$media_dir/Arrival.mkv" "$media_dir/Gamma.mkv"
 chmod a+rx "$media_dir"
 chmod a+r "$media_dir"/*.mkv "$media_dir"/*.ts
 if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
+  prepare_player_checkpoint_fixture "$engine" "$image" "$media_dir" "${run[@]}"
   "$engine" "${run[@]}" --rm --entrypoint sh "$image" -c 'ffmpeg -hide_banner -loglevel error -f lavfi -i testsrc2=size=640x360:rate=24:duration=12 -f lavfi -i sine=frequency=440:duration=12 -c:v libx264 -threads 1 -preset veryfast -crf 32 -pix_fmt yuv420p -c:a aac -movflags +faststart /tmp/direct-retry-control.mp4 && cat /tmp/direct-retry-control.mp4' >"$media_dir/Direct Retry Control.mp4"
   chmod a+r "$media_dir/Direct Retry Control.mp4"
 fi
