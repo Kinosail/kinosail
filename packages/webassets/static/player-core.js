@@ -55,6 +55,8 @@ let managedSeek = false;
 const setPlayerTime = (seconds) => { managedSeek = true; player.currentTime = seconds; };
 let playbackPreparation;
 let preparationPausePending = 0;
+let preparationSeek;
+player.addEventListener("emptied", () => { preparationSeek = undefined; });
 let playbackRequest = 0;
 const requestPause = () => { playbackRequest++; playbackPreparation?.stop(); applePlaybackRequested = false; player.dispatchEvent(new CustomEvent("kinosail:playback-intent", {detail: {playing: false}})); player.pause(); };
 const requestPlay = (detail) => {
