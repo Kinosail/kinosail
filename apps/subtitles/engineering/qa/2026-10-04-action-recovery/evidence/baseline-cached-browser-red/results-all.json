@@ -1,0 +1,783 @@
+{
+  "config": {
+    "argv": [
+      "/opt/homebrew/Cellar/node/26.8.2/bin/node",
+      "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/node_modules/@playwright/test/cli.js",
+      "test",
+      "-c",
+      "e2e/playwright.config.ts",
+      "subtitle-action-recovery.spec.ts",
+      "--workers=1",
+      "--retries=0",
+      "--project=chromium",
+      "--timeout=10000"
+    ],
+    "configFile": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/playwright.config.ts",
+    "rootDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 10000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "open": "never",
+          "outputFolder": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/html-all"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results-all.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "subtitle-action-recovery.spec.ts",
+      "file": "subtitle-action-recovery.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "lost completed save response recovers without replay at 390px",
+          "ok": false,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 10000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 2021,
+                  "error": {
+                    "message": "Error: a lost response must not lock the editor indefinitely\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('#subtitle-edit-form [name=\"language\"]')\nExpected: enabled\nReceived: disabled\nTimeout:  1500ms\n\nCall log:\n\u001b[2m  - a lost response must not lock the editor indefinitely locator('#subtitle-edit-form [name=\"language\"]') with timeout 1500ms\u001b[22m\n\u001b[2m  - waiting for locator('#subtitle-edit-form [name=\"language\"]')\u001b[22m\n\u001b[2m    15 × locator resolved to <select disabled name=\"language\">…</select>\u001b[22m\n\u001b[2m       - unexpected value \"disabled\"\u001b[22m\n",
+                    "stack": "Error: a lost response must not lock the editor indefinitely\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('#subtitle-edit-form [name=\"language\"]')\nExpected: enabled\nReceived: disabled\nTimeout:  1500ms\n\nCall log:\n\u001b[2m  - a lost response must not lock the editor indefinitely locator('#subtitle-edit-form [name=\"language\"]') with timeout 1500ms\u001b[22m\n\u001b[2m  - waiting for locator('#subtitle-edit-form [name=\"language\"]')\u001b[22m\n\u001b[2m    15 × locator resolved to <select disabled name=\"language\">…</select>\u001b[22m\n\u001b[2m       - unexpected value \"disabled\"\u001b[22m\n\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts:83:134",
+                    "location": {
+                      "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+                      "column": 134,
+                      "line": 83
+                    },
+                    "snippet": "  81 |         await expect.poll(() => fixture.requests.mutations.length).toBe(1);\n  82 |         await page.clock.fastForward(45_000);\n> 83 |         await expect(page.locator('#subtitle-edit-form [name=\"language\"]'), \"a lost response must not lock the editor indefinitely\").toBeEnabled({ timeout: 1500 });\n     |                                                                                                                                      ^\n  84 |         await expect.poll(() => fixture.requests.inspections, { timeout: 1500 }).toBeGreaterThan(1);\n  85 |         await expect.poll(() => fixture.requests.histories, { timeout: 1500 }).toBeGreaterThan(0);\n  86 |         await expect(page.locator(\"#inspector-status\")).toContainText(action === \"save\" ? /saved|completed|installed/i : /restored|completed/i);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+                        "column": 134,
+                        "line": 83
+                      },
+                      "message": "Error: a lost response must not lock the editor indefinitely\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('#subtitle-edit-form [name=\"language\"]')\nExpected: enabled\nReceived: disabled\nTimeout:  1500ms\n\nCall log:\n\u001b[2m  - a lost response must not lock the editor indefinitely locator('#subtitle-edit-form [name=\"language\"]') with timeout 1500ms\u001b[22m\n\u001b[2m  - waiting for locator('#subtitle-edit-form [name=\"language\"]')\u001b[22m\n\u001b[2m    15 × locator resolved to <select disabled name=\"language\">…</select>\u001b[22m\n\u001b[2m       - unexpected value \"disabled\"\u001b[22m\n\n\n  81 |         await expect.poll(() => fixture.requests.mutations.length).toBe(1);\n  82 |         await page.clock.fastForward(45_000);\n> 83 |         await expect(page.locator('#subtitle-edit-form [name=\"language\"]'), \"a lost response must not lock the editor indefinitely\").toBeEnabled({ timeout: 1500 });\n     |                                                                                                                                      ^\n  84 |         await expect.poll(() => fixture.requests.inspections, { timeout: 1500 }).toBeGreaterThan(1);\n  85 |         await expect.poll(() => fixture.requests.histories, { timeout: 1500 }).toBeGreaterThan(0);\n  86 |         await expect(page.locator(\"#inspector-status\")).toContainText(action === \"save\" ? /saved|completed|installed/i : /restored|completed/i);\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts:83:134"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T11:48:39.226Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6ImEwNDZlYzg1NTNkN2VlY2E5ODVjZDhiMTIwNGZkNmJlYmNlMjBjNzMiLCJhY3Rpb24iOiJzYXZlIiwic3VyZmFjZSI6Imluc3BlY3RvciIsImNvbXBsZXRlZCI6dHJ1ZSwid2lkdGgiOjM5MCwiY29tbWFuZCI6InBsYXl3cmlnaHQgdGVzdCBzdWJ0aXRsZS1hY3Rpb24tcmVjb3Zlcnkuc3BlYy50cyAtLXdvcmtlcnM9MSIsImJyb3dzZXJWZXJzaW9uIjoiMTUzLjAuODAxMC4xMiIsImJvdW5kYXJ5IjoiaXNvbGF0ZWQgYnJvd3NlciB0cmFuc3BvcnQgdXNpbmcgYWN0dWFsIHB1YmxpYyBHbyBIVE1ML2Fzc2V0cy9TYXZlL1Jlc3RvcmUgcmVhZHM7IFBPU1QgY29tcGxldGlvbiBpcyByZXByZXNlbnRlZCBieSBjYXB0dXJlZCByZWFkcywgbm90IGV4ZWN1dGVkIGluIHRoaXMgYnJvd3NlciBmaXh0dXJlOyBtZWRpYSBhYm9ydGVkIiwic291cmNlU0hBMjU2IjoiN2VlNjI0MjExYzcxOGYyZTc2OTNkMWU3M2UyZTIwNWU5ZjVkY2ZmMjU4NGNjN2Q3NTYwY2UxNDg1Zjk2MzYwYSIsImJlZm9yZUZpbmdlcnByaW50IjoiNTc0ZTZjMWJhZjQ4NDc3Yzg3MGI0ZWQ3MzFjOGZiYmY5NTIyMjM0MzE2NzgzMThkNzQ2YmM2YzliZDc2MjhjZSIsImFmdGVyRmluZ2VycHJpbnQiOiI1Y2M5MTk5ZjY0ODhjNDMwNjJiYTFmOWJlYjM4M2Y1OGNiYTQ1YzNjMWRhOThlZWM2MjBjNjdlODliYjBkOTVlIn0="
+                    },
+                    {
+                      "name": "action-requests",
+                      "contentType": "application/json",
+                      "body": "eyJtdXRhdGlvbnMiOlt7InBhdGgiOiIvYXBpL3YxL3N1YnRpdGxlLWxpYnJhcnkvNTNhZTcyNmRhZWFlZDNmYS9hcHBseSIsImlucHV0Ijp7InJvbGUiOiJ0cmFuc2xhdGlvbiIsImxhbmd1YWdlIjoiZW4iLCJmaW5nZXJwcmludCI6IjU3NGU2YzFiYWY0ODQ3N2M4NzBiNGVkNzMxYzhmYmJmOTUyMjIzNDMxNjc4MzE4ZDc0NmJjNmM5YmQ3NjI4Y2UiLCJlbmNvZGluZyI6ImF1dG8iLCJvZmZzZXRNaWxsaXNlY29uZHMiOjUwMCwiYXV0b21hdGljU3luYyI6ZmFsc2UsInJlbW92ZUNyZWRpdHMiOnRydWUsIm1lcmdlUmVwZWF0ZWQiOnRydWV9fV0sImluc3BlY3Rpb25zIjoxLCJoaXN0b3JpZXMiOjAsInBhZ2VzIjo0fQ=="
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-l-fe9ac-ers-without-replay-at-390px-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-l-fe9ac-ers-without-replay-at-390px-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-l-fe9ac-ers-without-replay-at-390px-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+                    "column": 134,
+                    "line": 83
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "26b3d1df17a25f0e9983-6ea4c7bec827bdd3836d",
+          "file": "subtitle-action-recovery.spec.ts",
+          "line": 76,
+          "column": 5
+        },
+        {
+          "title": "lost completed restore response recovers without replay at 390px",
+          "ok": false,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 10000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1837,
+                  "error": {
+                    "message": "Error: a lost response must not lock the editor indefinitely\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('#subtitle-edit-form [name=\"language\"]')\nExpected: enabled\nReceived: disabled\nTimeout:  1500ms\n\nCall log:\n\u001b[2m  - a lost response must not lock the editor indefinitely locator('#subtitle-edit-form [name=\"language\"]') with timeout 1500ms\u001b[22m\n\u001b[2m  - waiting for locator('#subtitle-edit-form [name=\"language\"]')\u001b[22m\n\u001b[2m    15 × locator resolved to <select disabled name=\"language\">…</select>\u001b[22m\n\u001b[2m       - unexpected value \"disabled\"\u001b[22m\n",
+                    "stack": "Error: a lost response must not lock the editor indefinitely\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('#subtitle-edit-form [name=\"language\"]')\nExpected: enabled\nReceived: disabled\nTimeout:  1500ms\n\nCall log:\n\u001b[2m  - a lost response must not lock the editor indefinitely locator('#subtitle-edit-form [name=\"language\"]') with timeout 1500ms\u001b[22m\n\u001b[2m  - waiting for locator('#subtitle-edit-form [name=\"language\"]')\u001b[22m\n\u001b[2m    15 × locator resolved to <select disabled name=\"language\">…</select>\u001b[22m\n\u001b[2m       - unexpected value \"disabled\"\u001b[22m\n\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts:83:134",
+                    "location": {
+                      "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+                      "column": 134,
+                      "line": 83
+                    },
+                    "snippet": "  81 |         await expect.poll(() => fixture.requests.mutations.length).toBe(1);\n  82 |         await page.clock.fastForward(45_000);\n> 83 |         await expect(page.locator('#subtitle-edit-form [name=\"language\"]'), \"a lost response must not lock the editor indefinitely\").toBeEnabled({ timeout: 1500 });\n     |                                                                                                                                      ^\n  84 |         await expect.poll(() => fixture.requests.inspections, { timeout: 1500 }).toBeGreaterThan(1);\n  85 |         await expect.poll(() => fixture.requests.histories, { timeout: 1500 }).toBeGreaterThan(0);\n  86 |         await expect(page.locator(\"#inspector-status\")).toContainText(action === \"save\" ? /saved|completed|installed/i : /restored|completed/i);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+                        "column": 134,
+                        "line": 83
+                      },
+                      "message": "Error: a lost response must not lock the editor indefinitely\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('#subtitle-edit-form [name=\"language\"]')\nExpected: enabled\nReceived: disabled\nTimeout:  1500ms\n\nCall log:\n\u001b[2m  - a lost response must not lock the editor indefinitely locator('#subtitle-edit-form [name=\"language\"]') with timeout 1500ms\u001b[22m\n\u001b[2m  - waiting for locator('#subtitle-edit-form [name=\"language\"]')\u001b[22m\n\u001b[2m    15 × locator resolved to <select disabled name=\"language\">…</select>\u001b[22m\n\u001b[2m       - unexpected value \"disabled\"\u001b[22m\n\n\n  81 |         await expect.poll(() => fixture.requests.mutations.length).toBe(1);\n  82 |         await page.clock.fastForward(45_000);\n> 83 |         await expect(page.locator('#subtitle-edit-form [name=\"language\"]'), \"a lost response must not lock the editor indefinitely\").toBeEnabled({ timeout: 1500 });\n     |                                                                                                                                      ^\n  84 |         await expect.poll(() => fixture.requests.inspections, { timeout: 1500 }).toBeGreaterThan(1);\n  85 |         await expect.poll(() => fixture.requests.histories, { timeout: 1500 }).toBeGreaterThan(0);\n  86 |         await expect(page.locator(\"#inspector-status\")).toContainText(action === \"save\" ? /saved|completed|installed/i : /restored|completed/i);\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts:83:134"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T11:48:41.668Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6ImEwNDZlYzg1NTNkN2VlY2E5ODVjZDhiMTIwNGZkNmJlYmNlMjBjNzMiLCJhY3Rpb24iOiJyZXN0b3JlIiwic3VyZmFjZSI6Imluc3BlY3RvciIsImNvbXBsZXRlZCI6dHJ1ZSwid2lkdGgiOjM5MCwiY29tbWFuZCI6InBsYXl3cmlnaHQgdGVzdCBzdWJ0aXRsZS1hY3Rpb24tcmVjb3Zlcnkuc3BlYy50cyAtLXdvcmtlcnM9MSIsImJyb3dzZXJWZXJzaW9uIjoiMTUzLjAuODAxMC4xMiIsImJvdW5kYXJ5IjoiaXNvbGF0ZWQgYnJvd3NlciB0cmFuc3BvcnQgdXNpbmcgYWN0dWFsIHB1YmxpYyBHbyBIVE1ML2Fzc2V0cy9TYXZlL1Jlc3RvcmUgcmVhZHM7IFBPU1QgY29tcGxldGlvbiBpcyByZXByZXNlbnRlZCBieSBjYXB0dXJlZCByZWFkcywgbm90IGV4ZWN1dGVkIGluIHRoaXMgYnJvd3NlciBmaXh0dXJlOyBtZWRpYSBhYm9ydGVkIiwic291cmNlU0hBMjU2IjoiN2VlNjI0MjExYzcxOGYyZTc2OTNkMWU3M2UyZTIwNWU5ZjVkY2ZmMjU4NGNjN2Q3NTYwY2UxNDg1Zjk2MzYwYSIsImJlZm9yZUZpbmdlcnByaW50IjoiNWNjOTE5OWY2NDg4YzQzMDYyYmExZjliZWIzODNmNThjYmE0NWMzYzFkYTk4ZWVjNjIwYzY3ZTg5YmIwZDk1ZSIsImFmdGVyRmluZ2VycHJpbnQiOiI1NzRlNmMxYmFmNDg0NzdjODcwYjRlZDczMWM4ZmJiZjk1MjIyMzQzMTY3ODMxOGQ3NDZiYzZjOWJkNzYyOGNlIn0="
+                    },
+                    {
+                      "name": "action-requests",
+                      "contentType": "application/json",
+                      "body": "eyJtdXRhdGlvbnMiOlt7InBhdGgiOiIvYXBpL3YxL3N1YnRpdGxlLWxpYnJhcnkvNTNhZTcyNmRhZWFlZDNmYS9yZXN0b3JlIiwiaW5wdXQiOnsibGFuZ3VhZ2UiOiJlbiJ9fV0sImluc3BlY3Rpb25zIjoxLCJoaXN0b3JpZXMiOjAsInBhZ2VzIjo0fQ=="
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-l-142dd-ers-without-replay-at-390px-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-l-142dd-ers-without-replay-at-390px-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-l-142dd-ers-without-replay-at-390px-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+                    "column": 134,
+                    "line": 83
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "26b3d1df17a25f0e9983-31d3131555b4ab70cbaf",
+          "file": "subtitle-action-recovery.spec.ts",
+          "line": 76,
+          "column": 5
+        },
+        {
+          "title": "dashboard restore response deadline preserves safe navigation at 390px",
+          "ok": false,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 10000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1841,
+                  "error": {
+                    "message": "Error: an uncertain write must stop occupying the global pending state\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).not.\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('[data-subtitle-action][data-api$=\"/restore\"]')\nExpected: not \u001b[32m\"true\"\u001b[39m\nReceived: \u001b[31m\"\u001b[7mtrue\u001b[27m\"\u001b[39m\nTimeout:  1500ms\n\nCall log:\n\u001b[2m  - an uncertain write must stop occupying the global pending state locator('[data-subtitle-action][data-api$=\"/restore\"]') with timeout 1500ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-subtitle-action][data-api$=\"/restore\"]')\u001b[22m\n\u001b[2m    16 × locator resolved to <form method=\"post\" aria-busy=\"true\" data-subtitle-action=\"\" action=\"/subtitles/manage/53ae726daeaed3fa/restore\" data-api=\"/api/v1/subtitle-library/53ae726daeaed3fa/restore\">…</form>\u001b[22m\n\u001b[2m       - unexpected value \"true\"\u001b[22m\n",
+                    "stack": "Error: an uncertain write must stop occupying the global pending state\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).not.\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('[data-subtitle-action][data-api$=\"/restore\"]')\nExpected: not \u001b[32m\"true\"\u001b[39m\nReceived: \u001b[31m\"\u001b[7mtrue\u001b[27m\"\u001b[39m\nTimeout:  1500ms\n\nCall log:\n\u001b[2m  - an uncertain write must stop occupying the global pending state locator('[data-subtitle-action][data-api$=\"/restore\"]') with timeout 1500ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-subtitle-action][data-api$=\"/restore\"]')\u001b[22m\n\u001b[2m    16 × locator resolved to <form method=\"post\" aria-busy=\"true\" data-subtitle-action=\"\" action=\"/subtitles/manage/53ae726daeaed3fa/restore\" data-api=\"/api/v1/subtitle-library/53ae726daeaed3fa/restore\">…</form>\u001b[22m\n\u001b[2m       - unexpected value \"true\"\u001b[22m\n\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts:105:97",
+                    "location": {
+                      "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+                      "column": 97,
+                      "line": 105
+                    },
+                    "snippet": "  103 |       await expect.poll(() => fixture.requests.mutations.length).toBe(1);\n  104 |       await page.clock.fastForward(45_000);\n> 105 |       await expect(form, \"an uncertain write must stop occupying the global pending state\").not.toHaveAttribute(\"aria-busy\", \"true\", { timeout: 1500 });\n      |                                                                                                 ^\n  106 |       await expect(page.locator(\"#subtitle-feedback\")).toContainText(/unknown|could not confirm|still|pending/i);\n  107 |       await page.getByRole(\"link\", { name: \"History\", exact: true }).click();\n  108 |       await expect.poll(() => fixture.requests.pages).toBeGreaterThan(1);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+                        "column": 97,
+                        "line": 105
+                      },
+                      "message": "Error: an uncertain write must stop occupying the global pending state\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).not.\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('[data-subtitle-action][data-api$=\"/restore\"]')\nExpected: not \u001b[32m\"true\"\u001b[39m\nReceived: \u001b[31m\"\u001b[7mtrue\u001b[27m\"\u001b[39m\nTimeout:  1500ms\n\nCall log:\n\u001b[2m  - an uncertain write must stop occupying the global pending state locator('[data-subtitle-action][data-api$=\"/restore\"]') with timeout 1500ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-subtitle-action][data-api$=\"/restore\"]')\u001b[22m\n\u001b[2m    16 × locator resolved to <form method=\"post\" aria-busy=\"true\" data-subtitle-action=\"\" action=\"/subtitles/manage/53ae726daeaed3fa/restore\" data-api=\"/api/v1/subtitle-library/53ae726daeaed3fa/restore\">…</form>\u001b[22m\n\u001b[2m       - unexpected value \"true\"\u001b[22m\n\n\n  103 |       await expect.poll(() => fixture.requests.mutations.length).toBe(1);\n  104 |       await page.clock.fastForward(45_000);\n> 105 |       await expect(form, \"an uncertain write must stop occupying the global pending state\").not.toHaveAttribute(\"aria-busy\", \"true\", { timeout: 1500 });\n      |                                                                                                 ^\n  106 |       await expect(page.locator(\"#subtitle-feedback\")).toContainText(/unknown|could not confirm|still|pending/i);\n  107 |       await page.getByRole(\"link\", { name: \"History\", exact: true }).click();\n  108 |       await expect.poll(() => fixture.requests.pages).toBeGreaterThan(1);\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts:105:97"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T11:48:43.910Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6ImEwNDZlYzg1NTNkN2VlY2E5ODVjZDhiMTIwNGZkNmJlYmNlMjBjNzMiLCJhY3Rpb24iOiJyZXN0b3JlIiwic3VyZmFjZSI6ImRhc2hib2FyZCIsImNvbXBsZXRlZCI6ZmFsc2UsIndpZHRoIjozOTAsImNvbW1hbmQiOiJwbGF5d3JpZ2h0IHRlc3Qgc3VidGl0bGUtYWN0aW9uLXJlY292ZXJ5LnNwZWMudHMgLS13b3JrZXJzPTEiLCJicm93c2VyVmVyc2lvbiI6IjE1My4wLjgwMTAuMTIiLCJib3VuZGFyeSI6Imlzb2xhdGVkIGJyb3dzZXIgdHJhbnNwb3J0IHVzaW5nIGFjdHVhbCBwdWJsaWMgR28gSFRNTC9hc3NldHMvU2F2ZS9SZXN0b3JlIHJlYWRzOyBQT1NUIGNvbXBsZXRpb24gaXMgcmVwcmVzZW50ZWQgYnkgY2FwdHVyZWQgcmVhZHMsIG5vdCBleGVjdXRlZCBpbiB0aGlzIGJyb3dzZXIgZml4dHVyZTsgbWVkaWEgYWJvcnRlZCIsInNvdXJjZVNIQTI1NiI6IjYzMDNhODQ1MTUxYzRhM2M3NzMyZGUyYzkzN2Y3NjBmNGRjMmNjMDMwNWFjZjQ2ZWI4MDY2NDI2ODcxOTZhMTMiLCJiZWZvcmVGaW5nZXJwcmludCI6IjVjYzkxOTlmNjQ4OGM0MzA2MmJhMWY5YmViMzgzZjU4Y2JhNDVjM2MxZGE5OGVlYzYyMGM2N2U4OWJiMGQ5NWUiLCJhZnRlckZpbmdlcnByaW50IjoiNTc0ZTZjMWJhZjQ4NDc3Yzg3MGI0ZWQ3MzFjOGZiYmY5NTIyMjM0MzE2NzgzMThkNzQ2YmM2YzliZDc2MjhjZSJ9"
+                    },
+                    {
+                      "name": "action-requests",
+                      "contentType": "application/json",
+                      "body": "eyJtdXRhdGlvbnMiOlt7InBhdGgiOiIvYXBpL3YxL3N1YnRpdGxlLWxpYnJhcnkvNTNhZTcyNmRhZWFlZDNmYS9yZXN0b3JlIiwiaW5wdXQiOnt9fV0sImluc3BlY3Rpb25zIjowLCJoaXN0b3JpZXMiOjAsInBhZ2VzIjo0fQ=="
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-d-0d511-es-safe-navigation-at-390px-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-d-0d511-es-safe-navigation-at-390px-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-d-0d511-es-safe-navigation-at-390px-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+                    "column": 97,
+                    "line": 105
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "26b3d1df17a25f0e9983-b69709e2645437b81286",
+          "file": "subtitle-action-recovery.spec.ts",
+          "line": 95,
+          "column": 3
+        },
+        {
+          "title": "lost completed save response recovers without replay at 1440px",
+          "ok": false,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 10000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 2005,
+                  "error": {
+                    "message": "Error: a lost response must not lock the editor indefinitely\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('#subtitle-edit-form [name=\"language\"]')\nExpected: enabled\nReceived: disabled\nTimeout:  1500ms\n\nCall log:\n\u001b[2m  - a lost response must not lock the editor indefinitely locator('#subtitle-edit-form [name=\"language\"]') with timeout 1500ms\u001b[22m\n\u001b[2m  - waiting for locator('#subtitle-edit-form [name=\"language\"]')\u001b[22m\n\u001b[2m    15 × locator resolved to <select disabled name=\"language\">…</select>\u001b[22m\n\u001b[2m       - unexpected value \"disabled\"\u001b[22m\n",
+                    "stack": "Error: a lost response must not lock the editor indefinitely\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('#subtitle-edit-form [name=\"language\"]')\nExpected: enabled\nReceived: disabled\nTimeout:  1500ms\n\nCall log:\n\u001b[2m  - a lost response must not lock the editor indefinitely locator('#subtitle-edit-form [name=\"language\"]') with timeout 1500ms\u001b[22m\n\u001b[2m  - waiting for locator('#subtitle-edit-form [name=\"language\"]')\u001b[22m\n\u001b[2m    15 × locator resolved to <select disabled name=\"language\">…</select>\u001b[22m\n\u001b[2m       - unexpected value \"disabled\"\u001b[22m\n\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts:83:134",
+                    "location": {
+                      "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+                      "column": 134,
+                      "line": 83
+                    },
+                    "snippet": "  81 |         await expect.poll(() => fixture.requests.mutations.length).toBe(1);\n  82 |         await page.clock.fastForward(45_000);\n> 83 |         await expect(page.locator('#subtitle-edit-form [name=\"language\"]'), \"a lost response must not lock the editor indefinitely\").toBeEnabled({ timeout: 1500 });\n     |                                                                                                                                      ^\n  84 |         await expect.poll(() => fixture.requests.inspections, { timeout: 1500 }).toBeGreaterThan(1);\n  85 |         await expect.poll(() => fixture.requests.histories, { timeout: 1500 }).toBeGreaterThan(0);\n  86 |         await expect(page.locator(\"#inspector-status\")).toContainText(action === \"save\" ? /saved|completed|installed/i : /restored|completed/i);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+                        "column": 134,
+                        "line": 83
+                      },
+                      "message": "Error: a lost response must not lock the editor indefinitely\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('#subtitle-edit-form [name=\"language\"]')\nExpected: enabled\nReceived: disabled\nTimeout:  1500ms\n\nCall log:\n\u001b[2m  - a lost response must not lock the editor indefinitely locator('#subtitle-edit-form [name=\"language\"]') with timeout 1500ms\u001b[22m\n\u001b[2m  - waiting for locator('#subtitle-edit-form [name=\"language\"]')\u001b[22m\n\u001b[2m    15 × locator resolved to <select disabled name=\"language\">…</select>\u001b[22m\n\u001b[2m       - unexpected value \"disabled\"\u001b[22m\n\n\n  81 |         await expect.poll(() => fixture.requests.mutations.length).toBe(1);\n  82 |         await page.clock.fastForward(45_000);\n> 83 |         await expect(page.locator('#subtitle-edit-form [name=\"language\"]'), \"a lost response must not lock the editor indefinitely\").toBeEnabled({ timeout: 1500 });\n     |                                                                                                                                      ^\n  84 |         await expect.poll(() => fixture.requests.inspections, { timeout: 1500 }).toBeGreaterThan(1);\n  85 |         await expect.poll(() => fixture.requests.histories, { timeout: 1500 }).toBeGreaterThan(0);\n  86 |         await expect(page.locator(\"#inspector-status\")).toContainText(action === \"save\" ? /saved|completed|installed/i : /restored|completed/i);\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts:83:134"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T11:48:46.148Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6ImEwNDZlYzg1NTNkN2VlY2E5ODVjZDhiMTIwNGZkNmJlYmNlMjBjNzMiLCJhY3Rpb24iOiJzYXZlIiwic3VyZmFjZSI6Imluc3BlY3RvciIsImNvbXBsZXRlZCI6dHJ1ZSwid2lkdGgiOjE0NDAsImNvbW1hbmQiOiJwbGF5d3JpZ2h0IHRlc3Qgc3VidGl0bGUtYWN0aW9uLXJlY292ZXJ5LnNwZWMudHMgLS13b3JrZXJzPTEiLCJicm93c2VyVmVyc2lvbiI6IjE1My4wLjgwMTAuMTIiLCJib3VuZGFyeSI6Imlzb2xhdGVkIGJyb3dzZXIgdHJhbnNwb3J0IHVzaW5nIGFjdHVhbCBwdWJsaWMgR28gSFRNTC9hc3NldHMvU2F2ZS9SZXN0b3JlIHJlYWRzOyBQT1NUIGNvbXBsZXRpb24gaXMgcmVwcmVzZW50ZWQgYnkgY2FwdHVyZWQgcmVhZHMsIG5vdCBleGVjdXRlZCBpbiB0aGlzIGJyb3dzZXIgZml4dHVyZTsgbWVkaWEgYWJvcnRlZCIsInNvdXJjZVNIQTI1NiI6IjdlZTYyNDIxMWM3MThmMmU3NjkzZDFlNzNlMmUyMDVlOWY1ZGNmZjI1ODRjYzdkNzU2MGNlMTQ4NWY5NjM2MGEiLCJiZWZvcmVGaW5nZXJwcmludCI6IjU3NGU2YzFiYWY0ODQ3N2M4NzBiNGVkNzMxYzhmYmJmOTUyMjIzNDMxNjc4MzE4ZDc0NmJjNmM5YmQ3NjI4Y2UiLCJhZnRlckZpbmdlcnByaW50IjoiNWNjOTE5OWY2NDg4YzQzMDYyYmExZjliZWIzODNmNThjYmE0NWMzYzFkYTk4ZWVjNjIwYzY3ZTg5YmIwZDk1ZSJ9"
+                    },
+                    {
+                      "name": "action-requests",
+                      "contentType": "application/json",
+                      "body": "eyJtdXRhdGlvbnMiOlt7InBhdGgiOiIvYXBpL3YxL3N1YnRpdGxlLWxpYnJhcnkvNTNhZTcyNmRhZWFlZDNmYS9hcHBseSIsImlucHV0Ijp7InJvbGUiOiJ0cmFuc2xhdGlvbiIsImxhbmd1YWdlIjoiZW4iLCJmaW5nZXJwcmludCI6IjU3NGU2YzFiYWY0ODQ3N2M4NzBiNGVkNzMxYzhmYmJmOTUyMjIzNDMxNjc4MzE4ZDc0NmJjNmM5YmQ3NjI4Y2UiLCJlbmNvZGluZyI6ImF1dG8iLCJvZmZzZXRNaWxsaXNlY29uZHMiOjUwMCwiYXV0b21hdGljU3luYyI6ZmFsc2UsInJlbW92ZUNyZWRpdHMiOnRydWUsIm1lcmdlUmVwZWF0ZWQiOnRydWV9fV0sImluc3BlY3Rpb25zIjoxLCJoaXN0b3JpZXMiOjAsInBhZ2VzIjozfQ=="
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-l-e82c7-rs-without-replay-at-1440px-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-l-e82c7-rs-without-replay-at-1440px-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-l-e82c7-rs-without-replay-at-1440px-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+                    "column": 134,
+                    "line": 83
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "26b3d1df17a25f0e9983-d6349c9884f13273ab8d",
+          "file": "subtitle-action-recovery.spec.ts",
+          "line": 76,
+          "column": 5
+        },
+        {
+          "title": "lost completed restore response recovers without replay at 1440px",
+          "ok": false,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 10000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1884,
+                  "error": {
+                    "message": "Error: a lost response must not lock the editor indefinitely\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('#subtitle-edit-form [name=\"language\"]')\nExpected: enabled\nReceived: disabled\nTimeout:  1500ms\n\nCall log:\n\u001b[2m  - a lost response must not lock the editor indefinitely locator('#subtitle-edit-form [name=\"language\"]') with timeout 1500ms\u001b[22m\n\u001b[2m  - waiting for locator('#subtitle-edit-form [name=\"language\"]')\u001b[22m\n\u001b[2m    15 × locator resolved to <select disabled name=\"language\">…</select>\u001b[22m\n\u001b[2m       - unexpected value \"disabled\"\u001b[22m\n",
+                    "stack": "Error: a lost response must not lock the editor indefinitely\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('#subtitle-edit-form [name=\"language\"]')\nExpected: enabled\nReceived: disabled\nTimeout:  1500ms\n\nCall log:\n\u001b[2m  - a lost response must not lock the editor indefinitely locator('#subtitle-edit-form [name=\"language\"]') with timeout 1500ms\u001b[22m\n\u001b[2m  - waiting for locator('#subtitle-edit-form [name=\"language\"]')\u001b[22m\n\u001b[2m    15 × locator resolved to <select disabled name=\"language\">…</select>\u001b[22m\n\u001b[2m       - unexpected value \"disabled\"\u001b[22m\n\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts:83:134",
+                    "location": {
+                      "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+                      "column": 134,
+                      "line": 83
+                    },
+                    "snippet": "  81 |         await expect.poll(() => fixture.requests.mutations.length).toBe(1);\n  82 |         await page.clock.fastForward(45_000);\n> 83 |         await expect(page.locator('#subtitle-edit-form [name=\"language\"]'), \"a lost response must not lock the editor indefinitely\").toBeEnabled({ timeout: 1500 });\n     |                                                                                                                                      ^\n  84 |         await expect.poll(() => fixture.requests.inspections, { timeout: 1500 }).toBeGreaterThan(1);\n  85 |         await expect.poll(() => fixture.requests.histories, { timeout: 1500 }).toBeGreaterThan(0);\n  86 |         await expect(page.locator(\"#inspector-status\")).toContainText(action === \"save\" ? /saved|completed|installed/i : /restored|completed/i);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+                        "column": 134,
+                        "line": 83
+                      },
+                      "message": "Error: a lost response must not lock the editor indefinitely\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('#subtitle-edit-form [name=\"language\"]')\nExpected: enabled\nReceived: disabled\nTimeout:  1500ms\n\nCall log:\n\u001b[2m  - a lost response must not lock the editor indefinitely locator('#subtitle-edit-form [name=\"language\"]') with timeout 1500ms\u001b[22m\n\u001b[2m  - waiting for locator('#subtitle-edit-form [name=\"language\"]')\u001b[22m\n\u001b[2m    15 × locator resolved to <select disabled name=\"language\">…</select>\u001b[22m\n\u001b[2m       - unexpected value \"disabled\"\u001b[22m\n\n\n  81 |         await expect.poll(() => fixture.requests.mutations.length).toBe(1);\n  82 |         await page.clock.fastForward(45_000);\n> 83 |         await expect(page.locator('#subtitle-edit-form [name=\"language\"]'), \"a lost response must not lock the editor indefinitely\").toBeEnabled({ timeout: 1500 });\n     |                                                                                                                                      ^\n  84 |         await expect.poll(() => fixture.requests.inspections, { timeout: 1500 }).toBeGreaterThan(1);\n  85 |         await expect.poll(() => fixture.requests.histories, { timeout: 1500 }).toBeGreaterThan(0);\n  86 |         await expect(page.locator(\"#inspector-status\")).toContainText(action === \"save\" ? /saved|completed|installed/i : /restored|completed/i);\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts:83:134"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T11:48:48.581Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6ImEwNDZlYzg1NTNkN2VlY2E5ODVjZDhiMTIwNGZkNmJlYmNlMjBjNzMiLCJhY3Rpb24iOiJyZXN0b3JlIiwic3VyZmFjZSI6Imluc3BlY3RvciIsImNvbXBsZXRlZCI6dHJ1ZSwid2lkdGgiOjE0NDAsImNvbW1hbmQiOiJwbGF5d3JpZ2h0IHRlc3Qgc3VidGl0bGUtYWN0aW9uLXJlY292ZXJ5LnNwZWMudHMgLS13b3JrZXJzPTEiLCJicm93c2VyVmVyc2lvbiI6IjE1My4wLjgwMTAuMTIiLCJib3VuZGFyeSI6Imlzb2xhdGVkIGJyb3dzZXIgdHJhbnNwb3J0IHVzaW5nIGFjdHVhbCBwdWJsaWMgR28gSFRNTC9hc3NldHMvU2F2ZS9SZXN0b3JlIHJlYWRzOyBQT1NUIGNvbXBsZXRpb24gaXMgcmVwcmVzZW50ZWQgYnkgY2FwdHVyZWQgcmVhZHMsIG5vdCBleGVjdXRlZCBpbiB0aGlzIGJyb3dzZXIgZml4dHVyZTsgbWVkaWEgYWJvcnRlZCIsInNvdXJjZVNIQTI1NiI6IjdlZTYyNDIxMWM3MThmMmU3NjkzZDFlNzNlMmUyMDVlOWY1ZGNmZjI1ODRjYzdkNzU2MGNlMTQ4NWY5NjM2MGEiLCJiZWZvcmVGaW5nZXJwcmludCI6IjVjYzkxOTlmNjQ4OGM0MzA2MmJhMWY5YmViMzgzZjU4Y2JhNDVjM2MxZGE5OGVlYzYyMGM2N2U4OWJiMGQ5NWUiLCJhZnRlckZpbmdlcnByaW50IjoiNTc0ZTZjMWJhZjQ4NDc3Yzg3MGI0ZWQ3MzFjOGZiYmY5NTIyMjM0MzE2NzgzMThkNzQ2YmM2YzliZDc2MjhjZSJ9"
+                    },
+                    {
+                      "name": "action-requests",
+                      "contentType": "application/json",
+                      "body": "eyJtdXRhdGlvbnMiOlt7InBhdGgiOiIvYXBpL3YxL3N1YnRpdGxlLWxpYnJhcnkvNTNhZTcyNmRhZWFlZDNmYS9yZXN0b3JlIiwiaW5wdXQiOnsibGFuZ3VhZ2UiOiJlbiJ9fV0sImluc3BlY3Rpb25zIjoxLCJoaXN0b3JpZXMiOjAsInBhZ2VzIjozfQ=="
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-l-06d94-rs-without-replay-at-1440px-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-l-06d94-rs-without-replay-at-1440px-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-l-06d94-rs-without-replay-at-1440px-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+                    "column": 134,
+                    "line": 83
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "26b3d1df17a25f0e9983-9b4402085002d0bda82d",
+          "file": "subtitle-action-recovery.spec.ts",
+          "line": 76,
+          "column": 5
+        },
+        {
+          "title": "dashboard restore response deadline preserves safe navigation at 1440px",
+          "ok": false,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 10000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1857,
+                  "error": {
+                    "message": "Error: an uncertain write must stop occupying the global pending state\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).not.\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('[data-subtitle-action][data-api$=\"/restore\"]')\nExpected: not \u001b[32m\"true\"\u001b[39m\nReceived: \u001b[31m\"\u001b[7mtrue\u001b[27m\"\u001b[39m\nTimeout:  1500ms\n\nCall log:\n\u001b[2m  - an uncertain write must stop occupying the global pending state locator('[data-subtitle-action][data-api$=\"/restore\"]') with timeout 1500ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-subtitle-action][data-api$=\"/restore\"]')\u001b[22m\n\u001b[2m    16 × locator resolved to <form method=\"post\" aria-busy=\"true\" data-subtitle-action=\"\" action=\"/subtitles/manage/53ae726daeaed3fa/restore\" data-api=\"/api/v1/subtitle-library/53ae726daeaed3fa/restore\">…</form>\u001b[22m\n\u001b[2m       - unexpected value \"true\"\u001b[22m\n",
+                    "stack": "Error: an uncertain write must stop occupying the global pending state\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).not.\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('[data-subtitle-action][data-api$=\"/restore\"]')\nExpected: not \u001b[32m\"true\"\u001b[39m\nReceived: \u001b[31m\"\u001b[7mtrue\u001b[27m\"\u001b[39m\nTimeout:  1500ms\n\nCall log:\n\u001b[2m  - an uncertain write must stop occupying the global pending state locator('[data-subtitle-action][data-api$=\"/restore\"]') with timeout 1500ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-subtitle-action][data-api$=\"/restore\"]')\u001b[22m\n\u001b[2m    16 × locator resolved to <form method=\"post\" aria-busy=\"true\" data-subtitle-action=\"\" action=\"/subtitles/manage/53ae726daeaed3fa/restore\" data-api=\"/api/v1/subtitle-library/53ae726daeaed3fa/restore\">…</form>\u001b[22m\n\u001b[2m       - unexpected value \"true\"\u001b[22m\n\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts:105:97",
+                    "location": {
+                      "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+                      "column": 97,
+                      "line": 105
+                    },
+                    "snippet": "  103 |       await expect.poll(() => fixture.requests.mutations.length).toBe(1);\n  104 |       await page.clock.fastForward(45_000);\n> 105 |       await expect(form, \"an uncertain write must stop occupying the global pending state\").not.toHaveAttribute(\"aria-busy\", \"true\", { timeout: 1500 });\n      |                                                                                                 ^\n  106 |       await expect(page.locator(\"#subtitle-feedback\")).toContainText(/unknown|could not confirm|still|pending/i);\n  107 |       await page.getByRole(\"link\", { name: \"History\", exact: true }).click();\n  108 |       await expect.poll(() => fixture.requests.pages).toBeGreaterThan(1);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+                        "column": 97,
+                        "line": 105
+                      },
+                      "message": "Error: an uncertain write must stop occupying the global pending state\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).not.\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('[data-subtitle-action][data-api$=\"/restore\"]')\nExpected: not \u001b[32m\"true\"\u001b[39m\nReceived: \u001b[31m\"\u001b[7mtrue\u001b[27m\"\u001b[39m\nTimeout:  1500ms\n\nCall log:\n\u001b[2m  - an uncertain write must stop occupying the global pending state locator('[data-subtitle-action][data-api$=\"/restore\"]') with timeout 1500ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-subtitle-action][data-api$=\"/restore\"]')\u001b[22m\n\u001b[2m    16 × locator resolved to <form method=\"post\" aria-busy=\"true\" data-subtitle-action=\"\" action=\"/subtitles/manage/53ae726daeaed3fa/restore\" data-api=\"/api/v1/subtitle-library/53ae726daeaed3fa/restore\">…</form>\u001b[22m\n\u001b[2m       - unexpected value \"true\"\u001b[22m\n\n\n  103 |       await expect.poll(() => fixture.requests.mutations.length).toBe(1);\n  104 |       await page.clock.fastForward(45_000);\n> 105 |       await expect(form, \"an uncertain write must stop occupying the global pending state\").not.toHaveAttribute(\"aria-busy\", \"true\", { timeout: 1500 });\n      |                                                                                                 ^\n  106 |       await expect(page.locator(\"#subtitle-feedback\")).toContainText(/unknown|could not confirm|still|pending/i);\n  107 |       await page.getByRole(\"link\", { name: \"History\", exact: true }).click();\n  108 |       await expect.poll(() => fixture.requests.pages).toBeGreaterThan(1);\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts:105:97"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T11:48:50.889Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6ImEwNDZlYzg1NTNkN2VlY2E5ODVjZDhiMTIwNGZkNmJlYmNlMjBjNzMiLCJhY3Rpb24iOiJyZXN0b3JlIiwic3VyZmFjZSI6ImRhc2hib2FyZCIsImNvbXBsZXRlZCI6ZmFsc2UsIndpZHRoIjoxNDQwLCJjb21tYW5kIjoicGxheXdyaWdodCB0ZXN0IHN1YnRpdGxlLWFjdGlvbi1yZWNvdmVyeS5zcGVjLnRzIC0td29ya2Vycz0xIiwiYnJvd3NlclZlcnNpb24iOiIxNTMuMC44MDEwLjEyIiwiYm91bmRhcnkiOiJpc29sYXRlZCBicm93c2VyIHRyYW5zcG9ydCB1c2luZyBhY3R1YWwgcHVibGljIEdvIEhUTUwvYXNzZXRzL1NhdmUvUmVzdG9yZSByZWFkczsgUE9TVCBjb21wbGV0aW9uIGlzIHJlcHJlc2VudGVkIGJ5IGNhcHR1cmVkIHJlYWRzLCBub3QgZXhlY3V0ZWQgaW4gdGhpcyBicm93c2VyIGZpeHR1cmU7IG1lZGlhIGFib3J0ZWQiLCJzb3VyY2VTSEEyNTYiOiI2MzAzYTg0NTE1MWM0YTNjNzczMmRlMmM5MzdmNzYwZjRkYzJjYzAzMDVhY2Y0NmViODA2NjQyNjg3MTk2YTEzIiwiYmVmb3JlRmluZ2VycHJpbnQiOiI1Y2M5MTk5ZjY0ODhjNDMwNjJiYTFmOWJlYjM4M2Y1OGNiYTQ1YzNjMWRhOThlZWM2MjBjNjdlODliYjBkOTVlIiwiYWZ0ZXJGaW5nZXJwcmludCI6IjU3NGU2YzFiYWY0ODQ3N2M4NzBiNGVkNzMxYzhmYmJmOTUyMjIzNDMxNjc4MzE4ZDc0NmJjNmM5YmQ3NjI4Y2UifQ=="
+                    },
+                    {
+                      "name": "action-requests",
+                      "contentType": "application/json",
+                      "body": "eyJtdXRhdGlvbnMiOlt7InBhdGgiOiIvYXBpL3YxL3N1YnRpdGxlLWxpYnJhcnkvNTNhZTcyNmRhZWFlZDNmYS9yZXN0b3JlIiwiaW5wdXQiOnt9fV0sImluc3BlY3Rpb25zIjowLCJoaXN0b3JpZXMiOjAsInBhZ2VzIjozfQ=="
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-d-86f94-s-safe-navigation-at-1440px-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-d-86f94-s-safe-navigation-at-1440px-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-d-86f94-s-safe-navigation-at-1440px-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+                    "column": 97,
+                    "line": 105
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "26b3d1df17a25f0e9983-ff0e955145ec59f4c630",
+          "file": "subtitle-action-recovery.spec.ts",
+          "line": 95,
+          "column": 3
+        },
+        {
+          "title": "still pending save permits safe editing but blocks another write",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 10000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1956,
+                  "error": {
+                    "message": "Error: safe editing must recover even when unchanged reads cannot confirm a write outcome\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('#subtitle-edit-form [name=\"language\"]')\nExpected: enabled\nReceived: disabled\nTimeout:  1500ms\n\nCall log:\n\u001b[2m  - safe editing must recover even when unchanged reads cannot confirm a write outcome locator('#subtitle-edit-form [name=\"language\"]') with timeout 1500ms\u001b[22m\n\u001b[2m  - waiting for locator('#subtitle-edit-form [name=\"language\"]')\u001b[22m\n\u001b[2m    15 × locator resolved to <select disabled name=\"language\">…</select>\u001b[22m\n\u001b[2m       - unexpected value \"disabled\"\u001b[22m\n",
+                    "stack": "Error: safe editing must recover even when unchanged reads cannot confirm a write outcome\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('#subtitle-edit-form [name=\"language\"]')\nExpected: enabled\nReceived: disabled\nTimeout:  1500ms\n\nCall log:\n\u001b[2m  - safe editing must recover even when unchanged reads cannot confirm a write outcome locator('#subtitle-edit-form [name=\"language\"]') with timeout 1500ms\u001b[22m\n\u001b[2m  - waiting for locator('#subtitle-edit-form [name=\"language\"]')\u001b[22m\n\u001b[2m    15 × locator resolved to <select disabled name=\"language\">…</select>\u001b[22m\n\u001b[2m       - unexpected value \"disabled\"\u001b[22m\n\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts:125:161",
+                    "location": {
+                      "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+                      "column": 161,
+                      "line": 125
+                    },
+                    "snippet": "  123 |       await expect.poll(() => fixture.requests.mutations.length).toBe(1);\n  124 |       await page.clock.fastForward(45_000);\n> 125 |       await expect(page.locator('#subtitle-edit-form [name=\"language\"]'), \"safe editing must recover even when unchanged reads cannot confirm a write outcome\").toBeEnabled({ timeout: 1500 });\n      |                                                                                                                                                                 ^\n  126 |       await expect(page.locator(\"#inspector-status\")).toContainText(/unknown|could not confirm|still|pending/i);\n  127 |       await expect(page.locator(\"#apply-subtitle\")).toBeDisabled();\n  128 |       await expect(page.locator(\"#restore-subtitle\")).toBeDisabled();"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+                        "column": 161,
+                        "line": 125
+                      },
+                      "message": "Error: safe editing must recover even when unchanged reads cannot confirm a write outcome\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('#subtitle-edit-form [name=\"language\"]')\nExpected: enabled\nReceived: disabled\nTimeout:  1500ms\n\nCall log:\n\u001b[2m  - safe editing must recover even when unchanged reads cannot confirm a write outcome locator('#subtitle-edit-form [name=\"language\"]') with timeout 1500ms\u001b[22m\n\u001b[2m  - waiting for locator('#subtitle-edit-form [name=\"language\"]')\u001b[22m\n\u001b[2m    15 × locator resolved to <select disabled name=\"language\">…</select>\u001b[22m\n\u001b[2m       - unexpected value \"disabled\"\u001b[22m\n\n\n  123 |       await expect.poll(() => fixture.requests.mutations.length).toBe(1);\n  124 |       await page.clock.fastForward(45_000);\n> 125 |       await expect(page.locator('#subtitle-edit-form [name=\"language\"]'), \"safe editing must recover even when unchanged reads cannot confirm a write outcome\").toBeEnabled({ timeout: 1500 });\n      |                                                                                                                                                                 ^\n  126 |       await expect(page.locator(\"#inspector-status\")).toContainText(/unknown|could not confirm|still|pending/i);\n  127 |       await expect(page.locator(\"#apply-subtitle\")).toBeDisabled();\n  128 |       await expect(page.locator(\"#restore-subtitle\")).toBeDisabled();\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts:125:161"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T11:48:53.151Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6ImEwNDZlYzg1NTNkN2VlY2E5ODVjZDhiMTIwNGZkNmJlYmNlMjBjNzMiLCJhY3Rpb24iOiJzYXZlIiwic3VyZmFjZSI6Imluc3BlY3RvciIsImNvbXBsZXRlZCI6ZmFsc2UsIndpZHRoIjozOTAsImNvbW1hbmQiOiJwbGF5d3JpZ2h0IHRlc3Qgc3VidGl0bGUtYWN0aW9uLXJlY292ZXJ5LnNwZWMudHMgLS13b3JrZXJzPTEiLCJicm93c2VyVmVyc2lvbiI6IjE1My4wLjgwMTAuMTIiLCJib3VuZGFyeSI6Imlzb2xhdGVkIGJyb3dzZXIgdHJhbnNwb3J0IHVzaW5nIGFjdHVhbCBwdWJsaWMgR28gSFRNTC9hc3NldHMvU2F2ZS9SZXN0b3JlIHJlYWRzOyBQT1NUIGNvbXBsZXRpb24gaXMgcmVwcmVzZW50ZWQgYnkgY2FwdHVyZWQgcmVhZHMsIG5vdCBleGVjdXRlZCBpbiB0aGlzIGJyb3dzZXIgZml4dHVyZTsgbWVkaWEgYWJvcnRlZCIsInNvdXJjZVNIQTI1NiI6IjdlZTYyNDIxMWM3MThmMmU3NjkzZDFlNzNlMmUyMDVlOWY1ZGNmZjI1ODRjYzdkNzU2MGNlMTQ4NWY5NjM2MGEiLCJiZWZvcmVGaW5nZXJwcmludCI6IjU3NGU2YzFiYWY0ODQ3N2M4NzBiNGVkNzMxYzhmYmJmOTUyMjIzNDMxNjc4MzE4ZDc0NmJjNmM5YmQ3NjI4Y2UiLCJhZnRlckZpbmdlcnByaW50IjoiNWNjOTE5OWY2NDg4YzQzMDYyYmExZjliZWIzODNmNThjYmE0NWMzYzFkYTk4ZWVjNjIwYzY3ZTg5YmIwZDk1ZSJ9"
+                    },
+                    {
+                      "name": "action-requests",
+                      "contentType": "application/json",
+                      "body": "eyJtdXRhdGlvbnMiOlt7InBhdGgiOiIvYXBpL3YxL3N1YnRpdGxlLWxpYnJhcnkvNTNhZTcyNmRhZWFlZDNmYS9hcHBseSIsImlucHV0Ijp7InJvbGUiOiJ0cmFuc2xhdGlvbiIsImxhbmd1YWdlIjoiZW4iLCJmaW5nZXJwcmludCI6IjU3NGU2YzFiYWY0ODQ3N2M4NzBiNGVkNzMxYzhmYmJmOTUyMjIzNDMxNjc4MzE4ZDc0NmJjNmM5YmQ3NjI4Y2UiLCJlbmNvZGluZyI6ImF1dG8iLCJvZmZzZXRNaWxsaXNlY29uZHMiOjUwMCwiYXV0b21hdGljU3luYyI6ZmFsc2UsInJlbW92ZUNyZWRpdHMiOnRydWUsIm1lcmdlUmVwZWF0ZWQiOnRydWV9fV0sImluc3BlY3Rpb25zIjoxLCJoaXN0b3JpZXMiOjAsInBhZ2VzIjo0fQ=="
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-s-6b9a7-ng-but-blocks-another-write-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-s-6b9a7-ng-but-blocks-another-write-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-s-6b9a7-ng-but-blocks-another-write-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+                    "column": 161,
+                    "line": 125
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "26b3d1df17a25f0e9983-a1ee3f207429872e3972",
+          "file": "subtitle-action-recovery.spec.ts",
+          "line": 118,
+          "column": 3
+        },
+        {
+          "title": "still pending restore permits safe editing but blocks another write",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 10000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 7,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1837,
+                  "error": {
+                    "message": "Error: safe editing must recover even when unchanged reads cannot confirm a write outcome\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('#subtitle-edit-form [name=\"language\"]')\nExpected: enabled\nReceived: disabled\nTimeout:  1500ms\n\nCall log:\n\u001b[2m  - safe editing must recover even when unchanged reads cannot confirm a write outcome locator('#subtitle-edit-form [name=\"language\"]') with timeout 1500ms\u001b[22m\n\u001b[2m  - waiting for locator('#subtitle-edit-form [name=\"language\"]')\u001b[22m\n\u001b[2m    15 × locator resolved to <select disabled name=\"language\">…</select>\u001b[22m\n\u001b[2m       - unexpected value \"disabled\"\u001b[22m\n",
+                    "stack": "Error: safe editing must recover even when unchanged reads cannot confirm a write outcome\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('#subtitle-edit-form [name=\"language\"]')\nExpected: enabled\nReceived: disabled\nTimeout:  1500ms\n\nCall log:\n\u001b[2m  - safe editing must recover even when unchanged reads cannot confirm a write outcome locator('#subtitle-edit-form [name=\"language\"]') with timeout 1500ms\u001b[22m\n\u001b[2m  - waiting for locator('#subtitle-edit-form [name=\"language\"]')\u001b[22m\n\u001b[2m    15 × locator resolved to <select disabled name=\"language\">…</select>\u001b[22m\n\u001b[2m       - unexpected value \"disabled\"\u001b[22m\n\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts:125:161",
+                    "location": {
+                      "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+                      "column": 161,
+                      "line": 125
+                    },
+                    "snippet": "  123 |       await expect.poll(() => fixture.requests.mutations.length).toBe(1);\n  124 |       await page.clock.fastForward(45_000);\n> 125 |       await expect(page.locator('#subtitle-edit-form [name=\"language\"]'), \"safe editing must recover even when unchanged reads cannot confirm a write outcome\").toBeEnabled({ timeout: 1500 });\n      |                                                                                                                                                                 ^\n  126 |       await expect(page.locator(\"#inspector-status\")).toContainText(/unknown|could not confirm|still|pending/i);\n  127 |       await expect(page.locator(\"#apply-subtitle\")).toBeDisabled();\n  128 |       await expect(page.locator(\"#restore-subtitle\")).toBeDisabled();"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+                        "column": 161,
+                        "line": 125
+                      },
+                      "message": "Error: safe editing must recover even when unchanged reads cannot confirm a write outcome\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('#subtitle-edit-form [name=\"language\"]')\nExpected: enabled\nReceived: disabled\nTimeout:  1500ms\n\nCall log:\n\u001b[2m  - safe editing must recover even when unchanged reads cannot confirm a write outcome locator('#subtitle-edit-form [name=\"language\"]') with timeout 1500ms\u001b[22m\n\u001b[2m  - waiting for locator('#subtitle-edit-form [name=\"language\"]')\u001b[22m\n\u001b[2m    15 × locator resolved to <select disabled name=\"language\">…</select>\u001b[22m\n\u001b[2m       - unexpected value \"disabled\"\u001b[22m\n\n\n  123 |       await expect.poll(() => fixture.requests.mutations.length).toBe(1);\n  124 |       await page.clock.fastForward(45_000);\n> 125 |       await expect(page.locator('#subtitle-edit-form [name=\"language\"]'), \"safe editing must recover even when unchanged reads cannot confirm a write outcome\").toBeEnabled({ timeout: 1500 });\n      |                                                                                                                                                                 ^\n  126 |       await expect(page.locator(\"#inspector-status\")).toContainText(/unknown|could not confirm|still|pending/i);\n  127 |       await expect(page.locator(\"#apply-subtitle\")).toBeDisabled();\n  128 |       await expect(page.locator(\"#restore-subtitle\")).toBeDisabled();\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts:125:161"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T11:48:55.520Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6ImEwNDZlYzg1NTNkN2VlY2E5ODVjZDhiMTIwNGZkNmJlYmNlMjBjNzMiLCJhY3Rpb24iOiJyZXN0b3JlIiwic3VyZmFjZSI6Imluc3BlY3RvciIsImNvbXBsZXRlZCI6ZmFsc2UsIndpZHRoIjozOTAsImNvbW1hbmQiOiJwbGF5d3JpZ2h0IHRlc3Qgc3VidGl0bGUtYWN0aW9uLXJlY292ZXJ5LnNwZWMudHMgLS13b3JrZXJzPTEiLCJicm93c2VyVmVyc2lvbiI6IjE1My4wLjgwMTAuMTIiLCJib3VuZGFyeSI6Imlzb2xhdGVkIGJyb3dzZXIgdHJhbnNwb3J0IHVzaW5nIGFjdHVhbCBwdWJsaWMgR28gSFRNTC9hc3NldHMvU2F2ZS9SZXN0b3JlIHJlYWRzOyBQT1NUIGNvbXBsZXRpb24gaXMgcmVwcmVzZW50ZWQgYnkgY2FwdHVyZWQgcmVhZHMsIG5vdCBleGVjdXRlZCBpbiB0aGlzIGJyb3dzZXIgZml4dHVyZTsgbWVkaWEgYWJvcnRlZCIsInNvdXJjZVNIQTI1NiI6IjdlZTYyNDIxMWM3MThmMmU3NjkzZDFlNzNlMmUyMDVlOWY1ZGNmZjI1ODRjYzdkNzU2MGNlMTQ4NWY5NjM2MGEiLCJiZWZvcmVGaW5nZXJwcmludCI6IjVjYzkxOTlmNjQ4OGM0MzA2MmJhMWY5YmViMzgzZjU4Y2JhNDVjM2MxZGE5OGVlYzYyMGM2N2U4OWJiMGQ5NWUiLCJhZnRlckZpbmdlcnByaW50IjoiNTc0ZTZjMWJhZjQ4NDc3Yzg3MGI0ZWQ3MzFjOGZiYmY5NTIyMjM0MzE2NzgzMThkNzQ2YmM2YzliZDc2MjhjZSJ9"
+                    },
+                    {
+                      "name": "action-requests",
+                      "contentType": "application/json",
+                      "body": "eyJtdXRhdGlvbnMiOlt7InBhdGgiOiIvYXBpL3YxL3N1YnRpdGxlLWxpYnJhcnkvNTNhZTcyNmRhZWFlZDNmYS9yZXN0b3JlIiwiaW5wdXQiOnsibGFuZ3VhZ2UiOiJlbiJ9fV0sImluc3BlY3Rpb25zIjoxLCJoaXN0b3JpZXMiOjAsInBhZ2VzIjo0fQ=="
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-s-0a01c-ng-but-blocks-another-write-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-s-0a01c-ng-but-blocks-another-write-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-s-0a01c-ng-but-blocks-another-write-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+                    "column": 161,
+                    "line": 125
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "26b3d1df17a25f0e9983-c61faab8886fbd9fd113",
+          "file": "subtitle-action-recovery.spec.ts",
+          "line": 118,
+          "column": 3
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-04T11:48:38.974Z",
+    "duration": 18569.536,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 8,
+    "flaky": 0
+  }
+}

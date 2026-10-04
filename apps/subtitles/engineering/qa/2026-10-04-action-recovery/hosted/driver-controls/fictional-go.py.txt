@@ -1,0 +1,100 @@
+#!/usr/bin/env python3
+"""Fictional subprocess for public driver controls; never a product proof."""
+from datetime import datetime, timezone
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+
+if sys.argv[1:] == ["version"]:
+    print("go version go1.27.0 linux/amd64")
+    raise SystemExit(0)
+case = os.environ["R06_DRIVER_CASE"]
+scope = json.loads(Path(os.environ["R06_DRIVER_SCOPE"]).read_text())
+package = "github.com/MikeO7/kinosail-subtitles/internal/server"
+names = scope["namedR06Tests"] + scope["incumbentControls"] + scope["expectedSubtests"]
+
+def emit(action, name=None, **fields):
+    event = {"Time": datetime.now(timezone.utc).isoformat(), "Action": action, "Package": package}
+    if name is not None:
+        event["Test"] = name
+    event.update(fields)
+    print(json.dumps(event), flush=True)
+
+def healthy_stream():
+    for name in names:
+        emit("run", name)
+        if case == "private-sentinel":
+            emit("output", name, Output="FAKE_TOKEN_SENTINEL Cookie: fake-only private provider body /fictional/private/path\n")
+        emit("pass", name, Elapsed=0.001)
+    emit("pass", Elapsed=0.01)
+
+if sys.argv[1:3] == ["test", "-c"]:
+    Path(os.environ["R06_DRIVER_COMPILE_STARTED"]).write_text(str(os.getpid()))
+    assert "-p" in sys.argv and sys.argv[sys.argv.index("-p")+1] == "1"
+    assert "./internal/server" in sys.argv and any(a.startswith("-overlay=") for a in sys.argv)
+    assert "-run" not in sys.argv and "-json" not in sys.argv
+    binary = Path(sys.argv[sys.argv.index("-o")+1])
+    if case == "compile-failure":
+        print("FAKE_TOKEN_SENTINEL fictional compiler failure", flush=True)
+        raise SystemExit(1)
+    if case == "compile-missing-binary":
+        raise SystemExit(0)
+    if case == "compile-symlink-binary":
+        binary.symlink_to(Path(os.environ["R06_DRIVER_DRIFT"]))
+        raise SystemExit(0)
+    if case == "compile-source-drift":
+        Path(os.environ["R06_DRIVER_DRIFT"]).write_text("changed by fictional compiler control")
+    if case == "compile-leader-held-stdout":
+        child = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(150)"], stdout=sys.stdout)
+        Path(os.environ["R06_DRIVER_DESCENDANT"]).write_text(str(child.pid))
+        raise SystemExit(0)
+    if case == "compile-stream-is-not-tests":
+        healthy_stream()
+    binary.write_text("#!/usr/bin/env python3\nimport runpy,sys\nsys.argv=['fixture-go','fixture-binary',*sys.argv[1:]]\nrunpy.run_path("+repr(str(Path(__file__).resolve()))+",run_name='__main__')\n")
+    binary.chmod(0o700)
+    raise SystemExit(0)
+
+if sys.argv[1:3] == ["tool", "test2json"]:
+    Path(os.environ["R06_DRIVER_STARTED"]).write_text(str(os.getpid()))
+    assert Path.cwd() == Path(os.environ["R06_DRIVER_TEST_DIRECTORY"])
+    assert sys.argv[3:6] == ["-t", "-p", package]
+    binary = Path(sys.argv[6])
+    required = ["-test.v=test2json", "-test.run="+scope["runPattern"], "-test.parallel=1", "-test.count=1", "-test.timeout=80s"]
+    assert sys.argv[7:] == required
+    if case == "compile-stream-is-not-tests":
+        raise SystemExit(0)
+    os.environ["R06_DRIVER_BINARY"] = str(binary)
+    raise SystemExit(subprocess.call([str(binary), *required]))
+
+if sys.argv[1:2] == ["fixture-binary"]:
+    Path(os.environ["R06_DRIVER_BINARY_STARTED"]).write_text(str(os.getpid()))
+    if case == "binary-mutated-during-runtime":
+        with Path(os.environ["R06_DRIVER_BINARY"]).open("a") as target:
+            target.write("# fictional runtime mutation\n")
+else:
+    # Historical combined driver remains admissible to demonstrate test-first RED.
+    Path(os.environ["R06_DRIVER_STARTED"]).write_text(str(os.getpid()))
+
+if case == "leader-exit-held-stdout":
+    child = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(120)"], stdout=sys.stdout)
+    Path(os.environ["R06_DRIVER_DESCENDANT"]).write_text(str(child.pid))
+    raise SystemExit(0)
+if case == "package-fail-pass":
+    emit("fail", Elapsed=0)
+elif case == "package-duplicate":
+    emit("pass", Elapsed=0)
+elif case == "invalid-action":
+    emit("unknown", names[0])
+elif case == "missing-action":
+    print(json.dumps({"Package": package, "Test": names[0]}), flush=True)
+elif case == "boolean-test":
+    emit("pass", False, Elapsed=0)
+elif case == "boolean-elapsed":
+    emit("pass", names[0], Elapsed=True)
+elif case == "missing-elapsed":
+    emit("pass", names[0])
+elif case == "tracked-drift":
+    Path(os.environ["R06_DRIVER_DRIFT"]).write_text("changed by fictional driver control")
+healthy_stream()

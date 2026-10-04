@@ -1,0 +1,52 @@
+{
+  "head": "e6840994b661734b142138cbace219b3936399e2",
+  "boundary": "actual public Go Server with disposable sidecars; R16 excluded by compilation overlay",
+  "result": "candidate receipt status prerequisite failed before null leaves",
+  "completedNamedParents": 1,
+  "failedNamedParents": 1,
+  "completedNullLeaves": 0,
+  "intendedNullFailures": 0,
+  "nullCases": [
+    {
+      "action": "maintain",
+      "body": {
+        "action": "maintain",
+        "item": null
+      },
+      "expectedStatus": 400,
+      "executed": false
+    },
+    {
+      "action": "fetch-wanted",
+      "body": {
+        "action": "fetch-wanted",
+        "item": null
+      },
+      "expectedStatus": 400,
+      "executed": false
+    }
+  ],
+  "runtimeObserved": {
+    "validPreparationStatus": 201,
+    "statusReadStatus": 200,
+    "assertion": "existing public receipt shape/ID/private,no-store condition",
+    "noEffectsAssertionsReached": false
+  },
+  "sourceDiagnosis": {
+    "cause": "writeSubtitleOperationReceipt sets private, no-store; shared apihttp.WriteJSON overwrites Cache-Control with no-store before WriteHeader",
+    "locations": [
+      "apps/subtitles/internal/server/subtitle_operation_http.go",
+      "apps/subtitles/internal/server/api.go",
+      "packages/apihttp/api.go"
+    ],
+    "exactRuntimeHeaderCaptured": false
+  },
+  "limits": [
+    "No null input rejection reproduced",
+    "No aggregate R06 feature acceptance",
+    "No audio/browser/lint executed",
+    "Original receipt prerequisiteFailure field is null because its regex did not classify the existing combined assertion; this separate classification corrects the interpretation without rewriting raw receipt"
+  ],
+  "headroomGiBBefore": 7.0,
+  "ownedProcessesExited": true
+}

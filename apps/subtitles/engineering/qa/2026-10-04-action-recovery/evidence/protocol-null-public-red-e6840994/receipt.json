@@ -1,0 +1,57 @@
+{
+  "head": "e6840994b661734b142138cbace219b3936399e2",
+  "phase": "protocol-null-public-red-e6840994",
+  "command": [
+    "go",
+    "test",
+    "-p",
+    "1",
+    "-parallel",
+    "1",
+    "-overlay=.verification/r06-actions/committed-e78db447/overlay.json",
+    "./internal/server",
+    "-run",
+    "^TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects$/(maintenance_explicit_null|Wanted_explicit_null)$",
+    "-count=1",
+    "-timeout=35s",
+    "-json"
+  ],
+  "wallLimitSeconds": 45.0,
+  "seconds": 15.223,
+  "exit": 1,
+  "timedOut": false,
+  "prerequisiteFailure": null,
+  "R16Before": {
+    "apps/subtitles/internal/server/subtitle_maintenance_test.go": {
+      "sha256": "f26e00b3f914130793b72c5187b546244ed4d47222380743899f02aa9f7993fb",
+      "bytes": 10619
+    },
+    "apps/subtitles/internal/server/subtitle_dashboard_revision_test.go": {
+      "sha256": "c0111e937ade97838c3422b89de5a56089efd3e289828598147860615ddd7de6",
+      "bytes": 4828
+    }
+  },
+  "R16After": {
+    "apps/subtitles/internal/server/subtitle_maintenance_test.go": {
+      "sha256": "f26e00b3f914130793b72c5187b546244ed4d47222380743899f02aa9f7993fb",
+      "bytes": 10619
+    },
+    "apps/subtitles/internal/server/subtitle_dashboard_revision_test.go": {
+      "sha256": "c0111e937ade97838c3422b89de5a56089efd3e289828598147860615ddd7de6",
+      "bytes": 4828
+    }
+  },
+  "R16Preserved": true,
+  "offline": {
+    "GOPROXY": "off",
+    "GOSUMDB": "off",
+    "GOMAXPROCS": "2"
+  },
+  "completedTests": [
+    {
+      "name": "TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects",
+      "action": "fail",
+      "elapsed": 0.06
+    }
+  ]
+}

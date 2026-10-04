@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "sourceSnapshot": "3682759bea98117023a39c97700dce9f4dcde910",
+  "baseActualHostedProof": {
+    "revision": "e687826be27ff18a9c03b90033d8ebdd45ef482b",
+    "runID": "37226260845",
+    "topLevelPass": 33,
+    "subtestPass": 45,
+    "reportedBy": "Root and independent review; historical result applies to earlier bytes only"
+  },
+  "repairBoundary": "Structural source refactor of exact 15 required-check lint diagnostics; no local Go/format/lint/test/generator execution and no candidate runtime acceptance.",
+  "retainedContracts": {
+    "selectedTopLevelNames": 33,
+    "selectedSubtestNames": 45,
+    "originalFatalErrorMessagesRemoved": 0,
+    "noSuppressionOrThresholdChanges": true,
+    "nullOwnerCSRFDurableAdmissionAndChildWaitAssertionsRetained": true,
+    "operationContext": [
+      "request values detached with WithoutCancel",
+      "Server Lifecycle AfterFunc cancellation",
+      "unchanged receipt clock WithTimeout deadline",
+      "unchanged admission value",
+      "cleanup stopLifecycle, cancelLimit, cancelBase after worker return"
+    ]
+  },
+  "historyGuard": "Fails an unpaired expectation before indexing actions/reasons; existing action/reason comparisons remain unchanged.",
+  "activeScope": {
+    "path": "protocol-scope-3682759b.json",
+    "sha256": "be16e9dd161aa1ac0a4a8364220e37b6bb34086474f07cf601d77d493b0f47e9",
+    "selectedInputs": 53,
+    "selectedInputsLimit": "Selected protocol inputs only; transient compiled-test executable digest remains uncaptured."
+  },
+  "historicalScope": {
+    "path": "protocol-scope.json",
+    "sha256": "7de3b390b051d2053e715674601f52854ae9b1074a2732599607cdd131d69ea5",
+    "preserved": true
+  },
+  "overlaySHA256": "21659fdc35a9edaa0169d7addebf6f92bc61fca8e40ea364f00c0880ae892bee",
+  "generatorBoundary": {
+    "path": "scripts/tooling/generate-architecture-explorer.py",
+    "requiresGo": true,
+    "commands": [
+      "go list -json ./... in apps/subtitles",
+      "go list -json ./... in packages"
+    ],
+    "canonicalEnvironment": {
+      "GOOS": "linux",
+      "GOARCH": "amd64",
+      "CGO_ENABLED": "0"
+    },
+    "localExecution": "not run; root owns bounded hosted generation and unchanged required check"
+  },
+  "pending": [
+    "independent exact-source review",
+    "hosted affected lint/full33+45 recheck",
+    "canonical generated architecture refresh and check",
+    "all ordinary exact-head required gates",
+    "integration/merge/ancestry"
+  ]
+}

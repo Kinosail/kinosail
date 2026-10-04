@@ -1,0 +1,86 @@
+{
+  "sourceRevision": "a046ec8553d7eeca985cd8b1204fd6bebce20c73",
+  "selected": 8,
+  "terminalReportedFailures": 2,
+  "additionalPreservedAssertionFailures": 1,
+  "completedMatrix": false,
+  "runnerExit": 124,
+  "remainingCasesNotCompleted": 5,
+  "boundary": "isolated browser transport with actual Go HTML/assets and captured public Save/Restore read outcomes; media aborted; no actual write executed by browser fixture",
+  "cases": [
+    {
+      "name": "subtitle-action-recovery.spec.ts >> dashboard restore response deadline preserves safe navigation at 390px",
+      "assertion": "persistent aria-busy=true",
+      "requests": {
+        "mutations": [
+          {
+            "path": "/api/v1/subtitle-library/53ae726daeaed3fa/restore",
+            "input": {}
+          }
+        ],
+        "inspections": 0,
+        "histories": 0,
+        "pages": 3
+      },
+      "runnerReportedTerminalFailure": false,
+      "artifacts": {
+        "test-failed-1.png": "14dcf13a9597e5f36e8de4d12f88ae1ae946be670965834935cac4375f1fdf10",
+        "trace.zip": "1d10c24c14616febd3eaed8a5a64882233e968d294cd66d379ba11a3e7e77789",
+        "error-context.md": "6c899270c5931dc4adc07d04937632ed2457078af0bffb165df175a395933c5f"
+      }
+    },
+    {
+      "name": "subtitle-action-recovery.spec.ts >> lost completed restore response recovers without replay at 390px",
+      "assertion": "language select remains disabled",
+      "requests": {
+        "mutations": [
+          {
+            "path": "/api/v1/subtitle-library/53ae726daeaed3fa/restore",
+            "input": {
+              "language": "en"
+            }
+          }
+        ],
+        "inspections": 1,
+        "histories": 0,
+        "pages": 3
+      },
+      "runnerReportedTerminalFailure": true,
+      "artifacts": {
+        "test-failed-1.png": "07d79a271d1f0c16e26d50e08203d2efa5706f9c38c92d38126634564772dc47",
+        "trace.zip": "8639c8eb75d30afe3fbadda6bc9bfdf8a8236062329b55cead4fed402b9329cc",
+        "error-context.md": "1212bba26130f17eb4f8603bcb2d6028073f3260ce7cc28e614abcac7fa989c7"
+      }
+    },
+    {
+      "name": "subtitle-action-recovery.spec.ts >> lost completed save response recovers without replay at 390px",
+      "assertion": "language select remains disabled",
+      "requests": {
+        "mutations": [
+          {
+            "path": "/api/v1/subtitle-library/53ae726daeaed3fa/apply",
+            "input": {
+              "role": "translation",
+              "language": "en",
+              "fingerprint": "574e6c1baf48477c870b4ed731c8fbbf952223431678318d746bc6c9bd7628ce",
+              "encoding": "auto",
+              "offsetMilliseconds": 500,
+              "automaticSync": false,
+              "removeCredits": true,
+              "mergeRepeated": true
+            }
+          }
+        ],
+        "inspections": 1,
+        "histories": 0,
+        "pages": 3
+      },
+      "runnerReportedTerminalFailure": true,
+      "artifacts": {
+        "test-failed-1.png": "32e3c8802a32d82ddc72d9e7c1f66b35c915a8a1611e462cf4f91d14f32b1986",
+        "trace.zip": "4f08ec7900871651d8ad14da2c622a6fcda5e044e471c74f4474e53762dd3697",
+        "error-context.md": "9f362fb20fe7378631d1d135cded4e8a3b0f5e882888bd2f85f314a64d5d1fc2"
+      }
+    }
+  ]
+}

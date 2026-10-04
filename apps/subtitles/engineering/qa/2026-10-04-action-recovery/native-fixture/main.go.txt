@@ -1,0 +1,305 @@
+// Command native-fixture allows one approved mutation on an explicitly chosen fictional fixture.
+package main
+
+import (
+	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+	"errors"
+	"flag"
+	"fmt"
+	"io"
+	"net"
+	"net/http"
+	"net/http/httptest"
+	"os"
+	"os/signal"
+	"path/filepath"
+	"strings"
+	"sync"
+	"syscall"
+	"time"
+
+	"github.com/MikeO7/kinosail-subtitles/internal/server"
+)
+
+const clipSHA256 = "9dbd85e7863d921e209978c8349992e5f8505b0d7ffa468c37b8caf97af3f0a4"
+const initialSubtitle = "1\n00:00:01,000 --> 00:00:02,000\nFirst dialogue\n\n2\n00:00:04,000 --> 00:00:05,000\nLater dialogue\n"
+
+type outcome struct {
+	Action           string `json:"action"`
+	Count            int    `json:"count"`
+	Completed        bool   `json:"completed"`
+	Status           int    `json:"status"`
+	CurrentSHA256    string `json:"currentSHA256"`
+	RecoverySHA256   string `json:"recoverySHA256"`
+	ResponseWithheld bool   `json:"responseWithheld"`
+	OperationID      string `json:"operationID"`
+	Preparations     int    `json:"preparations"`
+	ActivationStatus int    `json:"activationStatus"`
+}
+
+type fixture struct {
+	sync.Mutex
+	app     http.Handler
+	id      string
+	sidecar string
+	outcome outcome
+}
+
+func main() {
+	if err := run(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+}
+
+func run() error {
+	dir := flag.String("fixture", "", "explicit disposable fixture; files are preserved")
+	action := flag.String("action", "", "save or restore; one mutation only")
+	revision := flag.String("revision", "", "exact tested revision")
+	probe := flag.String("ffprobe", "/opt/homebrew/bin/ffprobe", "installed probe; no encoder runs")
+	flag.Parse()
+	if *dir == "" || *revision == "" || *action != "save" && *action != "restore" {
+		return errors.New("fixture, revision, and save/restore action are required")
+	}
+	host, url, current, err := startFixture(*dir, *action, *probe)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = host.Close() }()
+	ready := map[string]any{"revision": *revision, "url": url, "id": current.id, "action": *action, "clipSHA256": clipSHA256, "initialSubtitleSHA256": hash([]byte(initialSubtitle)), "beforeCurrentSHA256": fileHash(current.sidecar), "beforeRecoverySHA256": fileHash(current.sidecar + ".kinosail.bak"), "boundary": "actual loopback Go Server, HTML/assets, public inspect/history and fictional playable media; one public prepared receipt activates exactly one approved Save or Restore; its actual public status confirms completion before only the activation acknowledgment is withheld; other mutations rejected; auth-disabled disposable installation; no provider, encoder or deployment"}
+	if err = writeJSON(filepath.Join(*dir, "ready.json"), ready); err != nil {
+		return err
+	}
+	fmt.Println("fictional action fixture ready")
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+	select {
+	case <-ctx.Done():
+	case <-time.After(2 * time.Minute):
+	}
+	shutdown, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err = host.Shutdown(shutdown); err != nil {
+		return err
+	}
+	current.Lock()
+	result := current.outcome
+	current.Unlock()
+	if result.Count != 1 || result.Preparations != 1 || result.ActivationStatus != http.StatusAccepted || !result.Completed || result.Status != successfulStatus(*action) || fileHash(current.sidecar) != result.CurrentSHA256 || fileHash(current.sidecar+".kinosail.bak") != result.RecoverySHA256 {
+		return errors.New("fixture mutation or final current/recovery integrity did not match its recorded single outcome")
+	}
+	if fileHash(filepath.Join(*dir, "media", "R06 Example.mp4")) != clipSHA256 {
+		return errors.New("fictional clip changed")
+	}
+	return writeJSON(filepath.Join(*dir, "integrity.json"), result)
+}
+
+func startFixture(dir, action, probe string) (*http.Server, string, *fixture, error) {
+	media := filepath.Join(dir, "media")
+	sidecar := filepath.Join(media, "R06 Example.en.srt")
+	if fileHash(filepath.Join(media, "R06 Example.mp4")) != clipSHA256 || fileHash(sidecar) != hash([]byte(initialSubtitle)) || fileHash(sidecar+".kinosail.bak") != "missing" {
+		return nil, "", nil, errors.New("fresh fictional clip/sidecar identity or absent recovery precondition failed")
+	}
+	for _, name := range []string{"data", "cache"} {
+		if err := os.Mkdir(filepath.Join(dir, name), 0o700); err != nil {
+			return nil, "", nil, errors.New("data/cache must be fresh and preserved")
+		}
+	}
+	app := server.New(server.Config{SubtitleApp: true, MediaDir: media, DataDir: filepath.Join(dir, "data"), CacheDir: filepath.Join(dir, "cache"), FFprobe: probe, FFmpeg: "/usr/bin/false"})
+	id, err := libraryID(app)
+	if err != nil {
+		return nil, "", nil, err
+	}
+	current := &fixture{app: app, id: id, sidecar: sidecar, outcome: outcome{Action: action}}
+	if action == "restore" {
+		if err = setupRestore(app, id); err != nil {
+			return nil, "", nil, err
+		}
+	}
+	listener, err := new(net.ListenConfig).Listen(context.Background(), "tcp", "127.0.0.1:0")
+	if err != nil {
+		return nil, "", nil, err
+	}
+	host := &http.Server{Handler: current, ReadHeaderTimeout: 5 * time.Second}
+	go func() {
+		if serveErr := host.Serve(listener); serveErr != nil && !errors.Is(serveErr, http.ErrServerClosed) {
+			fmt.Fprintln(os.Stderr, "fictional fixture HTTP server failed")
+		}
+	}()
+	return host, "http://" + listener.Addr().String(), current, nil
+}
+
+func (f *fixture) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
+	if request.Method == http.MethodGet && request.URL.Path == "/__fixture__/outcome" {
+		f.Lock()
+		defer f.Unlock()
+		writer.Header().Set("Content-Type", "application/json")
+		writer.Header().Set("Cache-Control", "no-store")
+		_ = json.NewEncoder(writer).Encode(f.outcome)
+		return
+	}
+	base := "/api/v1/subtitle-library/" + f.id
+	if request.Method == http.MethodGet || request.Method == http.MethodPost && request.URL.Path == base+"/preview" {
+		f.app.ServeHTTP(writer, request)
+		return
+	}
+	if request.Method == http.MethodPost && request.URL.Path == "/api/v1/subtitle-operations" {
+		f.prepare(writer, request)
+		return
+	}
+	action := "apply"
+	if f.outcome.Action == "restore" {
+		action = "restore"
+	}
+	f.Lock()
+	allowed := request.Method == http.MethodPost && request.URL.Path == base+"/"+action && f.outcome.Count == 0 && f.outcome.OperationID != "" && request.Header.Get("X-Kinosail-Operation") == f.outcome.OperationID
+	if allowed {
+		f.outcome.Count++
+	}
+	f.Unlock()
+	if !allowed {
+		http.Error(writer, "fictional fixture permits reads, previews, and one selected mutation only", http.StatusMethodNotAllowed)
+		return
+	}
+	response := httptest.NewRecorder()
+	f.app.ServeHTTP(response, request)
+	f.Lock()
+	f.outcome.ActivationStatus = response.Code
+	id := f.outcome.OperationID
+	f.Unlock()
+	if response.Code == http.StatusAccepted {
+		f.observeCompletion(id)
+	}
+	f.Lock()
+	withheld := f.outcome.Completed && f.outcome.Status == successfulStatus(f.outcome.Action)
+	f.outcome.ResponseWithheld = withheld
+	f.Unlock()
+	if withheld {
+		<-request.Context().Done()
+		return
+	}
+	writer.Header().Set("Content-Type", "application/json")
+	writer.WriteHeader(response.Code)
+	_, _ = writer.Write(response.Body.Bytes())
+}
+
+func (f *fixture) prepare(writer http.ResponseWriter, req *http.Request) {
+	data, err := io.ReadAll(http.MaxBytesReader(writer, req.Body, 1024))
+	var input struct{ Action, Item string }
+	action := "apply"
+	if f.outcome.Action == "restore" {
+		action = "restore"
+	}
+	f.Lock()
+	allowed := err == nil && json.Unmarshal(data, &input) == nil && input.Action == action && input.Item == f.id && f.outcome.Preparations == 0
+	if allowed {
+		f.outcome.Preparations++
+	}
+	f.Unlock()
+	if !allowed {
+		http.Error(writer, "fictional fixture permits one selected preparation only", http.StatusMethodNotAllowed)
+		return
+	}
+	req.Body = io.NopCloser(strings.NewReader(string(data)))
+	response := httptest.NewRecorder()
+	f.app.ServeHTTP(response, req)
+	var receipt struct{ ID string }
+	if response.Code == http.StatusCreated && json.Unmarshal(response.Body.Bytes(), &receipt) == nil && len(receipt.ID) == 64 {
+		f.Lock()
+		f.outcome.OperationID = receipt.ID
+		f.Unlock()
+	}
+	for key, values := range response.Header() {
+		writer.Header()[key] = values
+	}
+	writer.WriteHeader(response.Code)
+	_, _ = writer.Write(response.Body.Bytes())
+}
+
+func (f *fixture) observeCompletion(id string) {
+	deadline := time.Now().Add(5 * time.Second)
+	for time.Now().Before(deadline) {
+		response := request(f.app, http.MethodGet, "/api/v1/subtitle-operations/"+id, "")
+		var receipt struct {
+			State   string
+			Status  int
+			Outcome string
+		}
+		if response.Code == http.StatusOK && json.Unmarshal(response.Body.Bytes(), &receipt) == nil && receipt.State == "completed" {
+			f.Lock()
+			f.outcome.Completed, f.outcome.Status = true, receipt.Status
+			f.outcome.ResponseWithheld = receipt.Status == successfulStatus(f.outcome.Action)
+			f.outcome.CurrentSHA256, f.outcome.RecoverySHA256 = fileHash(f.sidecar), fileHash(f.sidecar+".kinosail.bak")
+			f.Unlock()
+			return
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+}
+
+func libraryID(app http.Handler) (string, error) {
+	response := request(app, http.MethodGet, "/api/v1/subtitle-library?view=library", "")
+	var inventory struct{ Items []struct{ ID string } }
+	if response.Code != http.StatusOK || json.Unmarshal(response.Body.Bytes(), &inventory) != nil || len(inventory.Items) != 1 {
+		return "", errors.New("fixture did not expose its one fictional title")
+	}
+	return inventory.Items[0].ID, nil
+}
+
+func setupRestore(app http.Handler, id string) error {
+	base := "/api/v1/subtitle-library/" + id
+	response := request(app, http.MethodGet, base+"/inspect?language=en", "")
+	var review struct{ Fingerprint string }
+	if response.Code != http.StatusOK || json.Unmarshal(response.Body.Bytes(), &review) != nil || len(review.Fingerprint) != 64 {
+		return errors.New("restore setup could not inspect its initial subtitle")
+	}
+	input, _ := json.Marshal(map[string]any{"language": "en", "fingerprint": review.Fingerprint, "offsetMilliseconds": 500})
+	if request(app, http.MethodPost, base+"/apply", string(input)).Code != http.StatusOK {
+		return errors.New("restore setup public Save failed")
+	}
+	return nil
+}
+
+func request(app http.Handler, method, path, body string) *httptest.ResponseRecorder {
+	req := httptest.NewRequestWithContext(context.Background(), method, path, strings.NewReader(body))
+	if method == http.MethodPost {
+		req.Header.Set("Content-Type", "application/json")
+	}
+	response := httptest.NewRecorder()
+	app.ServeHTTP(response, req)
+	return response
+}
+
+func successfulStatus(action string) int {
+	if action == "restore" {
+		return http.StatusNoContent
+	}
+	return http.StatusOK
+}
+
+func fileHash(path string) string {
+	data, err := os.ReadFile(path)
+	if os.IsNotExist(err) {
+		return "missing"
+	}
+	if err != nil {
+		return "unavailable"
+	}
+	return hash(data)
+}
+
+func hash(data []byte) string {
+	digest := sha256.Sum256(data)
+	return hex.EncodeToString(digest[:])
+}
+
+func writeJSON(path string, value any) error {
+	data, err := json.MarshalIndent(value, "", "  ")
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(path, append(data, '\n'), 0o600)
+}

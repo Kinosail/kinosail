@@ -1,0 +1,83 @@
+{
+  "sourceRevision": "42f3c2a930e9f609c5450ef4cd41ce3335101044",
+  "sourceInventorySHA256": {
+    "internal/server/subtitle_action_controls_test.go": "ca1decff4a321df08730d77b530b99681e52809931dd044ede634356367d7e35",
+    "e2e/subtitle-action-recovery.spec.ts": "6d1cfe5ffd852291d42b5f3bbf64285ea6e362cc977cdb217dbcf595c5a92bd6",
+    "e2e/subtitle-action-recovery-native.spec.ts": "e6af85a732279018cfd037ffddbdb394f475714caf8699bc7bff91fd1eda9f31",
+    "engineering/qa/2026-10-04-action-recovery/native-fixture/main.go.txt": "db92a9405c7cd7d66b7ca7319fd826bb9f431a21eb309bf423bb4b534065deec",
+    "internal/server/static/subtitle-inspector.js": "e8a65f4c7486828ebafb99d576724e448255a9fdb74c96dadac4716bc2a19bd0",
+    "internal/server/static/subtitle-source-cues.js": "2b388f3a13435318744e28f7f67658b87c7da32dfa98061d8090964e1c6aa991",
+    "internal/server/static/subtitle-status.js": "6303a845151c4a3c7732de2c937f760f4dc2cc0305acf46eb806642687196a13",
+    "internal/server/subtitle_review_http.go": "92945d0a9773034ff9e22eb9d297fade65210cd35695a4b32c04617466da1549",
+    "internal/server/subtitle_edit.go": "ff7b8b86def21a253d4d8f126f6f7f78b60a65f595829b37dd00ee9f38009305",
+    "internal/server/subtitle_recovery.go": "26752dbc56befa8dbb38bb652f159c2579ec6939da14022d1303eebab38ceb4e",
+    "internal/server/subtitle_inspector.go": "44073fe3f050ec5df90595167c21c3693eca724d9681ec6c34a5e6b6df3796ca",
+    "internal/server/subtitle_dashboard.html": "0649947ddc2d9400b2f6f3d445407c2721f3973dfc02110fc6869d45473d7cbc",
+    "internal/server/subtitle_dashboard_item.html": "078db605c9258cf3b437638dc27669ebd458673af16d678b1a62932956384cd1",
+    "internal/server/assets.go": "bfbecbed116bb8c6b4a16d08f43a1a7c75dc5844b7e8729305b85cef53d7cd17",
+    "internal/server/subtitle_prepared_operation_test.go": "77b6257b4d6cf9e9aa8a09472f2ce954b39e83faa45b4187b0b81c0020f090d8",
+    "internal/server/subtitle_operation_owner_test.go": "50283fe054fa8dc4ba9833c7674a35fc1409db0419945e1ea7e36c2b46b34e2b",
+    "internal/server/subtitle_operation_input_test.go": "911b9713634340a607b7f9f5fc824ea7de30e7411b964a8d96f44cef3e20ebaf",
+    "internal/server/subtitle_operation_audio_test.go": "50610c1fcd45be21a586906ebb1493e0b7162b9b3cdddb5bb69cffab65af59de",
+    "internal/server/subtitle_operation_persistence_test.go": "ae31c653fbbe49748e71f35db2a8170a9d63a6c4a5cf9d9bc16b9d1c22b17fa2"
+  },
+  "sourceInventoryCanonicalSHA256": "8d85c3fb67365a88fbd792cdc5a681b8f02b16cecd15a3972e4d5d50282f4ec0",
+  "inventoryBoundary": "five new public Go test files plus unchanged baseline source inventory; JS and native templates were not executed by this Go run",
+  "artifactSHA256": {
+    "evidence/protocol-public-red/classified-cases.json": {
+      "bytes": 6755,
+      "sha256": "13644ed5460ff30b1f1e214ce6d486e181d8e7a84904b27b6cdaa317d52cce30"
+    },
+    "evidence/protocol-public-red/events.jsonl": {
+      "bytes": 52745,
+      "sha256": "dd60eab425f801256ab1f8c2e129101be2f82afa60975704caf796633cdb6cee"
+    },
+    "evidence/protocol-public-red/receipt.json": {
+      "bytes": 3467,
+      "sha256": "8c89537c847a79e44f8b84344396d2322795c6ce3c9a071fbe64cfb551c96dab"
+    },
+    "evidence/protocol-public-red/runner.py.txt": {
+      "bytes": 2562,
+      "sha256": "0b68e15d153dd8616f9673d981473c5bc40d3fd7a385802d27f08dd91593c70e"
+    },
+    "evidence/protocol-public-red/scope.json": {
+      "bytes": 917,
+      "sha256": "ab53415000a66c229626dcbb724698a81ccafc2dfaf17eac875753a4786e40ec"
+    }
+  },
+  "runtime": "go1.27.1 darwin/arm64",
+  "headroomGiB": 7.8,
+  "namedControls": {
+    "total": 13,
+    "legacyAudioPass": 1,
+    "desiredProtocolFailures": 12,
+    "preparationRouteFailures": 11,
+    "headerParentFailures": 1,
+    "headerLeafFailures": 5,
+    "skip": 0,
+    "prerequisiteFailures": 0
+  },
+  "observedHeaderEffects": "Each of five actual Restore responses returned204, changed current and recovery bytes, and exposed two History events after its one Save prerequisite. This is absence of the additive protocol, not a legacy authorization regression.",
+  "executionLimits": [
+    "No receipt worker started",
+    "Busy/restart/expiry/receipt-result/CSRF-denial assertions after preparation were not reached",
+    "Actual audio control supplied fictional one-minute silence at the process boundary, not playable media",
+    "No browser/container/provider/deployment execution in this slot"
+  ],
+  "contractSemanticReview": {
+    "revision": "10e191d2ee9ce1a1f9369aa4d4f73e84a06f3a95",
+    "proposalSHA256": "a23af1334466390377fc1f0d2e154df77707943c7cfab7f418f348db88fe32ed"
+  },
+  "R16": {
+    "head": "42f3c2a930e9f609c5450ef4cd41ce3335101044",
+    "excludedUnimplementedR16": [
+      "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/internal/server/subtitle_maintenance_test.go",
+      "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/internal/server/subtitle_dashboard_revision_test.go"
+    ],
+    "committedMaintenanceSha256": "21659fdc35a9edaa0169d7addebf6f92bc61fca8e40ea364f00c0880ae892bee",
+    "preservedR16Sha256": {
+      "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/internal/server/subtitle_maintenance_test.go": "f26e00b3f914130793b72c5187b546244ed4d47222380743899f02aa9f7993fb",
+      "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/internal/server/subtitle_dashboard_revision_test.go": "c0111e937ade97838c3422b89de5a56089efd3e289828598147860615ddd7de6"
+    }
+  }
+}
