@@ -4,7 +4,7 @@ const subtitleStatus = document.querySelector("[data-subtitle-status]");
 const subtitleRetry = document.querySelector("[data-subtitle-retry]");
 const subtitleSelector = document.querySelector("[data-subtitles]");
 const subtitleLoads = new Map();
-const subtitleAbort = new AbortController();
+let subtitleAbort = new AbortController();
 const selectedSubtitle = () => subtitleElements.find((element) => element.track.mode === "showing");
 const updateSubtitleStatus = () => {
   const load = subtitleLoads.get(selectedSubtitle());
@@ -26,6 +26,7 @@ const updateSubtitleStatus = () => {
 };
 const loadSubtitle = async (element) => {
   if (subtitleLoads.has(element) || subtitleAbort.signal.aborted) return;
+  const lifecycleSignal = subtitleAbort.signal;
   const controller = new AbortController();
   const load = {state: "loading", url: "", failure: "", requestID: ""};
   let reader;
@@ -35,7 +36,7 @@ const loadSubtitle = async (element) => {
     clearTimeout(timer);
     element.removeEventListener("load", ready);
     element.removeEventListener("error", decodeFailed);
-    subtitleAbort.signal.removeEventListener("abort", load.cancel);
+    lifecycleSignal.removeEventListener("abort", load.cancel);
   };
   const cancel = () => {
     cleanup();
@@ -66,7 +67,7 @@ const loadSubtitle = async (element) => {
     cancel();
   };
   subtitleLoads.set(element, load);
-  subtitleAbort.signal.addEventListener("abort", load.cancel, {once: true});
+  lifecycleSignal.addEventListener("abort", load.cancel, {once: true});
   timer = setTimeout(() => fail("timeout"), 20_000);
   updateSubtitleStatus();
   try {
@@ -129,4 +130,11 @@ addEventListener("pagehide", () => {
   if (document.pictureInPictureElement === player || player.webkitPresentationMode === "picture-in-picture") return;
   subtitleAbort.abort();
   for (const load of subtitleLoads.values()) load.cancel();
+  updateSubtitleStatus();
+});
+addEventListener("pageshow", (event) => {
+  if (!event.persisted || !subtitleAbort.signal.aborted) return;
+  subtitleAbort = new AbortController();
+  subtitleLoads.clear();
+  loadSelectedSubtitles();
 });
