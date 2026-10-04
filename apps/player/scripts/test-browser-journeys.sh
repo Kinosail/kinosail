@@ -12,6 +12,17 @@ run_subtitle_recovery_journey() {
     ../../scripts/tooling/with-go-module.sh go test -p 1 ./internal/server -run '^TestSubtitleRecoveryBrowserJourney$' -count=1 -timeout=6m
 }
 
+run_download_pause_journeys() {
+  local mode hit
+  for mode in downloads-pause downloads-hit-targets; do
+    hit=0
+    [[ "$mode" == downloads-hit-targets ]] && hit=1
+    GOMAXPROCS=2 KINOSAIL_DOWNLOAD_PAUSE_BROWSER=1 KINOSAIL_DOWNLOAD_PAUSE_HIT_TARGETS="$hit" \
+      KINOSAIL_BROWSER_PROJECT="$1" KINOSAIL_E2E_OUTPUT_DIR="$2-$mode" KINOSAIL_E2E_ARTIFACT_DIR="$3/$mode" \
+      ../../scripts/tooling/with-go-module.sh go test -p 1 ./internal/server -run '^TestDownloadPauseBrowserJourney$' -count=1 -timeout=6m
+  done
+}
+
 run_populated_player_journeys() {
   local repo
   repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"

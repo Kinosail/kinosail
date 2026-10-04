@@ -197,7 +197,6 @@ port="${url##*:}"
 "$engine" rm --force "$container" >/dev/null
 container=""
 start_server "$port"
-
 expect_status 401 "$url/api/v1/settings"
 expect_status 403 --request POST --header 'Origin: https://attacker.example' --data 'name=Attacker&password=attacker-password' "$url/setup"
 expect_status 421 --header 'Host: attacker.example' "$url/healthz"
@@ -205,7 +204,6 @@ dd if=/dev/zero of="$media_dir/oversized-request" bs=1048577 count=1 2>/dev/null
 expect_status 413 --request POST --header 'Content-Type: application/json' --data-binary "@$media_dir/oversized-request" "$url/api/v1/setup"
 grep --quiet 'Set up your Server.' < <(curl --fail --silent --insecure "$url/setup")
 assert_container_test_headers "$url"
-
 if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
   browser_args=()
   if [[ "${KINOSAIL_BROWSER_SMOKE:-}" == "1" ]]; then browser_args+=(--grep=@smoke); fi
@@ -215,6 +213,8 @@ if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
       "${KINOSAIL_E2E_ARTIFACT_DIR:-$media_dir/playwright-artifact}/library-pagination-$project"
     run_subtitle_recovery_journey "$project" "$media_dir/Direct Retry Control.mp4" \
       "${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project-caption-recovery" "${KINOSAIL_E2E_ARTIFACT_DIR:-$media_dir/playwright-artifact}/caption-recovery-$project"
+    run_download_pause_journeys "$project" "${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project" \
+      "${KINOSAIL_E2E_ARTIFACT_DIR:-$media_dir/playwright-artifact}/downloads-$project"
     start_fresh_server "$port"
     KINOSAIL_BROWSER_PROJECT="$project" KINOSAIL_E2E_URL="$url" KINOSAIL_E2E_OUTPUT_DIR="${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project" pnpm --dir e2e test "${browser_args[@]}"
     # Prepared-Owner journeys need fresh state after the installation journey.
