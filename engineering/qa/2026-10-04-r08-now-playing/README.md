@@ -172,7 +172,7 @@ The candidate now separates source loading from position readiness. A media erro
 can restore Previous/details recovery while the source remains ineligible for
 progress writes. Metadata acknowledgment restores normal saves. A recovery move
 skips saving a source that never acquired a usable position; it makes no saved
-claim. Full isolated and actual Server GREEN verification remains pending.
+claim. At this checkpoint, full isolated and actual Server GREEN verification remained pending.
 
 ## Initial automated GREEN and mobile visual blocker
 
@@ -227,7 +227,50 @@ matching Subtitles patch derivation receives the same selector change. Freshly
 fetched `origin/main` at `0e99a52f` still uses Player `electric-47` and Subtitles
 `cinema-15`; the narrow cache increments are `electric-48` and `cinema-16`.
 Existing tests retain all assertions and only update those expected version values.
-Final native GREEN and visual verification remain pending.
+The final native GREEN and visual verification are recorded below.
+
+## Final native GREEN and delivery evidence
+
+At `68f404937cdf5d3332590325e9c5e3854a710718`, the default native runner passed
+all six named executions in 32.29 browser seconds, with no skips, failures, flaky
+cases, or global errors. Four canonical album journeys used unrouted Go Server
+routes. Two mobile R03 controls injected an isolated 503 into Go-backed HTML;
+the initial acknowledgment and Retry used real 204 responses. The receipt binds
+the stable Go/embed inventory to native product `b95a0bb20b2a37d9c5ad2f2cbfd54823dc4d461b9803261d3e1360ae5d113af8`.
+
+`green-native-receipt.json` is byte-identical to the private native receipt.
+`green-native-results.json` preserves every viewport projection and the safe
+metadata, session, route-identity, and cache-delivery snapshots. Player JavaScript
+uses its actual content hash; CSS serves `electric-48`, the scoped hidden selector,
+and immutable headers. The native product initialized the strict shared Subtitles
+style derivation successfully. No Subtitles Server journey was run in this slot.
+
+Visual inspection covered 390, 1440, and 1920 pixels. The second track's cover,
+heading, byline, queue position, and current-details link render correctly. Original
+item controls and the saved notice remain hidden. The mobile failure screenshot
+shows truthful unsaved copy and Retry; the actual Retry acknowledgment removes
+that notice. The full current-track page restores its canonical actions. The six
+`green-*.png` screenshots preserve these states, with no horizontal overflow or
+changed-surface accessibility violations in the corresponding browser assertions.
+
+All 50 isolated browser source/test inputs still match the successful `38b43c3a`
+run byte for byte. CSS and cache tokens do not occur in those isolated fixtures;
+they were verified in the final native viewport journeys. No broader isolated
+rerun was needed. Browser lint has zero errors or warnings, `make max-loc` passed,
+and the R08 diff from frozen `6ec0b5c` passes whitespace checks.
+
+The new artwork pending, empty, and failed boundaries, cast/offline ownership,
+rejected queue input, unsupported system controls, and sender continuation races
+retain explicit isolated coverage. The actual Server proves loaded artwork and
+native Media Session metadata plus real handler registration; it does not prove
+a physical OS media-control panel or receiver. No physical device, other browser,
+container, deployed revision, or production-health claim is made. All disposable
+state and private artifacts remain preserved, and all task-owned processes stopped.
+
+Root owns independent review, current-main reconciliation, affected-app verification,
+required hosted checks, PR publication, merge, and fetched ancestry proof. Root must
+retain the merged R03 isolated-origin pin and R04/Q09 composition during integration.
+`manifest.json` binds the curated artifacts and unchanged production inputs.
 
 ## Ownership
 
