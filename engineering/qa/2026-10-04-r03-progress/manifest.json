@@ -1,0 +1,59 @@
+{
+  "task": "R03",
+  "testedImplementation": "7956411098dba77931c30cd5966a6e542eae115d",
+  "review": "Integration owner reviewed the exact implementation commit and reported no findings.",
+  "sourceSHA256": {
+    "apps/player/e2e/player-progress.spec.ts": "5c790d61be65388e2a75ca17b088b48e66b1091079f4458bf037a66a39f4660d",
+    "apps/player/e2e/player-seeking.spec.ts": "1b27ef3ee7220c71633f6bdc5fe6ec7d96e13389fa5e3176f93ff33ea2441aa4",
+    "apps/player/e2e/test-instance-progress.spec.ts": "43fb0372b402c859af599bbbc0d522daa2e86032a37f15c09b2e27d8619a5f73",
+    "apps/player/internal/server/static/player-streaming-recovery.js": "7e66f1cfc023fed1f7a00916c0ea2453a94ab688a92028fe7e2597009e757c2f",
+    "packages/playerweb/player_template.go": "8e94f40660a1bda4f2b435477b813b9c992eafd7fca62d21e0e92fc8ec9c9d42",
+    "packages/playerweb/progress_notice.go": "004a9903ae33f3f13bce9df586a6b3d4a56a74c06d07a58020189a9ffb33141c",
+    "packages/webassets/static/player-progress.js": "036130baca81a79fb17b2807cc886d10b140ed843dca13f2562c7cacbc236ac3",
+    "scripts/ci/run-populated-settings.py": "84dbea3dfd8153b0baeb3bf8914789e79e13921ad40ad7056fb5d13c55f5a095",
+    "scripts/ci/test_populated_settings.py": "cc8f494d561520833d8dc74a9d308c5002523d5ccf4ca16b9a1c097caa47cc5f",
+    "scripts/testing/test-player-progress-local.py": "86a4ef01bbcfe449e436ae2cf6e0a1677fd183b06f9f79d1179914c05056ad36"
+  },
+  "checks": {
+    "isolatedLatestChromium": 25,
+    "earlierCombinedChromium": 47,
+    "helperContractTests": 3,
+    "browserLintErrors": 0,
+    "browserLintWarnings": 0,
+    "baselineRealServerRepetitionsPassed": 2,
+    "candidateRealServerRepetitionsPassed": 4,
+    "scopedAxeViolations": 0,
+    "responsiveWidths": [
+      390,
+      1440,
+      1920
+    ],
+    "sourceCap": "passed",
+    "diffCheck": "passed"
+  },
+  "limits": "In-page recovery only. Page-close keepalive is best effort. No container, TLS, native client, physical device, Safari or Firefox proof.",
+  "preservedPrivateArtifacts": ".verification/r03-progress (raw traces, fixture credentials and state; do not share)",
+  "evidenceSHA256": {
+    "README.md": "cd82309b8c4a8dae993acf9ad8f8eb935f07edfc94ca6b577e091f1ae3f96790",
+    "browser-lint.log": "c3f22b54ffc1b5b24fd84371124e4c134c1ec7609d4c49fe031f96bb46994f91",
+    "ci-helper-green.log": "5279d1fc9a1ced44f9c96da1414ef59e4676f963fbad52e7a1a2903538819b0d",
+    "ci-helper-red.log": "68105b8bebce39e558f4ec47a05dae0a8aa6f9a293105576fbc94daccb952f7e",
+    "close-red-browser.log": "c0e66b52fdd8109c675b103dc1116b307ddb007abdcac0d463ed20feb8c20065",
+    "design-detect.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "native/baseline-browser.log": "c383d1d4290c45f02c8a3f06fcb370115b8e41fee1360f25a9d7d770c1085e74",
+    "native/baseline-real-server-rejection.png": "f4a191d4cf88552a1a1abf4dbf97b86f0392dc3ed1cfbc18778de85318fef64b",
+    "native/candidate-browser.log": "4fefbb60599303c9a07bbfedc80912dd2375568357545a818aac09dd24b5c31d",
+    "native/pending-save.png": "c4a020a91eb0c609d66366f25db16b92bab7a26abfa5223f246f97ecea747159",
+    "native/real-server-rejection.png": "a4ae13d723624c276b2f31384cbbb5481b1d8d1ec330107bc79c7476444136a9",
+    "native/saved.png": "08022d18290fd18a2023cded0dd00255a4c19447d3015b35c61499b4bd6d753a",
+    "native/unsaved-1440.png": "3e42dc622ba8676fd6bcbd925daa58cb1a486f096331d3374352d9c350897d4f",
+    "native/unsaved-1920.png": "866dc0568b9c8087ecd1f9d5f111dffb3e3750a75298feed3afd4562277e2de9",
+    "native/unsaved-390.png": "757b8bd8667ab2e6b0ddd3f524615750ce6e54ad147f3b4338ca8f46f179434d",
+    "native-proof.json": "cf341c21e09ee23b2ace7c63fa199b20125ed4fe74a33a5946d7ffee65504eca",
+    "native-server-proof.log": "328dae94ce5e331aaf515e49ee932b5fc377e1d6c10b391f26113a4d9d346537",
+    "red-browser.log": "4742e3919d84b6f53e33d4312c90e1dd5f98e16c563caba3bc5ba05dc00a6696",
+    "review-browser.log": "895985806345cb25051eb1fcd81bb25eb12937bc15410d9efe362cec147044a7",
+    "server-progress-diagnostics.json": "be10f8cba35745d8965bbb9dbc259353c08c2d5128839b23215c327d7d895dda",
+    "verified-browser.log": "0f00954726bac3406745bc677472f3bafe9d644e09e6a298e661a6b5023a9b56"
+  }
+}
