@@ -92,3 +92,15 @@ selector, scanner rule, suppression or policy changes in this repair.
 
 This is source-only evidence. Fresh hosted protocol, lint, metadata, exact
 PR-ref CodeQL and normal required gates must verify the final changed bytes.
+
+The literal-field source checkpoint is
+`3f465e222a37df4ba2624fd3061c367ae5fd90f7`. Its new immutable
+`protocol-scope-3f465e22.json` SHA256 is
+`759e8218384a99eeed887d4451463dd4c5deb6269c05e3a94ce9ee6e86e00987`.
+Only `subtitle_operation.go` changes among the same 53 selected inputs.
+The new logger SHA256 is
+`ed9eb9dc894f38e4b989ed4b7df41c645fd13ad101d70d279c245504ed09998b`.
+All tests, selector, baseline overlay, older scopes, driver and projection
+are unchanged. The provenance helper updates only its active filename/digest.
+`fixed-action-source-inspection-3f465e22.json` records exact literal labels,
+the accepted pre-change baseline and the unrun final verification boundary.

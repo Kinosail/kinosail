@@ -10,8 +10,8 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[3]
 APP = ROOT / "apps/subtitles"
 RECIPE = APP / "engineering/qa/2026-10-04-action-recovery/hosted"
-SCOPE_FILE = "protocol-scope-977e01c4.json"
-SCOPE_SHA = "63c0bfe58e7e870c3b6b943c9d26cae7ca66d217f1223310e8695eadc2d479f5"
+SCOPE_FILE = "protocol-scope-3f465e22.json"
+SCOPE_SHA = "759e8218384a99eeed887d4451463dd4c5deb6269c05e3a94ce9ee6e86e00987"
 
 def fingerprint(path):
     if not path.exists():
