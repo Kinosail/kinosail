@@ -1,0 +1,56 @@
+{
+  "boundary": "Fictional/static controls only; no actual app/browser/Go runtime",
+  "controls": {
+    "root_ci_tests": 102,
+    "q14_retained_tests": 19,
+    "typed_shape_case_names": 22,
+    "typed_negative_mutations": 72,
+    "actionlint": "pass",
+    "max_loc": "pass",
+    "whitespace": "pass"
+  },
+  "typed_negative_mutations": [
+    "missing attachment",
+    "duplicate attachment",
+    "unknown observation field",
+    "bad document digest",
+    "unknown navigation enum",
+    "non-finite coordinate",
+    "out-of-bound query",
+    "skip",
+    "wrong suite"
+  ],
+  "test_first_checkpoint": "63954d24",
+  "vectors_checkpoint": "3c34823c",
+  "sources": {
+    "apps/player/scripts/campaign-q14-public.py": {
+      "bytes": 16303,
+      "sha256": "f7490eea0b0e972551d70a0154fc1c65cc3e5d26c18433e713ba22408015b380"
+    },
+    "apps/player/scripts/campaign_q14_admission.py": {
+      "bytes": 11137,
+      "sha256": "5a4c708f0753bf4fd9b96b2c7b9dea1901437080625eaa1dc6c340463d4efcf7"
+    },
+    "apps/player/scripts/campaign_q14_suites.py": {
+      "bytes": 7022,
+      "sha256": "15937f6504347f3c8d3e611a247fceb60040241cbc2e36125baa7e692c15c450"
+    },
+    "apps/player/scripts/test_campaign_q14_public.py": {
+      "bytes": 13972,
+      "sha256": "6587386eecce62324b0c0b68fc6dbdac0c0e9ef6a13804e5c20b8182690b6b07"
+    },
+    "apps/player/scripts/test_campaign_q14_suites.py": {
+      "bytes": 3319,
+      "sha256": "ba2e56cc3ec146ed940da25b4378d2d3d842be345a00e6674fd3811365f13ca7"
+    },
+    ".github/workflows/layout-stability.yml": {
+      "bytes": 7788,
+      "sha256": "bc2c1652bc251d02ef43a0749cd00267a25f6f66ca8541cf32a7d29aeb4ee62f"
+    }
+  },
+  "limits": [
+    "Reporter/fixture execution unrun locally.",
+    "Fresh hosted suite and protected checks pending.",
+    "Fictional shapes do not certify public behavior."
+  ]
+}

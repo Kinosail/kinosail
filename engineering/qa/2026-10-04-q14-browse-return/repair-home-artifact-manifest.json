@@ -1,0 +1,26 @@
+{
+  "artifactCount": 4,
+  "artifactSHA256": "c45120fccb0822529390d03b6a3959d67461efb1898f4117e1a98ea2d7b9f42b",
+  "artifacts": {
+    "engineering/qa/2026-10-04-q14-browse-return/repair-home-analysis.md": {
+      "bytes": 4144,
+      "sha256": "762c6c22bc9e7f4ea43bab5499f91d6583c9b0abb5bbadaebe8ea903c1a169fd"
+    },
+    "engineering/qa/2026-10-04-q14-browse-return/repair-home-handoff.json": {
+      "bytes": 6989,
+      "sha256": "89cbaf7fa019eb426230799b5f9ba8c293a27079eb19d1d352da0b16a35204a3"
+    },
+    "engineering/qa/2026-10-04-q14-browse-return/repair-home-source-manifest.json": {
+      "bytes": 38803,
+      "sha256": "385907c082851c47abcb5d85ecf2f97212ad4bb92c5a2d9b99c57d0ba0c42f4b"
+    },
+    "engineering/qa/2026-10-04-q14-browse-return/repair-home-static-controls.json": {
+      "bytes": 8221,
+      "sha256": "a3728806435ade5e9110dfca902941573e859dc7e994af63d3a9368a0242602b"
+    }
+  },
+  "boundary": "Four source-only checkpoint payloads; manifest excludes itself. Historical stamps preserved separately.",
+  "recipe": "UTF-8 sorted path<TAB>lowercase SHA-256<LF>, trailing LF",
+  "schema": 1,
+  "sourceRevision": "ca8d27a63d321f7d93353661b7f273bde86d8cea"
+}

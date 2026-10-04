@@ -2014,5 +2014,21 @@
   {
     "id": "Sign-in protection",
     "other": "Sign-in protection"
+  },
+  {
+    "id": "Back to Movies",
+    "other": "Back to Movies"
+  },
+  {
+    "id": "Back to Shows",
+    "other": "Back to Shows"
+  },
+  {
+    "id": "Back to search results",
+    "other": "Back to search results"
+  },
+  {
+    "id": "Back to Library",
+    "other": "Back to Library"
   }
 ]

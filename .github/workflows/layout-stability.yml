@@ -17,6 +17,11 @@ on:
         type: choice
         options: [none, R06, Q14, Q09]
         default: none
+      campaign_q14_suite:
+        description: Select one fixed Q14 public suite; primary keeps its two repeats
+        type: choice
+        options: [primary, cold, bfcache, htmx, shows, search, safety, home]
+        default: primary
       architecture_metadata:
         description: Collect bounded source metadata for canonical architecture regeneration
         type: boolean
@@ -104,6 +109,7 @@ jobs:
     timeout-minutes: 12
     env:
       CAMPAIGN_PROOF: ${{ inputs.campaign_proof }}
+      CAMPAIGN_Q14_SUITE: ${{ inputs.campaign_q14_suite || 'primary' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -112,6 +118,11 @@ jobs:
         id: selection
         run: |
           test ! -e .gates-disabled
+          case "$CAMPAIGN_Q14_SUITE" in
+            primary|cold|bfcache|htmx|shows|search|safety|home) ;;
+            *) exit 2 ;;
+          esac
+          if [ "$CAMPAIGN_PROOF" != Q14 ] && [ "$CAMPAIGN_Q14_SUITE" != primary ]; then exit 2; fi
           case "$CAMPAIGN_PROOF" in
             R06) echo app=subtitles >> "$GITHUB_OUTPUT" ;;
             Q14|Q09) echo app=player >> "$GITHUB_OUTPUT" ;;

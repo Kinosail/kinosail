@@ -1,0 +1,73 @@
+{
+  "stage": "lightweight source checks only; no Go/browser execution",
+  "checks": [
+    {
+      "command": [
+        "node",
+        "--check",
+        "apps/player/e2e/browse-return-helpers.ts"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "apps/player/e2e/browse-return.spec.ts"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "make",
+        "max-loc"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "gofmt",
+        "-d",
+        "apps/player/internal/server/browse_return_browser_test.go"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "--input-type=module"
+      ],
+      "stdin": "import ts from './scripts/quality/node_modules/typescript/lib/typescript.js';\nimport {readFileSync} from 'node:fs';\nlet errors=[];\nfor (const file of ['apps/player/e2e/browse-return-helpers.ts','apps/player/e2e/browse-return.spec.ts']) {\n const source=ts.createSourceFile(file,readFileSync(file,'utf8'),ts.ScriptTarget.Latest,true,ts.ScriptKind.TS);\n errors.push(...source.parseDiagnostics.map(d=>file+': '+ts.flattenDiagnosticMessageText(d.messageText,' ')));\n function visit(node) {\n  if(node.kind===ts.SyntaxKind.AnyKeyword||node.kind===ts.SyntaxKind.UnknownKeyword) errors.push(file+': forbidden type');\n  ts.forEachChild(node,visit);\n }\n visit(source);\n}\nif(errors.length){process.stdout.write(errors.join('\\n')+'\\n');process.exitCode=1;}\nelse process.stdout.write('Q14 files: valid TypeScript syntax, zero forbidden types\\n');\n",
+      "exitCode": 0,
+      "stdout": "Q14 files: valid TypeScript syntax, zero forbidden types\n",
+      "stderr": ""
+    },
+    {
+      "check": "frozen Q09 product13",
+      "matched": 13,
+      "q09BranchRevision": "1b68c55b8fa176154f2a17052606f71867208308"
+    }
+  ],
+  "unclaimedChecks": {
+    "strictSemanticTypecheck": "Node type definitions are not installed; repaired observer declarations, but no complete strict semantic result",
+    "repositoryForbiddenTypeScan": "inherited errors outside Q14, unchanged"
+  }
+}

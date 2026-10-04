@@ -92,19 +92,3 @@ commandMenu?.addEventListener("keydown", (event) => {
   else if (event.key !== "Enter") commands[(current + (event.key === "ArrowDown" ? 1 : -1) + commands.length) % commands.length].focus();
   event.preventDefault();
 });
-
-const browseStateKey = `kinosail:browse:${location.pathname}${location.search}`;
-document.addEventListener("click", (event) => {
-  const link = event.target.closest?.("#library a.card, .home-shelf .card > a, .destination-card");
-  if (!link) return;
-  try { sessionStorage.setItem(browseStateKey, JSON.stringify({ href: link.getAttribute("href"), scroll: scrollY })); } catch (_) {}
-});
-window.addEventListener("pageshow", (event) => {
-  if (!event.persisted && performance.getEntriesByType("navigation")[0]?.type !== "back_forward") return;
-  try {
-    const state = JSON.parse(sessionStorage.getItem(browseStateKey));
-    const link = state?.href && document.querySelector(`a[href="${CSS.escape(state.href)}"]`);
-    if (link) link.focus({ preventScroll: true });
-    if (Number.isFinite(state?.scroll)) scrollTo(0, state.scroll);
-  } catch (_) {}
-});
