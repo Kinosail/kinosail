@@ -1,0 +1,7 @@
+# Q09 accepted hosted proof and canonical page reproduction
+
+Run `37230728400` at `1188bca139af963a96d5f1492ae00887581401ec` passed all 14 unchanged public cases and the bounded source metadata step. Artifact `11312759564` contains only the four safe JSON files. Every file is within 4 MiB and all three artifact bindings match. Receipt SHA-256: `ece121058a2b685c4d3ef4046afa35db31d7eeb99dfd0afe87cec73201408ee0`; results: `541194fa18acf054db94b70f2818a53d46fa480189d7fa592e261d954b7ee2e5`; source manifest: `530243004baeca43a2c128a6dc9977d1209013fa1cb9019d6385d3b08cf1732a`; artifact manifest: `b2ee092affc97e11060d83b700575d0245f4eb02208da56f97235963905e29ae`.
+
+The standalone reproduction command completed with exit 0 at the same exact source revision. It verified the full tracked tree, generator, all three templates, module/workspace inputs, both typed graphs and both hosted HTML references before either tracked document write. Player output is 771,327 bytes, SHA-256 `357d06c4f570ddd6d835b072352229fedb84d557d5f7ff88dfbadfb5ffd01fbc`. Subtitles output is 813,233 bytes, SHA-256 `18e4a88986925cb303de4197c6c8ee4c74932453c3511e666f2607b8a9c8b5e8`.
+
+No local Go or browser ran. This is canonical metadata reproduction; final exact-head normal real-Go generator `--check`, app/protected gates, fetched merge ancestry and deployment remain separate facts. Earlier failed attachment and rejected local render are retained with their exact boundaries in `hosted-architecture-diagnosis.md`.
