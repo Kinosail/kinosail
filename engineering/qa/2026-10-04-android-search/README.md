@@ -4,6 +4,9 @@ Canonical item: Q03 / AND-Q04. Reliability R09/R13 are the preceding batch.
 This document records preparation only; Q03 production changes are not made.
 Baseline: frozen recovery candidate `47bcc64c8d737b1249498ea402e41788d781507b`,
 with origin/main `50fd82f329c651258245451a55b8fff8dfa9adec` reconciled.
+R09/R13 subsequently merged in PR #466. The queued Q03 baseline branch is
+reconciled with fetched main `d440fb05ede52498b08c9a0b53d2ea929a1b584b`;
+Q03 production remains identical to that merged Android tree.
 
 Use the existing bounded explicit Search/IME request. Add a labeled Clear search
 control and a polite result announcement bound to the submitted query and the
