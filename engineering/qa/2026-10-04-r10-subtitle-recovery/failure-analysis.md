@@ -57,3 +57,14 @@ security cases remain retained for their distinct boundaries.
 
 No production, user-data deletion, devices, media encoders, deployments or
 PiP/miniplayer work is included.
+
+A caption-only persisted page lifecycle control is prepared before its repair.
+The current global AbortController remains aborted after pagehide, so the
+selected caption cannot reload after persisted pageshow. This case uses real
+transport cancellation and native PageTransitionEvent dispatch on the same
+document; it isolates lifecycle semantics and does not establish that an actual
+browser navigation admitted the page to its BFCache. A second case protects Off
+and rejects any new request or late caption source after persisted restore.
+Playback/session lifecycle changes remain outside this repair. Parent approved
+this narrow R10 caption restore scope on 2026-10-04. Both runtime repeats remain
+queued before modifying the controller or restore path.
