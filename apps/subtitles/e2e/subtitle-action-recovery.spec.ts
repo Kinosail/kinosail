@@ -8,7 +8,7 @@ const revision = process.env.KINOSAIL_TEST_REVISION ?? execFileSync("git", ["rev
 const origin = "http://subtitle-actions.test";
 test.skip(!fixtureRoot, "requires real public Save/Restore control artifacts");
 
-async function actionFixture(page: Page, testInfo: TestInfo, action: "save" | "restore", surface: "inspector" | "dashboard", completed: boolean) {
+async function actionFixture(page: Page, testInfo: TestInfo, action: "save" | "restore", surface: "inspector" | "dashboard", completed: boolean, stalledRead?: "status" | "draft") {
   const dir = `${fixtureRoot}/${action}`;
   const source = await readFile(`${dir}/${surface}.html`, "utf8");
   const historyPage = await readFile(`${dir}/history.html`, "utf8");
@@ -17,7 +17,7 @@ async function actionFixture(page: Page, testInfo: TestInfo, action: "save" | "r
   const history = JSON.parse(await readFile(`${dir}/${completed ? "history" : "before-history"}.json`, "utf8"));
   const preview = action === "save" ? JSON.parse(await readFile(`${dir}/preview.json`, "utf8")) : null;
   const release: Array<() => void> = [];
-  const requests = { preparations: [] as unknown[], mutations: [] as Array<{ path: string; input: unknown }>, statuses: 0, inspections: 0, histories: 0, pages: 0 };
+  const requests = { preparations: [] as unknown[], mutations: [] as Array<{ path: string; input: unknown }>, statuses: 0, drafts: 0, inspections: 0, histories: 0, pages: 0 };
   const operation = { id: "a".repeat(64), action: action === "save" ? "apply" : "restore", item: before.id, state: "prepared", statusURL: `/api/v1/subtitle-operations/${"a".repeat(64)}` };
   const scripts = { inspector: await readFile(`${dir}/subtitle-inspector.js`), dashboard: await readFile(`${dir}/subtitle-status.js`) };
   await testInfo.attach("verification-context", { contentType: "application/json", body: JSON.stringify({ revision, action, surface, completed, width: page.viewportSize()?.width, command: "playwright test subtitle-action-recovery.spec.ts --workers=1", browserVersion: page.context().browser()?.version(), boundary: "isolated browser transport using actual public Go HTML/assets/Save/Restore reads; prepared/running/completed receipts are simulated at the transport boundary; POST completion is represented by captured reads, not executed in this browser fixture; media aborted", sourceSHA256: createHash("sha256").update(scripts[surface]).digest("hex"), beforeFingerprint: before.fingerprint, afterFingerprint: after.fingerprint }) });
@@ -33,6 +33,10 @@ async function actionFixture(page: Page, testInfo: TestInfo, action: "save" | "r
     if (path === operation.statusURL) {
       expect(request.method()).toBe("GET");
       requests.statuses++;
+      if (stalledRead === "status") {
+        await new Promise<void>(resolve => release.push(resolve));
+        return route.abort().catch(() => {});
+      }
       return route.fulfill({ json: completed ? { ...operation, state: "completed", outcome: "success", status: action === "save" ? 200 : 204 } : { ...operation, state: "running" } });
     }
     if (path.endsWith("/preview")) {
@@ -49,7 +53,14 @@ async function actionFixture(page: Page, testInfo: TestInfo, action: "save" | "r
       requests.inspections++;
       return route.fulfill({ json: completed && requests.mutations.length ? after : before });
     }
-    if (path.endsWith("/draft")) return route.fulfill({ json: { state: "none", message: "No draft", words: [] } });
+    if (path.endsWith("/draft")) {
+      requests.drafts++;
+      if (stalledRead === "draft") {
+        await new Promise<void>(resolve => release.push(resolve));
+        return route.abort().catch(() => {});
+      }
+      return route.fulfill({ json: { state: "none", message: "No draft", words: [] } });
+    }
     if (path === "/api/v1/subtitle-library") {
       if (url.searchParams.get("view") === "history") { requests.histories++; return route.fulfill({ json: history }); }
       return route.fulfill({ json: { total: 1, ready: 1, wanted: 0, pending: 0, unavailable: 0 } });
@@ -149,3 +160,39 @@ for (const action of ["save", "restore"] as const) {
     } finally { await fixture.finish(); }
   });
 }
+
+for (const action of ["save", "restore"] as const) {
+  test(`stalled ${action} reconciliation read reaches its own deadline without replay`, async ({ page }, testInfo) => {
+    await page.setViewportSize({ width: 390, height: 900 });
+    const fixture = await actionFixture(page, testInfo, action, "inspector", false, "status");
+    try {
+      await beginInspectorAction(page, action);
+      await expect.poll(() => fixture.requests.mutations.length).toBe(1);
+      await page.clock.fastForward(30_000);
+      await expect.poll(() => fixture.requests.statuses).toBeGreaterThan(0);
+      await page.clock.fastForward(15_000);
+      await expect(page.locator('#subtitle-edit-form [name="language"]'), "recovery GET must have a deadline too").toBeEnabled({ timeout: 1500 });
+      await expect(page.locator("#inspector-status")).toContainText(/unknown|could not confirm|still|pending/i);
+      await expect(page.locator("#apply-subtitle")).toBeDisabled();
+      await expect(page.locator("#restore-subtitle")).toBeDisabled();
+      expect(fixture.requests.mutations).toHaveLength(1);
+      expect(fixture.requests.preparations).toHaveLength(1);
+    } finally { await fixture.finish(); }
+  });
+}
+
+test("stalled draft GET enters bounded backoff while editing stays usable", async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+  const fixture = await actionFixture(page, testInfo, "save", "inspector", false, "draft");
+  try {
+    await expect(page.locator('#subtitle-edit-form [name="language"]')).toBeEnabled();
+    await expect.poll(() => fixture.requests.drafts).toBe(1);
+    await page.clock.fastForward(15_000);
+    await expect(page.locator("#draft-status"), "a stalled read must reach the existing five-second backoff").toContainText(/unavailable.*Retrying in 5 seconds/i, { timeout: 1500 });
+    await page.clock.fastForward(5_000);
+    await expect.poll(() => fixture.requests.drafts).toBe(2);
+    await expect(page.locator('#subtitle-edit-form [name="language"]')).toBeEnabled();
+    expect(fixture.requests.mutations).toHaveLength(0);
+    expect(fixture.requests.preparations).toHaveLength(0);
+  } finally { await fixture.finish(); }
+});
