@@ -17,8 +17,8 @@ if (controls && player.tagName === "VIDEO") {
   const nativeControls = appleNativePlayback || player.hasAttribute("data-native-controls");
   if (appleNativePlayback) {
     controls.classList.add("player-native-controls");
-    const toolbar = stage.querySelector(".player-stage-toolbar");
-    if (settingsButton && !toolbar.contains(settingsButton)) toolbar.append(settingsButton);
+    const toolbar = stage.querySelector(".player-stage-toolbar") || stage.nextElementSibling?.querySelector(".player-stage-toolbar");
+    if (settingsButton && toolbar && !toolbar.contains(settingsButton)) toolbar.append(settingsButton);
     for (const child of controls.children) if (!child.matches(".player-center-control[data-player-toggle]")) child.hidden = true;
     if (theaterButton) theaterButton.hidden = true;
     player.addEventListener("webkitendfullscreen", () => {
@@ -28,10 +28,13 @@ if (controls && player.tagName === "VIDEO") {
     });
   }
   if (nativeControls) {
-    const options = document.createElement("div");
-    options.className = "player-native-options";
-    stage.after(options);
-    options.append(stage.querySelector(".player-stage-toolbar"), settingsPanel);
+    let options = stage.nextElementSibling;
+    if (!options?.classList.contains("player-native-options")) {
+      options = document.createElement("div");
+      options.className = "player-native-options";
+      stage.after(options);
+      options.append(stage.querySelector(".player-stage-toolbar"), settingsPanel);
+    }
   }
   stage.tabIndex = 0;
   stage.setAttribute("role", "region");

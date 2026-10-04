@@ -185,8 +185,8 @@
  .player-settings{max-height:calc(100% - 8rem);overflow-y:auto;overscroll-behavior:contain;scroll-padding:1rem}.player-settings header{position:sticky;top:0;z-index:2;background:var(--overlay);padding-block:.5rem}.player-settings header button{min-height:44px}.player-settings .choice-option{padding:0;border:0}.player-policy small{grid-column:auto}@media(max-width:700px){.player-page:not(.player-theater) .media-stage.has-settings{margin-bottom:24rem}.media-stage.has-settings .player-settings{bottom:auto;max-height:23rem}.player-theater .media-stage.has-settings .player-settings{bottom:4.3rem;max-height:calc(100% - 8rem)}}
  .player-theater .media-stage:has(>video){aspect-ratio:auto;height:100%}.player-theater .media-stage.has-settings:has(.player-recovery:not([hidden])){margin:0}
  .media-stage.has-settings .player-settings{background:var(--overlay);color:var(--text);border-color:var(--line);scroll-padding-top:5rem}.media-stage.has-settings .player-settings header button,.media-stage.has-settings .player-settings select{background:var(--surface-2);color:var(--text)}.media-stage.has-settings .player-settings p,.media-stage.has-settings .player-settings small{color:var(--muted)}
-@@ -276,33 +325,14 @@
- button[aria-busy=true]:after{content:"";display:inline-block;width:2rem;height:.5rem;margin-inline-start:.5rem;border-radius:3px;background:currentColor;opacity:.35}
+@@ -277,33 +326,14 @@
+ button[aria-busy=true]:after{content:"";position:absolute;bottom:.15rem;left:50%;width:2rem;height:.3rem;transform:translateX(-50%);border-radius:3px;background:currentColor;opacity:.35;pointer-events:none}
  @media(forced-colors:active){.buffer-skeleton,.pagination[aria-busy=true] [data-library-next]:after{background:GrayText}.request-skeleton:after{border:1px solid GrayText}}
  
 -/* Playback comes first; inline utility actions sit beneath the picture. */

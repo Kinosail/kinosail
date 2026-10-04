@@ -21,6 +21,8 @@
 .settings-shell:has([data-settings-organized]) .settings-flow>section>p{max-width:65ch;font-size:.9rem;line-height:1.6}
 .settings-shell:has([data-settings-organized]) .settings-flow label{font-size:.9rem;line-height:1.5;color:var(--text)}
 .settings-shell .settings-flow select{overflow:hidden;text-overflow:ellipsis}
+.settings-shell .settings-flow .status{display:inline-block;max-width:100%;overflow-wrap:anywhere}
+@media(max-width:900px){:root:has(body.settings-page){scroll-padding-top:var(--settings-header-height,72px)}.settings-page .settings-flow>section,.settings-page .settings-flow>[data-settings-group]{scroll-margin-top:1rem}}
 .settings-shell:has([data-settings-organized]) .settings-flow form{max-width:44rem}
 .settings-shell:has([data-settings-organized]) .settings-flow button{justify-self:start;min-height:44px;padding:.65rem 1rem}
 .settings-shell:has([data-settings-organized]) .settings-search-results a{grid-template-columns:1fr;gap:.2rem;padding:.75rem;font-size:.9rem}
@@ -41,3 +43,32 @@
 .settings-shell .settings-compatibility summary{min-height:44px;padding:.65rem 0;color:var(--text);font-size:.9rem;font-weight:650;cursor:pointer}
 .settings-shell .settings-compatibility>p{font-size:.875rem;line-height:1.6;color:var(--muted);max-width:65ch}
 .settings-shell .settings-flow label:has(>input[type=checkbox]){display:flex;align-items:center;gap:.75rem;min-height:44px}
+
+/* Match native fragment navigation before the deferred bundle arrives. */
+[data-settings-description-category]{display:none}
+[data-settings-description-category=playback]{display:inline}
+.settings-shell[data-settings-ready] [data-settings-description-category]:not([hidden]){display:inline}
+html[data-settings-category] .settings-shell:not([data-settings-ready]) .settings-flow>[data-settings-category]:not([role=alert]),html[data-settings-category] .settings-shell:not([data-settings-ready]) [data-settings-description-category]{display:none}
+html[data-settings-level=general] .settings-shell:not([data-settings-ready]) .settings-nav>a[data-settings-level=advanced],html[data-settings-level=advanced] .settings-shell:not([data-settings-ready]) .settings-nav>a[data-settings-level=general]{display:none}
+html[data-settings-category=playback] .settings-shell:not([data-settings-ready]) .settings-flow>[data-settings-category=playback]:not([role=alert]){display:block}
+html[data-settings-category=playback] .settings-shell:not([data-settings-ready]) [data-settings-description-category=playback]{display:inline}
+html[data-settings-category=appearance] .settings-shell:not([data-settings-ready]) .settings-flow>[data-settings-category=appearance]:not([role=alert]){display:block}
+html[data-settings-category=appearance] .settings-shell:not([data-settings-ready]) [data-settings-description-category=appearance]{display:inline}
+html[data-settings-category=library] .settings-shell:not([data-settings-ready]) .settings-flow>[data-settings-category=library]:not([role=alert]){display:block}
+html[data-settings-category=library] .settings-shell:not([data-settings-ready]) [data-settings-description-category=library]{display:inline}
+html[data-settings-category=household] .settings-shell:not([data-settings-ready]) .settings-flow>[data-settings-category=household]:not([role=alert]){display:block}
+html[data-settings-category=household] .settings-shell:not([data-settings-ready]) [data-settings-description-category=household]{display:inline}
+html[data-settings-category=general] .settings-shell:not([data-settings-ready]) .settings-flow>[data-settings-category=general]:not([role=alert]){display:block}
+html[data-settings-category=general] .settings-shell:not([data-settings-ready]) [data-settings-description-category=general]{display:inline}
+html[data-settings-category=thanks] .settings-shell:not([data-settings-ready]) .settings-flow>[data-settings-category=thanks]:not([role=alert]){display:block}
+html[data-settings-category=thanks] .settings-shell:not([data-settings-ready]) [data-settings-description-category=thanks]{display:inline}
+html[data-settings-category=network] .settings-shell:not([data-settings-ready]) .settings-flow>[data-settings-category=network]:not([role=alert]){display:block}
+html[data-settings-category=network] .settings-shell:not([data-settings-ready]) [data-settings-description-category=network]{display:inline}
+html[data-settings-category=security] .settings-shell:not([data-settings-ready]) .settings-flow>[data-settings-category=security]:not([role=alert]){display:block}
+html[data-settings-category=security] .settings-shell:not([data-settings-ready]) [data-settings-description-category=security]{display:inline}
+html[data-settings-category=integrations] .settings-shell:not([data-settings-ready]) .settings-flow>[data-settings-category=integrations]:not([role=alert]){display:block}
+html[data-settings-category=integrations] .settings-shell:not([data-settings-ready]) [data-settings-description-category=integrations]{display:inline}
+html[data-settings-category=system] .settings-shell:not([data-settings-ready]) .settings-flow>[data-settings-category=system]:not([role=alert]){display:block}
+html[data-settings-category=system] .settings-shell:not([data-settings-ready]) [data-settings-description-category=system]{display:inline}
+html[data-settings-category=migration] .settings-shell:not([data-settings-ready]) .settings-flow>[data-settings-category=migration]:not([role=alert]){display:block}
+html[data-settings-category=migration] .settings-shell:not([data-settings-ready]) [data-settings-description-category=migration]{display:inline}

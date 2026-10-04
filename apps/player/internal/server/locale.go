@@ -77,15 +77,17 @@ func loadLocalization() (*i18n.Bundle, []catalogMessage) {
 type localizedTemplate = *localization.TemplateSet
 
 func newLocalizedTemplate(name, source string) *localization.TemplateSet {
-	source = strings.ReplaceAll(source, `/static/main.kinosail.bundle.js?v=12-htmx4`, `/static/main.kinosail.bundle.js?v=32-htmx4`)
+	source = strings.ReplaceAll(source, `/static/main.kinosail.bundle.js?v=33-htmx4`, `/static/main.kinosail.bundle.js?v=34-htmx4`)
+	source = strings.ReplaceAll(source, `/static/main.kinosail.bundle.js?v=32-htmx4`, `/static/main.kinosail.bundle.js?v=34-htmx4`)
 	themeSource := fmt.Sprintf("/static/theme.js?v=%x", sha256.Sum256(themeJS))
 	for _, version := range []string{"electric-1", "electric-2"} {
 		source = strings.ReplaceAll(source, "/static/theme.js?v="+version, themeSource)
 	}
+	source = strings.ReplaceAll(source, `/static/main.kinosail.bundle.js?v=12-htmx4`, `/static/main.kinosail.bundle.js?v=34-htmx4`)
 	source = strings.Replace(source, `<html lang="en">`, `<html lang="en" data-theme="dark">`, 1)
 	funcs := httpguard.CSRFParseFuncs(uiIcon)
 	funcs["sidebarGroups"] = sidebarGroups
-	return localization.NewTemplateSet(name, string(applicationShellCSSVersion([]byte(source))), "32-htmx4", localeCatalog, supportedLanguages, httpguard.CSRFTemplateSource, funcs, localeTemplateRuntime)
+	return localization.NewTemplateSet(name, string(applicationShellCSSVersion([]byte(source))), "34-htmx4", localeCatalog, supportedLanguages, httpguard.CSRFTemplateSource, funcs, localeTemplateRuntime)
 }
 
 func localized(next http.Handler) http.Handler {

@@ -42,7 +42,7 @@ func playerTemplate(template string) string {
 	template = strings.Replace(template, `/static/player.js?v=34`, fmt.Sprintf("/static/player.js?v=%x", sha256.Sum256(playerJS)), 1)
 	template = sharedplayback.PlayerTemplate(template)
 	template = strings.ReplaceAll(template, `data-player-fallback>Try again</button>`, `data-player-fallback></button>`)
-	return strings.ReplaceAll(template, `data-player-fallback hidden>Try again</button>`, `data-player-fallback hidden></button>`)
+	return sharedplayback.StablePlayerLayout(strings.ReplaceAll(template, `data-player-fallback hidden>Try again</button>`, `data-player-fallback hidden></button>`))
 }
 
 func registerPlayer(mux *http.ServeMux, index *libraryIndex, progress *progressStore, settings *settingsStore, lists *listStore, hls *hlsManager, probe *mediaProbe, subtitles *subtitleProvider, metadata *metadataStore, rooms *watchRoomAdapter, auth *authentication) {

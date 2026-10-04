@@ -35,14 +35,15 @@ if (settingsNav && settingsFlow) {
     ["language", "appearance theme"],
   ]);
   const normalize = (value) => value.normalize("NFKD").replace(/[^\p{L}\p{N}]+/gu, " ").toLowerCase().trim();
+  const fragmentID = (hash) => { try { return decodeURIComponent(hash.slice(1)); } catch (_) { return ""; } };
   const groupLabel = (group) => links.find((link) => link.dataset.settingsGroup === group)?.textContent.trim() || group;
   const searchableText = (section) => {
     const heading = normalize(section.querySelector("h2,h3")?.textContent || "");
     return normalize([section.textContent, groupLabel(categoryOf(section)), [...aliases].filter(([key]) => normalize(key) === heading).map(([, value]) => value).join(" ")].join(" "));
   };
   const groupForHash = () => {
-    const target = document.getElementById(location.hash.slice(1));
-    return categoryOf(target?.closest("[data-settings-category], [data-settings-group]")) || links.find((link) => link.hash === location.hash)?.dataset.settingsGroup || links[0]?.dataset.settingsGroup || "general";
+    const target = document.getElementById(fragmentID(location.hash));
+    return categoryOf(target?.closest("[data-settings-category], [data-settings-group]")) || links.find((link) => fragmentID(link.hash) === fragmentID(location.hash))?.dataset.settingsGroup || links[0]?.dataset.settingsGroup || "general";
   };
   const selectSettingsGroup = (group) => {
     const selected = links.find((link) => link.dataset.settingsGroup === group) || links[0];
@@ -50,8 +51,14 @@ if (settingsNav && settingsFlow) {
     const level = selected?.dataset.settingsLevel;
     const description = settingsFlow.querySelector("[data-settings-description]");
     if (description) {
-      description.textContent = selected?.dataset.settingsDescription || "";
-      description.hidden = !description.textContent;
+      const initialDescriptions = description.querySelectorAll("[data-settings-description-category]");
+      if (initialDescriptions.length) {
+        for (const copy of initialDescriptions) copy.hidden = copy.dataset.settingsDescriptionCategory !== group;
+        description.hidden = false;
+      } else {
+        description.textContent = selected?.dataset.settingsDescription || "";
+        description.hidden = !description.textContent;
+      }
     }
     for (const link of levelLinks) {
       if (link.dataset.settingsLevel === level) link.setAttribute("aria-current", "page");
@@ -67,6 +74,9 @@ if (settingsNav && settingsFlow) {
       if (link.dataset.settingsGroup === group) link.setAttribute("aria-current", "page");
       else link.removeAttribute("aria-current");
     }
+    // The initial CSS projection already shows the native fragment's category.
+    // Switch to interactive visibility only after the same projection is applied.
+    if (organized) settingsFlow.closest(".settings-shell").setAttribute("data-settings-ready", "");
   };
   const searchSettings = () => {
     const query = normalize((settingsSearchInput?.value || "").slice(0, 160));
@@ -120,20 +130,20 @@ if (settingsNav && settingsFlow) {
   const revealHash = () => {
     selectSettingsGroup(groupForHash());
     if (!organized) return;
-    const target = document.getElementById(location.hash.slice(1));
+    const target = document.getElementById(fragmentID(location.hash));
     if (!target) return;
     if (settingsSearchInput?.value) { settingsSearchInput.value = ""; searchSettings(); }
     for (let parent = target.parentElement; parent; parent = parent.parentElement) {
       if (parent.tagName === "DETAILS") parent.open = true;
     }
-    target.scrollIntoView({ block: "start" });
+    target.scrollIntoView({ block: "start", behavior: "instant" });
   };
   revealHash();
   window.addEventListener("hashchange", revealHash);
   if (organized) settingsSearchResults?.addEventListener("click", (event) => {
     const result = event.target.closest("[data-settings-search-result]");
     if (!result) return;
-    const target = document.getElementById(result.hash.slice(1));
+    const target = document.getElementById(fragmentID(result.hash));
     if (!target) return;
     settingsSearchInput.value = "";
     searchSettings();

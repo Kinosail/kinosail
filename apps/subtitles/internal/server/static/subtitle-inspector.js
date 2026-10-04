@@ -22,14 +22,14 @@
     if (!response.ok) { const error = new Error(typeof result.error === "string" ? result.error : "The request could not be completed. Reload and try again."); error.stepUpRequired = result.stepUpRequired; error.status = response.status; throw error; }
     return result;
   }
-  function invalidate() { revision++; prepared = undefined; apply.disabled = true; status.removeAttribute("aria-busy"); }
+  function invalidate() { revision++; prepared = undefined; apply.disabled = true; status.removeAttribute("aria-busy"); status.removeAttribute("aria-label"); }
   function setBusy(value, lockInputs = false) {
     if (lockInputs) for (const control of form.querySelectorAll("input, select, textarea, button")) { lockedControls.set(control, control.disabled); control.disabled = true; }
     if (!value) { for (const [control, disabled] of lockedControls) control.disabled = disabled; lockedControls.clear(); }
     busy = value; form.querySelector('button[type="submit"]').disabled = value; apply.disabled = value || !prepared;
     document.getElementById("restore-subtitle").disabled = value;
   }
-  function showError(error) { status.textContent = error.message || "The subtitle could not be loaded."; if (error.stepUpRequired) { const link = element("a", " Sign in again, then retry here."); link.href = `/login?next=${encodeURIComponent(location.pathname + location.search)}`; link.target = "_blank"; link.rel = "noopener"; status.append(link); } }
+  function showError(error) { status.removeAttribute("aria-label"); status.textContent = error.message || "The subtitle could not be loaded."; if (error.stepUpRequired) { const link = element("a", " Sign in again, then retry here."); link.href = `/login?next=${encodeURIComponent(location.pathname + location.search)}`; link.target = "_blank"; link.rel = "noopener"; status.append(link); } }
   function renderTrack(name, document) {
     const track = tracks[name];
     for (const cue of Array.from(track.cues || [])) track.removeCue(cue);
@@ -80,7 +80,7 @@
     const progress = document.getElementById("cue-page"), previous = document.getElementById("previous-cues"), next = document.getElementById("next-cues");
     cueObserver?.disconnect();
     if ("IntersectionObserver" in window) {
-      previous.style.display = next.style.display = "none";
+      previous.hidden = next.hidden = true;
       progress.textContent = `${Math.min((page + 1) * 40, indexes.length)} of ${indexes.length} cues shown`;
       if (page < pages - 1) {
         cueObserver = new IntersectionObserver(entries => { if (entries.some(entry => entry.isIntersecting)) { page++; renderCues(true); } }, { rootMargin: "400px 0px" });
@@ -88,17 +88,30 @@
       }
     } else {
       progress.textContent = `${indexes.length} cues · page ${page + 1} of ${pages}`;
-      previous.disabled = page === 0; next.disabled = page === pages - 1;
+      previous.hidden = next.hidden = false; previous.disabled = page === 0; next.disabled = page === pages - 1;
     }
   }
   async function load() {
-    const ticket = ++revision; status.textContent = "Loading subtitle details…"; status.setAttribute("aria-busy", "true"); apply.disabled = true; prepared = undefined;
+    const ticket = ++revision; status.setAttribute("aria-label", "Loading subtitle details…"); status.setAttribute("aria-busy", "true"); apply.disabled = true; prepared = undefined; form.querySelector('button[type="submit"]').disabled = true;
+    const lockRefresh = !busy;
+    const focused = lockRefresh && form.contains?.(document.activeElement) ? document.activeElement : undefined;
+    let focusMoved = false;
+    const observeFocus = event => { if (event.type === "pointerdown" || event.target !== document.body) focusMoved ||= event.target !== focused; };
+    if (focused) { document.addEventListener("focusin", observeFocus, true); document.addEventListener("pointerdown", observeFocus, true); }
+    if (lockRefresh) setBusy(true, true);
     let result;
     try { result = await request(`/inspect?language=${encodeURIComponent(form.elements.language.value)}`); }
     catch (error) { if (ticket === revision) throw error; return; }
-    finally { if (ticket === revision) status.removeAttribute("aria-busy"); }
+    finally {
+      if (lockRefresh) { setBusy(false); form.querySelector('button[type="submit"]').disabled = true; }
+      if (focused) {
+        document.removeEventListener("focusin", observeFocus, true); document.removeEventListener("pointerdown", observeFocus, true);
+        if (ticket === revision && !focusMoved && document.activeElement === document.body && !focused.disabled) focused.focus({ preventScroll: true });
+      }
+      if (ticket === revision) { status.removeAttribute("aria-busy"); status.removeAttribute("aria-label"); }
+    }
     if (ticket !== revision) return;
-    review = result; form.elements.role.value = review.role === "captions" ? "captions" : "translation"; page = 0; render(); status.textContent = review.current ? "Current subtitle loaded. Preview a change before saving." : "Choose a subtitle file to begin.";
+    review = result; form.elements.role.value = review.role === "captions" ? "captions" : "translation"; page = 0; render(); form.querySelector('button[type="submit"]').disabled = false; status.textContent = review.current ? "Current subtitle loaded. Preview a change before saving." : "Choose a subtitle file to begin.";
   }
   async function input() {
     const values = { role: form.elements.role.value, language: form.elements.language.value, fingerprint: review.fingerprint, encoding: form.elements.encoding.value, offsetMilliseconds: Math.round(Number(form.elements.offset.value) * 1000), automaticSync: form.elements.automaticSync.checked, removeCredits: form.elements.removeCredits.checked, mergeRepeated: form.elements.mergeRepeated.checked };
@@ -237,6 +250,6 @@
   });
   window.addEventListener("pagehide", () => { pageActive = false; draftRevision++; draftActionRevision++; clearTimeout(draftPoll); wordObserver?.disconnect(); });
   window.addEventListener("pageshow", () => { if (!pageActive) { pageActive = true; loadDraft().catch(showError); } });
-  load().catch(showError);
+  load().catch(error => { status.style.minHeight = `${status.getBoundingClientRect().height}px`; showError(error); });
   loadDraft().catch(showError);
 })();

@@ -31,7 +31,9 @@ var (
 	subtitleDashboardBaseCSS []byte
 	//go:embed static/subtitle-workspace.css
 	subtitleWorkspaceCSS []byte
-	subtitleDashboardCSS = append(append([]byte(nil), subtitleDashboardBaseCSS...), subtitleWorkspaceCSS...)
+	//go:embed static/subtitle-dock-initial.js
+	subtitleDockInitialJS []byte
+	subtitleDashboardCSS  = append(append([]byte(nil), subtitleDashboardBaseCSS...), subtitleWorkspaceCSS...)
 	//go:embed static/hls.min.js
 	hlsJS []byte
 	//go:embed static/manifest.webmanifest
@@ -85,7 +87,7 @@ var (
 	pwaNavigationJS     = webassets.PWANavigation
 	pwaSettingsJS       = webassets.PWASettings
 	shortcutsJS         = webassets.Shortcuts
-	themeJS             = joinScripts(webassets.Theme, webassets.ArtworkPalette, webassets.WatchProgress)
+	themeJS             = joinScripts(subtitleDockInitialJS, webassets.Theme, webassets.ArtworkPalette, webassets.WatchProgress)
 	supporterJS         = joinScripts(webassets.Supporter, supporterAppJS)
 	playerJS            = joinScripts(playerCoreJS, playerStreamingStartJS, playerStreamingEndJS, playerControlsJS, playerDevicesJS, playerProgressJS)
 	downloadsJS         = joinScripts(webassets.OfflineIdentity, webassets.OfflineRuntime, downloadsCoreJS, webassets.DownloadsStorage, downloadsTransferJS, webassets.DownloadsProgress, downloadsUIJS)

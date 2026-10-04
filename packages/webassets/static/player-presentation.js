@@ -22,6 +22,7 @@ const setTheater = (enabled) => {
     stage.tabIndex = -1;
   }
   document.body.classList.toggle("player-theater", enabled);
+  if (!enabled && !document.fullscreenElement) stage.querySelector(".player-stage-toolbar")?.removeAttribute("hidden");
   theaterButton?.setAttribute("aria-pressed", String(enabled));
   theaterButton?.setAttribute("aria-label", enabled ? "Exit theater" : "Theater");
   if (enabled) (theaterButton || stage).focus({ preventScroll: true });
@@ -81,7 +82,7 @@ if (theaterButton && !appleNativePlayback) {
   let theaterIdle;
   const hideTheater = () => {
     clearTimeout(theaterIdle);
-    theaterToolbar.hidden = true;
+    theaterToolbar.hidden = document.body.classList.contains("player-theater") || Boolean(document.fullscreenElement);
     controls?.classList.add("is-idle");
   };
   const revealTheater = () => {
@@ -98,7 +99,7 @@ if (theaterButton && !appleNativePlayback) {
     playing = playing && !player.paused && !playbackPreparation;
     mediaStage.classList.toggle("is-playing", playing);
     clearTimeout(theaterIdle);
-    theaterToolbar.hidden = playing && !mediaStage.classList.contains("has-settings");
+    theaterToolbar.hidden = playing && !mediaStage.classList.contains("has-settings") && (document.body.classList.contains("player-theater") || Boolean(document.fullscreenElement));
     controls?.classList.toggle("is-idle", playing && !mediaStage.classList.contains("has-settings"));
     if (playing) revealTheater();
   };
@@ -127,6 +128,9 @@ if (theaterButton && !appleNativePlayback) {
     else hideTheater();
   }, {passive: false});
   mediaStage.addEventListener("focusin", revealTheater);
+  document.addEventListener("fullscreenchange", () => {
+    if (!document.fullscreenElement && !document.body.classList.contains("player-theater")) revealTheater();
+  });
   mediaStage.addEventListener("focusout", () => { if (!controls?.classList.contains("is-idle")) revealTheater(); });
   theaterButton.addEventListener("click", () => { theaterButton.focus(); setTheater(!document.body.classList.contains("player-theater")); });
   document.addEventListener("keydown", (event) => {

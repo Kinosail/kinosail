@@ -1,9 +1,11 @@
 package server
 
 import (
+	"crypto/sha256"
 	"embed"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/fs"
 	"net/http"
 	"net/url"
@@ -82,9 +84,15 @@ func loadLocalization() (*i18n.Bundle, []catalogMessage) {
 type localizedTemplate = *localization.TemplateSet
 
 func newLocalizedTemplate(name, source string) *localization.TemplateSet {
+	source = strings.ReplaceAll(source, `/static/main.kinosail.bundle.js?v=17-htmx4`, `/static/main.kinosail.bundle.js?v=18-htmx4`)
+	source = strings.ReplaceAll(source, `/static/main.kinosail.bundle.js?v=16-htmx4`, `/static/main.kinosail.bundle.js?v=18-htmx4`)
+	themeSource := fmt.Sprintf("/static/theme.js?v=%x", sha256.Sum256(themeJS))
+	for _, version := range []string{"electric-1", "electric-2", "4", "6"} {
+		source = strings.ReplaceAll(source, "/static/theme.js?v="+version, themeSource)
+	}
 	source = stylesheetURL.ReplaceAllString(source, "/static/app.css?v="+applicationCSSVersion)
-	source = strings.ReplaceAll(source, `/static/main.kinosail.bundle.js?v=7-htmx4`, `/static/main.kinosail.bundle.js?v=16-htmx4`)
-	return localization.NewTemplateSet(name, source, "16-htmx4", localeCatalog, supportedLanguages, httpguard.CSRFTemplateSource, httpguard.CSRFParseFuncs(uiIcon), localeTemplateRuntime)
+	source = strings.ReplaceAll(source, `/static/main.kinosail.bundle.js?v=7-htmx4`, `/static/main.kinosail.bundle.js?v=18-htmx4`)
+	return localization.NewTemplateSet(name, source, "18-htmx4", localeCatalog, supportedLanguages, httpguard.CSRFTemplateSource, httpguard.CSRFParseFuncs(uiIcon), localeTemplateRuntime)
 }
 
 func localized(next http.Handler) http.Handler {
