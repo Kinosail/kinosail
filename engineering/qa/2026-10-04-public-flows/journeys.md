@@ -6,8 +6,9 @@ Their source presence alone does not establish current passing coverage.
 
 Hosted commands for the final PR head:
 
-- Each app's existing Go job runs `make test`, which runs `go test ./...`.
-  This includes the complete server suites and shared fixture contracts below.
+- Each app's existing Go job runs `scripts/ci/test-go.sh <app>` in quick mode.
+  That runs the complete app Go packages; deep mode adds race and coverage.
+  Shared fixture contracts below execute through their app test owners.
 - The existing populated Chromium job runs `scripts/test-container.sh` with
   the required smoke and dedicated populated journeys. Weekly/manual deep
   runs retain the complete Firefox/WebKit suites. This task does not replace them.
