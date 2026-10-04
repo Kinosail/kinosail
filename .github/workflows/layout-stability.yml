@@ -17,6 +17,10 @@ on:
         type: choice
         options: [none, R06, Q14, Q09]
         default: none
+      architecture_metadata:
+        description: Collect bounded source metadata for canonical architecture regeneration
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -140,6 +144,12 @@ jobs:
           timeout 240s pnpm --dir apps/player/e2e exec playwright install --with-deps chromium
       - name: Run exact owned public proof
         run: bash scripts/ci/run-campaign-proof.sh "$CAMPAIGN_PROOF"
+      - name: Collect bounded canonical source metadata
+        if: always() && inputs.architecture_metadata
+        run: |
+          timeout 120s bash scripts/ci/prepare-campaign-go.sh player
+          timeout 120s bash scripts/ci/prepare-campaign-go.sh subtitles
+          timeout 120s python3 scripts/ci/campaign-architecture.py "$CAMPAIGN_PROOF"
       - name: Keep safe campaign proof
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
