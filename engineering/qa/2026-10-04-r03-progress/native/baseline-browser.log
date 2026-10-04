@@ -1,0 +1,17 @@
+
+Running 4 tests using 1 worker
+
+(node:35310) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/4] [chromium] › test-instance-progress.spec.ts:32:1 › real Server rejects invalid progress without changing stored state and web reports the rejection @smoke
+[2/4] [chromium] › test-instance-progress.spec.ts:67:1 › populated player retries the latest progress through the real Server and renders accessible states @smoke
+(node:35486) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[3/4] [chromium] › test-instance-progress.spec.ts:32:1 › real Server rejects invalid progress without changing stored state and web reports the rejection @smoke
+[4/4] [chromium] › test-instance-progress.spec.ts:67:1 › populated player retries the latest progress through the real Server and renders accessible states @smoke
+  2 skipped
+  2 passed (25.9s)

@@ -1,0 +1,11 @@
+{
+  "baselineRevision": "5c3df3a06adad59c65551a65e132a92360b57c4b",
+  "candidateRevision": "b4024370f47e44545e879637b0aa7cc9238f414a",
+  "app": "subtitles",
+  "baselineFindings": 94,
+  "candidateFindings": 94,
+  "identical": true,
+  "issuesSHA256": "60789e060f7c5f75e670295b2f99193678de14396c32b0d9118cc7c7f5b5c136",
+  "changedCitedSources": [],
+  "sourceFiles": 56
+}

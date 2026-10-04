@@ -7,6 +7,8 @@ repo="$(git -C "$app" rev-parse --show-toplevel)"
 cd "$app"
 # shellcheck source=scripts/ci/test-container-transport.sh
 source "$repo/scripts/ci/test-container-transport.sh"
+# shellcheck source=apps/player/scripts/test-browser-journeys.sh
+source "$app/scripts/test-browser-journeys.sh"
 case "${KINOSAIL_BROWSER_SMOKE:-}" in
   ""|1) ;;
   *) echo 'unsupported browser smoke mode' >&2; exit 2 ;;
@@ -208,17 +210,15 @@ if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
   browser_args=()
   if [[ "${KINOSAIL_BROWSER_SMOKE:-}" == "1" ]]; then browser_args+=(--grep=@smoke); fi
   while IFS= read -r project; do
-    GOMAXPROCS=2 KINOSAIL_LIBRARY_BROWSER=1 KINOSAIL_BROWSER_PROJECT="$project" \
-      KINOSAIL_E2E_OUTPUT_DIR="${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project-library-pagination" \
-      KINOSAIL_E2E_ARTIFACT_DIR="${KINOSAIL_E2E_ARTIFACT_DIR:-$media_dir/playwright-artifact}/library-pagination-$project" \
-      ../../scripts/tooling/with-go-module.sh go test -p 1 ./internal/server -run '^TestLibraryPaginationBrowserJourney$' -count=1 -timeout=6m
+    run_library_pagination_journey "$project" \
+      "${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project-library-pagination" \
+      "${KINOSAIL_E2E_ARTIFACT_DIR:-$media_dir/playwright-artifact}/library-pagination-$project"
     start_fresh_server "$port"
     KINOSAIL_BROWSER_PROJECT="$project" KINOSAIL_E2E_URL="$url" KINOSAIL_E2E_OUTPUT_DIR="${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project" pnpm --dir e2e test "${browser_args[@]}"
     # Prepared-Owner journeys need fresh state after the installation journey.
     start_fresh_server "$port"
-    KINOSAIL_BROWSER_PROJECT="$project" python3 "$repo/scripts/ci/run-populated-settings.py" \
-      --url "$url" --output "${KINOSAIL_E2E_ARTIFACT_DIR:-$media_dir/playwright-artifact}/settings-$project" \
-      -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts --grep=@smoke --workers=1
+    run_populated_player_journeys "$project" "$url" \
+      "${KINOSAIL_E2E_ARTIFACT_DIR:-$media_dir/playwright-artifact}/settings-$project"
   done <<< "$browser_projects"
   exit
 fi

@@ -1,0 +1,78 @@
+[
+  {
+    "level": "INFO",
+    "msg": "request",
+    "route": "POST /progress/{id}",
+    "status": 204,
+    "request_id": "905645ecc6397e9062f9304a"
+  },
+  {
+    "level": "WARN",
+    "msg": "request",
+    "route": "POST /progress/{id}",
+    "status": 400,
+    "request_id": "b748d199d6074ec0f8fab538"
+  },
+  {
+    "level": "INFO",
+    "msg": "request",
+    "route": "POST /progress/{id}",
+    "status": 204,
+    "request_id": "532a5807099e043c57e63631"
+  },
+  {
+    "level": "WARN",
+    "msg": "request",
+    "route": "POST /progress/{id}",
+    "status": 400,
+    "request_id": "e85ca6920fc7b4f0f197eead"
+  },
+  {
+    "level": "INFO",
+    "msg": "request",
+    "route": "POST /progress/{id}",
+    "status": 204,
+    "request_id": "02d677222d3f58573b031587",
+    "playback_session": "931e1bc7bb9398608cebd1bc"
+  },
+  {
+    "level": "WARN",
+    "msg": "request",
+    "route": "POST /progress/{id}",
+    "status": 400,
+    "request_id": "a9be98d96819db8fc2ca2c5b",
+    "playback_session": "931e1bc7bb9398608cebd1bc"
+  },
+  {
+    "level": "INFO",
+    "msg": "request",
+    "route": "POST /progress/{id}",
+    "status": 204,
+    "request_id": "14cb738c8bcd6a80e0e99f4d",
+    "playback_session": "0baa006f6551ffb2af3c6721"
+  },
+  {
+    "level": "INFO",
+    "msg": "request",
+    "route": "POST /progress/{id}",
+    "status": 204,
+    "request_id": "aa940fcdc3d4392c350bf1b1",
+    "playback_session": "3ea6aa8acde591b40337daa4"
+  },
+  {
+    "level": "WARN",
+    "msg": "request",
+    "route": "POST /progress/{id}",
+    "status": 400,
+    "request_id": "d9ad61cac066bce867de290e",
+    "playback_session": "3ea6aa8acde591b40337daa4"
+  },
+  {
+    "level": "INFO",
+    "msg": "request",
+    "route": "POST /progress/{id}",
+    "status": 204,
+    "request_id": "5cf958abf8e8fe60de1ecc2a",
+    "playback_session": "5f672459c4b46a3e2f2cde20"
+  }
+]

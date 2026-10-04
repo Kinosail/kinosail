@@ -1,0 +1,50 @@
+.EEEEE
+======================================================================
+ERROR: test_explicit_progress_and_library_journeys_are_required (scripts.ci.test_populated_settings.PopulatedResultsTest.test_explicit_progress_and_library_journeys_are_required)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r03-progress/scripts/ci/test_populated_settings.py", line 40, in test_explicit_progress_and_library_journeys_are_required
+    self.assertEqual(set(verify_results(self.results(titles), titles)["passed"]), set(titles))
+                         ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: verify_results() takes 1 positional argument but 2 were given
+
+======================================================================
+ERROR: test_explicit_skip_failure_and_duplicate_results_are_rejected (scripts.ci.test_populated_settings.PopulatedResultsTest.test_explicit_skip_failure_and_duplicate_results_are_rejected) (status='skipped', result='skipped')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r03-progress/scripts/ci/test_populated_settings.py", line 48, in test_explicit_skip_failure_and_duplicate_results_are_rejected
+    verify_results(self.results(titles, status, result), titles)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: verify_results() takes 1 positional argument but 2 were given
+
+======================================================================
+ERROR: test_explicit_skip_failure_and_duplicate_results_are_rejected (scripts.ci.test_populated_settings.PopulatedResultsTest.test_explicit_skip_failure_and_duplicate_results_are_rejected) (status='unexpected', result='failed')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r03-progress/scripts/ci/test_populated_settings.py", line 48, in test_explicit_skip_failure_and_duplicate_results_are_rejected
+    verify_results(self.results(titles, status, result), titles)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: verify_results() takes 1 positional argument but 2 were given
+
+======================================================================
+ERROR: test_explicit_skip_failure_and_duplicate_results_are_rejected (scripts.ci.test_populated_settings.PopulatedResultsTest.test_explicit_skip_failure_and_duplicate_results_are_rejected) (status='expected', result='failed')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r03-progress/scripts/ci/test_populated_settings.py", line 48, in test_explicit_skip_failure_and_duplicate_results_are_rejected
+    verify_results(self.results(titles, status, result), titles)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: verify_results() takes 1 positional argument but 2 were given
+
+======================================================================
+ERROR: test_explicit_skip_failure_and_duplicate_results_are_rejected (scripts.ci.test_populated_settings.PopulatedResultsTest.test_explicit_skip_failure_and_duplicate_results_are_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r03-progress/scripts/ci/test_populated_settings.py", line 50, in test_explicit_skip_failure_and_duplicate_results_are_rejected
+    verify_results(self.results(titles * 2), titles)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: verify_results() takes 1 positional argument but 2 were given
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.004s
+
+FAILED (errors=5)

@@ -1,10 +1,119 @@
 let progressRevision = 0;
-const save = (watched) => playbackPreparation || player.dataset.castActive === "true" ? Promise.resolve() : player.dataset.offline === "true" ? window.KinosailOfflineMedia?.saveProgress(player, watched) : fetch(player.dataset.progress, {
-  method: "POST",
-  headers: {"Content-Type": "application/x-www-form-urlencoded", ...(csrf ? {"X-Kinosail-CSRF": csrf} : {})},
-  body: new URLSearchParams({seconds: watched ? 0 : player.currentTime, session: playbackSession, revision: ++progressRevision, ...(watched ? {watched: true} : {})}),
-  keepalive: true,
-}).catch(() => undefined);
+// One page-owned pending position; never replay a closed page's session over newer state.
+let pendingProgress, progressFlight, progressFailure = "", progressContinuation;
+const progressNotice = document.querySelector("[data-progress-notice]");
+const progressStatus = document.querySelector("[data-progress-status]");
+const progressRetry = document.querySelector("[data-progress-retry]");
+const progressContinue = document.querySelector("[data-progress-continue]");
+const progressText = (state, fallback) => progressStatus?.dataset[state] || fallback;
+const progressItem = () => {
+  try {
+    const url = new URL(player.dataset.progress, location.href);
+    return url.origin === location.origin ? url.pathname.match(/^\/progress\/([a-zA-Z0-9_-]{1,128})$/)?.[1] : undefined;
+  } catch (_) { return undefined; }
+};
+const progressProfile = () => document.body.dataset.viewerProfile || "";
+const ownsProgress = (value) => value && value.profile === progressProfile() && value.item === progressItem() &&
+  value.revision === progressRevision && player.dataset.castActive !== "true" && player.dataset.offline !== "true";
+const clearProgress = () => {
+  pendingProgress = undefined; progressFailure = ""; progressContinuation = undefined;
+  if (progressNotice) { progressNotice.hidden = true; progressNotice.removeAttribute("aria-busy"); }
+  if (progressRetry) progressRetry.disabled = false;
+  if (progressStatus) for (const key of ["progressFailure", "progressSession", "progressRevision", "progressRequestId"]) delete progressStatus.dataset[key];
+};
+const retryableProgress = () => ["network", "timeout", "server"].includes(progressFailure);
+const showProgressFailure = () => {
+  if (progressNotice) { progressNotice.hidden = false; progressNotice.removeAttribute("aria-busy"); }
+  if (progressStatus) progressStatus.textContent = progressFailure === "authentication" ? progressText("authentication", "Your position is not saved. Reload this page to sign in again.") :
+    progressFailure === "policy" || progressFailure === "invalid" ? progressText("policy", "Your position is not saved. Reload this page to check access to this title.") :
+    progressFailure === "response" ? progressText("response", "Your position is not saved. Reload this page to reconnect to Kinosail Server.") :
+    pendingProgress?.watched ? progressContinuation ? progressText("continue", "Watched status is not saved. Retry or continue without saving.") : progressText("watched", "Watched status is not saved. Retry while this page is open.") : progressText("unsaved", "Your latest position is not saved. Retry while this page is open.");
+  if (progressRetry) { progressRetry.hidden = !retryableProgress(); progressRetry.disabled = false; }
+  if (progressContinue) progressContinue.hidden = !progressContinuation;
+};
+const sendProgress = (closing = false) => {
+  if (progressFlight && !closing) return progressFlight;
+  // Unload cannot wait for an older response to dispatch the latest keepalive.
+  let flight;
+  flight = (async () => {
+    let response;
+    while (ownsProgress(pendingProgress)) {
+      const observed = pendingProgress;
+      const controller = new AbortController();
+      let timedOut = false;
+      const timeout = setTimeout(() => { timedOut = true; controller.abort(); }, 8000);
+      let failure = "";
+      if (progressNotice && !progressNotice.hidden) {
+        progressNotice.setAttribute("aria-busy", "true");
+        if (progressStatus) progressStatus.textContent = progressText("saving", "Saving progress…");
+      }
+      if (progressRetry) progressRetry.disabled = true;
+      try {
+        response = await fetch(player.dataset.progress, {
+          method: "POST",
+          headers: {"Content-Type": "application/x-www-form-urlencoded", "X-Playback-Session": playbackSession, ...(csrf ? {"X-Kinosail-CSRF": csrf} : {})},
+          body: new URLSearchParams({seconds: observed.seconds, session: playbackSession, revision: observed.revision, ...(observed.watched ? {watched: true} : {})}),
+          keepalive: true, signal: controller.signal,
+        });
+        if (response.redirected || response.status === 401) failure = "authentication";
+        else if (response.status === 408 || response.status === 429 || response.status >= 500) failure = "server";
+        else if (response.status >= 400) failure = "policy";
+        else if (response.status !== 204) failure = "response";
+      } catch (_) { failure = timedOut ? "timeout" : "network"; response = undefined; }
+      finally { clearTimeout(timeout); }
+      if (progressFlight !== flight) break;
+      if (observed !== pendingProgress) continue;
+      if (!ownsProgress(observed)) { clearProgress(); break; }
+      if (failure) {
+        if (progressStatus) {
+          const requestID = response?.headers?.get("X-Request-ID") || "";
+          Object.assign(progressStatus.dataset, {progressFailure: failure, progressRevision: String(observed.revision),
+            progressSession: /^[a-zA-Z0-9_-]{8,64}$/.test(playbackSession) ? playbackSession : "",
+            progressRequestId: /^[a-zA-Z0-9_-]{1,64}$/.test(requestID) ? requestID : ""});
+        }
+        progressFailure = failure; showProgressFailure(); response = {ok: false}; break;
+      }
+      const continuation = progressContinuation;
+      clearProgress();
+      if (continuation) await continuation();
+      if (progressFlight === flight && ownsProgress(pendingProgress)) continue;
+      break;
+    }
+    return response;
+  })().finally(() => { if (progressFlight === flight) progressFlight = undefined; });
+  progressFlight = flight;
+  return flight;
+};
+const retryProgress = () => {
+  if (!ownsProgress(pendingProgress)) { clearProgress(); return; }
+  if (retryableProgress()) return sendProgress();
+};
+progressRetry?.addEventListener("click", retryProgress);
+progressContinue?.addEventListener("click", () => {
+  if (!ownsProgress(pendingProgress)) { clearProgress(); return; }
+  const continuation = progressContinuation;
+  clearProgress();
+  continuation?.();
+});
+addEventListener("online", retryProgress);
+const save = (watched = false, closing = false) => {
+  if (playbackPreparation) return Promise.resolve();
+  if (player.dataset.castActive === "true" || player.dataset.offline === "true") {
+    clearProgress();
+    return player.dataset.offline === "true" ? window.KinosailOfflineMedia?.saveProgress(player, watched) : Promise.resolve();
+  }
+  if (pendingProgress && !ownsProgress(pendingProgress)) clearProgress();
+  if (pendingProgress && progressFailure && !retryableProgress() && !watched) return Promise.resolve({ok: false});
+  if (pendingProgress?.watched && !watched) return closing ? sendProgress(true) : progressFlight || Promise.resolve({ok: false});
+  const seconds = watched ? 0 : player.currentTime;
+  if (!progressItem() || !Number.isFinite(seconds) || seconds < 0 || seconds > 31536000 || progressProfile().length > 128) {
+    progressFailure = "invalid"; showProgressFailure(); return Promise.resolve({ok: false});
+  }
+  pendingProgress = {profile: progressProfile(), item: progressItem(), seconds, watched, revision: ++progressRevision};
+  if (progressFailure && !retryableProgress()) { showProgressFailure(); return Promise.resolve({ok: false}); }
+  return sendProgress(closing);
+};
+player.addEventListener("play", () => { if (pendingProgress?.watched) clearProgress(); });
 let audioQueue = [];
 let queuedAudio;
 const warmAudio = () => {
@@ -55,11 +164,20 @@ document.addEventListener("visibilitychange", () => {
 player.addEventListener("ended", async () => {
   if (playbackPreparation) return;
   if (player.dataset.castActive === "true") return;
-	const saved = save(true);
-	const advanced = player.dataset.queue && advanceQueue();
-	await saved;
-	if (advanced && await advanced) return;
-  if (player.dataset.next) location.assign(player.dataset.next);
+  const continuePlayback = async () => {
+    if (player.dataset.queue && await advanceQueue()) return;
+    if (player.dataset.next) location.assign(player.dataset.next);
+  };
+  if (player.dataset.offline === "true") {
+    await save(true);
+    await continuePlayback();
+    return;
+  }
+  progressContinuation = player.dataset.queue || player.dataset.next ? continuePlayback : undefined;
+  await save(true);
+});
+addEventListener("pagehide", () => {
+  if (player.readyState >= HTMLMediaElement.HAVE_METADATA && !player.ended) save(false, true);
 });
 setInterval(() => { if (!player.paused) save(); }, 10000);
 setInterval(() => { if (!player.paused || player.readyState < HTMLMediaElement.HAVE_FUTURE_DATA) playbackTrace("heartbeat", "periodic"); flushPlaybackTrace(); }, 5000);

@@ -18,6 +18,7 @@ import urllib.request
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--url', required=True)
 parser.add_argument('--output', type=Path, required=True)
+parser.add_argument('--required-title', action='append', help='Require this exact populated journey title; repeat for each selected journey')
 parser.add_argument('command', nargs=argparse.REMAINDER)
 args = parser.parse_args()
 url = urllib.parse.urlsplit(args.url)
@@ -26,11 +27,16 @@ if url.scheme != 'http' or url.hostname not in ('localhost', '127.0.0.1') or url
 command = args.command[1:] if args.command[:1] == ['--'] else args.command
 if not command:
     parser.error('requires a browser command')
+if args.required_title and any(not title.strip() or len(title) > 240 or '\n' in title or '\r' in title for title in args.required_title):
+    parser.error('required journey titles must be bounded nonempty single lines')
 args.output.mkdir(parents=True, exist_ok=False)
 receipt = {'command': command, 'urlScheme': url.scheme, 'ownerSetup': 'pending',
            'sourceRevision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
            'helperSHA256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
            'browserCertificateBypasses': 'disabled', 'selection': 'two existing populated search journeys'}
+if args.required_title:
+    receipt['selection'] = 'explicit required populated journeys'
+    receipt['requiredTitles'] = args.required_title
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -60,10 +66,11 @@ def call(path, method, body=None, token='', expected=200):
         raise RuntimeError(f'Owner preparation {path} returned HTTP {error.code}') from None
 
 
-def verify_results(path):
+def verify_results(path, required_titles=None):
     results = json.loads(path.read_text())
-    wanted = {'settings search crosses levels and preserves unsaved preferences',
-              'Owner settings search finds a setting across task families'}
+    wanted = set(required_titles) if required_titles is not None else {
+        'settings search crosses levels and preserves unsaved preferences',
+        'Owner settings search finds a setting across task families'}
     found = []
 
     def walk(suite):
@@ -72,15 +79,15 @@ def verify_results(path):
                 tests = spec['tests']
                 if not tests or any(test['status'] != 'expected' or not test['results'] or
                                     any(result['status'] != 'passed' for result in test['results']) for test in tests):
-                    raise RuntimeError('A required populated settings journey did not pass')
+                    raise RuntimeError('A required populated journey did not pass')
                 found.append(spec['title'])
         for child in suite.get('suites', []):
             walk(child)
 
     for suite in results['suites']:
         walk(suite)
-    if set(found) != wanted or len(found) != 2:
-        raise RuntimeError('Both required populated settings journeys must execute')
+    if not wanted or set(found) != wanted or len(found) != len(wanted):
+        raise RuntimeError('Every required populated journey must execute exactly once')
     return {'passed': found, 'resultsSHA256': hashlib.sha256(path.read_bytes()).hexdigest()}
 
 
@@ -103,7 +110,7 @@ try:
                PLAYWRIGHT_JSON_OUTPUT_FILE=str(args.output / f'results-{project}.json'))
     exit_code = subprocess.run(command, env=env, check=False).returncode
     if exit_code == 0:
-        receipt['journeys'] = verify_results(args.output / f'results-{project}.json')
+        receipt['journeys'] = verify_results(args.output / f'results-{project}.json', args.required_title)
 except (RuntimeError, KeyError, OSError, ValueError) as error:
     # Setup response bodies and credentials are deliberately absent from diagnostics.
     receipt['errorClass'] = type(error).__name__
