@@ -51,26 +51,7 @@ func TestDownloadPauseBrowserJourney(t *testing.T) {
 	if prepared.Code != http.StatusAccepted || json.Unmarshal(prepared.Body.Bytes(), &job) != nil || job.ID == "" {
 		t.Fatalf("public original preparation = %d", prepared.Code)
 	}
-	deadline := time.Now().Add(10 * time.Second)
-	for {
-		response := httptest.NewRecorder()
-		handler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/downloads/"+job.ID, nil))
-		var state struct {
-			State        string `json:"state"`
-			SHA256       string `json:"sha256"`
-			ReadyOffline bool   `json:"readyOffline"`
-		}
-		if response.Code != http.StatusOK || json.Unmarshal(response.Body.Bytes(), &state) != nil {
-			t.Fatal("public preparation status unavailable")
-		}
-		if state.State == "ready" && state.ReadyOffline && state.SHA256 == fmt.Sprintf("%x", sha256.Sum256(fixture)) {
-			break
-		}
-		if time.Now().After(deadline) {
-			t.Fatalf("original-quality preparation did not become ready: %s", state.State)
-		}
-		time.Sleep(25 * time.Millisecond)
-	}
+	waitDownloadPausePrepared(t, handler, job.ID, fixture)
 	peer := &downloadPausePeer{handler: handler, job: job.ID}
 	web := httptest.NewServer(peer)
 	t.Cleanup(web.Close)
@@ -93,6 +74,30 @@ func TestDownloadPauseBrowserJourney(t *testing.T) {
 	}
 }
 
+func waitDownloadPausePrepared(t *testing.T, handler http.Handler, job string, fixture []byte) {
+	t.Helper()
+	deadline := time.Now().Add(10 * time.Second)
+	for {
+		response := httptest.NewRecorder()
+		handler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/downloads/"+job, nil))
+		var state struct {
+			State        string `json:"state"`
+			SHA256       string `json:"sha256"`
+			ReadyOffline bool   `json:"readyOffline"`
+		}
+		if response.Code != http.StatusOK || json.Unmarshal(response.Body.Bytes(), &state) != nil {
+			t.Fatal("public preparation status unavailable")
+		}
+		if state.State == "ready" && state.ReadyOffline && state.SHA256 == fmt.Sprintf("%x", sha256.Sum256(fixture)) {
+			break
+		}
+		if time.Now().After(deadline) {
+			t.Fatalf("original-quality preparation did not become ready: %s", state.State)
+		}
+		time.Sleep(25 * time.Millisecond)
+	}
+}
+
 type downloadPausePeer struct {
 	handler          http.Handler
 	mutex            sync.Mutex
@@ -105,14 +110,7 @@ type downloadPausePeer struct {
 
 func (peer *downloadPausePeer) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	if request.URL.Path == "/__download-pause" {
-		peer.mutex.Lock()
-		defer peer.mutex.Unlock()
-		if request.Method == http.MethodPost {
-			peer.ranges, peer.closed, peer.removals, peer.held = []int{}, 0, 0, false
-			peer.generation++
-		}
-		writer.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(writer).Encode(map[string]any{"ranges": peer.ranges, "closed": peer.closed, "removals": peer.removals})
+		peer.serveStatus(writer, request)
 		return
 	}
 	if request.Method == http.MethodDelete || strings.HasSuffix(request.URL.Path, "/remove") {
@@ -164,4 +162,15 @@ func (peer *downloadPausePeer) ServeHTTP(writer http.ResponseWriter, request *ht
 		peer.closed++
 	}
 	peer.mutex.Unlock()
+}
+
+func (peer *downloadPausePeer) serveStatus(writer http.ResponseWriter, request *http.Request) {
+	peer.mutex.Lock()
+	defer peer.mutex.Unlock()
+	if request.Method == http.MethodPost {
+		peer.ranges, peer.closed, peer.removals, peer.held = []int{}, 0, 0, false
+		peer.generation++
+	}
+	writer.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(writer).Encode(map[string]any{"ranges": peer.ranges, "closed": peer.closed, "removals": peer.removals})
 }
