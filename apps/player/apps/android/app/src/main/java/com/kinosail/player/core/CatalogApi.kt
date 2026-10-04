@@ -58,7 +58,7 @@ class CatalogApi(
         result["sort"]?.let { require(result.text("sort", 32) == sort) { INVALID_RESPONSE } }
         result["query"]?.let { require(result.text("query", 512, empty = true) == query) { INVALID_RESPONSE } }
         val rawItems = result["items"] as? JsonArray
-        require(rawItems != null && rawItems.size <= PAGE_SIZE && rawItems.size <= maxOf(0, total - offset) &&
+        require(rawItems != null && rawItems.size <= returnedLimit && rawItems.size <= maxOf(0, total - offset) &&
             (offset >= total || rawItems.isNotEmpty())) {
             INVALID_RESPONSE
         }

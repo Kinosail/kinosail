@@ -41,6 +41,9 @@ class PlaybackApi(
         require(itemId.matches(ID)) { "Invalid playback request." }
         val value = api.playback("/api/v1/items/$itemId/playback?${capabilities.query}", token, viewerId)
             .fields(PLAYBACK_KEYS, setOf("plan", "directAllowed", "duration"))
+        value["policy"]?.let {
+            require(value.text("policy", 32) in setOf("automatic", "direct", "compatible")) { INVALID_RESPONSE }
+        }
         val plan = value.getValue("plan").fields(PLAN_KEYS, setOf("allowed", "mode", "reason"))
         require(plan.flag("allowed") == (plan.text("mode", 32) != "denied") &&
             plan.text("mode", 32) in MODES && plan.text("reason", 128).isNotEmpty() &&
@@ -109,7 +112,7 @@ class PlaybackApi(
         private val ID = Regex("[A-Za-z0-9_-]{1,128}")
         private val MODES = setOf("direct", "remux", "audio-transcode", "transcode", "denied")
         private val MARKER_MODES = setOf("", "unavailable", "server")
-        private val PLAYBACK_KEYS = setOf("media", "plan", "compatiblePlan", "compatibleLabel", "compatibleDescription",
+        private val PLAYBACK_KEYS = setOf("policy", "media", "plan", "compatiblePlan", "compatibleLabel", "compatibleDescription",
             "qualities", "directAllowed", "direct", "compatibleDuration", "compatibleProgressToken", "compatible",
             "download", "directType", "summary", "duration", "start", "audio", "chapters", "markers", "autoSkip",
             "subtitles", "next", "downloadNext", "trickplay", "progressToken", "replayGain",

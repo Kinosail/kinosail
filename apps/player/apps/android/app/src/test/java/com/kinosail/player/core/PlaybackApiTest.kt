@@ -38,6 +38,25 @@ class PlaybackApiTest {
         assertEquals("", source.progressToken)
     }
 
+    @Test fun acceptsCurrentServerPlaybackPoliciesAndRejectsMalformedPolicies() {
+        for (policy in listOf("automatic", "direct", "compatible")) {
+            val current = response.replace("\"plan\":", "\"policy\":\"$policy\",\"plan\":")
+            val source = PlaybackApi(server) { PlaybackResponse(200, current) }
+                .source("film-1", "token", "alex", capabilities)
+            assertEquals("/media/film-1", source.direct)
+            assertEquals(30.0, source.start, 0.0)
+        }
+        for (policy in listOf("\"other\"", "\"\"", "1", "true", "null", "{}", "[]",
+            "\"${"x".repeat(33)}\"", "\"automatic\\n\"", "\"automatic\",\"policy\":\"direct\"")) {
+            val current = response.replace("\"plan\":", "\"policy\":$policy,\"plan\":")
+            val connection = PlaybackResponse(200, current)
+            assertThrows(current, Exception::class.java) {
+                PlaybackApi(server) { connection }.source("film-1", "token", "alex", capabilities)
+            }
+            assertTrue(connection.closed)
+        }
+    }
+
     @Test fun rejectsInvalidInputsBeforeNetwork() {
         var opens = 0
         val api = PlaybackApi(server) { opens++; PlaybackResponse(200, response) }
