@@ -278,7 +278,7 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
                             }
                             path.endsWith("/playback-preferences") -> """{"playback":{"audioTrack":"","subtitleTrack":"","rate":1,"audioLanguage":"auto","subtitleLanguage":"off","nightMode":false,"dialogueBoost":false,"volumeBoost":1},"overridden":false}""".toByteArray()
                             path.endsWith("/progress/sync") -> JSONObject(requestBody).getJSONObject("progress").toString().toByteArray()
-                            path.endsWith("/playback") -> """{"plan":{"allowed":true,"mode":"direct","reason":"direct-preferred"},"directAllowed":true,"direct":"/media/film","directType":"video/mp4","duration":20,"start":0}""".toByteArray()
+                            path.endsWith("/playback") -> """{"policy":"automatic","plan":{"allowed":true,"mode":"direct","reason":"direct-preferred"},"directAllowed":true,"direct":"/media/film","directType":"video/mp4","duration":20,"start":0}""".toByteArray()
                             path == "/media/film" -> {
                                 type = "video/mp4"
                                 InstrumentationRegistry.getInstrumentation().context.assets.open("parity-video.mp4").use { it.readBytes() }
