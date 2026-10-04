@@ -17,3 +17,9 @@ Subtitles canonical page: 820,174 bytes, SHA-256 `cf9695f10ecc1f9027a5e1668a87f3
 `artifact-manifest.json` SHA-256: `823c0423a155fee23f08c32134815d0fc51ea2751161457a03ca92bd61bbf0a2`.
 
 No local Go or browser ran. Compilation must be separated from runtime before a fresh exact-head 33+45 proof. Final normal real-Go generator checks, protected gates, review and fetched merge ancestry remain required. The complete R06 browser recovery behavior remains unfinished.
+
+## Reconciled Q09-main checkpoint
+
+Run `37233940041` at `1e8ba4fed93d29de1173b04985347d96eab416c3` passed all 33 top-level tests and 45 subtests after ordinary reconciliation with delivered Q09 main `d27d55cca01d08ea6b14b24e93d2330c3fca606b`. Compilation completed in 50.928 seconds; public runtime in 15.320 seconds. The exact 71,326,523-byte executable, SHA-256 `830c6f79f877ac5d8b5cea79eb637a5aa7dfc507eb28cafe034435af28775fa5`, retained mode 0700 and identical before/after bytes. Source, revision, full tree, R16 and both owned process groups passed integrity/settlement.
+
+Artifact `11315076328` contains only the four safe JSON files with correct bindings. Its canonical metadata was admitted. Python reproduction at the same source completed with exit 0, checking both remote HTML references before writes; both generated pages were already exact after conflict reconciliation. Normal lint still reported a nested-context diagnostic and two test History indexing diagnostics. Those source repairs, refreshed immutable scope, fresh actual proof and final protected gates remain required. CodeQL policy also failed; current read-only open-alert lookup was empty and its exact failure cause remains undiagnosed. No security acceptance or whole R06 UI completion is claimed.
