@@ -289,5 +289,24 @@
     "No Nox request, deployment, physical media playback or installation",
     "Swift Core on macOS validates the same platform-neutral playback decoder; does not prove AVPlayer iOS/tvOS behavior",
     "Installed2913 predates the repair; screenshot build unknown"
+  ],
+  "exactReviewedHead": "5644c9e6a9e72aec1e0a1c7b281c6cac930e7dfe",
+  "exactReviewedHeadAcceptance": {
+    "casesPassed": 16,
+    "casesTotal": 16,
+    "mediaFetchedAfterValidation": true,
+    "elapsedSeconds": 14.301630500000101,
+    "nativeTree": "64de2aac3ad065c1f4688ae511945595aee8e6b0"
+  },
+  "requiredLocalChecks": {
+    "result": "PASS",
+    "nativeClientSeconds": 117,
+    "buildSource": "e353aec1c35a32752d2ddabd717c3de9da034d2f",
+    "nativeTreeMatchesReviewedHead": true,
+    "scheduling": "iOS and tvOS serial; xcodebuild jobs2"
+  },
+  "ciCorrections": [
+    "Use context-aware ListenConfig in fixture server",
+    "Regenerate Player architecture snapshot for fixture Go package"
   ]
 }
