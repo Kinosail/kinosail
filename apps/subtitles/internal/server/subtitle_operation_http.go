@@ -26,8 +26,8 @@ func (manager *subtitleManager) registerSubtitleOperations(mux *http.ServeMux, a
 func (manager *subtitleManager) prepareSubtitleOperationAPI(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Cache-Control", "private, no-store")
 	var input struct {
-		Action string  `json:"action"`
-		Item   *string `json:"item"`
+		Action string          `json:"action"`
+		Item   json.RawMessage `json:"item"`
 	}
 	mediaType, _, err := mime.ParseMediaType(request.Header.Get("Content-Type"))
 	if err != nil || mediaType != "application/json" || request.URL.RawQuery != "" || httpguard.DecodeUniqueJSON(request.Body, 1024, &input) != nil {
@@ -35,8 +35,9 @@ func (manager *subtitleManager) prepareSubtitleOperationAPI(writer http.Response
 		return
 	}
 	item := ""
-	if input.Item != nil {
-		item = *input.Item
+	if input.Item != nil && !decodeSubtitleValue(input.Item, &item) {
+		manager.operations.rejected(writer, request, "prepare", http.StatusBadRequest)
+		return
 	}
 	batch := oneOf(input.Action, "maintain", "fetch-wanted")
 	if !validSubtitleOperationInput(input.Action, item) || batch && input.Item != nil {
