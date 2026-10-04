@@ -22,7 +22,7 @@ func TestSubtitleRecoveryBrowserJourney(t *testing.T) {
 	if os.Getenv("KINOSAIL_CAPTION_BROWSER") != "1" {
 		t.Skip("KINOSAIL_CAPTION_BROWSER is not set")
 	}
-	clip, err := os.ReadFile(os.Getenv("KINOSAIL_CAPTION_MEDIA_FIXTURE"))
+	clip, err := os.ReadFile(os.Getenv("KINOSAIL_CAPTION_MEDIA_FIXTURE")) //nolint:gosec // Explicit disposable media selected by the test runner, never a production path.
 	if err != nil {
 		t.Fatal("provide KINOSAIL_CAPTION_MEDIA_FIXTURE with a disposable playable MP4:", err)
 	}
