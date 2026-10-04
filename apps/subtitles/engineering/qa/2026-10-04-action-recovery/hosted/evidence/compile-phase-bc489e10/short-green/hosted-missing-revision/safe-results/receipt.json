@@ -1,0 +1,40 @@
+{
+  "bounds": {
+    "compileSeconds": 120,
+    "externalSeconds": 90,
+    "goSeconds": 80,
+    "groupSettlementSeconds": 4,
+    "leaderReapSeconds": 3
+  },
+  "checkoutRevision": "5d70f0c20e91e56e53421b9b2f016591ebcc7336",
+  "classification": "incomplete-or-failed",
+  "compilationWorkingDirectory": "apps/subtitles",
+  "compiledBinaryUnchanged": false,
+  "driver": {
+    "bytes": 15799,
+    "present": true,
+    "sha256": "09b63d6e5c1ebbe8bee5faea1dc6f6a6173736c978058f7d45dab52e7aa24efb"
+  },
+  "environment": {
+    "GOMAXPROCS": "2",
+    "GOPROXY": "off",
+    "GOTOOLCHAIN": "local",
+    "GOWORK": "repository/go.work"
+  },
+  "exportPolicy": "Only fixed names/status/counts/phases and source/artifact hashes; no raw Go output or environment dump.",
+  "goWasLaunched": false,
+  "harnessFailure": {
+    "class": "RuntimeError",
+    "stage": "hosted-revision-preflight"
+  },
+  "mode": "public-go",
+  "productBoundary": "33 public Go contracts only; browser/playback/lint/full required gates/integration/merge remain separate.",
+  "protocolSourceSnapshot": "3682759bea98117023a39c97700dce9f4dcde910",
+  "publicRuntimeWasLaunched": false,
+  "publicRuntimeWorkingDirectory": "apps/subtitles/internal/server",
+  "schemaVersion": 1,
+  "scopeSHA256": "be16e9dd161aa1ac0a4a8364220e37b6bb34086474f07cf601d77d493b0f47e9",
+  "selector": "^(TestSubtitlePreparedRestoreActivatesExactlyOnce|TestSubtitlePreparedMutationRejectsUnknownOrMalformedReceiptBeforeEffects|TestSubtitlePreparedReceiptCannotActivateAnotherAction|TestSubtitlePreparedReceiptRejectsStatusQueriesWithoutConsumingActivation|TestSubtitleExclusiveOperationBlocksAllLegacyWriteAndAudioPathsWithoutEffects|TestSubtitleExclusiveOperationDefersReviewedCleanupWithoutRenamingOrChangingSettings|TestSubtitleRejectedBodyLeavesPreparedReceiptReusableAndLegacyValidationIntact|TestSubtitlePreparedAudioCannotBypassActiveLegacyProviderFetchAdapters|TestSubtitleActionLegacyAudioPublicControl|TestSubtitlePreparedAudioRejectsSecondActivationWithoutStartingAnotherProcess|TestSubtitlePreparedAudioCannotBypassActiveLegacyAnalysis|TestSubtitlePreparedReceiptExpiryCannotReactivateOrChangeFiles|TestSubtitleCompletedReceiptExpiryCannotReplayRestore|TestSubtitleOperationLifecycleDiagnosticsAndMetadataExcludePrivatePayloads|TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects|TestSubtitleOperationCapacityPreservesExistingPreparedReceipts|TestSubtitleOperationPreservesActiveOwnerAndCSRFBoundaries|TestSubtitlePreparedReceiptBecomesUnavailableAfterRealLifecycleRestart|TestSubtitleFailedActivationPersistenceNeverStartsWorkOrResurrectsAfterRestart|TestSubtitleCompletedRestoreOutcomeSurvivesRestartWithoutReplay|TestSubtitleAudioResultsStayBoundedAndUnavailableResultsDoNotRestartWork|TestSubtitleCompletedAudioResultRetainsOwnerBinding|TestSubtitleOperationDeadlineKeepsAdmissionUntilChildPipeAndWaitSettle|TestSubtitleRunningReceiptRestartCannotResumeOrReplayAfterRealChildSettlement|TestSubtitleCorruptOperationRegistryFailsClosedWithoutChangingLegacyOwnerWorkflow|TestSubtitleOperationPreparationPersistenceFailureStartsNoWork|TestConcurrentSubtitleFetchNeverOverwritesSidecar|TestSubtitleMutationsRejectInvalidInputBeforeProviderOrFilesystem|TestSubtitleWebAndBatchMutationsWriteWantedSidecars|TestLocalSubtitleDraftCancellationAndMissingItem|TestSubtitleAutomationStopsDuringCircuitDelay|TestOpenAPIDocumentsEveryVersionedRouteExactlyOnce|TestEveryVersionedAPIRouteHasExactlyOneMCPPolicy)$",
+  "startedUTC": "2026-10-04T20:40:46.068057+00:00",
+  "workingDirectory": "apps/subtitles"
+}

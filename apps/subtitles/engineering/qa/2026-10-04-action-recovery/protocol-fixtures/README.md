@@ -1,0 +1,9 @@
+# Prepared public controls
+
+The `.go.txt` file is preparation, not a compiled or executed regression. It precedes the production time seam and will become a real public-route test before implementing expiry. The time seam remains receipt-only and defaults to `time.Now` and `context.WithTimeout`. Clock-controlled expiry is separate from actual lifecycle restart.
+
+The cancellation-settlement fixture will use a local shell process and a controlled descendant that holds the audio stdout pipe open. Canceling the operation deadline context kills the parent, while the descendant remains blocked until its fixture release. During that interval, public status must stay running and another prepared activation must remain busy. The assertion observes the real child, the actual public handler, and sidecar/history integrity; it does not replace the application operation. Release then produces fictional silence, closes the pipe, and lets the real `Wait` finish. A completion-persistence fault must produce an unknown receipt with no replay after settlement.
+
+The interrupted-running restart control must cancel the first real Server lifecycle, release and observe the controlled child/pipe settling, and only then create the second Server. Its durable running snapshot must become unknown with no resumption or replay. It must preserve the current/recovery files and the public History. A seeded running record alone will not be counted as actual worker/restart proof.
+
+The native lost-response fixture remains a separate required browser journey: approved fictional clip, real media response/decoded frames, one actual approved Save or Restore, actual Go receipt/status/inspection/History, guarded other writes, and final current/recovery/media hashes. No route mock or synthetic one-minute audio process is native media proof.

@@ -1,0 +1,15 @@
+{
+  "revision": "a046ec8553d7eeca985cd8b1204fd6bebce20c73",
+  "boundary": "Go compilation overlay only; R16 files physically unchanged, unimplemented R16 tests excluded",
+  "R16": {
+    "subtitle_maintenance_test.go": "f26e00b3f914130793b72c5187b546244ed4d47222380743899f02aa9f7993fb",
+    "subtitle_dashboard_revision_test.go": "c0111e937ade97838c3422b89de5a56089efd3e289828598147860615ddd7de6"
+  },
+  "committedMaintenanceSHA256": "21659fdc35a9edaa0169d7addebf6f92bc61fca8e40ea364f00c0880ae892bee",
+  "overlay": {
+    "Replace": {
+      "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/internal/server/subtitle_maintenance_test.go": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/.verification/r06-actions/committed-a046ec85/subtitle_maintenance_test.go",
+      "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/internal/server/subtitle_dashboard_revision_test.go": ""
+    }
+  }
+}

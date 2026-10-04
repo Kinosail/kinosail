@@ -64,6 +64,11 @@ func (manager *subtitleManager) runAutomation(ctx context.Context, trigger <-cha
 }
 
 func (manager *subtitleManager) automate(ctx context.Context, limit int) subtitleMaintenanceResult {
+	ctx, settled, admissionErr := manager.provider.admission.enter(ctx)
+	if admissionErr != nil {
+		return subtitleMaintenanceResult{}
+	}
+	defer settled()
 	if limit < 1 || manager.readiness().State != "Ready" || !manager.embeddedReady() && !manager.provider.configured() {
 		return subtitleMaintenanceResult{}
 	}

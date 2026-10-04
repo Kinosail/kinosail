@@ -1,0 +1,55 @@
+// Preparation only: this file is not compiled or executed. The reviewed
+// receipt-only Server time boundary does not exist in production yet.
+package server_test
+
+import (
+	"net/http"
+	"sync/atomic"
+	"testing"
+	"time"
+
+	"github.com/MikeO7/kinosail-subtitles/internal/server"
+)
+
+func TestSubtitlePreparedReceiptExpiryCannotReactivateOrChangeFiles(t *testing.T) {
+	config, target, calls, _ := subtitleOperationAudioConfig(t, false)
+	var seconds atomic.Int64
+	start := time.Now()
+	config.SubtitleOperationTime.Now = func() time.Time { return start.Add(time.Duration(seconds.Load()) * time.Second) }
+	handler := server.New(config)
+	base := "/api/v1/subtitle-library/" + firstSubtitleInventoryID(t, handler)
+	prepared := prepareSubtitleOperation(t, handler, base, "audio")
+	seconds.Store(6 * 60)
+	assertSubtitleOperationUnavailable(t, handler, base+"/audio", prepared.ID, `{"language":"en"}`)
+	assertSubtitleOperationNoProcess(t, calls)
+	assertSubtitleActionBytes(t, target, []byte(subtitleActionInitial))
+	_ = subtitleActionHistory(t, handler, nil, nil)
+	// An explicitly requested fresh operation is allowed. Expiry cannot make
+	// the old ID a factory for replacement work.
+	fresh := prepareSubtitleOperation(t, handler, base, "audio")
+	if fresh.ID == prepared.ID {
+		t.Fatal("expiry reused an unavailable operation identity")
+	}
+	assertSubtitleOperationNoProcess(t, calls)
+}
+
+func TestSubtitleCompletedReceiptExpiryCannotReplayRestore(t *testing.T) {
+	config, target, _, _ := subtitleOperationAudioConfig(t, false)
+	var seconds atomic.Int64
+	start := time.Now()
+	config.SubtitleOperationTime.Now = func() time.Time { return start.Add(time.Duration(seconds.Load()) * time.Second) }
+	handler := server.New(config)
+	base := "/api/v1/subtitle-library/" + firstSubtitleInventoryID(t, handler)
+	subtitleOperationSetupSave(t, handler, base)
+	prepared := prepareSubtitleOperation(t, handler, base, "restore")
+	assertSubtitleOperationAccepted(t, activateSubtitleOperation(t, handler, base+"/restore", `{"language":"en"}`, []string{prepared.ID}), prepared.ID)
+	_ = waitSubtitleOperation(t, handler, prepared.ID)
+	seconds.Store(31 * 60)
+	assertSubtitleOperationUnavailable(t, handler, base+"/restore", prepared.ID, `{"language":"en"}`)
+	assertSubtitleActionBytes(t, target, []byte(subtitleActionInitial))
+	_ = subtitleActionHistory(t, handler, []string{"restored", "updated"}, []string{"restore", "manual"})
+	response := requestApp(t, handler, http.MethodGet, "/api/v1/subtitle-operations/"+prepared.ID+"/result", "")
+	if response.Code != http.StatusNotFound {
+		t.Fatalf("expired receipt result = %d", response.Code)
+	}
+}

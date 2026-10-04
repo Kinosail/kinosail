@@ -1,0 +1,119 @@
+{
+  "head": "42f3c2a930e9f609c5450ef4cd41ce3335101044",
+  "command": [
+    "go",
+    "test",
+    "-p",
+    "1",
+    "-parallel",
+    "1",
+    "-overlay=.verification/r06-actions/committed-42f3c2a9/overlay.json",
+    "./internal/server",
+    "-run",
+    "^TestSubtitle(Prepared.*|Operation(PreparationRejectsUntrustedInputWithoutEffects|CapacityPreservesExistingPreparedReceipts|PreservesActiveOwnerAndCSRFBoundaries)|FailedActivationPersistenceNeverStartsWorkOrResurrectsAfterRestart|CompletedRestoreOutcomeSurvivesRestartWithoutReplay|ActionLegacyAudioPublicControl)$",
+    "-count=1",
+    "-timeout=55s",
+    "-json"
+  ],
+  "wallLimitSeconds": 60,
+  "seconds": 12.315,
+  "exit": 1,
+  "timedOut": false,
+  "prerequisiteFailure": null,
+  "offline": {
+    "GOPROXY": "off",
+    "GOSUMDB": "off"
+  },
+  "completedTests": [
+    {
+      "name": "TestSubtitleActionLegacyAudioPublicControl",
+      "action": "pass",
+      "elapsed": 1.55
+    },
+    {
+      "name": "TestSubtitlePreparedAudioRejectsSecondActivationWithoutStartingAnotherProcess",
+      "action": "fail",
+      "elapsed": 0.04
+    },
+    {
+      "name": "TestSubtitlePreparedAudioCannotBypassActiveLegacyAnalysis",
+      "action": "fail",
+      "elapsed": 0.03
+    },
+    {
+      "name": "TestSubtitlePreparedReceiptBecomesUnavailableAfterRealLifecycleRestart",
+      "action": "fail",
+      "elapsed": 0.04
+    },
+    {
+      "name": "TestSubtitleFailedActivationPersistenceNeverStartsWorkOrResurrectsAfterRestart",
+      "action": "fail",
+      "elapsed": 0.03
+    },
+    {
+      "name": "TestSubtitleCompletedRestoreOutcomeSurvivesRestartWithoutReplay",
+      "action": "fail",
+      "elapsed": 0.14
+    },
+    {
+      "name": "TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects",
+      "action": "fail",
+      "elapsed": 0.04
+    },
+    {
+      "name": "TestSubtitlePreparedRestoreActivatesExactlyOnce",
+      "action": "fail",
+      "elapsed": 0.05
+    },
+    {
+      "name": "TestSubtitleOperationPreservesActiveOwnerAndCSRFBoundaries",
+      "action": "fail",
+      "elapsed": 0.23
+    },
+    {
+      "name": "TestSubtitleOperationCapacityPreservesExistingPreparedReceipts",
+      "action": "fail",
+      "elapsed": 0.03
+    },
+    {
+      "name": "TestSubtitlePreparedReceiptRejectsStatusQueriesWithoutConsumingActivation",
+      "action": "fail",
+      "elapsed": 0.03
+    },
+    {
+      "name": "TestSubtitlePreparedReceiptCannotActivateAnotherAction",
+      "action": "fail",
+      "elapsed": 0.05
+    },
+    {
+      "name": "TestSubtitlePreparedMutationRejectsUnknownOrMalformedReceiptBeforeEffects/never_issued",
+      "action": "fail",
+      "elapsed": 0.06
+    },
+    {
+      "name": "TestSubtitlePreparedMutationRejectsUnknownOrMalformedReceiptBeforeEffects/oversized",
+      "action": "fail",
+      "elapsed": 0.06
+    },
+    {
+      "name": "TestSubtitlePreparedMutationRejectsUnknownOrMalformedReceiptBeforeEffects/duplicate_header",
+      "action": "fail",
+      "elapsed": 0.06
+    },
+    {
+      "name": "TestSubtitlePreparedMutationRejectsUnknownOrMalformedReceiptBeforeEffects/uppercase",
+      "action": "fail",
+      "elapsed": 0.06
+    },
+    {
+      "name": "TestSubtitlePreparedMutationRejectsUnknownOrMalformedReceiptBeforeEffects/empty_supplied_header",
+      "action": "fail",
+      "elapsed": 0.06
+    },
+    {
+      "name": "TestSubtitlePreparedMutationRejectsUnknownOrMalformedReceiptBeforeEffects",
+      "action": "fail",
+      "elapsed": 0
+    }
+  ]
+}

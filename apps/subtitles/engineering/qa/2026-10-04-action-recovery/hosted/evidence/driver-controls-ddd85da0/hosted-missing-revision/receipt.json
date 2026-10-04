@@ -1,0 +1,35 @@
+{
+  "bounds": {
+    "externalSeconds": 90,
+    "goSeconds": 80,
+    "groupSettlementSeconds": 4,
+    "leaderReapSeconds": 3
+  },
+  "checkoutRevision": "466229cfa6d1dbfa586c69ac986121006e484cc9",
+  "classification": "incomplete-or-failed",
+  "driver": {
+    "bytes": 13169,
+    "present": true,
+    "sha256": "62cc70a8778c4c664e25d6286e85e7efe360ba5cda129f0f9d0435ed63c67dac"
+  },
+  "environment": {
+    "GOMAXPROCS": "2",
+    "GOPROXY": "off",
+    "GOTOOLCHAIN": "local",
+    "GOWORK": "repository/go.work"
+  },
+  "exportPolicy": "Only fixed names/status/counts/phases and source/artifact hashes; no raw Go output or environment dump.",
+  "goWasLaunched": false,
+  "harnessFailure": {
+    "class": "RuntimeError",
+    "stage": "hosted-revision-preflight"
+  },
+  "mode": "public-go",
+  "productBoundary": "33 public Go contracts only; browser/playback/lint/full required gates/integration/merge remain separate.",
+  "protocolSourceSnapshot": "ac27d7af98624bf333091382aa9a66e9e5a917be",
+  "schemaVersion": 1,
+  "scopeSHA256": "7de3b390b051d2053e715674601f52854ae9b1074a2732599607cdd131d69ea5",
+  "selector": "^(TestSubtitlePreparedRestoreActivatesExactlyOnce|TestSubtitlePreparedMutationRejectsUnknownOrMalformedReceiptBeforeEffects|TestSubtitlePreparedReceiptCannotActivateAnotherAction|TestSubtitlePreparedReceiptRejectsStatusQueriesWithoutConsumingActivation|TestSubtitleExclusiveOperationBlocksAllLegacyWriteAndAudioPathsWithoutEffects|TestSubtitleExclusiveOperationDefersReviewedCleanupWithoutRenamingOrChangingSettings|TestSubtitleRejectedBodyLeavesPreparedReceiptReusableAndLegacyValidationIntact|TestSubtitlePreparedAudioCannotBypassActiveLegacyProviderFetchAdapters|TestSubtitleActionLegacyAudioPublicControl|TestSubtitlePreparedAudioRejectsSecondActivationWithoutStartingAnotherProcess|TestSubtitlePreparedAudioCannotBypassActiveLegacyAnalysis|TestSubtitlePreparedReceiptExpiryCannotReactivateOrChangeFiles|TestSubtitleCompletedReceiptExpiryCannotReplayRestore|TestSubtitleOperationLifecycleDiagnosticsAndMetadataExcludePrivatePayloads|TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects|TestSubtitleOperationCapacityPreservesExistingPreparedReceipts|TestSubtitleOperationPreservesActiveOwnerAndCSRFBoundaries|TestSubtitlePreparedReceiptBecomesUnavailableAfterRealLifecycleRestart|TestSubtitleFailedActivationPersistenceNeverStartsWorkOrResurrectsAfterRestart|TestSubtitleCompletedRestoreOutcomeSurvivesRestartWithoutReplay|TestSubtitleAudioResultsStayBoundedAndUnavailableResultsDoNotRestartWork|TestSubtitleCompletedAudioResultRetainsOwnerBinding|TestSubtitleOperationDeadlineKeepsAdmissionUntilChildPipeAndWaitSettle|TestSubtitleRunningReceiptRestartCannotResumeOrReplayAfterRealChildSettlement|TestSubtitleCorruptOperationRegistryFailsClosedWithoutChangingLegacyOwnerWorkflow|TestSubtitleOperationPreparationPersistenceFailureStartsNoWork|TestConcurrentSubtitleFetchNeverOverwritesSidecar|TestSubtitleMutationsRejectInvalidInputBeforeProviderOrFilesystem|TestSubtitleWebAndBatchMutationsWriteWantedSidecars|TestLocalSubtitleDraftCancellationAndMissingItem|TestSubtitleAutomationStopsDuringCircuitDelay|TestOpenAPIDocumentsEveryVersionedRouteExactlyOnce|TestEveryVersionedAPIRouteHasExactlyOneMCPPolicy)$",
+  "startedUTC": "2026-10-04T18:37:07.834300+00:00",
+  "workingDirectory": "apps/subtitles"
+}

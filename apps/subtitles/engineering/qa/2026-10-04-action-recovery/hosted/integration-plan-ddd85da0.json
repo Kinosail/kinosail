@@ -1,0 +1,394 @@
+{
+  "schemaVersion": 1,
+  "integrationBase": "ee567e9b9d6b4dc4211055e1f2ef968c5ce63209",
+  "sourceHead": "ddd85da04ced8b03ee97761a3a1e0d228925dbc4",
+  "mergeBase": "95b41857a4e337c2e3e8d335abf3fa4d9a8f6e1b",
+  "orderedOwnedCommits": [
+    {
+      "sha": "9f142f432b06b83b0e9c9f6aca1c7f991d23ff99",
+      "subject": "test(subtitles): prepare stalled action recovery contracts",
+      "changedPaths": [
+        "apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/failure-analysis.md",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/report.md",
+        "apps/subtitles/internal/server/subtitle_action_controls_test.go"
+      ]
+    },
+    {
+      "sha": "a046ec8553d7eeca985cd8b1204fd6bebce20c73",
+      "subject": "test(subtitles): prepare actual lost response mutation fixture",
+      "changedPaths": [
+        "apps/subtitles/e2e/subtitle-action-recovery-native.spec.ts",
+        "apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/native-fixture/main.go.txt",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/report.md",
+        "apps/subtitles/internal/server/subtitle_action_controls_test.go"
+      ]
+    },
+    {
+      "sha": "ebc74ceec206623c2ad3ce13ee3d1fa8de191688",
+      "subject": "docs(subtitles): freeze stalled action baseline and receipt proposal",
+      "changedPaths": [
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-api-controls.log.gz",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-api-controls.log.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-observations.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red.log.gz",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red.log.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/26b3d1df17a25f0e9983-b69709e2645437b81286-pwnetcopy-1.network",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/26b3d1df17a25f0e9983-b69709e2645437b81286-recording1-pwnetcopy-1.network",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/26b3d1df17a25f0e9983-b69709e2645437b81286-recording1.network",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/26b3d1df17a25f0e9983-b69709e2645437b81286-recording1.trace",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/26b3d1df17a25f0e9983-b69709e2645437b81286.network",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/26b3d1df17a25f0e9983-b69709e2645437b81286.trace",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/resources/1d0ade019022d53a3899dfa6985bd048d7048915.html",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/resources/30d9b925461f94179447f4f48be7ca462971035c.css",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/resources/4841e0cf70b5e61cedab223287a92fbb75910152.woff2",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/resources/b8b7408a3b45fbcecc0812f3cd6fb036ff687984.svg",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/resources/bf21a9e8fbc5a3846fb05b4fa0859e0917b2202f.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/resources/da39a3ee5e6b4b0d3255bfef95601890afd80709.html",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/screencast/page@60b46e4d853e0105c4f3fd428793ae10-1791113583431.jpeg",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/screencast/page@60b46e4d853e0105c4f3fd428793ae10-1791113583446.jpeg",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/screencast/page@60b46e4d853e0105c4f3fd428793ae10-1791113583511.jpeg",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/screencast/page@60b46e4d853e0105c4f3fd428793ae10-1791113583529.jpeg",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/screencast/page@60b46e4d853e0105c4f3fd428793ae10-1791113583547.jpeg",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/screencast/page@60b46e4d853e0105c4f3fd428793ae10-1791113583564.jpeg",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/screencast/page@60b46e4d853e0105c4f3fd428793ae10-1791113583578.jpeg",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/screencast/page@60b46e4d853e0105c4f3fd428793ae10-1791113583597.jpeg",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/screencast/page@60b46e4d853e0105c4f3fd428793ae10-1791113583612.jpeg",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/screencast/page@60b46e4d853e0105c4f3fd428793ae10-1791113583628.jpeg",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/screencast/page@60b46e4d853e0105c4f3fd428793ae10-1791113583646.jpeg",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/screencast/page@60b46e4d853e0105c4f3fd428793ae10-1791113583662.jpeg",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/screencast/page@60b46e4d853e0105c4f3fd428793ae10-1791113583678.jpeg",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/screencast/page@60b46e4d853e0105c4f3fd428793ae10-1791113583694.jpeg",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/screencast/page@60b46e4d853e0105c4f3fd428793ae10-1791113583715.jpeg",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/screencast/page@60b46e4d853e0105c4f3fd428793ae10-1791113583731.jpeg",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/screencast/page@60b46e4d853e0105c4f3fd428793ae10-1791113583747.jpeg",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/screencast/page@60b46e4d853e0105c4f3fd428793ae10-1791113585057.jpeg",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/.playwright-artifacts-2/traces/screencast/page@60b46e4d853e0105c4f3fd428793ae10-1791113585074.jpeg",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/subtitle-action-recovery-d-0d511-es-safe-navigation-at-390px-chromium/error-context.md.gz",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/subtitle-action-recovery-d-0d511-es-safe-navigation-at-390px-chromium/test-failed-1.png",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/subtitle-action-recovery-d-0d511-es-safe-navigation-at-390px-chromium/trace.zip",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/subtitle-action-recovery-l-142dd-ers-without-replay-at-390px-chromium/error-context.md.gz",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/subtitle-action-recovery-l-142dd-ers-without-replay-at-390px-chromium/test-failed-1.png",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/subtitle-action-recovery-l-142dd-ers-without-replay-at-390px-chromium/trace.zip",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/subtitle-action-recovery-l-fe9ac-ers-without-replay-at-390px-chromium/error-context.md.gz",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/subtitle-action-recovery-l-fe9ac-ers-without-replay-at-390px-chromium/test-failed-1.png",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red/results/subtitle-action-recovery-l-fe9ac-ers-without-replay-at-390px-chromium/trace.zip",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red.log.gz",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red.log.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/classified-cases.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results-all.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-d-0d511-es-safe-navigation-at-390px-chromium/error-context.md.gz",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-d-0d511-es-safe-navigation-at-390px-chromium/test-failed-1.png",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-d-0d511-es-safe-navigation-at-390px-chromium/trace.zip",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-d-86f94-s-safe-navigation-at-1440px-chromium/error-context.md.gz",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-d-86f94-s-safe-navigation-at-1440px-chromium/test-failed-1.png",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-d-86f94-s-safe-navigation-at-1440px-chromium/trace.zip",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-l-06d94-rs-without-replay-at-1440px-chromium/error-context.md.gz",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-l-06d94-rs-without-replay-at-1440px-chromium/test-failed-1.png",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-l-06d94-rs-without-replay-at-1440px-chromium/trace.zip",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-l-142dd-ers-without-replay-at-390px-chromium/error-context.md.gz",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-l-142dd-ers-without-replay-at-390px-chromium/test-failed-1.png",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-l-142dd-ers-without-replay-at-390px-chromium/trace.zip",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-l-e82c7-rs-without-replay-at-1440px-chromium/error-context.md.gz",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-l-e82c7-rs-without-replay-at-1440px-chromium/test-failed-1.png",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-l-e82c7-rs-without-replay-at-1440px-chromium/trace.zip",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-l-fe9ac-ers-without-replay-at-390px-chromium/error-context.md.gz",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-l-fe9ac-ers-without-replay-at-390px-chromium/test-failed-1.png",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-l-fe9ac-ers-without-replay-at-390px-chromium/trace.zip",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-s-0a01c-ng-but-blocks-another-write-chromium/error-context.md.gz",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-s-0a01c-ng-but-blocks-another-write-chromium/test-failed-1.png",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-s-0a01c-ng-but-blocks-another-write-chromium/trace.zip",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-s-6b9a7-ng-but-blocks-another-write-chromium/error-context.md.gz",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-s-6b9a7-ng-but-blocks-another-write-chromium/test-failed-1.png",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-cached-browser-red/results/subtitle-action-recovery-s-6b9a7-ng-but-blocks-another-write-chromium/trace.zip",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixture-manifest.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/restore/after.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/restore/app.css",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/restore/before-history.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/restore/before.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/restore/dashboard.html",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/restore/history.html",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/restore/history.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/restore/icon.svg",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/restore/inspector.html",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/restore/manrope.woff2",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/restore/preview.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/restore/subtitle-inspector.css",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/restore/subtitle-inspector.js",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/restore/subtitle-status.js",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/restore/theme.js",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/save/after.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/save/app.css",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/save/before-history.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/save/before.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/save/dashboard.html",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/save/history.html",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/save/history.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/save/icon.svg",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/save/inspector.html",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/save/manrope.woff2",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/save/preview.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/save/subtitle-inspector.css",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/save/subtitle-inspector.js",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/save/subtitle-status.js",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-fixtures/save/theme.js",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-manifest.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/baseline-scope.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/operation-contract-proposal.md",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/report.md"
+      ]
+    },
+    {
+      "sha": "ef35141533944e276f6f3e983b4aa8e5357173cc",
+      "subject": "test(subtitles): prepare reviewed operation activation boundaries",
+      "changedPaths": [
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/failure-analysis.md",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/operation-contract-proposal.md",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/report.md",
+        "apps/subtitles/internal/server/subtitle_operation_input_test.go",
+        "apps/subtitles/internal/server/subtitle_operation_owner_test.go",
+        "apps/subtitles/internal/server/subtitle_prepared_operation_test.go"
+      ]
+    },
+    {
+      "sha": "10e191d2ee9ce1a1f9369aa4d4f73e84a06f3a95",
+      "subject": "docs(subtitles): pin restart and operation persistence contract",
+      "changedPaths": [
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/operation-contract-proposal.md"
+      ]
+    },
+    {
+      "sha": "342e52a6429cb6af86888e6a79e6fa023998ff02",
+      "subject": "test(subtitles): prepare audio admission and durable restart controls",
+      "changedPaths": [
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/failure-analysis.md",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/report.md",
+        "apps/subtitles/internal/server/subtitle_operation_audio_test.go",
+        "apps/subtitles/internal/server/subtitle_operation_persistence_test.go"
+      ]
+    },
+    {
+      "sha": "42f3c2a930e9f609c5450ef4cd41ce3335101044",
+      "subject": "test(subtitles): distinguish receipt admission from public side effects",
+      "changedPaths": [
+        "apps/subtitles/internal/server/subtitle_operation_input_test.go",
+        "apps/subtitles/internal/server/subtitle_prepared_operation_test.go"
+      ]
+    },
+    {
+      "sha": "31f3ec2660b9dddf8eef18a48efb35fa80ef2e2a",
+      "subject": "test(subtitles): preserve public operation RED and clock controls",
+      "changedPaths": [
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/protocol-public-red/classified-cases.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/protocol-public-red/events.jsonl",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/protocol-public-red/manifest.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/protocol-public-red/receipt.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/protocol-public-red/runner.py.txt",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/protocol-public-red/scope.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/failure-analysis.md",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/protocol-fixtures/README.md",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/protocol-fixtures/operation_clock_controls_test.go.txt",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/report.md"
+      ]
+    },
+    {
+      "sha": "b4d86db01fef53a178028deac2abee3cf5f79eb7",
+      "subject": "test(subtitles): cover receipt settlement and all write admission paths",
+      "changedPaths": [
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/report.md",
+        "apps/subtitles/internal/server/subtitle_operation_admission_test.go",
+        "apps/subtitles/internal/server/subtitle_operation_clock_test.go",
+        "apps/subtitles/internal/server/subtitle_operation_diagnostics_test.go",
+        "apps/subtitles/internal/server/subtitle_operation_owner_test.go",
+        "apps/subtitles/internal/server/subtitle_operation_results_test.go",
+        "apps/subtitles/internal/server/subtitle_operation_settlement_test.go",
+        "apps/subtitles/internal/server/subtitle_operation_storage_test.go",
+        "apps/subtitles/internal/server/subtitle_prepared_operation_test.go"
+      ]
+    },
+    {
+      "sha": "e78db44709f1d73c39549e77b0874f1cdb94e79d",
+      "subject": "feat(subtitles): add durable prepared operation receipts",
+      "changedPaths": [
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/report.md",
+        "apps/subtitles/internal/server/api_openapi.json",
+        "apps/subtitles/internal/server/api_product.go",
+        "apps/subtitles/internal/server/auth_all_routes_test.go",
+        "apps/subtitles/internal/server/mcp_route_policy.go",
+        "apps/subtitles/internal/server/server.go",
+        "apps/subtitles/internal/server/subtitle_admission.go",
+        "apps/subtitles/internal/server/subtitle_audio_http.go",
+        "apps/subtitles/internal/server/subtitle_automation.go",
+        "apps/subtitles/internal/server/subtitle_cleanup.go",
+        "apps/subtitles/internal/server/subtitle_dashboard.go",
+        "apps/subtitles/internal/server/subtitle_edit.go",
+        "apps/subtitles/internal/server/subtitle_embedded.go",
+        "apps/subtitles/internal/server/subtitle_mutations.go",
+        "apps/subtitles/internal/server/subtitle_operation.go",
+        "apps/subtitles/internal/server/subtitle_operation_http.go",
+        "apps/subtitles/internal/server/subtitle_operation_result.go",
+        "apps/subtitles/internal/server/subtitle_operation_store.go",
+        "apps/subtitles/internal/server/subtitle_operation_worker.go",
+        "apps/subtitles/internal/server/subtitle_provider.go",
+        "apps/subtitles/internal/server/subtitle_review_http.go",
+        "apps/subtitles/internal/server/subtitle_speech_cache.go",
+        "apps/subtitles/internal/server/subtitle_sync.go",
+        "apps/subtitles/internal/server/subtitle_upgrade.go"
+      ]
+    },
+    {
+      "sha": "cb8542400a47cfdbed4a04c41acac3b4211f1199",
+      "subject": "test(subtitles): prepare receipt-aware lost-response journeys",
+      "changedPaths": [
+        "apps/subtitles/e2e/subtitle-action-recovery-native.spec.ts",
+        "apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/native-fixture/main.go.txt",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/report.md"
+      ]
+    },
+    {
+      "sha": "708d561a21499e2601a397489a09be28559fe6d8",
+      "subject": "test(subtitles): reject explicit null batch receipt items",
+      "changedPaths": [
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/report.md",
+        "apps/subtitles/internal/server/subtitle_operation_input_test.go"
+      ]
+    },
+    {
+      "sha": "7d036eb2290410b032e60bc3fe6ae2dd78f27db6",
+      "subject": "test(subtitles): bound stalled recovery and draft reads",
+      "changedPaths": [
+        "apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/report.md"
+      ]
+    },
+    {
+      "sha": "e6840994b661734b142138cbace219b3936399e2",
+      "subject": "test(subtitles): observe rejected preparation data before status",
+      "changedPaths": [
+        "apps/subtitles/internal/server/subtitle_operation_input_test.go"
+      ]
+    },
+    {
+      "sha": "2ae4b8c6505d3101b9e3c3bca83807c158048d88",
+      "subject": "docs(subtitles): preserve receipt prerequisite failure evidence",
+      "changedPaths": [
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/protocol-null-public-red-e6840994/classification.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/protocol-null-public-red-e6840994/events.jsonl",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/protocol-null-public-red-e6840994/manifest.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/protocol-null-public-red-e6840994/receipt.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/protocol-null-public-red-e6840994/runner.py.txt",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/report.md"
+      ]
+    },
+    {
+      "sha": "16c3612c89414e3b01f5eeabca71bab2a0385922",
+      "subject": "fix(subtitles): preserve private receipt JSON cache headers",
+      "changedPaths": [
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/report.md",
+        "apps/subtitles/internal/server/subtitle_operation.go",
+        "apps/subtitles/internal/server/subtitle_operation_http.go"
+      ]
+    },
+    {
+      "sha": "061d9daed6cefc03a27b81145df621592e9f1d64",
+      "subject": "fix(subtitles): reject supplied null batch receipt items",
+      "changedPaths": [
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/protocol-null-public-red-16c3612c-root/classification.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/protocol-null-public-red-16c3612c-root/events.jsonl",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/protocol-null-public-red-16c3612c-root/manifest.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/protocol-null-public-red-16c3612c-root/receipt.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/protocol-null-public-red-16c3612c-root/runner.py.txt",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/report.md",
+        "apps/subtitles/internal/server/subtitle_operation_http.go"
+      ]
+    },
+    {
+      "sha": "ac27d7af98624bf333091382aa9a66e9e5a917be",
+      "subject": "test(subtitles): wait for public startup admission before restart controls",
+      "changedPaths": [
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/protocol-candidate-public-green-061d9dae/classification.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/protocol-candidate-public-green-061d9dae/events.jsonl",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/protocol-candidate-public-green-061d9dae/manifest.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/protocol-candidate-public-green-061d9dae/overlay-scope.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/protocol-candidate-public-green-061d9dae/overlay.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/protocol-candidate-public-green-061d9dae/planned-scope.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/protocol-candidate-public-green-061d9dae/receipt.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/protocol-candidate-public-green-061d9dae/runner.py.txt",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/report.md",
+        "apps/subtitles/internal/server/subtitle_operation_persistence_test.go",
+        "apps/subtitles/internal/server/subtitle_operation_settlement_test.go",
+        "apps/subtitles/internal/server/subtitle_operation_startup_test.go"
+      ]
+    },
+    {
+      "sha": "133637bb40f2898ad3b554cc3f0876323d6bfb90",
+      "subject": "test(subtitles): publish bounded portable R06 protocol recipe",
+      "changedPaths": [
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/evidence/protocol-candidate-public-preflight-stop-ac27d7af/preflight.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/hosted/README.md",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/hosted/protocol-scope.json",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/hosted/subtitle-maintenance-baseline.go.txt",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/report.md",
+        "apps/subtitles/scripts/campaign-r06-public.py"
+      ]
+    },
+    {
+      "sha": "d8f5d08ce52a8a61f6ea3664182298d947b9a3df",
+      "subject": "test(subtitles): prepare fictional hosted-driver failure controls",
+      "changedPaths": [
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/hosted/driver-controls/fictional-go.py.txt",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/hosted/driver-controls/public-driver-controls.py.txt"
+      ]
+    },
+    {
+      "sha": "f723fa6f0b4ddc7591a7a6cac5868c1ed8c7db24",
+      "subject": "test(subtitles): close hosted protocol provenance and timeout gaps",
+      "changedPaths": [
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/hosted/README.md",
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/report.md",
+        "apps/subtitles/scripts/campaign-r06-public.py",
+        "apps/subtitles/scripts/campaign_r06_projection.py",
+        "apps/subtitles/scripts/campaign_r06_sources.py"
+      ]
+    },
+    {
+      "sha": "ddd69cd57af957687759714bb4f29686c873d49d",
+      "subject": "test(subtitles): require fictional driver group settlement",
+      "changedPaths": [
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/hosted/driver-controls/public-driver-controls.py.txt"
+      ]
+    },
+    {
+      "sha": "0e47f2b039e85e3e8eabbb42f36d17e666788418",
+      "subject": "test: preserve R06 process boundary failures",
+      "changedPaths": [
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/hosted/driver-controls/public-driver-controls.py.txt"
+      ]
+    },
+    {
+      "sha": "616ac75e1f98b6a48ab960814c956a3824ccfe9d",
+      "subject": "test: import R06 driver in permission control",
+      "changedPaths": [
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/hosted/driver-controls/public-driver-controls.py.txt"
+      ]
+    },
+    {
+      "sha": "ddd85da04ced8b03ee97761a3a1e0d228925dbc4",
+      "subject": "fix: settle R06 owned processes after natural exit",
+      "changedPaths": [
+        "apps/subtitles/engineering/qa/2026-10-04-action-recovery/hosted/README.md",
+        "apps/subtitles/scripts/campaign-r06-public.py"
+      ]
+    }
+  ],
+  "rootOwnedRoute": {
+    "localCherryPick": "24ba36d2581e1baeeba7d64feecc9f5b7d7eff30",
+    "rootOriginal": "0fe843feade85a51147baeebf9e073b30039c87a",
+    "instruction": "Root integrates the route separately once; do not duplicate both identical patches."
+  },
+  "changedMainOverlap": [],
+  "excludedPhysicalR16AndUncompiledSummary": true,
+  "integrationBoundary": "Source inventory only; cherry-pick/reconciliation/runtime/required gates are root-owned and remain pending."
+}

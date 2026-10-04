@@ -122,12 +122,21 @@ func (manager *subtitleManager) fetchAPI(writer http.ResponseWriter, request *ht
 			return
 		}
 	}
-	status, err := manager.fetch(request, request.PathValue("id"), language)
-	if err != nil {
-		apiError(writer, err, status)
+	if _, err := validateSubtitleLanguages([]string{language}); err != nil {
+		apiError(writer, err, http.StatusBadRequest)
 		return
 	}
-	writer.WriteHeader(http.StatusCreated)
+	work := func(writer http.ResponseWriter, request *http.Request) {
+		status, err := manager.fetch(request, request.PathValue("id"), language)
+		if err != nil {
+			apiError(writer, err, status)
+			return
+		}
+		writer.WriteHeader(http.StatusCreated)
+	}
+	if !manager.runPrepared(writer, request, work) {
+		work(writer, request)
+	}
 }
 
 func (manager *subtitleManager) fetchWantedAPI(writer http.ResponseWriter, request *http.Request) { //nolint:cyclop // Missing fields receive defaults while explicit malformed values are rejected independently.
@@ -157,12 +166,17 @@ func (manager *subtitleManager) fetchWantedAPI(writer http.ResponseWriter, reque
 		apiError(writer, errors.New("subtitle request is invalid"), http.StatusBadRequest)
 		return
 	}
-	attempted, written, err := manager.fetchWantedLanguages(request, languages, limit)
-	if err != nil && written == 0 {
-		apiError(writer, errors.New("subtitle provider unavailable"), http.StatusBadGateway)
-		return
+	work := func(writer http.ResponseWriter, request *http.Request) {
+		attempted, written, err := manager.fetchWantedLanguages(request, languages, limit)
+		if err != nil && written == 0 {
+			apiError(writer, errors.New("subtitle provider unavailable"), http.StatusBadGateway)
+			return
+		}
+		writeJSON(writer, map[string]int{"attempted": attempted, "written": written, "failed": attempted - written}, http.StatusOK)
 	}
-	writeJSON(writer, map[string]int{"attempted": attempted, "written": written, "failed": attempted - written}, http.StatusOK)
+	if !manager.runPrepared(writer, request, work) {
+		work(writer, request)
+	}
 }
 
 func (manager *subtitleManager) maintainAPI(writer http.ResponseWriter, request *http.Request) { //nolint:cyclop // The API validates one bounded request before the shared maintenance operation.
@@ -190,12 +204,17 @@ func (manager *subtitleManager) maintainAPI(writer http.ResponseWriter, request 
 		apiError(writer, errors.New("subtitle request is invalid"), http.StatusBadRequest)
 		return
 	}
-	result, err := manager.maintainLanguages(request, languages, limit)
-	if err != nil && result.Added+result.Upgraded == 0 {
-		apiError(writer, errors.New("subtitle maintenance failed"), http.StatusBadGateway)
-		return
+	work := func(writer http.ResponseWriter, request *http.Request) {
+		result, err := manager.maintainLanguages(request, languages, limit)
+		if err != nil && result.Added+result.Upgraded == 0 {
+			apiError(writer, errors.New("subtitle maintenance failed"), http.StatusBadGateway)
+			return
+		}
+		writeJSON(writer, result, http.StatusOK)
 	}
-	writeJSON(writer, result, http.StatusOK)
+	if !manager.runPrepared(writer, request, work) {
+		work(writer, request)
+	}
 }
 
 func (manager *subtitleManager) restoreAPI(writer http.ResponseWriter, request *http.Request) {
@@ -210,11 +229,20 @@ func (manager *subtitleManager) restoreAPI(writer http.ResponseWriter, request *
 		apiError(writer, errors.New("subtitle language is invalid"), http.StatusBadRequest)
 		return
 	}
-	if status, err := manager.restoreLanguage(request, request.PathValue("id"), language); err != nil {
-		apiError(writer, err, status)
+	if _, err := validateSubtitleLanguages([]string{language}); err != nil {
+		apiError(writer, err, http.StatusBadRequest)
 		return
 	}
-	writer.WriteHeader(http.StatusNoContent)
+	work := func(writer http.ResponseWriter, request *http.Request) {
+		if status, err := manager.restoreLanguage(request, request.PathValue("id"), language); err != nil {
+			apiError(writer, err, status)
+			return
+		}
+		writer.WriteHeader(http.StatusNoContent)
+	}
+	if !manager.runPrepared(writer, request, work) {
+		work(writer, request)
+	}
 }
 
 func (manager *subtitleManager) replacementAPI(writer http.ResponseWriter, request *http.Request) {
@@ -229,11 +257,16 @@ func (manager *subtitleManager) replacementAPI(writer http.ResponseWriter, reque
 		apiError(writer, errors.New("subtitle replacement request is invalid"), http.StatusBadRequest)
 		return
 	}
-	if status, err := manager.setReplacement(request, request.PathValue("id"), replaceable); err != nil {
-		apiError(writer, err, status)
-		return
+	work := func(writer http.ResponseWriter, request *http.Request) {
+		if status, err := manager.setReplacement(request, request.PathValue("id"), replaceable); err != nil {
+			apiError(writer, err, status)
+			return
+		}
+		writer.WriteHeader(http.StatusNoContent)
 	}
-	writer.WriteHeader(http.StatusNoContent)
+	if !manager.runPrepared(writer, request, work) {
+		work(writer, request)
+	}
 }
 
 func (manager *subtitleManager) testProvidersAPI(writer http.ResponseWriter, request *http.Request) {

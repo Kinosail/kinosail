@@ -28,10 +28,11 @@ var errSubtitleTimingMismatch = errors.New("subtitle timing disagrees with the v
 var subtitleTimeScales = []float64{1, 25.0 / 23.976, 23.976 / 25.0}
 
 type subtitleSynchronizer struct {
-	ffmpeg   string
-	probe    *mediaProbe
-	analysis chan struct{}
-	cache    []subtitleSpeechCacheEntry
+	ffmpeg    string
+	probe     *mediaProbe
+	analysis  chan struct{}
+	cache     []subtitleSpeechCacheEntry
+	admission *subtitleAdmission
 }
 
 type subtitleAlignment struct {

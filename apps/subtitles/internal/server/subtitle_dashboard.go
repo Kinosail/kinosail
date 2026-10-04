@@ -99,6 +99,7 @@ type subtitleManager struct {
 	probe            *mediaProbe
 	backups          *backupManager
 	drafts           subtitleDraftStore
+	operations       *subtitleOperations
 	automationCursor int
 }
 
@@ -114,20 +115,21 @@ func newSubtitleManager(index *libraryIndex, settings *settingsStore, provider *
 }
 
 func (manager *subtitleManager) register(mux *http.ServeMux, auth *authentication) {
+	manager.registerSubtitleOperations(mux, auth)
 	manager.registerSubtitleReview(mux, auth)
-	mux.Handle("POST /subtitles/manage/fetch-wanted", auth.owner(http.HandlerFunc(manager.fetchWantedWeb)))
-	mux.Handle("POST /subtitles/manage/maintain", auth.owner(http.HandlerFunc(manager.maintainWeb)))
-	mux.Handle("POST /subtitles/manage/{id}/fetch", auth.owner(http.HandlerFunc(manager.fetchWeb)))
-	mux.Handle("POST /subtitles/manage/{id}/restore", auth.owner(http.HandlerFunc(manager.restoreWeb)))
-	mux.Handle("POST /subtitles/manage/{id}/replacement", auth.owner(http.HandlerFunc(manager.replacementWeb)))
+	mux.Handle("POST /subtitles/manage/fetch-wanted", auth.owner(manager.operations.admission.legacyHandler(manager.fetchWantedWeb)))
+	mux.Handle("POST /subtitles/manage/maintain", auth.owner(manager.operations.admission.legacyHandler(manager.maintainWeb)))
+	mux.Handle("POST /subtitles/manage/{id}/fetch", auth.owner(manager.operations.admission.legacyHandler(manager.fetchWeb)))
+	mux.Handle("POST /subtitles/manage/{id}/restore", auth.owner(manager.operations.admission.legacyHandler(manager.restoreWeb)))
+	mux.Handle("POST /subtitles/manage/{id}/replacement", auth.owner(manager.operations.admission.legacyHandler(manager.replacementWeb)))
 	mux.Handle("POST /subtitles/providers/test", auth.owner(http.HandlerFunc(manager.testProvidersWeb)))
 	mux.HandleFunc("GET /static/subtitle-status.js", serveScript(subtitleStatusJS))
 	mux.Handle("GET /api/v1/subtitle-library", auth.owner(http.HandlerFunc(manager.statusAPI)))
-	mux.Handle("POST /api/v1/subtitle-library/fetch-wanted", auth.owner(http.HandlerFunc(manager.fetchWantedAPI)))
-	mux.Handle("POST /api/v1/subtitle-library/maintain", auth.owner(http.HandlerFunc(manager.maintainAPI)))
-	mux.Handle("POST /api/v1/subtitle-library/{id}/fetch", auth.owner(http.HandlerFunc(manager.fetchAPI)))
-	mux.Handle("POST /api/v1/subtitle-library/{id}/restore", auth.owner(http.HandlerFunc(manager.restoreAPI)))
-	mux.Handle("POST /api/v1/subtitle-library/{id}/replacement", auth.owner(http.HandlerFunc(manager.replacementAPI)))
+	mux.Handle("POST /api/v1/subtitle-library/fetch-wanted", auth.owner(manager.mutation("fetch-wanted", manager.fetchWantedAPI)))
+	mux.Handle("POST /api/v1/subtitle-library/maintain", auth.owner(manager.mutation("maintain", manager.maintainAPI)))
+	mux.Handle("POST /api/v1/subtitle-library/{id}/fetch", auth.owner(manager.mutation("fetch", manager.fetchAPI)))
+	mux.Handle("POST /api/v1/subtitle-library/{id}/restore", auth.owner(manager.mutation("restore", manager.restoreAPI)))
+	mux.Handle("POST /api/v1/subtitle-library/{id}/replacement", auth.owner(manager.mutation("replacement", manager.replacementAPI)))
 	mux.Handle("POST /api/v1/subtitle-providers/test", auth.owner(http.HandlerFunc(manager.testProvidersAPI)))
 }
 

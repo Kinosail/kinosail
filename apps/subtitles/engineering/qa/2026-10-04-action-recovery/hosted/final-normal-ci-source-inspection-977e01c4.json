@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "sourceSnapshot": "977e01c4b49c6c59f06346f80ffd1815d85078a0",
+  "boundary": "Source inspection only; no Go/linter/formatter execution. Logger production file remains unchanged pending hosted baseline.",
+  "lintDiagnosticLogSHA256": "a6d6cdd24367fc40fc6dc5a39e3b4a36ce80a75b01b61fa0c338a7d075d9703c",
+  "activeScope": {
+    "path": "apps/subtitles/engineering/qa/2026-10-04-action-recovery/hosted/protocol-scope-977e01c4.json",
+    "sha256": "63c0bfe58e7e870c3b6b943c9d26cae7ca66d217f1223310e8695eadc2d479f5"
+  },
+  "previousScopes": [
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-04-action-recovery/hosted/protocol-scope-3682759b.json",
+      "sha256": "be16e9dd161aa1ac0a4a8364220e37b6bb34086474f07cf601d77d493b0f47e9"
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-04-action-recovery/hosted/protocol-scope.json",
+      "sha256": "7de3b390b051d2053e715674601f52854ae9b1074a2732599607cdd131d69ea5"
+    }
+  ],
+  "changedSelectedInputs": [
+    {
+      "path": "apps/subtitles/internal/server/subtitle_action_controls_test.go",
+      "bytes": 7948,
+      "sha256": "fcbe8fdcf8bfea595d262a1cb316c46b1fae1789c8bc09ac93dc4ec7efeb454b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_operation_diagnostics_test.go",
+      "bytes": 6178,
+      "sha256": "ed6dfd7c2e80486a1590c9a4e51d2f6ccf3fde7225dc80f5892d0e85916199a9"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_operation_worker.go",
+      "bytes": 5375,
+      "sha256": "35a383342a4ba5d16dd37efe55e836ca7fdfdf84f136e6255a775d98b49e2960"
+    }
+  ],
+  "productionLoggerSHA256": "021c251baeda0cd37275e74ee41f0a0b271b333dc5fcdcd9a7483d5e413a984a",
+  "sourceHelperSHA256": "dea14daa819e7ca8b3314b98cee382466084aa3bdbc88c41892b6973b47fc558",
+  "namedTopLevelCount": 33,
+  "knownSubtestCount": 45,
+  "publicPrivacyControl": "Unsupported action includes newline and fictional secret; must reject 400 with no sidecar/recovery/History/audio effects and retain private fixed prepare warning. Baseline outcome unrun; no manufactured RED.",
+  "freshRequiredEvidence": [
+    "actual 33 top-level plus45 subtest protocol",
+    "normal app lint including public Save/Restore controls",
+    "metadata generation",
+    "exact PR-ref CodeQL and policy",
+    "all ordinary required gates"
+  ]
+}

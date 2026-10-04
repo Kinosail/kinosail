@@ -13,6 +13,11 @@ func (manager *subtitleManager) embeddedReady() bool {
 }
 
 func (manager *subtitleManager) fetchSidecar(ctx context.Context, item library.Item, language string) error { //nolint:gocognit // Embedded extraction and durable ledger rollback form one atomic operation.
+	ctx, settled, admissionErr := manager.provider.admission.enter(ctx)
+	if admissionErr != nil {
+		return admissionErr
+	}
+	defer settled()
 	target, err := manager.provider.openSidecar(item, language)
 	if err != nil {
 		return err

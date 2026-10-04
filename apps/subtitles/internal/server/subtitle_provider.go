@@ -32,6 +32,7 @@ type subtitleProvider struct {
 	client    *http.Client
 	ledger    *subtitleLedger
 	health    *subtitleProviderHealthRegistry
+	admission *subtitleAdmission
 	sidecar   sync.Mutex
 	current   atomic.Pointer[subtitleProvider]
 }
@@ -84,7 +85,7 @@ func (provider *subtitleProvider) replaceConfig(config SubtitleConfig) {
 	if config == previous {
 		return
 	}
-	next := &subtitleProvider{config: config, cache: provider.cache, index: provider.index, settings: provider.settings, sync: provider.sync, open: newOpenSubtitlesProvider(config.OpenSubtitles), subsource: newSubSourceProvider(config.SubSource), ledger: provider.ledger, health: provider.health}
+	next := &subtitleProvider{config: config, cache: provider.cache, index: provider.index, settings: provider.settings, sync: provider.sync, open: newOpenSubtitlesProvider(config.OpenSubtitles), subsource: newSubSourceProvider(config.SubSource), ledger: provider.ledger, health: provider.health, admission: provider.admission}
 	next.open.health, next.subsource.health = provider.health, provider.health
 	next.client = localIntegrationHTTPClient(15 * time.Second)
 	next.client.CheckRedirect = subtitleProviderRedirect(next.allowed)
@@ -127,7 +128,7 @@ func validSubtitleProviderEndpoint(value string) bool {
 }
 
 func (provider *subtitleProvider) register(mux *http.ServeMux, auth *authentication) {
-	mux.Handle("POST /subtitles/{id}/fetch", auth.owner(provider.fetchHandler()))
+	mux.Handle("POST /subtitles/{id}/fetch", auth.owner(provider.admission.legacyHandler(provider.fetchHandler())))
 	mux.HandleFunc("GET /subtitles/{id}/{language}", provider.serve)
 }
 
@@ -151,6 +152,11 @@ func (provider *subtitleProvider) fetchHandler() http.HandlerFunc {
 }
 
 func (provider *subtitleProvider) fetch(ctx context.Context, item library.Item, language string) error {
+	ctx, settled, admissionErr := provider.admission.enter(ctx)
+	if admissionErr != nil {
+		return admissionErr
+	}
+	defer settled()
 	canonical, err := validateSubtitleLanguages([]string{language})
 	if err != nil {
 		return errors.New("subtitle request is invalid")
@@ -167,6 +173,11 @@ func (provider *subtitleProvider) fetch(ctx context.Context, item library.Item, 
 }
 
 func (provider *subtitleProvider) fetchSidecar(ctx context.Context, item library.Item, language string) error {
+	ctx, settled, admissionErr := provider.admission.enter(ctx)
+	if admissionErr != nil {
+		return admissionErr
+	}
+	defer settled()
 	canonical, err := validateSubtitleLanguages([]string{language})
 	if item.Kind != "video" || err != nil {
 		return errors.New("subtitle request is invalid")

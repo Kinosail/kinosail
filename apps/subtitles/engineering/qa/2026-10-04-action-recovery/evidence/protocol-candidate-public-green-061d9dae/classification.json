@@ -1,0 +1,273 @@
+{
+  "head": "061d9daed6cefc03a27b81145df621592e9f1d64",
+  "acceptance": "incomplete; not aggregate GREEN",
+  "execution": {
+    "seconds": 34.977,
+    "exit": 1,
+    "timedOut": false,
+    "topLevel": {
+      "total": 33,
+      "pass": 31,
+      "fail": 2,
+      "skip": 0
+    },
+    "namedSubtests": {
+      "total": 45,
+      "pass": 45,
+      "fail": 0,
+      "skip": 0
+    }
+  },
+  "incumbentControls": [
+    "TestConcurrentSubtitleFetchNeverOverwritesSidecar",
+    "TestSubtitleMutationsRejectInvalidInputBeforeProviderOrFilesystem",
+    "TestSubtitleWebAndBatchMutationsWriteWantedSidecars",
+    "TestLocalSubtitleDraftCancellationAndMissingItem",
+    "TestSubtitleAutomationStopsDuringCircuitDelay",
+    "TestOpenAPIDocumentsEveryVersionedRouteExactlyOnce",
+    "TestEveryVersionedAPIRouteHasExactlyOneMCPPolicy"
+  ],
+  "failedCases": [
+    {
+      "name": "TestSubtitleFailedActivationPersistenceNeverStartsWorkOrResurrectsAfterRestart",
+      "observed": 409,
+      "expected": 503,
+      "assertion": "failed activation persistence = 409, want 503 before launch",
+      "classification": "activation admission prerequisite failure before durable-fault assertion",
+      "notReached": [
+        "no-process after failed activation",
+        "actual Server lifecycle restart",
+        "prior-process prepared ID unavailable after failed transition"
+      ]
+    },
+    {
+      "name": "TestSubtitleRunningReceiptRestartCannotResumeOrReplayAfterRealChildSettlement",
+      "observed": 409,
+      "expected": 202,
+      "assertion": "public operation activation = 409, want 202 for the prepared receipt",
+      "classification": "activation admission prerequisite failure before controlled child starts",
+      "notReached": [
+        "controlled child readiness",
+        "lifecycle cancellation held through real child/pipe settlement",
+        "interrupted-running restart unknown state",
+        "no-replay and final process/file/History assertions"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "name": "TestEveryVersionedAPIRouteHasExactlyOneMCPPolicy",
+      "action": "pass",
+      "elapsed": 0.08,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestSubtitleExclusiveOperationBlocksAllLegacyWriteAndAudioPathsWithoutEffects",
+      "action": "pass",
+      "elapsed": 2,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestSubtitleExclusiveOperationDefersReviewedCleanupWithoutRenamingOrChangingSettings",
+      "action": "pass",
+      "elapsed": 1.66,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestSubtitleRejectedBodyLeavesPreparedReceiptReusableAndLegacyValidationIntact",
+      "action": "pass",
+      "elapsed": 0.08,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestSubtitlePreparedAudioCannotBypassActiveLegacyProviderFetchAdapters",
+      "action": "pass",
+      "elapsed": 0.25,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestSubtitleActionLegacyAudioPublicControl",
+      "action": "pass",
+      "elapsed": 1.49,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestSubtitlePreparedAudioRejectsSecondActivationWithoutStartingAnotherProcess",
+      "action": "pass",
+      "elapsed": 1.53,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestSubtitlePreparedAudioCannotBypassActiveLegacyAnalysis",
+      "action": "pass",
+      "elapsed": 1.52,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestSubtitlePreparedReceiptExpiryCannotReactivateOrChangeFiles",
+      "action": "pass",
+      "elapsed": 0.06,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestSubtitleCompletedReceiptExpiryCannotReplayRestore",
+      "action": "pass",
+      "elapsed": 0.21,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestSubtitleOperationLifecycleDiagnosticsAndMetadataExcludePrivatePayloads",
+      "action": "pass",
+      "elapsed": 0.2,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestSubtitlePreparedReceiptBecomesUnavailableAfterRealLifecycleRestart",
+      "action": "pass",
+      "elapsed": 0.07,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestSubtitleFailedActivationPersistenceNeverStartsWorkOrResurrectsAfterRestart",
+      "action": "fail",
+      "elapsed": 0.04,
+      "classification": "activation admission prerequisite failure before durable-fault assertion"
+    },
+    {
+      "name": "TestSubtitleCompletedRestoreOutcomeSurvivesRestartWithoutReplay",
+      "action": "pass",
+      "elapsed": 0.22,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestSubtitleAudioResultsStayBoundedAndUnavailableResultsDoNotRestartWork",
+      "action": "pass",
+      "elapsed": 1.63,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestSubtitleCompletedAudioResultRetainsOwnerBinding",
+      "action": "pass",
+      "elapsed": 1.65,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestSubtitleOperationDeadlineKeepsAdmissionUntilChildPipeAndWaitSettle",
+      "action": "pass",
+      "elapsed": 3.03,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestSubtitleRunningReceiptRestartCannotResumeOrReplayAfterRealChildSettlement",
+      "action": "fail",
+      "elapsed": 0.03,
+      "classification": "activation admission prerequisite failure before controlled child starts"
+    },
+    {
+      "name": "TestSubtitleCorruptOperationRegistryFailsClosedWithoutChangingLegacyOwnerWorkflow",
+      "action": "pass",
+      "elapsed": 0.96,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestSubtitleOperationPreparationPersistenceFailureStartsNoWork",
+      "action": "pass",
+      "elapsed": 0.05,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestLocalSubtitleDraftCancellationAndMissingItem",
+      "action": "pass",
+      "elapsed": 0,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestSubtitleOperationCapacityPreservesExistingPreparedReceipts",
+      "action": "pass",
+      "elapsed": 0.94,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestSubtitlePreparedReceiptRejectsStatusQueriesWithoutConsumingActivation",
+      "action": "pass",
+      "elapsed": 0.05,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestSubtitlePreparedReceiptCannotActivateAnotherAction",
+      "action": "pass",
+      "elapsed": 0.06,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestSubtitlePreparedRestoreActivatesExactlyOnce",
+      "action": "pass",
+      "elapsed": 0.11,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestSubtitleOperationPreservesActiveOwnerAndCSRFBoundaries",
+      "action": "pass",
+      "elapsed": 0.31,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestSubtitleMutationsRejectInvalidInputBeforeProviderOrFilesystem",
+      "action": "pass",
+      "elapsed": 0.2,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects",
+      "action": "pass",
+      "elapsed": 0.13,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestSubtitleWebAndBatchMutationsWriteWantedSidecars",
+      "action": "pass",
+      "elapsed": 0.24,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestOpenAPIDocumentsEveryVersionedRouteExactlyOnce",
+      "action": "pass",
+      "elapsed": 0.02,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestConcurrentSubtitleFetchNeverOverwritesSidecar",
+      "action": "pass",
+      "elapsed": 0.09,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestSubtitleAutomationStopsDuringCircuitDelay",
+      "action": "pass",
+      "elapsed": 0.03,
+      "classification": "public contract/control PASS"
+    },
+    {
+      "name": "TestSubtitlePreparedMutationRejectsUnknownOrMalformedReceiptBeforeEffects",
+      "action": "pass",
+      "elapsed": 0,
+      "classification": "public contract/control PASS"
+    }
+  ],
+  "runnerClassificationLimit": "Raw prerequisiteFailure is null because the runner message pattern does not detect these early 409 assertions. This separate classification preserves the original receipt and explicitly excludes the two later persistence/restart scenarios from acceptance.",
+  "rootCauseBoundary": "Independently consistent source diagnosis: both failing tests supply real Config.Lifecycle, which schedules an initial automatic-maintenance pass under counted legacy admission. Fresh sole prepared receipt/exact body has no prior activation. No private gate observation or automatic-pass runtime trace was captured; the full runtime receipt has not yet undergone independent evidence review.",
+  "safeEvidenceLimit": "All 31 passing tests retain their public process/file/history/Owner/CSRF assertions. The two failed tests stopped before their later no-effects/restart assertions; their safety acceptance is not claimed.",
+  "R16Preserved": true,
+  "headroomGiB": {
+    "before": 4.5,
+    "after": 4.4
+  },
+  "processState": "All owned processes exited; serial slot released and independently re-inventoried with only the inventory command present.",
+  "excluded": [
+    "engineering/qa/2026-10-04-action-recovery/operation-summary-contract-delta.md",
+    "engineering/qa/2026-10-04-action-recovery/operation-summary-test-prep.go.txt",
+    "unimplemented R16 compilation inputs",
+    "browser/actual playback",
+    "lint/container/deployment"
+  ]
+}

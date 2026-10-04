@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "boundary": "Test-first fictional Python controls only; no actual Go/product acceptance",
+  "sourceCommit": "decf3bc32f889cd4f0aa589ec9ab33195375b65f",
+  "cases": [
+    {
+      "name": "private-sentinel",
+      "status": "fail",
+      "failureClass": "KeyError",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "candidateClassification": "focused-public-protocol-green",
+      "candidateGoExit": 0,
+      "compilePhasePresent": false,
+      "receiptSHA256": "ca96232765808c4dd9747d65280527c510bf0b627c76bbe58e7e9de50827ebd0"
+    },
+    {
+      "name": "compile-failure",
+      "status": "fail",
+      "failureClass": "AssertionError",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "candidateClassification": "focused-public-protocol-green",
+      "candidateGoExit": 0,
+      "compilePhasePresent": false,
+      "receiptSHA256": "12bd92912d11801a4ced68fcdcd0ae052ba128e00062d5e484606219fb65dd66"
+    },
+    {
+      "name": "compile-missing-binary",
+      "status": "fail",
+      "failureClass": "AssertionError",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "candidateClassification": "focused-public-protocol-green",
+      "candidateGoExit": 0,
+      "compilePhasePresent": false,
+      "receiptSHA256": "bf1cfbf5c731701f76f9dcc6f004406687d608f6cbf0e699be060b69d8d9a13c"
+    },
+    {
+      "name": "compile-symlink-binary",
+      "status": "fail",
+      "failureClass": "AssertionError",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "candidateClassification": "focused-public-protocol-green",
+      "candidateGoExit": 0,
+      "compilePhasePresent": false,
+      "receiptSHA256": "3fdf4412de5b6942f4c6f7e1a9b82f2ba86a6db2ac59b2b29a448f2d96cc3e17"
+    },
+    {
+      "name": "compile-source-drift",
+      "status": "fail",
+      "failureClass": "AssertionError",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "candidateClassification": "focused-public-protocol-green",
+      "candidateGoExit": 0,
+      "compilePhasePresent": false,
+      "receiptSHA256": "5b82699454282f0359263caf339ea2e4a1ff2f37a0ec00f6d393532146ef4af0"
+    },
+    {
+      "name": "compile-stream-is-not-tests",
+      "status": "fail",
+      "failureClass": "AssertionError",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "candidateClassification": "focused-public-protocol-green",
+      "candidateGoExit": 0,
+      "compilePhasePresent": false,
+      "receiptSHA256": "a7f7789cb66ba26e6da987d9fe21c2191ceb575955aad2a48b8b75cf8c40155c"
+    },
+    {
+      "name": "binary-mutated-during-runtime",
+      "status": "fail",
+      "failureClass": "AssertionError",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "candidateClassification": "focused-public-protocol-green",
+      "candidateGoExit": 0,
+      "compilePhasePresent": false,
+      "receiptSHA256": "2309d2038c17bd38978168da252e30fc1ae18bcaa8ad705fa6f07cea05b01437"
+    }
+  ],
+  "seconds": 3.458,
+  "pass": 0,
+  "fail": 7
+}

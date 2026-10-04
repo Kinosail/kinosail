@@ -20,6 +20,11 @@ func (synchronizer *subtitleSynchronizer) speechForLanguage(ctx context.Context,
 }
 
 func (synchronizer *subtitleSynchronizer) audioReference(ctx context.Context, item library.Item, language string) (subtitleAudioReference, error) {
+	ctx, settled, admissionErr := synchronizer.admission.enter(ctx)
+	if admissionErr != nil {
+		return subtitleAudioReference{}, admissionErr
+	}
+	defer settled()
 	if language != "" && !validLanguage(language) {
 		return subtitleAudioReference{}, errors.New("subtitle language is invalid")
 	}
