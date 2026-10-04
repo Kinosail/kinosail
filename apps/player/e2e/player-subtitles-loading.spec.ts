@@ -36,9 +36,13 @@ test("turning captions off while loading preserves the choice", async ({page}) =
 
 for (const failure of ["http", "type", "empty", "oversized"]) {
   test(`rejects ${failure} captions without assigning a media source`, async ({page}) => {
-    await page.route("**/captions.vtt", (route) => route.fulfill({status: failure === "http" ? 503 : 200, contentType: failure === "type" ? "text/vtt-invalid" : "text/vtt", body: failure === "empty" ? "" : failure === "oversized" ? "x".repeat(16 * 1024 * 1024 + 1) : caption}));
+    const untrustedCorrelation = "unsafe value?path=/captions.vtt";
+    await page.route("**/captions.vtt", (route) => route.fulfill({status: failure === "http" ? 503 : 200, headers: {"X-Request-ID": untrustedCorrelation}, contentType: failure === "type" ? "text/vtt-invalid" : "text/vtt", body: failure === "empty" ? "" : failure === "oversized" ? "x".repeat(16 * 1024 * 1024 + 1) : caption}));
     await install(page);
     await expect(page.locator("[data-subtitle-status]")).toContainText("Subtitles unavailable");
+    await expect(page.locator("[data-subtitle-status]")).toHaveAttribute("data-failure", failure);
+    await expect(page.locator("[data-subtitle-status]")).not.toHaveAttribute("data-request-id");
+    await expect(page.locator("[data-subtitle-status]")).not.toContainText(untrustedCorrelation);
     await expect(page.locator("track")).not.toHaveAttribute("src", /.+/);
   });
 }

@@ -68,3 +68,9 @@ and rejects any new request or late caption source after persisted restore.
 Playback/session lifecycle changes remain outside this repair. Parent approved
 this narrow R10 caption restore scope on 2026-10-04. Both runtime repeats remain
 queued before modifying the controller or restore path.
+
+The retained finite rejection table also receives an untrusted request ID with
+spaces and a query-like value. It must expose the fixed failure class without
+copying that value into diagnostics or status and without assigning a media
+source. This isolated header-boundary case covers unsafe correlation syntax;
+the primary real Server stall journey instead covers a validated request ID.
