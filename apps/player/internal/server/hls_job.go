@@ -14,11 +14,7 @@ import (
 func (manager *hlsManager) ensureHLSJob(ctx context.Context, item library.Item, key string, options transcodeSettings, recipe hlsRecipe) (*hlsJob, error) {
 	for {
 		manager.mu.Lock()
-		if err := ctx.Err(); err != nil {
-			manager.mu.Unlock()
-			return nil, err
-		}
-		if err := manager.validateHLSPolicy(item, recipe, options.Cache); err != nil {
+		if err := manager.validateHLSPolicy(ctx, item, recipe, options.Cache); err != nil {
 			manager.mu.Unlock()
 			return nil, err
 		}
@@ -89,7 +85,10 @@ func (manager *hlsManager) hlsSettings(item library.Item, recipe hlsRecipe) (tra
 }
 
 // Recheck the complete settings, subtitle, and source snapshot under manager.mu.
-func (manager *hlsManager) validateHLSPolicy(item library.Item, recipe hlsRecipe, expected string) error {
+func (manager *hlsManager) validateHLSPolicy(ctx context.Context, item library.Item, recipe hlsRecipe, expected string) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 	current, err := manager.hlsSettings(item, recipe)
 	if err != nil {
 		if errors.Is(err, playback.ErrHLSSourceChanged) {

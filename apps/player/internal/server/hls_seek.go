@@ -163,7 +163,7 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 			manager.mu.Unlock()
 			return err
 		}
-		if err := manager.validateHLSPolicy(item, recipe, options.Cache); err != nil {
+		if err := manager.validateHLSPolicy(ctx, item, recipe, options.Cache); err != nil {
 			manager.mu.Unlock()
 			return err
 		}
