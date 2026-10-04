@@ -26,8 +26,11 @@ var (
 	DownloadsTransfer []byte
 	//go:embed static/downloads-progress.js
 	DownloadsProgress []byte
+	//go:embed static/downloads-control.js
+	downloadsControl []byte
 	//go:embed static/downloads-ui.js
-	DownloadsUI []byte
+	downloadsUI []byte
+	DownloadsUI = append(append([]byte(nil), downloadsControl...), downloadsUI...)
 	//go:embed static/offline-profile.js
 	offlineProfile []byte
 	//go:embed static/offline-media.js

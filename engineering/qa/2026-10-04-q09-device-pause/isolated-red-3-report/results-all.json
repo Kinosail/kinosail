@@ -1,0 +1,273 @@
+{
+  "config": {
+    "argv": [
+      "/opt/homebrew/Cellar/node/26.8.2/bin/node",
+      "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/node_modules/@playwright/test/cli.js",
+      "test",
+      "download-pause.spec.ts",
+      "--workers=1",
+      "--project=chromium"
+    ],
+    "configFile": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/playwright.config.ts",
+    "rootDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/isolated-red-3",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "open": "never",
+          "outputFolder": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/isolated-red-3-report/html-all"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/isolated-red-3-report/results-all.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "download-pause.spec.ts",
+      "file": "download-pause.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "isolated native browser: Pause retains verified opfs blocks and Resume continues missing ranges at 390px",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 2781,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: 'Pause download', exact: true })\nExpected: enabled\nTimeout: 2000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeEnabled\" getByRole('button', { name: 'Pause download', exact: true }) with timeout 2000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: 'Pause download', exact: true })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: 'Pause download', exact: true })\nExpected: enabled\nTimeout: 2000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeEnabled\" getByRole('button', { name: 'Pause download', exact: true }) with timeout 2000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: 'Pause download', exact: true })\u001b[22m\n\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/download-pause.spec.ts:29:27",
+                    "location": {
+                      "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/download-pause.spec.ts",
+                      "column": 27,
+                      "line": 29
+                    },
+                    "snippet": "  27 |       await page.screenshot({path: info.outputPath(`${storage}-${width}-pending.png`), fullPage: true});\n  28 |       const pause = page.getByRole(\"button\", {name: \"Pause download\", exact: true});\n> 29 |       await expect(pause).toBeEnabled({timeout: 2_000});\n     |                           ^\n  30 |       await pause.focus(); await page.keyboard.press(\"Enter\");\n  31 |       const resume = page.getByRole(\"button\", {name: \"Resume on this device\", exact: true});\n  32 |       await expect(resume).toBeEnabled();"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/download-pause.spec.ts",
+                        "column": 27,
+                        "line": 29
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: 'Pause download', exact: true })\nExpected: enabled\nTimeout: 2000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeEnabled\" getByRole('button', { name: 'Pause download', exact: true }) with timeout 2000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: 'Pause download', exact: true })\u001b[22m\n\n\n  27 |       await page.screenshot({path: info.outputPath(`${storage}-${width}-pending.png`), fullPage: true});\n  28 |       const pause = page.getByRole(\"button\", {name: \"Pause download\", exact: true});\n> 29 |       await expect(pause).toBeEnabled({timeout: 2_000});\n     |                           ^\n  30 |       await pause.focus(); await page.keyboard.press(\"Enter\");\n  31 |       const resume = page.getByRole(\"button\", {name: \"Resume on this device\", exact: true});\n  32 |       await expect(resume).toBeEnabled();\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/download-pause.spec.ts:29:27"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T11:16:34.776Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "native-download-environment",
+                      "contentType": "application/json",
+                      "body": "eyJicm93c2VyIjoiY2hyb21pdW0iLCJ2ZXJzaW9uIjoiMTUzLjAuODAxMC4xMiIsInJlcXVlc3RlZENoYW5uZWwiOiIiLCJwcm9qZWN0IjoiY2hyb21pdW0iLCJub2RlIjoidjI2LjguMiIsImlzb2xhdGVkIjp0cnVlfQ=="
+                    },
+                    {
+                      "name": "served-download-bundle",
+                      "contentType": "application/json",
+                      "body": "eyJqb2JJRCI6ImFhYWFhYWFhYWFhYWFhYWEiLCJidW5kbGUiOiIvc3RhdGljL2Rvd25sb2Fkcy5qcz92PWJhc2VsaW5lIiwiY2hlY2tzdW0iOiIzNGRhMzdlNmMxZmE2MjRjODZkYWMxNWExZTA2ZjRlZmFhZjAyYmFlMWY1ZjYwOGQ0ZmFmYTE1N2E2OWRjN2VmIn0="
+                    },
+                    {
+                      "name": "verified-first-block-before-pause",
+                      "contentType": "application/json",
+                      "body": "eyJqb2IiOnsiaWQiOiJhYWFhYWFhYWFhYWFhYWFhIiwiaW50ZWdyaXR5VmVyc2lvbiI6MiwicHJvZmlsZUlEIjoicHJvZmlsZSIsIml0ZW1JRCI6ImJiYmJiYmJiYmJiYmJiYmIiLCJ0aXRsZSI6IkZpY3Rpb25hbCBSYW5nZSBGaXh0dXJlIiwicXVhbGl0eSI6Im9yaWdpbmFsIiwiZXh0ZW5zaW9uIjoiLm1wNCIsInNoYTI1NiI6IjI4Yzk1N2MyYjE4ZjY5OThkYzRlMDY3ZTliOWQzMTY0OTdjNWMxNGRmMWE5NGFmNTViZGRhYWE2ZDMzNDQ2NDciLCJzaXplIjoxNjc3NzI0Nywic3RvcmFnZSI6Im9wZnMiLCJwcm9ncmVzc0Jhc2VsaW5lIjp7InNlY29uZHMiOjAsIndhdGNoZWQiOmZhbHNlLCJzZXNzaW9uIjoiIiwicmV2aXNpb24iOjB9LCJ0cmFuc2ZlcklEIjoiNjA2YjQwNTcyMGE2YjE5YzIwMjFlMDRhNjM1YTg3MWQiLCJ0cmFuc2ZlclN0YXJ0ZWRBdCI6MTc5MTExMjU5NTE5MS41LCJzdGF0ZSI6InRyYW5zZmVycmluZyIsInJlYWR5T2ZmbGluZSI6ZmFsc2UsImVycm9yIjoiIiwiYnl0ZXMiOjgzODg2MDgsInJlc2VydmVkQnl0ZXMiOjgzODg2Mzl9LCJjaHVua3MiOlt7Im9mZnNldCI6MCwibGVuZ3RoIjo4Mzg4NjA4LCJzaGEyNTYiOiJiYjkyOWJiZGNlODVmZGJjOTAzYTQ2M2U5NjYzMGEyNWY4YjZlZjViNzYwOTBlMjRjZDkyZWE4ZmI0N2IyZjY1IiwiYWN0dWFsIjoiYmI5MjliYmRjZTg1ZmRiYzkwM2E0NjNlOTY2MzBhMjVmOGI2ZWY1Yjc2MDkwZTI0Y2Q5MmVhOGZiNDdiMmY2NSJ9XSwiZmlsZVNpemUiOjgzODg2MDgsImZpbGVIYXNoIjoiYmI5MjliYmRjZTg1ZmRiYzkwM2E0NjNlOTY2MzBhMjVmOGI2ZWY1Yjc2MDkwZTI0Y2Q5MmVhOGZiNDdiMmY2NSIsImxvY2tzIjpbImtpbm9zYWlsLW9mZmxpbmUtc2xvdDowIiwia2lub3NhaWwtb2ZmbGluZTphYWFhYWFhYWFhYWFhYWFhIl19"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/isolated-red-3/download-pause-isolated-na-6db2a-ues-missing-ranges-at-390px-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/isolated-red-3/download-pause-isolated-na-6db2a-ues-missing-ranges-at-390px-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/isolated-red-3/download-pause-isolated-na-6db2a-ues-missing-ranges-at-390px-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/download-pause.spec.ts",
+                    "column": 27,
+                    "line": 29
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "edf17b853bcd12b465d2-bb71ef6c239124243637",
+          "file": "download-pause.spec.ts",
+          "line": 10,
+          "column": 3
+        },
+        {
+          "title": "isolated native browser: Pause retains verified indexeddb blocks and Resume continues missing ranges at 1440px",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 2795,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: 'Pause download', exact: true })\nExpected: enabled\nTimeout: 2000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeEnabled\" getByRole('button', { name: 'Pause download', exact: true }) with timeout 2000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: 'Pause download', exact: true })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: 'Pause download', exact: true })\nExpected: enabled\nTimeout: 2000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeEnabled\" getByRole('button', { name: 'Pause download', exact: true }) with timeout 2000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: 'Pause download', exact: true })\u001b[22m\n\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/download-pause.spec.ts:29:27",
+                    "location": {
+                      "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/download-pause.spec.ts",
+                      "column": 27,
+                      "line": 29
+                    },
+                    "snippet": "  27 |       await page.screenshot({path: info.outputPath(`${storage}-${width}-pending.png`), fullPage: true});\n  28 |       const pause = page.getByRole(\"button\", {name: \"Pause download\", exact: true});\n> 29 |       await expect(pause).toBeEnabled({timeout: 2_000});\n     |                           ^\n  30 |       await pause.focus(); await page.keyboard.press(\"Enter\");\n  31 |       const resume = page.getByRole(\"button\", {name: \"Resume on this device\", exact: true});\n  32 |       await expect(resume).toBeEnabled();"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/download-pause.spec.ts",
+                        "column": 27,
+                        "line": 29
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: 'Pause download', exact: true })\nExpected: enabled\nTimeout: 2000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeEnabled\" getByRole('button', { name: 'Pause download', exact: true }) with timeout 2000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: 'Pause download', exact: true })\u001b[22m\n\n\n  27 |       await page.screenshot({path: info.outputPath(`${storage}-${width}-pending.png`), fullPage: true});\n  28 |       const pause = page.getByRole(\"button\", {name: \"Pause download\", exact: true});\n> 29 |       await expect(pause).toBeEnabled({timeout: 2_000});\n     |                           ^\n  30 |       await pause.focus(); await page.keyboard.press(\"Enter\");\n  31 |       const resume = page.getByRole(\"button\", {name: \"Resume on this device\", exact: true});\n  32 |       await expect(resume).toBeEnabled();\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/download-pause.spec.ts:29:27"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T11:16:38.013Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "native-download-environment",
+                      "contentType": "application/json",
+                      "body": "eyJicm93c2VyIjoiY2hyb21pdW0iLCJ2ZXJzaW9uIjoiMTUzLjAuODAxMC4xMiIsInJlcXVlc3RlZENoYW5uZWwiOiIiLCJwcm9qZWN0IjoiY2hyb21pdW0iLCJub2RlIjoidjI2LjguMiIsImlzb2xhdGVkIjp0cnVlfQ=="
+                    },
+                    {
+                      "name": "served-download-bundle",
+                      "contentType": "application/json",
+                      "body": "eyJqb2JJRCI6ImFhYWFhYWFhYWFhYWFhYWEiLCJidW5kbGUiOiIvc3RhdGljL2Rvd25sb2Fkcy5qcz92PWJhc2VsaW5lIiwiY2hlY2tzdW0iOiIzNGRhMzdlNmMxZmE2MjRjODZkYWMxNWExZTA2ZjRlZmFhZjAyYmFlMWY1ZjYwOGQ0ZmFmYTE1N2E2OWRjN2VmIn0="
+                    },
+                    {
+                      "name": "verified-first-block-before-pause",
+                      "contentType": "application/json",
+                      "body": "eyJqb2IiOnsiaWQiOiJhYWFhYWFhYWFhYWFhYWFhIiwiaW50ZWdyaXR5VmVyc2lvbiI6MiwicHJvZmlsZUlEIjoicHJvZmlsZSIsIml0ZW1JRCI6ImJiYmJiYmJiYmJiYmJiYmIiLCJ0aXRsZSI6IkZpY3Rpb25hbCBSYW5nZSBGaXh0dXJlIiwicXVhbGl0eSI6Im9yaWdpbmFsIiwiZXh0ZW5zaW9uIjoiLm1wNCIsInNoYTI1NiI6IjI4Yzk1N2MyYjE4ZjY5OThkYzRlMDY3ZTliOWQzMTY0OTdjNWMxNGRmMWE5NGFmNTViZGRhYWE2ZDMzNDQ2NDciLCJzaXplIjoxNjc3NzI0Nywic3RvcmFnZSI6ImluZGV4ZWRkYiIsInByb2dyZXNzQmFzZWxpbmUiOnsic2Vjb25kcyI6MCwid2F0Y2hlZCI6ZmFsc2UsInNlc3Npb24iOiIiLCJyZXZpc2lvbiI6MH0sInRyYW5zZmVySUQiOiJhOTZkM2UxNTYyZWYzOWEwYzgzZWExZjg4MTE5YzZmOCIsInRyYW5zZmVyU3RhcnRlZEF0IjoxNzkxMTEyNTk4NDEwLjUsInN0YXRlIjoidHJhbnNmZXJyaW5nIiwicmVhZHlPZmZsaW5lIjpmYWxzZSwiZXJyb3IiOiIiLCJieXRlcyI6ODM4ODYwOCwicmVzZXJ2ZWRCeXRlcyI6ODM4ODYzOX0sImNodW5rcyI6W3sib2Zmc2V0IjowLCJsZW5ndGgiOjgzODg2MDgsInNoYTI1NiI6ImJiOTI5YmJkY2U4NWZkYmM5MDNhNDYzZTk2NjMwYTI1ZjhiNmVmNWI3NjA5MGUyNGNkOTJlYThmYjQ3YjJmNjUiLCJhY3R1YWwiOiJiYjkyOWJiZGNlODVmZGJjOTAzYTQ2M2U5NjYzMGEyNWY4YjZlZjViNzYwOTBlMjRjZDkyZWE4ZmI0N2IyZjY1In1dLCJmaWxlU2l6ZSI6ODM4ODYwOCwiZmlsZUhhc2giOiJiYjkyOWJiZGNlODVmZGJjOTAzYTQ2M2U5NjYzMGEyNWY4YjZlZjViNzYwOTBlMjRjZDkyZWE4ZmI0N2IyZjY1IiwibG9ja3MiOlsia2lub3NhaWwtb2ZmbGluZS1zbG90OjAiLCJraW5vc2FpbC1vZmZsaW5lOmFhYWFhYWFhYWFhYWFhYWEiXX0="
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/isolated-red-3/download-pause-isolated-na-cc52b-es-missing-ranges-at-1440px-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/isolated-red-3/download-pause-isolated-na-cc52b-es-missing-ranges-at-1440px-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/isolated-red-3/download-pause-isolated-na-cc52b-es-missing-ranges-at-1440px-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/download-pause.spec.ts",
+                    "column": 27,
+                    "line": 29
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "edf17b853bcd12b465d2-62eb4ee2cca21e73a370",
+          "file": "download-pause.spec.ts",
+          "line": 10,
+          "column": 3
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-04T11:16:34.494Z",
+    "duration": 6520.607,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

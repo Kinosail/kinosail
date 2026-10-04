@@ -1,0 +1,41 @@
+{
+  "revision": "6d45ea0106ae29911c3ce1e57d76fdc5be92545a",
+  "production_baseline": "9b59524ddaadc6ab34c8354d9b139760673d7e40",
+  "sources": {
+    "apps/player/e2e/download-pause-fixture.ts": "8be206faa554b328f6e57b6c1cdd1fb416c1ba2cba2726791e33ad6d44c6f3b8",
+    "apps/player/e2e/download-pause.spec.ts": "472e556b6bbad526373cd970f345a0628c198cc9a62e248beaab7260fbe8a9af",
+    "apps/player/e2e/download-pause-ownership.spec.ts": "f0eb37049c9ae515cf1ad255e69e95f1073dee1882bb9a96b4fff10f0802b74c",
+    "apps/player/e2e/static-sources.ts": "63912fbc134bd00ea2f235c7848043faa07d9818f42e6234ad7061019176964e",
+    "apps/player/internal/server/download_pause_browser_test.go": "0fc1bdfc884f4335bc1b72098e1bff411448f1ae23e28dbdd0f287a4050f0eb8",
+    "packages/webassets/webassets.go": "2f0ba61180ed3fa90976ff50baa26bedd6c2f75f6bec4ab285957d5360f490c1",
+    "packages/webassets/static/offline-identity.js": "ae1a2cacfabe6471283151843e177d9ec4604c19423ad3b2ed88dd5260ebeb58",
+    "packages/webassets/static/offline-runtime.js": "b421d24643fadc58f8ceff9c1024d0d33f548f19fd2bcaafd97042b413d631a4",
+    "packages/webassets/static/downloads.js": "015b495ab750142b3afe30d803af06d8cbc6cf549491dfeb0d0a27a6da2ddf53",
+    "packages/webassets/static/downloads-integrity.js": "42ac4c2cd70eca69c974b23b38a1eca2ac93e4ec48a2fe24977e11166e32a6ff",
+    "packages/webassets/static/downloads-storage.js": "7ae56a0430b6c4a10c424552769cb3d83934da484a501d1ba05405b07e5307db",
+    "packages/webassets/static/downloads-transfer.js": "c5eb315bc8e1e5f7970688d96dd3a6a6a68d3fee3671a09156d0e73a87fe9d48",
+    "packages/webassets/static/downloads-progress.js": "f823d99eadeb16f1d6868b41bb86e4338c522c29457b831bcb64d10217960cca",
+    "packages/webassets/static/downloads-ui.js": "1dc721cc51a6e5cad00853a9ed65c1cf79317df3cc2940d8b517984fbb3079e3",
+    "packages/webassets/static/offline-profile.js": "4f9f751de19168517a9d3d9a189d412ad800c56068d37bba7b4c6cf176b2dcee",
+    "packages/webassets/static/offline-media.js": "78617ca8afede4243cfb02db8119ee1ee38a1ded951623013cc037e61945c1b0",
+    "apps/player/internal/server/static/service-worker.js": "d8af6f505ec245ded0e8a1ed47a219c3e29fab1dc94cef4d1a5cd1b4a2cfd9a9"
+  },
+  "environment": {
+    "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+    "node": "v26.8.2",
+    "pnpm": "12.4.2",
+    "channel": "chrome",
+    "workers": 1,
+    "video": "off"
+  },
+  "boundary": "isolated native browser and real localhost HTTP; expected feature absence separately from profile interruption; no Go proof",
+  "first_command": [
+    "pnpm",
+    "exec",
+    "playwright",
+    "test",
+    "download-pause.spec.ts",
+    "--workers=1",
+    "--project=chromium"
+  ]
+}

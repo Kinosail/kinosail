@@ -1,0 +1,163 @@
+{
+  "source_revision": "0606ac620a2a8348e9fbf55a239aeca11d28688f",
+  "product_revision": "bf10089edc79652312db66f52277bcc6fedf3dfd",
+  "stats": {
+    "startTime": "2026-10-04T12:45:01.374Z",
+    "duration": 4212.279,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "runner_errors": [],
+  "classification": "complete single-case actual Go supplemental GREEN; original eight-case Go proof and all original phone assertions retained",
+  "cases": [
+    {
+      "title": "actual Go phone: fictional download controls and ready Play link remain reachable after explicit scrolling",
+      "status": "passed",
+      "attachments": {
+        "native-download-environment": {
+          "browser": "chromium",
+          "version": "153.0.8010.12",
+          "requestedChannel": "",
+          "project": "chromium",
+          "node": "v26.8.2",
+          "isolated": false
+        },
+        "served-hit-target-bundle": {
+          "jobID": "2a3707cc5f26c6c6",
+          "bundle": "/static/downloads.js?v=30-htmx4",
+          "checksum": "2fb188e2744fe553afb7c4730d58bb0a3df38c2191c6f20732898a07503a2fc5"
+        },
+        "phone-pause-hit-target": {
+          "box": {
+            "x": 28.984375,
+            "y": 497.859375,
+            "width": 331.984375,
+            "height": 44
+          },
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "scroll": {
+            "x": 0,
+            "y": 238
+          },
+          "centerInViewport": true,
+          "receivesPointer": true,
+          "hitTag": "BUTTON",
+          "hitClass": "mode",
+          "focused": true
+        },
+        "phone-resume-hit-target": {
+          "box": {
+            "x": 28.984375,
+            "y": 497.859375,
+            "width": 331.984375,
+            "height": 44
+          },
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "scroll": {
+            "x": 0,
+            "y": 238
+          },
+          "centerInViewport": true,
+          "receivesPointer": true,
+          "hitTag": "BUTTON",
+          "hitClass": "mode",
+          "focused": true
+        },
+        "phone-play-before-explicit-scroll": {
+          "box": {
+            "x": 28.984375,
+            "y": 557.03125,
+            "width": 331.984375,
+            "height": 44
+          },
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "scroll": {
+            "x": 0,
+            "y": 238
+          },
+          "centerInViewport": true,
+          "receivesPointer": true,
+          "hitTag": "A",
+          "hitClass": "mode",
+          "focused": false
+        },
+        "phone-play-pointer-hit-target": {
+          "box": {
+            "x": 28.984375,
+            "y": 498.03125,
+            "width": 331.984375,
+            "height": 44
+          },
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "scroll": {
+            "x": 0,
+            "y": 297
+          },
+          "centerInViewport": true,
+          "receivesPointer": true,
+          "hitTag": "A",
+          "hitClass": "mode",
+          "focused": true
+        },
+        "phone-play-pointer-navigation": {
+          "pathname": "/offline",
+          "selectedJob": "2a3707cc5f26c6c6",
+          "decodingClaim": false
+        },
+        "phone-play-keyboard-hit-target": {
+          "box": {
+            "x": 28.984375,
+            "y": 498.03125,
+            "width": 331.984375,
+            "height": 44
+          },
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "scroll": {
+            "x": 0,
+            "y": 297
+          },
+          "centerInViewport": true,
+          "receivesPointer": true,
+          "hitTag": "A",
+          "hitClass": "mode",
+          "focused": true
+        },
+        "phone-play-keyboard-navigation": {
+          "pathname": "/offline",
+          "selectedJob": "2a3707cc5f26c6c6",
+          "peer": {
+            "closed": 1,
+            "ranges": [
+              0,
+              8388608,
+              8388608,
+              16777216
+            ],
+            "removals": 0
+          },
+          "decodingClaim": false
+        }
+      },
+      "errors": []
+    }
+  ],
+  "acceptance": "Native smooth scrolling settles under a bounded stable-geometry observation. Pause/Resume and ready Play receive pointer at their centers and remain focused; pointer click and fresh-page keyboard Enter navigate to the same fictional stored offline job. Final native digest, only-missing ranges, canceled partial response and zero Remove requests pass.",
+  "limits": "Navigation and hit testing after explicit user scrolling; deterministic non-playable bytes do not prove media decoding. No every-scroll-position, physical/native device, alternate browser or BFCache claim."
+}

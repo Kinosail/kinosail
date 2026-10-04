@@ -1,0 +1,34 @@
+{
+  "source_revision": "c8749dc978902447c3df84bb66f3111bd7d08c2b",
+  "command": [
+    "pnpm",
+    "exec",
+    "playwright",
+    "test",
+    "download-pause.spec.ts",
+    "--workers=1",
+    "--project=chromium"
+  ],
+  "environment_overrides": {
+    "PLAYWRIGHT_CHANNEL": "",
+    "KINOSAIL_DOWNLOAD_PAUSE_ISOLATED": "1",
+    "KINOSAIL_BROWSER_WORKERS": "1",
+    "KINOSAIL_E2E_VIDEO": "off",
+    "KINOSAIL_E2E_OUTPUT_DIR": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/isolated-red-2",
+    "KINOSAIL_E2E_ARTIFACT_DIR": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/isolated-red-2-report"
+  },
+  "external_bound_seconds": 40,
+  "elapsed_seconds": 9.285,
+  "exit_code": 1,
+  "timed_out": false,
+  "aggregate_report_completed": true,
+  "stats": {
+    "startTime": "2026-10-04T11:16:25.566Z",
+    "duration": 6668.438,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  },
+  "timestamp_utc": "2026-10-04T11:16:32.277743+00:00"
+}

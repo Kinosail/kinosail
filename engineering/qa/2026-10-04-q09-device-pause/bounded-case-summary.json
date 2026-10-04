@@ -1,0 +1,22 @@
+{
+  "cases": [
+    {
+      "case": "download-pause-isolated-na-6db2a-ues-missing-ranges-at-390px-chromium",
+      "intended_missing_pause_errors": 1,
+      "source": "6d45ea01",
+      "last_trace_end_ms": 14287.796,
+      "boundary": "verified first native-size block then missing enabled Pause; aggregate process receipt incomplete"
+    },
+    {
+      "case": "download-pause-isolated-na-cc52b-es-missing-ranges-at-1440px-chromium",
+      "intended_missing_pause_errors": 1,
+      "source": "6d45ea01",
+      "last_trace_end_ms": 28253.258,
+      "boundary": "verified first native-size block then missing enabled Pause; aggregate process receipt incomplete"
+    }
+  ],
+  "aggregate_report_completed": false,
+  "independent_repeats_completed": 0,
+  "fixture_correction_commit": "aa9f5a4f",
+  "visual_observation": "phone and desktop retain separate Remove disclosure; fixture UTF-8 corrected before future runs"
+}

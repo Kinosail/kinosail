@@ -1,0 +1,42 @@
+{
+  "source_revision": "7acb6d9a83ec7fa6efcdb67410a586be0c73cfb6",
+  "product_revision": "bf10089edc79652312db66f52277bcc6fedf3dfd",
+  "command": [
+    "../../scripts/tooling/with-go-module.sh",
+    "go",
+    "test",
+    "-v",
+    "-p",
+    "1",
+    "./internal/server",
+    "-run",
+    "^TestDownloadPauseBrowserJourney$",
+    "-count=1",
+    "-timeout=6m"
+  ],
+  "environment_overrides": {
+    "GOMAXPROCS": "2",
+    "PLAYWRIGHT_CHANNEL": "",
+    "KINOSAIL_DOWNLOAD_PAUSE_BROWSER": "1",
+    "KINOSAIL_DOWNLOAD_PAUSE_HIT_TARGETS": "1",
+    "KINOSAIL_BROWSER_WORKERS": "1",
+    "KINOSAIL_E2E_VIDEO": "off",
+    "KINOSAIL_E2E_OUTPUT_DIR": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/server-hit-targets",
+    "KINOSAIL_E2E_ARTIFACT_DIR": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/server-hit-targets-report"
+  },
+  "external_bound_seconds": 60,
+  "elapsed_seconds": 15.123,
+  "exit_code": 1,
+  "timed_out": false,
+  "aggregate_report_completed": true,
+  "stats": {
+    "startTime": "2026-10-04T12:28:30.488Z",
+    "duration": 2661.8379999999997,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  },
+  "runner_errors": [],
+  "timestamp_utc": "2026-10-04T12:28:33.310335+00:00"
+}
