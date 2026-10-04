@@ -1,0 +1,387 @@
+{
+  "revision": "e09a67e80d5a0ca8aa6ad5e12c3229b942e8e4e3",
+  "result": "passed",
+  "binarySHA256": "e5f0a73816d5082c67f7496c695f92960705bbd8d942b7702ab471d448036015",
+  "buildInputsSHA256": "98cc7e6a3e806958f59aca55027c97f2709c93bf682f1c0f959fa97fe01aaaed",
+  "sourceInputsUnchangedAfterBuild": true,
+  "fixtureSHA256": {
+    "01 Lantern.nfo": "5eaba5d5a24ffcc0c28c45b7818b07112ac853e089c4998aaf0d9eeeeb468552",
+    "01 Lantern.png": "8be69672e8013fcb0ecf63e169a4fcc84a9c5b103de14e7f72fabbeaf7db4f6a",
+    "01 Lantern.wav": "38d4fe14e5f89f543e875da3c70ad9b1bfc9f3bf6503216e2266891bd9fcd5fe",
+    "02 Copper.nfo": "037c16f3b69a359f5243170a20d3d6c22f996098f68bc8a50abf46a4ca54f406",
+    "02 Copper.png": "818caffacae2ece1b33f22d59eade6fffb7a65400d287f030b90a14f11ab0f6b",
+    "02 Copper.wav": "c018220a8ab86aa0170ec18fcbaa67849bbfb70a469d0cbde1007e545c7250ff"
+  },
+  "namedResults": {
+    "real album queue advances source and all Now Playing identity to the fictional second track": [
+      "passed",
+      "passed"
+    ],
+    "real album queue keeps system previous and next current and exposes only fresh current-track actions": [
+      "passed",
+      "passed"
+    ],
+    "mobile R03 progress notice stays hidden after real acknowledgement and reopens only on failure": [
+      "passed",
+      "passed"
+    ]
+  },
+  "namedResultClasses": {
+    "real album queue advances source and all Now Playing identity to the fictional second track": "Actual Go Server canonical routes",
+    "real album queue keeps system previous and next current and exposes only fresh current-track actions": "Actual Go Server canonical routes",
+    "mobile R03 progress notice stays hidden after real acknowledgement and reopens only on failure": "Isolated 503 failure injection in Go-backed UI; real acknowledgements and Retry"
+  },
+  "rawResultsSHA256": "76d90f7e2ba584412b8550ed9423fbd3e0318080f92021947a418c7d9f5f7e37",
+  "rawReceiptSHA256": "79b543a0671514573fb2d43fd44ac2676987d97058906da4bbe547cb58fc3d25",
+  "stats": {
+    "startTime": "2026-10-04T13:06:21.678Z",
+    "duration": 9951.212000000001,
+    "expected": 6,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "globalErrors": 0,
+  "cases": [
+    {
+      "title": "real album queue advances source and all Now Playing identity to the fictional second track",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMS": 2526,
+      "observations": [
+        {
+          "name": "player-content-cache-delivery",
+          "value": {
+            "path": "/static/player.js?v=94ca8a300fae552a3b21aeebb1c1cdac4ba59b46b777e79052c21d30662eb537",
+            "sha256": "94ca8a300fae552a3b21aeebb1c1cdac4ba59b46b777e79052c21d30662eb537",
+            "cacheControl": "public, max-age=31536000, immutable"
+          }
+        },
+        {
+          "name": "now-playing-after-real-advance",
+          "value": {
+            "heading": "Copper <Moon> & Harbor",
+            "byline": "Mira Tide \u00b7 R08 Fictional Session \u00b7 Track 2",
+            "accessibleLabel": "Copper <Moon> & Harbor",
+            "documentTitle": "Copper <Moon> & Harbor \u00b7 Kinosail Player",
+            "sourcePath": "/media/31c330f7ead4c950",
+            "progressPath": "/progress/31c330f7ead4c950",
+            "castPath": "/api/v1/items/31c330f7ead4c950/cast",
+            "tracePath": "/api/v1/items/31c330f7ead4c950/playback-events",
+            "sourceSessionMatches": true,
+            "title": "Copper <Moon> & Harbor",
+            "artist": "Mira Tide",
+            "album": "R08 Fictional Session",
+            "artworkPath": "/art/31c330f7ead4c950",
+            "visibleArtworkPath": "/art/31c330f7ead4c950",
+            "metadataTitle": "Copper <Moon> & Harbor",
+            "metadataArtist": "Mira Tide",
+            "metadataAlbum": "R08 Fictional Session",
+            "metadataArtworkPath": "/art/31c330f7ead4c950",
+            "queuePosition": 2,
+            "queueTotal": 2
+          }
+        },
+        {
+          "name": "viewport-item-actions",
+          "value": {
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "originalWatchedVisible": false,
+            "originalListVisible": false,
+            "noticeVisible": false
+          }
+        },
+        {
+          "name": "viewport-item-actions",
+          "value": {
+            "viewport": {
+              "width": 1440,
+              "height": 900
+            },
+            "originalWatchedVisible": false,
+            "originalListVisible": false,
+            "noticeVisible": false
+          }
+        },
+        {
+          "name": "viewport-item-actions",
+          "value": {
+            "viewport": {
+              "width": 1920,
+              "height": 1080
+            },
+            "originalWatchedVisible": false,
+            "originalListVisible": false,
+            "noticeVisible": false
+          }
+        },
+        {
+          "name": "css-cache-delivery",
+          "value": {
+            "path": "/static/app.css?v=electric-48",
+            "sha256": "10e340c71de8aacfdd4dead6f32e949da57ce1f77d6ef45307747a3eb3e77ad2",
+            "cacheControl": "public, max-age=31536000, immutable"
+          }
+        }
+      ]
+    },
+    {
+      "title": "real album queue advances source and all Now Playing identity to the fictional second track",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMS": 2355,
+      "observations": [
+        {
+          "name": "player-content-cache-delivery",
+          "value": {
+            "path": "/static/player.js?v=94ca8a300fae552a3b21aeebb1c1cdac4ba59b46b777e79052c21d30662eb537",
+            "sha256": "94ca8a300fae552a3b21aeebb1c1cdac4ba59b46b777e79052c21d30662eb537",
+            "cacheControl": "public, max-age=31536000, immutable"
+          }
+        },
+        {
+          "name": "now-playing-after-real-advance",
+          "value": {
+            "heading": "Copper <Moon> & Harbor",
+            "byline": "Mira Tide \u00b7 R08 Fictional Session \u00b7 Track 2",
+            "accessibleLabel": "Copper <Moon> & Harbor",
+            "documentTitle": "Copper <Moon> & Harbor \u00b7 Kinosail Player",
+            "sourcePath": "/media/31c330f7ead4c950",
+            "progressPath": "/progress/31c330f7ead4c950",
+            "castPath": "/api/v1/items/31c330f7ead4c950/cast",
+            "tracePath": "/api/v1/items/31c330f7ead4c950/playback-events",
+            "sourceSessionMatches": true,
+            "title": "Copper <Moon> & Harbor",
+            "artist": "Mira Tide",
+            "album": "R08 Fictional Session",
+            "artworkPath": "/art/31c330f7ead4c950",
+            "visibleArtworkPath": "/art/31c330f7ead4c950",
+            "metadataTitle": "Copper <Moon> & Harbor",
+            "metadataArtist": "Mira Tide",
+            "metadataAlbum": "R08 Fictional Session",
+            "metadataArtworkPath": "/art/31c330f7ead4c950",
+            "queuePosition": 2,
+            "queueTotal": 2
+          }
+        },
+        {
+          "name": "viewport-item-actions",
+          "value": {
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "originalWatchedVisible": false,
+            "originalListVisible": false,
+            "noticeVisible": false
+          }
+        },
+        {
+          "name": "viewport-item-actions",
+          "value": {
+            "viewport": {
+              "width": 1440,
+              "height": 900
+            },
+            "originalWatchedVisible": false,
+            "originalListVisible": false,
+            "noticeVisible": false
+          }
+        },
+        {
+          "name": "viewport-item-actions",
+          "value": {
+            "viewport": {
+              "width": 1920,
+              "height": 1080
+            },
+            "originalWatchedVisible": false,
+            "originalListVisible": false,
+            "noticeVisible": false
+          }
+        },
+        {
+          "name": "css-cache-delivery",
+          "value": {
+            "path": "/static/app.css?v=electric-48",
+            "sha256": "10e340c71de8aacfdd4dead6f32e949da57ce1f77d6ef45307747a3eb3e77ad2",
+            "cacheControl": "public, max-age=31536000, immutable"
+          }
+        }
+      ]
+    },
+    {
+      "title": "mobile R03 progress notice stays hidden after real acknowledgement and reopens only on failure",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMS": 1029,
+      "observations": [
+        {
+          "name": "mobile-progress-after-real-acknowledgement",
+          "value": {
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "realAcknowledgementStatus": 204,
+            "noticeVisible": false,
+            "hiddenAttribute": true
+          }
+        }
+      ]
+    },
+    {
+      "title": "mobile R03 progress notice stays hidden after real acknowledgement and reopens only on failure",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMS": 1034,
+      "observations": [
+        {
+          "name": "mobile-progress-after-real-acknowledgement",
+          "value": {
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "realAcknowledgementStatus": 204,
+            "noticeVisible": false,
+            "hiddenAttribute": true
+          }
+        }
+      ]
+    },
+    {
+      "title": "real album queue keeps system previous and next current and exposes only fresh current-track actions",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMS": 999,
+      "observations": []
+    },
+    {
+      "title": "real album queue keeps system previous and next current and exposes only fresh current-track actions",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "durationMS": 1007,
+      "observations": []
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": "packages/webassets/static/player-progress.js",
+      "sha256": "1a65d06c4b7cf912837aaa4d0a56ce6b26f5fd1037f5919c5b5cc734a53ea7b4"
+    },
+    {
+      "path": "packages/webassets/static/player-presentation.js",
+      "sha256": "4a7330ba317b7da98afe094f52a2c28c47fad261b3c37ee7ead5a74de1c0c879"
+    },
+    {
+      "path": "packages/webassets/static/player-audio-queue.js",
+      "sha256": "8e721ab3ed7debb457c426dcf7485b11991e335030a0fd8a5f74e4d7c2667448"
+    },
+    {
+      "path": "packages/playerweb/audio_queue_template.go",
+      "sha256": "543927e9223ec2310dabb51c5ed6f3211948a9da14af7d9a860225964bd4a633"
+    },
+    {
+      "path": "packages/playerweb/player_template.go",
+      "sha256": "5722e6100d788327b56d13249f9d75d9f08ea301828cd37607e3ce2f332fc627"
+    },
+    {
+      "path": "apps/player/e2e/test-instance-audio-queue.spec.ts",
+      "sha256": "beb2cdb6f6a160b67e052adc1e589573a4bc05731d7981e663723fe1486cf729"
+    },
+    {
+      "path": "apps/player/e2e/player-audio-policy.spec.ts",
+      "sha256": "9607eacfc7fb428290f9cc65d476567f60b806458eeffb25ca2b1d46e5e4d569"
+    },
+    {
+      "path": "apps/player/e2e/player-progress.spec.ts",
+      "sha256": "433286d1fa68b6bc8c339a671f9bad7bcf868c342cb6bd5574a2e6473abc6c82"
+    },
+    {
+      "path": "apps/player/e2e/static-sources.ts",
+      "sha256": "4af44c204b9699991b26e5daec1ed48d4c6380fe5570225987074a91d06ff19d"
+    },
+    {
+      "path": "scripts/testing/test-player-audio-queue-local.py",
+      "sha256": "31b1b09692ba3c86589605c2c88a03f7ef9bb82dac1bb747ffe280d144dd6731"
+    },
+    {
+      "path": "packages/webassets/static/player-app.css",
+      "sha256": "8c415019682bba3e2afffb28dac12d3e04a7fb9753808e2426ecb963e1bd20b2"
+    },
+    {
+      "path": "packages/webassets/static/subtitles-app.css.patch",
+      "sha256": "e224005c598245795efdeab9b8a98201b5ab36d8627abdbf638857ddd9725b59"
+    },
+    {
+      "path": "apps/player/internal/server/navigation_shell.go",
+      "sha256": "f6e6f09db34bcdaa22f428179325d5b16832bb6db74c6d9e1e3e74e3bb9ef860"
+    },
+    {
+      "path": "apps/subtitles/internal/server/navigation_shell.go",
+      "sha256": "8bbdebce04d481236bb675da1fdc2c7d6d6109b3dc36c3d4032d8b1c48a15573"
+    }
+  ],
+  "screens": [
+    {
+      "path": "screens/test-instance-audio-queue--0777c-and-reopens-only-on-failure-chromium-mobile-progress-failed.png",
+      "sha256": "532a30ddc5cf484911559f949d5c49f2877ab234c702518b5a393f1bbbaf830b"
+    },
+    {
+      "path": "screens/test-instance-audio-queue--0777c-and-reopens-only-on-failure-chromium-mobile-progress-saved.png",
+      "sha256": "44825ee92f38f2eed43e15dc31c0cbeaa9074ff2de633e5c10c1f6e3fe15755e"
+    },
+    {
+      "path": "screens/test-instance-audio-queue--0777c-and-reopens-only-on-failure-chromium-repeat1-mobile-progress-failed.png",
+      "sha256": "532a30ddc5cf484911559f949d5c49f2877ab234c702518b5a393f1bbbaf830b"
+    },
+    {
+      "path": "screens/test-instance-audio-queue--0777c-and-reopens-only-on-failure-chromium-repeat1-mobile-progress-saved.png",
+      "sha256": "44825ee92f38f2eed43e15dc31c0cbeaa9074ff2de633e5c10c1f6e3fe15755e"
+    },
+    {
+      "path": "screens/test-instance-audio-queue--1a578-fresh-current-track-actions-chromium-fresh-second-track-actions.png",
+      "sha256": "9b2828a3346bc5b5a7e6533ce2b4362a761c1745e0b7df0fbadc8a5a3d3a0a8a"
+    },
+    {
+      "path": "screens/test-instance-audio-queue--1a578-fresh-current-track-actions-chromium-repeat1-fresh-second-track-actions.png",
+      "sha256": "9b2828a3346bc5b5a7e6533ce2b4362a761c1745e0b7df0fbadc8a5a3d3a0a8a"
+    },
+    {
+      "path": "screens/test-instance-audio-queue--cd5da--the-fictional-second-track-chromium-second-track-1440.png",
+      "sha256": "115c052c4ee73fcd96d2eeb51b3ed40416b8200eec4c94b7705c813251f8bafe"
+    },
+    {
+      "path": "screens/test-instance-audio-queue--cd5da--the-fictional-second-track-chromium-second-track-1920.png",
+      "sha256": "18ea47fb16bb818c2e1150eda1d344b1eb098c5f649bc03217b63984096ddaf0"
+    },
+    {
+      "path": "screens/test-instance-audio-queue--cd5da--the-fictional-second-track-chromium-second-track-390.png",
+      "sha256": "ce3d3d991d0113975cc373aa90bad0b7ae3182d0a88d550c8716075087093ad6"
+    },
+    {
+      "path": "screens/test-instance-audio-queue--cd5da--the-fictional-second-track-chromium-second-track-before-assertions.png",
+      "sha256": "cac3b90c0f2606dcdc1e1a9b6a1ec16b8835775a3066ebe49bf9e21fc36c2cb5"
+    },
+    {
+      "path": "screens/test-instance-audio-queue--cd5da--the-fictional-second-track-chromium-repeat1-second-track-1440.png",
+      "sha256": "115c052c4ee73fcd96d2eeb51b3ed40416b8200eec4c94b7705c813251f8bafe"
+    },
+    {
+      "path": "screens/test-instance-audio-queue--cd5da--the-fictional-second-track-chromium-repeat1-second-track-1920.png",
+      "sha256": "18ea47fb16bb818c2e1150eda1d344b1eb098c5f649bc03217b63984096ddaf0"
+    },
+    {
+      "path": "screens/test-instance-audio-queue--cd5da--the-fictional-second-track-chromium-repeat1-second-track-390.png",
+      "sha256": "ce3d3d991d0113975cc373aa90bad0b7ae3182d0a88d550c8716075087093ad6"
+    },
+    {
+      "path": "screens/test-instance-audio-queue--cd5da--the-fictional-second-track-chromium-repeat1-second-track-before-assertions.png",
+      "sha256": "cac3b90c0f2606dcdc1e1a9b6a1ec16b8835775a3066ebe49bf9e21fc36c2cb5"
+    }
+  ]
+}

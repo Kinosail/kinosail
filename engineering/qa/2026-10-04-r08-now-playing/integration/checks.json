@@ -1,0 +1,145 @@
+{
+  "revision": "e09a67e80d5a0ca8aa6ad5e12c3229b942e8e4e3",
+  "base": "0d85c75a5ed2f304a8c657ecc2a06c11dbbcef0a",
+  "sourceSHA256": {
+    "apps/player/internal/server/static/playback-capabilities.js": "4c369515a923fbe1d85aa35e21d50a0e4c484b9f62d25d5904845826e10bac2b",
+    "packages/webassets/static/player-core.js": "92d6bc44d3ff7fc05a1593949a9d6d673785fce1471b6a5bea7bce6aaf85aa0c",
+    "apps/player/internal/server/static/player-subtitles.js": "cbd2e1afb58d508736504e9e03b9878f7385533b6a59dd1c9656cc870a6e790f",
+    "apps/player/internal/server/static/player.js": "214997dbce7bb80fcb81d3c6988e3a6203c8a60935b05a13652e4644f5e059ba",
+    "apps/player/internal/server/static/player-streaming-adaptive.js": "c7545cf8ba5b400de5733017f204a7bb2565738b3acea3fb23b507a40dfb543c",
+    "apps/player/internal/server/static/player-streaming-recovery.js": "7e66f1cfc023fed1f7a00916c0ea2453a94ab688a92028fe7e2597009e757c2f",
+    "apps/player/internal/server/static/player-streaming-offline.js": "ddceb6e6cbfc18ece9ca44365f0791fa106d323f6bc9f61328bbb9418cc1c9d8",
+    "packages/webassets/static/player-controls.js": "4bbad3109f66f57e8aa637beb6cb8e52a6715b1bca106aa40e7db6f850cd9e05",
+    "packages/webassets/static/player-status.js": "748d8c2607261aff3afbd71c4dae44c338b44becc14407d594f4e1dca5017011",
+    "packages/webassets/static/player-presentation.js": "4a7330ba317b7da98afe094f52a2c28c47fad261b3c37ee7ead5a74de1c0c879",
+    "packages/webassets/static/player-devices.js": "67dcd0f9b639732a4ad593f2e7d0750bcbdc874a378aab980b1cce72f6b1da6b",
+    "packages/webassets/static/player-progress.js": "1a65d06c4b7cf912837aaa4d0a56ce6b26f5fd1037f5919c5b5cc734a53ea7b4",
+    "packages/webassets/static/player-audio-queue.js": "8e721ab3ed7debb457c426dcf7485b11991e335030a0fd8a5f74e4d7c2667448",
+    "apps/player/e2e/static-sources.ts": "4af44c204b9699991b26e5daec1ed48d4c6380fe5570225987074a91d06ff19d",
+    "apps/player/e2e/playwright.config.ts": "628d3a62d9b3e2fba1bc43f3cd58979acadf22c083e3559c73c4f750a97cc0b3",
+    "apps/player/e2e/player-audio-policy.spec.ts": "9607eacfc7fb428290f9cc65d476567f60b806458eeffb25ca2b1d46e5e4d569",
+    "apps/player/e2e/player-progress.spec.ts": "433286d1fa68b6bc8c339a671f9bad7bcf868c342cb6bd5574a2e6473abc6c82",
+    "apps/player/e2e/player-progress-queue-drain.spec.ts": "92727254d224c8ff2cf09fab3c54bf9f4f2e8865ddf2e8251b87f2715814889a",
+    "apps/player/scripts/test-browser-journeys.sh": "abce6f165c6e79f5e9f521a60499efffc597f6ecedf80a6bc21f28dd66d201d1",
+    "apps/player/scripts/test-container.sh": "a9acf49d304e59b1f7137dd47a6207024aadd2878f2615a9d6171d25f7e42405",
+    "scripts/ci/test_audio_queue_journey.py": "5cf7c4fcfd389587f87d2580a4a5d4d68c0b81f43c19b5128069c99fd502a9cd"
+  },
+  "results": [
+    {
+      "name": "player-verify-changed",
+      "command": [
+        "make",
+        "-C",
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/apps/player",
+        "verify-changed",
+        "BASE=origin/main"
+      ],
+      "boundSeconds": 90,
+      "exitCode": 2,
+      "timedOut": false,
+      "seconds": 68.27,
+      "log": "r08-integration-player-verify-changed-private.log",
+      "logSHA256": "d7161cb3181a5f180b24a34581bed58c4a855675a6181cf9eba93274768f7922"
+    },
+    {
+      "name": "subtitles-verify-changed",
+      "command": [
+        "make",
+        "-C",
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/apps/subtitles",
+        "verify-changed",
+        "BASE=origin/main"
+      ],
+      "boundSeconds": 90,
+      "exitCode": 2,
+      "timedOut": false,
+      "seconds": 54.36,
+      "log": "r08-integration-subtitles-verify-changed-private.log",
+      "logSHA256": "b6b81fbca0d1dc615d1a0090e813699d08d5a5c630b884c91bfd6085eaaa8344"
+    },
+    {
+      "name": "changed-lint",
+      "command": [
+        "bash",
+        "scripts/quality/check-lint.sh"
+      ],
+      "boundSeconds": 90,
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 89.44,
+      "log": "r08-integration-changed-lint-private.log",
+      "logSHA256": "3c6f43c00b56d7116263f7523bfb6a311aed70cff8c5f4d73ab254b299717fdf"
+    },
+    {
+      "name": "shared-templates",
+      "command": [
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/scripts/tooling/with-go-module.sh",
+        "go",
+        "test",
+        "-p",
+        "1",
+        "./playerweb",
+        "./webassets",
+        "-count=1"
+      ],
+      "boundSeconds": 45,
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 1.5,
+      "log": "r08-integration-shared-templates-private.log",
+      "logSHA256": "09fc36f02c36e1023faa188748dc3ec3200583d27b3126aa06b4f539c3002cb2"
+    },
+    {
+      "name": "test-instance-check",
+      "command": [
+        "make",
+        "-C",
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/apps/player",
+        "test-instance-check"
+      ],
+      "boundSeconds": 15,
+      "exitCode": 2,
+      "timedOut": false,
+      "seconds": 1.51,
+      "log": "r08-integration-test-instance-check-private.log",
+      "logSHA256": "42e699335baa8cd5b025289eb2e3404ad20fc5f4e108a0bb24d652b5ad7bc483"
+    },
+    {
+      "name": "isolated-browser",
+      "command": [
+        "node",
+        "node_modules/@playwright/test/cli.js",
+        "test",
+        "player-audio-policy.spec.ts",
+        "player-progress.spec.ts",
+        "player-progress-queue-drain.spec.ts",
+        "--project=chromium",
+        "--workers=1",
+        "--retries=0",
+        "--timeout=15000",
+        "--global-timeout=60000",
+        "--reporter=line,json"
+      ],
+      "boundSeconds": 75,
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 10.69,
+      "log": "r08-integration-isolated-browser-private.log",
+      "logSHA256": "0c845e39ae18df569c671a3877ed2cfdace11febe878f82aadca673dc39beb6f"
+    },
+    {
+      "name": "native-server-proof",
+      "command": [
+        "python3",
+        "scripts/testing/test-player-audio-queue-local.py"
+      ],
+      "boundSeconds": 110,
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 20.22,
+      "log": "r08-integration-native-server-proof-private.log",
+      "logSHA256": "20ad9562bd550623761830156dbf245856ba384fde48bde7f6d48859b24eeb64"
+    }
+  ],
+  "sourceInputsUnchanged": true
+}

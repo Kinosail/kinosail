@@ -1,0 +1,67 @@
+VERIFY 6 changed path(s) against origin/main
+PASS max-loc (0s)
+PASS diff-check (0s)
+PASS go-compile:internal/server (11s)
+PASS go-focused:internal/server (9s)
+FAIL shared-packages (2s); full log: /Users/mikeo/Documents/Codex/2026-10-04/task-2/.repos/kinosail/.git/kinosail-verify-logs/apps-subtitles/1c534b19d22e7a19ec50d7f8ce095394f5d3064022ba9118971fd46f8c603bef.log
+packages/owneraccess/owneraccess_test.go:126:17: G705: XSS via taint analysis (gosec)
+		_, _ = w.Write([]byte(ProfileID(r)))
+		              ^
+packages/publicgateway/gateway.go:36:19: G102: Binds to all network interfaces (gosec)
+	listener, err := net.Listen("tcp", ":8443")
+	                 ^
+packages/publicgateway/gateway_test.go:27:14: G112: Potential Slowloris Attack because ReadHeaderTimeout is not configured in the http.Server (gosec)
+	backend := &http.Server{Handler: TLSMetadata(identitycore.Remote(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !identitycore.RemoteRequest(r) || r.TLS == nil || r.Header.Get("X-Kinosail-Proxy-Token") != "" || r.Header.Get("X-Forwarded-For") != "" || r.RemoteAddr != "198.51.100.10:5000" || r.Header.Get("Authorization") != "Bearer viewer" {
+			t.Error("gateway boundary lost")
+		}
+		w.WriteHeader(http.StatusNoContent)
+	})))}
+packages/quickconnect/browser_test.go:102:75: G124: http.Cookie missing or has insecure Secure, HttpOnly, or SameSite attribute (gosec)
+		"duplicate cookie":     func(r *http.Request) { r.AddCookie(&http.Cookie{Name: browserCookieName, Value: "other"}) },
+		                                                                        ^
+packages/remoteaccess/gateway.go:65:12: G302: Expect file permissions to be 0600 or less (gosec)
+	if err := os.Chmod(publicgateway.Directory, 0o700); err != nil {
+	          ^
+packages/owneraccess/owneraccess_test.go:153:29: (*net/http.Client).Get must not be called. use (*net/http.Client).Do(*http.Request) (noctx)
+	response, err := client.Get(config.Origin + "/settings")
+	                           ^
+packages/owneraccess/owneraccess_test.go:177:28: (*net/http.Client).Get must not be called. use (*net/http.Client).Do(*http.Request) (noctx)
+	response, err = client.Get(config.Origin + "/stream")
+	                          ^
+packages/publicgateway/gateway_test.go:23:29: net.Listen must not be called. use (*net.ListenConfig).Listen (noctx)
+	listener, err := net.Listen("unix", path)
+	                           ^
+packages/remoteaccess/gateway.go:78:22: net.Listen must not be called. use (*net.ListenConfig).Listen (noctx)
+	l, err := net.Listen("unix", path)
+	                    ^
+packages/homeassistant/pairing.go:58:14: ST1005: error strings should not be capitalized (staticcheck)
+		return "", errors.New("Home Assistant pairing requires a current Owner")
+		           ^
+packages/homeassistant/player.go:75:15: ST1005: error strings should not be capitalized (staticcheck)
+		return nil, errors.New("Home Assistant player belongs to another Viewer Profile")
+		            ^
+packages/identitycore/session_requests.go:149:42: QF1008: could remove embedded field "Sessions" from selector (staticcheck)
+	if sessions.Sessions != nil && sessions.Sessions.valid() {
+	                                        ^
+packages/mcpgateway/application_profile_state.go:39:12: QF1001: could apply De Morgan's law (staticcheck)
+			return (!(profile.Owner || config.MFARequired()) || profile.Secured()) && profile.Allowed(config.PublicRequest(request), now)
+			        ^
+packages/owneraccess/dns.go:47:68: QF1008: could remove embedded field "Header" from selector (staticcheck)
+	if len(packet) > 1232 || request.Unpack(packet) != nil || request.Header.Response || request.Header.OpCode != 0 || len(request.Questions) != 1 || len(request.Answers) != 0 || len(request.Authorities) != 0 {
+	                                                                  ^
+packages/publicgateway/gateway.go:108:7: QF1001: could apply De Morgan's law (staticcheck)
+			if !(c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '-') {
+			   ^
+94 issues:
+* contextcheck: 3
+* cyclop: 46
+* exhaustive: 2
+* funlen: 1
+* gocognit: 24
+* gofumpt: 1
+* gosec: 7
+* noctx: 4
+* staticcheck: 6
+make[1]: *** [lint] Error 1
+make: *** [verify-changed] Error 1
