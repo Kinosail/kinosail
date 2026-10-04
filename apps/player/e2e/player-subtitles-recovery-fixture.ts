@@ -1,5 +1,6 @@
 import { expect, type Page } from "@playwright/test";
 import { createServer, type ServerResponse } from "node:http";
+import { createHash } from "node:crypto";
 import { readStaticSource } from "./static-sources";
 
 const source = await readStaticSource(["../internal/server/static/player-subtitles.js"]);
@@ -37,7 +38,7 @@ export async function captionPeer(page: Page, mode: "headers" | "body") {
       return;
     }
     response.writeHead(200, { "Content-Type": "text/html" });
-    response.end(`<video aria-label="Fixture video"><track default kind="subtitles" label="English" data-subtitle-source="/captions.vtt"></video><label>Subtitles<select data-subtitles><option value="0">English</option><option value="off">Off</option></select></label><small role="status" data-subtitle-status hidden></small><button type="button" data-subtitle-retry hidden>Retry subtitles</button>`);
+    response.end(`<video aria-label="Fixture video"><track default kind="subtitles" label="English" srclang="en" data-subtitle-source="/captions.vtt"></video><label>Subtitles<select data-subtitles><option value="0">English</option><option value="off">Off</option></select></label><small role="status" data-subtitle-status hidden></small><button type="button" data-subtitle-retry hidden>Retry subtitles</button>`);
   });
   await new Promise<void>((resolve) => web.listen(0, "127.0.0.1", resolve));
   const address = web.address();
@@ -63,12 +64,22 @@ export async function openCaptionPlayer(page: Page, origin: string) {
     expect(library.items[0].title).toBe("Caption Recovery");
     await page.goto(`${origin}/watch/${library.items[0].id}?playback=direct`);
     const bundle = await page.locator('script[src^="/static/player.js"]').getAttribute("src");
-    expect(new URL(bundle!, origin).searchParams.get("v")).toMatch(/^[a-f0-9]{64}$/);
-    await page.locator("video").evaluate(async (video: HTMLVideoElement) => { video.muted = true; await video.play(); });
+    const asset = new URL(bundle!, origin);
+    expect(asset.origin).toBe(origin);
+    const version = asset.searchParams.get("v");
+    expect(version).toMatch(/^[a-f0-9]{64}$/);
+    const responseAsset = await page.request.get(asset.toString());
+    expect(responseAsset.ok()).toBe(true);
+    const checksum = createHash("sha256").update(await responseAsset.body()).digest("hex");
+    expect(checksum).toBe(version);
+    await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThan(0);
+    await page.locator("video").evaluate(async (video: HTMLVideoElement) => { video.muted = true; video.currentTime = 0; await video.play(); });
     await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(0.1);
     await page.getByRole("button", {name: "Settings", exact: true}).first().click();
+    return { version, checksum };
   } else {
     await page.goto(origin);
     await page.addScriptTag({ content: `const player = document.querySelector("video");\n${source}` });
+    return null;
   }
 }

@@ -62,11 +62,12 @@ func TestSubtitleRecoveryBrowserJourney(t *testing.T) {
 }
 
 type captionFaultPeer struct {
-	handler http.Handler
-	mutex   sync.Mutex
-	mode    string
-	calls   int
-	closed  int
+	handler    http.Handler
+	mutex      sync.Mutex
+	mode       string
+	calls      int
+	closed     int
+	generation int
 }
 
 func (peer *captionFaultPeer) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
@@ -80,6 +81,7 @@ func (peer *captionFaultPeer) ServeHTTP(writer http.ResponseWriter, request *htt
 				return
 			}
 			peer.mode, peer.calls, peer.closed = mode, 0, 0
+			peer.generation++
 		}
 		writer.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(writer).Encode(map[string]int{"calls": peer.calls, "closed": peer.closed}); err != nil {
@@ -94,6 +96,7 @@ func (peer *captionFaultPeer) ServeHTTP(writer http.ResponseWriter, request *htt
 	peer.mutex.Lock()
 	peer.calls++
 	mode := peer.mode
+	generation := peer.generation
 	peer.mode = "normal"
 	peer.mutex.Unlock()
 	if mode != "headers" && mode != "body" {
@@ -112,6 +115,8 @@ func (peer *captionFaultPeer) ServeHTTP(writer http.ResponseWriter, request *htt
 	}
 	<-request.Context().Done()
 	peer.mutex.Lock()
-	peer.closed++
+	if peer.generation == generation {
+		peer.closed++
+	}
 	peer.mutex.Unlock()
 }

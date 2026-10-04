@@ -31,9 +31,10 @@ Failure modes identified before product changes:
   sources. Preserve same-origin, redirect, MIME and byte bounds before src.
 - Raw URLs, tokens or arbitrary response errors leak into notices/diagnostics.
   Use fixed failure classes and only bounded validated request correlation.
-- Recovery remains hidden in playback settings with no direct accessible
-  control, or status is not announced. Expose a clear keyboard Retry next to
-  the caption failure and preserve existing settings/controls behavior.
+- Recovery has no direct accessible control, status is not announced, or
+  hiding Retry strands keyboard focus. Expose a clear keyboard Retry next to
+  the caption failure, return focus to its selector, and preserve existing
+  settings/controls behavior.
 
 Initial reproduction uses an isolated browser and a real disposable local HTTP
 stand-in serving the unmodified caption loader. It leaves headers/body pending
@@ -47,7 +48,8 @@ The video SHA-256 is
 `9dbd85e7863d921e209978c8349992e5f8505b0d7ffa468c37b8caf97af3f0a4`. No production
 seam, global timer setting or test-only loader parameter will be introduced.
 
-The regression observes failure status, keyboard Retry, recovered real cues,
+The regression observes failure status, keyboard Retry and focus continuity,
+recovered real cues, absence of a later false timeout,
 selected track/mode, unchanged media state, request cancellation and safe
 failure diagnostics. Public playback/track invariants derive from the fixture,
 not from the implementation's private maps. Existing finite caption and

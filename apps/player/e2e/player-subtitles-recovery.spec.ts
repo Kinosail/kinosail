@@ -10,7 +10,8 @@ for (const stalledBoundary of ["headers", "body"] as const) {
     await page.setViewportSize({width, height: width === 1920 ? 1080 : 844});
     const peer = await captionPeer(page, stalledBoundary);
     try {
-      await openCaptionPlayer(page, peer.origin);
+      const servedBundle = await openCaptionPlayer(page, peer.origin);
+      if (servedBundle) await info.attach("served-player-bundle-identity", {body: JSON.stringify(servedBundle), contentType: "application/json"});
       await expect(page.locator("[data-subtitle-status]")).toHaveText("Loading subtitles…");
       await expect.poll(async () => (await peer.stats()).calls).toBe(1);
       const before = await page.locator("video").evaluate((video: HTMLVideoElement) => ({source: video.getAttribute("src"), time: video.currentTime, paused: video.paused}));
@@ -26,11 +27,16 @@ for (const stalledBoundary of ["headers", "body"] as const) {
       await expect(retry).toBeVisible();
       await retry.focus();
       await page.keyboard.press("Enter");
-      await expect.poll(() => page.locator('track[label="English"]').evaluate((track: HTMLTrackElement) => (track.track.cues?.[0] as VTTCue | undefined)?.text)).toBe("Recovered captions");
+      await expect.poll(() => page.locator('track[srclang="en"]').evaluate((track: HTMLTrackElement) => (track.track.cues?.[0] as VTTCue | undefined)?.text)).toBe("Recovered captions");
       await expect(page.locator("[data-subtitle-status]")).toBeHidden();
       await expect(retry).toBeHidden();
+      await expect(page.locator("[data-subtitles]")).toBeFocused();
       await expect(page.locator("[data-subtitles]")).toHaveValue("0");
-      expect(await page.locator('track[label="English"]').evaluate((track: HTMLTrackElement) => track.track.mode)).toBe("showing");
+      await page.clock.fastForward(25_000);
+      await expect(page.locator("[data-subtitle-status]")).toBeHidden();
+      await expect(page.locator("[data-subtitle-status]")).not.toHaveAttribute("data-failure");
+      await expect(page.locator("[data-subtitle-status]")).not.toHaveAttribute("data-request-id");
+      expect(await page.locator('track[srclang="en"]').evaluate((track: HTMLTrackElement) => track.track.mode)).toBe("showing");
       const after = await page.locator("video").evaluate((video: HTMLVideoElement) => ({source: video.getAttribute("src"), time: video.currentTime, paused: video.paused}));
       expect(after.source).toBe(before.source);
       expect(after.paused).toBe(before.paused);
@@ -43,7 +49,7 @@ for (const stalledBoundary of ["headers", "body"] as const) {
         await page.locator("[data-subtitles]").selectOption("off");
         await expect(page.locator("[data-subtitle-status]")).toBeHidden();
         await expect(retry).toBeHidden();
-        expect(await page.locator('track[label="English"]').evaluate((track: HTMLTrackElement) => track.track.mode)).toBe("disabled");
+        expect(await page.locator('track[srclang="en"]').evaluate((track: HTMLTrackElement) => track.track.mode)).toBe("disabled");
         await page.screenshot({path: info.outputPath(`${stalledBoundary}-${width}-off.png`), fullPage: true});
       }
     } finally {
