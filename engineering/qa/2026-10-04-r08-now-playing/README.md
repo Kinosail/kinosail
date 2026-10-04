@@ -142,8 +142,13 @@ retired continuation, and requires each latest payload to dispatch exactly once.
 It also requires the closing policy failure and safe request ID to remain visible.
 The first root run hung because the synchronization assignment returned the held
 Promise. That setup timeout is excluded. `1944cc3c` returns `undefined` from the
-assignment while preserving the observable HTTP and policy assertions. Root owns
-the corrected RED replay and production guard; this branch has not run GREEN.
+assignment while preserving the observable HTTP and policy assertions. Root's
+corrected replay at `df47fe8d` completed one intended failure, with no skipped,
+flaky, or global errors. The HTTP assertion received the duplicate next-item
+revision 3. This branch mirrors the root guard from `d72451da`: the original
+sender drains only while it still owns the current flight. The standalone test
+lineage is retained. Root owns that RED receipt and its GREEN verification;
+this R08 branch has not run GREEN.
 
 ## Ownership
 
