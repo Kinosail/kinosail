@@ -4,7 +4,7 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
   for (const viewport of [{width:390,height:844},{width:1440,height:900}]) {
     const context = await browser.newContext({...options,viewport,ignoreHTTPSErrors:false,reducedMotion:"reduce",serviceWorkers:"block"});
     const page = await context.newPage();
-    await page.goto("/?view=movies");
+    await page.goto(inspectorPath ? "/?view=library" : "/?view=movies");
     const search = page.locator(".app-header input[name=q]");
     if (!await search.count()) {results.push({viewport,flow:"HTMX search",result:"not present"});await context.close();continue;}
     let fail = false;
