@@ -33,11 +33,7 @@ func TestSubtitleOperationPreservesActiveOwnerAndCSRFBoundaries(t *testing.T) {
 	base := subtitleOperationOwnerItem(t, handler, owner)
 	item := strings.TrimPrefix(base, "/api/v1/subtitle-library/")
 	input, _ := json.Marshal(map[string]string{"action": "replacement", "item": item})
-	prepared := subtitleOperationAuthenticated(t, handler, http.MethodPost, "/api/v1/subtitle-operations", string(input), owner, "")
-	var receipt subtitleOperationReceipt
-	if prepared.Code != http.StatusCreated || json.Unmarshal(prepared.Body.Bytes(), &receipt) != nil || len(receipt.ID) != 64 {
-		t.Fatalf("active Owner preparation = %d, want 201 with a receipt", prepared.Code)
-	}
+	receipt := prepareSubtitleOperationOwnerReceipt(t, handler, string(input), owner)
 	statusPath := "/api/v1/subtitle-operations/" + receipt.ID
 	assertSubtitleOperationAccessDenied(t, handler, http.MethodGet, statusPath, "", nil, "", http.StatusUnauthorized)
 	assertSubtitleOperationAccessDenied(t, handler, http.MethodGet, statusPath, "", viewer, "", http.StatusForbidden)
@@ -48,17 +44,39 @@ func TestSubtitleOperationPreservesActiveOwnerAndCSRFBoundaries(t *testing.T) {
 	assertSubtitleOperationCrossOriginDenied(t, handler, string(input), owner)
 	assertSubtitleOperationActivationCrossOriginDenied(t, handler, base+"/replacement", receipt.ID, owner)
 	assertSubtitleActionBytes(t, target, []byte(subtitleActionInitial))
-	current := subtitleOperationAuthenticated(t, handler, http.MethodGet, statusPath, "", owner, "")
+	receipt = assertSubtitleOperationOwnerPrepared(t, handler, statusPath, owner)
+	accepted := subtitleOperationAuthenticated(t, handler, http.MethodPost, base+"/replacement", `{"replaceable":false}`, owner, receipt.ID)
+	assertSubtitleOperationAccepted(t, accepted, receipt.ID)
+	assertSubtitleOperationOwnerCompletes(t, handler, statusPath, owner)
+	assertSubtitleActionBytes(t, target, []byte(subtitleActionInitial))
+	assertSubtitleOperationOwnerProtected(t, handler, owner)
+}
+
+func prepareSubtitleOperationOwnerReceipt(t *testing.T, handler http.Handler, input string, owner *http.Cookie) subtitleOperationReceipt {
+	t.Helper()
+	prepared := subtitleOperationAuthenticated(t, handler, http.MethodPost, "/api/v1/subtitle-operations", input, owner, "")
+	var receipt subtitleOperationReceipt
+	if prepared.Code != http.StatusCreated || json.Unmarshal(prepared.Body.Bytes(), &receipt) != nil || len(receipt.ID) != 64 {
+		t.Fatalf("active Owner preparation = %d, want 201 with a receipt", prepared.Code)
+	}
+	return receipt
+}
+
+func assertSubtitleOperationOwnerPrepared(t *testing.T, handler http.Handler, path string, owner *http.Cookie) subtitleOperationReceipt {
+	t.Helper()
+	current := subtitleOperationAuthenticated(t, handler, http.MethodGet, path, "", owner, "")
+	var receipt subtitleOperationReceipt
 	if current.Code != http.StatusOK || json.Unmarshal(current.Body.Bytes(), &receipt) != nil || receipt.State != "prepared" {
 		t.Fatalf("denied requests changed the active Owner receipt: status %d", current.Code)
 	}
 	if current.Header().Get("Cache-Control") != "private, no-store" {
 		t.Fatal("Owner receipt status is cacheable")
 	}
-	accepted := subtitleOperationAuthenticated(t, handler, http.MethodPost, base+"/replacement", `{"replaceable":false}`, owner, receipt.ID)
-	assertSubtitleOperationAccepted(t, accepted, receipt.ID)
-	assertSubtitleOperationOwnerCompletes(t, handler, statusPath, owner)
-	assertSubtitleActionBytes(t, target, []byte(subtitleActionInitial))
+	return receipt
+}
+
+func assertSubtitleOperationOwnerProtected(t *testing.T, handler http.Handler, owner *http.Cookie) {
+	t.Helper()
 	protected := subtitleOperationAuthenticated(t, handler, http.MethodGet, "/api/v1/subtitle-library?view=library", "", owner, "")
 	var inventory struct{ Items []struct{ Frozen bool } }
 	if protected.Code != http.StatusOK || json.Unmarshal(protected.Body.Bytes(), &inventory) != nil || len(inventory.Items) != 1 || !inventory.Items[0].Frozen {

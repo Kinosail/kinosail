@@ -43,22 +43,29 @@ func (operations *subtitleOperations) activate(request *http.Request, activation
 func (operations *subtitleOperations) launch(request *http.Request, record subtitleOperationRecord, limit time.Duration, work http.HandlerFunc) {
 	// Browser cancellation does not undo an activation. The job keeps request
 	// identity, follows Server shutdown, and has the reviewed outer deadline.
-	base, cancelBase := context.WithCancel(context.WithoutCancel(request.Context()))
-	stopLifecycle := context.AfterFunc(operations.lifecycle, cancelBase)
-	ctx, cancelLimit := operations.clock.WithTimeout(base, limit)
-	ctx = context.WithValue(ctx, subtitleAdmissionKey{}, operations.admission)
+	ctx, cancel := operations.operationContext(request.Context(), limit)
 	operations.active[record.ID] = ctx
 	jobRequest := request.Clone(ctx)
 	jobRequest.Body = http.NoBody
 	slog.Info("subtitle operation started", "request_id", activityRequestID(request), "operation_id", record.ID, "action", record.Action, "outcome", "running")
 	go func() {
-		defer cancelBase()
-		defer cancelLimit()
-		defer stopLifecycle()
+		defer cancel()
 		capture := &subtitleOperationResponse{header: http.Header{}, retain: record.Action == "audio"}
 		work(capture, jobRequest)
 		operations.complete(jobRequest, record, capture)
 	}()
+}
+
+func (operations *subtitleOperations) operationContext(parent context.Context, limit time.Duration) (context.Context, context.CancelFunc) {
+	base, cancelBase := context.WithCancel(context.WithoutCancel(parent))
+	stopLifecycle := context.AfterFunc(operations.lifecycle, cancelBase)
+	limited, cancelLimit := operations.clock.WithTimeout(base, limit)
+	admitted := context.WithValue(limited, subtitleAdmissionKey{}, operations.admission)
+	return admitted, func() {
+		stopLifecycle()
+		cancelLimit()
+		cancelBase()
+	}
 }
 
 func (operations *subtitleOperations) markUnknown(record subtitleOperationRecord) {

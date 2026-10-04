@@ -111,7 +111,7 @@ func (operations *subtitleOperations) restore(envelope subtitleOperationEnvelope
 }
 
 func validSubtitleOperationRecord(record subtitleOperationRecord) bool {
-	if !validSubtitleFingerprint(record.ID) || !validSubtitleOperationInput(record.Action, record.Item) || !validSubtitleOperationOwner(record.Owner) || record.Created <= 0 || record.Expires < 0 {
+	if !validSubtitleOperationRecordIdentity(record) {
 		return false
 	}
 	switch record.State {
@@ -126,6 +126,10 @@ func validSubtitleOperationRecord(record subtitleOperationRecord) bool {
 	default:
 		return false
 	}
+}
+
+func validSubtitleOperationRecordIdentity(record subtitleOperationRecord) bool {
+	return validSubtitleFingerprint(record.ID) && validSubtitleOperationInput(record.Action, record.Item) && validSubtitleOperationOwner(record.Owner) && record.Created > 0 && record.Expires >= 0
 }
 
 func validSubtitleOperationOwner(owner string) bool {

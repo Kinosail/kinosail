@@ -16,13 +16,20 @@ func validSubtitleOperationAudio(data []byte) bool {
 		return false
 	}
 	for _, values := range [][]float64{result.Waveform, result.Speech} {
-		if len(values) < 1 || len(values) > 1024 {
+		if !validSubtitleOperationSamples(values) {
 			return false
 		}
-		for _, value := range values {
-			if !finiteSubtitleOperationNumber(value) {
-				return false
-			}
+	}
+	return true
+}
+
+func validSubtitleOperationSamples(values []float64) bool {
+	if len(values) < 1 || len(values) > 1024 {
+		return false
+	}
+	for _, value := range values {
+		if !finiteSubtitleOperationNumber(value) {
+			return false
 		}
 	}
 	return true

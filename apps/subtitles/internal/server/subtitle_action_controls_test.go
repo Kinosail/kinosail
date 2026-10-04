@@ -131,6 +131,10 @@ func subtitleActionHistory(t *testing.T, handler http.Handler, actions, reasons 
 		t.Fatalf("action history = %d %s", response.Code, response.Body.String())
 	}
 	for index, item := range history.History {
+		if index >= len(actions) || index >= len(reasons) {
+			t.Fatal("history expectations do not pair each action with a reason")
+			return nil
+		}
 		if item.Action != actions[index] || item.Reason != reasons[index] {
 			t.Fatalf("history %d = %+v, want %s/%s", index, item, actions[index], reasons[index])
 		}

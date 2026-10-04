@@ -21,7 +21,7 @@ func TestSubtitlePreparedReceiptBecomesUnavailableAfterRealLifecycleRestart(t *t
 	stopFirst()
 	config.Lifecycle = t.Context()
 	restarted := server.New(config)
-	assertSubtitleOperationUnavailable(t, restarted, base+"/audio", prepared.ID, `{"language":"en"}`)
+	assertSubtitleOperationUnavailable(t, restarted, base+"/audio", prepared.ID)
 	assertSubtitleOperationNoProcess(t, calls)
 	assertSubtitleActionBytes(t, target, []byte(subtitleActionInitial))
 	_ = subtitleActionHistory(t, restarted, nil, nil)
@@ -46,7 +46,7 @@ func TestSubtitleFailedActivationPersistenceNeverStartsWorkOrResurrectsAfterRest
 	restoreRegistry()
 	config.Lifecycle = t.Context()
 	restarted := server.New(config)
-	assertSubtitleOperationUnavailable(t, restarted, base+"/audio", prepared.ID, `{"language":"en"}`)
+	assertSubtitleOperationUnavailable(t, restarted, base+"/audio", prepared.ID)
 	assertSubtitleOperationNoProcess(t, calls)
 	assertSubtitleActionBytes(t, target, []byte(subtitleActionInitial))
 	_ = subtitleActionHistory(t, restarted, nil, nil)
@@ -80,13 +80,13 @@ func TestSubtitleCompletedRestoreOutcomeSurvivesRestartWithoutReplay(t *testing.
 	_ = subtitleActionHistory(t, restarted, []string{"restored", "updated"}, []string{"restore", "manual"})
 }
 
-func assertSubtitleOperationUnavailable(t *testing.T, handler http.Handler, path, id, body string) {
+func assertSubtitleOperationUnavailable(t *testing.T, handler http.Handler, path, id string) {
 	t.Helper()
 	status := requestApp(t, handler, http.MethodGet, "/api/v1/subtitle-operations/"+id, "")
 	if status.Code != http.StatusNotFound {
 		t.Fatalf("prior prepared receipt status = %d, want unavailable", status.Code)
 	}
-	activation := activateSubtitleOperation(t, handler, path, body, []string{id})
+	activation := activateSubtitleOperation(t, handler, path, `{"language":"en"}`, []string{id})
 	if activation.Code != http.StatusNotFound {
 		t.Fatalf("prior prepared receipt activation = %d, want rejection before work", activation.Code)
 	}

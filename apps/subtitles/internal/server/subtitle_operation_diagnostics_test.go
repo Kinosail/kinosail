@@ -37,15 +37,25 @@ func TestSubtitleOperationLifecycleDiagnosticsAndMetadataExcludePrivatePayloads(
 		t.Fatalf("diagnostic malformed-header control = %d", rejected.Code)
 	}
 	text := waitSubtitleOperationCompletionLog(t, &logs)
-	for _, forbidden := range []string{private, target, config.DataDir, config.CacheDir, "fingerprint", string(input)} {
-		if strings.Contains(text, forbidden) {
-			t.Fatal("operation diagnostics leaked private payload or storage metadata")
-		}
-	}
+	assertSubtitleOperationPrivateDiagnostics(t, text, []string{private, target, config.DataDir, config.CacheDir, "fingerprint", string(input)})
 	assertSubtitleOperationLifecycleLog(t, text, "INFO", "subtitle operation started", prepared.ID, "apply")
 	assertSubtitleOperationLifecycleLog(t, text, "INFO", "subtitle operation completed", prepared.ID, "apply")
 	assertSubtitleOperationLifecycleLog(t, text, "WARN", "subtitle operation rejected", "", "restore")
-	path := filepath.Join(config.DataDir, "subtitle_operations.json")
+	assertSubtitleOperationPrivateMetadata(t, config.DataDir, []string{private, target, config.DataDir, config.CacheDir, `"text"`, `"waveform"`, `"speech"`})
+}
+
+func assertSubtitleOperationPrivateDiagnostics(t *testing.T, text string, forbidden []string) {
+	t.Helper()
+	for _, value := range forbidden {
+		if strings.Contains(text, value) {
+			t.Fatal("operation diagnostics leaked private payload or storage metadata")
+		}
+	}
+}
+
+func assertSubtitleOperationPrivateMetadata(t *testing.T, dataDir string, forbidden []string) {
+	t.Helper()
+	path := filepath.Join(dataDir, "subtitle_operations.json")
 	metadata, err := os.ReadFile(path)
 	if err != nil || len(metadata) > 96*1024 {
 		t.Fatal("durable receipt metadata is missing or unbounded")
@@ -54,8 +64,8 @@ func TestSubtitleOperationLifecycleDiagnosticsAndMetadataExcludePrivatePayloads(
 	if err != nil || info.Mode().Perm()&0o077 != 0 {
 		t.Fatal("receipt metadata is not owner-readable-only")
 	}
-	for _, forbidden := range []string{private, target, config.DataDir, config.CacheDir, `"text"`, `"waveform"`, `"speech"`} {
-		if bytes.Contains(metadata, []byte(forbidden)) {
+	for _, value := range forbidden {
+		if bytes.Contains(metadata, []byte(value)) {
 			t.Fatal("durable operation metadata retained private payload or audio")
 		}
 	}
@@ -98,10 +108,14 @@ func assertSubtitleOperationLifecycleLog(t *testing.T, logs, level, message, id,
 		if json.Unmarshal([]byte(line), &entry) != nil || entry["msg"] != message {
 			continue
 		}
-		requestID, bounded := entry["request_id"].(string)
-		if entry["level"] == level && entry["action"] == action && bounded && len(requestID) > 0 && len(requestID) <= 128 && (id == "" || entry["operation_id"] == id) {
+		if subtitleOperationLifecycleEntryMatches(entry, level, id, action) {
 			return
 		}
 	}
 	t.Fatalf("missing structured %s lifecycle diagnostic for %s/%s", level, action, message)
+}
+
+func subtitleOperationLifecycleEntryMatches(entry map[string]any, level, id, action string) bool {
+	requestID, bounded := entry["request_id"].(string)
+	return entry["level"] == level && entry["action"] == action && bounded && len(requestID) > 0 && len(requestID) <= 128 && (id == "" || entry["operation_id"] == id)
 }
