@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "boundary": "fictional Python subprocess and event streams only; no actual Go, Node, browser, UI, media or product proof",
+  "sourceCommit": "ddd85da04ced8b03ee97761a3a1e0d228925dbc4",
+  "controlsSHA256": "114ddc02029e964f7ecc7fc3563fc7d548d4f09a6b98f4f6776ccd1926d844bf",
+  "driverSHA256": "62cc70a8778c4c664e25d6286e85e7efe360ba5cda129f0f9d0435ed63c67dac",
+  "seconds": 97.449,
+  "pass": 13,
+  "fail": 1,
+  "cases": [
+    {
+      "name": "default-output",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.215,
+      "receiptSHA256": "98dc992a08bc2b6508fdcd77681737eebc2ebf51359af2ac0ce3e5fea3aa55bd"
+    },
+    {
+      "name": "hosted-missing-revision",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.093,
+      "receiptSHA256": "752cebe52c307e4d4b0ed4fbe3d626d49f644bf33d3c413a07c53b282c911321"
+    },
+    {
+      "name": "hosted-wrong-revision",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.088,
+      "receiptSHA256": "781c15f1c3277af1da7d4127faa01eec59d26c8acc526cd19fc850f7e7939fa1"
+    },
+    {
+      "name": "private-sentinel",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.575,
+      "receiptSHA256": "c354baea93ad0e291adf25e807accef83d411af96757ff8f9d4448162a30ca9a"
+    },
+    {
+      "name": "package-fail-pass",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.346,
+      "receiptSHA256": "8c65a6e228a1671da8d9f728a70bb68b88dba84814bb249fcd5ade748e96627a"
+    },
+    {
+      "name": "package-duplicate",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.366,
+      "receiptSHA256": "8082bcf666a529b4b3d6f17a71526f60b1c3e79a931b816b4e87bbf3cf3712d1"
+    },
+    {
+      "name": "invalid-action",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.393,
+      "receiptSHA256": "233e6f5b7f9a1f7eda36a0b5d220c05a07e730eada468ca72f58e58f42c5e5e9"
+    },
+    {
+      "name": "missing-action",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.384,
+      "receiptSHA256": "c0d9e83445b46fd86694480a68dd95abec1e51e5b5ea4df836a77524c8956b69"
+    },
+    {
+      "name": "boolean-test",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.349,
+      "receiptSHA256": "2cb1f429003c7ecbd346656b4a7b5188547a8965a8f62a92a8bacac00de5aa7a"
+    },
+    {
+      "name": "boolean-elapsed",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.436,
+      "receiptSHA256": "c03e76a2c2ea6ae7d334e9089a5ee9f4e3d84a6d10b62c3984ada3911d26570c"
+    },
+    {
+      "name": "missing-elapsed",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.427,
+      "receiptSHA256": "07ff56053f9cd436f94309c0d1a59370f7d059187afed20ef4787f62c622d153"
+    },
+    {
+      "name": "tracked-drift",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.424,
+      "receiptSHA256": "bdc727957df605b3a208b8a4bc50281e2658d324c7eccae17859d043f3b70cb3"
+    },
+    {
+      "name": "permission-denied",
+      "boundary": "fictional driver control only; no actual Go or product proof",
+      "status": "pass",
+      "seconds": 0.449,
+      "receiptSHA256": "d12493fad8f70f6afab84fb373648ea08f8c37f427dde28bbf10c6aed374acb4"
+    },
+    {
+      "name": "leader-exit-held-stdout",
+      "status": "fail",
+      "failureClass": "AssertionError",
+      "boundary": "fictional driver control only; no actual Go or product proof"
+    }
+  ]
+}

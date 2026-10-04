@@ -1,0 +1,46 @@
+{
+  "head": "16c3612c89414e3b01f5eeabca71bab2a0385922",
+  "executor": "parent integration owner",
+  "boundary": "actual public Go Server/disposable synthetic sidecars; only two null leaves selected; no audio/browser/media execution",
+  "result": "two intended rejection failures",
+  "namedParents": 1,
+  "completedLeaves": 2,
+  "failedLeaves": 2,
+  "passedLeaves": 0,
+  "skips": 0,
+  "prerequisiteFailures": 0,
+  "validPreparationAndPrivateStatusPrerequisitePassed": true,
+  "cases": [
+    {
+      "name": "maintenance_explicit_null",
+      "body": {
+        "action": "maintain",
+        "item": null
+      },
+      "actualStatus": 201,
+      "expectedStatus": 400,
+      "currentBytesUnchanged": true,
+      "recoveryAbsent": true,
+      "historyCount": 0
+    },
+    {
+      "name": "Wanted_explicit_null",
+      "body": {
+        "action": "fetch-wanted",
+        "item": null
+      },
+      "actualStatus": 201,
+      "expectedStatus": 400,
+      "currentBytesUnchanged": true,
+      "recoveryAbsent": true,
+      "historyCount": 0
+    }
+  ],
+  "limits": [
+    "Receipt metadata preparation occurred; no-sidecar/History observations are not a claim of zero registry writes",
+    "No full receipt suite/aggregate acceptance",
+    "No audio, Chromium, linter or deployment"
+  ],
+  "ownedProcessesExited": "parent reported all owned heavy processes exited before release",
+  "R16Preserved": true
+}

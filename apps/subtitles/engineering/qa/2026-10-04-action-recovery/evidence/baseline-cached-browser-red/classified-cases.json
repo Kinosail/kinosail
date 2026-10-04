@@ -1,0 +1,302 @@
+{
+  "sourceRevision": "a046ec8553d7eeca985cd8b1204fd6bebce20c73",
+  "stats": {
+    "startTime": "2026-10-04T11:48:38.974Z",
+    "duration": 18569.536,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 8,
+    "flaky": 0
+  },
+  "cases": [
+    {
+      "name": "lost completed save response recovers without replay at 390px",
+      "status": "failed",
+      "classification": "intended deadline assertion",
+      "expected": "disabled language",
+      "seconds": 2.021,
+      "requests": {
+        "mutations": [
+          {
+            "path": "/api/v1/subtitle-library/53ae726daeaed3fa/apply",
+            "input": {
+              "role": "translation",
+              "language": "en",
+              "fingerprint": "574e6c1baf48477c870b4ed731c8fbbf952223431678318d746bc6c9bd7628ce",
+              "encoding": "auto",
+              "offsetMilliseconds": 500,
+              "automaticSync": false,
+              "removeCredits": true,
+              "mergeRepeated": true
+            }
+          }
+        ],
+        "inspections": 1,
+        "histories": 0,
+        "pages": 4
+      },
+      "context": {
+        "revision": "a046ec8553d7eeca985cd8b1204fd6bebce20c73",
+        "action": "save",
+        "surface": "inspector",
+        "completed": true,
+        "width": 390,
+        "command": "playwright test subtitle-action-recovery.spec.ts --workers=1",
+        "browserVersion": "153.0.8010.12",
+        "boundary": "isolated browser transport using actual public Go HTML/assets/Save/Restore reads; POST completion is represented by captured reads, not executed in this browser fixture; media aborted",
+        "sourceSHA256": "7ee624211c718f2e7693d1e73e2e205e9f5dcff2584cc7d7560ce1485f96360a",
+        "beforeFingerprint": "574e6c1baf48477c870b4ed731c8fbbf952223431678318d746bc6c9bd7628ce",
+        "afterFingerprint": "5cc9199f6488c43062ba1f9beb383f58cba45c3c1da98eec620c67e89bb0d95e"
+      }
+    },
+    {
+      "name": "lost completed restore response recovers without replay at 390px",
+      "status": "failed",
+      "classification": "intended deadline assertion",
+      "expected": "disabled language",
+      "seconds": 1.837,
+      "requests": {
+        "mutations": [
+          {
+            "path": "/api/v1/subtitle-library/53ae726daeaed3fa/restore",
+            "input": {
+              "language": "en"
+            }
+          }
+        ],
+        "inspections": 1,
+        "histories": 0,
+        "pages": 4
+      },
+      "context": {
+        "revision": "a046ec8553d7eeca985cd8b1204fd6bebce20c73",
+        "action": "restore",
+        "surface": "inspector",
+        "completed": true,
+        "width": 390,
+        "command": "playwright test subtitle-action-recovery.spec.ts --workers=1",
+        "browserVersion": "153.0.8010.12",
+        "boundary": "isolated browser transport using actual public Go HTML/assets/Save/Restore reads; POST completion is represented by captured reads, not executed in this browser fixture; media aborted",
+        "sourceSHA256": "7ee624211c718f2e7693d1e73e2e205e9f5dcff2584cc7d7560ce1485f96360a",
+        "beforeFingerprint": "5cc9199f6488c43062ba1f9beb383f58cba45c3c1da98eec620c67e89bb0d95e",
+        "afterFingerprint": "574e6c1baf48477c870b4ed731c8fbbf952223431678318d746bc6c9bd7628ce"
+      }
+    },
+    {
+      "name": "dashboard restore response deadline preserves safe navigation at 390px",
+      "status": "failed",
+      "classification": "intended deadline assertion",
+      "expected": "persistent aria-busy",
+      "seconds": 1.841,
+      "requests": {
+        "mutations": [
+          {
+            "path": "/api/v1/subtitle-library/53ae726daeaed3fa/restore",
+            "input": {}
+          }
+        ],
+        "inspections": 0,
+        "histories": 0,
+        "pages": 4
+      },
+      "context": {
+        "revision": "a046ec8553d7eeca985cd8b1204fd6bebce20c73",
+        "action": "restore",
+        "surface": "dashboard",
+        "completed": false,
+        "width": 390,
+        "command": "playwright test subtitle-action-recovery.spec.ts --workers=1",
+        "browserVersion": "153.0.8010.12",
+        "boundary": "isolated browser transport using actual public Go HTML/assets/Save/Restore reads; POST completion is represented by captured reads, not executed in this browser fixture; media aborted",
+        "sourceSHA256": "6303a845151c4a3c7732de2c937f760f4dc2cc0305acf46eb806642687196a13",
+        "beforeFingerprint": "5cc9199f6488c43062ba1f9beb383f58cba45c3c1da98eec620c67e89bb0d95e",
+        "afterFingerprint": "574e6c1baf48477c870b4ed731c8fbbf952223431678318d746bc6c9bd7628ce"
+      }
+    },
+    {
+      "name": "lost completed save response recovers without replay at 1440px",
+      "status": "failed",
+      "classification": "intended deadline assertion",
+      "expected": "disabled language",
+      "seconds": 2.005,
+      "requests": {
+        "mutations": [
+          {
+            "path": "/api/v1/subtitle-library/53ae726daeaed3fa/apply",
+            "input": {
+              "role": "translation",
+              "language": "en",
+              "fingerprint": "574e6c1baf48477c870b4ed731c8fbbf952223431678318d746bc6c9bd7628ce",
+              "encoding": "auto",
+              "offsetMilliseconds": 500,
+              "automaticSync": false,
+              "removeCredits": true,
+              "mergeRepeated": true
+            }
+          }
+        ],
+        "inspections": 1,
+        "histories": 0,
+        "pages": 3
+      },
+      "context": {
+        "revision": "a046ec8553d7eeca985cd8b1204fd6bebce20c73",
+        "action": "save",
+        "surface": "inspector",
+        "completed": true,
+        "width": 1440,
+        "command": "playwright test subtitle-action-recovery.spec.ts --workers=1",
+        "browserVersion": "153.0.8010.12",
+        "boundary": "isolated browser transport using actual public Go HTML/assets/Save/Restore reads; POST completion is represented by captured reads, not executed in this browser fixture; media aborted",
+        "sourceSHA256": "7ee624211c718f2e7693d1e73e2e205e9f5dcff2584cc7d7560ce1485f96360a",
+        "beforeFingerprint": "574e6c1baf48477c870b4ed731c8fbbf952223431678318d746bc6c9bd7628ce",
+        "afterFingerprint": "5cc9199f6488c43062ba1f9beb383f58cba45c3c1da98eec620c67e89bb0d95e"
+      }
+    },
+    {
+      "name": "lost completed restore response recovers without replay at 1440px",
+      "status": "failed",
+      "classification": "intended deadline assertion",
+      "expected": "disabled language",
+      "seconds": 1.884,
+      "requests": {
+        "mutations": [
+          {
+            "path": "/api/v1/subtitle-library/53ae726daeaed3fa/restore",
+            "input": {
+              "language": "en"
+            }
+          }
+        ],
+        "inspections": 1,
+        "histories": 0,
+        "pages": 3
+      },
+      "context": {
+        "revision": "a046ec8553d7eeca985cd8b1204fd6bebce20c73",
+        "action": "restore",
+        "surface": "inspector",
+        "completed": true,
+        "width": 1440,
+        "command": "playwright test subtitle-action-recovery.spec.ts --workers=1",
+        "browserVersion": "153.0.8010.12",
+        "boundary": "isolated browser transport using actual public Go HTML/assets/Save/Restore reads; POST completion is represented by captured reads, not executed in this browser fixture; media aborted",
+        "sourceSHA256": "7ee624211c718f2e7693d1e73e2e205e9f5dcff2584cc7d7560ce1485f96360a",
+        "beforeFingerprint": "5cc9199f6488c43062ba1f9beb383f58cba45c3c1da98eec620c67e89bb0d95e",
+        "afterFingerprint": "574e6c1baf48477c870b4ed731c8fbbf952223431678318d746bc6c9bd7628ce"
+      }
+    },
+    {
+      "name": "dashboard restore response deadline preserves safe navigation at 1440px",
+      "status": "failed",
+      "classification": "intended deadline assertion",
+      "expected": "persistent aria-busy",
+      "seconds": 1.857,
+      "requests": {
+        "mutations": [
+          {
+            "path": "/api/v1/subtitle-library/53ae726daeaed3fa/restore",
+            "input": {}
+          }
+        ],
+        "inspections": 0,
+        "histories": 0,
+        "pages": 3
+      },
+      "context": {
+        "revision": "a046ec8553d7eeca985cd8b1204fd6bebce20c73",
+        "action": "restore",
+        "surface": "dashboard",
+        "completed": false,
+        "width": 1440,
+        "command": "playwright test subtitle-action-recovery.spec.ts --workers=1",
+        "browserVersion": "153.0.8010.12",
+        "boundary": "isolated browser transport using actual public Go HTML/assets/Save/Restore reads; POST completion is represented by captured reads, not executed in this browser fixture; media aborted",
+        "sourceSHA256": "6303a845151c4a3c7732de2c937f760f4dc2cc0305acf46eb806642687196a13",
+        "beforeFingerprint": "5cc9199f6488c43062ba1f9beb383f58cba45c3c1da98eec620c67e89bb0d95e",
+        "afterFingerprint": "574e6c1baf48477c870b4ed731c8fbbf952223431678318d746bc6c9bd7628ce"
+      }
+    },
+    {
+      "name": "still pending save permits safe editing but blocks another write",
+      "status": "failed",
+      "classification": "intended deadline assertion",
+      "expected": "disabled language",
+      "seconds": 1.956,
+      "requests": {
+        "mutations": [
+          {
+            "path": "/api/v1/subtitle-library/53ae726daeaed3fa/apply",
+            "input": {
+              "role": "translation",
+              "language": "en",
+              "fingerprint": "574e6c1baf48477c870b4ed731c8fbbf952223431678318d746bc6c9bd7628ce",
+              "encoding": "auto",
+              "offsetMilliseconds": 500,
+              "automaticSync": false,
+              "removeCredits": true,
+              "mergeRepeated": true
+            }
+          }
+        ],
+        "inspections": 1,
+        "histories": 0,
+        "pages": 4
+      },
+      "context": {
+        "revision": "a046ec8553d7eeca985cd8b1204fd6bebce20c73",
+        "action": "save",
+        "surface": "inspector",
+        "completed": false,
+        "width": 390,
+        "command": "playwright test subtitle-action-recovery.spec.ts --workers=1",
+        "browserVersion": "153.0.8010.12",
+        "boundary": "isolated browser transport using actual public Go HTML/assets/Save/Restore reads; POST completion is represented by captured reads, not executed in this browser fixture; media aborted",
+        "sourceSHA256": "7ee624211c718f2e7693d1e73e2e205e9f5dcff2584cc7d7560ce1485f96360a",
+        "beforeFingerprint": "574e6c1baf48477c870b4ed731c8fbbf952223431678318d746bc6c9bd7628ce",
+        "afterFingerprint": "5cc9199f6488c43062ba1f9beb383f58cba45c3c1da98eec620c67e89bb0d95e"
+      }
+    },
+    {
+      "name": "still pending restore permits safe editing but blocks another write",
+      "status": "failed",
+      "classification": "intended deadline assertion",
+      "expected": "disabled language",
+      "seconds": 1.837,
+      "requests": {
+        "mutations": [
+          {
+            "path": "/api/v1/subtitle-library/53ae726daeaed3fa/restore",
+            "input": {
+              "language": "en"
+            }
+          }
+        ],
+        "inspections": 1,
+        "histories": 0,
+        "pages": 4
+      },
+      "context": {
+        "revision": "a046ec8553d7eeca985cd8b1204fd6bebce20c73",
+        "action": "restore",
+        "surface": "inspector",
+        "completed": false,
+        "width": 390,
+        "command": "playwright test subtitle-action-recovery.spec.ts --workers=1",
+        "browserVersion": "153.0.8010.12",
+        "boundary": "isolated browser transport using actual public Go HTML/assets/Save/Restore reads; POST completion is represented by captured reads, not executed in this browser fixture; media aborted",
+        "sourceSHA256": "7ee624211c718f2e7693d1e73e2e205e9f5dcff2584cc7d7560ce1485f96360a",
+        "beforeFingerprint": "5cc9199f6488c43062ba1f9beb383f58cba45c3c1da98eec620c67e89bb0d95e",
+        "afterFingerprint": "574e6c1baf48477c870b4ed731c8fbbf952223431678318d746bc6c9bd7628ce"
+      }
+    }
+  ],
+  "boundary": "isolated renderer/transport using actual public Go HTML/assets/read payloads; no actual browser-side mutation or playable media",
+  "runnerExit": 1,
+  "runnerTimedOut": false,
+  "channel": "empty PLAYWRIGHT_CHANNEL; cached headless Chromium153.0.8010.12",
+  "declaredBoundSeconds": 90,
+  "externalSeconds": 18.923,
+  "unchangedDeadlineSeconds": 45,
+  "prerequisiteFailures": 0
+}

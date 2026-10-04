@@ -17,9 +17,9 @@ func (manager *subtitleManager) registerSubtitleReview(mux *http.ServeMux, auth 
 	mux.Handle("GET /api/v1/subtitle-library/{id}/export", auth.owner(http.HandlerFunc(manager.exportSubtitleAPI)))
 	mux.Handle("GET /api/v1/subtitle-library/{id}/draft", auth.owner(http.HandlerFunc(manager.inspectSubtitleDraftAPI)))
 	mux.Handle("POST /api/v1/subtitle-library/{id}/draft", auth.owner(http.HandlerFunc(manager.subtitleDraftAPI)))
-	mux.Handle("POST /api/v1/subtitle-library/{id}/audio", auth.owner(http.HandlerFunc(manager.subtitleAudioAPI)))
+	mux.Handle("POST /api/v1/subtitle-library/{id}/audio", auth.owner(manager.mutation("audio", manager.subtitleAudioAPI)))
 	mux.Handle("POST /api/v1/subtitle-library/{id}/preview", auth.owner(http.HandlerFunc(manager.previewSubtitleAPI)))
-	mux.Handle("POST /api/v1/subtitle-library/{id}/apply", auth.owner(http.HandlerFunc(manager.applySubtitleAPI)))
+	mux.Handle("POST /api/v1/subtitle-library/{id}/apply", auth.owner(manager.mutation("apply", manager.applySubtitleAPI)))
 }
 
 func (manager *subtitleManager) reviewQuery(request *http.Request, export bool) (string, string, error) {
@@ -103,12 +103,21 @@ func (manager *subtitleManager) applySubtitleAPI(writer http.ResponseWriter, req
 	if !readSubtitleEdit(writer, request, &input) {
 		return
 	}
-	review, status, err := manager.applySubtitleEdit(request, request.PathValue("id"), input)
-	if err != nil {
-		apiError(writer, err, status)
+	if err := validateSubtitleEdit(input, true); err != nil {
+		apiError(writer, err, http.StatusBadRequest)
 		return
 	}
-	writeJSON(writer, review, status)
+	work := func(writer http.ResponseWriter, request *http.Request) {
+		review, status, err := manager.applySubtitleEdit(request, request.PathValue("id"), input)
+		if err != nil {
+			apiError(writer, err, status)
+			return
+		}
+		writeJSON(writer, review, status)
+	}
+	if !manager.runPrepared(writer, request, work) {
+		work(writer, request)
+	}
 }
 
 func readSubtitleEdit(writer http.ResponseWriter, request *http.Request, target *subtitleEdit) bool {

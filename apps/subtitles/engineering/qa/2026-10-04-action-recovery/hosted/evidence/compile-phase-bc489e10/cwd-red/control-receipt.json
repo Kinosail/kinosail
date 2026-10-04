@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "429ff12d9afd05bb4f81e5c803f871a2397d30f2",
+  "boundary": "Fictional-only exact runtime cwd contract; no actualGo/product failure",
+  "case": {
+    "name": "test-working-directory",
+    "status": "fail",
+    "failureClass": "AssertionError"
+  },
+  "candidateExit": 1,
+  "compilationComplete": true,
+  "publicRuntimeWasLaunched": true,
+  "counts": {
+    "subtests": {
+      "expected": 45,
+      "fail": 0,
+      "notCompleted": 45,
+      "pass": 0,
+      "skip": 0
+    },
+    "topLevel": {
+      "expected": 33,
+      "fail": 0,
+      "notCompleted": 33,
+      "pass": 0,
+      "skip": 0
+    }
+  },
+  "invalidEventCount": 5,
+  "receiptSHA256": "f13d45d60660d4bea543281f962810275b400691e469857b77d5e89360a8d0f1"
+}

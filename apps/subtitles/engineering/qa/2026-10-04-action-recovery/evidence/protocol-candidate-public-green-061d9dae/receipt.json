@@ -1,0 +1,442 @@
+{
+  "head": "061d9daed6cefc03a27b81145df621592e9f1d64",
+  "phase": "protocol-candidate-public-green-061d9dae",
+  "command": [
+    "go",
+    "test",
+    "-p",
+    "1",
+    "-parallel",
+    "1",
+    "-overlay=.verification/r06-actions/committed-e78db447/overlay.json",
+    "./internal/server",
+    "-run",
+    "^(TestSubtitlePreparedRestoreActivatesExactlyOnce|TestSubtitlePreparedMutationRejectsUnknownOrMalformedReceiptBeforeEffects|TestSubtitlePreparedReceiptCannotActivateAnotherAction|TestSubtitlePreparedReceiptRejectsStatusQueriesWithoutConsumingActivation|TestSubtitleExclusiveOperationBlocksAllLegacyWriteAndAudioPathsWithoutEffects|TestSubtitleExclusiveOperationDefersReviewedCleanupWithoutRenamingOrChangingSettings|TestSubtitleRejectedBodyLeavesPreparedReceiptReusableAndLegacyValidationIntact|TestSubtitlePreparedAudioCannotBypassActiveLegacyProviderFetchAdapters|TestSubtitleActionLegacyAudioPublicControl|TestSubtitlePreparedAudioRejectsSecondActivationWithoutStartingAnotherProcess|TestSubtitlePreparedAudioCannotBypassActiveLegacyAnalysis|TestSubtitlePreparedReceiptExpiryCannotReactivateOrChangeFiles|TestSubtitleCompletedReceiptExpiryCannotReplayRestore|TestSubtitleOperationLifecycleDiagnosticsAndMetadataExcludePrivatePayloads|TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects|TestSubtitleOperationCapacityPreservesExistingPreparedReceipts|TestSubtitleOperationPreservesActiveOwnerAndCSRFBoundaries|TestSubtitlePreparedReceiptBecomesUnavailableAfterRealLifecycleRestart|TestSubtitleFailedActivationPersistenceNeverStartsWorkOrResurrectsAfterRestart|TestSubtitleCompletedRestoreOutcomeSurvivesRestartWithoutReplay|TestSubtitleAudioResultsStayBoundedAndUnavailableResultsDoNotRestartWork|TestSubtitleCompletedAudioResultRetainsOwnerBinding|TestSubtitleOperationDeadlineKeepsAdmissionUntilChildPipeAndWaitSettle|TestSubtitleRunningReceiptRestartCannotResumeOrReplayAfterRealChildSettlement|TestSubtitleCorruptOperationRegistryFailsClosedWithoutChangingLegacyOwnerWorkflow|TestSubtitleOperationPreparationPersistenceFailureStartsNoWork|TestConcurrentSubtitleFetchNeverOverwritesSidecar|TestSubtitleMutationsRejectInvalidInputBeforeProviderOrFilesystem|TestSubtitleWebAndBatchMutationsWriteWantedSidecars|TestLocalSubtitleDraftCancellationAndMissingItem|TestSubtitleAutomationStopsDuringCircuitDelay|TestOpenAPIDocumentsEveryVersionedRouteExactlyOnce|TestEveryVersionedAPIRouteHasExactlyOneMCPPolicy)$",
+    "-count=1",
+    "-timeout=80s",
+    "-json"
+  ],
+  "wallLimitSeconds": 90.0,
+  "seconds": 34.977,
+  "exit": 1,
+  "timedOut": false,
+  "prerequisiteFailure": null,
+  "R16Before": {
+    "apps/subtitles/internal/server/subtitle_maintenance_test.go": {
+      "sha256": "f26e00b3f914130793b72c5187b546244ed4d47222380743899f02aa9f7993fb",
+      "bytes": 10619
+    },
+    "apps/subtitles/internal/server/subtitle_dashboard_revision_test.go": {
+      "sha256": "c0111e937ade97838c3422b89de5a56089efd3e289828598147860615ddd7de6",
+      "bytes": 4828
+    }
+  },
+  "R16After": {
+    "apps/subtitles/internal/server/subtitle_maintenance_test.go": {
+      "sha256": "f26e00b3f914130793b72c5187b546244ed4d47222380743899f02aa9f7993fb",
+      "bytes": 10619
+    },
+    "apps/subtitles/internal/server/subtitle_dashboard_revision_test.go": {
+      "sha256": "c0111e937ade97838c3422b89de5a56089efd3e289828598147860615ddd7de6",
+      "bytes": 4828
+    }
+  },
+  "R16Preserved": true,
+  "offline": {
+    "GOPROXY": "off",
+    "GOSUMDB": "off",
+    "GOMAXPROCS": "2"
+  },
+  "completedTests": [
+    {
+      "name": "TestEveryVersionedAPIRouteHasExactlyOneMCPPolicy",
+      "action": "pass",
+      "elapsed": 0.08
+    },
+    {
+      "name": "TestSubtitleExclusiveOperationBlocksAllLegacyWriteAndAudioPathsWithoutEffects/Save",
+      "action": "pass",
+      "elapsed": 0.01
+    },
+    {
+      "name": "TestSubtitleExclusiveOperationBlocksAllLegacyWriteAndAudioPathsWithoutEffects/automatic_Save",
+      "action": "pass",
+      "elapsed": 0.01
+    },
+    {
+      "name": "TestSubtitleExclusiveOperationBlocksAllLegacyWriteAndAudioPathsWithoutEffects/Restore",
+      "action": "pass",
+      "elapsed": 0.01
+    },
+    {
+      "name": "TestSubtitleExclusiveOperationBlocksAllLegacyWriteAndAudioPathsWithoutEffects/Fetch",
+      "action": "pass",
+      "elapsed": 0.01
+    },
+    {
+      "name": "TestSubtitleExclusiveOperationBlocksAllLegacyWriteAndAudioPathsWithoutEffects/replacement_policy",
+      "action": "pass",
+      "elapsed": 0.01
+    },
+    {
+      "name": "TestSubtitleExclusiveOperationBlocksAllLegacyWriteAndAudioPathsWithoutEffects/maintenance",
+      "action": "pass",
+      "elapsed": 0.01
+    },
+    {
+      "name": "TestSubtitleExclusiveOperationBlocksAllLegacyWriteAndAudioPathsWithoutEffects/Wanted_batch",
+      "action": "pass",
+      "elapsed": 0.01
+    },
+    {
+      "name": "TestSubtitleExclusiveOperationBlocksAllLegacyWriteAndAudioPathsWithoutEffects/audio",
+      "action": "pass",
+      "elapsed": 0.01
+    },
+    {
+      "name": "TestSubtitleExclusiveOperationBlocksAllLegacyWriteAndAudioPathsWithoutEffects/automatic_preview",
+      "action": "pass",
+      "elapsed": 0.01
+    },
+    {
+      "name": "TestSubtitleExclusiveOperationBlocksAllLegacyWriteAndAudioPathsWithoutEffects/general_API_Fetch",
+      "action": "pass",
+      "elapsed": 0.01
+    },
+    {
+      "name": "TestSubtitleExclusiveOperationBlocksAllLegacyWriteAndAudioPathsWithoutEffects/general_web_Fetch",
+      "action": "pass",
+      "elapsed": 0.01
+    },
+    {
+      "name": "TestSubtitleExclusiveOperationBlocksAllLegacyWriteAndAudioPathsWithoutEffects/web_Restore",
+      "action": "pass",
+      "elapsed": 0.02
+    },
+    {
+      "name": "TestSubtitleExclusiveOperationBlocksAllLegacyWriteAndAudioPathsWithoutEffects/web_replacement",
+      "action": "pass",
+      "elapsed": 0.01
+    },
+    {
+      "name": "TestSubtitleExclusiveOperationBlocksAllLegacyWriteAndAudioPathsWithoutEffects/web_Fetch",
+      "action": "pass",
+      "elapsed": 0.02
+    },
+    {
+      "name": "TestSubtitleExclusiveOperationBlocksAllLegacyWriteAndAudioPathsWithoutEffects/web_Wanted_batch",
+      "action": "pass",
+      "elapsed": 0.01
+    },
+    {
+      "name": "TestSubtitleExclusiveOperationBlocksAllLegacyWriteAndAudioPathsWithoutEffects/web_maintenance",
+      "action": "pass",
+      "elapsed": 0.01
+    },
+    {
+      "name": "TestSubtitleExclusiveOperationBlocksAllLegacyWriteAndAudioPathsWithoutEffects",
+      "action": "pass",
+      "elapsed": 2
+    },
+    {
+      "name": "TestSubtitleExclusiveOperationDefersReviewedCleanupWithoutRenamingOrChangingSettings",
+      "action": "pass",
+      "elapsed": 1.66
+    },
+    {
+      "name": "TestSubtitleRejectedBodyLeavesPreparedReceiptReusableAndLegacyValidationIntact",
+      "action": "pass",
+      "elapsed": 0.08
+    },
+    {
+      "name": "TestSubtitlePreparedAudioCannotBypassActiveLegacyProviderFetchAdapters/library",
+      "action": "pass",
+      "elapsed": 0.18
+    },
+    {
+      "name": "TestSubtitlePreparedAudioCannotBypassActiveLegacyProviderFetchAdapters/general",
+      "action": "pass",
+      "elapsed": 0.07
+    },
+    {
+      "name": "TestSubtitlePreparedAudioCannotBypassActiveLegacyProviderFetchAdapters",
+      "action": "pass",
+      "elapsed": 0.25
+    },
+    {
+      "name": "TestSubtitleActionLegacyAudioPublicControl",
+      "action": "pass",
+      "elapsed": 1.49
+    },
+    {
+      "name": "TestSubtitlePreparedAudioRejectsSecondActivationWithoutStartingAnotherProcess",
+      "action": "pass",
+      "elapsed": 1.53
+    },
+    {
+      "name": "TestSubtitlePreparedAudioCannotBypassActiveLegacyAnalysis",
+      "action": "pass",
+      "elapsed": 1.52
+    },
+    {
+      "name": "TestSubtitlePreparedReceiptExpiryCannotReactivateOrChangeFiles",
+      "action": "pass",
+      "elapsed": 0.06
+    },
+    {
+      "name": "TestSubtitleCompletedReceiptExpiryCannotReplayRestore",
+      "action": "pass",
+      "elapsed": 0.21
+    },
+    {
+      "name": "TestSubtitleOperationLifecycleDiagnosticsAndMetadataExcludePrivatePayloads",
+      "action": "pass",
+      "elapsed": 0.2
+    },
+    {
+      "name": "TestSubtitlePreparedReceiptBecomesUnavailableAfterRealLifecycleRestart",
+      "action": "pass",
+      "elapsed": 0.07
+    },
+    {
+      "name": "TestSubtitleFailedActivationPersistenceNeverStartsWorkOrResurrectsAfterRestart",
+      "action": "fail",
+      "elapsed": 0.04
+    },
+    {
+      "name": "TestSubtitleCompletedRestoreOutcomeSurvivesRestartWithoutReplay",
+      "action": "pass",
+      "elapsed": 0.22
+    },
+    {
+      "name": "TestSubtitleAudioResultsStayBoundedAndUnavailableResultsDoNotRestartWork",
+      "action": "pass",
+      "elapsed": 1.63
+    },
+    {
+      "name": "TestSubtitleCompletedAudioResultRetainsOwnerBinding",
+      "action": "pass",
+      "elapsed": 1.65
+    },
+    {
+      "name": "TestSubtitleOperationDeadlineKeepsAdmissionUntilChildPipeAndWaitSettle",
+      "action": "pass",
+      "elapsed": 3.03
+    },
+    {
+      "name": "TestSubtitleRunningReceiptRestartCannotResumeOrReplayAfterRealChildSettlement",
+      "action": "fail",
+      "elapsed": 0.03
+    },
+    {
+      "name": "TestSubtitleCorruptOperationRegistryFailsClosedWithoutChangingLegacyOwnerWorkflow/malformed",
+      "action": "pass",
+      "elapsed": 0.15
+    },
+    {
+      "name": "TestSubtitleCorruptOperationRegistryFailsClosedWithoutChangingLegacyOwnerWorkflow/unsupported_version",
+      "action": "pass",
+      "elapsed": 0.16
+    },
+    {
+      "name": "TestSubtitleCorruptOperationRegistryFailsClosedWithoutChangingLegacyOwnerWorkflow/duplicate_version",
+      "action": "pass",
+      "elapsed": 0.16
+    },
+    {
+      "name": "TestSubtitleCorruptOperationRegistryFailsClosedWithoutChangingLegacyOwnerWorkflow/unknown_field",
+      "action": "pass",
+      "elapsed": 0.16
+    },
+    {
+      "name": "TestSubtitleCorruptOperationRegistryFailsClosedWithoutChangingLegacyOwnerWorkflow/oversized",
+      "action": "pass",
+      "elapsed": 0.15
+    },
+    {
+      "name": "TestSubtitleCorruptOperationRegistryFailsClosedWithoutChangingLegacyOwnerWorkflow/invalid_receipt_identity",
+      "action": "pass",
+      "elapsed": 0.17
+    },
+    {
+      "name": "TestSubtitleCorruptOperationRegistryFailsClosedWithoutChangingLegacyOwnerWorkflow",
+      "action": "pass",
+      "elapsed": 0.96
+    },
+    {
+      "name": "TestSubtitleOperationPreparationPersistenceFailureStartsNoWork",
+      "action": "pass",
+      "elapsed": 0.05
+    },
+    {
+      "name": "TestLocalSubtitleDraftCancellationAndMissingItem",
+      "action": "pass",
+      "elapsed": 0
+    },
+    {
+      "name": "TestSubtitleOperationCapacityPreservesExistingPreparedReceipts",
+      "action": "pass",
+      "elapsed": 0.94
+    },
+    {
+      "name": "TestSubtitlePreparedReceiptRejectsStatusQueriesWithoutConsumingActivation",
+      "action": "pass",
+      "elapsed": 0.05
+    },
+    {
+      "name": "TestSubtitlePreparedReceiptCannotActivateAnotherAction",
+      "action": "pass",
+      "elapsed": 0.06
+    },
+    {
+      "name": "TestSubtitlePreparedRestoreActivatesExactlyOnce",
+      "action": "pass",
+      "elapsed": 0.11
+    },
+    {
+      "name": "TestSubtitleOperationPreservesActiveOwnerAndCSRFBoundaries",
+      "action": "pass",
+      "elapsed": 0.31
+    },
+    {
+      "name": "TestSubtitleMutationsRejectInvalidInputBeforeProviderOrFilesystem",
+      "action": "pass",
+      "elapsed": 0.2
+    },
+    {
+      "name": "TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects/unknown_field",
+      "action": "pass",
+      "elapsed": 0
+    },
+    {
+      "name": "TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects/duplicate_action",
+      "action": "pass",
+      "elapsed": 0
+    },
+    {
+      "name": "TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects/missing_action",
+      "action": "pass",
+      "elapsed": 0
+    },
+    {
+      "name": "TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects/unsupported_action",
+      "action": "pass",
+      "elapsed": 0
+    },
+    {
+      "name": "TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects/missing_item",
+      "action": "pass",
+      "elapsed": 0
+    },
+    {
+      "name": "TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects/uppercase_item",
+      "action": "pass",
+      "elapsed": 0
+    },
+    {
+      "name": "TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects/oversized_item",
+      "action": "pass",
+      "elapsed": 0
+    },
+    {
+      "name": "TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects/unavailable_item",
+      "action": "pass",
+      "elapsed": 0
+    },
+    {
+      "name": "TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects/maintenance_item",
+      "action": "pass",
+      "elapsed": 0
+    },
+    {
+      "name": "TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects/maintenance_explicit_null",
+      "action": "pass",
+      "elapsed": 0
+    },
+    {
+      "name": "TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects/Wanted_explicit_null",
+      "action": "pass",
+      "elapsed": 0
+    },
+    {
+      "name": "TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects/array",
+      "action": "pass",
+      "elapsed": 0
+    },
+    {
+      "name": "TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects/empty",
+      "action": "pass",
+      "elapsed": 0
+    },
+    {
+      "name": "TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects/trailing_JSON",
+      "action": "pass",
+      "elapsed": 0
+    },
+    {
+      "name": "TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects/oversized_body",
+      "action": "pass",
+      "elapsed": 0
+    },
+    {
+      "name": "TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects/extra_query",
+      "action": "pass",
+      "elapsed": 0.01
+    },
+    {
+      "name": "TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects",
+      "action": "pass",
+      "elapsed": 0.13
+    },
+    {
+      "name": "TestSubtitleWebAndBatchMutationsWriteWantedSidecars",
+      "action": "pass",
+      "elapsed": 0.24
+    },
+    {
+      "name": "TestOpenAPIDocumentsEveryVersionedRouteExactlyOnce",
+      "action": "pass",
+      "elapsed": 0.02
+    },
+    {
+      "name": "TestConcurrentSubtitleFetchNeverOverwritesSidecar",
+      "action": "pass",
+      "elapsed": 0.09
+    },
+    {
+      "name": "TestSubtitleAutomationStopsDuringCircuitDelay",
+      "action": "pass",
+      "elapsed": 0.03
+    },
+    {
+      "name": "TestSubtitlePreparedMutationRejectsUnknownOrMalformedReceiptBeforeEffects/never_issued",
+      "action": "pass",
+      "elapsed": 0.05
+    },
+    {
+      "name": "TestSubtitlePreparedMutationRejectsUnknownOrMalformedReceiptBeforeEffects/oversized",
+      "action": "pass",
+      "elapsed": 0.05
+    },
+    {
+      "name": "TestSubtitlePreparedMutationRejectsUnknownOrMalformedReceiptBeforeEffects/duplicate_header",
+      "action": "pass",
+      "elapsed": 0.05
+    },
+    {
+      "name": "TestSubtitlePreparedMutationRejectsUnknownOrMalformedReceiptBeforeEffects/uppercase",
+      "action": "pass",
+      "elapsed": 0.05
+    },
+    {
+      "name": "TestSubtitlePreparedMutationRejectsUnknownOrMalformedReceiptBeforeEffects/empty_supplied_header",
+      "action": "pass",
+      "elapsed": 0.05
+    },
+    {
+      "name": "TestSubtitlePreparedMutationRejectsUnknownOrMalformedReceiptBeforeEffects",
+      "action": "pass",
+      "elapsed": 0
+    }
+  ]
+}

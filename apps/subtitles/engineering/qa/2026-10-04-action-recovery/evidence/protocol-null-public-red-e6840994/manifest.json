@@ -1,0 +1,178 @@
+{
+  "head": "e6840994b661734b142138cbace219b3936399e2",
+  "source": [
+    {
+      "path": "apps/subtitles/e2e/subtitle-action-recovery-native.spec.ts",
+      "bytes": 8164,
+      "sha256": "0a2e46175d138b53ea3bd436adde02ca97ab3260c049f941f2c907e490384889"
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-action-recovery.spec.ts",
+      "bytes": 13088,
+      "sha256": "2dbd445e38d7bdcd331dd6186fa0d200f90797ecf5eb1a75e339241fb01a540d"
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-04-action-recovery/native-fixture/main.go.txt",
+      "bytes": 11141,
+      "sha256": "d84b2c4d6d10bca08a9dff7da223d70b10f383fcfa36f7505441323e707bf3d2"
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-04-action-recovery/report.md",
+      "bytes": 15707,
+      "sha256": "e3ca6b15fb880a135b7781e4b371150966d8e20640d67c29731c478eca91788c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_openapi.json",
+      "bytes": 57775,
+      "sha256": "83e374ca1af9ed65752bd30f4b1c8e382bfc32281397e912b16f9147fb4b6851"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_product.go",
+      "bytes": 10565,
+      "sha256": "fe33ae2f13aa63c9a010db5687597570773bf954ddcf0cec839704e949889bad"
+    },
+    {
+      "path": "apps/subtitles/internal/server/auth_all_routes_test.go",
+      "bytes": 15394,
+      "sha256": "f9db1e040c56bb802465a5c6fae033f06f133046222b395e746f234b7af12d0c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/mcp_route_policy.go",
+      "bytes": 6500,
+      "sha256": "bef68e7c542e3263b18b810156421c24f5b97f36cf63c6ef21cfc35b9f0886ad"
+    },
+    {
+      "path": "apps/subtitles/internal/server/server.go",
+      "bytes": 35552,
+      "sha256": "3d290f29cba3b95f8d9926c8290666234399028a53478c9eafaea5cbdf4d9d9c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_admission.go",
+      "bytes": 1548,
+      "sha256": "c01958c9c3383764fed2b81bdad2bce97fd07e8fcc61736f109a17dce1e7a75e"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_audio_http.go",
+      "bytes": 1720,
+      "sha256": "357c4c2f5cf2921299458c493a085586e60980b06e09f5300f418528e626549e"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_automation.go",
+      "bytes": 2154,
+      "sha256": "7ca2d894ffc8d490b765d84d6b832a59f9a883cab1fa5ae23270ec6e4eba289c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_cleanup.go",
+      "bytes": 7239,
+      "sha256": "8e833107321209b0c9f873471ca8435357bf89c907f4d92efc73a8b394a84ba3"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_dashboard.go",
+      "bytes": 10552,
+      "sha256": "d96efb117599a3eea82e74ff019e686b6e9c64daf1a78d7334da108184affc12"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_edit.go",
+      "bytes": 12329,
+      "sha256": "c1c785c68d633b6d6e29f2f8f52a19e7a9662db629019f1b1c79f2a7e261302d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_embedded.go",
+      "bytes": 3550,
+      "sha256": "7cf84f6b4bbe98c537563923f0229bbf993e01366a91e576a852a9292c872f05"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_mutations.go",
+      "bytes": 10350,
+      "sha256": "4341420a349d04e6647335e5e238eb67288f317eff07bfae176b2bf5fa0b8f34"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_operation.go",
+      "bytes": 4683,
+      "sha256": "070ab07496a98f0b4ebab7b344cb4cef2c78edba3aec48fa39f58b9516a07155"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_operation_http.go",
+      "bytes": 5851,
+      "sha256": "47a1705bc74833b62a7b3d526c6a2be73d6236258a692863c91c7847a8f0635d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_operation_input_test.go",
+      "bytes": 3886,
+      "sha256": "8ace678f7c004a3c636c7b78f517940ff8b204ee22f655fd4d8533830b891a20"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_operation_result.go",
+      "bytes": 1686,
+      "sha256": "36d4a9601966f22292371a68229e92dee3a6579927f7783043a84c2b722ea421"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_operation_store.go",
+      "bytes": 6857,
+      "sha256": "197432b45977894c491979fae9c38c2d4be5f327d1fc04f3cccf39491314dfe1"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_operation_worker.go",
+      "bytes": 5084,
+      "sha256": "4a23fc3cd41eba50466d755b107e95f380a5daedb4c7cdab1c7cefdbd67c3415"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_prepared_operation_test.go",
+      "bytes": 9095,
+      "sha256": "55452d8add6504db730749a5a5b20062a90f6d5e1715e07eb1d8981823ff5491"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_provider.go",
+      "bytes": 10440,
+      "sha256": "496584e3674180a5511ffc9531d92ada37e8aa1aa802af4012f8bad1ed92d2c3"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_review_http.go",
+      "bytes": 6865,
+      "sha256": "5c482b4c2075dcfa9352738239e602bf0e8628ee06aefb1e37b027f6bf338610"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_speech_cache.go",
+      "bytes": 2377,
+      "sha256": "d9d1b9b40665da72dec5de22cb305d330e6db1cd8203cc155533c4131ad14db7"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_sync.go",
+      "bytes": 5935,
+      "sha256": "0539dc166cbcbed116f59bc6a6c98fa7ca15a79afea13d4b38e3bfd69d40c650"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_upgrade.go",
+      "bytes": 5535,
+      "sha256": "7c39e3cb6fbef4a7a386d0a05951c880482dfd65224bc5c15f04326784795d00"
+    },
+    {
+      "path": "packages/apihttp/api.go",
+      "bytes": 2516,
+      "sha256": "f05490fe07b39658ea4980bd42bc2d9536cea2066ec1de7b04d3eaa08b6c3773"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "classification.json",
+      "bytes": 1741,
+      "sha256": "ef04454b6a2fe4f496f82851ebb918ad5cdf8e58f73aa260731b60569832c816"
+    },
+    {
+      "path": "events.jsonl",
+      "bytes": 3452,
+      "sha256": "52b378dfd71ada9d6a1113d91b3e8ad80e1b0b08e48aa9a2ba46f245f437fdcf"
+    },
+    {
+      "path": "receipt.json",
+      "bytes": 1649,
+      "sha256": "044412ec4d7b8eb7c5f536c2e3b5f72dc0165d3aeb4b134694220f434c7d6f2e"
+    },
+    {
+      "path": "runner.py.txt",
+      "bytes": 3093,
+      "sha256": "27b961d79f80995a1727a8946b744ad8c4eb9b809c778567f93961193a4e53a7"
+    }
+  ],
+  "classification": "prerequisite only; null desired failures unreached"
+}

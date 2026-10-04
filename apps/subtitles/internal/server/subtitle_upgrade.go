@@ -43,6 +43,11 @@ func (provider *subtitleProvider) upgradeEligible(item library.Item, language st
 }
 
 func (provider *subtitleProvider) upgradeSidecar(ctx context.Context, item library.Item, language string) (bool, error) { //nolint:cyclop,gocognit // Upgrade validation, backup, write, and rollback form one atomic operation.
+	ctx, settled, admissionErr := provider.admission.enter(ctx)
+	if admissionErr != nil {
+		return false, admissionErr
+	}
+	defer settled()
 	provider.sidecar.Lock()
 	defer provider.sidecar.Unlock()
 	if !provider.upgradeAvailable(item, language) {

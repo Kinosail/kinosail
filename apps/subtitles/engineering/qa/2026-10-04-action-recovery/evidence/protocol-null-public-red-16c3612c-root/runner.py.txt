@@ -1,0 +1,66 @@
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import signal
+import subprocess
+import sys
+import threading
+import time
+
+phase, head, limit, pattern = sys.argv[1:]
+app = Path.cwd()
+root = app / "engineering/qa/2026-10-04-action-recovery/evidence" / phase
+root.mkdir(parents=True, exist_ok=False)
+scope = json.loads((app / ".verification/r06-actions/committed-e78db447/scope.json").read_text())
+repository = app.parents[1]
+def preserved():
+    return {name: {"sha256": hashlib.sha256((repository / name).read_bytes()).hexdigest(), "bytes": (repository / name).stat().st_size} for name in scope["preservedR16"]}
+before = preserved()
+if before != scope["preservedR16"]:
+    raise SystemExit("R16 preparation differs from its preserved source boundary")
+actual = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+if actual != head:
+    raise SystemExit("candidate revision differs from the declared execution revision")
+command = ["go", "test", "-p", "1", "-parallel", "1", "-overlay=.verification/r06-actions/committed-e78db447/overlay.json", "./internal/server", "-run", pattern, "-count=1", f"-timeout={int(limit)-10}s", "-json"]
+started = time.monotonic()
+child = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, start_new_session=True)
+records, timed_out, prerequisite = [], False, None
+def stop():
+    try:
+        os.killpg(child.pid, signal.SIGTERM)
+    except ProcessLookupError:
+        pass
+def deadline():
+    global timed_out
+    timed_out = True
+    stop()
+timer = threading.Timer(float(limit), deadline)
+timer.start()
+with (root / "events.jsonl").open("wb") as output:
+    for line in child.stdout:
+        output.write(line)
+        output.flush()
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        records.append(event)
+        message = event.get("Output", "")
+        if re.search(r"prerequisite.*(?:=|failed|did not)|legacy public Save setup =|public operation status = .*want private receipt", message, re.I):
+            prerequisite = message.strip()
+        if event.get("Action") == "fail" and event.get("Test") and prerequisite:
+            stop()
+            break
+try:
+    status = child.wait(timeout=5)
+except subprocess.TimeoutExpired:
+    os.killpg(child.pid, signal.SIGKILL)
+    status = child.wait()
+timer.cancel()
+after = preserved()
+receipt = {"head": head, "phase": phase, "command": command, "wallLimitSeconds": float(limit), "seconds": round(time.monotonic()-started, 3), "exit": status, "timedOut": timed_out, "prerequisiteFailure": prerequisite, "R16Before": before, "R16After": after, "R16Preserved": before == after, "offline": {name: os.environ.get(name) for name in ("GOPROXY", "GOSUMDB", "GOMAXPROCS")}, "completedTests": [{"name": e["Test"], "action": e["Action"], "elapsed": e.get("Elapsed")} for e in records if e.get("Test") and e.get("Action") in ("pass", "fail", "skip")]}
+(root / "receipt.json").write_text(json.dumps(receipt, indent=2)+"\n")
+print(json.dumps(receipt, indent=2))
+raise SystemExit(124 if timed_out else status if before == after else 125)

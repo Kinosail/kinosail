@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "sourceSnapshot": "3f465e222a37df4ba2624fd3061c367ae5fd90f7",
+  "boundary": "Static source inspection only; no local Go/lint/CodeQL/runtime execution. Fresh final exact-head acceptance pending.",
+  "acceptedHostedBaseline": {
+    "runId": "37235575973",
+    "sourceRevision": "3c93eac32968d8f864f7d0c50235174bd8711032",
+    "topLevelPass": 33,
+    "subtestPass": 45,
+    "privacyControlPassedWithLoggerUnchanged": true,
+    "reproducedPrivacyLeak": false,
+    "compiledBinarySHAPrefix": "7d31d692",
+    "compiledBinaryBytes": 71402410,
+    "compilerSeconds": 66.635,
+    "publicRuntimeSeconds": 21.625
+  },
+  "activeScope": {
+    "path": "apps/subtitles/engineering/qa/2026-10-04-action-recovery/hosted/protocol-scope-3f465e22.json",
+    "sha256": "759e8218384a99eeed887d4451463dd4c5deb6269c05e3a94ce9ee6e86e00987"
+  },
+  "previousScope": {
+    "path": "apps/subtitles/engineering/qa/2026-10-04-action-recovery/hosted/protocol-scope-977e01c4.json",
+    "sha256": "63c0bfe58e7e870c3b6b943c9d26cae7ca66d217f1223310e8695eadc2d479f5",
+    "protocolSourceSnapshot": "977e01c4b49c6c59f06346f80ffd1815d85078a0"
+  },
+  "changedSelectedInputs": [
+    {
+      "path": "apps/subtitles/internal/server/subtitle_operation.go",
+      "bytes": 5370,
+      "sha256": "ed9eb9dc894f38e4b989ed4b7df41c645fd13ad101d70d279c245504ed09998b"
+    }
+  ],
+  "sourceHelperSHA256": "6c20ed559d58d13b8bbe9a0cd8e1306b60b05dcd79897cd94b8a92af617172d8",
+  "exactLiteralLogLabels": [
+    "apply",
+    "restore",
+    "fetch",
+    "replacement",
+    "audio",
+    "maintain",
+    "fetch-wanted",
+    "prepare",
+    "status",
+    "result"
+  ],
+  "unknownFallback": "unknown",
+  "normalizedFields": [
+    "rejected.action",
+    "persistenceFailed.action"
+  ],
+  "unchangedBoundaries": [
+    "all preexisting non-action logger fields and log levels/messages",
+    "operation/request correlation",
+    "operation state and admission behavior",
+    "all tests and33/45 selector",
+    "R16 overlay and original scopes",
+    "driver/projection/compile120+runtime80/90 bounds",
+    "scanner and policy configuration"
+  ],
+  "futureRequiredEvidence": [
+    "actual33/45 final exact-head proof",
+    "normal app lint",
+    "fresh canonical metadata",
+    "exact PR-ref CodeQL and policy",
+    "all ordinary required gates"
+  ]
+}

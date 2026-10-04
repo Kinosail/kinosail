@@ -1,0 +1,20 @@
+{
+  "command": [
+    "go",
+    "test",
+    "-p",
+    "1",
+    "-overlay=.verification/r06-actions/committed-a046ec85/overlay.json",
+    "./internal/server",
+    "-run",
+    "^TestWriteUIStateFixturesSubtitleAction(Save|Restore)Control$",
+    "-count=1",
+    "-timeout=25s",
+    "-v"
+  ],
+  "limitSeconds": 30.0,
+  "seconds": 12.262,
+  "exit": 0,
+  "timedOut": false,
+  "log": "engineering/qa/2026-10-04-action-recovery/evidence/baseline-api-controls.log"
+}

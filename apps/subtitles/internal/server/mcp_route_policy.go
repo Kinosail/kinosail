@@ -19,6 +19,7 @@ var mcpWriteRoutes = routeSet(
 )
 
 var mcpManageRoutes = routeSet(
+	"POST /api/v1/subtitle-operations", "GET /api/v1/subtitle-operations/{operation}", "GET /api/v1/subtitle-operations/{operation}/result",
 	"GET /api/v1/subtitle-library/{id}/draft", "POST /api/v1/subtitle-library/{id}/draft", "GET /api/v1/subtitle-library/{id}/inspect", "POST /api/v1/subtitle-library/{id}/preview", "POST /api/v1/subtitle-library/{id}/apply", "POST /api/v1/subtitle-library/{id}/audio",
 	"GET /api/v1/agent-connections", "GET /api/v1/backups", "GET /api/v1/configuration",
 	"POST /api/v1/subtitle-library/fetch-wanted", "POST /api/v1/subtitle-library/maintain", "POST /api/v1/subtitle-library/{id}/fetch", "POST /api/v1/subtitle-library/{id}/replacement", "POST /api/v1/subtitle-library/{id}/restore", "POST /api/v1/subtitle-providers/test",

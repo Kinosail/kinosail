@@ -1,0 +1,19 @@
+{
+  "command": [
+    "node",
+    "e2e/node_modules/@playwright/test/cli.js",
+    "test",
+    "-c",
+    "e2e/playwright.config.ts",
+    "subtitle-action-recovery.spec.ts",
+    "--workers=1",
+    "--retries=0",
+    "--project=chromium",
+    "--timeout=10000"
+  ],
+  "limitSeconds": 30.0,
+  "seconds": 30.022,
+  "exit": 124,
+  "timedOut": true,
+  "log": "engineering/qa/2026-10-04-action-recovery/evidence/baseline-browser-red.log"
+}

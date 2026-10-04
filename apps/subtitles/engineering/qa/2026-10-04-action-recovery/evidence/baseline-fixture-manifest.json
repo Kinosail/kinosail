@@ -1,0 +1,122 @@
+{
+  "save/before.json": {
+    "bytes": 641,
+    "sha256": "c3cffcbf2eb3e837fdc824f8278e0724bce0ca7d078ff5bcd24b5152efb6d1b8"
+  },
+  "save/before-history.json": {
+    "bytes": 433,
+    "sha256": "07dd491bbe53f1b1c24d071f94b84479f1b3d8dd4432d7d06db02b4d663bd3fd"
+  },
+  "save/subtitle-status.js": {
+    "bytes": 11232,
+    "sha256": "6303a845151c4a3c7732de2c937f760f4dc2cc0305acf46eb806642687196a13"
+  },
+  "save/subtitle-inspector.css": {
+    "bytes": 3181,
+    "sha256": "865a91d20bc24c371c02c9e294eaf7159931806a59a9472235f79e68b97b3b20"
+  },
+  "save/app.css": {
+    "bytes": 233733,
+    "sha256": "64a462e0fe63550251ed8202858a489fa5ad6154d4c83d2f95ef0f946657f567"
+  },
+  "save/icon.svg": {
+    "bytes": 232,
+    "sha256": "6a73058828809eea809a36b74b49a2fe15bebb0ddd57d70920562de30ad19227"
+  },
+  "save/theme.js": {
+    "bytes": 19978,
+    "sha256": "717bfa9383ced4b3be057cdc9e1dc63592738132fea6f2367975222c9cb5bb98"
+  },
+  "save/history.json": {
+    "bytes": 755,
+    "sha256": "68e90ba5f496aeb97888be5e3c3daeb4a64f6f4430742ed970e792ec3839af44"
+  },
+  "save/dashboard.html": {
+    "bytes": 8324,
+    "sha256": "a863fa3745f1b19a59e936bfe2d987131bc8ebfd2727908df9667066b5d14aac"
+  },
+  "save/manrope.woff2": {
+    "bytes": 53776,
+    "sha256": "d021a35e139087c179d032e509327fc2dfdbf2c33b6156d25143e004d939da87"
+  },
+  "save/after.json": {
+    "bytes": 664,
+    "sha256": "51a67a01bf3f924dad92db6e2265de8390c490677c0860690c9bf8c79868233b"
+  },
+  "save/inspector.html": {
+    "bytes": 19099,
+    "sha256": "6fa1ab7d85ae3b7346418179aad4f6bcd0d94524a00119268b931d415005d2a4"
+  },
+  "save/history.html": {
+    "bytes": 4490,
+    "sha256": "cf391cc328745a4e2e7bfeef42626aa7982e7d01406d5a278a2c04f4cda60b35"
+  },
+  "save/subtitle-inspector.js": {
+    "bytes": 27535,
+    "sha256": "7ee624211c718f2e7693d1e73e2e205e9f5dcff2584cc7d7560ce1485f96360a"
+  },
+  "save/preview.json": {
+    "bytes": 1107,
+    "sha256": "c2319db15b4adc22f08d40d2c8f9f16bd4833f27a30e2ef1c50e60ab5f5b7b63"
+  },
+  "restore/before.json": {
+    "bytes": 664,
+    "sha256": "51a67a01bf3f924dad92db6e2265de8390c490677c0860690c9bf8c79868233b"
+  },
+  "restore/before-history.json": {
+    "bytes": 755,
+    "sha256": "68e90ba5f496aeb97888be5e3c3daeb4a64f6f4430742ed970e792ec3839af44"
+  },
+  "restore/subtitle-status.js": {
+    "bytes": 11232,
+    "sha256": "6303a845151c4a3c7732de2c937f760f4dc2cc0305acf46eb806642687196a13"
+  },
+  "restore/subtitle-inspector.css": {
+    "bytes": 3181,
+    "sha256": "865a91d20bc24c371c02c9e294eaf7159931806a59a9472235f79e68b97b3b20"
+  },
+  "restore/app.css": {
+    "bytes": 233733,
+    "sha256": "64a462e0fe63550251ed8202858a489fa5ad6154d4c83d2f95ef0f946657f567"
+  },
+  "restore/icon.svg": {
+    "bytes": 232,
+    "sha256": "6a73058828809eea809a36b74b49a2fe15bebb0ddd57d70920562de30ad19227"
+  },
+  "restore/theme.js": {
+    "bytes": 19978,
+    "sha256": "717bfa9383ced4b3be057cdc9e1dc63592738132fea6f2367975222c9cb5bb98"
+  },
+  "restore/history.json": {
+    "bytes": 1084,
+    "sha256": "669c3e1be9a9d5b1de18ebaa5933c3f4056e09044e6780daf24001b513dbb426"
+  },
+  "restore/dashboard.html": {
+    "bytes": 8949,
+    "sha256": "e8c4ebb09bc1b146bf2bc3f285f7f5b8c43a60d03421f66993ee74b99f1e7b5f"
+  },
+  "restore/manrope.woff2": {
+    "bytes": 53776,
+    "sha256": "d021a35e139087c179d032e509327fc2dfdbf2c33b6156d25143e004d939da87"
+  },
+  "restore/after.json": {
+    "bytes": 654,
+    "sha256": "2b84a6251a74b117e0093cf108bc7ed36398694aeea10c666ef6a18e4e375c6c"
+  },
+  "restore/inspector.html": {
+    "bytes": 19100,
+    "sha256": "c31caf5d64f9202b61f410b36a7d854a11c411c2654c99bdd7eb1e029d2884fb"
+  },
+  "restore/history.html": {
+    "bytes": 5559,
+    "sha256": "e755c0010793d003d1e542641a8e6dab94a390e343f090c685e34d82ecacb2a7"
+  },
+  "restore/subtitle-inspector.js": {
+    "bytes": 27535,
+    "sha256": "7ee624211c718f2e7693d1e73e2e205e9f5dcff2584cc7d7560ce1485f96360a"
+  },
+  "restore/preview.json": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}
