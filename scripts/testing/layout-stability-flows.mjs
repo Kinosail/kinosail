@@ -2,7 +2,7 @@
 export async function measureFlows(browser, options, watchPath, inspectorPath, results = [], probe = {}) {
   probe.stage = "HTMX-search";
   for (const viewport of [{width:390,height:844},{width:1440,height:900}]) {
-    const context = await browser.newContext({...options,viewport,ignoreHTTPSErrors:false,reducedMotion:"reduce"});
+    const context = await browser.newContext({...options,viewport,ignoreHTTPSErrors:false,reducedMotion:"reduce",serviceWorkers:"block"});
     const page = await context.newPage();
     await page.goto("/?view=movies");
     const search = page.locator(".app-header input[name=q]");
@@ -38,14 +38,31 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
       stable:JSON.stringify(resizeBefore)===JSON.stringify(resizeAfter),overflow:await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)});
     if(viewport.width===390){
       probe.stage="mobile-tabs-customize-focus";await page.setViewportSize(viewport);
-      await page.goto("/settings#navigation");
-      for(const settings of [false,true]){
+      let mainHeld=false, releaseMain;
+      const mainBarrier=new Promise(resolve=>{releaseMain=resolve;});
+      await page.route("**/static/main.kinosail.bundle.js*",async route=>{mainHeld=true;try{const response=await route.fetch();await mainBarrier;await route.fulfill({response});}finally{mainHeld=false;}});
+      try{
+        await page.goto("/settings#navigation",{waitUntil:"commit"});
+        for(const settings of [false,true]){
         const trigger=settings?page.locator("[data-customize-tabs]"):page.locator(".nav-more>summary");
         if(!settings){await trigger.click();await page.getByRole("button",{name:"Customize tabs",exact:true}).click();}else await trigger.click();
-        await page.locator(".tab-editor").waitFor({state:"visible"});await page.keyboard.press("Escape");await page.locator(".tab-editor").waitFor({state:"hidden"});
-        const focusRetained=await trigger.evaluate(n=>n===document.activeElement);results.push({viewport,flow:settings?"settings-customize-tabs-focus":"more-customize-tabs-focus",focusRetained});
-      }
+        await page.locator(".tab-editor").waitFor({state:"visible"});const pendingAtOpen=mainHeld;await page.keyboard.press("Escape");await page.locator(".tab-editor").waitFor({state:"hidden"});
+        const focusRetained=await trigger.evaluate(n=>n===document.activeElement);results.push({viewport,flow:settings?"settings-customize-tabs-focus":"more-customize-tabs-focus",pendingAtOpen,serviceWorkers:"blocked for transport-controlled flow",focusRetained,stable:settings||pendingAtOpen});
+        if(!settings){releaseMain();await page.waitForLoadState("domcontentloaded");}
+        }
+      }finally{releaseMain();}
     }
+    await context.close();
+  }
+  if(inspectorPath)for(const viewport of [{width:320,height:800},{width:390,height:844},{width:844,height:390}]){
+    probe.stage="enlarged-dock-end-focus";
+    const context=await browser.newContext({...options,viewport,ignoreHTTPSErrors:false,reducedMotion:"reduce"});
+    await context.addInitScript(()=>{const apply=()=>{if(!document.documentElement)return false;document.documentElement.style.fontSize="200%";return true;};if(!apply()){const observer=new MutationObserver(()=>{if(apply())observer.disconnect();});observer.observe(document,{childList:true});}});
+    const page=await context.newPage();await page.goto("/settings#thanks");
+    const last=page.locator("main").locator('button:enabled, input:enabled:not([type=hidden]), select:enabled, textarea:enabled, a[href]').last();
+    await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));await last.focus();
+    const control=await last.boundingBox(), tail=await page.locator("#thanks").boundingBox(), dock=await page.locator("[data-subtitle-dock]").boundingBox(), header=await page.locator(".app-header").boundingBox();
+    results.push({flow:"enlarged-dock-end-focus",viewport,control,tail,dock,header,focusRetained:await last.evaluate(n=>n===document.activeElement),stable:Boolean(control&&tail&&dock&&header&&control.y+control.height<=dock.y+1&&tail.y+tail.height<=dock.y+1&&control.y>=header.y+header.height-1)});
     await context.close();
   }
   const context = await browser.newContext({...options,viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce"});

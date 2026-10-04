@@ -35,10 +35,15 @@ func initialInspector(review subtitleReview) inspectorInitialView {
 		}
 		quality := document.Quality
 		view.Quality = []inspectorQualityRow{
-			{"Source", review.Source}, {"Identity evidence", review.MatchEvidence}, {"Installed role", role},
-			{"Cues", strconv.Itoa(quality.CueCount)}, {"Reading above 20 characters/sec", strconv.Itoa(quality.FastCues)},
-			{"Overlapping cues", strconv.Itoa(quality.Overlaps)}, {"Lines above 42 characters", strconv.Itoa(quality.LongLines)},
-			{"Timing evidence", quality.Timing}, {"Completeness", quality.Completeness},
+			{"Source", review.Source},
+			{"Identity evidence", review.MatchEvidence},
+			{"Installed role", role},
+			{"Cues", strconv.Itoa(quality.CueCount)},
+			{"Reading above 20 characters/sec", strconv.Itoa(quality.FastCues)},
+			{"Overlapping cues", strconv.Itoa(quality.Overlaps)},
+			{"Lines above 42 characters", strconv.Itoa(quality.LongLines)},
+			{"Timing evidence", quality.Timing},
+			{"Completeness", quality.Completeness},
 		}
 	}
 	var current, proposed []subtitleReviewCue

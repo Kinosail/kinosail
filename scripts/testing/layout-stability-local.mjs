@@ -59,9 +59,10 @@ function cls(shifts) {
 }
 const boxesChanged=(a,b)=>a.filter(first=>{const last=b.find(v=>v.id===first.id);return last&&["x",first.pinned&&last.pinned?"y":"documentY","width","height"].some(key=>Math.abs(first[key]-last[key])>1);});
 const inspect = () => ({rootFontSize: getComputedStyle(document.documentElement).fontSize, rootScale:document.documentElement.style.fontSize, ready: document.querySelector(".settings-shell")?.hasAttribute("data-settings-ready"), category: document.documentElement.dataset.settingsCategory, scrollY,
+  timeouts: ["#session-timeouts","#security"].includes(location.hash)?(()=>{const target=document.getElementById(location.hash.slice(1));return {visible:Boolean(target&&target.getBoundingClientRect().height&&(!target.checkVisibility||target.checkVisibility())),access:[...target?.querySelectorAll("form[data-timeout-access]")||[]].map(n=>n.dataset.timeoutAccess).sort()};})():undefined,
   sections: [...document.querySelectorAll(".settings-flow>section")].filter(n=>n.getBoundingClientRect().height).map(n=>({id:n.id,category:n.dataset.settingsCategory,heading:n.querySelector("h2")?.textContent})),
   nativeOptions: document.querySelectorAll(".player-native-options").length, settingsButtons: document.querySelectorAll("[data-player-settings]").length,
-  overflowNodes: [...document.querySelectorAll("body *")].filter(n => {const r=n.getBoundingClientRect();return r.height>0&&r.right>innerWidth+1&&(!n.checkVisibility||n.checkVisibility());}).slice(0,20).map(n=>({node:n.id||n.className||n.tagName,rect:n.getBoundingClientRect().toJSON(),minWidth:getComputedStyle(n).minWidth,whiteSpace:getComputedStyle(n).whiteSpace}))});
+  overflowNodes: [...document.querySelectorAll("body *:not(option):not(optgroup)")].filter(n => {const r=n.getBoundingClientRect();return r.height>0&&r.right>innerWidth+1&&(!n.checkVisibility||n.checkVisibility());}).slice(0,30).map(n=>({node:n.id||n.className||n.tagName,rect:n.getBoundingClientRect().toJSON(),minWidth:getComputedStyle(n).minWidth,whiteSpace:getComputedStyle(n).whiteSpace}))});
 function observe() {
   const ids = new WeakMap(); let nextID = 0;
   const identify = node => {if(!ids.has(node))ids.set(node, ++nextID);return ids.get(node);};
@@ -90,10 +91,11 @@ const viewports = process.env.KINOSAIL_LAYOUT_QUICK ? [{width: 390, height: 844}
 let routes = ["/login", "/", "/?view=movies", "/settings", "/settings#access", "/account", `/watch/${item.id}?playback=direct`, "/?view=movies&q=no-synthetic-match", "/item/missing-layout-probe"];
 if(app==="player")routes.push(`/item/${item.id}`);
 else {routes=routes.map(path=>path.replace("view=movies","view=library").replace("#access","#provider"));routes.push("/?view=wanted","/?view=history");const sub=await pageRequestLibrary(); if(!sub)throw new Error("Synthetic subtitle library must include an inspector item");routes.push(`/subtitles/inspect/${sub}?language=en`);}
+routes.push(app==="player"?"/settings#session-timeouts":"/settings#security");
 async function pageRequestLibrary(){const c=await browser.newContext({baseURL, storageState:auth});try{const r=await c.request.get("/api/v1/subtitle-library?view=library");const d=await r.json();return (d.items?.find(i=>i.title==="Layout Example")||d.items?.[0])?.id;}finally{await c.close();}}
 if(process.env.KINOSAIL_LAYOUT_PATHS)routes=process.env.KINOSAIL_LAYOUT_PATHS.split(",");
 const cases=viewports.flatMap(viewport=>routes.map(path=>({viewport,path,variant:"default"})));
-if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of [app==="player"?"/settings#access":"/settings#provider",`/watch/${item.id}?playback=direct`,...routes.filter(path=>path.startsWith("/subtitles/inspect/"))]){
+if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of [app==="player"?"/settings#access":"/settings#provider",app==="player"?"/settings#session-timeouts":"/settings#security",`/watch/${item.id}?playback=direct`,...routes.filter(path=>path.startsWith("/subtitles/inspect/"))]){
   cases.push({viewport:{width:390,height:844},path,variant:"text-200",scale:"200%"});
   cases.push({viewport:{width:390,height:844},path,variant:"motion",motion:"no-preference"});
 }
@@ -149,7 +151,8 @@ try {
     const moved=boxesChanged(initialBoxes,audit.frames.at(-1)?.boxes||[]);
     const finalState=await page.evaluate(inspect);
     const categoryStable=!initialState.category||JSON.stringify(initialState.sections)===JSON.stringify(finalState.sections);
-    reports.push({viewport,path,variant,scaleApplied:!scale||finalState.rootScale===scale,status:response.status(),unexpected,aggregateUnexpected,identifiedDOMCLS,unattributedCLS,moved,categoryStable,initialState,finalState,...audit});
+    const timeoutsPresent=!["/settings#session-timeouts","/settings#security"].includes(path)||[initialState,finalState].every(s=>s.timeouts?.visible&&JSON.stringify(s.timeouts.access)==='["private","public"]');
+    reports.push({viewport,path,variant,scaleApplied:!scale||finalState.rootScale===scale,status:response.status(),unexpected,aggregateUnexpected,identifiedDOMCLS,unattributedCLS,moved,categoryStable,timeoutsPresent,initialState,finalState,...audit});
     console.log(JSON.stringify({viewport: viewport.width, path, unexpected, overflow: audit.overflow,
       sources: audit.shifts.flatMap(shift => shift.sources.map(source => source.node))}));
     if (engine === "chromium") {
@@ -175,5 +178,5 @@ try {
     result: "measurement", command: "python3 scripts/testing/test-layout-stability-local.py", data: "Synthetic media and account; delayed real font/bundle/image responses", reports,flows}, null, 2));
   await browser.close();
 }
-if (process.env.KINOSAIL_LAYOUT_ENFORCE && reports.some(report => report.identifiedDOMCLS > 0.001 || report.overflow > 1 || !report.categoryStable || !report.scaleApplied || report.moved.length>0)) process.exitCode = 1;
+if (process.env.KINOSAIL_LAYOUT_ENFORCE && reports.some(report => report.identifiedDOMCLS > 0.001 || report.overflow > 1 || !report.categoryStable || !report.timeoutsPresent || !report.scaleApplied || report.moved.length>0)) process.exitCode = 1;
 if(flows.some(f=>f.pendingStable===false||f.focusRetained===false||f.settled?.inert||f.settled?.skeleton||f.stable===false||f.overflow>1))process.exitCode=1;

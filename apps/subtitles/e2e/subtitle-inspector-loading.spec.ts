@@ -34,6 +34,9 @@ for (const failed of [false, true]) {
     await expect(preview).toBeDisabled();
     await expect(page.locator(".subtitle-cue-row")).toHaveCount(2);
     const before = await workspace.boundingBox();
+    expect(before).not.toBeNull();
+    const currentText = review.current.cues.map((cue: { text: string }) => cue.text);
+    expect(await page.locator(".subtitle-cue-row>div:first-child p").allTextContents()).toEqual(currentText);
     await page.screenshot({ path: testInfo.outputPath("pending.png") });
     release();
     await expect(status).not.toHaveAttribute("aria-busy", "true");
@@ -41,7 +44,10 @@ for (const failed of [false, true]) {
     if (failed) await expect(preview).toBeDisabled(); else await expect(preview).toBeEnabled();
     await expect(page.locator(".subtitle-cue-row")).toHaveCount(2);
     await expect(status).toHaveText(failed ? "Subtitle details are unavailable. Reload and try again." : "Current subtitle loaded. Preview a change before saving.");
-    expect(await workspace.boundingBox()).toEqual(before);
+    const after = await workspace.boundingBox();
+    expect(after).not.toBeNull();
+    expect(after).toEqual(before);
+    expect(await page.locator(".subtitle-cue-row>div:first-child p").allTextContents()).toEqual(currentText);
     await page.screenshot({ path: testInfo.outputPath("settled.png") });
     await testInfo.attach("verification-context", { contentType: "application/json", body: JSON.stringify({ revision, command: "playwright test subtitle-inspector-loading.spec.ts", data: "Server-rendered Arrival review, two installed cues; synthetic delayed API and labelled 503", environment: testInfo.project.name, failed, before, after: await workspace.boundingBox(), result: testInfo.status }) });
   });
