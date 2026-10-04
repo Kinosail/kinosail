@@ -64,9 +64,9 @@ export async function openCaptionPlayer(page: Page, origin: string) {
     await page.goto(`${origin}/watch/${library.items[0].id}?playback=direct`);
     const bundle = await page.locator('script[src^="/static/player.js"]').getAttribute("src");
     expect(new URL(bundle!, origin).searchParams.get("v")).toMatch(/^[a-f0-9]{64}$/);
-    await page.getByRole("button", {name: "Settings", exact: true}).first().click();
     await page.locator("video").evaluate(async (video: HTMLVideoElement) => { video.muted = true; await video.play(); });
     await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(0.1);
+    await page.getByRole("button", {name: "Settings", exact: true}).first().click();
   } else {
     await page.goto(origin);
     await page.addScriptTag({ content: `const player = document.querySelector("video");\n${source}` });
