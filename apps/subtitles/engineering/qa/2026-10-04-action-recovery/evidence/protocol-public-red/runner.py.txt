@@ -1,0 +1,42 @@
+import json, os, re, signal, subprocess, time
+from pathlib import Path
+app=Path.cwd()
+root=app/'engineering/qa/2026-10-04-action-recovery/evidence/protocol-public-red'
+root.mkdir(parents=True,exist_ok=True)
+command=['go','test','-p','1','-parallel','1','-overlay=.verification/r06-actions/committed-42f3c2a9/overlay.json','./internal/server','-run','^TestSubtitle(Prepared.*|Operation(PreparationRejectsUntrustedInputWithoutEffects|CapacityPreservesExistingPreparedReceipts|PreservesActiveOwnerAndCSRFBoundaries)|FailedActivationPersistenceNeverStartsWorkOrResurrectsAfterRestart|CompletedRestoreOutcomeSurvivesRestartWithoutReplay|ActionLegacyAudioPublicControl)$','-count=1','-timeout=55s','-json']
+start=time.monotonic()
+process=subprocess.Popen(command,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,start_new_session=True)
+records=[]
+prerequisite=None
+# A separate wall timer terminates only this owned process group.
+import threading
+timed_out=False
+def stop_timeout():
+ global timed_out
+ timed_out=True
+ try: os.killpg(process.pid,signal.SIGTERM)
+ except ProcessLookupError: pass
+timer=threading.Timer(60,stop_timeout); timer.start()
+with (root/'events.jsonl').open('wb') as log:
+ for line in process.stdout:
+  log.write(line); log.flush()
+  try: event=json.loads(line)
+  except json.JSONDecodeError: continue
+  records.append(event)
+  output=event.get('Output','')
+  if re.search(r'prerequisite.*=|prerequisite.*failed|legacy public Save setup =',output,re.I):
+   prerequisite=output.strip()
+  if event.get('Action')=='fail' and event.get('Test'):
+   if event['Test']=='TestSubtitleActionLegacyAudioPublicControl' or prerequisite:
+    prerequisite=prerequisite or 'Legacy audio public prerequisite failed'
+    try: os.killpg(process.pid,signal.SIGTERM)
+    except ProcessLookupError: pass
+    break
+try: status=process.wait(timeout=5)
+except subprocess.TimeoutExpired:
+ os.killpg(process.pid,signal.SIGKILL); status=process.wait()
+timer.cancel()
+receipt={'head':os.environ['KINOSAIL_TEST_REVISION'],'command':command,'wallLimitSeconds':60,'seconds':round(time.monotonic()-start,3),'exit':status,'timedOut':timed_out,'prerequisiteFailure':prerequisite,'offline':{'GOPROXY':os.environ.get('GOPROXY'),'GOSUMDB':os.environ.get('GOSUMDB')},'completedTests':[{'name':e['Test'],'action':e['Action'],'elapsed':e.get('Elapsed')} for e in records if e.get('Test') and e.get('Action') in ('pass','fail','skip')]}
+(root/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
+print(json.dumps(receipt,indent=2))
+raise SystemExit(124 if timed_out else status)
