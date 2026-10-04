@@ -1,10 +1,12 @@
 // Real HTMX bodies; only the explicitly labelled transport failure is injected.
 import {measureSubtitleSearch} from "./layout-stability-subtitle-search.mjs";
+import {measureSubtitleBackground} from "./layout-stability-subtitle-background.mjs";
 export async function measureFlows(browser, options, watchPath, inspectorPath, results = [], probe = {}) {
   probe.stage = "HTMX-search";
-  for (const viewport of [{width:390,height:844},{width:1440,height:900}]) {
+  for (const viewport of [{width:390,height:844},{width:1440,height:900},...(inspectorPath?[{width:320,height:800}]:[])]) {
     const context = await browser.newContext({...options,viewport,ignoreHTTPSErrors:false,reducedMotion:"reduce",serviceWorkers:"block"});
     const page = await context.newPage();
+    if(inspectorPath&&viewport.width===320)await context.addInitScript(()=>{const apply=()=>{if(!document.documentElement)return false;document.documentElement.style.fontSize="200%";return true;};if(!apply()){const observer=new MutationObserver(()=>{if(apply())observer.disconnect();});observer.observe(document,{childList:true});}});
     await page.goto(inspectorPath ? "/?view=library" : "/?view=movies");
     if (inspectorPath) {await measureSubtitleSearch(page,viewport,results,probe);await context.close();continue;}
     const search = page.locator(".app-header input[name=q]");
@@ -58,6 +60,7 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
     }
     await context.close();
   }
+  if(inspectorPath)await measureSubtitleBackground(browser,options,results,probe);
   if(inspectorPath)for(const viewport of [{width:320,height:800},{width:390,height:844},{width:844,height:390}]){
     probe.stage="enlarged-dock-end-focus";
     const context=await browser.newContext({...options,viewport,ignoreHTTPSErrors:false,reducedMotion:"reduce"});
@@ -79,7 +82,7 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
   const context = await browser.newContext({...options,viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce"});
   probe.stage = "theater-idle-exit";
   const page = await context.newPage();
-  await page.goto(watchPath);
+  await page.goto(watchPath,{waitUntil:"domcontentloaded"});
   probe.media = await page.locator("video").evaluate(video=>({readyState:video.readyState,errorCode:video.error?.code,mp4:video.canPlayType('video/mp4; codecs="avc1.42E01E"')}));
   const theater = page.locator("[data-theater]");
   if (await theater.isVisible()) {

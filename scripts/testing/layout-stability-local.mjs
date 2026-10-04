@@ -177,7 +177,7 @@ try {
       await page.keyboard.press("Escape");await page.locator(".player-settings").waitFor({state:"hidden"});
       reports.at(-1).settingsKeyboard={closed:true,focusRestored:await settingsButton.evaluate(n=>n===document.activeElement)};
     }
-    if(viewport.width===390&&variant==="default"&&(path.startsWith("/settings")||path.startsWith("/watch/")||path.startsWith("/subtitles/inspect/"))){const audit=await new AxeBuilder({page}).analyze();reports.at(-1).accessibility={violations:audit.violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.map(n=>n.target)}))};}
+    if(viewport.width===390&&variant==="default"&&(path.startsWith("/settings")||path.startsWith("/watch/")||path.startsWith("/subtitles/inspect/")||path.startsWith("/?view=library"))){const audit=await new AxeBuilder({page}).analyze();reports.at(-1).accessibility={violations:audit.violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.map(n=>n.target)}))};}
     if(traced)await context.tracing.stop({path:join(run,name+"-trace.zip")});
     await context.close();
   }
@@ -188,4 +188,4 @@ try {
   await browser.close();
 }
 if (process.env.KINOSAIL_LAYOUT_ENFORCE && reports.some(report => report.identifiedDOMCLS > 0.001 || report.overflow > 1 || !report.categoryStable || !report.timeoutsPresent || !report.bookmarkVisible || !report.scaleApplied || report.moved.length>0)) process.exitCode = 1;
-if(flows.some(f=>f.pendingStable===false||f.failureRetainsContent===false||f.focusRetained===false||f.scrollRetained===false||f.settled?.inert||f.settled?.skeleton||f.stable===false||f.overflow>1))process.exitCode=1;
+if(flows.some(f=>f.pendingStable===false||f.failureRetainsContent===false||f.caretPreserved===false||f.focusRetained===false||f.scrollRetained===false||f.settled?.inert||f.settled?.skeleton||f.stable===false||f.overflow>1))process.exitCode=1;

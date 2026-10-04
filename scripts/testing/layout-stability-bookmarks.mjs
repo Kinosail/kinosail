@@ -13,7 +13,7 @@ export function bookmarkSnapshot() {
   const rectangle = node => node?.getBoundingClientRect().toJSON();
   const header = document.querySelector(".app-header");
   const dock = [...document.querySelectorAll("[data-subtitle-dock], .mobile-navigation")]
-    .find(node => getComputedStyle(node).position === "fixed" && node.getBoundingClientRect().height > 0);
+    .find(node => {const rect=node.getBoundingClientRect();return getComputedStyle(node).position === "fixed" && rect.height > 0 && rect.left <= 1 && rect.right >= innerWidth - 1 && rect.bottom >= innerHeight - 1;});
   const headingBox = rectangle(heading), headerBox = rectangle(header), dockBox = rectangle(dock);
   const headerPinned = header && ["fixed", "sticky"].includes(getComputedStyle(header).position);
   const top = headerPinned ? Math.max(0, headerBox.bottom) : 0;

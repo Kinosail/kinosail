@@ -5,6 +5,7 @@ if (location.hash) (() => {
   try { id = decodeURIComponent(location.hash.slice(1)); } catch (_) { return; }
   if (!id) return;
   let completed = false;
+  let headerObserver;
   const waitingStyles = new WeakSet();
   const project = () => {
     if (completed) return;
@@ -14,6 +15,13 @@ if (location.hash) (() => {
     for (const link of pendingStyles) if (!waitingStyles.has(link)) { waitingStyles.add(link); link.addEventListener("load", project, {once: true}); }
     if (pendingStyles.length) return;
     const dock = document.querySelector("[data-subtitle-dock]");
+    const header = document.querySelector("body.settings-page>.app-header");
+    if (!dock && header && !headerObserver) {
+      const update = () => document.documentElement.style.setProperty("--settings-header-height", `${header.getBoundingClientRect().height}px`);
+      update();
+      headerObserver = new ResizeObserver(update);
+      headerObserver.observe(header);
+    }
     if (matchMedia("(max-width: 900px)").matches && dock) {
       const root = document.documentElement.style;
       const matches = (name, node) => Math.abs(Number.parseFloat(root.getPropertyValue(name)) - node.getBoundingClientRect().height) <= 1;
@@ -37,5 +45,5 @@ if (location.hash) (() => {
     project();
     if (completed || !document.getElementById(id)) observer.disconnect();
   }, {once: true});
-  addEventListener("pagehide", () => observer.disconnect(), {once: true});
+  addEventListener("pagehide", event => {observer.disconnect(); if (!event.persisted) headerObserver?.disconnect();});
 })();

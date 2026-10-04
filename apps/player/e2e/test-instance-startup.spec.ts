@@ -122,7 +122,7 @@ test('bounded startup preparation preserves the exact stream and playback priori
   await page.goto('/?q=Cold');
   const cold = await moving('Cold');
   await record({name: 'cold', ...cold});
-  await leavePlayback('Cold', () => page.goto('/?q=Warm'));
+  await leavePlayback('Cold', () => page.goto('/?q=Warm', {waitUntil: 'domcontentloaded', timeout: 20_000}));
   await page.unroute('**/playback-prepare');
   await writeFile(info.outputPath('startup-measurements.json'), JSON.stringify(receipts, null, 2));
   if (process.env.KINOSAIL_STARTUP_BASELINE === '1') return;
@@ -149,9 +149,9 @@ test('bounded startup preparation preserves the exact stream and playback priori
   await page.locator('video').evaluate(media => { media.pause(); media.currentTime = 42; });
   await page.locator('video').evaluate(media => media.play());
   await expect.poll(() => page.locator('video').evaluate(media => media.currentTime)).toBeGreaterThan(42.25);
-  await leavePlayback('Warm', () => page.reload());
+  await leavePlayback('Warm', () => page.reload({waitUntil: 'domcontentloaded', timeout: 20_000}));
   await expect.poll(() => page.locator('video').evaluate(media => media.currentTime)).toBeGreaterThan(40);
-  await leavePlayback('Warm', () => page.goto('/?q=Direct'));
+  await leavePlayback('Warm', () => page.goto('/?q=Direct', {waitUntil: 'domcontentloaded', timeout: 20_000}));
   expect((await prepare('Direct', `/media/${id('Direct')}`)).status()).toBe(202);
   const beforeRejected = (await readdir(join(run, 'cache'))).sort();
   const enumSources = [
@@ -176,7 +176,7 @@ test('bounded startup preparation preserves the exact stream and playback priori
   expect(await page.locator('video').evaluate(media => media.currentSrc)).toContain(`/media/${id('Direct')}`);
   expect((await readdir(join(run, 'cache'))).some(value => value.startsWith(id('Direct')))).toBe(false);
   await page.evaluate(() => localStorage.setItem('kinosail.playback-policy-v2', 'compatible'));
-  await leavePlayback('Direct', () => page.goto('/?q=Adopt'));
+  await leavePlayback('Direct', () => page.goto('/?q=Adopt', {waitUntil: 'domcontentloaded', timeout: 20_000}));
   const adopt = source(await plan('Adopt'));
   expect((await prepare('Adopt', adopt)).status()).toBe(202);
   await expect.poll(async () => {
@@ -193,7 +193,7 @@ test('bounded startup preparation preserves the exact stream and playback priori
   await page.waitForTimeout(1500);
   expect((await readdir(join(run, 'cache'))).some(value => value.startsWith(id('Compete')))).toBe(false);
   await page.route('**/playback-prepare', route => route.abort());
-  await leavePlayback('Adopt', () => page.goto('/?q=Compete'));
+  await leavePlayback('Adopt', () => page.goto('/?q=Compete', {waitUntil: 'domcontentloaded', timeout: 20_000}));
   await page.waitForLoadState('networkidle');
   // Keep admission closed without new media GETs clearing the queue under test.
   const queueTrace = (sequence: number, event: string, paused: boolean) => page.request.post(`/api/v1/items/${id('Compete')}/playback-events`, {headers, data: {session: 'startup-queue-bound', sequence, event, paused}});

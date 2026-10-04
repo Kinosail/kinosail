@@ -6,10 +6,10 @@ export async function measureSubtitleSearch(page, viewport, results, probe) {
   if (!await search.isVisible()) throw new Error("Synthetic Library needs its native search");
   const geometry = () => page.evaluate(() => [".app-header", "#subtitle-list-title", ".subtitle-filters", "#subtitle-content"].map(selector => {
     const node = document.querySelector(selector), rect = node?.getBoundingClientRect();
-    return {selector, present: Boolean(rect?.height), x: rect?.x, documentY: rect?.y + scrollY, width: rect?.width, height: rect?.height};
+    return {selector, present: Boolean(rect?.height), pinned: node && ["fixed", "sticky"].includes(getComputedStyle(node).position), x: rect?.x, y: rect?.y, documentY: rect?.y + scrollY, width: rect?.width, height: rect?.height};
   }));
   const unchanged = (before, after) => before.every((first, index) => first.present && after[index]?.present &&
-    ["x", "documentY", "width", "height"].every(key => Math.abs(first[key] - after[index][key]) <= 1));
+    ["x", first.pinned ? "y" : "documentY", "width", "height"].every(key => Math.abs(first[key] - after[index][key]) <= 1));
   let fail = false;
   await page.route("**/*", async route => {
     const request = route.request(), url = new URL(request.url());
@@ -20,7 +20,9 @@ export async function measureSubtitleSearch(page, viewport, results, probe) {
   });
   for (const [state, query, injected] of [["pending-success", "Layout", false], ["pending-failure", "Missing", true], ["retry-real-link", "Missing", false], ["retry-empty", "no-synthetic-match", false]]) {
     fail = injected;
+    if (state !== "retry-real-link") await search.focus();
     const before = await geometry();
+    const content = await page.locator("#subtitle-content").elementHandle();
     const retry = state === "retry-real-link";
     if (retry) await page.getByRole("link", {name: "Reload view", exact: true}).click();
     else await search.fill(query);
@@ -29,9 +31,18 @@ export async function measureSubtitleSearch(page, viewport, results, probe) {
     const pending = await geometry();
     await page.waitForFunction(() => document.querySelector("#main")?.getAttribute("aria-busy") !== "true");
     const after = await geometry(), errorVisible = await page.locator("#subtitle-feedback[data-error]").isVisible();
+    const sameContentNode = await page.evaluate(node => node === document.getElementById("subtitle-content"), content);
+    await content.dispose();
+    const result = await page.evaluate(() => ({view: document.getElementById("main")?.dataset.view,
+      query: new URL(location.href).searchParams.get("q"), items: document.querySelectorAll(".subtitle-file").length,
+      empty: Boolean(document.querySelector(".subtitle-empty h3")?.textContent.includes("No files match."))}));
+    const navigationSucceeded = !errorVisible && result.view === "library" && result.query === query &&
+      (state === "pending-success" ? result.items > 0 : result.items === 0 && result.empty);
+    const caretPreserved = retry ? undefined : await search.evaluate((node, length) => node.selectionStart === length && node.selectionEnd === length, query.length);
     results.push({flow: "subtitle-native-search", state, viewport, injectedFailure: injected, before, pending, after,
-      pendingStable: unchanged(before, pending), failureRetainsContent: !injected || unchanged(before, after),
-      errorVisible, stable: !injected || errorVisible, focusRetained: retry ? undefined : await search.evaluate(node => node === document.activeElement),
+      pendingStable: unchanged(before, pending), failureRetainsContent: !injected || (sameContentNode && unchanged(before, after)),
+      errorVisible, sameContentNode, navigationSucceeded: injected ? undefined : navigationSucceeded, caretPreserved,
+      stable: injected ? errorVisible : navigationSucceeded, focusRetained: retry ? undefined : await search.evaluate(node => node === document.activeElement),
       overflow: await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)});
   }
 }

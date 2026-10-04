@@ -80,7 +80,7 @@
   .subtitle-dashboard .subtitle-header-settings .header-link{width:auto;min-width:0;padding:.6rem .5rem;white-space:normal;overflow-wrap:anywhere}
   .subtitle-dashboard>.subtitle-main{padding-top:1.5rem}
   .subtitle-dashboard>main{padding-bottom:max(7rem,calc(var(--subtitle-dock-height,0px) + 1rem))}
-  .subtitle-settings .settings-flow>section{scroll-margin-top:1rem}
+  .subtitle-settings .settings-flow>section{scroll-margin-top:-.25rem}
   .subtitle-filters{top:72px}.subtitle-overview{gap:1.5rem;padding:1.5rem 0;grid-template-columns:minmax(0,1fr) 13rem}
   .subtitle-coverage-stat{padding-left:1.5rem}
 }
@@ -133,6 +133,11 @@
 .subtitle-settings #language select{min-width:0;max-width:100%}
 @media(max-width:600px){.subtitle-settings .settings-nav{flex-wrap:wrap;overflow:visible;white-space:normal}.subtitle-settings .settings-nav>a{flex:1 1 auto;justify-content:center}}
 @media(max-width:700px){.subtitle-settings .settings-shell,.subtitle-settings .settings-flow{grid-template-columns:minmax(0,1fr)}.subtitle-settings .settings-flow>section{min-width:0;overflow-wrap:anywhere}}
+.subtitle-feedback-slot,.subtitle-feedback-reservation,.subtitle-update-slot{display:grid;min-width:0;font-variant-numeric:tabular-nums}
+.subtitle-feedback-slot>*,.subtitle-feedback-reservation>*,.subtitle-update-slot>*{grid-area:1/1;min-width:0;align-self:start;overflow-wrap:anywhere}
+.subtitle-feedback-reservation,.subtitle-update-reservation{visibility:hidden;pointer-events:none}
+.subtitle-feedback-retry{margin-left:.75rem;text-decoration:underline;text-underline-offset:.25em}
+.subtitle-update-action{display:inline-flex;min-height:44px;align-items:center;color:var(--text);text-decoration:underline;text-underline-offset:.25em}
 /* WebKit does not always resolve inherited theme variables on these labels. */
 .subtitle-settings #cleanup label{color:#a0a79c}
 .subtitle-settings #cleanup input[type=checkbox]{flex:none;width:1.1rem;min-height:1.1rem;margin:0;accent-color:var(--signal)}
