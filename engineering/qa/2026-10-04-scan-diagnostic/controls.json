@@ -1,0 +1,69 @@
+{
+  "kind": "isolated launcher and static workflow controls",
+  "base_revision": "0d85c75a5ed2f304a8c657ecc2a06c11dbbcef0a",
+  "implementation_before_first_red": false,
+  "red": {
+    "controls": 8,
+    "failures": 2,
+    "subtest_errors": 16,
+    "reason": "missing helper and opt-in workflow",
+    "limitation": "initial tool-error control passed because helper was absent"
+  },
+  "green": {
+    "command": "python3 -m unittest discover -s scripts/ci -p 'test_*.py'",
+    "controls": 63,
+    "diagnostic_controls": 8,
+    "seconds": 1.988,
+    "exit_code": 0
+  },
+  "static_checks": {
+    "actionlint": 0,
+    "max_loc": 0,
+    "git_diff_check": 0,
+    "validate_workflows": 0
+  },
+  "cases": [
+    "test_shared_projection_has_only_authorized_metadata",
+    "test_invalid_metadata_fails_without_echoing_private_input",
+    "test_invalid_report_shape_is_rejected",
+    "test_scanner_keeps_all_history_redaction_and_failure_exit",
+    "test_tool_error_does_not_publish_a_successful_projection",
+    "test_timeout_and_invalid_report_publish_nothing_private",
+    "test_exit_code_and_report_must_agree",
+    "test_manual_projection_does_not_replace_the_existing_gate"
+  ],
+  "inputs": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "bytes": 16930,
+      "sha256": "eca36c221f8e20bcd8a61c9b6284da827f00ac75e772cd99630ae64996c8dd30"
+    },
+    {
+      "path": "scripts/ci/scan-diagnostic.py",
+      "bytes": 4029,
+      "sha256": "87059dffb1b53131c52d1d91eb06088d5ea9d389751086f7b3470bd15edf7f5b"
+    },
+    {
+      "path": "scripts/ci/test_scan_diagnostic.py",
+      "bytes": 7700,
+      "sha256": "eac86dfa3fafb097884f0473b4c26f1b0925cb513d16967da91933f23ed61c96"
+    },
+    {
+      "path": "scripts/ci/secrets.py",
+      "bytes": 1430,
+      "sha256": "2be5ceb200e0f555e907396933a3581f08ac1d39d0425a5bd27dfcc7a8bed28f"
+    },
+    {
+      "path": ".gitleaksignore",
+      "bytes": 6232,
+      "sha256": "569bd10e959458d20dfea93488510488a36fb5091748714f329729c19b96e6bd"
+    }
+  ],
+  "runtime_scan_executed": false,
+  "native_or_browser_execution": false,
+  "limits": [
+    "fictional/fake scanner only",
+    "hosted real scan pending independent review",
+    "no claim that existing findings are false positives or resolved"
+  ]
+}
