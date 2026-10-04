@@ -2,7 +2,8 @@
 
 Baseline: `5c3df3a06adad59c65551a65e132a92360b57c4b`.
 This commit owns R09 from the canonical ranked audit. R13 is a separate follow-up.
-R09 is confirmed and implementing; scheduled GREEN verification is pending.
+R09 is confirmed and implemented. Model, phone and tablet checks pass; the TV
+footer journey still requires scheduled verification after a navigation fixture repair.
 
 ## Failure modes before implementation
 
@@ -47,6 +48,30 @@ factory; TV retry checks timed out before the intended boundary. Those five
 failures are harness failures, not evidence of R09 UI or R13 reproduction.
 R13 production remains unchanged and is tracked in the follow-up evidence document. Baseline XML and stdout are retained outside Git in
 `task-2/android-recovery-red/`; the log is `task-2/android-recovery-red.log`.
+
+## Candidate runtime results
+
+Candidate `093bdbfe7da8dc82a62e9f66806ed309e19bdd9a` executed 13 checks in
+41 seconds: eight R09 model checks passed, phone and tablet footer journeys
+passed, the TV footer timed out, and two R13 ownership regressions failed as intended.
+Both manual and delayed retry passed twice with 48 loaded rows retained, 72 rows
+after recovery, and offset 48 requested. Duplicate responses, simultaneous taps,
+denied pages and obsolete delayed retry controls all passed.
+
+The TV timeout occurred while waiting for the Movies destination, before paging
+or footer assertions. It is not a TV footer success or demonstrated production
+failure. The fixture now scrolls to the actual Movies button, checks visibility
+and focus, and sends a D-pad center key rather than a touch click on a TV surface.
+The footer still must receive focus and the actual key event; assertions remain
+unchanged. The next run also retains bounded state diagnostics on failure.
+
+Phone and tablet pending, loaded, failed and recovered captures were inspected;
+loaded cards remain visible during failure and the new recovery control is
+visible without replacing rows. These are synthetic host renders. Candidate XML,
+stdout and checksums are in `task-2/android-recovery-green-r09-red-r13/receipt.json`,
+SHA-256 `bf0e13ad681eb2c7754eaa008a1cd1b106550c955ae28fcc3ceb8af1faa3ef63`.
+The receipt explicitly hashes the R13 test that was compiled while still untracked.
+PNG and semantics artifacts are in `task-2/android-recovery-green-r09/`.
 
 ## Reproduction command and evidence limits
 

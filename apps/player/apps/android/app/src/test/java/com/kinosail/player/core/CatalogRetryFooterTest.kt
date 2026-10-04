@@ -57,7 +57,12 @@ class CatalogRetryFooterTest {
                 }
                 await { catalog.state.items.isNotEmpty() && !catalog.state.loading }
                 await { home.state.recent.isNotEmpty() && !home.state.loading }
-                compose.onAllNodesWithText("Movies")[0].performClick()
+                val movies = compose.onAllNodesWithText("Movies")[0]
+                if (tv) {
+                    movies.performScrollTo().assertIsDisplayed()
+                    movies.performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.RequestFocus) { it() }
+                    movies.assertIsFocused().performKeyInput { pressKey(ComposeKey.DirectionCenter) }
+                } else movies.performClick()
                 await { catalog.state.view == "movies" && !catalog.state.loading }
                 if (catalog.state.items.size == 24) {
                     compose.runOnIdle { catalog.loadMore() }
@@ -93,6 +98,10 @@ class CatalogRetryFooterTest {
                 assertEquals(48, fixture.catalogOffsets.last())
                 compose.onNodeWithText("Retry loading more").assertDoesNotExist()
                 capture("$name-recovered")
+            } catch (error: Throwable) {
+                println("R09 footer $name: view=${catalog.state.view} loading=${catalog.state.loading} rows=${catalog.state.items.size} offsets=${fixture.catalogOffsets.takeLast(8)}")
+                runCatching { capture("$name-diagnostic") }
+                throw error
             } finally { compose.runOnIdle { models.clear() } }
         }
     }
