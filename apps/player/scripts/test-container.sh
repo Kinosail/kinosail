@@ -213,6 +213,8 @@ if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
     run_library_pagination_journey "$project" \
       "${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project-library-pagination" \
       "${KINOSAIL_E2E_ARTIFACT_DIR:-$media_dir/playwright-artifact}/library-pagination-$project"
+    run_subtitle_recovery_journey "$project" "$media_dir/Direct Retry Control.mp4" \
+      "${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project-caption-recovery" "${KINOSAIL_E2E_ARTIFACT_DIR:-$media_dir/playwright-artifact}/caption-recovery-$project"
     start_fresh_server "$port"
     KINOSAIL_BROWSER_PROJECT="$project" KINOSAIL_E2E_URL="$url" KINOSAIL_E2E_OUTPUT_DIR="${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project" pnpm --dir e2e test "${browser_args[@]}"
     # Prepared-Owner journeys need fresh state after the installation journey.
