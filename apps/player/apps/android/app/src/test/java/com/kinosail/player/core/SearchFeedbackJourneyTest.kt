@@ -129,6 +129,7 @@ class SearchFeedbackJourneyTest {
         field.performImeAction()
         await { !catalog.state.loading && fixture.catalogQueries.last() == "Fictional" }
         compose.onNodeWithText("Results: 96 · “Fictional”").assertIsDisplayed()
+            .assert(SemanticsMatcher.expectValue(SemanticsProperties.LiveRegion, LiveRegionMode.Polite))
         capture("$name-search-results")
         val submittedRequests = fixture.catalogQueries.size
         field.performTextReplacement("draft")
