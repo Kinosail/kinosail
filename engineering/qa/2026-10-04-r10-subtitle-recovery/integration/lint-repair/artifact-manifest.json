@@ -1,6 +1,7 @@
 {
   "checks.json": "3ab13e1211474db32c06bdc3614ce35e45c7ea16b16933622ddbc8e8d2c36907",
-  "native-proof.json": "bad08f4be749dcb212a32fac98ace611e82e0848bf0b4bde162aadf0f535ef71",
+  "firefox-subtitles-layout-failure.json": "1badbc22fd34e75c3af8bb20803f3190c78755cefc0b7519435db04078d9818a",
+  "native-proof.json": "919293a20cf0884f0f874696e3bafd0790b9cd1df0fae81e63f848603192b5dd",
   "r10-lint-repair-changed-lint.log": "e92606b0bf483111dff0a120c315ea165821348f31365020e2468a0059095c47",
   "r10-lint-repair-changed-lint.log.gz": "bafcb04d67f6157ff3d4a1fdf228afd2df6cc6d786c61642c1125b1fe879e728",
   "r10-lint-repair-native-server-proof.log": "af0d8869d693de6b4f198084e5d3526d6e06aebb0daf2571eb124f28af01da2c",
@@ -36,5 +37,8 @@
   "screens/player-subtitles-recovery--f135f-and-keyboard-Retry-at-390px-chromium-body-390-off.png": "594c7cc6f7da2a50a82ec1ad420e8e51f6a61adce364f33afeb32977c45d1c89",
   "screens/player-subtitles-recovery--f135f-and-keyboard-Retry-at-390px-chromium-body-390-pending.png": "eb2078503ff5bb17754dc38ed6b69b3b96e0261e34e9958bdc2ae69af7d90e35",
   "screens/player-subtitles-recovery--f135f-and-keyboard-Retry-at-390px-chromium-body-after-deadline.png": "2bd816bdf6e3804752eeebd9de2f9436af9f60d51eddde6f35a96a1a8dea8fe0",
-  "screens/player-subtitles-recovery--f135f-and-keyboard-Retry-at-390px-chromium-body-recovered.png": "bf183bef757fe8d3ffa61765d9b356c6bded7c8060d73b28bac8e09ed3b53d79"
+  "screens/player-subtitles-recovery--f135f-and-keyboard-Retry-at-390px-chromium-body-recovered.png": "bf183bef757fe8d3ffa61765d9b356c6bded7c8060d73b28bac8e09ed3b53d79",
+  "supplementary-layout.json": "0de60bc3814c3bfb05c01281df0e4847d7f0e765765de59d68ad87d3b9d80c5a",
+  "webkit-player-layout-failure.json": "45b14f355884908a1dca00e956ffcf6935acbd1634461db64cbad6f61bdaf79a",
+  "webkit-subtitles-layout-failure.json": "06e879057f9943c1da909ceebbc1bb1abc78f762b976fef6e11b0f9a47400594"
 }
