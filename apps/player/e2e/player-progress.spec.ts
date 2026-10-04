@@ -273,7 +273,7 @@ test("audio queue saves a new-track pause while final watched continuation still
   await page.evaluate(() => Object.assign(window, {holdQueuePlay: true}));
   await page.locator("video").dispatchEvent("ended");
   await expect(page.locator("video")).toHaveAttribute("data-progress", "/progress/next");
-  await page.waitForFunction("queueSourceChanging === false && typeof window.finishQueuePlay === 'function'");
+  await page.waitForFunction("typeof window.finishQueuePlay === 'function'");
   await pauseAt(page, 3);
   await page.evaluate(() => (window as Window & {finishQueuePlay(): void}).finishQueuePlay());
   await expect.poll(() => requests.length, {timeout: 1500}).toBe(2);
