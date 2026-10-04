@@ -1,0 +1,169 @@
+{
+  "accepted_by": "strict runtime receipt and independent evidence review",
+  "artifact_hashes": [
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-green-fixed-120.json",
+      "sha256": "e9e291767b2e762ddd5139d2b963bd422a839f01367a7d54055e106c59e325ae"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-green-fixed-120-inputs.json",
+      "sha256": "d5191e4abca3645cd7fba888d35bc7a5a90f72e4837ce026ddcd07843ebc1d1f"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-green-fixed-120-build-manifest.json",
+      "sha256": "263a5ad08a46ed91378ddde69a066f96acba520f33ccbd20f65857b4f5b82a0e"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-green-fixed-120-test-tree.json",
+      "sha256": "8f94bf84bdf6786ce0f16e07a7f011dc2f6dcff1115a46ce1f89693168ccfe3c"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-green-fixed-120-test-summary.json",
+      "sha256": "8d16341486b46c7f626a43511a73dbbc8564681053b9bee9312c8c22ade4f2ba"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-green-fixed-120.log",
+      "sha256": "94290489f55ec4230b3d9e2284b455893b29a491e4a0b0df644e2046a25ecd01"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-green-fixed-120-product-preservation.json",
+      "sha256": "3b1af3070eff1b043b09c140f335265bf9bb6b129783ce95b1050692430b48b1"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-green-fixed-120/photo-503-saved.png",
+      "sha256": "9c9935eee91c19dba755cafd9fff9c4353d0f87a4589a01ed666bb9c6a37cd18"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-green-fixed-120/photo-401-saved.png",
+      "sha256": "9c9935eee91c19dba755cafd9fff9c4353d0f87a4589a01ed666bb9c6a37cd18"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-green-fixed-120/photo-403-settled.png",
+      "sha256": "9c24fc329d5e013d47f080ce7dd77d3638f1f8b3abddc0150fab053ebb491886"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-green-fixed-120/photo-401-settled.png",
+      "sha256": "c802dd9dc51f9e170609733c13bf2962d5a7a31d12d589a0ef9a96e0d6cede70"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-green-fixed-120/photo-404-settled.png",
+      "sha256": "ce4b6a0a248ab3695252c4af208fd259220cbc07ca32ffd989c95212fec33027"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-green-fixed-120/photo-503-settled.png",
+      "sha256": "9c9935eee91c19dba755cafd9fff9c4353d0f87a4589a01ed666bb9c6a37cd18"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-green-fixed-120/photo-403-saved.png",
+      "sha256": "9c9935eee91c19dba755cafd9fff9c4353d0f87a4589a01ed666bb9c6a37cd18"
+    },
+    {
+      "path": ".verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-green-fixed-120/photo-404-saved.png",
+      "sha256": "9c9935eee91c19dba755cafd9fff9c4353d0f87a4589a01ed666bb9c6a37cd18"
+    }
+  ],
+  "compiled_revision": "bc7892d2709356ae06af538dbb77be3e8ff0c190",
+  "deadline_seconds": 120,
+  "finding": "R05",
+  "finished": "2026-10-04T10:07:57.595903+00:00",
+  "kind": "safe projection of retained native evidence",
+  "limitations": [
+    "Production SwiftUI PhotoScreen hosted in a task-owned iOS simulator against fictional loopback HTTP.",
+    "Screenshots retain final repetition states; result tree retains both repetitions.",
+    "No physical device, tvOS, real Server, release, installation or deployment claim.",
+    "Private raw logs and signed binaries are retained locally, not included in this publication."
+  ],
+  "native_input_count": 461,
+  "original_receipt_accepted": true,
+  "original_receipt_preserved": true,
+  "original_result_parser_sha256": "a73143419115982379485440787b9d94b67c628c9c7fbe9a9b0522f99f9ee604",
+  "pending_test_inputs_excluded_from_batch": {
+    "apps/player/apps/native/Tests/DownloadManagerRecoveryJourneys.swift": "77ac75d91fe9cbf75b94aba458ef71186bcc6f98575f66f4584e005f4fe441ca",
+    "apps/player/apps/native/Tests/LibraryRefreshRecoveryJourneys.swift": "7f61a59d50cd4779390e8b7f91bc8de719455f904cde503a42ee95d657b734d6"
+  },
+  "platform": "iOS",
+  "process_exit_codes": [
+    0,
+    0
+  ],
+  "products_unchanged": true,
+  "runner_sha256": "c8d7af8a7a88ef2acb06cccc9c334e81dbe5f75d45c89c8dae7b3e964d4fc3f5",
+  "selected_completed_tests": [
+    {
+      "method": "revokedPhotoDisappearsAfterSavedContentWasShown",
+      "result": "Passed",
+      "runs": [
+        {
+          "argument": "401",
+          "repetitions": [
+            {
+              "index": "1",
+              "result": "Passed"
+            },
+            {
+              "index": "2",
+              "result": "Passed"
+            }
+          ],
+          "result": "Passed"
+        },
+        {
+          "argument": "403",
+          "repetitions": [
+            {
+              "index": "1",
+              "result": "Passed"
+            },
+            {
+              "index": "2",
+              "result": "Passed"
+            }
+          ],
+          "result": "Passed"
+        },
+        {
+          "argument": "404",
+          "repetitions": [
+            {
+              "index": "1",
+              "result": "Passed"
+            },
+            {
+              "index": "2",
+              "result": "Passed"
+            }
+          ],
+          "result": "Passed"
+        }
+      ]
+    },
+    {
+      "method": "connectionFailureKeepsTheSavedPhoto",
+      "result": "Passed",
+      "runs": [
+        {
+          "argument": null,
+          "repetitions": [
+            {
+              "index": "1",
+              "result": "Passed"
+            },
+            {
+              "index": "2",
+              "result": "Passed"
+            }
+          ],
+          "result": "Passed"
+        }
+      ]
+    }
+  ],
+  "signed_product_file_count": 93,
+  "signed_product_verified": true,
+  "sources_unchanged": true,
+  "started": "2026-10-04T10:07:36.029404+00:00",
+  "status": "tested fix",
+  "timed_out": false,
+  "validated_result_parser_sha256": "a73143419115982379485440787b9d94b67c628c9c7fbe9a9b0522f99f9ee604",
+  "workspace_revision": "bc7892d2709356ae06af538dbb77be3e8ff0c190"
+}

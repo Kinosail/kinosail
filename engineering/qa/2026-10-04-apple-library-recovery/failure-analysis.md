@@ -148,7 +148,8 @@ validation, without a fresh runtime run. Its SHA-256 is
 `00ef62a6e5ec993146d2d1b00812e85923178d193e426a70e423688cd884d3b7`.
 The original rejected receipt remains byte-exact. R05 is confirmed. Its narrow
 production fix now clears the displayed cached image and title on explicit
-denial, and rejects cancelled-task error writes. Its green run is pending.
+denial, and rejects cancelled-task error writes. Its completed green evidence
+and remaining delivery gates are recorded in [R05-report.md](R05-report.md).
 
 Private evidence prefix:
 `.verification/apple-library-recovery/ios-PhotoAuthorizationJourneys-red-provenance-120`.
