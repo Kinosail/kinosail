@@ -129,10 +129,19 @@ def collect():
 
 
 def write_json(path, value):
-    path.write_text(json.dumps(value, indent=2, sort_keys=True) + '\n')
+    path.write_bytes(json_bytes(value))
+
+
+def json_bytes(value):
+    body = (json.dumps(value, separators=(',', ':'), sort_keys=True) + '\n').encode()
+    if len(body) > 4 * 1024 * 1024: raise ValueError('safe metadata file bound')
+    return body
 
 
 def refresh_manifest(original, pins):
+    if set(original) == {'safeFiles'}:
+        if set(original['safeFiles']) != set(SAFE_NAMES[:3]): raise ValueError('unexpected Q09 artifact manifest')
+        return {'safeFiles': {name: pins[name]['sha256'] for name in SAFE_NAMES[:3]}}
     if set(original) == {'artifacts'}:
         rows = original['artifacts']
         if not isinstance(rows, list) or [row['path'] for row in rows] != list(SAFE_NAMES[:3]):
@@ -150,9 +159,11 @@ def attach(identifier):
     encoded = json.dumps(graph, sort_keys=True, separators=(',', ':')).encode()
     values['receipt.json']['architectureMetadata'] = {'accepted': True, 'revision': graph['revision'],
                                                     'bytes': len(encoded), 'sha256': hashlib.sha256(encoded).hexdigest()}
-    for name in SAFE_NAMES[:3]: write_json(output / name, values[name])
-    write_json(output / 'artifact-manifest.json', refresh_manifest(values['artifact-manifest.json'],
-                                                                  {name: pin(output / name) for name in SAFE_NAMES[:3]}))
+    bodies = {name: json_bytes(values[name]) for name in SAFE_NAMES[:3]}
+    pins = {name: {'bytes': len(body), 'sha256': hashlib.sha256(body).hexdigest()} for name, body in bodies.items()}
+    # Validate all encodings, bounds and the selected original schema before writes.
+    bodies['artifact-manifest.json'] = json_bytes(refresh_manifest(values['artifact-manifest.json'], pins))
+    for name in SAFE_NAMES: (output / name).write_bytes(bodies[name])
 
 
 def reproduce(manifest_path):

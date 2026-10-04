@@ -138,6 +138,28 @@ class ArchitectureAdmissionTests(unittest.TestCase):
                                   for row in original['artifacts']]}
         self.assertEqual(self.helper().refresh_manifest(original, pins), expected)
 
+    def test_actual_q09_safe_files_manifest_shape_is_preserved(self):
+        helper = self.helper(); original = {'safeFiles': {name: 'old' for name in helper.SAFE_NAMES[:3]}}
+        pins = {name: {'bytes': 7, 'sha256': 'new'} for name in helper.SAFE_NAMES[:3]}
+        self.assertEqual(helper.refresh_manifest(original, pins),
+                         {'safeFiles': {name: 'new' for name in helper.SAFE_NAMES[:3]}})
+
+    def test_source_graph_serialization_stays_within_safe_four_mebibytes(self):
+        helper = self.helper()
+        value = {'metadata': [{'symbols': [{'name': 'F', 'kind': 'function', 'line': 1}]} for _ in range(40000)]}
+        self.assertGreater(len(json.dumps(value, indent=2).encode()), 4 * 1024 * 1024)
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / 'source-manifest.json'; helper.write_json(path, value)
+            self.assertLessEqual(path.stat().st_size, 4 * 1024 * 1024)
+            self.assertEqual(json.loads(path.read_text()), value)
+
+    def test_oversized_metadata_rejects_before_replacing_a_file(self):
+        helper = self.helper()
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / 'source-manifest.json'; path.write_text('preserved')
+            with self.assertRaises(ValueError): helper.write_json(path, {'metadata': 'x' * (4 * 1024 * 1024)})
+            self.assertEqual(path.read_text(), 'preserved')
+
     def test_route_is_default_off_and_retains_four_json_allowlist(self):
         source = SCRIPT.parents[2].joinpath('.github/workflows/layout-stability.yml').read_text()
         self.assertIn('architecture_metadata:', source)
