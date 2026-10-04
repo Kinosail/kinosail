@@ -30,6 +30,7 @@ test.beforeEach(async ({ page }, testInfo) => {
     let playFailure = "";
     let playPending = false;
     let finishPlay = () => {};
+    let rejectPendingPlay = (_name: string) => {};
     let readyState = safariStartup ? 0 : 4;
     let networkState = safariStartup ? 2 : 1;
     const video = document.querySelector("video")!;
@@ -62,7 +63,7 @@ test.beforeEach(async ({ page }, testInfo) => {
       networkState: { get: () => networkState },
       load: { value() {} },
       paused: { get: () => paused, configurable: true },
-      play: { value: async () => { if (playFailure) throw new DOMException("", playFailure); paused = false; video.dispatchEvent(new Event("play")); if (playPending) await new Promise<void>((resolve) => { finishPlay = resolve; }); video.dispatchEvent(new Event("playing")); } },
+      play: { value: async () => { if (playFailure) throw new DOMException("", playFailure); paused = false; video.dispatchEvent(new Event("play")); if (playPending) await new Promise<void>((resolve, reject) => { finishPlay = resolve; rejectPendingPlay = name => reject(new DOMException("synthetic interrupted request", name)); }); video.dispatchEvent(new Event("playing")); } },
       pause: { value: () => { paused = true; if (queuedPause) queueMicrotask(() => video.dispatchEvent(new Event("pause"))); else video.dispatchEvent(new Event("pause")); } },
       volume: { value: 1, writable: true },
       muted: { value: false, writable: true },
@@ -76,6 +77,7 @@ test.beforeEach(async ({ page }, testInfo) => {
       setPlayFailure: (value: string) => { playFailure = value; },
       setPlayPending: (value: boolean) => { playPending = value; },
       finishPlay: () => finishPlay(),
+      rejectPendingPlay: (name: string) => rejectPendingPlay(name),
       setReadyState: (value: number) => { readyState = value; },
       setNetworkState: (value: number) => { networkState = value; },
       textTrack,
