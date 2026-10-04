@@ -1,0 +1,16 @@
+✔ htmx:finally:request restores content only after all pending requests finish (1.362792ms)
+✔ restores a pre-existing busy and inert state (0.904167ms)
+✔ delayed loading skeleton does not reappear after completion (0.701333ms)
+✔ delayed loading skeleton does not reappear after disconnection (0.823833ms)
+✔ resolves final browser scope and excludes CSS compositions (6.387458ms)
+✔ rejects unresolved dependencies (3.439875ms)
+✔ rejects mixed CSS and JavaScript (3.190917ms)
+✔ rejects circular composition even without a root bundle (2.642458ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 116.568292
