@@ -90,6 +90,50 @@ The generated WAV fixture uses Python's standard library, with no encoder proces
 Raw browser traces, Server logs, account state, and failed-run details remain in
 ignored `.verification/r08-now-playing/20261004T091152Z`. All state is preserved.
 
+## Candidate behavior and limits
+
+The shared Go template projects stable metadata hooks, optional cover, queue
+controls, and a current-track details/actions link. The existing ClientItem API
+stays unchanged. Each move reads that target item and checks its Viewer profile,
+identity, audio kind, canonical same-origin stream/artwork, and metadata bounds
+before any current progress write or source change. The response limit is 4 MiB,
+the queue limit is 10,000 items, and each displayed tag is limited to 65,536
+characters. Oversized inputs fail explicitly; no queue or tag is silently cut.
+
+After acknowledgment, one synchronous operation moves source, progress/cast/trace
+identity, page metadata, and Media Session metadata. Old trace events flush first.
+Each source retains the page playback session. Native source-load pause events
+cannot write progress until the new metadata loads. Previous/next use the current
+cursor and a fresh Server progress projection rather than stale queue positions.
+
+The cover reserves a 320-pixel image frame while actual image work is pending.
+Missing/failed covers clear the old image. Unsupported system metadata clears a
+previous title while local controls remain available. In-page queue history and
+the latest pending progress remain bounded page memory; no persistent URL or
+credential queue is introduced. Closing a page keeps the existing R03 limitations.
+
+Original item forms and disclosures are hidden after a move. The current-track
+link loads the existing full Server page, restoring its canonical toggle values
+and permissions. Returning to the first track also requires that page before
+using item actions, because the originally rendered toggle values may be stale.
+
+## Frozen R03 ordering regression
+
+The isolated sender test replayed the unchanged frozen R03 source separately from
+R08 loading guards. After source moved to `/media/next`, a pause at three seconds
+queued a new revision while the old watched save awaited playback continuation.
+Releasing that continuation left the new position unsent. The intended HTTP
+assertion failed: two requests expected, one received. No tests skipped or global
+errors occurred. `drain-frozen-red.json` records source/test hashes, safe debug
+context, and raw artifact hashes. Its debug fields are evidence context; the
+correctness contract is the actual new-item HTTP dispatch and position.
+
+The first ten-second attempt timed out during teardown and is excluded. It also
+recorded video unintentionally; that artifact is preserved. The accepted replay
+used video off and finally released the held playback promise. The one-line
+sender drain correction and standalone regression are isolated in `41fa08d7`
+for the integration owner's R03 assessment. GREEN verification is pending.
+
 ## Ownership
 
 R08 owns `player-progress.js`, `player-presentation.js`, shared Go metadata template
