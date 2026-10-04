@@ -7,16 +7,18 @@ import Testing
 // An isolated HTTP listener exercises the production client and playback
 // coordinator. Only fictional identity and bounded JSON cross this interface.
 final class PlaybackStartupFixture: @unchecked Sendable {
-    struct State { var counts: [String: Int] = [:]; var delayed = false; var denied = true; var media: Data? }
+    struct State { var counts: [String: Int] = [:]; var delayed = false; var denied = true; var media: Data?; var savedSeconds: Double? }
     let state = Mutex(State())
     let listener: NWListener
     let server: ServerAddress
     let client: ServerClient
+    let viewer: Viewer
     private let queue = DispatchQueue(label: "playback-startup-fixture")
     var delayed: Bool { get { state.withLock { $0.delayed } } set { state.withLock { $0.delayed = newValue } } }
     var denied: Bool { get { state.withLock { $0.denied } } set { state.withLock { $0.denied = newValue } } }
     var media: Data? { get { state.withLock { $0.media } } set { state.withLock { $0.media = newValue } } }
     func count(_ path: String) -> Int { state.withLock { $0.counts[path] ?? 0 } }
+    var savedSeconds: Double? { state.withLock { $0.savedSeconds } }
 
     init() async throws {
         let parameters = NWParameters.tcp
@@ -29,7 +31,7 @@ final class PlaybackStartupFixture: @unchecked Sendable {
         for _ in 0..<500 where !ready.withLock({ $0 }) { try await Task.sleep(for: .milliseconds(10)) }
         try #require(ready.withLock { $0 })
         server = try ServerAddress("http://127.0.0.1:\(try #require(listener.port).rawValue)")
-        let viewer = try Viewer(.object(["server": .string("Isolated startup"), "serverId": .string("startup-fixture"),
+        viewer = try Viewer(.object(["server": .string("Isolated startup"), "serverId": .string("startup-fixture"),
             "viewer": .object(["id": .string("fixture"), "name": .string("Fixture"), "owner": .bool(false),
                                "downloads": .bool(false), "transcode": .bool(false), "remote": .bool(false)])]))
         client = try ServerClient(server: server, token: "fictional-startup-token", viewer: viewer)
@@ -92,10 +94,15 @@ final class PlaybackStartupFixture: @unchecked Sendable {
                 self.sendMedia(media, header: header, head: parts[0] == "HEAD", connection: connection)
                 return
             }
+            if path == "/api/v1/me", !denied {
+                self.send(try! JSONEncoder().encode(self.viewer.json), type: "application/json", connection: connection)
+                return
+            }
             if path.hasSuffix("/progress/sync") {
                 guard let raw = try? StrictJSON.decode(Data(next[boundary.upperBound..<(boundary.upperBound + length)])),
                       let body = try? raw.object(allowing: ["progress", "expected", "playbackToken"]),
                       let progress = body["progress"], let data = try? JSONEncoder().encode(progress) else { connection.cancel(); return }
+                if let saved = try? WatchProgress(progress) { self.state.withLock { $0.savedSeconds = saved.seconds } }
                 self.send(data, type: "application/json", connection: connection)
                 return
             }

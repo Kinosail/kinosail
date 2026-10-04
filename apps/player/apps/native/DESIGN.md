@@ -136,6 +136,10 @@ The Apple Watch opens on a compact Remote page with the current player, title, p
 
 `TouchVideoSurface` uses AVPlayerLayer with aspect-fit rendering and captions inside the picture. AVFoundation owns video rendering and system Picture in Picture. Loading, buffering and reconnection retain the player surface; terminal failures expose readable retry and dismissal. Speed applies immediately to the session, including downloads, while Server preference saving happens separately. External captions remain an in-app capability and do not claim system PiP support.
 
+The iPhone landscape action uses opposing diagonal arrows in a dark 44pt circle. It requests landscape for the player's window with Apple's public scene geometry API. Its return action and leaving playback restore the previous interface orientation. iOS can decline a request; the player shows recoverable feedback and keeps playback available. This action does not change Portrait Orientation Lock or crop the video.
+
+A downward swipe on the video background closes playback through the existing navigation callback. It requires 100pt of predominantly vertical movement and excludes header and timeline starts. Playback controls, sheets, volume and system Picture in Picture retain their own interactions. VoiceOver retains the visible Close player button. Closing pauses playback and saves position through the existing playback departure behavior.
+
 Tabs default to Home, TV Shows, Movies and Search with persistent More. One to four destinations can be added, removed or reordered for the current Viewer Profile on this device. More always exposes the remaining destinations and Customize tabs. iPhone uses system tabs; iPad retains `.sidebarAdaptable`. Apple TV Home keeps Search and Settings in a fixed top bar above scrolling content and includes Library among the Browse destinations. Native Back navigation returns from those destinations to Home. Search opens library search; Home shows a toolbar Search action only when Search is absent from the pinned tabs. Settings remains reachable through More on iPhone and iPad.
 
 ### Personal tab editor

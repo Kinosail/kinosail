@@ -24,6 +24,8 @@ struct TouchPlaybackView: View {
     @State private var seekRevision = 0
     @State private var pendingSeek: Double?
     @State private var timelineHeight: CGFloat = 144
+    @State private var orientation = PlaybackOrientation()
+    @State private var dismissal = PlaybackDismissal()
 
     private var playback: PlaybackCoordinator { session.player }
     private var presentation: PlayerPresentation { playback.presentation }
@@ -52,6 +54,8 @@ struct TouchPlaybackView: View {
                         guard playback.player != nil, playback.duration > 0, !presentation.pictureInPicture else { return }
                         seek(displayedPosition + (tap.location.x < geometry.size.width / 2 ? -10 : 10))
                     }.exclusively(before: TapGesture().onEnded { reveal(toggle: true) }))
+                    .modifier(PlaybackSwipeDismiss(dismissal: dismissal, size: geometry.size, excludedBottom: timelineHeight,
+                                                   enabled: !presentation.pictureInPicture && sheet == nil && !showsVolume, close: close))
                     .accessibilityLabel("Show playback controls")
                     .accessibilityAddTraits(.isButton)
                     .accessibilityAction { reveal() }
@@ -63,7 +67,8 @@ struct TouchPlaybackView: View {
             GeometryReader { geometry in
                 let area = TouchPlaybackLayout.controlArea(size: geometry.size, division: geometry.playbackDivision)
                 VStack(spacing: 0) {
-                    header
+                    TouchPlaybackHeader(title: playback.currentItem?.title ?? "Playback", compact: compactControls,
+                                        close: { dismissal.requestClose(close) }, options: { sheet = .options; reveal() })
                     Spacer(minLength: 12)
                     if let error {
                         ContentUnavailableView {
@@ -117,22 +122,7 @@ struct TouchPlaybackView: View {
             switchControl = UIAccessibility.isSwitchControlRunning
             reveal()
         }
-    }
-
-    private var header: some View {
-        HStack(spacing: 12) {
-            Button("Close player", systemImage: "chevron.down", action: close)
-                .labelStyle(.iconOnly).frame(width: 44, height: 44)
-                .keyboardShortcut(.cancelAction)
-            Text(playback.currentItem?.title ?? "Playback")
-                .font(.headline).lineLimit(compactControls ? 1 : 2).frame(maxWidth: .infinity, alignment: .leading)
-                .accessibilityAddTraits(.isHeader)
-            Button("Playback options", systemImage: "ellipsis") { sheet = .options; reveal() }
-                .labelStyle(.iconOnly).frame(width: 44, height: 44)
-        }
-        .buttonStyle(.plain)
-        .padding(.horizontal, 16).padding(.vertical, 8)
-        .background(LinearGradient(colors: [.black.opacity(0.8), .clear], startPoint: .top, endPoint: .bottom).ignoresSafeArea(edges: .top))
+        .onDisappear { if sheet == nil, !showsVolume { orientation.restore { session.notice = $0 } } }
     }
 
     private var transport: some View {
@@ -161,7 +151,7 @@ struct TouchPlaybackView: View {
 
     private var timeline: some View {
         VStack(spacing: 2) {
-            if let message = actionMessage ?? presentation.presentationMessage {
+            if let message = actionMessage ?? orientation.message ?? presentation.presentationMessage {
                 Text(message).font(.footnote).multilineTextAlignment(.center).padding(.bottom, 8)
             }
             if scrubbing {
@@ -247,6 +237,12 @@ struct TouchPlaybackView: View {
                 .frame(width: 44, height: 44)
                 .accessibilityLabel("Start Picture in Picture")
                 .disabled(!presentation.pictureInPicturePossible || presentation.pictureInPicture)
+            }
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                PlaybackLandscapeButton(orientation: orientation, window: { presentation.videoView.window },
+                                        enabled: playback.player != nil && !orientation.requesting,
+                                        returnsToPrevious: orientation.landscapeRequested, interact: { reveal() })
+                    .frame(width: 44, height: 44)
             }
         }
         .buttonStyle(.plain)
