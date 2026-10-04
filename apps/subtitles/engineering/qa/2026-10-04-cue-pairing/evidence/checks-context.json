@@ -1,0 +1,43 @@
+{
+  "backlog_id": "R07",
+  "revision": "0ab173dd7a7edbf81510d966bd984e0aeb776fd3",
+  "lint_timeout": {
+    "command": "GOMAXPROCS=2 golangci-lint run --timeout=45s --new-from-rev=origin/main ./internal/server",
+    "exit": 4,
+    "status": "unverified",
+    "log": "evidence/lint.log"
+  },
+  "lint_retry": {
+    "command": "GOMAXPROCS=2 golangci-lint run --timeout=90s --new-from-rev=origin/main ./internal/server",
+    "exit": 0,
+    "issues": 0,
+    "status": "passed",
+    "log": "evidence/lint-retry.log"
+  },
+  "affected_gate": {
+    "command": "GOMAXPROCS=2 GOFLAGS=-p=1 make verify-changed BASE=origin/main",
+    "outer_bound_seconds": 45,
+    "outer_exit": 124,
+    "passed_stages": [
+      "max-loc",
+      "diff-check",
+      "shellcheck",
+      "go-compile:internal/server",
+      "go-focused:internal/server",
+      "e2e-list"
+    ],
+    "container_stage": "blocked at unavailable Podman socket; no container created",
+    "status": "unverified",
+    "log": "evidence/verify-changed.log"
+  },
+  "isolated_browser": {
+    "status": "passed",
+    "passed": 2,
+    "skipped": 0,
+    "flaky": 0,
+    "failed": 0,
+    "duration_ms": 17593.785,
+    "manifest": "evidence/browser-green-manifest.json"
+  },
+  "native_media": "not run yet"
+}
