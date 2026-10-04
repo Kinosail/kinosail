@@ -99,6 +99,13 @@ slot. `make -C apps/player verify-changed BASE=5c3df3a06adad59c65551a65e132a9236
 passed max-loc and diff-check after committing the app changes; its Android-only
 dispatcher does not execute Gradle, so the native test counts above are separate.
 
+The host phone/tablet renders also show low contrast in the existing Movies
+heading and Loading more text. Their default text styling and KinoTheme are
+unchanged from the merged baseline; this batch does not establish full-screen
+contrast or TalkBack compliance. The new failed-page message and retry control
+remain visibly readable. Preserve this observation for the later Android UI
+batch rather than treating a displayed semantics node as contrast proof.
+
 ## Reproduction command and evidence limits
 
 From `apps/player/apps/android`, use the cached JDK 17 and Android SDK:
