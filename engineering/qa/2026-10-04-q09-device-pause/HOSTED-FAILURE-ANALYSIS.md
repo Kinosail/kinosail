@@ -42,3 +42,17 @@ preserved and separate. These driver controls do not prove public product cases.
 
 The composed branch's71 CI controls are historical. This clean-main candidate
 passes78 controls; all13 frozen product inputs and250 artifacts remain exact.
+
+Focused run37224512557 at da05 stopped with CalledProcessError before source
+inventory, compilation or any product case. Its four safe artifacts and private
+job-log checksum are preserved outside the repository. Setup completed, but the
+exact checkout failure is not established. Do not call this a product failure.
+
+Before retry, add explicit phase and revision receipts, plus a source-drift
+projection for ten fixed workspace/app/browser dependency manifests. Export
+only their identities, lengths and hashes. Count and hash other changed paths
+without reading or exporting them. Keep the exact-head and clean-source checks;
+do not reset, ignore or accept setup changes. Four fictional controls were
+prepared before the helper; the missing-helper RED is a zero-body setup error.
+After correction all82 CI controls pass, including those four privacy controls.
+The hosted retry must classify the actual drift before a dependency fix.

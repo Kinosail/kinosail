@@ -11,6 +11,8 @@ import signal
 import subprocess
 import time
 
+from campaign_source_admission import source_admission
+
 ROOT = Path(__file__).resolve().parents[3]
 MODES = ('isolated', 'server', 'phone')
 
@@ -166,12 +168,18 @@ def main():
     results, inputs = [], {}
     accepted = False
     try:
+        receipt['phase'] = 'checkout-identity'
         revision = git('rev-parse', 'HEAD').decode().strip()
+        receipt['revision'] = revision if re.fullmatch('[a-f0-9]{40}', revision) else 'invalid'
         if not re.fullmatch('[a-f0-9]{40}', revision) or os.environ.get('GITHUB_SHA') != revision:
             raise ValueError('checkout revision mismatch')
+        receipt['phase'] = 'source-admission'
+        receipt['sourceAdmission'] = source_admission(ROOT, git)
+        if not receipt['sourceAdmission']['clean']:
+            raise ValueError('tracked source changed before proof')
         git('diff', '--quiet', 'HEAD', '--')
         inputs = snapshot()
-        receipt['revision'] = revision
+        receipt['phase'] = 'tool-provenance'
         tools = {}
         for name in ('go', 'node', 'pnpm'):
             binary = shutil.which(name)
@@ -194,6 +202,7 @@ def main():
         base.update(GOMAXPROCS='2', GOPROXY='off', GOTOOLCHAIN='local', PLAYWRIGHT_CHANNEL='',
                     KINOSAIL_BROWSER_PROJECT='chromium', KINOSAIL_BROWSER_WORKERS='1', KINOSAIL_E2E_VIDEO='off')
         binary = private / 'q09-server.test'
+        receipt['phase'] = 'compile'
         compile_command = ['go', 'test', '-c', '-p', '1', '-o', str(binary), './internal/server']
         compiled = execute(compile_command, ROOT / 'apps/player', base, private / 'compile.log', 90)
         receipt['compile'] = {'command': ['go', 'test', '-c', '-p', '1', '-o', 'private/q09-server.test', './internal/server'], **compiled}
@@ -202,6 +211,7 @@ def main():
         binary_sha = digest(binary)
         receipt['compiledTestBinary'] = {'file': binary.name, 'sha256': binary_sha, 'bytes': binary.stat().st_size}
         for mode in MODES:
+            receipt['phase'] = mode
             group = private / mode
             group.mkdir()
             environment = base | {'KINOSAIL_E2E_OUTPUT_DIR': str(group / 'browser'),
@@ -237,6 +247,7 @@ def main():
                         events.append(event.get('Action'))
                 record['goTopLevelPass'] = events.count('run') == 1 and events.count('pass') == 1 and not set(events) & {'fail', 'skip'}
             record['accepted'] = record['exitCode'] == 0 and result['passed'] and record.get('goTopLevelPass', True)
+        receipt['phase'] = 'end-integrity'
         git('diff', '--quiet', 'HEAD', '--')
         receipt['sourceUnchanged'] = (inputs == snapshot() and git('rev-parse', 'HEAD').decode().strip() == revision
                                       and digest(binary) == binary_sha)

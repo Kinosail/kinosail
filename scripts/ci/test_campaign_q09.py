@@ -15,6 +15,7 @@ DRIVER = ROOT / 'apps/player/scripts/campaign-q09-public.py'
 class Q09ProofTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        sys.path.insert(0, str(DRIVER.parent))
         spec = importlib.util.spec_from_file_location('q09proof', DRIVER)
         cls.driver = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(cls.driver)
