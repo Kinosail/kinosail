@@ -52,6 +52,7 @@ for (const stalledBoundary of ["headers", "body"] as const) {
       expect(after.source).toBe(before.source);
       expect(after.paused).toBe(before.paused);
       if (serverOrigin) {
+        await expect.poll(() => page.locator('track[srclang="en"]').evaluate((track: HTMLTrackElement) => (track.track.activeCues?.[0] as VTTCue | undefined)?.text)).toBe("Recovered captions");
         await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(before.time + 0.1);
         await page.screenshot({ path: info.outputPath(`${stalledBoundary}-recovered.png`), fullPage: true });
       } else expect(after.time).toBe(before.time);

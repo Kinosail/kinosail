@@ -73,8 +73,8 @@ export async function openCaptionPlayer(page: Page, origin: string) {
     const checksum = createHash("sha256").update(await responseAsset.body()).digest("hex");
     expect(checksum).toBe(version);
     await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThan(0);
-    await page.locator("video").evaluate(async (video: HTMLVideoElement) => { video.muted = true; video.currentTime = 0; await video.play(); });
-    await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(0.1);
+    await page.locator("video").evaluate(async (video: HTMLVideoElement) => { video.muted = true; video.currentTime = 2; await video.play(); });
+    await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(2.1);
     await page.getByRole("button", {name: "Settings", exact: true}).first().click();
     return { version, checksum };
   } else {
