@@ -173,11 +173,14 @@ nowPlayingArtwork?.addEventListener("error", () => {
 });
 const updateMediaMetadata = () => {
   try {
-    if (navigator.mediaSession && typeof MediaMetadata === "function") navigator.mediaSession.metadata = new MediaMetadata({
+    if (navigator.mediaSession) navigator.mediaSession.metadata = typeof MediaMetadata === "function" ? new MediaMetadata({
       title: player.dataset.title || "", artist: player.dataset.artist || "", album: player.dataset.album || "",
       artwork: player.dataset.artwork ? [{src: player.dataset.artwork}] : [],
-    });
-  } catch (_) { /* Unsupported system controls must not prevent local playback. */ }
+    }) : null;
+  } catch (_) {
+    // Prefer no system title to retaining a previous track after an API failure.
+    try { navigator.mediaSession.metadata = null; } catch (_) {}
+  }
 };
 const updateNowPlaying = (item) => {
   const heading = document.querySelector("[data-now-playing-title],.title-block h1");
