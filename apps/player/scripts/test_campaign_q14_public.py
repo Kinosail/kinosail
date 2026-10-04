@@ -75,6 +75,9 @@ class AdmissionTests(unittest.TestCase):
             self.assertIsNone(admit(candidate, True))
 
     def test_false_numeric_fields_and_unbounded_data_are_rejected(self):
+        candidate = report()
+        candidate["schemaVersion"] = True
+        self.assertIsNone(admit(candidate))
         for key, value in (("retry", False), ("durationMs", -1), ("durationMs", 1000000)):
             candidate = report()
             candidate["cases"][0][key] = value

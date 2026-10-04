@@ -8,23 +8,18 @@ import shutil
 import signal
 import subprocess
 import sys
+import threading
 import time
+
+from campaign_q14_admission import SPECS, admit, complete, go_boundary
 
 ROOT = Path(__file__).resolve().parents[3]
 OUTPUT = ROOT / ".verification/campaign-proof/Q14"
 PRIVATE = ROOT / ".verification/campaign-proof-private/Q14"
 QA = ROOT / "engineering/qa/2026-10-04-q14-browse-return"
-SPECS = ["browse-return.spec.ts", "browse-return-cold.spec.ts", "browse-return-bfcache.spec.ts"]
 CLIP = "engineering/qa/2026-09-30-android-playback-overlay/fixtures/Native portrait contrast 01a0f2ab.mp4"
 CLIP_SHA = "507ff669647ce0eda1f8965341a52fbb9a7bc9fe3a4b0fea4efa3933777a50c2"
-PRIMARY = [f"visible Player Back preserves Movies query, offset, extent, focus and scroll at {width}px" for width in (390, 1440)]
-COLLECTION = [(SPECS[0], title) for title in PRIMARY] + [
-    (SPECS[0], "HTMX title-letter Back fetches current browse data and restores extent without a native pageshow"),
-    *[(SPECS[0], f"visible Player Back restores original Shows action via {action}") for action in ("direct Play", "details and episode")],
-    *[(SPECS[1], f"cold native Back restores later Movie cards at {width}px") for width in (390, 1440)],
-    (SPECS[1], "live query uses current URL rather than the document's initial browse key"),
-    (SPECS[2], "native BFCache preserves loaded Movie DOM without repeated continuation"),
-]
+OUTPUT_CAP = 16 * 1024 * 1024
 active = None
 
 
@@ -66,48 +61,69 @@ def stop(_signum, _frame):
     raise KeyboardInterrupt
 
 
+def settle_group(process, deadline):
+    group_signal(process, signal.SIGTERM)
+    kill_at = min(time.monotonic() + 3, deadline - 1)
+    while time.monotonic() < deadline:
+        try:
+            os.killpg(process.pid, 0)
+        except ProcessLookupError:
+            return True
+        if time.monotonic() >= kill_at:
+            group_signal(process, signal.SIGKILL)
+        process.poll()
+        time.sleep(0.05)
+    return False
+
+
 def run(command, cwd, environment, seconds, label, command_seconds=None):
     global active
     started = time.monotonic()
     command_seconds = command_seconds or seconds - 5
     receipt = {"phase": label, "boundSeconds": seconds, "commandDeadlineSeconds": command_seconds,
                "command": command, "cwd": str(cwd.relative_to(ROOT))}
-    raw = b""
+    captured = {"data": bytearray(), "bytes": 0, "overflow": False, "hasher": hashlib.sha256()}
+    reader = None
+    def drain(process):
+        while piece := process.stdout.read(65536):
+            captured["bytes"] += len(piece)
+            captured["hasher"].update(piece)
+            retained = min(len(piece), max(0, OUTPUT_CAP - len(captured["data"])))
+            captured["data"].extend(piece[:retained])
+            if captured["bytes"] > OUTPUT_CAP:
+                captured["overflow"] = True
+                group_signal(process, signal.SIGTERM)
     try:
         active = subprocess.Popen(command, cwd=cwd, env=environment, stdout=subprocess.PIPE,
                                   stderr=subprocess.STDOUT, start_new_session=True)
+        reader = threading.Thread(target=drain, args=(active,), daemon=True)
+        reader.start()
         try:
-            raw = active.communicate(timeout=command_seconds)[0]
+            active.wait(timeout=command_seconds)
         except subprocess.TimeoutExpired:
             receipt["timeout"] = True
             group_signal(active, signal.SIGTERM)
-            try:
-                raw = active.communicate(timeout=3)[0]
-            except subprocess.TimeoutExpired:
-                group_signal(active, signal.SIGKILL)
-                raw = active.communicate(timeout=2)[0]
-        receipt["exitCode"] = active.returncode
     except (OSError, KeyboardInterrupt, subprocess.TimeoutExpired) as error:
         receipt["errorClass"] = type(error).__name__
     finally:
         if active:
-            group_signal(active, signal.SIGKILL)  # Only this driver's owned group.
-            try:
-                active.wait(timeout=1)
-                os.killpg(active.pid, 0)
-                receipt["ownedGroupStopped"] = False
-            except ProcessLookupError:
-                receipt["ownedGroupStopped"] = True
-            except subprocess.TimeoutExpired:
-                receipt["ownedGroupStopped"] = False
+            receipt["ownedGroupStopped"] = settle_group(active, started + seconds)
+            receipt["exitCode"] = active.poll()
             active = None
+        if reader:
+            reader.join(timeout=max(0, started + seconds - time.monotonic()))
+            receipt["captureSettled"] = not reader.is_alive()
         receipt.update(durationSeconds=round(time.monotonic() - started, 3),
-                       outputBytes=len(raw), outputSHA256=sha(raw))
+                       outputBytes=captured["bytes"], outputSHA256=captured["hasher"].hexdigest(),
+                       outputOverflow=captured["overflow"])
+    raw = bytes(captured["data"])
+    receipt["goBoundary"] = go_boundary(raw) if label.startswith("primary-") else None
     reports = [line[len(b"Q14_PROOF_RESULT "):] for line in raw.splitlines() if line.startswith(b"Q14_PROOF_RESULT ")]
     try:
-        report = json.loads(reports[0]) if len(reports) == 1 and len(reports[0]) <= 2 * 1024 * 1024 else None
+        report = admit(json.loads(reports[0]), label == "collection") if len(reports) == 1 and len(reports[0]) <= 2 * 1024 * 1024 and not captured["overflow"] else None
     except (ValueError, TypeError):
         report = None
+    receipt["reportAdmitted"] = report is not None
     # Raw stdout/stderr, Go panic text and Playwright errors never reach artifacts.
     return receipt, report
 
@@ -116,26 +132,13 @@ def manifest(revision):
     paths = set(json.loads((QA / "direct-cli-preparation-context.json").read_text())["sources"])
     paths.update({str(Path(__file__).relative_to(ROOT)), CLIP,
                   "apps/player/e2e/browse-return-proof-reporter.ts", "go.work", "go.work.sum",
+                  "apps/player/scripts/campaign_q14_admission.py", "apps/player/scripts/test_campaign_q14_public.py",
                   "apps/player/go.mod", "apps/player/go.sum", "packages/go.mod", "packages/go.sum",
                   ".github/workflows/layout-stability.yml",
                   "engineering/qa/2026-10-04-q14-browse-return/direct-cli-preparation-context.json"})
     sources = {name: {"bytes": (ROOT / name).stat().st_size, "sha256": sha((ROOT / name).read_bytes())} for name in sorted(paths)}
     canonical = "".join(f"{name}\t{entry['sha256']}\n" for name, entry in sources.items()).encode()
     return {"revision": revision, "recipe": "UTF-8 sorted path<TAB>lowercase SHA-256<LF>, trailing LF", "canonicalSHA256": sha(canonical), "sources": sources}
-
-
-def safe_report(report, expected_count, collection=False):
-    if not isinstance(report, dict) or report.get("schemaVersion") != 1:
-        return False
-    collected, cases = report.get("collected", []), report.get("cases", [])
-    if len(collected) != expected_count or report.get("errors") or len({(item.get("file"), item.get("title")) for item in collected}) != expected_count:
-        return False
-    if any(item.get("file") not in SPECS or not isinstance(item.get("title"), str) or len(item["title"]) > 256 for item in collected):
-        return False
-    if collection:
-        return report.get("status") == "passed" and not cases and sorted((item["file"], item["title"]) for item in collected) == sorted(COLLECTION)
-    return (len(cases) == 2 and sorted((item.get("file"), item.get("title")) for item in cases) == sorted((SPECS[0], title) for title in PRIMARY)
-            and all(item.get("retry") == 0 and item.get("status") in ("passed", "failed", "timedOut") and item.get("expectedStatus") == "passed" for item in cases))
 
 
 def main():
@@ -154,6 +157,8 @@ def main():
         if (ROOT / ".gates-disabled").exists() or not clean_source():
             raise ValueError("gates/source prerequisite")
         revision = git("rev-parse", "HEAD")
+        if os.environ.get("GITHUB_SHA") != revision:
+            raise ValueError("hosted checkout revision prerequisite")
         inputs = manifest(revision)
         write("source-manifest.json", inputs)
         node, go = shutil.which("node"), shutil.which("go")
@@ -189,7 +194,7 @@ def main():
         phase, report = run(command, ROOT / "apps/player/e2e", environment, 20, "collection", 15)
         receipt["phases"].append(phase)
         results["collection"] = report
-        if phase.get("exitCode") != 0 or phase.get("timeout") or not phase.get("ownedGroupStopped") or not safe_report(report, 9, True):
+        if phase.get("exitCode") != 0 or phase.get("timeout") or not phase.get("ownedGroupStopped") or not phase.get("captureSettled") or not complete(report, True):
             raise ValueError("collection prerequisite")
         environment.update(KINOSAIL_BROWSE_RETURN_BROWSER="1", KINOSAIL_BROWSE_RETURN_CASES="primary", KINOSAIL_BROWSE_RETURN_MEDIA=str(clip))
         environment.pop("KINOSAIL_BROWSE_RETURN_URL", None)
@@ -199,12 +204,13 @@ def main():
             phase, report = run(command, ROOT / "apps/player", environment, 75, f"primary-{repeat}")
             receipt["phases"].append(phase)
             results["primary"].append(report)
-            if phase.get("timeout") or not phase.get("ownedGroupStopped") or not safe_report(report, 2):
+            if phase.get("timeout") or not phase.get("ownedGroupStopped") or not phase.get("captureSettled") or not complete(report):
                 raise ValueError("primary completeness prerequisite")
             if any(failure.get("phase") == "prerequisite" for case in report["cases"] for failure in case.get("failures", [])):
                 raise ValueError("journey prerequisite")
             passed = all(item["status"] == "passed" for item in report["cases"])
-            if (passed and phase.get("exitCode") != 0) or (not passed and phase.get("exitCode") == 0):
+            expected_boundary = "completed-pass" if passed else "completed-fail"
+            if phase.get("goBoundary") != expected_boundary or (passed and phase.get("exitCode") != 0) or (not passed and phase.get("exitCode") == 0):
                 raise ValueError("runner/browser result mismatch")
         receipt["sourceUnchanged"] = git("rev-parse", "HEAD") == revision and clean_source() and manifest(revision) == inputs
         if not receipt["sourceUnchanged"]:
