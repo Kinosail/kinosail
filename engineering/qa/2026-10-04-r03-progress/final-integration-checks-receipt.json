@@ -1,0 +1,85 @@
+{
+  "revision": "b4024370f47e44545e879637b0aa7cc9238f414a",
+  "environment": {
+    "GOMAXPROCS": "4",
+    "GOFLAGS": "-p=1"
+  },
+  "results": [
+    {
+      "name": "player-verify-changed",
+      "command": [
+        "make",
+        "-C",
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/apps/player",
+        "verify-changed"
+      ],
+      "boundSeconds": 90,
+      "exitCode": 2,
+      "timedOut": false,
+      "seconds": 20.14,
+      "log": "r03-final-player-verify-changed.log",
+      "logSHA256": "2961f99230e39110f6714631f2a1e4e66ebc16bba57ef8069f5c0ed64da48921"
+    },
+    {
+      "name": "subtitles-verify-changed",
+      "command": [
+        "make",
+        "-C",
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/apps/subtitles",
+        "verify-changed"
+      ],
+      "boundSeconds": 90,
+      "exitCode": 2,
+      "timedOut": false,
+      "seconds": 18.19,
+      "log": "r03-final-subtitles-verify-changed.log",
+      "logSHA256": "df2cb30ba7e6a47c53bcc2cff7fff8d691deeebc094e11bb22816144cb186a5c"
+    },
+    {
+      "name": "playerweb-template",
+      "command": [
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/scripts/tooling/with-go-module.sh",
+        "go",
+        "test",
+        "-p",
+        "1",
+        "./playerweb",
+        "-count=1"
+      ],
+      "boundSeconds": 45,
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 1.93,
+      "log": "r03-final-playerweb-template.log",
+      "logSHA256": "b85c402aa8b3f156b317ec86947a8546555aaf94fab4d8d400fa84bad14f0b48"
+    },
+    {
+      "name": "test-instance-check",
+      "command": [
+        "make",
+        "-C",
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/apps/player",
+        "test-instance-check"
+      ],
+      "boundSeconds": 15,
+      "exitCode": 2,
+      "timedOut": false,
+      "seconds": 1.54,
+      "log": "r03-final-test-instance-check.log",
+      "logSHA256": "42e699335baa8cd5b025289eb2e3404ad20fc5f4e108a0bb24d652b5ad7bc483"
+    },
+    {
+      "name": "native-server-proof",
+      "command": [
+        "python3",
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/scripts/testing/test-player-progress-local.py"
+      ],
+      "boundSeconds": 150,
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 65.5,
+      "log": "r03-final-native-server-proof.log",
+      "logSHA256": "3a94c31690488d72229b739878c18dc27eb64f7ac76618e87677dec364f9021f"
+    }
+  ]
+}

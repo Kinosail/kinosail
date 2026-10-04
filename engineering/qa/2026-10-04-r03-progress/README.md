@@ -180,3 +180,19 @@ errors (`queue-drain-green.json`). The hosted-style external base URL remains
 independent of both isolated synthetic origins; production CSP is unchanged.
 Historical original populated proof remains explicitly pinned to `795641`; the
 new isolated sender proof does not replace final protected populated checks.
+
+## Final guarded-source Server proof
+
+The integration owner reran the native Go Server fixture at clean committed
+`b4024370`. Both baseline rejected-write repetitions and all four candidate
+repetitions passed. Only the two baseline candidate-only cases were skipped;
+the candidate had zero skips. The current delivered content-hash bundle, latest
+stored seconds/revision, rejected-token no-side-effect behavior, responsive
+notice states and scoped accessibility assertions are exercised again.
+`fresh-native-proof.json` and `fresh-native/` preserve safe source/artifact hashes
+and selected screenshots; raw credentials, process logs and state remain local.
+
+Post-commit Player/Subtitles checks stop at 94 identical baseline lint findings
+in 56 unchanged cited Go sources. Focused shared Go template tests pass. The
+required local container attempt cannot connect to the existing Podman socket.
+Final protected populated checks still gate merge; no local test was disabled.

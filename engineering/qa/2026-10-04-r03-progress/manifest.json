@@ -34,7 +34,7 @@
   "limits": "In-page recovery only. Page-close keepalive is best effort. No container, TLS, native client, physical device, Safari or Firefox proof.",
   "preservedPrivateArtifacts": ".verification/r03-progress (raw traces, fixture credentials and state; do not share)",
   "evidenceSHA256": {
-    "README.md": "2c6a1fe908e3e89bc0378ec5a8efe65cce6a93a26eb42787d0710319edcb2ea3",
+    "README.md": "da3e9e19b09512e6758b98edc310bbe60d99494a8dd897b03c8442ec59dcc153",
     "browser-lint.log": "c3f22b54ffc1b5b24fd84371124e4c134c1ec7609d4c49fe031f96bb46994f91",
     "ci-helper-green.log": "5279d1fc9a1ced44f9c96da1414ef59e4676f963fbad52e7a1a2903538819b0d",
     "ci-helper-red.log": "68105b8bebce39e558f4ec47a05dae0a8aa6f9a293105576fbc94daccb952f7e",
@@ -49,6 +49,21 @@
     "closing-flight-red.log.gz": "fa46f408105ce70bc26f87e4a778812a10d8951372f3a3fde2dc52a5992af375",
     "design-detect.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
     "drain-frozen-red.json": "a3c8499f9812ad110d041dbf1f3f53ec4a704980f2c7d95f1b542a070caba48a",
+    "final-integration-checks-receipt.json": "51d2914a0cc820173a186bcad7af9935185f15318e05bbe443c2ed0d988a7c21",
+    "final-player-baseline-lint-comparison.json": "07db1cab7bd3d52f226c71b7c7ef888f9551259c5f9b2e9dc849a29040f8d77e",
+    "final-subtitles-baseline-lint-comparison.json": "9202f79075a17885d4410793400ae4681d6dbcb3e351dd34b2d0199f51974718",
+    "fresh-native/baseline-browser.log": "2f92d982e78bfbdfb7bf9033e8ad13ca0467d94cd5ab61b03eea3c1d214114ce",
+    "fresh-native/baseline-browser.log.gz": "1dc232044fa240490bd01403b021406da5fedadc7dfce46bd92d6ba238958a89",
+    "fresh-native/baseline-real-server-rejection.png": "3fe80fa174f473065400ae41d0e49d8552440ec9880db53944a5c504c2dac1aa",
+    "fresh-native/candidate-browser.log": "b90fd0d1590da49d90835839e446c4a98ed79d18cf9b7b25bdecd9918ac10222",
+    "fresh-native/candidate-browser.log.gz": "06a45d0f2f9840d1b87e89cd05802e76f5aa586a29ad090c2e2fc50ce69c6bb8",
+    "fresh-native/pending-save.png": "c4a020a91eb0c609d66366f25db16b92bab7a26abfa5223f246f97ecea747159",
+    "fresh-native/real-server-rejection.png": "46233677d4c75dfe6b5e1f2a770550b174e0f7146c2ccf356ea7375450ab5314",
+    "fresh-native/saved.png": "08022d18290fd18a2023cded0dd00255a4c19447d3015b35c61499b4bd6d753a",
+    "fresh-native/unsaved-1440.png": "3e42dc622ba8676fd6bcbd925daa58cb1a486f096331d3374352d9c350897d4f",
+    "fresh-native/unsaved-1920.png": "866dc0568b9c8087ecd1f9d5f111dffb3e3750a75298feed3afd4562277e2de9",
+    "fresh-native/unsaved-390.png": "757b8bd8667ab2e6b0ddd3f524615750ce6e54ad147f3b4338ca8f46f179434d",
+    "fresh-native-proof.json": "f760ad030960f46ff2eddaef7f1b223776efabc4a6b1cac1de1677b70093576a",
     "native/baseline-browser.log": "c383d1d4290c45f02c8a3f06fcb370115b8e41fee1360f25a9d7d770c1085e74",
     "native/baseline-real-server-rejection.png": "f4a191d4cf88552a1a1abf4dbf97b86f0392dc3ed1cfbc18778de85318fef64b",
     "native/candidate-browser.log": "4fefbb60599303c9a07bbfedc80912dd2375568357545a818aac09dd24b5c31d",
@@ -167,7 +182,24 @@
       "supersedingFlightRedCommit": "df47fe8dbd186445153576ae90bb29f121d26044",
       "supersedingFlightRed": "closing-flight-red.json",
       "inconclusiveTimeout": "closing-flight-inconclusive.json (excluded; synchronization expression awaited the held promise)",
-      "independentReview": "Reviewed exact guarded sender and corrected synchronization; prior product P2 is resolved. Final artifact review remains pending."
+      "independentReview": "Exact b402 source/evidence independently cleared; all 11 integration source, ten historical source and 34 evidence hashes plus raw gzip were verified."
+    },
+    "freshNativeProof": {
+      "testedCommit": "b4024370f47e44545e879637b0aa7cc9238f414a",
+      "receipt": "fresh-native-proof.json",
+      "baselinePassed": 2,
+      "baselineCandidateOnlySkipped": 2,
+      "candidatePassed": 4,
+      "candidateSkipped": 0,
+      "workingDiff": "empty",
+      "sameGuardedSource": true
+    },
+    "localCommittedChecks": {
+      "receipt": "final-integration-checks-receipt.json",
+      "sharedTemplateGo": "passed",
+      "player": "94 identical baseline lint findings in 56 unchanged cited sources",
+      "subtitles": "94 identical baseline lint findings in 56 unchanged cited sources",
+      "testInstance": "Existing Podman socket unavailable; no restart or cleanup"
     }
   }
 }
