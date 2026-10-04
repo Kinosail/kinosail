@@ -114,19 +114,22 @@
     if (next) { next.hidden = false; bindLibraryRetry(next); }
   }
   async function restore(force = false) {
-    const state = read(), library = document.querySelector("#library");
-    if (!state || !library || state.url !== here() || !force && !state.returning || restored.get(library) === state.at || running?.library === library) return;
+    const state = read();
+    const needsLibrary = state?.area === "library" || state?.area === "letter";
+    const surfaceSelector = needsLibrary ? "#library" : "#main";
+    const surface = document.querySelector(surfaceSelector);
+    if (!state || !surface || state.url !== here() || !force && !state.returning || restored.get(surface) === state.at || running?.surface === surface) return;
     stopLibraryPaging(); libraryRestorePending = true;
-    const run = { library, generation: ++generation, frames: [] }; running = run;
+    const run = { surface, generation: ++generation, frames: [] }; running = run;
     let expired = false, complete = false;
-    const current = () => generation === run.generation && library.isConnected && library === document.querySelector("#library") && state.url === here() && Boolean(valid(state)) && !expired;
+    const current = () => generation === run.generation && surface.isConnected && surface === document.querySelector(surfaceSelector) && state.url === here() && Boolean(valid(state)) && !expired;
     run.timer = window.setTimeout(() => {
       expired = true; stopLibraryPaging(); run.settle?.();
     }, 20000);
     write({ ...state, returning: true });
     try {
       const seen = new Set();
-      while (current() && cardCount() < state.extent) {
+      while (needsLibrary && current() && cardCount() < state.extent) {
         const next = document.querySelector("[data-library-next]");
         if (!next) { failed("extent_changed"); return; }
         const url = browseURL(next.getAttribute("href"));
@@ -140,7 +143,7 @@
         if (cardCount() <= count) { failed("extent_changed"); return; }
       }
       if (!current()) return;
-      const link = [...document.querySelectorAll(actions[state.area])].find(action => action.getAttribute("href") === state.href);
+      const link = [...document.querySelectorAll(actions[state.area])].find(action => surface.contains(action) && action.getAttribute("href") === state.href);
       if (!link) { failed("title_unavailable"); return; }
       // The real DOM must exist before focus/scroll, including HTMX's settlement.
       await new Promise(resolve => {
@@ -150,7 +153,7 @@
       if (!current()) { if (expired && generation === run.generation) failed("deadline"); return; }
       link.focus({ preventScroll: true });
       scrollTo({ left: state.x, top: state.y, behavior: "instant" });
-      restored.set(library, state.at); write({ ...state, returning: false });
+      restored.set(surface, state.at); write({ ...state, returning: false });
       delete document.querySelector("[data-library-status]")?.dataset.browseRestoreFailure;
       complete = true;
     } finally {
