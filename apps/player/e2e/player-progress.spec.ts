@@ -276,10 +276,7 @@ test("audio queue saves a new-track pause while final watched continuation still
   await page.waitForFunction("typeof window.finishQueuePlay === 'function'");
   await pauseAt(page, 3);
   await page.evaluate(() => (window as Window & {finishQueuePlay(): void}).finishQueuePlay());
-  await testInfo.attach("queued-new-track-pause", {body: JSON.stringify(await page.evaluate(() => ({
-    progressPath: document.querySelector("video")!.dataset.progress,
-    pendingSeconds: (window as Window & {pendingProgress?: {seconds: number}}).pendingProgress?.seconds,
-  }))), contentType: "application/json"});
+  await testInfo.attach("queued-new-track-pause", {body: JSON.stringify(await page.evaluate("({progressPath: player.dataset.progress, pendingSeconds: pendingProgress?.seconds, pendingRevision: pendingProgress?.revision, flightSettled: progressFlight === undefined})")), contentType: "application/json"});
   await expect.poll(() => requests.length, {timeout: 1500}).toBe(2);
   expect(new URL(requests[1].route.request().url()).pathname).toBe("/progress/next");
   expect(requests[1].body.get("seconds")).toBe("3");
