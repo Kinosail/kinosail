@@ -106,7 +106,7 @@ const scopeCurrentTrackActions = item => {
 const commitAudioQueueItem = (item, cursor) => {
   // Dispatch old buffered events before the endpoint changes. No asynchronous
   // work separates the validated source, all identities, and displayed metadata.
-  flushPlaybackTrace(); queueSourceChanging = true;
+  flushPlaybackTrace(); queueSourceChanging = true; queueProgressReady = false;
   window.KinosailOfflineMedia?.unbindProgress(player); delete player.dataset.offline;
   Object.assign(player.dataset, {progress: `/progress/${item.id}`, title: item.title, artist: item.artist, album: item.album,
     track: String(item.track), artwork: item.artwork, start: String(item.progress.seconds),
@@ -119,7 +119,7 @@ const commitAudioQueueItem = (item, cursor) => {
   try { navigator.mediaSession?.setPositionState(); } catch (_) {}
   player.addEventListener("loadedmetadata", () => {
     if (progressItem() !== item.id) return;
-    queueSourceChanging = false;
+    queueSourceChanging = false; queueProgressReady = true;
     const start = item.progress.seconds;
     if (start > 0 && start < player.duration - 10) setPlayerTime(start);
     refreshQueueControls();
@@ -141,7 +141,7 @@ const moveAudioQueue = (delta, saveCurrent = true) => {
       if (body.profileId !== context.profile || body.item?.id !== target.id) throw queueError("invalid");
       const item = queueItem(body.item);
       // Rejected authorization never writes the current track's progress.
-      if (saveCurrent && !(await save(player.ended))?.ok) throw queueError("progress");
+      if (saveCurrent && queueProgressReady && !(await save(player.ended))?.ok) throw queueError("progress");
       if (!queueCurrent(context)) throw queueError("ownership");
       commitAudioQueueItem(item, cursor);
       try { await requestPlay("queue-advance"); } catch (_) { reportQueueFailure(queueError(player.error ? "media" : "playback")); }

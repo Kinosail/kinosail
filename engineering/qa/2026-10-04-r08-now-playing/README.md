@@ -153,6 +153,27 @@ sender drains only while it still owns the current flight. The standalone test
 lineage is retained. Root owns that RED receipt and its GREEN verification;
 this R08 branch has not run GREEN.
 
+## Failed source position reproduction
+
+At `8cffedd6`, the isolated Chromium case reached the newly assigned audio source
+with saved position 42 seconds, reset media time zero, and a media failure before
+metadata. Pause and Previous sent two incorrect zero-position writes, revisions
+2 and 3. The intended HTTP no-write assertion failed. The named case took 515 ms;
+the complete run took 11.57 seconds, with no skips, flaky cases, or global errors.
+`pre-metadata-red.json` binds the safe snapshot, dispatched payloads, source hashes,
+committed bundle, and raw artifacts. Production was byte-identical to `f6cf967e`.
+
+The first command selected no tests because an anchored selector matched against
+Playwright's full test name. Its discovery failure is preserved and excluded.
+The retry used one worker, video off, and a 20-second global limit. This controlled
+source failure is isolated proof; it is not a populated Server journey.
+
+The candidate now separates source loading from position readiness. A media error
+can restore Previous/details recovery while the source remains ineligible for
+progress writes. Metadata acknowledgment restores normal saves. A recovery move
+skips saving a source that never acquired a usable position; it makes no saved
+claim. Full isolated and actual Server GREEN verification remains pending.
+
 ## Ownership
 
 R08 owns `player-progress.js`, `player-presentation.js`, shared Go metadata template

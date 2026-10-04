@@ -1,6 +1,6 @@
 let progressRevision = 0;
 // One page-owned pending position; never replay a closed page's session over newer state.
-let pendingProgress, progressFlight, progressFailure = "", progressContinuation, queueSourceChanging = false;
+let pendingProgress, progressFlight, progressFailure = "", progressContinuation, queueSourceChanging = false, queueProgressReady = true;
 const progressNotice = document.querySelector("[data-progress-notice]");
 const progressStatus = document.querySelector("[data-progress-status]");
 const progressRetry = document.querySelector("[data-progress-retry]");
@@ -97,7 +97,7 @@ progressContinue?.addEventListener("click", () => {
 });
 addEventListener("online", retryProgress);
 const save = (watched = false, closing = false) => {
-  if (playbackPreparation || queueSourceChanging) return Promise.resolve();
+  if (playbackPreparation || queueSourceChanging || !queueProgressReady) return Promise.resolve();
   if (player.dataset.castActive === "true" || player.dataset.offline === "true") {
     clearProgress();
     return player.dataset.offline === "true" ? window.KinosailOfflineMedia?.saveProgress(player, watched) : Promise.resolve();
