@@ -8,6 +8,15 @@ on:
   schedule:
     - cron: "17 7 * * 1"
   workflow_dispatch:
+    inputs:
+      scan_diagnostic:
+        description: Keep metadata-only full-history scan evidence
+        type: boolean
+        default: false
+      coverage_diagnostic:
+        description: Keep exact deep Go coverage profiles
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -173,6 +182,7 @@ jobs:
     with:
       app: player
       plan: ${{ needs.plan.outputs.plan }}
+      coverage_diagnostic: ${{ github.event_name == 'workflow_dispatch' && inputs.coverage_diagnostic }}
 
   player-required:
     name: Player checks
@@ -197,6 +207,7 @@ jobs:
     with:
       app: subtitles
       plan: ${{ needs.plan.outputs.plan }}
+      coverage_diagnostic: ${{ github.event_name == 'workflow_dispatch' && inputs.coverage_diagnostic }}
 
   subtitles-required:
     name: Subtitles checks
@@ -224,8 +235,20 @@ jobs:
         with:
           go-version-file: go.work
           cache-dependency-path: "**/go.sum"
-      - run: go install github.com/zricethezav/gitleaks/v8@v8.30.1
+      - id: scanner_install
+        run: go install github.com/zricethezav/gitleaks/v8@v8.30.1
       - run: python3 scripts/ci/secrets.py
+      - name: Keep full-history finding locations
+        if: always() && github.event_name == 'workflow_dispatch' && inputs.scan_diagnostic && steps.scanner_install.outcome == 'success'
+        run: python3 scripts/ci/scan-diagnostic.py --output "$RUNNER_TEMP/scan-safe.json"
+      - name: Upload only validated finding locations
+        if: always() && github.event_name == 'workflow_dispatch' && inputs.scan_diagnostic && steps.scanner_install.outcome == 'success'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: full-history-scan-metadata-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/scan-safe.json
+          if-no-files-found: error
+          retention-days: 3
 
   codeql:
     needs: plan
