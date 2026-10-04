@@ -1,8 +1,10 @@
 # R10: stalled subtitle deadline and Retry
 
-Status: implementing. Deadline runtime RED is confirmed twice. Product is
-committed; GREEN and real Go-rendered playback proof are queued with the
-integration owner. No merge or deployment is claimed.
+Status: tested in the isolated browser. Deadline runtime RED is confirmed
+twice, and the separate caption restore RED is repeated twice. The affected
+isolated suite passed 12 / 12 at `e3651e1e`, with no skipped, failed or flaky
+cases and no errors, in 12.0 seconds. Real Go-rendered playback proof is queued
+with the integration owner. No merge or deployment is claimed.
 
 The selected caption could remain at “Loading subtitles…” indefinitely when
 headers or a VTT body stopped arriving. Both independent real-HTTP isolated
@@ -37,7 +39,8 @@ Android, Apple, deployments and PiP/miniplayer are unchanged.
 - Logs, traces, screenshots and JSON reports are retained in the two
   `isolated-red-*` directories. Compressed text uses deterministic gzip and was
   verified to decompress to the original bytes before compression.
-- `product-browser-lint.log`: 0 errors and 0 warnings.
+- `product-browser-lint.log` and `lifecycle-browser-lint.log`: 0 errors and 0 warnings.
+- `isolated-green-context.json`: exact tested product/test hashes and all 12 results.
 - `product-max-loc.log`: passed, with no output.
 - `evidence-gitleaks.log`: no leaks found in retained evidence.
 - `artifact-sha256.json`: current artifact hashes; refreshed at final handoff.
@@ -55,12 +58,15 @@ in the Go-rendered fixture.
 ## Caption lifecycle follow-up
 
 `ce9b8caa` adds a caption-only persisted lifecycle control before its repair.
-The existing global controller remains aborted after pagehide, preventing a
-caption reload on persisted pageshow. Its separate two-repeat baseline is
-queued before any controller/restore change. A companion case preserves Off
-without another request. Native PageTransitionEvent dispatch controls the
-caption lifecycle in one document; it does not establish actual BFCache
-admission or browser navigation behavior.
+Both repetitions at `04997617` confirmed that the old request closes but the
+selected caption does not reload after persisted pageshow. Exact baseline
+artifacts are retained in `lifecycle-red*` and committed in `5eb53ad9` before
+the repair. Product `e3651e1e` refreshes only the caption controller and attempt
+map on persisted restore, then reloads the current showing track. It captures
+the original lifecycle signal for cleanup and clears stale status on pagehide.
+Both lifecycle cases pass; Off starts no new request. Native PageTransitionEvent
+dispatch controls the caption lifecycle in one document; it does not establish
+actual BFCache admission or browser navigation behavior.
 
 ## Remaining verification boundaries
 
@@ -76,4 +82,4 @@ Required CI hook, `make verify-changed`, `make test-instance-check`, independent
 review, protected checks, PR, merge and fetched ancestry are owned by the
 integration owner. `test-container.sh` remains untouched during R03 integration.
 
-MAIN: NO — awaiting GREEN, real Server proof, independent review and integration.
+MAIN: NO — awaiting real Server proof, independent review and integration.
