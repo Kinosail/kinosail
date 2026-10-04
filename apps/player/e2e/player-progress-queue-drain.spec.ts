@@ -100,7 +100,7 @@ test("pagehide dispatches latest position once while retired watched continuatio
     await page.waitForFunction("typeof window.releaseQueuePlayback === 'function'");
     // Capture only the retired promise for deterministic continuation settlement;
     // correctness below is the observable request list and policy failure state.
-    await page.evaluate("window.retiredProgressSender = progressFlight");
+    await page.evaluate("void (window.retiredProgressSender = progressFlight)");
     await audio.evaluate((media: HTMLAudioElement) => {media.currentTime = 3; media.dispatchEvent(new Event("pause"));});
     await audio.evaluate((media: HTMLAudioElement) => media.currentTime = 4);
     await page.evaluate(() => dispatchEvent(new PageTransitionEvent("pagehide")));
