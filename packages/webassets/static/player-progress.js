@@ -76,6 +76,7 @@ const sendProgress = (closing = false) => {
       const continuation = progressContinuation;
       clearProgress();
       if (continuation) await continuation();
+      if (ownsProgress(pendingProgress)) continue;
       break;
     }
     return response;
