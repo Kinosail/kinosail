@@ -5,6 +5,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"io"
 	"mime"
@@ -89,11 +90,17 @@ func (manager *subtitleManager) subtitleOperationResultAPI(writer http.ResponseW
 }
 
 func writeSubtitleOperationReceipt(writer http.ResponseWriter, receipt subtitleOperationReceipt, status int) {
-	writer.Header().Set("Cache-Control", "private, no-store")
-	writeJSON(writer, struct {
+	writeSubtitleOperationJSON(writer, struct {
 		subtitleOperationReceipt
 		URL string `json:"statusURL"`
 	}{receipt, "/api/v1/subtitle-operations/" + receipt.ID}, status)
+}
+
+func writeSubtitleOperationJSON(writer http.ResponseWriter, value any, status int) {
+	writer.Header().Set("Content-Type", "application/json")
+	writer.Header().Set("Cache-Control", "private, no-store")
+	writer.WriteHeader(status)
+	_ = json.NewEncoder(writer).Encode(value)
 }
 
 func (manager *subtitleManager) mutation(action string, next http.HandlerFunc) http.HandlerFunc {

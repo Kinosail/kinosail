@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/hex"
-	"errors"
 	"log/slog"
 	"net/http"
 	"sync"
@@ -120,7 +119,7 @@ func subtitleOperationDeadline(action string) time.Duration {
 
 func (operations *subtitleOperations) rejected(writer http.ResponseWriter, request *http.Request, action string, status int) {
 	slog.Warn("subtitle operation rejected", "request_id", activityRequestID(request), "action", action, "status", status, "outcome", "not-started")
-	apiError(writer, errors.New("subtitle operation is unavailable or cannot be started; review its status and current subtitle"), status)
+	writeSubtitleOperationJSON(writer, map[string]string{"error": "subtitle operation is unavailable or cannot be started; review its status and current subtitle"}, status)
 }
 
 func (operations *subtitleOperations) persistenceFailed(request *http.Request, action, id, outcome string) {
