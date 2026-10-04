@@ -14,7 +14,9 @@ The original nine journey bodies, helper, Go fixture and selector remain unchang
 
 ## Minimal correction and failure boundaries
 
-Use the actual Library element for Library/title-letter actions and the actual root main element for Home shelf/destination actions. Only Library/title-letter restoration may fetch missing Library extent. Home restoration must find the saved literal href in its fixed action area before claiming focus or completion. Keep the existing root-URL/profile validation, storage bounds, generation cancellation, owned deadline/animation cleanup and safe status fallback.
+Use the actual Library element for Library card actions and the actual root main element for Home shelf/destination and title-letter actions. Title-letter links are siblings of the Library grid inside main. Both Library and title-letter restoration must retain the current Library identity for extent paging; only those actions may fetch missing Library extent. Every restoration must find the saved literal href in its fixed action area and current containing element before claiming focus or completion. Keep the existing root-URL/profile validation, storage bounds, generation cancellation, owned deadline/animation cleanup and safe status fallback.
+
+Independent review of `58f56313` caught the title-letter sibling-containment regression introduced by the first Home correction. The unchanged canonical HTMX journey already asserts focus on the actual title-letter link before any product change. The follow-up correction uses main for that action's containment while retaining the Library identity guard for continuation. No new runtime claim follows from the source correction.
 
 A missing or replaced main element, unavailable saved action, invalid record, profile mismatch or navigation change must prevent stale focus. A Home return must not start continuation merely because a Library extent is stored. Network continuation failures retain their existing accessible Retry behavior on Library journeys. No CSS, Go routes, parser, progress lifecycle, media startup or download seams require this correction.
 

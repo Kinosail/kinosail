@@ -116,13 +116,14 @@
   async function restore(force = false) {
     const state = read();
     const needsLibrary = state?.area === "library" || state?.area === "letter";
-    const surfaceSelector = needsLibrary ? "#library" : "#main";
+    const library = needsLibrary ? document.querySelector("#library") : undefined;
+    const surfaceSelector = state?.area === "library" ? "#library" : "#main";
     const surface = document.querySelector(surfaceSelector);
-    if (!state || !surface || state.url !== here() || !force && !state.returning || restored.get(surface) === state.at || running?.surface === surface) return;
+    if (!state || !surface || needsLibrary && !library || state.url !== here() || !force && !state.returning || restored.get(surface) === state.at || running?.surface === surface) return;
     stopLibraryPaging(); libraryRestorePending = true;
     const run = { surface, generation: ++generation, frames: [] }; running = run;
     let expired = false, complete = false;
-    const current = () => generation === run.generation && surface.isConnected && surface === document.querySelector(surfaceSelector) && state.url === here() && Boolean(valid(state)) && !expired;
+    const current = () => generation === run.generation && surface.isConnected && surface === document.querySelector(surfaceSelector) && (!needsLibrary || library.isConnected && library === document.querySelector("#library")) && state.url === here() && Boolean(valid(state)) && !expired;
     run.timer = window.setTimeout(() => {
       expired = true; stopLibraryPaging(); run.settle?.();
     }, 20000);
