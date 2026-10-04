@@ -1,0 +1,69 @@
+import { readFile } from "node:fs/promises";
+import { execFileSync } from "node:child_process";
+import { expect, test } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
+
+const fixtureDir = process.env.KINOSAIL_SUBTITLE_MERGED_FIXTURE_DIR;
+const revision = process.env.KINOSAIL_TEST_REVISION ?? execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
+test.skip(!fixtureDir, "requires the public 10,000-cue merged preview fixture");
+
+for (const width of [390, 1440]) {
+  test(`long merged comparison bounds rendering and reaches the last source at ${width}px`, { tag: "@smoke" }, async ({ page }, testInfo) => {
+    const current = JSON.parse(await readFile(`${fixtureDir}/subtitle-pairing.json`, "utf8"));
+    const proposed = JSON.parse(await readFile(`${fixtureDir}/subtitle-pairing-cleanup.json`, "utf8"));
+    expect(current.current.cues).toHaveLength(10000);
+    expect(proposed.comparison[0].current).toHaveLength(10000);
+    const writes: string[] = [];
+    await page.setViewportSize({ width, height: 900 });
+    await page.route("http://merged.test/**", async route => {
+      const path = new URL(route.request().url()).pathname;
+      if (path.endsWith("/inspect")) return route.fulfill({ json: current });
+      if (path.endsWith("/draft")) return route.fulfill({ json: { state: "none", words: [] } });
+      if (path.endsWith("/preview")) { writes.push(path); return route.fulfill({ json: proposed }); }
+      expect(route.request().method()).toBe("GET");
+      if (path.startsWith("/media/")) return route.abort();
+      const types: Record<string, string> = { "theme.js": "text/javascript", "app.css": "text/css", "subtitle-inspector.css": "text/css", "subtitle-inspector.js": "text/javascript", "icon.svg": "image/svg+xml", "manrope.woff2": "font/woff2" };
+      const name = path.split("/").pop() || "";
+      if (types[name]) return route.fulfill({ contentType: types[name], body: await readFile(`${fixtureDir}/${name}`) });
+      if (path.startsWith("/static/")) return route.fulfill({ body: "" });
+      return route.fulfill({ contentType: "text/html", body: await readFile(`${fixtureDir}/subtitle-pairing.html`) });
+    });
+    await page.goto("http://merged.test/subtitles/inspect/fixture");
+    await expect(page.locator("#inspector-status")).toContainText("Current subtitle loaded");
+    await page.locator('input[name="automaticSync"]').uncheck();
+    await page.getByRole("button", { name: "Preview changes", exact: true }).click();
+    await expect(page.locator("#inspector-status")).toContainText("Preview ready");
+    await expect(page.locator(".subtitle-cue-row")).toHaveCount(1);
+    const metrics = await page.locator("#subtitle-cues").evaluate(root => ({ seekButtons: root.querySelectorAll('button[aria-label^="Seek "]').length, elements: root.querySelectorAll("*").length, textBytes: root.textContent?.length || 0 }));
+    await testInfo.attach("long-group-initial-render", { contentType: "application/json", body: JSON.stringify({ revision, width, metrics, sourceCount: 10000, boundary: "isolated renderer; actual public Go 10,000-cue inspect/preview/assets; media aborted; no browser performance timing claim" }) });
+    expect(metrics.seekButtons).toBeLessThanOrEqual(80);
+    expect(metrics.elements).toBeLessThanOrEqual(1000);
+    expect(metrics.textBytes).toBeLessThanOrEqual(4000);
+    await page.getByRole("button", { name: "Review 10000 Current source cues", exact: true }).click();
+    const sourcePage = page.getByRole("spinbutton", { name: "Current source page", exact: true });
+    await expect(sourcePage).toBeFocused();
+    await expect(sourcePage).toHaveValue("1");
+    await expect(page.getByRole("button", { name: "Previous Current source page", exact: true })).toBeDisabled();
+    await page.getByRole("button", { name: "Next Current source page", exact: true }).click();
+    await expect(sourcePage).toHaveValue("2");
+    await expect(sourcePage).toBeFocused();
+    await page.getByRole("button", { name: "Previous Current source page", exact: true }).click();
+    await expect(sourcePage).toHaveValue("1");
+    await sourcePage.fill(await sourcePage.getAttribute("max") || "");
+    await sourcePage.press("Enter");
+    await expect(page.getByRole("button", { name: "Next Current source page", exact: true })).toBeDisabled();
+    await expect(page.getByRole("button", { name: "Seek Current cue 1: 0:00.000 to 0:01.000", exact: true })).toHaveCount(0);
+    await page.getByRole("button", { name: "Seek Current cue 10000: 166:39.000 to 166:40.000", exact: true }).click();
+    await expect(page.locator('input[name="preview-track"][value="current"]')).toBeChecked();
+    await expect.poll(() => page.locator("video").evaluate(video => video.currentTime)).toBe(9998);
+    await expect(page.locator("video")).toBeFocused();
+    expect(await page.locator('#subtitle-cues button[aria-label^="Seek "]').count()).toBeLessThanOrEqual(80);
+    await testInfo.attach("long-group-expanded-render", { contentType: "application/json", body: JSON.stringify({ revision, width, sourcePage: await sourcePage.inputValue(), seekButtons: await page.locator('#subtitle-cues button[aria-label^="Seek "]').count() }) });
+    expect((await new AxeBuilder({ page }).include("#subtitle-cues").withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze()).violations).toEqual([]);
+    await page.getByRole("button", { name: "Close Current source cues", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Review 10000 Current source cues", exact: true })).toBeFocused();
+    expect(writes).toHaveLength(1);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
+    await page.screenshot({ path: testInfo.outputPath("long-group-bounded.png") });
+  });
+}

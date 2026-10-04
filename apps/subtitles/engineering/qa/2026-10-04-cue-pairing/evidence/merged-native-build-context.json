@@ -1,0 +1,7 @@
+{
+  "revision": "de6d487af024db89dae6eb8841d2dfb1d58bca9e",
+  "fixtureSourceSHA256": "cf2ead8df499f9cd028871d99a30863a9e7a8692ec57a863e0eeb2b604b3283f",
+  "newBinary": "apps/subtitles/.verification/r07-pairing/native-fixture-merged-de6d487a",
+  "appScriptSHA256": "7ee624211c718f2e7693d1e73e2e205e9f5dcff2584cc7d7560ce1485f96360a",
+  "boundary": "fresh ordinary actual native fixture; all production Go and bundled JS match committed revision; pending R16 changes are tests only and cannot enter this go build"
+}

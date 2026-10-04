@@ -1,0 +1,165 @@
+// Command native-fixture hosts the actual Subtitles HTTP adapter over disposable data.
+package main
+
+import (
+	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+	"errors"
+	"flag"
+	"fmt"
+	"net"
+	"net/http"
+	"os"
+	"os/signal"
+	"path/filepath"
+	"strings"
+	"syscall"
+	"time"
+
+	"github.com/MikeO7/kinosail-subtitles/internal/server"
+)
+
+const clipHash = "9dbd85e7863d921e209978c8349992e5f8505b0d7ffa468c37b8caf97af3f0a4"
+
+const initialSubtitle = "1\n00:00:01,000 --> 00:00:02,000\nDownloaded from www.example.com\n\n2\n00:00:03,000 --> 00:00:04,000\nHello there\n\n3\n00:00:04,000 --> 00:00:05,000\nHello there\n\n4\n00:00:07,000 --> 00:00:08,000\nA later line\n"
+
+func main() {
+	if err := run(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+}
+
+func run() error {
+	dir := flag.String("fixture", "", "explicit disposable fixture directory; files are preserved")
+	probe := flag.String("ffprobe", "/opt/homebrew/bin/ffprobe", "installed probe; no encoder is used")
+	revision := flag.String("revision", "", "exact tested revision")
+	flag.Parse()
+	if *dir == "" || *revision == "" {
+		return errors.New("fixture directory and revision are required")
+	}
+	host, url, err := startFixture(*dir, *probe)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = host.Close() }()
+	id, err := libraryID(url)
+	if err != nil {
+		return err
+	}
+	if err = writeReadyManifest(*dir, *revision, url, id); err != nil {
+		return err
+	}
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+	select {
+	case <-ctx.Done():
+	case <-time.After(2 * time.Minute):
+	}
+	shutdown, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err = host.Shutdown(shutdown); err != nil {
+		return err
+	}
+	return writeIntegrityManifest(*dir)
+}
+
+func startFixture(dir, probe string) (*http.Server, string, error) {
+	media := filepath.Join(dir, "media")
+	clip := filepath.Join(media, "R07 Example.mp4")
+	data, err := os.ReadFile(clip) //nolint:gosec // Fixed fictional filename beneath the explicitly chosen QA fixture directory.
+	if err != nil || hash(data) != clipHash {
+		return nil, "", errors.New("fictional clip is missing or differs from its approved SHA256")
+	}
+	sidecar := filepath.Join(media, "R07 Example.en.srt")
+	if err = checkSidecar(sidecar); err != nil {
+		return nil, "", err
+	}
+	for _, name := range []string{"data", "cache"} {
+		if err = os.MkdirAll(filepath.Join(dir, name), 0o700); err != nil {
+			return nil, "", err
+		}
+	}
+	listener, err := new(net.ListenConfig).Listen(context.Background(), "tcp", "127.0.0.1:0")
+	if err != nil {
+		return nil, "", err
+	}
+	// No managed lifecycle means no update, maintenance, marker, or provider jobs.
+	// Empty credentials disable providers. The encoder executable cannot run media work.
+	app := server.New(server.Config{SubtitleApp: true, MediaDir: media, DataDir: filepath.Join(dir, "data"), CacheDir: filepath.Join(dir, "cache"), FFprobe: probe, FFmpeg: "/usr/bin/false"})
+	host := &http.Server{Handler: previewOnly(app), ReadHeaderTimeout: 5 * time.Second}
+	go func() {
+		if err := host.Serve(listener); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			fmt.Fprintln(os.Stderr, "native fixture HTTP server failed")
+		}
+	}()
+	return host, "http://" + listener.Addr().String(), nil
+}
+
+func writeReadyManifest(dir, revision, url, id string) error {
+	manifest := map[string]any{"revision": revision, "url": url, "id": id, "clipSHA256": clipHash, "sidecarSHA256": hash([]byte(initialSubtitle)), "boundary": "native loopback Subtitles Server; actual HTML, assets, API, probe and playable media; auth-disabled disposable installation; only GET and preview POST permitted; no provider credentials, encoder, Save or deployment"}
+	ready, err := json.MarshalIndent(manifest, "", "  ")
+	if err != nil {
+		return err
+	}
+	if err = os.WriteFile(filepath.Join(dir, "ready.json"), ready, 0o600); err != nil {
+		return err
+	}
+	fmt.Println(string(ready))
+	return nil
+}
+
+func writeIntegrityManifest(dir string) error {
+	sidecar := filepath.Join(dir, "media", "R07 Example.en.srt")
+	if err := checkSidecar(sidecar); err != nil {
+		return err
+	}
+	if _, err := os.Stat(sidecar + ".kinosail.bak"); !os.IsNotExist(err) {
+		return errors.New("preview created a recovery sidecar")
+	}
+	return os.WriteFile(filepath.Join(dir, "integrity.json"), []byte(`{"installedSubtitleUnchanged":true,"recoverySidecarAbsent":true}`+"\n"), 0o600)
+}
+
+func previewOnly(app http.Handler) http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		preview := request.Method == http.MethodPost && strings.HasPrefix(request.URL.Path, "/api/v1/subtitle-library/") && strings.HasSuffix(request.URL.Path, "/preview")
+		if request.Method != http.MethodGet && !preview {
+			http.Error(writer, "disposable fixture permits reads and previews only", http.StatusMethodNotAllowed)
+			return
+		}
+		app.ServeHTTP(writer, request)
+	})
+}
+
+func libraryID(url string) (string, error) {
+	client := &http.Client{Timeout: 30 * time.Second}
+	request, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url+"/api/v1/subtitle-library?view=library", nil)
+	if err != nil {
+		return "", err
+	}
+	response, err := client.Do(request)
+	if err != nil {
+		return "", err
+	}
+	defer func() { _ = response.Body.Close() }()
+	var inventory struct{ Items []struct{ ID string } }
+	if response.StatusCode != http.StatusOK || json.NewDecoder(response.Body).Decode(&inventory) != nil || len(inventory.Items) != 1 {
+		return "", errors.New("native fixture did not expose its single fictional title")
+	}
+	return inventory.Items[0].ID, nil
+}
+
+func checkSidecar(path string) error {
+	data, err := os.ReadFile(path) //nolint:gosec // Fixed fictional sidecar beneath the caller-chosen QA directory.
+	if err != nil || string(data) != initialSubtitle {
+		return errors.New("fictional subtitle is missing or changed")
+	}
+	return nil
+}
+
+func hash(data []byte) string {
+	sum := sha256.Sum256(data)
+	return hex.EncodeToString(sum[:])
+}

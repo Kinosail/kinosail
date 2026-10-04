@@ -1,0 +1,334 @@
+{
+  "backlogID": "R07",
+  "testedRevision": "79f877e020fc6bf02e77e95092e5fad2b50aa326",
+  "mainBase": "ba527747b09b29c3836529b8de61c7ae877180bc",
+  "generatedArchitectureSHA256": "1c7c9e9cfee4424760104abeccf411617ba3bf2b7eb2cde25ea86df962d00c76",
+  "nativeBinarySHA256": "aafc748fd49e4128933eb4286db6a8fd12e4940890dcd8f7b3240b3cfcc18bc7",
+  "fixtureSourceSHA256": "cf2ead8df499f9cd028871d99a30863a9e7a8692ec57a863e0eeb2b604b3283f",
+  "rawResultsPath": "apps/subtitles/.verification/r07-integration/native-artifacts/results-all.json",
+  "rawResultsSHA256": "ba142286266397ed9e3ce106bcfe816581d6820fb410b5b605ab319c3e730d1c",
+  "stats": {
+    "startTime": "2026-10-04T12:06:47.437Z",
+    "duration": 12215.386999999999,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "globalErrors": 0,
+  "cases": [
+    {
+      "title": "native Server pairs dialogue with playable media at 390px",
+      "status": "passed",
+      "durationMS": 7611,
+      "width": 390,
+      "browser": "chromium",
+      "browserVersion": "153.0.8010.12",
+      "clipSHA256": "9dbd85e7863d921e209978c8349992e5f8505b0d7ffa468c37b8caf97af3f0a4",
+      "sidecarSHA256": "eb3bde14cacc59d517305b4dcc93e1b72b7eab099666a36b1e216583e9372aa4",
+      "transportAndIntegrity": {
+        "requests": [
+          {
+            "method": "GET",
+            "path": "/subtitles/inspect/8e537f8897244f98"
+          },
+          {
+            "method": "GET",
+            "path": "/static/theme.js"
+          },
+          {
+            "method": "GET",
+            "path": "/static/app.css"
+          },
+          {
+            "method": "GET",
+            "path": "/static/subtitle-inspector.css"
+          },
+          {
+            "method": "GET",
+            "path": "/static/subtitle-inspector.js"
+          },
+          {
+            "method": "GET",
+            "path": "/static/main.kinosail.bundle.js"
+          },
+          {
+            "method": "GET",
+            "path": "/static/icon.svg"
+          },
+          {
+            "method": "GET",
+            "path": "/static/cinema-backdrop.jpg"
+          },
+          {
+            "method": "GET",
+            "path": "/static/icon.svg"
+          },
+          {
+            "method": "GET",
+            "path": "/static/manrope.woff2"
+          },
+          {
+            "method": "GET",
+            "path": "/media/8e537f8897244f98"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/subtitle-library/8e537f8897244f98/inspect"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/subtitle-library/8e537f8897244f98/draft"
+          },
+          {
+            "method": "GET",
+            "path": "/media/8e537f8897244f98"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/subtitle-library/8e537f8897244f98/preview"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/subtitle-library/8e537f8897244f98/preview"
+          }
+        ],
+        "media": [
+          {
+            "status": 206,
+            "contentRange": "bytes 0-396547/396548"
+          },
+          {
+            "status": 206,
+            "contentRange": "bytes 393216-396547/396548"
+          }
+        ],
+        "rejectedMutations": [
+          {
+            "action": "apply",
+            "status": 405
+          },
+          {
+            "action": "restore",
+            "status": 405
+          }
+        ],
+        "installedSubtitleUnchanged": true,
+        "recoverySidecarAbsent": true,
+        "directPlaybackDuration": 12
+      }
+    },
+    {
+      "title": "native Server pairs dialogue with playable media at 1440px",
+      "status": "passed",
+      "durationMS": 4028,
+      "width": 1440,
+      "browser": "chromium",
+      "browserVersion": "153.0.8010.12",
+      "clipSHA256": "9dbd85e7863d921e209978c8349992e5f8505b0d7ffa468c37b8caf97af3f0a4",
+      "sidecarSHA256": "eb3bde14cacc59d517305b4dcc93e1b72b7eab099666a36b1e216583e9372aa4",
+      "transportAndIntegrity": {
+        "requests": [
+          {
+            "method": "GET",
+            "path": "/subtitles/inspect/8e537f8897244f98"
+          },
+          {
+            "method": "GET",
+            "path": "/static/theme.js"
+          },
+          {
+            "method": "GET",
+            "path": "/static/app.css"
+          },
+          {
+            "method": "GET",
+            "path": "/static/subtitle-inspector.css"
+          },
+          {
+            "method": "GET",
+            "path": "/static/subtitle-inspector.js"
+          },
+          {
+            "method": "GET",
+            "path": "/static/main.kinosail.bundle.js"
+          },
+          {
+            "method": "GET",
+            "path": "/static/icon.svg"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/subtitle-library/8e537f8897244f98/inspect"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/subtitle-library/8e537f8897244f98/draft"
+          },
+          {
+            "method": "GET",
+            "path": "/static/cinema-backdrop.jpg"
+          },
+          {
+            "method": "GET",
+            "path": "/static/icon.svg"
+          },
+          {
+            "method": "GET",
+            "path": "/static/manrope.woff2"
+          },
+          {
+            "method": "GET",
+            "path": "/media/8e537f8897244f98"
+          },
+          {
+            "method": "GET",
+            "path": "/media/8e537f8897244f98"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/subtitle-library/8e537f8897244f98/preview"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/subtitle-library/8e537f8897244f98/preview"
+          }
+        ],
+        "media": [
+          {
+            "status": 206,
+            "contentRange": "bytes 0-396547/396548"
+          },
+          {
+            "status": 206,
+            "contentRange": "bytes 393216-396547/396548"
+          }
+        ],
+        "rejectedMutations": [
+          {
+            "action": "apply",
+            "status": 405
+          },
+          {
+            "action": "restore",
+            "status": 405
+          }
+        ],
+        "installedSubtitleUnchanged": true,
+        "recoverySidecarAbsent": true,
+        "directPlaybackDuration": 12
+      }
+    }
+  ],
+  "integrity": {
+    "installedSubtitleUnchanged": true,
+    "recoverySidecarAbsent": true
+  },
+  "boundary": "Actual disposable loopback Subtitles Server, HTML/assets/inspect/preview/direct playable media, cached Chromium, no browser response routes. GET and preview POST only; other mutations return HTTP405. No providers, encoder, deployment or real user data.",
+  "screens": [
+    "integration/screens/subtitle-pairing-native-na-59ee3-th-playable-media-at-1440px-chromium-actual-cleanup.png",
+    "integration/screens/subtitle-pairing-native-na-59ee3-th-playable-media-at-1440px-chromium-paired-cleanup.png",
+    "integration/screens/subtitle-pairing-native-na-59ee3-th-playable-media-at-1440px-chromium-unpaired-import.png",
+    "integration/screens/subtitle-pairing-native-na-b6288-ith-playable-media-at-390px-chromium-actual-cleanup.png",
+    "integration/screens/subtitle-pairing-native-na-b6288-ith-playable-media-at-390px-chromium-paired-cleanup.png",
+    "integration/screens/subtitle-pairing-native-na-b6288-ith-playable-media-at-390px-chromium-unpaired-import.png"
+  ],
+  "sourceFiles": [
+    {
+      "path": "apps/subtitles/docs/reference/api.md",
+      "sha256": "493b538e16d6d2bdac62530096233a9e37cc575a4e1e8d50e4465ecaa6d68688"
+    },
+    {
+      "path": "apps/subtitles/docs/user-guide/index.md",
+      "sha256": "c62bac2ad16c853695e81a7ca0ba1c6047def385f42440e572b39b3f33afcd44"
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-race-fixture.ts",
+      "sha256": "f28674b7b838a724b3899f0e567ae744148bf3b39770f523f235de77ca1fd8d5"
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-races.spec.ts",
+      "sha256": "119bd52848c91d3631cc8feffae85dd04a46de26253fd1ce6a7e28494909c948"
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-inspector-scroll.spec.ts",
+      "sha256": "eba4b17d74365df96c50378c4a481e8da25d02d831a50ad8675f0add9014727f"
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-merged-group.spec.ts",
+      "sha256": "ca0f0beb32fcf86e3da01b63eb04b68b11cb916936c14b3845cc165e71eaef5f"
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-pairing-journey.ts",
+      "sha256": "fedbcd7f1d580069c86c47786d151ead28df9d9527deb56b6735ade2bcb6109c"
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-pairing-native.spec.ts",
+      "sha256": "afc6b089cee0b86d0fd068c0afb0a2a999f6aa9ef253193daec7604b504913dd"
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-pairing.spec.ts",
+      "sha256": "956a98428d7d9561676af453170ee356b177fe7f6bdaf31cba866e67d614c9ba"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_openapi.json",
+      "sha256": "b8518b6ed2049f49eff6dc9c112e7c4d6b6671009d83da149c6effa17693a275"
+    },
+    {
+      "path": "apps/subtitles/internal/server/assets.go",
+      "sha256": "bfbecbed116bb8c6b4a16d08f43a1a7c75dc5844b7e8729305b85cef53d7cd17"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/subtitle-inspector.js",
+      "sha256": "e8a65f4c7486828ebafb99d576724e448255a9fdb74c96dadac4716bc2a19bd0"
+    },
+    {
+      "path": "apps/subtitles/internal/server/static/subtitle-source-cues.js",
+      "sha256": "2b388f3a13435318744e28f7f67658b87c7da32dfa98061d8090964e1c6aa991"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_clean.go",
+      "sha256": "72b937f0f8d4d6cfa84395bdde0de9be7272d26e583765ea2c7e6edfa09241ba"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_conversion.go",
+      "sha256": "0ed6b966a053ba6e71d8660305690133a9b040d386046643cb2d2a8848603c44"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_draft_tool_test.go",
+      "sha256": "8995b4107b8fa2acd1d8d9e5407b5f6ac85194209a0980f81d92963160c56f3d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_edit.go",
+      "sha256": "ff7b8b86def21a253d4d8f126f6f7f78b60a65f595829b37dd00ee9f38009305"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_inspector.go",
+      "sha256": "44073fe3f050ec5df90595167c21c3693eca724d9681ec6c34a5e6b6df3796ca"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_review.go",
+      "sha256": "1962d56b50b090731369ea87b9b55df0dd31525e472fa2604f582af89bc2d5af"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_review_merged_group_test.go",
+      "sha256": "8eafc3883f90af2dbb33c0e54dc66610df67fe1406bd1ec388f7896eefa1cd52"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_review_pairing.go",
+      "sha256": "57f68cd43619769d62c33e72efcbf2d1bb12474aa23f4edf17d3aeaf4662216d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_review_pairing_test.go",
+      "sha256": "f05f80e3d730f567e623c1241e0be2ce371ad93ae4de338c122a195113f1ee27"
+    },
+    {
+      "path": "apps/subtitles/scripts/test-container.sh",
+      "sha256": "13f96d10e1b40ec0e5dee93121190d93b538546111c8d000ec59cc90e99e8bc3"
+    },
+    {
+      "path": "apps/subtitles/scripts/test-instance.sh",
+      "sha256": "3db2011fd969443bdcf6480194b3767e5338a5fdf44ceed16ad73b3710d210a1"
+    }
+  ]
+}

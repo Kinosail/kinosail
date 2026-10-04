@@ -1,0 +1,336 @@
+{
+  "config": {
+    "argv": [
+      "/opt/homebrew/Cellar/node/26.8.2/bin/node",
+      "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/node_modules/@playwright/test/cli.js",
+      "test",
+      "subtitle-merged-group.spec.ts",
+      "subtitle-pairing.spec.ts",
+      "subtitle-inspector-scroll.spec.ts",
+      "--project=chromium",
+      "--workers=1",
+      "--timeout=30000"
+    ],
+    "configFile": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/playwright.config.ts",
+    "rootDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/engineering/qa/2026-10-04-cue-pairing/evidence/merged-browser-green/results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "open": "never",
+          "outputFolder": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/../engineering/qa/2026-10-04-cue-pairing/evidence/merged-browser-green/html-all"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/subtitles-reliability/apps/subtitles/e2e/../engineering/qa/2026-10-04-cue-pairing/evidence/merged-browser-green/results-all.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "subtitle-inspector-scroll.spec.ts",
+      "file": "subtitle-inspector-scroll.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "long cue and draft-word reviews load as the reader scrolls",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 988,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T10:54:45.802Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "7a5821539f45ebf0ccec-3c422c79340a2eaadad7",
+          "file": "subtitle-inspector-scroll.spec.ts",
+          "line": 22,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "subtitle-merged-group.spec.ts",
+      "file": "subtitle-merged-group.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "long merged comparison bounds rendering and reaches the last source at 390px",
+          "ok": true,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3632,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T10:54:47.196Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "long-group-initial-render",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6ImRlNmQ0ODdhZjAyNGRiODlkYWU2ZWI4ODQxZDJkZmIxZDU4YmNhOWUiLCJ3aWR0aCI6MzkwLCJtZXRyaWNzIjp7InNlZWtCdXR0b25zIjozLCJlbGVtZW50cyI6MTcsInRleHRCeXRlcyI6MjAzfSwic291cmNlQ291bnQiOjEwMDAwLCJib3VuZGFyeSI6Imlzb2xhdGVkIHJlbmRlcmVyOyBhY3R1YWwgcHVibGljIEdvIDEwLDAwMC1jdWUgaW5zcGVjdC9wcmV2aWV3L2Fzc2V0czsgbWVkaWEgYWJvcnRlZDsgbm8gYnJvd3NlciBwZXJmb3JtYW5jZSB0aW1pbmcgY2xhaW0ifQ=="
+                    },
+                    {
+                      "name": "long-group-expanded-render",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6ImRlNmQ0ODdhZjAyNGRiODlkYWU2ZWI4ODQxZDJkZmIxZDU4YmNhOWUiLCJ3aWR0aCI6MzkwLCJzb3VyY2VQYWdlIjoiNTAwIiwic2Vla0J1dHRvbnMiOjIxfQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6c032184c816e44ff4a7-c7fff3a06b3fcf4875fd",
+          "file": "subtitle-merged-group.spec.ts",
+          "line": 11,
+          "column": 3
+        },
+        {
+          "title": "long merged comparison bounds rendering and reaches the last source at 1440px",
+          "ok": true,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3093,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T10:54:50.834Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "long-group-initial-render",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6ImRlNmQ0ODdhZjAyNGRiODlkYWU2ZWI4ODQxZDJkZmIxZDU4YmNhOWUiLCJ3aWR0aCI6MTQ0MCwibWV0cmljcyI6eyJzZWVrQnV0dG9ucyI6MywiZWxlbWVudHMiOjE3LCJ0ZXh0Qnl0ZXMiOjIwM30sInNvdXJjZUNvdW50IjoxMDAwMCwiYm91bmRhcnkiOiJpc29sYXRlZCByZW5kZXJlcjsgYWN0dWFsIHB1YmxpYyBHbyAxMCwwMDAtY3VlIGluc3BlY3QvcHJldmlldy9hc3NldHM7IG1lZGlhIGFib3J0ZWQ7IG5vIGJyb3dzZXIgcGVyZm9ybWFuY2UgdGltaW5nIGNsYWltIn0="
+                    },
+                    {
+                      "name": "long-group-expanded-render",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6ImRlNmQ0ODdhZjAyNGRiODlkYWU2ZWI4ODQxZDJkZmIxZDU4YmNhOWUiLCJ3aWR0aCI6MTQ0MCwic291cmNlUGFnZSI6IjUwMCIsInNlZWtCdXR0b25zIjoyMX0="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6c032184c816e44ff4a7-bbbf3b902abd3023ba7c",
+          "file": "subtitle-merged-group.spec.ts",
+          "line": 11,
+          "column": 3
+        }
+      ]
+    },
+    {
+      "title": "subtitle-pairing.spec.ts",
+      "file": "subtitle-pairing.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "cleanup compares the same dialogue at 390px",
+          "ok": true,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6845,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T10:54:53.938Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6ImRlNmQ0ODdhZjAyNGRiODlkYWU2ZWI4ODQxZDJkZmIxZDU4YmNhOWUiLCJ3aWR0aCI6MzkwLCJjb21tYW5kIjoicGxheXdyaWdodCB0ZXN0IHN1YnRpdGxlLXBhaXJpbmcuc3BlYy50cyAtLXdvcmtlcnM9MSIsImVudmlyb25tZW50IjoiY2hyb21pdW0iLCJicm93c2VyVmVyc2lvbiI6IjE1NC4wLjgwMzcuOTciLCJkYXRhIjoiYWN0dWFsIHJlbmRlcmVkIGluc3BlY3RvciBhbmQgQVBJIHByZXZpZXcgb3V0cHV0cyBmb3Igc3ludGhldGljIGNyZWRpdC9yZXBlYXRlZC9sYXRlciBkaWFsb2d1ZSBhbmQgdW5yZWxhdGVkIGltcG9ydCIsImJvdW5kYXJ5IjoiaXNvbGF0ZWQgYnJvd3NlciB0cmFuc3BvcnQvcmVuZGVyIGZpeHR1cmU7IG5vIHBsYXlhYmxlIG1lZGlhIG9yIHBvcHVsYXRlZCBTZXJ2ZXIifQ=="
+                    },
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6ImRlNmQ0ODdhZjAyNGRiODlkYWU2ZWI4ODQxZDJkZmIxZDU4YmNhOWUiLCJ3aWR0aCI6MzkwLCJjb21tYW5kIjoicGxheXdyaWdodCB0ZXN0IHN1YnRpdGxlLXBhaXJpbmcuc3BlYy50cyIsImVudmlyb25tZW50IjoiY2hyb21pdW0iLCJkYXRhIjoiYWN0dWFsIHJlbmRlcmVkIGluc3BlY3RvciBhbmQgQVBJIHByZXZpZXcgb3V0cHV0cyBmb3Igc3ludGhldGljIGNyZWRpdC9yZXBlYXRlZC9sYXRlciBkaWFsb2d1ZSBhbmQgdW5yZWxhdGVkIGltcG9ydCIsImJvdW5kYXJ5IjoiaXNvbGF0ZWQgYnJvd3NlciB0cmFuc3BvcnQvcmVuZGVyIGZpeHR1cmU7IG5vIHBsYXlhYmxlIG1lZGlhIG9yIHBvcHVsYXRlZCBTZXJ2ZXIiLCJwcmV2aWV3cyI6W3sicm9sZSI6InRyYW5zbGF0aW9uIiwibGFuZ3VhZ2UiOiJlbiIsImZpbmdlcnByaW50IjoiZWIzYmRlMTRjYWNjNTlkNTE3MzA1YjRkY2M5M2UxYjcyYjdlYWIwOTk2NjZhMzZiMWUyMTY1ODNlOTM3MmFhNCIsImVuY29kaW5nIjoiYXV0byIsIm9mZnNldE1pbGxpc2Vjb25kcyI6NzUwLCJhdXRvbWF0aWNTeW5jIjpmYWxzZSwicmVtb3ZlQ3JlZGl0cyI6dHJ1ZSwibWVyZ2VSZXBlYXRlZCI6dHJ1ZX0seyJyb2xlIjoidHJhbnNsYXRpb24iLCJsYW5ndWFnZSI6ImVuIiwiZmluZ2VycHJpbnQiOiJlYjNiZGUxNGNhY2M1OWQ1MTczMDViNGRjYzkzZTFiNzJiN2VhYjA5OTY2NmEzNmIxZTIxNjU4M2U5MzcyYWE0IiwiZW5jb2RpbmciOiJhdXRvIiwib2Zmc2V0TWlsbGlzZWNvbmRzIjowLCJhdXRvbWF0aWNTeW5jIjpmYWxzZSwicmVtb3ZlQ3JlZGl0cyI6dHJ1ZSwibWVyZ2VSZXBlYXRlZCI6dHJ1ZSwiZGF0YSI6Ik1Rb3dNRG93TURvd015d3dNREFnTFMwK0lEQXdPakF3T2pBMUxEQXdNQXBDYjI1cWIzVnlJRHhwUG1GdGFUd3ZhVDRLIn1dfQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "fe876a51f951818ac144-efad44845add28419393",
+          "file": "subtitle-pairing.spec.ts",
+          "line": 11,
+          "column": 3
+        },
+        {
+          "title": "cleanup compares the same dialogue at 1440px",
+          "ok": true,
+          "tags": [
+            "smoke"
+          ],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5513,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T10:55:00.788Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6ImRlNmQ0ODdhZjAyNGRiODlkYWU2ZWI4ODQxZDJkZmIxZDU4YmNhOWUiLCJ3aWR0aCI6MTQ0MCwiY29tbWFuZCI6InBsYXl3cmlnaHQgdGVzdCBzdWJ0aXRsZS1wYWlyaW5nLnNwZWMudHMgLS13b3JrZXJzPTEiLCJlbnZpcm9ubWVudCI6ImNocm9taXVtIiwiYnJvd3NlclZlcnNpb24iOiIxNTQuMC44MDM3Ljk3IiwiZGF0YSI6ImFjdHVhbCByZW5kZXJlZCBpbnNwZWN0b3IgYW5kIEFQSSBwcmV2aWV3IG91dHB1dHMgZm9yIHN5bnRoZXRpYyBjcmVkaXQvcmVwZWF0ZWQvbGF0ZXIgZGlhbG9ndWUgYW5kIHVucmVsYXRlZCBpbXBvcnQiLCJib3VuZGFyeSI6Imlzb2xhdGVkIGJyb3dzZXIgdHJhbnNwb3J0L3JlbmRlciBmaXh0dXJlOyBubyBwbGF5YWJsZSBtZWRpYSBvciBwb3B1bGF0ZWQgU2VydmVyIn0="
+                    },
+                    {
+                      "name": "verification-context",
+                      "contentType": "application/json",
+                      "body": "eyJyZXZpc2lvbiI6ImRlNmQ0ODdhZjAyNGRiODlkYWU2ZWI4ODQxZDJkZmIxZDU4YmNhOWUiLCJ3aWR0aCI6MTQ0MCwiY29tbWFuZCI6InBsYXl3cmlnaHQgdGVzdCBzdWJ0aXRsZS1wYWlyaW5nLnNwZWMudHMiLCJlbnZpcm9ubWVudCI6ImNocm9taXVtIiwiZGF0YSI6ImFjdHVhbCByZW5kZXJlZCBpbnNwZWN0b3IgYW5kIEFQSSBwcmV2aWV3IG91dHB1dHMgZm9yIHN5bnRoZXRpYyBjcmVkaXQvcmVwZWF0ZWQvbGF0ZXIgZGlhbG9ndWUgYW5kIHVucmVsYXRlZCBpbXBvcnQiLCJib3VuZGFyeSI6Imlzb2xhdGVkIGJyb3dzZXIgdHJhbnNwb3J0L3JlbmRlciBmaXh0dXJlOyBubyBwbGF5YWJsZSBtZWRpYSBvciBwb3B1bGF0ZWQgU2VydmVyIiwicHJldmlld3MiOlt7InJvbGUiOiJ0cmFuc2xhdGlvbiIsImxhbmd1YWdlIjoiZW4iLCJmaW5nZXJwcmludCI6ImViM2JkZTE0Y2FjYzU5ZDUxNzMwNWI0ZGNjOTNlMWI3MmI3ZWFiMDk5NjY2YTM2YjFlMjE2NTgzZTkzNzJhYTQiLCJlbmNvZGluZyI6ImF1dG8iLCJvZmZzZXRNaWxsaXNlY29uZHMiOjc1MCwiYXV0b21hdGljU3luYyI6ZmFsc2UsInJlbW92ZUNyZWRpdHMiOnRydWUsIm1lcmdlUmVwZWF0ZWQiOnRydWV9LHsicm9sZSI6InRyYW5zbGF0aW9uIiwibGFuZ3VhZ2UiOiJlbiIsImZpbmdlcnByaW50IjoiZWIzYmRlMTRjYWNjNTlkNTE3MzA1YjRkY2M5M2UxYjcyYjdlYWIwOTk2NjZhMzZiMWUyMTY1ODNlOTM3MmFhNCIsImVuY29kaW5nIjoiYXV0byIsIm9mZnNldE1pbGxpc2Vjb25kcyI6MCwiYXV0b21hdGljU3luYyI6ZmFsc2UsInJlbW92ZUNyZWRpdHMiOnRydWUsIm1lcmdlUmVwZWF0ZWQiOnRydWUsImRhdGEiOiJNUW93TURvd01Eb3dNeXd3TURBZ0xTMCtJREF3T2pBd09qQTFMREF3TUFwQ2IyNXFiM1Z5SUR4cFBtRnRhVHd2YVQ0SyJ9XX0="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "fe876a51f951818ac144-6d95855cee54f56d5773",
+          "file": "subtitle-pairing.spec.ts",
+          "line": 11,
+          "column": 3
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-04T10:54:45.520Z",
+    "duration": 27120.426,
+    "expected": 5,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

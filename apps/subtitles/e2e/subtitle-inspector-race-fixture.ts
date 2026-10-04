@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
 
-const source = readFileSync(new URL("../internal/server/static/subtitle-inspector.js", import.meta.url), "utf8");
+const source = ["subtitle-source-cues.js", "subtitle-inspector.js"].map(name => readFileSync(new URL(`../internal/server/static/${name}`, import.meta.url), "utf8")).join("\n");
 export const flush = () => new Promise<void>(resolve => setImmediate(resolve));
 
 // Execute the complete shipped script with controlled requests and lifecycle.

@@ -1,0 +1,20 @@
+{
+  "unpublishedEvidenceCommitPreservedPrivately": "55ce44772eb26fed19bb3f511ff951460f129453",
+  "findings": [
+    {
+      "rule": "generic-api-key",
+      "line": 6,
+      "sourcePath": "apps/subtitles/docs/reference/api.md",
+      "verifiedSourceSHA256": "493b538e16d6d2bdac62530096233a9e37cc575a4e1e8d50e4465ecaa6d68688",
+      "classification": "A source-file checksum in an API-named JSON property; no credential."
+    },
+    {
+      "rule": "generic-api-key",
+      "line": 15,
+      "sourcePath": "apps/subtitles/internal/server/api_openapi.json",
+      "verifiedSourceSHA256": "b8518b6ed2049f49eff6dc9c112e7c4d6b6671009d83da149c6effa17693a275",
+      "classification": "A source-file checksum in an API-named JSON property; no credential."
+    }
+  ],
+  "resolution": "Represent source records as path and sha256 fields, matching the existing reviewed manifest. Scanner rules and suppressions remain unchanged."
+}

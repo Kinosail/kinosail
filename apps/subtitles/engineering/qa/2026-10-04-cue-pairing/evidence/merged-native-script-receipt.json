@@ -1,0 +1,10 @@
+{
+  "revision": "de6d487af024db89dae6eb8841d2dfb1d58bca9e",
+  "status": 200,
+  "urlPath": "/static/subtitle-inspector.js?v=11",
+  "bytes": 27535,
+  "sha256": "7ee624211c718f2e7693d1e73e2e205e9f5dcff2584cc7d7560ce1485f96360a",
+  "matchesActualPublicGoFixture": true,
+  "contentType": "text/javascript; charset=utf-8",
+  "cacheControl": "public, max-age=31536000, immutable"
+}
