@@ -1,0 +1,89 @@
+{
+  "auditSHA256": "02bc9d14f7debc0cd5df8f1be32fad894fc65e4c0e0789c2be00b0394f85d503",
+  "record": {
+    "source_id": "Q-WP-02",
+    "slice": "web-player",
+    "kind": "optional_qol",
+    "title": "Return to the exact browse position after playback",
+    "problem": "The player\u2019s visible Library action returns Home; a long loaded catalog can also lose its extent after a back navigation that misses cache.",
+    "proposed_behavior": "Add a visible 'Back to Movies/Shows/search' action with a safe same-origin return context; restore sort/query/loaded extent/focused title when browser history cache cannot do it.",
+    "apps_devices": [
+      "Web Player: discovery to playback",
+      "Desktop and phone"
+    ],
+    "current_state": "There is already scroll/focus restoration for matching cards and browser back/forward. It stores href plus scroll only, and only selected card shapes are captured. Player\u2019s Library link is href='/'. This is completion of the existing return feature.",
+    "evidence": [
+      {
+        "id": "S018",
+        "repository": "kinosail",
+        "path": "packages/webassets/static/pwa-navigation.js",
+        "line_start": 96,
+        "line_end": 109,
+        "revision": "5f91114d16e7c049e0da1d9c119653a6e8161b90",
+        "url": "https://github.com/Kinosail/kinosail/blob/5f91114d16e7c049e0da1d9c119653a6e8161b90/packages/webassets/static/pwa-navigation.js#L96",
+        "sha256": "076b41044ccd8d0a79664bafa7ac1aea7f9e0efda192615dd2f791e49e63b202",
+        "observation": "sessionStorage ... { href: link.getAttribute('href'), scroll: scrollY }; ... focus ... scrollTo"
+      },
+      {
+        "id": "S019",
+        "repository": "kinosail",
+        "path": "packages/webassets/static/pwa.js",
+        "line_start": 290,
+        "line_end": 296,
+        "revision": "5f91114d16e7c049e0da1d9c119653a6e8161b90",
+        "url": "https://github.com/Kinosail/kinosail/blob/5f91114d16e7c049e0da1d9c119653a6e8161b90/packages/webassets/static/pwa.js#L290",
+        "sha256": "4ea43e5431973c9f6a6f7923248fcb63d7f0b401e44724539c0289b6ae1c0762",
+        "observation": "data-return-to-form / data-browse-back ... history.back()"
+      },
+      {
+        "id": "S020",
+        "repository": "kinosail",
+        "path": "apps/player/internal/server/player.go",
+        "line_start": 18,
+        "line_end": 18,
+        "revision": "5f91114d16e7c049e0da1d9c119653a6e8161b90",
+        "url": "https://github.com/Kinosail/kinosail/blob/5f91114d16e7c049e0da1d9c119653a6e8161b90/apps/player/internal/server/player.go#L18",
+        "sha256": "54ae98f86919376f93cb4a4f4e6b55a39e77f9238137eb37478eb29f6e805280",
+        "observation": "<a class=\"back\" href=\"/\"> ... Library</a>"
+      },
+      {
+        "id": "S021",
+        "repository": "kinosail",
+        "path": "packages/webassets/static/pwa.js",
+        "line_start": 169,
+        "line_end": 198,
+        "revision": "5f91114d16e7c049e0da1d9c119653a6e8161b90",
+        "url": "https://github.com/Kinosail/kinosail/blob/5f91114d16e7c049e0da1d9c119653a6e8161b90/packages/webassets/static/pwa.js#L169",
+        "sha256": "4ea43e5431973c9f6a6f7923248fcb63d7f0b401e44724539c0289b6ae1c0762",
+        "observation": "append incoming cards and replace next page link"
+      }
+    ],
+    "impact": 4,
+    "frequency": 4,
+    "effort": "M",
+    "risks": {
+      "regression": "Avoid reopening playback on Back, duplicate card loads, restoring a scroll position before cards exist, or clobbering browser history.",
+      "security": "Validate bounded same-origin return paths; never honor arbitrary URL redirects.",
+      "privacy": "Keep browse state profile-scoped and tab-local; avoid sensitive query retention beyond the session.",
+      "ip": "No new gesture or miniplayer behavior proposed."
+    },
+    "dependencies": [
+      "R-WP-02 stable card identity",
+      "History cache-hit/miss cases",
+      "Show wrapper and resumed-card focus coverage"
+    ],
+    "confidence_note": "level: high; rationale: A return feature exists but does not persist loaded extent, and the visible player link goes Home. Cache-miss behavior requires runtime validation.; benefit: medium; prioritization is an audit judgment, not measured household usage",
+    "confidence_weight": 1,
+    "evidence_level": "source-grounded opportunity; benefit inferred",
+    "runtime_verified": false,
+    "validation_gap": "No fresh runtime reproduction or user study in this audit.",
+    "severity": "P2 opportunity",
+    "category": "optional_qol",
+    "reach_weight": 1.25,
+    "value_score": 10.0,
+    "workflow_tier": 2,
+    "id": "Q14",
+    "rank": 14,
+    "selected": false
+  }
+}
