@@ -21,7 +21,7 @@ const showFailure = (message, action = "", recover) => {
     playbackModeStatus.textContent = adaptiveActive ? "Playback interrupted" : "Direct Play stopped";
     playbackModeStatus.setAttribute("aria-label", `${playbackModeStatus.textContent}. Open playback settings.`);
   }
-  if (playbackReason) playbackReason.textContent = adaptiveActive ? "Playback was interrupted. Your position is saved." : "The original file stopped playing. No conversion is running.";
+  if (playbackReason) playbackReason.textContent = adaptiveActive ? "Playback was interrupted. You can retry from this position." : "The original file stopped playing. No conversion is running.";
   if (!action) return;
   recoveryAction = recover;
   if (playbackRecovery) playbackRecovery.hidden = false;
@@ -101,7 +101,7 @@ const watchBuffering = (position = player.currentTime, startedAt = performance.n
       player.paused && !pendingResume?.playing && !networkWantsPlay) return;
     if (adaptiveActive && !hls && !playbackHasStarted && player.networkState === HTMLMediaElement.NETWORK_LOADING) {
       if (performance.now() - startedAt < 90000) return watchBuffering(position, startedAt);
-      return showFailure("Playback has not advanced. Your position is saved.", "Retry playback", retryStalledPlayback);
+      return showFailure("Playback has not advanced. You can retry from this position.", "Retry playback", retryStalledPlayback);
     }
     if (performance.now() - bufferingRetryAt >= 30000) {
       bufferingRetryAt = performance.now();
@@ -110,7 +110,7 @@ const watchBuffering = (position = player.currentTime, startedAt = performance.n
       watchBuffering(position);
       return;
     }
-    showFailure("Playback has not advanced. Your position is saved.", "Retry playback", retryStalledPlayback);
+    showFailure("Playback has not advanced. You can retry from this position.", "Retry playback", retryStalledPlayback);
   }, 12000);
 };
 player.addEventListener("waiting", () => {
@@ -210,7 +210,7 @@ const recoverDirectFailure = async (code = player.error?.code || 0, verifySource
     if (code === MediaError.MEDIA_ERR_ABORTED) return;
     if (code === MediaError.MEDIA_ERR_NETWORK) return scheduleNetworkRetry(() => retryStalledPlayback(networkPosition));
     if (hls && code === MediaError.MEDIA_ERR_DECODE && mediaRecoveries++ < 1) return hls.recoverMediaError();
-    return showFailure("Playback interrupted. Your position is saved.", "Retry playback", () => retryStalledPlayback(networkPosition));
+    return showFailure("Playback interrupted. You can retry from this position.", "Retry playback", () => retryStalledPlayback(networkPosition));
   }
   const generation = adaptiveGeneration;
   const failedSource = player.currentSrc || player.src;
