@@ -7,8 +7,8 @@
   "artifacts": [
     {
       "path": "evidence/browser-red/html-all/data/04b4a237a4548d4b98093b20c63750b19421536b.md",
-      "bytes": 21823,
-      "sha256": "cd3e9c5778d7ac3ae906faaa22aca1a745460e4279cb653e818f93e25fe285ad"
+      "bytes": 21820,
+      "sha256": "18d1719116748a2d19a33410b33cbd0f9a0134554a369337b83cbffd444f7d6a"
     },
     {
       "path": "evidence/browser-red/html-all/data/352032e0e83b3452f7d6975a1ae9ac70ffc981ed.png",
@@ -32,8 +32,8 @@
     },
     {
       "path": "evidence/browser-red/html-all/data/d679942d362d0683786a98e6d57c54ef17a355f7.md",
-      "bytes": 21654,
-      "sha256": "32c8fd3a334deab9a244a0c7479b25e739ff124868ebdac1821ac7b6130547f1"
+      "bytes": 21651,
+      "sha256": "ac909cc0edbe9e7f47f93be659a11405892952b73a713c095a6ff13c209f254f"
     },
     {
       "path": "evidence/browser-red/html-all/index.html",
@@ -142,8 +142,8 @@
     },
     {
       "path": "evidence/browser-red/results/subtitle-pairing-cleanup-c-b8631-the-same-dialogue-at-1440px-chromium/error-context.md",
-      "bytes": 21823,
-      "sha256": "cd3e9c5778d7ac3ae906faaa22aca1a745460e4279cb653e818f93e25fe285ad"
+      "bytes": 21820,
+      "sha256": "18d1719116748a2d19a33410b33cbd0f9a0134554a369337b83cbffd444f7d6a"
     },
     {
       "path": "evidence/browser-red/results/subtitle-pairing-cleanup-c-b8631-the-same-dialogue-at-1440px-chromium/test-failed-1.png",
@@ -162,8 +162,8 @@
     },
     {
       "path": "evidence/browser-red/results/subtitle-pairing-cleanup-compares-the-same-dialogue-at-390px-chromium/error-context.md",
-      "bytes": 21654,
-      "sha256": "32c8fd3a334deab9a244a0c7479b25e739ff124868ebdac1821ac7b6130547f1"
+      "bytes": 21651,
+      "sha256": "ac909cc0edbe9e7f47f93be659a11405892952b73a713c095a6ff13c209f254f"
     },
     {
       "path": "evidence/browser-red/results/subtitle-pairing-cleanup-compares-the-same-dialogue-at-390px-chromium/test-failed-1.png",
@@ -179,6 +179,64 @@
       "path": "evidence/browser-red/results-all.json",
       "bytes": 17695,
       "sha256": "d0b517f74c946a19ef21c42b1698ad24b4c1bdbef6bdac36a2cd960001b9629f"
+    },
+    {
+      "path": "evidence/browser-red.log.gz",
+      "bytes": 1042,
+      "sha256": "6a7ac1298289031228f07a9916b12520849eef35f28dc451fd04d77de86ec94e"
+    },
+    {
+      "path": "evidence/browser-red/html-all/data/04b4a237a4548d4b98093b20c63750b19421536b.md.gz",
+      "bytes": 5689,
+      "sha256": "b47497dd1a1375f455381ee70346034a51b2e6144c0ee8c45d526a189606252d"
+    },
+    {
+      "path": "evidence/browser-red/html-all/data/d679942d362d0683786a98e6d57c54ef17a355f7.md.gz",
+      "bytes": 5652,
+      "sha256": "0f5669600e4340c914c862e3c0b5116a5f1faef841369639e29521428e12a80f"
+    },
+    {
+      "path": "evidence/browser-red/results/subtitle-pairing-cleanup-c-b8631-the-same-dialogue-at-1440px-chromium/error-context.md.gz",
+      "bytes": 5689,
+      "sha256": "b47497dd1a1375f455381ee70346034a51b2e6144c0ee8c45d526a189606252d"
+    },
+    {
+      "path": "evidence/browser-red/results/subtitle-pairing-cleanup-compares-the-same-dialogue-at-390px-chromium/error-context.md.gz",
+      "bytes": 5652,
+      "sha256": "0f5669600e4340c914c862e3c0b5116a5f1faef841369639e29521428e12a80f"
+    }
+  ],
+  "readableReports": "Trailing spaces trimmed from readable log/Markdown; exact original bytes remain in .gz copies and this raw checksum inventory. Baseline HTML/assets/API fixtures and trace ZIPs remain unchanged.",
+  "rawReportChecksums": [
+    {
+      "path": "evidence/browser-red.log",
+      "rawArchive": "evidence/browser-red.log.gz",
+      "rawSHA256": "65d22e8055e135429234d276e973f497e927a9a81f0be6f980d8393ba5bfe2a1",
+      "archiveSHA256": "6a7ac1298289031228f07a9916b12520849eef35f28dc451fd04d77de86ec94e"
+    },
+    {
+      "path": "evidence/browser-red/html-all/data/04b4a237a4548d4b98093b20c63750b19421536b.md",
+      "rawArchive": "evidence/browser-red/html-all/data/04b4a237a4548d4b98093b20c63750b19421536b.md.gz",
+      "rawSHA256": "cd3e9c5778d7ac3ae906faaa22aca1a745460e4279cb653e818f93e25fe285ad",
+      "archiveSHA256": "b47497dd1a1375f455381ee70346034a51b2e6144c0ee8c45d526a189606252d"
+    },
+    {
+      "path": "evidence/browser-red/html-all/data/d679942d362d0683786a98e6d57c54ef17a355f7.md",
+      "rawArchive": "evidence/browser-red/html-all/data/d679942d362d0683786a98e6d57c54ef17a355f7.md.gz",
+      "rawSHA256": "32c8fd3a334deab9a244a0c7479b25e739ff124868ebdac1821ac7b6130547f1",
+      "archiveSHA256": "0f5669600e4340c914c862e3c0b5116a5f1faef841369639e29521428e12a80f"
+    },
+    {
+      "path": "evidence/browser-red/results/subtitle-pairing-cleanup-c-b8631-the-same-dialogue-at-1440px-chromium/error-context.md",
+      "rawArchive": "evidence/browser-red/results/subtitle-pairing-cleanup-c-b8631-the-same-dialogue-at-1440px-chromium/error-context.md.gz",
+      "rawSHA256": "cd3e9c5778d7ac3ae906faaa22aca1a745460e4279cb653e818f93e25fe285ad",
+      "archiveSHA256": "b47497dd1a1375f455381ee70346034a51b2e6144c0ee8c45d526a189606252d"
+    },
+    {
+      "path": "evidence/browser-red/results/subtitle-pairing-cleanup-compares-the-same-dialogue-at-390px-chromium/error-context.md",
+      "rawArchive": "evidence/browser-red/results/subtitle-pairing-cleanup-compares-the-same-dialogue-at-390px-chromium/error-context.md.gz",
+      "rawSHA256": "32c8fd3a334deab9a244a0c7479b25e739ff124868ebdac1821ac7b6130547f1",
+      "archiveSHA256": "0f5669600e4340c914c862e3c0b5116a5f1faef841369639e29521428e12a80f"
     }
   ]
 }

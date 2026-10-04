@@ -440,7 +440,7 @@ Call log:
 ```ts
   1  | import AxeBuilder from "@axe-core/playwright";
   2  | import { expect, type Page, type TestInfo } from "@playwright/test";
-  3  | 
+  3  |
   4  | export async function reviewSubtitlePairing(page: Page, testInfo: TestInfo) {
   5  |   await expect(page.locator("#inspector-status")).toHaveText("Current subtitle loaded. Preview a change before saving.");
   6  |   await page.locator('input[name="automaticSync"]').uncheck();
@@ -467,7 +467,7 @@ Call log:
   26 |   await page.screenshot({ path: testInfo.outputPath("paired-cleanup.png"), fullPage: true });
   27 |   expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
   28 |   expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze()).violations).toEqual([]);
-  29 | 
+  29 |
   30 |   await page.locator('input[name="offset"]').fill("0");
   31 |   await page.locator('input[name="file"]').setInputFiles({ name: "translation.srt", mimeType: "application/x-subrip", buffer: Buffer.from("1\n00:00:03,000 --> 00:00:05,000\nBonjour <i>ami</i>\n") });
   32 |   await page.getByRole("button", { name: "Preview changes", exact: true }).click();
@@ -478,5 +478,5 @@ Call log:
   37 |   await expect(rows.nth(4)).toContainText("Correspondence not verified");
   38 |   await page.screenshot({ path: testInfo.outputPath("unpaired-import.png"), fullPage: true });
   39 | }
-  40 | 
+  40 |
 ```

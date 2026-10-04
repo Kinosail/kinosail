@@ -9,7 +9,7 @@ Running 2 tests using 1 worker
   ✘  2 [chromium] › subtitle-pairing.spec.ts:11:3 › cleanup compares the same dialogue at 1440px @smoke (10.7s)
 
 
-  1) [chromium] › subtitle-pairing.spec.ts:11:3 › cleanup compares the same dialogue at 390px @smoke 
+  1) [chromium] › subtitle-pairing.spec.ts:11:3 › cleanup compares the same dialogue at 390px @smoke
 
     Error: expect(locator).toHaveCount(expected) failed
 
@@ -51,7 +51,7 @@ Running 2 tests using 1 worker
 
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
-  2) [chromium] › subtitle-pairing.spec.ts:11:3 › cleanup compares the same dialogue at 1440px @smoke 
+  2) [chromium] › subtitle-pairing.spec.ts:11:3 › cleanup compares the same dialogue at 1440px @smoke
 
     Error: expect(locator).toHaveCount(expected) failed
 
@@ -94,5 +94,5 @@ Running 2 tests using 1 worker
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
   2 failed
-    [chromium] › subtitle-pairing.spec.ts:11:3 › cleanup compares the same dialogue at 390px @smoke 
-    [chromium] › subtitle-pairing.spec.ts:11:3 › cleanup compares the same dialogue at 1440px @smoke 
+    [chromium] › subtitle-pairing.spec.ts:11:3 › cleanup compares the same dialogue at 390px @smoke
+    [chromium] › subtitle-pairing.spec.ts:11:3 › cleanup compares the same dialogue at 1440px @smoke
