@@ -53,7 +53,7 @@ application source set as preparation history and is not runtime evidence.
 Runtime availability and benefit remain unverified until baseline and candidate
 native journeys execute.
 
-The synthetic HTTP stand-in will need query-specific total, failure and gate
+The synthetic HTTP stand-in adds query-specific total, failure and gate
 controls for those journeys. Keep its responses valid JSON for Unicode and quoted
 queries, and release held responses during fixture disposal. A zero-result
 response must contain no items and total zero; a pending old query must be held

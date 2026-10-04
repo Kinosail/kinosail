@@ -5,6 +5,8 @@ import android.graphics.Bitmap
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.input.key.Key as ComposeKey
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.lifecycle.ViewModelProvider
@@ -68,6 +70,7 @@ class SearchFeedbackJourneyTest {
         field.performImeAction()
         await { !catalog.state.loading && catalog.hasActiveSearch }
         compose.onNodeWithText("Results: 96 · “Fictional”").assertIsDisplayed()
+            .assert(SemanticsMatcher.expectValue(SemanticsProperties.LiveRegion, LiveRegionMode.Polite))
         fixture.catalogGates["new query"] = CountDownLatch(1)
         fixture.catalogFailures["new query"] = 400
         field.performTextReplacement("new query")
@@ -139,6 +142,8 @@ class SearchFeedbackJourneyTest {
         } else clear.performClick()
         await { !catalog.state.loading && !catalog.hasActiveSearch && fixture.catalogQueries.last().isEmpty() }
         assertTrue(catalog.searchInput.isEmpty())
+        assertEquals("One Clear action must send one new query", submittedRequests + 1, fixture.catalogQueries.size)
+        await { compose.onAllNodesWithText("Results: 96").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("Results: 96").assertIsDisplayed()
         if (tv) clear.assertIsFocused()
         capture("$name-search-cleared")
