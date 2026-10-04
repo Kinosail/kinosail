@@ -1,0 +1,23 @@
+EF
+======================================================================
+ERROR: test_container_runs_caption_journey_before_general_smoke (__main__.CaptionJourneyTest.test_container_runs_caption_journey_before_general_smoke)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/scripts/ci/test_caption_journey.py", line 50, in test_container_runs_caption_journey_before_general_smoke
+    caption = source.index('run_subtitle_recovery_journey "$project" "$media_dir/Direct Retry Control.mp4"')
+ValueError: substring not found
+
+======================================================================
+FAIL: test_helper_selects_real_server_and_passes_fixture_and_artifact_paths (__main__.CaptionJourneyTest.test_helper_selects_real_server_and_passes_fixture_and_artifact_paths)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/scripts/ci/test_caption_journey.py", line 38, in test_helper_selects_real_server_and_passes_fixture_and_artifact_paths
+    self.assertEqual(result.returncode, 0, result.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 127 != 0 : caption-test: run_subtitle_recovery_journey: command not found
+
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.008s
+
+FAILED (failures=1, errors=1)
