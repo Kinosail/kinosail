@@ -1,0 +1,14 @@
+{
+  "finding": "generic-api-key historical artifact checksum",
+  "commit": "30eac3c60bddf8a931deb3cca60511fcb73e5dbc",
+  "path": "engineering/qa/2026-10-04-r04-pagination/run-context.json",
+  "line": 41,
+  "historical_log_bytes": 81,
+  "matches_exact_historical_log_SHA256": true,
+  "historical_artifact_SHA256": "a028ad0067f677c33244ff823da6797b660c9c84fb06ab79fedc9f414f3d5dd8",
+  "current_log_bytes": 80,
+  "current_log_SHA256": "720bfc61127a9f2e6145c0789ef8e87bbe91008e6bf690445ff4d53223e09473",
+  "boundary": "Historical and current logs are separate runs. Each has two scanner status lines; independently inspected, no credential.",
+  "scope": "Exact historical fingerprint only; no scanner rule or path changes.",
+  "independent_review": "Checksum false-positive classification and narrow exception confirmed before edit."
+}

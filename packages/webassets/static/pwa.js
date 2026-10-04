@@ -89,8 +89,6 @@ for (const reel of document.querySelectorAll("[data-season-reel]")) {
   for (const event of ["focusin", "pointerover"]) reel.addEventListener(event, ({ target }) => selectEpisode(target.closest?.("[data-episode-row]")));
 }
 
-let libraryObserver;
-let libraryAbortController;
 let mainRequestGeneration = 0;
 const mainRequests = new WeakMap();
 const loadingRequests = new WeakMap();
@@ -146,68 +144,7 @@ function animateMotion(element, className, duration = 240) {
     window.setTimeout(() => element.classList.remove(className), duration);
   });
 }
-function bindInfiniteLibrary() {
-  libraryObserver?.disconnect();
-  libraryAbortController?.abort();
-  libraryAbortController = undefined;
-  const next = document.querySelector("[data-library-next]");
-  if (!next || !("IntersectionObserver" in window)) return;
-  next.hidden = true; const status = document.querySelector("[data-library-status]");
-  if (!status) return; next.addEventListener("click", event => { event.preventDefault(); bindInfiniteLibrary(); }, { once: true });
-  libraryObserver = new IntersectionObserver(async (entries) => {
-    if (!entries.some(({ isIntersecting }) => isIntersecting) || next.dataset.loading) return;
-    const navigation = next.closest("[data-library-pagination]");
-    const controller = new AbortController();
-    libraryAbortController = controller;
-    next.dataset.loading = "true";
-    navigation?.setAttribute("aria-busy", "true"); status.textContent = "Loading more titles…";
-    try {
-      const response = await fetch(next.href, { headers: { "X-Kinosail-Library-Page": "1" }, signal: controller.signal });
-      if (!response.ok) throw new Error(`Library page failed with ${response.status}`);
-      const incoming = new DOMParser().parseFromString(await response.text(), "text/html");
-      const library = document.querySelector("#library");
-      const appended = [];
-      let added = 0;
-      for (const group of incoming.querySelectorAll("[data-library-group]")) {
-        const current = [...library.querySelectorAll("[data-library-group]")].find(({ dataset }) => dataset.libraryGroup === group.dataset.libraryGroup);
-        if (!current) {
-          added += group.querySelectorAll(".card").length;
-          library.append(group);
-          appended.push(group);
-          continue;
-        }
-        const grid = current.querySelector(".grid");
-        const seen = new Set([...grid.querySelectorAll(".card")].map((card) => card.getAttribute("href")));
-        for (const card of group.querySelectorAll(".card")) {
-          if (seen.has(card.getAttribute("href"))) continue;
-          grid.append(card);
-          appended.push(card);
-          added++;
-        }
-      }
-      for (const element of appended) animateMotion(element, "motion-append", 180);
-      const incomingNext = incoming.querySelector("[data-library-next]");
-      if (incomingNext) next.replaceWith(incomingNext);
-      else {
-        next.remove();
-        if (!navigation?.querySelector("a")) navigation?.remove();
-      }
-      if (status) status.textContent = incomingNext ? `${added} more titles loaded.` : "All titles are loaded.";
-      navigation?.removeAttribute("aria-busy");
-      libraryAbortController = undefined;
-      bindInfiniteLibrary();
-    } catch (error) {
-      if (error.name === "AbortError") return;
-      delete next.dataset.loading;
-      navigation?.removeAttribute("aria-busy");
-      libraryObserver?.disconnect(); next.hidden = false;
-      next.textContent = "Retry loading"; status.textContent = "Could not load more titles.";
-    } finally {
-      if (libraryAbortController === controller) libraryAbortController = undefined;
-    }
-  }, { rootMargin: "600px 0px" });
-  libraryObserver.observe(status);
-}
+
 bindInfiniteLibrary();
 
 const boundTitleJumps = new WeakSet();
