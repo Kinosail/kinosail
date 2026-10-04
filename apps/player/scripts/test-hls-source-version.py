@@ -27,7 +27,8 @@ RUN.mkdir(parents=True)
 revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
 receipt = {'revision': revision, 'command': 'python3 apps/player/scripts/test-hls-source-version.py',
            'environment': 'disposable loopback HTTP Server; synthetic H264 High/AC3; real FFmpeg decode',
-           'cases': [], 'result': 'failed', 'productionMediaOrCacheModified': False}
+           'cases': [], 'result': 'failed', 'productionMediaOrCacheModified': False,
+           'sourceMutationPolicy': 'Only the harness changes disposable fixture copies between invalidation cases; app requests preserve bytes and mtime.'}
 binary, probe = RUN / 'player', RUN / 'readiness'
 fixture = RUN / 'fixture.mkv'
 builds = [['go', '-C', 'apps/player', 'build', '-p=1', '-o', str(binary), './cmd/kinosail'],
@@ -47,6 +48,11 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def source_state(path):
+    info = path.stat()
+    return {'sizeBytes': info.st_size, 'mtimeNanoseconds': str(info.st_mtime_ns), 'sha256': digest(path)}
+
+
 def journey(name, source_time):
     case = {'name': name, 'requestedSourceMtimeSeconds': source_time, 'result': 'failed'}
     receipt['cases'].append(case)
@@ -56,6 +62,8 @@ def journey(name, source_time):
     source = media / 'Fixture.mkv'
     shutil.copyfile(fixture, source)
     os.utime(source, (source_time, source_time))
+    initial_source = source_state(source)
+    case['sourceReadOnlyChecks'] = []
     with socket.socket() as listener:
         listener.bind(('127.0.0.1', 0))
         port = listener.getsockname()[1]
@@ -101,6 +109,11 @@ def journey(name, source_time):
         if not condition:
             raise RuntimeError(failure)
 
+    def unchanged_source(stage, expected):
+        observed = source_state(source)
+        check(observed == expected, 'application_changed_source_' + stage)
+        case['sourceReadOnlyChecks'].append({'stage': stage, 'before': expected, 'after': observed, 'unchanged': True})
+
     def master():
         status, data = http(hls)
         check(status == 200, 'master_http_' + str(status))
@@ -141,6 +154,7 @@ def journey(name, source_time):
             check(denial_status == 303 and response_location == '/login', 'unauthenticated_hls_denial')
             case['unauthenticatedHLS'] = {'status': denial_status, 'loginRedirect': True}
             check(not roots(), 'unauthenticated_cache_side_effect')
+            unchanged_source('unauthenticated_denial', initial_source)
             preparation = '/api/v1/items/' + item_id + '/playback-prepare'
             check(http(preparation, 'POST', {'source': hls})[0] == 202, 'preparation_accepted')
             limit = time.monotonic() + 20
@@ -180,19 +194,24 @@ def journey(name, source_time):
             check(result.returncode == 0 and max(frames, default=0) >= 240, 'decoded_moving_frames')
             case['decodedFramesAcrossWarmWindow'] = max(frames)
             case['originalInitSHA256'] = hashlib.sha256(fragments[0]).hexdigest()
+            unchanged_source('playback_through_warm_window', initial_source)
             # Move source mtime backwards: a timestamp-only cache check would accept old output.
             os.utime(source, (315532800, 315532800))
+            backwards_source = source_state(source)
             first_changed = master()
             check(identity(first_changed) != original, 'backwards_mtime_stale_reuse')
             case['backwardsMtimeInvalidated'] = True
+            unchanged_source('backwards_mtime_invalidation', backwards_source)
             # Change bytes while retaining exactly that mtime, then join one rebuild twice.
             with source.open('ab') as output:
                 output.write(b'\0')
             os.utime(source, (315532800, 315532800))
+            changed_size_source = source_state(source)
             with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
                 rebuilt = list(pool.map(lambda _: master(), range(2)))
             check(identity(rebuilt[0]) == identity(rebuilt[1]) and identity(rebuilt[0]) != identity(first_changed), 'size_change_concurrent_rebuild')
             case['changedSizeInvalidatedAndConcurrentMastersMatch'] = True
+            unchanged_source('size_invalidation_and_concurrent_rebuild', changed_size_source)
             # A stale validated-policy marker must never be returned as the current master.
             current = root / 'index.m3u8'
             previous = current.read_bytes()
@@ -200,6 +219,8 @@ def journey(name, source_time):
             current.write_bytes(b''.join(b'#KINOSAIL-TRANSCODER:stale\n' if line.startswith(b'#KINOSAIL-TRANSCODER:') else line for line in lines))
             check(identity(master()) == identity(previous), 'stale_policy_master_reuse')
             case['staleMasterIdentityRegenerated'] = True
+            unchanged_source('stale_policy_regeneration', changed_size_source)
+            case['sourceReadOnlyAcrossApplicationRequests'] = True
             case['result'] = 'passed'
         except Exception as error:
             # Safe categories only; HTTP bodies, tokens, private targets and encoder stderr stay private.

@@ -57,7 +57,7 @@ func VariantReady(source, directory string) bool { //nolint:cyclop // Manifest p
 }
 
 func WriteMaster(path, transcoder string, qualities []PlaybackQuality, independent bool, write AtomicWriter) error { //nolint:cyclop // Validation and manifest construction form one atomic publication input.
-	if write == nil || len(qualities) == 0 || len(transcoder) > 1024 || strings.ContainsAny(transcoder, "\r\n") {
+	if write == nil || len(qualities) == 0 || len(transcoder) > hlsSourcePolicyLimit || strings.ContainsAny(transcoder, "\r\n") {
 		return errors.New("HLS master playlist input is invalid")
 	}
 	manifest := []byte("#EXTM3U\n#KINOSAIL-TRANSCODER:" + transcoder + "\n" + HLSBandwidthPolicyMarker + "\n#EXT-X-VERSION:7\n")

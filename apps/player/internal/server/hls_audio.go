@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/MikeO7/kinosail/packages/library"
+	"github.com/MikeO7/kinosail/packages/playback"
 )
 
 func (manager *hlsManager) encodeAudioVariant(ctx context.Context, item library.Item, directory string, options transcodeSettings, recipe, window hlsRecipe, duration, start float64, startNumber int) error {
@@ -13,10 +14,10 @@ func (manager *hlsManager) encodeAudioVariant(ctx context.Context, item library.
 		bitrate = min(bitrate, recipe.maxBitrate)
 	}
 	quality := PlaybackQuality{Label: "audio", Bitrate: max(1, bitrate)}
-	results := make(chan error, 1)
-	go func() {
-		results <- manager.encodeVariant(ctx, item, directory, "audio", "0", "", strconv.FormatInt(bitrate, 10), duration, options, recipe, window, start, startNumber)
-	}()
+	results, stop := playback.StartHLSWorker(ctx, func(ctx context.Context) error {
+		return manager.encodeVariant(ctx, item, directory, "audio", "0", "", strconv.FormatInt(bitrate, 10), duration, options, recipe, window, start, startNumber)
+	})
+	defer stop()
 	if startNumber > 0 {
 		return <-results
 	}

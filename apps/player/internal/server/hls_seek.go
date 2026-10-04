@@ -15,8 +15,9 @@ import (
 const hlsIdleTimeout = 45 * time.Second
 
 var (
-	errHLSSeekRestart = errors.New("HLS transcode replaced for seek")
-	errHLSInactive    = errors.New("HLS playback is inactive")
+	errHLSSeekRestart     = errors.New("HLS transcode replaced for seek")
+	errHLSInactive        = errors.New("HLS playback is inactive")
+	errHLSIdentityChanged = errors.New("HLS source or playback policy changed")
 )
 
 func (manager *hlsManager) newHLSJob(request context.Context, startNumber int) (context.Context, *hlsJob) {
@@ -162,6 +163,10 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 			manager.mu.Unlock()
 			return err
 		}
+		if err := manager.validateHLSPolicy(item, recipe, options.Cache); err != nil {
+			manager.mu.Unlock()
+			return err
+		}
 		if _, err = os.Stat(path); err == nil {
 			manager.mu.Unlock()
 			return nil
@@ -191,6 +196,7 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 		}
 		jobContext, created := manager.newHLSJob(ctx, segment)
 		job = created
+		job.cachePolicy = options.Cache
 		manager.jobs[key] = job
 		manager.mu.Unlock()
 		//nolint:contextcheck // Encoding uses the Server lifecycle so a disconnected segment request does not destroy shared output.
@@ -200,14 +206,10 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 }
 
 func (manager *hlsManager) seekSettings(item library.Item, recipe hlsRecipe, directory string) (transcodeSettings, error) {
-	options, err := manager.settings.transcodingFor(recipe.codec)
+	options, err := manager.hlsSettings(item, recipe)
 	if err != nil {
 		return transcodeSettings{}, err
 	}
-	if recipe.subtitlePath != "" {
-		options.Cache += ":subtitle=" + sourceVersion(recipe.subtitlePath)
-	}
-	options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=13"
 	master, readErr := os.ReadFile(filepath.Join(directory, "index.m3u8"))
 	if readErr != nil || !strings.Contains(string(master), "#KINOSAIL-TRANSCODER:"+options.Cache+"\n") {
 		return transcodeSettings{}, errors.New("playback settings changed; start a new compatible stream")
@@ -256,7 +258,7 @@ func (manager *hlsManager) prepareHLSEncodeDirectory(job *hlsJob, directory stri
 func (manager *hlsManager) runHLSEncode(ctx context.Context, item library.Item, job *hlsJob, directory string, options transcodeSettings, recipe hlsRecipe, startNumber int, preserve bool) hlsEncodeOutcome {
 	outcome := hlsEncodeOutcome{preserve: preserve}
 	job.err = manager.encodeVariants(ctx, item, directory, options, recipe, startNumber)
-	outcome.superseded = errors.Is(context.Cause(ctx), errHLSSeekRestart)
+	outcome.superseded = errors.Is(context.Cause(ctx), errHLSSeekRestart) || errors.Is(context.Cause(ctx), errHLSIdentityChanged)
 	outcome.inactive = errors.Is(context.Cause(ctx), errHLSInactive)
 	if outcome.superseded || outcome.inactive {
 		job.err = nil

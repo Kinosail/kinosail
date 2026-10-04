@@ -2,6 +2,7 @@ package playback
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"io"
@@ -15,6 +16,10 @@ import (
 	"github.com/MikeO7/kinosail/packages/privatefile"
 	"github.com/MikeO7/kinosail/packages/transcodepolicy"
 )
+
+const hlsSourcePolicyLimit = 16 * 1024
+
+var ErrHLSSourceChanged = errors.New("HLS source snapshot changed")
 
 // BindHLSEncoder keeps seek segments on the encoder that produced the existing
 // initialization data, while cache readers use the unchanged playback policy.
@@ -41,10 +46,8 @@ func BindHLSEncoder(directory string, options transcodepolicy.Settings, resume b
 // BindHLSSource records the immutable source and complete policy before encoding.
 // A retained presentation is never rebound to a different source or policy.
 func BindHLSSource(directory, source, policy string) error {
-	expected, valid := hlsPolicySourceVersion(policy)
-	current, err := hlsSourceVersion(source)
-	if !valid || err != nil || current != expected {
-		return errors.New("HLS source changed before encoding")
+	if err := ValidateHLSSource(source, policy); err != nil {
+		return err
 	}
 	root, err := openHLSSourceRoot(directory)
 	if err != nil {
@@ -99,7 +102,7 @@ func hlsSourceFresh(playlist, source, policy string) bool {
 }
 
 func hlsPolicySourceVersion(policy string) (string, bool) {
-	if len(policy) > 1024 || strings.ContainsAny(policy, "\r\n") {
+	if len(policy) > hlsSourcePolicyLimit || strings.ContainsAny(policy, "\r\n") {
 		return "", false
 	}
 	parts := strings.Split(policy, ":")
@@ -164,15 +167,15 @@ func readHLSSource(root *os.Root) ([]byte, error) {
 	if err != nil || !os.SameFile(linked, opened) || !validHLSSourceFile(opened) {
 		return nil, errors.New("HLS source cache identity is invalid")
 	}
-	data, err := io.ReadAll(io.LimitReader(file, 1025))
-	if err != nil || len(data) > 1024 {
+	data, err := io.ReadAll(io.LimitReader(file, hlsSourcePolicyLimit+1))
+	if err != nil || len(data) > hlsSourcePolicyLimit {
 		return nil, errors.New("HLS source cache identity is invalid")
 	}
 	return data, nil
 }
 
 func validHLSSourceFile(info os.FileInfo) bool {
-	return info.Mode().IsRegular() && info.Size() > 0 && info.Size() <= 1024
+	return info.Mode().IsRegular() && info.Size() > 0 && info.Size() <= hlsSourcePolicyLimit
 }
 
 func writeHLSSource(root *os.Root, data []byte) error {
@@ -193,4 +196,36 @@ func writeHLSSource(root *os.Root, data []byte) error {
 		return err
 	}
 	return root.Rename(".source.pending", ".source")
+}
+
+// ValidateHLSSource distinguishes a changed snapshot from invalid or missing input.
+func ValidateHLSSource(source, policy string) error {
+	expected, valid := hlsPolicySourceVersion(policy)
+	if !valid {
+		return errors.New("HLS source policy is invalid")
+	}
+	current, err := hlsSourceVersion(source)
+	if err != nil {
+		return err
+	}
+	if current != expected {
+		return ErrHLSSourceChanged
+	}
+	return nil
+}
+
+// StartHLSWorker keeps cancellation and worker completion under one owner.
+// Callers defer the returned stop function before publishing or returning output.
+func StartHLSWorker(parent context.Context, encode func(context.Context) error) (<-chan error, func()) {
+	ctx, cancel := context.WithCancel(parent)
+	results := make(chan error, 1)
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		results <- encode(ctx)
+	}()
+	return results, func() {
+		cancel()
+		<-done
+	}
 }
