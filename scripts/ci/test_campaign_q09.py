@@ -1,7 +1,10 @@
 """Admission controls for Q09 evidence; no actual Go/Node/browser execution."""
 import importlib.util
 import json
+import os
 from pathlib import Path
+import signal
+import sys
 import tempfile
 import unittest
 
@@ -69,6 +72,48 @@ class Q09ProofTests(unittest.TestCase):
         actual = self.verify(data)
         self.assertFalse(actual['passed'])
         self.assertNotIn('PRIVATE-FAKE', json.dumps(actual))
+
+    def test_missing_false_nonlist_errors_and_bad_result_shapes_reject(self):
+        for errors in (None, False, {}, 'PRIVATE-FAKE'):
+            data = self.result()
+            if errors is None: del data['errors']
+            else: data['errors'] = errors
+            with self.subTest(errors=errors), self.assertRaises(ValueError):
+                self.verify(data)
+        for part in ('spec', 'case', 'attempt'):
+            data = self.result()
+            specs = data['suites'][0]['specs']
+            if part == 'spec': specs[0] = False
+            elif part == 'case': specs[0]['tests'][0] = False
+            else: specs[0]['tests'][0]['results'][0] = False
+            with self.subTest(part=part), self.assertRaises(ValueError):
+                self.verify(data)
+
+    def test_completed_leader_settles_its_owned_descendant(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            child = 'import signal,time;signal.signal(signal.SIGTERM,signal.SIG_IGN);time.sleep(60)'
+            parent = ('import os,subprocess,sys;from pathlib import Path;'
+                      'Path(sys.argv[1]).write_text(str(os.getpgrp()));'
+                      'subprocess.Popen([sys.executable,"-c",sys.argv[2]])')
+            pid = None
+            try:
+                result = self.driver.execute([sys.executable, '-c', parent, str(root / 'pid'), child],
+                                             root, os.environ, root / 'log', 2)
+                pid = int((root / 'pid').read_text())
+                self.assertTrue(result.get('ownedGroupSettled'))
+            finally:
+                if pid is None and (root / 'pid').exists(): pid = int((root / 'pid').read_text())
+                if pid:
+                    try: os.killpg(pid, signal.SIGKILL)
+                    except ProcessLookupError: pass
+
+    def test_real_embed_and_executed_binary_provenance_is_prepared(self):
+        source = DRIVER.read_text()
+        self.assertNotIn("extensions =", source)
+        self.assertIn("'compiledTestBinary'", source)
+        self.assertIn("'test2json'", source)
+        self.assertIn("'privateEvidenceLimit'", source)
 
     def test_native_fixture_explicitly_forbids_retry_and_only(self):
         source = (ROOT / 'apps/player/internal/server/download_pause_browser_test.go').read_text()

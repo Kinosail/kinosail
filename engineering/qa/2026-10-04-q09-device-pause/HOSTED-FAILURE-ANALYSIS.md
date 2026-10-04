@@ -26,3 +26,15 @@ manifest JSON: fixed labels/statuses, bounded source/evidence hashes and exact
 revision. Failures require separate private-log classification before calling
 them product RED. Cold dependencies are prepared separately by the approved
 manual layout workflow; compilation timeout remains incomplete proof.
+
+Independent review required universal group settlement, malformed-report
+rejection, full embed provenance and actual executed-binary identity. Prepared
+negative controls reproduced those driver gaps before correction: eight
+controls ran with five failures and three malformed-shape errors. The corrected
+driver compiles one actual Go test binary under a separate90-second external
+bound, hashes it, and executes it twice through Go's test2json. It pins all
+tracked Player/package inputs including non-code embeds and workspace modules.
+Every command settles its owned group after any exit. Fixed failure source
+locations and hashes are retained; raw private/visual evidence remains ephemeral
+and cannot support later visual inspection. Original reviewed250 artifacts stay
+preserved and separate. These driver controls do not prove public product cases.
