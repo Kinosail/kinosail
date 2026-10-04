@@ -1,9 +1,12 @@
 import hashlib
+import datetime
 import json
 import pathlib
+import select
 import shutil
 import subprocess
 import sys
+import time
 
 fixture = pathlib.Path(__file__).resolve().parent
 app = fixture.parents[1]
@@ -13,6 +16,8 @@ output.mkdir(parents=True, exist_ok=False)
 media = output / "media"
 media.mkdir()
 commands = []
+started = datetime.datetime.now(datetime.UTC).isoformat()
+clock = time.monotonic()
 
 
 def run(command, **kwargs):
@@ -28,6 +33,7 @@ run(["xcrun", "swiftc", "-parse-as-library", "-module-cache-path", str(output / 
 with (output / "server.log").open("w") as log:
     server = subprocess.Popen([str(output / "server"), str(media), str(output / "data"), shutil.which("ffprobe"), shutil.which("ffmpeg")], stdout=subprocess.PIPE, stderr=log, text=True)
     try:
+        assert select.select([server.stdout], [], [], 30)[0], "Loopback server startup exceeded 30 seconds"
         origin = server.stdout.readline().strip()
         assert origin.startswith("http://127.0.0.1:")
         command = [str(output / "native"), origin, str(output)]
@@ -36,10 +42,14 @@ with (output / "server.log").open("w") as log:
         (output / "native.log").write_text(result.stdout + result.stderr)
     finally:
         server.terminate()
-        server.wait(timeout=10)
-hashes = {str(path.relative_to(repo)): hashlib.sha256(path.read_bytes()).hexdigest() for path in sources + [fixture / "main.swift", fixture / "server.go"]}
+        try:
+            server.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            server.kill()
+            server.wait(timeout=5)
+hashes = {str(path.relative_to(repo)): hashlib.sha256(path.read_bytes()).hexdigest() for path in sources + [fixture / "main.swift", fixture / "server.go", app / "apps/native/Sources/Services/PlaybackAPI.swift"]}
 hashes["fixture.mp4"] = hashlib.sha256((media / "Fictional.mp4").read_bytes()).hexdigest()
-receipt = {"revision": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=repo, text=True).strip(), "commands": commands, "hashes": hashes, "exitCode": result.returncode, "boundary": "Real loopback Player handler and production Swift Core; no physical playback or Nox request"}
+receipt = {"startedUTC": started, "elapsedSeconds": time.monotonic() - clock, "revision": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=repo, text=True).strip(), "commands": commands, "hashes": hashes, "exitCode": result.returncode, "boundary": "Real loopback Player handler and production Swift Core; no physical playback or Nox request"}
 (output / "receipt.json").write_text(json.dumps(receipt, indent=2))
 print(result.stdout + result.stderr)
 sys.exit(result.returncode)
