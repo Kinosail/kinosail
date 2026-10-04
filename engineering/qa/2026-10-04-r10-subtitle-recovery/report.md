@@ -97,6 +97,9 @@ Independent source/evidence review is clear at product `e3651e1e`, with the
 stronger Go-only harness rechecked at `7dfe6005`; see `independent-review.md`.
 Required CI hook, `make verify-changed`, `make test-instance-check`, final
 protected checks, PR, merge and fetched ancestry are owned by the integration
-owner. Final populated evidence review is requested at this exact checkpoint. `test-container.sh` remains untouched during R03 integration.
+owner. Final populated evidence review is independently clear at `2ace6b75`: all
+163 artifacts, eight source/context inputs, composed asset and responsive
+captures match. This report update records that clearance without a product
+or harness change. `test-container.sh` remains untouched during R03 integration.
 
-MAIN: NO — awaiting final evidence review, required integration/hosted gates and merge ancestry.
+MAIN: NO — awaiting required integration/hosted gates and merge ancestry.

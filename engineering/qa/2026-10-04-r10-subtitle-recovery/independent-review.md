@@ -31,3 +31,21 @@ are unchanged. Final populated evidence must be pinned to that later harness.
 This review does not establish Go-rendered delivery, playable video, actual
 BFCache admission, WebKit, required CI hook or protected checks. Those remaining
 boundaries are tracked in the main report and owned by integration where noted.
+
+## Final populated evidence clearance
+
+The reviewer independently cleared
+`2ace6b75d02751efaf3dc7631f72cb7d0d68403d`. All eight context/source inputs
+and 163 artifact digests match. Six real Go/Chromium cases pass with no skipped,
+unexpected, flaky or error results; all deadline receipts observe one request
+and one closed request. The reviewer independently composed the 122826-byte
+player asset and matched checksum
+`0ff9a9da7c93d26ef3a756f46c9f98fb72a23bd08d75491a2873743e31579b51`
+to every served receipt. All 12 body-state responsive captures were inspected
+with no defect. The seven-file canonical source manifest is
+`d49bf51b3c275fdd2a0099d3e38ddce14482c4200ea991b75ad127b24640e215`.
+
+Product and harness remain unchanged after that clearance. The final report
+update only records the outcome and refreshes its artifact hashes. Actual
+BFCache admission/navigation, other browsers/devices and required integration
+checks remain separate limits. No independent-review build or edit occurred.
