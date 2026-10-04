@@ -7,6 +7,7 @@ import java.net.URLDecoder
 import java.security.Provider
 import java.security.Security
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -19,6 +20,10 @@ internal class AndroidRecoveryFixture(private val application: Application) : Au
     val viewer = Viewer("Recovery fixture", "recovery-server", "recovery-viewer", "Viewer")
     val catalogOffsets = CopyOnWriteArrayList<Int>()
     val catalogQueries = CopyOnWriteArrayList<String>()
+    val completedCatalogQueries = CopyOnWriteArrayList<String>()
+    val catalogTotals = ConcurrentHashMap<String, Int>()
+    val catalogFailures = ConcurrentHashMap<String, Int>()
+    val catalogGates = ConcurrentHashMap<String, CountDownLatch>()
     val remoteUpdates = CopyOnWriteArrayList<Pair<String, String>>()
     val playbackRequests = AtomicInteger()
     val requestPaths = CopyOnWriteArrayList<String>()
@@ -48,6 +53,7 @@ internal class AndroidRecoveryFixture(private val application: Application) : Au
             val authorized = request.requestHeaders.getFirst("Authorization") == "Bearer recovery-fixture" &&
                 (path == "/api/v1/me" || request.requestHeaders.getFirst("X-Kinosail-Viewer-Profile") == viewer.id)
             var status = if (authorized) 200 else 401
+            var catalogQuery: String? = null
             val body = when {
                 path == "/api/v1/me" ->
                     """{"server":"${viewer.server}","serverId":"${viewer.serverId}","viewer":{"id":"${viewer.id}","name":"${viewer.name}"}}"""
@@ -59,12 +65,16 @@ internal class AndroidRecoveryFixture(private val application: Application) : Au
                     val offset = query["offset"]?.toInt() ?: 0
                     val limit = query["limit"]?.toInt() ?: 24
                     val search = query["q"].orEmpty()
+                    catalogQuery = search
                     catalogOffsets += offset; catalogQueries += search
-                    check(catalogGate.await(5, TimeUnit.SECONDS))
+                    check((catalogGates[search] ?: catalogGate).await(5, TimeUnit.SECONDS))
                     if (offset == failingOffset) status = catalogFailure
+                    catalogFailures[search]?.let { status = it }
+                    val total = catalogTotals[search] ?: 96
+                    check(total in 0..96)
                     val begin = if (duplicatePage && offset > 0) 0 else offset
-                    val items = (begin until minOf(begin + limit, 96)).joinToString(",") { item(it + 1) }
-                    """{"items":[$items],"total":96,"offset":$offset,"limit":$limit,"query":"$search"}"""
+                    val items = (begin until minOf(begin + limit, total)).joinToString(",") { item(it + 1) }
+                    """{"items":[$items],"total":$total,"offset":$offset,"limit":$limit,"query":${JsonPrimitive(search)}}"""
                 }
                 path.endsWith("/playback") -> {
                     playbackRequests.incrementAndGet()
@@ -84,6 +94,7 @@ internal class AndroidRecoveryFixture(private val application: Application) : Au
             request.responseHeaders.set("Content-Type", "application/json")
             request.sendResponseHeaders(status, body.size.toLong())
             request.responseBody.use { it.write(body) }
+            catalogQuery?.let { completedCatalogQueries += it }
         }
         server.start()
         SessionStore(application).save(SavedSession(ServerAddress("http://127.0.0.1:${server.address.port}"),
@@ -95,6 +106,7 @@ internal class AndroidRecoveryFixture(private val application: Application) : Au
 
     override fun close() {
         catalogGate.countDown()
+        catalogGates.values.forEach { it.countDown() }
         server.stop(0)
         executor.shutdownNow()
         SessionStore(application).clear()
