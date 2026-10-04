@@ -1,5 +1,6 @@
 import {expect, test, type Page} from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import {createHash} from "node:crypto";
 import {configureTestInstance, login} from "./test-instance-helpers";
 
 configureTestInstance();
@@ -55,6 +56,15 @@ test("real album queue advances source and all Now Playing identity to the ficti
   const queue = page.waitForResponse(response => new URL(response.url()).pathname === `/api/v1/audio/${first.id}/queue`);
   await page.goto(`/watch/${first.id}`);
   expect((await queue).status()).toBe(200);
+  const playerAsset = await page.locator('script[src^="/static/player.js?"]').getAttribute("src");
+  expect(playerAsset).toBeTruthy();
+  const asset = await page.request.get(playerAsset!);
+  expect(asset.status()).toBe(200);
+  const assetHash = createHash("sha256").update(await asset.body()).digest("hex");
+  expect(new URL(playerAsset!, "https://fixture.invalid").searchParams.get("v")).toBe(assetHash);
+  expect(asset.headers()["cache-control"]).toBe("public, max-age=31536000, immutable");
+  await testInfo.attach("player-content-cache-delivery", {body: JSON.stringify({path: playerAsset, sha256: assetHash,
+    cacheControl: asset.headers()["cache-control"]}), contentType: "application/json"});
   const media = page.locator("audio");
   await expect.poll(() => media.evaluate((audio: HTMLAudioElement) => audio.readyState)).toBeGreaterThanOrEqual(2);
   await expect(page.locator(".title-block h1")).toHaveText(first.title);
