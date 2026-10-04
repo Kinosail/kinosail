@@ -94,7 +94,10 @@ def main():
     except ValueError as failure:
         # Every ValueError above is a fixed local code, never remote input.
         result = {'revision': revision, 'result': 'failed', 'reason': str(failure)}
-    (run / 'hls-phases.json').write_text(json.dumps(result, indent=2) + '\n')
+    artifact = run / 'hls-phases.json'
+    artifact.write_text(json.dumps(result, indent=2) + '\n')
+    digest = hashlib.sha256(artifact.read_bytes()).hexdigest()
+    (run / 'hls-phases.sha256').write_text(f'{digest}  hls-phases.json\n')
     print(json.dumps({key: value for key, value in result.items() if key != 'events'}))
     raise SystemExit(0 if result['result'] == 'passed' else 1)
 

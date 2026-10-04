@@ -276,6 +276,7 @@ jobs:
           path: |
             .verification/startup/*/receipt.json
             .verification/startup/*/hls-phases.json
+            .verification/startup/*/hls-phases.sha256
             .verification/startup/*/resources.json
             .verification/startup/*/SHA256SUMS
             .verification/startup/*/results/**/startup-measurements.json

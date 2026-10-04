@@ -88,3 +88,4 @@ and workflow validation passed. Full hosted checks and real-media phase evidence
 are still pending. The hosted phase extraction step uses the existing synthetic
 browser journey without changing PR455's startup runner or browser fixtures.
 It retains fixed enums and bounded numbers and strips request identifiers.
+Its separate SHA256 sidecar covers the phase JSON produced after the journey.

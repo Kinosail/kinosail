@@ -49,10 +49,11 @@ func (buffer *phaseLogBuffer) Write(data []byte) (int, error) {
 	defer buffer.Unlock()
 	return buffer.Buffer.Write(data)
 }
+
 func (buffer *phaseLogBuffer) snapshot() string {
 	buffer.Lock()
 	defer buffer.Unlock()
-	return buffer.Buffer.String()
+	return buffer.String()
 }
 
 func phaseFixture(t *testing.T, count int, executable bool) phaseHTTPFixture {
@@ -77,7 +78,11 @@ func phaseFixture(t *testing.T, count int, executable bool) phaseHTTPFixture {
 	host := httptest.NewServer(New(Config{Lifecycle: ctx, MediaDir: media, DataDir: t.TempDir(), CacheDir: cache, FFprobe: probe, FFmpeg: encoder}))
 	t.Cleanup(func() { cancel(); host.Close() })
 	fixture := phaseHTTPFixture{host: host, client: &http.Client{Timeout: 4 * time.Second}, starts: starts, release: release, media: media, cache: cache, output: output, cancel: cancel}
-	response, err := fixture.client.Get(host.URL + "/?view=movies")
+	request, err := http.NewRequestWithContext(t.Context(), http.MethodGet, host.URL+"/?view=movies", nil)
+	if err != nil {
+		t.Fatal("cannot create synthetic Movies request")
+	}
+	response, err := fixture.client.Do(request)
 	if err != nil {
 		t.Fatal("synthetic Movies HTTP request failed")
 	}
