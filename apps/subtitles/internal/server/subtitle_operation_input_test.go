@@ -42,14 +42,15 @@ func TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects(t *test
 	for _, test := range cases {
 		t.Run(test.name, func(t *testing.T) {
 			response := requestJSON(t, handler, http.MethodPost, "/api/v1/subtitle-operations"+test.query, test.body)
-			if response.Code != test.status {
-				t.Fatalf("operation preparation rejection = %d, want %d", response.Code, test.status)
-			}
 			assertSubtitleActionBytes(t, target, []byte(subtitleActionInitial))
 			if _, err := os.Stat(target + ".kinosail.bak"); !os.IsNotExist(err) {
 				t.Fatalf("rejected preparation created recovery data: %v", err)
 			}
 			_ = subtitleActionHistory(t, handler, nil, nil)
+			t.Logf("preparation status=%d; current bytes unchanged, recovery absent, History empty", response.Code)
+			if response.Code != test.status {
+				t.Fatalf("operation preparation rejection = %d, want %d", response.Code, test.status)
+			}
 		})
 	}
 }
