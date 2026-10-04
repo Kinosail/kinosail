@@ -1,0 +1,76 @@
+{
+  "revision": "ee2c009cd5a3e49cb920491f674a0b954498c5f7",
+  "result": "reproduced",
+  "cases": [
+    {
+      "title": "real album queue advances source and all Now Playing identity to the fictional second track",
+      "status": "failed",
+      "startTime": "2026-10-04T09:12:05.782Z",
+      "durationMs": 1566,
+      "observed": {
+        "player-content-cache-delivery": {
+          "path": "/static/player.js?v=89fb849c4aa3b7844a805efaade1a7e293c4d90e7b44f53548ae274610b6a783",
+          "sha256": "89fb849c4aa3b7844a805efaade1a7e293c4d90e7b44f53548ae274610b6a783",
+          "cacheControl": "public, max-age=31536000, immutable"
+        },
+        "now-playing-after-real-advance": {
+          "heading": "Lantern Start",
+          "byline": "Aster Vale \u00b7 R08 Fictional Session \u00b7 Track 1",
+          "accessibleLabel": "Lantern Start",
+          "documentTitle": "Lantern Start \u00b7 Kinosail Player",
+          "sourcePath": "/media/31c330f7ead4c950",
+          "progressPath": "/progress/31c330f7ead4c950",
+          "castPath": "/api/v1/items/31c330f7ead4c950/cast",
+          "tracePath": "/api/v1/items/8d805c66afc67747/playback-events",
+          "sourceSessionMatches": false,
+          "title": "Copper <Moon> & Harbor",
+          "artist": "Aster Vale",
+          "album": "R08 Fictional Session",
+          "artworkPath": "/art/31c330f7ead4c950",
+          "visibleArtworkPath": "",
+          "metadataTitle": "Lantern Start",
+          "metadataArtist": "Aster Vale",
+          "metadataAlbum": "R08 Fictional Session",
+          "metadataArtworkPath": "/art/8d805c66afc67747",
+          "queuePosition": 0,
+          "queueTotal": 0
+        }
+      }
+    },
+    {
+      "title": "real album queue advances source and all Now Playing identity to the fictional second track",
+      "status": "failed",
+      "startTime": "2026-10-04T09:12:18.440Z",
+      "durationMs": 1470,
+      "observed": {
+        "player-content-cache-delivery": {
+          "path": "/static/player.js?v=89fb849c4aa3b7844a805efaade1a7e293c4d90e7b44f53548ae274610b6a783",
+          "sha256": "89fb849c4aa3b7844a805efaade1a7e293c4d90e7b44f53548ae274610b6a783",
+          "cacheControl": "public, max-age=31536000, immutable"
+        },
+        "now-playing-after-real-advance": {
+          "heading": "Lantern Start",
+          "byline": "Aster Vale \u00b7 R08 Fictional Session \u00b7 Track 1",
+          "accessibleLabel": "Lantern Start",
+          "documentTitle": "Lantern Start \u00b7 Kinosail Player",
+          "sourcePath": "/media/31c330f7ead4c950",
+          "progressPath": "/progress/31c330f7ead4c950",
+          "castPath": "/api/v1/items/31c330f7ead4c950/cast",
+          "tracePath": "/api/v1/items/8d805c66afc67747/playback-events",
+          "sourceSessionMatches": false,
+          "title": "Copper <Moon> & Harbor",
+          "artist": "Aster Vale",
+          "album": "R08 Fictional Session",
+          "artworkPath": "/art/31c330f7ead4c950",
+          "visibleArtworkPath": "",
+          "metadataTitle": "Lantern Start",
+          "metadataArtist": "Aster Vale",
+          "metadataAlbum": "R08 Fictional Session",
+          "metadataArtworkPath": "/art/8d805c66afc67747",
+          "queuePosition": 0,
+          "queueTotal": 0
+        }
+      }
+    }
+  ]
+}

@@ -72,6 +72,24 @@ authorization or malformed queue rejection without source/progress side effects,
 offline/cast ownership, unsupported system controls, and progress-save recovery.
 Use isolated cases only where real Server fixtures cannot cause the boundary fault.
 
+## Confirmed public reproduction
+
+At `ee2c009cd5a3e49cb920491f674a0b954498c5f7`, the native Go Server reproduced
+the defect twice. Both cases switched audio source and progress to the second
+track while heading, accessible label, document title, artist, and native Media
+Session metadata retained the first track. The trace endpoint also retained the
+first item, and the second source lost playback-session correlation.
+
+`red-results.json` contains the safe runtime snapshots. The two red screenshots
+show the actual populated page. `red-receipt.json` binds source, Go dependency and
+embed inventory, native product, fixture, and raw private artifact hashes. Its
+strict named result check distinguishes two intended assertion failures from a
+setup or navigation failure. No production changes preceded this reproduction.
+
+The generated WAV fixture uses Python's standard library, with no encoder process.
+Raw browser traces, Server logs, account state, and failed-run details remain in
+ignored `.verification/r08-now-playing/20261004T091152Z`. All state is preserved.
+
 ## Ownership
 
 R08 owns `player-progress.js`, `player-presentation.js`, shared Go metadata template
