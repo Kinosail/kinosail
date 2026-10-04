@@ -264,6 +264,9 @@ jobs:
           GOMAXPROCS: "4"
           KINOSAIL_STARTUP_BROWSER_CHANNEL: chromium
         run: python3 apps/player/scripts/test-startup-local.py
+      - name: Verify bounded HLS phase evidence
+        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        run: python3 apps/player/scripts/hls-phase-evidence.py
       - name: Keep safe startup evidence
         if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
@@ -272,6 +275,8 @@ jobs:
           include-hidden-files: true
           path: |
             .verification/startup/*/receipt.json
+            .verification/startup/*/hls-phases.json
+            .verification/startup/*/hls-phases.sha256
             .verification/startup/*/resources.json
             .verification/startup/*/SHA256SUMS
             .verification/startup/*/results/**/startup-measurements.json

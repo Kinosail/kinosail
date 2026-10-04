@@ -65,12 +65,23 @@ func (buffer *HLSDiagnosticBuffer) Write(data []byte) (int, error) {
 func (buffer *HLSDiagnosticBuffer) Bytes() []byte { return append([]byte(nil), buffer.data...) }
 
 func RunHLSCommand(command *exec.Cmd, private ...string) error {
+	return RunHLSCommandObserved(command, nil, private...)
+}
+
+// RunHLSCommandObserved reports a successful child launch before waiting for its exit.
+func RunHLSCommandObserved(command *exec.Cmd, started func(), private ...string) error {
 	if command == nil {
 		return NewHLSDiagnosticError(errors.New("transcoder command is missing"), "")
 	}
 	var diagnostic HLSDiagnosticBuffer
 	command.Stderr = &diagnostic
-	if err := command.Run(); err != nil {
+	if err := command.Start(); err != nil {
+		return NewHLSDiagnosticError(err, string(diagnostic.data), private...)
+	}
+	if started != nil {
+		started()
+	}
+	if err := command.Wait(); err != nil {
 		return NewHLSDiagnosticError(err, string(diagnostic.data), private...)
 	}
 	return nil
