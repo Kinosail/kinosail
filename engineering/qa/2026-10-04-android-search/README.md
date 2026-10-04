@@ -1,13 +1,13 @@
-# Q03 Android search feedback: test-first plan
+# Q03 Android search feedback: verification record
 
 Canonical item: Q03 / AND-Q04. Reliability R09/R13 are the preceding batch.
-Q03 acceptance RED is confirmed; the narrow production implementation is now
-present and scheduled candidate GREEN verification is pending.
+Q03 acceptance RED and candidate GREEN are confirmed. The implementation adds
+submitted-result feedback and an explicit Clear search control.
 Baseline: frozen recovery candidate `47bcc64c8d737b1249498ea402e41788d781507b`,
 with origin/main `50fd82f329c651258245451a55b8fff8dfa9adec` reconciled.
 R09/R13 subsequently merged in PR #466. The queued Q03 baseline branch is
 reconciled with fetched main `d440fb05ede52498b08c9a0b53d2ea929a1b584b`;
-Q03 production remains identical to that merged Android tree.
+Q03 production was identical to that merged Android tree during acceptance RED.
 
 Use the existing bounded explicit Search/IME request. Add a labeled Clear search
 control and a polite result announcement bound to the submitted query and the
@@ -33,8 +33,7 @@ current populated Go Server result ranking remain separately named boundaries.
 The fixture validates request decoding/auth headers but cannot prove the Server
 search algorithm. Retain existing catalog parser and generation checks.
 
-Failure reproduction and GREEN results are pending separately scheduled bounded
-Gradle runs. Eight active native journeys now cover phone/tablet/TV submitted
+Eight active native journeys cover phone/tablet/TV submitted
 results, draft edits, independent phone/TV Clear paths, pending/failed queries,
 zero matches with a quoted Unicode query, and an older held HTTP response after
 a newer successful query. The fixture keeps default R09 data unchanged and adds
@@ -51,11 +50,9 @@ and show a bounded submitted query independently of draft edits. Existing Server
 query ranking, API validation and authorization need no production changes.
 
 `SearchFeedbackJourneyTest` uses a displayed, focused Search destination and
-actual TV center-key input, then the native field/IME and Clear controls. It has
-not yet compiled or run. The earlier smaller inactive draft remains outside the
-application source set as preparation history and is not runtime evidence.
-Runtime availability and benefit remain unverified until baseline and candidate
-native journeys execute.
+actual TV center-key input, then the native field/IME and Clear controls.
+The earlier smaller inactive draft remains outside the application source set.
+It is preparation history and is not runtime evidence.
 
 ## Acceptance RED before production edits
 
@@ -103,6 +100,43 @@ boundary. Keep first-page loading placeholders and the empty/failure copy alongs
 the new count; it must not reduce the area available to search results below the
 native phone navigation or TV remote controls.
 
+## Candidate GREEN and inspected renders
+
+At exact source commit `32b73eaa19c6dcafe8a772056a32db2ea8d3533d`, the
+bounded candidate run completed in 33 seconds: 16 executed and passed, with zero
+failures, errors or skips. All eight native Q03 journeys and eight R09 controls
+passed. The tests and HTTP fixture were unchanged from acceptance RED.
+
+Native phone, tablet and TV journeys reached these observable behaviors:
+
+- Draft edits send no request and retain the submitted query's count label.
+- Successful responses show the Server total and submitted query in a polite live region.
+- One Clear action clears the field and sends one empty query.
+- Focused TV Clear accepts center-key input and retains focus after completion.
+- A new pending or failed query removes the older submitted-result summary.
+- A quoted Unicode query with no matches shows total zero and empty-state copy.
+- A held older HTTP response cannot replace or relabel the newer successful result.
+
+The receipt pins six production/test source hashes, two nonzero XML reports, the
+Gradle log, 14 native host PNGs and 14 semantics files:
+`task-2/android-search-green/receipt.json`, SHA-256
+`353f90ee3157b2b0cec810e7e7342cae20722080ca3bb8ccfa5488f5630e9842`.
+Evidence-only follow-ups must preserve these executed source hashes.
+
+All 14 PNGs were inspected. New count and Clear copy remain readable within the
+phone, tablet and TV layouts. Pending shows placeholders without the old count.
+Failure removes placeholders and count. Zero results show the zero count and
+empty-state message. The TV cleared render shows focus on Clear search.
+The existing phone/tablet Search heading remains low contrast, matching baseline;
+this unchanged styling is a separate observation, not a whole-screen contrast pass.
+
+These are isolated native host journeys through actual models, decoders and
+SessionStore with an authenticated disposable HTTP stand-in. They protect the
+native query/count/focus behavior that browser E2E does not reach. They do not
+prove populated Go Server ranking, hardware input, observed TalkBack speech,
+large-text/RTL or non-English layouts, media playback, device installation or
+deployment. No actual user data was used or deleted.
+
 From `apps/player/apps/android`, request the serial build slot before running:
 
 ```sh
@@ -115,7 +149,7 @@ KINOSAIL_ANDROID_SEARCH_EVIDENCE=/tmp/android-search-evidence \
 ```
 
 The eight R09 model controls accompany the eight Q03 native journeys to check
-that new fixture controls do not alter recovery behavior. Capture and reconcile
-nonzero XML counts and separate intended missing-control/summary assertions from
-harness failures. No production behavior, device install, encoder or external
-sharing occurs in this baseline run.
+that fixture controls preserve recovery behavior. Preserve nonzero XML counts
+and separate intended feature failures from prerequisite or harness failures.
+The command uses disposable fixtures and creates local artifacts. It does not
+install an application, encode media, deploy or share externally.
