@@ -56,6 +56,7 @@ def control(source, output, name):
     env = dict(os.environ, PATH=str(root / "control-tools") + os.pathsep + os.environ["PATH"],
                GITHUB_SHA=revision, R06_DRIVER_CASE=name, R06_DRIVER_SCOPE=str(root / "apps/subtitles/engineering/qa/2026-10-04-action-recovery/hosted" / scope_name),
                R06_DRIVER_STARTED=str(root / "fake-go-started"), R06_DRIVER_DESCENDANT=str(root / "fake-descendant"),
+               R06_DRIVER_COMPILE_STARTED=str(root / "fake-compile-started"), R06_DRIVER_BINARY_STARTED=str(root / "fake-binary-started"),
                R06_DRIVER_DRIFT=str(root / "driver-control-marker.txt"))
     if name == "hosted-missing-revision":
         env.pop("GITHUB_SHA")
@@ -69,11 +70,11 @@ def control(source, output, name):
         evidence = root / "safe-results"
         command += ["--output", str(evidence)]
     if name == "permission-denied":
-        command = [sys.executable, "-c", "import os,runpy,sys; sys.path.insert(0,'apps/subtitles/scripts'); os.killpg=lambda *a: (_ for _ in ()).throw(PermissionError('fictional control')); sys.argv=['apps/subtitles/scripts/campaign-r06-public.py','--output',sys.argv[1]]; runpy.run_path(sys.argv[0],run_name='__main__')", str(evidence)]
+        command = [sys.executable, "-c", "import os,runpy,sys; from pathlib import Path; sys.path.insert(0,'apps/subtitles/scripts'); real=os.killpg; os.killpg=lambda *a: (_ for _ in ()).throw(PermissionError('fictional control')) if Path(os.environ['R06_DRIVER_STARTED']).exists() else real(*a); sys.argv=['apps/subtitles/scripts/campaign-r06-public.py','--output',sys.argv[1]]; runpy.run_path(sys.argv[0],run_name='__main__')", str(evidence)]
     started = time.monotonic()
     group_absent_before_cleanup = None
     try:
-        result = subprocess.run(command, cwd=root, env=env, capture_output=True, timeout=105)
+        result = subprocess.run(command, cwd=root, env=env, capture_output=True, timeout=240)
         if (root / "fake-go-started").exists():
             try:
                 os.killpg(int((root / "fake-go-started").read_text()), 0)
@@ -82,9 +83,11 @@ def control(source, output, name):
                 group_absent_before_cleanup = True
     finally:
         # Only a PID recorded by this control's fake executable is eligible.
-        if (root / "fake-go-started").exists():
+        for pid_file in ("fake-go-started", "fake-compile-started"):
+            if not (root / pid_file).exists():
+                continue
             try:
-                os.killpg(int((root / "fake-go-started").read_text()), signal.SIGKILL)
+                os.killpg(int((root / pid_file).read_text()), signal.SIGKILL)
             except ProcessLookupError:
                 pass
     receipt = json.loads((evidence / "receipt.json").read_text())
@@ -101,6 +104,10 @@ def control(source, output, name):
         assert result.returncode == 0 and receipt["classification"] == "focused-public-protocol-green"
         assert receipt["ownedProcessExited"] and receipt["ownedGroupSettled"]
         assert group_absent_before_cleanup
+        assert receipt["compilation"]["exitCode"] == 0 and receipt["compilation"]["ownedGroupSettled"]
+        assert receipt["compiledTestBinarySHA256"] == hashlib.sha256((evidence/"work/public-server.test").read_bytes()).hexdigest()
+        assert receipt["compiledBinaryUnchanged"] and receipt["publicRuntimeWasLaunched"]
+        assert receipt["bounds"]["compileSeconds"] == 120 and receipt["bounds"]["goSeconds"] == 80 and receipt["bounds"]["externalSeconds"] == 90
     elif name == "leader-exit-held-stdout":
         assert result.returncode != 0 and receipt["stopReason"] == "external-timeout"
         assert 89 <= time.monotonic() - started <= 102
@@ -115,6 +122,22 @@ def control(source, output, name):
         assert receipt["sourcesUnchanged"] and receipt["trackedTreeUnchanged"] and receipt["R16Preserved"]
     elif name == "tracked-drift":
         assert result.returncode != 0 and not receipt["trackedTreeUnchanged"]
+    elif name.startswith("compile-"):
+        assert result.returncode != 0 and receipt["classification"] == "incomplete-or-failed"
+        assert receipt["compilation"]["goWasLaunched"]
+        if name == "compile-stream-is-not-tests":
+            assert receipt["publicRuntimeWasLaunched"] and results["counts"]["topLevel"]["pass"] == 0
+        else:
+            assert not receipt["publicRuntimeWasLaunched"]
+        if name == "compile-leader-held-stdout":
+            assert receipt["compilation"]["stopReason"] == "external-timeout"
+            assert 119 <= time.monotonic()-started <= 132
+            assert receipt["compilation"]["ownedProcessExited"] and receipt["compilation"]["ownedGroupSettled"]
+        else:
+            assert results["counts"]["topLevel"]["pass"] == 0 and results["counts"]["subtests"]["pass"] == 0
+    elif name == "binary-mutated-during-runtime":
+        assert result.returncode != 0 and not receipt["compiledBinaryUnchanged"]
+        assert results["counts"]["topLevel"]["pass"] == 33 and results["counts"]["subtests"]["pass"] == 45
     else:
         assert result.returncode != 0 and receipt["classification"] == "incomplete-or-failed"
         if name.startswith("package-"):
@@ -132,7 +155,9 @@ def main():
     args.output.mkdir(exist_ok=False)
     cases = ["default-output", "hosted-missing-revision", "hosted-wrong-revision", "private-sentinel",
              "package-fail-pass", "package-duplicate", "invalid-action", "missing-action", "boolean-test",
-             "boolean-elapsed", "missing-elapsed", "tracked-drift", "permission-denied", "leader-exit-held-stdout"]
+             "boolean-elapsed", "missing-elapsed", "tracked-drift", "permission-denied", "leader-exit-held-stdout",
+             "compile-failure", "compile-missing-binary", "compile-symlink-binary", "compile-source-drift",
+             "compile-stream-is-not-tests", "binary-mutated-during-runtime", "compile-leader-held-stdout"]
     records = [control(args.source.resolve(), args.output, name) for name in cases]
     (args.output / "control-receipt.json").write_text(json.dumps({"boundary": "fictional-only; source prepared before driver correction", "cases": records}, indent=2) + "\n")
 
