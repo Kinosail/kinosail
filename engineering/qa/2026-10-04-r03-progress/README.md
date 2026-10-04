@@ -137,3 +137,31 @@ Their deterministic `.log.gz` companions preserve the byte-exact originals from
 `6ec0b5c944ad4651e358e9302875c605c615785b`. The previous diff-check claim covered
 only the implementation owner’s working-tree diff; it did not check the committed
 QA delta. The integration owner verifies the complete main-to-candidate diff.
+
+The first protected browser run failed five isolated smoke cases before their
+assertions: the hard-coded fixture route did not match the hosted Server base URL,
+so navigation reached the real Server and its content security policy correctly
+blocked inline fixture scripts. The isolated spec now pins its own synthetic
+origin. Server CSP and native populated tests are unchanged. Historical source
+hashes remain pinned to `795641`; integration hashes record each explicit source override.
+
+The corrected isolated spec passed all 25 cases in 12.14 seconds under an
+external hosted-style base URL, with zero skips, unexpected or flaky results.
+`ci-origin-green.json` pins the test source and environment; its log and exact
+compressed original are retained. This remains isolated browser proof.
+
+## New-track progress drain
+
+A separate isolated HTTP regression reproduced a second ordering failure on the
+frozen original sender and queue, excluding the R08 metadata/loading changes.
+The old watched save settled, the actual audio source changed to `/media/next`,
+and a pause at three seconds occurred before the play continuation was released.
+Only the old watched request was dispatched; the pending next-track save remained
+in memory. One intended assertion failed, with zero skips or global errors.
+`drain-frozen-red.json` pins the exact unchanged sender and controlled run.
+
+The minimal correction continues the sender loop when the continuation creates
+a newly owned pending position. Its standalone smoke regression requires both
+HTTP dispatches and the correct item, seconds and watched payloads. Fresh GREEN
+and populated Server checks remain required before publishing the final head.
+The isolated media-promise fault is separate from actual Server/media proof.

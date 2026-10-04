@@ -3,6 +3,8 @@ import { readFile } from "node:fs/promises";
 
 // Isolated HTTP failure/ordering coverage; see engineering/qa/2026-10-04-r03-progress.
 const source = await readFile(new URL("../../../packages/webassets/static/player-progress.js", import.meta.url), "utf8");
+const fixtureOrigin = "https://progress.kinosail.test";
+test.use({baseURL: fixtureOrigin});
 const failure = "Your latest position is not saved. Retry while this page is open.";
 const requests: Array<{ body: URLSearchParams; route: Route }> = [];
 let status = 204;
@@ -18,7 +20,7 @@ test.beforeEach(async ({ page }, testInfo) => {
     if (aborted) return route.abort("failed");
     await route.fulfill({ status, headers: { "X-Request-ID": "qa-request-03" }, body: status === 204 ? "" : "private-server-error?token=synthetic" });
   });
-  await page.route("https://127.0.0.1:38127/", route => route.fulfill({ contentType: "text/html", body: `
+  await page.route(`${fixtureOrigin}/`, route => route.fulfill({ contentType: "text/html", body: `
     <!doctype html><html lang="en"><head><meta charset="utf-8"><title>R03 fixture</title></head>
     <body data-viewer-profile="qa-viewer"><main class="player-shell">
       <video data-progress="/progress/movie?playbackToken=synthetic" data-start="0"></video>

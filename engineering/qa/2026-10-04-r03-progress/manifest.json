@@ -34,13 +34,17 @@
   "limits": "In-page recovery only. Page-close keepalive is best effort. No container, TLS, native client, physical device, Safari or Firefox proof.",
   "preservedPrivateArtifacts": ".verification/r03-progress (raw traces, fixture credentials and state; do not share)",
   "evidenceSHA256": {
-    "README.md": "1ffbdf781a454d351ce9f83a33219d20ffc0a0f3cc22c176d5efa91669294152",
+    "README.md": "5b63e3e9c9cddf9940dd0b04d5eb9e54a3a4bf795c5cd41003a095773c3ed568",
     "browser-lint.log": "c3f22b54ffc1b5b24fd84371124e4c134c1ec7609d4c49fe031f96bb46994f91",
     "ci-helper-green.log": "5279d1fc9a1ced44f9c96da1414ef59e4676f963fbad52e7a1a2903538819b0d",
     "ci-helper-red.log": "68105b8bebce39e558f4ec47a05dae0a8aa6f9a293105576fbc94daccb952f7e",
+    "ci-origin-green.json": "5ca1e5bddb23f81ffb9c844a810270799cd2c2c4af46b7dc971de798631b5572",
+    "ci-origin-green.log": "e2e4096d1842b25a88777fcf45d8ed09f33eb58183e6b855249e111b19b35f26",
+    "ci-origin-green.log.gz": "5278aa245b5e585dc579af5947924916c93a3c611505ba7c718f7379e6cc1341",
     "close-red-browser.log": "b15a4b73da27c7aad236d25d49f37318773cb5488c15ccb353238a21738f0d7b",
     "close-red-browser.log.gz": "b5a966ba85dcb71f1936d3a3233d7e039382b793923d45d379a3cca9cd44c954",
     "design-detect.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "drain-frozen-red.json": "a3c8499f9812ad110d041dbf1f3f53ec4a704980f2c7d95f1b542a070caba48a",
     "native/baseline-browser.log": "c383d1d4290c45f02c8a3f06fcb370115b8e41fee1360f25a9d7d770c1085e74",
     "native/baseline-real-server-rejection.png": "f4a191d4cf88552a1a1abf4dbf97b86f0392dc3ed1cfbc18778de85318fef64b",
     "native/candidate-browser.log": "4fefbb60599303c9a07bbfedc80912dd2375568357545a818aac09dd24b5c31d",
@@ -73,11 +77,19 @@
       "archive": "close-red-browser.log.gz",
       "archiveSHA256": "b5a966ba85dcb71f1936d3a3233d7e039382b793923d45d379a3cca9cd44c954",
       "readableSHA256": "b15a4b73da27c7aad236d25d49f37318773cb5488c15ccb353238a21738f0d7b"
+    },
+    "ci-origin-green.log": {
+      "baseCommit": "f2f60a711942f26e90f08b9825229a935c17779b",
+      "testedSpecSHA256": "24f2f7344f1ed668b1b9c1ddd39fd7eb1634f10d86cb9948a4e503a3702a8213",
+      "sha256": "e2e4096d1842b25a88777fcf45d8ed09f33eb58183e6b855249e111b19b35f26",
+      "archive": "ci-origin-green.log.gz",
+      "archiveSHA256": "5278aa245b5e585dc579af5947924916c93a3c611505ba7c718f7379e6cc1341",
+      "readableSHA256": "e2e4096d1842b25a88777fcf45d8ed09f33eb58183e6b855249e111b19b35f26"
     }
   },
   "integration": {
-    "base": "50fd82f329c651258245451a55b8fff8dfa9adec",
-    "productionSources": "All ten independently reviewed implementation source hashes remain identical.",
+    "base": "d440fb05ede52498b08c9a0b53d2ea929a1b584b",
+    "productionSources": "Historical original hashes remain pinned above. Integration overrides include the isolated fixture origin and the confirmed sender drain correction.",
     "ciHook": {
       "files": {
         "apps/player/scripts/test-container.sh": "c9e21457c9ad62726c8bc6950f04ce3243b445a0b1674190ff984896ca2e36f9",
@@ -86,6 +98,45 @@
       "requiredTitles": 4,
       "retainedLibraryPaginationJourney": true,
       "extraction": "Focused sourced browser-journey functions preserve required commands and keep the container script below 300 source lines."
+    },
+    "sourceSHA256": {
+      "apps/player/e2e/player-progress.spec.ts": "24f2f7344f1ed668b1b9c1ddd39fd7eb1634f10d86cb9948a4e503a3702a8213",
+      "apps/player/e2e/player-seeking.spec.ts": "1b27ef3ee7220c71633f6bdc5fe6ec7d96e13389fa5e3176f93ff33ea2441aa4",
+      "apps/player/e2e/test-instance-progress.spec.ts": "43fb0372b402c859af599bbbc0d522daa2e86032a37f15c09b2e27d8619a5f73",
+      "apps/player/internal/server/static/player-streaming-recovery.js": "7e66f1cfc023fed1f7a00916c0ea2453a94ab688a92028fe7e2597009e757c2f",
+      "packages/playerweb/player_template.go": "8e94f40660a1bda4f2b435477b813b9c992eafd7fca62d21e0e92fc8ec9c9d42",
+      "packages/playerweb/progress_notice.go": "004a9903ae33f3f13bce9df586a6b3d4a56a74c06d07a58020189a9ffb33141c",
+      "packages/webassets/static/player-progress.js": "4689b34cbcf2179e6191645aa99a59c2b3955b1e70abf81aa065525ae1ce2564",
+      "scripts/ci/run-populated-settings.py": "84dbea3dfd8153b0baeb3bf8914789e79e13921ad40ad7056fb5d13c55f5a095",
+      "scripts/ci/test_populated_settings.py": "cc8f494d561520833d8dc74a9d308c5002523d5ccf4ca16b9a1c097caa47cc5f",
+      "scripts/testing/test-player-progress-local.py": "86a4ef01bbcfe449e436ae2cf6e0a1677fd183b06f9f79d1179914c05056ad36",
+      "apps/player/e2e/player-progress-queue-drain.spec.ts": "7914e8101b36f9283cfd6349ee475016e8adef97c70aceada23b508b7b30375b"
+    },
+    "sourceOverrides": {
+      "apps/player/e2e/player-progress.spec.ts": "Pin isolated fixture origin independently of hosted disposable Server baseURL. Original testedImplementation/sourceSHA256 remain historical; production files unchanged.",
+      "packages/webassets/static/player-progress.js": "After successful watched continuation, drain a newly owned pending progress update before settling the shared flight; confirmed by frozen-source HTTP RED before this change."
+    },
+    "hostedFixtureFailure": {
+      "run": "https://github.com/Kinosail/kinosail/actions/runs/37191647968",
+      "class": "isolated fixture navigated actual Server; real CSP correctly rejected inline scripts",
+      "affectedSmokeCases": 5,
+      "securityPolicy": "unchanged",
+      "candidateRerun": {
+        "passed": 25,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0,
+        "receipt": "ci-origin-green.json"
+      }
+    },
+    "queueDrain": {
+      "candidateCommit": "44ca53af6",
+      "upstreamMinimalCommit": "41fa08d757568c686f7475d9d6959f8c4f2ae946",
+      "regression": "apps/player/e2e/player-progress-queue-drain.spec.ts",
+      "redExpectedFailed": 1,
+      "redSkipped": 0,
+      "green": "pending serial run",
+      "scope": "Isolated media-promise ordering fault; actual HTTP dispatch assertion, not native populated playback proof."
     }
   }
 }
