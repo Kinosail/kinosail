@@ -38,7 +38,7 @@ function bindInfiniteLibrary() {
   if (!status || !library) return;
   next.hidden = true; bindLibraryRetry(next);
   libraryObserver = new IntersectionObserver(async (entries) => {
-    if (!next.isConnected || !entries.some(({ isIntersecting }) => isIntersecting) || next.dataset.loading) return;
+    if (libraryRestorePending || !next.isConnected || !entries.some(({ isIntersecting }) => isIntersecting) || next.dataset.loading) return;
     await loadLibraryPage(next);
   }, { rootMargin: "600px 0px" });
   libraryObserver.observe(status);
