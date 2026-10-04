@@ -1,0 +1,33 @@
+
+Running 25 tests using 1 worker
+
+(node:14499) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+  ✓   1 [chromium] › htmx-journeys.ts:47:3 › HTMX delays visual placeholders while keeping pending content inert @smoke (528ms)
+  ✓   2 [chromium] › htmx-journeys.ts:73:36 › HTMX clears a fast 200 response before delayed placeholders appear @smoke (365ms)
+  ✓   3 [chromium] › htmx-journeys.ts:73:36 › HTMX clears a fast 500 response before delayed placeholders appear @smoke (364ms)
+  ✓   4 [chromium] › htmx-journeys.ts:86:5 › HTMX replaces loaded and empty content after pending work at 390px @smoke (805ms)
+  ✓   5 [chromium] › htmx-journeys.ts:86:5 › HTMX replaces loaded and empty content after pending work at 1440px @smoke (808ms)
+  ✓   6 [chromium] › htmx-journeys.ts:86:5 › HTMX replaces loaded and empty content after pending work at 1920px @smoke (811ms)
+  ✓   7 [chromium] › htmx-journeys.ts:123:5 › HTMX 400 leaves loaded content usable at 390px @smoke (503ms)
+  ✓   8 [chromium] › htmx-journeys.ts:123:5 › HTMX 500 leaves loaded content usable at 390px @smoke (501ms)
+  ✓   9 [chromium] › htmx-journeys.ts:123:5 › HTMX 204 leaves loaded content usable at 390px @smoke (502ms)
+  ✓  10 [chromium] › htmx-journeys.ts:123:5 › HTMX network leaves loaded content usable at 390px @smoke (470ms)
+  ✓  11 [chromium] › htmx-journeys.ts:123:5 › HTMX abort leaves loaded content usable at 390px @smoke (489ms)
+  ✓  12 [chromium] › htmx-journeys.ts:123:5 › HTMX timeout leaves loaded content usable at 390px @smoke (1.8s)
+  ✓  13 [chromium] › htmx-journeys.ts:123:5 › HTMX 400 leaves loaded content usable at 1440px @smoke (578ms)
+  ✓  14 [chromium] › htmx-journeys.ts:123:5 › HTMX 500 leaves loaded content usable at 1440px @smoke (527ms)
+  ✓  15 [chromium] › htmx-journeys.ts:123:5 › HTMX 204 leaves loaded content usable at 1440px @smoke (490ms)
+  ✓  16 [chromium] › htmx-journeys.ts:123:5 › HTMX network leaves loaded content usable at 1440px @smoke (523ms)
+  ✓  17 [chromium] › htmx-journeys.ts:123:5 › HTMX abort leaves loaded content usable at 1440px @smoke (530ms)
+  ✓  18 [chromium] › htmx-journeys.ts:123:5 › HTMX timeout leaves loaded content usable at 1440px @smoke (1.8s)
+  ✓  19 [chromium] › htmx-journeys.ts:123:5 › HTMX 400 leaves loaded content usable at 1920px @smoke (497ms)
+  ✓  20 [chromium] › htmx-journeys.ts:123:5 › HTMX 500 leaves loaded content usable at 1920px @smoke (500ms)
+  ✓  21 [chromium] › htmx-journeys.ts:123:5 › HTMX 204 leaves loaded content usable at 1920px @smoke (499ms)
+  ✓  22 [chromium] › htmx-journeys.ts:123:5 › HTMX network leaves loaded content usable at 1920px @smoke (520ms)
+  ✓  23 [chromium] › htmx-journeys.ts:123:5 › HTMX abort leaves loaded content usable at 1920px @smoke (500ms)
+  ✓  24 [chromium] › htmx-journeys.ts:123:5 › HTMX timeout leaves loaded content usable at 1920px @smoke (1.8s)
+  ✓  25 [chromium] › htmx-journeys.ts:146:3 › HTMX keeps the newer result when an older request finishes last @smoke (328ms)
+
+  25 passed (22.7s)
