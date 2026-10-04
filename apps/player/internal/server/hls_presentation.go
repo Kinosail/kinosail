@@ -16,7 +16,7 @@ import (
 
 func (manager *hlsManager) encodePresentation(ctx context.Context, item library.Item, root string, options transcodeSettings, recipe hlsRecipe, qualities []PlaybackQuality, audioBitrate int64, start float64, startNumber int) error { //nolint:funlen // One decode feeds the complete switchable presentation.
 	device := transcodehardware.DeviceKey(options)
-	release, err := manager.workloads.AcquireEncoding(ctx, startupWorkClass(ctx), len(qualities), device)
+	release, err := manager.acquireHLSEncode(ctx, len(qualities), device, start, startNumber)
 	if err != nil {
 		return err
 	}
@@ -61,7 +61,7 @@ func (manager *hlsManager) encodePresentation(ctx context.Context, item library.
 		arguments = append(arguments, hlsSegmentArguments("transcode", directory, filepath.Join(playlistDirectory, "index.m3u8"), startNumber)...)
 	}
 	//nolint:gosec // G204: executable is installation config and input is found only by a Library scan.
-	if err := runHLSCommand(exec.CommandContext(ctx, manager.ffmpeg, arguments...), item.Path, root); err != nil {
+	if err := runHLSCommand(ctx, exec.CommandContext(ctx, manager.ffmpeg, arguments...), item.Path, root); err != nil {
 		return err
 	}
 	return finalizePresentationPlaylists(root, qualities, startNumber)

@@ -2,13 +2,11 @@ package playback
 
 import (
 	"bytes"
-	"context"
 	"errors"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/MikeO7/kinosail/packages/isobmff"
 )
@@ -17,42 +15,6 @@ const maximumHLSPlaylistBytes = 1 << 20
 
 // HLSBandwidthPolicyMarker identifies masters with conservative startup demand.
 const HLSBandwidthPolicyMarker = "#KINOSAIL-BANDWIDTH:2"
-
-type AtomicWriter func(string, []byte) error
-
-func PublishVariants(ctx context.Context, source, directory, transcoder string, qualities []PlaybackQuality, results <-chan error, expected int, independent bool, write AtomicWriter) error { //nolint:cyclop,gocognit // Readiness and worker completion are one bounded coordination loop.
-	if expected <= 0 || expected > 64 || write == nil {
-		return errors.New("HLS publication configuration is invalid")
-	}
-	ticker := time.NewTicker(25 * time.Millisecond)
-	defer ticker.Stop()
-	completed, published := 0, false
-	for completed < expected {
-		if !published && VariantsReady(source, directory, qualities) {
-			if err := WriteMaster(filepath.Join(directory, "index.m3u8"), transcoder, qualities, independent, write); err != nil {
-				return err
-			}
-			published = true
-		}
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		case err, open := <-results:
-			if !open {
-				return errors.New("HLS publication ended early")
-			}
-			completed++
-			if err != nil {
-				return err
-			}
-		case <-ticker.C:
-		}
-	}
-	if !VariantsReady(source, directory, qualities) {
-		return errors.New("transcoder produced no playable variants")
-	}
-	return WriteMaster(filepath.Join(directory, "index.m3u8"), transcoder, qualities, independent, write)
-}
 
 func VariantsReady(source, directory string, qualities []PlaybackQuality) bool {
 	if len(qualities) == 0 {
