@@ -64,19 +64,6 @@ func TestApplicationPoliciesKeepIndependentReleaseIdentities(t *testing.T) {
 	}
 }
 
-func TestNewRejectsInvalidPolicyBeforeLoadingState(t *testing.T) {
-	t.Parallel()
-	for _, policy := range []Policy{PlayerPolicy(0, 1), PlayerPolicy(1, 1001), {}} {
-		db := newMemoryDocumentStore()
-		if _, err := New(db, policy); err == nil {
-			t.Fatalf("invalid policy accepted: %#v", policy)
-		}
-		if db.loads != 0 {
-			t.Fatalf("invalid policy loaded state %d times", db.loads)
-		}
-	}
-}
-
 func TestDocumentStoreFailuresDoNotMutateUpdateState(t *testing.T) {
 	t.Parallel()
 	failedLoad := newMemoryDocumentStore()

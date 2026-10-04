@@ -14,7 +14,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestSubtitleAppExtractsPreferredEmbeddedTextBeforeProviderSearch(t *testing.T) {
+func TestSubtitleAppExtractsPreferredEmbeddedText(t *testing.T) {
 	t.Parallel()
 	media, tools := t.TempDir(), t.TempDir()
 	video := filepath.Join(media, "Arrival.mp4")

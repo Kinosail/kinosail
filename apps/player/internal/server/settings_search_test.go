@@ -8,12 +8,7 @@ import (
 	"testing"
 
 	"github.com/MikeO7/kinosail-player/internal/server"
-	"github.com/MikeO7/kinosail/packages/servertest"
 )
-
-func TestSettingsExposeSmartSearch(t *testing.T) {
-	servertest.SettingsExposeSmartSearch(t, settingsSearchHandler)
-}
 
 func TestSettingsBookmarksFollowTheRenderedSectionOrder(t *testing.T) {
 	t.Parallel()

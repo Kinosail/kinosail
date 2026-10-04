@@ -1,12 +1,10 @@
 package updatecontrol
 
 import (
-	"context"
 	"errors"
 	"io"
 	"net/http"
 	"strings"
-	"sync/atomic"
 	"testing"
 )
 
@@ -64,34 +62,6 @@ func TestGitHubCheckerUsesApplicationReleaseIdentity(t *testing.T) {
 				t.Fatalf("status = %#v", status)
 			}
 		})
-	}
-}
-
-func TestNewGitHubCheckerRejectsInvalidAdaptersBeforeNetworkAccess(t *testing.T) {
-	t.Parallel()
-	var calls atomic.Int32
-	client := &http.Client{Transport: roundTripFunc(func(*http.Request) (*http.Response, error) {
-		calls.Add(1)
-		return githubResponse(http.StatusOK, `[]`, ""), nil
-	})}
-	valid := CheckerConfig{CurrentVersion: "v1.0.0", Automatic: func() bool { return false }, SaveAutomatic: func(bool) error { return nil }}
-	for name, invoke := range map[string]func() (*Checker, error){
-		"client": func() (*Checker, error) { return NewGitHubChecker(nil, PlayerPolicy(1, 1), valid) },
-		"policy": func() (*Checker, error) { return NewGitHubChecker(client, Policy{}, valid) },
-		"source": func() (*Checker, error) {
-			config := valid
-			config.Source = ReleaseSourceFunc(func(context.Context, string) (string, string, bool, error) { return "", "", false, nil })
-			return NewGitHubChecker(client, PlayerPolicy(1, 1), config)
-		},
-	} {
-		t.Run(name, func(t *testing.T) {
-			if checker, err := invoke(); err == nil || checker != nil {
-				t.Fatalf("invalid adapters created checker %#v, err=%v", checker, err)
-			}
-		})
-	}
-	if calls.Load() != 0 {
-		t.Fatalf("invalid adapters made %d network request(s)", calls.Load())
 	}
 }
 

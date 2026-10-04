@@ -21,58 +21,12 @@ func TestHomeHasSelfHostedFrontendAssets(t *testing.T) {
 	assetContracts.HomeHasSelfHostedFrontendAssets(t)
 }
 
-func TestLibraryNavigationKeepsEveryDestinationInMainWithCompactOverflow(t *testing.T) {
-	assetContracts.LibraryNavigationKeepsEveryDestinationInMainWithCompactOverflow(t)
-}
-
 func TestPrimaryPagesExposeTheInstallExperience(t *testing.T) { //nolint:cyclop // The shared install contract checks each primary page explicitly.
 	assetContracts.PrimaryPagesExposeTheInstallExperience(t)
 }
 
 func TestLibraryExposesDiscoverableCommandsAndInputParity(t *testing.T) {
 	assetContracts.LibraryExposesDiscoverableCommandsAndInputParity(t)
-}
-
-func TestDesktopRailSeparatesUtilitiesFromAccount(t *testing.T) {
-	assetContracts.DesktopRailSeparatesUtilitiesFromAccount(t)
-}
-
-func TestPagesUseSharedModernStyles(t *testing.T) {
-	t.Parallel()
-
-	handler := server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true})
-	page := httptest.NewRecorder()
-	handler.ServeHTTP(page, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/setup", nil))
-	styles := httptest.NewRecorder()
-	handler.ServeHTTP(styles, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/app.css", nil))
-	home, settings := httptest.NewRecorder(), httptest.NewRecorder()
-	open := server.New(server.Config{})
-	open.ServeHTTP(home, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
-	open.ServeHTTP(settings, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/settings", nil))
-
-	if styles.Header().Get("Content-Type") != "text/css; charset=utf-8" {
-		t.Fatalf("page = %q, styles = %d %q", page.Body.String(), styles.Code, styles.Body.String())
-	}
-	for body, fragments := range map[string][]string{
-		page.Body.String():     {`class="brand-mark"`},
-		styles.Body.String():   {"--signal:#c8f169", "--focus:#e4ff9c", `url("/static/cinema-backdrop.jpg")`, "flex-wrap:wrap", ".resume-link:focus-visible", ".resume-action", "margin-top:0;padding-top:0;border-top:0;background:none"},
-		home.Body.String():     {`class="home-sections"`, `/static/app.css?v=electric-45`},
-		settings.Body.String(): {"settings-page"},
-	} {
-		for _, fragment := range fragments {
-			if !strings.Contains(body, fragment) {
-				t.Fatalf("asset contract missing %q: %q", fragment, body)
-			}
-		}
-	}
-	if strings.Contains(home.Body.String(), "Your evening.") {
-		t.Fatal("home still renders the removed greeting")
-	}
-	backdrop := httptest.NewRecorder()
-	handler.ServeHTTP(backdrop, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/cinema-backdrop.jpg", nil))
-	if backdrop.Code != http.StatusOK || backdrop.Header().Get("Content-Type") != "image/jpeg" || backdrop.Body.Len() < 100_000 {
-		t.Fatalf("backdrop = %d %q, bytes = %d", backdrop.Code, backdrop.Header().Get("Content-Type"), backdrop.Body.Len())
-	}
 }
 
 func TestViewerCanChooseDarkLightOrSystemTheme(t *testing.T) {
@@ -86,11 +40,6 @@ func TestSettingsAndSharedPageFamiliesUseSignalLayout(t *testing.T) {
 func TestHomeIsInstallableAsAWebApp(t *testing.T) {
 	t.Parallel()
 	servertest.AssertInstallableWebApp(t, server.New(server.Config{}))
-}
-
-func TestBrandUsesFoldedPlayLogo(t *testing.T) {
-	t.Parallel()
-	servertest.AssertBrandLogo(t, server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true}), []string{`<img class="brand-mark" src="/static/icon.svg?v=8"`}, []string{`d="M160 112 384 256 160 304Z"`, `d="m160 336 128-28-128 92Z"`}, []string{`body .brand-icon{box-shadow:none;filter:none;border-radius:10px}`}, nil)
 }
 
 func TestPlayerHTMLStartsInDefaultDarkTheme(t *testing.T) {

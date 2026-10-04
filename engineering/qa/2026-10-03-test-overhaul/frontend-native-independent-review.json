@@ -1,0 +1,43 @@
+{
+  "schema": "kinosail-independent-removal-review-v1",
+  "reviewer": "frontend_native",
+  "reviewed_source": {
+    "integration": "a8dd0aa239365c2a2a31b13318dfb61aacfaedca",
+    "shared_second": "7a81d6bfd53c760a18db1c8ca78103bc932f5ce3",
+    "tooling_nonserver": "3298e906d9c02619aac398ffebcc80e4e5a3befd"
+  },
+  "reviews": [
+    {
+      "scope": "shared8D +4 dead support helpers at a8dd",
+      "result": "approve",
+      "evidence": "Read deleted declaration bodies, production owners, app/shared callers and named executable keepers. Static predicate/export/source or fake callback replay duplicates retire while public malformed input, real init MP4 manifest, hardware readiness, profile/privacy/storage boundaries remain. No blanket claim of browser equivalence."
+    },
+    {
+      "scope": "latest backend7D at a8dd",
+      "result": "approve",
+      "evidence": "Player shortcuts version/source probe superseded by actual keyboard journeys; app queue overflow identical exact33 admission/1reject canonical package keeper remains. Subtitles default YAML version-only test vacuous (no meaningful discovery proof), health shared CheckHealth primary actual transport matrix remains, MCP mapping stronger real CLI stdio/data-dir boundary remains, stored JSON validation public configuration Set/Delete preserves same file bytes, subtitle-tag parser exact canonical alias matrix plus appLoad retained."
+    },
+    {
+      "scope": "E2E artifact recorder/workflows/failure analysis",
+      "result": "approve",
+      "evidence": "Recorder captures full source SHA/diff/state, exact commands, safe environment allowlist/tool versions/input hashes/logs/browser reports and SHA256SUMS; failed command status preserved; CI always uploads artifacts. Required checks unweakened. Successful final integrated receipt still required."
+    },
+    {
+      "scope": "operations2D and dead shortcuts29LOC at7a81d6bfd",
+      "result": "approve",
+      "evidence": "Both apps supply complete static System callbacks+parsed template and metadataRefresh callbacks+request/lifecycle contexts. Deleted intentional nil programmer-misuse guard tests have no reachable dynamic omission. Actual provider/download/store/cancellation/concurrency failure tests remain. Missing-dependency early-panic/error pin intentionally retired; no E2E equivalence claimed. Shortcut helper has no remaining caller after both app wrapper removals."
+    },
+    {
+      "scope": "tooling five Player nonserver declarations at3298e906",
+      "result": "approve4; token1 needs preservation",
+      "approved": [
+        "TestLoadConfigurationFindsDefaultFile (version-only YAML with env paths.data cannot detect discovery; gap explicit)",
+        "TestHealthCheckCoversHTTPHTTPSAndCanonicalHost (direct shared CheckHealth; canonicalHTTP/TLS/Host/status/address/unreachable keeper and real app configured-host child process)",
+        "TestConfiguredMCPServerUsesOnlyTheDataDirectory (only one-field projection; actual CLI stdio bound DataDir/same owner tools retained)",
+        "TestValidOIDCURLAllowsOnlyTrustedEndpointForms (direct shared predicate; TrustedURL plus ValidIdentityURL empty and appLoad OIDC complete-safe matrix preserve grammar)"
+      ],
+      "blocker": "TestValidRemoteTokenRejectsWrongLengthAndCharacters uniquely rejects colon in valid+\"-_:\". Canonical TestRemoteTokenValidation only rejects !/\u00e9/length; app public remote config only short token. An accidental ASCII0..z accepted range would pass canonical matrix but allow colon. Restore existing declaration or move existing colon case into primary shared table after documented failure analysis. No edits by reviewer."
+    }
+  ],
+  "execution": "Static independent review; baseline statuses from parent exact876 full Go logs. Reviewer did not rerun Go builds."
+}

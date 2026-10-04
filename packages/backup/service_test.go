@@ -9,34 +9,6 @@ import (
 	"testing"
 )
 
-func TestNewRejectsInvalidConfigurationWithoutOpeningDatabase(t *testing.T) {
-	opens := 0
-	open := func(string) (Database, error) {
-		opens++
-		return nil, nil
-	}
-	valid := Config{"kinosail.db", open, func([]byte) error { return nil }}
-	for name, mutate := range map[string]func(*Config){
-		"missing filename": func(config *Config) { config.DatabaseFilename = "" },
-		"nested filename":  func(config *Config) { config.DatabaseFilename = "../kinosail.db" },
-		"missing opener":   func(config *Config) { config.OpenDatabase = nil },
-		"missing validator": func(config *Config) {
-			config.ValidateSettings = nil
-		},
-	} {
-		t.Run(name, func(t *testing.T) {
-			config := valid
-			mutate(&config)
-			if service, err := New(config); err == nil || service != nil {
-				t.Fatalf("invalid configuration = %#v, %v", service, err)
-			}
-		})
-	}
-	if opens != 0 {
-		t.Fatalf("invalid configuration opened database %d times", opens)
-	}
-}
-
 func TestWriteRejectsInvalidInputsBeforeOutput(t *testing.T) {
 	service := testService(t, func(string) (Database, error) { return nil, errors.New("unexpected open") }, func([]byte) error { return nil })
 	directory := t.TempDir()

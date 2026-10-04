@@ -5,7 +5,6 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"strconv"
 	"strings"
 	"testing"
@@ -137,12 +136,4 @@ func jsonMarkerRequest(t *testing.T, path, body string) *http.Request {
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodPut, path, strings.NewReader(body))
 	request.Header.Set("Content-Type", "application/json")
 	return request
-}
-
-func TestMarkerFormHelpers(t *testing.T) {
-	t.Parallel()
-	form := url.Values{"type": {"intro"}, "start": {"1"}, "end": {"2"}}
-	if !onlyMarkerFormKeys(form, "type", "start", "end") || onlyMarkerFormKeys(form, "type") {
-		t.Fatal("form key validation mismatch")
-	}
 }

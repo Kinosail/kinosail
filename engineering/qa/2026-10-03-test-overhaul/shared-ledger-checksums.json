@@ -1,0 +1,26 @@
+{
+  "source_head": "ec6201be3e4c022c3e578574cf193fbcf59f937d",
+  "execution": "Read-only exact baseline/source/independent-review integrity; source HEAD working tree clean before saving receipt. Following artifact-only commit does not change packages.",
+  "artifacts": [
+    {
+      "path": "engineering/qa/2026-10-03-test-overhaul/shared-identity.json",
+      "bytes": 8436869,
+      "sha256": "a2f58e5f8efd44bf1da56c0da8755101689821cbfb3a9f9d4a46bc10a96e6f4b"
+    },
+    {
+      "path": "engineering/qa/2026-10-03-test-overhaul/verify_shared_ledger.py",
+      "bytes": 11483,
+      "sha256": "0479442589e48ec755924f8a02cd89740df45c8cdece5ade04b74b02d1d5224c"
+    },
+    {
+      "path": "engineering/qa/2026-10-03-test-overhaul/independent-shared-removal-review.json",
+      "bytes": 1465773,
+      "sha256": "cfd52ac4d24aa97472a8bdb3a41da01854456c99d6a804d5b825f29b181e731e"
+    },
+    {
+      "path": "engineering/qa/2026-10-03-test-overhaul/shared-ledger-source-integrity.json",
+      "bytes": 3697,
+      "sha256": "b9d9e3a20a37e72171a8a3d0396c8b3d1288d748822e05ba1280c4a35d24095b"
+    }
+  ]
+}

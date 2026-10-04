@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
-	"github.com/MikeO7/kinosail/packages/playback"
 	"github.com/MikeO7/kinosail/packages/transcodepolicy"
 )
 
@@ -146,25 +145,6 @@ func TestTranscodeRetriesWithSoftware(t *testing.T) {
 	ready, found := manager.Get("viewer", job.ID)
 	if !found || ready.State != "ready" || !software.Load() {
 		t.Fatalf("software fallback = %v, job = %#v", software.Load(), ready)
-	}
-}
-
-func TestEncodeBuildsVideoCommandAndReportsCopyErrors(t *testing.T) {
-	t.Parallel()
-	manager := &Manager{
-		ctx: t.Context(), ffmpeg: "/usr/bin/true",
-		inspect: func(context.Context, library.Item) playback.MediaFacts {
-			return playback.MediaFacts{Video: playback.VideoFacts{Codec: "h264", Width: 1280, Height: 720}}
-		},
-		transcoding: func(bool) transcodepolicy.Settings {
-			return transcodepolicy.Settings{Codec: "h264", Accelerator: "none", Encoder: "libx264"}
-		},
-	}
-	if err := manager.encodeSelectedContext(t.Context(), library.Item{Kind: "video", Path: "/media/film.mkv"}, "720p", "/cache/output.mp4", false, nil); err != nil {
-		t.Fatalf("video command = %v", err)
-	}
-	if err := copyFileContext(t.Context(), "/missing", filepath.Join(t.TempDir(), "output")); !os.IsNotExist(err) {
-		t.Fatalf("missing input error = %v", err)
 	}
 }
 

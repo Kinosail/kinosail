@@ -1,0 +1,489 @@
+{
+  "revision": "876b771a7dd0aef5e65957fcee87add0312535e8",
+  "phase": "baseline",
+  "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "working_changes": "?? engineering/qa/2026-10-03-test-overhaul/\n",
+  "environment": {
+    "CI": null,
+    "GOWORK": null,
+    "KINOSAIL_VERIFY_WORKTREE": null,
+    "KINOSAIL_BROWSER_TEST": null
+  },
+  "results": [
+    {
+      "file": "scripts/ci/test_*.py",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/ci",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 1.626,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/scripts_ci_test_all.py.log",
+      "log_sha256": "c8224ddb6c50887a94edc80f172a24ecba1cf91126e3109c6823e9e628be91ff"
+    },
+    {
+      "file": "scripts/quality/test_check_duplicates.py",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/quality/test_check_duplicates.py"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 0.133,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/scripts_quality_test_check_duplicates.py.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "scripts/quality/test_check_halstead.py",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/quality/test_check_halstead.py"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 0.099,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/scripts_quality_test_check_halstead.py.log",
+      "log_sha256": "af55efa5c3ceb122f8184c380aa405d3f3b4e7e0c1e892773d0eff31d0645c8a"
+    },
+    {
+      "file": "scripts/quality/test_dependency_integrity.py",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/quality/test_dependency_integrity.py"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 0.095,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/scripts_quality_test_dependency_integrity.py.log",
+      "log_sha256": "baf49b59538192f3e136ca0404cac516ecb8dd2fe5ba1416604056f3080fa49c"
+    },
+    {
+      "file": "scripts/tooling/test-architecture-explorer.py",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/tooling/test-architecture-explorer.py"
+      ],
+      "status": "fail",
+      "exit_code": 1,
+      "duration_seconds": 0.391,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/scripts_tooling_test-architecture-explorer.py.log",
+      "log_sha256": "dfc09f8261bb962f69ccce64efaf783b4442dc21357e3126614a7cd91ea08c42"
+    },
+    {
+      "file": "scripts/tooling/test-build-apple.py",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/tooling/test-build-apple.py"
+      ],
+      "status": "fail",
+      "exit_code": 1,
+      "duration_seconds": 0.472,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/scripts_tooling_test-build-apple.py.log",
+      "log_sha256": "ea5bd8c2385d8579e5334bfced436ef557b0452d9c8400ae6614a38ebe3d4cc4"
+    },
+    {
+      "file": "scripts/tooling/test-container-context-input.py",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/tooling/test-container-context-input.py"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 0.281,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/scripts_tooling_test-container-context-input.py.log",
+      "log_sha256": "b957116d3cdb56aa76a4b0aa69dded6aad02fc2dba699cdb7b815518d1580815"
+    },
+    {
+      "file": "scripts/tooling/test-deploy-apple-devices.py",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/tooling/test-deploy-apple-devices.py"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 0.147,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/scripts_tooling_test-deploy-apple-devices.py.log",
+      "log_sha256": "417e03cc7f8d44f8741c9d64a91f8f203032cfe1dc480a8dd6222b4643cf7f35"
+    },
+    {
+      "file": "scripts/tooling/test-file-loc.py",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/tooling/test-file-loc.py"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 8.581,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/scripts_tooling_test-file-loc.py.log",
+      "log_sha256": "e6541c57c46c1c7e5358bd453714eb08eb0c11025ba78f73241ad85465debec2"
+    },
+    {
+      "file": "scripts/tooling/test-gates-paused.py",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/tooling/test-gates-paused.py"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 6.896,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/scripts_tooling_test-gates-paused.py.log",
+      "log_sha256": "23bb278f47dace35a53879c140127d0b05a53ad78f43cd75aede4eca0abd340b"
+    },
+    {
+      "file": "scripts/tooling/test-platform-install-kits.py",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/tooling/test-platform-install-kits.py"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 0.41,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/scripts_tooling_test-platform-install-kits.py.log",
+      "log_sha256": "00712b72d37f3418406afda15288199a2fa97274c9e47b4f0b5c02370daa6801"
+    },
+    {
+      "file": "scripts/tooling/test-pre-push-environment.py",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/tooling/test-pre-push-environment.py"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 1.225,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/scripts_tooling_test-pre-push-environment.py.log",
+      "log_sha256": "d379418e7fd973e3e0fac390b5ab63e98a7605b17d19006b28b6e85a01976c6a"
+    },
+    {
+      "file": "scripts/tooling/test-verify-deleted-e2e.py",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/tooling/test-verify-deleted-e2e.py"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 0.578,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/scripts_tooling_test-verify-deleted-e2e.py.log",
+      "log_sha256": "9f18502157969df7fb63d3288a9d276c48135053443dfc7ebc92c032666c63ef"
+    },
+    {
+      "file": "scripts/tooling/test-worktree-guard.py",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/tooling/test-worktree-guard.py"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 5.474,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/scripts_tooling_test-worktree-guard.py.log",
+      "log_sha256": "3fe62a936e5bee1bf4c5dc4b31d3828bc0ab7cd5ac1edd73f07a2197cd448ecd"
+    },
+    {
+      "file": "scripts/quality/browser-script-bundles.test.mjs",
+      "command": [
+        "node",
+        "--test",
+        "scripts/quality/browser-script-bundles.test.mjs"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 0.123,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/scripts_quality_browser-script-bundles.test.mjs.log",
+      "log_sha256": "f7f05579a80fa69d4b158c8eb9f681b9eb1dd399e6cd7eab1a9b6304bba478c7"
+    },
+    {
+      "file": "scripts/ci/prepare-codeql-js.test.mjs",
+      "command": [
+        "node",
+        "--test",
+        "scripts/ci/prepare-codeql-js.test.mjs"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 0.191,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/scripts_ci_prepare-codeql-js.test.mjs.log",
+      "log_sha256": "76a194096746e48768fe2133e45876c791dad6db03c9460f65aaf7a257919b1f"
+    },
+    {
+      "file": "scripts/tooling/test-script-lint.mjs",
+      "command": [
+        "node",
+        "--test",
+        "scripts/tooling/test-script-lint.mjs"
+      ],
+      "status": "fail",
+      "exit_code": 1,
+      "duration_seconds": 0.107,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/scripts_tooling_test-script-lint.mjs.log",
+      "log_sha256": "4fe92faac67458e575e48afad2e8ed0bf069bceed5e9894a542d1f5a1a3b2234"
+    },
+    {
+      "file": "scripts/tooling/test-check-go-loc.sh",
+      "command": [
+        "bash",
+        "scripts/tooling/test-check-go-loc.sh"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 0.78,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/scripts_tooling_test-check-go-loc.sh.log",
+      "log_sha256": "c7443858cd7c52986a165e2e98d2a20fc745a41e4629958e2d8f8afbb111b09e"
+    },
+    {
+      "file": "scripts/tooling/test-go-coverage-input.sh",
+      "command": [
+        "bash",
+        "scripts/tooling/test-go-coverage-input.sh"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 0.245,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/scripts_tooling_test-go-coverage-input.sh.log",
+      "log_sha256": "bc9249b2bb331f04cc36018436707abd74b0e35efa1138c40eb14b08835385e0"
+    },
+    {
+      "file": "scripts/tooling/test-quality-controls.sh",
+      "command": [
+        "bash",
+        "scripts/tooling/test-quality-controls.sh"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 0.074,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/scripts_tooling_test-quality-controls.sh.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "scripts/tooling/test-scan-deployment-image.sh",
+      "command": [
+        "bash",
+        "scripts/tooling/test-scan-deployment-image.sh"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 0.584,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/scripts_tooling_test-scan-deployment-image.sh.log",
+      "log_sha256": "80deb800dd7aeb3465495bc7ffe0542371d117c8d27e5f256583c7c4c5b9ca75"
+    },
+    {
+      "file": "scripts/tooling/test-source-tools.sh",
+      "command": [
+        "bash",
+        "scripts/tooling/test-source-tools.sh"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 0.662,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/scripts_tooling_test-source-tools.sh.log",
+      "log_sha256": "fd2652b6fcf1a9e127658bc31296a49121c648b8944e6e60c436cb4830605157"
+    },
+    {
+      "file": "scripts/tooling/test-deploy-nox-app.sh",
+      "command": [
+        "bash",
+        "scripts/tooling/test-deploy-nox-app.sh"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 2.884,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/scripts_tooling_test-deploy-nox-app.sh.log",
+      "log_sha256": "ecb3a0f27eb9dbd6b28cc5d5ee245fb4c141dfbc246639ab59d621e8a0873b28"
+    },
+    {
+      "file": "scripts/tooling/test-deploy-nox-remote.sh",
+      "command": [
+        "bash",
+        "scripts/tooling/test-deploy-nox-remote.sh"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 0.563,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/scripts_tooling_test-deploy-nox-remote.sh.log",
+      "log_sha256": "8e4f781556f018cbd05a4d656cc6378b133e25bb56b7b0b960d5fb2b295f4e95"
+    },
+    {
+      "file": "scripts/tooling/test-nox-autodeploy.sh",
+      "command": [
+        "bash",
+        "scripts/tooling/test-nox-autodeploy.sh"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 2.847,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/scripts_tooling_test-nox-autodeploy.sh.log",
+      "log_sha256": "769628cff6f0b33e1da87a2c0447803c3c08e9d172f55c0278e498c01213e12c"
+    },
+    {
+      "file": "apps/player/scripts/test-installer.sh",
+      "command": [
+        "bash",
+        "apps/player/scripts/test-installer.sh"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 6.893,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/apps_player_scripts_test-installer.sh.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "apps/player/scripts/test-remote-setup.sh",
+      "command": [
+        "bash",
+        "apps/player/scripts/test-remote-setup.sh"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 1.765,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/apps_player_scripts_test-remote-setup.sh.log",
+      "log_sha256": "1248f5c79f6a16f0596d5d107bec958171c4a45ef765d239bde3f7b61da18f53"
+    },
+    {
+      "file": "apps/player/scripts/test-deploy-nox.sh",
+      "command": [
+        "bash",
+        "apps/player/scripts/test-deploy-nox.sh"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 1.494,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/apps_player_scripts_test-deploy-nox.sh.log",
+      "log_sha256": "a4ad7db1aa1790dcc17483f5d46ef4806ab2a4c510c414d79be9ff76c5e99a70"
+    },
+    {
+      "file": "apps/player/scripts/test-verify-changed.sh",
+      "command": [
+        "bash",
+        "apps/player/scripts/test-verify-changed.sh"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 0.723,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/apps_player_scripts_test-verify-changed.sh.log",
+      "log_sha256": "b4c94588e968f54ea06273c829d86d6d72d37a6f1415050731575868131d62de"
+    },
+    {
+      "file": "apps/player/scripts/test-native-contract.py",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "apps/player/scripts/test-native-contract.py",
+        "apps/player/packaging/native-installation.json"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 0.032,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/apps_player_scripts_test-native-contract.py.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "apps/subtitles/scripts/test-installer.sh",
+      "command": [
+        "bash",
+        "apps/subtitles/scripts/test-installer.sh"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 4.869,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/apps_subtitles_scripts_test-installer.sh.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "apps/subtitles/scripts/test-remote-setup.sh",
+      "command": [
+        "bash",
+        "apps/subtitles/scripts/test-remote-setup.sh"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 1.68,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/apps_subtitles_scripts_test-remote-setup.sh.log",
+      "log_sha256": "1248f5c79f6a16f0596d5d107bec958171c4a45ef765d239bde3f7b61da18f53"
+    },
+    {
+      "file": "apps/subtitles/scripts/test-deploy-nox.sh",
+      "command": [
+        "bash",
+        "apps/subtitles/scripts/test-deploy-nox.sh"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 1.083,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/apps_subtitles_scripts_test-deploy-nox.sh.log",
+      "log_sha256": "b81366c02de9e3bceea33f76a5894feba52c662d7f24c2dfa20926ccc85f0d6f"
+    },
+    {
+      "file": "apps/subtitles/scripts/test-verify-changed.sh",
+      "command": [
+        "bash",
+        "apps/subtitles/scripts/test-verify-changed.sh"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 0.555,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/apps_subtitles_scripts_test-verify-changed.sh.log",
+      "log_sha256": "b4c94588e968f54ea06273c829d86d6d72d37a6f1415050731575868131d62de"
+    },
+    {
+      "file": "apps/subtitles/scripts/test-native-contract.py",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "apps/subtitles/scripts/test-native-contract.py",
+        "apps/subtitles/packaging/native-installation.json"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 0.034,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/apps_subtitles_scripts_test-native-contract.py.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "apps/player/scripts/test-package-installer.py",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "apps/player/scripts/test-package-installer.py"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 0.125,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/apps_player_scripts_test-package-installer.py.log",
+      "log_sha256": "6319d3bb3a6a7ce1718f224d7e02acfb9fbff1b1a88a500d9e7a698b595b61ec"
+    },
+    {
+      "file": "apps/player/scripts/test_media_server_benchmark.py",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "apps/player/scripts/test_media_server_benchmark.py"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 0.153,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/apps_player_scripts_test_media_server_benchmark.py.log",
+      "log_sha256": "26e4fc70ea6b6384bf46375bf00ad2ce38024aabcad5482770bd95e72ba6bbc6"
+    },
+    {
+      "file": "apps/player/scripts/test_summarize_playback.py",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "apps/player/scripts/test_summarize_playback.py"
+      ],
+      "status": "pass",
+      "exit_code": 0,
+      "duration_seconds": 0.063,
+      "log": "engineering/qa/2026-10-03-test-overhaul/tooling-baseline/apps_player_scripts_test_summarize_playback.py.log",
+      "log_sha256": "e73c3805f810fdcf3d0167ced7085c48306c9482a952ffb710551d230cdb3e51"
+    }
+  ],
+  "limits": [
+    "Isolated fixture checks only; no real Nox deployment or cleanup.",
+    "Container, populated-browser, native release cross-builds and Go metrics run separately.",
+    "These results are not product E2E evidence."
+  ]
+}

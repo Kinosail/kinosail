@@ -1,0 +1,94 @@
+{
+  "source_head": "f614fe6182920868dbbab8aca804533830293631",
+  "working_tree_status": [
+    " M engineering/qa/2026-10-03-test-overhaul/audit.md"
+  ],
+  "baseline_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+  "baseline_files_verified": 530,
+  "baseline_declarations_verified": 1900,
+  "retained_bodies_unchanged": 1796,
+  "existing_assertion_repairs_with_prior_failure_analysis": [
+    {
+      "file": "packages/watchrooms/http_test.go",
+      "name": "TestHTTPWebSocketPreservesLeaderAndValidationRules",
+      "validated_candidate_sha": "f3d2a1ceba474101ab0a0477d21299e43f741a3a"
+    },
+    {
+      "file": "packages/watchrooms/http_test.go",
+      "name": "TestHTTPJoinAndAccessFailuresCloseConnections",
+      "validated_candidate_sha": "f3d2a1ceba474101ab0a0477d21299e43f741a3a"
+    }
+  ],
+  "removed_declarations_absent": 102,
+  "removed_test_lines": 1975,
+  "upstream_additions_preserved_unchanged": [
+    {
+      "file": "packages/identitycore/session_cookie_issuance_boundary_test.go",
+      "name": "TestCookieIssuancePreservesPersistedExpiryAcrossSecondBoundary"
+    }
+  ],
+  "upstream_additions_absent_in_older_isolated_checkout": [],
+  "dead_support_helpers_verified_absent": [
+    {
+      "file": "packages/servertest/ui_icons.go",
+      "name": "UIIconSetIsCompleteAndLocal"
+    },
+    {
+      "file": "packages/servertest/ui_icons.go",
+      "name": "ProductionUITemplatesAvoidMixedGlyphIcons"
+    },
+    {
+      "file": "packages/servertest/password_manager.go",
+      "name": "PasswordFieldsOfferAccessibleRevealControls"
+    },
+    {
+      "file": "packages/servertest/assets.go",
+      "name": "AssertBrandLogo"
+    },
+    {
+      "file": "packages/servertest/shortcuts.go",
+      "name": "ApplicationPagesExposeSharedKeyboardShortcuts"
+    },
+    {
+      "file": "packages/commandtest/child.go",
+      "name": "CoveredChild"
+    },
+    {
+      "file": "packages/servertest/locale_catalog.go",
+      "name": "SupportedLanguageCoverageIncludesJellyfinLocaleSet"
+    },
+    {
+      "file": "packages/servertest/qa_permission_edges.go",
+      "name": "AssertAPIKeyPermissionsHonorScopeAndRouteClassification"
+    }
+  ],
+  "production_seam_cleanup_verified": [
+    {
+      "path": "packages/trustedhttps/provider.go",
+      "sha256": "289a1420952c4eeb452f6f34eb6c76e2c6d2933fab544c5b993d15a16c548c41",
+      "removed_lines": 1
+    }
+  ],
+  "decisions": {
+    "R": 1668,
+    "D": 102,
+    "F": 67,
+    "C": 63
+  },
+  "removals_without_structured_review_receipt": [],
+  "baseline_event_receipt": {
+    "sha256": "b6296a6b2a00da2d7fbf43e367f465c5e205aeb59f241dd76e74ee9cbff74987",
+    "bytes": 5048244
+  },
+  "execution": "Read-only source/audit integrity verification; no Go or browser execution",
+  "command": "python3 engineering/qa/2026-10-03-test-overhaul/verify_shared_ledger.py --require-review-receipts --require-upstream-additions --baseline-events .verification/test-overhaul/baseline/packages-go.jsonl",
+  "environment": {
+    "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+    "python_executable": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "checkout": "/Users/mikeo/Documents/Codex/2026-10-03/task/kinosail"
+  },
+  "recorded_at_utc": "2026-10-03T20:50:54.753421+00:00",
+  "limits": "Read-only integrity verification against reconciled root source, all102 review receipts and the separately preserved upstream cookie-expiry test. Any working-tree entries are explicit below; this command runs no Go, browser, container or native tests. Historical focused Watch Together proof remains pinned separately."
+}

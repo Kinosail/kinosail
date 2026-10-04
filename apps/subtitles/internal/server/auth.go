@@ -41,6 +41,9 @@ func newAuthentication(ctx context.Context, dataDir string, required bool, authU
 	notify := newNotification(notifications)
 	profiles := newProfileStore(dataDir, stateDB) //nolint:contextcheck // Startup state loading must finish independently of lifecycle cancellation.
 	profiles.sessionTimeouts = settings.sessionTimeouts
+	profiles.publicSessionTimeouts = settings.publicSessionTimeouts
+	profiles.publicSessionLifetime = settings.publicSessionLifetime
+	settings.profiles = profiles
 	profiles.requireMFA = settings.requireMFA
 	auth := &authentication{profiles: profiles, passkeys: newPasskeyAuth(authURL, profiles), mfa: newMFA(profiles), settings: settings, required: required, audit: newAuditStore(ctx, dataDir, func(event auditEvent) { notify.send(ctx, event) }, retentions...), notify: notify}
 	auth.passkeys.audit, auth.passkeys.settings = auth.audit, settings
@@ -91,7 +94,7 @@ func (auth *authentication) viewerAccess(profile viewerProfile, request *http.Re
 	input := identitycore.AccessInput{
 		EnrollmentRoute: mfaEnrollmentRoute(matched), Secured: profile.Secured(), MFARequired: auth.settings.requireMFA(), LocalOwner: profile.ID == "local-owner",
 		APIKeyAllowed: profileAllowsAPI(profile, matched), ScheduleAllowed: profile.Allowed(publicInternetRequest(request), time.Now()), RemoteRouteAllowed: publicViewerRouteAllowed(matched),
-		PublicSession: auth.profiles.publicSession(request), RecentlyAuthenticated: auth.profiles.recentlyAuthenticated(request, publicSessionMaximumAge),
+		PublicSession: auth.profiles.publicSession(request), RecentlyAuthenticated: auth.profiles.recentlyAuthenticated(request, auth.publicAuthenticationMaximumAge()),
 		APIKey: profile.APIKey, Owner: profile.Owner, Public: publicInternetRequest(request),
 	}
 	return identitycore.EvaluateAccess(input)

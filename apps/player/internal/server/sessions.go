@@ -26,6 +26,7 @@ func (store *profileStore) sessionModule() *identitycore.RequestSessions {
 	return identitycore.NewRequestSessions(identitycore.SessionConfig{
 		Mutex: &store.mu, Values: &store.sessions, File: store.sessionFile, Persist: store.persist,
 		Profiles: store.sessionProfiles, Timeouts: store.sessionTimeouts,
+		PublicTimeouts: store.publicSessionTimeouts, PublicLifetime: store.publicSessionLifetime,
 	}, sessionToken, sessionTokenSource)
 }
 

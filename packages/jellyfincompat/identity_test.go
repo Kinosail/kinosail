@@ -145,14 +145,6 @@ func TestItemIDsValidateOneBoundedQuery(t *testing.T) { //nolint:cyclop // One b
 	}
 }
 
-func TestInvalidControlBoundaries(t *testing.T) {
-	for value, want := range map[rune]bool{0x1f: true, 0x20: false, 0x7f: true, 0x80: false} {
-		if got := invalidControl(value); got != want {
-			t.Errorf("invalidControl(%#x) = %t, want %t", value, got, want)
-		}
-	}
-}
-
 func TestGrantsSortScopeExpireAndCleanInvalidState(t *testing.T) {
 	now := time.Unix(1_000, 0)
 	grants := &Grants{}

@@ -63,7 +63,7 @@ func TestOwnerCannotRemoveOnlyStrongFactor(t *testing.T) {
 	}
 }
 
-func TestPasskeyRemovalRequiresRecentStrongAuthentication(t *testing.T) { //nolint:cyclop,funlen // One security lifecycle proves stale, weak, invalid, and valid removal attempts.
+func TestPasskeyRemovalRequiresSessionAndValidIdentifier(t *testing.T) { //nolint:cyclop,funlen // One lifecycle checks missing-session, malformed-identifier, and valid removals.
 	t.Parallel()
 	store := newProfileStore(t.TempDir())
 	profile, _ := newProfile("Viewer", "viewer-password", false)
@@ -119,7 +119,7 @@ func TestPasskeyRemovalRequiresRecentStrongAuthentication(t *testing.T) { //noli
 	}
 }
 
-func TestPasskeyCloneWarningCreatesSecuritySignalWithoutAutomaticRevocation(t *testing.T) {
+func TestPasskeyCloneWarningCreatesSecuritySignal(t *testing.T) {
 	audit := newAuditStore(t.Context(), "", nil)
 	assertRisk := servertest.PasskeyCloneWarningCreatesSecuritySignal
 	assertRisk(t, audit.passkeyRisk, audit.Query)

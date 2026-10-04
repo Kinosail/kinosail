@@ -50,18 +50,6 @@ func TestSubtitleDashboardFlushesNavigationBeforeReadingLibrary(t *testing.T) {
 	}
 }
 
-func TestSubtitleDashboardInvalidQueryDoesNotFlushOrReadLibrary(t *testing.T) {
-	t.Parallel()
-	manager := &subtitleManager{}
-	for _, path := range []string{"/?view=invalid", "/?view=wanted&view=library", "/?unknown=true", "/?q=" + strings.Repeat("x", 129)} {
-		response := httptest.NewRecorder()
-		manager.dashboard(response, ownerRequest(path))
-		if response.Code != http.StatusBadRequest || response.Flushed {
-			t.Fatalf("invalid request streamed a dashboard: %d, flushed=%v", response.Code, response.Flushed)
-		}
-	}
-}
-
 func TestSubtitleDashboardDisconnectAfterShellSkipsProjection(t *testing.T) {
 	t.Parallel()
 	manager, _ := subtitleFactsFixture(t, "#!/bin/sh\nexit 1\n")

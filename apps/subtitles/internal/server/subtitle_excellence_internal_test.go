@@ -82,6 +82,11 @@ func TestSubtitleCleanupPreservesSpokenURLsAndRepeatedDialogue(t *testing.T) {
 	if err != nil || len(cleaned.Cues) != 3 || cleaned.Duplicates != 0 {
 		t.Fatalf("dialogue changed: %#v, %v", cleaned, err)
 	}
+	for index, text := range []string{"Visit https://example.test now.", "Wait!", "Wait!"} {
+		if cleaned.Cues[index].Text != text {
+			t.Fatalf("spoken text changed: cue %d = %q, want %q", index, cleaned.Cues[index].Text, text)
+		}
+	}
 }
 
 func TestSubtitleOriginalArchiveIsImmutableAndBounded(t *testing.T) {

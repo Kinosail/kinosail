@@ -1,0 +1,42 @@
+{
+  "schema": "kinosail-player-audit-verification-v1",
+  "result": "pass",
+  "revision": "a7eb9a5a97eb58e107ebbc84640e61a4e5a41eb4",
+  "base_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+  "checkout": "/Users/mikeo/Documents/Codex/2026-10-03/task/kinosail",
+  "ledger_sha256": "7b4fb72065dcd083b476242d81d7f130ac5b3b3a1cea0cdf655e147a1956f7c8",
+  "verifier_sha256": "a3fef78dbcf7d4bb33f3dfb96e82013f064b7dca8f4d57717624f4fc9f2ab850",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "engineering/qa/2026-10-03-test-overhaul/verify-player-audit.py",
+    "--checkout",
+    "../kinosail",
+    "--revision",
+    "a7eb9a5a9",
+    "--output",
+    "engineering/qa/2026-10-03-test-overhaul/player-audit-verification.json"
+  ],
+  "environment": {
+    "python": "3.14.7",
+    "platform": "macOS-27.0-arm64-arm-64bit-Mach-O"
+  },
+  "counts": {
+    "original_files": 351,
+    "original_declarations": 837,
+    "current_files": 343,
+    "current_declarations": 775,
+    "decisions": {
+      "R": 716,
+      "D": 63,
+      "F": 57,
+      "C": 1
+    },
+    "upstream_rows": 5,
+    "upstream_fixture_files": 2,
+    "preserved_C_names": [
+      "TestSettingsExposeSmartSearch"
+    ]
+  },
+  "scope": "Inventory/body integrity, actual removals/preservation and exact keeper-name existence. Semantic quality and product execution remain evidenced by ledger reviewers and root run artifacts.",
+  "errors": []
+}

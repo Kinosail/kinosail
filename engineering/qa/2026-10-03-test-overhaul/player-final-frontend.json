@@ -1,0 +1,2371 @@
+{
+  "schema": "kinosail-test-audit-v1",
+  "scope": "Exclusive read-only final Player28 declarations, original owner retains edits",
+  "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+  "reviewed_integration_sha": "066091ef6a260e5fbfdedaea783fb2e13022647a",
+  "manifest_path": "/tmp/player-frontend-final-slice.json",
+  "manifest_sha256": "6d1aa001d4e28e55e26863b4ac526403280137f54605417a48940a6b7b1b4409",
+  "reviewer": "frontend_native",
+  "summary": {
+    "R": 21,
+    "D": 4,
+    "F": 3
+  },
+  "rows": [
+    {
+      "path": "apps/player/internal/server/agent_playlist_api_test.go",
+      "name": "TestAgentCanCreateAnOrderedPlaylistInOneAPICall",
+      "line": 7,
+      "end_line": 9,
+      "sha256": "62d5a72a797d24737ccf1d716104ba298fadd469688a7257ed4a8db434e9b518",
+      "baseline_file_sha256": "c268d173e37d884469a70cd125adb0db068f7adbfa59aa1fea2ff82633e4ed7f",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "category": "important_missed_failure",
+      "credible_failure": "Registered batch creation preserves explicit episode/movie order, rejects unavailable IDs and bounded 201-item/257-byte inputs before publishing rejected names. Losing route validation or ordered create would silently alter agent queues or publish excessive input.",
+      "assertion_review_and_limits": "AgentCanCreateOrderedPlaylist uses real MFA Owner/API server; actual created read has exactly2 IDs and exact order. Too many/Long ID absent from final listing; Unsafe absence is not asserted. Dummy media does not prove playback.",
+      "source_body": "func TestAgentCanCreateAnOrderedPlaylistInOneAPICall(t *testing.T) {\n\tlibraryAPIFixture.AgentCanCreateOrderedPlaylist(t)\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/servertest/agent_playlist.go",
+          "baseline_sha256": "6b6f8d5b346e74ea71a2987cc1c9fc6321a0fa013360e08b7a2a7d0b4350ece4",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/servertest/api_helpers.go",
+          "baseline_sha256": "6aa0343bc5bd683d04e73d77ddca75697cc71366c10c9e19f65a974879c4415c",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalogapi/playlist_document.go",
+          "baseline_sha256": "b7e38e896960571d09af1ee73587f503e31b54dd20646733430866613e9897e8",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalogapi/media_http.go",
+          "baseline_sha256": "b92b469d465fbfeaa58f63c0383383277b6184375a267bca511fb0dd0529316e",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalogapi/media_http_read.go",
+          "baseline_sha256": "f6a04c539a345408b77244589eeb77ccf55c2ad3b6cfcbe6c1761c23b2b79a33",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalogapi/media_http_write.go",
+          "baseline_sha256": "34c34ef20b7820d8e6d38ba06a5273e3c62a9949d4f5d25f6bdece008a3a3d6c",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/api.go",
+        "apps/player/internal/server/playlist_document.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/player.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/api.go",
+        "apps/player/internal/server/playlist_document.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/player.go"
+      ],
+      "remaining_proof": "genuine instant-show-play creates2 IDs but checks statuses/layout rather than queue order/rejected input; UI curation happy journey has valid single membership only. Shared validation cannot prove actual registered batch adapter/profile binding.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. AgentCanCreateOrderedPlaylist uses real MFA Owner/API server; actual created read has exactly2 IDs and exact order. Too many/Long ID absent from final listing; Unsafe absence is not asserted. Dummy media does not prove playback.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:50.505234-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestAgentCanCreateAnOrderedPlaylistInOneAPICall",
+          "Elapsed": 0.5
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestAgentCanCreateAnOrderedPlaylistInOneAPICall$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    },
+    {
+      "path": "apps/player/internal/server/collection_summary_test.go",
+      "name": "TestCollectionCardEscapesMetadataNameAsOneRouteSegment",
+      "line": 15,
+      "end_line": 32,
+      "sha256": "044fad1216035b7f3cff8d45305f4bdaf8dedffcab9db8be4c821eaf215ab2e9",
+      "baseline_file_sha256": "c3babcc74427c702942d0b5505c655d835b98297ad3c1b47f6ecc00e6f0092cd",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "category": "important_missed_failure",
+      "credible_failure": "Extracted actual Home curation-card template must use escaped public Path for slash-containing imported metadata; switching template binding to raw Name breaks access to valid imported collections while simple-name E2E remains green.",
+      "assertion_review_and_limits": "Compiles only actual extracted first card fragment with actual CSRF/icon functions; no full Home/default-card render or actual request to that href. Shared Path and encoded API tests validate builder/router, not this app HTML binding.",
+      "source_body": "func TestCollectionCardEscapesMetadataNameAsOneRouteSegment(t *testing.T) {\n\tt.Parallel()\n\tname := \"28 Days/Weeks/Years Later Collection\"\n\thomeHTML := homeTemplateSource()\n\tstart := strings.Index(homeHTML, `<a class=\"curation-card\" href=\"{{.Path}}\">`)\n\tif start < 0 {\n\t\tt.Fatal(\"collection card template is missing\")\n\t}\n\tend := strings.Index(homeHTML[start:], `</a>`) + start + len(`</a>`)\n\tview := template.Must(template.New(\"card\").Funcs(httpguard.CSRFParseFuncs(uiIcon)).Parse(homeHTML[start:end]))\n\tvar output bytes.Buffer\n\tif err := view.Execute(&output, catalog.CollectionSummary{Name: name}); err != nil {\n\t\tt.Fatal(err)\n\t}\n\tif !strings.Contains(output.String(), `href=\"/collection/`+url.PathEscape(name)+`\"`) {\n\t\tt.Fatalf(\"card = %s\", output.String())\n\t}\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalog/collection_summary.go",
+          "baseline_sha256": "9572f7ef3572cde4e09e231714a89016d2bfd877bfdfcc8ef0a7a0828e1a0e08",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/collection_names_test.go",
+          "baseline_sha256": "86fdbaeab7dda608e5618135434ed8f8cc5f5417f57b9924c992d8faf8945bc3",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/collection_mutation_edges_test.go",
+          "baseline_sha256": "fcf280e550816330ea00eb86ea13e810a1534d1952c80a60037e60b3817f5e15",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/server.go",
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/collection_summary.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/server.go",
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/collection_summary.go"
+      ],
+      "remaining_proof": "ui-happy-paths and populated collection routes use Example Collection/simple names; no browser journey uses slash imported name. Retain actual fragment binding with its stated scope.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Compiles only actual extracted first card fragment with actual CSRF/icon functions; no full Home/default-card render or actual request to that href. Shared Path and encoded API tests validate builder/router, not this app HTML binding.",
+      "history": [
+        "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+        "3061af1cd083cfc5848d42c038b478d5e573142b Restore static gates and offline regression contracts",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "verified_history": [
+        "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+        "3061af1cd083cfc5848d42c038b478d5e573142b Restore static gates and offline regression contracts",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:55.642524-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestCollectionCardEscapesMetadataNameAsOneRouteSegment",
+          "Elapsed": 0
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestCollectionCardEscapesMetadataNameAsOneRouteSegment$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    },
+    {
+      "path": "apps/player/internal/server/collection_summary_test.go",
+      "name": "TestCollectionSummariesSeparateDefaultAndCustomSources",
+      "line": 34,
+      "end_line": 38,
+      "sha256": "2974d025171784f17b440bd3f1db72c596d3b439c55096e2caaa90878c2b085f",
+      "baseline_file_sha256": "c3babcc74427c702942d0b5505c655d835b98297ad3c1b47f6ecc00e6f0092cd",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "D",
+      "review_status": "semantic_review_complete",
+      "category": "duplicate_or_preempted",
+      "credible_failure": "Source/count/JSON/artwork and excluded default behavior would fail shared canonical collection projection/read/exclusion matrices; this in-memory adapter adds no independent persistence/auth/concurrency assertion.",
+      "assertion_review_and_limits": "CollectionSources builds2 fabricated items, creates Custom Set, removes default member, and checks custom/default labels counts/art ID/JSON. Actual wrappers lock and call same storage fields; app lifecycle below exercises actual storage construction/persistence.",
+      "source_body": "func TestCollectionSummariesSeparateDefaultAndCustomSources(t *testing.T) { //nolint:cyclop // One compact projection check covers source, count, and JSON parity.\n\tt.Parallel()\n\tstore := newListStore(\"\")\n\tservertest.CollectionSources(t, store.createCollection, store.setCollection, store.collectionSummaries)\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/servertest/collection_sources.go",
+          "baseline_sha256": "d3b62756638923cfdb40413cc41c778c1cb0aa48fc3049c2015cf31f31a7a34a",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/collection_read_test.go",
+          "baseline_sha256": "84abbd7d063445f25a66d495b5de5aa28a8b5399059942277e99ed763c2cbbd8",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/collection_mutation_edges_test.go",
+          "baseline_sha256": "fcf280e550816330ea00eb86ea13e810a1534d1952c80a60037e60b3817f5e15",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/collection_summary.go",
+          "baseline_sha256": "9572f7ef3572cde4e09e231714a89016d2bfd877bfdfcc8ef0a7a0828e1a0e08",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/collection.go",
+        "apps/player/internal/server/collection_summary.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/home.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/collection.go",
+        "apps/player/internal/server/collection_summary.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/home.go"
+      ],
+      "remaining_proof": "Keep TestCollectionReadsKeepDefaultsExclusionsAndCustomMembers, TestCollectionSummariesPreserveProjectionAndSearch, TestCollectionSummarySearchAndJSON and actual TestOwnerCanCreateAndCurateCollection. Genuine ui-happy-paths checks populated default/custom groups and curation-count zero/one/two counts. Shared projection is isolated proof; browser does not prove excluded-default JSON case. No full E2E equivalence claim.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. CollectionSources builds2 fabricated items, creates Custom Set, removes default member, and checks custom/default labels counts/art ID/JSON. Actual wrappers lock and call same storage fields; app lifecycle below exercises actual storage construction/persistence.",
+      "history": [
+        "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+        "3061af1cd083cfc5848d42c038b478d5e573142b Restore static gates and offline regression contracts",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "verified_history": [
+        "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+        "3061af1cd083cfc5848d42c038b478d5e573142b Restore static gates and offline regression contracts",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:55.659791-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestCollectionSummariesSeparateDefaultAndCustomSources",
+          "Elapsed": 0
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestCollectionSummariesSeparateDefaultAndCustomSources$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    },
+    {
+      "path": "apps/player/internal/server/collection_test.go",
+      "name": "TestOwnerCanCreateAndCurateCollection",
+      "line": 15,
+      "end_line": 79,
+      "sha256": "47adaba1eb32aba7b790c633a846fe3621a63a00248b3d060b1d45cf99a2c40c",
+      "baseline_file_sha256": "96ef3eb9c01a0c503110871d0801b25aae965a0c47842725a7a0267e70c7c727",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual app route/template/SQLite binding persists mixed book+video collection over server reconstruction and rejects ambiguous memberships without state changes; book-specific mapping or persistence failure can miss valid video-only browser journey.",
+      "assertion_review_and_limits": "Actual New handlers and8 negative POST forms; zero items before valid add,2 items after restart, remove video retains1. Actual book+player membership projections checked. Dummy EPub/video and CSS source recipes do not prove reader/playback/layout; source literal subchecks incidental.",
+      "source_body": "func TestOwnerCanCreateAndCurateCollection(t *testing.T) { //nolint:cyclop,funlen // One lifecycle proves validation, persistence, and both adapters.\n\tt.Parallel()\n\tmediaDir, dataDir := t.TempDir(), t.TempDir()\n\tif err := os.WriteFile(filepath.Join(mediaDir, \"Dune.mp4\"), nil, 0o600); err != nil {\n\t\tt.Fatal(err)\n\t}\n\tif err := os.WriteFile(filepath.Join(mediaDir, \"Dune Guide.epub\"), nil, 0o600); err != nil {\n\t\tt.Fatal(err)\n\t}\n\thandler := server.New(server.Config{MediaDir: mediaDir, DataDir: dataDir})\n\thome := httptest.NewRecorder()\n\thandler.ServeHTTP(home, httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/\", nil))\n\twatches := regexp.MustCompile(`/(?:watch|item)/([a-f0-9]+)`).FindAllStringSubmatch(home.Body.String(), -1)\n\tid := watches[len(watches)-1][1]\n\tbookID := regexp.MustCompile(`/book/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())[1]\n\tcreate := httptest.NewRecorder()\n\trequest := httptest.NewRequestWithContext(t.Context(), http.MethodPost, \"/collections\", strings.NewReader(\"name=Favorites\"))\n\trequest.Header.Set(\"Content-Type\", \"application/x-www-form-urlencoded\")\n\thandler.ServeHTTP(create, request)\n\tbrowser := httptest.NewRecorder()\n\thandler.ServeHTTP(browser, httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/?view=collections\", nil))\n\tapi := httptest.NewRecorder()\n\thandler.ServeHTTP(api, httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/api/v1/collections\", nil))\n\tsearch := httptest.NewRecorder()\n\thandler.ServeHTTP(search, httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/collection/Favorites?q=Dune\", nil))\n\tplayer := httptest.NewRecorder()\n\thandler.ServeHTTP(player, httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/watch/\"+id, nil))\n\tbookPage := httptest.NewRecorder()\n\thandler.ServeHTTP(bookPage, httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/book/\"+bookID, nil))\n\n\tassertInvalidCollectionForms(t, handler, id)\n\tunchanged := httptest.NewRecorder()\n\thandler.ServeHTTP(unchanged, httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/collection/Favorites\", nil))\n\tif !strings.Contains(unchanged.Body.String(), \"0 items\") {\n\t\tt.Fatalf(\"invalid membership forms changed collection: %q\", unchanged.Body.String())\n\t}\n\tadd := collectionForm(t, handler, \"/collection/Favorites/items/\"+id, \"included=true&q=Dune\")\n\tbook := collectionForm(t, handler, \"/collection/Favorites/items/\"+bookID, \"included=true\")\n\tcollection := httptest.NewRecorder()\n\tserver.New(server.Config{MediaDir: mediaDir, DataDir: dataDir}).ServeHTTP(collection, httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/collection/Favorites\", nil))\n\n\tif create.Code != http.StatusSeeOther || add.Header().Get(\"Location\") != \"/collection/Favorites?q=Dune#collection-search\" || book.Header().Get(\"Location\") != \"/collection/Favorites\" || collection.Code != http.StatusOK {\n\t\tt.Fatalf(\"create = %d, add = %q, book = %q, collection = %d %q\", create.Code, add.Header().Get(\"Location\"), book.Header().Get(\"Location\"), collection.Code, collection.Body.String())\n\t}\n\tmustContainAll(t, browser.Body.String(), `class=\"active\" aria-current=\"page\" href=\"/?view=collections\">Collections`, \"Custom collections\", \"Default collections\", \"No default collections found in your media metadata.\", `class=\"curation-card\"`, \"0 items\")\n\tmustContainAll(t, api.Body.String(), `\"name\":\"Favorites\"`, `\"source\":\"custom\"`)\n\tmustContainAll(t, search.Body.String(), \"/collection/Favorites/items/\"+id, \"/collection/Favorites/items/\"+bookID, \"Add to\")\n\tfor name, page := range map[string]string{\"player\": player.Body.String(), \"book\": bookPage.Body.String()} {\n\t\tmustContainAll(t, page, `class=\"curation-options\"`, `<h2>Collections</h2>`, `<span>Favorites</span><small>Add</small>`, `aria-label=\"Add to Collection \u00b7 Favorites\"`)\n\t\tif strings.Contains(page, `>Add to Collection \u00b7 Favorites</button>`) {\n\t\t\tt.Fatalf(\"%s repeats the collection action in its visible label: %q\", name, page)\n\t\t}\n\t}\n\tstyles := httptest.NewRecorder()\n\thandler.ServeHTTP(styles, httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/static/app.css\", nil))\n\tmustContainAll(t, collection.Body.String(), `class=\"detail-shell collection-detail collection-page\"`, \"2 items\", \"Dune Guide\", \"Remove\", \"Delete Favorites?\", \"Delete Collection\")\n\tmustContainAll(t, styles.Body.String(), \".collection-page .collection-items .card{display:grid\", \".collection-page .collection-results .card{display:grid\", \".collection-page .collection-items .card button,.collection-page .collection-results .card button{min-height:44px}\")\n\n\tremoved := collectionForm(t, handler, \"/collection/Favorites/items/\"+id, \"included=false\")\n\tafter := httptest.NewRecorder()\n\thandler.ServeHTTP(after, httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/collection/Favorites\", nil))\n\tif removed.Code != http.StatusSeeOther || strings.Contains(after.Body.String(), `<h2>Dune</h2>`) || !strings.Contains(after.Body.String(), \"1 item\") {\n\t\tt.Fatalf(\"remove = %d, collection = %q\", removed.Code, after.Body.String())\n\t}\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalog/collection_web.go",
+          "baseline_sha256": "273655b7ae0b87d0ab5cc4b13bf52e8d183f8c595811b4e5f66a6112ffce6bda",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/list_operations.go",
+          "baseline_sha256": "deb05696fb2162cd572aee8f5c940d9dc0b0837b0f759b0028232aed3616ecb1",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/playerweb/curation_template.go",
+          "baseline_sha256": "dbc4b6deac5e025007705126d769db475e3d614b225b2f2087a042ab1c15af54",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/collection.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/book.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/collection.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/book.go"
+      ],
+      "remaining_proof": "genuine ui-happy-paths and curation-count cover valid video create/add/remove/delete and real browser controls/counts. No E2E server restart + mixed book membership, and no negative-form no-write matrix. Retain important integration boundaries.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Actual New handlers and8 negative POST forms; zero items before valid add,2 items after restart, remove video retains1. Actual book+player membership projections checked. Dummy EPub/video and CSS source recipes do not prove reader/playback/layout; source literal subchecks incidental.",
+      "history": [
+        "71538432ebe9000e777c1ac70f1629f7e24a016d Fix curation item counts and repair populated browser QA",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "verified_history": [
+        "71538432ebe9000e777c1ac70f1629f7e24a016d Fix curation item counts and repair populated browser QA",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:44.962359-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestOwnerCanCreateAndCurateCollection",
+          "Elapsed": 0.77
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestOwnerCanCreateAndCurateCollection$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    },
+    {
+      "path": "apps/player/internal/server/collection_test.go",
+      "name": "TestCollectionSearchRejectsAmbiguousInput",
+      "line": 102,
+      "end_line": 116,
+      "sha256": "71fc812e8a7fae29ddcdbf5ba76c36d8956eceddfabcde217bb7b3881b119adb",
+      "baseline_file_sha256": "96ef3eb9c01a0c503110871d0801b25aae965a0c47842725a7a0267e70c7c727",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "category": "important_missed_failure",
+      "credible_failure": "Registered actual Collection GET must reject unknown key, duplicate query and201-byte query rather than accepting conflicting/unbounded search inputs. E2E uses valid search only.",
+      "assertion_review_and_limits": "Creates actual collection and verifies303 before3 exact400 responses; no mutation-counter assertion needed for read-only endpoint. Shared ParseCurationQuery tests protect parser, not registration of this app Browse validation path.",
+      "source_body": "func TestCollectionSearchRejectsAmbiguousInput(t *testing.T) {\n\tt.Parallel()\n\thandler := server.New(server.Config{MediaDir: t.TempDir(), DataDir: t.TempDir()})\n\tcreate := collectionForm(t, handler, \"/collections\", \"name=Favorites\")\n\tif create.Code != http.StatusSeeOther {\n\t\tt.Fatalf(\"create = %d %q\", create.Code, create.Body.String())\n\t}\n\tfor _, path := range []string{\"/collection/Favorites?unknown=x\", \"/collection/Favorites?q=a&q=b\", \"/collection/Favorites?q=\" + strings.Repeat(\"x\", 201)} {\n\t\tresponse := httptest.NewRecorder()\n\t\thandler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, path, nil))\n\t\tif response.Code != http.StatusBadRequest {\n\t\t\tt.Fatalf(\"%s = %d %q\", path, response.Code, response.Body.String())\n\t\t}\n\t}\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalog/collection_web.go",
+          "baseline_sha256": "273655b7ae0b87d0ab5cc4b13bf52e8d183f8c595811b4e5f66a6112ffce6bda",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/validation.go",
+          "baseline_sha256": "82073ca9f56d80368fdafb98224e10984a8a6847b20816c8b805fd18d532f0dc",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/collection.go",
+        "apps/player/internal/server/player.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/collection.go",
+        "apps/player/internal/server/player.go"
+      ],
+      "remaining_proof": "genuine curation-count valid Find query and UI curation do not send unknown/duplicate/oversized GET. Shared CollectionWebHandlersProjectBrowseThroughPublicPage has an unknown query case but fake render/index and no actual app mux.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Creates actual collection and verifies303 before3 exact400 responses; no mutation-counter assertion needed for read-only endpoint. Shared ParseCurationQuery tests protect parser, not registration of this app Browse validation path.",
+      "history": [
+        "71538432ebe9000e777c1ac70f1629f7e24a016d Fix curation item counts and repair populated browser QA",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "verified_history": [
+        "71538432ebe9000e777c1ac70f1629f7e24a016d Fix curation item counts and repair populated browser QA",
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:44.382126-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestCollectionSearchRejectsAmbiguousInput",
+          "Elapsed": 0.23
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestCollectionSearchRejectsAmbiguousInput$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    },
+    {
+      "path": "apps/player/internal/server/configuration_test.go",
+      "name": "TestConfigurationHTTPContract",
+      "line": 12,
+      "end_line": 22,
+      "sha256": "ef7ac6c738e2abcaa5ec71b0db663071e3e35dd7bbd01b3847cc1455b9233b51",
+      "baseline_file_sha256": "334ad45e1419a365b4dc5ddfc97ce748fac9db924dffb2dd45980f64bcbfab8d",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual Player configuration adapters must keep environment-managed settings immutable, hide deployment/OIDC/SCIM secrets, preserve blank OIDC secret, reject invalid/partial changes without writes, and reload saved restart values/TLS preference. Miswiring app configuration policy remains missed by layout browser journeys.",
+      "assertion_review_and_limits": "Six Run subtests invoke real Player Load/New/MFA web/API callbacks; External settings compare values after rejection; OIDC web/API roundtrip/reload/reset, file absence on invalid, managed secret nonrendering. Standalone predicate is weak about individual editability but other security/persistence checks remain important. HTTPS preference test changes stored operator setting only; no TLS bypass performed.",
+      "source_body": "func TestConfigurationHTTPContract(t *testing.T) {\n\tfixture := servertest.ConfigurationHTTP[configuration.Source, configuration.Snapshot]{\n\t\tLoad: configuration.Load, GUI: configuration.GUI, SCIMToken: scimTestToken,\n\t\tSignIn: signInTestProfile, WebCall: requestWithCookie,\n\t\tTMDBSection: `href=\"/settings/configuration#integrations.tmdb\"`, TMDBLabel: \"Movie artwork and details\", TMDBHelp: \"Configuration key: <code>integrations.tmdb.token</code>\",\n\t\tNewHandler: func(media, directory string, configured configuration.Snapshot) http.Handler {\n\t\t\treturn server.New(server.Config{MediaDir: media, DataDir: directory, RequireAuth: true, Configuration: configured})\n\t\t},\n\t}\n\tfixture.Run(t)\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/servertest/configuration_http.go",
+          "baseline_sha256": "0715d13a3440d8ff6775b01c82058d54d330e34bb4b32ca79dbbc062edd72a1b",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/settings/configuration.go",
+          "baseline_sha256": "390e6b761d50ddc596fbc74ada71f940af9533b54289db0a3d87b8b83bcc5f97",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/settings_configuration.go",
+        "apps/player/internal/server/settings_configuration_api.go",
+        "apps/player/internal/server/settings_oidc_configuration.go",
+        "apps/player/internal/server/settings_scim_configuration.go",
+        "apps/player/internal/server/settings_tmdb_configuration.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/settings_configuration.go",
+        "apps/player/internal/server/settings_configuration_api.go",
+        "apps/player/internal/server/settings_oidc_configuration.go",
+        "apps/player/internal/server/settings_scim_configuration.go",
+        "apps/player/internal/server/settings_tmdb_configuration.go"
+      ],
+      "remaining_proof": "layout-audit-configuration browser journeys assert SCIM/OIDC/SAML usability/valid updates; no environment-managed immutable deployment matrix or invalid-operation no-write/reload parity. Shared settings storage tests are isolated injected callbacks, no full app adapter proof.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Six Run subtests invoke real Player Load/New/MFA web/API callbacks; External settings compare values after rejection; OIDC web/API roundtrip/reload/reset, file absence on invalid, managed secret nonrendering. Standalone predicate is weak about individual editability but other security/persistence checks remain important. HTTPS preference test changes stored operator setting only; no TLS bypass performed.",
+      "history": [
+        "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+        "3061af1cd083cfc5848d42c038b478d5e573142b Restore static gates and offline regression contracts",
+        "5ffb4e0d3eb315ccf7643b2782a495716677fc67 Restore security and subtitle regressions and simplify validation paths"
+      ],
+      "verified_history": [
+        "aeeba0ee4e9d87dec55d59c800da7d857b43596e Restore playback and management contract coverage",
+        "3061af1cd083cfc5848d42c038b478d5e573142b Restore static gates and offline regression contracts",
+        "5ffb4e0d3eb315ccf7643b2782a495716677fc67 Restore security and subtitle regressions and simplify validation paths"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:02.492247-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestConfigurationHTTPContract",
+          "Elapsed": 0
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestConfigurationHTTPContract$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    },
+    {
+      "path": "apps/player/internal/server/live_events_test.go",
+      "name": "TestLiveEventAPIStreamsThroughTheServerMiddleware",
+      "line": 15,
+      "end_line": 45,
+      "sha256": "7de2d955c9f6df04d07aca33a5bf839dc3d41f9b541cf1e4495880169430f257",
+      "baseline_file_sha256": "72edc9f3d61136720cd38ac55d5f9cb8ee41e4a683e34233b5a8323f34069734",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual composed app middleware must retain http.Flusher/streaming response capability and deliver immediate SSE retry line with no-store; a wrapping middleware buffering/disabling flush breaks live updates while ordinary HTTP and shared hub tests remain green.",
+      "assertion_review_and_limits": "Real TCP httptest server, authenticated Owner,2-second bounded first-line read and actual invalid Last-Event-ID400. Does not test app publishers, heartbeat or subsequent revocation; shared liveevents tests cover those isolated.",
+      "source_body": "func TestLiveEventAPIStreamsThroughTheServerMiddleware(t *testing.T) {\n\thandler := server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true})\n\tcookie := signInTestProfile(t, handler, \"/setup\", \"name=Owner&password=owner-password\")\n\tinvalid := httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/api/v1/events\", nil)\n\tinvalid.Header.Set(\"Last-Event-ID\", \"invalid\")\n\tinvalid.AddCookie(cookie)\n\tinvalidResponse := httptest.NewRecorder()\n\thandler.ServeHTTP(invalidResponse, invalid)\n\tif invalidResponse.Code != http.StatusBadRequest {\n\t\tt.Fatalf(\"invalid event cursor = %d %q\", invalidResponse.Code, invalidResponse.Body.String())\n\t}\n\n\tweb := httptest.NewServer(handler)\n\tt.Cleanup(web.Close)\n\tctx, cancel := context.WithTimeout(t.Context(), 2*time.Second)\n\tdefer cancel()\n\trequest, err := http.NewRequestWithContext(ctx, http.MethodGet, web.URL+\"/api/v1/events\", nil)\n\tif err != nil {\n\t\tt.Fatal(err)\n\t}\n\trequest.AddCookie(cookie)\n\tresponse, err := http.DefaultClient.Do(request)\n\tif err != nil {\n\t\tt.Fatal(err)\n\t}\n\tdefer response.Body.Close()\n\tline, err := bufio.NewReader(response.Body).ReadString('\\n')\n\tif err != nil || response.StatusCode != http.StatusOK || response.Header.Get(\"Content-Type\") != \"text/event-stream\" || response.Header.Get(\"Cache-Control\") != \"no-store\" || !strings.HasPrefix(line, \"retry: \") {\n\t\tt.Fatalf(\"event stream = %d %q %q, line %q, error %v\", response.StatusCode, response.Header.Get(\"Content-Type\"), response.Header.Get(\"Cache-Control\"), line, err)\n\t}\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/liveevents/http.go",
+          "baseline_sha256": "d295c6b084af0c230f2a2ebcfeff1d4d0353b79b7ad61680c1b859642e49e380",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/liveevents/http_test.go",
+          "baseline_sha256": "57f9d4bcd6ceea12a923ba9f7afb78fbaf53d0972a0b65f18cf4539b6e62adbc",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/live_events.go",
+        "apps/player/internal/server/api.go",
+        "apps/player/internal/server/server.go",
+        "apps/player/internal/server/security.go",
+        "apps/player/internal/server/observability.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/live_events.go",
+        "apps/player/internal/server/api.go",
+        "apps/player/internal/server/server.go",
+        "apps/player/internal/server/security.go",
+        "apps/player/internal/server/observability.go"
+      ],
+      "remaining_proof": "No genuine Player journey asserts actual SSE retry line through whole middleware. Offline lifecycle browser spec replaces EventSource; it is a fixture and cannot replace this proof.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Real TCP httptest server, authenticated Owner,2-second bounded first-line read and actual invalid Last-Event-ID400. Does not test app publishers, heartbeat or subsequent revocation; shared liveevents tests cover those isolated.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:22.839809-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestLiveEventAPIStreamsThroughTheServerMiddleware",
+          "Elapsed": 0.14
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestLiveEventAPIStreamsThroughTheServerMiddleware$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    },
+    {
+      "path": "apps/player/internal/server/marker_analysis_api_test.go",
+      "name": "TestMarkerAnalysisReportsDetectorVersion",
+      "line": 8,
+      "end_line": 18,
+      "sha256": "df5a954f7483d4451197354729a82d09758c2131992d157ae805cdd7e9efba07",
+      "baseline_file_sha256": "a1e4db85ec2a2722064ebac7dd556d5e8ee9f96bc15c9aa25504810916e3e444",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "D",
+      "review_status": "semantic_review_complete",
+      "category": "duplicate_or_preempted",
+      "credible_failure": "Only response integer>0. Canonical registered marker Admin test asserts exact current DetectorVersion and full status/queue workflow; actual app200/owner gate keepers preserve wiring. No independent injection/state boundary in this declaration.",
+      "assertion_review_and_limits": "Real API Owner parses detectorVersion; drops if missing or0, but does not establish exact revision/current analyzer state. Actual registerMarkerAdmin binds unmodified shared Admin JSON; wrong route admission/status covered separately.",
+      "source_body": "func TestMarkerAnalysisReportsDetectorVersion(t *testing.T) {\n\tt.Parallel()\n\thandler, token := apiServer(t)\n\tvar status struct {\n\t\tDetectorVersion int `json:\"detectorVersion\"`\n\t}\n\tmustJSON(t, apiCall(t, handler, token, http.MethodGet, \"/api/v1/marker-analysis\", nil), &status)\n\tif status.DetectorVersion <= 0 {\n\t\tt.Fatalf(\"detector version = %d\", status.DetectorVersion)\n\t}\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/markers/admin.go",
+          "baseline_sha256": "3743522c964625625a9625e51cc0fb382316e2e1f2c36a95d02f397565906295",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/markers/admin_test.go",
+          "baseline_sha256": "77cbe23ba61b1e1ee1c1fe52e05d4e57c3965c78aced6c75b356f2d0e571ab01",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/marker_admin.go",
+        "apps/player/internal/server/settings_http.go",
+        "apps/player/internal/server/api.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/marker_admin.go",
+        "apps/player/internal/server/settings_http.go",
+        "apps/player/internal/server/api.go"
+      ],
+      "remaining_proof": "Keep TestAdminRoutesManageMarkersAndQueueAnalysis exact version and TestVersionedAPIReadModelsAreReachableThroughOwnerSession marker endpoint, auth_all_routes owner boundary. No genuine E2E asserts version; relies explicitly on stronger shared isolated primary plus real app route keeper, not browser equivalence.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Real API Owner parses detectorVersion; drops if missing or0, but does not establish exact revision/current analyzer state. Actual registerMarkerAdmin binds unmodified shared Admin JSON; wrong route admission/status covered separately.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:40.783795-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestMarkerAnalysisReportsDetectorVersion",
+          "Elapsed": 0.27
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestMarkerAnalysisReportsDetectorVersion$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    },
+    {
+      "path": "apps/player/internal/server/playback_trace_test.go",
+      "name": "TestPlaybackTraceCorrelatesBrowserAndMediaWithoutPrivateData",
+      "line": 20,
+      "end_line": 55,
+      "sha256": "9645128f4cbe4a7b4875a3cf1a637cbf1422ab48c6962a6f6b77fb7ae1ee3aa0",
+      "baseline_file_sha256": "ecaf2e961c8503c28efe57be6af3582e253aa33f956c9681b9879b05f8d63954",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual watch HTML/session URL, trace POST and media range request must share correlation without logging private file/title/item ID/source URL. App observability and rendered URL miswiring or sensitive logging would miss pure trace logger tests and browser playback.",
+      "assertion_review_and_limits": "Captures actual global slog DEBUG; watch actual generated session equals source query, POST204, Range206 one byte, at least3 session log occurrences and planned/trace/range facts; compares path/title/id/URL absence. Dummy5-byte media/no decoder.",
+      "source_body": "func TestPlaybackTraceCorrelatesBrowserAndMediaWithoutPrivateData(t *testing.T) {\n\tmedia := t.TempDir()\n\tpath := filepath.Join(media, \"Private Film.mp4\")\n\tif err := os.WriteFile(path, []byte(\"video\"), 0o600); err != nil {\n\t\tt.Fatal(err)\n\t}\n\tvar output bytes.Buffer\n\tprevious := slog.Default()\n\tslog.SetDefault(slog.New(slog.NewJSONHandler(&output, &slog.HandlerOptions{Level: slog.LevelDebug})))\n\tt.Cleanup(func() { slog.SetDefault(previous) })\n\thandler := New(Config{MediaDir: media})\n\thome := playbackTraceRequest(handler, httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/\", nil))\n\tid := regexp.MustCompile(`/(?:watch|item)/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())[1]\n\tpage := playbackTraceRequest(handler, httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/watch/\"+id, nil))\n\tsession := regexp.MustCompile(`data-playback-session=?\"?([a-zA-Z0-9_-]+)`).FindStringSubmatch(page.Body.String())\n\tsource := regexp.MustCompile(`src=?\"?(/media/[^\" >]+)`).FindStringSubmatch(page.Body.String())\n\tif page.Code != http.StatusOK || len(session) != 2 || len(source) != 2 || !strings.Contains(source[1], \"playbackSession=\"+session[1]) {\n\t\tt.Fatalf(\"player trace contract is missing: %d %q\", page.Code, page.Body.String())\n\t}\n\n\tpayload := map[string]any{\"session\": session[1], \"event\": \"play-rejected\", \"sequence\": 4, \"elapsedMs\": 812, \"positionMs\": 42000, \"durationMs\": 7200000, \"bufferedAheadMs\": 250, \"readyState\": 2, \"networkState\": 2, \"paused\": true, \"method\": \"direct\", \"detail\": \"control:NotAllowedError\"}\n\tbody, _ := json.Marshal(payload)\n\tevent := httptest.NewRequestWithContext(t.Context(), http.MethodPost, \"/api/v1/items/\"+id+\"/playback-events\", bytes.NewReader(body))\n\tevent.Header.Set(\"Content-Type\", \"application/json\")\n\teventResponse := playbackTraceRequest(handler, event)\n\tmediaRequest := httptest.NewRequestWithContext(t.Context(), http.MethodGet, html.UnescapeString(source[1]), nil)\n\tmediaRequest.Header.Set(\"Range\", \"bytes=0-0\")\n\tmediaResponse := playbackTraceRequest(handler, mediaRequest)\n\tlogs := output.String()\n\tassertPlaybackTraceLogs(t, logs, session[1], eventResponse, mediaResponse)\n\tfor _, private := range []string{path, \"Private Film\", id, source[1]} {\n\t\tif strings.Contains(logs, private) {\n\t\t\tt.Fatalf(\"playback trace exposed %q: %s\", private, logs)\n\t\t}\n\t}\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/playback/trace_http.go",
+          "baseline_sha256": "9bf6edfc4ad05b7e45b0dbe633452a034cc99da2bad97febddef09818112f657",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/playback/file_delivery.go",
+          "baseline_sha256": "16d86d7101827d23d8b947bf59372df2d5f3741212e743ddf3af8eb2b7bd3510",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/playback_trace.go",
+        "apps/player/internal/server/observability.go",
+        "apps/player/internal/server/observability_context.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/server.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/playback_trace.go",
+        "apps/player/internal/server/observability.go",
+        "apps/player/internal/server/observability_context.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/server.go"
+      ],
+      "remaining_proof": "player-experience-status and player-frame-trace capture requests from synthetic video/routes, no actual Go logger/media correlation. Genuine playback exercises media but no private-log assertion.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Captures actual global slog DEBUG; watch actual generated session equals source query, POST204, Range206 one byte, at least3 session log occurrences and planned/trace/range facts; compares path/title/id/URL absence. Dummy5-byte media/no decoder.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:28:28.543371-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestPlaybackTraceCorrelatesBrowserAndMediaWithoutPrivateData",
+          "Elapsed": 0.02
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestPlaybackTraceCorrelatesBrowserAndMediaWithoutPrivateData$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    },
+    {
+      "path": "apps/player/internal/server/playback_trace_test.go",
+      "name": "TestPlaybackTraceRejectsInvalidInputWithoutLogging",
+      "line": 57,
+      "end_line": 62,
+      "sha256": "c18aee77c296bb7d9a1d80cf355a883b1fd2fb8e8b62375bf67b80b9c8db6239",
+      "baseline_file_sha256": "ecaf2e961c8503c28efe57be6af3582e253aa33f956c9681b9879b05f8d63954",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "D",
+      "review_status": "semantic_review_complete",
+      "category": "duplicate_or_preempted",
+      "credible_failure": "All6 named malformed payloads omit required sequence. Even removing each named session/event/state/detail check leaves sequence0 rejection; no independent claimed rejection branch is proved. Stronger shared valid-sequence readers/logger privacy tests and actual app positive correlation survive.",
+      "assertion_review_and_limits": "Helper payloads missing/invalid session,unknown event,unknown field,readyState5,65-char detail all deserialize Sequence0. It checks400 and absence of playback trace message, not all logs. Actual app positive trace has sequence4; API malformed body matrix exercises actual route decode.",
+      "source_body": "func TestPlaybackTraceRejectsInvalidInputWithoutLogging(t *testing.T) {\n\tfixture := servertest.LibraryAPIFixture{NewHandler: func(media, data string, requireAuth bool) http.Handler {\n\t\treturn New(Config{MediaDir: media, DataDir: data, RequireAuth: requireAuth})\n\t}}\n\tfixture.PlaybackTraceRejectsInvalidInputWithoutLogging(t)\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/servertest/playback_trace.go",
+          "baseline_sha256": "64d2d99d91459d894abab98e2844e7a506d5c2d73236c6c20c1778a941bf8028",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/playback/trace.go",
+          "baseline_sha256": "cd0b1565f7aee5e140927976c84aa295a72c9591a365ce20fc3e47ee946603e4",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/playback/trace_http_test.go",
+          "baseline_sha256": "4c451454103722c3199a12e8206564b91fa0cd81523b949b930208021b5f8c2b",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/playback/protocol_test.go",
+          "baseline_sha256": "6370aa4e3111ffab47816e1dc4e6497dd54dcd88dbdab0a7b2726f8020290949",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/playback/trace_diagnostics_http_test.go",
+          "baseline_sha256": "e487f3d4fb1fd5b454e75037cf2692fc4c340bfee9cada4ab2e011b9398b7978",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/playback_trace.go",
+        "apps/player/internal/server/api.go",
+        "apps/player/internal/server/observability_context.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/playback_trace.go",
+        "apps/player/internal/server/api.go",
+        "apps/player/internal/server/observability_context.go"
+      ],
+      "remaining_proof": "Keep TestTraceReaderRejectsBeforeCallerSideEffects (valid seq1 then unknown event/state/field), TestTraceHTTPRejectsLogInjectionWithoutEffects (valid seq1 baseline +24 field attacks, no logs or session effects), TestTraceHTTPDiagnosticsRejectAmbiguityAndProtectLogPrivacy (actual shared TCP/seq1). Actual app TestPlaybackTraceCorrelatesBrowserAndMediaWithoutPrivateData guards bindings. No genuine backend trace rejection browser journey and no equivalence claim.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Helper payloads missing/invalid session,unknown event,unknown field,readyState5,65-char detail all deserialize Sequence0. It checks400 and absence of playback trace message, not all logs. Actual app positive trace has sequence4; API malformed body matrix exercises actual route decode.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:28:28.56943-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestPlaybackTraceRejectsInvalidInputWithoutLogging",
+          "Elapsed": 0.02
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestPlaybackTraceRejectsInvalidInputWithoutLogging$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    },
+    {
+      "path": "apps/player/internal/server/playback_trace_test.go",
+      "name": "TestDisplayedFramePlaybackTraceEventsAreAccepted",
+      "line": 64,
+      "end_line": 71,
+      "sha256": "63790f6dbd1f8ecc9ba5022fb658fda87430865b04083d0f145b7cca6556e862",
+      "baseline_file_sha256": "ecaf2e961c8503c28efe57be6af3582e253aa33f956c9681b9879b05f8d63954",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "category": "important_missed_failure",
+      "credible_failure": "Backend allowlist must accept capability-direct,first-frame,frame-after-seek diagnostics that browser emits. Removing one name drops repeatable first-frame/seek evidence while video playback itself and moving-frame-only shared test can pass.",
+      "assertion_review_and_limits": "Direct canonical playback.ValidTrace positive sequence1 using actual app validPlaybackSession; alias has no logic, but no remaining canonical exact positive enumeration for these3 events found. Pure accepted-value contract, not rendered/backend delivery proof.",
+      "source_body": "func TestDisplayedFramePlaybackTraceEventsAreAccepted(t *testing.T) {\n\tt.Parallel()\n\tfor _, event := range []string{\"capability-direct\", \"first-frame\", \"frame-after-seek\"} {\n\t\tif !playback.ValidTrace(playbackTraceEvent{Session: \"trace-session\", Event: event, Sequence: 1}, validPlaybackSession) {\n\t\t\tt.Fatalf(\"%s trace was rejected\", event)\n\t\t}\n\t}\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/playback/trace.go",
+          "baseline_sha256": "cd0b1565f7aee5e140927976c84aa295a72c9591a365ce20fc3e47ee946603e4",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/playback/trace_http_test.go",
+          "baseline_sha256": "4c451454103722c3199a12e8206564b91fa0cd81523b949b930208021b5f8c2b",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/webassets/static/player-core.js",
+          "baseline_sha256": "17da3a54d2d4006f5a8e6c3b72d5666edee16d4c8efcf42a20bdbe67d0295b5a",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/playback_trace.go",
+        "apps/player/internal/server/observability_context.go",
+        "apps/player/internal/server/api.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/playback_trace.go",
+        "apps/player/internal/server/observability_context.go",
+        "apps/player/internal/server/api.go"
+      ],
+      "remaining_proof": "player-frame-trace uses intercepted synthetic https://trace.test/events returning204 and does not reach backend validator. TestTraceAcceptsMovingFrameEvidence covers first-moving-frame only; actual genuine playback does not assert backend accepts all3 distinct diagnostic events.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Direct canonical playback.ValidTrace positive sequence1 using actual app validPlaybackSession; alias has no logic, but no remaining canonical exact positive enumeration for these3 events found. Pure accepted-value contract, not rendered/backend delivery proof.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:50.895561-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestDisplayedFramePlaybackTraceEventsAreAccepted",
+          "Elapsed": 0
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestDisplayedFramePlaybackTraceEventsAreAccepted$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    },
+    {
+      "path": "apps/player/internal/server/playlist_features_test.go",
+      "name": "TestPlaylistsSupportPersistentOrderAndDynamicRules",
+      "line": 16,
+      "end_line": 83,
+      "sha256": "a7d7c337b5539596d2be1e41b2439c0d01f128838dbf3fcb3733952e74260730",
+      "baseline_file_sha256": "487b4292a7b79246cdbb5f77027e9e29e8533738d1c9b08f0e88a7b0b5150633",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "category": "important_missed_failure",
+      "credible_failure": "Real Player API/web/store/session reconstruction must preserve manual order, dynamic rules and audio+audiobook policy; smart playlists must not expose manual membership mutation in player. App rule/wiring/reload failure remains missed by simple video curation E2E.",
+      "assertion_review_and_limits": "4 dummy media; MFA Owner; API create/membership/order/smart rules checked status then restart actual persisted session; first manual title Zodiac,len2; Arrival smart inclusion and validJSON (does not assert excludes Zodiac); actual player manual membership/smart absence; web audio smart includes Ambient+Ancillary.",
+      "source_body": "func TestPlaylistsSupportPersistentOrderAndDynamicRules(t *testing.T) { //nolint:cyclop,funlen // One workflow test covers the persistent playlist contract.\n\tt.Parallel()\n\n\tmedia, data := t.TempDir(), t.TempDir()\n\tfor _, name := range []string{\"Arrival.mp4\", \"Zodiac.mp4\", \"Ambient.mp3\", \"Audiobooks/Ancillary.m4b\"} {\n\t\tif err := os.MkdirAll(filepath.Dir(filepath.Join(media, name)), 0o700); err != nil {\n\t\t\tt.Fatal(err)\n\t\t}\n\t\tif err := os.WriteFile(filepath.Join(media, name), []byte(name), 0o600); err != nil {\n\t\t\tt.Fatal(err)\n\t\t}\n\t}\n\thandler := server.New(server.Config{MediaDir: media, DataDir: data, RequireAuth: true})\n\towner := signInTestProfile(t, handler, \"/setup\", \"name=Owner&password=owner-password\")\n\tvar session struct {\n\t\tToken string `json:\"token\"`\n\t}\n\tsession.Token = owner.Value\n\tlibraryResponse := apiCall(t, handler, session.Token, http.MethodGet, \"/api/v1/library\", nil)\n\tvar catalog struct {\n\t\tItems []struct {\n\t\t\tID, Title string\n\t\t} `json:\"items\"`\n\t}\n\tmustJSON(t, libraryResponse, &catalog)\n\tids := map[string]string{}\n\tfor _, item := range catalog.Items {\n\t\tids[item.Title] = item.ID\n\t}\n\tassertAPICalls(t, handler, session.Token, []apiTestCall{\n\t\t{Method: http.MethodPost, Path: \"/api/v1/playlists\", Body: map[string]any{\"name\": \"Films\"}, Status: http.StatusCreated},\n\t\t{Method: http.MethodPut, Path: \"/api/v1/playlists/Films/items/\" + ids[\"Arrival\"], Body: map[string]any{\"included\": true}, Status: http.StatusOK},\n\t\t{Method: http.MethodPut, Path: \"/api/v1/playlists/Films/items/\" + ids[\"Zodiac\"], Body: map[string]any{\"included\": true}, Status: http.StatusOK},\n\t\t{Method: http.MethodPut, Path: \"/api/v1/playlists/Films/order\", Body: map[string]any{\"ids\": []string{ids[\"Zodiac\"], ids[\"Arrival\"]}}, Status: http.StatusOK},\n\t\t{Method: http.MethodPost, Path: \"/api/v1/smart-playlists\", Body: map[string]any{\"name\": \"A titles\", \"kind\": \"video\", \"query\": \"a\", \"sort\": \"title\"}, Status: http.StatusCreated},\n\t})\n\n\thandler = server.New(server.Config{MediaDir: media, DataDir: data, RequireAuth: true})\n\tmanual := apiCall(t, handler, session.Token, http.MethodGet, \"/api/v1/playlists/Films\", nil)\n\tvar playlist struct {\n\t\tItems []struct {\n\t\t\tTitle string `json:\"title\"`\n\t\t} `json:\"items\"`\n\t}\n\tif err := json.Unmarshal(manual.Body.Bytes(), &playlist); err != nil || len(playlist.Items) != 2 || playlist.Items[0].Title != \"Zodiac\" {\n\t\tt.Fatalf(\"manual playlist = %d %q: %v\", manual.Code, manual.Body.String(), err)\n\t}\n\tsmart := apiCall(t, handler, session.Token, http.MethodGet, \"/api/v1/playlists/A%20titles\", nil)\n\tassertAPIBody(t, smart, http.StatusOK, \"Arrival\")\n\tif smart.Body.String() == \"\" || !json.Valid(smart.Body.Bytes()) {\n\t\tt.Fatalf(\"smart playlist JSON = %q\", smart.Body.String())\n\t}\n\tplayer := apiCall(t, handler, session.Token, http.MethodGet, \"/watch/\"+ids[\"Arrival\"], nil)\n\tassertAPIBody(t, player, http.StatusOK, `aria-label=\"Remove from playlist \u00b7 Films\"`, `<span>Films</span><small>Added</small>`)\n\tif strings.Contains(player.Body.String(), \"A titles\") {\n\t\tt.Fatalf(\"smart playlist exposed a manual membership control: %q\", player.Body.String())\n\t}\n\trequest := httptest.NewRequestWithContext(t.Context(), http.MethodPost, \"/smart-playlists\", strings.NewReader(\"name=Music&kind=audio&sort=title\"))\n\trequest.Header.Set(\"Content-Type\", \"application/x-www-form-urlencoded\")\n\trequest.Header.Set(\"Authorization\", \"Bearer \"+session.Token)\n\tresponse := httptest.NewRecorder()\n\thandler.ServeHTTP(response, request)\n\tif response.Code != http.StatusSeeOther {\n\t\tt.Fatalf(\"smart playlist web adapter = %d %q\", response.Code, response.Body.String())\n\t}\n\taudio := apiCall(t, handler, session.Token, http.MethodGet, \"/api/v1/playlists/Music\", nil)\n\tassertAPIBody(t, audio, http.StatusOK, \"Ambient\", \"Ancillary\")\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalog/list_read.go",
+          "baseline_sha256": "b10fad7b58f42245c6bb2167741eeb75312b6e911f85be8ea65bb1fd03d9cf79",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/list_operations.go",
+          "baseline_sha256": "deb05696fb2162cd572aee8f5c940d9dc0b0837b0f759b0028232aed3616ecb1",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalogapi/playlist_document.go",
+          "baseline_sha256": "b7e38e896960571d09af1ee73587f503e31b54dd20646733430866613e9897e8",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/playlist_http.go",
+          "baseline_sha256": "e8f73bb16995f9b18125326f02a8191f975fc0a1b813c0453711027823eb1cba",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/playlist.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/playlist_document.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/api.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/playlist.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/playlist_document.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/api.go"
+      ],
+      "remaining_proof": "test-instance-library creates valid smart-video query but no restart/manual order/audio+audiobook rule matrix. Shared canonical state/rules tests do not prove actual app load/session/template binding.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. 4 dummy media; MFA Owner; API create/membership/order/smart rules checked status then restart actual persisted session; first manual title Zodiac,len2; Arrival smart inclusion and validJSON (does not assert excludes Zodiac); actual player manual membership/smart absence; web audio smart includes Ambient+Ancillary.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:56.629357-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestPlaylistsSupportPersistentOrderAndDynamicRules",
+          "Elapsed": 0.62
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestPlaylistsSupportPersistentOrderAndDynamicRules$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    },
+    {
+      "path": "apps/player/internal/server/playlist_features_test.go",
+      "name": "TestPlaylistDocumentsRoundTripThroughVersionedAPI",
+      "line": 85,
+      "end_line": 130,
+      "sha256": "77591afcbbdd7655da5d69f6c678adf486d7def873f3dd48231f2919dffca5a9",
+      "baseline_file_sha256": "487b4292a7b79246cdbb5f77027e9e29e8533738d1c9b08f0e88a7b0b5150633",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual API portable versioned export must preserve full ID order and download MIME/filename; invalid format/unavailable imports must not publish partial playlist. Router/export/validation projection defects evade UI basic curation journeys.",
+      "assertion_review_and_limits": "Creates2ID source; exact format/version/name/deep IDs export; imports renamed document and checks firstID plus relative index (second absence weakness); rejection format/missingIDs and Rejected absent. No restart in this declaration despite name.",
+      "source_body": "func TestPlaylistDocumentsRoundTripThroughVersionedAPI(t *testing.T) { //nolint:cyclop // One scenario covers validation, persistence, and export.\n\tt.Parallel()\n\n\thandler, token := apiServer(t)\n\tlibrary := apiCall(t, handler, token, http.MethodGet, \"/api/v1/library\", nil)\n\tvar catalog struct {\n\t\tItems []struct{ ID string } `json:\"items\"`\n\t}\n\tmustJSON(t, library, &catalog)\n\tif len(catalog.Items) < 2 {\n\t\tt.Fatalf(\"test Library has %d items, want at least 2\", len(catalog.Items))\n\t}\n\tids := []string{catalog.Items[1].ID, catalog.Items[0].ID}\n\tassertAPIBody(t, apiCall(t, handler, token, http.MethodPost, \"/api/v1/playlists\", map[string]any{\"name\": \"Source\", \"ids\": ids}), http.StatusCreated)\n\n\texported := apiCall(t, handler, token, http.MethodGet, \"/api/v1/playlists/Source?format=kinosail\", nil)\n\tif exported.Code != http.StatusOK || exported.Header().Get(\"Content-Type\") != \"application/json\" || !strings.Contains(exported.Header().Get(\"Content-Disposition\"), \"kinosail-playlist.json\") {\n\t\tt.Fatalf(\"export = %d, type=%q disposition=%q body=%q\", exported.Code, exported.Header().Get(\"Content-Type\"), exported.Header().Get(\"Content-Disposition\"), exported.Body.String())\n\t}\n\tvar document struct {\n\t\tFormat  string   `json:\"format\"`\n\t\tVersion int      `json:\"version\"`\n\t\tName    string   `json:\"name\"`\n\t\tIDs     []string `json:\"ids\"`\n\t}\n\tmustJSON(t, exported, &document)\n\tif document.Format != \"kinosail.playlist\" || document.Version != 1 || document.Name != \"Source\" || !equalStrings(document.IDs, ids) {\n\t\tt.Fatalf(\"export document = %#v, want versioned ordered playlist\", document)\n\t}\n\tdocument.Name = \"Imported\"\n\tassertAPIBody(t, apiCall(t, handler, token, http.MethodPost, \"/api/v1/playlists\", document), http.StatusCreated, `\"name\":\"Imported\"`)\n\timported := apiCall(t, handler, token, http.MethodGet, \"/api/v1/playlists/Imported\", nil)\n\tif imported.Code != http.StatusOK || !strings.Contains(imported.Body.String(), ids[0]) || strings.Index(imported.Body.String(), ids[0]) > strings.Index(imported.Body.String(), ids[1]) {\n\t\tt.Fatalf(\"imported playlist = %d %q\", imported.Code, imported.Body.String())\n\t}\n\tassertAPIBody(t, apiCall(t, handler, token, http.MethodGet, \"/api/v1/playlists/Source?format=other\", nil), http.StatusBadRequest, \"playlist format is invalid\")\n\n\tdocument.Name, document.Format = \"Rejected\", \"other.playlist\"\n\tassertAPIBody(t, apiCall(t, handler, token, http.MethodPost, \"/api/v1/playlists\", document), http.StatusBadRequest, \"playlist document is invalid\")\n\tdocument.Format, document.IDs = \"kinosail.playlist\", []string{\"missing\"}\n\tassertAPIBody(t, apiCall(t, handler, token, http.MethodPost, \"/api/v1/playlists\", document), http.StatusBadRequest, \"playlist item is unavailable\")\n\tplaylists := apiCall(t, handler, token, http.MethodGet, \"/api/v1/playlists\", nil)\n\tif strings.Contains(playlists.Body.String(), `\"name\":\"Rejected\"`) {\n\t\tt.Fatalf(\"rejected import changed playlist state: %q\", playlists.Body.String())\n\t}\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalogapi/playlist_document.go",
+          "baseline_sha256": "b7e38e896960571d09af1ee73587f503e31b54dd20646733430866613e9897e8",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalogapi/media_http.go",
+          "baseline_sha256": "b92b469d465fbfeaa58f63c0383383277b6184375a267bca511fb0dd0529316e",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalogapi/media_http_read.go",
+          "baseline_sha256": "f6a04c539a345408b77244589eeb77ccf55c2ad3b6cfcbe6c1761c23b2b79a33",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalogapi/media_http_write.go",
+          "baseline_sha256": "34c34ef20b7820d8e6d38ba06a5273e3c62a9949d4f5d25f6bdece008a3a3d6c",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/playlist_document.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/api.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/playlist_document.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/api.go"
+      ],
+      "remaining_proof": "No genuine Player E2E import/export document journey found. Shared document tests validate isolated decode/create/export; actual headers and registered API no-side-effect boundary distinct.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Creates2ID source; exact format/version/name/deep IDs export; imports renamed document and checks firstID plus relative index (second absence weakness); rejection format/missingIDs and Rejected absent. No restart in this declaration despite name.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:56.322113-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestPlaylistDocumentsRoundTripThroughVersionedAPI",
+          "Elapsed": 0.38
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestPlaylistDocumentsRoundTripThroughVersionedAPI$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    },
+    {
+      "path": "apps/player/internal/server/playlist_features_test.go",
+      "name": "TestPlaylistDocumentsAreReachableThroughWebAdapter",
+      "line": 132,
+      "end_line": 162,
+      "sha256": "b81668bcaf211c826c9542adea17522aa8f59a17a8d05cdba6a450bbf98cae0b",
+      "baseline_file_sha256": "487b4292a7b79246cdbb5f77027e9e29e8533738d1c9b08f0e88a7b0b5150633",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual browser-form document import must use JSON document field and reject unavailable IDs without creating a playlist; actual detail must offer export endpoint. A web-only adapter bypass can pass API document test.",
+      "assertion_review_and_limits": "Authenticated bearer httptest form, sourceID;303 location, actual Import playlist/document field and Export playlist/format; malformed semantic missing-ID import400 plus name absent. Not a browser file download/real user selection.",
+      "source_body": "func TestPlaylistDocumentsAreReachableThroughWebAdapter(t *testing.T) {\n\tt.Parallel()\n\n\thandler, token := apiServer(t)\n\tlibrary := apiCall(t, handler, token, http.MethodGet, \"/api/v1/library\", nil)\n\tvar catalog struct {\n\t\tItems []struct{ ID string } `json:\"items\"`\n\t}\n\tmustJSON(t, library, &catalog)\n\tdocument, err := json.Marshal(map[string]any{\"format\": \"kinosail.playlist\", \"version\": 1, \"name\": \"Web import\", \"ids\": []string{catalog.Items[0].ID}})\n\tif err != nil {\n\t\tt.Fatal(err)\n\t}\n\tcreated := webFormCall(t, handler, token, \"/playlists\", url.Values{\"document\": {string(document)}})\n\tif created.Code != http.StatusSeeOther || !strings.Contains(created.Header().Get(\"Location\"), \"Web%20import\") {\n\t\tt.Fatalf(\"web import = %d location=%q body=%q\", created.Code, created.Header().Get(\"Location\"), created.Body.String())\n\t}\n\tplaylists := apiCall(t, handler, token, http.MethodGet, \"/?view=playlists\", nil)\n\tassertAPIBody(t, playlists, http.StatusOK, \"Import playlist\", `name=\"document\"`)\n\tdetail := apiCall(t, handler, token, http.MethodGet, \"/playlist/Web%20import\", nil)\n\tassertAPIBody(t, detail, http.StatusOK, \"Export playlist\", \"format=kinosail\")\n\n\tinvalid := webFormCall(t, handler, token, \"/playlists\", url.Values{\"document\": {`{\"format\":\"kinosail.playlist\",\"version\":1,\"name\":\"No side effect\",\"ids\":[\"missing\"]}`}})\n\tif invalid.Code != http.StatusBadRequest {\n\t\tt.Fatalf(\"invalid web import = %d %q\", invalid.Code, invalid.Body.String())\n\t}\n\tplaylists = apiCall(t, handler, token, http.MethodGet, \"/api/v1/playlists\", nil)\n\tif strings.Contains(playlists.Body.String(), `\"name\":\"No side effect\"`) {\n\t\tt.Fatalf(\"invalid web import changed playlist state: %q\", playlists.Body.String())\n\t}\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalogapi/playlist_document.go",
+          "baseline_sha256": "b7e38e896960571d09af1ee73587f503e31b54dd20646733430866613e9897e8",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/lists.go",
+          "baseline_sha256": "8d2084e310367ecb904ce3b46309de095a60d138483769705c84fa07724eb517",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/playlist_document.go",
+        "apps/player/internal/server/playlist_document_templates.go",
+        "apps/player/internal/server/player.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/playlist_document.go",
+        "apps/player/internal/server/playlist_document_templates.go",
+        "apps/player/internal/server/player.go"
+      ],
+      "remaining_proof": "Genuine ui-happy-paths posts name/new membership only. No browser imported JSON document or export-link/download proof. Keep actual registered form admission binding.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Authenticated bearer httptest form, sourceID;303 location, actual Import playlist/document field and Export playlist/format; malformed semantic missing-ID import400 plus name absent. Not a browser file download/real user selection.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:56.20793-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestPlaylistDocumentsAreReachableThroughWebAdapter",
+          "Elapsed": 0.33
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestPlaylistDocumentsAreReachableThroughWebAdapter$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    },
+    {
+      "path": "apps/player/internal/server/playlist_summary_test.go",
+      "name": "TestPlaylistSummariesDescribeRulesAndArtwork",
+      "line": 10,
+      "end_line": 31,
+      "sha256": "63522e2642e75701404d0ee9cf7f38c87a2e37c39479c61221dbe379c55338f0",
+      "baseline_file_sha256": "266ca819b37139f003770962d286a49d497ec415dcab5a971ebee320e10b1a13",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "D",
+      "review_status": "semantic_review_complete",
+      "category": "duplicate_or_preempted",
+      "credible_failure": "Simple3 synthetic storage summaries/rule/artwork/query checks duplicate canonical public summary+smart-rule primary; app wrapper only locks, currentViewer.ID and identical storage. No own failure injection or actual app render/persistence.",
+      "assertion_review_and_limits": "Manual artwork/2preview,Everything Smart All media,Drama matching arrival/video count1,missing query0. Canonical summary checks five-member preview truncation+art/showArt+profile exclusion/fullModeRules and canonical smart kind/query count match matrices.",
+      "source_body": "func TestPlaylistSummariesDescribeRulesAndArtwork(t *testing.T) {\n\tt.Parallel()\n\n\tstore := newListStore(\"\")\n\tstore.playlists[\"owner:Manual\"] = map[string]bool{\"art\": true, \"plain\": true}\n\tstore.playlistOrder[\"owner:Manual\"] = []string{\"art\", \"plain\"}\n\tstore.smart[\"owner:Everything\"] = playlistRule{}\n\tstore.smart[\"owner:Drama\"] = playlistRule{Query: \"arrival\", Kind: \"video\"}\n\titems := []library.Item{\n\t\t{ID: \"art\", Title: \"Arrival\", Kind: \"video\", Artwork: \"poster\"},\n\t\t{ID: \"plain\", Title: \"Notes\", Kind: \"book\"},\n\t}\n\n\tsummaries := store.PlaylistSummaries(ownerRequest(\"/\"), items, \"\")\n\tif len(summaries) != 3 {\n\t\tt.Fatalf(\"summaries = %#v\", summaries)\n\t}\n\tassertPlaylistSummaryRules(t, summaries)\n\tif filtered := store.PlaylistSummaries(ownerRequest(\"/\"), items, \"missing\"); len(filtered) != 0 {\n\t\tt.Fatalf(\"query unexpectedly matched: %#v\", filtered)\n\t}\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalog/collection_read_test.go",
+          "baseline_sha256": "84abbd7d063445f25a66d495b5de5aa28a8b5399059942277e99ed763c2cbbd8",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/list_read_test.go",
+          "baseline_sha256": "b0c68183b0722f38d3c453519a19534f2ad4d9e4fb2fedc1b7d2019a80e413c5",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/playlist_summary.go",
+          "baseline_sha256": "645d1346becd99b161e05aa4ea00e1baffe8211df1a4a3abe50adca50a22cffb",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/playlist_summary.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/home.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/playlist_summary.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/home.go"
+      ],
+      "remaining_proof": "Keep TestPlaylistSummariesPreserveModeRulesAndPreview and TestSmartPlaylistUsesCanonicalSearchKindsAndSort. Actual TestPlaylistsSupportPersistentOrderAndDynamicRules and app persistent lists retain bindings; genuine actual smart/curation cards used, not assertion-for-assertion equivalent summary JSON. Case/punctuation lost literal minor.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Manual artwork/2preview,Everything Smart All media,Drama matching arrival/video count1,missing query0. Canonical summary checks five-member preview truncation+art/showArt+profile exclusion/fullModeRules and canonical smart kind/query count match matrices.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:50.895516-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestPlaylistSummariesDescribeRulesAndArtwork",
+          "Elapsed": 0.01
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestPlaylistSummariesDescribeRulesAndArtwork$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    },
+    {
+      "path": "apps/player/internal/server/playlist_test.go",
+      "name": "TestViewerCanCreateAndUsePersistentPlaylist",
+      "line": 16,
+      "end_line": 52,
+      "sha256": "adc030ca6d2c950706e5c0a8ab13f3e65799e1d9f5171dbdeeab6876561398cf",
+      "baseline_file_sha256": "17194544eac3c53c73de420934003283ff5c1d05733fe5c16b623ba4f844291f",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual registered web membership/form validation and server reconstruction must retain playlist state and redirect search position; invalid form must not change initially empty list; explicit remove accepts legitimate _csrf transport token. Wrong form binding/persistence missed by valid browser path or isolated primary.",
+      "assertion_review_and_limits": "Real New no RequireAuth implicit Owner;8 invalid forms actual status400+0 items then add/reconstruct/actual player removal control; valid remove with transporttoken sees empty. Dummy media/no restart session auth here.",
+      "source_body": "func TestViewerCanCreateAndUsePersistentPlaylist(t *testing.T) {\n\tt.Parallel()\n\n\tmediaDir, dataDir := t.TempDir(), t.TempDir()\n\tif err := os.WriteFile(filepath.Join(mediaDir, \"Arrival.mp4\"), []byte(\"video\"), 0o600); err != nil {\n\t\tt.Fatal(err)\n\t}\n\thandler := server.New(server.Config{MediaDir: mediaDir, DataDir: dataDir})\n\thome := httptest.NewRecorder()\n\thandler.ServeHTTP(home, httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/\", nil))\n\tid := regexp.MustCompile(`/(?:watch|item)/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())[1]\n\tpostForm(t, handler, \"/playlists\", \"name=Favorites\")\n\tbrowser := httptest.NewRecorder()\n\thandler.ServeHTTP(browser, httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/?view=playlists\", nil))\n\tsearch := httptest.NewRecorder()\n\thandler.ServeHTTP(search, httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/playlist/Favorites?q=Arrival\", nil))\n\tassertInvalidPlaylistForms(t, handler, id)\n\tadded := collectionForm(t, handler, \"/playlist/Favorites/items/\"+id, \"included=true&q=Arrival\")\n\n\thandler = server.New(server.Config{MediaDir: mediaDir, DataDir: dataDir})\n\tplaylist := httptest.NewRecorder()\n\thandler.ServeHTTP(playlist, httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/playlist/Favorites\", nil))\n\tplayer := httptest.NewRecorder()\n\thandler.ServeHTTP(player, httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/watch/\"+id, nil))\n\tif added.Header().Get(\"Location\") != \"/playlist/Favorites?q=Arrival#playlist-search\" || playlist.Code != http.StatusOK || !strings.Contains(playlist.Body.String(), \"Arrival\") || !strings.Contains(playlist.Body.String(), \"Delete Favorites?\") || !strings.Contains(playlist.Body.String(), \"Delete playlist\") || !strings.Contains(player.Body.String(), \"Remove from\") || !strings.Contains(player.Body.String(), \"Favorites\") {\n\t\tt.Fatalf(\"playlist = %d %q, player = %q\", playlist.Code, playlist.Body.String(), player.Body.String())\n\t}\n\tmustContainAll(t, browser.Body.String(), `aria-current=\"page\" href=\"/?view=playlists\">Playlists`, `class=\"curation-card\"`, \"Manual \u00b7 0 items\")\n\tmustContainAll(t, search.Body.String(), \"/playlist/Favorites/items/\"+id, \"Add to\")\n\tremoved := collectionForm(t, handler, \"/playlist/Favorites/items/\"+id, \"included=false&_csrf=transport-token\")\n\tif removed.Code != http.StatusSeeOther {\n\t\tt.Fatalf(\"remove = %d %q\", removed.Code, removed.Body.String())\n\t}\n\tempty := httptest.NewRecorder()\n\thandler.ServeHTTP(empty, httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/playlist/Favorites\", nil))\n\tmustContainAll(t, empty.Body.String(), \"This playlist is empty.\")\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalog/playlist_http.go",
+          "baseline_sha256": "e8f73bb16995f9b18125326f02a8191f975fc0a1b813c0453711027823eb1cba",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalogapi/playlist_document.go",
+          "baseline_sha256": "b7e38e896960571d09af1ee73587f503e31b54dd20646733430866613e9897e8",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/validation.go",
+          "baseline_sha256": "82073ca9f56d80368fdafb98224e10984a8a6847b20816c8b805fd18d532f0dc",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/playlist.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/playlist_document.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/playlist.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/playlist_document.go"
+      ],
+      "remaining_proof": "Genuine curation happy and counts cover valid actualbrowser create/add/remove/delete and accessible controls but no server reconstruction or invalid ambiguous/_csrf matrix. Shared fixture validates core mutations with fake callbacks.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Real New no RequireAuth implicit Owner;8 invalid forms actual status400+0 items then add/reconstruct/actual player removal control; valid remove with transporttoken sees empty. Dummy media/no restart session auth here.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:56.352665-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestViewerCanCreateAndUsePersistentPlaylist",
+          "Elapsed": 0.52
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestViewerCanCreateAndUsePersistentPlaylist$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    },
+    {
+      "path": "apps/player/internal/server/playlist_test.go",
+      "name": "TestViewerCanReorderPlaylistWithoutDragging",
+      "line": 54,
+      "end_line": 96,
+      "sha256": "42b75fa6cc7a98d0b26ed871ce91517f6a57bb08150cba27f5d947a09adce0ee",
+      "baseline_file_sha256": "17194544eac3c53c73de420934003283ff5c1d05733fe5c16b623ba4f844291f",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "category": "retained_incomplete_proof",
+      "credible_failure": "Actual web reorder form must bind signed direction/id and reject missing/duplicate/unknown/oversized forms; no browser E2E actually reorders stored playlist. Retain current integration guard but ordering proof is incomplete.",
+      "assertion_review_and_limits": "Real3title actualapi enumeration/membership, generated move labels, up303 and6invalid400. Relative strings.Index comparisons can pass if both titles absent(-1), responses/order parsed status not asserted, after-invalid order predicate also does not prove all members unchanged. No new test added.",
+      "source_body": "func TestViewerCanReorderPlaylistWithoutDragging(t *testing.T) {\n\tt.Parallel()\n\tmedia, data := t.TempDir(), t.TempDir()\n\tfor _, title := range []string{\"Alpha\", \"Beta\", \"Gamma\"} {\n\t\tif err := os.WriteFile(filepath.Join(media, title+\".mp4\"), []byte(\"video\"), 0o600); err != nil {\n\t\t\tt.Fatal(err)\n\t\t}\n\t}\n\thandler := server.New(server.Config{MediaDir: media, DataDir: data})\n\tpostForm(t, handler, \"/playlists\", \"name=Queue\")\n\tlibrary := apiCall(t, handler, \"\", http.MethodGet, \"/api/v1/library?view=movies\", nil)\n\tvar catalog struct {\n\t\tItems []struct{ ID, Title string } `json:\"items\"`\n\t}\n\tif err := json.Unmarshal(library.Body.Bytes(), &catalog); err != nil {\n\t\tt.Fatal(err)\n\t}\n\tfor _, item := range catalog.Items {\n\t\tcollectionForm(t, handler, \"/playlist/Queue/items/\"+item.ID, \"included=true\")\n\t}\n\tpage := httptest.NewRecorder()\n\thandler.ServeHTTP(page, httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/playlist/Queue\", nil))\n\tmustContainAll(t, page.Body.String(), `aria-label=\"Move Alpha later\"`, `aria-label=\"Move Beta earlier\"`, `class=\"playlist-order\"`)\n\n\tmoved := collectionForm(t, handler, \"/playlist/Queue/order\", \"id=\"+catalog.Items[1].ID+\"&direction=up\")\n\tif moved.Code != http.StatusSeeOther {\n\t\tt.Fatalf(\"move = %d %q\", moved.Code, moved.Body.String())\n\t}\n\tordered := apiCall(t, handler, \"\", http.MethodGet, \"/api/v1/playlists/Queue\", nil)\n\tif strings.Index(ordered.Body.String(), `\"title\":\"Beta\"`) > strings.Index(ordered.Body.String(), `\"title\":\"Alpha\"`) {\n\t\tt.Fatalf(\"playlist order = %q\", ordered.Body.String())\n\t}\n\tfor _, body := range []string{\"\", \"id=\" + catalog.Items[1].ID, \"id=\" + catalog.Items[1].ID + \"&direction=sideways\", \"id=\" + catalog.Items[1].ID + \"&direction=up&direction=down\", \"id=\" + catalog.Items[1].ID + \"&direction=up&unknown=x\", \"id=\" + strings.Repeat(\"a\", 65) + \"&direction=up\"} {\n\t\tinvalid := collectionForm(t, handler, \"/playlist/Queue/order\", body)\n\t\tif invalid.Code != http.StatusBadRequest {\n\t\t\tt.Fatalf(\"invalid move %q = %d %q\", body, invalid.Code, invalid.Body.String())\n\t\t}\n\t}\n\tunchanged := apiCall(t, handler, \"\", http.MethodGet, \"/api/v1/playlists/Queue\", nil)\n\tif strings.Index(unchanged.Body.String(), `\"title\":\"Beta\"`) > strings.Index(unchanged.Body.String(), `\"title\":\"Alpha\"`) {\n\t\tt.Fatalf(\"invalid moves changed playlist = %q\", unchanged.Body.String())\n\t}\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalog/playlist_http.go",
+          "baseline_sha256": "e8f73bb16995f9b18125326f02a8191f975fc0a1b813c0453711027823eb1cba",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/playlist_http_test.go",
+          "baseline_sha256": "328b8a77d04dc16b72ab48fd2a40e3cd6bef6bb8e3ee7de748f27d2640b24607",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/playlist.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/player.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/playlist.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/player.go"
+      ],
+      "remaining_proof": "Shared TestPlaylistHandlersValidateOrderBeforeMutation asserts exact IDs+savedViewer/name callbacks with injected storage, cannot prove actual app wiring/reload. instant-show-play measures reorder row geometry, never clicks Move. Gap: exact nonnegative parsed IDs/order + before/after no-state-change required before calling full ordering protection.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Real3title actualapi enumeration/membership, generated move labels, up303 and6invalid400. Relative strings.Index comparisons can pass if both titles absent(-1), responses/order parsed status not asserted, after-invalid order predicate also does not prove all members unchanged. No new test added.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:56.157513-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestViewerCanReorderPlaylistWithoutDragging",
+          "Elapsed": 0.35
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestViewerCanReorderPlaylistWithoutDragging$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    },
+    {
+      "path": "apps/player/internal/server/profile_progress_test.go",
+      "name": "TestViewerProfilesKeepSeparatePlaybackProgress",
+      "line": 17,
+      "end_line": 48,
+      "sha256": "28f6250375fdf73fcda890aebeea2660eddf439196b4373a2bc31223d17b427f",
+      "baseline_file_sha256": "9d35b91558c52e9b84519d65a94eda4bcf9d8782c395f99e5cdf6442c73b5060",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "category": "retained_incomplete_proof",
+      "credible_failure": "Prevent one viewer inheriting another viewer resume data in actual authenticated web app; genuine browser happy path uses one Owner history, no cross-profile privacy assertion. Retain with unverified seed gap.",
+      "assertion_review_and_limits": "CreatesSam, Owner homeID, sends seconds60, Sam sign-in then no Continue watching. Owner progress POST status/state/positive Owner shelf not checked; ignored seed can pass negative assertion. Sign-in helper verifies realcookie+MFA; no browser decoder.",
+      "source_body": "func TestViewerProfilesKeepSeparatePlaybackProgress(t *testing.T) {\n\tt.Parallel()\n\n\tmediaDir, dataDir := t.TempDir(), t.TempDir()\n\tif err := os.WriteFile(filepath.Join(mediaDir, \"Heat.mp4\"), []byte(\"video\"), 0o600); err != nil {\n\t\tt.Fatal(err)\n\t}\n\thandler := server.New(server.Config{MediaDir: mediaDir, DataDir: dataDir, RequireAuth: true})\n\towner := signInTestProfile(t, handler, \"/setup\", \"name=Owner&password=owner-password\")\n\trequest := httptest.NewRequestWithContext(t.Context(), http.MethodPost, \"/settings/profiles\", strings.NewReader(\"name=Sam&password=viewer-password\"))\n\trequest.Header.Set(\"Content-Type\", \"application/x-www-form-urlencoded\")\n\trequest.AddCookie(owner)\n\thandler.ServeHTTP(httptest.NewRecorder(), request)\n\thome := httptest.NewRecorder()\n\trequest = httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/\", nil)\n\trequest.AddCookie(owner)\n\thandler.ServeHTTP(home, request)\n\tid := regexp.MustCompile(`/(?:watch|item)/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())[1]\n\trequest = httptest.NewRequestWithContext(t.Context(), http.MethodPost, \"/progress/\"+id, strings.NewReader(\"seconds=60\"))\n\trequest.Header.Set(\"Content-Type\", \"application/x-www-form-urlencoded\")\n\trequest.AddCookie(owner)\n\thandler.ServeHTTP(httptest.NewRecorder(), request)\n\tviewer := signInTestProfile(t, handler, \"/login\", \"name=Sam&password=viewer-password\")\n\thome = httptest.NewRecorder()\n\trequest = httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/\", nil)\n\trequest.AddCookie(viewer)\n\thandler.ServeHTTP(home, request)\n\n\tif strings.Contains(home.Body.String(), \"Continue watching\") {\n\t\tt.Fatalf(\"viewer inherited Owner progress: %q\", home.Body.String())\n\t}\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalog/progress_projection.go",
+          "baseline_sha256": "0d3882b4b48ab538fe45517dce58adae7058261b8e78349f61a63b5849598098",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalogapi/progress_store.go",
+          "baseline_sha256": "5038d46c2443d616bf80ed7e55a9e734e86860944f9c6e4d60062d65b7c31807",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/progress.go",
+        "apps/player/internal/server/auth.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/home.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/progress.go",
+        "apps/player/internal/server/auth.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/home.go"
+      ],
+      "remaining_proof": "Shared canonical viewer isolation checks existing populated states but app auth/currentViewer binding distinct. Gap: establish successful Owner progress+positive shelf before Sam absence; no new isolated test without failure analysis first.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. CreatesSam, Owner homeID, sends seconds60, Sam sign-in then no Continue watching. Owner progress POST status/state/positive Owner shelf not checked; ignored seed can pass negative assertion. Sign-in helper verifies realcookie+MFA; no browser decoder.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:56.35226-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestViewerProfilesKeepSeparatePlaybackProgress",
+          "Elapsed": 0.54
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestViewerProfilesKeepSeparatePlaybackProgress$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    },
+    {
+      "path": "apps/player/internal/server/profile_progress_test.go",
+      "name": "TestViewerProfilesKeepSeparatePersistentLists",
+      "line": 50,
+      "end_line": 86,
+      "sha256": "476b1e94d02c415e7cfaafdb9ab8ef95fc3111bb6dbdac4ff244c3110cad7621",
+      "baseline_file_sha256": "9d35b91558c52e9b84519d65a94eda4bcf9d8782c395f99e5cdf6442c73b5060",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual profile-specific list mutation/session+SQLite reconstruction must keep Owner personal shelf and hide it from Sam; wrong currentViewer binding or lost persistence leaks/loses lists while single-profile E2E passes.",
+      "assertion_review_and_limits": "Owner writeslist true; reconstructed authenticated app returns Owner My List heading true and Samfalse. Positive Owner assertion validates seed unlike progress sibling; no exact item-content assertion.",
+      "source_body": "func TestViewerProfilesKeepSeparatePersistentLists(t *testing.T) {\n\tt.Parallel()\n\n\tmediaDir, dataDir := t.TempDir(), t.TempDir()\n\tif err := os.WriteFile(filepath.Join(mediaDir, \"Heat.mp4\"), []byte(\"video\"), 0o600); err != nil {\n\t\tt.Fatal(err)\n\t}\n\thandler := server.New(server.Config{MediaDir: mediaDir, DataDir: dataDir, RequireAuth: true})\n\towner := signInTestProfile(t, handler, \"/setup\", \"name=Owner&password=owner-password\")\n\trequest := httptest.NewRequestWithContext(t.Context(), http.MethodPost, \"/settings/profiles\", strings.NewReader(\"name=Sam&password=viewer-password\"))\n\trequest.Header.Set(\"Content-Type\", \"application/x-www-form-urlencoded\")\n\trequest.AddCookie(owner)\n\thandler.ServeHTTP(httptest.NewRecorder(), request)\n\tviewer := signInTestProfile(t, handler, \"/login\", \"name=Sam&password=viewer-password\")\n\thome := httptest.NewRecorder()\n\trequest = httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/\", nil)\n\trequest.AddCookie(owner)\n\thandler.ServeHTTP(home, request)\n\tid := regexp.MustCompile(`/(?:watch|item)/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())[1]\n\trequest = httptest.NewRequestWithContext(t.Context(), http.MethodPost, \"/list/\"+id, strings.NewReader(\"listed=true\"))\n\trequest.Header.Set(\"Content-Type\", \"application/x-www-form-urlencoded\")\n\trequest.AddCookie(owner)\n\thandler.ServeHTTP(httptest.NewRecorder(), request)\n\thandler = server.New(server.Config{MediaDir: mediaDir, DataDir: dataDir, RequireAuth: true})\n\tfor name, expected := range map[string]struct {\n\t\tcookie *http.Cookie\n\t\twant   bool\n\t}{\"owner\": {owner, true}, \"viewer\": {viewer, false}} {\n\t\tresponse := httptest.NewRecorder()\n\t\trequest = httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/\", nil)\n\t\trequest.AddCookie(expected.cookie)\n\t\thandler.ServeHTTP(response, request)\n\t\tif strings.Contains(response.Body.String(), \"<h2>My List</h2>\") != expected.want {\n\t\t\tt.Fatalf(\"%s home = %q\", name, response.Body.String())\n\t\t}\n\t}\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalogapi/progress_store.go",
+          "baseline_sha256": "5038d46c2443d616bf80ed7e55a9e734e86860944f9c6e4d60062d65b7c31807",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/list_operations.go",
+          "baseline_sha256": "deb05696fb2162cd572aee8f5c940d9dc0b0837b0f759b0028232aed3616ecb1",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/auth.go",
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/database.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/auth.go",
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/database.go"
+      ],
+      "remaining_proof": "genuine happy-path persists MyList in sameOwner context and relogin; no second profile comparing after server restart. Shared scoped list storage tests cannot prove actualcookie/context mapping.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Owner writeslist true; reconstructed authenticated app returns Owner My List heading true and Samfalse. Positive Owner assertion validates seed unlike progress sibling; no exact item-content assertion.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:40.280222-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestViewerProfilesKeepSeparatePersistentLists",
+          "Elapsed": 0.54
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestViewerProfilesKeepSeparatePersistentLists$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    },
+    {
+      "path": "apps/player/internal/server/profile_progress_test.go",
+      "name": "TestViewerCanDismissContinueWatchingWithoutDeletingHistory",
+      "line": 88,
+      "end_line": 122,
+      "sha256": "e897d4e12e39f8ecfcfb7acc2d11eb76d0c962faf863ac846e2cb3d24abf6ecf",
+      "baseline_file_sha256": "9d35b91558c52e9b84519d65a94eda4bcf9d8782c395f99e5cdf6442c73b5060",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual API and web dismiss must remove Home resume while preserving recorded history, then new progress can reexpose item before subsequent web dismiss. Deleting history rather than dismissing loses user data while Home disappearance passes.",
+      "assertion_review_and_limits": "API progress61, actualEnglish/Spanish labels,APIdelete204,newprogress,statuschecked,web303; finalhistoryArrival/seconds61 andHomeabsence,historypagecontains. Does not inspect state immediately after first API delete separately but shared Dismiss storesflag.",
+      "source_body": "func TestViewerCanDismissContinueWatchingWithoutDeletingHistory(t *testing.T) {\n\tt.Parallel()\n\n\thandler, token := apiServer(t)\n\tlibraryResponse := apiCall(t, handler, token, http.MethodGet, \"/api/v1/library\", nil)\n\tvar catalog struct {\n\t\tItems []struct {\n\t\t\tID string `json:\"id\"`\n\t\t} `json:\"items\"`\n\t}\n\tif err := json.Unmarshal(libraryResponse.Body.Bytes(), &catalog); err != nil || len(catalog.Items) == 0 {\n\t\tt.Fatalf(\"library = %d %q: %v\", libraryResponse.Code, libraryResponse.Body.String(), err)\n\t}\n\tid := catalog.Items[0].ID\n\tassertAPICalls(t, handler, token, []apiTestCall{{Method: http.MethodPut, Path: \"/api/v1/items/\" + id + \"/progress\", Body: map[string]any{\"seconds\": 61}, Status: http.StatusOK}})\n\thome := apiCall(t, handler, token, http.MethodGet, \"/\", nil)\n\tassertAPIBody(t, home, http.StatusOK, `action=\"/continue-watching/`+id+`/remove\"`, \"Remove Arrival from Continue Watching\")\n\tspanishHome := apiCall(t, handler, token, http.MethodGet, \"/?lang=es\", nil)\n\tassertAPIBody(t, spanishHome, http.StatusOK, \"Eliminar Arrival de Seguir viendo\")\n\tassertAPICalls(t, handler, token, []apiTestCall{{Method: http.MethodDelete, Path: \"/api/v1/items/\" + id + \"/continue-watching\", Body: nil, Status: http.StatusNoContent}})\n\tassertAPICalls(t, handler, token, []apiTestCall{{Method: http.MethodPut, Path: \"/api/v1/items/\" + id + \"/progress\", Body: map[string]any{\"seconds\": 61}, Status: http.StatusOK}})\n\tremoved := apiCall(t, handler, token, http.MethodPost, \"/continue-watching/\"+id+\"/remove\", nil)\n\tif removed.Code != http.StatusSeeOther {\n\t\tt.Fatalf(\"web dismiss = %d %q\", removed.Code, removed.Body.String())\n\t}\n\n\thistory := apiCall(t, handler, token, http.MethodGet, \"/api/v1/history\", nil)\n\tassertAPIBody(t, history, http.StatusOK, \"Arrival\", `\"seconds\":61`)\n\thome = apiCall(t, handler, token, http.MethodGet, \"/\", nil)\n\tif strings.Contains(home.Body.String(), \"Continue watching\") {\n\t\tt.Fatalf(\"dismissed item remains in Continue Watching: %q\", home.Body.String())\n\t}\n\thistoryPage := apiCall(t, handler, token, http.MethodGet, \"/?view=history\", nil)\n\tassertAPIBody(t, historyPage, http.StatusOK, \"Playback history\", \"Arrival\")\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalog/progress_request_store.go",
+          "baseline_sha256": "9ef6b1f13dfa797a738ac6381d1f0f571cd219026673cd82d0c3adbcc8a36ea9",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalogapi/progress_store.go",
+          "baseline_sha256": "5038d46c2443d616bf80ed7e55a9e734e86860944f9c6e4d60062d65b7c31807",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/progress.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/api.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/progress.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/api.go"
+      ],
+      "remaining_proof": "masthead-spacing removes priorresumes throughAPI as setup but never asserts history preserved. Genuine happy-path watched removes Resume, distinct behavior. Shared stores flags in isolation, no actual web/API/history/render path parity.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. API progress61, actualEnglish/Spanish labels,APIdelete204,newprogress,statuschecked,web303; finalhistoryArrival/seconds61 andHomeabsence,historypagecontains. Does not inspect state immediately after first API delete separately but shared Dismiss storesflag.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:55.811429-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestViewerCanDismissContinueWatchingWithoutDeletingHistory",
+          "Elapsed": 0.39
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestViewerCanDismissContinueWatchingWithoutDeletingHistory$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    },
+    {
+      "path": "apps/player/internal/server/progress_audit_internal_test.go",
+      "name": "TestRejectedProgressCannotEmitPlaybackAudit",
+      "line": 9,
+      "end_line": 23,
+      "sha256": "b12fac8fc8c0690738a66f87e575e57fa9d6d3d57baa973954e613ea55f44fd3",
+      "baseline_file_sha256": "52d23a65168ce7877cd6fc750c5ad713964d8828242c1268c2f6df725e6ae058",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "category": "important_missed_failure",
+      "credible_failure": "Stale progress+watched true must not emit additional playback lifecycle journal entries or rewind committed state. API state-only rejection and pure ProgressAudit calculations miss an unconditional actual auditor call in RequestProgressStore wiring.",
+      "assertion_review_and_limits": "Actual app constructor helpers RequestProgressStore + real auditjournal HTTPTracker; initial accepted120/rev2 yields exactly1 Query, stale10/watchedtrue/rev1 returnsnotaccepted and exactly1 plus120. No full app HTTP request/mux used.",
+      "source_body": "func TestRejectedProgressCannotEmitPlaybackAudit(t *testing.T) {\n\tstore := newProgressStore(\"\")\n\taudit := newAuditStore(t.Context(), \"\", nil)\n\tstore.SetAuditor(audit)\n\trequest := httptest.NewRequestWithContext(withViewer(t.Context(), viewerProfile{ID: \"viewer\"}), http.MethodPut, \"/\", nil)\n\taccepted, err := store.SetRevision(request, \"item\", 120, nil, \"phone\", 2)\n\tif err != nil || !accepted || len(audit.Query(\"playback\", 10)) != 1 {\n\t\tt.Fatalf(\"initial progress = %v %v\", accepted, err)\n\t}\n\twatched := true\n\taccepted, err = store.SetRevision(request, \"item\", 10, &watched, \"phone\", 1)\n\tif err != nil || accepted || len(audit.Query(\"playback\", 10)) != 1 || store.Get(request, \"item\").Seconds != 120 {\n\t\tt.Fatalf(\"stale progress changed state or audit: %v %v\", accepted, err)\n\t}\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalog/progress_request_store.go",
+          "baseline_sha256": "9ef6b1f13dfa797a738ac6381d1f0f571cd219026673cd82d0c3adbcc8a36ea9",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/progress_change.go",
+          "baseline_sha256": "d9fcb85059e5d212f98b24f21c1b7d3e472e3e43a4403a9426aa5125e83237d1",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/auditjournal/http.go",
+          "baseline_sha256": "2fea7f4d00924bdd34cff1d0df029705130a8beeb8d3eef38d8b94be925c5a5b",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/progress.go",
+        "apps/player/internal/server/audit.go",
+        "apps/player/internal/server/server.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/progress.go",
+        "apps/player/internal/server/audit.go",
+        "apps/player/internal/server/server.go"
+      ],
+      "remaining_proof": "Shared TestProgressRevisionRejectsChangesWithoutPersistenceOrAudit exercises pure ProgressAudit; RequestProgressStoreAuditsAcceptedTransitions covers valid events, not stale no-journal side effect. Genuine browser has no stale/reordered audit observation.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Actual app constructor helpers RequestProgressStore + real auditjournal HTTPTracker; initial accepted120/rev2 yields exactly1 Query, stale10/watchedtrue/rev1 returnsnotaccepted and exactly1 plus120. No full app HTTP request/mux used.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:28:28.569831-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestRejectedProgressCannotEmitPlaybackAudit",
+          "Elapsed": 0
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestRejectedProgressCannotEmitPlaybackAudit$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    },
+    {
+      "path": "apps/player/internal/server/progress_input_validation_test.go",
+      "name": "TestWebProgressRejectsOversizedSession",
+      "line": 14,
+      "end_line": 28,
+      "sha256": "c80c4e8c47d4fab3e3be138a598abb0084891ae402da0b8ce98cf5241e3e8676",
+      "baseline_file_sha256": "4c5ba0facfbdb903dfa274aab115b64a3d75fde0a228fbed53d3453aa86d71b9",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual authenticated /progress form must reject129-byte session through configured status mapping; accepting it can publish unbounded state or weaken optimistic playback ordering. Genuine valid progress only.",
+      "assertion_review_and_limits": "RealMFAOwner,realindexedID,seconds42/revision1otherwisevalid,session129,exact400. Does not assert no-write/reload itself. Shared store rejects bound and playback API body tests coverJSON, not this web registration/status adapter.",
+      "source_body": "func TestWebProgressRejectsOversizedSession(t *testing.T) {\n\tt.Parallel()\n\tmedia, data := t.TempDir(), t.TempDir()\n\tif err := os.WriteFile(filepath.Join(media, \"Film.mp4\"), []byte(\"media\"), 0o600); err != nil {\n\t\tt.Fatal(err)\n\t}\n\thandler := server.New(server.Config{MediaDir: media, DataDir: data, RequireAuth: true})\n\towner := signInTestProfile(t, handler, \"/setup\", \"name=Owner&password=owner-password\")\n\tid := firstAPIItemID(t, handler, owner.Value)\n\tbody := url.Values{\"seconds\": {\"42\"}, \"session\": {strings.Repeat(\"s\", 129)}, \"revision\": {\"1\"}}.Encode()\n\tresponse := requestWithCookie(t, handler, http.MethodPost, \"/progress/\"+id, body, owner)\n\tif response.Code != http.StatusBadRequest {\n\t\tt.Fatalf(\"oversized web progress session = %d %q\", response.Code, response.Body.String())\n\t}\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalog/progress_http.go",
+          "baseline_sha256": "54255e3a3eda77b30f8bb9f0b7c6fe32e06e32b8b0e3bce95ad6cae722eaa217",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/progress_change.go",
+          "baseline_sha256": "d9fcb85059e5d212f98b24f21c1b7d3e472e3e43a4403a9426aa5125e83237d1",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/progress.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/api.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/progress.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/api.go"
+      ],
+      "remaining_proof": "TestProgressHTTPSaveRejectsInvalidInput does not include oversized session; canonical ProgressRevisionRejectsChangesWithoutPersistenceOrAudit includes129withstub persistence. No actual browser invalid session boundary.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. RealMFAOwner,realindexedID,seconds42/revision1otherwisevalid,session129,exact400. Does not assert no-write/reload itself. Shared store rejects bound and playback API body tests coverJSON, not this web registration/status adapter.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:55.636897-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestWebProgressRejectsOversizedSession",
+          "Elapsed": 0.29
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestWebProgressRejectsOversizedSession$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    },
+    {
+      "path": "apps/player/internal/server/sqlite_persistence_test.go",
+      "name": "TestVersionedAPIAndWebPersistStateOnlyInSQLite",
+      "line": 13,
+      "end_line": 42,
+      "sha256": "f4d5cd3896a75f680fcb1ffbbd0daa122e7e51363aee3ccd122695eb792a12d1",
+      "baseline_file_sha256": "d72a64e19f084e5889a893dd8bbf1d64c7d3034666512a32e7269712c7daf147",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "category": "important_missed_failure",
+      "credible_failure": "App construction must route all mutable session/progress/list state into SQLite rather than leaking legacy JSON, retain0600 database and restore session+history+lists after server reinitialization. Shared documentdb cannot prove all app stores wired toDB.",
+      "assertion_review_and_limits": "ActualOwnerMFA,APIprogress42,webplaylist,member toggles,create/deleteTemporary then every database.Documents path absent and actualDBpermission0600; newapphistory42/Favorites. Does not assert deleted Temporary remainsabsent after restart or memberships survive exactly.",
+      "source_body": "func TestVersionedAPIAndWebPersistStateOnlyInSQLite(t *testing.T) {\n\tmedia, data := t.TempDir(), t.TempDir()\n\tif err := os.WriteFile(filepath.Join(media, \"Movie.mp4\"), []byte(\"movie\"), 0o600); err != nil {\n\t\tt.Fatal(err)\n\t}\n\thandler := server.New(server.Config{MediaDir: media, DataDir: data, RequireAuth: true})\n\towner := signInTestProfile(t, handler, \"/setup\", \"name=Owner&password=owner-password\")\n\titem := firstAPIItemID(t, handler, owner.Value)\n\tassertAPIBody(t, apiCall(t, handler, owner.Value, http.MethodPut, \"/api/v1/items/\"+item+\"/progress\", map[string]any{\"seconds\": 42}), http.StatusOK, `\"seconds\":42`)\n\tresponse := requestWithCookie(t, handler, http.MethodPost, \"/playlists\", \"name=Favorites\", owner)\n\tif response.Code != http.StatusSeeOther {\n\t\tt.Fatalf(\"web playlist = %d %q\", response.Code, response.Body.String())\n\t}\n\tassertAPIBody(t, apiCall(t, handler, owner.Value, http.MethodPut, \"/api/v1/playlists/Favorites/items/\"+item, map[string]any{\"included\": true}), http.StatusOK, `\"included\":true`)\n\tassertAPIBody(t, apiCall(t, handler, owner.Value, http.MethodPut, \"/api/v1/playlists/Favorites/items/\"+item, map[string]any{\"included\": false}), http.StatusOK, `\"included\":false`)\n\tassertAPIBody(t, apiCall(t, handler, owner.Value, http.MethodPut, \"/api/v1/playlists/Favorites/items/\"+item, map[string]any{\"included\": true}), http.StatusOK, `\"included\":true`)\n\tassertAPIBody(t, apiCall(t, handler, owner.Value, http.MethodPost, \"/api/v1/playlists\", map[string]any{\"name\": \"Temporary\", \"ids\": []string{item}}), http.StatusCreated, `\"Temporary\"`)\n\tassertAPIBody(t, apiCall(t, handler, owner.Value, http.MethodDelete, \"/api/v1/playlists/Temporary\", nil), http.StatusNoContent, \"\")\n\tfor _, name := range database.Documents {\n\t\tif _, err := os.Lstat(filepath.Join(data, name)); !os.IsNotExist(err) {\n\t\t\tt.Fatalf(\"legacy %s remains: %v\", name, err)\n\t\t}\n\t}\n\tif info, err := os.Stat(filepath.Join(data, database.Filename)); err != nil || info.Mode().Perm() != 0o600 {\n\t\tt.Fatalf(\"SQLite state = %v, %v\", info, err)\n\t}\n\thandler = server.New(server.Config{MediaDir: media, DataDir: data, RequireAuth: true})\n\tassertAPIBody(t, apiCall(t, handler, owner.Value, http.MethodGet, \"/api/v1/history\", nil), http.StatusOK, `\"seconds\":42`)\n\tassertAPIBody(t, apiCall(t, handler, owner.Value, http.MethodGet, \"/api/v1/playlists\", nil), http.StatusOK, `\"Favorites\"`)\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/documentdb/documentdb.go",
+          "baseline_sha256": "a87bfb12de18a8cf214b0e90a0a827673a3eaa5f41fbe15f214122df4b83b3e3",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalogapi/progress_store.go",
+          "baseline_sha256": "5038d46c2443d616bf80ed7e55a9e734e86860944f9c6e4d60062d65b7c31807",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/database.go",
+        "apps/player/internal/server/server.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/progress.go",
+        "apps/player/internal/server/auth.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/database.go",
+        "apps/player/internal/server/server.go",
+        "apps/player/internal/server/lists.go",
+        "apps/player/internal/server/progress.go",
+        "apps/player/internal/server/auth.go"
+      ],
+      "remaining_proof": "Genuine server browser reload does not reconstruct backend/check filesystem SQLite-only/permissions. Shared database migrations/injected transaction tests complement app path. Retain no legacy sensitive-state files boundary.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. ActualOwnerMFA,APIprogress42,webplaylist,member toggles,create/deleteTemporary then every database.Documents path absent and actualDBpermission0600; newapphistory42/Favorites. Does not assert deleted Temporary remainsabsent after restart or memberships survive exactly.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:34.100087-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestVersionedAPIAndWebPersistStateOnlyInSQLite",
+          "Elapsed": 0.17
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestVersionedAPIAndWebPersistStateOnlyInSQLite$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    },
+    {
+      "path": "apps/player/internal/server/watch_together_test.go",
+      "name": "TestWatchTogetherEnforcesLeaderSyncAndExpiry",
+      "line": 31,
+      "end_line": 89,
+      "sha256": "c0542c090aafd6530f0573d673e12bafdc0b4cadec62015c5822cf9882d04c4e",
+      "baseline_file_sha256": "edd3a65a9874dc5cc0a3721dc9bb16e80629f41111c91c364d484429e049e8fd",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual authenticated room/socket adapters must deny nonleader control, sync monotonically versioned/effective state, restore changed media to reconnecting viewer, close alreadyconnected deleted profile and expire room. Failure to reauthorize allows revoked users continued access; browser normal reconnect misses revocation/expiry.",
+      "assertion_review_and_limits": "RealTCPWebSocket TwoProfiles actualcookieMFA, invalid initialposition400,leaderpage,participantdenied,leaderplay42/Revision/effectiveAt,changeMedia,disconnect/reconnectsamechangedmedia,actualprofiledelete+wsreaderror,1.1sTTLexpiry404. Dummyvideo/noactualdecoder/syncaccuracy.",
+      "source_body": "func TestWatchTogetherEnforcesLeaderSyncAndExpiry(t *testing.T) { //nolint:cyclop,funlen // One workflow test covers room state transitions and expiry.\n\tt.Parallel()\n\tmediaDir, dataDir := t.TempDir(), t.TempDir()\n\tfor _, name := range []string{\"Movie.mp4\", \"Next.mp4\"} {\n\t\tif err := os.WriteFile(filepath.Join(mediaDir, name), []byte(name), 0o600); err != nil {\n\t\t\tt.Fatal(err)\n\t\t}\n\t}\n\thandler := server.New(server.Config{Lifecycle: t.Context(), MediaDir: mediaDir, DataDir: dataDir, RequireAuth: true, WatchRoomTTL: time.Second})\n\towner := signInTestProfile(t, handler, \"/setup\", \"name=Owner&password=owner-password\")\n\taddTestViewer(t, handler, owner)\n\tviewer := signInTestProfile(t, handler, \"/login\", \"name=Sam&password=viewer-password\")\n\thome := requestWithCookie(t, handler, http.MethodGet, \"/\", \"\", owner)\n\tids := regexp.MustCompile(`/(?:watch|item)/([a-f0-9]+)`).FindAllStringSubmatch(home.Body.String(), -1)\n\tinvalid := requestWithCookie(t, handler, http.MethodPost, \"/watch-together\", \"media=\"+url.QueryEscape(ids[0][1])+\"&seconds=999999999\", owner)\n\tif invalid.Code != http.StatusBadRequest {\n\t\tt.Fatalf(\"oversized room position = %d %q\", invalid.Code, invalid.Body.String())\n\t}\n\troom := createTestRoom(t, handler, owner, ids[0][1])\n\tpage := requestWithCookie(t, handler, http.MethodGet, room, \"\", owner)\n\tmustRoomPage(t, page)\n\tweb := httptest.NewServer(handler)\n\tt.Cleanup(web.Close)\n\troomID := regexp.MustCompile(`room=([^&]+)`).FindStringSubmatch(room)[1]\n\tleader := dialRoom(t, web.URL, roomID, owner)\n\tparticipant := dialRoom(t, web.URL, roomID, viewer)\n\tinitial := readEvent(t, leader)\n\treadEvent(t, participant)\n\twriteEvent(t, participant, syncEvent{Action: \"play\", Media: ids[0][1], Seconds: 8})\n\tif denied := readEvent(t, participant); denied.Action != \"denied\" {\n\t\tt.Fatalf(\"participant event = %+v\", denied)\n\t}\n\twriteEvent(t, leader, syncEvent{Action: \"play\", Media: ids[0][1], Seconds: 42})\n\tif synced := readEvent(t, participant); synced.Action != \"play\" || synced.Seconds != 42 || synced.Leader || synced.Revision <= initial.Revision || synced.EffectiveAt.IsZero() {\n\t\tt.Fatalf(\"synced event = %+v\", synced)\n\t}\n\twriteEvent(t, leader, syncEvent{Action: \"media\", Media: ids[1][1], Seconds: 0})\n\tif changed := readEvent(t, participant); changed.Media != ids[1][1] {\n\t\tt.Fatalf(\"media event = %+v\", changed)\n\t}\n\t_ = participant.Close(websocket.StatusNormalClosure, \"done\")\n\tparticipant = dialRoom(t, web.URL, roomID, viewer)\n\tif resumed := readEvent(t, participant); resumed.Media != ids[1][1] || resumed.Action != \"media\" {\n\t\tt.Fatalf(\"reconnected event = %+v\", resumed)\n\t}\n\trequestWithCookie(t, handler, http.MethodPost, \"/settings/profiles/remove\", \"id=\"+storedProfileID(t, dataDir, \"Sam\"), owner)\n\tclosed, cancel := context.WithTimeout(t.Context(), 2*time.Second)\n\tdefer cancel()\n\tif err := wsjson.Read(closed, participant, &syncEvent{}); err == nil {\n\t\tt.Fatal(\"removed Viewer retained an active Watch Together connection\")\n\t}\n\t_ = leader.Close(websocket.StatusNormalClosure, \"done\")\n\t_ = participant.Close(websocket.StatusNormalClosure, \"done\")\n\ttime.Sleep(1100 * time.Millisecond)\n\texpired := requestWithCookie(t, handler, http.MethodGet, \"/room/\"+roomID, \"\", owner)\n\tif expired.Code != http.StatusNotFound {\n\t\tt.Fatalf(\"expired room = %d %q\", expired.Code, expired.Body.String())\n\t}\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/watchrooms/http.go",
+          "baseline_sha256": "97126834cd02cdfeab145a59da24935a327a190b24db0781de938a916074fc00",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/watchrooms/watchrooms.go",
+          "baseline_sha256": "5740fe4d0ba2413e1ffb79233310a614fda26da2b8197d4c08b927a88970c62f",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/watch_together.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/auth.go",
+        "apps/player/internal/server/server.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/watch_together.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/auth.go",
+        "apps/player/internal/server/server.go"
+      ],
+      "remaining_proof": "genuine test-instance-offline two browser clients synchronize/reconnect uses realbackend but no participant command denial, leader mediachange, profiledelete socket close,TTL test. Shared watchrooms isolation usesinjected profile authorization rather than actualauthrevocation adapter.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. RealTCPWebSocket TwoProfiles actualcookieMFA, invalid initialposition400,leaderpage,participantdenied,leaderplay42/Revision/effectiveAt,changeMedia,disconnect/reconnectsamechangedmedia,actualprofiledelete+wsreaderror,1.1sTTLexpiry404. Dummyvideo/noactualdecoder/syncaccuracy.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:55.878473-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestWatchTogetherEnforcesLeaderSyncAndExpiry",
+          "Elapsed": 2.43
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestWatchTogetherEnforcesLeaderSyncAndExpiry$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    },
+    {
+      "path": "apps/player/internal/server/watch_together_test.go",
+      "name": "TestWatchTogetherPlayerConnectsAndReconnectsThroughTheRoomAPI",
+      "line": 91,
+      "end_line": 100,
+      "sha256": "f8355de842fa2aec5f2a235874996fcaf025a38f7057221deb9d88d4b5725b00",
+      "baseline_file_sha256": "edd3a65a9874dc5cc0a3721dc9bb16e80629f41111c91c364d484429e049e8fd",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "F",
+      "review_status": "semantic_review_complete",
+      "category": "retained_incomplete_proof",
+      "credible_failure": "Served client needs automatic delayed reconnect after unexpected socket closure, leader play/media bindings and effectiveAt correction. Genuine two-client journey only reloads viewer to reconnect, so deleting the automatic retry timer can leave that journey green. Retain existing coarse guard with explicit runtime gap.",
+      "assertion_review_and_limits": "Actual served static JS checks8 implementation tokens. It catches deletion of retry/play/media wiring but cannot prove timer executes, delay/backoff, scheduling, close cleanup, or functions are reachable. No new isolated test added.",
+      "source_body": "func TestWatchTogetherPlayerConnectsAndReconnectsThroughTheRoomAPI(t *testing.T) {\n\tt.Parallel()\n\tresponse := httptest.NewRecorder()\n\tserver.New(server.Config{}).ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/static/player.js\", nil))\n\tfor _, expected := range []string{`new WebSocket`, `/api/v1/watch-rooms/`, `player.dataset.roomLeader`, `event.effectiveAt`, `sendRoomEvent(\"play\")`, `sendRoomEvent(\"media\"`, `setTimeout(connectRoom`, `socket?.close(1000`} {\n\t\tif !strings.Contains(response.Body.String(), expected) {\n\t\t\tt.Fatalf(\"Watch Together browser client lacks %q\", expected)\n\t\t}\n\t}\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/webassets/static/player-devices.js",
+          "baseline_sha256": "67dcd0f9b639732a4ad593f2e7d0750bcbdc874a378aab980b1cce72f6b1da6b",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/watchrooms/http.go",
+          "baseline_sha256": "97126834cd02cdfeab145a59da24935a327a190b24db0781de938a916074fc00",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/watch_together.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/server.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/watch_together.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/server.go"
+      ],
+      "remaining_proof": "Genuine test-instance-offline.spec.ts:two browser clients synchronize and reconnect in one Watch Together room uses actual backend and seek/reload/metrics. Reload starts a fresh JS client; it does not force unexpected socket close and wait for setTimeout reconnect. Backend TestWatchTogetherEnforcesLeaderSyncAndExpiry retains leader play/media/reconnect/revocation/TTL but never executes frontend timer. Do not claim genuine automatic-retry equivalence.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. Actual served static JS checks8 implementation tokens. It catches deletion of retry/play/media wiring but cannot prove timer executes, delay/backoff, scheduling, close cleanup, or functions are reachable. No new isolated test added.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:53.465285-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestWatchTogetherPlayerConnectsAndReconnectsThroughTheRoomAPI",
+          "Elapsed": 0.03
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestWatchTogetherPlayerConnectsAndReconnectsThroughTheRoomAPI$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    },
+    {
+      "path": "apps/player/internal/server/watch_together_test.go",
+      "name": "TestWatchTogetherRejectsInvalidDriftWithoutMetricSideEffect",
+      "line": 102,
+      "end_line": 126,
+      "sha256": "4600df1274988debb1e33c387b9a81df511c8b8600b7efd4d8951dcc41a9a1bf",
+      "baseline_file_sha256": "edd3a65a9874dc5cc0a3721dc9bb16e80629f41111c91c364d484429e049e8fd",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual WebSocket observe invalidnegative drift must closeconnection and avoid incrementing real app metrics. InjectedRooms validation can missHTTPadapter metrics effect/actualsocket lifetime; browser journey sendsvalidobservations only.",
+      "assertion_review_and_limits": "ActualindexedMovie+MFAOwner,realroom/socketinitialevent thenobserve-1;bounded wsjsonReadmusterror, actualmetricscontains exactdriftobservations0. Readerrorcouldtimeoutwithoutactualclose so assertion narrower than closeclaim; still zerometric guardactualapp.",
+      "source_body": "func TestWatchTogetherRejectsInvalidDriftWithoutMetricSideEffect(t *testing.T) {\n\tmediaDir := t.TempDir()\n\tif err := os.WriteFile(filepath.Join(mediaDir, \"Movie.mp4\"), []byte(\"movie\"), 0o600); err != nil {\n\t\tt.Fatal(err)\n\t}\n\thandler := server.New(server.Config{MediaDir: mediaDir, DataDir: t.TempDir(), RequireAuth: true})\n\towner := signInTestProfile(t, handler, \"/setup\", \"name=Owner&password=owner-password\")\n\thome := requestWithCookie(t, handler, http.MethodGet, \"/\", \"\", owner)\n\tmedia := regexp.MustCompile(`/(?:watch|item)/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())[1]\n\troom := createTestRoom(t, handler, owner, media)\n\tweb := httptest.NewServer(handler)\n\tt.Cleanup(web.Close)\n\tconnection := dialRoom(t, web.URL, regexp.MustCompile(`room=([^&]+)`).FindStringSubmatch(room)[1], owner)\n\treadEvent(t, connection)\n\twriteEvent(t, connection, syncEvent{Action: \"observe\", Drift: -1})\n\tclosed, cancel := context.WithTimeout(t.Context(), 2*time.Second)\n\tdefer cancel()\n\tif err := wsjson.Read(closed, connection, &syncEvent{}); err == nil {\n\t\tt.Fatal(\"invalid drift retained the Watch Together connection\")\n\t}\n\tmetrics := requestWithCookie(t, handler, http.MethodGet, \"/settings/metrics\", \"\", owner)\n\tif !strings.Contains(metrics.Body.String(), \"kinosail_watch_room_drift_observations_total 0\\n\") {\n\t\tt.Fatalf(\"invalid drift changed metrics: %q\", metrics.Body.String())\n\t}\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/watchrooms/http.go",
+          "baseline_sha256": "97126834cd02cdfeab145a59da24935a327a190b24db0781de938a916074fc00",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/watchrooms/watchrooms.go",
+          "baseline_sha256": "5740fe4d0ba2413e1ffb79233310a614fda26da2b8197d4c08b927a88970c62f",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/watch_together.go",
+        "apps/player/internal/server/operations.go",
+        "apps/player/internal/server/server.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/watch_together.go",
+        "apps/player/internal/server/operations.go",
+        "apps/player/internal/server/server.go"
+      ],
+      "remaining_proof": "Shared WatchRooms validation tests protect negative/infinite handling inisolation; genuine test-instance-offline asserts positive drift counter/reconnects only, not negative socketinput/no-countereffect. Retain anddisclosereaderrorclosurelimitation.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. ActualindexedMovie+MFAOwner,realroom/socketinitialevent thenobserve-1;bounded wsjsonReadmusterror, actualmetricscontains exactdriftobservations0. Readerrorcouldtimeoutwithoutactualclose so assertion narrower than closeclaim; still zerometric guardactualapp.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:39.594336-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestWatchTogetherRejectsInvalidDriftWithoutMetricSideEffect",
+          "Elapsed": 0.1
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestWatchTogetherRejectsInvalidDriftWithoutMetricSideEffect$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    },
+    {
+      "path": "apps/player/internal/server/watched_test.go",
+      "name": "TestViewerCanMarkMediaWatched",
+      "line": 15,
+      "end_line": 36,
+      "sha256": "cbdc98ee6efe9207d12d3d0e5e0b522a5e1fc3c3f45aaa2a533ba2a5617b6bbf",
+      "baseline_file_sha256": "4adbbdcb6658bf3ef380a42fb629f6b2a5362c02600b1ae055eb030befca7880",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual web watched route must persist flag and reconstruct actual player as Mark unwatched; loss of durable watched flag while live-memory browser navigation works remainsmissed.",
+      "assertion_review_and_limits": "RealindexedHeat,POSTwatchedtrue implicitOwner then newapp sameSQLite directory watchcontainsMarkunwatched. POSTstatusunchecked but resultingpositiveactualcontrol validatesseed; dummyvideo/nobrowserdecoder.",
+      "source_body": "func TestViewerCanMarkMediaWatched(t *testing.T) {\n\tt.Parallel()\n\n\tmediaDir := t.TempDir()\n\tif err := os.WriteFile(filepath.Join(mediaDir, \"Heat.mp4\"), []byte(\"video\"), 0o600); err != nil {\n\t\tt.Fatal(err)\n\t}\n\tdataDir := t.TempDir()\n\thandler := server.New(server.Config{MediaDir: mediaDir, DataDir: dataDir})\n\thome := httptest.NewRecorder()\n\thandler.ServeHTTP(home, httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/\", nil))\n\tid := regexp.MustCompile(`/(?:watch|item)/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())[1]\n\trequest := httptest.NewRequestWithContext(t.Context(), http.MethodPost, \"/watched/\"+id, strings.NewReader(\"watched=true\"))\n\trequest.Header.Set(\"Content-Type\", \"application/x-www-form-urlencoded\")\n\thandler.ServeHTTP(httptest.NewRecorder(), request)\n\tplayer := httptest.NewRecorder()\n\tserver.New(server.Config{MediaDir: mediaDir, DataDir: dataDir}).ServeHTTP(player, httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/watch/\"+id, nil))\n\n\tif !strings.Contains(player.Body.String(), \"Mark unwatched\") {\n\t\tt.Fatalf(\"player = %q\", player.Body.String())\n\t}\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalog/progress_http.go",
+          "baseline_sha256": "54255e3a3eda77b30f8bb9f0b7c6fe32e06e32b8b0e3bce95ad6cae722eaa217",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/progress_request_store.go",
+          "baseline_sha256": "9ef6b1f13dfa797a738ac6381d1f0f571cd219026673cd82d0c3adbcc8a36ea9",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/progress.go",
+        "apps/player/internal/server/database.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/progress.go",
+        "apps/player/internal/server/database.go"
+      ],
+      "remaining_proof": "genuine happy-path complete clicksMarkwatched and seesMarkunwatched/nofutureResume but doesnotrestartGo backend. Shared SaveWatched usesinjectedprogresspersistence, notactualappdatabaseprojection.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. RealindexedHeat,POSTwatchedtrue implicitOwner then newapp sameSQLite directory watchcontainsMarkunwatched. POSTstatusunchecked but resultingpositiveactualcontrol validatesseed; dummyvideo/nobrowserdecoder.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:53.889848-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestViewerCanMarkMediaWatched",
+          "Elapsed": 0.51
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestViewerCanMarkMediaWatched$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    },
+    {
+      "path": "apps/player/internal/server/watched_test.go",
+      "name": "TestViewerCanFilterTheirUnwatchedMedia",
+      "line": 38,
+      "end_line": 60,
+      "sha256": "570b7d31decbbaee4b4d15c5baac58a50d79c5775c5c22aed13b0a83243dfd31",
+      "baseline_file_sha256": "4adbbdcb6658bf3ef380a42fb629f6b2a5362c02600b1ae055eb030befca7880",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+      "owner_source_matches_baseline": true,
+      "decision": "R",
+      "review_status": "semantic_review_complete",
+      "category": "important_missed_failure",
+      "credible_failure": "Actual Unwatched browse must exclude watchedHeat while retainingunwatchedArrival and correctresetlink; wrongappfilter wiring leaves alreadywatchedtitles in focusedview though ordinaryplayback/watchbuttonjourney passes.",
+      "assertion_review_and_limits": "2 indexednilmedia; selectHeatbyquery,POSTwatchedtrue then actualunwatched view:Heatabsent/Arrivalpresent/alllinkpresent. NoPOSTstatuschecked butpositivecontrastvalidatesflagprojection.",
+      "source_body": "func TestViewerCanFilterTheirUnwatchedMedia(t *testing.T) {\n\tt.Parallel()\n\n\tmediaDir := t.TempDir()\n\tfor _, name := range []string{\"Arrival.mp4\", \"Heat.mp4\"} {\n\t\tif err := os.WriteFile(filepath.Join(mediaDir, name), nil, 0o600); err != nil {\n\t\t\tt.Fatal(err)\n\t\t}\n\t}\n\thandler := server.New(server.Config{MediaDir: mediaDir, DataDir: t.TempDir()})\n\thome := httptest.NewRecorder()\n\thandler.ServeHTTP(home, httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/?q=Heat\", nil))\n\theatID := regexp.MustCompile(`/(?:watch|item)/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())[1]\n\trequest := httptest.NewRequestWithContext(t.Context(), http.MethodPost, \"/watched/\"+heatID, strings.NewReader(\"watched=true\"))\n\trequest.Header.Set(\"Content-Type\", \"application/x-www-form-urlencoded\")\n\thandler.ServeHTTP(httptest.NewRecorder(), request)\n\tfiltered := httptest.NewRecorder()\n\thandler.ServeHTTP(filtered, httptest.NewRequestWithContext(t.Context(), http.MethodGet, \"/?view=unwatched\", nil))\n\n\tif strings.Contains(filtered.Body.String(), \">Heat<\") || !strings.Contains(filtered.Body.String(), \">Arrival<\") || !strings.Contains(filtered.Body.String(), `href=\"/?view=all\"`) {\n\t\tt.Fatalf(\"unwatched = %q\", filtered.Body.String())\n\t}\n}",
+      "helper_and_primary_receipts": [
+        {
+          "file": "packages/catalog/browse.go",
+          "baseline_sha256": "5f32935c388ddc040fa4069ce352e1b50bad55d329fa5978b0ff9796ee2575af",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        },
+        {
+          "file": "packages/catalog/catalog_test.go",
+          "baseline_sha256": "f69043b262f82e8b9fb69c9a0bb9c6ffa4629febb7db1aebe61cd94e46a1f6dc",
+          "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+        }
+      ],
+      "production_owner": [
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/browse.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/progress.go"
+      ],
+      "non_test_callers": [
+        "apps/player/internal/server/home.go",
+        "apps/player/internal/server/browse.go",
+        "apps/player/internal/server/player.go",
+        "apps/player/internal/server/progress.go"
+      ],
+      "remaining_proof": "test-instance-library/focus-audit visitunwatched route butdo notseedandassertwatched-vs-unwatchedmembership. Genuine happy-path testsResume disappearance afterwatched, notfocusedUnwatched filter. Retainactualappbrowseprojection.",
+      "coverage_limit": "Read-only source comparison and parent baseline. No child fresh Go/browser/native build. Genuine browser proof distinguished from isolated/shared fixtures; fresh exact-SHA keeper receipts remain root responsibility. 2 indexednilmedia; selectHeatbyquery,POSTwatchedtrue then actualunwatched view:Heatabsent/Arrivalpresent/alllinkpresent. NoPOSTstatuschecked butpositivecontrastvalidatesflagprojection.",
+      "history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "verified_history": [
+        "52fc467562fff99d4d4573196a39d3c77f7960b8 Initial commit"
+      ],
+      "baseline_result": "pass",
+      "baseline_events": [
+        {
+          "Time": "2026-10-03T10:29:53.712287-06:00",
+          "Action": "pass",
+          "Package": "github.com/MikeO7/kinosail-player/internal/server",
+          "Test": "TestViewerCanFilterTheirUnwatchedMedia",
+          "Elapsed": 0.33
+        }
+      ],
+      "validation_command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./internal/server -run '^TestViewerCanFilterTheirUnwatchedMedia$'",
+      "test_edits": false,
+      "new_isolated_tests_added": false
+    }
+  ],
+  "source_receipts": [
+    {
+      "file": "packages/servertest/agent_playlist.go",
+      "baseline_sha256": "6b6f8d5b346e74ea71a2987cc1c9fc6321a0fa013360e08b7a2a7d0b4350ece4",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/servertest/api_helpers.go",
+      "baseline_sha256": "6aa0343bc5bd683d04e73d77ddca75697cc71366c10c9e19f65a974879c4415c",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/catalogapi/playlist_document.go",
+      "baseline_sha256": "b7e38e896960571d09af1ee73587f503e31b54dd20646733430866613e9897e8",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/catalogapi/media_http.go",
+      "baseline_sha256": "b92b469d465fbfeaa58f63c0383383277b6184375a267bca511fb0dd0529316e",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/catalogapi/media_http_read.go",
+      "baseline_sha256": "f6a04c539a345408b77244589eeb77ccf55c2ad3b6cfcbe6c1761c23b2b79a33",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/catalogapi/media_http_write.go",
+      "baseline_sha256": "34c34ef20b7820d8e6d38ba06a5273e3c62a9949d4f5d25f6bdece008a3a3d6c",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/api.go",
+      "baseline_sha256": "7b4467b92ee2b9d7701cd2a612a8d468619c7ea323585179fc6cf9b9cb8b9070",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/playlist_document.go",
+      "baseline_sha256": "6f39375571bf0887b48d82a0044ba20a9410f21e261fa71da1b5ddf1abc36fe3",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/lists.go",
+      "baseline_sha256": "75c25821b041d7f37b9a3525f1cbc034c3867db2c0fb47a0b4c7628fa9aae406",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/player.go",
+      "baseline_sha256": "fd89cfdcf72e68068e635cf3b5f1c98ef3e3a9697d7446808c7b3e6b4a866e0f",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/catalog/collection_summary.go",
+      "baseline_sha256": "9572f7ef3572cde4e09e231714a89016d2bfd877bfdfcc8ef0a7a0828e1a0e08",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/catalog/collection_names_test.go",
+      "baseline_sha256": "86fdbaeab7dda608e5618135434ed8f8cc5f5417f57b9924c992d8faf8945bc3",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/catalog/collection_mutation_edges_test.go",
+      "baseline_sha256": "fcf280e550816330ea00eb86ea13e810a1534d1952c80a60037e60b3817f5e15",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/server.go",
+      "baseline_sha256": "e793d497405e2b2e14a5139208c69ecfaaa6b7a81c3083a2649aa7f86bf40efd",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/home.go",
+      "baseline_sha256": "ae00ea4bc4e89865b1052c9ecca788419235f9532342932b7bdf345c8e8f9961",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/collection_summary.go",
+      "baseline_sha256": "b304045b7e6e753794761ff23eaebaeb6b07390b9a310234bd6721f30059f071",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/servertest/collection_sources.go",
+      "baseline_sha256": "d3b62756638923cfdb40413cc41c778c1cb0aa48fc3049c2015cf31f31a7a34a",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/catalog/collection_read_test.go",
+      "baseline_sha256": "84abbd7d063445f25a66d495b5de5aa28a8b5399059942277e99ed763c2cbbd8",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/collection.go",
+      "baseline_sha256": "be25688630a10451c23690846bda1b218217359ef1465d342c8e73e50d1873f5",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/catalog/collection_web.go",
+      "baseline_sha256": "273655b7ae0b87d0ab5cc4b13bf52e8d183f8c595811b4e5f66a6112ffce6bda",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/catalog/list_operations.go",
+      "baseline_sha256": "deb05696fb2162cd572aee8f5c940d9dc0b0837b0f759b0028232aed3616ecb1",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/playerweb/curation_template.go",
+      "baseline_sha256": "dbc4b6deac5e025007705126d769db475e3d614b225b2f2087a042ab1c15af54",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/book.go",
+      "baseline_sha256": "7b25fe4de318ed4ed554ce16c8da42a7e4afefdc6a97df1b9af9b9f0a1560464",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/catalog/validation.go",
+      "baseline_sha256": "82073ca9f56d80368fdafb98224e10984a8a6847b20816c8b805fd18d532f0dc",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/servertest/configuration_http.go",
+      "baseline_sha256": "0715d13a3440d8ff6775b01c82058d54d330e34bb4b32ca79dbbc062edd72a1b",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/settings/configuration.go",
+      "baseline_sha256": "390e6b761d50ddc596fbc74ada71f940af9533b54289db0a3d87b8b83bcc5f97",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/settings_configuration.go",
+      "baseline_sha256": "5101d73aed043f7d264ba0a1dcb5f60019c14700fc27266135f69e287b7b5536",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/settings_configuration_api.go",
+      "baseline_sha256": "650ea70383d39a46234eddd854445d61a1f6f61a6d1d8c1b4b092c66a55a7db9",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/settings_oidc_configuration.go",
+      "baseline_sha256": "af4111d8cd0b821b44b7ec81a20d30d56e08fc47154225d5c36e6e6b0c2ecb6b",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/settings_scim_configuration.go",
+      "baseline_sha256": "98461ad20af7dec65a595499fc6ebeedef91b0876146d34afa291c17d946a9cb",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/settings_tmdb_configuration.go",
+      "baseline_sha256": "6b76c221b4386843d4ccfb2737467ad472aa26b4435d8a9ac9007b696e6acbdd",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/liveevents/http.go",
+      "baseline_sha256": "d295c6b084af0c230f2a2ebcfeff1d4d0353b79b7ad61680c1b859642e49e380",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/liveevents/http_test.go",
+      "baseline_sha256": "57f9d4bcd6ceea12a923ba9f7afb78fbaf53d0972a0b65f18cf4539b6e62adbc",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/live_events.go",
+      "baseline_sha256": "877ff5de0a14137fa7d8fbd746f6767955202bf38e7b10f33ba0ee5e414e147b",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/security.go",
+      "baseline_sha256": "c812000aac81ad4a9182aadc0e899b64864e0817dd4db4b8cd10fb964d976d34",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/observability.go",
+      "baseline_sha256": "09456eb8ab431e8f6c9f633f0a494b971ac447023677cadf63e63a9db69922b6",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/markers/admin.go",
+      "baseline_sha256": "3743522c964625625a9625e51cc0fb382316e2e1f2c36a95d02f397565906295",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/markers/admin_test.go",
+      "baseline_sha256": "77cbe23ba61b1e1ee1c1fe52e05d4e57c3965c78aced6c75b356f2d0e571ab01",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/marker_admin.go",
+      "baseline_sha256": "2aa13a98c471258bb8be43a21eb27738604e3c36be45a6dbafa63c02e93772ce",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/settings_http.go",
+      "baseline_sha256": "8be3becd44d99c36aa68e438edce2e6c638fdc5e9c17a7720300c6a40df425a9",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/playback/trace_http.go",
+      "baseline_sha256": "9bf6edfc4ad05b7e45b0dbe633452a034cc99da2bad97febddef09818112f657",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/playback/file_delivery.go",
+      "baseline_sha256": "16d86d7101827d23d8b947bf59372df2d5f3741212e743ddf3af8eb2b7bd3510",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/playback_trace.go",
+      "baseline_sha256": "f1d666dc07dfbe8e0ccc94b0df379fa8a7ee7dff0e5334a6bcdeef29fa867b4b",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/observability_context.go",
+      "baseline_sha256": "b1b54e49dc60ea547582293c20746bc93359a9c52ba15d2838395ef7158c4d4c",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/servertest/playback_trace.go",
+      "baseline_sha256": "64d2d99d91459d894abab98e2844e7a506d5c2d73236c6c20c1778a941bf8028",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/playback/trace.go",
+      "baseline_sha256": "cd0b1565f7aee5e140927976c84aa295a72c9591a365ce20fc3e47ee946603e4",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/playback/trace_http_test.go",
+      "baseline_sha256": "4c451454103722c3199a12e8206564b91fa0cd81523b949b930208021b5f8c2b",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/playback/protocol_test.go",
+      "baseline_sha256": "6370aa4e3111ffab47816e1dc4e6497dd54dcd88dbdab0a7b2726f8020290949",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/playback/trace_diagnostics_http_test.go",
+      "baseline_sha256": "e487f3d4fb1fd5b454e75037cf2692fc4c340bfee9cada4ab2e011b9398b7978",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/webassets/static/player-core.js",
+      "baseline_sha256": "17da3a54d2d4006f5a8e6c3b72d5666edee16d4c8efcf42a20bdbe67d0295b5a",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/catalog/list_read.go",
+      "baseline_sha256": "b10fad7b58f42245c6bb2167741eeb75312b6e911f85be8ea65bb1fd03d9cf79",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/catalog/playlist_http.go",
+      "baseline_sha256": "e8f73bb16995f9b18125326f02a8191f975fc0a1b813c0453711027823eb1cba",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/playlist.go",
+      "baseline_sha256": "87242730860cee377f7a4fdcb23401dffbd9cdbb1221b850352e3879a36c7b6b",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/catalog/lists.go",
+      "baseline_sha256": "8d2084e310367ecb904ce3b46309de095a60d138483769705c84fa07724eb517",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/playlist_document_templates.go",
+      "baseline_sha256": "3cec9a590510edaa4221c0b851eb0bf594d0bd7c014eac9c59aa86123722b394",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/catalog/list_read_test.go",
+      "baseline_sha256": "b0c68183b0722f38d3c453519a19534f2ad4d9e4fb2fedc1b7d2019a80e413c5",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/catalog/playlist_summary.go",
+      "baseline_sha256": "645d1346becd99b161e05aa4ea00e1baffe8211df1a4a3abe50adca50a22cffb",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/playlist_summary.go",
+      "baseline_sha256": "6ab0e4668c1e9f75142e8630fdb5515cf103bff1de0a25b8798ea826e9bd12b4",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/catalog/playlist_http_test.go",
+      "baseline_sha256": "328b8a77d04dc16b72ab48fd2a40e3cd6bef6bb8e3ee7de748f27d2640b24607",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/catalog/progress_projection.go",
+      "baseline_sha256": "0d3882b4b48ab538fe45517dce58adae7058261b8e78349f61a63b5849598098",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/catalogapi/progress_store.go",
+      "baseline_sha256": "5038d46c2443d616bf80ed7e55a9e734e86860944f9c6e4d60062d65b7c31807",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/progress.go",
+      "baseline_sha256": "97ef8f71b1e093ff2a0d53eda7702442d5e3a6752505c017b2d6e40cd3019345",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/auth.go",
+      "baseline_sha256": "12ad5e6036361295918e3f92a5efe2452b7334d40af1a085b9de394bc09ed42f",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/database.go",
+      "baseline_sha256": "b47891177a704b358004ea32c6a45b96c4041b099affa3e2090574718f9a3625",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/catalog/progress_request_store.go",
+      "baseline_sha256": "9ef6b1f13dfa797a738ac6381d1f0f571cd219026673cd82d0c3adbcc8a36ea9",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/catalog/progress_change.go",
+      "baseline_sha256": "d9fcb85059e5d212f98b24f21c1b7d3e472e3e43a4403a9426aa5125e83237d1",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/auditjournal/http.go",
+      "baseline_sha256": "2fea7f4d00924bdd34cff1d0df029705130a8beeb8d3eef38d8b94be925c5a5b",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/audit.go",
+      "baseline_sha256": "8d60113b3287115fbcea57272b90ecbb686dfb92ae78032d991468c13f529629",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/catalog/progress_http.go",
+      "baseline_sha256": "54255e3a3eda77b30f8bb9f0b7c6fe32e06e32b8b0e3bce95ad6cae722eaa217",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/documentdb/documentdb.go",
+      "baseline_sha256": "a87bfb12de18a8cf214b0e90a0a827673a3eaa5f41fbe15f214122df4b83b3e3",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/watchrooms/http.go",
+      "baseline_sha256": "97126834cd02cdfeab145a59da24935a327a190b24db0781de938a916074fc00",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/watchrooms/watchrooms.go",
+      "baseline_sha256": "5740fe4d0ba2413e1ffb79233310a614fda26da2b8197d4c08b927a88970c62f",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/watch_together.go",
+      "baseline_sha256": "b799cb7c5abc8f945c95ad050830d059d8a5357f1d80627e364b4c01e12fc837",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/webassets/static/player-devices.js",
+      "baseline_sha256": "67dcd0f9b639732a4ad593f2e7d0750bcbdc874a378aab980b1cce72f6b1da6b",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/operations.go",
+      "baseline_sha256": "f8f3759875f9ac5a718462d29a73c210c0acc06dab9ac36cffb2ab929fdc3260",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/catalog/browse.go",
+      "baseline_sha256": "5f32935c388ddc040fa4069ce352e1b50bad55d329fa5978b0ff9796ee2575af",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/catalog/catalog_test.go",
+      "baseline_sha256": "f69043b262f82e8b9fb69c9a0bb9c6ffa4629febb7db1aebe61cd94e46a1f6dc",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/browse.go",
+      "baseline_sha256": "a13ebeb8994d5e39e721c390a2f2e92f7ca2391b9065f9a35061a27ab60d8c2d",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/e2e/curation-count.spec.ts",
+      "baseline_sha256": "eeb3d1ffe5b17f1919f397503fcbd6bc4a78c83231a072dd201070e6a75e9ab9",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/e2e/ui-happy-paths.spec.ts",
+      "baseline_sha256": "dc745195e452e6b77238b9096611286d4a7a0dc55329132c8833380893644b8a",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/e2e/test-instance-library.spec.ts",
+      "baseline_sha256": "ca7ce499ddb8c1678ee0f10d81ac4cdff75a83d431d6faf1d27f1c1bc5876eb3",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/e2e/test-instance-offline.spec.ts",
+      "baseline_sha256": "80a6198ea76d505ace29cb95616bf537182c16c104c0e25bb8ab1d2b2dddb3b0",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/e2e/happy-path.spec.ts",
+      "baseline_sha256": "dbd194ce7cc480ec4c908fbb4aad3af73e44b596644128e13b7e0abbff6fc9ff",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/e2e/happy-path-complete.ts",
+      "baseline_sha256": "4ec685d184bd39d819f4157ef0d858abf8f6095f4ec8af7e230109874ea4841f",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/e2e/happy-path-setup.ts",
+      "baseline_sha256": "b40647ad66ca8c6781912d470e0f50afacc04e327d5c12971348e2f8de5a0756",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/e2e/test-instance-helpers.ts",
+      "baseline_sha256": "361bfeb64b5576de8cba106978a2ae3b5d2ae27b79c923e986aa823d92f74b1f",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/e2e/instant-show-play.spec.ts",
+      "baseline_sha256": "cfe7f4c0275b5fafc4a47edee2bce310b878abf3e825f000c5a680e648e44bea",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/e2e/player-frame-trace.spec.ts",
+      "baseline_sha256": "bac69327ef179b41c9e14232331103abfd1fd60c09d155aa44f25fa95c7f3ac5",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/e2e/player-experience-status.spec.ts",
+      "baseline_sha256": "254cdac35f602d93df8d2d07f2577ef3ad022b1c4eda3fc378a3a002b90271c6",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/e2e/layout-audit-configuration.spec.ts",
+      "baseline_sha256": "657b54501b3e442a44cfff26f8fbd72af8177b2a1308e2db844994c11eea46be",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/e2e/masthead-spacing.spec.ts",
+      "baseline_sha256": "f9f5879ff627ac68a0188d89a53149866e255cf8d00bd6996a87270280299cc9",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/api_test_helpers_test.go",
+      "baseline_sha256": "03c096e8e7a6811b1f857bb64bd8e7b4753cbd99114388088357d0f5f80d83db",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "apps/player/internal/server/api_library_fixture_test.go",
+      "baseline_sha256": "dee7b0fc222a3219613f25f98c279482047fcb3268d68f5a9f492169aae1660f",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    },
+    {
+      "file": "packages/servertest/oidc_requests.go",
+      "baseline_sha256": "180be2c231e7e0c79e31d9b7b8d419f6366dc2f73767597da75543b6098457b9",
+      "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8"
+    }
+  ],
+  "retained_keeper_inventory": [
+    {
+      "file": "packages/catalog/collection_read_test.go",
+      "name": "TestCollectionReadsKeepDefaultsExclusionsAndCustomMembers",
+      "present_at_reviewed_integration_sha": true
+    },
+    {
+      "file": "packages/catalog/collection_read_test.go",
+      "name": "TestCollectionSummariesPreserveProjectionAndSearch",
+      "present_at_reviewed_integration_sha": true
+    },
+    {
+      "file": "packages/catalog/collection_read_test.go",
+      "name": "TestCollectionSummarySearchAndJSON",
+      "present_at_reviewed_integration_sha": true
+    },
+    {
+      "file": "packages/catalog/collection_read_test.go",
+      "name": "TestPlaylistSummariesPreserveModeRulesAndPreview",
+      "present_at_reviewed_integration_sha": true
+    },
+    {
+      "file": "packages/catalog/list_read_test.go",
+      "name": "TestSmartPlaylistUsesCanonicalSearchKindsAndSort",
+      "present_at_reviewed_integration_sha": true
+    },
+    {
+      "file": "packages/markers/admin_test.go",
+      "name": "TestAdminRoutesManageMarkersAndQueueAnalysis",
+      "present_at_reviewed_integration_sha": true
+    },
+    {
+      "file": "packages/playback/protocol_test.go",
+      "name": "TestTraceReaderRejectsBeforeCallerSideEffects",
+      "present_at_reviewed_integration_sha": true
+    },
+    {
+      "file": "packages/playback/trace_http_test.go",
+      "name": "TestTraceHTTPRejectsLogInjectionWithoutEffects",
+      "present_at_reviewed_integration_sha": true
+    },
+    {
+      "file": "packages/playback/trace_diagnostics_http_test.go",
+      "name": "TestTraceHTTPDiagnosticsRejectAmbiguityAndProtectLogPrivacy",
+      "present_at_reviewed_integration_sha": true
+    },
+    {
+      "file": "apps/player/internal/server/api_boundary_coverage_test.go",
+      "name": "TestVersionedAPIReadModelsAreReachableThroughOwnerSession",
+      "present_at_reviewed_integration_sha": true
+    },
+    {
+      "file": "apps/player/internal/server/collection_test.go",
+      "name": "TestOwnerCanCreateAndCurateCollection",
+      "present_at_reviewed_integration_sha": true
+    },
+    {
+      "file": "apps/player/internal/server/playlist_features_test.go",
+      "name": "TestPlaylistsSupportPersistentOrderAndDynamicRules",
+      "present_at_reviewed_integration_sha": true
+    },
+    {
+      "file": "apps/player/internal/server/watch_together_test.go",
+      "name": "TestWatchTogetherEnforcesLeaderSyncAndExpiry",
+      "present_at_reviewed_integration_sha": true
+    }
+  ],
+  "baseline": {
+    "command": "GOCACHE=/tmp/kinosail-testing-go-cache go -C apps/player test -json -count=1 ./...",
+    "path": "/Users/mikeo/Documents/Codex/2026-10-03/task/kinosail/.verification/test-overhaul/baseline/player-go.jsonl",
+    "sha256": "539d66c79a444d8bdc9ee8dc843d9f442300facc1e2ad4a6b3ab15a3f8a88e8b",
+    "source_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+    "results": "28/28 pass parent full baseline; no fresh child execution"
+  },
+  "remaining_browser_run_requirement": "Root must produce genuine selected keeper execution JSON/screenshots/logs with exact final SHA. Source mappings do not claim fresh execution or equivalence of fixture APIs to live app. No child browser TLS bypass or builds.",
+  "failure_analysis_first": "No isolated test additions/repairs. F rows retain existing protection while making unproved claims explicit.",
+  "reproduce": {
+    "command": "python3 /tmp/frontend-player-final-slice-audit.py",
+    "generator_sha256": "0dce5c46796a02de04500e484d80c3ac4ef0a54bd37fef8d3ba65e7e2ce2f567"
+  }
+}

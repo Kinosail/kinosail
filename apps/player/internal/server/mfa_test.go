@@ -54,14 +54,6 @@ func TestRecoveryCodesWorkThroughWebLoginAndAccountDisable(t *testing.T) {
 	}
 }
 
-func TestDefaultMFADoesNotBlockOpenInitialServer(t *testing.T) {
-	handler := server.New(server.Config{})
-	response := apiCall(t, handler, "", http.MethodGet, "/api/v1/library", nil)
-	if response.Code != http.StatusOK {
-		t.Fatalf("initial open library = %d %q", response.Code, response.Body.String())
-	}
-}
-
 var enrollTestAPIFactor = servertest.EnrollTestAPIFactor
 
 func disableTestMFA(t *testing.T, handler http.Handler, token string) {

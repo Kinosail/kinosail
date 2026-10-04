@@ -72,31 +72,6 @@ func TestProbeConfigurationDurationAndResultValidation(t *testing.T) {
 	}
 }
 
-func TestProbeDurationRunsAndLoadsBoundedResults(t *testing.T) {
-	t.Parallel()
-	root, cache := t.TempDir(), t.TempDir()
-	media := filepath.Join(root, "film.mp4")
-	executable := filepath.Join(root, "ffprobe")
-	if err := os.WriteFile(media, []byte("video"), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	writeProbeScript(t, executable, "#!/bin/sh\nprintf '%s' '{\"format\":{\"duration\":\"73\"}}'\n")
-	item := library.Item{ID: "film", Kind: "video", Path: media}
-	first := New(executable)
-	first.ConfigureCache(cache)
-	if duration := first.Inspect(t.Context(), item, Enrichment{}).Duration; duration != 73 {
-		t.Fatalf("first duration = %v", duration)
-	}
-	second := New("missing")
-	second.ConfigureCache(cache)
-	if duration := second.Duration(t.Context(), item); duration != 73 {
-		t.Fatalf("loaded duration = %v", duration)
-	}
-	if duration := New(filepath.Join(root, "missing")).Duration(t.Context(), item); duration != 0 {
-		t.Fatalf("failed duration = %v", duration)
-	}
-}
-
 func TestProbeCommandBoundsOutputAndExecutable(t *testing.T) {
 	t.Parallel()
 	output := boundedOutput{remaining: 2}

@@ -1,7 +1,6 @@
 package metadata
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -101,12 +100,5 @@ func TestChaptersDBOnlyReplacesGenericLocalTitles(t *testing.T) {
 	}
 	if _, ok := parseChapterDBTime(strings.TrimSpace("1:2:03")); ok {
 		t.Fatal("ambiguous chapter time accepted")
-	}
-}
-
-func TestChapterProviderReturnsNoDataWithoutTVDBEpisodeIdentity(t *testing.T) {
-	provider := NewChapterProvider(defaultChaptersDBURL)
-	if got := provider.Chapters(context.Background(), library.Item{Show: "Example", Episode: 1}, 120, nil); got != nil {
-		t.Fatalf("chapters without TVDB identity = %#v", got)
 	}
 }

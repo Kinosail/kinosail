@@ -1,0 +1,28 @@
+{
+  "schema": "kinosail-independent-workflow-reconciliation-review-v1",
+  "reviewer": "tooling subagent; independent of merge resolution author",
+  "decision": "approved exact unchanged workflow source against new upstream main; no findings",
+  "resolvedCommit": "fcd139b979fb532ab40ebcf200627945757a85af",
+  "actualUpstreamMain": "9d1b158e1a49fd523fb61a3603faafcfa45c1aeb",
+  "approval": {
+    "path": ".github/workflows/app.yml",
+    "sha256": "2b5ac70822428002b3b742c1bc91d8e46bf5c56a18d3afc4b0b131ce9be8f1dc",
+    "gitBlob": "c56df3eb515221038ac37cd68eeb9f28f55d79a9",
+    "scope": "Only this exact path/hash at this reviewed commit is approved as the task workflow delta from the named current main; no generic exemption for unknown workflow content."
+  },
+  "priorReview": {
+    "path": "engineering/qa/2026-10-03-test-overhaul/workflow-reconciliation-review-645fda9.json",
+    "sha256": "588e260983ddbfecf372c9150b7a03fba0a212b46984cc2db3d6cdc6b0b22dc2",
+    "resolvedCommit": "645fda9c7230d62cdf3eee68a0d1664879794b44",
+    "actualUpstreamMain": "5851175e4fd0f2473172ed80c38e6767c6942d0c"
+  },
+  "evidence": [
+    "Complete workflow bytes at fcd139b979fb532ab40ebcf200627945757a85af equal the prior independently reviewed645fda9 workflow.",
+    "Complete upstream workflow bytes at main9d1b158e1a49fd523fb61a3603faafcfa45c1aeb equal prior main5851175e4fd0f2473172ed80c38e6767c6942d0c; the full task workflow delta is therefore unchanged.",
+    "Named new main and prior reviewed root commit are ancestors of the reviewed resolved commit. Source comparisons use immutable Git blobs.",
+    "The prior receipt proves exact preservation of upstream startup setup, pinned FFmpeg download and SHA check, native runner invocation, safe startup upload and required gates. Identical workflow bytes retain every step, condition, argument, path and assertion invocation, together with task recorder/hidden artifact uploads/prepared-settings invocation/Trivy temp-cache integration."
+  ],
+  "validation": "Only bounded read-only Git/blob comparisons and source assertions; no builds, downloads, browser suites, scanners, cleanup or cache-heavy checks.",
+  "remainingBoundary": "Approval covers workflow reconciliation only. It does not certify changed product source outside this file or claim CI passed at the new resolved commit.",
+  "commitHold": "Receipt prepared in reviewer checkout; commit is held until root releases the active shared-ledger window."
+}

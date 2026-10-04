@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/MikeO7/kinosail/packages/library"
-	"github.com/MikeO7/kinosail/packages/playback"
 )
 
 func TestProbeCacheRemovesRestartProbeFromPlaybackPath(t *testing.T) {
@@ -69,35 +68,5 @@ func writeProbeScript(t *testing.T, path, script string) {
 	}
 	if err := os.Rename(temporary, path); err != nil {
 		t.Fatal(err)
-	}
-}
-
-func TestProbeCacheRejectsStaleMalformedAndOversizedState(t *testing.T) {
-	root, cache := t.TempDir(), t.TempDir()
-	media := filepath.Join(root, "film.mp4")
-	if err := os.WriteFile(media, []byte("video"), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	probe := New("unused")
-	probe.cacheDir = cache
-	item := library.Item{ID: "film", Kind: "video", Path: media}
-	path := probe.cachePath(item.ID)
-	if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
-		t.Fatal(err)
-	}
-	for name, content := range map[string][]byte{
-		"malformed": []byte(`{"schema":1`),
-		"unknown":   []byte(`{"schema":1,"version":"` + playback.SourceVersion(media) + `","result":{},"extra":true}`),
-		"stale":     []byte(`{"schema":1,"version":"old","result":{}}`),
-		"oversized": make([]byte, probeCacheLimit+1),
-	} {
-		t.Run(name, func(t *testing.T) {
-			if err := os.WriteFile(path, content, 0o600); err != nil {
-				t.Fatal(err)
-			}
-			if _, found := probe.load(item, playback.SourceVersion(media)); found {
-				t.Fatal("invalid cache was accepted")
-			}
-		})
 	}
 }

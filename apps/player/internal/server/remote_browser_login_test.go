@@ -7,8 +7,10 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/MikeO7/kinosail-player/internal/server"
+	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
 func TestPublicBrowserQuickConnectEndToEndBoundary(t *testing.T) {
@@ -68,7 +70,9 @@ func TestPublicBrowserQuickConnectEndToEndBoundary(t *testing.T) {
 	if approved.Code != http.StatusNoContent {
 		t.Fatalf("local approval = %d %s", approved.Code, approved.Body.String())
 	}
+	loginStarted := time.Now()
 	connected := call("/auth/quick-connect/token", pending)
+	loginFinished := time.Now()
 	if connected.Code != http.StatusNoContent {
 		t.Fatalf("browser sign-in = %d %s", connected.Code, connected.Body.String())
 	}
@@ -78,9 +82,7 @@ func TestPublicBrowserQuickConnectEndToEndBoundary(t *testing.T) {
 			session = cookie
 		}
 	}
-	if session == nil || !session.HttpOnly || !session.Secure || session.MaxAge != 28800 {
-		t.Fatalf("browser session cookie = %#v", session)
-	}
+	servertest.AssertIssuedCookieLifetime(t, session, 8*time.Hour, loginStarted, loginFinished, storedState(t, data, "sessions.json"))
 	library := serveRequest(public, requestWithCookieRequest(t, http.MethodGet, "/api/v1/library", "", session))
 	if library.Code != http.StatusOK {
 		t.Fatalf("public library = %d %s", library.Code, library.Body.String())

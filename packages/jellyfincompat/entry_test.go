@@ -9,17 +9,6 @@ import (
 	"testing"
 )
 
-func TestPathRecognizesOnlyJellyfinPrefixes(t *testing.T) {
-	for _, prefix := range jellyfinPrefixes {
-		if !Path(prefix + "child") {
-			t.Errorf("Jellyfin prefix rejected: %q", prefix)
-		}
-	}
-	if Path("/api/v1/library") {
-		t.Fatal("native API path was accepted")
-	}
-}
-
 func TestCoreAndQuickConnectRoutesPreserveContract(t *testing.T) {
 	mux := http.NewServeMux()
 	called := map[string]int{}

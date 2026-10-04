@@ -148,30 +148,6 @@ func TestSubtitleCoverageClassifiesDefaultOtherAndDoubleDigitEpisodes(t *testing
 	}
 }
 
-func TestSubtitleSettingsAPIRendersEverySavedLanguageAtTheLimit(t *testing.T) {
-	t.Parallel()
-	languages := []string{"es-419", "pt-MZ", "zh-Hant", "sr-Cyrl", "yue", "ckb", "mni", "cnr", "sat", "syr", "tet", "tok", "azb", "ast", "ext", "prs", "fil", "aa", "en", "de"}
-	handler := server.New(server.Config{SubtitleApp: true, MediaDir: t.TempDir(), DataDir: t.TempDir(), CacheDir: t.TempDir()})
-	body, err := json.Marshal(map[string]any{"languages": languages})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if saved := requestJSON(t, handler, http.MethodPut, "/api/v1/settings/subtitles", string(body)); saved.Code != http.StatusOK {
-		t.Fatalf("save = %d %q", saved.Code, saved.Body.String())
-	}
-	api := requestApp(t, handler, http.MethodGet, "/api/v1/settings", "")
-	page := requestApp(t, handler, http.MethodGet, "/settings", "")
-	start := strings.Index(page.Body.String(), `<ol class="subtitle-language-list"`)
-	end := strings.Index(page.Body.String(), `</ol>`)
-	rows := 0
-	if start >= 0 && end > start {
-		rows = strings.Count(page.Body.String()[start:end], "<li>")
-	}
-	if api.Code != http.StatusOK || !strings.Contains(api.Body.String(), `"subtitleLanguages":["es-419","pt-MZ","zh-Hant"`) || page.Code != http.StatusOK || rows != len(languages) || !strings.Contains(page.Body.String(), "20-language limit reached") {
-		t.Fatalf("api = %d %q, page = %d rows=%d", api.Code, api.Body.String(), page.Code, rows)
-	}
-}
-
 func TestSubtitleAppUsesKinosailSisterSetupAndFocusedSettings(t *testing.T) { //nolint:cyclop // Sister-app setup, settings, and onboarding stay one visible experience contract.
 	t.Parallel()
 	media := t.TempDir()

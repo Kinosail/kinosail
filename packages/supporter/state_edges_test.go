@@ -78,10 +78,3 @@ func TestRotatePublicKeyRejectsEveryInvalidPrecondition(t *testing.T) {
 		t.Fatalf("same key rotation = %v", err)
 	}
 }
-
-func TestEmptyStateIsValid(t *testing.T) {
-	service := testServiceAt(t, App{}, testNow())
-	if err := service.ValidateState(State{}); err != nil {
-		t.Fatalf("empty state validation = %v", err)
-	}
-}

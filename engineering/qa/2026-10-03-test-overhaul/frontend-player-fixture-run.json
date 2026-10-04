@@ -1,0 +1,274 @@
+{
+  "schema": "kinosail-fixture-audit-receipt-v1",
+  "source_sha": "692ec488f0cc91351629276c8b278b73d1aac975",
+  "base_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+  "scope": "Existing isolated Playwright fixture checks. No genuine browser+live-server E2E proof claimed by this receipt.",
+  "environment": {
+    "os": "macOS-27.0-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "node": "v26.8.2",
+    "python": "3.14.7",
+    "playwright": "1.63.0",
+    "chrome": "154.0.8037.97",
+    "env": {}
+  },
+  "source_inputs": [
+    {
+      "path": "apps/player/e2e/playwright.config.ts",
+      "sha256": "6f838c5fdedaafb929513fea80d4564b1f0df0136111c6e8588b9d8b975e9d26"
+    },
+    {
+      "path": "apps/player/e2e/static-sources.ts",
+      "sha256": "9486cb2b2db3c4320f97164ceef7faba36487a56f02849d8f90e4023a20eb17c"
+    },
+    {
+      "path": "apps/player/e2e/player-experience-fixture.ts",
+      "sha256": "2159dd6623b3408a7324365156b24ec477485b75563bf3bbd0a58849530e4f98"
+    },
+    {
+      "path": "apps/player/internal/server/static/service-worker.js",
+      "sha256": "d8af6f505ec245ded0e8a1ed47a219c3e29fab1dc94cef4d1a5cd1b4a2cfd9a9"
+    },
+    {
+      "path": "apps/player/internal/server/static/player.js",
+      "sha256": "ccd7c1a523c41cac8b90099ddf0a99e646da7f3f2a4e0c47148e820135148bed"
+    },
+    {
+      "path": "packages/webassets/static/player-app.css",
+      "sha256": "788faa89b30f86f758b9e5a0d090ee9a846fb737e18086e10207d47203bfbeff"
+    },
+    {
+      "path": "packages/webassets/static/pwa.js",
+      "sha256": "4ea43e5431973c9f6a6f7923248fcb63d7f0b401e44724539c0289b6ae1c0762"
+    }
+  ],
+  "runs": [
+    {
+      "path": "engineering/qa/2026-10-03-test-overhaul/frontend-player-fixture-launch-blocked.json",
+      "sha256": "dee6f7bea9557599a150ccb0654f5c34b31dca3b219fefa42c8332b6746f09bf",
+      "command": "../../../scripts/tooling/gate-shell.sh -c 'exec node node_modules/@playwright/test/cli.js test \"$@\"' -- service-worker-storage-contract.spec.ts service-worker-contract.spec.ts player-subtitle-fullscreen.spec.ts title-jump-first-paint.spec.ts --project=chromium --workers=1 --grep 'service worker selects offline chunks|service worker validates a fresh shell|service worker streams verified IndexedDB|native fullscreen fallback stays available with all subtitle choices|native fullscreen fallback follows Safari|mobile title jump starts' --reporter=json",
+      "cwd": "apps/player/e2e",
+      "source_sha": "692ec488f0cc91351629276c8b278b73d1aac975",
+      "tracked_dirty": false,
+      "command_exit_code": 1,
+      "stats": {
+        "startTime": "2026-10-03T17:17:07.069Z",
+        "duration": 1856.3269999999998,
+        "expected": 1,
+        "skipped": 0,
+        "unexpected": 5,
+        "flaky": 0
+      },
+      "mode": "sandbox browser-launch abort; not product failure",
+      "suites": [
+        {
+          "file": "player-subtitle-fullscreen.spec.ts",
+          "name": "native fullscreen fallback stays available with all subtitle choices",
+          "results": [
+            {
+              "expected_status": "passed",
+              "status": "failed"
+            }
+          ]
+        },
+        {
+          "file": "player-subtitle-fullscreen.spec.ts",
+          "name": "native fullscreen fallback follows Safari entry and exit events",
+          "results": [
+            {
+              "expected_status": "passed",
+              "status": "failed"
+            }
+          ]
+        },
+        {
+          "file": "service-worker-contract.spec.ts",
+          "name": "service worker validates a fresh shell before replacing the active cache",
+          "results": [
+            {
+              "expected_status": "passed",
+              "status": "failed"
+            }
+          ]
+        },
+        {
+          "file": "service-worker-storage-contract.spec.ts",
+          "name": "service worker selects offline chunks through the target job index",
+          "results": [
+            {
+              "expected_status": "passed",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "file": "service-worker-storage-contract.spec.ts",
+          "name": "service worker streams verified IndexedDB chunks with backpressure",
+          "results": [
+            {
+              "expected_status": "passed",
+              "status": "failed"
+            }
+          ]
+        },
+        {
+          "file": "title-jump-first-paint.spec.ts",
+          "name": "mobile title jump starts with its compact control while navigation loads",
+          "results": [
+            {
+              "expected_status": "passed",
+              "status": "failed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "engineering/qa/2026-10-03-test-overhaul/frontend-player-fixture-baseline.json",
+      "sha256": "a8b8e0b2e4331a4064cfec1582cdb9227c422bb24fc1057eb98d008cab3233e3",
+      "command": "../../../scripts/tooling/gate-shell.sh -c 'exec node node_modules/@playwright/test/cli.js test \"$@\"' -- service-worker-storage-contract.spec.ts service-worker-contract.spec.ts player-subtitle-fullscreen.spec.ts title-jump-first-paint.spec.ts --project=chromium --workers=1 --grep 'service worker selects offline chunks|service worker validates a fresh shell|service worker streams verified IndexedDB|native fullscreen fallback stays available with all subtitle choices|native fullscreen fallback follows Safari|mobile title jump starts' --reporter=json",
+      "cwd": "apps/player/e2e",
+      "source_sha": "692ec488f0cc91351629276c8b278b73d1aac975",
+      "tracked_dirty": false,
+      "command_exit_code": 0,
+      "stats": {
+        "startTime": "2026-10-03T17:18:29.620Z",
+        "duration": 12927.529,
+        "expected": 6,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "mode": "approved escalation retry; fixtures only",
+      "suites": [
+        {
+          "file": "player-subtitle-fullscreen.spec.ts",
+          "name": "native fullscreen fallback stays available with all subtitle choices",
+          "results": [
+            {
+              "expected_status": "passed",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "file": "player-subtitle-fullscreen.spec.ts",
+          "name": "native fullscreen fallback follows Safari entry and exit events",
+          "results": [
+            {
+              "expected_status": "passed",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "file": "service-worker-contract.spec.ts",
+          "name": "service worker validates a fresh shell before replacing the active cache",
+          "results": [
+            {
+              "expected_status": "passed",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "file": "service-worker-storage-contract.spec.ts",
+          "name": "service worker selects offline chunks through the target job index",
+          "results": [
+            {
+              "expected_status": "passed",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "file": "service-worker-storage-contract.spec.ts",
+          "name": "service worker streams verified IndexedDB chunks with backpressure",
+          "results": [
+            {
+              "expected_status": "passed",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "file": "title-jump-first-paint.spec.ts",
+          "name": "mobile title jump starts with its compact control while navigation loads",
+          "results": [
+            {
+              "expected_status": "passed",
+              "status": "passed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "engineering/qa/2026-10-03-test-overhaul/frontend-player-fixture-final.json",
+      "sha256": "ba5e33c5ddf5c2a825847f44faa8cf56075ac5a7614215e1ac078f8916768e27",
+      "command": "../../../scripts/tooling/gate-shell.sh -c 'exec node node_modules/@playwright/test/cli.js test \"$@\"' -- service-worker-storage-contract.spec.ts service-worker-contract.spec.ts player-subtitle-fullscreen.spec.ts title-jump-first-paint.spec.ts --project=chromium --workers=1 --grep 'service worker validates a fresh shell|service worker streams verified IndexedDB|native fullscreen fallback follows Safari|populated mobile library' --reporter=json",
+      "cwd": "apps/player/e2e",
+      "source_sha": "692ec488f0cc91351629276c8b278b73d1aac975",
+      "tracked_dirty": true,
+      "command_exit_code": 0,
+      "stats": {
+        "startTime": "2026-10-03T17:20:06.641Z",
+        "duration": 12545.953,
+        "expected": 3,
+        "skipped": 1,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "mode": "approved escalation; fixtures only; live keeper skipped",
+      "suites": [
+        {
+          "file": "player-subtitle-fullscreen.spec.ts",
+          "name": "native fullscreen fallback follows Safari entry and exit events",
+          "results": [
+            {
+              "expected_status": "passed",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "file": "service-worker-contract.spec.ts",
+          "name": "service worker validates a fresh shell before replacing the active cache",
+          "results": [
+            {
+              "expected_status": "passed",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "file": "service-worker-storage-contract.spec.ts",
+          "name": "service worker streams verified IndexedDB chunks with backpressure",
+          "results": [
+            {
+              "expected_status": "passed",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "file": "title-jump-first-paint.spec.ts",
+          "name": "populated mobile library keeps the compact title jump while navigation loads",
+          "results": [
+            {
+              "expected_status": "skipped",
+              "status": "skipped"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "not_validated": [
+    "Real Safari native fullscreen UI/device behavior (events/methods are fixture stubs)",
+    "Populated first-paint keeper against real server; one intentional skip",
+    "Final integrated source SHA/required CI; parent captures final receipt",
+    "Complete Player or native suites; no native runtime/build performed"
+  ],
+  "trace_screenshot_policy": "Existing trace retain-on-failure and screenshot only-on-failure; successful isolated keepers emit JSON test results only. Sandbox launch error messages retained in blocked report. Final parent runtime recorder is required for repeatable E2E source/environment/command/artifact manifest."
+}

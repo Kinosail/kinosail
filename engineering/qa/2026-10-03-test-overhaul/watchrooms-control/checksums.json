@@ -1,0 +1,66 @@
+{
+  "original-baseline-permitted.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "run-metadata.json": {
+    "bytes": 4363,
+    "sha256": "1a1473a158b40646f2d1a61e857f1339480240c58ff5c93b10bddc97658ea09a"
+  },
+  "visibility-guard-disabled-noncompiling.patch": {
+    "bytes": 576,
+    "sha256": "6eceb6826aeb051678c7c68c65eb1695fe86980c160559ecece53ebf1980c8ba"
+  },
+  "repaired-mutant.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "original-mutant.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "original-mutant.jsonl": {
+    "bytes": 1409,
+    "sha256": "6412a67f2bb83f1e320ea5bc6e6b955e0402ca9587e8087d1112fed67de7f983"
+  },
+  "final-candidate.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "original-mutant-compiling.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "visibility-guard-disabled.patch": {
+    "bytes": 630,
+    "sha256": "49712386b0414c6da0177040c7d513baa75f199535ca37e34390100ec4112c2a"
+  },
+  "original-baseline-permitted.jsonl": {
+    "bytes": 1481,
+    "sha256": "914b4ad079126b92294d6d18af3243b751c37de6befd1d4675f158a34ded0c42"
+  },
+  "original-baseline.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "original-mutant-compiling.jsonl": {
+    "bytes": 1478,
+    "sha256": "abeba97ce9628dff55178f8098192c8d9acf57ac8593e6a8bd096da706bcafbb"
+  },
+  "final-candidate.jsonl": {
+    "bytes": 29013,
+    "sha256": "e497061bce304c7716f8e863d96135ef4c4d17c37e3563acdbc267f33df8c146"
+  },
+  "original-baseline.jsonl": {
+    "bytes": 6527,
+    "sha256": "a55aa3d63d5e7896674695c191ed582bfac6d5723d6d14a6269b333775eaeaff"
+  },
+  "assertion-repair.patch": {
+    "bytes": 2849,
+    "sha256": "8de4b809785799a677877387ee660487e660bbf3a9b0350a8b5cf57814dfa946"
+  },
+  "repaired-mutant.jsonl": {
+    "bytes": 1833,
+    "sha256": "325fb2f6f5f183c417f3cf3220b81a8e36ceac81e7454a9f48879ea1609bcb4c"
+  }
+}

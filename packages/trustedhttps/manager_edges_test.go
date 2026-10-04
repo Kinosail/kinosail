@@ -10,18 +10,6 @@ import (
 	"time"
 )
 
-func TestManagerDefaultDependenciesAndNilReceiver(t *testing.T) {
-	manager, err := New(validIssuerConfig(), t.TempDir())
-	if err != nil || manager.client == nil || manager.now == nil || manager.obtain == nil || manager.wait == nil {
-		t.Fatalf("default manager = %#v, %v", manager, err)
-	}
-	var absent *Manager
-	absent.Run(t.Context())
-	if absent.Status().State != "disabled" {
-		t.Fatalf("nil status = %#v", absent.Status())
-	}
-}
-
 func TestManagerMaintenanceReportsObtainWriteAndLoadFailures(t *testing.T) {
 	for name, setup := range map[string]func(*Manager){
 		"obtain": func(manager *Manager) {

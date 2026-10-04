@@ -14,18 +14,25 @@ import (
 	"github.com/zserge/govad"
 )
 
-func TestSynchronizeSubtitleRejectsWeakEvidence(t *testing.T) {
-	t.Parallel()
-	if _, changed, err := synchronizeSubtitle(nil, cleanedSubtitle{}); err == nil || changed {
-		t.Fatalf("weak synchronization = changed %v, error %v", changed, err)
-	}
-}
-
 func TestSynchronizeCandidateRejectsPreservedSubtitle(t *testing.T) {
 	t.Parallel()
-	attempt := &subtitleCandidateAttempt{provider: &subtitleProvider{sync: newSubtitleSynchronizer("")}}
-	if _, err := attempt.synchronizeCandidate(cleanedSubtitle{}, subtitleDownloadCandidate{Preserve: true}); err == nil {
-		t.Fatal("preserved subtitle was synchronized")
+	cues := syntheticSubtitleCues()
+	input, err := subtitleDocument(cues, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	attempt := &subtitleCandidateAttempt{audio: syntheticSpeech(cues, 1, 7*time.Second)}
+	corrected, err := attempt.synchronizeCandidate(input, subtitleDownloadCandidate{})
+	if err != nil || bytes.Equal(corrected.Data, input.Data) || len(corrected.Cues) != len(cues) || absDuration(corrected.Cues[0].Start-cues[0].Start-7*time.Second) > 300*time.Millisecond {
+		t.Fatalf("non-preserved correction control = %#v, error %v", corrected.Cues, err)
+	}
+	if _, err = attempt.synchronizeCandidate(input, subtitleDownloadCandidate{Preserve: true}); !errors.Is(err, errSubtitleTimingMismatch) {
+		t.Fatalf("preserved timing mismatch = %v", err)
+	}
+	attempt.audio = syntheticSpeech(cues, 1, 0)
+	aligned, err := attempt.synchronizeCandidate(input, subtitleDownloadCandidate{Preserve: true})
+	if err != nil || !bytes.Equal(aligned.Data, input.Data) || aligned.TimingEvidence != "audio" {
+		t.Fatalf("aligned preserved control changed bytes or evidence: %#v, error %v", aligned, err)
 	}
 }
 

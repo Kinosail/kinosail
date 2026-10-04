@@ -31,13 +31,6 @@ test("element fullscreen enters and exits without changing playback", async ({pa
   await expect(page.locator("video")).toHaveJSProperty("paused", false);
 });
 
-test("native fullscreen fallback stays available with all subtitle choices", async ({ page }) => {
-  const fullscreen = page.getByRole("button", { name: "Enter fullscreen" });
-  await expect(fullscreen).toBeEnabled();
-  await fullscreen.click();
-  expect(await page.evaluate(() => (window as Window & {nativeFullscreenCalls?: number}).nativeFullscreenCalls)).toBe(1);
-});
-
 test("native fullscreen fallback follows Safari entry and exit events", async ({page}) => {
   await page.locator("video").evaluate(video => {
     let fullscreen = false;

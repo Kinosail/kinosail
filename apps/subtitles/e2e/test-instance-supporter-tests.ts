@@ -5,7 +5,7 @@ import { expect, test } from "@playwright/test";
 import { login } from "./test-instance-helpers";
 
 export function registerTestInstanceSupporterTests() {
-test("Supporter page loads twenty distinct badges with accessible names", async ({ page }, testInfo) => {
+test("Supporter page loads twenty distinct badges with accessible names", { tag: "@smoke" }, async ({ page }, testInfo) => {
   await login(page);
   for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }, { width: 320, height: 800 }]) {
     await page.setViewportSize(viewport);

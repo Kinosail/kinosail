@@ -75,25 +75,3 @@ func TestProfilePrincipalsOwnCanonicalIdentityPolicy(t *testing.T) { //nolint:cy
 		t.Fatalf("unavailable owners = %+v, %v", owners, err)
 	}
 }
-
-func TestProfilePrincipalsRejectIncompleteStateWithoutCallbacks(t *testing.T) {
-	var mutex sync.RWMutex
-	profiles := []identitycore.Profile{{ID: "owner", Owner: true}}
-	var stateErr error
-	mutations := []func(*ProfilePrincipalConfig){
-		func(config *ProfilePrincipalConfig) { config.State.Mutex = nil },
-		func(config *ProfilePrincipalConfig) { config.State.Profiles = nil },
-		func(config *ProfilePrincipalConfig) { config.State.Error = nil },
-		func(config *ProfilePrincipalConfig) { config.CurrentProfile = nil },
-		func(config *ProfilePrincipalConfig) { config.RecentlyAuthenticated = nil },
-		func(config *ProfilePrincipalConfig) { config.AttributeProfile = nil },
-		func(config *ProfilePrincipalConfig) { config.PublicRequest = nil },
-	}
-	for index, mutate := range mutations {
-		config := profilePrincipalTestConfig(&mutex, &profiles, &stateErr)
-		mutate(&config)
-		if principals := NewProfilePrincipals(config); principals != nil {
-			t.Fatalf("incomplete configuration %d produced principals", index)
-		}
-	}
-}

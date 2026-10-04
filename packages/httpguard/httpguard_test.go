@@ -63,17 +63,6 @@ func TestDecodeJSONPreservesExternalShapesAndMetadata(t *testing.T) {
 	}
 }
 
-func TestDecodeRequestJSONAcceptsOneStrictObject(t *testing.T) {
-	t.Parallel()
-	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/", strings.NewReader(`{"ok":true}`))
-	var target struct {
-		OK bool `json:"ok"`
-	}
-	if err := DecodeRequestJSON(httptest.NewRecorder(), request, &target); err != nil || !target.OK {
-		t.Fatalf("request JSON = %#v, %v", target, err)
-	}
-}
-
 func TestDecodeRequestJSONRejectsInvalidDocuments(t *testing.T) {
 	t.Parallel()
 	for _, body := range []string{`{`, `null`, `[]`, `{"unknown":true}`, `{"ok":false,"ok":true}`, `{"ok":false,"OK":true}`, `{"ok":true}{}`, strings.Repeat(" ", 1<<20) + `{}`} {

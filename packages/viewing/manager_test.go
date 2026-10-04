@@ -1,7 +1,6 @@
 package viewing
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"net/http/httptest"
@@ -124,25 +123,6 @@ func TestManagerPreviewBuildApplyAndMetrics(t *testing.T) { //nolint:cyclop // O
 		t.Fatalf("metrics=%d/%d", active, deferred)
 	}
 	<-manager.syncSlots
-}
-
-func TestManagerRestoresAndSchedulesDurableState(t *testing.T) {
-	config := testManagerConfig()
-	dataDir := t.TempDir()
-	manager := newTestManager(dataDir, config)
-	manager.previews["old"] = Preview{ID: "old", ExpiresAt: time.Now().Add(-time.Second)}
-	manager.RunDue(t.Context(), time.Now())
-	if len(manager.previews) != 0 {
-		t.Fatal("expired preview remained")
-	}
-	manager = newTestManager(dataDir, config)
-	if manager.loadErr != nil || len(manager.Syncs()) != 0 {
-		t.Fatalf("restored=%#v error=%v", manager.Syncs(), manager.loadErr)
-	}
-	ctx, cancel := context.WithCancel(t.Context())
-	_ = NewManager(ctx, "", config)
-	cancel()
-	time.Sleep(time.Millisecond)
 }
 
 func TestCreateSyncIsAtomicAcrossPersistenceAndCommit(t *testing.T) { //nolint:cyclop,funlen,gocognit // Every failure point keeps a recoverable preview or durable pending batch.

@@ -1,0 +1,84 @@
+{
+  "schema": "kinosail-independent-workflow-reconciliation-review-v1",
+  "reviewer": "tooling subagent; independent of merge resolution author",
+  "decision": "approved exact resolved workflow source; no findings",
+  "resolvedCommit": "645fda9c7230d62cdf3eee68a0d1664879794b44",
+  "taskParent": "dcabf8d65318178f6a36c418fd2c4d497b0d74b6",
+  "actualUpstreamMain": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+  "approval": {
+    "path": ".github/workflows/app.yml",
+    "sha256": "2b5ac70822428002b3b742c1bc91d8e46bf5c56a18d3afc4b0b131ce9be8f1dc",
+    "gitBlob": "c56df3eb515221038ac37cd68eeb9f28f55d79a9",
+    "scope": "Only this exact path and content hash at the resolved commit is approved as the task workflow delta from the named upstream main. Do not exempt unknown or later workflow content."
+  },
+  "requirements": "Preserve upstream startup setup, pinned fixture download/hash check, native startup runner and safe evidence upload; preserve task E2E recorder, complete hidden uploads, prepared-settings proof and Trivy temp cache; retain every required check.",
+  "evidence": [
+    "The resolved commit has exactly the named task parent and actual upstream main as parents. Complete workflow and both full diffs were read; no conflict markers remain.",
+    "The complete 32-line startup block is byte-identical to actual upstream main. Removing only this block reproduces the complete task-parent workflow byte-for-byte, so every preexisting task step, condition, environment, argument and gate remains unchanged.",
+    "Upstream static, Go tests, vulnerability, tooling, Swift and Android jobs are byte-identical. Required suite aggregation is byte-identical, still always runs, still needs all eight jobs and calls unchanged required.py; no gate bypass or continue-on-error appears.",
+    "Startup setup retains the pinned setup-go action with apps/player/go.mod and Go sum caching. Every startup step retains the player/chromium condition. FFmpeg download retains HTTPS-only curl, failure status, bounded timeout, pinned release filename and exact b4e72894ad26c809ed0104805f5415a97be75212b9fcf9d60b89ad25bb3d43e3 SHA256 check before apt installation and PATH setup.",
+    "Native startup invocation retains GOMAXPROCS=4, Chromium channel and python3 apps/player/scripts/test-startup-local.py at repository root. Runner and complete startup browser spec are byte-identical to upstream main, preserving their assertions and failure propagation.",
+    "Safe startup upload retains always() plus player/chromium condition, pinned upload action, hidden files, exact four bounded receipt/resource/checksum/measurement path patterns, seven-day retention and missing-file error. It does not become a broad private-log upload.",
+    "Task additions from upstream main are the already-reviewed Trivy cache relocation, system/browser command wrappers and complete generic E2E uploads. Trivy pin/image/severity/ignore-unfixed/exit-code remain unchanged. Generic uploads still always run with hidden files, missing-file error and 30-day retention.",
+    "System/browser command environments and image revision tags remain intact; browser output moves inside the exact recorder artifact directory. Generic browser upload replaces both old selective fullscreen and failure-only uploads with the complete artifact directory. The separate upstream safe startup upload remains intact.",
+    "Recorder, prepared-settings runner and both production test-container scripts are byte-identical to the task parent. Existing prepared-settings assertions and receipt generation are preserved; startup runs after the browser recorder final snapshot with separate .verification/startup evidence."
+  ],
+  "unchangedComponents": [
+    {
+      "path": "apps/player/scripts/test-startup-local.py",
+      "identicalTo": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "22fd7b58ff95408300bbe9617d1f0e11a95f42e3a0f77d28faccb4333f069a8d"
+    },
+    {
+      "path": "apps/player/e2e/test-instance-startup.spec.ts",
+      "identicalTo": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "01c799796968869916aa53b8edc99633fccb49b864fb9f356f3d1593f3af4ddd"
+    },
+    {
+      "path": "scripts/ci/e2e-artifact.py",
+      "identicalTo": "dcabf8d65318178f6a36c418fd2c4d497b0d74b6",
+      "sha256": "61dfa64b0b675dd67e9e8c31c4e5e99ceecc63eb88d69a4b453a60a06c86d76a"
+    },
+    {
+      "path": "scripts/ci/run-populated-settings.py",
+      "identicalTo": "dcabf8d65318178f6a36c418fd2c4d497b0d74b6",
+      "sha256": "1887445160faaeb569dfa5df9544c3ec7c6395a5d1c43e1c65b3883271091366"
+    },
+    {
+      "path": "apps/player/scripts/test-container.sh",
+      "identicalTo": "dcabf8d65318178f6a36c418fd2c4d497b0d74b6",
+      "sha256": "cccac572df1a37fbea72cdff6aa68547a8d9e41cd628fdf3ce836f246b12175a"
+    },
+    {
+      "path": "apps/subtitles/scripts/test-container.sh",
+      "identicalTo": "dcabf8d65318178f6a36c418fd2c4d497b0d74b6",
+      "sha256": "54109ed54933c79656580d7628207ee837f94e2089c66d318cb6e72499a60107"
+    },
+    {
+      "path": "scripts/ci/required.py",
+      "identicalTo": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "sha256": "2323e3a22284bf83bf9b21707f863b600b79bcb4c70d068f42c3a58525e9f18b"
+    }
+  ],
+  "comparisons": [
+    {
+      "base": "dcabf8d65318178f6a36c418fd2c4d497b0d74b6",
+      "path": ".github/workflows/app.yml",
+      "diffSHA256": "cad90d817d1dd152a28bf6a6b8dabde952d085b28bcba7b2e32721806b3f6062",
+      "meaning": "Only exact upstream startup block added."
+    },
+    {
+      "base": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+      "path": ".github/workflows/app.yml",
+      "diffSHA256": "8983ea5e05a5fdd24d624558a146cbd51045495a463ad1c19a5673bb994cefa5",
+      "meaning": "Only reviewed task cache/recorder/upload integration; startup block and other gates preserved."
+    }
+  ],
+  "reproduction": [
+    "git show 645fda9c7230d62cdf3eee68a0d1664879794b44:.github/workflows/app.yml | shasum -a 256",
+    "git diff dcabf8d65318178f6a36c418fd2c4d497b0d74b6 645fda9c7230d62cdf3eee68a0d1664879794b44 -- .github/workflows/app.yml",
+    "git diff 5851175e4fd0f2473172ed80c38e6767c6942d0c 645fda9c7230d62cdf3eee68a0d1664879794b44 -- .github/workflows/app.yml"
+  ],
+  "validation": "Read-only Git/blob comparisons and bounded source assertions confirmed exact startup-block equality, task-parent preservation, required-gate equality, unchanged runner/spec/recorder/settings/container owners and reviewed workflow hash. No builds, browser suites, downloads, scanners, caches, actionlint or workflow contract execution performed under explicit critical-storage hold.",
+  "remainingBoundary": "This is source reconciliation approval, not a claim that CI executed or passed at the resolved commit. Root owns required checks and fresh exact-revision E2E artifacts after reconciliation."
+}

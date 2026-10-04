@@ -1,0 +1,282 @@
+{
+  "schema": "kinosail-independent-actual-main-source-reconciliation-v1",
+  "reviewer": "frontend_native",
+  "source_sha": "645fda9c7230d62cdf3eee68a0d1664879794b44",
+  "actual_upstream_sha": "5851175e4fd0f2473172ed80c38e6767c6942d0c",
+  "actual_upstream_is_ancestor": true,
+  "previous_approved_removal_sha": "3885906a5508ef497c2775d547f3321ccc69d63d",
+  "outcome": "Source preservation approved; no source-review blocker. Runtime and final CI/merge proof remain coordinator-owned.",
+  "inventory": {
+    "Go_decisions": {
+      "R": 3214,
+      "D": 239,
+      "F": 174,
+      "C": 64
+    },
+    "Go_current_declarations": 3456,
+    "Go_D_present": 0,
+    "Go_R_F_missing": 0,
+    "Go_pending": 0,
+    "Go_C_physically_retained": 64,
+    "other_decisions": {
+      "R": 1095,
+      "D": 10,
+      "F": 10,
+      "C": 1
+    },
+    "other_D_present": 0,
+    "other_R_F_missing": 0,
+    "other_baseline_unresolved": 0,
+    "original_removals": 249,
+    "count_boundary": "239 unique Go plus10 other; four additive upstream Go declarations do not change original baseline decisions."
+  },
+  "retained_baseline_bodies": {
+    "compared": 3452,
+    "extraction_gaps": 0,
+    "changed_from_original876": 16,
+    "previous14_changed_hashes_identical_to_reviewed_d16": true,
+    "additional_changes": [
+      {
+        "file": "apps/player/internal/server/remote_browser_login_test.go",
+        "name": "TestPublicBrowserQuickConnectEndToEndBoundary",
+        "baseline_body_sha256": "72116ad46cec9784a8f2b8a363fbcd3a72c8ec99bb770e4b746c83ae2b24716a",
+        "current_body_sha256": "4cfee42f0863e555c99059677979eb84e8464509f36ded2625a3d4538c061695",
+        "equals_actual_upstream": true
+      },
+      {
+        "file": "apps/subtitles/internal/server/remote_browser_login_test.go",
+        "name": "TestPublicBrowserQuickConnectEndToEndBoundary",
+        "baseline_body_sha256": "c31ee13790f10a6ca7243f50997f01152207e66accf3e98ecf64d7e8ce4a8a6a",
+        "current_body_sha256": "ceaa30304e4eabad4a02b6b849b1f4981e227a0a0fe420635ea09b7a2d50ec31",
+        "equals_actual_upstream": true
+      }
+    ]
+  },
+  "QuickConnect_semantic_review": {
+    "read": "Both complete real-handler QuickConnect journeys, caller and persistence seams, shared one-year authentication helper and issued-cookie helper, current identitycore persisted expiry owner and exact upstream diffs.",
+    "retained": "Pending poll, local-only approval, public viewer session, route denials and revoked permission rejection all unchanged. Cookie Secure/HttpOnly protection retained and strengthened with host-bound Path/Domain/SameSite, expiry and persisted Browser session validation.",
+    "clock_contract": "Request interval brackets actual issuance. Persisted CreatedAt lies within it; ExpiresAt equals CreatedAt plus configured8-hour/one-year cap; emitted Expires equals stored expiry; MaxAge is positive and consistent with remaining lifetime during that interval. This replaces exact-full-lifetime real-clock assertion without allowing expiry extension. Fixed-clock second-crossing regression remains unchanged.",
+    "boundary": "Go real-handler HTTP/storage contracts, not an actual running-browser journey. No test execution/red-green proof here."
+  },
+  "new_upstream_Go_declarations": [
+    {
+      "file": "apps/player/internal/server/hls_bandwidth_delivery_test.go",
+      "name": "TestRealBlackIntroHLSBandwidthSurvivesCachedMasterReuse",
+      "file_sha256": "6e91e117060039137b2916d13e8a87ee257f65ca2e1dae92cdee0f58afe34df6",
+      "body_sha256": "22179b202a6f61d4133768112922ae7b5daca8c6646c7ac2d2f87a4fc1a5c001",
+      "equals_actual_upstream": true,
+      "origin": "New upstream declaration outside original876 audit decisions; retained without altering249 removals."
+    },
+    {
+      "file": "packages/identitycore/session_cookie_issuance_boundary_test.go",
+      "name": "TestCookieIssuancePreservesPersistedExpiryAcrossSecondBoundary",
+      "file_sha256": "f0bd2de5ff6cda8f3fe5efa1b0550385b91e17ce490c30dd5c7856bbd3c50beb",
+      "body_sha256": "175cedd1a344d6a7f438fd432e5b6fb35469bc5f34d42745ddcdb9d3e404e03e",
+      "equals_actual_upstream": true,
+      "origin": "New upstream declaration outside original876 audit decisions; retained without altering249 removals."
+    },
+    {
+      "file": "packages/playback/hls_recipe_enums_test.go",
+      "name": "TestHLSRecipeEnumCacheIdentity",
+      "file_sha256": "37452c4ee895172df1bb297bf4077ded2e1854e95c3fe2b405cc46a399fa8283",
+      "body_sha256": "fb7216e87eb0dece83c58044bad2599e2cdf2b813035a93bd003f34214a68841",
+      "equals_actual_upstream": true,
+      "origin": "New upstream declaration outside original876 audit decisions; retained without altering249 removals."
+    },
+    {
+      "file": "packages/playback/hls_recipe_enums_test.go",
+      "name": "TestHLSRecipeRejectsUntrustedEnums",
+      "file_sha256": "37452c4ee895172df1bb297bf4077ded2e1854e95c3fe2b405cc46a399fa8283",
+      "body_sha256": "8100f64115ad9cd6fbe5158b19045dad7de2f412180511a2b151af5c8ad182a2",
+      "equals_actual_upstream": true,
+      "origin": "New upstream declaration outside original876 audit decisions; retained without altering249 removals."
+    }
+  ],
+  "actual_upstream_source_preserved": [
+    {
+      "file": "apps/player/internal/server/remote_browser_login_test.go",
+      "sha256": "bd54b59f8ed249b2a3895b1a90137648c8b1f0daed2b66715d24b1524fff9912",
+      "equals_actual_upstream": true
+    },
+    {
+      "file": "apps/subtitles/internal/server/remote_browser_login_test.go",
+      "sha256": "dfe1f12e1b2ed5a0c47f66eadadfccab605092636a17bdfb2fde97350ebf50b8",
+      "equals_actual_upstream": true
+    },
+    {
+      "file": "packages/servertest/issued_cookie_lifetime.go",
+      "sha256": "0024d7a3bcd08dec58a1f7a049fe22a64ff990b6886e2da57b76e4b1f49b1e39",
+      "equals_actual_upstream": true
+    },
+    {
+      "file": "packages/servertest/auth_session_contract.go",
+      "sha256": "ffdaf940717197028c863cfdf83fbfd7868b3660882bbf9f12bfdfd4548519c5",
+      "equals_actual_upstream": true
+    },
+    {
+      "file": "packages/identitycore/session_requests.go",
+      "sha256": "6f7c1df5fb7d16b0652095a4061a8aa342f51e527f95a93f9319079a230b85fe",
+      "equals_actual_upstream": true
+    },
+    {
+      "file": "packages/playback/hls_recipe.go",
+      "sha256": "a3c8e20efcc889f006c489afb389cd91d5e32ecdbd7f0605c2e1fb26ead23162",
+      "equals_actual_upstream": true
+    },
+    {
+      "file": "packages/playback/hls_recipe_enums_test.go",
+      "sha256": "37452c4ee895172df1bb297bf4077ded2e1854e95c3fe2b405cc46a399fa8283",
+      "equals_actual_upstream": true
+    },
+    {
+      "file": "apps/player/e2e/startup-signout.spec.ts",
+      "sha256": "a7fd60ccd7100ed80f2885c1f65cc9439949336b560e6d4e6267065925416eb9",
+      "equals_actual_upstream": true
+    },
+    {
+      "file": "apps/player/e2e/test-instance-startup.spec.ts",
+      "sha256": "01c799796968869916aa53b8edc99633fccb49b864fb9f356f3d1593f3af4ddd",
+      "equals_actual_upstream": true
+    },
+    {
+      "file": "apps/player/e2e/apple-playback.config.ts",
+      "sha256": "0e2b17a240a8c747f264f0145a1c8b1c8c121aea1276e1f7f407ce6414612ec9",
+      "equals_actual_upstream": true
+    },
+    {
+      "file": "apps/player/internal/server/static/startup-preparation.js",
+      "sha256": "a266aeec8437e8e61cd4390da7ddc115187b46c6ee657fa3916774c96cd16046",
+      "equals_actual_upstream": true
+    },
+    {
+      "file": "apps/player/scripts/test-startup-local.py",
+      "sha256": "22fd7b58ff95408300bbe9617d1f0e11a95f42e3a0f77d28faccb4333f069a8d",
+      "equals_actual_upstream": true
+    },
+    {
+      "file": "engineering/qa/startup-cache-boundary-2026-10-03.md",
+      "sha256": "6ce4745aebb4397e0ea9ade7625fa4a44425d92826cb3407a09812dc0f91c8d4",
+      "equals_actual_upstream": true
+    }
+  ],
+  "unchanged_reviewed_keepers": [
+    {
+      "file": "apps/player/e2e/settings-discovery.spec.ts",
+      "sha256": "d765950ba4aea3bf7a772620933e759bfef4da011be35a20c646f12847245eb4",
+      "equals_previous_approved": true
+    },
+    {
+      "file": "apps/player/e2e/layout-audit-shell.spec.ts",
+      "sha256": "d133c9f0e66d28e0d1128d52651b731a107a4f2cb797b785fee8bd4d0e5818f8",
+      "equals_previous_approved": true
+    },
+    {
+      "file": "apps/player/e2e/layout-audit-helpers.ts",
+      "sha256": "891c842533c36f85eae91c62d7aeba098f13717fbc9386574704cb40b7c1e00e",
+      "equals_previous_approved": true
+    },
+    {
+      "file": "scripts/ci/run-populated-settings.py",
+      "sha256": "1887445160faaeb569dfa5df9544c3ec7c6395a5d1c43e1c65b3883271091366",
+      "equals_previous_approved": true
+    },
+    {
+      "file": "apps/subtitles/e2e/subtitle-inspector-layout.spec.ts",
+      "sha256": "2aa0adf72bb7627f4050da4390380e9f0fc46af6e479a58b74a9942761c48b63",
+      "equals_previous_approved": true
+    },
+    {
+      "file": "apps/subtitles/e2e/subtitle-inspector-races.spec.ts",
+      "sha256": "5f7b0d25fd0bb2e3f10eb626b91e552f6d154a721e34b0c30403868dafd81402",
+      "equals_previous_approved": true
+    },
+    {
+      "file": "apps/subtitles/e2e/subtitle-inspector-race-fixture.ts",
+      "sha256": "7b0563af44cb811199ae6319e61e107b08c1fbe7f6a1ebf00d60b8772f30dc1e",
+      "equals_previous_approved": true
+    }
+  ],
+  "TLS_hardening": [
+    {
+      "file": "apps/player/e2e/playwright.config.ts",
+      "sha256": "628d3a62d9b3e2fba1bc43f3cd58979acadf22c083e3559c73c4f750a97cc0b3",
+      "ignoreHTTPSErrors_false": true,
+      "chromium_bypass_flags_absent": true
+    },
+    {
+      "file": "apps/subtitles/e2e/playwright.config.ts",
+      "sha256": "3faad3cedaaeab4ba50aa78926da3076d8fadcd2aa3752806a4dbb7088d144a2",
+      "ignoreHTTPSErrors_false": true,
+      "chromium_bypass_flags_absent": true
+    }
+  ],
+  "startup_boundary_review": "New startup-signout four-case browser script harness uses synthetic HTML/authentication state and real HTTP form navigation, with explicit journal/script hash receipt; it is not genuine real-Server sign-out proof. Populated startup case retains moving-frame assertions, rethrows recorded readiness failure, adds actual untrusted enum400/cache-no-side-effect checks. Exact current files equal actual585 upstream; no runtime claim.",
+  "future_layout_boundary": {
+    "unmerged_ref_sha": "914660d88e9c2376ee24802e4246b7490d446e0c",
+    "old_loading_file_absent_at_reviewed_source": true,
+    "new_two_loading_browser_fixture_cases_not_integrated": true,
+    "allowlist_restoration_not_due_yet": true,
+    "note": "Prior provisional PR455 obligations remain separate; no future layout source is counted as actual main preservation."
+  },
+  "named_reference_warning_resolution": {
+    "warnings": 3,
+    "same_as_previous_review": true,
+    "reference": "TestMCPStdioCommandConnectsAsSoleOwner",
+    "actual_owner": "packages/commandtest/cli.go CLI.Run t.Run subtest, invoked by both retained app TestCLIContract",
+    "boundary": "Anchored Go func regex does not inventory subtests; no physical keeper missing."
+  },
+  "reports": [
+    {
+      "generator": "engineering/qa/2026-10-03-test-overhaul/independent-review/inventory-go.py",
+      "generator_sha256": "5563b826e6fa13a28f4f797cf6adfc36ab9f4e4cecd94cec8312e8e8e80a7920",
+      "report_sha256": "eecd7dd1b91c2e3eed20b2235e2a7e5154f380a33b63291852513a36d2ca5c23",
+      "command": [
+        "python3",
+        "engineering/qa/2026-10-03-test-overhaul/independent-review/inventory-go.py",
+        "645fda9c7230d62cdf3eee68a0d1664879794b44",
+        "--repo",
+        "<checkout-containing-reviewed-sha>",
+        "--output",
+        "/tmp/frontend-645-go-inventory.json"
+      ],
+      "boundary": "Source inventory only; full repeated report remains ephemeral, not committed."
+    },
+    {
+      "generator": "engineering/qa/2026-10-03-test-overhaul/independent-review/inventory-other.py",
+      "generator_sha256": "649e96199b7bcdf693d361dbf50d2cb53cd10ea6ed6f225f1b0d265de952e632",
+      "report_sha256": "0a8b1583f2637878db02cf7c27ecc09ed25e0e73aaa5434e0bee85a9ba98a602",
+      "command": [
+        "python3",
+        "engineering/qa/2026-10-03-test-overhaul/independent-review/inventory-other.py",
+        "645fda9c7230d62cdf3eee68a0d1664879794b44",
+        "--repo",
+        "<checkout-containing-reviewed-sha>",
+        "--output",
+        "/tmp/frontend-645-other-inventory.json"
+      ],
+      "boundary": "Source inventory only; full repeated report remains ephemeral, not committed."
+    },
+    {
+      "generator": "engineering/qa/2026-10-03-test-overhaul/independent-review/retained-go-bodies.py",
+      "generator_sha256": "2240453680463e089fbd22dcc92e596a768240bc78ab0b7af898cc24b2279b02",
+      "report_sha256": "036793a77db514e542459823852d8aca2c640f59cbdb4377b682377b7725cf5c",
+      "command": [
+        "python3",
+        "engineering/qa/2026-10-03-test-overhaul/independent-review/retained-go-bodies.py",
+        "645fda9c7230d62cdf3eee68a0d1664879794b44",
+        "--repo",
+        "<checkout-containing-reviewed-sha>",
+        "--output",
+        "/tmp/frontend-645-retained-go-bodies.json"
+      ],
+      "boundary": "Source inventory only; full repeated report remains ephemeral, not committed."
+    }
+  ],
+  "limits": [
+    "Source-only Git/Python; no product tests, builds, browser suites, Podman, downloads or cache-heavy commands during urgent storage hold.",
+    "Required CI/workflow execution and merge verification remain separate. Tooling owner reviews workflow reconciliation.",
+    "Owner ledgers/provenance are updated by their owners separately; reviewed report hashes pin exact645 metadata before those later updates.",
+    "Full report snapshots are ephemeral and reproducible; compact receipt alone is committed.",
+    "Host reported no space for a shell heredoc temp file during read-only work; remaining Python reads used direct -c. No cleanup, deployment or process kills."
+  ]
+}

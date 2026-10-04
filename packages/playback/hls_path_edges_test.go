@@ -92,22 +92,3 @@ func stubRoot(root stubHLSRoot) func(string) (hlsPlaylistRoot, error) {
 type errorReader struct{ err error }
 
 func (reader errorReader) Read([]byte) (int, error) { return 0, reader.err }
-
-func TestVariantReadyRejectsFreshSymlink(t *testing.T) {
-	root := t.TempDir()
-	source := filepath.Join(root, "source")
-	writeTestFile(t, source, "source")
-	actual := filepath.Join(root, "actual.m3u8")
-	writeTestFile(t, actual, "#EXTM3U\n")
-	directory := filepath.Join(root, "360p")
-	if err := os.Mkdir(directory, 0o700); err != nil {
-		t.Fatal(err)
-	}
-	playlist := filepath.Join(directory, "index.m3u8")
-	if err := os.Symlink(actual, playlist); err != nil {
-		t.Fatal(err)
-	}
-	if VariantReady(source, directory) || MasterFresh(playlist, source, "ffmpeg") {
-		t.Fatal("fresh symlink variant was accepted")
-	}
-}

@@ -2,6 +2,7 @@ package server
 
 import (
 	"errors"
+	"log/slog"
 	"math"
 	"net/http"
 	"strconv"
@@ -27,18 +28,7 @@ func sessionTimeoutHours(settings installationSettings) (float64, float64) {
 }
 
 func (store *settingsStore) setSessionTimeouts(inactive, absolute float64) error {
-	if !validSessionTimeouts(inactive, absolute) {
-		return errors.New("session timeouts must be 0.25–8760 inactive hours and 4–8760 absolute hours, with inactivity no longer than the absolute limit")
-	}
-	store.mu.Lock()
-	defer store.mu.Unlock()
-	settings := store.value
-	settings.SessionInactiveHours, settings.SessionAbsoluteHours = inactive, absolute
-	if err := store.save(settings); err != nil {
-		return err
-	}
-	store.value = settings
-	return nil
+	return store.changeSessionTimeouts(inactive, absolute, false)
 }
 
 func validSessionTimeouts(inactive, absolute float64) bool {
@@ -46,7 +36,7 @@ func validSessionTimeouts(inactive, absolute float64) bool {
 	return finite(inactive) && finite(absolute) && inactive >= .25 && inactive <= 365*24 && absolute >= 4 && absolute <= 365*24 && inactive <= absolute
 }
 
-func saveSessionTimeouts(settings *settingsStore) http.HandlerFunc {
+func saveSessionTimeouts(settings *settingsStore, public ...bool) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if !strictSingleValueForm(request, "inactiveHours", "absoluteHours") {
 			localizedError(writer, request, "session timeouts are invalid", http.StatusBadRequest)
@@ -54,24 +44,39 @@ func saveSessionTimeouts(settings *settingsStore) http.HandlerFunc {
 		}
 		inactive, inactiveErr := strconv.ParseFloat(request.PostForm.Get("inactiveHours"), 64)
 		absolute, absoluteErr := strconv.ParseFloat(request.PostForm.Get("absoluteHours"), 64)
-		if inactiveErr != nil || absoluteErr != nil || settings.setSessionTimeouts(inactive, absolute) != nil {
+		if inactiveErr != nil || absoluteErr != nil || !validSessionTimeouts(inactive, absolute) {
 			localizedError(writer, request, "session timeouts are invalid", http.StatusBadRequest)
+			return
+		}
+		if err := settings.changeSessionTimeouts(inactive, absolute, len(public) > 0 && public[0]); err != nil {
+			timeoutSettingsFailure(request)
+			localizedError(writer, request, "could not save session timeouts", http.StatusInternalServerError)
 			return
 		}
 		http.Redirect(writer, request, "/settings#security", http.StatusSeeOther)
 	}
 }
 
-func apiSessionTimeouts(settings *settingsStore) http.HandlerFunc {
+func apiSessionTimeouts(settings *settingsStore, public ...bool) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		var input struct{ InactiveHours, AbsoluteHours float64 }
 		if !readJSON(writer, request, &input) {
 			return
 		}
-		if err := settings.setSessionTimeouts(input.InactiveHours, input.AbsoluteHours); err != nil {
-			apiError(writer, err, http.StatusBadRequest)
+		if err := settings.changeSessionTimeouts(input.InactiveHours, input.AbsoluteHours, len(public) > 0 && public[0]); err != nil {
+			status := http.StatusBadRequest
+			if !errors.Is(err, errSessionTimeoutsInvalid) {
+				timeoutSettingsFailure(request)
+				err = errors.New("could not save session timeouts")
+				status = http.StatusInternalServerError
+			}
+			apiError(writer, err, status)
 			return
 		}
 		writeJSON(writer, map[string]string{"status": "saved"}, http.StatusOK)
 	}
+}
+
+func timeoutSettingsFailure(request *http.Request) {
+	slog.ErrorContext(request.Context(), "session timeout settings persistence failed", "request_id", requestActivityID(request.Context()), "operation", "settings.session-timeouts", "outcome", "previous-policy-retained")
 }

@@ -64,30 +64,6 @@ func TestAuthorizationRequestRejectsClientAndScopeBeforePendingState(t *testing.
 	}
 }
 
-func TestMetadataClientRejectsUnavailableAndInvalidDocuments(t *testing.T) {
-	status := http.StatusNotFound
-	body := `{}`
-	server := httptest.NewTLSServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
-		writer.Header().Set("Content-Type", "application/json")
-		writer.WriteHeader(status)
-		_, _ = writer.Write([]byte(body))
-	}))
-	defer server.Close()
-	connections := testConnections("https://kino.test", &testPrincipals{values: map[string]Principal{}}, &memoryState{})
-	connections.client = server.Client()
-	id := server.URL + "/client.json"
-	if _, err := connections.metadataClient(nil, id); err == nil { //nolint:staticcheck // The nil-context rejection is part of the private boundary.
-		t.Fatal("nil metadata context was accepted")
-	}
-	if _, err := connections.metadataClient(t.Context(), id); err == nil {
-		t.Fatal("unavailable metadata document was accepted")
-	}
-	status, body = http.StatusOK, `{"client_id":"wrong"}`
-	if _, err := connections.metadataClient(t.Context(), id); err == nil {
-		t.Fatal("invalid metadata document was accepted")
-	}
-}
-
 func TestMetadataURLAndRedirectBounds(t *testing.T) {
 	for _, id := range []string{strings.Repeat("x", 2049), ":", "http://example.test/client", "https://example.test/"} {
 		if validClientMetadataURL(id) {

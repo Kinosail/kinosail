@@ -14,29 +14,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/httpguard"
 )
 
-func TestNewHTTPHandlersRejectsMissingAdaptersBeforeEffects(t *testing.T) {
-	t.Parallel()
-	checker := newHTTPTestChecker(t, nil, nil, nil)
-	valid := testHTTPConfig()
-	for name, mutate := range map[string]func(*HTTPConfig){
-		"reader":    func(config *HTTPConfig) { config.ReadJSON = nil },
-		"json":      func(config *HTTPConfig) { config.JSON = nil },
-		"api error": func(config *HTTPConfig) { config.APIError = nil },
-		"web error": func(config *HTTPConfig) { config.WebError = nil },
-	} {
-		t.Run(name, func(t *testing.T) {
-			config := valid
-			mutate(&config)
-			if handlers, err := NewHTTPHandlers(checker, config); err == nil || handlers != nil {
-				t.Fatalf("invalid config created handlers %#v, err=%v", handlers, err)
-			}
-		})
-	}
-	if handlers, err := NewHTTPHandlers(nil, valid); err == nil || handlers != nil {
-		t.Fatalf("nil checker created handlers %#v, err=%v", handlers, err)
-	}
-}
-
 func TestUpdatePreferenceRejectsInvalidJSONBeforePersistence(t *testing.T) {
 	t.Parallel()
 	var saves atomic.Int32

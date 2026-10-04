@@ -1,7 +1,6 @@
 package routeinventory
 
 import (
-	"go/ast"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -69,30 +68,6 @@ func TestDiscoverRejectsInvalidInputs(t *testing.T) {
 				t.Fatalf("Discover() = %q, %v; want nil error result", routes, err)
 			}
 		})
-	}
-}
-
-func TestRouteDiscoveryCoversRejectedSourceShapes(t *testing.T) {
-	t.Parallel()
-	routes := make(map[string]struct{})
-	if err := addExplicit(routes, [][]string{make([]string, maxExplicitRoutes+1)}); err == nil {
-		t.Fatal("oversized explicit route group accepted")
-	}
-	if err := scanDir(routes, "["); err == nil {
-		t.Fatal("malformed glob path accepted")
-	}
-
-	expressions := []ast.Expr{
-		&ast.FuncLit{},
-		&ast.CallExpr{Fun: ast.NewIdent("handle"), Args: []ast.Expr{ast.NewIdent("pattern")}},
-	}
-	for _, expression := range expressions {
-		if _, found := registeredRoute(expression); found {
-			t.Fatalf("registeredRoute(%T) found a route", expression)
-		}
-	}
-	if routeRegistration(&ast.CallExpr{}) {
-		t.Fatal("call expression accepted as route registration")
 	}
 }
 

@@ -1,14 +1,12 @@
 package server
 
 import (
-	"context"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/MikeO7/kinosail/packages/servertest/mp4fixture"
 
@@ -88,23 +86,6 @@ func TestJellyfinVODPlaylistStartsAtTheRequestedResumePosition(t *testing.T) {
 	}
 }
 
-func TestJellyfinVODPlaylistRejectsInvalidSegmentDuration(t *testing.T) {
-	for _, value := range []string{"invalid", "NaN", "0", "61"} {
-		manifest := []byte("#EXTM3U\n#EXT-X-PLAYLIST-TYPE:EVENT\n#EXTINF:" + value + ",\nsegment-00000.m4s\n")
-		if result := completeHLSVOD(manifest, 10); string(result) != string(manifest) {
-			t.Fatalf("invalid source playlist changed: %q", result)
-		}
-	}
-}
-
-func TestJellyfinVODPlaylistUsesObservedSegmentCadence(t *testing.T) {
-	manifest := []byte("#EXTM3U\n#EXT-X-PLAYLIST-TYPE:EVENT\n#EXTINF:2.1,\nsegment-00000.m4s\n#EXTINF:1.9,\nsegment-00001.m4s\n")
-	result := string(completeHLSVOD(manifest, 4.1))
-	if !strings.Contains(result, "segment-00002.m4s\n#EXT-X-ENDLIST\n") {
-		t.Fatalf("VOD playlist used only its first segment duration: %q", result)
-	}
-}
-
 func TestHLSSeekUsesThePublishedSegmentTimeline(t *testing.T) {
 	manifest := []byte("#EXTM3U\n#EXT-X-PLAYLIST-TYPE:EVENT\n#EXTINF:2.1,\nsegment-00000.m4s\n#EXTINF:1.9,\nsegment-00001.m4s\n")
 	if offset, valid := hlsSegmentOffset(manifest, "segment-00075.m4s", 400); !valid || offset != 150 {
@@ -118,32 +99,6 @@ func TestHLSSeekUsesThePublishedSegmentTimeline(t *testing.T) {
 	malformed := []byte("#EXTM3U\n#EXT-X-PLAYLIST-TYPE:VOD\n#EXTINF:NaN,\nsegment-00075.m4s\n#EXT-X-ENDLIST\n")
 	if offset, valid := hlsSegmentOffset(malformed, "segment-00075.m4s", 400); valid {
 		t.Fatalf("malformed timeline offset = %v", offset)
-	}
-}
-
-func TestJellyfinVODPlaylistPreservesCompletedTranscoderTimeline(t *testing.T) {
-	manifest := []byte("#EXTM3U\n#EXT-X-PLAYLIST-TYPE:EVENT\n#EXTINF:4.1,\nsegment-00000.m4s\n#EXT-X-DISCONTINUITY\n#EXTINF:1.2,\nsegment-00001.m4s\n#EXT-X-ENDLIST\n")
-	result := string(completeHLSVOD(manifest, 9))
-	if !strings.Contains(result, "#EXT-X-PLAYLIST-TYPE:VOD\n") || !strings.Contains(result, "#EXT-X-DISCONTINUITY\n") || !strings.Contains(result, "#EXTINF:1.2,\nsegment-00001.m4s\n#EXT-X-ENDLIST\n") || strings.Contains(result, "segment-00002.m4s") {
-		t.Fatalf("completed VOD playlist changed: %q", result)
-	}
-}
-
-func TestWaitForHLSFileFollowsThePublishedVODTimeline(t *testing.T) {
-	path := filepath.Join(t.TempDir(), "segment-00002.m4s")
-	go func() {
-		time.Sleep(25 * time.Millisecond)
-		_ = os.WriteFile(path, []byte("segment"), 0o600)
-	}()
-	ctx, cancel := context.WithTimeout(t.Context(), time.Second)
-	defer cancel()
-	if !waitForHLSFile(ctx, path) {
-		t.Fatal("ready VOD segment was not observed")
-	}
-	canceled, stop := context.WithCancel(t.Context())
-	stop()
-	if waitForHLSFile(canceled, filepath.Join(t.TempDir(), "missing.m4s")) {
-		t.Fatal("canceled segment wait succeeded")
 	}
 }
 

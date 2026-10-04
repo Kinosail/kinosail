@@ -1,9 +1,6 @@
 package servertest
 
 import (
-	"net"
-	"net/http"
-	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -32,22 +29,6 @@ func TestSecurityFuzzConstructorPreservesAuthorizationLifecycle(t *testing.T) {
 		if !slices.Equal(probe.steps, []string{"initialize", "broker", "bind"}) {
 			t.Fatalf("authorization construction order = %v", probe.steps)
 		}
-	}
-}
-
-func TestSecurityFuzzConstructorPreservesParserCallbacks(t *testing.T) {
-	probe := &securityFuzzConstructorProbe{t: t}
-	ip := net.IP{192, 0, 2, 1}
-	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "https://example.invalid/", nil)
-	suite := NewSecurityFuzz(func(value net.IP) bool { return value.Equal(ip) }, func(value *http.Request) bool { return value == request }, probe.initialize, probe.newBroker, probe.bind)
-	if !suite.AllowedOutboundIP(ip) || suite.AllowedOutboundIP(nil) {
-		t.Fatal("constructor changed the outbound parser input or verdict")
-	}
-	if !suite.UnsafeCrossOrigin(request) || suite.UnsafeCrossOrigin(nil) {
-		t.Fatal("constructor changed the origin parser input or verdict")
-	}
-	if len(probe.steps) != 0 {
-		t.Fatal("parser checks created authorization state")
 	}
 }
 

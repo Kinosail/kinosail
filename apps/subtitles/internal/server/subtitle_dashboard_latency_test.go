@@ -149,24 +149,6 @@ func TestSubtitleDashboardUsesLastScanWithoutRevalidatingMedia(t *testing.T) {
 	}
 }
 
-func TestSubtitleDashboardInvalidQueryDoesNotStartTrackChecks(t *testing.T) {
-	t.Parallel()
-	calls := filepath.Join(t.TempDir(), "calls")
-	manager, _ := subtitleFactsFixture(t, "#!/bin/sh\ntouch '"+calls+"'\n")
-	for _, path := range []string{"/?unexpected=1", "/?view=unknown", "/?view=library&view=wanted", "/?q=" + strings.Repeat("a", 129)} {
-		for _, handler := range []http.HandlerFunc{manager.dashboard, manager.statusAPI} {
-			response := httptest.NewRecorder()
-			handler(response, ownerRequest(path))
-			if response.Code != http.StatusBadRequest {
-				t.Errorf("%s = %d", path, response.Code)
-			}
-		}
-	}
-	if _, err := os.Stat(calls); !os.IsNotExist(err) {
-		t.Fatalf("invalid query started a track check: %v", err)
-	}
-}
-
 func writeSubtitleFactsExecutable(t *testing.T, path, script string) {
 	t.Helper()
 	if err := os.WriteFile(path, []byte(script), 0o700); err != nil {

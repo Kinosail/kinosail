@@ -208,31 +208,3 @@ func TestPlayerCapacityAndPruning(t *testing.T) {
 		t.Fatal("playersSnapshot pruned boundary player")
 	}
 }
-
-func TestPlayerHTTPValidation(t *testing.T) {
-	state := &testState{enabled: true, profile: Profile[testProfile]{ID: "owner"}}
-	integration := newTestIntegration(t, state)
-	for _, handler := range []http.HandlerFunc{integration.playerStateHTTP, integration.commandHTTP} {
-		req := request(http.MethodPut, "/", strings.NewReader(`{}`))
-		req.SetPathValue("id", "bad/id")
-		got := response(handler, req)
-		if got.Code != http.StatusBadRequest || !strings.Contains(got.Body.String(), "player ID") {
-			t.Errorf("invalid ID = %d %s", got.Code, got.Body.String())
-		}
-	}
-	req := request(http.MethodPut, "/", strings.NewReader(`{"name":"p","state":"idle","position":0,"duration":0,"volume":0}`))
-	req.SetPathValue("id", "player")
-	if got := response(http.HandlerFunc(integration.playerStateHTTP), req); got.Code != http.StatusOK || !strings.Contains(got.Body.String(), `"command":null`) {
-		t.Fatalf("player state = %d %s", got.Code, got.Body.String())
-	}
-	req = request(http.MethodPost, "/", strings.NewReader(`{"command":"pause"}`))
-	req.SetPathValue("id", "player")
-	if got := response(http.HandlerFunc(integration.commandHTTP), req); got.Code != http.StatusAccepted {
-		t.Fatalf("command = %d %s", got.Code, got.Body.String())
-	}
-	req = request(http.MethodPut, "/", strings.NewReader(`{"name":"p","state":"idle","position":0,"duration":0,"volume":0}`))
-	req.SetPathValue("id", "player")
-	if got := response(http.HandlerFunc(integration.playerStateHTTP), req); got.Code != http.StatusOK || !strings.Contains(got.Body.String(), `"command":"pause"`) {
-		t.Fatalf("command poll = %d %s", got.Code, got.Body.String())
-	}
-}

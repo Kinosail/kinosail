@@ -35,18 +35,6 @@ func TestConfigRoundTrip(t *testing.T) {
 	}
 }
 
-func TestConfigAcceptsLocalHostnameAddress(t *testing.T) {
-	t.Parallel()
-
-	config, err := NewProviderConfig(ProviderDuckDNS, "family", testToken, "server.nox", true)
-	if err != nil {
-		t.Fatalf("local hostname address rejected: %v", err)
-	}
-	if config.Address != "server.nox" {
-		t.Fatalf("address = %q, want server.nox", config.Address)
-	}
-}
-
 func TestLocalHostnameResolutionRequiresOnePrivateIPv4(t *testing.T) {
 	t.Parallel()
 

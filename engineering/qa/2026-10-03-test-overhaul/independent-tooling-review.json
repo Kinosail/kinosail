@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "reviewer": "tooling owner, independent of backend/frontend/Android/root policy and recorder authors",
+  "base_sha": "876b771a7dd0aef5e65957fcee87add0312535e8",
+  "reviewed_sha": "836de4c70ce6d34268cd4b6653d80d33b389ad13",
+  "scope": [
+    "AGENTS.md",
+    ".github/workflows/app.yml",
+    "scripts/ci/e2e-artifact.py",
+    "apps/{player,subtitles}/e2e/playwright.config.ts",
+    "38 removed Go test declarations",
+    "packages/webassets/theme.test.mjs",
+    "2 removed Android declarations"
+  ],
+  "exclusions": [
+    "Tooling owner script-test changes, including runtime receipt parser and Apple negative assertion repair"
+  ],
+  "findings": [
+    {
+      "severity": "P2",
+      "file": ".github/workflows/app.yml",
+      "subject": "Production system E2E had no durable receipt",
+      "status": "resolved_before_reviewed_sha",
+      "resolution": "Real production-container command now runs through recorder; unique app/runner receipts always uploaded, missing evidence fails upload."
+    },
+    {
+      "severity": "P2",
+      "file": "apps/player/apps/android/app/src/test/java/com/kinosail/player/core/CastButtonThemeTest.kt",
+      "line": 14,
+      "subject": "Deleting sole CI-executed Cast theme constructor crash guard moves real failure protection to unexecuted instrumentation",
+      "status": "resolved",
+      "required_resolution": "Restore existing test or execute equivalent keeper in required automation. Native instrumentation is not genuine Server E2E and is currently absent from Android CI command.",
+      "resolution": "Exact original CastButtonThemeTest.kt restored at root724a6d721, original frontend692ec488f. Read current file and compared full text to876b771a7 baseline: equal.",
+      "resolution_sha": "724a6d721",
+      "restored_file_sha256": "553a294d5c27da5a3197f0fa467d60001e160ff4b724783162d2deeaa11bbb17"
+    }
+  ],
+  "backend_review": {
+    "removed_declarations": 38,
+    "result": "No blocking loss of concrete security/concurrency/data-loss assertions found.",
+    "proof": [
+      "Subtitles public Load and atomic Set preserve unsafe OIDC protocol/credentials/query/fragment rejection.",
+      "Shared validation preserves remote-token minimum/maximum/Unicode/punctuation guards.",
+      "Public settings Parse and backup validation preserve malformed settings rejection and no-replacement boundary.",
+      "Removed Player codec/direct startup assertions inspect source literals; detailed codec/fallback browser proofs are fixtures, named honestly in ledger; populated playback remains.",
+      "PWA registration rejection source guard remains Subtitles for same shared PWA implementation.",
+      "Artwork coordinates, CSS recipes, cache version counters and glyph inventories do not execute their intended browser behavior. Visual and route gaps are recorded rather than asserted equivalent."
+    ]
+  },
+  "frontend_review": {
+    "result": "Supported-theme happy-path deletion justified by actual populated Player ui-happy-paths choice/data-theme/localStorage/reload assertions; system-theme changes and blocked/invalid storage behavior remain isolated."
+  },
+  "android_review": {
+    "result": "Reader pending case exactly repeats retained transition test initial ReaderPageView input and spinner assertion. Cast concern remains pending resolution.",
+    "boundary": "No new Gradle/emulator/device run; native instrumentation remains separate from hosted required checks."
+  },
+  "policy_and_artifact_review": {
+    "result": "User three rules exact; conflicting isolated-test mandate reconciled without weakening unrelated policies or required workflow selection.",
+    "proof": [
+      "Recorder captures exact Git SHA, source status, patch checksum, hashed generators/configs/locks, explicit tool versions and allowlisted flags.",
+      "Recorder records image ID/revision separately; existing CI builds tested image from checked-out revision.",
+      "Final source revision/status/patch must match start or command fails; dirty runs cannot claim exactRevisionProof.",
+      "Nonzero child, missing executable, and actual tracked-source change controls all produce failed checksummed receipts.",
+      "Browser reporter captures JSON/HTML and existing failure screenshot/trace/video policy is unchanged.",
+      "System and browser upload steps use always(), unique directories and if-no-files-found:error.",
+      "No change to branch protection, required check jobs, test selectors, race checks, forbidden focused tests or flaky-test handling."
+    ],
+    "limits": [
+      "Hard runner kill may leave partial artifact; absent manifest/checksums is incomplete proof.",
+      "Successful artifact controls verify recorder behavior, not product E2E.",
+      "This review did not build container images or execute external providers/devices."
+    ]
+  },
+  "recorder_controls": [
+    {
+      "scenario": "child-nonzero",
+      "revision": "836de4c70ce6d34268cd4b6653d80d33b389ad13",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-c",
+        "print(\"review control: intentional child failure\"); raise SystemExit(7)"
+      ],
+      "wrapper_exit_code": 7,
+      "child_exit_code": 7,
+      "source_unchanged": true,
+      "exact_revision_proof": true,
+      "result": "failed",
+      "checksums_exit_code": 0,
+      "manifest": "engineering/qa/2026-10-03-test-overhaul/artifact-review-controls/child-nonzero/manifest.json",
+      "evidence_sha256": {
+        "engineering/qa/2026-10-03-test-overhaul/artifact-review-controls/child-nonzero/SHA256SUMS": "94fa45580db775ee97d48ec7fc8b24a18e9d76156e6838749c0fbd3a62fc6a0f",
+        "engineering/qa/2026-10-03-test-overhaul/artifact-review-controls/child-nonzero/command.log": "03dc07a454e91404f2445f8aa83c52afc232fc8390af9aef163562c39b305af5",
+        "engineering/qa/2026-10-03-test-overhaul/artifact-review-controls/child-nonzero/manifest.json": "0476d686dc947a1b3b02a8d124f0acbb1e35fe3aac4ebb9b171fae8af1307886",
+        "engineering/qa/2026-10-03-test-overhaul/artifact-review-controls/child-nonzero/review-execution.json": "ac96db51cef4eb5ecfe7b812b899e1afcae605af87edb19813cc3a10475d8c60"
+      }
+    },
+    {
+      "scenario": "missing-command",
+      "revision": "836de4c70ce6d34268cd4b6653d80d33b389ad13",
+      "command": [
+        "/kinosail-review-control-command-does-not-exist"
+      ],
+      "wrapper_exit_code": 1,
+      "child_exit_code": 1,
+      "source_unchanged": true,
+      "exact_revision_proof": true,
+      "result": "failed",
+      "checksums_exit_code": 0,
+      "manifest": "engineering/qa/2026-10-03-test-overhaul/artifact-review-controls/missing-command/manifest.json",
+      "evidence_sha256": {
+        "engineering/qa/2026-10-03-test-overhaul/artifact-review-controls/missing-command/SHA256SUMS": "9eb61784169f42881a10aa903be43e4f41755321846b892243dba0e965c3a643",
+        "engineering/qa/2026-10-03-test-overhaul/artifact-review-controls/missing-command/command.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "engineering/qa/2026-10-03-test-overhaul/artifact-review-controls/missing-command/manifest.json": "8a75432ab55a2c6a86eb7fb57fba693fb44819754461ef88ff686349f629d945",
+        "engineering/qa/2026-10-03-test-overhaul/artifact-review-controls/missing-command/review-execution.json": "f7aef9e7a64b50e662c39d24a5c236455aa2cb8f3689f14c144a852c01152cac"
+      }
+    },
+    {
+      "scenario": "changed-source",
+      "revision": "836de4c70ce6d34268cd4b6653d80d33b389ad13",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-c",
+        "from pathlib import Path; p=Path(\"AGENTS.md\"); p.write_text(p.read_text()+\"\\nreview control: temporary source mutation\\n\"); print(\"review control: source changed\")"
+      ],
+      "wrapper_exit_code": 1,
+      "child_exit_code": 0,
+      "source_unchanged": false,
+      "exact_revision_proof": false,
+      "result": "failed",
+      "checksums_exit_code": 0,
+      "manifest": "engineering/qa/2026-10-03-test-overhaul/artifact-review-controls/changed-source/manifest.json",
+      "evidence_sha256": {
+        "engineering/qa/2026-10-03-test-overhaul/artifact-review-controls/changed-source/SHA256SUMS": "d1cb7035044a5c24099bab92a03590a9f10066e5f349de7aa9bae2780a7c012e",
+        "engineering/qa/2026-10-03-test-overhaul/artifact-review-controls/changed-source/command.log": "8917acbf8b599842b4dfe087c8c5b10fab6740234549590133c6864fb32d7fce",
+        "engineering/qa/2026-10-03-test-overhaul/artifact-review-controls/changed-source/manifest.json": "cbc8682e00d9e4feeaca50341aa4125a451fa5e97d1cfaf7468922b58c5b6ee8",
+        "engineering/qa/2026-10-03-test-overhaul/artifact-review-controls/changed-source/review-execution.json": "aaed63cf90fb04e83f7c931b209f62967987acfb145a07a03e0093d8664b4908"
+      }
+    }
+  ]
+}

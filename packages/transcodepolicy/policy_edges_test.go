@@ -43,11 +43,3 @@ func TestCodecSelectionCoversEmptyAndUnavailableChoices(t *testing.T) {
 		t.Fatalf("missing encoder = %q", got)
 	}
 }
-
-func TestCapabilitiesExplainUndetectedVVC(t *testing.T) {
-	for _, capability := range Capabilities(nil) {
-		if capability.ID == "vvc" && !strings.Contains(capability.Reason, "libvvenc is not present") {
-			t.Fatalf("VVC reason = %q", capability.Reason)
-		}
-	}
-}

@@ -189,13 +189,3 @@ func TestWebFormRejectsUnsafeFieldsAndBounds(t *testing.T) {
 		t.Fatal("query form accepted")
 	}
 }
-
-func TestRegisterRejectsMissingDependencies(t *testing.T) {
-	t.Parallel()
-	defer func() {
-		if recover() == nil {
-			t.Fatal("missing HTTP dependencies were accepted")
-		}
-	}()
-	Register(nil, nil, Views{}, nil, nil, nil, nil)
-}

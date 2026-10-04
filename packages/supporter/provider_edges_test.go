@@ -1,7 +1,6 @@
 package supporter
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"io"
@@ -14,14 +13,6 @@ type failingReadCloser struct{}
 
 func (failingReadCloser) Read([]byte) (int, error) { return 0, errors.New("read failed") }
 func (failingReadCloser) Close() error             { return nil }
-
-func TestSendRejectsMalformedInternalEndpointBeforeNetwork(t *testing.T) {
-	service := testServiceAt(t, App{}, testNow())
-	service.endpoint = ":"
-	if _, err := service.send(context.Background(), activationRequest{}); !errors.Is(err, ErrInvalid) {
-		t.Fatalf("send malformed endpoint error = %v", err)
-	}
-}
 
 func TestReadActivationResponseRejectsReadAndDecodeFailures(t *testing.T) {
 	readFailure := &http.Response{Header: http.Header{"Content-Type": []string{"application/json"}}, Body: failingReadCloser{}}

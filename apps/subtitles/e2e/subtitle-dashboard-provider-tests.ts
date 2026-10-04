@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 import { compactViewports, expectNoHorizontalOverflow, expectSkipLinkOffscreen, initiallyOccludedTargets, occludedTargets, setSubtitleLanguages, supportedViewports } from "./subtitle-dashboard-helpers";
 
 export function registerSubtitleProviderTests() {
-test("Twenty long language choices remain usable at the preference limit", async ({ page }, testInfo) => {
+test("Twenty long language choices remain usable at the preference limit", { tag: "@smoke" }, async ({ page }, testInfo) => {
   const languages = ["es-419", "pt-MZ", "zh-Hant", "sr-Cyrl", "yue", "ckb", "mni", "cnr", "sat", "syr", "tet", "tok", "azb", "ast", "ext", "prs", "fil", "aa", "en", "de"];
   await page.goto("/settings#language");
   expect(await setSubtitleLanguages(page, languages)).toBe(200);

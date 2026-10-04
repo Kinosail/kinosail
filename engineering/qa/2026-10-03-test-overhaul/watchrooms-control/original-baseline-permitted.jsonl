@@ -1,0 +1,8 @@
+{"Time":"2026-10-03T11:51:31.228383-06:00","Action":"start","Package":"github.com/MikeO7/kinosail/packages/watchrooms"}
+{"Time":"2026-10-03T11:51:31.523621-06:00","Action":"run","Package":"github.com/MikeO7/kinosail/packages/watchrooms","Test":"TestHTTPAccessMonitorClosesInvisibleRoom"}
+{"Time":"2026-10-03T11:51:31.523722-06:00","Action":"output","Package":"github.com/MikeO7/kinosail/packages/watchrooms","Test":"TestHTTPAccessMonitorClosesInvisibleRoom","Output":"=== RUN   TestHTTPAccessMonitorClosesInvisibleRoom\n","OutputType":"frame"}
+{"Time":"2026-10-03T11:51:32.548957-06:00","Action":"output","Package":"github.com/MikeO7/kinosail/packages/watchrooms","Test":"TestHTTPAccessMonitorClosesInvisibleRoom","Output":"--- PASS: TestHTTPAccessMonitorClosesInvisibleRoom (1.01s)\n","OutputType":"frame"}
+{"Time":"2026-10-03T11:51:32.54904-06:00","Action":"pass","Package":"github.com/MikeO7/kinosail/packages/watchrooms","Test":"TestHTTPAccessMonitorClosesInvisibleRoom","Elapsed":1.01}
+{"Time":"2026-10-03T11:51:32.549108-06:00","Action":"output","Package":"github.com/MikeO7/kinosail/packages/watchrooms","Output":"PASS\n","OutputType":"frame"}
+{"Time":"2026-10-03T11:51:32.549647-06:00","Action":"output","Package":"github.com/MikeO7/kinosail/packages/watchrooms","Output":"ok  \tgithub.com/MikeO7/kinosail/packages/watchrooms\t1.321s\n"}
+{"Time":"2026-10-03T11:51:32.549707-06:00","Action":"pass","Package":"github.com/MikeO7/kinosail/packages/watchrooms","Elapsed":1.321}

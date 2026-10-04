@@ -1,0 +1,56 @@
+{
+  "schema": "kinosail-recoverable-download-removal-v1",
+  "authorization": "Parent explicitly authorized only this task's redundant local CI ZIP downloads after live authoritative hosted ID/digest/size/expiry verification and receipt preservation; no wider cleanup.",
+  "utc": "2026-10-03T23:09:06.993356+00:00",
+  "removedFileBytes": 45882930,
+  "physicalSpaceLimit": "Logical file bytes; APFS free-space changes also reflect concurrent activity.",
+  "hostedAvailability": "Successfully fetched live GitHub workflow artifact metadata immediately before removal; expired=false, matching size and SHA256, expiration 2026-11-02.",
+  "copies": [
+    {
+      "artifactId": 11284274651,
+      "workflowRun": 37153629848,
+      "bytes": 16027623,
+      "sha256": "7fdb9d722647255e721782d7224b8e79ed5fe193e7bb608dd9bffc26b598d445",
+      "restore": "https://github.com/Kinosail/kinosail/actions/runs/37153629848/artifacts/11284274651",
+      "preservedValidationReceipt": "ci-e2e-archive-verification-388.json",
+      "preservedReceiptSHA256": "9548d330fee700d9d8f87d9ea3197f2b56e0186257ff510921e886cc79c78650"
+    },
+    {
+      "artifactId": 11285077824,
+      "workflowRun": 37153629848,
+      "bytes": 5090334,
+      "sha256": "d9ab00362a39b065fddd454d56f9bfcbd232ccc091148bb5c38fcd604172bee8",
+      "restore": "https://github.com/Kinosail/kinosail/actions/runs/37153629848/artifacts/11285077824",
+      "preservedValidationReceipt": "ci-e2e-archive-verification-388.json",
+      "preservedReceiptSHA256": "9548d330fee700d9d8f87d9ea3197f2b56e0186257ff510921e886cc79c78650"
+    },
+    {
+      "artifactId": 11283707915,
+      "workflowRun": 37150700625,
+      "bytes": 16025436,
+      "sha256": "1aeab2f7e7a4e04e2572876d29a2b7dd643fc739f54bf37d96f46d23363cf78e",
+      "restore": "https://github.com/Kinosail/kinosail/actions/runs/37150700625/artifacts/11283707915",
+      "preservedValidationReceipt": "promoted-e2e-keeper-receipts.json",
+      "preservedReceiptSHA256": "44c8bfeb86a1bebc6423b3dadd11eadbeb518611c3434e0c37f34e0e3336287c"
+    },
+    {
+      "artifactId": 11283762936,
+      "workflowRun": 37150700625,
+      "bytes": 3682490,
+      "sha256": "5a6e4f79f53b4dd75e663108d0e82ca72fe60c244c02b1527b9e9ba0efa7fafd",
+      "restore": "https://github.com/Kinosail/kinosail/actions/runs/37150700625/artifacts/11283762936",
+      "preservedValidationReceipt": "promoted-e2e-keeper-receipts.json",
+      "preservedReceiptSHA256": "44c8bfeb86a1bebc6423b3dadd11eadbeb518611c3434e0c37f34e0e3336287c"
+    },
+    {
+      "artifactId": 11284717115,
+      "workflowRun": 37152840238,
+      "bytes": 5057047,
+      "sha256": "e97ede347fae0a8eb328dec570e33335cc352f99741c62707a9c415587f5c852",
+      "restore": "https://github.com/Kinosail/kinosail/actions/runs/37152840238/artifacts/11284717115",
+      "preservedValidationReceipt": "player-settings-real-keeper-receipt.json",
+      "preservedReceiptSHA256": "73bd0cc63f9c5e331cb2bccb83dbc8ec3d92ac8e25e41915461cc526f0ae5377"
+    }
+  ],
+  "scope": "Only five local download ZIP copies removed; hosted originals and original validation receipts preserved. No unique evidence, source, recordings, caches, credentials or other task files removed."
+}

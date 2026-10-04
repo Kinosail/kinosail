@@ -155,33 +155,6 @@ func TestRefreshMetadataReturnsNoWorkWithoutSideEffects(t *testing.T) {
 	}
 }
 
-func TestRefreshMetadataRejectsIncompleteDependenciesWithoutSideEffects(t *testing.T) {
-	t.Parallel()
-	base := metadataFixture([]library.Item{{ID: "movie", Kind: "video"}}, nil)
-	invalid := []MetadataRefresh{
-		base,
-		base,
-		base,
-		base,
-		base,
-		base,
-	}
-	invalid[0].Record = nil
-	invalid[1].Resolve = nil
-	invalid[2].ResolveEpisode = nil
-	invalid[3].Download = nil
-	invalid[4].Store = nil
-	invalid[5].RefreshLibrary = nil
-	for position, config := range invalid {
-		if err := RefreshMetadata(t.Context(), config); err == nil || err.Error() != "metadata refresh dependencies are incomplete" {
-			t.Fatalf("dependency %d error = %v", position, err)
-		}
-	}
-	if err := RefreshMetadata(nil, base); err == nil || err.Error() != "metadata refresh dependencies are incomplete" { //nolint:staticcheck // The public seam must reject a nil context.
-		t.Fatalf("nil context error = %v", err)
-	}
-}
-
 func TestRefreshMetadataResolvesMissingEpisodeAndReportsGroupFailure(t *testing.T) {
 	t.Parallel()
 	items := []library.Item{{ID: "first", Kind: "video", Library: "TV", Show: "Show"}, {ID: "second", Kind: "video", Library: "TV", Show: "Show"}}

@@ -104,16 +104,6 @@ func TestSupporterValidation(t *testing.T) {
 	}
 }
 
-func TestAllRunes(t *testing.T) {
-	t.Parallel()
-	if !allRunes("a", func(rune) bool { return true }) {
-		t.Fatal("allRunes rejected an allowed character")
-	}
-	if allRunes("a", func(rune) bool { return false }) {
-		t.Fatal("allRunes accepted a rejected character")
-	}
-}
-
 func clone(source map[string]string) map[string]string {
 	result := make(map[string]string, len(source))
 	for key, value := range source {

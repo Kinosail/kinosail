@@ -239,7 +239,7 @@ test("Owner can share Library Content, open the claim, and revoke it", async ({ 
 	await expect(authenticatedClaim.getByRole("heading", { name: "Shared with you" })).toBeVisible();
 	await authenticatedClaim.close();
 
-	const claimContext = await browser.newContext({ ignoreHTTPSErrors: true });
+	const claimContext = await browser.newContext({ ignoreHTTPSErrors: false });
 	const claim = await claimContext.newPage();
 	await claim.goto(new URL(claimURL!, page.url()).toString(), { waitUntil: "commit" });
 	await expect(claim).toHaveURL(/\/share\/items$/);

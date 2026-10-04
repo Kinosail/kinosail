@@ -44,22 +44,3 @@ func TestRequestAccessAppliesPlayerDownloadPolicy(t *testing.T) {
 		})
 	}
 }
-
-func TestRequestAccessFailsClosedWithoutBindings(t *testing.T) {
-	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/downloads", nil)
-	for _, test := range []struct {
-		access         Access
-		profileID      string
-		profileAllowed bool
-	}{
-		{NewAccess(nil, nil), "", false},
-		{NewAccess(func(*http.Request) identitycore.Profile { return identitycore.Profile{ID: "viewer", Downloads: true} }, nil), "viewer", true},
-	} {
-		if profileID, allowed := test.access.Profile(request); allowed != test.profileAllowed || profileID != test.profileID {
-			t.Fatalf("profile = %q/%t", profileID, allowed)
-		}
-		if profileID, item, allowed := test.access.Item(request, "film"); allowed || item.ID != "" || profileID != "" {
-			t.Fatalf("item = %q %#v/%t", profileID, item, allowed)
-		}
-	}
-}

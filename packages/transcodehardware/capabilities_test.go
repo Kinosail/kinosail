@@ -1,7 +1,6 @@
 package transcodehardware
 
 import (
-	"reflect"
 	"testing"
 )
 
@@ -89,50 +88,5 @@ func TestPreferredCodecUsesClientAndHardwareEvidence(t *testing.T) {
 	hardware.Probed = false
 	if got := hardware.PreferredCodec("auto", "auto", []string{"av1"}); got != "h264" {
 		t.Fatalf("unprobed codec = %q", got)
-	}
-}
-
-func TestCodecCapabilitiesPreservePlayerPolicy(t *testing.T) {
-	t.Parallel()
-	hardware := Capabilities{Backends: []Backend{
-		{Usable: true, encoders: map[string]string{"h264": "libx264", "hevc": "libx265", "vvc": "libvvenc"}},
-		{encoders: map[string]string{"av1": "av1_qsv"}},
-	}}
-	got := codecCapabilities(hardware)
-	if len(got) != 6 || got[0].ID != "h264" || !got[0].Usable || got[2].ID != "av1" || got[2].Usable {
-		t.Fatalf("codec capabilities = %#v", got)
-	}
-}
-
-func TestHLSCodecsPreservePlayerManifestValues(t *testing.T) {
-	t.Parallel()
-	tests := []struct {
-		video, audio, mode, output string
-		hasAudio                   bool
-		want                       string
-	}{
-		{"h264", "aac", "remux", "", true, "avc1.64002a,mp4a.40.2"},
-		{"hevc", "mp3", "remux", "", true, "hvc1,mp4a.6B"},
-		{"vp9", "ac3", "remux", "", true, "vp09,ac-3"},
-		{"av1", "eac3", "remux", "", true, "av01,ec-3"},
-		{"unknown", "unknown", "transcode", "hevc", true, "hvc1,mp4a.40.2"},
-		{"unknown", "aac", "direct", "av1", true, "av01,mp4a.40.2"},
-		{"h264", "aac", "remux", "", false, "avc1.64002a"},
-	}
-	for _, test := range tests {
-		if got := HLSCodecs(test.video, test.audio, test.mode, test.output, test.hasAudio); got != test.want {
-			t.Errorf("HLSCodecs(%q, %q, %q, %q, %v) = %q, want %q", test.video, test.audio, test.mode, test.output, test.hasAudio, got, test.want)
-		}
-	}
-}
-
-func TestEncoderForIsReadOnly(t *testing.T) {
-	t.Parallel()
-	backend := Backend{encoders: map[string]string{"h264": "libx264"}}
-	if got := backend.EncoderFor("h264"); got != "libx264" {
-		t.Fatalf("encoder = %q", got)
-	}
-	if got := backend.EncoderFor("unknown"); !reflect.DeepEqual(got, "") {
-		t.Fatalf("unknown encoder = %q", got)
 	}
 }

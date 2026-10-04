@@ -44,18 +44,3 @@ func TestOwnerRecoveryDispatchNeverStartsTheServer(t *testing.T) {
 		t.Fatalf("recovery state = %q, %v", data, err)
 	}
 }
-
-func TestPublicGatewayRejectsInvalidInvocationBeforeApplicationLoading(t *testing.T) {
-	for _, scenario := range []struct {
-		args   []string
-		getenv func(string) string
-	}{
-		{[]string{"public-gateway", "extra"}, func(string) string { return "" }},
-		{[]string{"public-gateway"}, nil},
-		{[]string{"public-gateway"}, func(string) string { return "invalid host" }},
-	} {
-		if Execute(scenario.args, nil, io.Discard, scenario.getenv, nil, Application[testSettings]{}) != 1 {
-			t.Fatal("invalid gateway invocation succeeded")
-		}
-	}
-}

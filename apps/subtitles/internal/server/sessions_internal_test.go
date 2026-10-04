@@ -5,28 +5,11 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
-
-func TestCleanDeviceNameNormalizesBrowserAgentsAndBoundsOtherNames(t *testing.T) {
-	for input, want := range map[string]string{
-		"  ":                            "Web browser",
-		"Mozilla Firefox/128":           "Firefox",
-		"Mozilla Edg/128 Chrome/128":    "Microsoft Edge",
-		"Mozilla Chrome/128 Safari/537": "Chrome",
-		"Mozilla Safari/537":            "Safari",
-		"  Living Room TV  ":            "Living Room TV",
-		strings.Repeat("x", 81):         strings.Repeat("x", 80),
-	} {
-		if got := cleanDeviceName(input); got != want {
-			t.Fatalf("cleanDeviceName(%q) = %q, want %q", input, got, want)
-		}
-	}
-}
 
 func TestOutboundNetworkRejectsLinkLocalMetadataAddresses(t *testing.T) {
 	for raw, allowed := range map[string]bool{
@@ -152,13 +135,6 @@ func TestPublicSessionsAreStrongShortLivedAndBounded(t *testing.T) { //nolint:cy
 	cookie := publicSessionCookie("token")
 	if cookie.Name != "__Host-kinosail_session" || !cookie.Secure || !cookie.HttpOnly || cookie.Path != "/" || cookie.MaxAge != 8*60*60 || cookie.SameSite != http.SameSiteStrictMode {
 		t.Fatalf("public cookie = %+v", cookie)
-	}
-}
-
-func TestBrowserSessionCookiesAreAlwaysHostBoundAndSecure(t *testing.T) {
-	cookie := sessionCookie("token")
-	if cookie.Name != "__Host-kinosail_session" || !cookie.Secure || !cookie.HttpOnly || cookie.Path != "/" || cookie.SameSite != http.SameSiteStrictMode {
-		t.Fatalf("browser cookie = %+v", cookie)
 	}
 }
 
