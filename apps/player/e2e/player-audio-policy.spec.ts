@@ -217,7 +217,10 @@ for (const boundary of ["missing artwork", "unsupported system metadata", "cast 
     await startQueue(page);
     if (boundary === "cast owner") await page.locator("audio").evaluate(audio => audio.dataset.castActive = "true");
     if (boundary === "room owner") await page.locator("audio").evaluate(audio => audio.dataset.room = "existing-room");
-    await page.getByRole("button", {name: "Next track", exact: true}).click();
+    if (boundary === "cast owner" || boundary === "room owner") {
+      await expect(page.getByRole("button", {name: "Next track", exact: true})).toBeDisabled();
+      await page.locator("[data-audio-next]").evaluate(button => button.dispatchEvent(new MouseEvent("click", {bubbles: true})));
+    } else await page.getByRole("button", {name: "Next track", exact: true}).click();
     if (boundary === "cast owner" || boundary === "room owner") {
       await expect(page.locator("audio")).toHaveAttribute("data-progress", "/progress/track");
       await expect(page.locator(".title-block h1")).toHaveText("First track");

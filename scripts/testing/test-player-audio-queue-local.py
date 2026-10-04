@@ -30,7 +30,9 @@ media.mkdir()
 title = 'real album queue advances source and all Now Playing identity to the fictional second track'
 action_title = 'real album queue keeps system previous and next current and exposes only fresh current-track actions'
 sources = ['packages/webassets/static/player-progress.js', 'packages/webassets/static/player-presentation.js',
+           'packages/webassets/static/player-audio-queue.js', 'packages/playerweb/audio_queue_template.go',
            'packages/playerweb/player_template.go', 'apps/player/e2e/test-instance-audio-queue.spec.ts',
+           'apps/player/e2e/player-audio-policy.spec.ts', 'apps/player/e2e/player-progress.spec.ts', 'apps/player/e2e/static-sources.ts',
            'scripts/testing/test-player-audio-queue-local.py']
 revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip()
 receipt = {'revision': revision, 'sourceSHA256': {name: hashlib.sha256((root / name).read_bytes()).hexdigest() for name in sources},

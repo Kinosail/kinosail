@@ -74,6 +74,7 @@ test("real album queue advances source and all Now Playing identity to the ficti
   await expect.poll(() => media.evaluate((audio: HTMLAudioElement) => new URL(audio.currentSrc || audio.src).pathname)).toBe(second.stream);
   await expect.poll(() => media.evaluate((audio: HTMLAudioElement) => audio.readyState)).toBeGreaterThanOrEqual(2);
   await media.evaluate((audio: HTMLAudioElement) => audio.pause());
+  await expect(page.locator("[data-now-playing-artwork]")).toBeVisible();
   const observed = await snapshot(page);
   await testInfo.attach("now-playing-after-real-advance", {body: JSON.stringify(observed, null, 2), contentType: "application/json"});
   await page.screenshot({path: testInfo.outputPath("second-track-before-assertions.png"), fullPage: true});
@@ -96,7 +97,7 @@ test("real album queue advances source and all Now Playing identity to the ficti
   for (const viewport of [{width: 390, height: 844}, {width: 1440, height: 900}, {width: 1920, height: 1080}]) {
     await page.setViewportSize(viewport);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    expect((await new AxeBuilder({page}).include(".title-block").analyze()).violations).toEqual([]);
+    expect((await new AxeBuilder({page}).include(".title-block").include("[data-audio-queue-controls]").include("[data-current-track-actions]").include(".media-stage").analyze()).violations).toEqual([]);
     await page.screenshot({path: testInfo.outputPath(`second-track-${viewport.width}.png`), fullPage: true});
   }
 });

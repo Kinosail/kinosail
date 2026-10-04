@@ -146,13 +146,61 @@ if (theaterButton && !appleNativePlayback) {
   });
   if (!player.paused) setTheaterPlaying(true);
 }
+const nowPlayingDocumentSuffix = document.title.startsWith(player.dataset.title || "") ? document.title.slice((player.dataset.title || "").length) : "";
+const nowPlayingArtwork = document.querySelector("[data-now-playing-artwork]");
+const updateNowPlayingArtwork = () => {
+  if (!nowPlayingArtwork) return;
+  nowPlayingArtwork.hidden = !player.dataset.artwork;
+  nowPlayingArtwork.style.visibility = "hidden";
+  nowPlayingArtwork.removeAttribute("src");
+  if (player.dataset.artwork) {
+    nowPlayingArtwork.setAttribute("aria-busy", "true");
+    nowPlayingArtwork.src = player.dataset.artwork;
+    if (nowPlayingArtwork.complete && nowPlayingArtwork.naturalWidth) {
+      nowPlayingArtwork.style.removeProperty("visibility"); nowPlayingArtwork.removeAttribute("aria-busy");
+    }
+  } else nowPlayingArtwork.removeAttribute("aria-busy");
+};
+nowPlayingArtwork?.addEventListener("load", () => {
+  if (nowPlayingArtwork.getAttribute("src") === player.dataset.artwork && nowPlayingArtwork.complete && nowPlayingArtwork.naturalWidth) {
+    nowPlayingArtwork.style.removeProperty("visibility"); nowPlayingArtwork.removeAttribute("aria-busy");
+  }
+});
+nowPlayingArtwork?.addEventListener("error", () => {
+  if (nowPlayingArtwork.getAttribute("src") === player.dataset.artwork && nowPlayingArtwork.complete && !nowPlayingArtwork.naturalWidth) {
+    nowPlayingArtwork.hidden = true; nowPlayingArtwork.removeAttribute("src"); nowPlayingArtwork.removeAttribute("aria-busy");
+  }
+});
+const updateMediaMetadata = () => {
+  try {
+    if (navigator.mediaSession && typeof MediaMetadata === "function") navigator.mediaSession.metadata = new MediaMetadata({
+      title: player.dataset.title || "", artist: player.dataset.artist || "", album: player.dataset.album || "",
+      artwork: player.dataset.artwork ? [{src: player.dataset.artwork}] : [],
+    });
+  } catch (_) { /* Unsupported system controls must not prevent local playback. */ }
+};
+const updateNowPlaying = (item) => {
+  const heading = document.querySelector("[data-now-playing-title],.title-block h1");
+  if (heading) {
+    heading.replaceChildren(document.createTextNode(item.title));
+    for (const [value, rating] of [[item.year, false], [item.rating, true]]) if (value) {
+      const small = document.createElement("small"); small.textContent = String(value);
+      if (rating) { small.className = "content-rating"; small.setAttribute("aria-label", "Content rating"); }
+      heading.append(document.createTextNode(" "), small);
+    }
+  }
+  let byline = document.querySelector("[data-now-playing-byline],.title-byline");
+  if (!byline && heading) { byline = document.createElement("p"); byline.className = "title-byline"; heading.after(byline); }
+  if (byline) {
+    byline.textContent = [item.artist, item.album, item.track ? `Track ${item.track}` : ""].filter(Boolean).join(" · ");
+    byline.hidden = !byline.textContent;
+  }
+  player.setAttribute("aria-label", item.title);
+  document.title = item.title + nowPlayingDocumentSuffix;
+  updateNowPlayingArtwork(); updateMediaMetadata();
+};
+updateNowPlayingArtwork(); updateMediaMetadata();
 if ("mediaSession" in navigator) {
-  navigator.mediaSession.metadata = new MediaMetadata({
-    title: player.dataset.title,
-    artist: player.dataset.artist,
-    album: player.dataset.album,
-    artwork: player.dataset.artwork ? [{src: player.dataset.artwork}] : [],
-  });
   const actions = {
     play: () => requestPlay("media-session"), pause: () => requestPause(),
     seekbackward: ({seekOffset = 10}) => { player.currentTime = Math.max(0, player.currentTime - seekOffset); },
@@ -165,7 +213,7 @@ if ("mediaSession" in navigator) {
     try { navigator.mediaSession.setActionHandler(action, handler); } catch (_) {}
   }
   const updateMediaPosition = () => {
-    if (Number.isFinite(player.duration) && player.duration > 0) navigator.mediaSession.setPositionState({duration: player.duration, playbackRate: player.playbackRate, position: Math.min(player.currentTime, player.duration)});
+    try { if (Number.isFinite(player.duration) && player.duration > 0) navigator.mediaSession.setPositionState({duration: player.duration, playbackRate: player.playbackRate, position: Math.min(player.currentTime, player.duration)}); } catch (_) {}
   };
   player.addEventListener("loadedmetadata", updateMediaPosition);
   player.addEventListener("timeupdate", updateMediaPosition);

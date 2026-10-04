@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 
 // Isolated HTTP failure/ordering coverage; see engineering/qa/2026-10-04-r03-progress.
 const source = await readFile(new URL("../../../packages/webassets/static/player-progress.js", import.meta.url), "utf8");
+const queueSource = await readFile(new URL("../../../packages/webassets/static/player-audio-queue.js", import.meta.url), "utf8");
 const failure = "Your latest position is not saved. Retry while this page is open.";
 const requests: Array<{ body: URLSearchParams; route: Route }> = [];
 let status = 204;
@@ -30,19 +31,25 @@ test.beforeEach(async ({ page }, testInfo) => {
       <label>Audio track <select data-audio-track><option value="0">Original</option><option value="1">Other</option></select></label><small data-audio-status></small>
     </main></body></html>` }));
   await page.route("**/watch/next", route => route.fulfill({ contentType: "text/html", body: "<h1>Next episode</h1>" }));
-  await page.route("**/api/v1/test-queue", route => route.fulfill({json: {items: [{id: "movie"}, {id: "next", title: "Next song", stream: "/media/next"}]}}));
+  await page.route("**/api/v1/audio/movie/queue", route => route.fulfill({json: {items: [
+    {id: "movie", kind: "audio", title: "First song", stream: "/media/movie"},
+    {id: "next", kind: "audio", title: "Next song", stream: "/media/next"},
+  ]}}));
+  await page.route("**/api/v1/items/next", route => route.fulfill({json: {profileId: "qa-viewer", item: {id: "next", kind: "audio", title: "Next song", stream: "/media/next"}}}));
   await page.goto("/");
-  if (testInfo.title.includes("audio queue")) await page.locator("video").evaluate(media => media.dataset.queue = "/api/v1/test-queue");
+  if (testInfo.title.includes("audio queue")) await page.locator("video").evaluate(media => media.dataset.queue = "/api/v1/audio/movie/queue");
   await page.addScriptTag({ content: `
     const player = document.querySelector('video'), csrf = 'synthetic-csrf', playbackSession = 'qa-session-03';
     let playbackPreparation, preparationPausePending = 0;
-    const playbackTraceMethod = 'direct', setPlayerTime = seconds => player.currentTime = seconds;
+    let playbackTraceMethod = 'direct', playbackTimelineOffset = 0;
+    const setPlayerTime = seconds => player.currentTime = seconds;
+    const withPlaybackSession = source => source + '?playbackSession=' + playbackSession, updateNowPlaying = () => {};
     const requestPlay = async () => {}, playerStorage = {get: () => '', set: () => {}};
     const playbackTrace = () => {}, flushPlaybackTrace = () => {};
     let position = 42, paused = true;
-    Object.defineProperties(player, {currentTime: {get: () => position, set: value => position = value}, duration: {value: 100}, readyState: {value: 4}, paused: {get: () => paused}, load: {value: () => {}}});
+    Object.defineProperties(player, {currentTime: {get: () => position, set: value => position = value}, duration: {value: 100}, readyState: {value: 4}, paused: {get: () => paused}, load: {value: () => queueMicrotask(() => player.dispatchEvent(new Event('loadedmetadata')))}});
     Object.assign(window, {setPaused: value => paused = value, prepare: value => playbackPreparation = value});
-  ` + source });
+  ` + source + queueSource });
 });
 
 async function pauseAt(page: Page, seconds: number) {
