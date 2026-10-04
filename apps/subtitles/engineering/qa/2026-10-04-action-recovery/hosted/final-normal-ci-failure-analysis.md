@@ -53,3 +53,20 @@ a runtime failure. CodeQL's dynamic enum arguments remain an actual analyzer
 finding, while a public privacy defect is unconfirmed. Keep production logging
 unchanged until the parent records the hosted baseline. A later fixed
 enum-to-literal normalization must preserve valid labels and correlation.
+
+## Frozen test-first checkpoint
+
+Structural lint source is committed at `5d98760b`. The public privacy control
+is committed at `977e01c4b49c6c59f06346f80ffd1815d85078a0`, before a logging
+production change. The production logger SHA256 is still
+`021c251baeda0cd37275e74ee41f0a0b271b333dc5fcdcd9a7483d5e413a984a`.
+
+The new immutable `protocol-scope-977e01c4.json` selects the same 53 inputs,
+33 top-level tests, 45 known subtests and byte-preserving R16 overlay. Exactly
+three source pins change: the worker, History helper and diagnostics test.
+Its SHA256 is
+`63c0bfe58e7e870c3b6b943c9d26cae7ca66d217f1223310e8695eadc2d479f5`.
+Both older scopes stay unchanged. The provenance helper changes only its
+active scope filename and digest; driver, projection and execution bounds
+stay unchanged. `final-normal-ci-source-inspection-977e01c4.json` pins this
+source-only boundary. Fresh hosted baseline and lint acceptance are pending.
