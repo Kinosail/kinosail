@@ -104,7 +104,15 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                             keyboardActions = KeyboardActions(onSearch = { catalog.search(); keyboard?.hide() }),
                             modifier = Modifier.fillMaxWidth())
-                        Button(onClick = { catalog.search(); keyboard?.hide() }) { Text(interfaceText("Search")) }
+                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Button(onClick = { catalog.search(); keyboard?.hide() }) { Text(interfaceText("Search")) }
+                            TextButton(onClick = { catalog.clearSearch(); keyboard?.hide() }) { Text(interfaceText("Clear search")) }
+                        }
+                        state.resultQuery?.let { query ->
+                            Text("${interfaceText("Results")}: ${state.total}" + if (query.isEmpty()) "" else " · “$query”",
+                                color = MaterialTheme.colorScheme.onSurface, maxLines = 2, overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
+                        }
                     }
                     if ((state.failedOffset ?: 0) == 0 || state.connectionExpired) {
                         state.notice?.let { Text(it, color = MaterialTheme.colorScheme.error,
