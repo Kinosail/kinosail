@@ -30,6 +30,14 @@ class WorkflowSecurityTests(unittest.TestCase):
         self.assertIn('scripts/e2e/.e2e/runs/', app)
         self.assertNotIn('continue-on-error:', step)
 
+    def test_full_affected_player_recovery_suites_are_hosted(self):
+        app = (WORKFLOWS / 'app.yml').read_text()
+        step = app.split('      - name: Verify complete Player recovery suites\n')[1].split('      - name:', 1)[0]
+        for suite in ('passkeys.spec.ts', 'worker-message-security.spec.ts', 'player-experience.spec.ts', 'player-direct-fallback.spec.ts'):
+            self.assertIn(suite, step)
+        self.assertNotIn('--grep', step)
+        self.assertIn('e2e-artifact.py', step)
+
     def test_ci_cannot_silently_bypass_checks(self):
         self.assertFalse((ROOT / '.gates-disabled').exists())
         ci = (WORKFLOWS / 'ci.yml').read_text()

@@ -1,6 +1,6 @@
 # Public flow inventory and evidence
 
-`inventory.json` lists 917 declared operations, registered routes, and native
+`inventory.json` lists 920 declared operations, registered routes, and native
 screen or activity owners at base `d27d55cca01d08ea6b14b24e93d2330c3fca606b`.
 Dashboard and Director have no active source here. Their archived repositories
 were not changed. API operations come from each app's `api_openapi.json`.
@@ -13,7 +13,7 @@ role, state, and format variants. A passing assertion covers only its subset.
 Dynamic route variants and every native control require further review.
 
 Current counts: 31 partial contracts passed on an earlier working revision;
-848 entries were not run; 38 native entries are blocked by device/build
+851 entries were not run; 38 native entries are blocked by device/build
 capacity. The final committed real-process suite awaits hosted verification.
 These counts do not support an all-flows-tested claim.
 
@@ -61,3 +61,10 @@ external provider/casting integrations, and physical devices. Pending, loaded,
 empty, and failed native layouts were not inspected in this run. The recovery
 change has source-browser failed/pending/loaded evidence, not a new physical
 device or complete responsive geometry verdict.
+
+Reconciliation with main added three subtitle-operation API entries. Their
+prepared/running/completed/unknown protocol is owned by the existing
+`subtitle_operation_*_test.go` suites and R06 browser recovery journeys.
+See `journeys.md` for journey-level ownership and hosted verification commands.
+The new automation-key and My List/collection process journeys are executable
+but unrun locally because of the storage boundary.

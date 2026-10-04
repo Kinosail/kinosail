@@ -281,6 +281,19 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends ffmpeg
           pnpm --dir scripts/e2e install --frozen-lockfile
+      - name: Verify complete Player recovery suites
+        if: inputs.app == 'player' && matrix.engine == 'chromium'
+        env:
+          KINOSAIL_E2E_VIDEO: "off"
+        run: python3 scripts/ci/e2e-artifact.py --output "${{ runner.temp }}/player-recovery-e2e-artifact" -- pnpm --dir apps/player/e2e exec playwright test passkeys.spec.ts worker-message-security.spec.ts player-experience.spec.ts player-direct-fallback.spec.ts --trace off --workers=1
+      - name: Keep Player recovery evidence
+        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: player-recovery-e2e-${{ github.sha }}
+          path: ${{ runner.temp }}/player-recovery-e2e-artifact/
+          retention-days: 30
+          if-no-files-found: error
       - name: Verify public flows with tester-army e2e
         if: matrix.engine == 'chromium'
         env:

@@ -13320,12 +13320,49 @@
       "existing_candidates": [],
       "status": "blocked",
       "boundary": "No device/emulator run or native build under storage constraint; existing native sources are executable coverage candidates only."
+    },
+    {
+      "app": "subtitles",
+      "surface": "API",
+      "flow": "POST /api/v1/subtitle-operations",
+      "operation": "prepareSubtitleOperation",
+      "existing_candidates": [
+        "apps/subtitles/internal/server/subtitle_operation_input_test.go",
+        "apps/subtitles/internal/server/subtitle_operation_owner_test.go"
+      ],
+      "status": "not-run",
+      "boundary": "Added on reconciled main; existing executable owner tests, current-head hosted results pending."
+    },
+    {
+      "app": "subtitles",
+      "surface": "API",
+      "flow": "GET /api/v1/subtitle-operations/{operation}",
+      "operation": "getSubtitleOperation",
+      "existing_candidates": [
+        "apps/subtitles/internal/server/subtitle_operation_input_test.go",
+        "apps/subtitles/internal/server/subtitle_operation_owner_test.go"
+      ],
+      "status": "not-run",
+      "boundary": "Added on reconciled main; existing executable owner tests, current-head hosted results pending."
+    },
+    {
+      "app": "subtitles",
+      "surface": "API",
+      "flow": "GET /api/v1/subtitle-operations/{operation}/result",
+      "operation": "getSubtitleOperationAudioResult",
+      "existing_candidates": [
+        "apps/subtitles/internal/server/subtitle_operation_input_test.go",
+        "apps/subtitles/internal/server/subtitle_operation_owner_test.go"
+      ],
+      "status": "not-run",
+      "boundary": "Added on reconciled main; existing executable owner tests, current-head hosted results pending."
     }
   ],
   "status_counts": {
-    "not-run": 848,
+    "not-run": 851,
     "passed-prior-working-revision": 31,
     "blocked": 38
   },
-  "inventory_count": 917
+  "inventory_count": 920,
+  "reconciled_base": "c3f0cb0d47a44cb952ea27107a8e5fb3307c9a3f"
 }
