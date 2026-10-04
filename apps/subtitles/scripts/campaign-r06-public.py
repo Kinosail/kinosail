@@ -60,7 +60,7 @@ def stop_owned(process, receipt):
                 receipt["leaderStopFailureClass"] = type(failure).__name__
 
 
-def execute(command, bound, projection, receipt):
+def execute(command, bound, projection, receipt, cwd=APP):
     environment = dict(os.environ, GOMAXPROCS="2", GOPROXY="off",
                        GOTOOLCHAIN="local", GOWORK=str(ROOT / "go.work"))
     process, selector, reason, total, pending = None, None, {"stop": None}, 0, b""
@@ -73,7 +73,7 @@ def execute(command, bound, projection, receipt):
     try:
         for signum in previous:
             signal.signal(signum, interrupted)
-        process = subprocess.Popen(command, cwd=APP, env=environment, stdout=subprocess.PIPE,
+        process = subprocess.Popen(command, cwd=cwd, env=environment, stdout=subprocess.PIPE,
                                    stderr=subprocess.STDOUT, start_new_session=True)
         receipt["goWasLaunched"] = True
         os.set_blocking(process.stdout.fileno(), False)
@@ -185,7 +185,7 @@ def run_protocol(scope, overlay, projection, receipt, work, before, tree_before)
     command = ["go", "tool", "test2json", "-t", "-p", PACKAGE, str(binary), "-test.v=test2json",
                "-test.run=" + scope["runPattern"], "-test.parallel=1", "-test.count=1", "-test.timeout=80s"]
     execution = {"goWasLaunched": False}
-    execute(command, 90, projection, execution)
+    execute(command, 90, projection, execution, cwd=APP / "internal/server")
     receipt.update(execution)
     receipt["publicRuntimeWasLaunched"] = execution["goWasLaunched"]
     receipt["goWasLaunched"] = compilation["goWasLaunched"] or execution["goWasLaunched"]
@@ -222,7 +222,8 @@ def main():
                "driver": fingerprint(Path(__file__)), "mode": "static-only" if args.static_check else "public-go",
                "bounds": {"compileSeconds": 120, "goSeconds": 80, "externalSeconds": 90, "leaderReapSeconds": 3, "groupSettlementSeconds": 4},
                "goWasLaunched": False, "publicRuntimeWasLaunched": False, "compiledBinaryUnchanged": False,
-               "workingDirectory": "apps/subtitles", "selector": scope["runPattern"],
+               "workingDirectory": "apps/subtitles", "compilationWorkingDirectory": "apps/subtitles",
+               "publicRuntimeWorkingDirectory": "apps/subtitles/internal/server", "selector": scope["runPattern"],
                "environment": {"GOMAXPROCS": "2", "GOPROXY": "off", "GOTOOLCHAIN": "local", "GOWORK": "repository/go.work"},
                "exportPolicy": "Only fixed names/status/counts/phases and source/artifact hashes; no raw Go output or environment dump."}
     try:
