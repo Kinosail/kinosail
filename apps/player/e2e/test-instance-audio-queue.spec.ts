@@ -96,6 +96,9 @@ test("real album queue advances source and all Now Playing identity to the ficti
   expect((await firstState.json()).item.progress.watched).toBe(true);
   for (const viewport of [{width: 390, height: 844}, {width: 1440, height: 900}, {width: 1920, height: 1080}]) {
     await page.setViewportSize(viewport);
+    await expect(page.locator(`form[action="/watched/${first.id}"]`)).toBeHidden();
+    await expect(page.locator(`form[action="/list/${first.id}"]`)).toBeHidden();
+    await expect(page.locator("[data-progress-notice]")).toBeHidden();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     expect((await new AxeBuilder({page}).include(".title-block").include("[data-audio-queue-controls]").include("[data-current-track-actions]").include(".media-stage").analyze()).violations).toEqual([]);
     await page.screenshot({path: testInfo.outputPath(`second-track-${viewport.width}.png`), fullPage: true});
