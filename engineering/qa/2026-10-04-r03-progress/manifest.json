@@ -29,16 +29,17 @@
       1920
     ],
     "sourceCap": "passed",
-    "diffCheck": "passed"
+    "diffCheck": "Implementation-owner working-tree check passed; that did not cover the committed QA diff. Integration owner corrected 10 trailing-whitespace lines and verifies the complete origin/main-to-candidate diff separately."
   },
   "limits": "In-page recovery only. Page-close keepalive is best effort. No container, TLS, native client, physical device, Safari or Firefox proof.",
   "preservedPrivateArtifacts": ".verification/r03-progress (raw traces, fixture credentials and state; do not share)",
   "evidenceSHA256": {
-    "README.md": "cd82309b8c4a8dae993acf9ad8f8eb935f07edfc94ca6b577e091f1ae3f96790",
+    "README.md": "1ffbdf781a454d351ce9f83a33219d20ffc0a0f3cc22c176d5efa91669294152",
     "browser-lint.log": "c3f22b54ffc1b5b24fd84371124e4c134c1ec7609d4c49fe031f96bb46994f91",
     "ci-helper-green.log": "5279d1fc9a1ced44f9c96da1414ef59e4676f963fbad52e7a1a2903538819b0d",
     "ci-helper-red.log": "68105b8bebce39e558f4ec47a05dae0a8aa6f9a293105576fbc94daccb952f7e",
-    "close-red-browser.log": "c0e66b52fdd8109c675b103dc1116b307ddb007abdcac0d463ed20feb8c20065",
+    "close-red-browser.log": "b15a4b73da27c7aad236d25d49f37318773cb5488c15ccb353238a21738f0d7b",
+    "close-red-browser.log.gz": "b5a966ba85dcb71f1936d3a3233d7e039382b793923d45d379a3cca9cd44c954",
     "design-detect.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
     "native/baseline-browser.log": "c383d1d4290c45f02c8a3f06fcb370115b8e41fee1360f25a9d7d770c1085e74",
     "native/baseline-real-server-rejection.png": "f4a191d4cf88552a1a1abf4dbf97b86f0392dc3ed1cfbc18778de85318fef64b",
@@ -51,9 +52,40 @@
     "native/unsaved-390.png": "757b8bd8667ab2e6b0ddd3f524615750ce6e54ad147f3b4338ca8f46f179434d",
     "native-proof.json": "cf341c21e09ee23b2ace7c63fa199b20125ed4fe74a33a5946d7ffee65504eca",
     "native-server-proof.log": "328dae94ce5e331aaf515e49ee932b5fc377e1d6c10b391f26113a4d9d346537",
-    "red-browser.log": "4742e3919d84b6f53e33d4312c90e1dd5f98e16c563caba3bc5ba05dc00a6696",
+    "red-browser.log": "47bb1fa1af26269d45e6eeec8d47cfb982fdb013ed5edf0b2af9f104fa94d0bf",
+    "red-browser.log.gz": "a367457312d159bfa6e655a110ff2427bded4b147e217df81411972025cec4a6",
     "review-browser.log": "895985806345cb25051eb1fcd81bb25eb12937bc15410d9efe362cec147044a7",
     "server-progress-diagnostics.json": "be10f8cba35745d8965bbb9dbc259353c08c2d5128839b23215c327d7d895dda",
     "verified-browser.log": "0f00954726bac3406745bc677472f3bafe9d644e09e6a298e661a6b5023a9b56"
+  },
+  "textEvidencePolicy": "Readable logs remove trailing horizontal whitespace only. Byte-exact original logs from evidence commit 6ec0b5c944ad4651e358e9302875c605c615785b are retained in deterministic gzip archives.",
+  "originalTextEvidence": {
+    "red-browser.log": {
+      "sourceCommit": "6ec0b5c944ad4651e358e9302875c605c615785b",
+      "sha256": "4742e3919d84b6f53e33d4312c90e1dd5f98e16c563caba3bc5ba05dc00a6696",
+      "archive": "red-browser.log.gz",
+      "archiveSHA256": "a367457312d159bfa6e655a110ff2427bded4b147e217df81411972025cec4a6",
+      "readableSHA256": "47bb1fa1af26269d45e6eeec8d47cfb982fdb013ed5edf0b2af9f104fa94d0bf"
+    },
+    "close-red-browser.log": {
+      "sourceCommit": "6ec0b5c944ad4651e358e9302875c605c615785b",
+      "sha256": "c0e66b52fdd8109c675b103dc1116b307ddb007abdcac0d463ed20feb8c20065",
+      "archive": "close-red-browser.log.gz",
+      "archiveSHA256": "b5a966ba85dcb71f1936d3a3233d7e039382b793923d45d379a3cca9cd44c954",
+      "readableSHA256": "b15a4b73da27c7aad236d25d49f37318773cb5488c15ccb353238a21738f0d7b"
+    }
+  },
+  "integration": {
+    "base": "50fd82f329c651258245451a55b8fff8dfa9adec",
+    "productionSources": "All ten independently reviewed implementation source hashes remain identical.",
+    "ciHook": {
+      "files": {
+        "apps/player/scripts/test-container.sh": "c9e21457c9ad62726c8bc6950f04ce3243b445a0b1674190ff984896ca2e36f9",
+        "apps/player/scripts/test-browser-journeys.sh": "a0eef1ef5922dcdcb961add62c773cba6acc0c98edc7af1d01220765a6bd9cf4"
+      },
+      "requiredTitles": 4,
+      "retainedLibraryPaginationJourney": true,
+      "extraction": "Focused sourced browser-journey functions preserve required commands and keep the container script below 300 source lines."
+    }
   }
 }

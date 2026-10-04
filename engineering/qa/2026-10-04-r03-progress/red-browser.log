@@ -6,7 +6,7 @@ Running 4 tests using 1 worker
 
 
 [1/4] [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: HTTP 503
-  1) [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: HTTP 503 
+  1) [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: HTTP 503
 
     Error: expect(locator).toHaveText(expected) failed
 
@@ -51,7 +51,7 @@ Running 4 tests using 1 worker
 
 
 [2/4] [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: network rejection
-  2) [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: network rejection 
+  2) [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: network rejection
 
     Error: expect(locator).toHaveText(expected) failed
 
@@ -96,7 +96,7 @@ Running 4 tests using 1 worker
 
 
 [3/4] [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: HTTP 503
-  3) [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: HTTP 503 
+  3) [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: HTTP 503
 
     Error: expect(locator).toHaveText(expected) failed
 
@@ -141,7 +141,7 @@ Running 4 tests using 1 worker
 
 
 [4/4] [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: network rejection
-  4) [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: network rejection 
+  4) [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: network rejection
 
     Error: expect(locator).toHaveText(expected) failed
 
@@ -182,7 +182,7 @@ Running 4 tests using 1 worker
 
 
   4 failed
-    [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: HTTP 503 
-    [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: network rejection 
-    [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: HTTP 503 
-    [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: network rejection 
+    [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: HTTP 503
+    [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: network rejection
+    [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: HTTP 503
+    [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: network rejection

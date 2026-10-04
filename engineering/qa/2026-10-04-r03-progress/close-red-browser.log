@@ -6,7 +6,7 @@ Running 1 test using 1 worker
 
 
 [1/1] [chromium] › apps/player/e2e/player-progress.spec.ts:198:1 › page-close dispatch sends the latest position while an older request is in flight
-  1) [chromium] › apps/player/e2e/player-progress.spec.ts:198:1 › page-close dispatch sends the latest position while an older request is in flight 
+  1) [chromium] › apps/player/e2e/player-progress.spec.ts:198:1 › page-close dispatch sends the latest position while an older request is in flight
 
     Error: expect(received).toBe(expected) // Object.is equality
 
@@ -41,4 +41,4 @@ Running 1 test using 1 worker
 
 
   1 failed
-    [chromium] › apps/player/e2e/player-progress.spec.ts:198:1 › page-close dispatch sends the latest position while an older request is in flight 
+    [chromium] › apps/player/e2e/player-progress.spec.ts:198:1 › page-close dispatch sends the latest position while an older request is in flight

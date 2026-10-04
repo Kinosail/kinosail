@@ -112,9 +112,12 @@ source checksums. Baseline and candidate each repeat their applicable cases twic
 
 ## CI integration and remaining checks
 
-Root owns `apps/player/scripts/test-container.sh`. Add `test-instance-progress.spec.ts`
-to its existing populated command and require these exact titles with
-`--required-title`, retaining every existing settings/library required title:
+The integration owner adds `test-instance-progress.spec.ts` to the prepared-Owner
+command called by `apps/player/scripts/test-container.sh`; its focused
+`test-browser-journeys.sh` helper keeps the existing container script within the
+300-line source cap. Four explicit required titles
+retain both existing settings journeys and require both progress journeys below.
+The separate R04 Go library-pagination invocation remains unchanged:
 
 - `real Server rejects invalid progress without changing stored state and web reports the rejection`
 - `populated player retries the latest progress through the real Server and renders accessible states`
@@ -128,3 +131,9 @@ integration separately from the reviewed implementation commit.
 No container, TLS deployment, physical device, physical TV, Safari, Firefox, or
 native-client playback proof is claimed. The shared template/asset also serves
 Subtitles; its affected checks remain required at integration.
+
+The committed readable red logs normalize trailing horizontal whitespace only.
+Their deterministic `.log.gz` companions preserve the byte-exact originals from
+`6ec0b5c944ad4651e358e9302875c605c615785b`. The previous diff-check claim covered
+only the implementation owner’s working-tree diff; it did not check the committed
+QA delta. The integration owner verifies the complete main-to-candidate diff.
