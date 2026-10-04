@@ -21,6 +21,7 @@ export async function measureSubtitleSearch(page, viewport, results, probe) {
   for (const [state, query, injected] of [["pending-success", "Layout", false], ["pending-failure", "Missing", true], ["retry-real-link", "Missing", false], ["retry-empty", "no-synthetic-match", false]]) {
     fail = injected;
     if (state !== "retry-real-link") await search.focus();
+    else {const link=page.getByRole("link",{name:"Reload view",exact:true});await link.scrollIntoViewIfNeeded();await link.focus();}
     const before = await geometry();
     const content = await page.locator("#subtitle-content").elementHandle();
     const retry = state === "retry-real-link";
@@ -43,6 +44,7 @@ export async function measureSubtitleSearch(page, viewport, results, probe) {
       pendingStable: unchanged(before, pending), failureRetainsContent: !injected || (sameContentNode && unchanged(before, after)),
       errorVisible, sameContentNode, navigationSucceeded: injected ? undefined : navigationSucceeded, caretPreserved,
       stable: injected ? errorVisible : navigationSucceeded, focusRetained: retry ? undefined : await search.evaluate(node => node === document.activeElement),
-      overflow: await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)});
+      overflow: await page.evaluate(() => document.documentElement.scrollWidth - innerWidth),
+      overflowNodes:await page.evaluate(()=>[...document.querySelectorAll("body *:not(option):not(optgroup)")].filter(node=>{const box=node.getBoundingClientRect();return box.height>0&&box.right+(getComputedStyle(node).position==="fixed"?0:scrollX)>innerWidth+1;}).slice(0,12).map(node=>({node:node.id||node.className||node.tagName,rect:node.getBoundingClientRect().toJSON(),minWidth:getComputedStyle(node).minWidth,whiteSpace:getComputedStyle(node).whiteSpace}))) });
   }
 }

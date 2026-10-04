@@ -12,21 +12,26 @@ export async function measureSubtitleBackground(browser, options, results, probe
     const box = document.querySelector(selector)?.getBoundingClientRect();
     return {selector,present:Boolean(box?.height),x:box?.x,documentY:box?.y+scrollY,width:box?.width,height:box?.height};
   }));
-  let linked = false, countBefore = 0, headers;
+  const scan = () => page.evaluate(async () => {
+    const token=document.querySelector('meta[name="kinosail-csrf"]')?.content;
+    const response=await fetch("/scan",{method:"POST",headers:token?{"X-Kinosail-CSRF":token}:{}});
+    return {ok:response.ok,status:response.status,authorizedLanding:new URL(response.url).pathname==="/"};
+  });
+  let linked = false, countBefore = 0;
   probe.stage = "subtitle-background-discovery";
   try {
     await page.goto("/?view=library",{waitUntil:"domcontentloaded"});
     const before = await geometry(); countBefore = await page.locator(".subtitle-file").count();
-    headers = {"X-Kinosail-CSRF":await page.locator('meta[name="kinosail-csrf"]').getAttribute("content")||""};
     if(!countBefore)throw new Error("Populated synthetic Library required");
     await link(join(root,"Layout Example.mp4"),added); linked = true;
-    const scan = await page.request.post("/scan",{headers});
-    if(!scan.ok())throw new Error("Synthetic discovery scan failed");
+    const discovery = await scan();
+    results.push({flow:"subtitle-background-scan-request",browserOrigin:true,scanStatus:discovery.status,authorizedLanding:discovery.authorizedLanding,stable:discovery.ok&&discovery.authorizedLanding});
+    if(!discovery.ok||!discovery.authorizedLanding)throw new Error("Synthetic discovery scan failed");
     probe.stage = "subtitle-background-normal-poll";
     await page.locator("#subtitle-update").waitFor({state:"visible",timeout:75_000});
     const after = await geometry(), countAfter = await page.locator(".subtitle-file").count();
     const stable = countBefore>0 && countBefore===countAfter && before.every((first,index)=>first.present&&after[index]?.present&&["x","documentY","width","height"].every(key=>Math.abs(first[key]-after[index][key])<=1));
-    results.push({flow:"subtitle-background-update",realFixtureDiscovery:true,normalPoll:true,scanStatus:scan.status(),countBefore,countAfter,before,after,noticeVisible:true,stable});
+    results.push({flow:"subtitle-background-update",realFixtureDiscovery:true,normalPoll:true,scanStatus:discovery.status,countBefore,countAfter,before,after,noticeVisible:true,stable});
     await page.locator("#subtitle-update [data-subtitle-refresh]").click();
     await page.waitForFunction(()=>document.querySelector("#main")?.getAttribute("aria-busy")!=="true");
     const refreshedCount = await page.locator(".subtitle-file").count();
@@ -36,11 +41,11 @@ export async function measureSubtitleBackground(browser, options, results, probe
       if(linked){
         const priorStage=probe.stage; probe.stage="subtitle-background-cleanup";
         await unlink(added);
-        const scan=await page.request.post("/scan",{headers});
-        if(scan.ok())await page.goto("/?view=library",{waitUntil:"domcontentloaded",timeout:20_000});
-        const restoredCount=scan.ok()?await page.locator(".subtitle-file").count():undefined;
-        const stable=scan.ok()&&restoredCount===countBefore;
-        results.push({flow:"subtitle-background-cleanup",scanStatus:scan.status(),restoredCount,expectedCount:countBefore,stable});
+        const cleanup=await scan(), authorized=cleanup.ok&&cleanup.authorizedLanding;
+        if(authorized)await page.goto("/?view=library",{waitUntil:"domcontentloaded",timeout:20_000});
+        const restoredCount=authorized?await page.locator(".subtitle-file").count():undefined;
+        const stable=authorized&&restoredCount===countBefore;
+        results.push({flow:"subtitle-background-cleanup",scanStatus:cleanup.status,authorizedLanding:cleanup.authorizedLanding,restoredCount,expectedCount:countBefore,stable});
         if(!stable)throw new Error("Synthetic catalogue restoration failed");
         probe.stage=priorStage;
       }

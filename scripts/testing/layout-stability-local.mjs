@@ -106,6 +106,7 @@ if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of ["/settings#%61ccess",
 if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of routes.filter(path=>path.startsWith("/settings#")))for(const viewport of [{width:390,height:844},{width:320,height:800}])cases.push({viewport,path,variant:"slow-css",scale:viewport.width===320?"200%":undefined});
 if(process.env.KINOSAIL_LAYOUT_VARIANTS&&app==="player")cases.push({viewport:{width:390,height:844},path:"/settings#access",variant:"saved-mobile-tabs",scale:"200%",savedTabs:true});
 if(process.env.KINOSAIL_LAYOUT_APPLE_SHIM)cases.push({viewport:{width:768,height:1024},path:`/watch/${item.id}?playback=direct`,variant:"desktop-UA-iPad-shim",apple:true});
+if(app==="subtitles"&&process.env.KINOSAIL_LAYOUT_VARIANTS)cases.push({viewport:{width:320,height:800},path:"/?view=library",variant:"text-200",scale:"200%"});
 try {
   for (const {viewport,path,variant,scale,motion,apple,savedTabs} of cases) {
     phase = "measure-case";
