@@ -11,16 +11,19 @@ import socket
 import struct
 import subprocess
 import time
+import traceback
 import urllib.request
 import zlib
 
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--red', action='store_true', help='Require the pre-fix metadata mismatch twice')
+mode = parser.add_mutually_exclusive_group()
+mode.add_argument('--red', action='store_true', help='Require the pre-fix metadata mismatch twice')
+mode.add_argument('--fixture-only', type=Path, help='Prepare only a new disposable album directory; no Owner or Server setup')
 args = parser.parse_args()
 root = Path(__file__).resolve().parents[2]
 run = root / '.verification/r08-now-playing' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
 run.mkdir(parents=True)
-media = run / 'media'
+media = args.fixture_only if args.fixture_only else run / 'media'
 media.mkdir()
 title = 'real album queue advances source and all Now Playing identity to the fictional second track'
 sources = ['packages/webassets/static/player-progress.js', 'packages/webassets/static/player-presentation.js',
@@ -28,11 +31,35 @@ sources = ['packages/webassets/static/player-progress.js', 'packages/webassets/s
            'scripts/testing/test-player-audio-queue-local.py']
 revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip()
 receipt = {'revision': revision, 'sourceSHA256': {name: hashlib.sha256((root / name).read_bytes()).hexdigest() for name in sources},
-           'command': 'GOMAXPROCS=2 python3 scripts/testing/test-player-audio-queue-local.py' + (' --red' if args.red else ''),
+           'workingDiffSHA256': hashlib.sha256(subprocess.check_output(['git', 'diff', 'HEAD'], cwd=root)).hexdigest(),
+           'command': 'GOMAXPROCS=2 python3 scripts/testing/test-player-audio-queue-local.py' + (' --red' if args.red else ' --fixture-only <new-disposable-directory>' if args.fixture_only else ''),
            'environment': 'Native Go Kinosail Server; loopback HTTP; one Chromium worker',
            'data': 'Two generated twelve-second WAV tracks, fictional NFO metadata and PNG covers; disposable Owner and TOTP. State preserved.',
            'boundaries': 'No real user data, container, deployment, physical device, or native OS-control panel proof.',
            'result': 'failed'}
+phase = 'fixture-preparation'
+
+def build_inputs():
+    output = subprocess.check_output(['go', 'list', '-deps', '-json', '-p', '1', './cmd/kinosail'],
+                                     cwd=root / 'apps/player', env={**os.environ, 'GOMAXPROCS': '2', 'GOPROXY': 'off'}, text=True)
+    decoder, offset, paths, modules = json.JSONDecoder(), 0, set(), {}
+    while offset < len(output):
+        while offset < len(output) and output[offset].isspace():
+            offset += 1
+        if offset == len(output):
+            break
+        package, offset = decoder.raw_decode(output, offset)
+        directory = Path(package['Dir'])
+        if directory.is_relative_to(root):
+            for group in ['GoFiles', 'CgoFiles', 'CFiles', 'CXXFiles', 'HFiles', 'SFiles', 'SysoFiles', 'EmbedFiles']:
+                paths.update(directory / name for name in package.get(group, []))
+        module = package.get('Module', {})
+        if module.get('Version'):
+            modules[module['Path']] = {key: module[key] for key in ['Version', 'Sum', 'GoModSum'] if key in module}
+    for directory in [root, root / 'apps/player']:
+        paths.update(path for name in ['go.work', 'go.work.sum', 'go.mod', 'go.sum'] if (path := directory / name).is_file())
+    return {'repoSHA256': {str(path.relative_to(root)): hashlib.sha256(path.read_bytes()).hexdigest() for path in sorted(paths)},
+            'modules': modules, 'toolchain': subprocess.check_output(['go', 'version'], text=True).strip()}
 
 def cover(path, color):
     def chunk(kind, value):
@@ -48,8 +75,25 @@ try:
                         '-c:a', 'pcm_s16le', '-threads', '1', str(media / (name + '.wav'))], check=True)
         (media / (name + '.nfo')).write_text(f'<track><title>{track_title}</title><artist>{artist}</artist><albumartist>Fictional Ensemble</albumartist><album>R08 Fictional Session</album><disc>1</disc><track>{number}</track></track>')
         cover(media / (name + '.png'), color)
+    receipt['fixtureSHA256'] = {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in sorted(media.iterdir())}
+    if args.fixture_only:
+        receipt['environment'] = 'New disposable media directory only; no Server, Owner, or browser setup'
+        receipt['data'] = 'Two generated twelve-second WAV tracks, fictional NFO metadata and PNG covers. No account state prepared.'
+        receipt['result'] = 'fixture-prepared'
+        raise SystemExit(0)
     binary = run / 'kinosail-player'
-    subprocess.run(['go', 'build', '-p', '1', '-o', str(binary), './cmd/kinosail'], cwd=root / 'apps/player', env={**os.environ, 'GOMAXPROCS': '2'}, check=True)
+    phase = 'build-inputs'
+    inputs = build_inputs()
+    encoded = (json.dumps(inputs, indent=2, sort_keys=True) + '\n').encode()
+    (run / 'build-inputs.json').write_bytes(encoded)
+    receipt['buildInputsSHA256'] = hashlib.sha256(encoded).hexdigest()
+    phase = 'native-build'
+    subprocess.run(['go', 'build', '-p', '1', '-o', str(binary), './cmd/kinosail'], cwd=root / 'apps/player', env={**os.environ, 'GOMAXPROCS': '2', 'GOPROXY': 'off'}, check=True)
+    if any(hashlib.sha256((root / name).read_bytes()).hexdigest() != wanted for name, wanted in inputs['repoSHA256'].items()):
+        raise RuntimeError('Source changed while building the native proof product')
+    receipt['binarySHA256'] = hashlib.sha256(binary.read_bytes()).hexdigest()
+    receipt['sourceInputsUnchangedAfterBuild'] = True
+    phase = 'server-startup'
     with socket.socket() as listener:
         listener.bind(('127.0.0.1', 0))
         port = listener.getsockname()[1]
@@ -76,6 +120,7 @@ try:
                 value = urllib.request.Request(url + path, method=method, data=json.dumps(body).encode(), headers=headers)
                 with urllib.request.urlopen(value, timeout=10) as response:
                     return json.load(response) if response.status != 204 else None
+            phase = 'disposable-owner-preparation'
             created = request('/api/v1/setup', {'name': 'Owner', 'password': 'synthetic-queue-password', 'device': 'Disposable R08 proof', 'totp': True})
             token, secret = created['token'], created['totp']['secret']
             digest = hmac.new(base64.b32decode(secret), int(time.time() // 30).to_bytes(8, 'big'), hashlib.sha1).digest()
@@ -88,14 +133,18 @@ try:
                            'KINOSAIL_E2E_VIDEO': 'off', 'KINOSAIL_BROWSER_WORKERS': '1',
                            'KINOSAIL_E2E_OUTPUT_DIR': str(run / 'browser-artifacts'), 'PLAYWRIGHT_JSON_OUTPUT_FILE': str(run / 'browser-results.json')}
             command = ['node', 'node_modules/@playwright/test/cli.js', 'test', 'test-instance-audio-queue.spec.ts',
-                       '--project=chromium', '--workers=1', '--repeat-each=2', '--reporter=line,json']
+                       '--project=chromium', '--workers=1', '--repeat-each=2', '--retries=0', '--global-timeout=120000', '--reporter=line,json']
             if args.red:
                 command += ['--grep', title]
             receipt['browserCommand'] = command
+            phase = 'browser-execution'
             with (run / 'browser.log').open('w') as browser_log:
                 result = subprocess.run(command, cwd=root / 'apps/player/e2e', env=browser_env, stdout=browser_log, stderr=subprocess.STDOUT, timeout=180)
             receipt['browserExitCode'] = result.returncode
+            if any(hashlib.sha256((root / name).read_bytes()).hexdigest() != wanted for name, wanted in receipt['sourceSHA256'].items()):
+                raise RuntimeError('Source or test harness changed while executing the native proof')
             if args.red:
+                phase = 'named-defect-reproduction-verification'
                 report = json.loads((run / 'browser-results.json').read_text())
                 def results(suite):
                     values = [result for spec in suite.get('specs', []) if spec['title'] == title for test in spec['tests'] for result in test['results']]
@@ -120,8 +169,13 @@ try:
             except subprocess.TimeoutExpired:
                 server.kill()
                 server.wait()
+except Exception as error:
+    receipt['failureClass'], receipt['failurePhase'] = type(error).__name__, phase
+    (run / 'harness-private.log').write_text(traceback.format_exc())
 finally:
     receipt['checksums'] = {str(path.relative_to(run)): hashlib.sha256(path.read_bytes()).hexdigest()
                             for path in run.rglob('*') if path.is_file() and path.name != 'kinosail-player'}
     (run / 'receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
     print(f"R08 native album proof: {receipt['result']}; receipt: {run / 'receipt.json'}")
+if receipt['result'] == 'failed':
+    raise SystemExit(1)

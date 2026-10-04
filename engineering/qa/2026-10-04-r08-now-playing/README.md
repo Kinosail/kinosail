@@ -43,6 +43,27 @@ while the rendered/system metadata still describes track one. Preserve receipts,
 safe snapshots, screenshots, and private traces. No real user data or deployment
 is touched. Root serializes encoder, Go build, and browser execution.
 
+The runner hashes relevant source and test inputs before execution. Before building,
+it inventories actual Go dependency sources and embedded assets, records local
+module/workspace inputs and dependency module sums, and binds the native binary
+checksum to that inventory. It rejects source changes during build or execution.
+Red proof requires two named failures with attached post-advance snapshots that
+show the defect. Setup, build, and harness failures remain separate failed receipts.
+Raw failure details stay private; normal output reports only result and receipt.
+
+```sh
+GOMAXPROCS=2 python3 scripts/testing/test-player-audio-queue-local.py --red
+```
+
+CI can reuse fixture generation without another credential-preparation path:
+
+```sh
+python3 scripts/testing/test-player-audio-queue-local.py --fixture-only <new-disposable-media-directory>
+```
+
+The fixture directory must not exist. This mode creates no Owner, Server, or
+browser session. Root retains the existing CI Owner/MFA preparation helper.
+
 Further regressions must protect manual previous/next, missing/failed artwork,
 authorization or malformed queue rejection without source/progress side effects,
 offline/cast ownership, unsupported system controls, and progress-save recovery.
