@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "scope": "R08 current audio queue identity and mobile hidden state; existing public contracts preserved",
+  "testedProductionRevision": "68f404937cdf5d3332590325e9c5e3854a710718",
+  "frozenBase": "6ec0b5c944ad4651e358e9302875c605c615785b",
+  "nativeResult": {
+    "canonicalUnroutedPassed": 4,
+    "isolated503NoticeControlsPassed": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0,
+    "globalErrors": 0,
+    "browserDurationMs": 32288.386
+  },
+  "retainedIsolatedResult": {
+    "passed": 50,
+    "testedRevision": "38b43c3a805515ea7556e31f82c3d9c77bd4d6d4",
+    "allSourceAndTestInputsStillExact": true,
+    "rerunReason": "No changed input in these isolated fixtures; final native cases cover new CSS/cache-token behavior."
+  },
+  "sourceSHA256": {
+    "apps/player/internal/server/navigation_shell.go": "f6e6f09db34bcdaa22f428179325d5b16832bb6db74c6d9e1e3e74e3bb9ef860",
+    "apps/subtitles/internal/server/navigation_shell.go": "8bbdebce04d481236bb675da1fdc2c7d6d6109b3dc36c3d4032d8b1c48a15573",
+    "packages/playerweb/audio_queue_template.go": "543927e9223ec2310dabb51c5ed6f3211948a9da14af7d9a860225964bd4a633",
+    "packages/playerweb/player_template.go": "5722e6100d788327b56d13249f9d75d9f08ea301828cd37607e3ce2f332fc627",
+    "packages/webassets/static/player-app.css": "8c415019682bba3e2afffb28dac12d3e04a7fb9753808e2426ecb963e1bd20b2",
+    "packages/webassets/static/player-audio-queue.js": "8e721ab3ed7debb457c426dcf7485b11991e335030a0fd8a5f74e4d7c2667448",
+    "packages/webassets/static/player-presentation.js": "4a7330ba317b7da98afe094f52a2c28c47fad261b3c37ee7ead5a74de1c0c879",
+    "packages/webassets/static/player-progress.js": "1a65d06c4b7cf912837aaa4d0a56ce6b26f5fd1037f5919c5b5cc734a53ea7b4",
+    "packages/webassets/static/subtitles-app.css.patch": "e224005c598245795efdeab9b8a98201b5ab36d8627abdbf638857ddd9725b59",
+    "packages/webassets/webassets.go": "a857c3a8020ce4dc10a7b660e39f8ab651564af9e257674531e01108f909dfd4"
+  },
+  "checks": {
+    "browserLint": {
+      "command": "node scripts/quality/lint-browser-scripts.mjs",
+      "errors": 0,
+      "warnings": 0
+    },
+    "sourceCap": {
+      "command": "make max-loc",
+      "exitCode": 0
+    },
+    "whitespace": {
+      "commands": [
+        "git diff --check 6ec0b5c HEAD",
+        "git diff --check"
+      ],
+      "exitCode": 0
+    },
+    "sharedStylePatchContext": {
+      "result": "passed using playerBaseCSS + playerStageCSS; strict Go derivation also initialized in final native product"
+    }
+  },
+  "evidenceSHA256": {
+    "README.md": "ea5a7222d96dfa25070f61b55767c0ec6f8f203c5bb6e1a2d0dfc446ec9eeeb4",
+    "drain-frozen-red.json": "a3c8499f9812ad110d041dbf1f3f53ec4a704980f2c7d95f1b542a070caba48a",
+    "green-fresh-second-track-actions.png": "8f5b4f711d355638a8f6d8954c5db5c9e852d1ffaf31a6c8032f5116b1c1bc44",
+    "green-mobile-progress-failed.png": "d69662374c673f820db3f8da8e7c4751185d38a107d0b92639a5dd7ede9b2982",
+    "green-mobile-progress-saved.png": "60038709a799a3c804de505ff0aeb8652b68a0666aa60538b73da8a47292192e",
+    "green-native-receipt.json": "e915a3d5208e6ba6f3498d1f06127cfa91685929b3543f64c7087873a95fc4eb",
+    "green-native-results.json": "38c439462cd5d5a06e56c617857010c4f6568c880d06cdf2c5db01c64ca35733",
+    "green-second-track-1440.png": "e56d16a960ce71f78cece02214908633fc20f7d781f8479403b7928789b2b222",
+    "green-second-track-1920.png": "3116e19475f98bec0864baa9d309b7cb006f79e819648758b02c554a4e340fa0",
+    "green-second-track-390.png": "026e9c591c71554fb7153d0b4bee35a26aaeae5baa59b04ba970caa850d348ee",
+    "initial-native-receipt.json": "4e28052c4f91e17cde51c7e7257575b6c4bacb32b1db87bdebddb701446fbe1c",
+    "initial-native-results.json": "c515fc1413193de74d70a3ecd9466f8de5712577646fa3ee8242bbe1c5bf2180",
+    "initial-phone-visible-actions.png": "519491994c1d17480dfb74ff6cb124ef3fe8da6c433b3139fdf4b6a2fda1eb16",
+    "isolated-green-receipt.json": "00cf48d45cadb3cb5157d7d3004a816fd9a9db6d78064f92015c6c505fb30921",
+    "pre-metadata-red.json": "4cdeacdcc0850f508a5d2ea95cb8494a4c1d502882161fb22bdfa0e156d6a110",
+    "red-receipt.json": "05f8e6c1e9a9ef0954d2e15e7eb4f74e4daa745e2b7a283ac87f91ecf7af0492",
+    "red-results.json": "353f9a98fcbc79e3073f8b0ed7e041ca81f3697c475d273958f0eac7a5c7164a",
+    "red-second-track-1.png": "e25a1c7f9a1c0f831c31dfe333135f6a8ead7f58e7ee1c31f009c0a04a28fad3",
+    "red-second-track-2.png": "26b6c89236bbb58631890053472cda2a1db16c7b8138628f9c62b1699cdff284",
+    "visibility-red-progress-mobile.png": "3fe4006f48abc8913ff54c19a2e6e03bed663ab7a7671dc3f9e27c2b3af71075",
+    "visibility-red-queue-mobile.png": "ba1f202f9538190f7e41c1a9042d8e2c269f9a272e603d3cf0885de429d6dd71",
+    "visibility-red-receipt.json": "00adbeb9595791163190ad20a03c5e3e17400191e3a8e13903a3aeb6572b81dc",
+    "visibility-red-results.json": "6a8460c7580b8c7e37375bcbcd3f1255c58b96fd141dcd812ea9ef9cf3c06a11"
+  },
+  "privateRun": "Ignored .verification/r08-now-playing/20261004T111845Z; raw traces, account state, Server logs and build inventory are preserved privately.",
+  "limits": [
+    "Headless Chromium; physical OS controls not exercised.",
+    "Cast/offline and source/image faults retain isolated coverage.",
+    "No standalone Subtitles Server journey, physical device, other browser, container, deployment or production-health proof.",
+    "Root-owned independent review, current-main reconciliation, affected-app checks, hosted protection checks, PR/merge and ancestry remain pending."
+  ],
+  "delivery": "MAIN: NO \u2014 root-owned integration and protected delivery pending."
+}

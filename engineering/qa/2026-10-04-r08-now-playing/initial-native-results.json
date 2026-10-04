@@ -1,0 +1,104 @@
+{
+  "testedRevision": "38b43c3a805515ea7556e31f82c3d9c77bd4d6d4",
+  "resultClass": "automated-pass-with-visual-blocker",
+  "stats": {
+    "startTime": "2026-10-04T10:41:38.306Z",
+    "duration": 29742.379,
+    "expected": 4,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "globalErrors": 0,
+  "cases": [
+    {
+      "title": "real album queue advances source and all Now Playing identity to the fictional second track",
+      "status": "passed",
+      "durationMs": 2696,
+      "projections": {
+        "player-content-cache-delivery": {
+          "path": "/static/player.js?v=5f1d72e686f77d6e44d0dd5a61796a5dd24976867769220a1de81dafa29ff215",
+          "sha256": "5f1d72e686f77d6e44d0dd5a61796a5dd24976867769220a1de81dafa29ff215",
+          "cacheControl": "public, max-age=31536000, immutable"
+        },
+        "now-playing-after-real-advance": {
+          "heading": "Copper <Moon> & Harbor",
+          "byline": "Mira Tide \u00b7 R08 Fictional Session \u00b7 Track 2",
+          "accessibleLabel": "Copper <Moon> & Harbor",
+          "documentTitle": "Copper <Moon> & Harbor \u00b7 Kinosail Player",
+          "sourcePath": "/media/31c330f7ead4c950",
+          "progressPath": "/progress/31c330f7ead4c950",
+          "castPath": "/api/v1/items/31c330f7ead4c950/cast",
+          "tracePath": "/api/v1/items/31c330f7ead4c950/playback-events",
+          "sourceSessionMatches": true,
+          "title": "Copper <Moon> & Harbor",
+          "artist": "Mira Tide",
+          "album": "R08 Fictional Session",
+          "artworkPath": "/art/31c330f7ead4c950",
+          "visibleArtworkPath": "/art/31c330f7ead4c950",
+          "metadataTitle": "Copper <Moon> & Harbor",
+          "metadataArtist": "Mira Tide",
+          "metadataAlbum": "R08 Fictional Session",
+          "metadataArtworkPath": "/art/31c330f7ead4c950",
+          "queuePosition": 2,
+          "queueTotal": 2
+        }
+      }
+    },
+    {
+      "title": "real album queue advances source and all Now Playing identity to the fictional second track",
+      "status": "passed",
+      "durationMs": 2622,
+      "projections": {
+        "player-content-cache-delivery": {
+          "path": "/static/player.js?v=5f1d72e686f77d6e44d0dd5a61796a5dd24976867769220a1de81dafa29ff215",
+          "sha256": "5f1d72e686f77d6e44d0dd5a61796a5dd24976867769220a1de81dafa29ff215",
+          "cacheControl": "public, max-age=31536000, immutable"
+        },
+        "now-playing-after-real-advance": {
+          "heading": "Copper <Moon> & Harbor",
+          "byline": "Mira Tide \u00b7 R08 Fictional Session \u00b7 Track 2",
+          "accessibleLabel": "Copper <Moon> & Harbor",
+          "documentTitle": "Copper <Moon> & Harbor \u00b7 Kinosail Player",
+          "sourcePath": "/media/31c330f7ead4c950",
+          "progressPath": "/progress/31c330f7ead4c950",
+          "castPath": "/api/v1/items/31c330f7ead4c950/cast",
+          "tracePath": "/api/v1/items/31c330f7ead4c950/playback-events",
+          "sourceSessionMatches": true,
+          "title": "Copper <Moon> & Harbor",
+          "artist": "Mira Tide",
+          "album": "R08 Fictional Session",
+          "artworkPath": "/art/31c330f7ead4c950",
+          "visibleArtworkPath": "/art/31c330f7ead4c950",
+          "metadataTitle": "Copper <Moon> & Harbor",
+          "metadataArtist": "Mira Tide",
+          "metadataAlbum": "R08 Fictional Session",
+          "metadataArtworkPath": "/art/31c330f7ead4c950",
+          "queuePosition": 2,
+          "queueTotal": 2
+        }
+      }
+    },
+    {
+      "title": "real album queue keeps system previous and next current and exposes only fresh current-track actions",
+      "status": "passed",
+      "durationMs": 1143,
+      "projections": {}
+    },
+    {
+      "title": "real album queue keeps system previous and next current and exposes only fresh current-track actions",
+      "status": "passed",
+      "durationMs": 1133,
+      "projections": {}
+    }
+  ],
+  "visualFinding": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "observation": "Original item action section and hidden Retry notice appear after queue advance. Desktop hidden assertions preceded the viewport change; this run is not final UI GREEN.",
+    "screenshot": "initial-phone-visible-actions.png"
+  },
+  "rawReportSHA256": "cac9af948e770137a56192ea72437d1594c7216307f2e1f79a649f5c693d6c95"
+}

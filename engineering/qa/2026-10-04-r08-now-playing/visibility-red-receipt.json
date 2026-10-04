@@ -1,0 +1,100 @@
+{
+  "revision": "ab489c148b137377a8400ccca65a5237e12af81f",
+  "sourceSHA256": {
+    "packages/webassets/static/player-progress.js": "1a65d06c4b7cf912837aaa4d0a56ce6b26f5fd1037f5919c5b5cc734a53ea7b4",
+    "packages/webassets/static/player-presentation.js": "4a7330ba317b7da98afe094f52a2c28c47fad261b3c37ee7ead5a74de1c0c879",
+    "packages/webassets/static/player-audio-queue.js": "8e721ab3ed7debb457c426dcf7485b11991e335030a0fd8a5f74e4d7c2667448",
+    "packages/playerweb/audio_queue_template.go": "543927e9223ec2310dabb51c5ed6f3211948a9da14af7d9a860225964bd4a633",
+    "packages/playerweb/player_template.go": "5722e6100d788327b56d13249f9d75d9f08ea301828cd37607e3ce2f332fc627",
+    "apps/player/e2e/test-instance-audio-queue.spec.ts": "beb2cdb6f6a160b67e052adc1e589573a4bc05731d7981e663723fe1486cf729",
+    "apps/player/e2e/player-audio-policy.spec.ts": "9607eacfc7fb428290f9cc65d476567f60b806458eeffb25ca2b1d46e5e4d569",
+    "apps/player/e2e/player-progress.spec.ts": "7ab3dfd78aedf5000430cd6f7d7f51dca0ba69d2f47edd2877534ab2cc74a1fd",
+    "apps/player/e2e/static-sources.ts": "4af44c204b9699991b26e5daec1ed48d4c6380fe5570225987074a91d06ff19d",
+    "scripts/testing/test-player-audio-queue-local.py": "31b1b09692ba3c86589605c2c88a03f7ef9bb82dac1bb747ffe280d144dd6731",
+    "packages/webassets/static/player-app.css": "8435a930c4ec62ba92a797f64f4b816cf3a4e778ba8fb6d1820a6288f94ae17f",
+    "packages/webassets/static/subtitles-app.css.patch": "96be4e11f4b35b255a91458d59a19c57c22d853d15bf26bd6e60150d3099e565",
+    "apps/player/internal/server/navigation_shell.go": "f5ccbec12d2b7a6e6069536bc88f05503cb4d08f43f8d138d0c0519cefcee33b",
+    "apps/subtitles/internal/server/navigation_shell.go": "7a070d52a1c9ba0088c47439db013d51e399fe7aa420c1076d40d081887dbd4f"
+  },
+  "workingDiffSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "command": "GOMAXPROCS=2 python3 scripts/testing/test-player-audio-queue-local.py --visibility-red",
+  "environment": "Native Go Kinosail Server; loopback HTTP; one Chromium worker",
+  "data": "Two generated twelve-second WAV tracks, fictional NFO metadata and PNG covers; disposable Owner and TOTP. State preserved.",
+  "boundaries": "No real user data, container, deployment, physical device, or native OS-control panel proof.",
+  "result": "reproduced",
+  "fixtureSHA256": {
+    "01 Lantern.nfo": "5eaba5d5a24ffcc0c28c45b7818b07112ac853e089c4998aaf0d9eeeeb468552",
+    "01 Lantern.png": "8be69672e8013fcb0ecf63e169a4fcc84a9c5b103de14e7f72fabbeaf7db4f6a",
+    "01 Lantern.wav": "38d4fe14e5f89f543e875da3c70ad9b1bfc9f3bf6503216e2266891bd9fcd5fe",
+    "02 Copper.nfo": "037c16f3b69a359f5243170a20d3d6c22f996098f68bc8a50abf46a4ca54f406",
+    "02 Copper.png": "818caffacae2ece1b33f22d59eade6fffb7a65400d287f030b90a14f11ab0f6b",
+    "02 Copper.wav": "c018220a8ab86aa0170ec18fcbaa67849bbfb70a469d0cbde1007e545c7250ff"
+  },
+  "buildInputsSHA256": "35b4510bafe778edf56b7cb933b490eba114651d686fe817dc884449f618bdbd",
+  "binarySHA256": "ae320f2b216c03047fce7a08ad1ad682cc6a71ab63a42354f2aff5adc721ad80",
+  "sourceInputsUnchangedAfterBuild": true,
+  "browserCommand": [
+    "node",
+    "node_modules/@playwright/test/cli.js",
+    "test",
+    "test-instance-audio-queue.spec.ts",
+    "--project=chromium",
+    "--workers=1",
+    "--repeat-each=2",
+    "--retries=0",
+    "--global-timeout=120000",
+    "--reporter=line,json",
+    "--grep",
+    "real album queue advances source and all Now Playing identity to the fictional second track|mobile R03 progress notice stays hidden after real acknowledgement and reopens only on failure"
+  ],
+  "browserExitCode": 1,
+  "namedResults": {
+    "real album queue advances source and all Now Playing identity to the fictional second track": [
+      "failed",
+      "failed"
+    ],
+    "mobile R03 progress notice stays hidden after real acknowledgement and reopens only on failure": [
+      "failed",
+      "failed"
+    ]
+  },
+  "namedResultClasses": {
+    "real album queue advances source and all Now Playing identity to the fictional second track": "Actual Go Server canonical routes",
+    "mobile R03 progress notice stays hidden after real acknowledgement and reopens only on failure": "Isolated 503 failure injection in Go-backed UI; real acknowledgements and Retry"
+  },
+  "checksums": {
+    "browser.log": "774bbe6749853378621be2a2802bcedf7372692ec8463dd9d1bca0a57f3a4201",
+    "build-inputs.json": "35b4510bafe778edf56b7cb933b490eba114651d686fe817dc884449f618bdbd",
+    "server-private.log": "77e7e0ae4d2c0f4acac4a3eed45fe8dcf30eb546ec0faa09885f4596442cae13",
+    "browser-results.json": "f3c49dbc595f9446fea0dd4a06dd5d9285d8e42b8f376037b593827e33a47c64",
+    "config/kinosail.db-shm": "dec029944c33b2dbe593b615f9609485c5a6bafba1731d044a7e571b10440a4e",
+    "config/kinosail.db-wal": "941305892c02017313b60b90c65ebbb97cc931d756ce1bc387fd7e031bff30fa",
+    "config/audit_key.json": "48798bf7f16061e1ea220ec5efcfaa4d5b36f6bf4b77d611508d3dabf0351573",
+    "config/kinosail.db": "97e8d54f8a7255106f66cf1b213c4a4d7b558d21310b1c2bfedc3d0d526dddda",
+    "config/audit.jsonl": "e469f52668b06433167feb0a5f22329a27a8796fe44dda24653b01b84490f832",
+    "browser-artifacts/.last-run.json": "1e58c31a55ebdf44150daaf9eca59360f451a6c2771f5b0ab9949d46467d448e",
+    "backups/kinosail-20261004T110716.972353000Z.backup": "5951524968337df5b9777e020d8c2bbe12884e114d750961f557e6e16b06c4a6",
+    "media/01 Lantern.wav": "38d4fe14e5f89f543e875da3c70ad9b1bfc9f3bf6503216e2266891bd9fcd5fe",
+    "media/02 Copper.png": "818caffacae2ece1b33f22d59eade6fffb7a65400d287f030b90a14f11ab0f6b",
+    "media/01 Lantern.nfo": "5eaba5d5a24ffcc0c28c45b7818b07112ac853e089c4998aaf0d9eeeeb468552",
+    "media/02 Copper.nfo": "037c16f3b69a359f5243170a20d3d6c22f996098f68bc8a50abf46a4ca54f406",
+    "media/01 Lantern.png": "8be69672e8013fcb0ecf63e169a4fcc84a9c5b103de14e7f72fabbeaf7db4f6a",
+    "media/02 Copper.wav": "c018220a8ab86aa0170ec18fcbaa67849bbfb70a469d0cbde1007e545c7250ff",
+    "browser-artifacts/test-instance-audio-queue--cd5da--the-fictional-second-track-chromium-repeat1/test-failed-1.png": "16ea88b00070b85247cd41d7f9560b65e7fd505f8a5e05e6ceb3f61be18bd15f",
+    "browser-artifacts/test-instance-audio-queue--cd5da--the-fictional-second-track-chromium-repeat1/second-track-before-assertions.png": "84a4c35a41120dbef3ee3a67ccfb8b6457ec32a938f053c94207e2c4a7911cc5",
+    "browser-artifacts/test-instance-audio-queue--cd5da--the-fictional-second-track-chromium-repeat1/trace.zip": "baf719005e051eba687bc941256148a2a09d43575d3b859de1f74bce7ace5ce5",
+    "browser-artifacts/test-instance-audio-queue--cd5da--the-fictional-second-track-chromium-repeat1/error-context.md": "6695bb1568e8edfb45aa5d43b5ecfb398cebd26894a59fb7faec5a2c95b4f872",
+    "browser-artifacts/test-instance-audio-queue--cd5da--the-fictional-second-track-chromium/test-failed-1.png": "ba1f202f9538190f7e41c1a9042d8e2c269f9a272e603d3cf0885de429d6dd71",
+    "browser-artifacts/test-instance-audio-queue--cd5da--the-fictional-second-track-chromium/second-track-before-assertions.png": "d0b24f97fbfb5aaa9c395e987129b757058a97b3b8b128c9adcd3c42135aa42d",
+    "browser-artifacts/test-instance-audio-queue--cd5da--the-fictional-second-track-chromium/trace.zip": "3fe0d5677f7dfc9015cd7a2705637cd6a41b8d9438b170cc8e36928000117c91",
+    "browser-artifacts/test-instance-audio-queue--cd5da--the-fictional-second-track-chromium/error-context.md": "6695bb1568e8edfb45aa5d43b5ecfb398cebd26894a59fb7faec5a2c95b4f872",
+    "browser-artifacts/test-instance-audio-queue--0777c-and-reopens-only-on-failure-chromium-repeat1/test-failed-1.png": "3fe4006f48abc8913ff54c19a2e6e03bed663ab7a7671dc3f9e27c2b3af71075",
+    "browser-artifacts/test-instance-audio-queue--0777c-and-reopens-only-on-failure-chromium-repeat1/trace.zip": "b24367ce740c563c4a0dcd29b6c64cc4acfa0f60cfd9f44e8942af29c283172f",
+    "browser-artifacts/test-instance-audio-queue--0777c-and-reopens-only-on-failure-chromium-repeat1/error-context.md": "c6b423203b58bd5ce32a4d68f5356d19eec2749b8866b4623a9063351e1a90f7",
+    "browser-artifacts/test-instance-audio-queue--0777c-and-reopens-only-on-failure-chromium/test-failed-1.png": "3fe4006f48abc8913ff54c19a2e6e03bed663ab7a7671dc3f9e27c2b3af71075",
+    "browser-artifacts/test-instance-audio-queue--0777c-and-reopens-only-on-failure-chromium/trace.zip": "c5dfb9ba335dbe84f21a2b2443af63611a77471e67a75c8de10d467e65adfe88",
+    "browser-artifacts/test-instance-audio-queue--0777c-and-reopens-only-on-failure-chromium/error-context.md": "c6b423203b58bd5ce32a4d68f5356d19eec2749b8866b4623a9063351e1a90f7",
+    "cache/probes/57ffdaf6d9ada218471c8eb2aca9ce86.json": "65482542f851649e1605f6e52a902f3d9fe06366504cec3ceb66934a4b316106",
+    "cache/probes/3ed31473bde9f4c7025e1254a60c3a5b.json": "39ff66942b81d9d69d8b787d86746a13ab12678d5ee7a89df93fe020f2a0cb2e"
+  }
+}

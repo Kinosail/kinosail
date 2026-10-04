@@ -1,0 +1,64 @@
+{
+  "revision": "8cffedd60c7b8f01d08859f80733c7f9d7d3b14b",
+  "sourceSHA256": {
+    "packages/webassets/static/player-progress.js": "cb116413baad693f076c0321eba8644ab5f6354de9082e3f5925d8d890e01f12",
+    "packages/webassets/static/player-audio-queue.js": "e259049630736c13218017e76ea721b982ba711aad171efe13f2662ce2c0f97d",
+    "packages/webassets/static/player-presentation.js": "4a7330ba317b7da98afe094f52a2c28c47fad261b3c37ee7ead5a74de1c0c879",
+    "apps/player/e2e/player-audio-policy.spec.ts": "9607eacfc7fb428290f9cc65d476567f60b806458eeffb25ca2b1d46e5e4d569",
+    "apps/player/e2e/static-sources.ts": "4af44c204b9699991b26e5daec1ed48d4c6380fe5570225987074a91d06ff19d",
+    "apps/player/e2e/playwright.config.ts": "628d3a62d9b3e2fba1bc43f3cd58979acadf22c083e3559c73c4f750a97cc0b3"
+  },
+  "productionUnchangedFrom": "f6cf967e",
+  "testOnlyInstrumentationCommit": "8cffedd6",
+  "environment": "Isolated Chromium HTTP fixture; one worker; video off",
+  "command": "player-audio-policy.spec.ts --grep failed queue source cannot replace its saved position with reset zero before metadata --project=chromium --workers=1 --retries=0 --timeout=5000 --global-timeout=20000",
+  "nodeVersion": "v26.8.2",
+  "excludedAttempt": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r03-progress/.verification/r08-now-playing/pre-metadata-red-20261004T102404Z",
+  "result": "reproduced",
+  "proofClass": "Isolated browser HTTP fault; not populated Server E2E",
+  "stats": {
+    "startTime": "2026-10-04T10:25:25.057Z",
+    "duration": 11565.501999999999,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  },
+  "globalErrors": 0,
+  "namedResults": {
+    "failed queue source cannot replace its saved position with reset zero before metadata": [
+      "failed"
+    ]
+  },
+  "caseDurationMs": 515,
+  "snapshot": {
+    "progressPath": "/progress/next",
+    "savedSeconds": 42,
+    "mediaSeconds": 0,
+    "sourcePath": "/media/next",
+    "failure": "media"
+  },
+  "progressWrites": [
+    {
+      "seconds": "0",
+      "revision": "2"
+    },
+    {
+      "seconds": "0",
+      "revision": "3"
+    }
+  ],
+  "failureAssertion": "Expected no new-source position writes; observed reset zero revisions 2 and 3",
+  "sourceInputsUnchangedAfterRun": true,
+  "committedPlayerBundleSHA256": "f948a8457f3c9ee757897bffe116a46b5f53ce001a0d012abda71c1d05d53317",
+  "bundleProvenance": "Derived from clean committed HEAD; every included current source compared byte-identical after run. Changed production/fixture inputs hashed before run.",
+  "artifactsSHA256": {
+    "browser-artifacts/.last-run.json": "27f1a72fc8afbd31614195e9f8f69cc54c6036b164b763c5f1e958e8c047773f",
+    "browser-artifacts/player-audio-policy-failed-e8c7d--reset-zero-before-metadata-chromium/error-context.md": "3a9f44f1d6c5feafeefcb61260e68447d26a62c4b28925bab53ba042a9fac4db",
+    "browser-artifacts/player-audio-policy-failed-e8c7d--reset-zero-before-metadata-chromium/test-failed-1.png": "8b9198f2eda22b55880dbcd378f8f71c70cd4605c4cb4d50e059ef2449393808",
+    "browser-artifacts/player-audio-policy-failed-e8c7d--reset-zero-before-metadata-chromium/trace.zip": "3be32cad232f2f906b50e5fb8478f70c5113537fc79faa7f19e492794fd809fa",
+    "browser.log": "ef027c9e871947c89a69354f01a44eb6cf232e660ff97e5efab5cee4b4b841d2",
+    "results.json": "39a6b5fceac0463d6130e66ce6949a37b649155d8d58ff89a396f823eeb5363b",
+    "source-inputs.json": "d2ca8d45c4fbe0cb1248a1ddd54de72a737617d4991e52d41ed4f3cebdd00922"
+  }
+}

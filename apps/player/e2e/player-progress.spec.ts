@@ -1,8 +1,14 @@
 import { expect, test, type Page, type Route } from "@playwright/test";
 import { readFile } from "node:fs/promises";
+import {execFileSync} from "node:child_process";
+import {createHash} from "node:crypto";
 
 // Isolated HTTP failure/ordering coverage; see engineering/qa/2026-10-04-r03-progress.
-const source = await readFile(new URL("../../../packages/webassets/static/player-progress.js", import.meta.url), "utf8");
+const frozenRevision = process.env.KINOSAIL_PROGRESS_FROZEN_REVISION;
+if (frozenRevision && !/^[a-f0-9]{40}$/.test(frozenRevision)) throw new Error("Frozen progress source must name an exact commit.");
+const source = frozenRevision ? execFileSync("git", ["show", `${frozenRevision}:packages/webassets/static/player-progress.js`], {encoding: "utf8"}) :
+  await readFile(new URL("../../../packages/webassets/static/player-progress.js", import.meta.url), "utf8");
+const queueSource = frozenRevision ? "" : await readFile(new URL("../../../packages/webassets/static/player-audio-queue.js", import.meta.url), "utf8");
 const fixtureOrigin = "https://progress.kinosail.test";
 test.use({baseURL: fixtureOrigin});
 const failure = "Your latest position is not saved. Retry while this page is open.";
@@ -32,19 +38,26 @@ test.beforeEach(async ({ page }, testInfo) => {
       <label>Audio track <select data-audio-track><option value="0">Original</option><option value="1">Other</option></select></label><small data-audio-status></small>
     </main></body></html>` }));
   await page.route("**/watch/next", route => route.fulfill({ contentType: "text/html", body: "<h1>Next episode</h1>" }));
-  await page.route("**/api/v1/test-queue", route => route.fulfill({json: {items: [{id: "movie"}, {id: "next", title: "Next song", stream: "/media/next"}]}}));
+  await page.route("**/api/v1/audio/movie/queue", route => route.fulfill({json: {items: [
+    {id: "movie", kind: "audio", title: "First song", stream: "/media/movie"},
+    {id: "next", kind: "audio", title: "Next song", stream: "/media/next"},
+  ]}}));
+  await page.route("**/api/v1/items/next", route => route.fulfill({json: {profileId: "qa-viewer", item: {id: "next", kind: "audio", title: "Next song", stream: "/media/next"}}}));
   await page.goto("/");
-  if (testInfo.title.includes("audio queue")) await page.locator("video").evaluate(media => media.dataset.queue = "/api/v1/test-queue");
+  if (testInfo.title.includes("audio queue")) await page.locator("video").evaluate(media => media.dataset.queue = "/api/v1/audio/movie/queue");
   await page.addScriptTag({ content: `
     const player = document.querySelector('video'), csrf = 'synthetic-csrf', playbackSession = 'qa-session-03';
     let playbackPreparation, preparationPausePending = 0;
-    const playbackTraceMethod = 'direct', setPlayerTime = seconds => player.currentTime = seconds;
-    const requestPlay = async () => {}, playerStorage = {get: () => '', set: () => {}};
+    let playbackTraceMethod = 'direct', playbackTimelineOffset = 0;
+    const setPlayerTime = seconds => player.currentTime = seconds;
+    const withPlaybackSession = source => source + '?playbackSession=' + playbackSession, updateNowPlaying = () => {};
+    const requestPlay = () => window.holdQueuePlay ? new Promise(resolve => window.finishQueuePlay = resolve) : Promise.resolve();
+    const playerStorage = {get: () => '', set: () => {}};
     const playbackTrace = () => {}, flushPlaybackTrace = () => {};
     let position = 42, paused = true;
-    Object.defineProperties(player, {currentTime: {get: () => position, set: value => position = value}, duration: {value: 100}, readyState: {value: 4}, paused: {get: () => paused}, load: {value: () => {}}});
+    Object.defineProperties(player, {currentTime: {get: () => position, set: value => position = value}, duration: {value: 100}, readyState: {value: 4}, paused: {get: () => paused}, load: {value: () => queueMicrotask(() => player.dispatchEvent(new Event('loadedmetadata')))}});
     Object.assign(window, {setPaused: value => paused = value, prepare: value => playbackPreparation = value});
-  ` + source });
+  ` + source + queueSource });
 });
 
 async function pauseAt(page: Page, seconds: number) {
@@ -260,4 +273,26 @@ test("audio queue does not drop a failed watched save when it advances", async (
   await expect(page.locator("video")).toHaveAttribute("data-progress", "/progress/next");
   expect(requests.at(-1)!.body.get("watched")).toBe("true");
   await expect(page.locator("[data-progress-notice]")).toBeHidden();
+});
+
+test("audio queue saves a new-track pause while final watched continuation still settles", async ({page}, testInfo) => {
+  await testInfo.attach("progress-source-provenance", {body: JSON.stringify({revision: frozenRevision || "working-tree",
+    senderAndQueueSHA256: createHash("sha256").update(source + queueSource).digest("hex")}), contentType: "application/json"});
+  try {
+    await page.waitForFunction("audioQueue.length === 1");
+    await page.evaluate(() => Object.assign(window, {holdQueuePlay: true}));
+    await page.locator("video").dispatchEvent("ended");
+    await expect(page.locator("video")).toHaveAttribute("data-progress", "/progress/next");
+    await expect.poll(() => page.locator("video").evaluate((media: HTMLVideoElement) => new URL(media.src).pathname)).toBe("/media/next");
+    await page.waitForFunction("typeof window.finishQueuePlay === 'function'");
+    await pauseAt(page, 3);
+    await page.evaluate(() => (window as Window & {finishQueuePlay(): void}).finishQueuePlay());
+    await testInfo.attach("queued-new-track-pause", {body: JSON.stringify(await page.evaluate("({progressPath: player.dataset.progress, pendingSeconds: pendingProgress?.seconds, pendingRevision: pendingProgress?.revision, flightSettled: progressFlight === undefined})")), contentType: "application/json"});
+    await expect.poll(() => requests.length, {timeout: 1500}).toBe(2);
+    expect(new URL(requests[1].route.request().url()).pathname).toBe("/progress/next");
+    expect(requests[1].body.get("seconds")).toBe("3");
+    expect(requests[1].body.get("watched")).toBeNull();
+  } finally {
+    await page.evaluate(() => (window as Window & {finishQueuePlay?: () => void}).finishQueuePlay?.()).catch(() => {});
+  }
 });

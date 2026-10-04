@@ -1,0 +1,247 @@
+{
+  "revision": "38b43c3a805515ea7556e31f82c3d9c77bd4d6d4",
+  "environment": "Isolated Chromium routed HTTP fixtures; one worker; video off",
+  "proofClass": "Isolated browser faults, not populated Server E2E",
+  "command": "player-audio-policy.spec.ts player-progress.spec.ts player-progress-queue-drain.spec.ts --project=chromium --workers=1 --retries=0 --timeout=15000 --global-timeout=120000",
+  "sourceSHA256": {
+    "apps/player/internal/server/static/playback-capabilities.js": "4c369515a923fbe1d85aa35e21d50a0e4c484b9f62d25d5904845826e10bac2b",
+    "packages/webassets/static/player-core.js": "92d6bc44d3ff7fc05a1593949a9d6d673785fce1471b6a5bea7bce6aaf85aa0c",
+    "apps/player/internal/server/static/player-subtitles.js": "5b1ece82b927503b0dcdf80c4d3b55e917feb1783f953c7402b25acf164d357e",
+    "apps/player/internal/server/static/player.js": "214997dbce7bb80fcb81d3c6988e3a6203c8a60935b05a13652e4644f5e059ba",
+    "apps/player/internal/server/static/player-streaming-adaptive.js": "c7545cf8ba5b400de5733017f204a7bb2565738b3acea3fb23b507a40dfb543c",
+    "apps/player/internal/server/static/player-streaming-recovery.js": "7e66f1cfc023fed1f7a00916c0ea2453a94ab688a92028fe7e2597009e757c2f",
+    "apps/player/internal/server/static/player-streaming-offline.js": "ddceb6e6cbfc18ece9ca44365f0791fa106d323f6bc9f61328bbb9418cc1c9d8",
+    "packages/webassets/static/player-controls.js": "4bbad3109f66f57e8aa637beb6cb8e52a6715b1bca106aa40e7db6f850cd9e05",
+    "packages/webassets/static/player-status.js": "748d8c2607261aff3afbd71c4dae44c338b44becc14407d594f4e1dca5017011",
+    "packages/webassets/static/player-presentation.js": "4a7330ba317b7da98afe094f52a2c28c47fad261b3c37ee7ead5a74de1c0c879",
+    "packages/webassets/static/player-devices.js": "67dcd0f9b639732a4ad593f2e7d0750bcbdc874a378aab980b1cce72f6b1da6b",
+    "packages/webassets/static/player-progress.js": "1a65d06c4b7cf912837aaa4d0a56ce6b26f5fd1037f5919c5b5cc734a53ea7b4",
+    "packages/webassets/static/player-audio-queue.js": "8e721ab3ed7debb457c426dcf7485b11991e335030a0fd8a5f74e4d7c2667448",
+    "apps/player/e2e/static-sources.ts": "4af44c204b9699991b26e5daec1ed48d4c6380fe5570225987074a91d06ff19d",
+    "apps/player/e2e/playwright.config.ts": "628d3a62d9b3e2fba1bc43f3cd58979acadf22c083e3559c73c4f750a97cc0b3",
+    "apps/player/e2e/player-audio-policy.spec.ts": "9607eacfc7fb428290f9cc65d476567f60b806458eeffb25ca2b1d46e5e4d569",
+    "apps/player/e2e/player-progress.spec.ts": "7ab3dfd78aedf5000430cd6f7d7f51dca0ba69d2f47edd2877534ab2cc74a1fd",
+    "apps/player/e2e/player-progress-queue-drain.spec.ts": "92727254d224c8ff2cf09fab3c54bf9f4f2e8865ddf2e8251b87f2715814889a"
+  },
+  "playerBundleSHA256": "fa7db50889a6ff96aa2272b2517d6b3151fbdd3de4fe65771b8bf00e07b96730",
+  "nodeVersion": "v26.8.2",
+  "result": "passed",
+  "stats": {
+    "startTime": "2026-10-04T10:40:11.786Z",
+    "duration": 23555.089,
+    "expected": 50,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "globalErrors": 0,
+  "sourceInputsUnchangedAfterRun": true,
+  "namedResults": {
+    "audio keeps its source and queue with saved policy compatible": {
+      "status": "passed",
+      "durationMs": 337
+    },
+    "audio keeps its source and queue with saved policy direct-first": {
+      "status": "passed",
+      "durationMs": 240
+    },
+    "audio keeps its source and queue with saved policy direct-only": {
+      "status": "passed",
+      "durationMs": 275
+    },
+    "audio keeps its source and queue with saved policy unset": {
+      "status": "passed",
+      "durationMs": 275
+    },
+    "audio keeps its source and queue with saved policy unknown": {
+      "status": "passed",
+      "durationMs": 243
+    },
+    "Home Assistant state uses the session CSRF token and consumes a command": {
+      "status": "passed",
+      "durationMs": 251
+    },
+    "queue rejects external stream before progress or Now Playing side effects": {
+      "status": "passed",
+      "durationMs": 360
+    },
+    "queue rejects missing authorization before progress or Now Playing side effects": {
+      "status": "passed",
+      "durationMs": 364
+    },
+    "queue rejects wrong profile before progress or Now Playing side effects": {
+      "status": "passed",
+      "durationMs": 347
+    },
+    "queue rejects wrong item before progress or Now Playing side effects": {
+      "status": "passed",
+      "durationMs": 363
+    },
+    "manual queue advance retains failed position and waits for Retry before another choice": {
+      "status": "passed",
+      "durationMs": 482
+    },
+    "queue source load ignores its delayed pause until new metadata belongs to that source": {
+      "status": "passed",
+      "durationMs": 399
+    },
+    "failed queue source cannot replace its saved position with reset zero before metadata": {
+      "status": "passed",
+      "durationMs": 409
+    },
+    "late item authorization cannot cross a profile change": {
+      "status": "passed",
+      "durationMs": 358
+    },
+    "overlapping queue actions authorize and advance only once": {
+      "status": "passed",
+      "durationMs": 352
+    },
+    "offline queue transition respects its own progress journal: saved": {
+      "status": "passed",
+      "durationMs": 376
+    },
+    "offline queue transition respects its own progress journal: failed": {
+      "status": "passed",
+      "durationMs": 370
+    },
+    "failed new artwork clears the previous cover without reverting current metadata": {
+      "status": "passed",
+      "durationMs": 352
+    },
+    "queue preserves truthful local ownership with missing artwork": {
+      "status": "passed",
+      "durationMs": 363
+    },
+    "queue preserves truthful local ownership with unsupported system metadata": {
+      "status": "passed",
+      "durationMs": 360
+    },
+    "queue preserves truthful local ownership with cast owner": {
+      "status": "passed",
+      "durationMs": 278
+    },
+    "queue preserves truthful local ownership with room owner": {
+      "status": "passed",
+      "durationMs": 259
+    },
+    "new track pause is dispatched after watched continuation release": {
+      "status": "passed",
+      "durationMs": 226
+    },
+    "pagehide dispatches latest position once while retired watched continuation settles": {
+      "status": "passed",
+      "durationMs": 267
+    },
+    "failed pause save is visible and retries the same revision: HTTP 503": {
+      "status": "passed",
+      "durationMs": 311
+    },
+    "failed pause save is visible and retries the same revision: network rejection": {
+      "status": "passed",
+      "durationMs": 290
+    },
+    "latest pending revision wins over late failures and successes": {
+      "status": "passed",
+      "durationMs": 531
+    },
+    "ended failure holds next navigation and offers an explicit continue": {
+      "status": "passed",
+      "durationMs": 295
+    },
+    "ended Retry saves watched state before next navigation": {
+      "status": "passed",
+      "durationMs": 414
+    },
+    "HTTP 401 does not repeat policy or authentication failures": {
+      "status": "passed",
+      "durationMs": 241
+    },
+    "HTTP 403 does not repeat policy or authentication failures": {
+      "status": "passed",
+      "durationMs": 245
+    },
+    "HTTP 400 does not repeat policy or authentication failures": {
+      "status": "passed",
+      "durationMs": 226
+    },
+    "HTTP 404 does not repeat policy or authentication failures": {
+      "status": "passed",
+      "durationMs": 226
+    },
+    "pending local save cannot cross profile ownership": {
+      "status": "passed",
+      "durationMs": 219
+    },
+    "pending local save cannot cross item ownership": {
+      "status": "passed",
+      "durationMs": 246
+    },
+    "pending local save cannot cross cast ownership": {
+      "status": "passed",
+      "durationMs": 243
+    },
+    "pending local save cannot cross offline ownership": {
+      "status": "passed",
+      "durationMs": 237
+    },
+    "preparation and cast never emit local progress; offline uses its own journal": {
+      "status": "passed",
+      "durationMs": 220
+    },
+    "audio track change stays on the page when progress fails": {
+      "status": "passed",
+      "durationMs": 230
+    },
+    "timeout gives a bounded Retry state without blocking viewing": {
+      "status": "passed",
+      "durationMs": 334
+    },
+    "periodic, hidden-page and page-close saves inspect failures and preserve latest progress": {
+      "status": "passed",
+      "durationMs": 235
+    },
+    "HTTP failure diagnostics carry bounded session/revision/request correlation without secrets": {
+      "status": "passed",
+      "durationMs": 232
+    },
+    "bounded positions reject invalid media time without making a request": {
+      "status": "passed",
+      "durationMs": 220
+    },
+    "page-close dispatch sends the latest position while an older request is in flight": {
+      "status": "passed",
+      "durationMs": 322
+    },
+    "watched failure on the last title survives later pause and hiding events": {
+      "status": "passed",
+      "durationMs": 215
+    },
+    "ended policy failure still offers Continue without saving": {
+      "status": "passed",
+      "durationMs": 267
+    },
+    "localized recovery notices use Go-rendered copy": {
+      "status": "passed",
+      "durationMs": 213
+    },
+    "audio track change cannot mistake an unexpected successful HTTP page for a progress acknowledgement": {
+      "status": "passed",
+      "durationMs": 214
+    },
+    "audio queue does not drop a failed watched save when it advances": {
+      "status": "passed",
+      "durationMs": 352
+    },
+    "audio queue saves a new-track pause while final watched continuation still settles": {
+      "status": "passed",
+      "durationMs": 235
+    }
+  },
+  "artifactsSHA256": {
+    "browser-artifacts/.last-run.json": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903",
+    "browser.log": "7844fadca3597f1e9013fd0565af34d373fe0b9415dc88ced33279c64c723b81",
+    "results.json": "7dcab1b5d5d0daaae1e62824a40746709ec11f816324a019980db8cf5b00929f",
+    "source-inputs.json": "b1c2a1556402a2f45b65f40edb89afc3ff56a160d72953700cc6fad526b1f989"
+  }
+}

@@ -1,0 +1,256 @@
+{
+  "testedRevision": "68f404937cdf5d3332590325e9c5e3854a710718",
+  "resultClass": "native-green-with-explicit-isolated-notice-controls",
+  "stats": {
+    "startTime": "2026-10-04T11:18:59.369Z",
+    "duration": 32288.386,
+    "expected": 6,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "globalErrors": 0,
+  "cases": [
+    {
+      "title": "real album queue advances source and all Now Playing identity to the fictional second track",
+      "proofClass": "Actual Go Server canonical routes",
+      "status": "passed",
+      "durationMs": 2787,
+      "projections": [
+        {
+          "name": "player-content-cache-delivery",
+          "value": {
+            "path": "/static/player.js?v=5f1d72e686f77d6e44d0dd5a61796a5dd24976867769220a1de81dafa29ff215",
+            "sha256": "5f1d72e686f77d6e44d0dd5a61796a5dd24976867769220a1de81dafa29ff215",
+            "cacheControl": "public, max-age=31536000, immutable"
+          }
+        },
+        {
+          "name": "now-playing-after-real-advance",
+          "value": {
+            "heading": "Copper <Moon> & Harbor",
+            "byline": "Mira Tide \u00b7 R08 Fictional Session \u00b7 Track 2",
+            "accessibleLabel": "Copper <Moon> & Harbor",
+            "documentTitle": "Copper <Moon> & Harbor \u00b7 Kinosail Player",
+            "sourcePath": "/media/31c330f7ead4c950",
+            "progressPath": "/progress/31c330f7ead4c950",
+            "castPath": "/api/v1/items/31c330f7ead4c950/cast",
+            "tracePath": "/api/v1/items/31c330f7ead4c950/playback-events",
+            "sourceSessionMatches": true,
+            "title": "Copper <Moon> & Harbor",
+            "artist": "Mira Tide",
+            "album": "R08 Fictional Session",
+            "artworkPath": "/art/31c330f7ead4c950",
+            "visibleArtworkPath": "/art/31c330f7ead4c950",
+            "metadataTitle": "Copper <Moon> & Harbor",
+            "metadataArtist": "Mira Tide",
+            "metadataAlbum": "R08 Fictional Session",
+            "metadataArtworkPath": "/art/31c330f7ead4c950",
+            "queuePosition": 2,
+            "queueTotal": 2
+          }
+        },
+        {
+          "name": "viewport-item-actions",
+          "value": {
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "originalWatchedVisible": false,
+            "originalListVisible": false,
+            "noticeVisible": false
+          }
+        },
+        {
+          "name": "viewport-item-actions",
+          "value": {
+            "viewport": {
+              "width": 1440,
+              "height": 900
+            },
+            "originalWatchedVisible": false,
+            "originalListVisible": false,
+            "noticeVisible": false
+          }
+        },
+        {
+          "name": "viewport-item-actions",
+          "value": {
+            "viewport": {
+              "width": 1920,
+              "height": 1080
+            },
+            "originalWatchedVisible": false,
+            "originalListVisible": false,
+            "noticeVisible": false
+          }
+        },
+        {
+          "name": "css-cache-delivery",
+          "value": {
+            "path": "/static/app.css?v=electric-48",
+            "sha256": "10e340c71de8aacfdd4dead6f32e949da57ce1f77d6ef45307747a3eb3e77ad2",
+            "cacheControl": "public, max-age=31536000, immutable"
+          }
+        }
+      ]
+    },
+    {
+      "title": "real album queue advances source and all Now Playing identity to the fictional second track",
+      "proofClass": "Actual Go Server canonical routes",
+      "status": "passed",
+      "durationMs": 2676,
+      "projections": [
+        {
+          "name": "player-content-cache-delivery",
+          "value": {
+            "path": "/static/player.js?v=5f1d72e686f77d6e44d0dd5a61796a5dd24976867769220a1de81dafa29ff215",
+            "sha256": "5f1d72e686f77d6e44d0dd5a61796a5dd24976867769220a1de81dafa29ff215",
+            "cacheControl": "public, max-age=31536000, immutable"
+          }
+        },
+        {
+          "name": "now-playing-after-real-advance",
+          "value": {
+            "heading": "Copper <Moon> & Harbor",
+            "byline": "Mira Tide \u00b7 R08 Fictional Session \u00b7 Track 2",
+            "accessibleLabel": "Copper <Moon> & Harbor",
+            "documentTitle": "Copper <Moon> & Harbor \u00b7 Kinosail Player",
+            "sourcePath": "/media/31c330f7ead4c950",
+            "progressPath": "/progress/31c330f7ead4c950",
+            "castPath": "/api/v1/items/31c330f7ead4c950/cast",
+            "tracePath": "/api/v1/items/31c330f7ead4c950/playback-events",
+            "sourceSessionMatches": true,
+            "title": "Copper <Moon> & Harbor",
+            "artist": "Mira Tide",
+            "album": "R08 Fictional Session",
+            "artworkPath": "/art/31c330f7ead4c950",
+            "visibleArtworkPath": "/art/31c330f7ead4c950",
+            "metadataTitle": "Copper <Moon> & Harbor",
+            "metadataArtist": "Mira Tide",
+            "metadataAlbum": "R08 Fictional Session",
+            "metadataArtworkPath": "/art/31c330f7ead4c950",
+            "queuePosition": 2,
+            "queueTotal": 2
+          }
+        },
+        {
+          "name": "viewport-item-actions",
+          "value": {
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "originalWatchedVisible": false,
+            "originalListVisible": false,
+            "noticeVisible": false
+          }
+        },
+        {
+          "name": "viewport-item-actions",
+          "value": {
+            "viewport": {
+              "width": 1440,
+              "height": 900
+            },
+            "originalWatchedVisible": false,
+            "originalListVisible": false,
+            "noticeVisible": false
+          }
+        },
+        {
+          "name": "viewport-item-actions",
+          "value": {
+            "viewport": {
+              "width": 1920,
+              "height": 1080
+            },
+            "originalWatchedVisible": false,
+            "originalListVisible": false,
+            "noticeVisible": false
+          }
+        },
+        {
+          "name": "css-cache-delivery",
+          "value": {
+            "path": "/static/app.css?v=electric-48",
+            "sha256": "10e340c71de8aacfdd4dead6f32e949da57ce1f77d6ef45307747a3eb3e77ad2",
+            "cacheControl": "public, max-age=31536000, immutable"
+          }
+        }
+      ]
+    },
+    {
+      "title": "mobile R03 progress notice stays hidden after real acknowledgement and reopens only on failure",
+      "proofClass": "Isolated 503 failure injection in Go-backed UI; real acknowledgements and Retry",
+      "status": "passed",
+      "durationMs": 1163,
+      "projections": [
+        {
+          "name": "mobile-progress-after-real-acknowledgement",
+          "value": {
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "realAcknowledgementStatus": 204,
+            "noticeVisible": false,
+            "hiddenAttribute": true
+          }
+        }
+      ]
+    },
+    {
+      "title": "mobile R03 progress notice stays hidden after real acknowledgement and reopens only on failure",
+      "proofClass": "Isolated 503 failure injection in Go-backed UI; real acknowledgements and Retry",
+      "status": "passed",
+      "durationMs": 1196,
+      "projections": [
+        {
+          "name": "mobile-progress-after-real-acknowledgement",
+          "value": {
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "realAcknowledgementStatus": 204,
+            "noticeVisible": false,
+            "hiddenAttribute": true
+          }
+        }
+      ]
+    },
+    {
+      "title": "real album queue keeps system previous and next current and exposes only fresh current-track actions",
+      "proofClass": "Actual Go Server canonical routes",
+      "status": "passed",
+      "durationMs": 1132,
+      "projections": []
+    },
+    {
+      "title": "real album queue keeps system previous and next current and exposes only fresh current-track actions",
+      "proofClass": "Actual Go Server canonical routes",
+      "status": "passed",
+      "durationMs": 1129,
+      "projections": []
+    }
+  ],
+  "rawReportSHA256": "4c780542135305a97e3a698c8702b339e3c20310fb6595884f1dabcbe8ce4c9c",
+  "visualInspection": {
+    "widths": [
+      390,
+      1440,
+      1920
+    ],
+    "observations": "Current second-track heading/byline/cover and actions link render at all widths; original controls and saved notice stay hidden. Mobile routed failure shows unsaved copy and Retry; actual Retry204 hides notice. Full current-track page renders canonical actions.",
+    "screenshots": [
+      "green-second-track-390.png",
+      "green-second-track-1440.png",
+      "green-second-track-1920.png",
+      "green-mobile-progress-failed.png",
+      "green-mobile-progress-saved.png",
+      "green-fresh-second-track-actions.png"
+    ]
+  }
+}

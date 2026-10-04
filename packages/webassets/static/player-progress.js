@@ -1,6 +1,6 @@
 let progressRevision = 0;
 // One page-owned pending position; never replay a closed page's session over newer state.
-let pendingProgress, progressFlight, progressFailure = "", progressContinuation;
+let pendingProgress, progressFlight, progressFailure = "", progressContinuation, queueSourceChanging = false, queueProgressReady = true;
 const progressNotice = document.querySelector("[data-progress-notice]");
 const progressStatus = document.querySelector("[data-progress-status]");
 const progressRetry = document.querySelector("[data-progress-retry]");
@@ -97,7 +97,7 @@ progressContinue?.addEventListener("click", () => {
 });
 addEventListener("online", retryProgress);
 const save = (watched = false, closing = false) => {
-  if (playbackPreparation) return Promise.resolve();
+  if (playbackPreparation || queueSourceChanging || !queueProgressReady) return Promise.resolve();
   if (player.dataset.castActive === "true" || player.dataset.offline === "true") {
     clearProgress();
     return player.dataset.offline === "true" ? window.KinosailOfflineMedia?.saveProgress(player, watched) : Promise.resolve();
@@ -114,33 +114,6 @@ const save = (watched = false, closing = false) => {
   return sendProgress(closing);
 };
 player.addEventListener("play", () => { if (pendingProgress?.watched) clearProgress(); });
-let audioQueue = [];
-let queuedAudio;
-const warmAudio = () => {
-  if (!audioQueue.length) return;
-  queuedAudio = new Audio(audioQueue[0].stream);
-  queuedAudio.preload = "auto";
-};
-const advanceQueue = async () => {
-  if (!audioQueue.length) return false;
-  const next = audioQueue.shift();
-  window.KinosailOfflineMedia?.unbindProgress(player);
-  delete player.dataset.offline;
-  player.dataset.progress = `/progress/${next.id}`;
-  if (player.dataset.castApi) player.dataset.castApi = `/api/v1/items/${next.id}/cast`;
-  player.dataset.title = next.title;
-  player.dataset.artwork = next.artwork || "";
-  player.dataset.start = next.progress?.seconds || 0;
-  player.src = next.stream;
-  player.load();
-  warmAudio();
-  await requestPlay("queue-advance");
-  return true;
-};
-if (player.dataset.queue) fetch(player.dataset.queue).then((response) => response.json()).then(({items}) => {
-  audioQueue = items.slice(1);
-  warmAudio();
-}).catch(() => {});
 const resumeFromSavedProgress = () => {
   if (player.dataset.offline === "true") return;
   const start = Number(player.dataset.start);
@@ -169,11 +142,10 @@ player.addEventListener("ended", async () => {
     if (player.dataset.next) location.assign(player.dataset.next);
   };
   if (player.dataset.offline === "true") {
-    await save(true);
-    await continuePlayback();
+    if ((await save(true))?.ok) await continuePlayback();
     return;
   }
-  progressContinuation = player.dataset.queue || player.dataset.next ? continuePlayback : undefined;
+  progressContinuation = audioQueue.length || player.dataset.next ? continuePlayback : undefined;
   await save(true);
 });
 addEventListener("pagehide", () => {
