@@ -189,6 +189,8 @@ for (const saved of [true, false]) test(`offline queue transition respects its o
     }});
   }, saved);
   await page.getByRole("button", {name: "Next track", exact: true}).click();
+  await expect.poll(() => page.evaluate(() => (window as Window & {r08Offline: {saved: number}}).r08Offline.saved)).toBe(1);
+  if (!saved) await expect(page.locator("[data-audio-queue-status]")).toHaveAttribute("data-queue-failure", "progress");
   await expect(page.locator("audio")).toHaveAttribute("data-progress", saved ? "/progress/next" : "/progress/track");
   expect(await page.evaluate(() => (window as Window & {r08Offline: {saved: number; detached: number}}).r08Offline)).toEqual({saved: 1, detached: saved ? 1 : 0});
   expect(serverWrites).toEqual([]);
