@@ -1,6 +1,7 @@
 # Fresh bounded Q09 integration proof
 
-Root integration composes the reviewed Pause feature with R08 and requires fresh
+The earlier root integration composed Pause with R08. This current candidate
+starts from main ee567 and excludes all unmerged R08 commits. It requires fresh
 evidence before protected delivery. Preserve the original five isolated, eight
 real Server and one phone-hit proofs and all earlier failures.
 
@@ -38,3 +39,6 @@ Every command settles its owned group after any exit. Fixed failure source
 locations and hashes are retained; raw private/visual evidence remains ephemeral
 and cannot support later visual inspection. Original reviewed250 artifacts stay
 preserved and separate. These driver controls do not prove public product cases.
+
+The composed branch's71 CI controls are historical. This clean-main candidate
+passes78 controls; all13 frozen product inputs and250 artifacts remain exact.
