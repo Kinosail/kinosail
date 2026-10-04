@@ -133,7 +133,8 @@ def write_json(path, value):
 
 
 def json_bytes(value):
-    body = (json.dumps(value, separators=(',', ':'), sort_keys=True) + '\n').encode()
+    # Nested snapshot key order contributes to the unchanged generator's HTML.
+    body = (json.dumps(value, separators=(',', ':')) + '\n').encode()
     if len(body) > 4 * 1024 * 1024: raise ValueError('safe metadata file bound')
     return body
 
