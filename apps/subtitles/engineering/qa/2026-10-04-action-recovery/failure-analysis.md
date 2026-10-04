@@ -1,6 +1,6 @@
 # R06: stalled actions and uncertain writes
 
-The approved R06 audit requires bounded subtitle requests and safe recovery after a lost response. This batch starts with existing public Save and Restore routes. Runtime reproduction is pending. Source inspection alone does not confirm the user impact.
+The approved R06 audit requires bounded subtitle requests and safe recovery after a lost response. This batch starts with existing public Save and Restore routes. Both public data-integrity controls passed, and all eight isolated browser deadline cases reproduced their intended failures. Actual native lost-response proof remains pending.
 
 ## Failures to reproduce before implementation
 
@@ -26,5 +26,9 @@ A later native Server fixture must execute the approved mutation on its disposab
 ## Design decision still open
 
 Existing fingerprints reject stale Save, but do not correlate a Restore or maintenance request with its result. Read reconciliation can report changed data; unchanged data cannot prove completion. A bounded Go receipt/status contract may be needed to distinguish running, completed, and unavailable outcomes safely. No new API contract or production behavior has been added at this preparation checkpoint.
+
+The additive contract proposal remains under independent semantic review. The frozen baseline receipts were reviewed at `ebc74cee`. The next test-only checkpoint prepares public preparation, activation/replay, body conflict, capacity, Owner, CSRF, and invalid-input controls. They have not executed. Restart, expiry, durable activation failure, and controlled cancellation/audio concurrency require further public fixture preparation before implementation.
+
+These server regressions are necessary because the isolated browser deadline cases cannot prove exactly-once activation, durable state, authorization, or no effects from rejected input. They call the actual public HTTP handler and inspect disposable sidecar/recovery bytes and History. They do not replace the required native media and actual-write browser proof.
 
 R16 preparation is excluded from this batch and remains byte-exact. R07 sources and receipts remain frozen at their reviewed checkpoint.

@@ -40,6 +40,10 @@ The baseline manifest records source and curated artifact hashes, including 30 p
 
 The concrete proposed Go prepared-receipt contract is in `operation-contract-proposal.md`. It requires read-only independent review of restart, expiry, Owner access, single activation, and audio concurrency before any production/API implementation.
 
+Independent review cleared the frozen baseline evidence at `ebc74cee`: all 14 executed-source hashes, all 105 curated artifact sizes/hashes, the per-case classifications, and all 11 PNGs matched. Semantic review identified proposal gaps, which the updated proposal now resolves explicitly: durable digest/running state before launch; admission held until actual application return and process `Wait`; counted concurrent legacy operations with exclusive new receipt jobs; and existing draft job correlation preserved. That updated proposal still awaits final semantic clearance.
+
+Seven named public regression tests are prepared for the proposed additive contract, including strict preparation inputs, capacity, activation/replay/body conflict, Owner, and CSRF. They have not run and are not product RED proof. Their proposed API does not exist yet. Restart, expiry, persistence-failure, and cancellation-delaying concurrency controls remain to be prepared after contract review. Production is unchanged.
+
 Preserved R16 SHA-256 checks:
 
 ```text
