@@ -101,15 +101,17 @@ test("real album queue advances source and all Now Playing identity to the ficti
       originalListVisible: await page.locator(`form[action="/list/${first.id}"]`).isVisible(),
       noticeVisible: await page.locator("[data-progress-notice]").isVisible(),
     }), contentType: "application/json"});
-    await expect(page.locator(`form[action="/watched/${first.id}"]`)).toBeHidden();
-    await expect(page.locator(`form[action="/list/${first.id}"]`)).toBeHidden();
-    await expect(page.locator("[data-progress-notice]")).toBeHidden();
+    await expect(page.locator(`form[action="/watched/${first.id}"]`)).toBeHidden({timeout: 1500});
+    await expect(page.locator(`form[action="/list/${first.id}"]`)).toBeHidden({timeout: 1500});
+    await expect(page.locator("[data-progress-notice]")).toBeHidden({timeout: 1500});
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     expect((await new AxeBuilder({page}).include(".title-block").include("[data-audio-queue-controls]").include("[data-current-track-actions]").include(".media-stage").analyze()).violations).toEqual([]);
     await page.screenshot({path: testInfo.outputPath(`second-track-${viewport.width}.png`), fullPage: true});
   }
 });
 
+// Isolated 503 injection in an actual Go-rendered page. Initial and Retry 204
+// acknowledgements remain real Server requests; canonical queue cases are unrouted.
 test("mobile R03 progress notice stays hidden after real acknowledgement and reopens only on failure", {tag: ["@smoke", "@routed-fault"]}, async ({page}, testInfo) => {
   await login(page);
   const [first] = await albumTracks(page);
@@ -125,7 +127,7 @@ test("mobile R03 progress notice stays hidden after real acknowledgement and reo
     viewport: {width: 390, height: 844}, realAcknowledgementStatus: acknowledgement.status(),
     noticeVisible: await notice.isVisible(), hiddenAttribute: await notice.getAttribute("hidden") !== null,
   }), contentType: "application/json"});
-  await expect(notice).toBeHidden();
+  await expect(notice).toBeHidden({timeout: 1500});
   const failureRoute = `**/progress/${first.id}`;
   await page.route(failureRoute, route => route.fulfill({status: 503, headers: {"X-Request-ID": "qa-mobile-progress-failure"}}));
   await media.evaluate(async (audio: HTMLAudioElement) => {audio.currentTime = 2; await audio.play(); audio.pause();});
@@ -140,7 +142,7 @@ test("mobile R03 progress notice stays hidden after real acknowledgement and reo
   expect((await retried).status()).toBe(204);
   await expect(notice).toBeHidden();
   await page.screenshot({path: testInfo.outputPath("mobile-progress-saved.png"), fullPage: true});
-  await testInfo.attach("proof-class", {body: "Go-backed UI with a routed 503 fault; acknowledgements and Retry use the actual Server.", contentType: "text/plain"});
+  await testInfo.attach("proof-class", {body: "Isolated 503 failure injection in a Go-backed UI; acknowledgements and Retry use the actual Server.", contentType: "text/plain"});
 });
 
 test("real album queue keeps system previous and next current and exposes only fresh current-track actions", {tag: "@smoke"}, async ({page}, testInfo) => {

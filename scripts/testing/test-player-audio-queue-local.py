@@ -163,7 +163,7 @@ try:
             selected_titles = [title] if args.red else [title, notice_title] if args.visibility_red else [title, action_title, notice_title]
             named = {name: [case for suite in report['suites'] for case in results(suite, name)] for name in selected_titles}
             receipt['namedResults'] = {name: [case['status'] for case in cases] for name, cases in named.items()}
-            receipt['namedResultClasses'] = {name: 'Go-backed UI with routed 503 fault after real acknowledgment' if name == notice_title else 'Actual Go Server canonical routes' for name in selected_titles}
+            receipt['namedResultClasses'] = {name: 'Isolated 503 failure injection in Go-backed UI; real acknowledgements and Retry' if name == notice_title else 'Actual Go Server canonical routes' for name in selected_titles}
             if report.get('errors') or any(report['stats'][name] for name in ['skipped', 'flaky']):
                 raise RuntimeError('Named native proof contains global, skipped, or flaky outcomes')
             if args.red:
