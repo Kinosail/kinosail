@@ -18,6 +18,9 @@ title, artist, album, track, artwork, and stream. No ClientItem keys are added.
   page session and attach it to each authorized source.
 - A failed final progress save must retain R03 Retry and explicit Continue without
   saving. A manual queue action must not bypass current progress ownership.
+- A queued source can fail before metadata loads and leave media time at zero.
+  Pause and Previous recovery must not replace its saved position with that reset
+  value. Keep the current details link and recovery controls available.
 - Offline and receiver playback have separate ownership. A local queue action must
   not replace a receiver-owned source or write its progress.
 - Watch Together holds the original media identity in its WebSocket closure.
