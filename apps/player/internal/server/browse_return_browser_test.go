@@ -81,6 +81,10 @@ func TestBrowseReturnBrowserJourney(t *testing.T) {
 	}
 	arguments := append([]string{"node_modules/@playwright/test/cli.js", "test"}, specs...)
 	arguments = append(arguments, "--workers=1", "--retries=0", "--project="+project)
+	if os.Getenv("KINOSAIL_BROWSE_RETURN_PROOF") == "1" {
+		// Hosted diagnosis publishes bounded fixture observations, never raw logs.
+		arguments = append(arguments, "--reporter=./browse-return-proof-reporter.ts", "--trace=off")
+	}
 	command := exec.CommandContext(t.Context(), "node", arguments...) //nolint:gosec // Fixed installed test CLI and explicitly disposable local Server; no package-manager resolution.
 	command.Dir = "../../e2e"
 	command.Env = append(os.Environ(), "KINOSAIL_BROWSE_RETURN_URL="+web.URL, "KINOSAIL_BROWSE_RETURN_CASES="+mode, "KINOSAIL_E2E_URL="+web.URL)
