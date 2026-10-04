@@ -56,7 +56,14 @@ class DownloadPauseJourneyTest(unittest.TestCase):
         self.assertIn('run_library_pagination_journey "$project"', source)
         self.assertIn('run_subtitle_recovery_journey "$project"', source)
         self.assertIn('run_populated_player_journeys "$project"', source)
-        self.assertIn('prepare_audio_queue_fixture "$media_dir"', source)
+        # This clean Q09 branch starts at main; R08's unmerged fixture remains
+        # protected by its separate original branch/controls, not this feature.
+        helper = HELPER.read_text()
+        for title in ('settings search crosses levels and preserves unsaved preferences',
+                      'Owner settings search finds a setting across task families',
+                      'real Server rejects invalid progress without changing stored state and web reports the rejection',
+                      'populated player retries the latest progress through the real Server and renders accessible states'):
+            self.assertIn("--required-title '" + title + "'", helper)
 
 
 if __name__ == "__main__":
