@@ -10,7 +10,7 @@ extension ServerClient {
     func playbackSubtitlePolicy(itemID: String) async throws -> SubtitleChoicePolicy {
         let id = try Input.id(itemID)
         let capabilities = try await PlaybackCapabilities.detect()
-        let value = try await request("/api/v1/items/\(id)/playback?\(capabilities.query)").body.object(allowing: PlaybackSource.allowedFields)
+        let value = try PlaybackSource.validatedFields(await request("/api/v1/items/\(id)/playback?\(capabilities.query)").body)
         return try SubtitleChoicePolicy(playback: value)
     }
 

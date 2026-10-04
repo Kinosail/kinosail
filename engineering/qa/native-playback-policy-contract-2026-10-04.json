@@ -1,0 +1,312 @@
+{
+  "recordedUTC": "2026-10-04T05:01:59.216040+00:00",
+  "beforeCodeFailureAnalysis": "engineering/qa/native-playback-policy-contract-2026-10-04.md",
+  "environment": {
+    "platform": "macOS ARM64",
+    "Xcode": "27.0 (27A266a)",
+    "Swift": "Production Core compiled by installed Xcode swiftc",
+    "server": "Actual local Player handler; FFprobe of fictional 2-second H264MP4"
+  },
+  "runs": {
+    "baseline": {
+      "sourceCommit": "7ad46ad1993c3b48d4bb1f5cae1c5fb37faa035c",
+      "cases": [
+        {
+          "passed": false,
+          "expectedAcceptance": true,
+          "accepted": false,
+          "errorClass": "invalidResponse",
+          "case": "real-server-response"
+        },
+        {
+          "passed": true,
+          "expectedAcceptance": true,
+          "accepted": true,
+          "errorClass": "",
+          "case": "legacy-policy-omitted"
+        },
+        {
+          "passed": false,
+          "expectedAcceptance": true,
+          "accepted": false,
+          "errorClass": "invalidResponse",
+          "case": "policy-automatic"
+        },
+        {
+          "passed": false,
+          "expectedAcceptance": true,
+          "accepted": false,
+          "errorClass": "invalidResponse",
+          "case": "policy-direct"
+        },
+        {
+          "passed": false,
+          "expectedAcceptance": true,
+          "accepted": false,
+          "errorClass": "invalidResponse",
+          "case": "policy-compatible"
+        },
+        {
+          "passed": true,
+          "expectedAcceptance": false,
+          "accepted": false,
+          "errorClass": "invalidResponse",
+          "case": "reject-policy-unknown"
+        },
+        {
+          "passed": true,
+          "expectedAcceptance": false,
+          "accepted": false,
+          "errorClass": "invalidResponse",
+          "case": "reject-policy-empty"
+        },
+        {
+          "passed": true,
+          "expectedAcceptance": false,
+          "accepted": false,
+          "errorClass": "invalidResponse",
+          "case": "reject-policy-number"
+        },
+        {
+          "passed": true,
+          "expectedAcceptance": false,
+          "accepted": false,
+          "errorClass": "invalidResponse",
+          "case": "reject-policy-boolean"
+        },
+        {
+          "passed": true,
+          "expectedAcceptance": false,
+          "accepted": false,
+          "errorClass": "invalidResponse",
+          "case": "reject-policy-null"
+        },
+        {
+          "passed": true,
+          "expectedAcceptance": false,
+          "accepted": false,
+          "errorClass": "invalidResponse",
+          "case": "reject-policy-oversized"
+        },
+        {
+          "passed": true,
+          "expectedAcceptance": false,
+          "accepted": false,
+          "errorClass": "invalidResponse",
+          "case": "reject-unknown-field"
+        },
+        {
+          "passed": true,
+          "expectedAcceptance": false,
+          "accepted": false,
+          "errorClass": "invalidResponse",
+          "case": "reject-wrong-item"
+        },
+        {
+          "passed": true,
+          "expectedAcceptance": false,
+          "accepted": false,
+          "errorClass": "invalidResponse",
+          "case": "reject-foreign-origin"
+        },
+        {
+          "passed": true,
+          "expectedAcceptance": false,
+          "accepted": false,
+          "errorClass": "invalidResponse",
+          "case": "reject-subtitle-type"
+        },
+        {
+          "passed": true,
+          "case": "reject-duplicate-field"
+        }
+      ],
+      "mediaFetchedAfterValidation": false,
+      "responseSHA256": "6e13570f1884dfc13ef06d8ddc02eeca383ebc11da9050245c7a4bb665a7f526",
+      "productionCoreHashes": {
+        "apps/player/apps/native/Sources/Core/ActorContract.swift": "56798d719321f16dcefafd49829d04cb0d7cb5d7795713ff2608e728176b9af1",
+        "apps/player/apps/native/Sources/Core/ApprovalLink.swift": "ad355c520096ed3da922bb81813222dd738f1306b9fd99f0103d0a3fa9fc1bea",
+        "apps/player/apps/native/Sources/Core/CastingContract.swift": "74c8819bc8b731acab4825a6564efcc54e38eb9ded2a58002e5d90bc43415042",
+        "apps/player/apps/native/Sources/Core/Contract.swift": "ef213d8ed4b4dd1fbdf320839d7493b3f7cf1865cc19656af671757fe3efd891",
+        "apps/player/apps/native/Sources/Core/DownloadContract.swift": "3f7d6462588b8f4b8e604f9d486e60f595a6681d612e0d49d88e1df4dfb9969f",
+        "apps/player/apps/native/Sources/Core/FeatureContracts.swift": "2e6029b851d5ca8e3f9dce3def2f37c89b2224062ab432de393e59e232fd448e",
+        "apps/player/apps/native/Sources/Core/HeartTimeline.swift": "bd6617600c211cb37793ecc4e018a59a1ad8b80c1fdef982312021998b613f57",
+        "apps/player/apps/native/Sources/Core/Media.swift": "3a00ce4aab242db1d4ce04e095db557756b508d405fd8c19ad0e71f654e61bf6",
+        "apps/player/apps/native/Sources/Core/MediaLink.swift": "2cc120885bc46f3bd6d5eb04e396a3db3426ca21d5a0643ecd37de8fc4a322cb",
+        "apps/player/apps/native/Sources/Core/MediaTimeline.swift": "a52940e2f797a90add1a36ecb5daae68bf79d6a4702058b99c9f6c2aa1986ab8",
+        "apps/player/apps/native/Sources/Core/PlaybackContract.swift": "1835de3a9d6af65d71d58d01081cca525f4a86d389d9f634a57450764dd097eb",
+        "apps/player/apps/native/Sources/Core/PlayerTab.swift": "7bce71edb91350c05d438f8a9f8f7098c1417fb4c9dd1c4d68335eeaf0d07bf5",
+        "apps/player/apps/native/Sources/Core/PreferenceContract.swift": "7356a35f1520b169dbc15fd51abf185fc6eea1fac168609d296331658b2ec32a",
+        "apps/player/apps/native/Sources/Core/ReaderContract.swift": "e6c410ef3c044567467f7829211070248ecdc0ef7c1d78e449a3169bac09b525",
+        "apps/player/apps/native/Sources/Core/StrictJSON.swift": "b7c51b69766099781e791be4eb3a897196bc9208e7683cfe8ee55799f2390111",
+        "apps/player/apps/native/Sources/Core/SubtitleDocument.swift": "6dd248ee73d59cfa9be5d191207b6e14677aa36296fc0d9c40707d1abea77b62",
+        "apps/player/apps/native/Sources/Core/SupporterCollection.swift": "ccb9758a66c25e95d06fcf01378e4f50cc22b7c5c77da0044bb7c7374838e4ef",
+        "apps/player/apps/native/Sources/Core/WatchProgressSummary.swift": "dc91809f171594a0fec1da5e6d3d00fe8cfe8d7d7b9f664276a7a1b2ef351b90",
+        "apps/player/apps/native/Sources/Core/WatchRemoteProtocol.swift": "0e779e5204343377a39a39f56044e2ad8492fd8e73c7674d656683f25ecd89fb"
+      },
+      "artifactReceiptSHA256": "2e73fad7a39d7f85e46f3df33669e4f5613c5843b43a0dee1ff99345479e289e"
+    },
+    "repaired": {
+      "sourceCommit": "7ad46ad1993c3b48d4bb1f5cae1c5fb37faa035c",
+      "cases": [
+        {
+          "case": "real-server-response",
+          "passed": true,
+          "expectedAcceptance": true,
+          "errorClass": "",
+          "accepted": true
+        },
+        {
+          "expectedAcceptance": true,
+          "errorClass": "",
+          "case": "legacy-policy-omitted",
+          "accepted": true,
+          "passed": true
+        },
+        {
+          "expectedAcceptance": true,
+          "errorClass": "",
+          "case": "policy-automatic",
+          "accepted": true,
+          "passed": true
+        },
+        {
+          "expectedAcceptance": true,
+          "case": "policy-direct",
+          "accepted": true,
+          "passed": true,
+          "errorClass": ""
+        },
+        {
+          "expectedAcceptance": true,
+          "case": "policy-compatible",
+          "accepted": true,
+          "passed": true,
+          "errorClass": ""
+        },
+        {
+          "expectedAcceptance": false,
+          "case": "reject-policy-unknown",
+          "accepted": false,
+          "passed": true,
+          "errorClass": "invalidResponse"
+        },
+        {
+          "expectedAcceptance": false,
+          "case": "reject-policy-empty",
+          "accepted": false,
+          "passed": true,
+          "errorClass": "invalidResponse"
+        },
+        {
+          "expectedAcceptance": false,
+          "case": "reject-policy-number",
+          "accepted": false,
+          "passed": true,
+          "errorClass": "invalidResponse"
+        },
+        {
+          "expectedAcceptance": false,
+          "case": "reject-policy-boolean",
+          "accepted": false,
+          "passed": true,
+          "errorClass": "invalidResponse"
+        },
+        {
+          "expectedAcceptance": false,
+          "case": "reject-policy-null",
+          "accepted": false,
+          "passed": true,
+          "errorClass": "invalidResponse"
+        },
+        {
+          "expectedAcceptance": false,
+          "case": "reject-policy-oversized",
+          "accepted": false,
+          "passed": true,
+          "errorClass": "invalidResponse"
+        },
+        {
+          "expectedAcceptance": false,
+          "case": "reject-unknown-field",
+          "accepted": false,
+          "passed": true,
+          "errorClass": "invalidResponse"
+        },
+        {
+          "expectedAcceptance": false,
+          "case": "reject-wrong-item",
+          "accepted": false,
+          "passed": true,
+          "errorClass": "invalidResponse"
+        },
+        {
+          "expectedAcceptance": false,
+          "case": "reject-foreign-origin",
+          "accepted": false,
+          "passed": true,
+          "errorClass": "invalidResponse"
+        },
+        {
+          "expectedAcceptance": false,
+          "case": "reject-subtitle-type",
+          "accepted": false,
+          "passed": true,
+          "errorClass": "invalidResponse"
+        },
+        {
+          "case": "reject-duplicate-field",
+          "passed": true
+        }
+      ],
+      "mediaFetchedAfterValidation": true,
+      "responseSHA256": "2b6a31e6a944152f6b420311814ea61fb1e1638844f060ebe3113c414ed4e71b",
+      "productionCoreHashes": {
+        "apps/player/apps/native/Sources/Core/ActorContract.swift": "56798d719321f16dcefafd49829d04cb0d7cb5d7795713ff2608e728176b9af1",
+        "apps/player/apps/native/Sources/Core/ApprovalLink.swift": "ad355c520096ed3da922bb81813222dd738f1306b9fd99f0103d0a3fa9fc1bea",
+        "apps/player/apps/native/Sources/Core/CastingContract.swift": "74c8819bc8b731acab4825a6564efcc54e38eb9ded2a58002e5d90bc43415042",
+        "apps/player/apps/native/Sources/Core/Contract.swift": "ef213d8ed4b4dd1fbdf320839d7493b3f7cf1865cc19656af671757fe3efd891",
+        "apps/player/apps/native/Sources/Core/DownloadContract.swift": "3f7d6462588b8f4b8e604f9d486e60f595a6681d612e0d49d88e1df4dfb9969f",
+        "apps/player/apps/native/Sources/Core/FeatureContracts.swift": "2e6029b851d5ca8e3f9dce3def2f37c89b2224062ab432de393e59e232fd448e",
+        "apps/player/apps/native/Sources/Core/HeartTimeline.swift": "bd6617600c211cb37793ecc4e018a59a1ad8b80c1fdef982312021998b613f57",
+        "apps/player/apps/native/Sources/Core/Media.swift": "3a00ce4aab242db1d4ce04e095db557756b508d405fd8c19ad0e71f654e61bf6",
+        "apps/player/apps/native/Sources/Core/MediaLink.swift": "2cc120885bc46f3bd6d5eb04e396a3db3426ca21d5a0643ecd37de8fc4a322cb",
+        "apps/player/apps/native/Sources/Core/MediaTimeline.swift": "a52940e2f797a90add1a36ecb5daae68bf79d6a4702058b99c9f6c2aa1986ab8",
+        "apps/player/apps/native/Sources/Core/PlaybackContract.swift": "47b680fd3822c0629922666d511b2bb153fe54538a62059d8fa22fc3f127d43f",
+        "apps/player/apps/native/Sources/Core/PlayerTab.swift": "7bce71edb91350c05d438f8a9f8f7098c1417fb4c9dd1c4d68335eeaf0d07bf5",
+        "apps/player/apps/native/Sources/Core/PreferenceContract.swift": "7356a35f1520b169dbc15fd51abf185fc6eea1fac168609d296331658b2ec32a",
+        "apps/player/apps/native/Sources/Core/ReaderContract.swift": "e6c410ef3c044567467f7829211070248ecdc0ef7c1d78e449a3169bac09b525",
+        "apps/player/apps/native/Sources/Core/StrictJSON.swift": "b7c51b69766099781e791be4eb3a897196bc9208e7683cfe8ee55799f2390111",
+        "apps/player/apps/native/Sources/Core/SubtitleDocument.swift": "6dd248ee73d59cfa9be5d191207b6e14677aa36296fc0d9c40707d1abea77b62",
+        "apps/player/apps/native/Sources/Core/SupporterCollection.swift": "ccb9758a66c25e95d06fcf01378e4f50cc22b7c5c77da0044bb7c7374838e4ef",
+        "apps/player/apps/native/Sources/Core/WatchProgressSummary.swift": "dc91809f171594a0fec1da5e6d3d00fe8cfe8d7d7b9f664276a7a1b2ef351b90",
+        "apps/player/apps/native/Sources/Core/WatchRemoteProtocol.swift": "0e779e5204343377a39a39f56044e2ad8492fd8e73c7674d656683f25ecd89fb"
+      },
+      "artifactReceiptSHA256": "fb55cb8f9269e98e31fb581e7d847dbcf108d8d1e3fe817a2e72d8b1f8c10cee"
+    }
+  },
+  "boundaries": [
+    "No Nox request, deployment, physical media playback or installation",
+    "Swift Core on macOS validates the same platform-neutral playback decoder; does not prove AVPlayer iOS/tvOS behavior",
+    "Installed2913 predates the repair; screenshot build unknown"
+  ],
+  "exactReviewedHead": "5644c9e6a9e72aec1e0a1c7b281c6cac930e7dfe",
+  "exactReviewedHeadAcceptance": {
+    "casesPassed": 16,
+    "casesTotal": 16,
+    "mediaFetchedAfterValidation": true,
+    "elapsedSeconds": 14.301630500000101,
+    "nativeTree": "64de2aac3ad065c1f4688ae511945595aee8e6b0"
+  },
+  "requiredLocalChecks": {
+    "result": "PASS",
+    "nativeClientSeconds": 117,
+    "buildSource": "e353aec1c35a32752d2ddabd717c3de9da034d2f",
+    "nativeTreeMatchesReviewedHead": true,
+    "scheduling": "iOS and tvOS serial; xcodebuild jobs2"
+  },
+  "ciCorrections": [
+    "Use context-aware ListenConfig in fixture server",
+    "Regenerate Player architecture snapshot for fixture Go package"
+  ]
+}
