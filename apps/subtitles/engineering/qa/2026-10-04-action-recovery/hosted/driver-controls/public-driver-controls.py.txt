@@ -57,6 +57,7 @@ def control(source, output, name):
                GITHUB_SHA=revision, R06_DRIVER_CASE=name, R06_DRIVER_SCOPE=str(root / "apps/subtitles/engineering/qa/2026-10-04-action-recovery/hosted" / scope_name),
                R06_DRIVER_STARTED=str(root / "fake-go-started"), R06_DRIVER_DESCENDANT=str(root / "fake-descendant"),
                R06_DRIVER_COMPILE_STARTED=str(root / "fake-compile-started"), R06_DRIVER_BINARY_STARTED=str(root / "fake-binary-started"),
+               R06_DRIVER_TEST_DIRECTORY=str(root / "apps/subtitles/internal/server"),
                R06_DRIVER_DRIFT=str(root / "driver-control-marker.txt"))
     if name == "hosted-missing-revision":
         env.pop("GITHUB_SHA")
@@ -100,7 +101,7 @@ def control(source, output, name):
     elif name.startswith("hosted-"):
         assert result.returncode != 0 and not receipt["goWasLaunched"]
         assert not (root / "fake-go-started").exists()
-    elif name == "private-sentinel":
+    elif name in ("private-sentinel", "test-working-directory"):
         assert result.returncode == 0 and receipt["classification"] == "focused-public-protocol-green"
         assert receipt["ownedProcessExited"] and receipt["ownedGroupSettled"]
         assert group_absent_before_cleanup
@@ -157,7 +158,7 @@ def main():
              "package-fail-pass", "package-duplicate", "invalid-action", "missing-action", "boolean-test",
              "boolean-elapsed", "missing-elapsed", "tracked-drift", "permission-denied", "leader-exit-held-stdout",
              "compile-failure", "compile-missing-binary", "compile-symlink-binary", "compile-source-drift",
-             "compile-stream-is-not-tests", "binary-mutated-during-runtime", "compile-leader-held-stdout"]
+             "compile-stream-is-not-tests", "binary-mutated-during-runtime", "compile-leader-held-stdout", "test-working-directory"]
     records = [control(args.source.resolve(), args.output, name) for name in cases]
     (args.output / "control-receipt.json").write_text(json.dumps({"boundary": "fictional-only; source prepared before driver correction", "cases": records}, indent=2) + "\n")
 

@@ -24,6 +24,11 @@ Before changing the driver, retain controls for these concrete failures:
   and after execution. A changed executable prevents GREEN.
 - Malformed JSON, duplicate terminals, skipped/missing cases and failed
   prerequisites still prevent GREEN. All existing controls remain intact.
+- A separately run test binary can inherit the wrong working directory.
+  Go's normal runner sets its command directory to the package directory
+  (`src/cmd/go/internal/test/test.go`, Go 1.27.1, line 1673). Preparation stays
+  in `apps/subtitles`; runtime must use `apps/subtitles/internal/server`.
+  A fictional converter assertion protects this compatibility boundary.
 - Departed leaders and inherited stdout still require whole-group absence.
   Preserve prior failed sandbox controls; later PID absence cannot repair them.
 

@@ -58,6 +58,7 @@ if sys.argv[1:3] == ["test", "-c"]:
 
 if sys.argv[1:3] == ["tool", "test2json"]:
     Path(os.environ["R06_DRIVER_STARTED"]).write_text(str(os.getpid()))
+    assert Path.cwd() == Path(os.environ["R06_DRIVER_TEST_DIRECTORY"])
     assert sys.argv[3:6] == ["-t", "-p", package]
     binary = Path(sys.argv[6])
     required = ["-test.v=test2json", "-test.run="+scope["runPattern"], "-test.parallel=1", "-test.count=1", "-test.timeout=80s"]
