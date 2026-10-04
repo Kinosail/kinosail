@@ -1,0 +1,8 @@
+Listing tests:
+  [chromium] › player-subtitles-recovery.spec.ts:9:3 › real Server: stalled caption headers reaches a deadline and keyboard Retry at 390px
+  [chromium] › player-subtitles-recovery.spec.ts:9:3 › real Server: stalled caption body reaches a deadline and keyboard Retry at 390px
+  [chromium] › player-subtitles-recovery.spec.ts:9:3 › real Server: stalled caption headers reaches a deadline and keyboard Retry at 1440px
+  [chromium] › player-subtitles-recovery.spec.ts:9:3 › real Server: stalled caption body reaches a deadline and keyboard Retry at 1440px
+  [chromium] › player-subtitles-recovery.spec.ts:9:3 › real Server: stalled caption headers reaches a deadline and keyboard Retry at 1920px
+  [chromium] › player-subtitles-recovery.spec.ts:9:3 › real Server: stalled caption body reaches a deadline and keyboard Retry at 1920px
+Total: 6 tests in 1 file

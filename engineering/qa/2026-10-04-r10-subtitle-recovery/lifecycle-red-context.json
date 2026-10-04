@@ -1,0 +1,14 @@
+{
+  "id": "R10",
+  "revision": "04997617f1d6a8f1f0f2530ae8652048f766afdf",
+  "boundary": "Native persisted PageTransitionEvent control, real HTTP cancellation; not an actual BFCache admission/navigation claim",
+  "repeats": 2,
+  "workers": 1,
+  "video": "off",
+  "inputs": {
+    "apps/player/internal/server/static/player-subtitles.js": "fdf27bc76d44f53f73cfe7ae28120c8caafcc4756583f9f73e6e6f7864907dd1",
+    "apps/player/e2e/player-subtitles-lifecycle.spec.ts": "918a961da8e28f28e8a929b0101f09d99740dc3b50f30bac2a63aea90ca6a84e",
+    "apps/player/e2e/player-subtitles-recovery-fixture.ts": "6924a9eeb1de95370eb3aa1714742011f49b07aef0b98aa289e4c9295cf98f95"
+  },
+  "result": "2 intended failures: old request closed, recovered cues remain absent after persisted pageshow"
+}
