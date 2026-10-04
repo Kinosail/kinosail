@@ -42,11 +42,19 @@ Draft start/cancel do not use this operation header. They retain the existing bo
 
 The server persists receipt metadata atomically before preparation succeeds, before activation launches work, and after completion. The exact submitted body digest and `running` transition must be durable before worker launch. A failed activation persistence executes no application work and does not silently return to a reusable prepared state. The in-memory receipt becomes `unknown`, and the previous process's receipt cannot reactivate. A failure to persist completion also leaves an uncertain receipt, even if the write itself completed. Admission remains held while that work is active.
 
-On restart, recorded `running` entries become `unknown`; they are never resumed. Prepared entries remain prepared only within their deadline. Completed receipts retain their factual outcome. Expired entries may be removed from internal receipt storage, but the mutation adapter still rejects their IDs. Creating a new receipt is an explicit new action after public data review, not a replay mechanism.
+On restart, recorded `running` entries become `unknown`; they are never resumed. All prior-process `prepared` entries become unavailable, even within their original deadline. This prevents a failed activation persistence from resurrecting a prepared ID after restart. It does not rely on writing an invalidation record after storage has failed. Completed receipts retain their factual outcome. Expired entries may be removed from internal receipt storage, but the mutation adapter still rejects their IDs. Creating a new receipt is an explicit new action after public data review, not a replay mechanism. Validation and busy rejections leave untouched, current-process prepared receipts reusable within their deadline.
 
 Proposed bounds for review: 64 metadata receipts, a 96 KiB metadata file, five minutes to activate a prepared receipt, and 30 minutes of completed receipt retention. A running receipt is never evicted to make capacity. Full capacity returns a safe `503` before execution. Receipt files and any audio results are owner-readable server data. Existing task artifacts are not cleanup targets.
 
 A deadline or lifecycle cancellation requests that work stop; it does not prove settlement. Keep the running admission until the application operation returns and its child process has completed `Wait`. While cancellation is pending, status remains `running` with a safe cancellation-requested indication, and other activation remains busy. Only actual settlement permits admission to reopen. A completion-persistence failure may produce `unknown`, but it cannot release admission while the worker or child process remains active.
+
+### Durable boundary and result bounds
+
+Use a strict version-1 JSON envelope at the private Server data path `subtitle_operations.json`. The bounded envelope contains at most 64 receipts. Each receipt stores its validated operation ID, bounded Owner profile ID, action/item, state, submitted SHA-256 digest after activation, created/expiry/deadline/completion timestamps, and safe outcome/status. It contains no request body, subtitle text, path, token, provider response, or audio samples. Writes use an owner-readable `0600` temporary file, file sync, atomic rename, and directory sync. A failed durable transition prevents worker launch. An unreadable, oversized, unsupported-version, malformed, duplicate-field, or invalid envelope makes the receipt service unavailable (`503`); it cannot be treated as an empty registry that permits old IDs to execute. Existing non-receipt Owner workflows retain their contracts.
+
+Audio output is separate, bounded transient memory. `GET /api/v1/subtitle-operations/{operation}/result` retains Owner binding, accepts no query, and uses `private, no-store`. It returns the existing audio response shape (`duration`, `waveform`, `speech`) only for a completed successful audio receipt with a retained result. Each numeric array has at most 1,024 finite elements, duration is finite and within the existing audio limit, and encoded output is at most 128 KiB. At most two results are retained for 30 minutes. Unknown, foreign, expired, or unavailable-result IDs return `404`; pending/unknown-outcome receipts and non-audio receipts return `409`. Restart does not restart analysis or fabricate an audio result. A completed receipt can still report its factual outcome after its transient result becomes unavailable.
+
+Expiry controls use a clock supplied at the Server configuration boundary, limited to this receipt service. This is a test substitute for external time, not a private manager mock or a user-facing setting. The test advances the clock while exercising only the public routes. Actual lifecycle restart and concurrent local-process controls use real work and are reported separately from clock-controlled expiry.
 
 ## Work and audio limits
 
@@ -58,7 +66,16 @@ Unknown outcomes block the client's automatic retry and write controls while it 
 
 Audio analysis uses one background job at a time and the existing serial audio-analysis seam. A second activation receives an explicit busy outcome rather than starting another process or waiting indefinitely. A legacy analysis already holding or awaiting that seam also prevents exclusive receipt activation. Audio work retains its existing 20-minute execution bound. Its waveform and speech-probability result is capped at 128 KiB, with at most two retained results and the same bounded retention lifetime. No audio, path, transcript, or credential is included in receipt metadata.
 
-Normal browser reads have a 15-second deadline. The initiating write and each status poll have a 30-second or shorter client deadline. Server mutation deadlines must account for provider batches and audio synchronization; the client deadline does not cancel or roll back a started mutation. Automatic-sync preview must use the bounded audio job before previewing, preserving the current audio cache and fingerprint checks. The job context must follow the existing `Config.Lifecycle` shutdown context, with its operation deadline; browser cancellation must not erase its status. The exact server limits and shutdown hook must be verified before implementation; no existing deadline is reduced speculatively.
+Normal browser reads, preparation, and status/result polls have a 15-second deadline. Activation has a 30-second client deadline. The client deadline does not cancel or roll back a started mutation. Automatic-sync preview must use the bounded audio job before previewing, preserving the current audio cache and fingerprint checks. The job context follows the existing `Config.Lifecycle` shutdown context and an opt-in operation deadline; browser cancellation must not erase its status.
+
+| Opt-in work | Server deadline | Existing inner limit preserved |
+| --- | --- | --- |
+| restore, replacement | 1 minute | Existing file guards and atomic recovery operations. |
+| audio | 21 minutes | Existing 20-minute child analysis plus probe/completion allowance. |
+| apply, fetch | 30 minutes | Existing provider deadlines and 20-minute audio synchronization. |
+| maintain, fetch-wanted | 2 hours | Existing per-provider/audio limits; a deadline may leave a factual partial batch. |
+
+These outer limits apply only to the additive receipt jobs. Legacy routes retain their current deadlines. A deadline requests cancellation; admission remains held until actual settlement. A stopped or failed batch may already have written subtitles, so status and UI must require public reconciliation and never describe a timeout as rollback. Draft retains its existing two-hour job bound.
 
 Draft start/cancel must reconcile through the existing public draft status. A stalled draft GET must eventually throw into the existing bounded backoff. Language changes and page lifecycle events invalidate stale read results and abort owned browser requests without treating that abort as write cancellation.
 
@@ -67,7 +84,7 @@ Draft start/cancel must reconcile through the existing public draft status. A st
 - Real public Save/Restore: lost response, one executed write, protected recovery bytes, current fingerprint, and matching history.
 - Same-ID replay and different-body conflict: zero additional writes or history events.
 - Prepared, unknown, expired, foreign, malformed, and unavailable IDs: rejection before any side effects; Owner and CSRF controls remain effective.
-- Restart with a running receipt: close/cancel the first Server and prove its child process stopped before constructing the next Server; then prove unknown outcome, no resumption, no replay, and preserved current/recovery data.
+- Restart with prepared and running receipts: close/cancel the first Server and prove its child process stopped before constructing the next Server; then prove prepared IDs unavailable, interrupted running IDs unknown, no resumption/replay, and preserved current/recovery data. Completed outcomes survive without starting work.
 - Receipt capacity and expiration: bounded storage and no active eviction. An expired operation cannot be reactivated.
 - Failed activation persistence: zero application/provider/process work and no reactivation of the uncertain receipt.
 - Two concurrent audio activations and a legacy analysis: only one local stand-in process starts, with a visible busy result for the other; no encoder, provider, or production data in QA.
