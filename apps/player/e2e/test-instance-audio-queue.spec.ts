@@ -133,11 +133,18 @@ test("real album queue keeps system previous and next current and exposes only f
   await expect(page.locator(".title-block h1")).toHaveText(second.title);
   const secondForm = page.locator(`form[action="/watched/${second.id}"]`);
   await expect(secondForm).toBeVisible();
+  const beforeSecond = await page.request.get(`/api/v1/items/${second.id}`);
+  expect(beforeSecond.status()).toBe(200);
+  const wantedWatched = !(await beforeSecond.json()).item.progress.watched;
+  await expect(secondForm.locator("button")).toHaveAttribute("value", String(wantedWatched));
   const mutation = page.waitForResponse(response => new URL(response.url()).pathname === `/watched/${second.id}` && response.request().method() === "POST");
   await secondForm.locator("button").click();
   expect((await mutation).status()).toBe(303);
   const afterFirst = await page.request.get(`/api/v1/items/${first.id}`);
   expect(afterFirst.status()).toBe(200);
   expect((await afterFirst.json()).item.progress).toEqual(before);
+  const afterSecond = await page.request.get(`/api/v1/items/${second.id}`);
+  expect(afterSecond.status()).toBe(200);
+  expect((await afterSecond.json()).item.progress.watched).toBe(wantedWatched);
   await page.screenshot({path: testInfo.outputPath("fresh-second-track-actions.png"), fullPage: true});
 });
