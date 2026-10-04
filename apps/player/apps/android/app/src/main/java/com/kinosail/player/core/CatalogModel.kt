@@ -2,6 +2,7 @@ package com.kinosail.player.core
 
 import android.app.Application
 import android.graphics.Bitmap
+import android.util.Log
 import android.util.LruCache
 import java.io.IOException
 import androidx.compose.runtime.getValue
@@ -11,6 +12,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -20,6 +22,8 @@ data class CatalogState(
     val total: Int = 0,
     val loading: Boolean = false,
     val notice: String? = null,
+    val failedOffset: Int? = null,
+    val connectionExpired: Boolean = false,
     val selected: CatalogItem? = null,
     val view: String = "all",
     val listed: Boolean? = null,
@@ -43,6 +47,7 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
     private var activeQuery = ""
     private var activeView = "all"
     private var refreshAfterDetail = false
+    private var retryJob: Job? = null
 
     var searchInput by mutableStateOf("")
     val hasActiveSearch get() = activeQuery.isNotEmpty()
@@ -103,15 +108,19 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
     fun loadMore() {
         if (state.loading || state.items.size >= state.total || session == null) return
         val attempt = generation
+        val offset = state.items.size
+        retryJob?.cancel()
         state = state.copy(loading = true, notice = null)
-        viewModelScope.launch { fetch(attempt, state.items.size) }
+        viewModelScope.launch { fetch(attempt, offset) }
     }
 
     fun retry() {
-        if (session == null) return
+        if (state.loading || session == null) return
         val attempt = generation
+        val offset = state.failedOffset ?: 0
+        retryJob?.cancel()
         state = state.copy(loading = true, notice = null)
-        viewModelScope.launch { fetch(attempt, 0) }
+        viewModelScope.launch { fetch(attempt, offset) }
     }
 
     fun select(item: CatalogItem) {
@@ -182,6 +191,7 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
 
     fun reset() {
         generation++
+        retryJob?.cancel()
         session = null
         viewerId = null
         viewer = null
@@ -234,36 +244,45 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
                 CatalogApi(saved.server).list(saved.token, viewer, activeQuery, offset, activeView)
             }
             if (attempt != generation) return
-            require(offset == 0 || page.items.none { candidate -> state.items.any { it.id == candidate.id } }) {
-                "The Server returned a duplicate library item."
+            if (offset > 0 && page.items.any { candidate -> state.items.any { it.id == candidate.id } }) {
+                Log.w("KinosailCatalog", "operation=library offset=$offset failure=duplicate_items outcome=loaded-rows-retained")
+                throw IllegalArgumentException("The Server returned a duplicate library item.")
             }
             state = state.copy(items = if (offset == 0) page.items else state.items + page.items,
-                total = page.total, loading = false, notice = null)
+                total = page.total, loading = false, notice = null, failedOffset = null, connectionExpired = false)
             if (offset == 0 && activeQuery.isEmpty()) this.viewer?.let { identity ->
                 withContext(Dispatchers.IO) {
                     runCatching { sessions.saveCatalog(saved.server, identity, "library-$activeView", page) }
                 }
             }
         } catch (error: CancellationException) { throw error } catch (error: ServerHttpException) {
-            if (attempt == generation) state = state.copy(loading = false,
-                notice = if (error.status == 401 || error.status == 403)
-                    "This connection expired. Disconnect and connect again."
-                else if (state.items.isEmpty()) "Could not load your library. Try again." else null)
-            if (error.status in setOf(408, 429, 500, 502, 503, 504)) retryLater(attempt)
+            failed(attempt, offset, error.status == 401 || error.status == 403)
+            if (error.status in setOf(408, 429, 500, 502, 503, 504)) retryLater(attempt, offset)
         } catch (_: IOException) {
-            if (attempt == generation) state = state.copy(loading = false,
-                notice = if (state.items.isEmpty()) "Could not load your library. Try again." else null)
-            retryLater(attempt)
+            failed(attempt, offset)
+            retryLater(attempt, offset)
         } catch (_: Exception) {
-            if (attempt == generation) state = state.copy(loading = false,
-                notice = if (state.items.isEmpty()) "Could not load your library. Try again." else null)
+            failed(attempt, offset)
         }
     }
 
-    private fun retryLater(attempt: Int) {
-        viewModelScope.launch {
+    private fun failed(attempt: Int, offset: Int, expired: Boolean = false) {
+        if (attempt == generation) state = state.copy(loading = false, failedOffset = offset,
+            connectionExpired = expired,
+            notice = if (expired) "This connection expired. Disconnect and connect again."
+                else if (offset > 0) "Could not load more titles. Try again."
+                else if (state.items.isEmpty()) "Could not load your library. Try again." else null)
+    }
+
+    private fun retryLater(attempt: Int, offset: Int) {
+        if (attempt != generation) return
+        retryJob?.cancel()
+        retryJob = viewModelScope.launch {
             delay(15_000)
-            if (attempt == generation) fetch(attempt, 0)
+            if (attempt == generation && state.failedOffset == offset && !state.loading) {
+                retryJob = null
+                retry()
+            }
         }
     }
 }
