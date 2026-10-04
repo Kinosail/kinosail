@@ -108,6 +108,15 @@ test("real album queue advances source and all Now Playing identity to the ficti
     expect((await new AxeBuilder({page}).include(".title-block").include("[data-audio-queue-controls]").include("[data-current-track-actions]").include(".media-stage").analyze()).violations).toEqual([]);
     await page.screenshot({path: testInfo.outputPath(`second-track-${viewport.width}.png`), fullPage: true});
   }
+  const stylesheet = await page.locator('link[rel="stylesheet"][href^="/static/app.css?"]').getAttribute("href");
+  expect(stylesheet).toBeTruthy();
+  const css = await page.request.get(stylesheet!);
+  expect(css.status()).toBe(200);
+  expect(new URL(stylesheet!, "https://fixture.invalid").searchParams.get("v")).not.toBe("electric-47");
+  expect(await css.text()).toContain(".primary-player-actions:not([hidden]){display:grid!important");
+  expect(css.headers()["cache-control"]).toBe("public, max-age=31536000, immutable");
+  await testInfo.attach("css-cache-delivery", {body: JSON.stringify({path: stylesheet,
+    sha256: createHash("sha256").update(await css.body()).digest("hex"), cacheControl: css.headers()["cache-control"]}), contentType: "application/json"});
 });
 
 // Isolated 503 injection in an actual Go-rendered page. Initial and Retry 204
