@@ -42,18 +42,44 @@ func TestSubtitleOperationPreservesActiveOwnerAndCSRFBoundaries(t *testing.T) {
 	assertSubtitleOperationAccessDenied(t, handler, http.MethodGet, statusPath, "", nil, "", http.StatusUnauthorized)
 	assertSubtitleOperationAccessDenied(t, handler, http.MethodGet, statusPath, "", viewer, "", http.StatusForbidden)
 	assertSubtitleOperationAccessDenied(t, handler, http.MethodGet, statusPath, "", partner, "", http.StatusNotFound)
+	assertSubtitleOperationAccessDenied(t, handler, http.MethodGet, statusPath+"/result", "", partner, "", http.StatusNotFound)
 	assertSubtitleOperationAccessDenied(t, handler, http.MethodPost, base+"/replacement", `{"replaceable":false}`, partner, receipt.ID, http.StatusNotFound)
 	assertSubtitleOperationAccessDenied(t, handler, http.MethodPost, "/api/v1/subtitle-operations", string(input), viewer, "", http.StatusForbidden)
 	assertSubtitleOperationCrossOriginDenied(t, handler, string(input), owner)
+	assertSubtitleOperationActivationCrossOriginDenied(t, handler, base+"/replacement", receipt.ID, owner)
 	assertSubtitleActionBytes(t, target, []byte(subtitleActionInitial))
 	current := subtitleOperationAuthenticated(t, handler, http.MethodGet, statusPath, "", owner, "")
 	if current.Code != http.StatusOK || json.Unmarshal(current.Body.Bytes(), &receipt) != nil || receipt.State != "prepared" {
 		t.Fatalf("denied requests changed the active Owner receipt: status %d", current.Code)
 	}
+	if current.Header().Get("Cache-Control") != "private, no-store" {
+		t.Fatal("Owner receipt status is cacheable")
+	}
 	accepted := subtitleOperationAuthenticated(t, handler, http.MethodPost, base+"/replacement", `{"replaceable":false}`, owner, receipt.ID)
 	assertSubtitleOperationAccepted(t, accepted, receipt.ID)
 	assertSubtitleOperationOwnerCompletes(t, handler, statusPath, owner)
 	assertSubtitleActionBytes(t, target, []byte(subtitleActionInitial))
+	protected := subtitleOperationAuthenticated(t, handler, http.MethodGet, "/api/v1/subtitle-library?view=library", "", owner, "")
+	var inventory struct{ Items []struct{ Frozen bool } }
+	if protected.Code != http.StatusOK || json.Unmarshal(protected.Body.Bytes(), &inventory) != nil || len(inventory.Items) != 1 || !inventory.Items[0].Frozen {
+		t.Fatal("active Owner replacement workflow did not protect the existing subtitle")
+	}
+}
+
+func assertSubtitleOperationActivationCrossOriginDenied(t *testing.T, handler http.Handler, path, operation string, owner *http.Cookie) {
+	t.Helper()
+	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, path, strings.NewReader(`{"replaceable":false}`))
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Accept", "application/json")
+	request.Header.Set("Origin", "https://unrelated.invalid")
+	request.Header.Set("Sec-Fetch-Site", "cross-site")
+	request.Header.Set("X-Kinosail-Operation", operation)
+	request.AddCookie(owner)
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, request)
+	if response.Code != http.StatusForbidden {
+		t.Fatalf("cross-origin activation without CSRF = %d", response.Code)
+	}
 }
 
 func subtitleOperationOwnerItem(t *testing.T, handler http.Handler, owner *http.Cookie) string {

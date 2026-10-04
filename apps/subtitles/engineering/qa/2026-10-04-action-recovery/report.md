@@ -60,3 +60,13 @@ Preserved R16 SHA-256 checks:
 subtitle_maintenance_test.go: f26e00b3f914130793b72c5187b546244ed4d47222380743899f02aa9f7993fb
 subtitle_dashboard_revision_test.go: c0111e937ade97838c3422b89de5a56089efd3e289828598147860615ddd7de6
 ```
+
+## Complete test-first source checkpoint
+
+Before receipt implementation, the prepared public Go coverage now contains 26 named tests. The additional source covers clock-controlled expiry, cancellation-delaying real child/pipe settlement, interrupted-running lifecycle restart, corrupt or unavailable storage, Owner-bound bounded audio results, safe diagnostics, and admission across every public subtitle write adapter. The legacy general API and web fetch adapters are included. Reviewed cleanup is tested with a fresh public preview digest: conflicting admission must preserve all sidecar bytes, avoid hidden-file renames, and preserve public settings.
+
+These additions have not run. They reference the approved receipt-only `Config.SubtitleOperationTime` boundary, which does not yet exist in production. This is deliberately incomplete test-first source, not another runtime RED or an accepted implementation. The prior exact `42f3c2a9` completed RED and its manifest remain unchanged and independently verifiable through Git.
+
+The child process controls use fictional audio supplied by a real local shell executable. External clock cancellation and actual lifecycle restart are separate tests. Both require running status and exclusive admission to stay held until the application returns after child output and process `Wait`; a failed completion write must expose uncertainty without replay. The delayed child fixture is released and allowed to settle on fixture exit.
+
+Automatic maintenance also needs the shared application admission boundary. Its existing 15-minute throttle remains intact. A short focused run cannot establish the full automatic scheduling interval; that remains an explicit runtime limit alongside source review and the existing lifecycle controls. Draft start/cancel retain their existing explicit job correlation and two-hour bound; no coarse receipt is added.
