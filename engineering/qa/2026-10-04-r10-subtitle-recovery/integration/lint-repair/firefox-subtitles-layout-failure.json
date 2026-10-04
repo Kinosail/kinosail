@@ -1,0 +1,13 @@
+{
+  "app": "subtitles",
+  "engine": "firefox",
+  "stage": "measure-flows",
+  "flowStage": "library-journey-navigation",
+  "errorClass": "TimeoutError",
+  "completedCases": 46,
+  "completedFlows": 4,
+  "loginResponses": [
+    303
+  ],
+  "pageState": "other"
+}

@@ -1,0 +1,59 @@
+{
+  "id": "R10",
+  "phase": "isolated runtime red",
+  "revision": "1e3e47f5ddc27422c3c6ebede5b271a06429d796",
+  "host": "macOS-27.0-arm64-arm-64bit-Mach-O",
+  "browser": "installed Google Chrome 154.0.8037.97",
+  "project": "chromium",
+  "workers": 1,
+  "video": "off",
+  "deadline_clock": "Playwright browser clock fastForward(20100), not 20 seconds wall time",
+  "transport": "real disposable localhost HTTP peer; baseline source-only shell, no media decode or Go-rendering claim",
+  "cancellation_boundary": "Baseline failures precede cancellation and Retry assertions. Task-owned peer closes held responses in test teardown; no product deadline cancellation is claimed.",
+  "inputs": {
+    "apps/player/internal/server/static/player-subtitles.js": "5b1ece82b927503b0dcdf80c4d3b55e917feb1783f953c7402b25acf164d357e",
+    "apps/player/internal/server/player.go": "54ae98f86919376f93cb4a4f4e6b55a39e77f9238137eb37478eb29f6e805280",
+    "apps/player/e2e/player-subtitles-recovery.spec.ts": "32eae2009c12ec60099df197a4a0e6424d1f6494d98645a205839784ce2d34e8",
+    "apps/player/e2e/player-subtitles-recovery-fixture.ts": "6924a9eeb1de95370eb3aa1714742011f49b07aef0b98aa289e4c9295cf98f95",
+    "apps/player/internal/server/subtitle_recovery_browser_test.go": "8d92bc3cb1f9d0cf945f93b8a52af054f2fe9fd59c9bf405bec27764ba1c2d7c",
+    "apps/player/e2e/playwright.config.ts": "628d3a62d9b3e2fba1bc43f3cd58979acadf22c083e3559c73c4f750a97cc0b3"
+  },
+  "runs": [
+    {
+      "run": 1,
+      "exit_code": 1,
+      "cases": [
+        {
+          "title": "isolated transport: stalled caption headers reaches a deadline and keyboard Retry at 390px",
+          "status": "failed",
+          "duration_ms": 2353,
+          "failure": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('[data-subtitle-status]')\nExpected substring: \u001b[32m\"Subtitles unavailable\"\u001b[39m\nReceived string:    \u001b[31m\"Loading subtitles\u2026\"\u001b[39m\nTimeout: 2000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" locator('[data-subtitle-status]') with timeout 2000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-subtitle-status]')\u001b[22m\n\u001b[2m    21 \u00d7 locator resolved to <small role=\"status\" data-subtitle-status=\"\">Loading subtitles\u2026</small>\u001b[22m\n\u001b[2m       - unexpected value \"Loading subtitles\u2026\"\u001b[22m\n"
+        },
+        {
+          "title": "isolated transport: stalled caption body reaches a deadline and keyboard Retry at 390px",
+          "status": "failed",
+          "duration_ms": 2363,
+          "failure": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('[data-subtitle-status]')\nExpected substring: \u001b[32m\"Subtitles unavailable\"\u001b[39m\nReceived string:    \u001b[31m\"Loading subtitles\u2026\"\u001b[39m\nTimeout: 2000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" locator('[data-subtitle-status]') with timeout 2000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-subtitle-status]')\u001b[22m\n\u001b[2m    21 \u00d7 locator resolved to <small role=\"status\" data-subtitle-status=\"\">Loading subtitles\u2026</small>\u001b[22m\n\u001b[2m       - unexpected value \"Loading subtitles\u2026\"\u001b[22m\n"
+        }
+      ]
+    },
+    {
+      "run": 2,
+      "exit_code": 1,
+      "cases": [
+        {
+          "title": "isolated transport: stalled caption headers reaches a deadline and keyboard Retry at 390px",
+          "status": "failed",
+          "duration_ms": 2370,
+          "failure": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('[data-subtitle-status]')\nExpected substring: \u001b[32m\"Subtitles unavailable\"\u001b[39m\nReceived string:    \u001b[31m\"Loading subtitles\u2026\"\u001b[39m\nTimeout: 2000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" locator('[data-subtitle-status]') with timeout 2000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-subtitle-status]')\u001b[22m\n\u001b[2m    20 \u00d7 locator resolved to <small role=\"status\" data-subtitle-status=\"\">Loading subtitles\u2026</small>\u001b[22m\n\u001b[2m       - unexpected value \"Loading subtitles\u2026\"\u001b[22m\n"
+        },
+        {
+          "title": "isolated transport: stalled caption body reaches a deadline and keyboard Retry at 390px",
+          "status": "failed",
+          "duration_ms": 2372,
+          "failure": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('[data-subtitle-status]')\nExpected substring: \u001b[32m\"Subtitles unavailable\"\u001b[39m\nReceived string:    \u001b[31m\"Loading subtitles\u2026\"\u001b[39m\nTimeout: 2000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" locator('[data-subtitle-status]') with timeout 2000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-subtitle-status]')\u001b[22m\n\u001b[2m    21 \u00d7 locator resolved to <small role=\"status\" data-subtitle-status=\"\">Loading subtitles\u2026</small>\u001b[22m\n\u001b[2m       - unexpected value \"Loading subtitles\u2026\"\u001b[22m\n"
+        }
+      ]
+    }
+  ]
+}

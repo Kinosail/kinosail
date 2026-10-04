@@ -1,0 +1,17 @@
+{
+  "run": 37198688511,
+  "head": "37a185f47775c68d11640ad73c673997bdff352c",
+  "protected": false,
+  "playerFirefox": "Native Player layout exited 0.",
+  "subtitlesFirefox": "Library journey navigation timed out after 46 cases and four flows. PR469 changes no Subtitles source or shared package source.",
+  "webkit": "Both apps stopped at login redirect: HTTP303, no auth cookie, zero layout cases or flows. Authentication remains unchanged.",
+  "failureProjections": [
+    "firefox-subtitles-layout-failure.json",
+    "webkit-player-layout-failure.json",
+    "webkit-subtitles-layout-failure.json"
+  ],
+  "privateLogSHA256": {
+    "r10-layout-firefox-private.log": "04ac54790c8024497486667c96f20866fb2ab6d8d83f81fb242ed17df5bbacf5",
+    "r10-layout-webkit-private.log": "d92d704a26e7314fc3c1822bdf67e1103306f34f495f1948e0f6a7253f86821b"
+  }
+}

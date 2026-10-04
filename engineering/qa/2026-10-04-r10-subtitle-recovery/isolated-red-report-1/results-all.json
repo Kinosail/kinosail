@@ -1,0 +1,243 @@
+{
+  "config": {
+    "argv": [
+      "/opt/homebrew/Cellar/node/26.8.2/bin/node",
+      "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/node_modules/.pnpm/@playwright+test@1.63.0/node_modules/@playwright/test/cli.js",
+      "test",
+      "player-subtitles-recovery.spec.ts",
+      "--workers=1",
+      "--project=chromium"
+    ],
+    "configFile": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/playwright.config.ts",
+    "rootDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-r10-subtitle-recovery/isolated-red-1",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "open": "never",
+          "outputFolder": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-r10-subtitle-recovery/isolated-red-report-1/html-all"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-r10-subtitle-recovery/isolated-red-report-1/results-all.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "player-subtitles-recovery.spec.ts",
+      "file": "player-subtitles-recovery.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "isolated transport: stalled caption headers reaches a deadline and keyboard Retry at 390px",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 2353,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('[data-subtitle-status]')\nExpected substring: \u001b[32m\"Subtitles unavailable\"\u001b[39m\nReceived string:    \u001b[31m\"Loading subtitles…\"\u001b[39m\nTimeout: 2000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" locator('[data-subtitle-status]') with timeout 2000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-subtitle-status]')\u001b[22m\n\u001b[2m    21 × locator resolved to <small role=\"status\" data-subtitle-status=\"\">Loading subtitles…</small>\u001b[22m\n\u001b[2m       - unexpected value \"Loading subtitles…\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('[data-subtitle-status]')\nExpected substring: \u001b[32m\"Subtitles unavailable\"\u001b[39m\nReceived string:    \u001b[31m\"Loading subtitles…\"\u001b[39m\nTimeout: 2000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" locator('[data-subtitle-status]') with timeout 2000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-subtitle-status]')\u001b[22m\n\u001b[2m    21 × locator resolved to <small role=\"status\" data-subtitle-status=\"\">Loading subtitles…</small>\u001b[22m\n\u001b[2m       - unexpected value \"Loading subtitles…\"\u001b[22m\n\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/player-subtitles-recovery.spec.ts:21:60",
+                    "location": {
+                      "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/player-subtitles-recovery.spec.ts",
+                      "column": 60,
+                      "line": 21
+                    },
+                    "snippet": "  19 |       await page.clock.fastForward(20_100);\n  20 |       await page.screenshot({ path: info.outputPath(`${stalledBoundary}-after-deadline.png`) });\n> 21 |       await expect(page.locator(\"[data-subtitle-status]\")).toContainText(\"Subtitles unavailable\", { timeout: 2_000 });\n     |                                                            ^\n  22 |       await expect(page.locator(\"[data-subtitle-status]\")).toHaveAttribute(\"data-failure\", \"timeout\");\n  23 |       if (stalledBoundary === \"body\") await expect(page.locator(\"[data-subtitle-status]\")).toHaveAttribute(\"data-request-id\", \"caption-fixture-1\");\n  24 |       else await expect(page.locator(\"[data-subtitle-status]\")).not.toHaveAttribute(\"data-request-id\");"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/player-subtitles-recovery.spec.ts",
+                        "column": 60,
+                        "line": 21
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('[data-subtitle-status]')\nExpected substring: \u001b[32m\"Subtitles unavailable\"\u001b[39m\nReceived string:    \u001b[31m\"Loading subtitles…\"\u001b[39m\nTimeout: 2000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" locator('[data-subtitle-status]') with timeout 2000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-subtitle-status]')\u001b[22m\n\u001b[2m    21 × locator resolved to <small role=\"status\" data-subtitle-status=\"\">Loading subtitles…</small>\u001b[22m\n\u001b[2m       - unexpected value \"Loading subtitles…\"\u001b[22m\n\n\n  19 |       await page.clock.fastForward(20_100);\n  20 |       await page.screenshot({ path: info.outputPath(`${stalledBoundary}-after-deadline.png`) });\n> 21 |       await expect(page.locator(\"[data-subtitle-status]\")).toContainText(\"Subtitles unavailable\", { timeout: 2_000 });\n     |                                                            ^\n  22 |       await expect(page.locator(\"[data-subtitle-status]\")).toHaveAttribute(\"data-failure\", \"timeout\");\n  23 |       if (stalledBoundary === \"body\") await expect(page.locator(\"[data-subtitle-status]\")).toHaveAttribute(\"data-request-id\", \"caption-fixture-1\");\n  24 |       else await expect(page.locator(\"[data-subtitle-status]\")).not.toHaveAttribute(\"data-request-id\");\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/player-subtitles-recovery.spec.ts:21:60"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T08:52:46.280Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-r10-subtitle-recovery/isolated-red-1/player-subtitles-recovery--dec06-and-keyboard-Retry-at-390px-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-r10-subtitle-recovery/isolated-red-1/player-subtitles-recovery--dec06-and-keyboard-Retry-at-390px-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-r10-subtitle-recovery/isolated-red-1/player-subtitles-recovery--dec06-and-keyboard-Retry-at-390px-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/player-subtitles-recovery.spec.ts",
+                    "column": 60,
+                    "line": 21
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "f764ae86f054595bda3b-641eab7800ba5f541c79",
+          "file": "player-subtitles-recovery.spec.ts",
+          "line": 9,
+          "column": 3
+        },
+        {
+          "title": "isolated transport: stalled caption body reaches a deadline and keyboard Retry at 390px",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 2363,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('[data-subtitle-status]')\nExpected substring: \u001b[32m\"Subtitles unavailable\"\u001b[39m\nReceived string:    \u001b[31m\"Loading subtitles…\"\u001b[39m\nTimeout: 2000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" locator('[data-subtitle-status]') with timeout 2000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-subtitle-status]')\u001b[22m\n\u001b[2m    21 × locator resolved to <small role=\"status\" data-subtitle-status=\"\">Loading subtitles…</small>\u001b[22m\n\u001b[2m       - unexpected value \"Loading subtitles…\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('[data-subtitle-status]')\nExpected substring: \u001b[32m\"Subtitles unavailable\"\u001b[39m\nReceived string:    \u001b[31m\"Loading subtitles…\"\u001b[39m\nTimeout: 2000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" locator('[data-subtitle-status]') with timeout 2000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-subtitle-status]')\u001b[22m\n\u001b[2m    21 × locator resolved to <small role=\"status\" data-subtitle-status=\"\">Loading subtitles…</small>\u001b[22m\n\u001b[2m       - unexpected value \"Loading subtitles…\"\u001b[22m\n\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/player-subtitles-recovery.spec.ts:21:60",
+                    "location": {
+                      "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/player-subtitles-recovery.spec.ts",
+                      "column": 60,
+                      "line": 21
+                    },
+                    "snippet": "  19 |       await page.clock.fastForward(20_100);\n  20 |       await page.screenshot({ path: info.outputPath(`${stalledBoundary}-after-deadline.png`) });\n> 21 |       await expect(page.locator(\"[data-subtitle-status]\")).toContainText(\"Subtitles unavailable\", { timeout: 2_000 });\n     |                                                            ^\n  22 |       await expect(page.locator(\"[data-subtitle-status]\")).toHaveAttribute(\"data-failure\", \"timeout\");\n  23 |       if (stalledBoundary === \"body\") await expect(page.locator(\"[data-subtitle-status]\")).toHaveAttribute(\"data-request-id\", \"caption-fixture-1\");\n  24 |       else await expect(page.locator(\"[data-subtitle-status]\")).not.toHaveAttribute(\"data-request-id\");"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/player-subtitles-recovery.spec.ts",
+                        "column": 60,
+                        "line": 21
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('[data-subtitle-status]')\nExpected substring: \u001b[32m\"Subtitles unavailable\"\u001b[39m\nReceived string:    \u001b[31m\"Loading subtitles…\"\u001b[39m\nTimeout: 2000ms\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" locator('[data-subtitle-status]') with timeout 2000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-subtitle-status]')\u001b[22m\n\u001b[2m    21 × locator resolved to <small role=\"status\" data-subtitle-status=\"\">Loading subtitles…</small>\u001b[22m\n\u001b[2m       - unexpected value \"Loading subtitles…\"\u001b[22m\n\n\n  19 |       await page.clock.fastForward(20_100);\n  20 |       await page.screenshot({ path: info.outputPath(`${stalledBoundary}-after-deadline.png`) });\n> 21 |       await expect(page.locator(\"[data-subtitle-status]\")).toContainText(\"Subtitles unavailable\", { timeout: 2_000 });\n     |                                                            ^\n  22 |       await expect(page.locator(\"[data-subtitle-status]\")).toHaveAttribute(\"data-failure\", \"timeout\");\n  23 |       if (stalledBoundary === \"body\") await expect(page.locator(\"[data-subtitle-status]\")).toHaveAttribute(\"data-request-id\", \"caption-fixture-1\");\n  24 |       else await expect(page.locator(\"[data-subtitle-status]\")).not.toHaveAttribute(\"data-request-id\");\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/player-subtitles-recovery.spec.ts:21:60"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T08:52:59.622Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-r10-subtitle-recovery/isolated-red-1/player-subtitles-recovery--27dcb-and-keyboard-Retry-at-390px-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-r10-subtitle-recovery/isolated-red-1/player-subtitles-recovery--27dcb-and-keyboard-Retry-at-390px-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-r10-subtitle-recovery/isolated-red-1/player-subtitles-recovery--27dcb-and-keyboard-Retry-at-390px-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/player-subtitles-recovery.spec.ts",
+                    "column": 60,
+                    "line": 21
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "f764ae86f054595bda3b-bfc4661071d87ec7257d",
+          "file": "player-subtitles-recovery.spec.ts",
+          "line": 9,
+          "column": 3
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-04T08:52:45.964Z",
+    "duration": 26704.893,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

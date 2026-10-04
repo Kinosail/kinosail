@@ -1,0 +1,4 @@
+Listing tests:
+  [chromium] › player-subtitles-recovery.spec.ts:9:3 › isolated transport: stalled caption headers reaches a deadline and keyboard Retry at 390px
+  [chromium] › player-subtitles-recovery.spec.ts:9:3 › isolated transport: stalled caption body reaches a deadline and keyboard Retry at 390px
+Total: 2 tests in 1 file

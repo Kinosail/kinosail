@@ -1,0 +1,111 @@
+{
+  "revision": "cc3beadfda7659e34f22dba03856d3019f0265f2",
+  "environment": {
+    "GOMAXPROCS": "4",
+    "GOFLAGS": "-p=1"
+  },
+  "integrationBase": "ba527747b09b29c3836529b8de61c7ae877180bc",
+  "results": [
+    {
+      "name": "changed-lint",
+      "command": [
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/scripts/tooling/with-go-module.sh",
+        "golangci-lint",
+        "run",
+        "--timeout=75s",
+        "--new-from-rev=origin/main"
+      ],
+      "boundSeconds": 90,
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 46.17,
+      "log": "integration/lint-repair/r10-lint-repair-changed-lint.log",
+      "logSHA256": "e92606b0bf483111dff0a120c315ea165821348f31365020e2468a0059095c47",
+      "rawGzip": "integration/lint-repair/r10-lint-repair-changed-lint.log.gz"
+    },
+    {
+      "name": "player-verify-changed",
+      "command": [
+        "make",
+        "-C",
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/apps/player",
+        "verify-changed",
+        "BASE=origin/main"
+      ],
+      "boundSeconds": 90,
+      "exitCode": 2,
+      "timedOut": false,
+      "seconds": 43.6,
+      "log": "integration/lint-repair/r10-lint-repair-player-verify-changed.log",
+      "logSHA256": "2a151d754ef4f9ab199b3a82ab4d2361bceb6f13f9d0d35aedcdc95a9351a4cb",
+      "rawGzip": "integration/lint-repair/r10-lint-repair-player-verify-changed.log.gz"
+    },
+    {
+      "name": "subtitles-verify-changed",
+      "command": [
+        "make",
+        "-C",
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/apps/subtitles",
+        "verify-changed",
+        "BASE=origin/main"
+      ],
+      "boundSeconds": 90,
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 0.5,
+      "log": "integration/lint-repair/r10-lint-repair-subtitles-verify-changed.log",
+      "logSHA256": "36b315c0c69b7cd8cf2b67fc2006024323c55cd2de268d62cb8ac0c9bd749a60",
+      "rawGzip": "integration/lint-repair/r10-lint-repair-subtitles-verify-changed.log.gz"
+    },
+    {
+      "name": "playerweb-template",
+      "command": [
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/scripts/tooling/with-go-module.sh",
+        "go",
+        "test",
+        "-p",
+        "1",
+        "./playerweb",
+        "-count=1"
+      ],
+      "boundSeconds": 45,
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 0.87,
+      "log": "integration/lint-repair/r10-lint-repair-playerweb-template.log",
+      "logSHA256": "833bab3aa0c38173111dc41957d6fe39f307b80d6f9e6092da0082cef12d4ca8",
+      "rawGzip": "integration/lint-repair/r10-lint-repair-playerweb-template.log.gz"
+    },
+    {
+      "name": "test-instance-check",
+      "command": [
+        "make",
+        "-C",
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/apps/player",
+        "test-instance-check"
+      ],
+      "boundSeconds": 15,
+      "exitCode": 2,
+      "timedOut": false,
+      "seconds": 1.49,
+      "log": "integration/lint-repair/r10-lint-repair-test-instance-check.log",
+      "logSHA256": "42e699335baa8cd5b025289eb2e3404ad20fc5f4e108a0bb24d652b5ad7bc483",
+      "rawGzip": "integration/lint-repair/r10-lint-repair-test-instance-check.log.gz"
+    },
+    {
+      "name": "native-server-proof",
+      "command": [
+        "bash",
+        "-c",
+        "source scripts/test-browser-journeys.sh; run_subtitle_recovery_journey chromium \"$KINOSAIL_CAPTION_MEDIA_FIXTURE\" \"$KINOSAIL_E2E_OUTPUT_DIR\" \"$KINOSAIL_E2E_ARTIFACT_DIR\""
+      ],
+      "boundSeconds": 100,
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 15.61,
+      "log": "integration/lint-repair/r10-lint-repair-native-server-proof.log",
+      "logSHA256": "af0d8869d693de6b4f198084e5d3526d6e06aebb0daf2571eb124f28af01da2c",
+      "rawGzip": "integration/lint-repair/r10-lint-repair-native-server-proof.log.gz"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "app": "player",
+  "engine": "webkit",
+  "stage": "login-redirect",
+  "flowStage": "not-started",
+  "errorClass": "TimeoutError",
+  "completedCases": 0,
+  "completedFlows": 0,
+  "loginResponses": [
+    303
+  ],
+  "authCookieCount": 0,
+  "pageState": "login"
+}
