@@ -17,6 +17,7 @@ import (
 )
 
 type hlsJob struct {
+	observation     *hlsObservation
 	preparation     *startupEncoding
 	done            chan struct{}
 	err             error
@@ -137,10 +138,10 @@ func (manager *hlsManager) prepare(ctx context.Context, item library.Item, recip
 		}
 		select {
 		case <-ctx.Done():
-			return ctx.Err()
+			return observedHLSReadinessError(ctx.Err(), job)
 		case <-job.done:
 			if job.err != nil {
-				return job.err
+				return observedHLSReadinessError(job.err, job)
 			}
 			return manager.prepare(ctx, item, recipe)
 		case <-ticker.C:
@@ -217,7 +218,7 @@ func sourceQuality(facts MediaFacts, maximum int64) PlaybackQuality {
 }
 
 func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item, root, name, width, videoRate, audioRate string, duration float64, options transcodeSettings, sourceRecipe, recipe hlsRecipe, start float64, startNumber int) error { //nolint:cyclop,funlen // One FFmpeg command is assembled from the validated playback recipe.
-	release, err := manager.workloads.Acquire(ctx, startupWorkClass(ctx))
+	release, err := manager.acquireHLSEncode(ctx, 1, "", start, startNumber)
 	if err != nil {
 		return err
 	}
@@ -256,7 +257,7 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 	arguments = append(arguments, hlsSegmentArguments(recipe.mode, directory, playlist, startNumber)...)
 	//nolint:gosec // G204: executable is installation config and input is found only by a Library scan.
 	command := exec.CommandContext(ctx, manager.ffmpeg, arguments...)
-	if err := runHLSCommand(command, item.Path, root); err != nil {
+	if err := runHLSCommand(ctx, command, item.Path, root); err != nil {
 		return err
 	}
 	return finalizePlaylist(playlist)

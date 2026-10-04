@@ -7,7 +7,7 @@ import (
 )
 
 func publishVariants(ctx context.Context, source, directory, transcoder string, qualities []PlaybackQuality, results <-chan error, expected int, independent bool) error {
-	return playback.PublishVariants(ctx, source, directory, transcoder, qualities, results, expected, independent, writeAtomicFile)
+	return playback.PublishVariantsObserved(ctx, source, directory, transcoder, qualities, results, expected, independent, writeAtomicFile, func() { hlsObservationFor(ctx).emit("media_ready", "") })
 }
 
 func masterFresh(playlist, source, transcoder string) bool {
