@@ -11,6 +11,7 @@ test.skip(!fixtureRoot, "requires real public Save/Restore control artifacts");
 async function actionFixture(page: Page, testInfo: TestInfo, action: "save" | "restore", surface: "inspector" | "dashboard", completed: boolean) {
   const dir = `${fixtureRoot}/${action}`;
   const source = await readFile(`${dir}/${surface}.html`, "utf8");
+  const historyPage = await readFile(`${dir}/history.html`, "utf8");
   const before = JSON.parse(await readFile(`${dir}/before.json`, "utf8"));
   const after = JSON.parse(await readFile(`${dir}/after.json`, "utf8"));
   const history = JSON.parse(await readFile(`${dir}/${completed ? "history" : "before-history"}.json`, "utf8"));
@@ -46,7 +47,7 @@ async function actionFixture(page: Page, testInfo: TestInfo, action: "save" | "r
     if (types[name]) return route.fulfill({ contentType: types[name], body: await readFile(`${dir}/${name}`) });
     expect(request.method(), "recovery and navigation may only read").toBe("GET");
     requests.pages++;
-    return route.fulfill({ contentType: "text/html", body: source });
+    return route.fulfill({ contentType: "text/html", body: surface === "dashboard" && url.searchParams.get("view") === "history" ? historyPage : source });
   });
   await page.goto(`${origin}/${surface === "inspector" ? "subtitles/inspect/fixture" : "?view=library"}`);
   return {
@@ -105,6 +106,7 @@ for (const width of [390, 1440]) {
       await expect(page.locator("#subtitle-feedback")).toContainText(/unknown|could not confirm|still|pending/i);
       await page.getByRole("link", { name: "History", exact: true }).click();
       await expect.poll(() => fixture.requests.pages).toBeGreaterThan(1);
+      await expect(page.locator("#main")).toHaveAttribute("data-view", "history");
       await page.clock.fastForward(60_000);
       expect(fixture.requests.mutations, "read-only navigation must not replay Restore").toHaveLength(1);
       await page.screenshot({ path: testInfo.outputPath(`restore-unknown-dashboard-${width}.png`), fullPage: true });

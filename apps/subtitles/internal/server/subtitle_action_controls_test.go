@@ -142,7 +142,7 @@ func subtitleActionBrowserFiles(t *testing.T, handler http.Handler, base, action
 	t.Helper()
 	files := map[string][]byte{"preview.json": append([]byte(nil), preview...)}
 	id := strings.TrimPrefix(base, "/api/v1/subtitle-library/")
-	paths := map[string]string{"inspector.html": "/subtitles/inspect/" + id, "before.json": base + "/inspect?language=en", "before-history.json": "/api/v1/subtitle-library?view=history", "dashboard.html": "/?view=library", "app.css": "/static/app.css", "subtitle-inspector.css": "/static/subtitle-inspector.css", "subtitle-inspector.js": "/static/subtitle-inspector.js", "subtitle-status.js": "/static/subtitle-status.js", "theme.js": "/static/theme.js", "icon.svg": "/static/icon.svg", "manrope.woff2": "/static/manrope.woff2"}
+	paths := map[string]string{"inspector.html": "/subtitles/inspect/" + id, "before.json": base + "/inspect?language=en", "before-history.json": "/api/v1/subtitle-library?view=history", "dashboard.html": "/?view=library", "history.html": "/?view=history", "app.css": "/static/app.css", "subtitle-inspector.css": "/static/subtitle-inspector.css", "subtitle-inspector.js": "/static/subtitle-inspector.js", "subtitle-status.js": "/static/subtitle-status.js", "theme.js": "/static/theme.js", "icon.svg": "/static/icon.svg", "manrope.woff2": "/static/manrope.woff2"}
 	for name, path := range paths {
 		response := requestApp(t, handler, http.MethodGet, path, "")
 		if response.Code != http.StatusOK {
