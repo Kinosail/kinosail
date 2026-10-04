@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"log/slog"
+	"maps"
 	"net/http"
 	"time"
 )
@@ -44,7 +45,7 @@ func (operations *subtitleOperations) launch(request *http.Request, record subti
 	// Browser cancellation does not undo an activation. The job keeps request
 	// identity, follows Server shutdown, and has the reviewed outer deadline.
 	ctx, cancel := operations.operationContext(request.Context(), limit)
-	operations.active[record.ID] = ctx
+	maps.Copy(operations.active, map[string]context.Context{record.ID: ctx})
 	jobRequest := request.Clone(ctx)
 	jobRequest.Body = http.NoBody
 	slog.Info("subtitle operation started", "request_id", activityRequestID(request), "operation_id", record.ID, "action", record.Action, "outcome", "running")
