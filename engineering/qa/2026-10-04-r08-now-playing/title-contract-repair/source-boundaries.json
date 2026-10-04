@@ -1,0 +1,27 @@
+{
+  "minimizationCheckpoint": "ba8e28be4bf0db426463056b0256764ce8df3739",
+  "minimizationProof": "../integration/private-state-minimization.json",
+  "minimizationClaimScope": "Production/harness/CI source equivalence in the earlier proof applies to ba8, before the separately documented title repair.",
+  "executedRepairRevision": "84f144ecd5bf4841c3d2780c9479db892c00f878",
+  "repair": "Delete one redundant Go-generated h1 attribute. Existing JS fallback updates the current heading; exact existing public title tests remain unchanged.",
+  "unchangedAssertions": [
+    "apps/player/internal/server/library_api_titles_test.go",
+    "apps/subtitles/internal/server/library_api_titles_test.go",
+    "packages/servertest/library_api_titles.go"
+  ],
+  "historicalSourceEvidence": "Original frozen/executed commits remain on preserved PR471 branch. They are not ancestors of the clean branch.",
+  "scannerAndIgnoreUnchanged": true,
+  "originalReceiptsPreservedPrivately": true,
+  "omittedCredentialLikeMetadataRepublished": false,
+  "isolated50CaseBoundary": "Historical50-case passing suite at e09 remains unchanged; the one Go heading repair has fresh actual Go public contracts and six fresh native journeys here.",
+  "checksReceiptMinimization": {
+    "originalWholeReceiptSHA256": "1206eddcdbda2c4f44384e13fb02b99e51f015eddeb2e7ff8fce3d8271be8198",
+    "omittedMetadataField": "sourceSHA256",
+    "omittedEntries": 15,
+    "originalUnpublishedCommitPreserved": "7eed09a506dc3681f800324a58a7ac0af9f0e53d",
+    "reason": "The per-file checksum map duplicates existing reviewed source and native product provenance. Its three API-named test entries triggered the unchanged scanner. The entire redundant map is genuinely omitted, with no added representation or relocation of its individual values. Some unchanged source hashes already occur in incumbent historical main evidence; that evidence is untouched.",
+    "allOtherChecksFieldsUnchanged": true,
+    "exactPrivateReceiptPreserved": true,
+    "productTestsAssertionsAndScannerUnchanged": true
+  }
+}

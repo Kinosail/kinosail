@@ -1,0 +1,143 @@
+{
+  "revision": "84f144ecd5bf4841c3d2780c9479db892c00f878",
+  "base": "0d85c75a5ed2f304a8c657ecc2a06c11dbbcef0a",
+  "results": [
+    {
+      "name": "player-public-title",
+      "command": [
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/scripts/tooling/with-go-module.sh",
+        "go",
+        "test",
+        "-p",
+        "1",
+        "./internal/server",
+        "-run",
+        "^TestReleaseFilenameUsesHumanTitleInAPIAndWeb$",
+        "-count=1",
+        "-timeout=25s"
+      ],
+      "boundSeconds": 35,
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 9.01,
+      "log": "r08-title-repair-player-public-title-private.log",
+      "logSHA256": "28f96f9cc47a22b31a34f36ee9d32d36de89eba4a1334fde4db62691c07bde7c"
+    },
+    {
+      "name": "subtitles-public-title",
+      "command": [
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/scripts/tooling/with-go-module.sh",
+        "go",
+        "test",
+        "-p",
+        "1",
+        "./internal/server",
+        "-run",
+        "^TestReleaseFilenameUsesHumanTitleInAPIAndWeb$",
+        "-count=1",
+        "-timeout=25s"
+      ],
+      "boundSeconds": 35,
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 10.03,
+      "log": "r08-title-repair-subtitles-public-title-private.log",
+      "logSHA256": "3eb90a62b77257e6b3af32a480bf872c3e05dcaefdba02ce30c59f1515db0502"
+    },
+    {
+      "name": "native-server-proof",
+      "command": [
+        "python3",
+        "scripts/testing/test-player-audio-queue-local.py"
+      ],
+      "boundSeconds": 110,
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 22.15,
+      "log": "r08-title-repair-native-server-proof-private.log",
+      "logSHA256": "530d1b5bf968177ce435d07a50b39465dd6f3c0e9c7ab299698d339e5947a336"
+    },
+    {
+      "name": "player-verify-changed",
+      "command": [
+        "make",
+        "-C",
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/apps/player",
+        "verify-changed",
+        "BASE=origin/main"
+      ],
+      "boundSeconds": 90,
+      "exitCode": 2,
+      "timedOut": false,
+      "seconds": 48.12,
+      "log": "r08-title-repair-player-verify-changed-private.log",
+      "logSHA256": "d570bcd37f5472eac7e405eed57096a7479aa767686d7ad6085dddeaec30ff3d"
+    },
+    {
+      "name": "subtitles-verify-changed",
+      "command": [
+        "make",
+        "-C",
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/apps/subtitles",
+        "verify-changed",
+        "BASE=origin/main"
+      ],
+      "boundSeconds": 90,
+      "exitCode": 2,
+      "timedOut": false,
+      "seconds": 34.63,
+      "log": "r08-title-repair-subtitles-verify-changed-private.log",
+      "logSHA256": "e933dc6cda0d8614f716a830fd576ce7c6e9de0903be2ab02f5468ed6a502d44"
+    },
+    {
+      "name": "changed-lint",
+      "command": [
+        "bash",
+        "scripts/quality/check-lint.sh"
+      ],
+      "boundSeconds": 90,
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 87.52,
+      "log": "r08-title-repair-changed-lint-private.log",
+      "logSHA256": "3c6f43c00b56d7116263f7523bfb6a311aed70cff8c5f4d73ab254b299717fdf"
+    },
+    {
+      "name": "shared-templates",
+      "command": [
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/scripts/tooling/with-go-module.sh",
+        "go",
+        "test",
+        "-p",
+        "1",
+        "./playerweb",
+        "./webassets",
+        "-count=1"
+      ],
+      "boundSeconds": 45,
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 1.89,
+      "log": "r08-title-repair-shared-templates-private.log",
+      "logSHA256": "c0dd52062721f2ec71324184805fe0f18f69355bf8843f6db6ade9570d87fb7e"
+    },
+    {
+      "name": "test-instance-check",
+      "command": [
+        "make",
+        "-C",
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/apps/player",
+        "test-instance-check"
+      ],
+      "boundSeconds": 15,
+      "exitCode": 2,
+      "timedOut": false,
+      "seconds": 1.52,
+      "log": "r08-title-repair-test-instance-check-private.log",
+      "logSHA256": "42e699335baa8cd5b025289eb2e3404ad20fc5f4e108a0bb24d652b5ad7bc483"
+    }
+  ],
+  "sourceInputsUnchanged": true,
+  "rawChecksReceiptSHA256": "1206eddcdbda2c4f44384e13fb02b99e51f015eddeb2e7ff8fce3d8271be8198",
+  "sourceInventoryBoundary": "Redundant public per-file source checksum map omitted in full. Exact original private receipt, source stability assertion and complete native build inventory are preserved."
+}

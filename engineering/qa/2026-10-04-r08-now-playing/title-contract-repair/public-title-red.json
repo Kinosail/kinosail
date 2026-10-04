@@ -1,0 +1,21 @@
+{
+  "revision": "ba8e28be4bf0db426463056b0256764ce8df3739",
+  "command": [
+    "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/scripts/tooling/with-go-module.sh",
+    "go",
+    "test",
+    "-p",
+    "1",
+    "./internal/server",
+    "-run",
+    "^TestReleaseFilenameUsesHumanTitleInAPIAndWeb$",
+    "-count=1",
+    "-timeout=25s"
+  ],
+  "exitCode": 1,
+  "timedOut": false,
+  "seconds": 8.84,
+  "publicFailure": "Existing escaped human-title HTML contract fails because the new redundant h1 attribute changes the exact expected markup. HTTP remains 200; no assertion or parser has changed.",
+  "expectedFailureObserved": true,
+  "logSHA256": "09b99998ecb19f712d6f0ab0a86014a153e63fad5fa951360b0fb5e106948757"
+}

@@ -1,0 +1,1525 @@
+{
+  "base": "0d85c75a5ed2f304a8c657ecc2a06c11dbbcef0a",
+  "head": "84f144ecd5bf4841c3d2780c9479db892c00f878",
+  "classification": "94 inherited findings in 56 byte-identical main files per affected verifier; no full lint pass or suppression.",
+  "runs": [
+    {
+      "app": "player",
+      "verifierLogSHA256": "d570bcd37f5472eac7e405eed57096a7479aa767686d7ad6085dddeaec30ff3d",
+      "fullPackageLintLogSHA256": "9e34ab6948c8b9146511de522bbf5a5eedd62149dd11b7561d06d1888002c01c",
+      "findings": [
+        {
+          "path": "packages/owneraccess/owneraccess.go",
+          "line": 118,
+          "column": 24,
+          "rule": "contextcheck",
+          "sha256": "695fe8ee89e00a64afe15e5312ab77e3a763ab029050de74bd24c33ee1e811b3",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/runtime.go",
+          "line": 218,
+          "column": 27,
+          "rule": "contextcheck",
+          "sha256": "5fe6732a770c0f1a3d609e20f64e9e86c37004c455c2023198bd3eb84843e275",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/publicgateway/gateway.go",
+          "line": 45,
+          "column": 53,
+          "rule": "contextcheck",
+          "sha256": "92a04d2f667b7a24f958f33d0ed3db928d3b2ebb23f934894ccb39a3e6de3cfe",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/backup/archive.go",
+          "line": 155,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "862c04884d41700f40418860bea4615585a5c5ed3bb8bd6dc10721416eecde8e",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/catalog/collection_web.go",
+          "line": 98,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "273655b7ae0b87d0ab5cc4b13bf52e8d183f8c595811b4e5f66a6112ffce6bda",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/catalog/collection_web.go",
+          "line": 212,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "273655b7ae0b87d0ab5cc4b13bf52e8d183f8c595811b4e5f66a6112ffce6bda",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/catalog/collection_web_test.go",
+          "line": 40,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "aa3d2cce883335eb9742c80defa8267626758af07fd856ebd1f988c124b0eabc",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/catalog/collection_web_test.go",
+          "line": 84,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "aa3d2cce883335eb9742c80defa8267626758af07fd856ebd1f988c124b0eabc",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/catalog/list_operations_test.go",
+          "line": 134,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "f368ec1a6684d8fe8365008a846c2334d11a7b1950c6099467470c90e64a6e21",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/catalog/playlist_http.go",
+          "line": 93,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "e8f73bb16995f9b18125326f02a8191f975fc0a1b813c0453711027823eb1cba",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/catalog/playlist_http.go",
+          "line": 127,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "e8f73bb16995f9b18125326f02a8191f975fc0a1b813c0453711027823eb1cba",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/catalog/playlist_http.go",
+          "line": 190,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "e8f73bb16995f9b18125326f02a8191f975fc0a1b813c0453711027823eb1cba",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/catalog/playlist_http_test.go",
+          "line": 15,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "328b8a77d04dc16b72ab48fd2a40e3cd6bef6bb8e3ee7de748f27d2640b24607",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/catalog/playlist_http_test.go",
+          "line": 40,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "328b8a77d04dc16b72ab48fd2a40e3cd6bef6bb8e3ee7de748f27d2640b24607",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/downloads/start.go",
+          "line": 72,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "c41b590f0d96ed6eef501eae4465ba34ce52401149cc4fe8d54abf5a1ff88500",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/httpguard/unique_json.go",
+          "line": 17,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "efab6d52076fb1a7645a5b8061c647cbe27b033dd47a3c4d1917850bb465db9e",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/identitycore/handlers.go",
+          "line": 71,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "8a487fbab9ccb9d842c2b943e1952e25bd897a96e21098f3b471237b7819734d",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/identitycore/management_session_test.go",
+          "line": 12,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "86b39d334b37199c26de1103a74d5ce83aff8ff072fb9691ecdde32c2d0a33ab",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/localization/catalog.go",
+          "line": 186,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "6d7e77d745501bc739d201ec31f5384bc2f237746f086cea7997f64118993e22",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/maintenance/concurrency_test.go",
+          "line": 12,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "cdbd8e8656b4cc1feb6501cb4679e4d34b14d374294e80f454d2ba7f992932fb",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/markers/analyzer_coverage_test.go",
+          "line": 12,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "45f197c8c1ec4e953ac94c96d4a7dea2ded32020aa0ff705d6e566c9d25b5eca",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/markers/analyzer_coverage_test.go",
+          "line": 52,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "45f197c8c1ec4e953ac94c96d4a7dea2ded32020aa0ff705d6e566c9d25b5eca",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/markers/batch_regression_test.go",
+          "line": 77,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "9408b411f2aa6650b4c2224937d095389fd423e00da906b622aa92996e18e640",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/mcpgateway/application_profile_state.go",
+          "line": 29,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "04d6c2d7e01629219a84e691618327c78cc34deee2e649b9ccc99ba97e77dc9a",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/mcpgateway/introspection.go",
+          "line": 31,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "95752619a4ede1764fd4e48f2e13fbc5a9808a39c89f451849aaf1ef6068d902",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/dns.go",
+          "line": 45,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "f3297af9e670a5bacdd0f730e4c7504c4048487ab5ec167d7e1420e644e12fdb",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/dns_test.go",
+          "line": 12,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "4383d683b8477c0ec7f077882b9acbc82e430774b8dd446168825a8399634501",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/http.go",
+          "line": 67,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "fe01e81c6d6f21857d157690d48aca91d1032afebdc2156dc1aeb83e2e632228",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/owneraccess.go",
+          "line": 81,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "695fe8ee89e00a64afe15e5312ab77e3a763ab029050de74bd24c33ee1e811b3",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/owneraccess.go",
+          "line": 130,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "695fe8ee89e00a64afe15e5312ab77e3a763ab029050de74bd24c33ee1e811b3",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/owneraccess.go",
+          "line": 189,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "695fe8ee89e00a64afe15e5312ab77e3a763ab029050de74bd24c33ee1e811b3",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/owneraccess_test.go",
+          "line": 54,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "8244e02795278e2201a5430671f84eb36cb22cb49fe12ad86877c1a7ac83829e",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/playback/client_constraints.go",
+          "line": 186,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "b327d532c37eb99a6fe57f76de488749dcdcf8c05ef1b49f446470c32e0975d5",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/playback/hls_source.go",
+          "line": 41,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "a22458a09417253cb36cb9beca4ab5ae04f7fb9b28f0e1b98d8170d38c889bb1",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/publicgateway/certificate.go",
+          "line": 27,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "6cbd9c82dc37a49e69f31ec3c97d5783d8c5bd28cf3141751af7faf28354bddb",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/publicgateway/gateway.go",
+          "line": 99,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "92a04d2f667b7a24f958f33d0ed3db928d3b2ebb23f934894ccb39a3e6de3cfe",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/quickconnect/browser.go",
+          "line": 44,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "0782d437d2b6d1061018f64c823262a8b1305ab04f2f54b8dd9be5ff86c8bb4c",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/quickconnect/browser_test.go",
+          "line": 125,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "0cd79028bb627c86bc1e2f46c1eb70a390de4e607b682061826b14bbf877b843",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/quickconnect/browser_test.go",
+          "line": 165,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "0cd79028bb627c86bc1e2f46c1eb70a390de4e607b682061826b14bbf877b843",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/quickconnect/browser_test.go",
+          "line": 225,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "0cd79028bb627c86bc1e2f46c1eb70a390de4e607b682061826b14bbf877b843",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/remoteaccess/readiness.go",
+          "line": 29,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "4a194990b07b7490dd7710e46e79bc5c650a2b44f69e74eaf20281a3df4a6a11",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/remoteaccess/setup_view_test.go",
+          "line": 12,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "7d11e642966b7058e9197456b58d541cce262b358d95ceb09adf016e8a245b1d",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/transcodehardware/tonemap_test.go",
+          "line": 60,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "aed15946d29be465776e2203a404938e8a417ee07ea9401b67c7b9280657aca4",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/transcodehardware/verification.go",
+          "line": 98,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "fc4f60ef293d2ce64332824d1b44ae5ebadb92676eed1c0be6d8c83102e505f4",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/transcodehardware/verification.go",
+          "line": 245,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "fc4f60ef293d2ce64332824d1b44ae5ebadb92676eed1c0be6d8c83102e505f4",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/transcodepolicy/check.go",
+          "line": 39,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "986b72a3c15f48ab7497178308ad8db6b3f75b1b9e0f9a39709642051d48256a",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/transcodepolicy/check.go",
+          "line": 106,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "986b72a3c15f48ab7497178308ad8db6b3f75b1b9e0f9a39709642051d48256a",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/transcodepolicy/tonemap.go",
+          "line": 43,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "6a44b931d7800cd36505d62ca5ad3989529908c55033328b98eaf7dd4560b6ec",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/updatecontrol/checker.go",
+          "line": 117,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "1c4da9753ac255ac3b2e5421867df45751f454996cd7816574accde0213af435",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/runtime.go",
+          "line": 276,
+          "column": 2,
+          "rule": "exhaustive",
+          "sha256": "5fe6732a770c0f1a3d609e20f64e9e86c37004c455c2023198bd3eb84843e275",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/publicgateway/gateway.go",
+          "line": 129,
+          "column": 2,
+          "rule": "exhaustive",
+          "sha256": "92a04d2f667b7a24f958f33d0ed3db928d3b2ebb23f934894ccb39a3e6de3cfe",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/configurationcore/application_fields.go",
+          "line": 12,
+          "column": 6,
+          "rule": "funlen",
+          "sha256": "4fc703360f87173245c1616c30ee0b659955c77373540c30325b5fcff5a31c6b",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/catalog/list_commit_limits_test.go",
+          "line": 8,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "75dcfcbc70f3b74e36c338ca2b754a72803092b02b10c77b4bd0a375ddc63a48",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/downloads/manifest_test.go",
+          "line": 80,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "6aed6a1af3217d7b8815f992dc8e5ff80eb06aa2db84ebd1665d41bb6d6a5fc9",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/federation/link_session_test.go",
+          "line": 9,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "8e94b2ece8dddd066a3bb7d9c19d3e297080fc52923eee7867d1728c9d27fa29",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/federation/profiles.go",
+          "line": 112,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "989866cc82d183e165640674f946902b6fdaabeb52cedb77e422f73cdabf5dfb",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/federation/saml_test.go",
+          "line": 152,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "5da1aa04758028c2414b970582b598e28f7a3055583c66e01789d872c323d2db",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/httpguard/unique_json.go",
+          "line": 45,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "efab6d52076fb1a7645a5b8061c647cbe27b033dd47a3c4d1917850bb465db9e",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/identitycore/profile_scim.go",
+          "line": 104,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "b93608736d2e66c0e2667beba3f9fe313c2078ef0d14ead971c74ae5606177b8",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/identitycore/profile_scim_identity_test.go",
+          "line": 32,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "9ae5b64ac2daccf33be9b40630a1e228cf6d6412cf2276ac00e78dea388aba9b",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/markers/analyzer.go",
+          "line": 217,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "7e5305280db4d370eb6232d3656e95aa2ee8034123b144a895622e6392c4721c",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/markers/batch_regression_test.go",
+          "line": 15,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "9408b411f2aa6650b4c2224937d095389fd423e00da906b622aa92996e18e640",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/markers/movie.go",
+          "line": 10,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "6f66875c65c6c5b6072bf7d659eb3943b5e4ebdc7f835fdf1b48a2288849192d",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/mcpgateway/connections_store.go",
+          "line": 84,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "76456685645c83b79f5b8d814471d9180ba0879865b0834d8da3188b1ac4b6a9",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/operations/metadata.go",
+          "line": 123,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "daaef8c42bb6154a60bb821cfd06020daef111b0d2579b9e1b033eca35116bd1",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/http.go",
+          "line": 30,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "fe01e81c6d6f21857d157690d48aca91d1032afebdc2156dc1aeb83e2e632228",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/owneraccess_test.go",
+          "line": 106,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "8244e02795278e2201a5430671f84eb36cb22cb49fe12ad86877c1a7ac83829e",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/runtime.go",
+          "line": 42,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "5fe6732a770c0f1a3d609e20f64e9e86c37004c455c2023198bd3eb84843e275",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/runtime.go",
+          "line": 174,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "5fe6732a770c0f1a3d609e20f64e9e86c37004c455c2023198bd3eb84843e275",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/playback/hls_recipe_test.go",
+          "line": 61,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "3cd031023a98cecec6f7750a2fe87e8fc74e78d61e042b2f52cc0dbaf7ebcf25",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/playback/hls_recipe_test.go",
+          "line": 101,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "3cd031023a98cecec6f7750a2fe87e8fc74e78d61e042b2f52cc0dbaf7ebcf25",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/publicgateway/certificate.go",
+          "line": 64,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "6cbd9c82dc37a49e69f31ec3c97d5783d8c5bd28cf3141751af7faf28354bddb",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/quickconnect/browser_test.go",
+          "line": 32,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "0cd79028bb627c86bc1e2f46c1eb70a390de4e607b682061826b14bbf877b843",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/servertest/api_security.go",
+          "line": 10,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "90bb7bfa8cfaaf9bc03c6ecd6b7627b21cb57a4b48a4a64797e7e405321f8443",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/transcodepolicy/tonemap_test.go",
+          "line": 13,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "cdf7d997cebc20e9b58d41f9d2d8bec148118155fe007189d01094ba7bd0787d",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/transcodepolicy/tonemap_test.go",
+          "line": 60,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "cdf7d997cebc20e9b58d41f9d2d8bec148118155fe007189d01094ba7bd0787d",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/runtime.go",
+          "line": 232,
+          "column": 1,
+          "rule": "gofumpt",
+          "sha256": "5fe6732a770c0f1a3d609e20f64e9e86c37004c455c2023198bd3eb84843e275",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/httpguard/csrf_template_test.go",
+          "line": 16,
+          "column": 32,
+          "rule": "gosec",
+          "sha256": "ece4d8d08d861ec2a5bfa281d0a4a2747a3357a86b76942abb146bd35515c3da",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/owneraccess.go",
+          "line": 283,
+          "column": 15,
+          "rule": "gosec",
+          "sha256": "695fe8ee89e00a64afe15e5312ab77e3a763ab029050de74bd24c33ee1e811b3",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/owneraccess_test.go",
+          "line": 126,
+          "column": 17,
+          "rule": "gosec",
+          "sha256": "8244e02795278e2201a5430671f84eb36cb22cb49fe12ad86877c1a7ac83829e",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/publicgateway/gateway.go",
+          "line": 36,
+          "column": 19,
+          "rule": "gosec",
+          "sha256": "92a04d2f667b7a24f958f33d0ed3db928d3b2ebb23f934894ccb39a3e6de3cfe",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/publicgateway/gateway_test.go",
+          "line": 27,
+          "column": 14,
+          "rule": "gosec",
+          "sha256": "69b87be17762ff664cdef839ddac7ba64f5f4a292b6bd1730703746893f66d53",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/quickconnect/browser_test.go",
+          "line": 102,
+          "column": 75,
+          "rule": "gosec",
+          "sha256": "0cd79028bb627c86bc1e2f46c1eb70a390de4e607b682061826b14bbf877b843",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/remoteaccess/gateway.go",
+          "line": 65,
+          "column": 12,
+          "rule": "gosec",
+          "sha256": "9b4917da6055235ecc7e9e0d2081ee902f263e78d64695a22a92dade3f6ad3fd",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/owneraccess_test.go",
+          "line": 153,
+          "column": 29,
+          "rule": "noctx",
+          "sha256": "8244e02795278e2201a5430671f84eb36cb22cb49fe12ad86877c1a7ac83829e",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/owneraccess_test.go",
+          "line": 177,
+          "column": 28,
+          "rule": "noctx",
+          "sha256": "8244e02795278e2201a5430671f84eb36cb22cb49fe12ad86877c1a7ac83829e",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/publicgateway/gateway_test.go",
+          "line": 23,
+          "column": 29,
+          "rule": "noctx",
+          "sha256": "69b87be17762ff664cdef839ddac7ba64f5f4a292b6bd1730703746893f66d53",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/remoteaccess/gateway.go",
+          "line": 78,
+          "column": 22,
+          "rule": "noctx",
+          "sha256": "9b4917da6055235ecc7e9e0d2081ee902f263e78d64695a22a92dade3f6ad3fd",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/homeassistant/pairing.go",
+          "line": 58,
+          "column": 14,
+          "rule": "staticcheck",
+          "sha256": "db24ae5b68654cd80a84e094dab0e4df880a9caac61124b6347238d06bed9d75",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/homeassistant/player.go",
+          "line": 75,
+          "column": 15,
+          "rule": "staticcheck",
+          "sha256": "9cd2867052ccf2b6a3dfb240c3c9542c3e3ee77dabaae70f5a6b18ef7cc64374",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/identitycore/session_requests.go",
+          "line": 149,
+          "column": 42,
+          "rule": "staticcheck",
+          "sha256": "6f7c1df5fb7d16b0652095a4061a8aa342f51e527f95a93f9319079a230b85fe",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/mcpgateway/application_profile_state.go",
+          "line": 39,
+          "column": 12,
+          "rule": "staticcheck",
+          "sha256": "04d6c2d7e01629219a84e691618327c78cc34deee2e649b9ccc99ba97e77dc9a",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/dns.go",
+          "line": 47,
+          "column": 68,
+          "rule": "staticcheck",
+          "sha256": "f3297af9e670a5bacdd0f730e4c7504c4048487ab5ec167d7e1420e644e12fdb",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/publicgateway/gateway.go",
+          "line": 108,
+          "column": 7,
+          "rule": "staticcheck",
+          "sha256": "92a04d2f667b7a24f958f33d0ed3db928d3b2ebb23f934894ccb39a3e6de3cfe",
+          "unchangedFromMain": true
+        }
+      ]
+    },
+    {
+      "app": "subtitles",
+      "verifierLogSHA256": "e933dc6cda0d8614f716a830fd576ce7c6e9de0903be2ab02f5468ed6a502d44",
+      "fullPackageLintLogSHA256": "9e34ab6948c8b9146511de522bbf5a5eedd62149dd11b7561d06d1888002c01c",
+      "findings": [
+        {
+          "path": "packages/owneraccess/owneraccess.go",
+          "line": 118,
+          "column": 24,
+          "rule": "contextcheck",
+          "sha256": "695fe8ee89e00a64afe15e5312ab77e3a763ab029050de74bd24c33ee1e811b3",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/runtime.go",
+          "line": 218,
+          "column": 27,
+          "rule": "contextcheck",
+          "sha256": "5fe6732a770c0f1a3d609e20f64e9e86c37004c455c2023198bd3eb84843e275",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/publicgateway/gateway.go",
+          "line": 45,
+          "column": 53,
+          "rule": "contextcheck",
+          "sha256": "92a04d2f667b7a24f958f33d0ed3db928d3b2ebb23f934894ccb39a3e6de3cfe",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/backup/archive.go",
+          "line": 155,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "862c04884d41700f40418860bea4615585a5c5ed3bb8bd6dc10721416eecde8e",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/catalog/collection_web.go",
+          "line": 98,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "273655b7ae0b87d0ab5cc4b13bf52e8d183f8c595811b4e5f66a6112ffce6bda",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/catalog/collection_web.go",
+          "line": 212,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "273655b7ae0b87d0ab5cc4b13bf52e8d183f8c595811b4e5f66a6112ffce6bda",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/catalog/collection_web_test.go",
+          "line": 40,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "aa3d2cce883335eb9742c80defa8267626758af07fd856ebd1f988c124b0eabc",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/catalog/collection_web_test.go",
+          "line": 84,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "aa3d2cce883335eb9742c80defa8267626758af07fd856ebd1f988c124b0eabc",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/catalog/list_operations_test.go",
+          "line": 134,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "f368ec1a6684d8fe8365008a846c2334d11a7b1950c6099467470c90e64a6e21",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/catalog/playlist_http.go",
+          "line": 93,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "e8f73bb16995f9b18125326f02a8191f975fc0a1b813c0453711027823eb1cba",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/catalog/playlist_http.go",
+          "line": 127,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "e8f73bb16995f9b18125326f02a8191f975fc0a1b813c0453711027823eb1cba",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/catalog/playlist_http.go",
+          "line": 190,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "e8f73bb16995f9b18125326f02a8191f975fc0a1b813c0453711027823eb1cba",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/catalog/playlist_http_test.go",
+          "line": 15,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "328b8a77d04dc16b72ab48fd2a40e3cd6bef6bb8e3ee7de748f27d2640b24607",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/catalog/playlist_http_test.go",
+          "line": 40,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "328b8a77d04dc16b72ab48fd2a40e3cd6bef6bb8e3ee7de748f27d2640b24607",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/downloads/start.go",
+          "line": 72,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "c41b590f0d96ed6eef501eae4465ba34ce52401149cc4fe8d54abf5a1ff88500",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/httpguard/unique_json.go",
+          "line": 17,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "efab6d52076fb1a7645a5b8061c647cbe27b033dd47a3c4d1917850bb465db9e",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/identitycore/handlers.go",
+          "line": 71,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "8a487fbab9ccb9d842c2b943e1952e25bd897a96e21098f3b471237b7819734d",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/identitycore/management_session_test.go",
+          "line": 12,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "86b39d334b37199c26de1103a74d5ce83aff8ff072fb9691ecdde32c2d0a33ab",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/localization/catalog.go",
+          "line": 186,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "6d7e77d745501bc739d201ec31f5384bc2f237746f086cea7997f64118993e22",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/maintenance/concurrency_test.go",
+          "line": 12,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "cdbd8e8656b4cc1feb6501cb4679e4d34b14d374294e80f454d2ba7f992932fb",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/markers/analyzer_coverage_test.go",
+          "line": 12,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "45f197c8c1ec4e953ac94c96d4a7dea2ded32020aa0ff705d6e566c9d25b5eca",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/markers/analyzer_coverage_test.go",
+          "line": 52,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "45f197c8c1ec4e953ac94c96d4a7dea2ded32020aa0ff705d6e566c9d25b5eca",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/markers/batch_regression_test.go",
+          "line": 77,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "9408b411f2aa6650b4c2224937d095389fd423e00da906b622aa92996e18e640",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/mcpgateway/application_profile_state.go",
+          "line": 29,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "04d6c2d7e01629219a84e691618327c78cc34deee2e649b9ccc99ba97e77dc9a",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/mcpgateway/introspection.go",
+          "line": 31,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "95752619a4ede1764fd4e48f2e13fbc5a9808a39c89f451849aaf1ef6068d902",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/dns.go",
+          "line": 45,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "f3297af9e670a5bacdd0f730e4c7504c4048487ab5ec167d7e1420e644e12fdb",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/dns_test.go",
+          "line": 12,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "4383d683b8477c0ec7f077882b9acbc82e430774b8dd446168825a8399634501",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/http.go",
+          "line": 67,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "fe01e81c6d6f21857d157690d48aca91d1032afebdc2156dc1aeb83e2e632228",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/owneraccess.go",
+          "line": 81,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "695fe8ee89e00a64afe15e5312ab77e3a763ab029050de74bd24c33ee1e811b3",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/owneraccess.go",
+          "line": 130,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "695fe8ee89e00a64afe15e5312ab77e3a763ab029050de74bd24c33ee1e811b3",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/owneraccess.go",
+          "line": 189,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "695fe8ee89e00a64afe15e5312ab77e3a763ab029050de74bd24c33ee1e811b3",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/owneraccess_test.go",
+          "line": 54,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "8244e02795278e2201a5430671f84eb36cb22cb49fe12ad86877c1a7ac83829e",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/playback/client_constraints.go",
+          "line": 186,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "b327d532c37eb99a6fe57f76de488749dcdcf8c05ef1b49f446470c32e0975d5",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/playback/hls_source.go",
+          "line": 41,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "a22458a09417253cb36cb9beca4ab5ae04f7fb9b28f0e1b98d8170d38c889bb1",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/publicgateway/certificate.go",
+          "line": 27,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "6cbd9c82dc37a49e69f31ec3c97d5783d8c5bd28cf3141751af7faf28354bddb",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/publicgateway/gateway.go",
+          "line": 99,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "92a04d2f667b7a24f958f33d0ed3db928d3b2ebb23f934894ccb39a3e6de3cfe",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/quickconnect/browser.go",
+          "line": 44,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "0782d437d2b6d1061018f64c823262a8b1305ab04f2f54b8dd9be5ff86c8bb4c",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/quickconnect/browser_test.go",
+          "line": 125,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "0cd79028bb627c86bc1e2f46c1eb70a390de4e607b682061826b14bbf877b843",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/quickconnect/browser_test.go",
+          "line": 165,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "0cd79028bb627c86bc1e2f46c1eb70a390de4e607b682061826b14bbf877b843",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/quickconnect/browser_test.go",
+          "line": 225,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "0cd79028bb627c86bc1e2f46c1eb70a390de4e607b682061826b14bbf877b843",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/remoteaccess/readiness.go",
+          "line": 29,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "4a194990b07b7490dd7710e46e79bc5c650a2b44f69e74eaf20281a3df4a6a11",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/remoteaccess/setup_view_test.go",
+          "line": 12,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "7d11e642966b7058e9197456b58d541cce262b358d95ceb09adf016e8a245b1d",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/transcodehardware/tonemap_test.go",
+          "line": 60,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "aed15946d29be465776e2203a404938e8a417ee07ea9401b67c7b9280657aca4",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/transcodehardware/verification.go",
+          "line": 98,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "fc4f60ef293d2ce64332824d1b44ae5ebadb92676eed1c0be6d8c83102e505f4",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/transcodehardware/verification.go",
+          "line": 245,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "fc4f60ef293d2ce64332824d1b44ae5ebadb92676eed1c0be6d8c83102e505f4",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/transcodepolicy/check.go",
+          "line": 39,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "986b72a3c15f48ab7497178308ad8db6b3f75b1b9e0f9a39709642051d48256a",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/transcodepolicy/check.go",
+          "line": 106,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "986b72a3c15f48ab7497178308ad8db6b3f75b1b9e0f9a39709642051d48256a",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/transcodepolicy/tonemap.go",
+          "line": 43,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "6a44b931d7800cd36505d62ca5ad3989529908c55033328b98eaf7dd4560b6ec",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/updatecontrol/checker.go",
+          "line": 117,
+          "column": 1,
+          "rule": "cyclop",
+          "sha256": "1c4da9753ac255ac3b2e5421867df45751f454996cd7816574accde0213af435",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/runtime.go",
+          "line": 276,
+          "column": 2,
+          "rule": "exhaustive",
+          "sha256": "5fe6732a770c0f1a3d609e20f64e9e86c37004c455c2023198bd3eb84843e275",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/publicgateway/gateway.go",
+          "line": 129,
+          "column": 2,
+          "rule": "exhaustive",
+          "sha256": "92a04d2f667b7a24f958f33d0ed3db928d3b2ebb23f934894ccb39a3e6de3cfe",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/configurationcore/application_fields.go",
+          "line": 12,
+          "column": 6,
+          "rule": "funlen",
+          "sha256": "4fc703360f87173245c1616c30ee0b659955c77373540c30325b5fcff5a31c6b",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/catalog/list_commit_limits_test.go",
+          "line": 8,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "75dcfcbc70f3b74e36c338ca2b754a72803092b02b10c77b4bd0a375ddc63a48",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/downloads/manifest_test.go",
+          "line": 80,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "6aed6a1af3217d7b8815f992dc8e5ff80eb06aa2db84ebd1665d41bb6d6a5fc9",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/federation/link_session_test.go",
+          "line": 9,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "8e94b2ece8dddd066a3bb7d9c19d3e297080fc52923eee7867d1728c9d27fa29",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/federation/profiles.go",
+          "line": 112,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "989866cc82d183e165640674f946902b6fdaabeb52cedb77e422f73cdabf5dfb",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/federation/saml_test.go",
+          "line": 152,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "5da1aa04758028c2414b970582b598e28f7a3055583c66e01789d872c323d2db",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/httpguard/unique_json.go",
+          "line": 45,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "efab6d52076fb1a7645a5b8061c647cbe27b033dd47a3c4d1917850bb465db9e",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/identitycore/profile_scim.go",
+          "line": 104,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "b93608736d2e66c0e2667beba3f9fe313c2078ef0d14ead971c74ae5606177b8",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/identitycore/profile_scim_identity_test.go",
+          "line": 32,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "9ae5b64ac2daccf33be9b40630a1e228cf6d6412cf2276ac00e78dea388aba9b",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/markers/analyzer.go",
+          "line": 217,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "7e5305280db4d370eb6232d3656e95aa2ee8034123b144a895622e6392c4721c",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/markers/batch_regression_test.go",
+          "line": 15,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "9408b411f2aa6650b4c2224937d095389fd423e00da906b622aa92996e18e640",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/markers/movie.go",
+          "line": 10,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "6f66875c65c6c5b6072bf7d659eb3943b5e4ebdc7f835fdf1b48a2288849192d",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/mcpgateway/connections_store.go",
+          "line": 84,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "76456685645c83b79f5b8d814471d9180ba0879865b0834d8da3188b1ac4b6a9",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/operations/metadata.go",
+          "line": 123,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "daaef8c42bb6154a60bb821cfd06020daef111b0d2579b9e1b033eca35116bd1",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/http.go",
+          "line": 30,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "fe01e81c6d6f21857d157690d48aca91d1032afebdc2156dc1aeb83e2e632228",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/owneraccess_test.go",
+          "line": 106,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "8244e02795278e2201a5430671f84eb36cb22cb49fe12ad86877c1a7ac83829e",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/runtime.go",
+          "line": 42,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "5fe6732a770c0f1a3d609e20f64e9e86c37004c455c2023198bd3eb84843e275",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/runtime.go",
+          "line": 174,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "5fe6732a770c0f1a3d609e20f64e9e86c37004c455c2023198bd3eb84843e275",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/playback/hls_recipe_test.go",
+          "line": 61,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "3cd031023a98cecec6f7750a2fe87e8fc74e78d61e042b2f52cc0dbaf7ebcf25",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/playback/hls_recipe_test.go",
+          "line": 101,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "3cd031023a98cecec6f7750a2fe87e8fc74e78d61e042b2f52cc0dbaf7ebcf25",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/publicgateway/certificate.go",
+          "line": 64,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "6cbd9c82dc37a49e69f31ec3c97d5783d8c5bd28cf3141751af7faf28354bddb",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/quickconnect/browser_test.go",
+          "line": 32,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "0cd79028bb627c86bc1e2f46c1eb70a390de4e607b682061826b14bbf877b843",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/servertest/api_security.go",
+          "line": 10,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "90bb7bfa8cfaaf9bc03c6ecd6b7627b21cb57a4b48a4a64797e7e405321f8443",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/transcodepolicy/tonemap_test.go",
+          "line": 13,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "cdf7d997cebc20e9b58d41f9d2d8bec148118155fe007189d01094ba7bd0787d",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/transcodepolicy/tonemap_test.go",
+          "line": 60,
+          "column": 1,
+          "rule": "gocognit",
+          "sha256": "cdf7d997cebc20e9b58d41f9d2d8bec148118155fe007189d01094ba7bd0787d",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/runtime.go",
+          "line": 232,
+          "column": 1,
+          "rule": "gofumpt",
+          "sha256": "5fe6732a770c0f1a3d609e20f64e9e86c37004c455c2023198bd3eb84843e275",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/httpguard/csrf_template_test.go",
+          "line": 16,
+          "column": 32,
+          "rule": "gosec",
+          "sha256": "ece4d8d08d861ec2a5bfa281d0a4a2747a3357a86b76942abb146bd35515c3da",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/owneraccess.go",
+          "line": 283,
+          "column": 15,
+          "rule": "gosec",
+          "sha256": "695fe8ee89e00a64afe15e5312ab77e3a763ab029050de74bd24c33ee1e811b3",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/owneraccess_test.go",
+          "line": 126,
+          "column": 17,
+          "rule": "gosec",
+          "sha256": "8244e02795278e2201a5430671f84eb36cb22cb49fe12ad86877c1a7ac83829e",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/publicgateway/gateway.go",
+          "line": 36,
+          "column": 19,
+          "rule": "gosec",
+          "sha256": "92a04d2f667b7a24f958f33d0ed3db928d3b2ebb23f934894ccb39a3e6de3cfe",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/publicgateway/gateway_test.go",
+          "line": 27,
+          "column": 14,
+          "rule": "gosec",
+          "sha256": "69b87be17762ff664cdef839ddac7ba64f5f4a292b6bd1730703746893f66d53",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/quickconnect/browser_test.go",
+          "line": 102,
+          "column": 75,
+          "rule": "gosec",
+          "sha256": "0cd79028bb627c86bc1e2f46c1eb70a390de4e607b682061826b14bbf877b843",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/remoteaccess/gateway.go",
+          "line": 65,
+          "column": 12,
+          "rule": "gosec",
+          "sha256": "9b4917da6055235ecc7e9e0d2081ee902f263e78d64695a22a92dade3f6ad3fd",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/owneraccess_test.go",
+          "line": 153,
+          "column": 29,
+          "rule": "noctx",
+          "sha256": "8244e02795278e2201a5430671f84eb36cb22cb49fe12ad86877c1a7ac83829e",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/owneraccess_test.go",
+          "line": 177,
+          "column": 28,
+          "rule": "noctx",
+          "sha256": "8244e02795278e2201a5430671f84eb36cb22cb49fe12ad86877c1a7ac83829e",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/publicgateway/gateway_test.go",
+          "line": 23,
+          "column": 29,
+          "rule": "noctx",
+          "sha256": "69b87be17762ff664cdef839ddac7ba64f5f4a292b6bd1730703746893f66d53",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/remoteaccess/gateway.go",
+          "line": 78,
+          "column": 22,
+          "rule": "noctx",
+          "sha256": "9b4917da6055235ecc7e9e0d2081ee902f263e78d64695a22a92dade3f6ad3fd",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/homeassistant/pairing.go",
+          "line": 58,
+          "column": 14,
+          "rule": "staticcheck",
+          "sha256": "db24ae5b68654cd80a84e094dab0e4df880a9caac61124b6347238d06bed9d75",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/homeassistant/player.go",
+          "line": 75,
+          "column": 15,
+          "rule": "staticcheck",
+          "sha256": "9cd2867052ccf2b6a3dfb240c3c9542c3e3ee77dabaae70f5a6b18ef7cc64374",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/identitycore/session_requests.go",
+          "line": 149,
+          "column": 42,
+          "rule": "staticcheck",
+          "sha256": "6f7c1df5fb7d16b0652095a4061a8aa342f51e527f95a93f9319079a230b85fe",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/mcpgateway/application_profile_state.go",
+          "line": 39,
+          "column": 12,
+          "rule": "staticcheck",
+          "sha256": "04d6c2d7e01629219a84e691618327c78cc34deee2e649b9ccc99ba97e77dc9a",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/owneraccess/dns.go",
+          "line": 47,
+          "column": 68,
+          "rule": "staticcheck",
+          "sha256": "f3297af9e670a5bacdd0f730e4c7504c4048487ab5ec167d7e1420e644e12fdb",
+          "unchangedFromMain": true
+        },
+        {
+          "path": "packages/publicgateway/gateway.go",
+          "line": 108,
+          "column": 7,
+          "rule": "staticcheck",
+          "sha256": "92a04d2f667b7a24f958f33d0ed3db928d3b2ebb23f934894ccb39a3e6de3cfe",
+          "unchangedFromMain": true
+        }
+      ]
+    }
+  ]
+}
