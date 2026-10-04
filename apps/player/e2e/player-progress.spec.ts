@@ -37,13 +37,14 @@ test.beforeEach(async ({ page }, testInfo) => {
   if (testInfo.title.includes("audio queue")) await page.locator("video").evaluate(media => media.dataset.queue = "/api/v1/test-queue");
   await page.addScriptTag({ content: `
     const player = document.querySelector('video'), csrf = 'synthetic-csrf', playbackSession = 'qa-session-03';
-    let playbackPreparation, preparationPausePending = 0;
+    let playbackPreparation, preparationSeek, preparationPausePending = 0;
     const playbackTraceMethod = 'direct', setPlayerTime = seconds => player.currentTime = seconds;
     const requestPlay = async () => {}, playerStorage = {get: () => '', set: () => {}};
     const playbackTrace = () => {}, flushPlaybackTrace = () => {};
     let position = 42, paused = true;
     Object.defineProperties(player, {currentTime: {get: () => position, set: value => position = value}, duration: {value: 100}, readyState: {value: 4}, paused: {get: () => paused}, load: {value: () => {}}});
     Object.assign(window, {setPaused: value => paused = value, prepare: value => playbackPreparation = value});
+    addEventListener('pagehide', () => player.dispatchEvent(new Event('kinosail:page-exit')));
   ` + source });
 });
 
