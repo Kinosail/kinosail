@@ -1,0 +1,44 @@
+
+Running 1 test using 1 worker
+
+(node:9642) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] [chromium] › apps/player/e2e/player-progress.spec.ts:198:1 › page-close dispatch sends the latest position while an older request is in flight
+  1) [chromium] › apps/player/e2e/player-progress.spec.ts:198:1 › page-close dispatch sends the latest position while an older request is in flight 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 2
+    Received: 1
+
+    Call Log:
+    - Timeout 1500ms exceeded while waiting on the predicate
+
+      202 |   await page.locator("video").evaluate((media: HTMLVideoElement) => media.currentTime = 60);
+      203 |   await page.evaluate(() => dispatchEvent(new Event("pagehide")));
+    > 204 |   await expect.poll(() => requests.length, {timeout: 1500}).toBe(2);
+          |                                                             ^
+      205 |   expect(requests[1].body.get("seconds")).toBe("60");
+      206 |   await requests[1].route.fulfill({status: 204});
+      207 |   await requests[0].route.fulfill({status: 503});
+        at /Users/mikeo/Documents/Codex/2026-10-04/task-2/r03-progress/apps/player/e2e/player-progress.spec.ts:204:61
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    engineering/qa/2026-10-04-r03-progress/close-red-results/player-progress-page-close-9fa66--older-request-is-in-flight-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: engineering/qa/2026-10-04-r03-progress/close-red-results/player-progress-page-close-9fa66--older-request-is-in-flight-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    engineering/qa/2026-10-04-r03-progress/close-red-results/player-progress-page-close-9fa66--older-request-is-in-flight-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace engineering/qa/2026-10-04-r03-progress/close-red-results/player-progress-page-close-9fa66--older-request-is-in-flight-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    [chromium] › apps/player/e2e/player-progress.spec.ts:198:1 › page-close dispatch sends the latest position while an older request is in flight 

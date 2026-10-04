@@ -1,0 +1,188 @@
+
+Running 4 tests using 1 worker
+
+(node:4292) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/4] [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: HTTP 503
+  1) [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: HTTP 503 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  locator('[data-progress-status]')
+    Expected: "Your latest position is not saved. Retry while this page is open."
+    Received: ""
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toHaveText" locator('[data-progress-status]') with timeout 10000ms
+      - waiting for locator('[data-progress-status]')
+        24 × locator resolved to <span role="status" aria-live="polite" data-progress-status=""></span>
+           - unexpected value ""
+
+
+      51 |   status = 503; aborted = mode === "network rejection";
+      52 |   await pauseAt(page, 42);
+    > 53 |   await expect(page.locator("[data-progress-status]")).toHaveText(failure);
+         |                                                        ^
+      54 |   await expect(page.locator("[data-progress-notice]")).toBeVisible();
+      55 |   const first = requests[0].body;
+      56 |   expect(first.get("seconds")).toBe("42");
+        at /Users/mikeo/Documents/Codex/2026-10-04/task-2/r03-progress/apps/player/e2e/player-progress.spec.ts:53:56
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    apps/player/e2e/engineering/qa/2026-10-04-r03-progress/red-results/player-progress-failed-pau-ed462--the-same-revision-HTTP-503-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: apps/player/e2e/engineering/qa/2026-10-04-r03-progress/red-results/player-progress-failed-pau-ed462--the-same-revision-HTTP-503-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    apps/player/e2e/engineering/qa/2026-10-04-r03-progress/red-results/player-progress-failed-pau-ed462--the-same-revision-HTTP-503-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace apps/player/e2e/engineering/qa/2026-10-04-r03-progress/red-results/player-progress-failed-pau-ed462--the-same-revision-HTTP-503-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:4604) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[2/4] [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: network rejection
+  2) [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: network rejection 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  locator('[data-progress-status]')
+    Expected: "Your latest position is not saved. Retry while this page is open."
+    Received: ""
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toHaveText" locator('[data-progress-status]') with timeout 10000ms
+      - waiting for locator('[data-progress-status]')
+        24 × locator resolved to <span role="status" aria-live="polite" data-progress-status=""></span>
+           - unexpected value ""
+
+
+      51 |   status = 503; aborted = mode === "network rejection";
+      52 |   await pauseAt(page, 42);
+    > 53 |   await expect(page.locator("[data-progress-status]")).toHaveText(failure);
+         |                                                        ^
+      54 |   await expect(page.locator("[data-progress-notice]")).toBeVisible();
+      55 |   const first = requests[0].body;
+      56 |   expect(first.get("seconds")).toBe("42");
+        at /Users/mikeo/Documents/Codex/2026-10-04/task-2/r03-progress/apps/player/e2e/player-progress.spec.ts:53:56
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    apps/player/e2e/engineering/qa/2026-10-04-r03-progress/red-results/player-progress-failed-pau-4972d--revision-network-rejection-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: apps/player/e2e/engineering/qa/2026-10-04-r03-progress/red-results/player-progress-failed-pau-4972d--revision-network-rejection-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    apps/player/e2e/engineering/qa/2026-10-04-r03-progress/red-results/player-progress-failed-pau-4972d--revision-network-rejection-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace apps/player/e2e/engineering/qa/2026-10-04-r03-progress/red-results/player-progress-failed-pau-4972d--revision-network-rejection-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:5047) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[3/4] [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: HTTP 503
+  3) [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: HTTP 503 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  locator('[data-progress-status]')
+    Expected: "Your latest position is not saved. Retry while this page is open."
+    Received: ""
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toHaveText" locator('[data-progress-status]') with timeout 10000ms
+      - waiting for locator('[data-progress-status]')
+        24 × locator resolved to <span role="status" aria-live="polite" data-progress-status=""></span>
+           - unexpected value ""
+
+
+      51 |   status = 503; aborted = mode === "network rejection";
+      52 |   await pauseAt(page, 42);
+    > 53 |   await expect(page.locator("[data-progress-status]")).toHaveText(failure);
+         |                                                        ^
+      54 |   await expect(page.locator("[data-progress-notice]")).toBeVisible();
+      55 |   const first = requests[0].body;
+      56 |   expect(first.get("seconds")).toBe("42");
+        at /Users/mikeo/Documents/Codex/2026-10-04/task-2/r03-progress/apps/player/e2e/player-progress.spec.ts:53:56
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    apps/player/e2e/engineering/qa/2026-10-04-r03-progress/red-results/player-progress-failed-pau-ed462--the-same-revision-HTTP-503-chromium-repeat1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: apps/player/e2e/engineering/qa/2026-10-04-r03-progress/red-results/player-progress-failed-pau-ed462--the-same-revision-HTTP-503-chromium-repeat1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    apps/player/e2e/engineering/qa/2026-10-04-r03-progress/red-results/player-progress-failed-pau-ed462--the-same-revision-HTTP-503-chromium-repeat1/trace.zip
+    Usage:
+
+        npx playwright show-trace apps/player/e2e/engineering/qa/2026-10-04-r03-progress/red-results/player-progress-failed-pau-ed462--the-same-revision-HTTP-503-chromium-repeat1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:5453) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[4/4] [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: network rejection
+  4) [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: network rejection 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  locator('[data-progress-status]')
+    Expected: "Your latest position is not saved. Retry while this page is open."
+    Received: ""
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toHaveText" locator('[data-progress-status]') with timeout 10000ms
+      - waiting for locator('[data-progress-status]')
+        24 × locator resolved to <span role="status" aria-live="polite" data-progress-status=""></span>
+           - unexpected value ""
+
+
+      51 |   status = 503; aborted = mode === "network rejection";
+      52 |   await pauseAt(page, 42);
+    > 53 |   await expect(page.locator("[data-progress-status]")).toHaveText(failure);
+         |                                                        ^
+      54 |   await expect(page.locator("[data-progress-notice]")).toBeVisible();
+      55 |   const first = requests[0].body;
+      56 |   expect(first.get("seconds")).toBe("42");
+        at /Users/mikeo/Documents/Codex/2026-10-04/task-2/r03-progress/apps/player/e2e/player-progress.spec.ts:53:56
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    apps/player/e2e/engineering/qa/2026-10-04-r03-progress/red-results/player-progress-failed-pau-4972d--revision-network-rejection-chromium-repeat1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: apps/player/e2e/engineering/qa/2026-10-04-r03-progress/red-results/player-progress-failed-pau-4972d--revision-network-rejection-chromium-repeat1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    apps/player/e2e/engineering/qa/2026-10-04-r03-progress/red-results/player-progress-failed-pau-4972d--revision-network-rejection-chromium-repeat1/trace.zip
+    Usage:
+
+        npx playwright show-trace apps/player/e2e/engineering/qa/2026-10-04-r03-progress/red-results/player-progress-failed-pau-4972d--revision-network-rejection-chromium-repeat1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  4 failed
+    [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: HTTP 503 
+    [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: network rejection 
+    [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: HTTP 503 
+    [chromium] › apps/player/e2e/player-progress.spec.ts:50:55 › failed pause save is visible and retries the same revision: network rejection 
