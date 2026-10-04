@@ -70,3 +70,25 @@ Both older scopes stay unchanged. The provenance helper changes only its
 active scope filename and digest; driver, projection and execution bounds
 stay unchanged. `final-normal-ci-source-inspection-977e01c4.json` pins this
 source-only boundary. Fresh hosted baseline and lint acceptance are pending.
+
+## Hosted privacy baseline and fixed literal fields
+
+The earlier pending baseline is now historical. Hosted run `37235575973`
+at `3c93eac3` passed all 33 top-level and 45 subtest contracts with the logger
+unchanged. The new unsupported-action privacy/no-effects control passed;
+it did not reproduce a privacy leak. Root admitted the safe proof: compilation
+66.635 seconds, public runtime 21.625 seconds, settled groups, unchanged
+71,402,410-byte executable digest starting `7d31d692`. Canonical evidence is
+root checkpoint `0fc600fc` and remains independent of later source changes.
+
+After that baseline, only the two CodeQL-flagged action fields use fixed
+literal normalization. Seven operation labels and three request labels retain
+their existing exact values. Every other string produces `unknown`; raw input
+is never returned. The small separate switches keep each helper within the
+existing cyclop limit of 10; its pinned `v1.2.3` counts default case clauses.
+Log levels, messages, request and operation IDs, outcomes, status, response
+body and all operation/state/admission behavior stay unchanged. No test,
+selector, scanner rule, suppression or policy changes in this repair.
+
+This is source-only evidence. Fresh hosted protocol, lint, metadata, exact
+PR-ref CodeQL and normal required gates must verify the final changed bytes.

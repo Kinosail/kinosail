@@ -118,10 +118,44 @@ func subtitleOperationDeadline(action string) time.Duration {
 }
 
 func (operations *subtitleOperations) rejected(writer http.ResponseWriter, request *http.Request, action string, status int) {
-	slog.Warn("subtitle operation rejected", "request_id", activityRequestID(request), "action", action, "status", status, "outcome", "not-started")
+	slog.Warn("subtitle operation rejected", "request_id", activityRequestID(request), "action", subtitleOperationLogAction(action), "status", status, "outcome", "not-started")
 	writeSubtitleOperationJSON(writer, map[string]string{"error": "subtitle operation is unavailable or cannot be started; review its status and current subtitle"}, status)
 }
 
 func (operations *subtitleOperations) persistenceFailed(request *http.Request, action, id, outcome string) {
-	slog.Error("subtitle operation persistence failed", "request_id", activityRequestID(request), "operation_id", id, "action", action, "outcome", outcome)
+	slog.Error("subtitle operation persistence failed", "request_id", activityRequestID(request), "operation_id", id, "action", subtitleOperationLogAction(action), "outcome", outcome)
+}
+
+func subtitleOperationLogAction(action string) string {
+	switch action {
+	case "apply":
+		return "apply"
+	case "restore":
+		return "restore"
+	case "fetch":
+		return "fetch"
+	case "replacement":
+		return "replacement"
+	case "audio":
+		return "audio"
+	case "maintain":
+		return "maintain"
+	case "fetch-wanted":
+		return "fetch-wanted"
+	default:
+		return subtitleOperationLogRequest(action)
+	}
+}
+
+func subtitleOperationLogRequest(action string) string {
+	switch action {
+	case "prepare":
+		return "prepare"
+	case "status":
+		return "status"
+	case "result":
+		return "result"
+	default:
+		return "unknown"
+	}
 }
