@@ -17,7 +17,8 @@ const queueError = (failure, response) => ({failure, requestID: response?.header
 const queueItem = item => {
   if (!item || typeof item !== "object" || !queueID(item.id) || item.kind !== "audio" || typeof item.title !== "string" || !item.title ||
       ![item.title, item.artist, item.album, item.rating].every(queueText) || !queuePath(item.stream, `/media/${item.id}`) ||
-      item.artwork && !queuePath(item.artwork, `/art/${item.id}`) ||
+      !queueText(item.artwork) || item.artwork && !queuePath(item.artwork, `/art/${item.id}`) ||
+      item.progress !== undefined && (!item.progress || typeof item.progress !== "object" || Array.isArray(item.progress)) ||
       ![item.track ?? 0, item.year ?? 0].every(value => Number.isSafeInteger(value) && value >= 0 && value <= 100000) ||
       !Number.isFinite(item.progress?.seconds ?? 0) || (item.progress?.seconds ?? 0) < 0 || (item.progress?.seconds ?? 0) > 31536000) throw queueError("invalid");
   return {id: item.id, title: item.title, artist: item.artist || "", album: item.album || "", track: item.track || 0,
@@ -45,7 +46,11 @@ const queueJSON = async path => {
       if (length > 4 * 1024 * 1024) throw queueError("invalid", response);
       try { text += decoder.decode(value, {stream: true}); } catch (_) { throw queueError("invalid", response); }
     }
-    try { return JSON.parse(text + decoder.decode()); } catch (_) { throw queueError("invalid", response); }
+    try {
+      const body = JSON.parse(text + decoder.decode());
+      if (!body || typeof body !== "object" || Array.isArray(body)) throw queueError("invalid", response);
+      return body;
+    } catch (_) { throw queueError("invalid", response); }
   } catch (error) { throw error?.failure ? error : queueError(signal.aborted ? "timeout" : "network", response); }
   finally { await reader?.cancel().catch(() => {}); }
 };
@@ -149,6 +154,7 @@ const moveAudioQueue = (delta, saveCurrent = true) => {
 const advanceQueue = () => moveAudioQueue(1, false);
 const loadAudioQueue = () => {
   if (queueFlight || !queueID(queueInitialItem) || progressItem() !== queueInitialItem || progressProfile() !== queueInitialProfile) return;
+  if (queueInitialProfile.length > 128) { reportQueueFailure(queueError("invalid")); refreshQueueControls(); return; }
   if (!queuePath(player.dataset.queue, `/api/v1/audio/${queueInitialItem}/queue`)) { reportQueueFailure(queueError("invalid")); refreshQueueControls(); return; }
   let flight;
   flight = (async () => {
