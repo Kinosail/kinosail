@@ -12,6 +12,10 @@ import (
 func TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects(t *testing.T) {
 	t.Parallel()
 	handler, base, target := subtitleInspectorFixture(t, subtitleActionInitial)
+	prepared := prepareSubtitleOperation(t, handler, base, "replacement")
+	if receipt := readSubtitleOperation(t, handler, prepared.ID); receipt.State != "prepared" {
+		t.Fatal("valid preparation did not establish the untrusted-input control")
+	}
 	item := strings.TrimPrefix(base, "/api/v1/subtitle-library/")
 	valid := `{"action":"restore","item":"` + item + `"}`
 	cases := []struct {

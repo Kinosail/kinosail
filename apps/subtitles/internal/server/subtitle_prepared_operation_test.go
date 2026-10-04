@@ -67,6 +67,7 @@ func TestSubtitlePreparedMutationRejectsUnknownOrMalformedReceiptBeforeEffects(t
 				t.Fatal(err)
 			}
 			response := activateSubtitleOperation(t, handler, base+"/restore", `{"language":"en"}`, test.values)
+			logSubtitleOperationRejectedEffects(t, handler, target, current, []byte(subtitleActionInitial), response.Code)
 			if response.Code != test.status {
 				t.Fatalf("%s receipt rejection = %d, want %d", test.name, response.Code, test.status)
 			}
@@ -75,6 +76,18 @@ func TestSubtitlePreparedMutationRejectsUnknownOrMalformedReceiptBeforeEffects(t
 			_ = subtitleActionHistory(t, handler, []string{"updated"}, []string{"manual"})
 		})
 	}
+}
+
+func logSubtitleOperationRejectedEffects(t *testing.T, handler http.Handler, target string, current, recovery []byte, status int) {
+	t.Helper()
+	installed, currentErr := os.ReadFile(target)
+	backup, recoveryErr := os.ReadFile(target + ".kinosail.bak")
+	response := requestApp(t, handler, http.MethodGet, "/api/v1/subtitle-library?view=history", "")
+	var history struct{ Matched int }
+	if currentErr != nil || recoveryErr != nil || response.Code != http.StatusOK || json.Unmarshal(response.Body.Bytes(), &history) != nil {
+		t.Fatal("receipt rejection data-observation prerequisite failed")
+	}
+	t.Logf("receipt rejection observation: status=%d currentUnchanged=%t recoveryUnchanged=%t historyCount=%d", status, string(installed) == string(current), string(backup) == string(recovery), history.Matched)
 }
 
 func TestSubtitlePreparedReceiptCannotActivateAnotherAction(t *testing.T) {
