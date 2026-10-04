@@ -34,7 +34,7 @@ async function openAudio(page: Page, policy: string, homeAssistant = false) {
   await page.goto("https://audio.test/watch/track");
   await page.evaluate(() => {
     const media = document.querySelector("audio")!;
-    media.addEventListener("error", (event) => event.stopImmediatePropagation(), true);
+    media.addEventListener("error", (event) => {if (event.isTrusted) event.stopImmediatePropagation();}, true);
     Object.defineProperties(media, {
       currentTime: { value: 12, writable: true },
       duration: { value: 120 },
@@ -139,6 +139,33 @@ test("queue source load ignores its delayed pause until new metadata belongs to 
   await page.locator("audio").dispatchEvent("loadedmetadata");
   await page.locator("audio").dispatchEvent("pause");
   await expect.poll(() => nextWrites.length).toBe(1);
+});
+
+// Isolated source failure: deterministically reject after source assignment but
+// before metadata without deleting media or changing Server authorization.
+test("failed queue source cannot replace its saved position with reset zero before metadata", async ({page}, testInfo) => {
+  await openAudio(page, "");
+  const nextWrites: string[] = [];
+  page.on("request", request => {if (new URL(request.url()).pathname === "/progress/next") nextWrites.push(request.postData() || "");});
+  await page.route("https://audio.test/api/v1/items/next", route => route.fulfill({json: {
+    item: {...queueItem("next"), progress: {seconds: 42, watched: false}}, profileId: "qa-viewer",
+  }}));
+  await page.locator("audio").evaluate(audio => Object.defineProperty(audio, "load", {value: () => {
+    audio.currentTime = 0;
+    queueMicrotask(() => audio.dispatchEvent(new Event("error")));
+  }, configurable: true}));
+  await startQueue(page);
+  await page.getByRole("button", {name: "Next track", exact: true}).click();
+  await expect(page.locator("audio")).toHaveAttribute("data-progress", "/progress/next");
+  await expect(page.locator("audio")).toHaveAttribute("data-start", "42");
+  await expect(page.locator("[data-audio-queue-status]")).toHaveAttribute("data-queue-failure", "media");
+  await expect(page.getByRole("link", {name: "Current track details and actions", exact: true})).toHaveAttribute("href", "/watch/next");
+  await expect(page.getByRole("button", {name: "Previous track", exact: true})).toBeEnabled();
+  await page.locator("audio").dispatchEvent("pause");
+  await page.getByRole("button", {name: "Previous track", exact: true}).click();
+  await expect(page.locator("audio")).toHaveAttribute("data-progress", "/progress/track");
+  await testInfo.attach("failed-source-progress-http-dispatches", {body: JSON.stringify(nextWrites), contentType: "application/json"});
+  expect(nextWrites).toEqual([]);
 });
 
 test("late item authorization cannot cross a profile change", async ({page}) => {
