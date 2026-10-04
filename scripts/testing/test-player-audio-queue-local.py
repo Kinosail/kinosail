@@ -5,6 +5,7 @@ import base64
 import hashlib
 import hmac
 import json
+import math
 import os
 from pathlib import Path
 import socket
@@ -13,6 +14,7 @@ import subprocess
 import time
 import traceback
 import urllib.request
+import wave
 import zlib
 
 parser = argparse.ArgumentParser(description=__doc__)
@@ -72,8 +74,9 @@ try:
     tracks = [('01 Lantern', 'Lantern Start', 'Aster Vale', 440, (10, 50, 90)),
               ('02 Copper', 'Copper &lt;Moon&gt; &amp; Harbor', 'Mira Tide', 660, (20, 80, 40))]
     for number, (name, track_title, artist, frequency, color) in enumerate(tracks, 1):
-        subprocess.run(['ffmpeg', '-nostdin', '-v', 'error', '-f', 'lavfi', '-i', f'sine=frequency={frequency}:sample_rate=16000:duration=12',
-                        '-c:a', 'pcm_s16le', '-threads', '1', str(media / (name + '.wav'))], check=True)
+        with wave.open(str(media / (name + '.wav')), 'wb') as audio:
+            audio.setparams((1, 2, 16000, 0, 'NONE', 'not compressed'))
+            audio.writeframes(b''.join(struct.pack('<h', round(4000 * math.sin(2 * math.pi * frequency * index / 16000))) for index in range(12 * 16000)))
         (media / (name + '.nfo')).write_text(f'<track><title>{track_title}</title><artist>{artist}</artist><albumartist>Fictional Ensemble</albumartist><album>R08 Fictional Session</album><disc>1</disc><track>{number}</track></track>')
         cover(media / (name + '.png'), color)
     receipt['fixtureSHA256'] = {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in sorted(media.iterdir())}
