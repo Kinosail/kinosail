@@ -14,6 +14,14 @@ for (const width of [390, 1440]) {
     const sidecar = join(root, "media", "R07 Example.en.srt");
     const original = await readFile(sidecar);
     expect(createHash("sha256").update(original).digest("hex")).toBe(manifest.sidecarSHA256);
+    const rejectedMutations = [];
+    for (const action of ["apply", "restore"]) {
+      // Invalid JSON remains harmless if this fixture's outer mutation guard ever regresses.
+      const response = await page.request.post(`${manifest.url}/api/v1/subtitle-library/${manifest.id}/${action}`, { data: "invalid-json", headers: { "Content-Type": "application/json" } });
+      expect(response.status()).toBe(405);
+      expect(await response.text()).toContain("disposable fixture permits reads and previews only");
+      rejectedMutations.push({ action, status: response.status() });
+    }
     const requests: { method: string; path: string }[] = [];
     const media: { status: number; contentRange: string | undefined }[] = [];
     page.on("request", request => requests.push({ method: request.method(), path: new URL(request.url()).pathname }));
@@ -35,6 +43,6 @@ for (const width of [390, 1440]) {
     expect(requests.filter(request => request.method !== "GET").map(request => request.path)).toEqual([`/api/v1/subtitle-library/${manifest.id}/preview`, `/api/v1/subtitle-library/${manifest.id}/preview`]);
     expect(await readFile(sidecar)).toEqual(original);
     await expect(readFile(sidecar + ".kinosail.bak")).rejects.toMatchObject({ code: "ENOENT" });
-    await testInfo.attach("native-transport-and-integrity", { contentType: "application/json", body: JSON.stringify({ requests, media, installedSubtitleUnchanged: true, recoverySidecarAbsent: true, directPlaybackDuration: 12 }) });
+    await testInfo.attach("native-transport-and-integrity", { contentType: "application/json", body: JSON.stringify({ requests, media, rejectedMutations, installedSubtitleUnchanged: true, recoverySidecarAbsent: true, directPlaybackDuration: 12 }) });
   });
 }

@@ -19,6 +19,10 @@ export async function reviewSubtitlePairing(page: Page, testInfo: TestInfo) {
   await expect(rows.nth(1)).toContainText("Current · cues 2, 3");
   await expect(rows.nth(1)).toContainText("Proposed · cue 1");
   expect(await rows.nth(2).locator("p").allTextContents()).toEqual(["A later line", "A later line"]);
+  await rows.nth(1).locator("div").first().getByRole("button", { name: "Seek Current cue 3: 0:04.000 to 0:05.000", exact: true }).click();
+  await expect(page.locator('input[name="preview-track"][value="current"]')).toBeChecked();
+  await expect.poll(() => page.locator("video").evaluate(video => video.currentTime)).toBe(3);
+  await expect(page.locator("video")).toBeFocused();
   await rows.nth(2).locator("div").nth(1).getByRole("button", { name: "Seek Proposed cue 2: 0:07.750 to 0:08.750", exact: true }).click();
   await expect(page.locator('input[name="preview-track"][value="proposed"]')).toBeChecked();
   await expect.poll(() => page.locator("video").evaluate(video => video.currentTime)).toBe(6.75);
