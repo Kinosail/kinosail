@@ -141,7 +141,7 @@ test("native HLS offers recovery when the first play never becomes ready", async
   await page.clock.fastForward("00:01:36");
   await expect(page.locator("video")).toHaveAttribute("data-load-calls", "1");
   await expect(page.locator("[data-player-status]")).toHaveClass(/is-recovery/);
-  await expect(page.locator("[data-player-message]")).toHaveText("Playback has not advanced. Your position is saved.");
+  await expect(page.locator("[data-player-message]")).toHaveText("Playback has not advanced. You can retry from this position.");
 });
 
 test("seeking to the start before initial metadata does not restore the resume position", async ({ page }) => {

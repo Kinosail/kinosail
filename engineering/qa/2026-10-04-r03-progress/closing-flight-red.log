@@ -1,0 +1,54 @@
+
+Running 1 test using 1 worker
+
+(node:41865) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › player-progress-queue-drain.spec.ts:59:1 › pagehide dispatches latest position once while retired watched continuation settles @smoke (332ms)
+
+
+  1) [chromium] › player-progress-queue-drain.spec.ts:59:1 › pagehide dispatches latest position once while retired watched continuation settles @smoke
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 0
+    + Received  + 6
+
+    @@ -9,6 +9,12 @@
+          "path": "/progress/next",
+          "revision": "3",
+          "seconds": "4",
+          "watched": null,
+        },
+    +   Object {
+    +     "path": "/progress/next",
+    +     "revision": "3",
+    +     "seconds": "4",
+    +     "watched": null,
+    +   },
+      ]
+
+      113 |     await expect(page.locator("[data-progress-notice]")).toBeVisible();
+      114 |     await expect(page.locator("[data-progress-retry]")).toBeHidden();
+    > 115 |     expect(writes).toEqual([{path: "/progress/first", seconds: "0", watched: "true", revision: "1"}, {path: "/progress/next", seconds: "4", watched: null, revision: "3"}]);
+          |                    ^
+      116 |   } finally {
+      117 |     releaseClosing();
+      118 |     await page.evaluate(() => (window as Window & {releaseQueuePlayback?: () => void}).releaseQueuePlayback?.()).catch(() => {});
+        at /Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/apps/player/e2e/player-progress-queue-drain.spec.ts:115:20
+
+    attachment #3: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../r03-closing-flight-red-2-results/player-progress-queue-drai-b6d10-atched-continuation-settles-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../r03-closing-flight-red-2-results/player-progress-queue-drai-b6d10-atched-continuation-settles-chromium/error-context.md
+
+    attachment #5: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../../r03-closing-flight-red-2-results/player-progress-queue-drai-b6d10-atched-continuation-settles-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../../r03-closing-flight-red-2-results/player-progress-queue-drai-b6d10-atched-continuation-settles-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › player-progress-queue-drain.spec.ts:59:1 › pagehide dispatches latest position once while retired watched continuation settles @smoke
