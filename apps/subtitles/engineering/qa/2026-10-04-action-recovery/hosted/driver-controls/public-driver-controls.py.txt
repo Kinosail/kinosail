@@ -83,10 +83,12 @@ def control(source, output, name):
         assert not (root / "fake-go-started").exists()
     elif name == "private-sentinel":
         assert result.returncode == 0 and receipt["classification"] == "focused-public-protocol-green"
+        assert receipt["ownedProcessExited"] and receipt["ownedGroupSettled"]
     elif name == "leader-exit-held-stdout":
         assert result.returncode != 0 and receipt["stopReason"] == "external-timeout"
         assert 89 <= time.monotonic() - started <= 102
         assert receipt["ownedProcessExited"]
+        assert receipt["ownedGroupSettled"]
     elif name == "tracked-drift":
         assert result.returncode != 0 and not receipt["trackedTreeUnchanged"]
     else:
