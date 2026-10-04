@@ -4,6 +4,7 @@ import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {join} from 'node:path';
 import {totp} from './happy-path-helpers';
+import {observeStartupPlaybackExits} from './startup-playback-exit';
 
 test('bounded startup preparation preserves the exact stream and playback priority', async ({page}, info) => {
   test.skip(process.env.KINOSAIL_STARTUP_E2E !== '1', 'Requires disposable synthetic local runner');
@@ -41,6 +42,7 @@ test('bounded startup preparation preserves the exact stream and playback priori
     receipts.push(value);
     await writeFile(info.outputPath('startup-measurements.json'), JSON.stringify(receipts, null, 2));
   }
+  const leavePlayback = observeStartupPlaybackExits(page, id, record);
   async function bytes(path: string): Promise<number> {
     let total = 0;
     for (const name of await readdir(path)) {
@@ -120,8 +122,7 @@ test('bounded startup preparation preserves the exact stream and playback priori
   await page.goto('/?q=Cold');
   const cold = await moving('Cold');
   await record({name: 'cold', ...cold});
-  await page.locator('video').evaluate(media => media.pause());
-  await page.goto('/?q=Warm');
+  await leavePlayback('Cold', () => page.goto('/?q=Warm'));
   await page.unroute('**/playback-prepare');
   await writeFile(info.outputPath('startup-measurements.json'), JSON.stringify(receipts, null, 2));
   if (process.env.KINOSAIL_STARTUP_BASELINE === '1') return;
@@ -148,10 +149,9 @@ test('bounded startup preparation preserves the exact stream and playback priori
   await page.locator('video').evaluate(media => { media.pause(); media.currentTime = 42; });
   await page.locator('video').evaluate(media => media.play());
   await expect.poll(() => page.locator('video').evaluate(media => media.currentTime)).toBeGreaterThan(42.25);
-  await page.reload();
+  await leavePlayback('Warm', () => page.reload());
   await expect.poll(() => page.locator('video').evaluate(media => media.currentTime)).toBeGreaterThan(40);
-  await page.locator('video').evaluate(media => media.pause());
-  await page.goto('/?q=Direct');
+  await leavePlayback('Warm', () => page.goto('/?q=Direct'));
   expect((await prepare('Direct', `/media/${id('Direct')}`)).status()).toBe(202);
   const beforeRejected = (await readdir(join(run, 'cache'))).sort();
   const enumSources = [
@@ -175,9 +175,8 @@ test('bounded startup preparation preserves the exact stream and playback priori
   await record({name: 'direct-first', ...directPlayback});
   expect(await page.locator('video').evaluate(media => media.currentSrc)).toContain(`/media/${id('Direct')}`);
   expect((await readdir(join(run, 'cache'))).some(value => value.startsWith(id('Direct')))).toBe(false);
-  await page.locator('video').evaluate(media => media.pause());
   await page.evaluate(() => localStorage.setItem('kinosail.playback-policy-v2', 'compatible'));
-  await page.goto('/?q=Adopt');
+  await leavePlayback('Direct', () => page.goto('/?q=Adopt'));
   const adopt = source(await plan('Adopt'));
   expect((await prepare('Adopt', adopt)).status()).toBe(202);
   await expect.poll(async () => {
@@ -193,9 +192,8 @@ test('bounded startup preparation preserves the exact stream and playback priori
   expect((await prepare('Compete', source(await plan('Compete')))).status()).toBe(202);
   await page.waitForTimeout(1500);
   expect((await readdir(join(run, 'cache'))).some(value => value.startsWith(id('Compete')))).toBe(false);
-  await page.locator('video').evaluate(media => media.pause());
   await page.route('**/playback-prepare', route => route.abort());
-  await page.goto('/?q=Compete');
+  await leavePlayback('Adopt', () => page.goto('/?q=Compete'));
   await page.waitForLoadState('networkidle');
   // Keep admission closed without new media GETs clearing the queue under test.
   const queueTrace = (sequence: number, event: string, paused: boolean) => page.request.post(`/api/v1/items/${id('Compete')}/playback-events`, {headers, data: {session: 'startup-queue-bound', sequence, event, paused}});

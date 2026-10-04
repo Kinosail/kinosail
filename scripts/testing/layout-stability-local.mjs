@@ -99,6 +99,7 @@ const cases=viewports.flatMap(viewport=>routes.map(path=>({viewport,path,variant
 if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of [app==="player"?"/settings#access":"/settings#provider",app==="player"?"/settings#session-timeouts":"/settings#security",`/watch/${item.id}?playback=direct`,...routes.filter(path=>path.startsWith("/subtitles/inspect/"))]){
   cases.push({viewport:{width:390,height:844},path,variant:"text-200",scale:"200%"});
   cases.push({viewport:{width:390,height:844},path,variant:"motion",motion:"no-preference"});
+  if(path.startsWith("/settings"))for(const viewport of [{width:320,height:800},{width:844,height:390}])cases.push({viewport,path,variant:"text-200",scale:"200%"});
 }
 if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of ["/settings#%61ccess","/settings#%E0%A4%A"])cases.push({viewport:{width:390,height:844},path,variant:"fragment"});
 if(process.env.KINOSAIL_LAYOUT_VARIANTS&&app==="player")cases.push({viewport:{width:390,height:844},path:"/settings#access",variant:"saved-mobile-tabs",scale:"200%",savedTabs:true});

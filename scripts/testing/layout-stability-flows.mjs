@@ -68,7 +68,8 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
     await page.evaluate(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:"instant"}));
     const tail=await page.locator("#thanks").boundingBox(), endDock=await page.locator("[data-subtitle-dock]").boundingBox();
     const reservation=await page.locator("main").evaluate(n=>({paddingBottom:getComputedStyle(n).paddingBottom,dockHeight:document.documentElement.style.getPropertyValue("--subtitle-dock-height"),scrollX,scrollY}));
-    results.push({flow:"enlarged-dock-end-focus",viewport,control,tail,dock,endDock,header,reservation,focusRetained,stable:Boolean(control&&tail&&dock&&endDock&&header&&control.y+control.height<=dock.y+1&&tail.y+tail.height<=endDock.y+1&&control.y>=header.y+header.height-1)});
+    const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+    results.push({flow:"enlarged-dock-end-focus",viewport,control,tail,dock,endDock,header,reservation,focusRetained,overflow,stable:Boolean(control&&tail&&dock&&endDock&&header&&control.y+control.height<=dock.y+1&&tail.y+tail.height<=endDock.y+1&&control.y>=header.y+header.height-1)});
     await context.close();
   }
   const context = await browser.newContext({...options,viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce"});
@@ -122,7 +123,7 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
       const originalScroll=await editor.evaluate(()=>scrollY),workspaceBefore=await editor.locator(".subtitle-inspector-workspace").boundingBox();
       await language.focus();await language.selectOption(alternate);await editor.waitForFunction(()=>document.querySelector("#inspector-status")?.getAttribute("aria-busy")==="true");
       if(mode==="tab-away")await editor.keyboard.press("Tab");
-      if(mode==="retain-scroll")await editor.evaluate(()=>scrollTo({top:document.documentElement.scrollHeight,behavior:"instant"}));
+      if(mode==="retain-scroll")await editor.evaluate(()=>scrollTo({top:Math.max(0,document.documentElement.scrollHeight-innerHeight-160),behavior:"instant"}));
       const selectorOffscreen=await language.evaluate(n=>{const r=n.getBoundingClientRect();return r.bottom<=0||r.top>=innerHeight;});
       const scrollBefore=await editor.evaluate(()=>scrollY),focus=await editor.evaluateHandle(()=>document.activeElement);await editor.waitForFunction(()=>document.querySelector("#inspector-status")?.getAttribute("aria-busy")!=="true");
       const focusRetained=mode==="tab-away"?await editor.evaluate(n=>n===document.activeElement,focus):await language.evaluate(n=>n===document.activeElement);await focus.dispose();
