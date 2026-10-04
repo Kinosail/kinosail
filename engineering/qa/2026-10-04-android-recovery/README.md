@@ -2,8 +2,8 @@
 
 Baseline: `5c3df3a06adad59c65551a65e132a92360b57c4b`.
 This commit owns R09 from the canonical ranked audit. R13 is a separate follow-up.
-R09 is confirmed and implemented. Model, phone and tablet checks pass; the TV
-footer journey still requires scheduled verification after a navigation fixture repair.
+R09 is confirmed, implemented and tested. All eight model and three native host
+footer journeys pass at `eeec3b7eda18944965803c2efc6b70328337b916`.
 
 ## Failure modes before implementation
 
@@ -72,6 +72,32 @@ stdout and checksums are in `task-2/android-recovery-green-r09-red-r13/receipt.j
 SHA-256 `bf0e13ad681eb2c7754eaa008a1cd1b106550c955ae28fcc3ceb8af1faa3ef63`.
 The receipt explicitly hashes the R13 test that was compiled while still untracked.
 PNG and semantics artifacts are in `task-2/android-recovery-green-r09/`.
+
+## Final GREEN and curated QA
+
+The combined candidate run at `eeec3b7eda18944965803c2efc6b70328337b916`
+completed in 31 seconds: 13 executed, 13 passed, zero failures, errors or skips.
+R09 accounts for eight model checks and phone/tablet/TV footer journeys; R13
+accounts for two focused TV playback retry checks. The TV footer reached the
+actual displayed, focused button, sent a D-pad center key, appended offset 48,
+retained the original 48 rows and removed recovery feedback after success.
+
+All four TV host renders were inspected: loaded cards, pending later-page status,
+failed-page feedback with visibly focused retry, and appended recovery content.
+Phone/tablet captures were also inspected across loaded, pending, failed and
+recovered states. The final receipt hashes 12 PNGs and 12 semantics files, including
+polite failure feedback and the TV retry's `Focused=true` node. Existing initial
+empty-state UI was not changed or rerendered by this later-page batch.
+
+The final XML, stdout and render receipt is
+`task-2/android-recovery-final-green/receipt.json`, SHA-256
+`9ab137daa2478d73add6daa5ebc68b128fc00a52650b88426f4b372bfa07b68e`.
+It pins all eight runtime production/test source hashes at the executed revision;
+later evidence-only commits do not replace that runtime identity. Full Android
+unit suites and physical accessibility/input checks were not run in this bounded
+slot. `make -C apps/player verify-changed BASE=5c3df3a06adad59c65551a65e132a92360b57c4b`
+passed max-loc and diff-check after committing the app changes; its Android-only
+dispatcher does not execute Gradle, so the native test counts above are separate.
 
 ## Reproduction command and evidence limits
 

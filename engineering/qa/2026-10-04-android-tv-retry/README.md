@@ -2,7 +2,8 @@
 
 Baseline: `5c3df3a06adad59c65551a65e132a92360b57c4b`.
 R13 / AND-B03 is a separate commit after R09. Public TV retry ownership failed
-twice before the one-line production fix. Scheduled GREEN verification is pending.
+twice before the one-line production fix and passes twice at
+`eeec3b7eda18944965803c2efc6b70328337b916`.
 
 ## Failure modes before implementation
 
@@ -69,3 +70,20 @@ ANDROID_HOME=/opt/homebrew/share/android-commandlinetools \
 No assembly, installation, device deployment, real data deletion or encoding is
 part of this run. Initial fixture timeouts remain separately classified and do
 not count toward the two confirmed failures.
+
+## Final GREEN
+
+At `eeec3b7eda18944965803c2efc6b70328337b916`, the combined bounded run
+completed in 31 seconds with 13 executed, 13 passed and zero failures, errors or
+skips. Both R13 journeys reached two playback requests and `phoneOwnership=false`.
+Both then verified the saved TV identifier in remote status publication and
+accepted the matching TV/item pause command while rejecting phone and wrong-item
+targets. The two independent test cases retain the actual focused native button
+and D-pad key path.
+
+The final receipt pins production/test sources separately from later evidence
+commits: `task-2/android-recovery-final-green/receipt.json`, SHA-256
+`9ab137daa2478d73add6daa5ebc68b128fc00a52650b88426f4b372bfa07b68e`.
+Its XML and stdout provide nonzero executed counts. The run still uses synthetic
+media returning 404; no decoder, continuity, physical TV remote, TV audio service,
+Wear discovery, TalkBack, emulator or deployment success is claimed.
