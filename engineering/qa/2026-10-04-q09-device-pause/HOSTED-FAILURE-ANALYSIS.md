@@ -56,3 +56,19 @@ do not reset, ignore or accept setup changes. Four fictional controls were
 prepared before the helper; the missing-helper RED is a zero-body setup error.
 After correction all82 CI controls pass, including those four privacy controls.
 The hosted retry must classify the actual drift before a dependency fix.
+
+Run37225398035 at60de confirms exact source-admission rejection: only go.work.sum
+changed, from2,894 bytes/SHA47030067 to17,646 bytes/SHAeed71fd2. It ran zero
+product groups. Preserve both failed runs. Go documents that workspace commands
+maintain this additional checksum file: https://go.dev/ref/mod#workspaces.
+
+Model the observed writing warmup before changing it: three fictional Go-tool
+controls fail because the new helper is absent. The correction copies the eight
+checked-in workspace/module manifests with the same relative layout into a fresh
+runner-temporary directory, then runs the unchanged mod-download command there.
+It preserves the real checksum verifier and source manifests; scratch is never
+copied back. The actual proof still compiles and executes the original checkout
+and fails on any initial or final source drift. These three controls verify copy
+identity, checksum-writing isolation, both apps and unknown-app rejection;
+they do not prove real Go compilation or product behavior. Fresh hosted proof
+must establish whether ordinary compilation leaves the original source exact.
