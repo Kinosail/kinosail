@@ -4,6 +4,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import stat
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -21,6 +22,12 @@ def fingerprint(path):
             count += len(chunk)
             hasher.update(chunk)
     return {"present": True, "bytes": count, "sha256": hasher.hexdigest()}
+
+def compiled_binary(path):
+    info = path.lstat()
+    if not stat.S_ISREG(info.st_mode) or not 0 < info.st_size <= 128 * 1024 * 1024 or not info.st_mode & 0o100:
+        raise ValueError("compiled-binary-shape")
+    return {**fingerprint(path), "mode": info.st_mode & 0o777}
 
 def save(path, value):
     path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")

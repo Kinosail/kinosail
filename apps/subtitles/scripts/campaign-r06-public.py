@@ -13,9 +13,9 @@ import subprocess
 import time
 
 from campaign_r06_sources import (APP, ROOT, SCOPE_SHA, checked_scope, current_revision,
-    fingerprint, prepare_overlay, r16_state, save, source_matches, source_state,
+    compiled_binary, fingerprint, prepare_overlay, r16_state, save, source_matches, source_state,
     tool_identity, tracked_clean, tracked_tree)
-from campaign_r06_projection import Projection
+from campaign_r06_projection import PACKAGE, Projection
 
 
 def signal_owned(pid, signum):
@@ -60,14 +60,12 @@ def stop_owned(process, receipt):
                 receipt["leaderStopFailureClass"] = type(failure).__name__
 
 
-def execute(scope, overlay, projection, receipt):
-    command = ["go", "test", "-p", "1", "-parallel", "1", "-overlay=" + str(overlay),
-               "./internal/server", "-run", scope["runPattern"], "-count=1", "-timeout=80s", "-json"]
+def execute(command, bound, projection, receipt):
     environment = dict(os.environ, GOMAXPROCS="2", GOPROXY="off",
                        GOTOOLCHAIN="local", GOWORK=str(ROOT / "go.work"))
     process, selector, reason, total, pending = None, None, {"stop": None}, 0, b""
     started = time.monotonic()
-    deadline = started + 90
+    deadline = started + bound
     previous = {s: signal.getsignal(s) for s in (signal.SIGINT, signal.SIGTERM)}
     def interrupted(_signum, _frame):
         reason["stop"] = "interrupted"
@@ -92,7 +90,7 @@ def execute(scope, overlay, projection, receipt):
             data = os.read(process.stdout.fileno(), 65536)
             if not data:
                 eof = True
-                if pending:
+                if pending and projection is not None:
                     projection.consume(pending)
                     if projection.prerequisite:
                         reason["stop"] = "prerequisite-failure"
@@ -107,10 +105,11 @@ def execute(scope, overlay, projection, receipt):
                 if len(line) > 65536:
                     reason["stop"] = "output-bound"
                     break
-                projection.consume(line)
-                if projection.prerequisite:
-                    reason["stop"] = "prerequisite-failure"
-                    break
+                if projection is not None:
+                    projection.consume(line)
+                    if projection.prerequisite:
+                        reason["stop"] = "prerequisite-failure"
+                        break
             if len(pending) > 65536:
                 reason["stop"] = "output-bound"
         # EOF is not proof of process exit. Preserve its natural result first.
@@ -154,9 +153,52 @@ def execute(scope, overlay, projection, receipt):
             signal.signal(signum, handler)
 
 
+def complete_process(execution):
+    return (execution.get("exitCode") == 0 and not execution.get("stopReason")
+            and execution.get("ownedProcessExited") and execution.get("ownedGroupSettled"))
+
+
+def run_protocol(scope, overlay, projection, receipt, work, before, tree_before):
+    binary = work / "public-server.test"
+    compilation = {"goWasLaunched": False, "boundSeconds": 120}
+    receipt["compilation"] = compilation
+    command = ["go", "test", "-c", "-p", "1", "-overlay=" + str(overlay), "-o", str(binary), "./internal/server"]
+    execute(command, 120, None, compilation)
+    receipt["goWasLaunched"] = compilation["goWasLaunched"]
+    receipt["compilationComplete"] = complete_process(compilation)
+    if not receipt["compilationComplete"]:
+        receipt["stopReason"] = "compile-" + (compilation["stopReason"] or "failed")
+        return
+    if not (source_matches(scope, source_state(scope)) and r16_state(scope) == before
+            and current_revision() == receipt["checkoutRevision"] and tracked_tree(scope) == tree_before and tracked_clean(scope)):
+        receipt["stopReason"] = "compile-source-integrity-drift"
+        return
+    try:
+        compiled_binary(binary)
+        binary.chmod(0o700)
+        receipt["compiledBinaryBefore"] = compiled_binary(binary)
+    except (OSError, ValueError) as error:
+        receipt["compiledBinaryFailureClass"] = type(error).__name__
+        receipt["stopReason"] = "compile-artifact-failure"
+        return
+    receipt["compiledTestBinarySHA256"] = receipt["compiledBinaryBefore"]["sha256"]
+    command = ["go", "tool", "test2json", "-t", "-p", PACKAGE, str(binary), "-test.v=test2json",
+               "-test.run=" + scope["runPattern"], "-test.parallel=1", "-test.count=1", "-test.timeout=80s"]
+    execution = {"goWasLaunched": False}
+    execute(command, 90, projection, execution)
+    receipt.update(execution)
+    receipt["publicRuntimeWasLaunched"] = execution["goWasLaunched"]
+    receipt["goWasLaunched"] = compilation["goWasLaunched"] or execution["goWasLaunched"]
+    try:
+        receipt["compiledBinaryAfter"] = compiled_binary(binary)
+        receipt["compiledBinaryUnchanged"] = receipt["compiledBinaryAfter"] == receipt["compiledBinaryBefore"]
+    except (OSError, ValueError) as error:
+        receipt["compiledBinaryFailureClass"] = type(error).__name__
+
+
 def complete_green(results, execution, unchanged):
-    return (unchanged and execution.get("exitCode") == 0 and not execution.get("stopReason")
-            and execution.get("ownedProcessExited") and execution.get("ownedGroupSettled")
+    return (unchanged and complete_process(execution) and execution.get("compilationComplete")
+            and execution.get("publicRuntimeWasLaunched") and execution.get("compiledBinaryUnchanged")
             and results["packageStatus"] == "pass" and results["packageTerminalComplete"] and results["runIdentityComplete"]
             and not any(results[k] for k in ("invalidEventCount", "unallowlistedTestEventCount", "duplicateTerminalCount", "duplicatePackageTerminalCount"))
             and results["counts"]["topLevel"]["pass"] == 33 and results["counts"]["subtests"]["pass"] == 45)
@@ -178,7 +220,8 @@ def main():
     receipt = {"schemaVersion": 1, "protocolSourceSnapshot": scope["protocolSourceSnapshot"],
                "startedUTC": datetime.now(timezone.utc).isoformat(), "scopeSHA256": SCOPE_SHA,
                "driver": fingerprint(Path(__file__)), "mode": "static-only" if args.static_check else "public-go",
-               "bounds": {"goSeconds": 80, "externalSeconds": 90, "leaderReapSeconds": 3, "groupSettlementSeconds": 4}, "goWasLaunched": False,
+               "bounds": {"compileSeconds": 120, "goSeconds": 80, "externalSeconds": 90, "leaderReapSeconds": 3, "groupSettlementSeconds": 4},
+               "goWasLaunched": False, "publicRuntimeWasLaunched": False, "compiledBinaryUnchanged": False,
                "workingDirectory": "apps/subtitles", "selector": scope["runPattern"],
                "environment": {"GOMAXPROCS": "2", "GOPROXY": "off", "GOTOOLCHAIN": "local", "GOWORK": "repository/go.work"},
                "exportPolicy": "Only fixed names/status/counts/phases and source/artifact hashes; no raw Go output or environment dump."}
@@ -203,7 +246,7 @@ def main():
         receipt["projectionHelper"] = fingerprint(Path(__file__).with_name("campaign_r06_projection.py"))
         receipt["checksumPolicy"] = "Driver does not override GOSUMDB; normal integrity policy retained."
         receipt["compiledTestBinarySHA256"] = None
-        receipt["compiledEvidenceLimit"] = "Transient go-test executable digest not captured; 53 pins identify selected protocol inputs only. Entire tracked tree, locks, tool, and driver are separately bound."
+        receipt["compiledEvidenceLimit"] = "Compiled executable stays private; digest/size/mode are compared before and after direct execution through Go test2json. 53 pins identify selected protocol inputs only."
         receipt["overlay"] = {"sha256": fingerprint(overlay)["sha256"], "baselineSHA256": scope["overlay"]["baselineSHA256"],
                               "replace": scope["overlay"]["replace"], "exclude": scope["overlay"]["exclude"]}
         if not args.static_check:
@@ -215,8 +258,8 @@ def main():
             if not match:
                 raise RuntimeError("toolchain-version")
             receipt["goVersion"] = match[1]
-            stage = "public-go"
-            execute(scope, overlay, projection, receipt)
+            stage = "compile-and-public-runtime"
+            run_protocol(scope, overlay, projection, receipt, output / "work", before, tree_before)
         stage = "integrity-settlement"
         receipt["sourcesUnchanged"] = source_state(scope) == sources
         receipt["endedRevision"] = current_revision()
