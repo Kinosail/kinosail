@@ -55,11 +55,15 @@ let managedSeek = false;
 const setPlayerTime = (seconds) => { managedSeek = true; player.currentTime = seconds; };
 let playbackPreparation;
 let preparationPausePending = 0;
-const requestPause = () => { playbackPreparation?.stop(); applePlaybackRequested = false; player.dispatchEvent(new CustomEvent("kinosail:playback-intent", {detail: {playing: false}})); player.pause(); };
+let playbackRequest = 0;
+const requestPause = () => { playbackRequest++; playbackPreparation?.stop(); applePlaybackRequested = false; player.dispatchEvent(new CustomEvent("kinosail:playback-intent", {detail: {playing: false}})); player.pause(); };
 const requestPlay = (detail) => {
+  const request = ++playbackRequest;
+  const source = player.currentSrc || player.src;
   playbackTrace("play-request", detail);
   const rejected = (error) => {
     playbackTrace("play-rejected", `${detail}:${error?.name || "Error"}`);
+    if (request !== playbackRequest || source !== (player.currentSrc || player.src)) return;
     if (appleNativePlayback) { applePlaybackRequested = false; player.controls = false; }
     if (error?.name === "NotAllowedError") player.dispatchEvent(new Event("kinosail:play-needs-gesture"));
     throw error;

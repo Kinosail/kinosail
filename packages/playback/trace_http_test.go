@@ -129,6 +129,10 @@ func TestTraceHTTPRejectsLogInjectionWithoutEffects(t *testing.T) {
 func TestTraceHTTPRetainsOnlyNamedPlayRejections(t *testing.T) {
 	for _, fixture := range []struct{ event, detail, expected string }{
 		{"play-rejected", "control:NotAllowedError", "control:NotAllowedError"},
+		{"play-rejected", "apple-play:AbortError", "apple-play:AbortError"},
+		{"play-rejected", "apple-play:NotSupportedError", "apple-play:NotSupportedError"},
+		{"play-rejected", "apple-play:qa_sensitive_marker", ""},
+		{"play-rejected", "apple-play:AbortError:qa_sensitive_marker", ""},
 		{"play-rejected", "autoplay-canplay:NotSupportedError", "autoplay-canplay:NotSupportedError"},
 		{"play-rejected", "keyboard:AbortError", "keyboard:AbortError"},
 		{"play-rejected", "media-element:InvalidStateError", "media-element:InvalidStateError"},

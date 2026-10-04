@@ -67,7 +67,7 @@ func safeTraceDetail(event TraceEvent) string {
 	if event.Event == "error" && len(parts) == 3 && parts[0] == "fullscreen" && parts[2] == "playback-retained" && oneOf(parts[1], "NotAllowedError", "InvalidStateError", "NotSupportedError", "TypeError", "Error") {
 		detail = event.Detail
 	}
-	if event.Event == "play-rejected" && len(parts) == 2 && oneOf(parts[0], "control", "autoplay-canplay", "keyboard", "media-element", "watch-room", "media-session", "queue-advance", "resume-progress", "home-assistant", "source-change", "offline-source") && oneOf(parts[1], "NotAllowedError", "NotSupportedError", "AbortError", "InvalidStateError", "TypeError", "Error") {
+	if event.Event == "play-rejected" && len(parts) == 2 && oneOf(parts[0], "control", "apple-play", "autoplay-canplay", "keyboard", "media-element", "watch-room", "media-session", "queue-advance", "resume-progress", "home-assistant", "source-change", "offline-source") && oneOf(parts[1], "NotAllowedError", "NotSupportedError", "AbortError", "InvalidStateError", "TypeError", "Error") {
 		detail = event.Detail
 	}
 	return detail
