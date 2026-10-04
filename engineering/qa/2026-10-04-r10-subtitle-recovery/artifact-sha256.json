@@ -1,6 +1,7 @@
 {
   "evidence-gitleaks.log": "314d73e23128a7b6640e6cc6a7f983a5564ad727174b20d7242619898ca32b37",
   "failure-analysis.md": "e020cd105f4dcd9736764e7273c5dfd5b02565a7eed9caf06f6d10cdb263c650",
+  "independent-review.md": "26e1b328195bfae8bbdb94aad7f1c46c5d2063710dcc645af54abc6642917178",
   "isolated-green/.last-run.json": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903",
   "isolated-green/player-subtitles-lifecycle-3137e-loads-the-selected-language-chromium/persisted-selected-recovered.png": "01ab979892e9942a040c9103345560834fcae1fc0ed7e1f5e75f985a6e3cd44e",
   "isolated-green/player-subtitles-lifecycle-dcde4-ut-starting-another-request-chromium/persisted-off.png": "b332dac6589394f607fc2520d0425d4fe318680414a3b532e08a3d2cc901071f",
@@ -129,6 +130,6 @@
   "product-browser-lint.log": "c3f22b54ffc1b5b24fd84371124e4c134c1ec7609d4c49fe031f96bb46994f91",
   "product-max-loc.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "product-ts-types.log": "eddf42e6d6bea0ee38a909b41e08285122851df771fde8d5a11ac0de829a9148",
-  "report.md": "cee7cea73fac899fe5893dfdfb6bf9c737377913b433f90adeb9adc22306daf1",
+  "report.md": "f36e0aaf93bfa70fcf2485ebdc571926ae6559de05cadebd88e5cab76e612c32",
   "reproduction-commands.md": "b115cfce84ecc8ca4dce60c5b3968074533112fb5db423ea6c177357e6be2d72"
 }

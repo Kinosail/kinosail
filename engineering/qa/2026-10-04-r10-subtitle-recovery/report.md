@@ -78,8 +78,10 @@ alongside synthetic captions, render through the actual Go Server, attest its
 served asset token against its bytes and play real video. The original fixture
 is preserved; no probe, encoder or deployment runs.
 
-Required CI hook, `make verify-changed`, `make test-instance-check`, independent
-review, protected checks, PR, merge and fetched ancestry are owned by the
-integration owner. `test-container.sh` remains untouched during R03 integration.
+Independent source/evidence review is clear at product `e3651e1e`, with the
+stronger Go-only harness rechecked at `7dfe6005`; see `independent-review.md`.
+Required CI hook, `make verify-changed`, `make test-instance-check`, final
+protected checks, PR, merge and fetched ancestry are owned by the integration
+owner. Final populated evidence review remains pending. `test-container.sh` remains untouched during R03 integration.
 
 MAIN: NO — awaiting real Server proof, independent review and integration.
