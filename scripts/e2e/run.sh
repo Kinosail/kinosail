@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Build real app binaries and keep the existing checksummed E2E receipt format.
 set -euo pipefail
-app="${1:-all}"
+app="${1-all}"
 if (( $# > 1 )) || [[ "$app" != all && "$app" != player && "$app" != subtitles ]]; then
   printf 'usage: %s [all|player|subtitles]\n' "$0" >&2
   exit 2
@@ -22,7 +22,7 @@ export KINOSAIL_E2E_SUBTITLES_BINARY="$binaries/subtitles"
 run="$(date -u +%Y%m%dT%H%M%SZ)-$$"
 mkdir -p ".e2e/runs/$run"
 shasum -a 256 package.json pnpm-lock.yaml e2e.config.ts fixture.mjs tests/*.ts > ".e2e/runs/$run/inputs.sha256"
-arguments=()
-[[ "$app" == all ]] || arguments=(--target "$app")
+arguments=(run)
+[[ "$app" == all ]] || arguments+=(--target "$app")
 python3 ../ci/e2e-artifact.py --output ".e2e/runs/$run/context" -- \
-  pnpm exec e2e run "${arguments[@]}" --output ".e2e/runs/$run/runner"
+  pnpm exec e2e "${arguments[@]}" --output ".e2e/runs/$run/runner"
