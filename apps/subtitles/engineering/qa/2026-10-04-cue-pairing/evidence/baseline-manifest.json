@@ -1,0 +1,52 @@
+{
+  "backlog_id": "R07",
+  "baseline_revision": "5409186a5c8f309af21d66c5e33a9849f2e545ad",
+  "verification": "actual HTTP handler emitted inspector assets and preview responses before production changes; API baseline failed twice for missing comparison rows",
+  "artifacts": [
+    {
+      "path": "evidence/baseline-fixtures/app.css",
+      "bytes": 233733,
+      "sha256": "64a462e0fe63550251ed8202858a489fa5ad6154d4c83d2f95ef0f946657f567"
+    },
+    {
+      "path": "evidence/baseline-fixtures/icon.svg",
+      "bytes": 232,
+      "sha256": "6a73058828809eea809a36b74b49a2fe15bebb0ddd57d70920562de30ad19227"
+    },
+    {
+      "path": "evidence/baseline-fixtures/manrope.woff2",
+      "bytes": 53776,
+      "sha256": "d021a35e139087c179d032e509327fc2dfdbf2c33b6156d25143e004d939da87"
+    },
+    {
+      "path": "evidence/baseline-fixtures/subtitle-inspector.css",
+      "bytes": 3181,
+      "sha256": "865a91d20bc24c371c02c9e294eaf7159931806a59a9472235f79e68b97b3b20"
+    },
+    {
+      "path": "evidence/baseline-fixtures/subtitle-inspector.js",
+      "bytes": 23203,
+      "sha256": "89d4eb3fb7c122e6131a9603a33a96b2cb5c1285acd0d7781cbef54083ad08b9"
+    },
+    {
+      "path": "evidence/baseline-fixtures/subtitle-pairing-cleanup.json",
+      "bytes": 1200,
+      "sha256": "d8acc186ecb34fb9831e408900a4d7e3a8eb1c534f48b1d047acd3d40de1a716"
+    },
+    {
+      "path": "evidence/baseline-fixtures/subtitle-pairing-import.json",
+      "bytes": 1085,
+      "sha256": "39007178556e16a1cb0bc48425a7d881cfabb651e38e7701edb6a332d53bc74e"
+    },
+    {
+      "path": "evidence/baseline-fixtures/subtitle-pairing.html",
+      "bytes": 19609,
+      "sha256": "90de7d4d74952536c97b2f8f17469bfc32570bdef61ff422d4ef969f173ab9ce"
+    },
+    {
+      "path": "evidence/baseline-fixtures/subtitle-pairing.json",
+      "bytes": 772,
+      "sha256": "1e5ddf7c8da7aa90233f03a69cbda17e2a9814beb33e45f89c18fbbc57eff55a"
+    }
+  ]
+}

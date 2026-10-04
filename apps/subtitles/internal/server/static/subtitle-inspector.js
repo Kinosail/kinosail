@@ -14,6 +14,7 @@
   const tracks = { current: video.addTextTrack("subtitles", "Current"), proposed: video.addTextTrack("subtitles", "Proposed") };
   const element = (tag, text, className) => { const node = document.createElement(tag); if (text !== undefined) node.textContent = text; if (className) node.className = className; return node; };
   const time = (seconds) => `${Math.floor(seconds / 60)}:${(seconds % 60).toFixed(3).padStart(6, "0")}`;
+  const sourceCues = window.kinosailSubtitleSourceCues({ element, time, seek: (name, start) => { video.currentTime = Math.max(0, start - 1); document.querySelector(`input[name="preview-track"][value="${name.toLowerCase()}"]`).checked = true; selectTrack(); video.focus(); } });
   async function request(path, input) {
     const options = input === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json", "X-Kinosail-CSRF": document.querySelector('meta[name="kinosail-csrf"]')?.content || "" }, body: JSON.stringify(input) };
     const response = await fetch(base + path, { credentials: "same-origin", ...options });
@@ -60,36 +61,33 @@
   }
   function renderCues(append = false) {
     const current = review?.current?.cues || [], proposed = review?.proposed?.cues || [];
-    let indexes = Array.from({ length: Math.max(current.length, proposed.length) }, (_, index) => index);
-    if (document.getElementById("show-flagged").checked) indexes = indexes.filter(i => (proposed[i] || current[i])?.warnings?.length);
-    const pages = Math.max(1, Math.ceil(indexes.length / 40)); page = Math.min(page, pages - 1);
-    const container = document.getElementById("subtitle-cues"); if (!append) container.replaceChildren();
-    for (const index of indexes.slice(page * 40, (page + 1) * 40)) {
+    let comparisons = cueComparisons(current, proposed);
+    if (document.getElementById("show-flagged").checked) comparisons = comparisons.filter(row => (row.current || []).some(index => current[index]?.warnings?.length) || (row.proposed || []).some(index => proposed[index]?.warnings?.length));
+    const pages = Math.max(1, Math.ceil(comparisons.length / 40)); page = Math.min(page, pages - 1);
+    const container = document.getElementById("subtitle-cues"); if (!append) { sourceCues.reset(); container.replaceChildren(); }
+    for (const comparison of comparisons.slice(page * 40, (page + 1) * 40)) {
       const row = element("div", undefined, "subtitle-cue-row");
-      for (const [name, cue] of [["Current", current[index]], ["Proposed", proposed[index]]]) {
-        const column = element("div"); column.append(element("small", `${name} · cue ${index + 1}`));
-        if (cue) {
-          const seek = element("button", `${time(cue.start)} → ${time(cue.end)}`, "quiet"); seek.type = "button";
-          seek.addEventListener("click", () => { video.currentTime = Math.max(0, cue.start - 1); document.querySelector(`input[name="preview-track"][value="${name.toLowerCase()}"]`).checked = true; selectTrack(); video.focus(); });
-          column.append(seek, element("p", cue.text), element("small", (cue.warnings || []).join(" · ")));
-        } else column.append(element("p", "—"));
-        row.append(column);
-      }
+      row.append(sourceCues.column("Current", comparison.current || [], current, comparison.kind), sourceCues.column("Proposed", comparison.proposed || [], proposed, comparison.kind));
       container.append(row);
     }
     const progress = document.getElementById("cue-page"), previous = document.getElementById("previous-cues"), next = document.getElementById("next-cues");
+    const unit = review.proposed ? "comparisons" : "cues";
     cueObserver?.disconnect();
     if ("IntersectionObserver" in window) {
       previous.hidden = next.hidden = true;
-      progress.textContent = `${Math.min((page + 1) * 40, indexes.length)} of ${indexes.length} cues shown`;
+      progress.textContent = `${Math.min((page + 1) * 40, comparisons.length)} of ${comparisons.length} ${unit} shown`;
       if (page < pages - 1) {
         cueObserver = new IntersectionObserver(entries => { if (entries.some(entry => entry.isIntersecting)) { page++; renderCues(true); } }, { rootMargin: "400px 0px" });
         cueObserver.observe(progress);
       }
     } else {
-      progress.textContent = `${indexes.length} cues · page ${page + 1} of ${pages}`;
+      progress.textContent = `${comparisons.length} ${unit} · page ${page + 1} of ${pages}`;
       previous.hidden = next.hidden = false; previous.disabled = page === 0; next.disabled = page === pages - 1;
     }
+  }
+  function cueComparisons(current, proposed) {
+    if (review.proposed && Array.isArray(review.comparison)) return review.comparison;
+    return [...current.map((_, index) => ({ current: [index], kind: review.proposed ? "unpaired-current" : "current" })), ...proposed.map((_, index) => ({ proposed: [index], kind: "unpaired-proposed" }))];
   }
   async function load() {
     const ticket = ++revision; status.setAttribute("aria-label", "Loading subtitle details…"); status.setAttribute("aria-busy", "true"); apply.disabled = true; prepared = undefined; form.querySelector('button[type="submit"]').disabled = true;

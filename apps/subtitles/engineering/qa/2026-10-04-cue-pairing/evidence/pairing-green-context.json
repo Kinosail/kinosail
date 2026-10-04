@@ -1,0 +1,15 @@
+{
+  "backlog_id": "R07",
+  "base_revision": "50fd82f329c651258245451a55b8fff8dfa9adec",
+  "state": "uncommitted R07 with interior removed-credit correction",
+  "boundary": "actual public preview handler; four-cue synthetic video/SRT; no playable media, providers or writes",
+  "command": "GOMAXPROCS=2 KINOSAIL_UI_FIXTURE_DIR=<green-fixtures> go test -p 1 ./internal/server -run '^(TestWriteUIStateFixturesSubtitlePairingPreservesDialogueCorrespondenceThroughCleanup|TestSubtitlePreviewDoesNotLoseRemovedCueInsideMergedGroup)$' -count=1 -timeout=20s",
+  "sources": {
+    "internal/server/subtitle_review_pairing.go": "57f68cd43619769d62c33e72efcbf2d1bb12474aa23f4edf17d3aeaf4662216d",
+    "internal/server/subtitle_review_pairing_test.go": "14a91cb1a6b5cc342597b3c215f080ae1b3934bed02b4ef8f9c41bcbd524f294",
+    "internal/server/subtitle_edit.go": "ff7b8b86def21a253d4d8f126f6f7f78b60a65f595829b37dd00ee9f38009305",
+    "internal/server/subtitle_conversion.go": "0ed6b966a053ba6e71d8660305690133a9b040d386046643cb2d2a8848603c44",
+    "internal/server/subtitle_clean.go": "72b937f0f8d4d6cfa84395bdde0de9be7272d26e583765ea2c7e6edfa09241ba",
+    "internal/server/subtitle_review.go": "1962d56b50b090731369ea87b9b55df0dd31525e472fa2604f582af89bc2d5af"
+  }
+}

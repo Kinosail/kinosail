@@ -1,0 +1,25 @@
+
+Running 18 tests using 1 worker
+
+(node:91004) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › subtitle-inspector-races.spec.ts:11:3 › apply locks editing until the reviewed language operation settles @smoke (11ms)
+  ✓   2 [chromium] › subtitle-inspector-races.spec.ts:11:3 › restore locks editing until the reviewed language operation settles @smoke (6ms)
+  ✓   3 [chromium] › subtitle-inspector-races.spec.ts:33:1 › failed save unlocks controls and preserves the user's text @smoke (1ms)
+  ✓   4 [chromium] › subtitle-inspector-races.spec.ts:43:1 › older inspect failure cannot replace the newer language's success @smoke (1ms)
+  ✓   5 [chromium] › subtitle-inspector-races.spec.ts:53:1 › older preview failure does not overwrite a newer language @smoke (1ms)
+  ✓   6 [chromium] › subtitle-inspector-races.spec.ts:62:1 › draft observation retries a transient error and settles when ready @smoke (2ms)
+  ✓   7 [chromium] › subtitle-inspector-races.spec.ts:73:3 › pagehide discards an in-flight running draft and pageshow starts one chain @smoke (3ms)
+  ✓   8 [chromium] › subtitle-inspector-races.spec.ts:73:3 › pagehide discards an in-flight failed draft and pageshow starts one chain @smoke (1ms)
+  ✓   9 [chromium] › subtitle-inspector-races.spec.ts:84:1 › a superseded draft response cannot regress the current state or polling @smoke (1ms)
+  ✓  10 [chromium] › subtitle-inspector-races.spec.ts:92:1 › pageshow preserves previously appended cue pages @smoke (2ms)
+  ✓  11 [chromium] › subtitle-inspector-races.spec.ts:104:1 › switching language hides the previous draft and cannot discard newer corrections @smoke (1ms)
+  ✓  12 [chromium] › subtitle-inspector-races.spec.ts:120:3 › late start failure cannot replace another language's preview status @smoke (1ms)
+  ✓  13 [chromium] › subtitle-inspector-races.spec.ts:120:3 › late cancel failure cannot replace another language's preview status @smoke (1ms)
+  ✓  14 [chromium] › subtitle-inspector-races.spec.ts:131:1 › late draft start success preserves the new language's reviewed correction @smoke (1ms)
+  ✓  15 [chromium] › subtitle-inspector-races.spec.ts:146:3 › pagehide ignores a pending draft start failure @smoke (1ms)
+  ✓  16 [chromium] › subtitle-inspector-races.spec.ts:146:3 › pagehide ignores a pending draft cancel failure @smoke (1ms)
+  ✓  17 [chromium] › subtitle-inspector-races.spec.ts:156:1 › an obsolete start completion cannot enable Generate during a newer start @smoke (1ms)
+  ✓  18 [chromium] › subtitle-inspector-races.spec.ts:168:1 › a draft start settling after pageshow reconciles an earlier idle observation @smoke (2ms)
+
+  18 passed (431ms)

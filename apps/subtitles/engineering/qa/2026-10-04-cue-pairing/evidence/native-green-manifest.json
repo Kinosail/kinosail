@@ -1,0 +1,66 @@
+{
+  "backlog_id": "R07",
+  "tested_revision": "515ba5b3997988be3066a02a6677adf3a865ab72",
+  "goVersion": "go version go1.27.1 darwin/arm64",
+  "boundary": "actual native loopback Subtitles Server; no browser routes; real HTML/assets/inspect/preview/ffprobe and playable media; auth-disabled disposable installation; no managed jobs or provider credentials; FFmpeg cannot encode",
+  "browser": "Chromium with installed Chrome channel; one worker; video off",
+  "widths": [
+    390,
+    1440
+  ],
+  "passed": 2,
+  "skipped": 0,
+  "flaky": 0,
+  "failed": 0,
+  "duration_ms": 20593.859,
+  "ready": "evidence/native-ready.json",
+  "integrity": "evidence/native-integrity.json",
+  "source": "evidence/native-build-retry-context.json",
+  "artifacts": [
+    {
+      "path": "evidence/native-green/html-all/index.html",
+      "bytes": 534579,
+      "sha256": "b7a5ffd20e45b1423f5159f7f94a985aed592b7897125f171aac9059e11ff35f"
+    },
+    {
+      "path": "evidence/native-green/results/.last-run.json",
+      "bytes": 45,
+      "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+    },
+    {
+      "path": "evidence/native-green/results/subtitle-pairing-native-na-59ee3-th-playable-media-at-1440px-chromium/actual-cleanup.png",
+      "bytes": 874436,
+      "sha256": "1c1e6be3f94560e709aab4932d2cdc42b47d16d4b4bea18e8702fdf7ecdb58e5"
+    },
+    {
+      "path": "evidence/native-green/results/subtitle-pairing-native-na-59ee3-th-playable-media-at-1440px-chromium/paired-cleanup.png",
+      "bytes": 858550,
+      "sha256": "6a16c9e2c56e653fecb7b91c72d05be70126fc859935884b5736a452d0dcef52"
+    },
+    {
+      "path": "evidence/native-green/results/subtitle-pairing-native-na-59ee3-th-playable-media-at-1440px-chromium/unpaired-import.png",
+      "bytes": 969955,
+      "sha256": "321a13b18b1fe5501b82f93bfccefa182553162ae08c302951d635d9f46ddb84"
+    },
+    {
+      "path": "evidence/native-green/results/subtitle-pairing-native-na-b6288-ith-playable-media-at-390px-chromium/actual-cleanup.png",
+      "bytes": 364816,
+      "sha256": "2bddf6299fd244821b072f4c5343de1d10476224a475be74264e5aeb5e2cc204"
+    },
+    {
+      "path": "evidence/native-green/results/subtitle-pairing-native-na-b6288-ith-playable-media-at-390px-chromium/paired-cleanup.png",
+      "bytes": 374900,
+      "sha256": "8eb0f9bc396053c93b80fd3d9c25a2d0f5c8bf7b982d95cc589f76f51906edcd"
+    },
+    {
+      "path": "evidence/native-green/results/subtitle-pairing-native-na-b6288-ith-playable-media-at-390px-chromium/unpaired-import.png",
+      "bytes": 415697,
+      "sha256": "ef735e1c2b527bc46c577c9425e2a2c9d6c1b262da4cb9e987455522e0d0d3ee"
+    },
+    {
+      "path": "evidence/native-green/results-all.json",
+      "bytes": 10814,
+      "sha256": "c74dc9631badf503464da3c8bafd3d653ff3d7db18d8eae85cb07780d46afb0e"
+    }
+  ]
+}

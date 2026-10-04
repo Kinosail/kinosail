@@ -204,9 +204,9 @@ expect_status 303 --cookie "$media_dir/cookies" --header "Origin: $url" --header
 if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
   fixture_dir="$mcp_dir/ui-fixtures"
   KINOSAIL_UI_FIXTURE_DIR="$fixture_dir" go test ./internal/server -run TestWriteUIStateFixtures -count=1
-  browser_args=(polish-shell.spec.ts subtitle-dashboard.spec.ts subtitle-history.spec.ts subtitle-inspector-races.spec.ts subtitle-inspector-layout.spec.ts subtitle-inspector-loading.spec.ts supporter-badge-layout.spec.ts test-instance.spec.ts session-resume.spec.ts test-instance-session-persistence.spec.ts)
+  browser_args=(polish-shell.spec.ts subtitle-dashboard.spec.ts subtitle-history.spec.ts subtitle-inspector-races.spec.ts subtitle-inspector-layout.spec.ts subtitle-inspector-loading.spec.ts subtitle-pairing.spec.ts subtitle-merged-group.spec.ts supporter-badge-layout.spec.ts test-instance.spec.ts session-resume.spec.ts test-instance-session-persistence.spec.ts)
   if [[ "${KINOSAIL_BROWSER_SMOKE:-}" == "1" ]]; then browser_args+=(--grep=@smoke); fi
-  KINOSAIL_TEST_INSTANCE=1 KINOSAIL_UI_FIXTURE_DIR="$fixture_dir" KINOSAIL_E2E_MEDIA_DIR="$media_dir" KINOSAIL_TEST_TOTP_SECRET="$secret" KINOSAIL_E2E_URL="$url" KINOSAIL_E2E_OUTPUT_DIR="${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}" pnpm --dir e2e test "${browser_args[@]}" --workers="${KINOSAIL_E2E_WORKERS:-1}"
+  KINOSAIL_TEST_INSTANCE=1 KINOSAIL_UI_FIXTURE_DIR="$fixture_dir" KINOSAIL_SUBTITLE_MERGED_FIXTURE_DIR="$fixture_dir/subtitle-merged" KINOSAIL_E2E_MEDIA_DIR="$media_dir" KINOSAIL_TEST_TOTP_SECRET="$secret" KINOSAIL_E2E_URL="$url" KINOSAIL_E2E_OUTPUT_DIR="${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}" pnpm --dir e2e test "${browser_args[@]}" --workers="${KINOSAIL_E2E_WORKERS:-1}"
   exit
 fi
 mkfifo "$mcp_dir/input"

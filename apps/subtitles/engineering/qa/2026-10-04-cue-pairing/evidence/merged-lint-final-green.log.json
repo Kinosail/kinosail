@@ -1,0 +1,14 @@
+{
+  "command": [
+    "golangci-lint",
+    "run",
+    "--timeout=90s",
+    "--new-from-rev=origin/main",
+    "./internal/server"
+  ],
+  "limitSeconds": 95.0,
+  "seconds": 16.995,
+  "exit": 0,
+  "timedOut": false,
+  "log": "engineering/qa/2026-10-04-cue-pairing/evidence/merged-lint-final-green.log"
+}

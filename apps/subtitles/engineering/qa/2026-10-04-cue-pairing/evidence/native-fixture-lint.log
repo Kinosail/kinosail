@@ -1,0 +1,5 @@
+.verification/r07-pairing/native-fixture.go:85:29: net.Listen must not be called. use (*net.ListenConfig).Listen (noctx)
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	                           ^
+1 issues:
+* noctx: 1
