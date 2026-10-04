@@ -12,7 +12,7 @@ import (
 
 // The populated browser fixture has readable media. This HTTP regression creates
 // a failed track check and follows its rendered recovery link to real Settings.
-func TestSubtitleUnavailableRecoveryReachesMediaLibraries(t *testing.T) { //nolint:cyclop // One rendered recovery journey follows and resolves its Settings link.
+func TestSubtitleUnavailableRecoveryReachesMediaLibraries(t *testing.T) {
 	t.Parallel()
 	manager, _ := subtitleFactsFixture(t, "#!/bin/sh\nexit 1\n")
 	manager.refreshFacts(t.Context())
@@ -21,25 +21,14 @@ func TestSubtitleUnavailableRecoveryReachesMediaLibraries(t *testing.T) { //noli
 	if page.Code != http.StatusOK {
 		t.Fatalf("unavailable library = %d", page.Code)
 	}
-	root, err := html.Parse(strings.NewReader(page.Body.String()))
+	root := subtitleRenderedHTML(t, page.Body.String())
+	notice := subtitleRenderedElement(t, root, "p", "class", "subtitle-background-note")
+	link := subtitleRenderedElement(t, notice, "a", "", "")
+	destination, err := url.Parse(subtitleHTMLAttribute(link, "href"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	var destination *url.URL
-	for node := range root.Descendants() {
-		if node.Type != html.ElementNode || node.Data != "p" || subtitleHTMLAttribute(node, "class") != "subtitle-background-note" {
-			continue
-		}
-		for link := range node.Descendants() {
-			if link.Type == html.ElementNode && link.Data == "a" {
-				destination, err = url.Parse(subtitleHTMLAttribute(link, "href"))
-				if err != nil {
-					t.Fatal(err)
-				}
-			}
-		}
-	}
-	if destination == nil || destination.Path != "/settings" || destination.Fragment == "" {
+	if destination.Path != "/settings" || destination.Fragment == "" {
 		t.Fatalf("file-access recovery lacks a Settings section: %v", destination)
 	}
 	settings := httptest.NewRecorder()
@@ -47,19 +36,30 @@ func TestSubtitleUnavailableRecoveryReachesMediaLibraries(t *testing.T) { //noli
 	if settings.Code != http.StatusOK {
 		t.Fatalf("recovery destination = %d", settings.Code)
 	}
-	root, err = html.Parse(strings.NewReader(settings.Body.String()))
+	root = subtitleRenderedHTML(t, settings.Body.String())
+	section := subtitleRenderedElement(t, root, "section", "id", destination.Fragment)
+	heading := subtitleRenderedElement(t, section, "h2", "", "")
+	if heading.FirstChild == nil || heading.FirstChild.Data != "Media Libraries" {
+		t.Fatalf("rendered recovery link %q does not resolve to Media Libraries", destination.String())
+	}
+}
+
+func subtitleRenderedHTML(t *testing.T, body string) *html.Node {
+	t.Helper()
+	root, err := html.Parse(strings.NewReader(body))
 	if err != nil {
 		t.Fatal(err)
 	}
-	for section := range root.Descendants() {
-		if section.Type != html.ElementNode || section.Data != "section" || subtitleHTMLAttribute(section, "id") != destination.Fragment {
-			continue
-		}
-		for heading := range section.Descendants() {
-			if heading.Type == html.ElementNode && heading.Data == "h2" && heading.FirstChild != nil && heading.FirstChild.Data == "Media Libraries" {
-				return
-			}
+	return root
+}
+
+func subtitleRenderedElement(t *testing.T, root *html.Node, tag, attribute, value string) *html.Node {
+	t.Helper()
+	for node := range root.Descendants() {
+		if node.Type == html.ElementNode && node.Data == tag && subtitleHTMLAttribute(node, attribute) == value {
+			return node
 		}
 	}
-	t.Fatalf("rendered recovery link %q does not resolve to Media Libraries", destination.String())
+	t.Fatalf("rendered %s with %s=%q is missing", tag, attribute, value)
+	return nil
 }

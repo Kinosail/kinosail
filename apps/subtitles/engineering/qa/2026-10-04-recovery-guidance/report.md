@@ -8,6 +8,8 @@ R20 is confirmed and repaired. The provider guide contradicted both source and r
 
 Independent review identified one additional distributed variant: `apps/player/packaging/platform-compose-both.yaml`, published by `engineering/documentation/build.py` as `install-assets/both.yaml`. Its Subtitles service maps only application directories and has no provider credential mappings. The guide and inventory now explicitly cover this combined installation file. No Player files were changed.
 
+Protected CI identified excess cognitive complexity in the new R19 regression. DOM parsing and element lookup are now separate helpers; the test still creates an unavailable state, follows its rendered link, and requires the target heading to be Media Libraries. No assertion or linter rule was removed or relaxed. Focused test and linter revalidation follow on the serial schedule.
+
 ## Verification
 
 - Red: `GOMAXPROCS=2 go test -p 1 ./internal/server -run '^TestSubtitleUnavailableRecoveryReachesMediaLibraries$' -count=1`, from `apps/subtitles/`. [Result](evidence/r19-red.log): the rendered `/settings#library` does not resolve to Media Libraries.
