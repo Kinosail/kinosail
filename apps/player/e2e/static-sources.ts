@@ -12,6 +12,7 @@ export const downloadsSource = await readStaticSource([
 	"../../../packages/webassets/static/downloads-storage.js",
 	"../../../packages/webassets/static/downloads-transfer.js",
 	"../../../packages/webassets/static/downloads-progress.js",
+	"../../../packages/webassets/static/downloads-control.js",
 	"../../../packages/webassets/static/downloads-ui.js",
 ]);
 

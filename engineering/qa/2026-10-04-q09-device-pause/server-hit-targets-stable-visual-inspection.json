@@ -1,0 +1,7 @@
+{
+  "source_revision": "0606ac620a2a8348e9fbf55a239aeca11d28688f",
+  "captures": {
+    "server-hit-targets-stable/download-pause-hit-target--a588e-le-after-explicit-scrolling-chromium/phone-ready-play-pointer.png": "fcaf19d1bb1d58e91ac3e3aeaf4dff8771633137acbb3781da466ac4d57888cc"
+  },
+  "inspection": "The exact 390x844 Go-served ready screenshot was inspected. Focused Play is clearly above the fixed navigation, with readable text and adequate pointer area after settled explicit scrolling. No CSS/markup/product repair was made. Raw hit receipts and successful navigation establish the interaction boundary; no media decoding claim."
+}

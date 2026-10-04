@@ -11,17 +11,28 @@ on:
       - "scripts/testing/*layout-stability*"
       - ".github/workflows/layout-stability.yml"
   workflow_dispatch:
+    inputs:
+      campaign_proof:
+        description: Run one bounded campaign proof instead of layout diagnosis
+        type: choice
+        options: [none, R06, Q14, Q09]
+        default: none
+      architecture_metadata:
+        description: Collect bounded source metadata for canonical architecture regeneration
+        type: boolean
+        default: false
 
 permissions:
   contents: read
 
 concurrency:
-  group: layout-evidence-${{ github.ref }}
+  group: layout-evidence-${{ github.ref }}-${{ inputs.campaign_proof || 'none' }}
   cancel-in-progress: true
 
 jobs:
   native:
     name: Native layout (${{ matrix.browser }})
+    if: github.event_name != 'workflow_dispatch' || inputs.campaign_proof == 'none'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     strategy:
@@ -85,3 +96,78 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
+
+  campaign-proof:
+    name: Bounded campaign proof
+    if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof != 'none'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      CAMPAIGN_PROOF: ${{ inputs.campaign_proof }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Validate explicit proof selection
+        id: selection
+        run: |
+          test ! -e .gates-disabled
+          case "$CAMPAIGN_PROOF" in
+            R06) echo app=subtitles >> "$GITHUB_OUTPUT" ;;
+            Q14|Q09) echo app=player >> "$GITHUB_OUTPUT" ;;
+            *) exit 2 ;;
+          esac
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version-file: go.work
+          cache-dependency-path: "**/go.sum"
+      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
+        if: steps.selection.outputs.app == 'player'
+        with:
+          version: 11.22.0
+          install: false
+          node-version-file: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        if: steps.selection.outputs.app == 'player'
+        with:
+          node-version: "26"
+          package-manager-cache: false
+      - run: sudo apt-get update && sudo apt-get install -y libarchive-tools
+      - name: Prepare bounded Go dependencies
+        env:
+          APP: ${{ steps.selection.outputs.app }}
+        run: timeout 120s bash scripts/ci/prepare-campaign-go.sh "$APP"
+      - name: Prepare bounded browser prerequisites
+        if: steps.selection.outputs.app == 'player'
+        run: |
+          timeout 180s pnpm --dir apps/player/e2e install --frozen-lockfile
+          timeout 240s pnpm --dir apps/player/e2e exec playwright install --with-deps chromium
+      - name: Run exact owned public proof
+        run: bash scripts/ci/run-campaign-proof.sh "$CAMPAIGN_PROOF"
+      - name: Collect bounded canonical source metadata
+        if: always() && inputs.architecture_metadata
+        run: |
+          timeout 120s bash scripts/ci/prepare-campaign-go.sh player
+          timeout 120s bash scripts/ci/prepare-campaign-go.sh subtitles
+          timeout 120s python3 scripts/ci/campaign-architecture.py "$CAMPAIGN_PROOF"
+      - name: Keep safe campaign proof
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: campaign-proof-${{ inputs.campaign_proof }}-${{ github.sha }}
+          path: |
+            .verification/campaign-proof/R06/receipt.json
+            .verification/campaign-proof/R06/results.json
+            .verification/campaign-proof/R06/source-manifest.json
+            .verification/campaign-proof/R06/artifact-manifest.json
+            .verification/campaign-proof/Q14/receipt.json
+            .verification/campaign-proof/Q14/results.json
+            .verification/campaign-proof/Q14/source-manifest.json
+            .verification/campaign-proof/Q14/artifact-manifest.json
+            .verification/campaign-proof/Q09/receipt.json
+            .verification/campaign-proof/Q09/results.json
+            .verification/campaign-proof/Q09/source-manifest.json
+            .verification/campaign-proof/Q09/artifact-manifest.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 3

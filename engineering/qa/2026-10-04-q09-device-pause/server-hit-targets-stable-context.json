@@ -1,0 +1,53 @@
+{
+  "revision": "0606ac620a2a8348e9fbf55a239aeca11d28688f",
+  "product_revision": "bf10089edc79652312db66f52277bcc6fedf3dfd",
+  "sources": {
+    "apps/player/e2e/download-pause-fixture.ts": "5b3c14d531799a14a9546e6d2c71cfbd5c9e46870431c69d628b3409518d5c17",
+    "apps/player/e2e/download-pause-ownership.spec.ts": "68778beb56fc7271d0b1186b1758702d0914ad7038e25530edfb06a557cd242a",
+    "apps/player/e2e/download-pause.spec.ts": "7dd7058e4a1c6799d8110e84a1a048ee9d939317c85d1af93a5c1270bb002819",
+    "apps/player/e2e/playwright.config.ts": "628d3a62d9b3e2fba1bc43f3cd58979acadf22c083e3559c73c4f750a97cc0b3",
+    "apps/player/e2e/static-sources.ts": "8f7a5e194a2fb8c45d3d4ea6338e0010a3e044ffa7ad6e66cb8bfa8c3ca3b54f",
+    "apps/player/internal/server/download_pause_browser_test.go": "bec5bef66fa658290481a8a526ed10dbb2d680e9b51e1d340bdc1e132c8f7068",
+    "apps/player/internal/server/downloads_boundary_test.go": "9eb95edb2bb07224dae2abe5e04041db412b653a17770503e7192d753ed6672b",
+    "apps/player/internal/server/downloads_http.go": "aaaf98515ec4c702fcd1ba665c6a812b5670f679e87c4f8631a2c24803c77181",
+    "apps/player/internal/server/player.go": "633ed24b29175ce63240708f32d6fc2970e7f2595b22c034037d0392b20ef255",
+    "apps/player/internal/server/static/offline.html": "37507197798c85b2fb992e669242e30ca9e78a516491865ead53080536276eff",
+    "apps/player/internal/server/static/service-worker.js": "d8af6f505ec245ded0e8a1ed47a219c3e29fab1dc94cef4d1a5cd1b4a2cfd9a9",
+    "apps/subtitles/internal/server/downloads_boundary_test.go": "8e8981baae391c995b346813cddcfc30c4422cdfd8e36f7a9a4464abfa21dfd4",
+    "apps/subtitles/internal/server/downloads_http.go": "b65e47adce8bea8ca3950d1311d14d23a75701f4ccab51b903c9611c167e6801",
+    "apps/subtitles/internal/server/static/offline.html": "484cb2c4bea8a8ae526b5db07b4d10856af66cb26d677c7442d085528d879904",
+    "packages/webassets/static/downloads-control.js": "3b9e9f0acd10fbb649da8d50f585f689b2402d79dd800fcf800b14faec602c40",
+    "packages/webassets/static/downloads-integrity.js": "42ac4c2cd70eca69c974b23b38a1eca2ac93e4ec48a2fe24977e11166e32a6ff",
+    "packages/webassets/static/downloads-progress.js": "f823d99eadeb16f1d6868b41bb86e4338c522c29457b831bcb64d10217960cca",
+    "packages/webassets/static/downloads-storage.js": "7ae56a0430b6c4a10c424552769cb3d83934da484a501d1ba05405b07e5307db",
+    "packages/webassets/static/downloads-transfer.js": "d346e53f625c3d0ad4458512559f1b4011ae8f888ad4bf2df3a319e64a0d4dc2",
+    "packages/webassets/static/downloads-ui.js": "9b90285800907f8be8248445467d0bf78dad02c5564a822ef95213296c0547e4",
+    "packages/webassets/static/downloads.js": "97c281b812df6cea7b07a0a507f0e57d32eb2469f1eacc671ed33d4b244e38e2",
+    "packages/webassets/static/offline-identity.js": "ae1a2cacfabe6471283151843e177d9ec4604c19423ad3b2ed88dd5260ebeb58",
+    "packages/webassets/static/offline-media.js": "78617ca8afede4243cfb02db8119ee1ee38a1ded951623013cc037e61945c1b0",
+    "packages/webassets/static/offline-profile.js": "4f9f751de19168517a9d3d9a189d412ad800c56068d37bba7b4c6cf176b2dcee",
+    "packages/webassets/static/offline-runtime.js": "b421d24643fadc58f8ceff9c1024d0d33f548f19fd2bcaafd97042b413d631a4",
+    "packages/webassets/webassets.go": "878a6d56605d589cdfa06d3640490cd6b2abe6f70a0a7cf621dbbc7c78dcea82",
+    "apps/player/e2e/download-pause-hit-target.spec.ts": "302c739dadb6f9f763ce01410878cf9fc7eae068ca59f5635efe9d36dd6998f0"
+  },
+  "environment": {
+    "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+    "node": "v26.8.2",
+    "pnpm": "11.22.0",
+    "requested_channel": "",
+    "selected_project": "chromium",
+    "workers": 1,
+    "video": "off",
+    "cached_executables": {
+      "/Users/mikeo/Library/Caches/ms-playwright/chromium-1243/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing": "8319963f6625accf51c0dd4f55091ceaf9f09ed39e7a52fed4fae12b2a6b668a",
+      "/Users/mikeo/Library/Caches/ms-playwright/chromium_headless_shell-1243/chrome-headless-shell-mac-arm64/chrome-headless-shell": "a0bfe7b4da4787b66058477d696cd1d09065d25f06a548947722b9af77ee8282"
+    }
+  },
+  "go": "go version go1.27.1 darwin/arm64",
+  "preflight_headroom": "7.9GiB",
+  "preflight_owned_processes": 0,
+  "boundary": "actual Go Server phone pointer Pause/Resume and pointer/keyboard ready Play hit testing/navigation after explicit scrolling; real native IndexedDB/SW/WebLocks and deterministic fictional bytes; no playable media decode/device/production/Remove action",
+  "test_preparation_revision": "0606ac620a2a8348e9fbf55a239aeca11d28688f",
+  "selected_case_count": 1,
+  "timing": "native smooth scrolling preserved; rectangles and scroll offsets must remain equal over three consecutive observations within 2 seconds before every hit-target assertion"
+}

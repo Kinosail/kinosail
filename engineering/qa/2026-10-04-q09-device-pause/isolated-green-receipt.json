@@ -1,0 +1,37 @@
+{
+  "source_revision": "ed7b926fb05314837b1385825217f1d7db96131f",
+  "product_revision": "bf10089edc79652312db66f52277bcc6fedf3dfd",
+  "command": [
+    "pnpm",
+    "exec",
+    "playwright",
+    "test",
+    "download-pause.spec.ts",
+    "download-pause-ownership.spec.ts",
+    "--workers=1",
+    "--project=chromium"
+  ],
+  "environment_overrides": {
+    "PLAYWRIGHT_CHANNEL": "",
+    "KINOSAIL_DOWNLOAD_PAUSE_ISOLATED": "1",
+    "KINOSAIL_BROWSER_WORKERS": "1",
+    "KINOSAIL_E2E_VIDEO": "off",
+    "KINOSAIL_E2E_OUTPUT_DIR": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/isolated-green",
+    "KINOSAIL_E2E_ARTIFACT_DIR": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-q09-device-pause/isolated-green-report"
+  },
+  "external_bound_seconds": 45,
+  "elapsed_seconds": 10.102,
+  "exit_code": 0,
+  "timed_out": false,
+  "aggregate_report_completed": true,
+  "stats": {
+    "startTime": "2026-10-04T11:36:51.655Z",
+    "duration": 7536.742,
+    "expected": 5,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "runner_errors": [],
+  "timestamp_utc": "2026-10-04T11:36:59.245632+00:00"
+}

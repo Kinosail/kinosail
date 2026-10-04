@@ -1,0 +1,35 @@
+{
+  "source_parent": "4b3b62d5e6599cf3cc397aefb9211318291fa3e1",
+  "initial_control_red": {
+    "tests_run": 0,
+    "error": "missing driver in setUpClass; no claim that five bodies ran before implementation"
+  },
+  "review_controls_red": {
+    "tests": 8,
+    "failures": 5,
+    "errors": 3,
+    "owned_fake_descendant": "cleaned in finally; no application/runtime process"
+  },
+  "green": {
+    "driver_admission_tests": 8,
+    "all_ci_contracts": 71,
+    "Go_Node_Browser_build_UI": false
+  },
+  "inputs": {
+    "apps/player/scripts/campaign-q09-public.py": "1344db9821b11a1ada4b47f2d37dcd83742df1995f5d2e4115b931969089c6aa",
+    "apps/player/internal/server/download_pause_browser_test.go": "2f151fb2808fa91e4f7c8e20bda8a7186e8b0bd841aeb726ed01f8949c88251f",
+    "scripts/ci/test_campaign_q09.py": "88fc13b8a61ec9b5f8bde0cdfa2a3355ef28064f1855cdb8b35791512e7bb6d4",
+    ".github/workflows/layout-stability.yml": "2d8cc088ab280d81d227ec49ff3b907378923f31dfb1e3ce6d5d7320c6d3b4be",
+    "scripts/ci/run-campaign-proof.sh": "421abdf380eaa51a9a2197bdedd2e9ca1d08bccff31bd5f9557718b9054e5e2b"
+  },
+  "bounds": {
+    "compile_external_seconds": 90,
+    "isolated_seconds": 60,
+    "server_test_binary_seconds": 70,
+    "server_external_seconds": 80,
+    "phone_test_binary_seconds": 70,
+    "phone_external_seconds": 80,
+    "settlement_seconds_max_per_command": 7
+  },
+  "private_evidence_limit": "Private logs/PNG/traces remain ephemeral; safe metadata hashes/known source locations and historical250 artifacts support repeatable boundaries, not fresh visual inspection."
+}
