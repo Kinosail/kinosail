@@ -99,8 +99,10 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                             focusedBorderColor = KinoColor.signal, unfocusedBorderColor = KinoColor.muted), modifier = Modifier.weight(1f))
                     Button(onClick = { catalog.search(); keyboard?.hide() }) { Text(interfaceText("Search")) }
                 }
-                state.notice?.let { Text(it, color = KinoColor.text, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
-                if (state.notice != null) Button(onClick = catalog::retry) { Text(interfaceText("Try again")) }
+                if ((state.failedOffset ?: 0) == 0 || state.connectionExpired) {
+                    state.notice?.let { Text(it, color = KinoColor.text, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
+                    if (state.notice != null) Button(onClick = catalog::retry) { Text(interfaceText("Try again")) }
+                }
                 if (state.loading && state.items.isEmpty()) LibraryLoading(tv = true, view = state.view)
                 else if (state.items.isEmpty() && state.notice == null) Text(interfaceText(catalogEmptyMessage(state.view, catalog.hasActiveSearch)), color = KinoColor.muted)
                 LazyVerticalGrid(GridCells.Adaptive(if (state.view == "photos") 280.dp else 160.dp),
@@ -116,6 +118,13 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                     }
                     if (state.loading && state.items.isNotEmpty()) item(span = { GridItemSpan(maxLineSpan) }) {
                         Text(interfaceText("Loading more…"), color = KinoColor.muted)
+                    }
+                    if (!state.loading && (state.failedOffset ?: 0) > 0 && !state.connectionExpired) item(key = "page-retry", span = { GridItemSpan(maxLineSpan) }) {
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            state.notice?.let { Text(it, color = KinoColor.text,
+                                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
+                            Button(onClick = catalog::retry) { Text(interfaceText("Retry loading more")) }
+                        }
                     }
                 }
             }

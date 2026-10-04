@@ -106,9 +106,11 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                             modifier = Modifier.fillMaxWidth())
                         Button(onClick = { catalog.search(); keyboard?.hide() }) { Text(interfaceText("Search")) }
                     }
-                    state.notice?.let { Text(it, color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
-                    if (state.notice != null) TextButton(onClick = catalog::retry) { Text(interfaceText("Try again")) }
+                    if ((state.failedOffset ?: 0) == 0 || state.connectionExpired) {
+                        state.notice?.let { Text(it, color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
+                        if (state.notice != null) TextButton(onClick = catalog::retry) { Text(interfaceText("Try again")) }
+                    }
                     if (state.loading && state.items.isEmpty()) LibraryLoading(view = state.view)
                     else if (state.items.isEmpty() && state.notice == null) Text(interfaceText(catalogEmptyMessage(state.view, catalog.hasActiveSearch)),
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -126,6 +128,13 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                         }
                         if (state.loading && state.items.isNotEmpty()) item(span = { GridItemSpan(maxLineSpan) }) {
                             Text(interfaceText("Loading more…"))
+                        }
+                        if (!state.loading && (state.failedOffset ?: 0) > 0 && !state.connectionExpired) item(key = "page-retry", span = { GridItemSpan(maxLineSpan) }) {
+                            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                state.notice?.let { Text(it, color = MaterialTheme.colorScheme.error,
+                                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
+                                TextButton(onClick = catalog::retry) { Text(interfaceText("Retry loading more")) }
+                            }
                         }
                     }
                 }
