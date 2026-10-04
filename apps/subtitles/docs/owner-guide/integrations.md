@@ -2,7 +2,7 @@
 title: Connect subtitle providers
 description: Create provider credentials and configure the Server.
 section: Own the Server
-last_reviewed: 2026-09-15
+last_reviewed: 2026-10-04
 ---
 
 # Connect subtitle providers
@@ -29,7 +29,21 @@ Kinosail checks the configured providers and ranks candidates against the video,
 
 The native process accepts `KINOSAIL_SUBDL_API_KEY`, the `KINOSAIL_OPENSUBTITLES_*` credential variables, and `KINOSAIL_SUBSOURCE_API_KEY` with `KINOSAIL_SUBSOURCE_PERSONAL_USE=true`. Supported secrets also accept `_FILE`; mount the referenced regular file into the container.
 
-A Compose `.env` file only supplies interpolation values. The supplied Compose files forward SubDL and OpenSubtitles settings, but do not currently forward SubSource settings. Use Owner Settings for SubSource or add explicit environment/secret mappings in a local Compose override. Review the checked-in `.env.example` and `compose.yaml` together.
+A Compose `.env` file only supplies interpolation values. Only variables declared in the selected Compose files reach the container.
+
+| Installation file | Provider configuration |
+| --- | --- |
+| `apps/subtitles/compose.yaml` | Forwards SubDL, OpenSubtitles, and SubSource settings from `.env`. |
+| `apps/subtitles/compose.release.yaml` | Forwards the same provider settings for the published image. |
+| `compose.config.yaml` | Adds a mounted `kinosail.yaml` configuration file to a base Compose file. It does not remove the base provider mappings. |
+| `compose.gpu.yaml`, `compose.rkmpp.yaml` | Add device access to a base Compose file. They do not change provider mappings. |
+| `compose.remote-https.yaml` | Adds public HTTPS to a base Compose file. Provider credentials stay with the Server. |
+| `compose.test.yaml` | Adds disposable test data to `compose.yaml`. It retains the base provider mappings. |
+| The Docker Compose example in the installation guide; `apps/subtitles/packaging/platform-compose.yaml`; `apps/player/packaging/platform-compose-both.yaml` (published as `install-assets/both.yaml`); ZimaOS Subtitles and Both catalogs; the TrueNAS catalog | These minimal installation files do not map provider credentials from `.env`. Configure providers in Owner Settings. For a local Compose installation, an explicit environment or secret mapping is also possible. |
+
+The source and release files map `KINOSAIL_SUBSOURCE_URL`, `KINOSAIL_SUBSOURCE_API_KEY`, `KINOSAIL_SUBSOURCE_API_KEY_FILE`, and `KINOSAIL_SUBSOURCE_PERSONAL_USE`. Set `KINOSAIL_SUBSOURCE_PERSONAL_USE=true` only after accepting the required terms. When using `_FILE`, mount that regular secret file into the Server container. A `.env` path alone does not mount it.
+
+Review the checked-in `.env.example`, the selected base Compose file, and any overlays together. Files in the table without an app path are in `apps/subtitles/`.
 
 SubSource downloads stay unchanged: Kinosail validates them but does not rewrite, synchronize, shift, or convert the stored sidecar. An API key alone does not replace the required use acceptance.
 

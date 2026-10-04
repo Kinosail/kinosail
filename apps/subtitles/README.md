@@ -83,7 +83,7 @@ KINOSAIL_SUBSOURCE_URL=https://api.subsource.net/api/v1
 KINOSAIL_SUBTITLE_LANGUAGE=en
 ```
 
-The variables above are native-process configuration names. The supplied Compose files forward SubDL, OpenSubtitles, and SubSource settings from `.env`. You can also configure providers through Owner Settings.
+The variables above are native-process configuration names. The source `compose.yaml` and published-image `compose.release.yaml` forward SubDL, OpenSubtitles, and SubSource settings from `.env`. Their overlays retain those mappings. The minimal platform and installation-guide Compose files do not map provider credentials from `.env`; use Owner Settings or explicit local mappings. See the [provider guide](docs/owner-guide/integrations.md) for each supplied variant.
 
 Secrets also support `_FILE` variants; the referenced file must be mounted into the container. Deployment-managed values stay visible but read-only in Owner Settings.
 
