@@ -1,0 +1,12 @@
+✔ htmx:finally:request restores content only after all pending requests finish (1.669958ms)
+✔ restores a pre-existing busy and inert state (0.436708ms)
+✔ delayed loading skeleton does not reappear after completion (0.387416ms)
+✔ delayed loading skeleton does not reappear after disconnection (0.351292ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 60.248834

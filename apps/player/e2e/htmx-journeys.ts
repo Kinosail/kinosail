@@ -15,10 +15,12 @@ export function registerHtmxJourneys(app: "player" | "subtitles", test: typeof i
     diffHash = createHash("sha256").update(execFileSync("git", ["diff", "HEAD"], { cwd: fileURLToPath(root) })).digest("hex");
     const server = await readFile(new URL(`apps/${app}/internal/server/server.go`, root), "utf8");
     config = server.match(/<meta name="htmx-config" content='([^']+)'/)![1];
-    [htmx, pwa, css] = await Promise.all([
+    let library: string;
+    [htmx, library, pwa, css] = await Promise.all([
       `apps/${app}/internal/server/static/htmx.min.js`,
-      "packages/webassets/static/pwa.js", "packages/webassets/static/player-app.css",
+      "packages/webassets/static/pwa-library.js", "packages/webassets/static/pwa.js", "packages/webassets/static/player-app.css",
     ].map(path => readFile(new URL(path, root), "utf8")));
+    pwa = `${library}\n${pwa}`;
   });
   test.beforeEach(async ({ browserName }, info) => {
     await info.attach("verification-context", { contentType: "application/json", body: JSON.stringify({ app, revision, diffHash, browserName, node: process.version, platform: process.platform, command: process.argv, testData: "Local library card fixture, delayed HTML responses, HTTP failures, aborted requests", htmxHash: createHash("sha256").update(htmx).digest("hex") }, null, 2) });

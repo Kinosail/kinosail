@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
 
-const script = await readFile(new URL("../../../packages/webassets/static/pwa.js", import.meta.url), "utf8");
+const script = (await Promise.all(["pwa-library.js", "pwa.js"].map(name => readFile(new URL(`../../../packages/webassets/static/${name}`, import.meta.url), "utf8")))).join("\n");
 const origin = "http://localhost:38127";
 function libraryPage(next: boolean) {
   return `<!doctype html><html><body><main id="main"><section id="library"><div data-library-group="movies"><div class="grid"><a class="card" href="/item/${next ? "beta" : "arrival"}">${next ? "Beta" : "Arrival"}</a></div></div></section>${next ? "" : '<div style="height:2200px"></div><nav data-library-pagination><a href="/?offset=1" data-library-next>Load more</a></nav>'}<p data-library-status role="status"></p></main><script src="/static/pwa.js"></script></body></html>`;

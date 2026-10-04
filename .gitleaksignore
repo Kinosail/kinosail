@@ -52,3 +52,7 @@ e1772de2b093e398b73e19dffff2858c7ff00472:engineering/qa/2026-10-03-test-overhaul
 e1772de2b093e398b73e19dffff2858c7ff00472:engineering/qa/2026-10-03-test-overhaul/player-operations-tooling.json:generic-api-key:15364
 e1772de2b093e398b73e19dffff2858c7ff00472:engineering/qa/2026-10-03-test-overhaul/player-operations-tooling.json:generic-api-key:15365
 e1772de2b093e398b73e19dffff2858c7ff00472:engineering/qa/2026-10-03-test-overhaul/player-operations-tooling.json:generic-api-key:15366
+
+# Independently verified SHA256 of the historical 81-byte R04 scan status log.
+# Proof: engineering/qa/2026-10-04-r04-pagination/historical-checksum-proof.json.
+30eac3c60bddf8a931deb3cca60511fcb73e5dbc:engineering/qa/2026-10-04-r04-pagination/run-context.json:generic-api-key:41

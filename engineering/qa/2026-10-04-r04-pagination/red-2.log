@@ -1,0 +1,215 @@
+2026/10/04 01:12:31 WARN Player local discovery unavailable error="invalid Player discovery advertisement"
+2026/10/04 01:12:31 WARN playback marker analysis failed error="playback segment media duration is unavailable"
+2026/10/04 01:12:31 WARN playback marker analysis failed error="playback segment media duration is unavailable"
+
+Running 3 tests using 1 worker
+
+(node:5215) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › library-pagination.spec.ts:18:2 › all Shows remain reachable across real Server pages at 390px (669ms)
+(node:5323) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [chromium] › library-pagination.spec.ts:18:2 › all Shows remain reachable across real Server pages at 1440px (722ms)
+(node:5613) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  3 [chromium] › library-pagination.spec.ts:36:1 › real Server mixed pages keep both Show and Movie cards (646ms)
+
+
+  1) [chromium] › library-pagination.spec.ts:18:2 › all Shows remain reachable across real Server pages at 390px
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 26
+    + Received  +  0
+
+      Array [
+        "Pagination Show 01",
+        "Pagination Show 02",
+        "Pagination Show 03",
+        "Pagination Show 04",
+    -   "Pagination Show 05",
+    -   "Pagination Show 06",
+    -   "Pagination Show 07",
+    -   "Pagination Show 08",
+    -   "Pagination Show 09",
+    -   "Pagination Show 10",
+    -   "Pagination Show 11",
+    -   "Pagination Show 12",
+    -   "Pagination Show 13",
+    -   "Pagination Show 14",
+    -   "Pagination Show 15",
+    -   "Pagination Show 16",
+    -   "Pagination Show 17",
+    -   "Pagination Show 18",
+    -   "Pagination Show 19",
+    -   "Pagination Show 20",
+    -   "Pagination Show 21",
+    -   "Pagination Show 22",
+    -   "Pagination Show 23",
+    -   "Pagination Show 24",
+    -   "Pagination Show 25",
+    -   "Pagination Show 26",
+    -   "Pagination Show 27",
+    -   "Pagination Show 28",
+    -   "Pagination Show 29",
+    -   "Pagination Show 30",
+      ]
+
+      25 | 		await page.goto(`${origin}/?view=shows&limit=4`);
+      26 | 		await loadAll(page);
+    > 27 | 		expect((await page.locator("#library .show-details h2").allTextContents()).sort()).toEqual(showTitles);
+         | 		                                                                                   ^
+      28 | 		const links = await page.locator("#library .show-details").evaluateAll(elements => elements.map(element => element.getAttribute("href")));
+      29 | 		expect(new Set(links).size).toBe(30);
+      30 | 		for (const link of links) expect(link).toMatch(/^\/show\/[a-f0-9]{16}$/);
+        at /Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/library-pagination.spec.ts:27:86
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../engineering/qa/2026-10-04-r04-pagination/red-2/library-pagination-all-Sho-00180--real-Server-pages-at-390px-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../engineering/qa/2026-10-04-r04-pagination/red-2/library-pagination-all-Sho-00180--real-Server-pages-at-390px-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../engineering/qa/2026-10-04-r04-pagination/red-2/library-pagination-all-Sho-00180--real-Server-pages-at-390px-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../../../engineering/qa/2026-10-04-r04-pagination/red-2/library-pagination-all-Sho-00180--real-Server-pages-at-390px-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › library-pagination.spec.ts:18:2 › all Shows remain reachable across real Server pages at 1440px
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 26
+    + Received  +  0
+
+      Array [
+        "Pagination Show 01",
+        "Pagination Show 02",
+        "Pagination Show 03",
+        "Pagination Show 04",
+    -   "Pagination Show 05",
+    -   "Pagination Show 06",
+    -   "Pagination Show 07",
+    -   "Pagination Show 08",
+    -   "Pagination Show 09",
+    -   "Pagination Show 10",
+    -   "Pagination Show 11",
+    -   "Pagination Show 12",
+    -   "Pagination Show 13",
+    -   "Pagination Show 14",
+    -   "Pagination Show 15",
+    -   "Pagination Show 16",
+    -   "Pagination Show 17",
+    -   "Pagination Show 18",
+    -   "Pagination Show 19",
+    -   "Pagination Show 20",
+    -   "Pagination Show 21",
+    -   "Pagination Show 22",
+    -   "Pagination Show 23",
+    -   "Pagination Show 24",
+    -   "Pagination Show 25",
+    -   "Pagination Show 26",
+    -   "Pagination Show 27",
+    -   "Pagination Show 28",
+    -   "Pagination Show 29",
+    -   "Pagination Show 30",
+      ]
+
+      25 | 		await page.goto(`${origin}/?view=shows&limit=4`);
+      26 | 		await loadAll(page);
+    > 27 | 		expect((await page.locator("#library .show-details h2").allTextContents()).sort()).toEqual(showTitles);
+         | 		                                                                                   ^
+      28 | 		const links = await page.locator("#library .show-details").evaluateAll(elements => elements.map(element => element.getAttribute("href")));
+      29 | 		expect(new Set(links).size).toBe(30);
+      30 | 		for (const link of links) expect(link).toMatch(/^\/show\/[a-f0-9]{16}$/);
+        at /Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/library-pagination.spec.ts:27:86
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../engineering/qa/2026-10-04-r04-pagination/red-2/library-pagination-all-Sho-314b0-real-Server-pages-at-1440px-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../engineering/qa/2026-10-04-r04-pagination/red-2/library-pagination-all-Sho-314b0-real-Server-pages-at-1440px-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../engineering/qa/2026-10-04-r04-pagination/red-2/library-pagination-all-Sho-314b0-real-Server-pages-at-1440px-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../../../engineering/qa/2026-10-04-r04-pagination/red-2/library-pagination-all-Sho-314b0-real-Server-pages-at-1440px-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › library-pagination.spec.ts:36:1 › real Server mixed pages keep both Show and Movie cards
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 28
+    + Received  +  0
+
+      Array [
+    -   "Pagination Show 01",
+    -   "Pagination Show 02",
+    -   "Pagination Show 03",
+    -   "Pagination Show 04",
+    -   "Pagination Show 05",
+    -   "Pagination Show 06",
+        "Pagination Show 07",
+    -   "Pagination Show 08",
+    -   "Pagination Show 09",
+    -   "Pagination Show 10",
+    -   "Pagination Show 11",
+    -   "Pagination Show 12",
+    -   "Pagination Show 13",
+    -   "Pagination Show 14",
+    -   "Pagination Show 15",
+        "Pagination Show 16",
+    -   "Pagination Show 17",
+    -   "Pagination Show 18",
+    -   "Pagination Show 19",
+    -   "Pagination Show 20",
+    -   "Pagination Show 21",
+    -   "Pagination Show 22",
+    -   "Pagination Show 23",
+    -   "Pagination Show 24",
+    -   "Pagination Show 25",
+    -   "Pagination Show 26",
+    -   "Pagination Show 27",
+    -   "Pagination Show 28",
+    -   "Pagination Show 29",
+    -   "Pagination Show 30",
+      ]
+
+      37 | 	await page.goto(`${origin}/?q=Pagination&limit=4`);
+      38 | 	await loadAll(page);
+    > 39 | 	expect((await page.locator('[data-library-group="shows"] .card h2').allTextContents()).sort()).toEqual(showTitles);
+         | 	                                                                                               ^
+      40 | 	expect((await page.locator('[data-library-group="movies"] .card h2').allTextContents()).sort()).toEqual(movieTitles);
+      41 | 	await expect(page.locator("#library .card")).toHaveCount(36);
+      42 | 	await page.screenshot({ path: info.outputPath("mixed-loaded.png"), fullPage: true });
+        at /Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/library-pagination.spec.ts:39:97
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../engineering/qa/2026-10-04-r04-pagination/red-2/library-pagination-real-Se-7e665-p-both-Show-and-Movie-cards-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../engineering/qa/2026-10-04-r04-pagination/red-2/library-pagination-real-Se-7e665-p-both-Show-and-Movie-cards-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../engineering/qa/2026-10-04-r04-pagination/red-2/library-pagination-real-Se-7e665-p-both-Show-and-Movie-cards-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../../../engineering/qa/2026-10-04-r04-pagination/red-2/library-pagination-real-Se-7e665-p-both-Show-and-Movie-cards-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    [chromium] › library-pagination.spec.ts:18:2 › all Shows remain reachable across real Server pages at 390px
+    [chromium] › library-pagination.spec.ts:18:2 › all Shows remain reachable across real Server pages at 1440px
+    [chromium] › library-pagination.spec.ts:36:1 › real Server mixed pages keep both Show and Movie cards
+--- FAIL: TestLibraryPaginationBrowserJourney (37.49s)
+    library_pagination_browser_test.go:43: exit status 1
+FAIL
+FAIL	github.com/MikeO7/kinosail-player/internal/server	42.284s
+FAIL

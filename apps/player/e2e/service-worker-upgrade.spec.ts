@@ -39,7 +39,7 @@ const test = base.extend({
 type WorkerWindow = Window & { checkWorker: () => Promise<string>; identifiedProfile?: { type: string; profile: string; worker: string } };
 
 const currentDownloads = downloadsSource;
-const currentPWA = await readStaticSource(["../../../packages/webassets/static/offline-identity.js", "../../../packages/webassets/static/pwa.js"]);
+const currentPWA = await readStaticSource(["../../../packages/webassets/static/offline-identity.js", "../../../packages/webassets/static/pwa-library.js", "../../../packages/webassets/static/pwa.js"]);
 const currentWorker = currentDownloads.match(/const offlineWorkerPath = "([^"]+)"/)![1];
 const oldWorker = "/service-worker.js?v=38";
 const oldDownloads = currentDownloads.replaceAll(currentWorker, oldWorker);

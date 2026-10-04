@@ -1,0 +1,10 @@
+
+Running 3 tests using 1 worker
+
+(node:13561) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › library-scroll.spec.ts:10:1 › web libraries append on scroll and retry in place without a load button (529ms)
+  ✓  2 [chromium] › service-worker-upgrade.spec.ts:53:3 › player refreshes both immutable scripts when upgrading its offline worker (2.0s)
+  ✓  3 [chromium] › service-worker-upgrade.spec.ts:53:3 › subtitles refreshes both immutable scripts when upgrading its offline worker (1.9s)
+
+  3 passed (15.6s)
