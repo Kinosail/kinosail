@@ -1,0 +1,20 @@
+{
+  "reviewed_revision": "fef7f1ddb8b665fe4ac470374174ca0b9aa1220e",
+  "reviewer": "independent_review",
+  "outcome": "source clear",
+  "controls_receipt_sha256": "dc800ceda8a0771f372d952ca2a7a5498c83fee54a2f3746467e4a2de425cade",
+  "verified": [
+    "five input hashes match",
+    "existing secrets.py, config and ignore unchanged from main",
+    "metadata whitelist and bounds",
+    "same full-history coverage/redaction/pin",
+    "original gate retains failure",
+    "manual opt-in and exact single-file upload"
+  ],
+  "reviewer_runtime_execution": false,
+  "pending": [
+    "real hosted report shape and publication",
+    "protected checks",
+    "classification and resolution of existing findings"
+  ]
+}
