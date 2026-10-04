@@ -1,0 +1,5 @@
+--- FAIL: TestSubtitleUnavailableRecoveryReachesMediaLibraries (0.10s)
+    subtitle_recovery_links_test.go:64: rendered recovery link "/settings#library" does not resolve to Media Libraries
+FAIL
+FAIL	github.com/MikeO7/kinosail-subtitles/internal/server	6.371s
+FAIL
