@@ -43,3 +43,36 @@ safe receipts, exact revisions, commands, generated data and artifact checksums.
 
 Post-merge Simulator Safari retest requires separately authorized deployment.
 No manual Nox deployment is part of this repair.
+
+The real Chromium exit journey disproved Window capture ordering. Final production
+emits a synchronous `kinosail:page-exit` event before PiP handling and all media
+teardown. Its handler uses the existing closing sender. Unloaded pauses are skipped.
+Preparation records its restore target/source until completion; `emptied` clears it.
+Only the matching preparation seek is suppressed. Chapter/viewer seeks still save.
+
+The prewritten queued-preparation case is an isolated exception: a real decoder
+cannot reliably schedule that callback ordering. It moved to its own focused spec
+to preserve the 300-line cap. No unit test was added after production code.
+
+Local acceptance passed eight real-Server Chromium executions: both checkpoint and
+both retained R03 journeys, each repeated twice. Forty-nine isolated progress,
+queue and startup checks passed. Source cap, diff check, shell lint and browser
+lint passed. Private final receipt:
+`.verification/paused-seek-checkpoint/20261004T192237Z/receipt.json`.
+Current-main baseline failed both checkpoint cases twice; pinned deployed baseline
+also failed both twice. Setup/test-argument failures were retained separately.
+The final Server position and increased revision prove exit persistence; Chromium
+may omit unload keepalive from page request events. No historical binary, live
+repaired Safari, physical device, soundtrack, container or TLS proof is claimed.
+
+Player and Subtitles already include the composed playback bundle SHA-256 in the
+script URL. No version/include edit is needed. At implementation `1479279a`, Player
+changed from `ea9bdcf5d502731475ba91b12b3a108714569dcbaf8587e1a60e555d614ccd55`
+to `2594c9c70f7cea00f81fa93d5b541b5b2bf8ea36d80d921e53a69dfee439d79e`.
+The real R03 journey verifies URL hash, immutable response headers and repaired
+progress bytes with service workers allowed. Q09 download versions are untouched.
+
+Repeat from repository root:
+`python3 apps/player/scripts/test-player-checkpoint-local.py --phase candidate`.
+Receipts preserve exact source hashes, environment, commands, synthetic data and
+private artifact checksums. Do not publish raw state, traces or Server logs.

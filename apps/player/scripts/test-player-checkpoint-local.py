@@ -15,7 +15,7 @@ import urllib.request
 parser = argparse.ArgumentParser()
 parser.add_argument("--phase", choices=["deployed", "current", "candidate"], required=True)
 args = parser.parse_args()
-root = Path(__file__).resolve().parents[2]
+root = Path(__file__).resolve().parents[3]
 run = root / ".verification/paused-seek-checkpoint" / time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
 run.mkdir(parents=True)
 media = run / "media"
@@ -27,10 +27,10 @@ sources = ["packages/webassets/static/player-progress.js", "packages/playerweb/p
            "apps/player/e2e/test-instance-checkpoint.spec.ts", "packages/webassets/static/player-presentation.js",
            "packages/webassets/static/player-core.js", "packages/webassets/static/player-status.js",
            "apps/player/e2e/player-preparation-progress.spec.ts", "apps/player/e2e/test-instance-progress.spec.ts",
-           "scripts/testing/test-player-checkpoint-local.py"]
+           "apps/player/scripts/test-player-checkpoint-local.py"]
 receipt = {"revision": revision, "workingDiffSHA256": hashlib.sha256(diff).hexdigest(),
            "sourceSHA256": {path: hashlib.sha256((root / path).read_bytes()).hexdigest() for path in sources},
-           "phase": args.phase, "command": "GOMAXPROCS=2 python3 scripts/testing/test-player-checkpoint-local.py --phase " + args.phase,
+           "phase": args.phase, "command": "GOMAXPROCS=2 python3 apps/player/scripts/test-player-checkpoint-local.py --phase " + args.phase,
            "environment": "Native Go Kinosail Server; loopback HTTP; one Chromium worker",
            "data": "Disposable synthetic Owner, TOTP, and generated 30-second video. State preserved.",
            "boundaries": "Browser baseline replays the base progress asset against the same real Server. No production, container, device, physical TV, or TLS deployment proof.",
