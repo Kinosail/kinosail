@@ -44,7 +44,8 @@ test.beforeEach(async ({ page }, testInfo) => {
     let playbackTraceMethod = 'direct', playbackTimelineOffset = 0;
     const setPlayerTime = seconds => player.currentTime = seconds;
     const withPlaybackSession = source => source + '?playbackSession=' + playbackSession, updateNowPlaying = () => {};
-    const requestPlay = async () => {}, playerStorage = {get: () => '', set: () => {}};
+    const requestPlay = () => window.holdQueuePlay ? new Promise(resolve => window.finishQueuePlay = resolve) : Promise.resolve();
+    const playerStorage = {get: () => '', set: () => {}};
     const playbackTrace = () => {}, flushPlaybackTrace = () => {};
     let position = 42, paused = true;
     Object.defineProperties(player, {currentTime: {get: () => position, set: value => position = value}, duration: {value: 100}, readyState: {value: 4}, paused: {get: () => paused}, load: {value: () => queueMicrotask(() => player.dispatchEvent(new Event('loadedmetadata')))}});
@@ -265,4 +266,18 @@ test("audio queue does not drop a failed watched save when it advances", async (
   await expect(page.locator("video")).toHaveAttribute("data-progress", "/progress/next");
   expect(requests.at(-1)!.body.get("watched")).toBe("true");
   await expect(page.locator("[data-progress-notice]")).toBeHidden();
+});
+
+test("audio queue saves a new-track pause while final watched continuation still settles", async ({page}) => {
+  await page.waitForFunction("audioQueue.length === 1");
+  await page.evaluate(() => Object.assign(window, {holdQueuePlay: true}));
+  await page.locator("video").dispatchEvent("ended");
+  await expect(page.locator("video")).toHaveAttribute("data-progress", "/progress/next");
+  await page.waitForFunction("queueSourceChanging === false && typeof window.finishQueuePlay === 'function'");
+  await pauseAt(page, 3);
+  await page.evaluate(() => (window as Window & {finishQueuePlay(): void}).finishQueuePlay());
+  await expect.poll(() => requests.length, {timeout: 1500}).toBe(2);
+  expect(new URL(requests[1].route.request().url()).pathname).toBe("/progress/next");
+  expect(requests[1].body.get("seconds")).toBe("3");
+  expect(requests[1].body.get("watched")).toBeNull();
 });
