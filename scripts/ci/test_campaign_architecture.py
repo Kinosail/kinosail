@@ -160,6 +160,15 @@ class ArchitectureAdmissionTests(unittest.TestCase):
             with self.assertRaises(ValueError): helper.write_json(path, {'metadata': 'x' * (4 * 1024 * 1024)})
             self.assertEqual(path.read_text(), 'preserved')
 
+    def test_snapshot_serialization_preserves_official_canonical_html_bytes(self):
+        helper = self.helper()
+        html = SCRIPT.parents[2].joinpath('apps/player/docs/architecture-explorer/index.html').read_text()
+        match = re.search(r'^\s*const snapshot = (.+);$', html, re.M)
+        snapshot = json.loads(match.group(1))
+        original = helper.render('player', snapshot)
+        round_trip = json.loads(helper.json_bytes(snapshot))
+        self.assertEqual(helper.render('player', round_trip), original)
+
     def test_route_is_default_off_and_retains_four_json_allowlist(self):
         source = SCRIPT.parents[2].joinpath('.github/workflows/layout-stability.yml').read_text()
         self.assertIn('architecture_metadata:', source)
