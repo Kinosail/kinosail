@@ -83,7 +83,7 @@ func TestDownloadPauseBrowserJourney(t *testing.T) {
 		specs = []string{"download-pause-hit-target.spec.ts"}
 	}
 	arguments := append([]string{"exec", "playwright", "test"}, specs...)
-	arguments = append(arguments, "--workers=1", "--project="+project)
+	arguments = append(arguments, "--workers=1", "--project="+project, "--retries=0", "--forbid-only")
 	command := exec.CommandContext(t.Context(), "pnpm", arguments...) //nolint:gosec // Fixed native-browser test against an explicitly disposable local Server.
 	command.Dir = "../../e2e"
 	command.Env = append(os.Environ(), "KINOSAIL_DOWNLOAD_PAUSE_URL="+web.URL, "KINOSAIL_E2E_URL="+web.URL)
