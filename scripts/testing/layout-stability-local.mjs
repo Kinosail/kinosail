@@ -59,7 +59,7 @@ function cls(shifts) {
 }
 const boxesChanged=(a,b)=>a.filter(first=>{const last=b.find(v=>v.id===first.id);return last&&["x",first.pinned&&last.pinned?"y":"documentY","width","height"].some(key=>Math.abs(first[key]-last[key])>1);});
 const inspect = () => ({rootFontSize: getComputedStyle(document.documentElement).fontSize, rootScale:document.documentElement.style.fontSize, ready: document.querySelector(".settings-shell")?.hasAttribute("data-settings-ready"), category: document.documentElement.dataset.settingsCategory, scrollY,
-  timeouts: ["#session-timeouts","#security"].includes(location.hash)?(()=>{const target=document.getElementById(location.hash.slice(1));return {visible:Boolean(target&&target.getBoundingClientRect().height&&(!target.checkVisibility||target.checkVisibility())),access:[...target?.querySelectorAll("form[data-timeout-access]")||[]].map(n=>n.dataset.timeoutAccess).sort()};})():undefined,
+  timeouts: ["#session-timeouts","#security"].includes(location.hash)?(()=>{const anchor=document.getElementById(location.hash.slice(1)),target=document.getElementById("session-timeouts");return {anchorPresent:Boolean(anchor),visible:Boolean(target&&target.getBoundingClientRect().height&&(!target.checkVisibility||target.checkVisibility())),access:[...target?.querySelectorAll("form[data-timeout-access]")||[]].map(n=>n.dataset.timeoutAccess).sort()};})():undefined,
   sections: [...document.querySelectorAll(".settings-flow>section")].filter(n=>n.getBoundingClientRect().height).map(n=>({id:n.id,category:n.dataset.settingsCategory,heading:n.querySelector("h2")?.textContent})),
   nativeOptions: document.querySelectorAll(".player-native-options").length, settingsButtons: document.querySelectorAll("[data-player-settings]").length,
   overflowNodes: [...document.querySelectorAll("body *:not(option):not(optgroup)")].filter(n => {const r=n.getBoundingClientRect();return r.height>0&&r.right>innerWidth+1&&(!n.checkVisibility||n.checkVisibility());}).slice(0,30).map(n=>({node:n.id||n.className||n.tagName,rect:n.getBoundingClientRect().toJSON(),minWidth:getComputedStyle(n).minWidth,whiteSpace:getComputedStyle(n).whiteSpace}))});
@@ -151,7 +151,7 @@ try {
     const moved=boxesChanged(initialBoxes,audit.frames.at(-1)?.boxes||[]);
     const finalState=await page.evaluate(inspect);
     const categoryStable=!initialState.category||JSON.stringify(initialState.sections)===JSON.stringify(finalState.sections);
-    const timeoutsPresent=!["/settings#session-timeouts","/settings#security"].includes(path)||[initialState,finalState].every(s=>s.timeouts?.visible&&JSON.stringify(s.timeouts.access)==='["private","public"]');
+    const timeoutsPresent=!["/settings#session-timeouts","/settings#security"].includes(path)||[initialState,finalState].every(s=>s.timeouts?.anchorPresent&&s.timeouts.visible&&JSON.stringify(s.timeouts.access)==='["private","public"]');
     reports.push({viewport,path,variant,scaleApplied:!scale||finalState.rootScale===scale,status:response.status(),unexpected,aggregateUnexpected,identifiedDOMCLS,unattributedCLS,moved,categoryStable,timeoutsPresent,initialState,finalState,...audit});
     console.log(JSON.stringify({viewport: viewport.width, path, unexpected, overflow: audit.overflow,
       sources: audit.shifts.flatMap(shift => shift.sources.map(source => source.node))}));
