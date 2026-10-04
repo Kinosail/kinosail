@@ -151,7 +151,7 @@ flaky, or global errors. The HTTP assertion received the duplicate next-item
 revision 3. This branch mirrors the root guard from `d72451da`: the original
 sender drains only while it still owns the current flight. The standalone test
 lineage is retained. Root owns that RED receipt and its GREEN verification;
-this R08 branch has not run GREEN.
+at that mirror checkpoint, this R08 branch had not run GREEN.
 
 ## Failed source position reproduction
 
@@ -201,6 +201,33 @@ unchanged until that valid RED. Its proposed repair scopes only the existing
 mobile primary-action display rule to elements without `hidden`, including the
 exact Subtitles style derivation. Root allocated only matching CSS cache tokens
 and existing version expectations; other composition and CI stay untouched.
+
+## Repeated mobile visibility RED
+
+At `ab489c14`, the strengthened native Go Server regressions reproduced both
+mobile failures twice in 55.84 browser seconds. All four named cases reached
+the required source or real 204 acknowledgment before the visibility assertion.
+There were no skipped, flaky, or global-error outcomes. Production CSS and cache
+versions remained unchanged. `visibility-red-results.json` contains the safe
+snapshots, and `visibility-red-receipt.json` is the byte-identical native receipt.
+
+The actual queue journey advanced every current-track identity correctly, then
+exposed the original watched/list forms and hidden notice at 390 pixels. The R03
+control received a real 204 acknowledgment while its hidden notice still rendered.
+That control is classified as isolated 503 injection in Go-backed UI; this RED
+stopped before its routed fault. Canonical queue journeys remain unrouted.
+`visibility-red-queue-mobile.png` and `visibility-red-progress-mobile.png` show
+both failures. Raw private traces and disposable state remain preserved.
+
+The mobile `.primary-player-actions{display:grid!important}` rule appears after
+the global `[hidden]{display:none!important}` rule with equal specificity. The
+repair scopes only that existing display rule to `.primary-player-actions:not([hidden])`.
+It preserves the global hidden contract and all existing layout geometry. The
+matching Subtitles patch derivation receives the same selector change. Freshly
+fetched `origin/main` at `0e99a52f` still uses Player `electric-47` and Subtitles
+`cinema-15`; the narrow cache increments are `electric-48` and `cinema-16`.
+Existing tests retain all assertions and only update those expected version values.
+Final native GREEN and visual verification remain pending.
 
 ## Ownership
 
