@@ -1,0 +1,94 @@
+{
+  "revision": "2628e40e63fca3274d577b3dada208d133a5da41",
+  "environment": {
+    "GOMAXPROCS": "4",
+    "GOFLAGS": "-p=1"
+  },
+  "integrationBase": "af5dc2c30606499bb54a16661abc4a72afaddcfe",
+  "results": [
+    {
+      "name": "player-verify-changed",
+      "command": [
+        "make",
+        "-C",
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/apps/player",
+        "verify-changed",
+        "BASE=origin/main"
+      ],
+      "boundSeconds": 90,
+      "exitCode": 2,
+      "timedOut": false,
+      "seconds": 47.81,
+      "log": "integration/r10-final-player-verify-changed.log",
+      "logSHA256": "cab8f9c7069dd1a93cb3cb9e4902f8155eec9ef5a5e06ac6354dd890d1cff64e",
+      "rawGzip": "integration/r10-final-player-verify-changed.log.gz"
+    },
+    {
+      "name": "subtitles-verify-changed",
+      "command": [
+        "make",
+        "-C",
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/apps/subtitles",
+        "verify-changed",
+        "BASE=origin/main"
+      ],
+      "boundSeconds": 90,
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 0.43,
+      "log": "integration/r10-final-subtitles-verify-changed.log",
+      "logSHA256": "40868b4afe48cabfb4a5eb46cf6118f1e8566a591f15867976878e23217fe840",
+      "rawGzip": "integration/r10-final-subtitles-verify-changed.log.gz"
+    },
+    {
+      "name": "playerweb-template",
+      "command": [
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/scripts/tooling/with-go-module.sh",
+        "go",
+        "test",
+        "-p",
+        "1",
+        "./playerweb",
+        "-count=1"
+      ],
+      "boundSeconds": 45,
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 0.83,
+      "log": "integration/r10-final-playerweb-template.log",
+      "logSHA256": "e15579371a037594bff0a036970743433ae66505afd8dab09f7bfaa06f672a01",
+      "rawGzip": "integration/r10-final-playerweb-template.log.gz"
+    },
+    {
+      "name": "test-instance-check",
+      "command": [
+        "make",
+        "-C",
+        "/Users/mikeo/Documents/Codex/2026-10-04/task-2/kinosail/apps/player",
+        "test-instance-check"
+      ],
+      "boundSeconds": 15,
+      "exitCode": 2,
+      "timedOut": false,
+      "seconds": 1.47,
+      "log": "integration/r10-final-test-instance-check.log",
+      "logSHA256": "42e699335baa8cd5b025289eb2e3404ad20fc5f4e108a0bb24d652b5ad7bc483",
+      "rawGzip": "integration/r10-final-test-instance-check.log.gz"
+    },
+    {
+      "name": "native-server-proof",
+      "command": [
+        "bash",
+        "-c",
+        "source scripts/test-browser-journeys.sh; run_subtitle_recovery_journey chromium \"$KINOSAIL_CAPTION_MEDIA_FIXTURE\" \"$KINOSAIL_E2E_OUTPUT_DIR\" \"$KINOSAIL_E2E_ARTIFACT_DIR\""
+      ],
+      "boundSeconds": 100,
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 20.56,
+      "log": "integration/r10-final-native-server-proof.log",
+      "logSHA256": "0892c3910ee5dd9f3e13aafbaa0581665137cedd9e939fc717c019a669f63b88",
+      "rawGzip": "integration/r10-final-native-server-proof.log.gz"
+    }
+  ]
+}

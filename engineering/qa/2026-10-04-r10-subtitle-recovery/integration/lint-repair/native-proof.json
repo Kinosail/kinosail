@@ -1,0 +1,152 @@
+{
+  "id": "R10",
+  "testedIntegrationRevision": "cc3beadfda7659e34f22dba03856d3019f0265f2",
+  "reconciledHead": "cc3beadfda7659e34f22dba03856d3019f0265f2",
+  "mainBase": "ba527747b09b29c3836529b8de61c7ae877180bc",
+  "sourceEquivalentAfterReconciliation": true,
+  "sourceSHA256": {
+    "apps/player/internal/server/static/player-subtitles.js": "cbd2e1afb58d508736504e9e03b9878f7385533b6a59dd1c9656cc870a6e790f",
+    "apps/player/internal/server/player.go": "72a8d18da5ad10f4f2f716cff0dcf6369e29670aea2dab35f647e261ddbe3542",
+    "apps/player/e2e/player-subtitles-recovery.spec.ts": "254d3769ecf206ad729fb6875b5502da4b251b2e8a008b813acd5099fd18e339",
+    "apps/player/e2e/player-subtitles-loading.spec.ts": "38dcca7181863d827a256bead2da569309a89eb30a8ac0f50445df4068aaf7ac",
+    "apps/player/e2e/player-subtitles-lifecycle.spec.ts": "918a961da8e28f28e8a929b0101f09d99740dc3b50f30bac2a63aea90ca6a84e",
+    "apps/player/e2e/player-subtitles-recovery-fixture.ts": "1eb9fe39fdbaffb058ef5df978acc0f901829674f415e989ae5a60393cab1515",
+    "apps/player/internal/server/subtitle_recovery_browser_test.go": "436bb7e7058042a668d6e2f6988ce89c432cdca698898a07f39b2f64cacca7cb",
+    "apps/player/e2e/playwright.config.ts": "628d3a62d9b3e2fba1bc43f3cd58979acadf22c083e3559c73c4f750a97cc0b3",
+    "apps/player/scripts/test-browser-journeys.sh": "78d2a0d91ce47477cf3d25754d1eb1625f533c32ff837a7a9685a2dd4c90ba51",
+    "apps/player/scripts/test-container.sh": "ba07327d447ff976c4e2209b150b0087b35e08fe97504b3f323474ba0a28fc4b",
+    "scripts/ci/test_caption_journey.py": "64b5317a99376e724fcdb56d75f376e59f601c8138fe051eece80b193fc7b4f8",
+    "apps/player/docs/architecture-explorer/index.html": "6dc1543c99e57d9549744d37b10edaec4c6a970662e2ec002cd82d99d4a5eae0"
+  },
+  "browser": "Chromium",
+  "boundary": "Actual Go Server HTML/assets/sidecar/media plus a disposable real-HTTP transport stall; accelerated deadline clock. No browser response routes.",
+  "rawResultsRelativePath": ".verification/r10-lint-repair/native-artifacts/results-chromium.json",
+  "rawResultsSHA256": "52641cbc15c2046957bdc6da7cc20c831e34c58a43d151284217c82fd66710d1",
+  "stats": {
+    "startTime": "2026-10-04T11:57:05.866Z",
+    "duration": 7234.0650000000005,
+    "expected": 6,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "globalErrors": 0,
+  "cases": [
+    {
+      "title": "real Server: stalled caption headers reaches a deadline and keyboard Retry at 390px",
+      "status": "passed",
+      "durationMS": 1171,
+      "servedBundle": {
+        "version": "ea9bdcf5d502731475ba91b12b3a108714569dcbaf8587e1a60e555d614ccd55",
+        "checksum": "ea9bdcf5d502731475ba91b12b3a108714569dcbaf8587e1a60e555d614ccd55"
+      },
+      "cancelledTransport": {
+        "calls": 1,
+        "closed": 1
+      }
+    },
+    {
+      "title": "real Server: stalled caption body reaches a deadline and keyboard Retry at 390px",
+      "status": "passed",
+      "durationMS": 908,
+      "servedBundle": {
+        "version": "ea9bdcf5d502731475ba91b12b3a108714569dcbaf8587e1a60e555d614ccd55",
+        "checksum": "ea9bdcf5d502731475ba91b12b3a108714569dcbaf8587e1a60e555d614ccd55"
+      },
+      "cancelledTransport": {
+        "calls": 1,
+        "closed": 1
+      }
+    },
+    {
+      "title": "real Server: stalled caption headers reaches a deadline and keyboard Retry at 1440px",
+      "status": "passed",
+      "durationMS": 1092,
+      "servedBundle": {
+        "version": "ea9bdcf5d502731475ba91b12b3a108714569dcbaf8587e1a60e555d614ccd55",
+        "checksum": "ea9bdcf5d502731475ba91b12b3a108714569dcbaf8587e1a60e555d614ccd55"
+      },
+      "cancelledTransport": {
+        "calls": 1,
+        "closed": 1
+      }
+    },
+    {
+      "title": "real Server: stalled caption body reaches a deadline and keyboard Retry at 1440px",
+      "status": "passed",
+      "durationMS": 1076,
+      "servedBundle": {
+        "version": "ea9bdcf5d502731475ba91b12b3a108714569dcbaf8587e1a60e555d614ccd55",
+        "checksum": "ea9bdcf5d502731475ba91b12b3a108714569dcbaf8587e1a60e555d614ccd55"
+      },
+      "cancelledTransport": {
+        "calls": 1,
+        "closed": 1
+      }
+    },
+    {
+      "title": "real Server: stalled caption headers reaches a deadline and keyboard Retry at 1920px",
+      "status": "passed",
+      "durationMS": 1167,
+      "servedBundle": {
+        "version": "ea9bdcf5d502731475ba91b12b3a108714569dcbaf8587e1a60e555d614ccd55",
+        "checksum": "ea9bdcf5d502731475ba91b12b3a108714569dcbaf8587e1a60e555d614ccd55"
+      },
+      "cancelledTransport": {
+        "calls": 1,
+        "closed": 1
+      }
+    },
+    {
+      "title": "real Server: stalled caption body reaches a deadline and keyboard Retry at 1920px",
+      "status": "passed",
+      "durationMS": 1199,
+      "servedBundle": {
+        "version": "ea9bdcf5d502731475ba91b12b3a108714569dcbaf8587e1a60e555d614ccd55",
+        "checksum": "ea9bdcf5d502731475ba91b12b3a108714569dcbaf8587e1a60e555d614ccd55"
+      },
+      "cancelledTransport": {
+        "calls": 1,
+        "closed": 1
+      }
+    }
+  ],
+  "screens": [
+    "integration/lint-repair/screens/player-subtitles-recovery--2387c-nd-keyboard-Retry-at-1920px-chromium-body-1920-off.png",
+    "integration/lint-repair/screens/player-subtitles-recovery--2387c-nd-keyboard-Retry-at-1920px-chromium-body-1920-pending.png",
+    "integration/lint-repair/screens/player-subtitles-recovery--2387c-nd-keyboard-Retry-at-1920px-chromium-body-after-deadline.png",
+    "integration/lint-repair/screens/player-subtitles-recovery--2387c-nd-keyboard-Retry-at-1920px-chromium-body-recovered.png",
+    "integration/lint-repair/screens/player-subtitles-recovery--36470-nd-keyboard-Retry-at-1920px-chromium-headers-1920-off.png",
+    "integration/lint-repair/screens/player-subtitles-recovery--36470-nd-keyboard-Retry-at-1920px-chromium-headers-1920-pending.png",
+    "integration/lint-repair/screens/player-subtitles-recovery--36470-nd-keyboard-Retry-at-1920px-chromium-headers-after-deadline.png",
+    "integration/lint-repair/screens/player-subtitles-recovery--36470-nd-keyboard-Retry-at-1920px-chromium-headers-recovered.png",
+    "integration/lint-repair/screens/player-subtitles-recovery--8183c-nd-keyboard-Retry-at-1440px-chromium-headers-1440-off.png",
+    "integration/lint-repair/screens/player-subtitles-recovery--8183c-nd-keyboard-Retry-at-1440px-chromium-headers-1440-pending.png",
+    "integration/lint-repair/screens/player-subtitles-recovery--8183c-nd-keyboard-Retry-at-1440px-chromium-headers-after-deadline.png",
+    "integration/lint-repair/screens/player-subtitles-recovery--8183c-nd-keyboard-Retry-at-1440px-chromium-headers-recovered.png",
+    "integration/lint-repair/screens/player-subtitles-recovery--a086c-nd-keyboard-Retry-at-1440px-chromium-body-1440-off.png",
+    "integration/lint-repair/screens/player-subtitles-recovery--a086c-nd-keyboard-Retry-at-1440px-chromium-body-1440-pending.png",
+    "integration/lint-repair/screens/player-subtitles-recovery--a086c-nd-keyboard-Retry-at-1440px-chromium-body-after-deadline.png",
+    "integration/lint-repair/screens/player-subtitles-recovery--a086c-nd-keyboard-Retry-at-1440px-chromium-body-recovered.png",
+    "integration/lint-repair/screens/player-subtitles-recovery--c6a5b-and-keyboard-Retry-at-390px-chromium-headers-390-off.png",
+    "integration/lint-repair/screens/player-subtitles-recovery--c6a5b-and-keyboard-Retry-at-390px-chromium-headers-390-pending.png",
+    "integration/lint-repair/screens/player-subtitles-recovery--c6a5b-and-keyboard-Retry-at-390px-chromium-headers-after-deadline.png",
+    "integration/lint-repair/screens/player-subtitles-recovery--c6a5b-and-keyboard-Retry-at-390px-chromium-headers-recovered.png",
+    "integration/lint-repair/screens/player-subtitles-recovery--f135f-and-keyboard-Retry-at-390px-chromium-body-390-off.png",
+    "integration/lint-repair/screens/player-subtitles-recovery--f135f-and-keyboard-Retry-at-390px-chromium-body-390-pending.png",
+    "integration/lint-repair/screens/player-subtitles-recovery--f135f-and-keyboard-Retry-at-390px-chromium-body-after-deadline.png",
+    "integration/lint-repair/screens/player-subtitles-recovery--f135f-and-keyboard-Retry-at-390px-chromium-body-recovered.png"
+  ],
+  "media": {
+    "bytes": 396548,
+    "sha256": "9dbd85e7863d921e209978c8349992e5f8505b0d7ffa468c37b8caf97af3f0a4",
+    "readOnlyReuse": true,
+    "encoderUsed": false
+  },
+  "limits": [
+    "Synthetic persisted-event coverage does not prove actual BFCache admission.",
+    "No physical device or deployment proof.",
+    "Test runner binary hash was not captured; exact committed inputs and all six delivered immutable asset hashes were verified.",
+    "Player verify-changed fails only at unavailable Podman container-native; preceding source, shell, Go compile/focused and browser discovery pass. Subtitles verify-changed and shared template test pass."
+  ]
+}

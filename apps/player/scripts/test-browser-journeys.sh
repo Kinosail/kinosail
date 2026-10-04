@@ -6,6 +6,12 @@ run_library_pagination_journey() {
     ../../scripts/tooling/with-go-module.sh go test -p 1 ./internal/server -run '^TestLibraryPaginationBrowserJourney$' -count=1 -timeout=6m
 }
 
+run_subtitle_recovery_journey() {
+  GOMAXPROCS=2 KINOSAIL_CAPTION_BROWSER=1 KINOSAIL_BROWSER_PROJECT="$1" \
+    KINOSAIL_CAPTION_MEDIA_FIXTURE="$2" KINOSAIL_E2E_OUTPUT_DIR="$3" KINOSAIL_E2E_ARTIFACT_DIR="$4" \
+    ../../scripts/tooling/with-go-module.sh go test -p 1 ./internal/server -run '^TestSubtitleRecoveryBrowserJourney$' -count=1 -timeout=6m
+}
+
 run_populated_player_journeys() {
   local repo
   repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"

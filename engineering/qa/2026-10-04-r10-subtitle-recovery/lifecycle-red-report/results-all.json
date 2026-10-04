@@ -1,0 +1,244 @@
+{
+  "config": {
+    "argv": [
+      "/opt/homebrew/Cellar/node/26.8.2/bin/node",
+      "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/node_modules/.pnpm/@playwright+test@1.63.0/node_modules/@playwright/test/cli.js",
+      "test",
+      "player-subtitles-lifecycle.spec.ts",
+      "--grep=persisted caption restore cancels",
+      "--repeat-each=2",
+      "--workers=1",
+      "--project=chromium"
+    ],
+    "configFile": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/playwright.config.ts",
+    "rootDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-r10-subtitle-recovery/lifecycle-red",
+        "repeatEach": 2,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "open": "never",
+          "outputFolder": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-r10-subtitle-recovery/lifecycle-red-report/html-all"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-r10-subtitle-recovery/lifecycle-red-report/results-all.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "player-subtitles-lifecycle.spec.ts",
+      "file": "player-subtitles-lifecycle.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "persisted caption restore cancels the old attempt and reloads the selected language",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 2207,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m\"Recovered captions\"\u001b[39m\nReceived: \u001b[31mundefined\u001b[39m\n\nCall Log:\n- Timeout 2000ms exceeded while waiting on the predicate",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m\"Recovered captions\"\u001b[39m\nReceived: \u001b[31mundefined\u001b[39m\n\nCall Log:\n- Timeout 2000ms exceeded while waiting on the predicate\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/player-subtitles-lifecycle.spec.ts:18:175",
+                    "location": {
+                      "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/player-subtitles-lifecycle.spec.ts",
+                      "column": 175,
+                      "line": 18
+                    },
+                    "snippet": "  16 |     await page.evaluate(() => dispatchEvent(new PageTransitionEvent(\"pageshow\", {persisted: true})));\n  17 |     await info.attach(\"transport-after-persisted-restore\", {body: JSON.stringify(await peer.stats()), contentType: \"application/json\"});\n> 18 |     await expect.poll(() => page.locator('track[srclang=\"en\"]').evaluate((track: HTMLTrackElement) => (track.track.cues?.[0] as VTTCue | undefined)?.text), {timeout: 2_000}).toBe(\"Recovered captions\");\n     |                                                                                                                                                                               ^\n  19 |     await expect(page.locator(\"[data-subtitle-status]\")).toBeHidden();\n  20 |     await expect(page.locator(\"[data-subtitle-retry]\")).toBeHidden();\n  21 |     expect(await page.locator(\"track\").evaluate((track: HTMLTrackElement) => track.track.mode)).toBe(\"showing\");"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/player-subtitles-lifecycle.spec.ts",
+                        "column": 175,
+                        "line": 18
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m\"Recovered captions\"\u001b[39m\nReceived: \u001b[31mundefined\u001b[39m\n\nCall Log:\n- Timeout 2000ms exceeded while waiting on the predicate\n\n  16 |     await page.evaluate(() => dispatchEvent(new PageTransitionEvent(\"pageshow\", {persisted: true})));\n  17 |     await info.attach(\"transport-after-persisted-restore\", {body: JSON.stringify(await peer.stats()), contentType: \"application/json\"});\n> 18 |     await expect.poll(() => page.locator('track[srclang=\"en\"]').evaluate((track: HTMLTrackElement) => (track.track.cues?.[0] as VTTCue | undefined)?.text), {timeout: 2_000}).toBe(\"Recovered captions\");\n     |                                                                                                                                                                               ^\n  19 |     await expect(page.locator(\"[data-subtitle-status]\")).toBeHidden();\n  20 |     await expect(page.locator(\"[data-subtitle-retry]\")).toBeHidden();\n  21 |     expect(await page.locator(\"track\").evaluate((track: HTMLTrackElement) => track.track.mode)).toBe(\"showing\");\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/player-subtitles-lifecycle.spec.ts:18:175"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T09:16:41.583Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "transport-after-persisted-restore",
+                      "contentType": "application/json",
+                      "body": "eyJjYWxscyI6MSwiY2xvc2VkIjoxfQ=="
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-r10-subtitle-recovery/lifecycle-red/player-subtitles-lifecycle-3137e-loads-the-selected-language-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-r10-subtitle-recovery/lifecycle-red/player-subtitles-lifecycle-3137e-loads-the-selected-language-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-r10-subtitle-recovery/lifecycle-red/player-subtitles-lifecycle-3137e-loads-the-selected-language-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/player-subtitles-lifecycle.spec.ts",
+                    "column": 175,
+                    "line": 18
+                  }
+                }
+              ],
+              "status": "unexpected"
+            },
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 2232,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m\"Recovered captions\"\u001b[39m\nReceived: \u001b[31mundefined\u001b[39m\n\nCall Log:\n- Timeout 2000ms exceeded while waiting on the predicate",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m\"Recovered captions\"\u001b[39m\nReceived: \u001b[31mundefined\u001b[39m\n\nCall Log:\n- Timeout 2000ms exceeded while waiting on the predicate\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/player-subtitles-lifecycle.spec.ts:18:175",
+                    "location": {
+                      "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/player-subtitles-lifecycle.spec.ts",
+                      "column": 175,
+                      "line": 18
+                    },
+                    "snippet": "  16 |     await page.evaluate(() => dispatchEvent(new PageTransitionEvent(\"pageshow\", {persisted: true})));\n  17 |     await info.attach(\"transport-after-persisted-restore\", {body: JSON.stringify(await peer.stats()), contentType: \"application/json\"});\n> 18 |     await expect.poll(() => page.locator('track[srclang=\"en\"]').evaluate((track: HTMLTrackElement) => (track.track.cues?.[0] as VTTCue | undefined)?.text), {timeout: 2_000}).toBe(\"Recovered captions\");\n     |                                                                                                                                                                               ^\n  19 |     await expect(page.locator(\"[data-subtitle-status]\")).toBeHidden();\n  20 |     await expect(page.locator(\"[data-subtitle-retry]\")).toBeHidden();\n  21 |     expect(await page.locator(\"track\").evaluate((track: HTMLTrackElement) => track.track.mode)).toBe(\"showing\");"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/player-subtitles-lifecycle.spec.ts",
+                        "column": 175,
+                        "line": 18
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m\"Recovered captions\"\u001b[39m\nReceived: \u001b[31mundefined\u001b[39m\n\nCall Log:\n- Timeout 2000ms exceeded while waiting on the predicate\n\n  16 |     await page.evaluate(() => dispatchEvent(new PageTransitionEvent(\"pageshow\", {persisted: true})));\n  17 |     await info.attach(\"transport-after-persisted-restore\", {body: JSON.stringify(await peer.stats()), contentType: \"application/json\"});\n> 18 |     await expect.poll(() => page.locator('track[srclang=\"en\"]').evaluate((track: HTMLTrackElement) => (track.track.cues?.[0] as VTTCue | undefined)?.text), {timeout: 2_000}).toBe(\"Recovered captions\");\n     |                                                                                                                                                                               ^\n  19 |     await expect(page.locator(\"[data-subtitle-status]\")).toBeHidden();\n  20 |     await expect(page.locator(\"[data-subtitle-retry]\")).toBeHidden();\n  21 |     expect(await page.locator(\"track\").evaluate((track: HTMLTrackElement) => track.track.mode)).toBe(\"showing\");\n    at /Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/player-subtitles-lifecycle.spec.ts:18:175"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T09:16:54.776Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "transport-after-persisted-restore",
+                      "contentType": "application/json",
+                      "body": "eyJjYWxscyI6MSwiY2xvc2VkIjoxfQ=="
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-r10-subtitle-recovery/lifecycle-red/player-subtitles-lifecycle-3137e-loads-the-selected-language-chromium-repeat1/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-r10-subtitle-recovery/lifecycle-red/player-subtitles-lifecycle-3137e-loads-the-selected-language-chromium-repeat1/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/engineering/qa/2026-10-04-r10-subtitle-recovery/lifecycle-red/player-subtitles-lifecycle-3137e-loads-the-selected-language-chromium-repeat1/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r02-r04-library/apps/player/e2e/player-subtitles-lifecycle.spec.ts",
+                    "column": 175,
+                    "line": 18
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "624f85760dbd4a368cb0-cc75b2b03cfbdb70f842",
+          "file": "player-subtitles-lifecycle.spec.ts",
+          "line": 7,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-04T09:16:41.271Z",
+    "duration": 26387.31,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

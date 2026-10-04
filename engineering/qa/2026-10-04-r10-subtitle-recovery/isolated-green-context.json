@@ -1,0 +1,115 @@
+{
+  "id": "R10",
+  "revision": "e3651e1e016e9d1e165e0d0f37985469456e56a9",
+  "boundary": "Actual caption loader, native tracks and real HTTP deadline/lifecycle controls in isolated shell; Go delivery/media/video proof not run",
+  "browser": "Chromium project using installed Google Chrome",
+  "workers": 1,
+  "video": "off",
+  "passed": 12,
+  "skipped": 0,
+  "failed": 0,
+  "flaky": 0,
+  "errors": [],
+  "duration_ms": 11952.949999999999,
+  "inputs": {
+    "apps/player/internal/server/static/player-subtitles.js": "cbd2e1afb58d508736504e9e03b9878f7385533b6a59dd1c9656cc870a6e790f",
+    "apps/player/internal/server/player.go": "72a8d18da5ad10f4f2f716cff0dcf6369e29670aea2dab35f647e261ddbe3542",
+    "apps/player/e2e/player-subtitles-recovery.spec.ts": "1a37778d8ca4cafa51c2aa19022a1c5e0298de30d637c7609dc2c715455570c5",
+    "apps/player/e2e/player-subtitles-loading.spec.ts": "38dcca7181863d827a256bead2da569309a89eb30a8ac0f50445df4068aaf7ac",
+    "apps/player/e2e/player-subtitles-lifecycle.spec.ts": "918a961da8e28f28e8a929b0101f09d99740dc3b50f30bac2a63aea90ca6a84e",
+    "apps/player/e2e/player-subtitles-recovery-fixture.ts": "6924a9eeb1de95370eb3aa1714742011f49b07aef0b98aa289e4c9295cf98f95",
+    "apps/player/internal/server/subtitle_recovery_browser_test.go": "8d92bc3cb1f9d0cf945f93b8a52af054f2fe9fd59c9bf405bec27764ba1c2d7c"
+  },
+  "cases": [
+    {
+      "title": "persisted caption restore cancels the old attempt and reloads the selected language",
+      "status": "passed",
+      "duration_ms": 349,
+      "attachments": [
+        {
+          "name": "transport-after-persisted-restore",
+          "contentType": "application/json",
+          "body": "eyJjYWxscyI6MiwiY2xvc2VkIjoxfQ=="
+        }
+      ]
+    },
+    {
+      "title": "persisted caption restore keeps Off without starting another request",
+      "status": "passed",
+      "duration_ms": 280,
+      "attachments": []
+    },
+    {
+      "title": "pending default captions never enter the media loading path",
+      "status": "passed",
+      "duration_ms": 223,
+      "attachments": []
+    },
+    {
+      "title": "turning captions off while loading preserves the choice",
+      "status": "passed",
+      "duration_ms": 233,
+      "attachments": []
+    },
+    {
+      "title": "rejects http captions without assigning a media source",
+      "status": "passed",
+      "duration_ms": 222,
+      "attachments": []
+    },
+    {
+      "title": "rejects type captions without assigning a media source",
+      "status": "passed",
+      "duration_ms": 214,
+      "attachments": []
+    },
+    {
+      "title": "rejects empty captions without assigning a media source",
+      "status": "passed",
+      "duration_ms": 222,
+      "attachments": []
+    },
+    {
+      "title": "rejects oversized captions without assigning a media source",
+      "status": "passed",
+      "duration_ms": 579,
+      "attachments": []
+    },
+    {
+      "title": "rejects a foreign caption origin before any request",
+      "status": "passed",
+      "duration_ms": 210,
+      "attachments": []
+    },
+    {
+      "title": "failed captions can be retried through the existing selector",
+      "status": "passed",
+      "duration_ms": 227,
+      "attachments": []
+    },
+    {
+      "title": "isolated transport: stalled caption headers reaches a deadline and keyboard Retry at 390px",
+      "status": "passed",
+      "duration_ms": 409,
+      "attachments": [
+        {
+          "name": "transport-at-deadline",
+          "contentType": "application/json",
+          "body": "eyJjYWxscyI6MSwiY2xvc2VkIjoxfQ=="
+        }
+      ]
+    },
+    {
+      "title": "isolated transport: stalled caption body reaches a deadline and keyboard Retry at 390px",
+      "status": "passed",
+      "duration_ms": 412,
+      "attachments": [
+        {
+          "name": "transport-at-deadline",
+          "contentType": "application/json",
+          "body": "eyJjYWxscyI6MSwiY2xvc2VkIjoxfQ=="
+        }
+      ]
+    }
+  ]
+}
