@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Prepared public driver E2E controls. SOURCE ONLY; do not invoke real Go."""
 import argparse
+import ast
 import hashlib
 import json
 import os
@@ -18,9 +19,15 @@ import time
 
 def prepare(source, directory):
     recipe = "apps/subtitles/engineering/qa/2026-10-04-action-recovery/hosted"
-    scope = json.loads((source / recipe / "protocol-scope.json").read_text())
+    helper = source / "apps/subtitles/scripts/campaign_r06_sources.py"
+    assignments = {target.id: node.value.value for node in ast.parse(helper.read_text()).body
+                   if isinstance(node, ast.Assign) and isinstance(node.value, ast.Constant)
+                   for target in node.targets if isinstance(target, ast.Name)}
+    scope_name = assignments.get("SCOPE_FILE", "protocol-scope.json")
+    assert isinstance(scope_name, str) and Path(scope_name).name == scope_name
+    scope = json.loads((source / recipe / scope_name).read_text())
     names = [s["path"] for s in scope["sourcePins"]]
-    names += [recipe + "/protocol-scope.json", scope["overlay"]["baselineFixture"],
+    names += [recipe + "/" + scope_name, scope["overlay"]["baselineFixture"],
               "apps/subtitles/scripts/campaign-r06-public.py"]
     for helper in ("campaign_r06_sources.py", "campaign_r06_projection.py"):
         if (source / "apps/subtitles/scripts" / helper).exists():
@@ -40,14 +47,14 @@ def prepare(source, directory):
     for command in (["git", "init", "-q"], ["git", "add", "."],
                     ["git", "-c", "user.name=Fictional Control", "-c", "user.email=control@example.invalid", "commit", "-qm", "fictional driver inputs"]):
         subprocess.run(command, cwd=directory, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    return scope, subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=directory, text=True).strip()
+    return scope, subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=directory, text=True).strip(), scope_name
 
 def control(source, output, name):
     root = output / name
     root.mkdir()
-    scope, revision = prepare(source, root)
+    scope, revision, scope_name = prepare(source, root)
     env = dict(os.environ, PATH=str(root / "control-tools") + os.pathsep + os.environ["PATH"],
-               GITHUB_SHA=revision, R06_DRIVER_CASE=name, R06_DRIVER_SCOPE=str(root / "apps/subtitles/engineering/qa/2026-10-04-action-recovery/hosted/protocol-scope.json"),
+               GITHUB_SHA=revision, R06_DRIVER_CASE=name, R06_DRIVER_SCOPE=str(root / "apps/subtitles/engineering/qa/2026-10-04-action-recovery/hosted" / scope_name),
                R06_DRIVER_STARTED=str(root / "fake-go-started"), R06_DRIVER_DESCENDANT=str(root / "fake-descendant"),
                R06_DRIVER_DRIFT=str(root / "driver-control-marker.txt"))
     if name == "hosted-missing-revision":
