@@ -154,4 +154,24 @@ failures export a fixed failure class and incomplete status, with source and
 R16 integrity fields retained. Fourteen fictional controls now include
 independent group-absence checks before control cleanup and injected signal
 permission failure. The strengthened controls precede this repair; their
-new runtime execution remains pending. No actual Go has run under this driver.
+runtime result at `ddd85da04ced8b03ee97761a3a1e0d228925dbc4` is 13 PASS and
+one FAIL in 97.449 seconds. The departed-leader control reaches its intended
+90.003-second timeout and reaps the leader with exit zero. Its owned-group
+settlement check receives `PermissionError`, so the unchanged group-absence
+assertion fails. This default-sandbox run does not establish complete driver
+acceptance. Later absence of both owned PIDs does not replace that assertion.
+The original receipt stores the fixed class and phase; errno and the specific
+signal call were not captured. Preserve this platform boundary for hosted
+evaluation without relaxing typed acceptance.
+
+The safe four-file projections for all 14 cases, original control summary,
+separate later PID observation, and SHA manifest are preserved under
+`evidence/driver-controls-ddd85da0/`. The manifest pins all 58 supporting JSON
+files. The summary SHA is
+`0e2ebd0d3c601adfefc7d63062dd6d6b37d63f6140ff64f9702ced5994653977`.
+`integration-plan-ddd85da0.json` lists 25 owned commits in order from current
+main `ee567e9b9d6b4dc4211055e1f2ef968c5ce63209`, with no changed-main path
+overlap and no physical R16 preparation changes. Root integrates its route
+separately once and adds this evidence-only checkpoint afterward. No actual
+Go has run under this driver. The previous actual public result remains
+31 top-level PASS, two early prerequisite FAIL, and 45 subtest PASS.
