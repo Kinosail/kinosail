@@ -51,3 +51,31 @@ existing TypeScript type scan fails on pre-existing any/unknown cases and one
 R04-owned new fixture assertion; root was notified to repair that assertion in
 the frozen R04 integration checkout. New R10 tests contain neither forbidden
 type. No type contract was weakened.
+
+## Separate persisted caption lifecycle baseline
+
+From `apps/player/e2e`, before the caption controller/restore repair:
+
+```sh
+KINOSAIL_CAPTION_ISOLATED=1 KINOSAIL_E2E_VIDEO=off \
+KINOSAIL_E2E_OUTPUT_DIR="$PWD/../../../engineering/qa/2026-10-04-r10-subtitle-recovery/lifecycle-red" \
+KINOSAIL_E2E_ARTIFACT_DIR="$PWD/../../../engineering/qa/2026-10-04-r10-subtitle-recovery/lifecycle-red-report" \
+pnpm exec playwright test player-subtitles-lifecycle.spec.ts \
+  --grep='persisted caption restore cancels' --repeat-each=2 --workers=1 --project=chromium
+```
+
+This separately repeats the native persisted-page lifecycle control. It proves
+real transport cancellation and caption reload behavior after dispatched native
+PageTransitionEvent objects, rather than an actual BFCache navigation.
+
+After that baseline and the narrow repair, run the affected isolated caption
+suite once with the same explicit opt-in and one worker:
+
+```sh
+pnpm exec playwright test player-subtitles-recovery.spec.ts \
+  player-subtitles-loading.spec.ts player-subtitles-lifecycle.spec.ts \
+  --workers=1 --project=chromium
+```
+
+The integration owner controls the browser/build slots. No additional timer
+configuration or production test flag is introduced.
