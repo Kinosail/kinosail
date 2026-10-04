@@ -9,7 +9,8 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[3]
 APP = ROOT / "apps/subtitles"
 RECIPE = APP / "engineering/qa/2026-10-04-action-recovery/hosted"
-SCOPE_SHA = "7de3b390b051d2053e715674601f52854ae9b1074a2732599607cdd131d69ea5"
+SCOPE_FILE = "protocol-scope-3682759b.json"
+SCOPE_SHA = "be16e9dd161aa1ac0a4a8364220e37b6bb34086474f07cf601d77d493b0f47e9"
 
 def fingerprint(path):
     if not path.exists():
@@ -35,7 +36,7 @@ def r16_state(scope):
     return {name: fingerprint(ROOT / name) for name in scope["overlay"]["preservedLocalR16"]}
 
 def checked_scope():
-    data = (RECIPE / "protocol-scope.json").read_bytes()
+    data = (RECIPE / SCOPE_FILE).read_bytes()
     if hashlib.sha256(data).hexdigest() != SCOPE_SHA:
         raise RuntimeError("scope-integrity")
     scope = json.loads(data)

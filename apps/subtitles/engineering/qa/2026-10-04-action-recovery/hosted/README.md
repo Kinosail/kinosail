@@ -1,11 +1,15 @@
 # R06 focused hosted public protocol
 
-This recipe pins the public protocol sources reviewed at
-`ac27d7af98624bf333091382aa9a66e9e5a917be`. It selects exactly 26 R06
-operation tests and seven incumbent controls, with 45 known named subtests.
-The previous complete run remains 31 top-level PASS, two early prerequisite
-FAIL, and 45 subtest PASS. The startup prerequisite correction is source-clear
-but has not executed. This recipe does not establish runtime acceptance.
+The active recipe pins structural required-check repairs at
+`3682759bea98117023a39c97700dce9f4dcde910` in
+`protocol-scope-3682759b.json`. It retains exactly 26 R06 operation tests,
+seven incumbent controls, and 45 known named subtests. The original
+`protocol-scope.json` still preserves the reviewed `ac27d7af` snapshot.
+Root's independently reviewed actual hosted run `37226260845` passed all
+33 top-level and 45 subtest cases at `e687826b`. That earlier proof does not
+validate the new structural refactor. Candidate lint, public checks and the
+canonical generated architecture refresh remain pending. No local Go or
+generator was executed for these source repairs.
 
 ## Failure analysis before driver implementation
 
@@ -74,7 +78,7 @@ The generated Go command runs from `apps/subtitles`:
 
 ```text
 go test -p 1 -parallel 1 -overlay=<generated portable overlay> \
-  ./internal/server -run <protocol-scope.json runPattern> \
+  ./internal/server -run <active protocol scope runPattern> \
   -count=1 -timeout=80s -json
 ```
 
@@ -83,7 +87,8 @@ The current command uses `GOMAXPROCS=2`, `GOPROXY=off`,
 `GOSUMDB`; normal checksum verification remains active. Historical local
 receipts retain their original environment and are never rewritten.
 The exact selector and
-53 source hashes are published in `protocol-scope.json`. The tracked
+53 current source hashes are published in `protocol-scope-3682759b.json`;
+the older `protocol-scope.json` is historical. The tracked
 `subtitle-maintenance-baseline.go.txt` is the clean compilation fixture;
 neither dirty R16 original is staged or copied into the published recipe.
 
@@ -173,5 +178,9 @@ files. The summary SHA is
 main `ee567e9b9d6b4dc4211055e1f2ef968c5ce63209`, with no changed-main path
 overlap and no physical R16 preparation changes. Root integrates its route
 separately once and adds this evidence-only checkpoint afterward. No actual
-Go has run under this driver. The previous actual public result remains
-31 top-level PASS, two early prerequisite FAIL, and 45 subtest PASS.
+Go ran during that local fictional control sequence. The earlier local
+public result remains 31 top-level PASS, two early prerequisite FAIL, and
+45 subtest PASS. Root's later actual hosted `e687826b` result passed 33/45;
+it is separate from both this failed fictional control and the untested
+structural source repairs. `required-check-repair-3682759b.json` records
+the new source-only boundary and the preserved lifecycle/contract assertions.
