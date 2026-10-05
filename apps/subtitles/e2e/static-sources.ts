@@ -9,4 +9,5 @@ export const playerSource = await readStaticSource([
   "../../../packages/webassets/static/player-presentation.js",
   "../../../packages/webassets/static/player-devices.js",
   "../../../packages/webassets/static/player-progress.js",
+  "../../../packages/webassets/static/player-progress-navigation.js",
 ], import.meta.url);
