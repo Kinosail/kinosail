@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page, type Request, type TestInfo } from "@playwright/test";
 import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { configureTestInstance, login } from "./test-instance-helpers";
@@ -25,19 +25,19 @@ test.beforeEach(async ({page}) => {
   });
 });
 
-async function checkpoint(page: Page, id: string) {
+async function checkpoint(page: Page, id: string, session?: string) {
   const response = await page.request.get(`/api/v1/items/${id}`);
   expect(response.status()).toBe(200);
   const body = await response.json();
   expect(body.item.progress).toBeTruthy();
-  return body.item.progress as {seconds: number; revision: number};
+  return {seconds: Number(body.item.progress.seconds), revision: Number(body.item.progress.revision),
+    ...(session ? {sessionMatches: body.item.progress.session === session} : {})};
 }
 
 
-async function observeExit(page: Page, id: string) {
-  await page.evaluate(item => {
+async function observeExit(page: Page, id: string, key: string) {
+  await page.evaluate(({item, key}) => {
     const video = document.querySelector("video")!;
-    const key = "kinosail:checkpoint-exit-observation";
     const observations: Array<Record<string, unknown>> = [];
     const record = (stage: string, detail: Record<string, unknown> = {}) => {
       try {
@@ -74,7 +74,7 @@ async function observeExit(page: Page, id: string) {
           preparationActive: typeof playbackPreparation !== "undefined" && Boolean(playbackPreparation),
           progressInFlight: typeof progressFlight !== "undefined" && Boolean(progressFlight),
           pendingWatched: typeof pendingProgress !== "undefined" && Boolean(pendingProgress?.watched),
-          pendingOwned: typeof ownsProgress === "function" && typeof pendingProgress !== "undefined" && ownsProgress(pendingProgress),
+          pendingOwned: typeof ownsProgress === "function" && typeof pendingProgress !== "undefined" && Boolean(ownsProgress(pendingProgress)),
           progressFailure: typeof progressFailure === "string" && ["", "authentication", "server", "policy", "response",
             "timeout", "network", "invalid"].includes(progressFailure) ? progressFailure : "unknown"});
       } catch { record("player-exit-guards-unavailable"); }
@@ -82,10 +82,10 @@ async function observeExit(page: Page, id: string) {
     for (const event of ["pause", "emptied"]) video.addEventListener(event, () => record(event), {capture: true});
     document.querySelector('a.back[href="/"]')?.addEventListener("click", () => record("library-click"), {capture: true});
     record("observation-start");
-  }, id);
+  }, {item: id, key});
 }
 
-async function openMovie(page: Page) {
+async function openMovie(page: Page, observation?: {key: string; iteration: number; testInfo: TestInfo}) {
   await login(page);
   await page.goto("/?q=Checkpoint%20Example&view=movies");
   const card = page.locator('a.card[href^="/watch/"]').filter({hasText: "Checkpoint Example"}).first();
@@ -97,13 +97,29 @@ async function openMovie(page: Page) {
   await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThanOrEqual(2);
   const duration = await media.evaluate((video: HTMLVideoElement) => video.duration);
   expect(duration).toBeGreaterThan(20);
+  const session = await media.getAttribute("data-playback-session") || undefined;
+  expect(Boolean(session && /^[a-zA-Z0-9_-]{8,64}$/.test(session))).toBe(true);
+  if (observation) await observeExit(page, id, observation.key);
   await media.evaluate((video: HTMLVideoElement) => video.play());
   await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.getVideoPlaybackQuality().totalVideoFrames)).toBeGreaterThan(2);
   await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(0.2);
   await media.evaluate((video: HTMLVideoElement) => video.pause());
   const paused = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
-  await expect.poll(async () => Math.abs((await checkpoint(page, id)).seconds - paused)).toBeLessThan(0.1);
-  return {watch, media, id, paused, duration};
+  let baseline: Awaited<ReturnType<typeof checkpoint>> | undefined;
+  try {
+    await expect.poll(async () => {
+      baseline = await checkpoint(page, id, session);
+      return !observation || baseline.sessionMatches ? Math.abs(baseline.seconds - paused) : Infinity;
+    }).toBeLessThan(0.1);
+  } finally {
+    if (observation) {
+      const lifecycle = await page.evaluate(key => JSON.parse(sessionStorage.getItem(key) || "[]"), observation.key)
+        .catch(() => [{stage: "observation-unavailable"}]);
+      await observation.testInfo.attach(`pause-baseline-${observation.iteration}`, {body: JSON.stringify({phase,
+        iteration: observation.iteration, paused, checkpoint: baseline, lifecycle}), contentType: "application/json"});
+    }
+  }
+  return {watch, media, id, paused, duration, session};
 }
 
 test("completed paused seek persists before Library navigation and resumes actual movie frames", {tag: "@smoke"}, async ({page}, testInfo) => {
@@ -135,35 +151,45 @@ test("completed paused seek persists before Library navigation and resumes actua
 });
 
 test("Library exit checkpoints actual playing time before teardown without reset-position overwrite", {tag: "@smoke"}, async ({page}, testInfo) => {
-  const {watch, media, id} = await openMovie(page);
-  await media.evaluate((video: HTMLVideoElement) => video.play());
-  const first = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
-  await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(first + 0.5);
-  await observeExit(page, id);
-  const leaveAt = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
-  const beforeExit = await checkpoint(page, id);
-  const writes: Array<{seconds: number; revision: number}> = [];
-  page.on("request", request => {
-    if (new URL(request.url()).pathname !== `/progress/${id}` || request.method() !== "POST") return;
-    const form = new URLSearchParams(request.postData() || "");
-    writes.push({seconds: Number(form.get("seconds")), revision: Number(form.get("revision"))});
-  });
-  try {
-    await page.getByRole("link", {name: "Library", exact: true}).click();
-    await expect(page).toHaveURL(/\/$/);
-    await expect.poll(async () => (await checkpoint(page, id)).seconds, {timeout: 3000}).toBeGreaterThanOrEqual(leaveAt - 0.1);
-    await page.waitForTimeout(300);
-    const saved = await checkpoint(page, id);
-    expect(saved.seconds).toBeGreaterThanOrEqual(leaveAt - 0.1);
-    expect(saved.revision).toBeGreaterThan(beforeExit.revision);
-    expect(writes.every(write => write.seconds >= leaveAt - 0.1)).toBe(true);
-    await testInfo.attach("exit-checkpoint", {body: JSON.stringify({phase, leaveAt, beforeExit, saved, browserObservedWrites: writes, observationLimit: "Chromium may omit pagehide keepalive from page request events; actual persisted position/revision are authoritative."}), contentType: "application/json"});
-  } finally {
-    const lifecycle = await page.evaluate(() => JSON.parse(sessionStorage.getItem("kinosail:checkpoint-exit-observation") || "[]"));
-    await testInfo.attach("exit-lifecycle-observation", {body: JSON.stringify({phase, revision: process.env.GITHUB_SHA || "",
-      browser: page.context().browser()?.version(), leaveAt, beforeExit, lifecycle}), contentType: "application/json"});
+  // Repeat the reported failure flow within one populated journey, without retrying away a failure.
+  for (let iteration = 0; iteration < (phase === "candidate" ? 3 : 1); iteration++) {
+    const observationKey = `kinosail:checkpoint-exit-observation:${iteration}`;
+    const {watch, media, id, session} = await openMovie(page, {key: observationKey, iteration, testInfo});
+    await media.evaluate((video: HTMLVideoElement) => video.play());
+    const first = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
+    await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(first + 0.5);
+    const leaveAt = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
+    const beforeExit = await checkpoint(page, id, session);
+    const writes: Array<{seconds: number; revision: number; sessionMatches: boolean}> = [];
+    const observeRequest = (request: Request) => {
+      if (new URL(request.url()).pathname !== `/progress/${id}` || request.method() !== "POST") return;
+      const form = new URLSearchParams(request.postData() || "");
+      writes.push({seconds: Number(form.get("seconds")), revision: Number(form.get("revision")),
+        sessionMatches: form.get("session") === session});
+    };
+    page.on("request", observeRequest);
+    try {
+      expect(beforeExit.sessionMatches).toBe(true);
+      await page.getByRole("link", {name: "Library", exact: true}).click();
+      await expect(page).toHaveURL(/\/$/);
+      await expect.poll(async () => (await checkpoint(page, id)).seconds, {timeout: 3000}).toBeGreaterThanOrEqual(leaveAt - 0.1);
+      await page.waitForTimeout(300);
+      const saved = await checkpoint(page, id, session);
+      expect(saved.seconds).toBeGreaterThanOrEqual(leaveAt - 0.1);
+      expect(saved.sessionMatches).toBe(true);
+      expect(saved.revision).toBeGreaterThan(beforeExit.revision);
+      expect(writes.every(write => write.seconds >= leaveAt - 0.1)).toBe(true);
+      await testInfo.attach(`exit-checkpoint-${iteration}`, {body: JSON.stringify({phase, iteration, leaveAt, beforeExit, saved, browserObservedWrites: writes, observationLimit: "Chromium may omit pagehide keepalive from page request events; actual persisted position/revision are authoritative."}), contentType: "application/json"});
+    } finally {
+      page.off("request", observeRequest);
+      const lifecycle = await page.evaluate(key => JSON.parse(sessionStorage.getItem(key) || "[]"), observationKey)
+        .catch(() => [{stage: "observation-unavailable"}]);
+      const finalCheckpoint = await checkpoint(page, id, session).catch(() => undefined);
+      await testInfo.attach(`exit-lifecycle-observation-${iteration}`, {body: JSON.stringify({phase, iteration, revision: process.env.GITHUB_SHA || "",
+        browser: page.context().browser()?.version(), leaveAt, beforeExit, finalCheckpoint, lifecycle}), contentType: "application/json"});
+    }
+    await page.goto(watch);
+    await expect.poll(async () => Number(await page.locator("video").getAttribute("data-start"))).toBeGreaterThanOrEqual(leaveAt - 0.1);
+    await page.screenshot({path: testInfo.outputPath(`exit-checkpoint-reentry-${iteration}.png`), fullPage: true});
   }
-  await page.goto(watch);
-  await expect.poll(async () => Number(await page.locator("video").getAttribute("data-start"))).toBeGreaterThanOrEqual(leaveAt - 0.1);
-  await page.screenshot({path: testInfo.outputPath("exit-checkpoint-reentry.png"), fullPage: true});
 });
