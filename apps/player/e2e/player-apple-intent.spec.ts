@@ -99,3 +99,43 @@ for (const failure of ['AbortError', 'NotSupportedError']) test(`current Apple P
   await expect(page.locator('video')).toHaveJSProperty('paused', false);
   await expect(page.locator('video')).toHaveJSProperty('webkitDisplayingFullscreen', true);
 });
+
+
+// One event-loop turn injects platform ordering; this does not assert a physical trusted gesture.
+test('queued pause from an older attempt cannot cancel newer Apple control Play @smoke', async ({page}) => {
+  await pendingPlay(page);
+  await page.evaluate(() => {
+    const state = window as Window & {setPlayPending: (value: boolean) => void};
+    document.querySelector('video')!.pause();
+    state.setPlayPending(false);
+    (document.querySelector('[data-player-toggle]') as HTMLButtonElement).click();
+  });
+  await expect(page.locator('video')).toHaveJSProperty('paused', false);
+  await page.evaluate(() => (window as Window & {rejectPendingPlay: (name: string) => void}).rejectPendingPlay('AbortError'));
+  await expect(page.locator('video')).toHaveJSProperty('paused', false);
+  await expect(page.locator('video')).toHaveJSProperty('webkitDisplayingFullscreen', true);
+  await expect(page.locator('.player-control-feedback')).toBeHidden();
+});
+
+test('a stale synchronous Apple Play throw cannot clear a newer pending attempt @smoke', async ({page}) => {
+  await page.evaluate(() => {
+    const video = document.querySelector('video')!;
+    const original = video.play.bind(video);
+    let first = true;
+    Object.defineProperty(video, 'play', {configurable: true, value: () => {
+      if (first) { first = false; throw new DOMException('synthetic current rejection', 'NotSupportedError'); }
+      return original();
+    }});
+    (window as Window & {setPlayPending: (value: boolean) => void}).setPlayPending(true);
+    const play = document.querySelector('[data-player-toggle]') as HTMLButtonElement;
+    play.click(); play.click();
+  });
+  await expect(page.locator('video')).toHaveJSProperty('paused', false);
+  await page.locator('video').evaluate((video: HTMLVideoElement) => video.pause());
+  await page.evaluate(() => (window as Window & {rejectPendingPlay: (name: string) => void}).rejectPendingPlay('AbortError'));
+  await page.waitForTimeout(0);
+  const feedbackVisible = await page.locator('.player-control-feedback').isVisible();
+  expect(feedbackVisible).toBe(false);
+  await expect(page.locator('video')).toHaveJSProperty('paused', true);
+  await expect(page.locator('video')).toHaveJSProperty('webkitDisplayingFullscreen', true);
+});
