@@ -1,6 +1,6 @@
 let progressRevision = 0;
 // One page-owned pending position; never replay a closed page's session over newer state.
-let pendingProgress, progressFlight, progressFailure = "", progressContinuation;
+let pendingProgress, progressFlight, progressFailure = "", progressContinuation, progressNavigation;
 const progressNotice = document.querySelector("[data-progress-notice]");
 const progressStatus = document.querySelector("[data-progress-status]");
 const progressRetry = document.querySelector("[data-progress-retry]");
@@ -15,7 +15,8 @@ const progressItem = () => {
 const progressProfile = () => document.body.dataset.viewerProfile || "";
 const ownsProgress = (value) => value && value.profile === progressProfile() && value.item === progressItem() &&
   value.revision === progressRevision && player.dataset.castActive !== "true" && player.dataset.offline !== "true";
-const clearProgress = () => {
+const clearProgress = (continueNavigation = false) => {
+  if (!continueNavigation) cancelProgressNavigation();
   pendingProgress = undefined; progressFailure = ""; progressContinuation = undefined;
   if (progressNotice) { progressNotice.hidden = true; progressNotice.removeAttribute("aria-busy"); }
   if (progressRetry) progressRetry.disabled = false;
@@ -40,8 +41,10 @@ const sendProgress = (closing = false) => {
     while (ownsProgress(pendingProgress)) {
       const observed = pendingProgress;
       const controller = new AbortController();
-      let timedOut = false;
-      const timeout = setTimeout(() => { timedOut = true; controller.abort(); }, 8000);
+      if (progressNavigation && !ownsProgressNavigation()) cancelProgressNavigation();
+      const remaining = progressNavigation ? Math.min(8000, progressNavigation.deadline - performance.now()) : 8000;
+      let timedOut = remaining <= 0;
+      const timeout = setTimeout(() => { timedOut = true; controller.abort(); }, Math.max(0, remaining));
       let failure = "";
       if (progressNotice && !progressNotice.hidden) {
         progressNotice.setAttribute("aria-busy", "true");
@@ -49,6 +52,7 @@ const sendProgress = (closing = false) => {
       }
       if (progressRetry) progressRetry.disabled = true;
       try {
+        if (timedOut) await Promise.reject(new Error("progress deadline elapsed"));
         response = await fetch(player.dataset.progress, {
           method: "POST",
           headers: {"Content-Type": "application/x-www-form-urlencoded", "X-Playback-Session": playbackSession, ...(csrf ? {"X-Kinosail-CSRF": csrf} : {})},
@@ -59,6 +63,7 @@ const sendProgress = (closing = false) => {
         else if (response.status === 408 || response.status === 429 || response.status >= 500) failure = "server";
         else if (response.status >= 400) failure = "policy";
         else if (response.status !== 204) failure = "response";
+        if (!failure && progressNavigation && performance.now() >= progressNavigation.deadline) failure = "timeout";
       } catch (_) { failure = timedOut ? "timeout" : "network"; response = undefined; }
       finally { clearTimeout(timeout); }
       if (progressFlight !== flight) break;
@@ -74,7 +79,7 @@ const sendProgress = (closing = false) => {
         progressFailure = failure; showProgressFailure(); response = {ok: false}; break;
       }
       const continuation = progressContinuation;
-      clearProgress();
+      clearProgress(continuation === progressNavigation?.leave);
       if (continuation) await continuation();
       if (progressFlight === flight && ownsProgress(pendingProgress)) continue;
       break;
@@ -84,18 +89,23 @@ const sendProgress = (closing = false) => {
   progressFlight = flight;
   return flight;
 };
-const retryProgress = () => {
+const retryProgress = (explicit = false) => {
   if (!ownsProgress(pendingProgress)) { clearProgress(); return; }
+  if (progressNavigation && !ownsProgressNavigation()) cancelProgressNavigation();
+  if (progressNavigation) {
+    if (explicit) progressNavigation.deadline = performance.now() + 8000;
+    else if (performance.now() >= progressNavigation.deadline) return;
+  }
   if (retryableProgress()) return sendProgress();
 };
-progressRetry?.addEventListener("click", retryProgress);
+progressRetry?.addEventListener("click", () => retryProgress(true));
 progressContinue?.addEventListener("click", () => {
   if (!ownsProgress(pendingProgress)) { clearProgress(); return; }
   const continuation = progressContinuation;
-  clearProgress();
+  clearProgress(continuation === progressNavigation?.leave);
   continuation?.();
 });
-addEventListener("online", retryProgress);
+addEventListener("online", () => retryProgress());
 const save = (watched = false, closing = false) => {
   if (playbackPreparation) return Promise.resolve();
   if (player.dataset.castActive === "true" || player.dataset.offline === "true") {
@@ -183,6 +193,7 @@ player.addEventListener("ended", async () => {
   await save(true);
 });
 player.addEventListener("kinosail:page-exit", () => {
+  cancelProgressNavigation();
   if (player.readyState >= HTMLMediaElement.HAVE_METADATA && !player.ended) save(false, true);
 });
 setInterval(() => { if (!player.paused) save(); }, 10000);
