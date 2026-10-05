@@ -3,6 +3,13 @@ import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { configureTestInstance, login } from "./test-instance-helpers";
 
+// Read-only diagnostics for the page's existing playback state; these declarations emit no JavaScript.
+declare const playbackPreparation: unknown;
+declare const progressFlight: unknown;
+declare const pendingProgress: {watched?: boolean} | undefined;
+declare const progressFailure: string;
+declare const ownsProgress: (pending: unknown) => boolean;
+
 configureTestInstance();
 const phase = process.env.KINOSAIL_CHECKPOINT_SOURCE || "candidate";
 if (!["deployed", "current", "candidate"].includes(phase)) throw new Error("Unknown checkpoint source phase");
@@ -33,20 +40,26 @@ async function observeExit(page: Page, id: string) {
     const key = "kinosail:checkpoint-exit-observation";
     const observations: Array<Record<string, unknown>> = [];
     const record = (stage: string, detail: Record<string, unknown> = {}) => {
-      observations.push({stage, elapsedMs: Math.round(performance.now()), seconds: video.currentTime,
-        readyState: video.readyState, paused: video.paused, ended: video.ended, seeking: video.seeking,
-        visibility: document.visibilityState, ...detail});
-      sessionStorage.setItem(key, JSON.stringify(observations.slice(-32)));
+      try {
+        observations.push({stage, sequence: observations.length + 1, elapsedMs: Math.round(performance.now()),
+          seconds: video.currentTime, readyState: video.readyState, paused: video.paused, ended: video.ended,
+          seeking: video.seeking, visibility: document.visibilityState,
+          serviceWorkerControlled: Boolean(navigator.serviceWorker?.controller), ...detail});
+        sessionStorage.setItem(key, JSON.stringify(observations.slice(-32)));
+      } catch { /* Observation must not change the playback or navigation outcome. */ }
     };
-    sessionStorage.removeItem(key);
+    try { sessionStorage.removeItem(key); } catch { /* Storage can be unavailable. */ }
     const originalFetch = window.fetch;
     window.fetch = function(input, init) {
-      const request = input instanceof Request ? input : null;
-      const matches = new URL(request?.url || String(input), location.href).pathname === `/progress/${item}`
-        && (init?.method || request?.method) === "POST";
-      const body = init?.body instanceof URLSearchParams ? init.body : new URLSearchParams();
-      if (matches) record("progress-dispatch", {submittedSeconds: Number(body.get("seconds")),
-        revision: Number(body.get("revision")), keepalive: init?.keepalive === true});
+      let matches = false;
+      try {
+        const request = input instanceof Request ? input : null;
+        matches = new URL(request?.url || String(input), location.href).pathname === `/progress/${item}`
+          && (init?.method || request?.method) === "POST";
+        const body = init?.body instanceof URLSearchParams ? init.body : new URLSearchParams();
+        if (matches) record("progress-dispatch", {submittedSeconds: Number(body.get("seconds")),
+          revision: Number(body.get("revision")), keepalive: init?.keepalive === true});
+      } catch { /* Preserve the original fetch behavior, including invalid input handling. */ }
       const flight = originalFetch.call(this, input, init);
       if (matches) void flight.then(response => record("progress-response", {status: response.status}),
         () => record("progress-rejected"));
@@ -55,7 +68,17 @@ async function observeExit(page: Page, id: string) {
     addEventListener("pagehide", event => record("pagehide-before-player", {persisted: event.persisted}), {capture: true});
     addEventListener("pagehide", event => record("pagehide-after-player", {persisted: event.persisted}));
     document.addEventListener("visibilitychange", () => record("visibilitychange"), {capture: true});
-    video.addEventListener("kinosail:page-exit", () => record("player-exit"), {capture: true});
+    video.addEventListener("kinosail:page-exit", () => {
+      try {
+        record("player-exit", {castActive: video.dataset.castActive === "true", offline: video.dataset.offline === "true",
+          preparationActive: typeof playbackPreparation !== "undefined" && Boolean(playbackPreparation),
+          progressInFlight: typeof progressFlight !== "undefined" && Boolean(progressFlight),
+          pendingWatched: typeof pendingProgress !== "undefined" && Boolean(pendingProgress?.watched),
+          pendingOwned: typeof ownsProgress === "function" && typeof pendingProgress !== "undefined" && ownsProgress(pendingProgress),
+          progressFailure: typeof progressFailure === "string" && ["", "authentication", "server", "policy", "response",
+            "timeout", "network", "invalid"].includes(progressFailure) ? progressFailure : "unknown"});
+      } catch { record("player-exit-guards-unavailable"); }
+    }, {capture: true});
     for (const event of ["pause", "emptied"]) video.addEventListener(event, () => record(event), {capture: true});
     document.querySelector('a.back[href="/"]')?.addEventListener("click", () => record("library-click"), {capture: true});
     record("observation-start");
