@@ -71,6 +71,7 @@ test('simulated native Apple Pause cancels pending Play without a startup failur
   await info.attach('native-pause-intent-observation', {body: JSON.stringify({observations,
     hypothesis: 'Pause makes the earlier pending Play obsolete', media: 'simulated Apple API/deferred Play, no decoded frames'}),
     contentType: 'application/json'});
+  expect(observations.at(-1)?.feedbackVisible).toBe(false);
   await expect(page.locator('video')).toHaveJSProperty('paused', true);
   await expect(page.locator('video')).toHaveJSProperty('webkitDisplayingFullscreen', true);
   await expect(page.locator('.player-control-feedback')).toBeHidden();
