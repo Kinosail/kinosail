@@ -22,6 +22,11 @@ on:
         type: choice
         options: [primary, cold, bfcache, htmx, shows, search, safety, home]
         default: primary
+      campaign_r06_suite:
+        description: Select original R06 protocol or one fixed Save browser fault suite
+        type: choice
+        options: [protocol, save-controls, save-headers, save-body, source-format]
+        default: protocol
       architecture_metadata:
         description: Collect bounded source metadata for canonical architecture regeneration
         type: boolean
@@ -113,6 +118,7 @@ jobs:
     env:
       CAMPAIGN_PROOF: ${{ inputs.campaign_proof }}
       CAMPAIGN_Q14_SUITE: ${{ inputs.campaign_q14_suite || 'primary' }}
+      CAMPAIGN_R06_SUITE: ${{ inputs.campaign_r06_suite || 'protocol' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -126,6 +132,11 @@ jobs:
             *) exit 2 ;;
           esac
           if [ "$CAMPAIGN_PROOF" != Q14 ] && [ "$CAMPAIGN_Q14_SUITE" != primary ]; then exit 2; fi
+          case "$CAMPAIGN_R06_SUITE" in
+            protocol|save-controls|save-headers|save-body|source-format) ;;
+            *) exit 2 ;;
+          esac
+          if [ "$CAMPAIGN_PROOF" != R06 ] && [ "$CAMPAIGN_R06_SUITE" != protocol ]; then exit 2; fi
           case "$CAMPAIGN_PROOF" in
             R06) echo app=subtitles >> "$GITHUB_OUTPUT" ;;
             Q14|Q09) echo app=player >> "$GITHUB_OUTPUT" ;;
@@ -136,26 +147,42 @@ jobs:
           go-version-file: go.work
           cache-dependency-path: "**/go.sum"
       - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
-        if: steps.selection.outputs.app == 'player'
+        if: steps.selection.outputs.app == 'player' || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
         with:
           version: 11.22.0
           install: false
           node-version-file: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
-        if: steps.selection.outputs.app == 'player'
+        if: steps.selection.outputs.app == 'player' || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
         with:
           node-version: "26"
           package-manager-cache: false
       - run: sudo apt-get update && sudo apt-get install -y libarchive-tools
+      - name: Install existing source formatter
+        if: env.CAMPAIGN_R06_SUITE == 'source-format'
+        timeout-minutes: 2
+        uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a
+        with:
+          version: v2.13.1
+          install-only: true
+          skip-cache: true
       - name: Prepare bounded Go dependencies
+        if: env.CAMPAIGN_R06_SUITE != 'source-format'
         env:
           APP: ${{ steps.selection.outputs.app }}
         run: timeout 120s bash scripts/ci/prepare-campaign-go.sh "$APP"
       - name: Prepare bounded browser prerequisites
-        if: steps.selection.outputs.app == 'player'
+        env:
+          APP: ${{ steps.selection.outputs.app }}
+        if: steps.selection.outputs.app == 'player' || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
         run: |
-          timeout 180s pnpm --dir apps/player/e2e install --frozen-lockfile
-          timeout 240s pnpm --dir apps/player/e2e exec playwright install --with-deps chromium
+          if [ "$APP" == subtitles ]; then
+            timeout 180s pnpm --dir apps/subtitles/e2e install --frozen-lockfile
+            timeout 240s pnpm --dir apps/subtitles/e2e exec playwright install --with-deps chromium
+          else
+            timeout 180s pnpm --dir apps/player/e2e install --frozen-lockfile
+            timeout 240s pnpm --dir apps/player/e2e exec playwright install --with-deps chromium
+          fi
       - name: Run exact owned public proof
         run: bash scripts/ci/run-campaign-proof.sh "$CAMPAIGN_PROOF"
       - name: Collect bounded canonical source metadata

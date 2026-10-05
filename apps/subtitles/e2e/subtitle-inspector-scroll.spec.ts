@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
 
-const script = (await Promise.all(["subtitle-source-cues.js", "subtitle-inspector.js"].map(name => readFile(new URL(`../internal/server/static/${name}`, import.meta.url), "utf8")))).join("\n");
+const script = (await Promise.all(["subtitle-source-cues.js", "subtitle-save-operation.js", "subtitle-inspector.js"].map(name => readFile(new URL(`../internal/server/static/${name}`, import.meta.url), "utf8")))).join("\n");
 const cues = Array.from({ length: 85 }, (_, index) => ({ start: index * 3, end: index * 3 + 2, text: `Cue ${index + 1}`, warnings: [] }));
 const words = Array.from({ length: 210 }, (_, index) => ({ start: index, text: `Word ${index + 1}`, confidence: 0.9 }));
 const review = { role: "translation", source: "local", matchEvidence: "matched", warnings: [], language: "en", originalAvailable: false,
