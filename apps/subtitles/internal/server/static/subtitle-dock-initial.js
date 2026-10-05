@@ -11,7 +11,7 @@
     if (root.style.getPropertyValue("--subtitle-header-height") !== headerHeight) root.style.setProperty("--subtitle-header-height", headerHeight);
   };
   const revealFocus = event => {
-    if (!mobile.matches || event.key !== "Tab" || event.altKey || event.ctrlKey || event.metaKey) return;
+    if (!mobile.matches || event.key !== "Tab" || event.ctrlKey || event.metaKey) return;
     const previous = document.activeElement;
     requestAnimationFrame(() => {
       const target = document.activeElement;

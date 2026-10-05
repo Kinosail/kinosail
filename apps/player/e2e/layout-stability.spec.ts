@@ -1,3 +1,5 @@
+import "./subtitle-dock-focus-tests";
+import "./layout-sticky-coordinate-tests";
 import "./layout-response-lifecycle-tests";
 import {readFile} from "node:fs/promises";
 import {expect, test} from "@playwright/test";

@@ -1,15 +1,19 @@
+export const subtitleSearchGeometry = page => page.evaluate(() => [".app-header", "#subtitle-list-title", ".subtitle-filters", "#subtitle-content"].map(selector => {
+    const node = document.querySelector(selector), rect = node?.getBoundingClientRect(), style = node && getComputedStyle(node);
+    const inset = style && Number.parseFloat(style.top);
+    return {selector, present: Boolean(rect?.height), pinned: Boolean(style && (style.position === "fixed" || (style.position === "sticky" && Number.isFinite(inset) && Math.abs(rect.y - inset) <= 1))), x: rect?.x, y: rect?.y, documentY: rect?.y + scrollY, width: rect?.width, height: rect?.height};
+  }));
+export const subtitleSearchUnchanged = (before, after) => before.every((first, index) => first.present && after[index]?.present &&
+    ["x", first.pinned && after[index].pinned ? "y" : "documentY", "width", "height"].every(key => Math.abs(first[key] - after[index][key]) <= 1));
+
 // Actual native fetch navigation, with real Server HTML. Only failure transport
 // is injected; result-list changes after a requested search are expected.
 export async function measureSubtitleSearch(page, viewport, results, probe) {
   probe.stage = "subtitle-native-search";
   const search = page.locator("#subtitle-search");
   if (!await search.isVisible()) throw new Error("Synthetic Library needs its native search");
-  const geometry = () => page.evaluate(() => [".app-header", "#subtitle-list-title", ".subtitle-filters", "#subtitle-content"].map(selector => {
-    const node = document.querySelector(selector), rect = node?.getBoundingClientRect();
-    return {selector, present: Boolean(rect?.height), pinned: node && ["fixed", "sticky"].includes(getComputedStyle(node).position), x: rect?.x, y: rect?.y, documentY: rect?.y + scrollY, width: rect?.width, height: rect?.height};
-  }));
-  const unchanged = (before, after) => before.every((first, index) => first.present && after[index]?.present &&
-    ["x", first.pinned ? "y" : "documentY", "width", "height"].every(key => Math.abs(first[key] - after[index][key]) <= 1));
+  const geometry = () => subtitleSearchGeometry(page);
+  const unchanged = subtitleSearchUnchanged;
   if(viewport.width===320){
     const file=page.locator(".subtitle-file").first(),summary=file.locator(":scope>summary");
     const clickSummary=async phase=>{

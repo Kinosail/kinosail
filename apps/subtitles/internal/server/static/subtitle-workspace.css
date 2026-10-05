@@ -130,7 +130,8 @@
 
 /* Keep native selector overflow inside its label while preserving the focus ring. */
 .subtitle-settings .settings-flow h2{overflow-wrap:anywhere}
-.subtitle-settings #language form label{overflow:clip;overflow-clip-margin:.25rem}
+:root:has(.subtitle-settings main :focus-visible){scroll-behavior:auto}
+.subtitle-settings :is(#language,#session-timeouts) form label{overflow:clip;overflow-clip-margin:.25rem}
 .subtitle-settings #language select{min-width:0;max-width:100%}
 @media(max-width:600px){.subtitle-settings .settings-nav{flex-wrap:wrap;overflow:visible;white-space:normal}.subtitle-settings .settings-nav>a{flex:1 1 auto;justify-content:center}}
 @media(max-width:700px){.subtitle-settings .settings-shell,.subtitle-settings .settings-flow{grid-template-columns:minmax(0,1fr)}.subtitle-settings .settings-flow>section{min-width:0;overflow-wrap:anywhere}}

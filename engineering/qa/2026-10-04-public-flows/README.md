@@ -20,6 +20,15 @@ on A57 and `29cd65f7` remain historical, independently reviewed evidence.
 Current-head hosted and independent verification remain required.
 These results do not support an all-flows-tested claim.
 
+The focused settings repair passed six Chromium UI-authenticated cases and six
+Mac WebKit API-authenticated cases on disposable real Subtitles Servers.
+Both Settings categories passed at 320, 390, and 844 pixels with 100% and 200%
+text. Checks retain strict overflow, timeout-control bounds, accessibility,
+keyboard focus exposure, and the navigation's normal motion policy.
+The native WebKit layout and skeleton file set passed 16 cases, including
+natural sticky scrolling, genuine movement, and unrelated focus-key controls.
+These local checks do not prove the hosted Linux WebKit layout matrix.
+
 | Public journey | Executable coverage | Current evidence |
 | --- | --- | --- |
 | Owner setup, MFA, session | `scripts/e2e/tests/owner.setup.e2e.ts` | Both real apps passed |
