@@ -1,0 +1,233 @@
+{
+  "canonicalNinePreserved": {
+    "apps/player/e2e/browse-return-bfcache.spec.ts": {
+      "bytes": 2243,
+      "lines": 36,
+      "sha256": "6132c19eed1a5cda2fccd0ff9280476a425f4d7a9c17ca43b18f8eb2cffde58d"
+    },
+    "apps/player/e2e/browse-return-cold.spec.ts": {
+      "bytes": 4356,
+      "lines": 68,
+      "sha256": "5a9afd3345bd851adef419464905baa9f0ad19daecac3979efecef0bb3e15bdb"
+    },
+    "apps/player/e2e/browse-return-helpers.ts": {
+      "bytes": 8015,
+      "lines": 125,
+      "sha256": "f44ae37d320662ee55206864c6c6b96f58aa7ca36ae04134648115a2b23ee021"
+    },
+    "apps/player/e2e/browse-return.spec.ts": {
+      "bytes": 5921,
+      "lines": 103,
+      "sha256": "742486a950692b1ac91a314a895c9c55ff7fdff90e830eebc2040659789dd054"
+    },
+    "apps/player/internal/server/browse_return_browser_test.go": {
+      "bytes": 4925,
+      "lines": 132,
+      "sha256": "5dbe7f3d8c86cc5d7464ccbfc07a9b7cc6fe56d0b291818b9e868d419aeea096"
+    }
+  },
+  "catalogs": {
+    "count": 108,
+    "entriesPerCatalog": 507,
+    "exactEarlierReviewedCatalogBytes": true,
+    "newIDsPerCatalog": 3,
+    "newValues": "English fallback; translated coverage unproved",
+    "originalEntriesPreserved": true
+  },
+  "executedChecks": [
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "0b48de6259becc7ed96ac3f0eaa0bc55e392827d",
+        "ca8d27a63d321f7d93353661b7f273bde86d8cea"
+      ],
+      "exitCode": 0,
+      "stderrBytes": 0,
+      "stdoutBytes": 0
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/tooling/check-file-loc.py",
+        "--head"
+      ],
+      "exitCode": 0,
+      "stderrBytes": 0,
+      "stdoutBytes": 0
+    }
+  ],
+  "historicalStampsPreserved": {
+    "engineering/qa/2026-10-04-q14-browse-return/repair-analysis.md": {
+      "bytes": 6497,
+      "lines": 30,
+      "sha256": "fcd6b5bae3d35d13c9593e2bbeac35f77304b1170ed604df4131458d3c1787ea"
+    },
+    "engineering/qa/2026-10-04-q14-browse-return/repair-artifact-manifest.json": {
+      "bytes": 776,
+      "lines": 23,
+      "sha256": "053ee431d1dc82dd858a665aa16d4e15b1b4a8e3343d2279ab21bb830ff20aca"
+    },
+    "engineering/qa/2026-10-04-q14-browse-return/repair-handoff.json": {
+      "bytes": 3273,
+      "lines": 77,
+      "sha256": "4d6fc90ccd69f61c19cb7e7d803666385513c5d1546b560bcb48657eb230f292"
+    },
+    "engineering/qa/2026-10-04-q14-browse-return/repair-source-manifest.json": {
+      "bytes": 36815,
+      "lines": 915,
+      "sha256": "63821140bc3c582df66c82acda054717dff506f6b7124caad4a37086379f0c88"
+    },
+    "engineering/qa/2026-10-04-q14-browse-return/repair-static-controls.json": {
+      "bytes": 4277,
+      "lines": 129,
+      "sha256": "6e5c24d2f3dddac70b07d594e9c523491e76451c9544c0cd41d90c68aa5d46b6"
+    }
+  },
+  "nativeIncomingExact": {
+    "count": 8,
+    "revision": "f532d219759a39d18f712cdf682b9081cfd7ec6f",
+    "sources": {
+      "apps/player/e2e/player-preparation-progress.spec.ts": {
+        "bytes": 1764,
+        "lines": 33,
+        "sha256": "06f7f968b70284a710e5941d70d973f9dfb2bfe2eb86f803df2845ea1611c39b"
+      },
+      "apps/player/e2e/player-progress.spec.ts": {
+        "bytes": 15806,
+        "lines": 264,
+        "sha256": "14846cd4fe33044d4a54aba4e6fc799bcfadb249a8c0a9f5cc03626a0a9fa0b9"
+      },
+      "apps/player/e2e/test-instance-checkpoint.spec.ts": {
+        "bytes": 7510,
+        "lines": 103,
+        "sha256": "4e02852788c4df2c1bcac596a0bf1bb508599e2ae1628a4cd4110f969aa96fa2"
+      },
+      "apps/player/scripts/test-player-checkpoint-local.py": {
+        "bytes": 6986,
+        "lines": 107,
+        "sha256": "ade33778141686707eb1853c2c7f2a52db88e8fe99ab42d81cc910f48a064872"
+      },
+      "packages/webassets/static/player-core.js": {
+        "bytes": 8286,
+        "lines": 128,
+        "sha256": "7da0ec4bc4aa67e5c98a2f0b3ae70067aea20e8162fcff6b14976f57e52ece7a"
+      },
+      "packages/webassets/static/player-presentation.js": {
+        "bytes": 11278,
+        "lines": 200,
+        "sha256": "016fb086add636b3bf5d7d18e36e157c677e0c8ed3055b22cbc1f34116547ba1"
+      },
+      "packages/webassets/static/player-progress.js": {
+        "bytes": 13961,
+        "lines": 257,
+        "sha256": "12b7238b7fde8f4452bce766a74c0fd9ad5ea75f0d92e911b3fe03f0a766f8fc"
+      },
+      "packages/webassets/static/player-status.js": {
+        "bytes": 8614,
+        "lines": 165,
+        "sha256": "5cefec3e89ad55497a45bd27c4fd77c8a4e97c3a8d6cb5286984375293cb18a3"
+      }
+    }
+  },
+  "offlineMainComposition": {
+    "assetPaths": [
+      "packages/webassets/static/offline-identity.js",
+      "packages/webassets/static/pwa-library.js",
+      "packages/webassets/static/pwa.js",
+      "packages/webassets/static/pwa-navigation.js",
+      "packages/webassets/static/pwa-browse-return.js",
+      "packages/webassets/static/pwa-settings.js",
+      "packages/webassets/static/shortcuts.js"
+    ],
+    "baselineBytes": 45035,
+    "baselineSHA256": "3d496d22ad5c1bca9fc9e25ffef3db29f145764348ee1ee565b2db2c1ba29401",
+    "candidateBytes": 57288,
+    "candidateSHA256": "c843c50d2573cdd8fb70d6b83deded1d7fde08fb13b8c257393a7c92687de88c",
+    "claim": "offline reconstruction only, not served candidate proof",
+    "recipe": "concatenate assetPaths in given order, matching Go append/joinScripts"
+  },
+  "ownedProcesses": [],
+  "protectedBaselineSources": {
+    "apps/player/e2e/browse-return-bfcache.spec.ts": {
+      "bytes": 2243,
+      "lines": 36,
+      "sha256": "6132c19eed1a5cda2fccd0ff9280476a425f4d7a9c17ca43b18f8eb2cffde58d"
+    },
+    "apps/player/e2e/browse-return-cold.spec.ts": {
+      "bytes": 4356,
+      "lines": 68,
+      "sha256": "5a9afd3345bd851adef419464905baa9f0ad19daecac3979efecef0bb3e15bdb"
+    },
+    "apps/player/e2e/browse-return-helpers.ts": {
+      "bytes": 8015,
+      "lines": 125,
+      "sha256": "f44ae37d320662ee55206864c6c6b96f58aa7ca36ae04134648115a2b23ee021"
+    },
+    "apps/player/e2e/browse-return.spec.ts": {
+      "bytes": 5921,
+      "lines": 103,
+      "sha256": "742486a950692b1ac91a314a895c9c55ff7fdff90e830eebc2040659789dd054"
+    },
+    "apps/player/internal/server/browse_return_browser_test.go": {
+      "bytes": 4925,
+      "lines": 132,
+      "sha256": "5dbe7f3d8c86cc5d7464ccbfc07a9b7cc6fe56d0b291818b9e868d419aeea096"
+    },
+    "packages/catalog/browse.go": {
+      "bytes": 6837,
+      "lines": 203,
+      "sha256": "5f32935c388ddc040fa4069ce352e1b50bad55d329fa5978b0ff9796ee2575af"
+    },
+    "packages/identitycore/http.go": {
+      "bytes": 2613,
+      "lines": 56,
+      "sha256": "f3e904bccc9caf57d08863de65db9fbf54fa8fe4cd550879878b11a89df94599"
+    },
+    "packages/playerweb/player_template.go": {
+      "bytes": 5924,
+      "lines": 27,
+      "sha256": "8e94f40660a1bda4f2b435477b813b9c992eafd7fca62d21e0e92fc8ec9c9d42"
+    },
+    "packages/webassets/static/downloads-ui.js": {
+      "bytes": 16074,
+      "lines": 295,
+      "sha256": "1dc721cc51a6e5cad00853a9ed65c1cf79317df3cc2940d8b517984fbb3079e3"
+    },
+    "packages/webassets/static/pwa.js": {
+      "bytes": 10902,
+      "lines": 234,
+      "sha256": "e133ab218c2979c81c3defb90170f47574798d33c923983f448b511e71a4e8ad"
+    }
+  },
+  "protectedNativeSources": {
+    "packages/webassets/static/player-core.js": {
+      "bytes": 8286,
+      "lines": 128,
+      "sha256": "7da0ec4bc4aa67e5c98a2f0b3ae70067aea20e8162fcff6b14976f57e52ece7a"
+    },
+    "packages/webassets/static/player-progress.js": {
+      "bytes": 13961,
+      "lines": 257,
+      "sha256": "12b7238b7fde8f4452bce766a74c0fd9ad5ea75f0d92e911b3fe03f0a766f8fc"
+    }
+  },
+  "revision": "ca8d27a63d321f7d93353661b7f273bde86d8cea",
+  "runtimeExecuted": false,
+  "schema": 1,
+  "stampPreparation": "Initial offline assembly stopped before writing on wrong locale key assumption; corrected to actual exact id/other shape. No runtime or acceptance assertion altered.",
+  "timestampUTC": "2026-10-04T20:43:05.468744+00:00",
+  "unrun": [
+    "JavaScript collection/syntax",
+    "Go compilation/tests",
+    "candidate primary GREEN",
+    "other seven original journeys",
+    "three Home journeys",
+    "ten safety journeys",
+    "actual BFCache admission",
+    "failure/cancellation/responsive states",
+    "Subtitles consumer",
+    "normal required protected checks"
+  ]
+}

@@ -1,0 +1,967 @@
+{
+  "baseline": "0b48de6259becc7ed96ac3f0eaa0bc55e392827d",
+  "boundary": "Source only: exact selected hosted-driver inputs and Git tree identity, not complete Go dependency/cache or compiled-byte provenance. Native incoming inputs separately pinned.",
+  "nativeIncoming": {
+    "count": 8,
+    "revision": "f532d219759a39d18f712cdf682b9081cfd7ec6f",
+    "sources": {
+      "apps/player/e2e/player-preparation-progress.spec.ts": {
+        "bytes": 1764,
+        "lines": 33,
+        "sha256": "06f7f968b70284a710e5941d70d973f9dfb2bfe2eb86f803df2845ea1611c39b"
+      },
+      "apps/player/e2e/player-progress.spec.ts": {
+        "bytes": 15806,
+        "lines": 264,
+        "sha256": "14846cd4fe33044d4a54aba4e6fc799bcfadb249a8c0a9f5cc03626a0a9fa0b9"
+      },
+      "apps/player/e2e/test-instance-checkpoint.spec.ts": {
+        "bytes": 7510,
+        "lines": 103,
+        "sha256": "4e02852788c4df2c1bcac596a0bf1bb508599e2ae1628a4cd4110f969aa96fa2"
+      },
+      "apps/player/scripts/test-player-checkpoint-local.py": {
+        "bytes": 6986,
+        "lines": 107,
+        "sha256": "ade33778141686707eb1853c2c7f2a52db88e8fe99ab42d81cc910f48a064872"
+      },
+      "packages/webassets/static/player-core.js": {
+        "bytes": 8286,
+        "lines": 128,
+        "sha256": "7da0ec4bc4aa67e5c98a2f0b3ae70067aea20e8162fcff6b14976f57e52ece7a"
+      },
+      "packages/webassets/static/player-presentation.js": {
+        "bytes": 11278,
+        "lines": 200,
+        "sha256": "016fb086add636b3bf5d7d18e36e157c677e0c8ed3055b22cbc1f34116547ba1"
+      },
+      "packages/webassets/static/player-progress.js": {
+        "bytes": 13961,
+        "lines": 257,
+        "sha256": "12b7238b7fde8f4452bce766a74c0fd9ad5ea75f0d92e911b3fe03f0a766f8fc"
+      },
+      "packages/webassets/static/player-status.js": {
+        "bytes": 8614,
+        "lines": 165,
+        "sha256": "5cefec3e89ad55497a45bd27c4fd77c8a4e97c3a8d6cb5286984375293cb18a3"
+      }
+    }
+  },
+  "productCount": 115,
+  "productPaths": [
+    "apps/player/internal/server/locale.go",
+    "apps/player/internal/server/locales/active.ab.json",
+    "apps/player/internal/server/locales/active.af.json",
+    "apps/player/internal/server/locales/active.ar.json",
+    "apps/player/internal/server/locales/active.as.json",
+    "apps/player/internal/server/locales/active.az.json",
+    "apps/player/internal/server/locales/active.be-BY.json",
+    "apps/player/internal/server/locales/active.bg-BG.json",
+    "apps/player/internal/server/locales/active.bn-BD.json",
+    "apps/player/internal/server/locales/active.bn.json",
+    "apps/player/internal/server/locales/active.br.json",
+    "apps/player/internal/server/locales/active.bs.json",
+    "apps/player/internal/server/locales/active.ca.json",
+    "apps/player/internal/server/locales/active.ch.json",
+    "apps/player/internal/server/locales/active.ckb.json",
+    "apps/player/internal/server/locales/active.cs.json",
+    "apps/player/internal/server/locales/active.cy.json",
+    "apps/player/internal/server/locales/active.da.json",
+    "apps/player/internal/server/locales/active.de.json",
+    "apps/player/internal/server/locales/active.dv.json",
+    "apps/player/internal/server/locales/active.el.json",
+    "apps/player/internal/server/locales/active.en-GB.json",
+    "apps/player/internal/server/locales/active.en-US.json",
+    "apps/player/internal/server/locales/active.en.json",
+    "apps/player/internal/server/locales/active.eo.json",
+    "apps/player/internal/server/locales/active.es-419.json",
+    "apps/player/internal/server/locales/active.es-AR.json",
+    "apps/player/internal/server/locales/active.es-DO.json",
+    "apps/player/internal/server/locales/active.es-MX.json",
+    "apps/player/internal/server/locales/active.es.json",
+    "apps/player/internal/server/locales/active.et.json",
+    "apps/player/internal/server/locales/active.eu.json",
+    "apps/player/internal/server/locales/active.fa.json",
+    "apps/player/internal/server/locales/active.fi.json",
+    "apps/player/internal/server/locales/active.fil.json",
+    "apps/player/internal/server/locales/active.fo.json",
+    "apps/player/internal/server/locales/active.fr-CA.json",
+    "apps/player/internal/server/locales/active.fr.json",
+    "apps/player/internal/server/locales/active.ga.json",
+    "apps/player/internal/server/locales/active.gl.json",
+    "apps/player/internal/server/locales/active.gsw.json",
+    "apps/player/internal/server/locales/active.gu.json",
+    "apps/player/internal/server/locales/active.he-IL.json",
+    "apps/player/internal/server/locales/active.he.json",
+    "apps/player/internal/server/locales/active.hi-IN.json",
+    "apps/player/internal/server/locales/active.hr.json",
+    "apps/player/internal/server/locales/active.ht.json",
+    "apps/player/internal/server/locales/active.hu.json",
+    "apps/player/internal/server/locales/active.hy.json",
+    "apps/player/internal/server/locales/active.id.json",
+    "apps/player/internal/server/locales/active.is-IS.json",
+    "apps/player/internal/server/locales/active.it.json",
+    "apps/player/internal/server/locales/active.ja.json",
+    "apps/player/internal/server/locales/active.jbo.json",
+    "apps/player/internal/server/locales/active.ka.json",
+    "apps/player/internal/server/locales/active.kab.json",
+    "apps/player/internal/server/locales/active.kk.json",
+    "apps/player/internal/server/locales/active.kn.json",
+    "apps/player/internal/server/locales/active.ko.json",
+    "apps/player/internal/server/locales/active.kw.json",
+    "apps/player/internal/server/locales/active.ky.json",
+    "apps/player/internal/server/locales/active.lb.json",
+    "apps/player/internal/server/locales/active.lt-LT.json",
+    "apps/player/internal/server/locales/active.lv.json",
+    "apps/player/internal/server/locales/active.mg.json",
+    "apps/player/internal/server/locales/active.mi.json",
+    "apps/player/internal/server/locales/active.mk.json",
+    "apps/player/internal/server/locales/active.ml.json",
+    "apps/player/internal/server/locales/active.mn.json",
+    "apps/player/internal/server/locales/active.mr.json",
+    "apps/player/internal/server/locales/active.ms.json",
+    "apps/player/internal/server/locales/active.mt.json",
+    "apps/player/internal/server/locales/active.my.json",
+    "apps/player/internal/server/locales/active.nb.json",
+    "apps/player/internal/server/locales/active.nds.json",
+    "apps/player/internal/server/locales/active.ne.json",
+    "apps/player/internal/server/locales/active.nl.json",
+    "apps/player/internal/server/locales/active.nn.json",
+    "apps/player/internal/server/locales/active.oc.json",
+    "apps/player/internal/server/locales/active.pa.json",
+    "apps/player/internal/server/locales/active.pl.json",
+    "apps/player/internal/server/locales/active.pt-BR.json",
+    "apps/player/internal/server/locales/active.pt-PT.json",
+    "apps/player/internal/server/locales/active.pt.json",
+    "apps/player/internal/server/locales/active.ro.json",
+    "apps/player/internal/server/locales/active.ru.json",
+    "apps/player/internal/server/locales/active.si.json",
+    "apps/player/internal/server/locales/active.sk.json",
+    "apps/player/internal/server/locales/active.sl-SI.json",
+    "apps/player/internal/server/locales/active.so.json",
+    "apps/player/internal/server/locales/active.sq.json",
+    "apps/player/internal/server/locales/active.sr.json",
+    "apps/player/internal/server/locales/active.sv.json",
+    "apps/player/internal/server/locales/active.sw.json",
+    "apps/player/internal/server/locales/active.ta.json",
+    "apps/player/internal/server/locales/active.te.json",
+    "apps/player/internal/server/locales/active.th.json",
+    "apps/player/internal/server/locales/active.tr.json",
+    "apps/player/internal/server/locales/active.ug.json",
+    "apps/player/internal/server/locales/active.uk.json",
+    "apps/player/internal/server/locales/active.ur-PK.json",
+    "apps/player/internal/server/locales/active.uz.json",
+    "apps/player/internal/server/locales/active.vi.json",
+    "apps/player/internal/server/locales/active.zh-CN.json",
+    "apps/player/internal/server/locales/active.zh-HK.json",
+    "apps/player/internal/server/locales/active.zh-Hans.json",
+    "apps/player/internal/server/locales/active.zh-Hant.json",
+    "apps/player/internal/server/locales/active.zh-TW.json",
+    "apps/player/internal/server/locales/active.zu.json",
+    "apps/player/internal/server/player.go",
+    "apps/subtitles/internal/server/locale.go",
+    "packages/webassets/static/pwa-browse-return.js",
+    "packages/webassets/static/pwa-library.js",
+    "packages/webassets/static/pwa-navigation.js",
+    "packages/webassets/webassets.go"
+  ],
+  "productSHA256": "51da46308b56745abe79b160e6d8fa7a953867ae7161f894c949fd1d80e703ab",
+  "recipe": "UTF-8 sorted path<TAB>lowercase SHA-256<LF>, trailing LF",
+  "revision": "ca8d27a63d321f7d93353661b7f273bde86d8cea",
+  "schema": 1,
+  "sourceCount": 158,
+  "sourceSHA256": "f2a8bc6b583ba7d1ea394ee2a68d5ea6d228b455df9b6d993852ed80fdd48608",
+  "sources": {
+    ".github/workflows/layout-stability.yml": {
+      "bytes": 7235,
+      "lines": 173,
+      "sha256": "487ea9857c0c6c04a129ab24d53c8358c513ca4b7fe8542a55d014b43c65a628"
+    },
+    "apps/player/e2e/browse-return-bfcache.spec.ts": {
+      "bytes": 2243,
+      "lines": 36,
+      "sha256": "6132c19eed1a5cda2fccd0ff9280476a425f4d7a9c17ca43b18f8eb2cffde58d"
+    },
+    "apps/player/e2e/browse-return-cold.spec.ts": {
+      "bytes": 4356,
+      "lines": 68,
+      "sha256": "5a9afd3345bd851adef419464905baa9f0ad19daecac3979efecef0bb3e15bdb"
+    },
+    "apps/player/e2e/browse-return-helpers.ts": {
+      "bytes": 8015,
+      "lines": 125,
+      "sha256": "f44ae37d320662ee55206864c6c6b96f58aa7ca36ae04134648115a2b23ee021"
+    },
+    "apps/player/e2e/browse-return-home.spec.ts": {
+      "bytes": 6808,
+      "lines": 120,
+      "sha256": "b4c96e5c3d73832a7c98b4ed25522fce500fca5ca14acd9270bf344cfcfbb2a6"
+    },
+    "apps/player/e2e/browse-return-proof-reporter.ts": {
+      "bytes": 5332,
+      "lines": 69,
+      "sha256": "fe7470ca913f0eebcaa555d232f11c4b2d8c7f2b9852a2ead6f2f4fb6dd7ba83"
+    },
+    "apps/player/e2e/browse-return-safety.spec.ts": {
+      "bytes": 2769,
+      "lines": 50,
+      "sha256": "8845baa417bb92990bd3d09fbfdfcce8401537f6c6425badbdc90380b1eb2612"
+    },
+    "apps/player/e2e/browse-return.spec.ts": {
+      "bytes": 5921,
+      "lines": 103,
+      "sha256": "742486a950692b1ac91a314a895c9c55ff7fdff90e830eebc2040659789dd054"
+    },
+    "apps/player/e2e/package.json": {
+      "bytes": 313,
+      "lines": 13,
+      "sha256": "1829525fd62a789fdb1767c89813eaf13394b1a115dbca3f749bb63e22b42e52"
+    },
+    "apps/player/e2e/playwright.config.ts": {
+      "bytes": 2091,
+      "lines": 42,
+      "sha256": "628d3a62d9b3e2fba1bc43f3cd58979acadf22c083e3559c73c4f750a97cc0b3"
+    },
+    "apps/player/e2e/pnpm-lock.yaml": {
+      "bytes": 1636,
+      "lines": 61,
+      "sha256": "b3151e08c2af7e480d7f6f5aeafb2a230e92c9dd5aaf18dfcd787ee71c8ba655"
+    },
+    "apps/player/go.mod": {
+      "bytes": 2231,
+      "lines": 55,
+      "sha256": "92c5b9dbdf2b413f8ff38bae2f6303d947010953ded4b7a95cb01f550e91fdc3"
+    },
+    "apps/player/go.sum": {
+      "bytes": 10906,
+      "lines": 122,
+      "sha256": "865970fee7d100edc1a7d2a52d61eebf6d474eee992495f8f9fc1c1c2290170b"
+    },
+    "apps/player/internal/server/browse.go": {
+      "bytes": 482,
+      "lines": 14,
+      "sha256": "a13ebeb8994d5e39e721c390a2f2e92f7ca2391b9065f9a35061a27ab60d8c2d"
+    },
+    "apps/player/internal/server/browse_return_browser_test.go": {
+      "bytes": 4925,
+      "lines": 132,
+      "sha256": "5dbe7f3d8c86cc5d7464ccbfc07a9b7cc6fe56d0b291818b9e868d419aeea096"
+    },
+    "apps/player/internal/server/browse_return_contract_test.go": {
+      "bytes": 2070,
+      "lines": 54,
+      "sha256": "76839e8db40d4afda3628e4aa02b04ef39601556047b02cb74188ca9ca3a2e1c"
+    },
+    "apps/player/internal/server/home.go": {
+      "bytes": 1809,
+      "lines": 51,
+      "sha256": "ae00ea4bc4e89865b1052c9ecca788419235f9532342932b7bdf345c8e8f9961"
+    },
+    "apps/player/internal/server/locale.go": {
+      "bytes": 9112,
+      "lines": 266,
+      "sha256": "da3472dee2082d0b57b457118302931bc9c1ea863c1da835be9bfd3a2bb6dd8c"
+    },
+    "apps/player/internal/server/locales/active.ab.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.af.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.ar.json": {
+      "bytes": 48600,
+      "lines": 2030,
+      "sha256": "2b3b1155bd528d6bd05d1664a209ae5952df6f986801c10109478f2af0b55524"
+    },
+    "apps/player/internal/server/locales/active.as.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.az.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.be-BY.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.bg-BG.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.bn-BD.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.bn.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.br.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.bs.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.ca.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.ch.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.ckb.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.cs.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.cy.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.da.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.de.json": {
+      "bytes": 43093,
+      "lines": 2030,
+      "sha256": "56dd06fd4c0167ba1b7035ec741f19dbbe1afc7787aec0a4380c3530e5c52c56"
+    },
+    "apps/player/internal/server/locales/active.dv.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.el.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.en-GB.json": {
+      "bytes": 32610,
+      "lines": 1,
+      "sha256": "d8607a37bdb26dbbc5752708e89ec187f89286eed5438c55d0f142ad2797558d"
+    },
+    "apps/player/internal/server/locales/active.en-US.json": {
+      "bytes": 32610,
+      "lines": 1,
+      "sha256": "d8607a37bdb26dbbc5752708e89ec187f89286eed5438c55d0f142ad2797558d"
+    },
+    "apps/player/internal/server/locales/active.en.json": {
+      "bytes": 41699,
+      "lines": 2030,
+      "sha256": "65758fcf0aa267fae263e5f0f330df11ec0976a4a861173c01aa29a0f5c4eb92"
+    },
+    "apps/player/internal/server/locales/active.eo.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.es-419.json": {
+      "bytes": 31407,
+      "lines": 1,
+      "sha256": "cea8d4bff2bb93ff887b686fda8385509203d4958887643b770aff95633acc70"
+    },
+    "apps/player/internal/server/locales/active.es-AR.json": {
+      "bytes": 31407,
+      "lines": 1,
+      "sha256": "cea8d4bff2bb93ff887b686fda8385509203d4958887643b770aff95633acc70"
+    },
+    "apps/player/internal/server/locales/active.es-DO.json": {
+      "bytes": 31407,
+      "lines": 1,
+      "sha256": "cea8d4bff2bb93ff887b686fda8385509203d4958887643b770aff95633acc70"
+    },
+    "apps/player/internal/server/locales/active.es-MX.json": {
+      "bytes": 31407,
+      "lines": 1,
+      "sha256": "cea8d4bff2bb93ff887b686fda8385509203d4958887643b770aff95633acc70"
+    },
+    "apps/player/internal/server/locales/active.es.json": {
+      "bytes": 43590,
+      "lines": 2030,
+      "sha256": "057bb48e627866a6dc6b83d1e53759cbbcf5cd811f6d515fad2058b830fe96a4"
+    },
+    "apps/player/internal/server/locales/active.et.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.eu.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.fa.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.fi.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.fil.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.fo.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.fr-CA.json": {
+      "bytes": 31401,
+      "lines": 1,
+      "sha256": "3bc268026920de071afd0d3c3d5f6170dd7c92a646eee2f2a8606df2d01fdb9e"
+    },
+    "apps/player/internal/server/locales/active.fr.json": {
+      "bytes": 43974,
+      "lines": 2030,
+      "sha256": "53ca996c1daf93be80ab0df1599f5266c850501fded44268a779ef9ea22551bd"
+    },
+    "apps/player/internal/server/locales/active.ga.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.gl.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.gsw.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.gu.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.he-IL.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.he.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.hi-IN.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.hr.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.ht.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.hu.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.hy.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.id.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.is-IS.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.it.json": {
+      "bytes": 42783,
+      "lines": 2030,
+      "sha256": "5c6b14147803f5f84c9cf6245a55308a67e27d5dd734176aa3c611434501ddfe"
+    },
+    "apps/player/internal/server/locales/active.ja.json": {
+      "bytes": 46259,
+      "lines": 2030,
+      "sha256": "4d04ea8960e62500d5be8da6c83e5b42056c296c1d8f9c39e1c488f63094bdc2"
+    },
+    "apps/player/internal/server/locales/active.jbo.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.ka.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.kab.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.kk.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.kn.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.ko.json": {
+      "bytes": 43197,
+      "lines": 2030,
+      "sha256": "7c9d6325b9d6be916a5adebcce006fa9aea91beadb8425bc26442941de15eed5"
+    },
+    "apps/player/internal/server/locales/active.kw.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.ky.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.lb.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.lt-LT.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.lv.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.mg.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.mi.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.mk.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.ml.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.mn.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.mr.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.ms.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.mt.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.my.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.nb.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.nds.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.ne.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.nl.json": {
+      "bytes": 42263,
+      "lines": 2030,
+      "sha256": "3e95f81803780c827897bca2f230fb41b856c4e9953ca0db2ab11edb40fac830"
+    },
+    "apps/player/internal/server/locales/active.nn.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.oc.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.pa.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.pl.json": {
+      "bytes": 43313,
+      "lines": 2030,
+      "sha256": "a63067555bfb419f71491a6e0fc7db4c12ba70f387a518e7fbd62b35bd95b946"
+    },
+    "apps/player/internal/server/locales/active.pt-BR.json": {
+      "bytes": 43028,
+      "lines": 2030,
+      "sha256": "0600b57d3cba5fdacaa31b201838c4ab608ecd9cfd5dd512688d17fd4d422d5a"
+    },
+    "apps/player/internal/server/locales/active.pt-PT.json": {
+      "bytes": 43056,
+      "lines": 2030,
+      "sha256": "4fe73a7a15f4ac4fa5cbf36b4f8a3e8fb55eacd6165cb205b558e3fe6a432a2c"
+    },
+    "apps/player/internal/server/locales/active.pt.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.ro.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.ru.json": {
+      "bytes": 52750,
+      "lines": 2030,
+      "sha256": "d6d561e89588395f3e98049014ceed71302d93887cdc78891869db993181aedb"
+    },
+    "apps/player/internal/server/locales/active.si.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.sk.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.sl-SI.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.so.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.sq.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.sr.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.sv.json": {
+      "bytes": 42036,
+      "lines": 2030,
+      "sha256": "54579de72e34829f5faf463e3a21fc809285d95fd0cce603340cf6b3463a2165"
+    },
+    "apps/player/internal/server/locales/active.sw.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.ta.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.te.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.th.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.tr.json": {
+      "bytes": 42817,
+      "lines": 2030,
+      "sha256": "b2e009f05cb845f45021bd2e0f35e75a8ff656e6c0c8986af1356afdd328a623"
+    },
+    "apps/player/internal/server/locales/active.ug.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.uk.json": {
+      "bytes": 51640,
+      "lines": 2030,
+      "sha256": "f04eb31556e9a30ad4c98ffeed328e51b27b2b29f436dcbb02ba2470fb37bb53"
+    },
+    "apps/player/internal/server/locales/active.ur-PK.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.uz.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.vi.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.zh-CN.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.zh-HK.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.zh-Hans.json": {
+      "bytes": 39834,
+      "lines": 2030,
+      "sha256": "4c1d06d98e10b6f190d60a6b112946476c31b3522c531b63dcecf4a42c6611ea"
+    },
+    "apps/player/internal/server/locales/active.zh-Hant.json": {
+      "bytes": 39747,
+      "lines": 2030,
+      "sha256": "ab5a691e76cbd63407e923fa1426012d87f195ad177831f1f86abddcb1acb2bf"
+    },
+    "apps/player/internal/server/locales/active.zh-TW.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/locales/active.zu.json": {
+      "bytes": 31393,
+      "lines": 1,
+      "sha256": "4e42707fae328166beeaa859fdd3ee1111808415d3289dee8e4b113dfe15e4e7"
+    },
+    "apps/player/internal/server/navigation_shell.go": {
+      "bytes": 6955,
+      "lines": 189,
+      "sha256": "f5ccbec12d2b7a6e6069536bc88f05503cb4d08f43f8d138d0c0519cefcee33b"
+    },
+    "apps/player/internal/server/player.go": {
+      "bytes": 26586,
+      "lines": 173,
+      "sha256": "c111c2c2db974478725b7a828379428516562a179c00a9d9cff0c2424e29f162"
+    },
+    "apps/player/internal/server/server.go": {
+      "bytes": 39943,
+      "lines": 300,
+      "sha256": "75cc2bab9008b353e1210383c873627f3febe5b362db48609cc683ff19ebf582"
+    },
+    "apps/player/internal/server/show.go": {
+      "bytes": 8341,
+      "lines": 131,
+      "sha256": "2edf91b5be578efd74118e8dfdc8e5f5ab12f065f2f05c1664466b2f2f57f2a0"
+    },
+    "apps/player/scripts/campaign-q14-public.py": {
+      "bytes": 15335,
+      "lines": 266,
+      "sha256": "0b0ad1a5629e41742438d2ba239e4f320ea3335f430f33797765c31f2c54bf26"
+    },
+    "apps/player/scripts/campaign_q14_admission.py": {
+      "bytes": 8310,
+      "lines": 148,
+      "sha256": "394244582664ec952388028a89322b2d3c3795c67231470248d52530d0114cd6"
+    },
+    "apps/player/scripts/test_campaign_q14_public.py": {
+      "bytes": 13790,
+      "lines": 246,
+      "sha256": "91e7b677ea70ebad2dcb8148bff20e9a95ab9334c1e8ad7bc24155c5c66404a9"
+    },
+    "apps/subtitles/internal/server/locale.go": {
+      "bytes": 8808,
+      "lines": 257,
+      "sha256": "26e7fa9f48844aec5f3449fa9183f7d05474dfe8fe4643157fae6a1c4eac9d15"
+    },
+    "engineering/qa/2026-09-30-android-playback-overlay/fixtures/Native portrait contrast 01a0f2ab.mp4": {
+      "bytes": 53073,
+      "lines": 3,
+      "sha256": "507ff669647ce0eda1f8965341a52fbb9a7bc9fe3a4b0fea4efa3933777a50c2"
+    },
+    "engineering/qa/2026-10-04-q14-browse-return/collection-repair-commands.md": {
+      "bytes": 3549,
+      "lines": 62,
+      "sha256": "1c31487c92466e2414d621e9c7781e9f7f88334f5a2625beccc9536233886aac"
+    },
+    "engineering/qa/2026-10-04-q14-browse-return/collection-repair.md": {
+      "bytes": 2552,
+      "lines": 42,
+      "sha256": "4c849a30264a97aad30a7172873954b9f44bc2f8059990c6f87b60a34935cd5b"
+    },
+    "engineering/qa/2026-10-04-q14-browse-return/direct-cli-preparation-context.json": {
+      "bytes": 11456,
+      "lines": 178,
+      "sha256": "af192d943d6bad75ea0964a609fd6ac89268abbb1774deb32a136d0a9eee1e4b"
+    },
+    "engineering/qa/2026-10-04-q14-browse-return/direct-cli-preparation.md": {
+      "bytes": 4267,
+      "lines": 76,
+      "sha256": "df3b50cf9486545c28d9e9b6ef89a9b32a0bd3301ffe6e24317b627de9105965"
+    },
+    "engineering/qa/2026-10-04-q14-browse-return/failure-analysis.md": {
+      "bytes": 8312,
+      "lines": 135,
+      "sha256": "f2c1b768910e2591abbaa4f5a7b314b510597b17003a05fb8153889f580d3251"
+    },
+    "engineering/qa/2026-10-04-q14-browse-return/reproduction-commands.md": {
+      "bytes": 3059,
+      "lines": 50,
+      "sha256": "69ac42720f054f2242154f9695feac154e204a4eac838148a9795d807fbe08b8"
+    },
+    "engineering/qa/2026-10-04-q14-browse-return/run-bounded.py": {
+      "bytes": 4766,
+      "lines": 108,
+      "sha256": "e50c195ec39f51a88bc2e30d5fa5570839b5f867f15d59ba50671c21de02c57b"
+    },
+    "go.work": {
+      "bytes": 62,
+      "lines": 7,
+      "sha256": "765a0af6b5ad93fa49fb0bae0fdc444df2d775393a2aa7e4d4aacfd4da567390"
+    },
+    "go.work.sum": {
+      "bytes": 2894,
+      "lines": 33,
+      "sha256": "47030067d6dcc02e8fc27e49da706bb3d137d9390a308e05845bf9ae439c1726"
+    },
+    "packages/catalog/browse.go": {
+      "bytes": 6837,
+      "lines": 203,
+      "sha256": "5f32935c388ddc040fa4069ce352e1b50bad55d329fa5978b0ff9796ee2575af"
+    },
+    "packages/catalog/browse_sort.go": {
+      "bytes": 4349,
+      "lines": 153,
+      "sha256": "cbc6c6343910e88f1bb8475f3c9a4796a03a3c1b458906bb5865cf0e8fb2b066"
+    },
+    "packages/catalogapi/library.go": {
+      "bytes": 1287,
+      "lines": 38,
+      "sha256": "05dbee278a4703a9db5318af71665bbc594d940e366d589d49c4aef0e7e25c78"
+    },
+    "packages/go.mod": {
+      "bytes": 2009,
+      "lines": 53,
+      "sha256": "fb65d344477353318a554f740ef582c6674e6feadc941830d38572d72a2ce458"
+    },
+    "packages/go.sum": {
+      "bytes": 11025,
+      "lines": 123,
+      "sha256": "6f6096601f0f7e3c349dead74079c5e88a78f38592af118041798de0effb1f6c"
+    },
+    "packages/home/handler.go": {
+      "bytes": 3651,
+      "lines": 70,
+      "sha256": "4a866d2ef6736cd3aa25c264ba3112ff438f070d7f134a0525d9ba5d2669b824"
+    },
+    "packages/home/model.go": {
+      "bytes": 3993,
+      "lines": 97,
+      "sha256": "43fc39917111628c9e7a77f094dcdda937211edd9049b48b1700127192d89001"
+    },
+    "packages/home/projection.go": {
+      "bytes": 1508,
+      "lines": 54,
+      "sha256": "1c43989d44f5c7b523a3d72268e0c429111df8f8e401f38b0924c864aae424f4"
+    },
+    "packages/identitycore/library_access.go": {
+      "bytes": 889,
+      "lines": 21,
+      "sha256": "ad72ef1578d3b10d6063984a886ba8c4f96a0e01f77182ea89b37aa834594664"
+    },
+    "packages/webassets/static/pwa-browse-return.js": {
+      "bytes": 11529,
+      "lines": 192,
+      "sha256": "dc21c33220963d09a29b661a778d5279276f3c57cfc567ac36eced80b194bba9"
+    },
+    "packages/webassets/static/pwa-library.js": {
+      "bytes": 6218,
+      "lines": 126,
+      "sha256": "b57bad22e9b47c734960460ff668659e35d5288b7e3282bd55c659156d4426e4"
+    },
+    "packages/webassets/static/pwa-navigation.js": {
+      "bytes": 5397,
+      "lines": 94,
+      "sha256": "772e4267e26368752bc4ab6ad14b7f02101594f1e775547c7d320ea390fc2838"
+    },
+    "packages/webassets/static/pwa.js": {
+      "bytes": 10902,
+      "lines": 234,
+      "sha256": "e133ab218c2979c81c3defb90170f47574798d33c923983f448b511e71a4e8ad"
+    },
+    "packages/webassets/webassets.go": {
+      "bytes": 2960,
+      "lines": 91,
+      "sha256": "549e51b4aa003dbb3badea0239b226b8a510720ce59182269bd391a1df5c3b31"
+    }
+  },
+  "trackedTree": "d8a94fcf4a00c289844d64f559b666b8793b00b6"
+}
