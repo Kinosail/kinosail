@@ -68,7 +68,7 @@ jobs:
               data = Path(path).read_bytes()
               assert hashlib.sha256(data).hexdigest() == digest
               blob = api("git/blobs", {"encoding": "base64", "content": base64.b64encode(data).decode()})
-              header = ("blob " + str(len(data)) + "\\0").encode()
+              header = ("blob " + str(len(data))).encode() + bytes([0])
               assert blob["sha"] == hashlib.sha1(header + data).hexdigest()
               entries.append({"path": path, "mode": "100644", "type": "blob", "sha": blob["sha"]})
               files.append({"path": path, "bytes": len(data), "sha256": digest, "blob": blob["sha"]})
@@ -80,7 +80,7 @@ jobs:
                      "boundary": "Existing canonical generator on disposable hosted runner; no refs moved"}
           dest = Path(".verification/apple-canonical/receipt.json")
           dest.parent.mkdir(parents=True, exist_ok=True)
-          dest.write_text(json.dumps(receipt, indent=2) + "\\n")
+          dest.write_text(json.dumps(receipt, indent=2) + chr(10))
           print(json.dumps(receipt))
           PY
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
