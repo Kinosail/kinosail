@@ -298,4 +298,3 @@ test.beforeEach(async ({ page }, testInfo) => {
   await page.addScriptTag({ content: `${availabilityFixture}\n${hlsFixture}\n${playerScript}` });
 });
 }
-
