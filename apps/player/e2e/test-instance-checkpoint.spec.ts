@@ -86,7 +86,7 @@ async function observeExit(page: Page, id: string, key: string) {
 }
 
 async function openMovie(page: Page, observation?: {key: string; iteration: number; testInfo: TestInfo}) {
-  await login(page);
+  if (!observation || observation.iteration === 0) await login(page);
   await page.goto("/?q=Checkpoint%20Example&view=movies");
   const card = page.locator('a.card[href^="/watch/"]').filter({hasText: "Checkpoint Example"}).first();
   await expect(card).toBeVisible();
