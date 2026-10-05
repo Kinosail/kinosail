@@ -1,22 +1,22 @@
 package main
 
 import (
- "context"
- "encoding/json"
- "errors"
- "flag"
- "net"
- "net/http"
- "net/http/httptest"
- "os"
- "os/signal"
- "path/filepath"
- "regexp"
- "sync"
- "syscall"
- "time"
+	"context"
+	"encoding/json"
+	"errors"
+	"flag"
+	"net"
+	"net/http"
+	"net/http/httptest"
+	"os"
+	"os/signal"
+	"path/filepath"
+	"regexp"
+	"sync"
+	"syscall"
+	"time"
 
- "github.com/MikeO7/kinosail-subtitles/internal/server"
+	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
 var (
@@ -58,8 +58,8 @@ type safeSnapshot struct {
 type fixture struct {
 	tls                      *httptest.Server
 	app                      http.Handler
-	origin, authority, mode string
-	files *os.Root
+	origin, authority, mode  string
+	files                    *os.Root
 	cancel                   context.CancelFunc
 	ctx                      context.Context
 	mu                       sync.Mutex
@@ -70,53 +70,60 @@ type fixture struct {
 	eligible, released       chan struct{}
 	releaseOnce              sync.Once
 	stopOnce                 sync.Once
-	cleanupFailed bool
+	cleanupFailed            bool
 }
 
-
 func newFixture(root, mode string) (*fixture, error) {
- if mode != "headers" && mode != "body" || root == "" || !filepath.IsAbs(root) {
-  return nil, errors.New("invalid fixture admission")
- }
- files, err := prepareFixtureFiles(root)
- if err != nil { return nil, err }
- ctx, cancel := context.WithCancel(context.Background())
- f := &fixture{files: files, mode: mode, cancel: cancel, ctx: ctx,
-  eligible: make(chan struct{}), released: make(chan struct{}),
-  state: safeSnapshot{Protocol: "unreached"}}
- f.tls = httptest.NewUnstartedServer(http.HandlerFunc(f.serve))
- if !f.admitListener() {
-  f.tls.Close()
-  cancel()
-  if closeErr := files.Close(); closeErr != nil { return nil, closeErr }
-  return nil, errors.New("fixture listener is not owned loopback")
- }
- unavailableTool := filepath.Join(root, "unavailable-media-tool")
- f.app = server.New(server.Config{
-  Lifecycle: ctx, SubtitleApp: true, RequireAuth: true, AuthURL: f.origin,
-  MediaDir: filepath.Join(root, "media"), DataDir: filepath.Join(root, "data"),
-  CacheDir: filepath.Join(root, "cache"), FFmpeg: unavailableTool, FFprobe: unavailableTool,
-  FPCalc: unavailableTool,
- })
- f.tls.StartTLS()
- return f, nil
+	if mode != "headers" && mode != "body" || root == "" || !filepath.IsAbs(root) {
+		return nil, errors.New("invalid fixture admission")
+	}
+	files, err := prepareFixtureFiles(root)
+	if err != nil {
+		return nil, err
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	f := &fixture{files: files, mode: mode, cancel: cancel, ctx: ctx,
+		eligible: make(chan struct{}), released: make(chan struct{}),
+		state: safeSnapshot{Protocol: "unreached"}}
+	f.tls = httptest.NewUnstartedServer(http.HandlerFunc(f.serve))
+	if !f.admitListener() {
+		f.tls.Close()
+		cancel()
+		if closeErr := files.Close(); closeErr != nil {
+			return nil, closeErr
+		}
+		return nil, errors.New("fixture listener is not owned loopback")
+	}
+	unavailableTool := filepath.Join(root, "unavailable-media-tool")
+	f.app = server.New(server.Config{
+		Lifecycle: ctx, SubtitleApp: true, RequireAuth: true, AuthURL: f.origin,
+		MediaDir: filepath.Join(root, "media"), DataDir: filepath.Join(root, "data"),
+		CacheDir: filepath.Join(root, "cache"), FFmpeg: unavailableTool, FFprobe: unavailableTool,
+		FPCalc: unavailableTool,
+	})
+	f.tls.StartTLS()
+	return f, nil
 }
 
 func (f *fixture) admitListener() bool {
- authority := f.tls.Listener.Addr().String()
- host, port, err := net.SplitHostPort(authority)
- if err != nil || port == "" { return false }
- address := net.ParseIP(host)
- if address == nil || !address.IsLoopback() { return false }
- f.authority = authority
- f.origin = "https://" + authority
- return true
+	authority := f.tls.Listener.Addr().String()
+	host, port, err := net.SplitHostPort(authority)
+	if err != nil || port == "" {
+		return false
+	}
+	address := net.ParseIP(host)
+	if address == nil || !address.IsLoopback() {
+		return false
+	}
+	f.authority = authority
+	f.origin = "https://" + authority
+	return true
 }
 
 func (f *fixture) failBoundary() {
- f.mu.Lock()
- f.state.BoundaryFailed = true
- f.mu.Unlock()
+	f.mu.Lock()
+	f.state.BoundaryFailed = true
+	f.mu.Unlock()
 }
 
 func (f *fixture) snapshot() safeSnapshot {
@@ -158,7 +165,11 @@ func runFixture() (exit int) {
 	if err != nil {
 		return 2
 	}
-	defer func() { if !f.stop() { exit = 2 } }()
+	defer func() {
+		if !f.stop() {
+			exit = 2
+		}
+	}()
 	if json.NewEncoder(os.Stdout).Encode(struct {
 		Kind, Origin string `json:",omitempty"`
 	}{"r06-save-fixture-v1", f.origin}) != nil {
