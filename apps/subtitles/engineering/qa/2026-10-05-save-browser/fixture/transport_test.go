@@ -46,12 +46,13 @@ func (f *fixture) capture(request *http.Request) *capturedResponse {
 	return response
 }
 
-func writeActual(writer http.ResponseWriter, response *capturedResponse) {
+func writeActual(writer http.ResponseWriter, response *capturedResponse) bool {
 	for name, values := range response.header {
 		writer.Header()[name] = append([]string(nil), values...)
 	}
 	writer.WriteHeader(response.status)
-	_, _ = writer.Write(response.body.Bytes())
+	written, err := writer.Write(response.body.Bytes())
+	return err == nil && written == response.body.Len()
 }
 
 func (f *fixture) actualHeaders() http.Header {
@@ -199,17 +200,26 @@ func (f *fixture) save(writer http.ResponseWriter, request *http.Request, id str
 	defer timer.Stop()
 	select {
 	case <-f.released:
-	case <-request.Context().Done(): return
+	case <-request.Context().Done():
+		f.mu.Lock(); f.state.ClientCancelled = true; f.mu.Unlock(); return
 	case <-f.ctx.Done(): return
 	case <-timer.C:
 		f.mu.Lock(); f.state.HoldExpired = true; f.mu.Unlock(); return
 	}
+	if request.Context().Err() != nil {
+		f.mu.Lock(); f.state.ClientCancelled = true; f.mu.Unlock(); return
+	}
+	complete := false
 	if f.mode == "headers" {
-		writeActual(writer, response)
+		complete = writeActual(writer, response)
 	} else {
-		_, _ = writer.Write(response.body.Bytes())
+		written, err := writer.Write(response.body.Bytes())
+		complete = err == nil && written == response.body.Len()
 	}
 	f.mu.Lock()
-	f.state.HeadersReleased, f.state.BodyReleased = true, true
+	f.state.HeadersReleased = true
+	f.state.BodyReleased, f.state.ResponseBodyWritten = complete, complete
+	if request.Context().Err() != nil { f.state.ClientCancelled = true }
+	if !complete && !f.state.ClientCancelled { f.state.BoundaryFailed = true }
 	f.mu.Unlock()
 }

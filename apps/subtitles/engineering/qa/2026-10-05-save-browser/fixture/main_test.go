@@ -44,6 +44,8 @@ type safeSnapshot struct {
 	HoldEligible bool `json:"holdEligible"`
 	HeadersReleased bool `json:"headersReleased"`
 	BodyReleased bool `json:"bodyReleased"`
+	ResponseBodyWritten bool `json:"responseBodyWritten"`
+	ClientCancelled bool `json:"clientCancelled"`
 	HoldExpired bool `json:"holdExpired"`
 	ActiveHolds int `json:"activeHolds"`
 	BrowserCompletedReads int `json:"browserCompletedReads"`
