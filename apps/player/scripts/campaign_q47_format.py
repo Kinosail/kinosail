@@ -24,7 +24,7 @@ SAFE_NAMES = ("receipt.json", "results.json", "source-manifest.json", "artifact-
 INPUT_CAP, OUTPUT_CAP, STDERR_CAP = 256 * 1024, 512 * 1024, 64 * 1024
 SOURCE_PINS = {
     "apps/player/e2e/compose-template-fixture.go": {"bytes": 2869, "sha256": "1078f61a5cff0926d0a4a592d337ce64751e232b6162adde1548da2c5c064a80"},
-    "apps/player/e2e/compose-template-peer.go": {"bytes": 5716, "sha256": "b9d6e06e0251bf0c743e2d614de2c38129695db1b18abdd3003703b95cd7fdac"},
+    "apps/player/e2e/compose-template-peer.go": {"bytes": 5718, "sha256": "245ec58619efa6e17a230c39dfaacad796691412418586880e63f7dab7caab45"},
 }
 
 

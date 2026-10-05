@@ -14,11 +14,13 @@ import (
 )
 
 const holdLimit = 25 * time.Second
+
 var modes = map[string]bool{
 	"valid": true, "headers": true, "body": true, "loss": true,
 	"late_headers": true, "late_body": true, "http_error": true,
 }
 var apps = map[string]bool{"player": true, "subtitles": true, "both": true}
+
 type control struct {
 	Operation string `json:"operation"`
 	Mode      string `json:"mode"`
