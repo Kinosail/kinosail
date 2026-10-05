@@ -10,6 +10,7 @@ from campaign_q47_execution import execute, complete, environment, check_budget
 from campaign_q47_admission import format_binding_valid
 from campaign_q47_io import fingerprint, read_bounded, bounded_paths
 import campaign_q47_dependencies as diagnostics
+from campaign_q47_package_resolution import resolve_package
 
 ROOT = Path(__file__).resolve().parents[3]
 APP = ROOT / "apps/player/e2e"
@@ -179,24 +180,29 @@ def dependencies():
     for name, path in tools.items():
         diagnostics.record_stage(name + "-fingerprint")
         pins[name] = fingerprint(path, limits[name] * 1024 * 1024)
-    packages = {}
+    packages, roots = {}, {}
     for name in ("@playwright/test", "playwright", "playwright-core"):
         label = "playwright-test" if name == "@playwright/test" else name
         diagnostics.record_stage(label + "-metadata")
-        root = (APP / "node_modules" / name).resolve(strict=True)
+        importer = APP if name == "@playwright/test" else roots["@playwright/test" if name == "playwright" else "playwright"]
+        selected = resolve_package(APP, importer, name)
+        root = selected["root"]
+        roots[name] = root
         if not root.is_relative_to(APP / "node_modules"):
             raise ValueError("dependency_root")
         metadata = json.loads(read_bounded(root / "package.json", 512 * 1024).decode("utf-8"))
         if metadata["name"] != name or metadata["version"] != "1.63.0":
             raise ValueError("dependency_version")
         diagnostics.record_stage(label + "-tree")
-        packages[name] = installed_tree(root)
+        packages[name] = {**installed_tree(root), "resolvedFrom": selected["resolvedFrom"], "layout": selected["layout"]}
     diagnostics.record_stage("cli-resolution")
-    cli = (APP / "node_modules/@playwright/test/cli.js").resolve(strict=True)
+    cli = (roots["@playwright/test"] / "cli.js").resolve(strict=True)
+    if not cli.is_relative_to(roots["@playwright/test"]):
+        raise ValueError("dependency_cli_root")
     diagnostics.record_stage("cli-fingerprint")
     pins["playwright-cli"] = fingerprint(cli)
     diagnostics.record_stage("registry-read")
-    registry = json.loads(read_bounded(APP / "node_modules/playwright-core/browsers.json", 262_144).decode("utf-8"))
+    registry = json.loads(read_bounded(roots["playwright-core"] / "browsers.json", 262_144).decode("utf-8"))
     diagnostics.record_stage("cache-resolution")
     cache = Path(os.environ.get("PLAYWRIGHT_BROWSERS_PATH", str(Path.home() / ".cache/ms-playwright"))).resolve(strict=True)
     diagnostics.record_stage("cache-validation")

@@ -45,6 +45,9 @@ def graph():
     context.enter_context(mock.patch.object(sources, "fingerprint", return_value=PIN.copy()))
     context.enter_context(mock.patch.object(sources, "installed_tree", return_value={"files": 1, "bytes": 1, "sha256": "a" * 64}))
     context.enter_context(mock.patch.object(sources, "read_bounded", side_effect=lambda path, _limit: data[str(path)]))
+    context.enter_context(mock.patch.object(sources, "resolve_package", side_effect=lambda app, importer, name: {
+        "root": app / "node_modules" / name, "layout": "flat",
+        "resolvedFrom": "app" if name == "@playwright/test" else "playwright-test" if name == "playwright" else "playwright"}, create=True))
     return context
 
 
