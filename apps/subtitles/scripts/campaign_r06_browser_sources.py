@@ -122,6 +122,15 @@ CONTROL_FAILURE_CODES = {
     "actual released response did not settle as a complete body write": "released-response-incomplete"
 }
 
+CONTROL_CASE_LINES = dict(zip(GO_CASES, (20, 21, 22, 23), strict=True))
+CONTROL_MARKER_LOCATIONS = {
+    "R06_OWNER_REQUEST": ("owner_enrollment_test.go", 35),
+    "R06_OWNER_SETUP": ("owner_enrollment_test.go", 52),
+    "R06_OWNER_ENROLLMENT": ("owner_enrollment_test.go", 85),
+    "R06_OWNER_CURRENT": ("owner_enrollment_test.go", 121),
+    "R06_ROUTE": ("owner_test.go", 84),
+}
+
 def control_diagnostics():
     return {"failures":[], "ownerRequests":{}, "ownerSetup":None, "ownerEnrollment":None, "ownerCurrent":None, "routes":{}}
 
@@ -146,7 +155,7 @@ def control_diagnostics_complete(value, prepared):
 
 def control_output(value, name, output):
     if type(output) is not str or len(output) > 65536: raise ValueError("control-output")
-    match = re.fullmatch(r"[ \t]*(fixture_test\.go|owner_test\.go):([0-9]{1,3}): ([^\r\n]+)\n",output)
+    match = re.fullmatch(r"[ \t]*(fixture_test\.go|owner_test\.go|owner_enrollment_test\.go|control_owned_test\.go|control_faults_test\.go):([0-9]{1,3}): ([^\r\n]+)\n",output)
     if match is None:
         if any(marker in output for marker in ("R06_OWNER_","R06_ROUTE ")):
             raise ValueError("control-marker-location")
@@ -154,16 +163,15 @@ def control_output(value, name, output):
     file, line, text = match.groups()
     if not 1 <= int(line) <= 300: raise ValueError("control-source-line")
     if text in CONTROL_FAILURE_CODES:
-        caller = 25 + GO_CASES.index(name)
-        allowed = {83,89} if text in ("owned request did not settle","owned body read did not settle") else {caller}
-        if file != "fixture_test.go" or int(line) not in allowed: raise ValueError("control-failure-location")
+        allowed = {("fixture_test.go", CONTROL_CASE_LINES[name])}
+        if (file, int(line)) not in allowed: raise ValueError("control-failure-location")
         code = CONTROL_FAILURE_CODES[text]
         if code in value["failures"] or len(value["failures"]) >= 4: raise ValueError("control-failure-duplicate")
         value["failures"].append(code)
         return
     parts = text.split(" ")
     if not parts[0].startswith(("R06_OWNER_","R06_ROUTE")): return
-    if file != "owner_test.go": raise ValueError("control-marker-location")
+    if CONTROL_MARKER_LOCATIONS.get(parts[0]) != (file, int(line)): raise ValueError("control-marker-location")
     def status(token):
         if not re.fullmatch(r"0|[1-5][0-9]{2}",token): raise ValueError("control-status")
         return int(token)
