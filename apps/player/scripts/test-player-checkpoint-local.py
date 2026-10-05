@@ -23,6 +23,8 @@ media.mkdir()
 revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
 diff = subprocess.check_output(["git", "diff", "HEAD"], cwd=root)
 sources = ["packages/webassets/static/player-progress.js", "packages/playerweb/player_template.go",
+           "packages/webassets/static/player-progress-navigation.js", "packages/webassets/webassets.go",
+           "apps/player/e2e/checkpoint-navigation-cases.ts",
            "packages/playerweb/progress_notice.go", "apps/player/internal/server/static/player-streaming-recovery.js",
            "apps/player/e2e/test-instance-checkpoint.spec.ts", "packages/webassets/static/player-presentation.js",
            "packages/webassets/static/player-core.js", "packages/webassets/static/player-status.js",

@@ -2,7 +2,8 @@ import { expect, test, type Page, type Route } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 
 // Isolated HTTP failure/ordering coverage; see engineering/qa/2026-10-04-r03-progress.
-const source = await readFile(new URL("../../../packages/webassets/static/player-progress.js", import.meta.url), "utf8");
+const source = (await Promise.all(["player-progress.js", "player-progress-navigation.js"].map(path =>
+  readFile(new URL(`../../../packages/webassets/static/${path}`, import.meta.url), "utf8")))).join("");
 const fixtureOrigin = "https://progress.kinosail.test";
 test.use({baseURL: fixtureOrigin});
 const failure = "Your latest position is not saved. Retry while this page is open.";
@@ -37,8 +38,10 @@ test.beforeEach(async ({ page }, testInfo) => {
   if (testInfo.title.includes("audio queue")) await page.locator("video").evaluate(media => media.dataset.queue = "/api/v1/test-queue");
   await page.addScriptTag({ content: `
     const player = document.querySelector('video'), csrf = 'synthetic-csrf', playbackSession = 'qa-session-03';
-    let playbackPreparation, preparationSeek, preparationPausePending = 0;
+    let playbackPreparation, preparationSeek, preparationPausePending = 0, playbackRequest = 0;
     const playbackTraceMethod = 'direct', setPlayerTime = seconds => player.currentTime = seconds;
+    const isPictureInPicture = () => false;
+    const requestPause = () => { playbackRequest++; paused = true; player.dispatchEvent(new Event("pause")); };
     const requestPlay = async () => {}, playerStorage = {get: () => '', set: () => {}};
     const playbackTrace = () => {}, flushPlaybackTrace = () => {};
     let position = 42, paused = true;
