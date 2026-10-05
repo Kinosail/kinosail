@@ -45,9 +45,23 @@ func enrollOwner(t *testing.T, f *fixture) (*http.Client, string, error) {
 	key := regexp.MustCompile(`<code>([A-Z2-7]{32})</code>`).FindSubmatch(body)
 	csrf := regexp.MustCompile(`name="_csrf" value="([A-Za-z0-9_-]{43})"`).FindSubmatch(body)
 	t.Logf("R06_OWNER_SETUP %d %t %t %t %t", response.StatusCode, err == nil, secure, len(key) == 2, len(csrf) == 2)
-	if response.StatusCode != 200 || err != nil || !secure || len(key) != 2 || len(csrf) != 2 {
+	if response.StatusCode != 200 || err != nil || !secure || len(key) != 2 {
 		return nil, "", errors.New("setup response invalid")
 	}
+	// Setup sets the response cookie; request-bound CSRF comes from a real authenticated page.
+	enrollment, err := client.Get(f.origin + "/account")
+	t.Logf("R06_OWNER_REQUEST enrollment %d %t", controlResponseStatus(enrollment), err == nil)
+	if err != nil {
+		return nil, "", errors.New("authenticated enrollment page unavailable")
+	}
+	enrollmentPage, readErr := io.ReadAll(io.LimitReader(enrollment.Body, 65537))
+	enrollment.Body.Close()
+	enrollmentCSRF := regexp.MustCompile(`name="kinosail-csrf" content="([A-Za-z0-9_-]{43})"`).FindAllSubmatch(enrollmentPage, -1)
+	t.Logf("R06_OWNER_ENROLLMENT %d %t %t %t", enrollment.StatusCode, readErr == nil, len(enrollmentPage) <= 65536, len(enrollmentCSRF) == 1)
+	if enrollment.StatusCode != 200 || readErr != nil || len(enrollmentPage) > 65536 || len(enrollmentCSRF) != 1 {
+		return nil, "", errors.New("authenticated enrollment CSRF boundary unavailable")
+	}
+	csrf = enrollmentCSRF[0]
 	code := servertest.TestTOTP(t, string(key[1]), time.Now())
 	input := "_csrf=" + string(csrf[1]) + "&code=" + code
 	request, _ = http.NewRequest(http.MethodPost, f.origin+"/account/mfa/enable", strings.NewReader(input))

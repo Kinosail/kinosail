@@ -15,10 +15,11 @@ class ControlDiagnostics(unittest.TestCase):
     def output(self, projection, name, payload, file="owner_test.go", line=44):
         self.event(projection, name, "output", f"    {file}:{line}: {payload}\n")
 
-    def inventory(self, projection, name, csrf=True):
-        for stage, status in (("setup",200), ("mfa",303), ("current",200)):
+    def inventory(self, projection, name, csrf=True, setup_csrf=False):
+        for stage, status in (("setup",200), ("enrollment",200), ("mfa",303), ("current",200)):
             self.output(projection, name, f"R06_OWNER_REQUEST {stage} {status} true")
-        self.output(projection, name, f"R06_OWNER_SETUP 200 true true true {str(csrf).lower()}")
+        self.output(projection, name, f"R06_OWNER_SETUP 200 true true true {str(setup_csrf).lower()}")
+        self.output(projection, name, f"R06_OWNER_ENROLLMENT 200 true true {str(csrf).lower()}")
         self.output(projection, name, "R06_OWNER_CURRENT 200 true true")
         routes = [("catalog",200), ("inspection",200), ("preview",200)]
         if "Receipt" in name: routes.append(("prepare",201))
@@ -94,6 +95,36 @@ class ControlDiagnostics(unittest.TestCase):
         self.event(projection, name, "run")
         self.output(projection, name, "actual TLS Owner/MFA/CSRF prerequisite failed","fixture_test.go",24)
         self.assertEqual(projection.result()["invalidEvents"], 1)
+
+    def test_initial_setup_without_csrf_requires_authenticated_enrollment(self):
+        result = self.completed()
+        self.assertTrue(result["green"])
+        for value in result["diagnostics"]:
+            self.assertFalse(value["ownerSetup"]["csrf"])
+            self.assertEqual(value["ownerEnrollment"],
+                             {"status":200,"read":True,"bounded":True,"csrf":True})
+
+    def test_missing_authenticated_enrollment_is_incomplete(self):
+        projection = GoProjection()
+        for name in GO_CASES:
+            self.event(projection, name, "run")
+            self.inventory(projection, name)
+            projection.diagnostics[name]["ownerEnrollment"] = None
+            self.event(projection, name, "pass")
+        self.event(projection, None, "pass")
+        self.assertFalse(projection.result()["green"])
+
+    def test_failed_authenticated_enrollment_cannot_be_green(self):
+        for key, wrong in (("status",403), ("read",False), ("bounded",False), ("csrf",False)):
+            with self.subTest(key=key):
+                projection = GoProjection()
+                for name in GO_CASES:
+                    self.event(projection, name, "run")
+                    self.inventory(projection, name)
+                    projection.diagnostics[name]["ownerEnrollment"][key] = wrong
+                    self.event(projection, name, "pass")
+                self.event(projection, None, "pass")
+                self.assertFalse(projection.result()["green"])
 
 
 if __name__ == "__main__":

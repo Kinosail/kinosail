@@ -123,14 +123,18 @@ CONTROL_FAILURE_CODES = {
 }
 
 def control_diagnostics():
-    return {"failures":[], "ownerRequests":{}, "ownerSetup":None, "ownerCurrent":None, "routes":{}}
+    return {"failures":[], "ownerRequests":{}, "ownerSetup":None, "ownerEnrollment":None, "ownerCurrent":None, "routes":{}}
 
 
 def control_diagnostics_complete(value, prepared):
-    expected = {"setup":200, "mfa":303, "current":200}
+    expected = {"setup":200, "enrollment":200, "mfa":303, "current":200}
     if value["failures"] or value["ownerRequests"] != {key:{"status":status,"ok":True} for key,status in expected.items()}:
         return False
-    if value["ownerSetup"] != {"status":200,"read":True,"secure":True,"totp":True,"csrf":True}:
+    setup = value["ownerSetup"]
+    if (setup is None or {key:item for key,item in setup.items() if key != "csrf"}
+            != {"status":200,"read":True,"secure":True,"totp":True} or type(setup.get("csrf")) is not bool):
+        return False
+    if value["ownerEnrollment"] != {"status":200,"read":True,"bounded":True,"csrf":True}:
         return False
     if value["ownerCurrent"] != {"status":200,"read":True,"csrf":True}:
         return False
@@ -167,12 +171,14 @@ def control_output(value, name, output):
         if token not in ("true","false"): raise ValueError("control-boolean")
         return token == "true"
     marker = parts[0]
-    if marker == "R06_OWNER_REQUEST" and len(parts) == 4 and parts[1] in ("setup","mfa","current"):
+    if marker == "R06_OWNER_REQUEST" and len(parts) == 4 and parts[1] in ("setup","enrollment","mfa","current"):
         key = parts[1]
         if key in value["ownerRequests"]: raise ValueError("control-marker-duplicate")
         value["ownerRequests"][key] = {"status":status(parts[2]),"ok":boolean(parts[3])}
     elif marker == "R06_OWNER_SETUP" and len(parts) == 6 and value["ownerSetup"] is None:
         value["ownerSetup"] = {"status":status(parts[1]), **dict(zip(("read","secure","totp","csrf"),map(boolean,parts[2:]),strict=True))}
+    elif marker == "R06_OWNER_ENROLLMENT" and len(parts) == 5 and value["ownerEnrollment"] is None:
+        value["ownerEnrollment"] = {"status":status(parts[1]), **dict(zip(("read","bounded","csrf"),map(boolean,parts[2:]),strict=True))}
     elif marker == "R06_OWNER_CURRENT" and len(parts) == 4 and value["ownerCurrent"] is None:
         value["ownerCurrent"] = {"status":status(parts[1]),"read":boolean(parts[2]),"csrf":boolean(parts[3])}
     elif marker == "R06_ROUTE" and len(parts) == 8 and parts[1] in ("catalog","inspection","preview","prepare"):

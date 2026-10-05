@@ -1,9 +1,10 @@
-import { createHash, createHmac, randomBytes } from "node:crypto";
+import { createHash } from "node:crypto";
 import { spawn, type ChildProcess } from "node:child_process";
 import { mkdtemp } from "node:fs/promises";
 import { join, isAbsolute } from "node:path";
 import type { Page, TestInfo } from "@playwright/test";
 import { observeSave } from "./subtitle-save-recovery-network";
+import { owner } from "./subtitle-save-recovery-auth";
 
 export const ASSERTION_IDS = [
   "actual-save-completed", "actual-history-once", "actual-recovery-retained",
@@ -81,35 +82,6 @@ async function clock(page: Page): Promise<BrowserClock> {
   if (!Number.isFinite(value.elapsed) || value.elapsed < 0 ||
     value.unlocked !== null && (!Number.isFinite(value.unlocked) || value.unlocked < 0)) throw new Error("fixed-observation-boundary");
   return value;
-}
-function totp(secret: string): string {
-  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-  let bits = 0, value = 0; const bytes: number[] = [];
-  for (const letter of secret) { const index = alphabet.indexOf(letter); if (index < 0) throw new Error("fixed-auth-boundary");
-    value = (value << 5) | index; bits += 5; if (bits >= 8) { bits -= 8; bytes.push((value >>> bits) & 255); } }
-  const counter = Buffer.alloc(8); counter.writeBigUInt64BE(BigInt(Math.floor(Date.now() / 30000)));
-  const digest = createHmac("sha1", Buffer.from(bytes)).update(counter).digest();
-  const at = digest[digest.length - 1] & 15;
-  return String((digest.readUInt32BE(at) & 0x7fffffff) % 1000000).padStart(6, "0");
-}
-async function owner(page: Page, origin: string) {
-  const response = await page.request.post(origin + "/setup", {
-    form: { name: "Fictional Owner", password: randomBytes(24).toString("hex") + "Aa7!", totp: "true", updateMode: "manual" },
-    headers: { Origin: origin }, maxRedirects: 0, timeout: 15000,
-  });
-  const html = await response.text();
-  const secret = /<code>([A-Z2-7]{32})<\/code>/.exec(html)?.[1];
-  const csrf = /name="_csrf" value="([A-Za-z0-9_-]{43})"/.exec(html)?.[1];
-  const cookies = await page.context().cookies(origin);
-  if (response.status() !== 200 || !secret || !csrf || !cookies.some(cookie =>
-    cookie.name === "__Host-kinosail_subtitles_session" && cookie.secure && cookie.httpOnly &&
-    cookie.sameSite === "Strict" && cookie.path === "/")) throw new Error("fixed-auth-boundary");
-  const confirmed = await page.request.post(origin + "/account/mfa/enable", {
-    form: { code: totp(secret), _csrf: csrf }, headers: { Origin: origin }, maxRedirects: 0, timeout: 15000,
-  });
-  if (confirmed.status() !== 303) throw new Error("fixed-auth-boundary");
-  await page.goto(origin + "/?view=library", { waitUntil: "domcontentloaded", timeout: 15000 });
-  if (!(await page.locator('meta[name="kinosail-csrf"]').getAttribute("content"))) throw new Error("fixed-auth-boundary");
 }
 async function startFixture(mode: Entry["mode"]): Promise<{ child: ChildProcess; origin: string; closed: Promise<void> }> {
   const binary = process.env.R06_SAVE_FIXTURE_BINARY, directory = process.env.R06_SAVE_PRIVATE_ROOT;
