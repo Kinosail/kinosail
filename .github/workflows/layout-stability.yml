@@ -28,7 +28,7 @@ on:
         options: [protocol, save-controls, save-headers, save-body, source-format]
         default: protocol
       campaign_q47_suite:
-        description: Project the singleton Q47 fixture through the existing Go formatter
+        description: Project the Q47 fixture source pair through the existing Go formatter
         type: choice
         options: [source-format]
         default: source-format

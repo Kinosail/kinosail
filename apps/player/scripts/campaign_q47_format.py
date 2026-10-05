@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Hosted singleton source-format projection; never rewrite or adopt source."""
+"""Hosted source-pair format projection; never rewrite or adopt source."""
 import base64
 import hashlib
 import json
@@ -16,10 +16,16 @@ import time
 
 ROOT = Path(__file__).resolve().parents[3]
 OUTPUT = ROOT / ".verification/campaign-proof/Q47"
-GO_FILES = ("apps/player/e2e/compose-template-fixture.go",)
+GO_FILES = (
+    "apps/player/e2e/compose-template-fixture.go",
+    "apps/player/e2e/compose-template-peer.go",
+)
 SAFE_NAMES = ("receipt.json", "results.json", "source-manifest.json", "artifact-manifest.json")
 INPUT_CAP, OUTPUT_CAP, STDERR_CAP = 256 * 1024, 512 * 1024, 64 * 1024
-SOURCE_PIN = {"bytes": 8504, "sha256": "723d479919c2cc1a21a13537645f9dfc82f66443a7fc7bf070bf255d26ede021"}
+SOURCE_PINS = {
+    "apps/player/e2e/compose-template-fixture.go": {"bytes": 2869, "sha256": "1078f61a5cff0926d0a4a592d337ce64751e232b6162adde1548da2c5c064a80"},
+    "apps/player/e2e/compose-template-peer.go": {"bytes": 5716, "sha256": "b9d6e06e0251bf0c743e2d614de2c38129695db1b18abdd3003703b95cd7fdac"},
+}
 
 
 def pin(data):
@@ -29,7 +35,7 @@ def pin(data):
 def format_record(*, path, original, output, exit_code, stderr):
     if type(path) is not str or path not in GO_FILES:
         raise ValueError("format-path")
-    if type(original) is not bytes or pin(original) != SOURCE_PIN:
+    if type(original) is not bytes or pin(original) != SOURCE_PINS[path]:
         raise ValueError("format-input")
     if type(output) is not bytes or not 0 < len(output) <= OUTPUT_CAP:
         raise ValueError("format-output")
@@ -182,7 +188,7 @@ def main():
     receipt = {"id": "Q47", "schemaVersion": 1, "mode": "source-format",
                "result": "prerequisite-blocked", "sourceUnchanged": False,
                "compilerExecuted": False, "applicationExecuted": False, "browserExecuted": False,
-               "limits": {"files": 1, "perFileSeconds": 10, "shutdownSeconds": 2,
+               "limits": {"files": 2, "perFileSeconds": 10, "shutdownSeconds": 2,
                           "inputBytes": INPUT_CAP, "outputBytes": OUTPUT_CAP, "stderrBytes": STDERR_CAP,
                           "maxAdoptedLines": 300}, "phases": []}
     results = {"schemaVersion": 1, "mode": "source-format", "files": [],
@@ -201,7 +207,7 @@ def main():
                  "apps/player/scripts/test_campaign_q47_format.py",
                  ".github/workflows/layout-stability.yml", "scripts/ci/run-campaign-proof.sh", "go.work")
         inputs = {name: read_source(name) for name in names}
-        if pin(inputs[GO_FILES[0]]) != SOURCE_PIN:
+        if any(pin(inputs[name]) != SOURCE_PINS[name] for name in GO_FILES):
             raise ValueError("fixture-identity")
         formatter = shutil.which("gofmt")
         if formatter is None:
@@ -210,18 +216,20 @@ def main():
         identity = tool_pin(tool)
         manifest = {"mode": "source-format", "revision": revision, "trackedTree": tree,
                     "sources": {name: pin(data) for name, data in inputs.items()},
-                    "boundary": "Known static singleton source only; no credentials/runtime/test acceptance."}
+                    "boundary": "Known static source pair only; no credentials/runtime/test acceptance."}
         receipt.update(revision=revision, trackedTree=tree, formatter=identity, command=["gofmt"])
-        output, errors, phase = format_owned(tool, inputs[GO_FILES[0]])
-        receipt["phases"].append({"path": GO_FILES[0], **phase})
-        if (phase["timedOut"] or phase["forcedShutdown"] or not phase["ownedGroupStopped"] or
-                not phase["captureSettled"] or phase["captureBoundExceeded"]):
-            raise ValueError("formatter-settlement")
-        record = format_record(path=GO_FILES[0], original=inputs[GO_FILES[0]], output=output,
-                               exit_code=phase["exitCode"], stderr=errors)
-        results["files"].append(record)
-        receipt["result"] = "formatted-source-projection" if record["adoptionAllowed"] else "formatted-source-over-line-limit"
-        exit_code = 0 if record["adoptionAllowed"] else 2
+        for name in GO_FILES:
+            output, errors, phase = format_owned(tool, inputs[name])
+            receipt["phases"].append({"path": name, **phase})
+            if (phase["timedOut"] or phase["forcedShutdown"] or not phase["ownedGroupStopped"] or
+                    not phase["captureSettled"] or phase["captureBoundExceeded"]):
+                raise ValueError("formatter-settlement")
+            record = format_record(path=name, original=inputs[name], output=output,
+                                   exit_code=phase["exitCode"], stderr=errors)
+            results["files"].append(record)
+        allowed = all(row["adoptionAllowed"] for row in results["files"])
+        receipt["result"] = "formatted-source-projection" if allowed else "formatted-source-over-line-limit"
+        exit_code = 0 if allowed else 2
     except (OSError, ValueError, subprocess.SubprocessError):
         receipt["errorClass"] = "source-format-prerequisite"
     try:
