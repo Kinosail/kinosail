@@ -77,7 +77,8 @@ def case(index, green=False):
                 unattemptedAssertions=unattempted, incompleteAssertions=[],
                 totalErrorCount=len(failed), knownAssertionErrorIDs=failed.copy(), unknownErrorCount=0,
                 assertionErrorsExact=True, deadlineDisposition="within-product-deadline" if green else "no-recovery-observed",
-                observations=observations)
+                observations=observations, privateRunnerAttachmentCount=0,
+                runnerAttachmentAdmission="none")
 
 
 def report(green=False, collection=False):

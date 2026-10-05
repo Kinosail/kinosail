@@ -23,7 +23,9 @@ BASE = "bd1ea2e148787ae8d4a0a46640bc2a965e10fe6a"
 FROZEN = {
     "apps/player/e2e/compose-template-recovery.journey.ts": "2f0836813c25e0c6dc0312712b7048e016c12181373b0327022b721f4a97e8a6",
     "apps/player/e2e/compose-template-recovery.config.ts": "62a269660ba877acdc3336fc17d60e44d3a94881be86cf0b57a5d0e4820b63fe",
-    "apps/player/e2e/compose-template-proof-reporter.ts": "5bbb8e50e005bbc8cba18530c1207fd3217b75ca39c949623765418101f69ce3",
+    "apps/player/e2e/compose-template-proof-reporter.ts": "52ce05e0d5c1d88c5e8b5413aebd60228f4bd0a12809df9e25017b2c6e4a05f5",
+    "apps/player/e2e/compose-template-proof-attachments.ts": "6365b41e61e489cfc6bb0830d5d4b504b15047d1314486b8cb38b2a1be2bcb03",
+    "apps/player/e2e/compose-template-proof-attachments.controls.cjs": "0ed12672d83ccd97a97ad9d895116d052f37ad635ee829f7bdea4b00ce064c00",
     "apps/player/e2e/compose-template-recovery.observation.ts": "2882b641dff938b0737a6d861069e2da6a6d12fa2f8c75e21fcee62d9411f4c1",
     "engineering/qa/2026-10-05-q47-compose-template/failure-analysis.md": "da520e8f06d296e8972d6471ebee4f845508250243eccb60247ddc3a1644aaf7"
 }

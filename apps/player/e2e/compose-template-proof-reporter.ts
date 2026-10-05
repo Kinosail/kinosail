@@ -1,6 +1,7 @@
 import type { FullConfig, FullResult, Reporter, Suite, TestCase, TestError, TestResult } from "@playwright/test/reporter";
 import { closeSync, openSync, realpathSync, statSync, writeFileSync } from "node:fs";
 import { basename, dirname, isAbsolute, join, resolve, sep } from "node:path";
+import { ownedOutputRoot, privateContextValid } from "./compose-template-proof-attachments";
 import { ASSERTION_IDS, ASSERTION_SOURCE, object, integer, safeLedger, scope, type AssertionID, type Ledger, type Json } from "./compose-template-recovery.observation";
 
 const registry = {
@@ -31,7 +32,7 @@ type Peer = {
 };
 type Observation = { asset: { bytes: number; sha256: string; sourceMatches: boolean } } | { state: State; peer: Peer };
 type ErrorAdmission = { totalErrorCount: number; knownAssertionErrorIDs: AssertionID[]; unknownErrorCount: number; assertionErrorsExact: boolean };
-type Case = ErrorAdmission & { name: string; status: TestResult["status"]; retry: number; durationMs: number;
+type Case = ErrorAdmission & { privateRunnerAttachmentCount: number; runnerAttachmentAdmission: "none" | "recognized" | "rejected"; name: string; status: TestResult["status"]; retry: number; durationMs: number;
   outcome: "passed" | "failed" | "incomplete"; failure: "none" | "known-assertion" | "unclassified";
   ledger: Ledger | null; failedAssertions: AssertionID[]; unattemptedAssertions: AssertionID[]; incompleteAssertions: AssertionID[];
   deadlineDisposition: "within-product-deadline" | "observation-grace" | "no-recovery-observed" | "ineligible" | "not-applicable";
@@ -133,10 +134,16 @@ export default class ComposeTemplateReporter implements Reporter {
   private cases: Case[] = [];
   private errors: string[] = [];
   private runnerErrorCount = 0;
+  private outputRoot: string | null = null;
   private problem(code: string) { if (this.errors.length < 16) this.errors.push(code); }
   onBegin(config: FullConfig, suite: Suite) {
     if (!Object.hasOwn(registry, this.suite)) this.problem("suite_invalid");
     if (config.projects.length !== 1 || config.projects[0].name !== "chromium" || config.projects[0].retries !== 0 || config.workers !== 1) this.problem("project_invalid");
+    try {
+      this.outputRoot = ownedOutputRoot(config.projects.length === 1 ? config.projects[0].outputDir : undefined,
+        process.env.KINOSAIL_E2E_OUTPUT_DIR, privateDestination());
+    } catch { this.outputRoot = null; }
+    if (!this.outputRoot) this.problem("output_root_invalid");
     const tests = suite.allTests();
     if (tests.length > 10) this.problem("collection_bound");
     this.collected = tests.slice(0, 10).map(test => names.includes(test.title) ? test.title : "unknown");
@@ -151,8 +158,23 @@ export default class ComposeTemplateReporter implements Reporter {
     }
     if (result.attachments.length > 10 || result.errors.length > 32 || result.retry !== 0) this.problem("attachment_or_error_bound");
     const records: Case["observations"] = [], seen = new Set<string>();
-    let ledger: Ledger | null = null, malformed = false;
+    let ledger: Ledger | null = null, malformed = false, privateRunnerAttachmentCount = 0;
+    let runnerAttachmentAdmission: Case["runnerAttachmentAdmission"] = "none";
     for (const attachment of result.attachments.slice(0, 10)) {
+      if (attachment.name === "error-context") {
+        let recognized = false;
+        try {
+          recognized = privateContextValid(attachment, { outputRoot: this.outputRoot, title: name,
+            status: result.status, retry: result.retry, recognizedCount: privateRunnerAttachmentCount });
+        } catch { recognized = false; }
+        if (recognized) {
+          privateRunnerAttachmentCount++;
+          if (runnerAttachmentAdmission !== "rejected") runnerAttachmentAdmission = "recognized";
+        } else {
+          this.problem("attachment_invalid"); malformed = true; runnerAttachmentAdmission = "rejected";
+        }
+        continue;
+      }
       if ((!stages.includes(attachment.name) && attachment.name !== "q47-assertions") ||
         attachment.contentType !== "application/json" || seen.has(attachment.name) || attachment.path !== undefined) {
         this.problem("attachment_invalid"); malformed = true; continue;
@@ -177,10 +199,13 @@ export default class ComposeTemplateReporter implements Reporter {
     const unattemptedAssertions = ledger ? selected.filter(id => !ledger!.assertions[id].attempted) : selected;
     const incompleteAssertions = ledger ? selected.filter(id => ledger!.assertions[id].attempted && !ledger!.assertions[id].completed) : [];
     const admission = admitErrors(result, ledger);
+    if (privateRunnerAttachmentCount && (!admission.assertionErrorsExact || admission.totalErrorCount < 1)) {
+      this.problem("attachment_invalid"); malformed = true; runnerAttachmentAdmission = "rejected";
+    }
     const outcome = !malformed && admission.assertionErrorsExact && result.status === "passed" &&
       admission.totalErrorCount === 0 && failedAssertions.length === 0 && unattemptedAssertions.length === 0 && incompleteAssertions.length === 0 ?
       "passed" : !malformed && admission.assertionErrorsExact && result.status === "failed" && admission.totalErrorCount > 0 ? "failed" : "incomplete";
-    this.cases.push({ name, status: result.status, retry: result.retry, durationMs: result.duration, outcome,
+    this.cases.push({ privateRunnerAttachmentCount, runnerAttachmentAdmission, name, status: result.status, retry: result.retry, durationMs: result.duration, outcome,
       failure: outcome === "passed" ? "none" : outcome === "failed" ? "known-assertion" : "unclassified",
       ledger, failedAssertions, unattemptedAssertions, incompleteAssertions, ...admission,
       deadlineDisposition: deadlineDisposition(ledger, name), observations: records });

@@ -2,6 +2,7 @@
 """Strict Q47 private reporter admission. Unknown evidence is never product RED."""
 import math
 import re
+from campaign_q47_attachment_admission import attachment_fields_valid
 
 IDS = ["control-status", "witness-status", "prior-handler-idle", "served-helper-equal", "builder-visible", "original-links-present", "template-request-observed", "result-visible", "preview-equal", "download-name-equal", "native-blob-digest-equal", "copy-status-equal", "native-copy-equal", "retry-keyboard-focused", "primary-one-request", "primary-one-hold", "primary-body-prefix", "primary-template-digest", "primary-pending-label", "primary-pending-disabled", "primary-no-output", "deadline-retry-label", "deadline-enabled", "deadline-error-visible", "deadline-retry-visible", "deadline-error-still-visible", "fallback-visible", "deadline-elapsed-at-least20s", "fallback-canonical", "primary-input-retention", "primary-peer-canceled", "primary-new-completed", "primary-two-requests", "primary-settled", "primary-privacy", "recovery-error-visible", "recovery-retry-visible", "recovery-input-retention", "recovery-fallback-canonical", "recovery-new-completed", "recovery-new-request", "recovery-prior-failed", "recovery-settled", "recovery-privacy", "supersession-one-hold", "supersession-no-active", "supersession-peer-canceled", "supersession-preview-current", "contract-one-completed", "contract-one-request", "contract-settled", "contract-privacy", "invalid-path-error", "invalid-path-no-request", "invalid-port-error", "invalid-port-no-request", "invalid-no-result", "invalid-no-download", "pending-confirmed-before-deadline", "absolute-clock-window-eligible", "recovery-observed-by-product-deadline"]
 NAMES = {
@@ -14,7 +15,7 @@ NAMES = {
 ERRORS = ["suite_invalid", "project_invalid", "collection_bound", "collection_invalid", "case_bound",
           "case_invalid", "attachment_or_error_bound", "attachment_invalid", "assertions_invalid",
           "observation_invalid", "assertions_missing_or_bound", "runner_error", "terminal_invalid",
-          "selection_invalid", "collection_case_emitted", "case_incomplete", "empty_or_inconsistent_green"]
+          "selection_invalid", "collection_case_emitted", "case_incomplete", "empty_or_inconsistent_green", "output_root_invalid"]
 STAGES = ["q47-asset", "q47-started", "q47-pending", "q47-deadline", "q47-failed",
           "q47-recovered", "q47-stale", "q47-rejected"]
 BOOLS = ["createDisabled", "resultVisible", "errorVisible", "fallbackVisible", "fallbackCanonical",
@@ -24,7 +25,8 @@ CHECKS = ["cookieSeen", "authorizationSeen", "bodySeen", "querySeen", "bodyPrefi
 ACTIONS = ["make", "preparing", "retry", "unknown"]
 CASE_KEYS = ["name", "status", "retry", "durationMs", "outcome", "failure", "ledger", "failedAssertions",
              "unattemptedAssertions", "incompleteAssertions", "totalErrorCount", "knownAssertionErrorIDs",
-             "unknownErrorCount", "assertionErrorsExact", "deadlineDisposition", "observations"]
+             "unknownErrorCount", "assertionErrorsExact", "deadlineDisposition", "observations",
+             "privateRunnerAttachmentCount", "runnerAttachmentAdmission"]
 
 
 def exact(value, keys):
@@ -139,6 +141,8 @@ def case_valid(value, suite):
     if not all(vector(value[key], IDS, 61, key != "knownAssertionErrorIDs") for key in
                ("failedAssertions", "unattemptedAssertions", "incompleteAssertions", "knownAssertionErrorIDs")):
         return False
+    if not attachment_fields_valid(value):
+        return False
     records = value["observations"]
     return ((value["ledger"] is None or ledger_valid(value["ledger"], value["name"]))
             and type(records) is list and len(records) <= 8 and all(observation_valid(item) for item in records)
@@ -159,7 +163,7 @@ def disposition(clock):
 
 def consistent_case(value):
     ledger = value["ledger"]
-    if ledger is None or value["retry"] != 0 or value["unknownErrorCount"] != 0:
+    if ledger is None or value["retry"] != 0 or value["unknownErrorCount"] != 0 or value["runnerAttachmentAdmission"] == "rejected":
         return False
     entries, selected = ledger["assertions"], scope(value["name"])
     failed = [key for key in selected if entries[key]["completed"] and entries[key]["passed"] is False]

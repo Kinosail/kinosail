@@ -17,11 +17,12 @@ from campaign_q47_sources import ROOT, APP, BASE, FIXTURE_FILES, canonical, sour
 
 OUTPUT = ROOT / ".verification/campaign-proof/Q47"
 FILES = ("receipt.json", "results.json", "source-manifest.json", "artifact-manifest.json")
-BOUNDS = {"dependency-check": 10, "docs-build": 120, "fixture-compile": 90, "collection": 15,
+BOUNDS = {"dependency-check": 10, "reporter-controls": 10, "docs-build": 120, "fixture-compile": 90, "collection": 15,
           "primary-1": 75, "primary-2": 75}
 LIMITS = {"admissionBudgetSeconds": 540, "commandCleanupSeconds": 7, "peerReadySeconds": 5,
           "peerLifetimeSeconds": 105, "privateReportBytes": 262144, "artifactBytes": 4194304}
-COMMANDS = {"docs-build": "python3 engineering/documentation/build.py --output <new RUNNER_TEMP site>",
+COMMANDS = {"reporter-controls": "node --test apps/player/e2e/compose-template-proof-attachments.controls.cjs",
+            "docs-build": "python3 engineering/documentation/build.py --output <new RUNNER_TEMP site>",
             "fixture-compile": "go build -p 1 -tags q47proof -o <new private binary> <declared fixture files>",
             "collection": "node <installed pinned Playwright CLI> test --config compose-template-recovery.config.ts --list --workers=1 --retries=0",
             "primary": "node <installed pinned Playwright CLI> test --config compose-template-recovery.config.ts --workers=1 --retries=0"}
@@ -67,6 +68,13 @@ def preflight(tools):
 def command_phase(name, command, cwd, env, hook=None):
     result, _private = execute(command, BOUNDS[name], cwd, env, hook, label=name)
     return result
+
+
+def reporter_controls(tools):
+    command = [str(tools["node"]), "--test", "apps/player/e2e/compose-template-proof-attachments.controls.cjs"]
+    terminal = command_phase("reporter-controls", command, ROOT, environment())
+    if not complete(terminal, 0):
+        raise ValueError("reporter_controls")
 
 
 def browser_phase(name, root, node, cli, pins, peer=None):
@@ -143,6 +151,8 @@ def main():
         tools, cli, dependency_pins = dependencies()
         sources["dependencies"] = dependency_pins
         preflight(tools)
+        phase = "reporter-controls"
+        reporter_controls(tools)
         phase = "docs-build"
         site = temporary / "site"
         terminal = command_phase(phase, [sys.executable, str(ROOT / "engineering/documentation/build.py"), "--output", str(site)],
