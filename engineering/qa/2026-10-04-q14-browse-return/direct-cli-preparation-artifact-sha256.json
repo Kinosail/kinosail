@@ -1,0 +1,17 @@
+{
+  "artifact-sha256.json": "70f5bf02e1371ea0d63359e1d577ee0c5fdd5e8a884ea6c3eae0e31ac6ff1a0b",
+  "canonical-Q14.json": "37e35daec4a01b92285f228b2d98b0e4389a6b75874d8dc525eff896f5831a4b",
+  "collection-repair-artifact-sha256.json": "9ef5b44a8eb1abeed36afd99e80e04b1c5e21dc5a79104c9b8dfc7488caf7061",
+  "collection-repair-commands.md": "1c31487c92466e2414d621e9c7781e9f7f88334f5a2625beccc9536233886aac",
+  "collection-repair-context.json": "f852c2fd16f87b582027fa60222ac66e3850b3ae5296fe14c6ad5e29e62731ad",
+  "collection-repair.md": "4c849a30264a97aad30a7172873954b9f44bc2f8059990c6f87b60a34935cd5b",
+  "direct-cli-preparation-context.json": "af192d943d6bad75ea0964a609fd6ac89268abbb1774deb32a136d0a9eee1e4b",
+  "direct-cli-preparation.md": "df3b50cf9486545c28d9e9b6ef89a9b32a0bd3301ffe6e24317b627de9105965",
+  "failure-analysis.md": "f2c1b768910e2591abbaa4f5a7b314b510597b17003a05fb8153889f580d3251",
+  "prepared-checks.json": "697586d127c1a3a501ac483f111c183f16ce39315248d9111e2e74e97c2c8e4a",
+  "prepared-context.json": "96823fbefc9351bb5450a0994177ce0c2b6a78b9af607b44418e25eb12b4a7e1",
+  "reproduction-commands.md": "69ac42720f054f2242154f9695feac154e204a4eac838148a9795d807fbe08b8",
+  "run-bounded.py": "e50c195ec39f51a88bc2e30d5fa5570839b5f867f15d59ba50671c21de02c57b",
+  "runtime-collection-prerequisite-sha256.json": "91b8a8c30e2057d58bb51ef657111190a17c89eaa4b65e9874fe381d728f466a",
+  "runtime-collection-prerequisite.json": "31344cd9d3828879e4a6aa19785e41719733e2fc70251c477ea4c99542e454ab"
+}

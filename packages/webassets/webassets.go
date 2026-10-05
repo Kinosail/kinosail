@@ -70,7 +70,10 @@ var (
 	//go:embed static/mobile-tabs.js
 	MobileTabs []byte
 	//go:embed static/pwa-navigation.js
-	PWANavigation []byte
+	pwaNavigation []byte
+	//go:embed static/pwa-browse-return.js
+	pwaBrowseReturn []byte
+	PWANavigation   = append(append([]byte(nil), pwaNavigation...), pwaBrowseReturn...)
 	//go:embed static/pwa-settings.js
 	PWASettings []byte
 	//go:embed static/shortcuts.js

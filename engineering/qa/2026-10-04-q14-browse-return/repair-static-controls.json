@@ -1,0 +1,129 @@
+{
+  "catalogs": {
+    "count": 108,
+    "entriesPerCatalog": 507,
+    "newIDsPerCatalog": 3,
+    "newValues": "English fallback; translated coverage unproved",
+    "originalEntriesAndPrefixBytesPreserved": true
+  },
+  "executedChecks": [
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "0b48de6259becc7ed96ac3f0eaa0bc55e392827d",
+        "e933ac422885ce6fd8d87edcc8ade28061ea68b3"
+      ],
+      "exitCode": 0,
+      "stderrBytes": 0,
+      "stdoutBytes": 0
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/tooling/check-file-loc.py",
+        "--head"
+      ],
+      "exitCode": 0,
+      "stderrBytes": 0,
+      "stdoutBytes": 0
+    }
+  ],
+  "navigationPrefix": "original menus retained; one separator LF before the removed old browse tail also removed",
+  "offlineMainComposition": {
+    "assetPaths": [
+      "packages/webassets/static/offline-identity.js",
+      "packages/webassets/static/pwa-library.js",
+      "packages/webassets/static/pwa.js",
+      "packages/webassets/static/pwa-navigation.js",
+      "packages/webassets/static/pwa-browse-return.js",
+      "packages/webassets/static/pwa-settings.js",
+      "packages/webassets/static/shortcuts.js"
+    ],
+    "baselineBytes": 45035,
+    "baselineSHA256": "3d496d22ad5c1bca9fc9e25ffef3db29f145764348ee1ee565b2db2c1ba29401",
+    "candidateBytes": 56863,
+    "candidateSHA256": "aa631a0ce9a1559ec5ce3a485e79557ba6680bbfa3ccfb0af94bdb619481d348",
+    "claim": "offline reconstruction only, not served candidate asset proof",
+    "recipe": "concatenate assetPaths in given order, matching Go append/joinScripts"
+  },
+  "ownedProcesses": [],
+  "protectedSourcesUnchanged": {
+    "apps/player/e2e/browse-return-bfcache.spec.ts": {
+      "bytes": 2243,
+      "lines": 36,
+      "sha256": "6132c19eed1a5cda2fccd0ff9280476a425f4d7a9c17ca43b18f8eb2cffde58d"
+    },
+    "apps/player/e2e/browse-return-cold.spec.ts": {
+      "bytes": 4356,
+      "lines": 68,
+      "sha256": "5a9afd3345bd851adef419464905baa9f0ad19daecac3979efecef0bb3e15bdb"
+    },
+    "apps/player/e2e/browse-return-helpers.ts": {
+      "bytes": 8015,
+      "lines": 125,
+      "sha256": "f44ae37d320662ee55206864c6c6b96f58aa7ca36ae04134648115a2b23ee021"
+    },
+    "apps/player/e2e/browse-return.spec.ts": {
+      "bytes": 5921,
+      "lines": 103,
+      "sha256": "742486a950692b1ac91a314a895c9c55ff7fdff90e830eebc2040659789dd054"
+    },
+    "apps/player/internal/server/browse_return_browser_test.go": {
+      "bytes": 4925,
+      "lines": 132,
+      "sha256": "5dbe7f3d8c86cc5d7464ccbfc07a9b7cc6fe56d0b291818b9e868d419aeea096"
+    },
+    "packages/catalog/browse.go": {
+      "bytes": 6837,
+      "lines": 203,
+      "sha256": "5f32935c388ddc040fa4069ce352e1b50bad55d329fa5978b0ff9796ee2575af"
+    },
+    "packages/identitycore/http.go": {
+      "bytes": 2613,
+      "lines": 56,
+      "sha256": "f3e904bccc9caf57d08863de65db9fbf54fa8fe4cd550879878b11a89df94599"
+    },
+    "packages/playerweb/player_template.go": {
+      "bytes": 5924,
+      "lines": 27,
+      "sha256": "8e94f40660a1bda4f2b435477b813b9c992eafd7fca62d21e0e92fc8ec9c9d42"
+    },
+    "packages/webassets/static/downloads-ui.js": {
+      "bytes": 16074,
+      "lines": 295,
+      "sha256": "1dc721cc51a6e5cad00853a9ed65c1cf79317df3cc2940d8b517984fbb3079e3"
+    },
+    "packages/webassets/static/player-core.js": {
+      "bytes": 8189,
+      "lines": 126,
+      "sha256": "92d6bc44d3ff7fc05a1593949a9d6d673785fce1471b6a5bea7bce6aaf85aa0c"
+    },
+    "packages/webassets/static/player-progress.js": {
+      "bytes": 13513,
+      "lines": 251,
+      "sha256": "98d232f651950d97364e50ff1335820962209d97583a3440f295b51fd8cbb0bd"
+    },
+    "packages/webassets/static/pwa.js": {
+      "bytes": 10902,
+      "lines": 234,
+      "sha256": "e133ab218c2979c81c3defb90170f47574798d33c923983f448b511e71a4e8ad"
+    }
+  },
+  "revision": "e933ac422885ce6fd8d87edcc8ade28061ea68b3",
+  "runtimeExecuted": false,
+  "schema": 1,
+  "timestampUTC": "2026-10-04T20:13:31.194054+00:00",
+  "unrun": [
+    "Go compile/tests",
+    "JavaScript syntax/collection",
+    "primary GREEN",
+    "other seven canonical journeys",
+    "10 safety cases",
+    "failure/cancellation responsive renders",
+    "Subtitles consumer",
+    "protected checks",
+    "merge ancestry"
+  ]
+}

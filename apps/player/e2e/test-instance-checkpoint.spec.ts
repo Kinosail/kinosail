@@ -193,3 +193,60 @@ test("Library exit checkpoints actual playing time before teardown without reset
     await page.screenshot({path: testInfo.outputPath(`exit-checkpoint-reentry-${iteration}.png`), fullPage: true});
   }
 });
+
+test.describe("acknowledged Library navigation", () => {
+  test.use({serviceWorkers: "block"});
+  // The populated media and progress store remain real. Only transport acknowledgement is held:
+  // an unload keepalive cannot prove this important pending-response navigation boundary.
+  test("Library waits for a real checkpoint acknowledgement before leaving moving media", {tag: "@smoke"}, async ({page}, testInfo) => {
+    test.skip(phase !== "candidate", "historical sources are reserved for the original checkpoint reproductions");
+    const {watch, media, id, session} = await openMovie(page, {key: "kinosail:checkpoint-ack-observation", iteration: 0, testInfo});
+    let release!: () => void;
+    const acknowledgement = new Promise<void>(resolve => release = resolve);
+    const writes: Array<{seconds: number; revision: number; sessionMatches: boolean}> = [];
+    await media.evaluate((video: HTMLVideoElement) => video.play());
+    const start = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
+    await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(start + 0.5);
+    const leaveAt = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
+    const before = await checkpoint(page, id, session);
+    expect(before.sessionMatches).toBe(true);
+    await page.route(`**/progress/${id}*`, async route => {
+      const form = new URLSearchParams(route.request().postData() || "");
+      writes.push({seconds: Number(form.get("seconds")), revision: Number(form.get("revision")),
+        sessionMatches: form.get("session") === session});
+      await acknowledgement;
+      await route.continue();
+    });
+    try {
+      await page.getByRole("link", {name: "Library", exact: true}).click({noWaitAfter: true});
+      await expect.poll(() => writes.length, {timeout: 1500}).toBeGreaterThan(0);
+      await expect(page).toHaveURL(url => url.pathname === watch, {timeout: 500});
+      await expect(media).toHaveJSProperty("paused", true);
+      const whileHeld = await checkpoint(page, id, session);
+      expect(whileHeld).toEqual(before);
+      // The server receives every original validated request only after this bounded hold.
+      release();
+      await page.unrouteAll({behavior: "wait"});
+      await expect(page).toHaveURL(/\/$/);
+      const saved = await checkpoint(page, id, session);
+      expect(saved.sessionMatches).toBe(true);
+      expect(saved.seconds).toBeGreaterThanOrEqual(leaveAt - 0.1);
+      expect(saved.revision).toBeGreaterThan(before.revision);
+      expect(writes.every(write => write.sessionMatches && write.seconds >= leaveAt - 0.1)).toBe(true);
+      await testInfo.attach("acknowledged-library-checkpoint", {body: JSON.stringify({phase, leaveAt, before,
+        whileHeld, saved, writes, transport: "response held before forwarding original request to real Server"}),
+        contentType: "application/json"});
+      await page.goto(watch);
+      await expect.poll(async () => Number(await page.locator("video").getAttribute("data-start"))).toBeGreaterThanOrEqual(leaveAt - 0.1);
+      await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThanOrEqual(2);
+      await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThanOrEqual(leaveAt - 0.1);
+      await page.locator("video").evaluate((video: HTMLVideoElement) => video.play());
+      await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(leaveAt + 0.2);
+      await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.getVideoPlaybackQuality().totalVideoFrames)).toBeGreaterThan(2);
+      await page.screenshot({path: testInfo.outputPath("acknowledged-library-reentry.png"), fullPage: true});
+    } finally {
+      release();
+      await page.unrouteAll({behavior: "ignoreErrors"});
+    }
+  });
+});

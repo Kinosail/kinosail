@@ -1,0 +1,224 @@
+{
+  "stage": "source-only strict admission candidate; all local runtime/control execution pending",
+  "testFirstCommit": "8d81d029",
+  "driverOriginalCommit": "1cf550ba674b0a209f15037fed296fd9eb0ddb5f",
+  "routeCommit": "462831a13c21b0bc31fc402ae67ba98301d2e0d8",
+  "sourceRecipe": "UTF-8 sorted path<TAB>lowercase SHA-256<LF>, trailing LF",
+  "sourceCount": 50,
+  "sourceCanonicalSHA256": "9aab0caff67f485a87a74bffe1ed10bdc1533bb18ad0affb484fa5a8ef58a98d",
+  "sources": {
+    ".github/workflows/layout-stability.yml": {
+      "bytes": 6703,
+      "sha256": "2d8cc088ab280d81d227ec49ff3b907378923f31dfb1e3ce6d5d7320c6d3b4be"
+    },
+    "apps/player/e2e/browse-return-bfcache.spec.ts": {
+      "bytes": 2243,
+      "sha256": "6132c19eed1a5cda2fccd0ff9280476a425f4d7a9c17ca43b18f8eb2cffde58d"
+    },
+    "apps/player/e2e/browse-return-cold.spec.ts": {
+      "bytes": 4356,
+      "sha256": "5a9afd3345bd851adef419464905baa9f0ad19daecac3979efecef0bb3e15bdb"
+    },
+    "apps/player/e2e/browse-return-helpers.ts": {
+      "bytes": 8015,
+      "sha256": "f44ae37d320662ee55206864c6c6b96f58aa7ca36ae04134648115a2b23ee021"
+    },
+    "apps/player/e2e/browse-return-proof-reporter.ts": {
+      "bytes": 5332,
+      "sha256": "fe7470ca913f0eebcaa555d232f11c4b2d8c7f2b9852a2ead6f2f4fb6dd7ba83"
+    },
+    "apps/player/e2e/browse-return.spec.ts": {
+      "bytes": 5921,
+      "sha256": "742486a950692b1ac91a314a895c9c55ff7fdff90e830eebc2040659789dd054"
+    },
+    "apps/player/e2e/package.json": {
+      "bytes": 313,
+      "sha256": "1829525fd62a789fdb1767c89813eaf13394b1a115dbca3f749bb63e22b42e52"
+    },
+    "apps/player/e2e/playwright.config.ts": {
+      "bytes": 2091,
+      "sha256": "628d3a62d9b3e2fba1bc43f3cd58979acadf22c083e3559c73c4f750a97cc0b3"
+    },
+    "apps/player/e2e/pnpm-lock.yaml": {
+      "bytes": 1636,
+      "sha256": "b3151e08c2af7e480d7f6f5aeafb2a230e92c9dd5aaf18dfcd787ee71c8ba655"
+    },
+    "apps/player/go.mod": {
+      "bytes": 2231,
+      "sha256": "92c5b9dbdf2b413f8ff38bae2f6303d947010953ded4b7a95cb01f550e91fdc3"
+    },
+    "apps/player/go.sum": {
+      "bytes": 10906,
+      "sha256": "865970fee7d100edc1a7d2a52d61eebf6d474eee992495f8f9fc1c1c2290170b"
+    },
+    "apps/player/internal/server/browse.go": {
+      "bytes": 482,
+      "sha256": "a13ebeb8994d5e39e721c390a2f2e92f7ca2391b9065f9a35061a27ab60d8c2d"
+    },
+    "apps/player/internal/server/browse_return_browser_test.go": {
+      "bytes": 4925,
+      "sha256": "5dbe7f3d8c86cc5d7464ccbfc07a9b7cc6fe56d0b291818b9e868d419aeea096"
+    },
+    "apps/player/internal/server/home.go": {
+      "bytes": 1809,
+      "sha256": "ae00ea4bc4e89865b1052c9ecca788419235f9532342932b7bdf345c8e8f9961"
+    },
+    "apps/player/internal/server/navigation_shell.go": {
+      "bytes": 6955,
+      "sha256": "f5ccbec12d2b7a6e6069536bc88f05503cb4d08f43f8d138d0c0519cefcee33b"
+    },
+    "apps/player/internal/server/player.go": {
+      "bytes": 26383,
+      "sha256": "633ed24b29175ce63240708f32d6fc2970e7f2595b22c034037d0392b20ef255"
+    },
+    "apps/player/internal/server/server.go": {
+      "bytes": 39943,
+      "sha256": "75cc2bab9008b353e1210383c873627f3febe5b362db48609cc683ff19ebf582"
+    },
+    "apps/player/internal/server/show.go": {
+      "bytes": 8341,
+      "sha256": "2edf91b5be578efd74118e8dfdc8e5f5ab12f065f2f05c1664466b2f2f57f2a0"
+    },
+    "apps/player/scripts/campaign-q14-public.py": {
+      "bytes": 13162,
+      "sha256": "71a4f510dbc022889a2ea82e3446118310b9572a1292168dd2f0d2cc679351c3"
+    },
+    "apps/player/scripts/campaign_q14_admission.py": {
+      "bytes": 8310,
+      "sha256": "394244582664ec952388028a89322b2d3c3795c67231470248d52530d0114cd6"
+    },
+    "apps/player/scripts/test_campaign_q14_public.py": {
+      "bytes": 8096,
+      "sha256": "ebf7c6f2a33e2e9d8cd9e1d73df49c43a0b12dfd6624684409c4e9c25150a83e"
+    },
+    "engineering/qa/2026-09-30-android-playback-overlay/fixtures/Native portrait contrast 01a0f2ab.mp4": {
+      "bytes": 53073,
+      "sha256": "507ff669647ce0eda1f8965341a52fbb9a7bc9fe3a4b0fea4efa3933777a50c2"
+    },
+    "engineering/qa/2026-10-04-campaign-hosted/FAILURE-ANALYSIS.md": {
+      "bytes": 2255,
+      "sha256": "bfe47018f672865a04a42b7e43520bf2cc546014ec6eb2399593ccd5e95ea40d"
+    },
+    "engineering/qa/2026-10-04-campaign-hosted/controls.json": {
+      "bytes": 1219,
+      "sha256": "d164a93f201773eab93b7dde4db4cf06586007a0cb5bfbc2bdded98ef845754f"
+    },
+    "engineering/qa/2026-10-04-q14-browse-return/collection-repair-commands.md": {
+      "bytes": 3549,
+      "sha256": "1c31487c92466e2414d621e9c7781e9f7f88334f5a2625beccc9536233886aac"
+    },
+    "engineering/qa/2026-10-04-q14-browse-return/collection-repair.md": {
+      "bytes": 2552,
+      "sha256": "4c849a30264a97aad30a7172873954b9f44bc2f8059990c6f87b60a34935cd5b"
+    },
+    "engineering/qa/2026-10-04-q14-browse-return/direct-cli-preparation-context.json": {
+      "bytes": 11456,
+      "sha256": "af192d943d6bad75ea0964a609fd6ac89268abbb1774deb32a136d0a9eee1e4b"
+    },
+    "engineering/qa/2026-10-04-q14-browse-return/direct-cli-preparation.md": {
+      "bytes": 4267,
+      "sha256": "df3b50cf9486545c28d9e9b6ef89a9b32a0bd3301ffe6e24317b627de9105965"
+    },
+    "engineering/qa/2026-10-04-q14-browse-return/failure-analysis.md": {
+      "bytes": 8312,
+      "sha256": "f2c1b768910e2591abbaa4f5a7b314b510597b17003a05fb8153889f580d3251"
+    },
+    "engineering/qa/2026-10-04-q14-browse-return/hosted-admission.md": {
+      "bytes": 3218,
+      "sha256": "a63217d5e21ed7e93851e76d348a56eeb393252e854d87c8707cb38a355a158e"
+    },
+    "engineering/qa/2026-10-04-q14-browse-return/hosted-preparation.md": {
+      "bytes": 6422,
+      "sha256": "c764fe06db03f2c4898a01646e241d29a54da8c8c321dc9064652fe5f3a6abd7"
+    },
+    "engineering/qa/2026-10-04-q14-browse-return/reproduction-commands.md": {
+      "bytes": 3059,
+      "sha256": "69ac42720f054f2242154f9695feac154e204a4eac838148a9795d807fbe08b8"
+    },
+    "engineering/qa/2026-10-04-q14-browse-return/run-bounded.py": {
+      "bytes": 4766,
+      "sha256": "e50c195ec39f51a88bc2e30d5fa5570839b5f867f15d59ba50671c21de02c57b"
+    },
+    "go.work": {
+      "bytes": 62,
+      "sha256": "765a0af6b5ad93fa49fb0bae0fdc444df2d775393a2aa7e4d4aacfd4da567390"
+    },
+    "go.work.sum": {
+      "bytes": 2894,
+      "sha256": "47030067d6dcc02e8fc27e49da706bb3d137d9390a308e05845bf9ae439c1726"
+    },
+    "packages/catalog/browse.go": {
+      "bytes": 6837,
+      "sha256": "5f32935c388ddc040fa4069ce352e1b50bad55d329fa5978b0ff9796ee2575af"
+    },
+    "packages/catalog/browse_sort.go": {
+      "bytes": 4349,
+      "sha256": "cbc6c6343910e88f1bb8475f3c9a4796a03a3c1b458906bb5865cf0e8fb2b066"
+    },
+    "packages/catalogapi/library.go": {
+      "bytes": 1287,
+      "sha256": "05dbee278a4703a9db5318af71665bbc594d940e366d589d49c4aef0e7e25c78"
+    },
+    "packages/go.mod": {
+      "bytes": 2009,
+      "sha256": "fb65d344477353318a554f740ef582c6674e6feadc941830d38572d72a2ce458"
+    },
+    "packages/go.sum": {
+      "bytes": 11025,
+      "sha256": "6f6096601f0f7e3c349dead74079c5e88a78f38592af118041798de0effb1f6c"
+    },
+    "packages/home/handler.go": {
+      "bytes": 3651,
+      "sha256": "4a866d2ef6736cd3aa25c264ba3112ff438f070d7f134a0525d9ba5d2669b824"
+    },
+    "packages/home/model.go": {
+      "bytes": 3993,
+      "sha256": "43fc39917111628c9e7a77f094dcdda937211edd9049b48b1700127192d89001"
+    },
+    "packages/home/projection.go": {
+      "bytes": 1508,
+      "sha256": "1c43989d44f5c7b523a3d72268e0c429111df8f8e401f38b0924c864aae424f4"
+    },
+    "packages/identitycore/library_access.go": {
+      "bytes": 889,
+      "sha256": "ad72ef1578d3b10d6063984a886ba8c4f96a0e01f77182ea89b37aa834594664"
+    },
+    "packages/webassets/static/pwa-library.js": {
+      "bytes": 4639,
+      "sha256": "c0a58cb89f0f79890a52bb63912bb3107c8ffef9c0dc85df15a45707a0ee5f2b"
+    },
+    "packages/webassets/static/pwa-navigation.js": {
+      "bytes": 6252,
+      "sha256": "076b41044ccd8d0a79664bafa7ac1aea7f9e0efda192615dd2f791e49e63b202"
+    },
+    "packages/webassets/static/pwa.js": {
+      "bytes": 10902,
+      "sha256": "e133ab218c2979c81c3defb90170f47574798d33c923983f448b511e71a4e8ad"
+    },
+    "packages/webassets/webassets.go": {
+      "bytes": 2956,
+      "sha256": "878a6d56605d589cdfa06d3640490cd6b2abe6f70a0a7cf621dbbc7c78dcea82"
+    },
+    "scripts/ci/run-campaign-proof.sh": {
+      "bytes": 298,
+      "sha256": "421abdf380eaa51a9a2197bdedd2e9ca1d08bccff31bd5f9557718b9054e5e2b"
+    },
+    "scripts/ci/test_campaign_proof.py": {
+      "bytes": 3373,
+      "sha256": "6b5f60d5a486d15b44d02a6092f705c3fec9c221ea899c8824034344321749a7"
+    }
+  },
+  "staticControls": {
+    "pythonASTParsedOffline": true,
+    "controlMethods": 11,
+    "controlsExecuted": 0,
+    "publicRuntimeCasesExecuted": 0,
+    "NodeGoBrowserLintPytestExecuted": false,
+    "stagedWhitespaceCheck": "required and passed before commit"
+  },
+  "originalNineJourneyAssertionsChanged": false,
+  "Q09ArtifactsChanged": false,
+  "runtimeSelectedSourceCount": 44,
+  "compiledBinaryHashRecorded": false,
+  "scope": "clean executed Git revision/current selected input pins and strict bounded safe public-test observations; not full Go/embed/cache/binary provenance"
+}
