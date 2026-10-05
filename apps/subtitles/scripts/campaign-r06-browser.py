@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import re
 import shutil
+import stat
 import sys
 import subprocess
 
@@ -26,12 +27,19 @@ def settled(phase, exits):
             phase.get("ownedProcessExited") and phase.get("ownedGroupSettled") and phase.get("captureSettled"))
 
 
-def tools_state():
+def tools_state(preflight=None):
     state = {}
     for name in ("go","node","pnpm"):
         found = shutil.which(name)
+        if preflight is not None:
+            preflight[name] = {"available":found is not None}
         if found is None: raise ValueError("tool-unavailable")
-        state[name] = fingerprint(Path(found).resolve(strict=True),64*1024*1024,True)
+        path = Path(found).resolve(strict=True)
+        if preflight is not None:
+            info = path.lstat()
+            preflight[name].update(bytes=info.st_size,mode=info.st_mode & 0o777,
+                                   regular=stat.S_ISREG(info.st_mode))
+        state[name] = fingerprint(path,64*1024*1024,True)
     return state
 
 
@@ -81,7 +89,10 @@ def main():
         initial = identity()
         if os.environ.get("GITHUB_SHA") != initial["revision"]: raise ValueError("hosted-revision")
         sources = tracked_sources()
-        receipt.update(checkout=initial,selectedSource=sources["canonical"],toolchain=tools_state())
+        receipt.update(checkout=initial,selectedSource=sources["canonical"])
+        stage = "toolchain"
+        receipt["toolchainPreflight"] = {}
+        receipt["toolchain"] = tools_state(receipt["toolchainPreflight"])
         tools_before = receipt["toolchain"]
         work = OUTPUT/"work"
         work.mkdir(mode=0o700)
