@@ -18,15 +18,15 @@ ROOT = Path(__file__).resolve().parents[3]
 OUTPUT = ROOT / ".verification/campaign-proof/R06"
 BASE_COMMIT = "bd1ea2e148787ae8d4a0a46640bc2a965e10fe6a"
 MANIFEST_PATH = "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture-source-manifest.json"
-MANIFEST_BLOB = "bf9ae2b849da6cb83d9f7b87780f06353596d1ad"
-MANIFEST_SHA256 = "8e46680fd34692d1be5090726d16833a1693d276d10c5f677c2aa74e6909a604"
+MANIFEST_BLOB = "91b822165e467d7682ad5eb221b267a20fec5dec"
+MANIFEST_SHA256 = "e97a2c9eab90a1324bfdf7a506c5e6234709a372775e3d3c6d5fc5295a41d373"
 PREFIX = "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/"
 GO_PINS = {
     PREFIX + "restore_assertions_test.go": ("0c72a93cf599390ecfa42a1b08ebbbe7e0c8bd6b", "82261355e73118d9cad07c3f6fa289ac29a0d6343efb8db669926b96087191c0", 6490),
     PREFIX + "restore_controls_test.go": ("ef0599a3a672d09603f5619b69cb1eee3fd2a770", "d7be68372506e6813b40b7a5b2c9080a53af634a8a0ab95e8369c1b18bddacdb", 4697),
     PREFIX + "restore_exchange_test.go": ("ddf89b521e9884a06a9e479acb17ecfb7322dff0", "d809df7ca579c2c612616d0448cdc056d7dba5c32cddea8d15adb276e8380414", 4659),
     PREFIX + "restore_filesystem_test.go": ("95e46d54ad38b19aae445e7886a9a10579e3e6ce", "14ad292f5db92043f44cdba9f62abcdd6a2f875da9e616508aa7ae04da8db0b1", 1960),
-    PREFIX + "restore_http_test.go": ("7b108781419303977eccd33e28241f4023766bba", "5efa10db3ffbcf70296fe0389e866de415e7ed6c365bb72b71b703325eab7798", 6018),
+    PREFIX + "restore_http_test.go": ("4b7aba7bd5b3329d22415cc0d14267347b712785", "3fc6d6b53a69bc6cbd2b9240db34a8c5139425e0829fb980ac44193dad7b7d2a", 6019),
     PREFIX + "restore_main_test.go": ("5b71ecc1bc3e94be6b516595bea89ac487f88500", "b808cdca52ea70579a5550a1c049e9f14e5213efafcef85ea8575630b7354f49", 4725),
     PREFIX + "restore_owner_enrollment_test.go": ("8c570ea7cf23f1c60b01950fee8ba5122b64ccf0", "d856b68f17840df1c7b8ccd857dbb4cd2e8397ae89307ef73401ba3fefb4913b", 5019),
     PREFIX + "restore_owner_test.go": ("ce0d824a454b4dda4aff3e714f57fd214740deff", "b4d54051e32adc3ad26f14d61f9b223f10cdd5ae5fd9f1e96769126a4212df43", 1374),

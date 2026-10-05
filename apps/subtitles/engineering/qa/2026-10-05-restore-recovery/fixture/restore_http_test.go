@@ -13,6 +13,7 @@ import (
 const privateResponseLimit = 65536
 
 type restoreControlResponse struct { status int; header http.Header; body []byte }
+
 type restoreCapture struct { header http.Header; status int; body bytes.Buffer; overflow bool }
 
 func (capture *restoreCapture) Header() http.Header { return capture.header }

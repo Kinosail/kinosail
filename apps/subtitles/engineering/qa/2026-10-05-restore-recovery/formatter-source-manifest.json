@@ -2,22 +2,22 @@
   "schema": "r06-restore-source-format-package-v1",
   "baseCommit": "bd1ea2e148787ae8d4a0a46640bc2a965e10fe6a",
   "baseTree": "6070e86cc8a3522810218d311cc2d5d6246f02d0",
-  "status": "source-authored-unreviewed-unformatted-unrun",
+  "status": "source-separator-corrected-unreviewed-unformatted-unrun",
   "fixtureSourceManifest": {
     "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture-source-manifest.json",
-    "bytes": 12758,
-    "lines": 285,
-    "sha256": "8e46680fd34692d1be5090726d16833a1693d276d10c5f677c2aa74e6909a604",
-    "blob": "bf9ae2b849da6cb83d9f7b87780f06353596d1ad",
+    "bytes": 12986,
+    "lines": 287,
+    "sha256": "e97a2c9eab90a1324bfdf7a506c5e6234709a372775e3d3c6d5fc5295a41d373",
+    "blob": "91b822165e467d7682ad5eb221b267a20fec5dec",
     "getVerified": true
   },
   "sources": [
     {
       "path": "apps/subtitles/scripts/test_campaign_r06_restore_format.py",
-      "blob": "9a6e4e9da86afcde01e2424d208e3eb68f974b24",
       "bytes": 14053,
       "lines": 253,
-      "sha256": "bcf8ff71ac94d38e7352f004c661ed4f363640731acda2f704bd7f0cb5d7b292",
+      "sha256": "4a4ceb02731f6bb471a0594848aecf0cb6057903bd66cf08e71b4e66c06ed7b7",
+      "blob": "237e5baee902207dc5d6094d191c6afaa5a36404",
       "getVerified": true
     },
     {
@@ -30,10 +30,10 @@
     },
     {
       "path": "apps/subtitles/scripts/campaign_r06_restore_format.py",
-      "blob": "2f69a0ca609ec3e4df72166decdc9770b7c87920",
       "bytes": 15898,
       "lines": 299,
-      "sha256": "f92f09d7a13f61cf9e033e31c6e9f591f0be578c6ec6693f6eebef556e98421e",
+      "sha256": "1e28717ca093ca4b970c89826cf6c859bf1afd12a738a3ef5b27f684104e5330",
+      "blob": "2ad8d3ff9ba90726f4f9f2f6d5e552ecb27aa0e8",
       "getVerified": true
     }
   ],
@@ -145,9 +145,9 @@
     },
     {
       "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_http_test.go",
-      "blob": "7b108781419303977eccd33e28241f4023766bba",
-      "bytes": 6018,
-      "sha256": "5efa10db3ffbcf70296fe0389e866de415e7ed6c365bb72b71b703325eab7798"
+      "blob": "4b7aba7bd5b3329d22415cc0d14267347b712785",
+      "bytes": 6019,
+      "sha256": "3fc6d6b53a69bc6cbd2b9240db34a8c5139425e0829fb980ac44193dad7b7d2a"
     },
     {
       "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_main_test.go",
@@ -241,7 +241,8 @@
     "Canonical source is static and allowlisted; raw stderr/errors/environment/auth/URLs/runtime output are not exported.",
     "All sources/artifacts are retained; formatter writes no tracked inputs and never auto-adopts outputs.",
     "An unexpected capture exception still signals/joins the owned group; captureFailed permanently blocks canonical admission.",
-    "Fixture-only structural lint repair preserves all failure literals and four Test names; harness body is unchanged apart from six raw pins and approved manifest identity constants."
+    "Fixture-only structural lint repair preserves all failure literals and four Test names; harness body is unchanged apart from six raw pins and approved manifest identity constants.",
+    "Only one raw HTTP blank separator changes; strict token helper/stock formatter/process admission remain exact."
   ],
   "remainingGates": [
     "independent exact revised22source/formatter package review",
@@ -255,11 +256,12 @@
   "remainingLimits": [
     "Root reports previous4b19 diagnostic22 RAM controls passed; current pin-only snapshot and actual formatter phases remain unrun.",
     "Captured formatter stdout/stderr size checks occur after communicate, following the admitted stock formatter design; stdin is pinned and bounded.",
-    "No claim of general Go grammar validation, compilation, auth, Save/Restore effects or runtime acceptance."
+    "No claim of general Go grammar validation, compilation, auth, Save/Restore effects or runtime acceptance.",
+    "Historical37344343769 passed22 controls/five stock phases but blocked token-change on HTTP; rejected source/cause unproved, detailed in lintRefactor manifest."
   ],
   "previousManifest": {
-    "blob": "635b93ca08cce5ffaec7ba01b1e6846d07dbb017",
-    "sha256": "30de319c59d10405514c1d56deb12d0b17f516e2e3bba29b7bef1ff167f9551e"
+    "blob": "49ba98867ec35085cf1ef0c3ffa91cff296caf9a",
+    "sha256": "57c5baa4eab5b4612973a9cceafeae3fd8f9c92f0d7424005b5da7a50cc658ae"
   },
   "historicalHostedControl": {
     "run": "37336041327",
@@ -283,14 +285,14 @@
     "workflowRepairOwner": "root"
   },
   "lintRefactor": {
-    "manifestBlob": "68e179df8cfdd110a482b752619b1e5173cb7c22",
-    "sha256": "3cf5eb6f9001d9e8245fc74cec0afa5423e6fd4cb9fc5f144600b7d2d65b027a",
+    "manifestBlob": "dcd57ab39ac9e4bf9c8f103db22612fe443116aa",
+    "sha256": "030d9d39f679387882a494d42447a410fec166c7f494919095e3cb99b8cffb0b",
     "changedGoFiles": 6,
     "fixtureGoFiles": 14
   },
   "currentControlSnapshot": {
-    "blob": "9a6e4e9da86afcde01e2424d208e3eb68f974b24",
+    "blob": "237e5baee902207dc5d6094d191c6afaa5a36404",
     "controls": 22,
-    "change": "approved manifest identity constants only; no test-body assertions removed"
+    "change": "all 22 methods/assertions retained; two expected manifest identity literals repinned; grouping proposal not adopted"
   }
 }

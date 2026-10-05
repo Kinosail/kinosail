@@ -2,7 +2,7 @@
   "schema": "r06-restore-fixture-source-v1",
   "baseCommit": "bd1ea2e148787ae8d4a0a46640bc2a965e10fe6a",
   "baseTree": "6070e86cc8a3522810218d311cc2d5d6246f02d0",
-  "status": "source-refactored-unreviewed-unformatted-uncompiled-unrun",
+  "status": "source-separator-corrected-unreviewed-unformatted-uncompiled-unrun",
   "publication": "append-only-unreferenced-blobs",
   "testFirstManifest": {
     "blob": "984865fb48e89b48fda0f953dcaa804ed1fe4d8d",
@@ -12,7 +12,8 @@
     "21a9713050c9f0410b7c496e8c4c06dc46b5528d",
     "fd17afe4eb98cf1982113265d6e9a2f90dabd04d",
     "eedf17e831df2ac12d062d94021f3a2f8c617444",
-    "42ba2ecc500a8b7fa42a90077dbc7da2df5db8fc"
+    "42ba2ecc500a8b7fa42a90077dbc7da2df5db8fc",
+    "bf9ae2b849da6cb83d9f7b87780f06353596d1ad"
   ],
   "fixtureImplementationAuthored": true,
   "actualControlRuntime": false,
@@ -112,10 +113,10 @@
     },
     {
       "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_http_test.go",
-      "bytes": 6018,
-      "lines": 137,
-      "sha256": "5efa10db3ffbcf70296fe0389e866de415e7ed6c365bb72b71b703325eab7798",
-      "blob": "7b108781419303977eccd33e28241f4023766bba",
+      "bytes": 6019,
+      "lines": 138,
+      "sha256": "3fc6d6b53a69bc6cbd2b9240db34a8c5139425e0829fb980ac44193dad7b7d2a",
+      "blob": "4b7aba7bd5b3329d22415cc0d14267347b712785",
       "getVerified": true
     },
     {
@@ -266,7 +267,8 @@
     "Exchange receipt copies status/header/body only after both owned joins confirm completion; the unchanged3s failure records abort the copy.",
     "Six fixture files structurally extract the seven CI-reported complexity sites; all four Test names and every Fatal/Error literal remain exact.",
     "The always-/restore suffix and always-one History-count arguments become the same fixed literals; no predicate/HTTP/effect assertion is removed.",
-    "No product defect or G704/format/compiler/control/browser acceptance is claimed from source review or RAM symbol checks."
+    "No product defect or G704/format/compiler/control/browser acceptance is claimed from source review or RAM symbol checks.",
+    "One blank separator between HTTP response types preserves every token and stops the pinned formatter adjacency merge; exact rejected output/cause remains unproved."
   ],
   "remainingGates": [
     "independent exact22source refactor review",
