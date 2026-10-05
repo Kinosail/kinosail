@@ -3,7 +3,7 @@ on:
   push:
     branches: [codex/apple-architecture-proof-20261005]
 permissions:
-  contents: read
+  contents: write
 concurrency:
   group: apple-architecture-proof-20261005
   cancel-in-progress: false
@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          ref: 572e33f28045995d0c95ac50490aaa4231280acb
+          ref: 7a4c74bba85b448549992ae4a2272050dcebe2af
           persist-credentials: false
       - run: test ! -e .gates-disabled
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
@@ -32,7 +32,7 @@ jobs:
         env:
           GOPROXY: "off"
         run: |
-          test "$(git rev-parse HEAD)" = 572e33f28045995d0c95ac50490aaa4231280acb
+          test "$(git rev-parse HEAD)" = 7a4c74bba85b448549992ae4a2272050dcebe2af
           timeout 120s python3 scripts/tooling/generate-architecture-explorer.py player
           timeout 120s python3 scripts/tooling/generate-architecture-explorer.py subtitles
           timeout 120s python3 scripts/tooling/generate-architecture-explorer.py player --check
@@ -40,10 +40,54 @@ jobs:
           git rev-parse HEAD
           sha256sum scripts/tooling/generate-architecture-explorer.py apps/player/docs/architecture-explorer/index.html apps/subtitles/docs/architecture-explorer/index.html
           git diff --stat
+      - name: Create reviewable Git objects without moving a ref
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import base64, hashlib, json, subprocess
+          from pathlib import Path
+          repo = "Kinosail/kinosail"
+          parent = "7a4c74bba85b448549992ae4a2272050dcebe2af"
+          def api(path, body=None):
+              args = ["gh", "api", "repos/" + repo + "/" + path]
+              payload = None
+              if body is not None:
+                  args += ["--method", "POST", "--input", "-"]
+                  payload = json.dumps(body).encode()
+              return json.loads(subprocess.run(args, input=payload, capture_output=True, check=True).stdout)
+          def git(*args):
+              return subprocess.run(["git", *args], capture_output=True, text=True, check=True).stdout.strip()
+          assert git("rev-parse", "HEAD") == parent
+          paths = ["apps/" + app + "/docs/architecture-explorer/index.html" for app in ("player", "subtitles")]
+          assert set(git("diff", "--name-only").splitlines()) == set(paths)
+          expected = ["55b74402172830041db5e499fd7389e3592f9727b08547a588f67e5d240d44c1",
+                      "9ccc95dfc36bcc3480fbebebe7f1928ba8d19a4301010763de8c09df1e0c3f60"]
+          entries, files = [], []
+          for path, digest in zip(paths, expected):
+              data = Path(path).read_bytes()
+              assert hashlib.sha256(data).hexdigest() == digest
+              blob = api("git/blobs", {"encoding": "base64", "content": base64.b64encode(data).decode()})
+              header = ("blob " + str(len(data)) + "\\0").encode()
+              assert blob["sha"] == hashlib.sha1(header + data).hexdigest()
+              entries.append({"path": path, "mode": "100644", "type": "blob", "sha": blob["sha"]})
+              files.append({"path": path, "bytes": len(data), "sha256": digest, "blob": blob["sha"]})
+          base = api("git/commits/" + parent)
+          tree = api("git/trees", {"base_tree": base["tree"]["sha"], "tree": entries})
+          commit = api("git/commits", {"message": "docs: regenerate canonical architecture snapshots for required checks",
+                                    "tree": tree["sha"], "parents": [parent]})
+          receipt = {"source": parent, "commit": commit["sha"], "tree": tree["sha"], "files": files,
+                     "boundary": "Existing canonical generator on disposable hosted runner; no refs moved"}
+          dest = Path(".verification/apple-canonical/receipt.json")
+          dest.parent.mkdir(parents=True, exist_ok=True)
+          dest.write_text(json.dumps(receipt, indent=2) + "\\n")
+          print(json.dumps(receipt))
+          PY
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: apple-canonical-architecture-572e33f28045995d0c95ac50490aaa4231280acb
+          name: apple-canonical-architecture-7a4c74bba85b448549992ae4a2272050dcebe2af
           path: |
+            .verification/apple-canonical/receipt.json
             apps/player/docs/architecture-explorer/index.html
             apps/subtitles/docs/architecture-explorer/index.html
           if-no-files-found: error
