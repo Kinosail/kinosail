@@ -1,0 +1,282 @@
+{
+  "schema": "r06-restore-fixture-source-v1",
+  "baseCommit": "bd1ea2e148787ae8d4a0a46640bc2a965e10fe6a",
+  "baseTree": "6070e86cc8a3522810218d311cc2d5d6246f02d0",
+  "status": "source-complete-unreviewed-unformatted-uncompiled-unrun",
+  "publication": "append-only-unreferenced-blobs",
+  "testFirstManifest": {
+    "blob": "984865fb48e89b48fda0f953dcaa804ed1fe4d8d",
+    "sha256": "49a11a8566a883d52e90a14fe6d46011033c78f8868e5bd094f09e23a37c0bd5"
+  },
+  "previousManifests": [
+    "21a9713050c9f0410b7c496e8c4c06dc46b5528d",
+    "fd17afe4eb98cf1982113265d6e9a2f90dabd04d",
+    "eedf17e831df2ac12d062d94021f3a2f8c617444"
+  ],
+  "fixtureImplementationAuthored": true,
+  "actualControlRuntime": false,
+  "actualBrowserRuntime": false,
+  "formatterRuntime": false,
+  "compilerRuntime": false,
+  "productChanged": false,
+  "refsCreated": false,
+  "sources": [
+    {
+      "path": "apps/subtitles/e2e/subtitle-restore-proof-reporter.ts",
+      "blob": "50434a8597d3015182348bd9bdef21a7a05eef55",
+      "bytes": 11344,
+      "lines": 178,
+      "sha256": "6cf05f505c6982690fc84c5eb22c43010830407df557532f939ee06235197c2a",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-restore-recovery-fixture.ts",
+      "blob": "a7a05860c53393c98c752801cd9f4d9787a2c86e",
+      "bytes": 10558,
+      "lines": 175,
+      "sha256": "17de23167ba32c96a437efa0663cac17f4c18a68acb80d03cdd18e0feb57eab5",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-restore-recovery-helpers.ts",
+      "blob": "491c726fbcb67e429ff36748ca90f2470f1fa123",
+      "bytes": 16794,
+      "lines": 231,
+      "sha256": "c43fcc6562f06889d7ad6f94801f0ca3703df2567ba00f3d9b057cbaa927becb",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-restore-recovery-network.ts",
+      "blob": "9f7ddc08f035b3e80a585df55ab7657c6e6913c1",
+      "bytes": 2687,
+      "lines": 54,
+      "sha256": "3071512d364cf8dde4a1681395d0945ba53560c3094514e69a5d384fb78e9d69",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-restore-recovery.config.ts",
+      "blob": "c0c4984307cfa2ffb37116242e4c2346ffa7eb58",
+      "bytes": 704,
+      "lines": 27,
+      "sha256": "82f6ac79869df0167c99b7006dbfefc239eb1e82c04cbd60872b03aef1484e28",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-restore-recovery.journey.ts",
+      "blob": "86b4f5f1ab2505598b8236dfb022f3e0a6c1116b",
+      "bytes": 1648,
+      "lines": 28,
+      "sha256": "e519904a37ac84fdfcf588ae84e62e1b3ebfb5143e6f3c81d38b79100d1b92a9",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/failure-analysis.md",
+      "blob": "d33edeb1ae3750eca4538b82326e6456b08535fe",
+      "bytes": 11384,
+      "lines": 142,
+      "sha256": "0c4f08db6bc2f6c262657837d7193cd6f467f53e69aa14d3453f6c189a057130",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_assertions_test.go",
+      "blob": "f3825cc3c1c8bee8c87d12cfd852730e7723251b",
+      "bytes": 6096,
+      "lines": 173,
+      "sha256": "7ae57f6c17f746f871f7904646e7bcce85bed9424f776912d2fc0950d2c80388",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_controls_test.go",
+      "blob": "b2dcbeee520d5d81f28bb972aba24a0d0695241e",
+      "bytes": 4424,
+      "lines": 101,
+      "sha256": "3788361e7d2905c18bb6f594b0f6ce2f14a7db50ca31c45229bad6c20496227e",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_exchange_test.go",
+      "blob": "b2bc96f3afd84a8521b3706142949263a0e9b4a3",
+      "bytes": 4534,
+      "lines": 104,
+      "sha256": "0355a8a406e099725643c61f6651c1017521b0d44e358a4f7f78e0408c685534",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_filesystem_test.go",
+      "blob": "95e46d54ad38b19aae445e7886a9a10579e3e6ce",
+      "bytes": 1960,
+      "lines": 70,
+      "sha256": "14ad292f5db92043f44cdba9f62abcdd6a2f875da9e616508aa7ae04da8db0b1",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_http_test.go",
+      "blob": "37736e36eceed711e444f48aa487596b0029167d",
+      "bytes": 5839,
+      "lines": 133,
+      "sha256": "cbb2eb379d3c0e7ae46578f9f6bbe394e205dc2c8254824318aa336f2e3116ae",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_main_test.go",
+      "blob": "5b71ecc1bc3e94be6b516595bea89ac487f88500",
+      "bytes": 4725,
+      "lines": 129,
+      "sha256": "b808cdca52ea70579a5550a1c049e9f14e5213efafcef85ea8575630b7354f49",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_owner_enrollment_test.go",
+      "blob": "8c570ea7cf23f1c60b01950fee8ba5122b64ccf0",
+      "bytes": 5019,
+      "lines": 132,
+      "sha256": "d856b68f17840df1c7b8ccd857dbb4cd2e8397ae89307ef73401ba3fefb4913b",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_owner_test.go",
+      "blob": "ce0d824a454b4dda4aff3e714f57fd214740deff",
+      "bytes": 1374,
+      "lines": 60,
+      "sha256": "b4d54051e32adc3ad26f14d61f9b223f10cdd5ae5fd9f1e96769126a4212df43",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_requests_test.go",
+      "blob": "8d3d89c2f9b18ef55efe8a293939c0e19fa34d66",
+      "bytes": 7199,
+      "lines": 139,
+      "sha256": "8740185a8026035330e389c3da2c187e86179246ca51050f9439f670d0fc8dbd",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_routes_test.go",
+      "blob": "0f3c734bc5fa27c2c9d7d33086e3c9a076aecaef",
+      "bytes": 3109,
+      "lines": 74,
+      "sha256": "c18118c650b89746167032518b3add2dac3a7d08ce7da3d6a35d3063091e84e8",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_routing_test.go",
+      "blob": "de74fd8dcd6a135f3d40661c6a662a93f353ab48",
+      "bytes": 5966,
+      "lines": 108,
+      "sha256": "73e0e68c47ae199746d7d92c68cd332e95ed91aeb45b38bb1b5ea178525e014d",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_target_test.go",
+      "blob": "5cffb6dc125fc4827e3926a05f6a7a8dc232e00a",
+      "bytes": 4606,
+      "lines": 159,
+      "sha256": "a2a985b832eb447129f7223737c1c083399b03478ee8ab992923d13e92928fe9",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_transport_test.go",
+      "blob": "bef80ffe1957e026697b8ff738c125a0e20f9ae9",
+      "bytes": 4928,
+      "lines": 103,
+      "sha256": "8641139e8acd6fcf7f6b553f06d1cb0a6443c4d1d78b29c5413579d96319aaf6",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_witness_test.go",
+      "blob": "055dc7a72a1944d34379157aa5ce02102a84ae3a",
+      "bytes": 8214,
+      "lines": 147,
+      "sha256": "328020a75bb82707eedc78dd2951b0d8504f3f85e9b2cf07712fa990f3f468fd",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/test-contract.json",
+      "blob": "4d635e169064fadf08adf56240c72682ca2b3d1b",
+      "bytes": 10916,
+      "lines": 268,
+      "sha256": "c48806bfd8595c947d82e5b55c749ca84aa80906d61dedde6071caad32a5b1ac",
+      "getVerified": true
+    }
+  ],
+  "controlNames": [
+    "TestRestoreLegacySwapPublicControl",
+    "TestRestorePreparedReceiptPublicControl",
+    "TestRestoreHeldHeadersPublicControl",
+    "TestRestoreHeldInspectionBodyPublicControl"
+  ],
+  "caseIDs": [
+    "r06-restore-headers-desktop",
+    "r06-restore-headers-phone",
+    "r06-restore-inspect-body-desktop",
+    "r06-restore-inspect-body-phone"
+  ],
+  "assertionIDs": [
+    "actual-restore",
+    "history-once",
+    "recovery-swapped",
+    "hold-proven",
+    "editor-released-by-45s",
+    "finite-truthful-outcome",
+    "original-correction-kept",
+    "original-import-kept",
+    "library-navigation",
+    "back-current-subtitle",
+    "no-restore-replay",
+    "fixture-settled"
+  ],
+  "unchangedDependencies": [
+    {
+      "path": "apps/subtitles/e2e/subtitle-save-recovery-auth.ts",
+      "blob": "3bb4120bc424eba05bb8df6e9cdc703fb7609ac0",
+      "bytes": 2649,
+      "lines": 37,
+      "sha256": "d45a5a79ad536a6e335b6e18f2efcfa42af9c31dc09864f2b5a0b595ea2da120"
+    },
+    {
+      "path": "apps/subtitles/e2e/subtitle-save-attachment-reader.cjs",
+      "blob": "a5ff80f328abe74ec393b2df2fe5f7c4a0bc629c",
+      "bytes": 1739,
+      "lines": 46,
+      "sha256": "3655771c8dca52160efc8ea7db9805896ec2232f42c43174592b3fcefdd88ef2"
+    }
+  ],
+  "staticChecks": {
+    "fixtureGoFiles": 14,
+    "newHelperGoFiles": 12,
+    "maximumRawGoLines": 173,
+    "matchedMissingHelperNames": [],
+    "allRawFilesWithin300": true,
+    "notACompilerOrLinter": true
+  },
+  "proofBoundaries": [
+    "All four public controls and twelve browser assertions were staged before fixture implementation.",
+    "Independent TLS target is allocated before rooted configuration input; no destination is constructed from root state.",
+    "Actual one-item catalogue and matching201/prepared Restore receipt register finite canonical routes for both browser and controls.",
+    "Original secure cookie, TOTP, account-page CSRF, MFA303 and current Owner CSRF flow remains real; credentials stay runtime-private.",
+    "One actual setup Save creates currentB/recoveryA; Restore witness requires exact currentA/recoveryB, real inspect/export/fingerprint and actual ordered History.",
+    "Legacy204 has no body; prepared202 is admission only; knownID success/status204 plus effects is required for receipt control.",
+    "Prepared exact-ID and conflicting-body requests reach the actual Server; restored History counts effects while browser Restore counter counts attempts.",
+    "Header hold starts only after actual completed Restore effects; following inspect200 holds its actual body independently.",
+    "Private witness/control inspections bypass only the opted-in fault and still call authenticated real public routes; explicit held-control and first browser inspect are faulted.",
+    "Transport proof requires200ms actual pending observation, privately equal application headers/body, checked sole Body owner and joined readers.",
+    "Request/body contexts inherit their actual request or t.Context and the remaining absolute receipt wait; no fresh nominal read allowance restarts5s.",
+    "Cancel/release and server shutdown precede owned reader joins and checked os.Root.Close; roots and evidence are retained without deletion.",
+    "Fresh fixture120s, one case110s, product45s, observation55s, pair230s/external235s remain unchanged.",
+    "Exchange receipt copies status/header/body only after both owned joins confirm completion; the unchanged3s failure records abort the copy.",
+    "No product defect or G704/format/compiler/control/browser acceptance is claimed from source review or RAM symbol checks."
+  ],
+  "remainingGates": [
+    "independent exact22source review",
+    "hosted strict formatting and300line caps",
+    "compiled binary/source/descriptor provenance",
+    "actual four public controls and bounded request/body deadline behavior",
+    "actual collection and exact headers pair",
+    "independently admitted inspect-body pair",
+    "required checks and independent artifact review"
+  ],
+  "remainingLimits": [
+    "No actual deadline-stall control has executed for the new Within seam.",
+    "The first browser proof is only Restore headers and following inspection body; newer-preview/failed-after-effects/lifecycle follow-ups remain separate.",
+    "The current authoritative outcome guard binds the first observed inspection terminal; a later successful reconciliation read after cancellation needs explicit future observer coverage before counting it as delivered old-response proof."
+  ]
+}

@@ -1,0 +1,258 @@
+{
+  "schema": "r06-restore-source-format-package-v1",
+  "baseCommit": "bd1ea2e148787ae8d4a0a46640bc2a965e10fe6a",
+  "baseTree": "6070e86cc8a3522810218d311cc2d5d6246f02d0",
+  "status": "source-authored-unreviewed-unformatted-unrun",
+  "fixtureSourceManifest": {
+    "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture-source-manifest.json",
+    "bytes": 12397,
+    "lines": 282,
+    "sha256": "c11d4ad273606fd6c7c8144c94627b83ec2358d9828564cc7980eb4a6a593bed",
+    "blob": "42ba2ecc500a8b7fa42a90077dbc7da2df5db8fc",
+    "getVerified": true
+  },
+  "sources": [
+    {
+      "path": "apps/subtitles/scripts/test_campaign_r06_restore_format.py",
+      "bytes": 11788,
+      "lines": 219,
+      "sha256": "c693a1dfd40b35b2b974dd836a52216cc0ef7d08d6ee8ed2aacaa9acfb324b76",
+      "blob": "55d88a6fce60fc5796e0295176450d141fffbe7f",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/scripts/campaign_r06_restore_tokens.py",
+      "blob": "ea9819030c92c9b7c21c072aa812e4d49154f10c",
+      "bytes": 8096,
+      "lines": 198,
+      "sha256": "d3a32cc0b1ded64e1e21fd598798ef9b8fcc8c1fda9cdb93f186e45ca3b12693",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/scripts/campaign_r06_restore_format.py",
+      "bytes": 14932,
+      "lines": 276,
+      "sha256": "3172e487c53a2f31e1566493516631b7f88e8bae84af4e9090e9a0889f327754",
+      "blob": "1d811ebdb5ddc3083caa2b7c86dc10ca8578c67b",
+      "getVerified": true
+    }
+  ],
+  "testFirstOrder": [
+    {
+      "blob": "ff26831ebf4a659fb6b13ebc32e18976058173b3",
+      "controls": 16
+    },
+    {
+      "blob": "b7dd08c325f60cba48258f22f30be03d762d00e7",
+      "controls": 17
+    },
+    {
+      "blob": "8f3b6edb389e75c5b69962a7157fb1599c9896e9",
+      "controls": 19
+    },
+    {
+      "blob": "ea9819030c92c9b7c21c072aa812e4d49154f10c",
+      "role": "token-implementation"
+    },
+    {
+      "blob": "f8d5a0a3cc0b0fe0e559f22a934d5b8ce8fc563a",
+      "role": "harness-implementation"
+    },
+    {
+      "blob": "55d88a6fce60fc5796e0295176450d141fffbe7f",
+      "controls": 20,
+      "role": "capture-error-regression-before-repair"
+    },
+    {
+      "blob": "1d811ebdb5ddc3083caa2b7c86dc10ca8578c67b",
+      "role": "capture-error-owned-cleanup-repair"
+    }
+  ],
+  "formatterMode": "restore-source-format",
+  "command": [
+    "golangci-lint",
+    "fmt",
+    "--stdin",
+    "--config",
+    "apps/subtitles/.golangci.yml"
+  ],
+  "goInputPaths": [
+    "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_assertions_test.go",
+    "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_controls_test.go",
+    "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_exchange_test.go",
+    "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_filesystem_test.go",
+    "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_http_test.go",
+    "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_main_test.go",
+    "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_owner_enrollment_test.go",
+    "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_owner_test.go",
+    "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_requests_test.go",
+    "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_routes_test.go",
+    "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_routing_test.go",
+    "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_target_test.go",
+    "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_transport_test.go",
+    "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_witness_test.go"
+  ],
+  "fixedDependencies": [
+    {
+      "path": "apps/subtitles/scripts/campaign_r06_format.py",
+      "sha256": "0627baac73b256fc6ec6a2788b06ce97f7a0e0faede8abbbedbb70f6fc93d1c2",
+      "gitBlob": "f59d2d1d1f43ed13e51656e30f9bdb6bddf7679d"
+    },
+    {
+      "path": "apps/subtitles/scripts/campaign_r06_browser_sources.py",
+      "sha256": "20a342625421d6ec7bc90df15bfa79c1ef2d3ef2deb915b0bab4cd334944e258",
+      "gitBlob": "57360b7b6a2f8037c99fd656b19b1c8e51c18571"
+    },
+    {
+      "path": "apps/subtitles/.golangci.yml",
+      "sha256": "389f5d87f20f6ea354dc36be94150e4057a09e1fd31a5cfb6aa14de96953eafd",
+      "gitBlob": "d63849acf919209a9da64cdc687d6d63f073f01c"
+    }
+  ],
+  "rawInputs": [
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_assertions_test.go",
+      "blob": "f3825cc3c1c8bee8c87d12cfd852730e7723251b",
+      "bytes": 6096,
+      "sha256": "7ae57f6c17f746f871f7904646e7bcce85bed9424f776912d2fc0950d2c80388"
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_controls_test.go",
+      "blob": "b2dcbeee520d5d81f28bb972aba24a0d0695241e",
+      "bytes": 4424,
+      "sha256": "3788361e7d2905c18bb6f594b0f6ce2f14a7db50ca31c45229bad6c20496227e"
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_exchange_test.go",
+      "blob": "b2bc96f3afd84a8521b3706142949263a0e9b4a3",
+      "bytes": 4534,
+      "sha256": "0355a8a406e099725643c61f6651c1017521b0d44e358a4f7f78e0408c685534"
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_filesystem_test.go",
+      "blob": "95e46d54ad38b19aae445e7886a9a10579e3e6ce",
+      "bytes": 1960,
+      "sha256": "14ad292f5db92043f44cdba9f62abcdd6a2f875da9e616508aa7ae04da8db0b1"
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_http_test.go",
+      "blob": "37736e36eceed711e444f48aa487596b0029167d",
+      "bytes": 5839,
+      "sha256": "cbb2eb379d3c0e7ae46578f9f6bbe394e205dc2c8254824318aa336f2e3116ae"
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_main_test.go",
+      "blob": "5b71ecc1bc3e94be6b516595bea89ac487f88500",
+      "bytes": 4725,
+      "sha256": "b808cdca52ea70579a5550a1c049e9f14e5213efafcef85ea8575630b7354f49"
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_owner_enrollment_test.go",
+      "blob": "8c570ea7cf23f1c60b01950fee8ba5122b64ccf0",
+      "bytes": 5019,
+      "sha256": "d856b68f17840df1c7b8ccd857dbb4cd2e8397ae89307ef73401ba3fefb4913b"
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_owner_test.go",
+      "blob": "ce0d824a454b4dda4aff3e714f57fd214740deff",
+      "bytes": 1374,
+      "sha256": "b4d54051e32adc3ad26f14d61f9b223f10cdd5ae5fd9f1e96769126a4212df43"
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_requests_test.go",
+      "blob": "8d3d89c2f9b18ef55efe8a293939c0e19fa34d66",
+      "bytes": 7199,
+      "sha256": "8740185a8026035330e389c3da2c187e86179246ca51050f9439f670d0fc8dbd"
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_routes_test.go",
+      "blob": "0f3c734bc5fa27c2c9d7d33086e3c9a076aecaef",
+      "bytes": 3109,
+      "sha256": "c18118c650b89746167032518b3add2dac3a7d08ce7da3d6a35d3063091e84e8"
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_routing_test.go",
+      "blob": "de74fd8dcd6a135f3d40661c6a662a93f353ab48",
+      "bytes": 5966,
+      "sha256": "73e0e68c47ae199746d7d92c68cd332e95ed91aeb45b38bb1b5ea178525e014d"
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_target_test.go",
+      "blob": "5cffb6dc125fc4827e3926a05f6a7a8dc232e00a",
+      "bytes": 4606,
+      "sha256": "a2a985b832eb447129f7223737c1c083399b03478ee8ab992923d13e92928fe9"
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_transport_test.go",
+      "blob": "bef80ffe1957e026697b8ff738c125a0e20f9ae9",
+      "bytes": 4928,
+      "sha256": "8641139e8acd6fcf7f6b553f06d1cb0a6443c4d1d78b29c5413579d96319aaf6"
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_witness_test.go",
+      "blob": "055dc7a72a1944d34379157aa5ce02102a84ae3a",
+      "bytes": 8214,
+      "sha256": "328020a75bb82707eedc78dd2951b0d8504f3f85e9b2cf07712fa990f3f468fd"
+    }
+  ],
+  "safeArtifacts": [
+    "receipt.json",
+    "results.json",
+    "source-manifest.json",
+    "artifact-manifest.json"
+  ],
+  "artifactDirectory": ".verification/campaign-proof/R06",
+  "controlsExecuted": false,
+  "formatterExecuted": false,
+  "compilationExecuted": false,
+  "applicationExecuted": false,
+  "browserExecuted": false,
+  "refsCreated": false,
+  "localFilesWritten": false,
+  "limits": {
+    "goFiles": 14,
+    "canonicalFileLines": 300,
+    "inputBytes": 262144,
+    "outputBytes": 524288,
+    "perFileSeconds": 10,
+    "captureShutdownSeconds": 2,
+    "groupShutdownSeconds": 2,
+    "artifactBytesEach": 4194304
+  },
+  "preservationBoundary": [
+    "Raw Go inputs are Git-blob/SHA256/size pinned to the independently clear22-source manifest.",
+    "Only the stock existing Subtitles formatter configuration is invoked through stdin; no application or compiler invocation.",
+    "Lexer is restricted to reviewed inputs, not a general Go parser; comments/literals/import bindings/declaration order are exact.",
+    "Only Go automatic/optional semicolons, exact import-spec sorting and recognized call/composite-list final commas normalize.",
+    "Numeric spellings are exact; reviewed raw mode literals already use0o600/0o700.",
+    "Unknown syntax, changed tokens/comments/literals, missing/duplicate outputs or more than300 canonical lines blocks adoption.",
+    "Natural EOF preserves the leader result; timeout signaling targets the owned group even after leader exit.",
+    "Every admitted file requires zero stderr, exit0, no deadline and proven capture/group settlement.",
+    "Checkout GITHUB_SHA/base ancestry, entire tracked source/tree, explicit inputs and formatter identity are checked before/after.",
+    "Canonical source is static and allowlisted; raw stderr/errors/environment/auth/URLs/runtime output are not exported.",
+    "All sources/artifacts are retained; formatter writes no tracked inputs and never auto-adopts outputs.",
+    "An unexpected capture exception still signals/joins the owned group; captureFailed permanently blocks canonical admission."
+  ],
+  "remainingGates": [
+    "independent exact package review",
+    "hosted20 pure controls",
+    "exact guarded tree integration by root",
+    "stock hosted formatter/source-tool/process admission",
+    "canonical token/comment/literal and <=300-line artifact review",
+    "root canonical adoption",
+    "actual compiler/G704/public-control/browser gates remain separate"
+  ],
+  "remainingLimits": [
+    "No Python controls or formatter have executed; fake process controls are source only.",
+    "Captured formatter stdout/stderr size checks occur after communicate, following the admitted stock formatter design; stdin is pinned and bounded.",
+    "No claim of general Go grammar validation, compilation, auth, Save/Restore effects or runtime acceptance."
+  ],
+  "previousManifest": {
+    "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/formatter-source-manifest.json",
+    "bytes": 10935,
+    "lines": 240,
+    "sha256": "7cccd6d8b053c227269f5da60162c3a6990a1f4ef55f6a165ca12db2046158c4",
+    "blob": "bdaf686ee71096af679bf2ef7bf41dec2a5d6715",
+    "getVerified": true
+  }
+}

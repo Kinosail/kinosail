@@ -61,6 +61,26 @@ class CampaignProofTests(unittest.TestCase):
         self.assertIn('retention-days: 3', artifact)
         self.assertIn('if-no-files-found: error', artifact)
 
+    def test_restore_source_formatter_is_fixed_and_rejects_foreign_selection(self):
+        from unittest import mock
+        with mock.patch.dict(os.environ, {'CAMPAIGN_R06_SUITE': 'restore-source-format'}):
+            actual = self.call('R06')
+            self.assertEqual(actual.returncode, 0, actual.stderr)
+            self.assertEqual(actual.stdout.splitlines(), ['apps/subtitles/scripts/campaign_r06_restore_format.py'])
+            for value in ('Q14', 'Q09'):
+                self.assertEqual(self.call(value).returncode, 2)
+        with mock.patch.dict(os.environ, {'CAMPAIGN_R06_SUITE': 'restore-source-format;echo unsafe'}):
+            self.assertEqual(self.call('R06').returncode, 2)
+
+    def test_restore_source_format_requires_formatter_and_excludes_other_phases(self):
+        source = LAYOUT.read_text().split('  campaign-proof:\n')[1]
+        self.assertIn("env.CAMPAIGN_R06_SUITE == 'source-format' || env.CAMPAIGN_R06_SUITE == 'restore-source-format'", source)
+        self.assertIn("env.CAMPAIGN_R06_SUITE != 'source-format' && env.CAMPAIGN_R06_SUITE != 'restore-source-format'", source)
+        self.assertIn("python3 -B -m unittest discover -s apps/subtitles/scripts -p test_campaign_r06_restore_format.py", source)
+        self.assertIn("if: always() && inputs.architecture_metadata && inputs.campaign_r06_suite != 'restore-source-format'", source)
+        self.assertIn('if [ "$CAMPAIGN_R06_SUITE" == restore-source-format ] && [ "${{ inputs.architecture_metadata }}" == true ]; then exit 2; fi', source)
+
+
 
 if __name__ == '__main__':
     unittest.main()

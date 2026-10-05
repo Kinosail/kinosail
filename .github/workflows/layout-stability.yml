@@ -25,7 +25,7 @@ on:
       campaign_r06_suite:
         description: Select original R06 protocol or one fixed Save browser fault suite
         type: choice
-        options: [protocol, save-controls, save-headers, save-body, source-format]
+        options: [protocol, save-controls, save-headers, save-body, source-format, restore-source-format]
         default: protocol
       architecture_metadata:
         description: Collect bounded source metadata for canonical architecture regeneration
@@ -133,10 +133,11 @@ jobs:
           esac
           if [ "$CAMPAIGN_PROOF" != Q14 ] && [ "$CAMPAIGN_Q14_SUITE" != primary ]; then exit 2; fi
           case "$CAMPAIGN_R06_SUITE" in
-            protocol|save-controls|save-headers|save-body|source-format) ;;
+            protocol|save-controls|save-headers|save-body|source-format|restore-source-format) ;;
             *) exit 2 ;;
           esac
           if [ "$CAMPAIGN_PROOF" != R06 ] && [ "$CAMPAIGN_R06_SUITE" != protocol ]; then exit 2; fi
+          if [ "$CAMPAIGN_R06_SUITE" == restore-source-format ] && [ "${{ inputs.architecture_metadata }}" == true ]; then exit 2; fi
           case "$CAMPAIGN_PROOF" in
             R06) echo app=subtitles >> "$GITHUB_OUTPUT" ;;
             Q14|Q09) echo app=player >> "$GITHUB_OUTPUT" ;;
@@ -159,7 +160,7 @@ jobs:
           package-manager-cache: false
       - run: sudo apt-get update && sudo apt-get install -y libarchive-tools
       - name: Install existing source formatter
-        if: env.CAMPAIGN_R06_SUITE == 'source-format'
+        if: env.CAMPAIGN_R06_SUITE == 'source-format' || env.CAMPAIGN_R06_SUITE == 'restore-source-format'
         timeout-minutes: 2
         uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a
         with:
@@ -167,7 +168,7 @@ jobs:
           install-only: true
           skip-cache: true
       - name: Prepare bounded Go dependencies
-        if: env.CAMPAIGN_R06_SUITE != 'source-format'
+        if: env.CAMPAIGN_R06_SUITE != 'source-format' && env.CAMPAIGN_R06_SUITE != 'restore-source-format'
         env:
           APP: ${{ steps.selection.outputs.app }}
         run: timeout 120s bash scripts/ci/prepare-campaign-go.sh "$APP"
@@ -183,10 +184,14 @@ jobs:
             timeout 180s pnpm --dir apps/player/e2e install --frozen-lockfile
             timeout 240s pnpm --dir apps/player/e2e exec playwright install --with-deps chromium
           fi
+      - name: Verify Restore formatter controls
+        if: env.CAMPAIGN_PROOF == 'R06' && env.CAMPAIGN_R06_SUITE == 'restore-source-format'
+        timeout-minutes: 1
+        run: python3 -B -m unittest discover -s apps/subtitles/scripts -p test_campaign_r06_restore_format.py
       - name: Run exact owned public proof
         run: bash scripts/ci/run-campaign-proof.sh "$CAMPAIGN_PROOF"
       - name: Collect bounded canonical source metadata
-        if: always() && inputs.architecture_metadata
+        if: always() && inputs.architecture_metadata && inputs.campaign_r06_suite != 'restore-source-format'
         run: |
           timeout 120s bash scripts/ci/prepare-campaign-go.sh player
           timeout 120s bash scripts/ci/prepare-campaign-go.sh subtitles
