@@ -2,6 +2,8 @@ import {writeFile} from 'node:fs/promises';
 import {expect, test} from '@playwright/test';
 import {installPlayerExperienceFixture} from './player-experience-fixture';
 
+declare const playbackRequest: number;
+
 test.use({hasTouch: true, viewport: {width: 390, height: 844}, ignoreHTTPSErrors: false});
 installPlayerExperienceFixture(false, true);
 
@@ -43,4 +45,37 @@ test('an obsolete Apple Play rejection respects later fullscreen dismissal @smok
   await expect(page.locator('video')).toHaveJSProperty('paused', true);
   await expect(page.getByRole('button', {name: 'Play', exact: true})).toBeVisible();
   expect(await page.locator('.player-control-feedback').isVisible()).toBe(false);
+});
+
+
+// Native Pause is an Apple platform action unavailable in populated Chromium.
+// This existing simulated-Apple fixture isolates the event seam; physical/Toy Story attribution stays separate.
+test('simulated native Apple Pause cancels pending Play without a startup failure @smoke', async ({page}, info) => {
+  const observations: Array<Record<string, unknown>> = [];
+  const observe = async (stage: string) => observations.push(await page.evaluate(label => {
+    const video = document.querySelector('video') as HTMLVideoElement & {webkitDisplayingFullscreen: boolean};
+    const feedback = document.querySelector('.player-control-feedback') as HTMLElement | null;
+    return {stage: label, elapsedMs: Math.round(performance.now()), paused: video.paused,
+      fullscreen: video.webkitDisplayingFullscreen, requestGeneration: typeof playbackRequest === 'number' ? playbackRequest : null,
+      feedbackVisible: Boolean(feedback && !feedback.hidden && feedback.getClientRects().length),
+      feedbackText: feedback?.textContent?.trim() || ''};
+  }, stage));
+  await pendingPlay(page);
+  await observe('play-promise-pending');
+  await page.locator('video').evaluate((media: HTMLVideoElement) => media.pause());
+  await observe('native-pause');
+  await page.evaluate(() => (window as Window & {rejectPendingPlay: (name: string) => void}).rejectPendingPlay('AbortError'));
+  await page.waitForTimeout(0);
+  await observe('interrupted-play-rejected');
+  await page.screenshot({path: info.outputPath('native-pause-after-interruption.png'), fullPage: true});
+  await info.attach('native-pause-intent-observation', {body: JSON.stringify({observations,
+    hypothesis: 'Pause makes the earlier pending Play obsolete', media: 'simulated Apple API/deferred Play, no decoded frames'}),
+    contentType: 'application/json'});
+  await expect(page.locator('video')).toHaveJSProperty('paused', true);
+  await expect(page.locator('video')).toHaveJSProperty('webkitDisplayingFullscreen', true);
+  await expect(page.locator('.player-control-feedback')).toBeHidden();
+  await page.evaluate(() => (window as Window & {setPlayPending: (value: boolean) => void}).setPlayPending(false));
+  await page.getByRole('button', {name: 'Play', exact: true}).tap();
+  await expect(page.locator('video')).toHaveJSProperty('paused', false);
+  await expect(page.locator('.player-control-feedback')).toBeHidden();
 });

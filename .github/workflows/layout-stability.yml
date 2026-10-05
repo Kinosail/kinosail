@@ -77,7 +77,7 @@ jobs:
           KINOSAIL_BROWSER_MATRIX: full
           KINOSAIL_TEST_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
           PLAYWRIGHT_JSON_OUTPUT_NAME: ../../../.verification/layout-fixtures/results.json
-        run: pnpm --dir apps/player/e2e exec playwright test --config layout-stability.config.ts --project "${{ matrix.browser }}" --reporter=list,json layout-stability.spec.ts skeleton-layout.spec.ts
+        run: pnpm --dir apps/player/e2e exec playwright test --config layout-stability.config.ts --project "${{ matrix.browser }}" --reporter=list,json layout-stability.spec.ts skeleton-layout.spec.ts player-apple-intent.spec.ts
       - name: Measure disposable native Servers
         env:
           KINOSAIL_LAYOUT_BROWSER: ${{ matrix.browser }}
@@ -98,6 +98,9 @@ jobs:
             .verification/layout/*/*/failure.json
             .verification/layout/*/*/*.png
             .verification/layout-fixtures/results.json
+            .verification/layout-fixtures/**/apple-intent-receipt.json
+            .verification/layout-fixtures/**/native-pause-after-interruption.png
+            .verification/layout-fixtures/**/trace.zip
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
