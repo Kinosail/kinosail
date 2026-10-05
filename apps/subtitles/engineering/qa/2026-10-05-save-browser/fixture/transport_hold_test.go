@@ -134,5 +134,5 @@ func (f *fixture) deliverHeld(writer http.ResponseWriter, request *http.Request,
 }
 
 func (f *fixture) cancelOnLifecycle(cancel context.CancelFunc) func() bool {
- return context.AfterFunc(f.ctx, cancel)
+	return context.AfterFunc(f.ctx, cancel)
 }

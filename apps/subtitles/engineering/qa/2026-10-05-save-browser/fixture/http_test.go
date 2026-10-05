@@ -34,13 +34,21 @@ func validPrivatePath(path string) bool {
 	return path != id && operationID.MatchString(id)
 }
 
+func privateURL(authority, path string) (string, error) {
+ if !validPrivatePath(path) { return "", errors.New("private route is not admitted") }
+ host, _, err := net.SplitHostPort(authority)
+ if err != nil { return "", errors.New("private transport authority rejected") }
+ address := net.ParseIP(host)
+ if address == nil || !address.IsLoopback() { return "", errors.New("private transport authority rejected") }
+ route, query, _ := strings.Cut(path, "?")
+ endpoint := url.URL{Scheme: "https", Host: authority, Path: route, RawQuery: query}
+ return endpoint.String(), nil
+}
+
 func (f *fixture) privateRequest(ctx context.Context, method, path string, body io.Reader) (*http.Request, error) {
-	if !validPrivatePath(path) {
-		return nil, errors.New("private route is not admitted")
-	}
-	route, query, _ := strings.Cut(path, "?")
-	endpoint := url.URL{Scheme: "https", Host: f.authority, Path: route, RawQuery: query}
-	request, err := http.NewRequestWithContext(ctx, method, endpoint.String(), body)
+ endpoint, err := privateURL(f.authority, path)
+ if err != nil { return nil, err }
+	request, err := http.NewRequestWithContext(ctx, method, endpoint, body)
 	if err != nil {
 		return nil, err
 	}
@@ -73,17 +81,27 @@ func (f *fixture) dialOwned(ctx context.Context, network, address string) (net.C
 }
 
 func (f *fixture) admittedPrivateRequest(request *http.Request) bool {
- if request.URL == nil { return false }
- endpoint := request.URL
- if endpoint.Scheme != "https" || endpoint.Host != f.authority || endpoint.User != nil { return false }
- address := net.ParseIP(endpoint.Hostname())
- if address == nil || !address.IsLoopback() { return false }
- return validPrivatePath(endpoint.RequestURI()) && endpoint.Fragment == "" && endpoint.Opaque == "" && endpoint.RawPath == ""
+	if request.URL == nil {
+		return false
+	}
+	endpoint := request.URL
+	if endpoint.Scheme != "https" || endpoint.Host != f.authority || endpoint.User != nil {
+		return false
+	}
+	address := net.ParseIP(endpoint.Hostname())
+	if address == nil || !address.IsLoopback() {
+		return false
+	}
+	return validPrivatePath(endpoint.RequestURI()) && endpoint.Fragment == "" && endpoint.Opaque == "" && endpoint.RawPath == ""
 }
 
 func (f *fixture) closeFailedPrivateResponse(response *http.Response) {
- if response == nil { return }
- if err := response.Body.Close(); err != nil { f.failBoundary() }
+	if response == nil {
+		return
+	}
+	if err := response.Body.Close(); err != nil {
+		f.failBoundary()
+	}
 }
 
 func readPrivateResponse(response *http.Response) ([]byte, error) {

@@ -12,8 +12,8 @@ import (
 // Only copied response metadata leaves a transport proof. The
 // HTTP body remains exclusively owned and closed by ownedSave.send.
 type responseReceipt struct {
- status int
- header http.Header
+	status int
+	header http.Header
 }
 
 func proveHeldHeaders(t *testing.T, f *fixture, exchange *ownedSave) responseReceipt {
@@ -112,18 +112,18 @@ func transportHeader(name string) bool {
 }
 
 func (exchange *ownedSave) copiedReceipt(t *testing.T, response *http.Response) responseReceipt {
- t.Helper()
- select {
- case <-exchange.requestDone:
- case <-time.After(3 * time.Second):
-  t.Fatal("owned request did not settle")
- }
- if exchange.bodyReadDone != nil {
-  select {
-  case <-exchange.bodyReadDone:
-  case <-time.After(3 * time.Second):
-   t.Fatal("owned body read did not settle")
-  }
- }
- return responseReceipt{status: response.StatusCode, header: response.Header.Clone()}
+	t.Helper()
+	select {
+	case <-exchange.requestDone:
+	case <-time.After(3 * time.Second):
+		t.Fatal("owned request did not settle")
+	}
+	if exchange.bodyReadDone != nil {
+		select {
+		case <-exchange.bodyReadDone:
+		case <-time.After(3 * time.Second):
+			t.Fatal("owned body read did not settle")
+		}
+	}
+	return responseReceipt{status: response.StatusCode, header: response.Header.Clone()}
 }

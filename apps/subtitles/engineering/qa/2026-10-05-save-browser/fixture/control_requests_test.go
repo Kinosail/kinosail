@@ -91,10 +91,10 @@ func controlItem(t *testing.T, client *http.Client, f *fixture) (string, error) 
 func controlJSON(t *testing.T, client *http.Client, f *fixture, method, path string, body []byte, headers http.Header, value any) (status int) {
 	diagnostic := &controlDiagnostic{stage: controlRoute(path), decoded: value == nil}
 	defer func() { diagnostic.emit(t, status) }()
-	request, err := f.privateRequest(t.Context(), method, path, bytes.NewReader(body))
-	if err != nil {
-		return 0
-	}
+ endpoint, err := privateURL(f.authority, path)
+ if err != nil { return 0 }
+ request, err := http.NewRequestWithContext(t.Context(), method, endpoint, bytes.NewReader(body))
+ if err != nil { return 0 }
 	if headers != nil {
 		request.Header = headers.Clone()
 	}
@@ -103,13 +103,19 @@ func controlJSON(t *testing.T, client *http.Client, f *fixture, method, path str
 	if body != nil {
 		request.Header.Set("Content-Type", "application/json")
 	}
-	if !f.admittedPrivateRequest(request) { return 0 }
+	if !f.admittedPrivateRequest(request) {
+		return 0
+	}
 	response, err := client.Do(request)
 	diagnostic.responseStatus, diagnostic.transport = controlResponseStatus(response), err == nil
 	if err != nil {
 		f.closeFailedPrivateResponse(response)
 		return 0
 	}
+	return decodeControlResponse(response, value, diagnostic)
+}
+
+func decodeControlResponse(response *http.Response, value any, diagnostic *controlDiagnostic) int {
 	data, err := readPrivateResponse(response)
 	diagnostic.read, diagnostic.bounded = err == nil, len(data) <= privateResponseLimit
 	if err != nil || len(data) > privateResponseLimit {

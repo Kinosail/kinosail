@@ -76,7 +76,9 @@ func (f *fixture) serveOwner(writer http.ResponseWriter, request *http.Request) 
 }
 
 func (f *fixture) serveSavePost(writer http.ResponseWriter, request *http.Request) bool {
- if request.Method != http.MethodPost { return false }
+	if request.Method != http.MethodPost {
+		return false
+	}
 	if request.URL.Path == "/api/v1/subtitle-operations" {
 		f.prepare(writer, request)
 		return true
@@ -90,5 +92,5 @@ func (f *fixture) serveSavePost(writer http.ResponseWriter, request *http.Reques
 		f.save(writer, request, match[1])
 		return true
 	}
- return false
+	return false
 }

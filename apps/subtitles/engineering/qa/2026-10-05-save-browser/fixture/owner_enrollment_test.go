@@ -13,17 +13,23 @@ var setupCSRF = regexp.MustCompile("name=\"_csrf\" value=\"([A-Za-z0-9_-]{43})\"
 var pageCSRF = regexp.MustCompile("name=\"kinosail-csrf\" content=\"([A-Za-z0-9_-]{43})\"")
 
 func ownerResponse(t *testing.T, f *fixture, client *http.Client, stage, method, path, form string) (*http.Response, error) {
-	request, err := f.privateRequest(t.Context(), method, path, strings.NewReader(form))
-	if err != nil {
-		return nil, err
-	}
+ endpoint, err := privateURL(f.authority, path)
+ if err != nil { return nil, err }
+ request, err := http.NewRequestWithContext(t.Context(), method, endpoint, strings.NewReader(form))
+ if err != nil { return nil, err }
+	request.Header.Set("Origin", f.origin)
+	request.Header.Set("User-Agent", "R06-private-control")
 	if method == http.MethodPost {
 		request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	}
-	if !f.admittedPrivateRequest(request) { return nil, errors.New("private request boundary unavailable") }
+	if !f.admittedPrivateRequest(request) {
+		return nil, errors.New("private request boundary unavailable")
+	}
 	response, err := client.Do(request)
 	t.Logf("R06_OWNER_REQUEST %s %d %t", stage, controlResponseStatus(response), err == nil)
-	if err != nil { f.closeFailedPrivateResponse(response) }
+	if err != nil {
+		f.closeFailedPrivateResponse(response)
+	}
 	return response, err
 }
 

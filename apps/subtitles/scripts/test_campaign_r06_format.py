@@ -74,5 +74,9 @@ class R06FormatAdmissionTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "^format-file-lines$"):
             self.call(output=b"package main\n" + b"\n"*300)
 
+    def test_formatter_uses_stdin_and_existing_exact_app_configuration(self):
+        self.assertEqual(campaign_r06_format.formatter_command("/owned/tool"),
+                         ["/owned/tool", "fmt", "--stdin", "--config", "apps/subtitles/.golangci.yml"])
+
 if __name__ == "__main__":
     unittest.main()

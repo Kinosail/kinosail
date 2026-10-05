@@ -27,6 +27,7 @@ GO_FILES = tuple("apps/subtitles/engineering/qa/2026-10-05-save-browser/fixture/
 FORMAT_FILE_LIMIT = len(GO_FILES)
 SAFE_NAMES = ("receipt.json", "results.json", "source-manifest.json", "artifact-manifest.json")
 INPUT_CAP, OUTPUT_CAP = 256 * 1024, 512 * 1024
+FORMAT_ARGS = ("fmt", "--stdin", "--config", "apps/subtitles/.golangci.yml")
 
 
 def pin(data):
@@ -70,7 +71,7 @@ def read_source(name):
 
 def tool_pin(path):
     info = path.stat()
-    if not stat.S_ISREG(info.st_mode) or not 0 < info.st_size <= 64 * 1024 * 1024 or not info.st_mode & 0o111:
+    if not stat.S_ISREG(info.st_mode) or not 0 < info.st_size <= 256 * 1024 * 1024 or not info.st_mode & 0o111:
         raise ValueError("formatter-shape")
     digest = hashlib.sha256()
     with path.open("rb") as stream:
@@ -79,9 +80,15 @@ def tool_pin(path):
     return {"bytes": info.st_size, "sha256": digest.hexdigest()}
 
 
+def formatter_command(tool):
+    return [str(tool), *FORMAT_ARGS]
+
+
 def format_owned(tool, source):
     started = time.monotonic()
-    process = subprocess.Popen([str(tool)], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+    process = subprocess.Popen(formatter_command(tool), cwd=ROOT,
+                               env=dict(os.environ, GOPROXY="off", GOTOOLCHAIN="local", GOMAXPROCS="2"),
+                               stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE, start_new_session=True)
     timed_out = False
     try:
@@ -130,9 +137,10 @@ def main():
             raise ValueError("fresh-output-required")
         names = (*GO_FILES, str(Path(__file__).relative_to(ROOT)),
                  "apps/subtitles/scripts/test_campaign_r06_format.py",
-                 ".github/workflows/layout-stability.yml", "scripts/ci/run-campaign-proof.sh", "go.work")
+                 ".github/workflows/layout-stability.yml", "scripts/ci/run-campaign-proof.sh", "go.work",
+                 "apps/subtitles/.golangci.yml", "apps/subtitles/go.mod")
         inputs = {name: read_source(name) for name in names}
-        formatter = shutil.which("gofmt")
+        formatter = shutil.which("golangci-lint")
         if formatter is None:
             raise ValueError("formatter-unavailable")
         tool = Path(formatter).resolve(strict=True)
@@ -140,7 +148,7 @@ def main():
         manifest = {"mode": "source-format", "revision": revision, "trackedTree": tree,
                     "sources": {name: pin(data) for name, data in inputs.items()},
                     "boundary": "Known static source projection only; no credentials, runtime state or test result."}
-        receipt.update(revision=revision, trackedTree=tree, formatter=identity, command=["gofmt"])
+        receipt.update(revision=revision, trackedTree=tree, formatter=identity, command=["golangci-lint", *FORMAT_ARGS])
         for name in GO_FILES:
             output, errors, phase = format_owned(tool, inputs[name])
             receipt["phases"].append({"path": name, **phase})

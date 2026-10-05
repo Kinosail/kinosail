@@ -37,15 +37,18 @@ func savedCues(review publicReview) bool {
 }
 
 func (f *fixture) publicRead(ctx context.Context, original *http.Request, path string, value any) ([]byte, bool) {
-	request, err := f.privateRequest(ctx, http.MethodGet, path, nil)
-	if err != nil {
-		return nil, false
-	}
+ endpoint, err := privateURL(f.authority, path)
+ if err != nil { return nil, false }
+ request, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, nil)
+ if err != nil { return nil, false }
+	request.Header.Set("Origin", f.origin)
 	request.Header.Set("Cookie", original.Header.Get("Cookie"))
 	request.Header.Set("User-Agent", "R06-private-witness")
 	client := f.privateClient(2 * time.Second)
 	defer client.CloseIdleConnections()
-	if !f.admittedPrivateRequest(request) { return nil, false }
+	if !f.admittedPrivateRequest(request) {
+		return nil, false
+	}
 	response, err := client.Do(request)
 	if err != nil {
 		f.closeFailedPrivateResponse(response)
