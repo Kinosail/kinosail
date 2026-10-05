@@ -15,7 +15,7 @@ on:
       campaign_proof:
         description: Run one bounded campaign proof instead of layout diagnosis
         type: choice
-        options: [none, R06, Q14, Q09]
+        options: [none, R06, Q14, Q09, Q47]
         default: none
       campaign_q14_suite:
         description: Select one fixed Q14 public suite; primary keeps its two repeats
@@ -27,6 +27,11 @@ on:
         type: choice
         options: [protocol, save-controls, save-headers, save-body, source-format]
         default: protocol
+      campaign_q47_suite:
+        description: Project the singleton Q47 fixture through the existing Go formatter
+        type: choice
+        options: [source-format]
+        default: source-format
       architecture_metadata:
         description: Collect bounded source metadata for canonical architecture regeneration
         type: boolean
@@ -116,6 +121,7 @@ jobs:
       CAMPAIGN_PROOF: ${{ inputs.campaign_proof }}
       CAMPAIGN_Q14_SUITE: ${{ inputs.campaign_q14_suite || 'primary' }}
       CAMPAIGN_R06_SUITE: ${{ inputs.campaign_r06_suite || 'protocol' }}
+      CAMPAIGN_Q47_SUITE: ${{ inputs.campaign_q47_suite || 'source-format' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -134,9 +140,10 @@ jobs:
             *) exit 2 ;;
           esac
           if [ "$CAMPAIGN_PROOF" != R06 ] && [ "$CAMPAIGN_R06_SUITE" != protocol ]; then exit 2; fi
+          if [ "$CAMPAIGN_Q47_SUITE" != source-format ]; then exit 2; fi
           case "$CAMPAIGN_PROOF" in
             R06) echo app=subtitles >> "$GITHUB_OUTPUT" ;;
-            Q14|Q09) echo app=player >> "$GITHUB_OUTPUT" ;;
+            Q14|Q09|Q47) echo app=player >> "$GITHUB_OUTPUT" ;;
             *) exit 2 ;;
           esac
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
@@ -144,13 +151,13 @@ jobs:
           go-version-file: go.work
           cache-dependency-path: "**/go.sum"
       - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
-        if: steps.selection.outputs.app == 'player' || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
+        if: (steps.selection.outputs.app == 'player' && env.CAMPAIGN_PROOF != 'Q47') || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
         with:
           version: 11.22.0
           install: false
           node-version-file: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
-        if: steps.selection.outputs.app == 'player' || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
+        if: (steps.selection.outputs.app == 'player' && env.CAMPAIGN_PROOF != 'Q47') || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
         with:
           node-version: "26"
           package-manager-cache: false
@@ -164,14 +171,14 @@ jobs:
           install-only: true
           skip-cache: true
       - name: Prepare bounded Go dependencies
-        if: env.CAMPAIGN_R06_SUITE != 'source-format'
+        if: env.CAMPAIGN_R06_SUITE != 'source-format' && env.CAMPAIGN_PROOF != 'Q47'
         env:
           APP: ${{ steps.selection.outputs.app }}
         run: timeout 120s bash scripts/ci/prepare-campaign-go.sh "$APP"
       - name: Prepare bounded browser prerequisites
         env:
           APP: ${{ steps.selection.outputs.app }}
-        if: steps.selection.outputs.app == 'player' || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
+        if: (steps.selection.outputs.app == 'player' && env.CAMPAIGN_PROOF != 'Q47') || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
         run: |
           if [ "$APP" == subtitles ]; then
             timeout 180s pnpm --dir apps/subtitles/e2e install --frozen-lockfile
@@ -206,6 +213,10 @@ jobs:
             .verification/campaign-proof/Q09/results.json
             .verification/campaign-proof/Q09/source-manifest.json
             .verification/campaign-proof/Q09/artifact-manifest.json
+            .verification/campaign-proof/Q47/receipt.json
+            .verification/campaign-proof/Q47/results.json
+            .verification/campaign-proof/Q47/source-manifest.json
+            .verification/campaign-proof/Q47/artifact-manifest.json
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 3
