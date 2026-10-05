@@ -26,6 +26,42 @@ async function checkpoint(page: Page, id: string) {
   return body.item.progress as {seconds: number; revision: number};
 }
 
+
+async function observeExit(page: Page, id: string) {
+  await page.evaluate(item => {
+    const video = document.querySelector("video")!;
+    const key = "kinosail:checkpoint-exit-observation";
+    const observations: Array<Record<string, unknown>> = [];
+    const record = (stage: string, detail: Record<string, unknown> = {}) => {
+      observations.push({stage, elapsedMs: Math.round(performance.now()), seconds: video.currentTime,
+        readyState: video.readyState, paused: video.paused, ended: video.ended, seeking: video.seeking,
+        visibility: document.visibilityState, ...detail});
+      sessionStorage.setItem(key, JSON.stringify(observations.slice(-32)));
+    };
+    sessionStorage.removeItem(key);
+    const originalFetch = window.fetch;
+    window.fetch = function(input, init) {
+      const request = input instanceof Request ? input : null;
+      const matches = new URL(request?.url || String(input), location.href).pathname === `/progress/${item}`
+        && (init?.method || request?.method) === "POST";
+      const body = init?.body instanceof URLSearchParams ? init.body : new URLSearchParams();
+      if (matches) record("progress-dispatch", {submittedSeconds: Number(body.get("seconds")),
+        revision: Number(body.get("revision")), keepalive: init?.keepalive === true});
+      const flight = originalFetch.call(this, input, init);
+      if (matches) void flight.then(response => record("progress-response", {status: response.status}),
+        () => record("progress-rejected"));
+      return flight;
+    };
+    addEventListener("pagehide", event => record("pagehide-before-player", {persisted: event.persisted}), {capture: true});
+    addEventListener("pagehide", event => record("pagehide-after-player", {persisted: event.persisted}));
+    document.addEventListener("visibilitychange", () => record("visibilitychange"), {capture: true});
+    video.addEventListener("kinosail:page-exit", () => record("player-exit"), {capture: true});
+    for (const event of ["pause", "emptied"]) video.addEventListener(event, () => record(event), {capture: true});
+    document.querySelector('a.back[href="/"]')?.addEventListener("click", () => record("library-click"), {capture: true});
+    record("observation-start");
+  }, id);
+}
+
 async function openMovie(page: Page) {
   await login(page);
   await page.goto("/?q=Checkpoint%20Example&view=movies");
@@ -80,6 +116,7 @@ test("Library exit checkpoints actual playing time before teardown without reset
   await media.evaluate((video: HTMLVideoElement) => video.play());
   const first = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
   await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(first + 0.5);
+  await observeExit(page, id);
   const leaveAt = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
   const beforeExit = await checkpoint(page, id);
   const writes: Array<{seconds: number; revision: number}> = [];
@@ -88,15 +125,21 @@ test("Library exit checkpoints actual playing time before teardown without reset
     const form = new URLSearchParams(request.postData() || "");
     writes.push({seconds: Number(form.get("seconds")), revision: Number(form.get("revision"))});
   });
-  await page.getByRole("link", {name: "Library", exact: true}).click();
-  await expect(page).toHaveURL(/\/$/);
-  await expect.poll(async () => (await checkpoint(page, id)).seconds, {timeout: 3000}).toBeGreaterThanOrEqual(leaveAt - 0.1);
-  await page.waitForTimeout(300);
-  const saved = await checkpoint(page, id);
-  expect(saved.seconds).toBeGreaterThanOrEqual(leaveAt - 0.1);
-  expect(saved.revision).toBeGreaterThan(beforeExit.revision);
-  expect(writes.every(write => write.seconds >= leaveAt - 0.1)).toBe(true);
-  await testInfo.attach("exit-checkpoint", {body: JSON.stringify({phase, leaveAt, beforeExit, saved, browserObservedWrites: writes, observationLimit: "Chromium may omit pagehide keepalive from page request events; actual persisted position/revision are authoritative."}), contentType: "application/json"});
+  try {
+    await page.getByRole("link", {name: "Library", exact: true}).click();
+    await expect(page).toHaveURL(/\/$/);
+    await expect.poll(async () => (await checkpoint(page, id)).seconds, {timeout: 3000}).toBeGreaterThanOrEqual(leaveAt - 0.1);
+    await page.waitForTimeout(300);
+    const saved = await checkpoint(page, id);
+    expect(saved.seconds).toBeGreaterThanOrEqual(leaveAt - 0.1);
+    expect(saved.revision).toBeGreaterThan(beforeExit.revision);
+    expect(writes.every(write => write.seconds >= leaveAt - 0.1)).toBe(true);
+    await testInfo.attach("exit-checkpoint", {body: JSON.stringify({phase, leaveAt, beforeExit, saved, browserObservedWrites: writes, observationLimit: "Chromium may omit pagehide keepalive from page request events; actual persisted position/revision are authoritative."}), contentType: "application/json"});
+  } finally {
+    const lifecycle = await page.evaluate(() => JSON.parse(sessionStorage.getItem("kinosail:checkpoint-exit-observation") || "[]"));
+    await testInfo.attach("exit-lifecycle-observation", {body: JSON.stringify({phase, revision: process.env.GITHUB_SHA || "",
+      browser: page.context().browser()?.version(), leaveAt, beforeExit, lifecycle}), contentType: "application/json"});
+  }
   await page.goto(watch);
   await expect.poll(async () => Number(await page.locator("video").getAttribute("data-start"))).toBeGreaterThanOrEqual(leaveAt - 0.1);
   await page.screenshot({path: testInfo.outputPath("exit-checkpoint-reentry.png"), fullPage: true});
