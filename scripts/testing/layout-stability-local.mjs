@@ -1,4 +1,4 @@
-import {installLayoutFailureReporter} from "./layout-stability-failure.mjs";
+import {installLayoutFailureReporter, layoutFailureLocations} from "./layout-stability-failure.mjs";
 import {layoutResponseHandler} from "./layout-stability-routing.mjs";
 import {navigationDiagnostics} from "./navigation-diagnostics.mjs";
 import {createRequire} from "node:module";
@@ -12,12 +12,13 @@ const {chromium, webkit, firefox} = require("@playwright/test");
 const AxeBuilder = require("@axe-core/playwright").default;
 const baseURL = process.env.KINOSAIL_E2E_URL, app = process.env.KINOSAIL_LAYOUT_APP, run = process.env.KINOSAIL_LAYOUT_RUN;
 const engine = process.env.KINOSAIL_LAYOUT_BROWSER || "chromium";
-let phase = "browser-launch", activePage, browser, authContext, activeCase, navigation;
+let phase = "browser-launch", operationPhase, activePage, browser, authContext, activeCase, navigation;
 const loginResponses = [];
 let requestStatus, requestContentType;
 const reports = [], flows = [], flowProbe = {stage: "not-started"};
 installLayoutFailureReporter(async error => {
-  return {result: "failed", app, engine, stage: phase, activeCase, flowStage: flowProbe.stage,
+  return {result: "failed", app, engine, stage: phase, operationPhase, activeCase, flowStage: flowProbe.stage,
+    locations: layoutFailureLocations(error),
     errorClass: ["TimeoutError", "TypeError", "ReferenceError", "SyntaxError"].includes(error.name) ? error.name : "Error",
     completedCases: reports.length, completedFlows: flows.length, media: flowProbe.media, probe: flowProbe.geometry, loginResponses,
     requestStatus, requestContentType, navigation: flowProbe.navigation || await navigation?.snapshot(),
@@ -119,6 +120,7 @@ if(app==="subtitles"&&process.env.KINOSAIL_LAYOUT_VARIANTS)cases.push({viewport:
 try {
   for (const {viewport,path,variant,scale,motion,apple,savedTabs} of cases) {
     phase = "measure-case";
+    operationPhase = "context-create";
     activeCase = {viewport, path, variant};
     const context = await browser.newContext({baseURL, storageState: path === "/login" ? undefined : auth,
       viewport, ignoreHTTPSErrors: false, reducedMotion: motion||"reduce"});
@@ -129,6 +131,7 @@ try {
       HTMLVideoElement.prototype.webkitEnterFullscreen=function(){this.dispatchEvent(new Event("webkitbeginfullscreen"));};
     });
     const traced=viewport.width===390&&(path==="/settings#access"||path.startsWith("/watch/"));
+    operationPhase = "trace-start";
     if(traced)await context.tracing.start({screenshots:true,snapshots:true});
     await context.addInitScript(observe);
     const page = activePage = await context.newPage();
@@ -136,12 +139,17 @@ navigation = navigationDiagnostics(page);
     // Delay real response bytes, without substituting mock markup or media.
     await page.route("**/*", layoutResponseHandler(context, variant));
     const name = `${viewport.width}-${variant}-${path.replace(/[^a-z0-9]+/gi, "-")}`;
+    operationPhase = "navigate";
     const response=await page.goto(path, {waitUntil: "commit"});
+    operationPhase = "body-visible";
     await page.locator("body").waitFor({state: "visible"});
     if(variant==="slow-css") {await page.waitForFunction(()=>[...document.querySelectorAll('link[rel~="stylesheet"]')].every(link=>link.sheet));await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));}
     await page.waitForTimeout(200);
+    operationPhase = "initial-inspect";
     const initialState = await page.evaluate(inspect);
+    operationPhase = "initial-bookmark";
     initialState.bookmark = await page.evaluate(bookmarkSnapshot);
+    operationPhase = "initial-boxes";
     const initialBoxes=await page.evaluate(()=>window.layoutAudit.frames.at(-1)?.boxes||[]);
     if (engine === "chromium") {
       // CDP captures pixels without Playwright's font-readiness hook, which can
@@ -151,8 +159,10 @@ navigation = navigationDiagnostics(page);
       await writeFile(join(run, name + "-initial.png"), Buffer.from(capture.data, "base64"));
       await cdp.detach();
     }
+    operationPhase = "domcontentloaded";
     await page.waitForLoadState("domcontentloaded");
     await page.waitForTimeout(2400);
+    operationPhase = "settled-audit";
     const audit = await page.evaluate(() => ({...window.layoutAudit, overflow: document.documentElement.scrollWidth - innerWidth,
       font: document.fonts.check("15px Manrope"), skeleton: document.querySelectorAll(".request-skeleton").length}));
     const entries=audit.shifts.filter(s=>!s.recentInput);
@@ -160,6 +170,7 @@ navigation = navigationDiagnostics(page);
     const identifiedDOMCLS=cls(entries.filter(e=>e.sources?.some(s=>s.node)));
     const unattributedCLS=cls(entries.filter(e=>!e.sources?.some(s=>s.node)));
     const moved=boxesChanged(initialBoxes,audit.frames.at(-1)?.boxes||[]);
+    operationPhase = "settled-inspect";
     const finalState=await page.evaluate(inspect);
     finalState.bookmark=await page.evaluate(bookmarkSnapshot);
     const categoryStable=!initialState.category||JSON.stringify(initialState.sections)===JSON.stringify(finalState.sections);
