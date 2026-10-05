@@ -93,7 +93,7 @@ class ToolIdentityControls(unittest.TestCase):
             preflight = {}
             with self.assertRaisesRegex(ValueError, "^tool-unavailable$"):
                 driver.tools_state(preflight)
-        self.assertEqual(preflight, {"go":{"available":False}})
+        self.assertEqual(preflight, {name:{"available":False} for name in ("go","node","pnpm")})
         self.assertEqual(self.calls, [])
 
 

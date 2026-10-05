@@ -25,7 +25,7 @@ on:
       campaign_r06_suite:
         description: Select original R06 protocol or one fixed Save browser fault suite
         type: choice
-        options: [protocol, save-headers, save-body, source-format]
+        options: [protocol, save-controls, save-headers, save-body, source-format]
         default: protocol
       architecture_metadata:
         description: Collect bounded source metadata for canonical architecture regeneration
@@ -130,7 +130,7 @@ jobs:
           esac
           if [ "$CAMPAIGN_PROOF" != Q14 ] && [ "$CAMPAIGN_Q14_SUITE" != primary ]; then exit 2; fi
           case "$CAMPAIGN_R06_SUITE" in
-            protocol|save-headers|save-body|source-format) ;;
+            protocol|save-controls|save-headers|save-body|source-format) ;;
             *) exit 2 ;;
           esac
           if [ "$CAMPAIGN_PROOF" != R06 ] && [ "$CAMPAIGN_R06_SUITE" != protocol ]; then exit 2; fi
@@ -144,13 +144,13 @@ jobs:
           go-version-file: go.work
           cache-dependency-path: "**/go.sum"
       - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
-        if: steps.selection.outputs.app == 'player' || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
+        if: steps.selection.outputs.app == 'player' || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
         with:
           version: 11.22.0
           install: false
           node-version-file: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
-        if: steps.selection.outputs.app == 'player' || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
+        if: steps.selection.outputs.app == 'player' || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
         with:
           node-version: "26"
           package-manager-cache: false
@@ -163,7 +163,7 @@ jobs:
       - name: Prepare bounded browser prerequisites
         env:
           APP: ${{ steps.selection.outputs.app }}
-        if: steps.selection.outputs.app == 'player' || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
+        if: steps.selection.outputs.app == 'player' || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
         run: |
           if [ "$APP" == subtitles ]; then
             timeout 180s pnpm --dir apps/subtitles/e2e install --frozen-lockfile

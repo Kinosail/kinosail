@@ -31,6 +31,7 @@ func enrollOwner(t *testing.T, f *fixture) (*http.Client, string, error) {
 	request.Header.Set("Origin", f.origin)
 	request.Header.Set("User-Agent", "R06-private-control")
 	response, err := client.Do(request)
+	t.Logf("R06_OWNER_REQUEST setup %d %t", controlResponseStatus(response), err == nil)
 	if err != nil {
 		return nil, "", errors.New("setup unavailable")
 	}
@@ -43,6 +44,7 @@ func enrollOwner(t *testing.T, f *fixture) (*http.Client, string, error) {
 	}
 	key := regexp.MustCompile(`<code>([A-Z2-7]{32})</code>`).FindSubmatch(body)
 	csrf := regexp.MustCompile(`name="_csrf" value="([A-Za-z0-9_-]{43})"`).FindSubmatch(body)
+	t.Logf("R06_OWNER_SETUP %d %t %t %t %t", response.StatusCode, err == nil, secure, len(key) == 2, len(csrf) == 2)
 	if response.StatusCode != 200 || err != nil || !secure || len(key) != 2 || len(csrf) != 2 {
 		return nil, "", errors.New("setup response invalid")
 	}
@@ -53,6 +55,7 @@ func enrollOwner(t *testing.T, f *fixture) (*http.Client, string, error) {
 	request.Header.Set("Origin", f.origin)
 	request.Header.Set("User-Agent", "R06-private-control")
 	response, err = client.Do(request)
+	t.Logf("R06_OWNER_REQUEST mfa %d %t", controlResponseStatus(response), err == nil)
 	if err != nil {
 		return nil, "", errors.New("MFA confirmation unavailable")
 	}
@@ -61,14 +64,42 @@ func enrollOwner(t *testing.T, f *fixture) (*http.Client, string, error) {
 		return nil, "", errors.New("MFA confirmation rejected")
 	}
 	current, err := client.Get(f.origin + "/?view=library")
+	t.Logf("R06_OWNER_REQUEST current %d %t", controlResponseStatus(current), err == nil)
 	if err != nil {
 		return nil, "", errors.New("current Owner page unavailable")
 	}
 	page, readErr := io.ReadAll(io.LimitReader(current.Body, 65537))
 	current.Body.Close()
 	currentCSRF := regexp.MustCompile(`name="kinosail-csrf" content="([A-Za-z0-9_-]{43})"`).FindSubmatch(page)
+	t.Logf("R06_OWNER_CURRENT %d %t %t", current.StatusCode, readErr == nil, len(currentCSRF) == 2)
 	if current.StatusCode != 200 || readErr != nil || len(currentCSRF) != 2 {
 		return nil, "", errors.New("current Owner/CSRF boundary unavailable")
 	}
 	return &client, string(currentCSRF[1]), nil
+}
+
+func controlResponseStatus(response *http.Response) int {
+	if response == nil { return 0 }
+	return response.StatusCode
+}
+
+type controlDiagnostic struct {
+	stage string
+	responseStatus int
+	transport, read, bounded, decoded bool
+}
+
+func controlRoute(path string) string {
+	switch {
+	case path == "/api/v1/subtitle-library?view=library": return "catalog"
+	case strings.HasSuffix(path, "/inspect?language=en"): return "inspection"
+	case strings.HasSuffix(path, "/preview"): return "preview"
+	case path == "/api/v1/subtitle-operations": return "prepare"
+	default: return "unknown"
+	}
+}
+
+func (d *controlDiagnostic) emit(t *testing.T, returned int) {
+	t.Logf("R06_ROUTE %s %d %d %t %t %t %t", d.stage, d.responseStatus, returned,
+		d.transport, d.read, d.bounded, d.decoded)
 }

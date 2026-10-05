@@ -44,7 +44,7 @@ class R06BrowserRouteTests(unittest.TestCase):
                                      "apps/subtitles/scripts/campaign-r06-public.py")
 
     def test_only_fixed_browser_suites_select_browser_driver(self):
-        for suite in ("save-headers", "save-body"):
+        for suite in ("save-controls", "save-headers", "save-body"):
             with self.subTest(suite=suite):
                 self.assert_dispatch("R06", suite,
                                      "apps/subtitles/scripts/campaign-r06-browser.py")
@@ -61,7 +61,7 @@ class R06BrowserRouteTests(unittest.TestCase):
 
     def test_other_proofs_require_protocol_default(self):
         for proof in ("Q14", "Q09"):
-            for suite in ("save-headers", "save-body", "source-format"):
+            for suite in ("save-controls", "save-headers", "save-body", "source-format"):
                 with self.subTest(proof=proof, suite=suite):
                     self.assert_rejected(proof, suite)
 

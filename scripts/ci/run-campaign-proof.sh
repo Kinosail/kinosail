@@ -3,7 +3,7 @@ set -euo pipefail
 [[ "$#" == 1 ]] || exit 2
 r06_suite="${CAMPAIGN_R06_SUITE-protocol}"
 case "$r06_suite" in
-  protocol|save-headers|save-body|source-format) ;;
+  protocol|save-controls|save-headers|save-body|source-format) ;;
   *) exit 2 ;;
 esac
 if [[ "$1" != R06 && "$r06_suite" != protocol ]]; then exit 2; fi

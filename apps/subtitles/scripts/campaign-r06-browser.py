@@ -18,6 +18,7 @@ from campaign_r06_browser_sources import (APP, FIXTURE, GO_CASES, OUTPUT, PACKAG
 SAFE_NAMES = ("receipt.json","results.json","source-manifest.json","artifact-manifest.json")
 TOOL_BYTE_LIMITS = {"go":64*1024*1024,"node":192*1024*1024,"pnpm":192*1024*1024}
 SUITES = {
+    "save-controls":("controls",[],"^$"),
     "save-headers":("headers",["save-headers-desktop","save-headers-phone"],"^R06 Save headers held after completed write - (phone|desktop)$"),
     "save-body":("body",["save-body-desktop","save-body-phone"],"^R06 Save body held after completed write - (phone|desktop)$"),
 }
@@ -29,17 +30,18 @@ def settled(phase, exits):
 
 
 def tools_state(preflight=None):
-    state = {}
+    state, paths = {}, {}
     for name in ("go","node","pnpm"):
         found = shutil.which(name)
         if preflight is not None:
             preflight[name] = {"available":found is not None}
-        if found is None: raise ValueError("tool-unavailable")
-        path = Path(found).resolve(strict=True)
-        if preflight is not None:
-            info = path.lstat()
+        paths[name] = Path(found).resolve(strict=True) if found is not None else None
+        if preflight is not None and paths[name] is not None:
+            info = paths[name].lstat()
             preflight[name].update(bytes=info.st_size,mode=info.st_mode & 0o777,
                                    regular=stat.S_ISREG(info.st_mode))
+    for name,path in paths.items():
+        if path is None: raise ValueError("tool-unavailable")
         state[name] = fingerprint(path,TOOL_BYTE_LIMITS[name],True)
     return state
 
@@ -119,29 +121,33 @@ def main():
             raise ValueError("public-controls-incomplete")
         if not sources_equal(initial,sources) or fingerprint(binary,128*1024*1024,True) != binary_before:
             raise ValueError("control-source-drift")
-        os.environ["R06_SAVE_FIXTURE_BINARY"] = str(binary)
-        os.environ["R06_SAVE_PRIVATE_OUTPUT"] = str(work/"playwright")
-        os.environ["R06_SAVE_SAFE_RESULTS"] = str(work/"collection-safe.json")
-        os.environ["R06_SAVE_REPORT_MODE"] = "collection"
-        stage = "collection"
-        collection_phase = launch(playwright_command("--list","--global-timeout=15000"),20,receipt,"collection",cwd=ROOT)
-        if not complete_process(collection_phase): raise ValueError("collection-incomplete")
-        results["collection"] = admit_projection(private_result(work/"collection-safe.json"),"collection",SUITES[suite][1])
-        os.environ["R06_SAVE_SAFE_RESULTS"] = str(work/"runtime-safe.json")
-        os.environ["R06_SAVE_REPORT_MODE"] = "runtime"
-        stage = "browser"
-        runtime_phase = launch(playwright_command("--grep",SUITES[suite][2],"--global-timeout=150000"),
-                               155,receipt,"browser",cwd=ROOT)
-        if not settled(runtime_phase,(0,1)): raise ValueError("browser-incomplete")
-        results["browser"] = admit_projection(private_result(work/"runtime-safe.json"),"runtime",SUITES[suite][1])
-        receipt["servedAssetExpected"] = {"inspector":inspector_identity()}
-        expected_inspector = receipt["servedAssetExpected"]["inspector"]["sha256"]
-        classified = classify(results["browser"],expected_inspector)
-        if (classified == "focused-save-browser-green" and runtime_phase["exitCode"] != 0 or
-                classified == "confirmed-save-deadline-red" and runtime_phase["exitCode"] != 1):
-            raise ValueError("runner-classification")
-        receipt["classification"] = classified
-        exit_code = 0 if classified == "focused-save-browser-green" else 1 if classified == "confirmed-save-deadline-red" else 2
+        if suite == "save-controls":
+            receipt["classification"] = "focused-save-public-controls-green"
+            exit_code = 0
+        else:
+            os.environ["R06_SAVE_FIXTURE_BINARY"] = str(binary)
+            os.environ["R06_SAVE_PRIVATE_OUTPUT"] = str(work/"playwright")
+            os.environ["R06_SAVE_SAFE_RESULTS"] = str(work/"collection-safe.json")
+            os.environ["R06_SAVE_REPORT_MODE"] = "collection"
+            stage = "collection"
+            collection_phase = launch(playwright_command("--list","--global-timeout=15000"),20,receipt,"collection",cwd=ROOT)
+            if not complete_process(collection_phase): raise ValueError("collection-incomplete")
+            results["collection"] = admit_projection(private_result(work/"collection-safe.json"),"collection",SUITES[suite][1])
+            os.environ["R06_SAVE_SAFE_RESULTS"] = str(work/"runtime-safe.json")
+            os.environ["R06_SAVE_REPORT_MODE"] = "runtime"
+            stage = "browser"
+            runtime_phase = launch(playwright_command("--grep",SUITES[suite][2],"--global-timeout=150000"),
+                                   155,receipt,"browser",cwd=ROOT)
+            if not settled(runtime_phase,(0,1)): raise ValueError("browser-incomplete")
+            results["browser"] = admit_projection(private_result(work/"runtime-safe.json"),"runtime",SUITES[suite][1])
+            receipt["servedAssetExpected"] = {"inspector":inspector_identity()}
+            expected_inspector = receipt["servedAssetExpected"]["inspector"]["sha256"]
+            classified = classify(results["browser"],expected_inspector)
+            if (classified == "focused-save-browser-green" and runtime_phase["exitCode"] != 0 or
+                    classified == "confirmed-save-deadline-red" and runtime_phase["exitCode"] != 1):
+                raise ValueError("runner-classification")
+            receipt["classification"] = classified
+            exit_code = 0 if classified == "focused-save-browser-green" else 1 if classified == "confirmed-save-deadline-red" else 2
         stage = "integrity"
     except (OSError,ValueError,RuntimeError,KeyError,TypeError,subprocess.SubprocessError) as error:
         receipt["failure"] = {"stage":stage,"class":type(error).__name__}

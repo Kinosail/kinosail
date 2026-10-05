@@ -43,13 +43,13 @@ func checkRealFault(t *testing.T, mode string, prepared bool) {
 	if err != nil {
 		t.Fatal("actual TLS Owner/MFA/CSRF prerequisite failed")
 	}
-	id, err := controlItem(client, f.origin)
+	id, err := controlItem(t, client, f.origin)
 	if err != nil {
 		t.Fatal("public fictional item prerequisite failed")
 	}
 	base := "/api/v1/subtitle-library/" + id
 	var before struct{ Fingerprint string }
-	if controlJSON(client, f.origin, http.MethodGet, base+"/inspect?language=en", nil, nil, &before) != 200 {
+	if controlJSON(t, client, f.origin, http.MethodGet, base+"/inspect?language=en", nil, nil, &before) != 200 {
 		t.Fatal("public inspection prerequisite failed")
 	}
 	input, _ := json.Marshal(map[string]any{
@@ -57,13 +57,13 @@ func checkRealFault(t *testing.T, mode string, prepared bool) {
 		"role": "translation", "automaticSync": false, "removeCredits": false, "mergeRepeated": false,
 	})
 	headers := http.Header{"X-Kinosail-CSRF": {csrf}}
-	if controlJSON(client, f.origin, http.MethodPost, base+"/preview", input, headers, nil) != 200 {
+	if controlJSON(t, client, f.origin, http.MethodPost, base+"/preview", input, headers, nil) != 200 {
 		t.Fatal("real public preview prerequisite failed")
 	}
 	if prepared {
 		preparation, _ := json.Marshal(map[string]string{"action": "apply", "item": id})
 		var receipt struct{ ID string }
-		if controlJSON(client, f.origin, http.MethodPost, "/api/v1/subtitle-operations",
+		if controlJSON(t, client, f.origin, http.MethodPost, "/api/v1/subtitle-operations",
 			preparation, headers, &receipt) != 201 || !operationID.MatchString(receipt.ID) {
 			t.Fatal("real public preparation prerequisite failed")
 		}
@@ -223,16 +223,18 @@ func equalApplicationHeaders(received, actual http.Header) bool {
 	return true
 }
 
-func controlItem(client *http.Client, origin string) (string, error) {
+func controlItem(t *testing.T, client *http.Client, origin string) (string, error) {
 	var data struct{ Items []struct{ ID, Title string } }
-	if controlJSON(client, origin, http.MethodGet, "/api/v1/subtitle-library?view=library", nil, nil, &data) != 200 ||
+	if controlJSON(t, client, origin, http.MethodGet, "/api/v1/subtitle-library?view=library", nil, nil, &data) != 200 ||
 		len(data.Items) != 1 || !itemID.MatchString(data.Items[0].ID) {
 		return "", errors.New("fictional item unavailable")
 	}
 	return data.Items[0].ID, nil
 }
 
-func controlJSON(client *http.Client, origin, method, path string, body []byte, headers http.Header, value any) int {
+func controlJSON(t *testing.T, client *http.Client, origin, method, path string, body []byte, headers http.Header, value any) (status int) {
+	diagnostic := &controlDiagnostic{stage: controlRoute(path), decoded: value == nil}
+	defer func() { diagnostic.emit(t, status) }()
 	request, err := http.NewRequest(method, origin+path, bytes.NewReader(body))
 	if err != nil {
 		return 0
@@ -246,16 +248,19 @@ func controlJSON(client *http.Client, origin, method, path string, body []byte, 
 		request.Header.Set("Content-Type", "application/json")
 	}
 	response, err := client.Do(request)
+	diagnostic.responseStatus, diagnostic.transport = controlResponseStatus(response), err == nil
 	if err != nil {
 		return 0
 	}
 	defer response.Body.Close()
 	data, err := io.ReadAll(io.LimitReader(response.Body, 65537))
+	diagnostic.read, diagnostic.bounded = err == nil, len(data) <= 65536
 	if err != nil || len(data) > 65536 {
 		return 0
 	}
 	if value != nil && json.Unmarshal(data, value) != nil {
 		return 0
 	}
+	diagnostic.decoded = true
 	return response.StatusCode
 }
