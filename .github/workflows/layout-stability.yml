@@ -28,9 +28,9 @@ on:
         options: [protocol, save-controls, save-headers, save-body, source-format]
         default: protocol
       campaign_q47_suite:
-        description: Project the Q47 fixture source pair through the existing Go formatter
+        description: Select source formatting or the repeated Q47 primary baseline
         type: choice
-        options: [source-format]
+        options: [source-format, primary]
         default: source-format
       architecture_metadata:
         description: Collect bounded source metadata for canonical architecture regeneration
@@ -143,7 +143,12 @@ jobs:
             *) exit 2 ;;
           esac
           if [ "$CAMPAIGN_PROOF" != R06 ] && [ "$CAMPAIGN_R06_SUITE" != protocol ]; then exit 2; fi
-          if [ "$CAMPAIGN_Q47_SUITE" != source-format ]; then exit 2; fi
+          case "$CAMPAIGN_Q47_SUITE" in
+            source-format|primary) ;;
+            *) exit 2 ;;
+          esac
+          if [ "$CAMPAIGN_PROOF" != Q47 ] && [ "$CAMPAIGN_Q47_SUITE" != source-format ]; then exit 2; fi
+          if [ "$CAMPAIGN_PROOF" == Q47 ] && [ "${{ inputs.architecture_metadata }}" == true ]; then exit 2; fi
           case "$CAMPAIGN_PROOF" in
             R06) echo app=subtitles >> "$GITHUB_OUTPUT" ;;
             Q14|Q09|Q47) echo app=player >> "$GITHUB_OUTPUT" ;;
@@ -153,14 +158,22 @@ jobs:
         with:
           go-version-file: go.work
           cache-dependency-path: "**/go.sum"
+      - name: Prepare bounded existing documentation dependencies
+        if: env.CAMPAIGN_PROOF == 'Q47' && env.CAMPAIGN_Q47_SUITE != 'source-format'
+        timeout-minutes: 3
+        uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8
+        with:
+          ruby-version: '3.4'
+          bundler-cache: true
+          working-directory: engineering/documentation
       - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
-        if: (steps.selection.outputs.app == 'player' && env.CAMPAIGN_PROOF != 'Q47') || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
+        if: (steps.selection.outputs.app == 'player' && (env.CAMPAIGN_PROOF != 'Q47' || env.CAMPAIGN_Q47_SUITE != 'source-format')) || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
         with:
           version: 11.22.0
           install: false
           node-version-file: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
-        if: (steps.selection.outputs.app == 'player' && env.CAMPAIGN_PROOF != 'Q47') || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
+        if: (steps.selection.outputs.app == 'player' && (env.CAMPAIGN_PROOF != 'Q47' || env.CAMPAIGN_Q47_SUITE != 'source-format')) || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
         with:
           node-version: "26"
           package-manager-cache: false
@@ -181,7 +194,7 @@ jobs:
       - name: Prepare bounded browser prerequisites
         env:
           APP: ${{ steps.selection.outputs.app }}
-        if: (steps.selection.outputs.app == 'player' && env.CAMPAIGN_PROOF != 'Q47') || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
+        if: (steps.selection.outputs.app == 'player' && (env.CAMPAIGN_PROOF != 'Q47' || env.CAMPAIGN_Q47_SUITE != 'source-format')) || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
         run: |
           if [ "$APP" == subtitles ]; then
             timeout 180s pnpm --dir apps/subtitles/e2e install --frozen-lockfile
@@ -193,7 +206,7 @@ jobs:
       - name: Run exact owned public proof
         run: bash scripts/ci/run-campaign-proof.sh "$CAMPAIGN_PROOF"
       - name: Collect bounded canonical source metadata
-        if: always() && inputs.architecture_metadata
+        if: always() && inputs.architecture_metadata && inputs.campaign_proof != 'Q47'
         run: |
           timeout 120s bash scripts/ci/prepare-campaign-go.sh player
           timeout 120s bash scripts/ci/prepare-campaign-go.sh subtitles
