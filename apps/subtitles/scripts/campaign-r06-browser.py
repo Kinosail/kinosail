@@ -16,7 +16,7 @@ from campaign_r06_browser_sources import (APP, FIXTURE, GO_CASES, OUTPUT, PACKAG
                                          GoProjection, fingerprint, identity, inspector_identity, pin, private_result, tracked_sources)
 
 SAFE_NAMES = ("receipt.json","results.json","source-manifest.json","artifact-manifest.json")
-TOOL_BYTE_LIMITS = {"go":64*1024*1024,"node":192*1024*1024,"pnpm":64*1024*1024}
+TOOL_BYTE_LIMITS = {"go":64*1024*1024,"node":192*1024*1024,"pnpm":192*1024*1024}
 SUITES = {
     "save-headers":("headers",["save-headers-desktop","save-headers-phone"],"^R06 Save headers held after completed write - (phone|desktop)$"),
     "save-body":("body",["save-body-desktop","save-body-phone"],"^R06 Save body held after completed write - (phone|desktop)$"),

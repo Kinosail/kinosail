@@ -29,7 +29,7 @@ class MemoryTool:
 
 class ToolIdentityControls(unittest.TestCase):
     def setUp(self):
-        MemoryTool.sizes = {"go":17142188, "node":149711504, "pnpm":1}
+        MemoryTool.sizes = {"go":17142188, "node":149711504, "pnpm":146738295}
         self.calls = []
         self.stack = [
             patch.object(driver.shutil, "which", side_effect=lambda name:name),
@@ -62,11 +62,15 @@ class ToolIdentityControls(unittest.TestCase):
         self.assertEqual(preflight["node"], {
             "available":True, "bytes":149711504, "mode":0o755, "regular":True,
         })
+        self.assertEqual(preflight["pnpm"], {
+            "available":True, "bytes":146738295, "mode":0o755, "regular":True,
+        })
         self.assertEqual(dict(self.calls), {
-            "go":64*1024*1024, "node":192*1024*1024, "pnpm":64*1024*1024,
+            "go":64*1024*1024, "node":192*1024*1024, "pnpm":192*1024*1024,
         })
 
     def test_node_cap_boundary_can_be_pinned(self):
+        MemoryTool.sizes["pnpm"] = 1
         MemoryTool.sizes["node"] = 192*1024*1024
         self.assertEqual(driver.tools_state()["node"]["bytes"], 192*1024*1024)
 
@@ -76,8 +80,13 @@ class ToolIdentityControls(unittest.TestCase):
     def test_go_above_original_cap_is_rejected(self):
         self.reject("go", 64*1024*1024+1)
 
-    def test_pnpm_above_original_cap_is_rejected(self):
-        self.reject("pnpm", 64*1024*1024+1)
+    def test_pnpm_above_cap_is_rejected(self):
+        self.reject("pnpm", 192*1024*1024+1)
+
+    def test_pnpm_cap_boundary_can_be_pinned(self):
+        MemoryTool.sizes["node"] = 1
+        MemoryTool.sizes["pnpm"] = 192*1024*1024
+        self.assertEqual(driver.tools_state()["pnpm"]["bytes"], 192*1024*1024)
 
     def test_unavailable_tool_retains_fixed_safe_diagnostic(self):
         with patch.object(driver.shutil, "which", return_value=None):
