@@ -28,9 +28,9 @@ on:
         options: [protocol, save-controls, save-headers, save-body, source-format]
         default: protocol
       campaign_q47_suite:
-        description: Select source formatting or the repeated Q47 primary baseline
+        description: Select one fixed Q47 public suite, each repeated twice
         type: choice
-        options: [source-format, primary]
+        options: [source-format, primary, recovery, supersession, contracts]
         default: source-format
       architecture_metadata:
         description: Collect bounded source metadata for canonical architecture regeneration
@@ -144,7 +144,7 @@ jobs:
           esac
           if [ "$CAMPAIGN_PROOF" != R06 ] && [ "$CAMPAIGN_R06_SUITE" != protocol ]; then exit 2; fi
           case "$CAMPAIGN_Q47_SUITE" in
-            source-format|primary) ;;
+            source-format|primary|recovery|supersession|contracts) ;;
             *) exit 2 ;;
           esac
           if [ "$CAMPAIGN_PROOF" != Q47 ] && [ "$CAMPAIGN_Q47_SUITE" != source-format ]; then exit 2; fi
@@ -203,6 +203,14 @@ jobs:
             timeout 180s pnpm --dir apps/player/e2e install --frozen-lockfile
             timeout 240s pnpm --dir apps/player/e2e exec playwright install --with-deps chromium
           fi
+      - name: Prepare bounded Compose control dependencies
+        if: env.CAMPAIGN_PROOF == 'Q47' && env.CAMPAIGN_Q47_SUITE != 'source-format'
+        timeout-minutes: 3
+        run: timeout 180s npm ci --prefix engineering/documentation --ignore-scripts
+      - name: Verify fixed Compose recovery controls
+        if: env.CAMPAIGN_PROOF == 'Q47' && env.CAMPAIGN_Q47_SUITE != 'source-format'
+        timeout-minutes: 1
+        run: timeout --kill-after=2s 10s node --test engineering/documentation/test-install-builder.cjs engineering/documentation/test-install-builder-recovery.cjs
       - name: Run exact owned public proof
         run: bash scripts/ci/run-campaign-proof.sh "$CAMPAIGN_PROOF"
       - name: Collect bounded canonical source metadata

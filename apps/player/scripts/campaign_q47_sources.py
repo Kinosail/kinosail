@@ -11,6 +11,8 @@ from campaign_q47_admission import format_binding_valid
 from campaign_q47_io import fingerprint, read_bounded, bounded_paths
 import campaign_q47_dependencies as diagnostics
 from campaign_q47_package_resolution import resolve_package
+from campaign_q47_product_binding import PRODUCT_CHANGE, APPROVED_PRODUCT_BLOBS
+from campaign_q47_supplementary_pins import output_pins
 
 ROOT = Path(__file__).resolve().parents[3]
 APP = ROOT / "apps/player/e2e"
@@ -27,6 +29,7 @@ FROZEN = {
     "apps/player/e2e/compose-template-proof-attachments.ts": "6365b41e61e489cfc6bb0830d5d4b504b15047d1314486b8cb38b2a1be2bcb03",
     "apps/player/e2e/compose-template-proof-attachments.controls.cjs": "0ed12672d83ccd97a97ad9d895116d052f37ad635ee829f7bdea4b00ce064c00",
     "apps/player/e2e/compose-template-recovery.observation.ts": "2882b641dff938b0737a6d861069e2da6a6d12fa2f8c75e21fcee62d9411f4c1",
+    "engineering/documentation/test-install-builder-recovery.cjs": "53d63a79a207a9f16dc1c67c5047907667ce814c9fa407381ca93574b827a277",
     "engineering/qa/2026-10-05-q47-compose-template/failure-analysis.md": "da520e8f06d296e8972d6471ebee4f845508250243eccb60247ddc3a1644aaf7"
 }
 BASE_BLOBS = {
@@ -113,6 +116,7 @@ def source_snapshot():
         if by_name.get(path, {}).get("sha256") != expected:
             raise ValueError("frozen_source")
     for path, expected in BASE_BLOBS.items():
+        expected = APPROVED_PRODUCT_BLOBS.get(path, expected)
         if by_name.get(path, {}).get("gitBlob") != expected:
             raise ValueError("baseline_product_changed")
     if not format_binding_valid(FORMAT_BINDING, FIXTURE_FILES, FORMAT_INPUTS):
@@ -126,7 +130,7 @@ def source_snapshot():
             raise ValueError("canonical_format_bytes")
         fixtures.append({"path": expected["path"], "lines": lines, **record})
     return {"base": BASE, "identity": state, "tracked": tracked, "fixtures": fixtures,
-            "formatBinding": FORMAT_BINDING, "formatBoundary": "Historical formatter artifacts separately admitted by root."}
+            "productChange": PRODUCT_CHANGE, "formatBinding": FORMAT_BINDING, "formatBoundary": "Historical formatter artifacts separately admitted by root."}
 
 
 def installed_tree(root):
@@ -275,6 +279,8 @@ def generated(site):
     pins = {"helper": {key: selected["assets/js/platform-install.js"][key] for key in ("bytes", "sha256")},
             "templates": {app: {key: selected["assets/install/" + app + ".yaml"][key] for key in ("bytes", "sha256")}
                           for app in TEMPLATES}, "outputs": outputs}
+    pins["supplementaryOutputs"] = output_pins({app: read_bounded(site / ("assets/install/" + app + ".yaml"), 16_384).decode("utf-8")
+                                                for app in TEMPLATES})
     return {"files": records, "sha256": hashlib.sha256(canonical(records)).hexdigest()}, pins
 
 

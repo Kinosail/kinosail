@@ -9,7 +9,7 @@ esac
 if [[ "$1" != R06 && "$r06_suite" != protocol ]]; then exit 2; fi
 q47_suite="${CAMPAIGN_Q47_SUITE-source-format}"
 case "$q47_suite" in
-  source-format|primary) ;;
+  source-format|primary|recovery|supersession|contracts) ;;
   *) exit 2 ;;
 esac
 if [[ "$1" != Q47 && "$q47_suite" != source-format ]]; then exit 2; fi

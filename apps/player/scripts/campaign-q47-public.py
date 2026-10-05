@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Hosted Q47 primary baseline only. No install, deployment or product mutation."""
+"""Hosted fixed Q47 public suites. No install, deployment or product mutation."""
 import hashlib
 import json
 import os
@@ -11,9 +11,14 @@ import tempfile
 import time
 import campaign_q47_execution as processes
 from campaign_q47_execution import Peer, execute, complete, environment
-from campaign_q47_admission import admit, selector_valid
+from campaign_q47_supplementary_admission import admit, selector_valid
 from campaign_q47_dependencies import receipt_stage
 from campaign_q47_sources import ROOT, APP, BASE, FIXTURE_FILES, canonical, source_snapshot, dependencies, generated, fingerprint, private_report
+
+SCOPES = {"primary": "Two primary public generated-docs cases repeated twice; later modes remain unrun.",
+          "recovery": "Two fixed network/HTTP recovery cases repeated twice.",
+          "supersession": "Two fixed input/app supersession cases repeated twice.",
+          "contracts": "Four fixed Compose/download/copy/input-validation cases repeated twice."}
 
 OUTPUT = ROOT / ".verification/campaign-proof/Q47"
 FILES = ("receipt.json", "results.json", "source-manifest.json", "artifact-manifest.json")
@@ -77,10 +82,10 @@ def reporter_controls(tools):
         raise ValueError("reporter_controls")
 
 
-def browser_phase(name, root, node, cli, pins, peer=None):
+def browser_phase(name, root, node, cli, pins, peer=None, suite="primary"):
     destination = root / name
     destination.mkdir(mode=0o700)
-    env = environment() | {"KINOSAIL_Q47_SUITE": "primary", "KINOSAIL_Q47_REPORT_FILE": str(destination / "q47-proof.json"),
+    env = environment() | {"KINOSAIL_Q47_SUITE": suite, "KINOSAIL_Q47_REPORT_FILE": str(destination / "q47-proof.json"),
                            "KINOSAIL_E2E_OUTPUT_DIR": str(destination / "browser-private")}
     command = [str(node), str(cli), "test", "--config", "compose-template-recovery.config.ts", "--workers=1", "--retries=0"]
     if name == "collection":
@@ -88,7 +93,7 @@ def browser_phase(name, root, node, cli, pins, peer=None):
         command.append("--list")
     terminal = command_phase(name, command, APP, env, peer.live if peer else None)
     value = private_report(destination / "q47-proof.json")
-    admission = admit(value, "collection" if name == "collection" else "journey", "primary", pins)
+    admission = admit(value, "collection" if name == "collection" else "journey", suite, pins)
     expected_exit = 0 if admission["classification"] in ("collection", "green") else 1
     if (admission["classification"] in ("invalid", "incomplete") or not complete(terminal, expected_exit)):
         admission["classification"] = "incomplete"
@@ -123,6 +128,8 @@ def artifacts(receipt, results, sources):
 
 
 def main():
+    selected = os.environ.get("CAMPAIGN_Q47_SUITE", "primary")
+    suite = selected if selected in SCOPES else "primary"
     phase = "source-prerequisite"
     before = after = dependency_pins = built = binary_pin = None
     tools = cli = binary = site = temporary = None
@@ -130,9 +137,9 @@ def main():
                "result": "incomplete", "blockedPhase": None, "dependencyStage": None, "sourceUnchanged": None,
                "dependenciesUnchanged": None, "generatedUnchanged": None, "binaryUnchanged": None,
                "ownedProcessesSettled": None, "limits": LIMITS, "bounds": BOUNDS, "commands": COMMANDS, "processes": []}
-    results = {"schemaVersion": 1, "campaign": "Q47", "suite": "primary", "collection": None, "runs": [],
+    results = {"schemaVersion": 1, "campaign": "Q47", "suite": suite, "collection": None, "runs": [],
                "classification": "incomplete", "attemptedRuns": 0,
-               "scope": "Two primary public generated-docs cases repeated twice; later modes remain unrun."}
+               "scope": SCOPES[suite]}
     sources = {"schemaVersion": 1, "campaign": "Q47", "before": None, "after": None,
                "dependencies": None, "generated": None, "binary": None, "fixtureFiles": list(FIXTURE_FILES)}
     previous = {}
@@ -170,7 +177,7 @@ def main():
             raise ValueError("fixture_compile")
         binary_pin = fingerprint(binary, 64 * 1024 * 1024); sources["binary"] = binary_pin
         phase = "collection"
-        results["collection"] = browser_phase(phase, temporary, tools["node"], cli, pins)
+        results["collection"] = browser_phase(phase, temporary, tools["node"], cli, pins, None, suite)
         if results["collection"]["classification"] != "collection":
             raise ValueError("collection")
         for index in (1, 2):
@@ -182,7 +189,7 @@ def main():
                 if not peer.start():
                     raise ValueError("fixture_ready")
                 results["attemptedRuns"] += 1
-                admission = browser_phase(phase, temporary, tools["node"], cli, pins, peer)
+                admission = browser_phase(phase, temporary, tools["node"], cli, pins, peer, suite)
             finally:
                 settlement = peer.stop()
                 results["runs"].append({"repeat": index, **admission, "peer": settlement})
