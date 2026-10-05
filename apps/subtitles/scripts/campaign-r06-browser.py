@@ -19,8 +19,8 @@ SAFE_NAMES = ("receipt.json","results.json","source-manifest.json","artifact-man
 TOOL_BYTE_LIMITS = {"go":64*1024*1024,"node":192*1024*1024,"pnpm":192*1024*1024}
 SUITES = {
     "save-controls":("controls",[],"^$"),
-    "save-headers":("headers",["save-headers-desktop","save-headers-phone"],"^R06 Save headers held after completed write - (phone|desktop)$"),
-    "save-body":("body",["save-body-desktop","save-body-phone"],"^R06 Save body held after completed write - (phone|desktop)$"),
+    "save-headers":("headers",["save-headers-desktop","save-headers-phone"],"(?:^| )R06 Save headers held after completed write - (phone|desktop)$"),
+    "save-body":("body",["save-body-desktop","save-body-phone"],"(?:^| )R06 Save body held after completed write - (phone|desktop)$"),
 }
 
 
