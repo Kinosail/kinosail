@@ -22,7 +22,8 @@ class BrowserFixtureTLS(unittest.TestCase):
                         "-pkeyopt", "ec_paramgen_curve:P-256", "-nodes",
                         "-keyout", str(self.root / "key"), "-out", str(self.cert),
                         "-days", "1", "-subj", "/CN=Disposable test CA",
-                        "-addext", "basicConstraints=critical,CA:TRUE"],
+                        "-addext", "basicConstraints=critical,CA:TRUE",
+                        "-addext", "subjectAltName=DNS:localhost,IP:127.0.0.1"],
                        check=True, capture_output=True)
         for name, text in {
             "uname": '#!/bin/sh\nprintf "%s\\n" "$FAKE_OS"\n',

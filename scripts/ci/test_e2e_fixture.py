@@ -1,6 +1,7 @@
 """Process-boundary proof that E2E apps cannot inherit operator credentials."""
 import json
 import os
+import signal
 from pathlib import Path
 import subprocess
 import time
@@ -139,8 +140,19 @@ class E2EFixtureTests(unittest.TestCase):
             app.chmod(0o755)
             env = {key: os.environ[key] for key in SAFE if key in os.environ}
             env.update(PATH=str(tools)+":"+env["PATH"], TMPDIR=directory, KINOSAIL_E2E_PLAYER_BINARY=str(app))
-            child = subprocess.Popen(["node", str(ROOT / "scripts/e2e/fixture.mjs"), "player", "49123"],
-                                     cwd=root, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            # Replace the owned regular request with a FIFO immediately before
+            # open, reproducing a path-type race without selecting another PID.
+            interceptor = root / "open-race.mjs"
+            interceptor.write_text("import fs from 'node:fs';import {spawnSync} from 'node:child_process';"
+                "import {syncBuiltinESMExports} from 'node:module';const open=fs.openSync;"
+                "fs.openSync=(path,flags,mode)=>{"
+                "if(String(path).endsWith('/49123.restart')&&fs.existsSync('race-armed')){"
+                "fs.unlinkSync(path);spawnSync('mkfifo',[path]);fs.unlinkSync('race-armed');}"
+                "return open(path,flags,mode);};syncBuiltinESMExports();")
+            child = subprocess.Popen(["node", "--import", interceptor.as_uri(),
+                str(ROOT / "scripts/e2e/fixture.mjs"), "player", "49123"],
+                cwd=root, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                start_new_session=True)
             try:
                 metadata = root / ".e2e/fixtures/49123.json"
                 deadline = time.monotonic() + 5
@@ -166,6 +178,15 @@ class E2EFixtureTests(unittest.TestCase):
                     self.assertEqual(json.loads(metadata.read_text())["childPID"], initial["childPID"])
                     self.assertIsNone(child.poll())
                     self.assertEqual(Path(started["data"], "persistent").read_text(), "original")
+                (root / "race-armed").write_text("owned fixture fault")
+                control.write_text("{}")
+                deadline = time.monotonic() + 2
+                while control.exists() and time.monotonic() < deadline:
+                    time.sleep(0.02)
+                self.assertFalse(control.exists(), "nonregular control blocked the supervisor")
+                self.assertEqual(json.loads(metadata.read_text())["generation"], 0)
+                self.assertEqual(json.loads(metadata.read_text())["childPID"], initial["childPID"])
+                self.assertEqual(Path(started["data"], "persistent").read_text(), "original")
                 for generation in (1, 2, 3):
                     current = json.loads(metadata.read_text())
                     control.write_text(json.dumps({"generation": current["generation"], "childPID": current["childPID"]}, separators=(",", ":")))
@@ -185,7 +206,12 @@ class E2EFixtureTests(unittest.TestCase):
                 self.assertEqual(json.loads(metadata.read_text())["generation"], 3, "restart budget exceeded")
             finally:
                 child.terminate()
-                child.wait(timeout=5)
+                try:
+                    child.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    # The test owns this session from Popen, not from a receipt.
+                    os.killpg(child.pid, signal.SIGKILL)
+                    child.wait(timeout=5)
             self.assertFalse(metadata.exists())
             self.assertFalse(Path(started["data"]).exists())
 

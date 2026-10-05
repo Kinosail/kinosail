@@ -79,7 +79,7 @@
   .subtitle-dashboard .subtitle-header-settings{flex:0 1 auto;min-width:0;max-width:100%;flex-wrap:wrap}
   .subtitle-dashboard .subtitle-header-settings .header-link{width:auto;min-width:0;padding:.6rem .5rem;white-space:normal;overflow-wrap:anywhere}
   .subtitle-dashboard>.subtitle-main{padding-top:1.5rem}
-  .subtitle-dashboard>main{padding-bottom:max(7rem,calc(var(--subtitle-dock-height,0px) + 1rem))}
+  .subtitle-dashboard>main,.subtitle-dashboard>.subtitle-main{padding-bottom:max(7rem,calc(var(--subtitle-dock-height,0px) + 1rem))}
   .subtitle-settings .settings-flow>section{scroll-margin-top:-.25rem}
   .subtitle-filters{top:72px}.subtitle-overview{gap:1.5rem;padding:1.5rem 0;grid-template-columns:minmax(0,1fr) 13rem}
   .subtitle-coverage-stat{padding-left:1.5rem}
@@ -112,19 +112,20 @@
   .subtitle-file-title strong{font-size:.95rem}.subtitle-file-title small{font-size:.8rem}
   .subtitle-overview-actions button,.subtitle-overview-actions .button{width:100%;justify-content:space-between;text-align:left}
 }
-@media(min-width:481px) and (max-width:900px) and (max-height:400px){
+@media(min-width:481px) and (max-width:900px) and (max-height:500px){
   .subtitle-dashboard>.app-header{min-height:56px;padding:.375rem 1.25rem}
-  .subtitle-dashboard>.subtitle-main{padding-top:.5rem}
-  .subtitle-page-heading{padding-bottom:.25rem}
-  .subtitle-page-heading h1{font-size:1.75rem}
-  .subtitle-overview{grid-template-columns:minmax(0,1fr) 12rem;gap:1rem;padding:.5rem 0 1rem}
+  .subtitle-dashboard>.subtitle-main{padding-top:.25rem}
+  .subtitle-page-heading{padding-bottom:0}
+  .subtitle-page-heading h1{font-size:1.5rem}
+  .subtitle-overview{grid-template-columns:minmax(0,1fr) 12rem;gap:1rem;padding:0 0 1rem}
   .subtitle-overview h2{margin-bottom:0;font-size:1.5rem}
-  .subtitle-overview-copy>p{margin:.25rem 0;font-size:.85rem;line-height:1.4}
+  .subtitle-overview-copy>p{margin:0;font-size:.85rem;line-height:1.4}
   .subtitle-overview-actions{margin-top:0}
   .subtitle-overview-actions button,.subtitle-overview-actions .button{min-height:44px;padding:.5rem 1rem}
-  .subtitle-coverage-stat{display:block;padding:.5rem 0 .5rem 1rem;border-top:0;border-left:1px solid var(--line)}
+  .subtitle-coverage-stat{align-self:start;display:block;padding:.5rem 0 .5rem 1rem;border-top:0;border-left:1px solid var(--line)}
   .subtitle-coverage-stat>.subtitle-text-link{display:flex;margin-top:.25rem}
   .subtitle-filters{top:56px}
+  .subtitle-feedback{margin:0;padding:.125rem .5rem;font-size:.75rem;line-height:1.25}
 }
 
 /* Keep native selector overflow inside its label while preserving the focus ring. */

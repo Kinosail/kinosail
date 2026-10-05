@@ -8,6 +8,13 @@ WORKFLOWS = ROOT / '.github/workflows'
 
 
 class WorkflowSecurityTests(unittest.TestCase):
+    def test_navigation_diagnostics_contracts_run_in_policy_and_tooling(self):
+        command = 'node --test scripts/testing/navigation-diagnostics.test.mjs'
+        static = (WORKFLOWS / 'ci.yml').read_text().split('  static:')[1].split('  tooling:')[0]
+        self.assertIn('      - run: ' + command, static)
+        tooling = (ROOT / 'Makefile').read_text().split('tooling-check:')[1].split('\n\n')[0]
+        self.assertIn('\t@' + command, tooling)
+
     def test_startup_boundary_has_hosted_public_interface_evidence(self):
         app = (WORKFLOWS / 'app.yml').read_text()
         self.assertIn('name: Verify bounded startup and request boundary', app)

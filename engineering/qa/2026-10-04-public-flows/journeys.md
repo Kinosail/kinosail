@@ -23,20 +23,26 @@ Hosted commands for the final PR head:
   Android compilation/unit checks use the existing Android job. Neither job
   establishes physical playback, focus, casting, or background behavior.
 
-All hosted results are pending at handoff. Match their run head SHA to the PR
-before using them as proof. The final report records run/artifact URLs.
+At reviewed head e18a2cc, both populated Chromium jobs passed, including the new
+real-process runner. Complete deep and layout runs failed with specific Go,
+scanner, cross-browser fixture, and security findings. Their repairs remain
+pending a new exact-head run. Focused local repairs passed the public startup race,
+Subtitles compact status/scroll journeys, Firefox real pagination, and six
+Chromium/Firefox/WebKit download recovery cases. Already-DCL Linux navigation
+failures remain unreproduced; new bounded diagnostics record transport state.
+The final report records run and artifact URLs.
 
 | User journey | Existing executable owner | New real-process coverage / current gap |
 | --- | --- | --- |
 | Owner setup, sign-in, MFA and recovery | Both apps `internal/server/mfa*_test.go`; `packages/servertest/api_parity_scenarios.go`; `e2e/session-resume.spec.ts` | Owner setup/MFA passed earlier; recovery variants owned by legacy suite, hosted pending |
 | Passkeys and session persistence/timeouts | Both apps `e2e/passkeys.spec.ts`, `session-timeouts.spec.ts`, `test-instance-session-persistence.spec.ts`; Player `session_security_boundary_test.go` | Passkeys in local 57 pass; negative timeout persistence passed; full durability hosted pending |
 | Viewer policy and credential lifecycle | `packages/identitycore/*profile*_test.go`; `packages/servertest/api_identity_lifecycle.go`; both apps `identity_permissions_test.go` | Unknown rating red/green, create/update/delete and revoked login passed |
-| API-key scopes and revocation | Player `api_key_test.go`; `packages/servertest/api_key_scope.go`, `api_identity_lifecycle.go` | New `access-curation.e2e.ts` tests the production process; unrun locally |
+| API-key scopes and revocation | Player `api_key_test.go`; `packages/servertest/api_key_scope.go`, `api_identity_lifecycle.go` | Real-process scoped issuance/use/revocation and invalid-scope no-mutation checks passed on both apps |
 | Search, sort, filter, paging and catalog views | Player `library_api_*_test.go`; `e2e/library-pagination*.spec.ts`, `test-instance-library.spec.ts` | Populated paging/search and negative query persistence passed; other variants owned by legacy suite |
-| My List, playlists and collections | Both apps `playlist*_test.go`, `collection*_test.go`; `packages/servertest/api_parity_scenarios.go` | Playlist lifecycle passed; new My List/collection reload and rejection journey unrun |
-| Direct First, compatibility and original playback | Player `playback_*_test.go`, `hls_*_test.go`; both apps `e2e/player-direct-fallback.spec.ts` | Real Player decoded frames/ranges passed; corrected Subtitles expectation unrun; full format matrix remains a gap |
+| My List, playlists and collections | Both apps `playlist*_test.go`, `collection*_test.go`; `packages/servertest/api_parity_scenarios.go` | Real-process playlist, My List/collection lifecycle, reload persistence and rejection/no-mutation checks passed |
+| Direct First, compatibility and original playback | Player `playback_*_test.go`, `hls_*_test.go`; both apps `e2e/player-direct-fallback.spec.ts` | Real Player decoded frames/ranges passed; Subtitles source/decode expectation passed; full format matrix remains a gap |
 | Offline failure, retry, source transitions | Player `e2e/player-experience.spec.ts`; `e2e/download-resilience.spec.ts` | Complete affected recovery files in 57 pass; real offline decode/network loss remains separate |
-| Download preparation, tracks, pause, resume, transfer and ownership | Player `offline_download_test.go`, `downloads_boundary_test.go`, `download_concurrency_test.go`; `e2e/download-pause*.spec.ts`, `download-transfer-recovery.spec.ts` | Owned by populated legacy journeys; current-head hosted pending |
+| Download preparation, tracks, pause, resume, transfer and ownership | Player `offline_download_test.go`, `downloads_boundary_test.go`, `download_concurrency_test.go`; `e2e/download-pause*.spec.ts`, `download-transfer-recovery.spec.ts` | Six local native browser pause/offline/resume and exact integrity cases passed; real Server/hosted full matrices remain required |
 | Resume progress, history, chapters, bookmarks and skip markers | Player `reader_progress_test.go`, `media_bookmarks_test.go`, `playback_timeline_test.go`; shared API parity scenarios | Real video progress/rejection passed; other media variants await legacy hosted evidence |
 | Music/audiobooks, audio tracks and queues | Both apps `album_test.go`, Player `audiobook_test.go`, `audio_tracks_test.go`, `audio_formats_test.go` | Existing handler/media owners; Player real AAC album/queue and chaptered M4B playback/resume passed |
 | Books, comics, PDFs, photos and archive boundaries | Player `books_test.go`, `reader_boundary_test.go`, `reader_archive_trust_http_test.go`; native reader/photo tests | Existing source coverage; Player EPUB/comic/photo passed; PDF document/ranges passed with rendering partial |
@@ -53,7 +59,7 @@ before using them as proof. The final report records run/artifact URLs.
 | Apple TV focus/Top Shelf, Watch remote/heart and App Intents | Native `TVOSFocusTests.swift`, `TopShelfTests.swift`, `WatchRemoteTests.swift`, `LibraryIntentTests.swift`; Watch sources | Runtime/device checks blocked; no macOS substitute claimed |
 | Android phone/TV browse/play/read/settings and Wear remote | Android `src/test/` and `src/androidTest/`, including `NativeParityJourneyTest.kt` and `LivePlaybackOverlayTest.kt` | Emulator/device checks blocked; existing instrumented tests remain executable owners |
 
-The genuinely new process gaps targeted here are scoped key issuance and
+The new process journeys completed here include scoped key issuance and
 revocation, My List/collection persistence, sidecar save/undo, and decoded
 media/range delivery. The runner includes applicable negative inputs and
 no-mutation assertions. Real Player audio/EPUB/comic/photo and both-app process-restart journeys

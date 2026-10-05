@@ -83,16 +83,21 @@ func TestPlaybackPreparationProducesAReusableStartupWindow(t *testing.T) {
 		}
 		count++
 		rendition := strings.TrimSuffix(source, "index.m3u8") + line
-		assertAPIBody(t, apiCall(t, h, "", http.MethodGet, rendition, nil), http.StatusOK, "segment-00000.m4s", "segment-00001.m4s")
-		for _, asset := range []string{"init.mp4", "segment-00000.m4s", "segment-00001.m4s"} {
-			r := apiCall(t, h, "", http.MethodGet, strings.TrimSuffix(rendition, "index.m3u8")+asset, nil)
-			if r.Code != http.StatusOK || r.Body.Len() == 0 {
-				t.Fatalf("asset %s: %d", asset, r.Code)
-			}
-		}
+		assertPreparedRendition(t, h, rendition)
 	}
 	if count == 0 {
 		t.Fatal("no delivered renditions")
+	}
+}
+
+func assertPreparedRendition(t *testing.T, h http.Handler, rendition string) {
+	t.Helper()
+	assertAPIBody(t, apiCall(t, h, "", http.MethodGet, rendition, nil), http.StatusOK, "segment-00000.m4s", "segment-00001.m4s")
+	for _, asset := range []string{"init.mp4", "segment-00000.m4s", "segment-00001.m4s"} {
+		r := apiCall(t, h, "", http.MethodGet, strings.TrimSuffix(rendition, "index.m3u8")+asset, nil)
+		if r.Code != http.StatusOK || r.Body.Len() == 0 {
+			t.Fatalf("asset %s: %d", asset, r.Code)
+		}
 	}
 }
 
@@ -110,13 +115,16 @@ func preparationFixture(t *testing.T, count int, caching bool) (http.Handler, []
 		cache = t.TempDir()
 	}
 	for index := range count {
-		if err := os.WriteFile(filepath.Join(media, fmt.Sprintf("Preparation %d.mp4", index)), []byte("synthetic media"), 0600); err != nil {
+		if err := os.WriteFile(filepath.Join(media, fmt.Sprintf("Preparation %d.mp4", index)), []byte("synthetic media"), 0o600); err != nil {
 			t.Fatal(err)
 		}
 	}
+
 	probe, encoder, starts := filepath.Join(tools, "ffprobe"), filepath.Join(tools, "ffmpeg"), filepath.Join(tools, "starts")
 	servertest.WriteExecutable(t, probe, "#!/bin/sh\nprintf '%s' '{\"streams\":[{\"index\":0,\"codec_type\":\"video\",\"codec_name\":\"h264\",\"width\":640,\"height\":360},{\"index\":1,\"codec_type\":\"audio\",\"codec_name\":\"aac\"}],\"format\":{\"format_name\":\"mp4\",\"duration\":\"8\"}}'\n")
-	servertest.WriteExecutable(t, encoder, "#!/bin/sh\nprintf 'started\\n' >> '"+starts+"'\n"+servertest.PlayableHLS())
+	// Observe HLS encoding, not unrelated scheduled marker analysis.
+	hlsStart := "for output; do case \"$output\" in */index.m3u8) printf 'started\\n' >> '" + starts + "'; break;; esac; done\n"
+	servertest.WriteExecutable(t, encoder, "#!/bin/sh\n"+hlsStart+servertest.PlayableHLS())
 	h := server.New(server.Config{Lifecycle: t.Context(), MediaDir: media, DataDir: t.TempDir(), CacheDir: cache, FFprobe: probe, FFmpeg: encoder})
 	listing := apiCall(t, h, "", http.MethodGet, "/api/v1/library", nil)
 	var library struct{ Items []struct{ ID string } }
@@ -129,15 +137,19 @@ func preparationFixture(t *testing.T, count int, caching bool) (http.Handler, []
 	}
 	return h, ids, starts
 }
+
 func preparationSource(id string) string { return "/hls/" + id + "/p/t-a0-s0-none-t0-b0/index.m3u8" }
+
 func preparationJSON(source string) string {
 	body, _ := json.Marshal(map[string]string{"source": source})
 	return string(body)
 }
+
 func prepareSource(t *testing.T, h http.Handler, id, source string) *httptest.ResponseRecorder {
 	t.Helper()
 	return apiCall(t, h, "", http.MethodPost, "/api/v1/items/"+id+"/playback-prepare", map[string]string{"source": source})
 }
+
 func preparationRaw(t *testing.T, h http.Handler, method, path, body string) *httptest.ResponseRecorder {
 	t.Helper()
 	request := httptest.NewRequestWithContext(t.Context(), method, path, bytes.NewBufferString(body))
@@ -146,6 +158,7 @@ func preparationRaw(t *testing.T, h http.Handler, method, path, body string) *ht
 	h.ServeHTTP(r, request)
 	return r
 }
+
 func assertPreparationState(t *testing.T, r *httptest.ResponseRecorder, status int, state string) {
 	t.Helper()
 	assertAPIBody(t, r, status, "\"state\":"+strconv.Quote(state))
@@ -153,6 +166,7 @@ func assertPreparationState(t *testing.T, r *httptest.ResponseRecorder, status i
 		t.Fatal("preparation response was cacheable")
 	}
 }
+
 func assertPreparationNoEncoder(t *testing.T, starts string) {
 	t.Helper()
 	if data, err := os.ReadFile(starts); !os.IsNotExist(err) {

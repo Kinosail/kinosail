@@ -1,3 +1,4 @@
+import { openPaginationLibrary } from "./library-pagination-fixture";
 import { expect, test, type Page } from "@playwright/test";
 
 const origin = process.env.KINOSAIL_LIBRARY_BROWSER_URL;
@@ -25,7 +26,7 @@ test("overlapping and repeated Show cards deduplicate in existing and new mixed 
 		const repeated = body.match(/<article class="card show-card">[\s\S]*?<\/article>/)?.[0] ?? "";
 		await route.fulfill({ response, body: body.replace("</div></div>", `${overlap}${repeated}</div></div>`) });
 	});
-	await page.goto(`${origin}/?q=Pagination&limit=4`);
+	await openPaginationLibrary(page, `${origin}/?q=Pagination&limit=4`);
 	await loadAll(page);
 	await expect(page.locator("#library .show-card")).toHaveCount(30);
 	await expect(page.locator("#library .card")).toHaveCount(36);
@@ -41,7 +42,7 @@ test("malformed card identity rejects the whole fragment and keyboard retry reco
 			const body = (await response.text()).replace(/(<a class="card" href=")\/watch\/[a-f0-9]+(")/, `$1${invalid}$2`);
 			await route.fulfill({ response, body });
 		});
-		await page.goto(`${origin}/?q=Pagination&limit=4`);
+		await openPaginationLibrary(page, `${origin}/?q=Pagination&limit=4`);
 		await page.locator("[data-library-status]").scrollIntoViewIfNeeded();
 		await expect(page.getByRole("link", { name: "Retry loading" })).toBeVisible();
 		await expect(page.locator("#library .card")).toHaveCount(4);
@@ -70,7 +71,7 @@ for (const width of [390, 1440, 1920]) {
 			await held;
 			await route.fulfill({ status: 503, headers: { "X-Request-ID": "pagination-503" } });
 		});
-		await page.goto(pageURL);
+		await openPaginationLibrary(page, pageURL);
 		await page.locator("[data-library-status]").scrollIntoViewIfNeeded();
 		await expect(page.locator("[data-library-status]")).toHaveText("Loading more titles…");
 		await expect(page.locator("[data-library-pagination]")).toHaveAttribute("aria-busy", "true");
@@ -91,7 +92,7 @@ for (const width of [390, 1440, 1920]) {
 		await loadAll(page);
 		await expect(page.locator("#library .show-card")).toHaveCount(30);
 		await page.screenshot({ path: info.outputPath(`loaded-${width}.png`), fullPage: true });
-		await page.goto(`${origin}/?q=NoPaginationFixtureMatch`);
+		await openPaginationLibrary(page, `${origin}/?q=NoPaginationFixtureMatch`);
 		await expect(page.getByRole("heading", { name: "No matching titles." })).toBeVisible();
 		await expect(page.locator("[data-library-next]")).toHaveCount(0);
 		expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
@@ -111,7 +112,7 @@ test("late Show continuation cannot append after the real HTMX search replacemen
 		try { await route.fulfill({ response }); } catch { /* The replaced request may already be aborted. */ }
 		finished();
 	});
-	await page.goto(pageURL);
+	await openPaginationLibrary(page, pageURL);
 	await page.locator("[data-library-status]").scrollIntoViewIfNeeded();
 	await expect(page.locator("[data-library-status]")).toHaveText("Loading more titles…");
 	await page.locator('form.search input[type="search"]').fill("Pagination Movie");
@@ -127,7 +128,7 @@ test("late Show continuation cannot append after the real HTMX search replacemen
 
 test("without IntersectionObserver the Go pagination link remains an ordinary page fallback", async ({ page }) => {
 	await page.addInitScript(() => { Reflect.deleteProperty(window, "IntersectionObserver"); });
-	await page.goto(pageURL);
+	await openPaginationLibrary(page, pageURL);
 	const next = page.getByRole("link", { name: "Load more" });
 	await expect(next).toBeVisible();
 	await next.focus();

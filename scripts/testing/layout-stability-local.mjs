@@ -1,3 +1,4 @@
+import {navigationDiagnostics} from "./navigation-diagnostics.mjs";
 import {createRequire} from "node:module";
 import {writeFile} from "node:fs/promises";
 import {join} from "node:path";
@@ -9,14 +10,18 @@ const {chromium, webkit, firefox} = require("@playwright/test");
 const AxeBuilder = require("@axe-core/playwright").default;
 const baseURL = process.env.KINOSAIL_E2E_URL, app = process.env.KINOSAIL_LAYOUT_APP, run = process.env.KINOSAIL_LAYOUT_RUN;
 const engine = process.env.KINOSAIL_LAYOUT_BROWSER || "chromium";
-let phase = "browser-launch", activePage, browser, authContext, activeCase;
+let phase = "browser-launch", activePage, browser, authContext, activeCase, navigation;
 const loginResponses = [];
+let requestStatus, requestContentType;
 const reports = [], flows = [], flowProbe = {stage: "not-started"};
 process.once("uncaughtException", async error => {
   const failure = {app, engine, stage: phase, activeCase, flowStage: flowProbe.stage,
     errorClass: ["TimeoutError", "TypeError", "ReferenceError", "SyntaxError"].includes(error.name) ? error.name : "Error",
     completedCases: reports.length, completedFlows: flows.length, media: flowProbe.media, probe: flowProbe.geometry, loginResponses,
-    authCookieCount: phase.startsWith("login") && authContext ? await authContext.cookies().then(c=>c.length).catch(()=>undefined) : undefined,
+    requestStatus, requestContentType, navigation: flowProbe.navigation || await navigation?.snapshot(),
+    requestErrorCode: ["CERT_HAS_EXPIRED", "DEPTH_ZERO_SELF_SIGNED_CERT", "SELF_SIGNED_CERT_IN_CHAIN", "UNABLE_TO_VERIFY_LEAF_SIGNATURE", "UNABLE_TO_GET_ISSUER_CERT_LOCALLY"].find(code => error.code === code || String(error.message).includes(code)) ||
+      (/unable to verify|self.signed certificate|unable to get local issuer/i.test(String(error.message)) ? "UNTRUSTED_CERTIFICATE" : undefined),
+    authCookieCount: authContext ? await authContext.cookies().then(c=>c.length).catch(()=>undefined) : undefined,
     pageState: activePage ? (new URL(activePage.url()).pathname === "/login" ? "login" : "other") : "not-created"};
   await writeFile(join(run, "failure.json"), JSON.stringify(failure, null, 2));
   await browser?.close();
@@ -25,6 +30,7 @@ process.once("uncaughtException", async error => {
 browser = await ({chromium, webkit, firefox}[engine]).launch(engine === "chromium" && process.platform === "darwin" ? {channel: "chrome"} : {});
 const context = authContext = await browser.newContext({baseURL, ignoreHTTPSErrors: false, reducedMotion: "reduce"});
 const page = activePage = await context.newPage();
+navigation = navigationDiagnostics(page);
 page.on("response", response => {if(response.request().method()==="POST"&&new URL(response.url()).pathname==="/login")loginResponses.push(response.status());});
 phase = "login-page";
 await page.goto("/login");
@@ -48,10 +54,14 @@ await page.waitForURL(url => url.pathname !== "/login");
 if (await page.getByRole("link", {name: "Not now"}).isVisible()) await page.getByRole("link", {name: "Not now"}).click();
 phase = "library-request";
 const response = await page.request.get("/api/v1/library");
+requestStatus = response.status();
+const contentType = response.headers()["content-type"]?.split(";")[0];
+requestContentType = ["application/json", "text/html", "text/plain"].includes(contentType) ? contentType : "other";
 const data = await response.json();
 const item = data.items.find(candidate => candidate.title === "Layout Example") || data.items[0];
 const auth = await context.storageState();
 const navProfile = app === "player" ? await page.locator("[data-mobile-tabs]").getAttribute("data-nav-profile") : undefined;
+navigation.stop();
 await context.close();
 function cls(shifts) {
   let maximum=0, sum=0, start=0, last=0;
@@ -123,6 +133,7 @@ try {
     if(traced)await context.tracing.start({screenshots:true,snapshots:true});
     await context.addInitScript(observe);
     const page = activePage = await context.newPage();
+navigation = navigationDiagnostics(page);
     // Delay real response bytes, without substituting mock markup or media.
     await page.route("**/*", async route => {
       const request = route.request(), url = new URL(request.url());

@@ -43,10 +43,12 @@ trust_native_browser_fixture_tls() {
   install_browser_fixture_ca "$certificate" "$3"
 }
 
-install_browser_fixture_ca() {
+validate_browser_fixture_ca() {
+  if [[ $# != 1 || "${#1}" -gt 4096 || "${1:-}" != /* || ! -f "${1:-}" || -L "${1:-}" ]]; then
+    echo 'invalid browser fixture public CA path' >&2
+    return 2
+  fi
   local certificate="$1"
-  local trust="/usr/local/share/ca-certificates/kinosail-browser-fixture-$2.crt"
-  if [[ -e "$trust" ]]; then echo 'browser fixture trust path already exists' >&2; return 2; fi
   if [[ "$(wc -c <"$certificate")" -gt 262144 ]] || grep -q 'PRIVATE KEY' "$certificate" || [[ "$(grep -c '^-----BEGIN CERTIFICATE-----$' "$certificate")" != 1 ]] || ! awk '
     /^-----BEGIN CERTIFICATE-----$/ { if (inside || done) exit 1; inside=1; next }
     /^-----END CERTIFICATE-----$/ { if (!inside) exit 1; inside=0; done=1; next }
@@ -55,9 +57,21 @@ install_browser_fixture_ca() {
     echo 'invalid browser fixture public CA export' >&2
     return 2
   fi
+}
+
+install_browser_fixture_ca() {
+  local certificate="$1"
+  local trust="/usr/local/share/ca-certificates/kinosail-browser-fixture-$2.crt"
+  if [[ -e "$trust" ]]; then echo 'browser fixture trust path already exists' >&2; return 2; fi
+  validate_browser_fixture_ca "$certificate" || return
   BROWSER_FIXTURE_CA_PATH="$trust"
   sudo install -m 0644 "$certificate" "$trust" || return
   sudo update-ca-certificates >/dev/null || return
+  # Playwright's APIRequestContext runs in Node, outside the browser trust store.
+  BROWSER_FIXTURE_NODE_CA_PREVIOUS="${NODE_EXTRA_CA_CERTS-}"
+  BROWSER_FIXTURE_NODE_CA_WAS_SET="${NODE_EXTRA_CA_CERTS+x}"
+  BROWSER_FIXTURE_NODE_CA_PATH="$certificate"
+  export NODE_EXTRA_CA_CERTS="$certificate"
 }
 
 remove_browser_fixture_trust() {
@@ -69,4 +83,12 @@ remove_browser_fixture_trust() {
   sudo rm -f -- "$BROWSER_FIXTURE_CA_PATH"
   sudo update-ca-certificates >/dev/null || return
   BROWSER_FIXTURE_CA_PATH=""
+  if [[ "${NODE_EXTRA_CA_CERTS-}" == "${BROWSER_FIXTURE_NODE_CA_PATH-}" && -n "${BROWSER_FIXTURE_NODE_CA_PATH-}" ]]; then
+    if [[ "${BROWSER_FIXTURE_NODE_CA_WAS_SET-}" == x ]]; then
+      export NODE_EXTRA_CA_CERTS="$BROWSER_FIXTURE_NODE_CA_PREVIOUS"
+    else
+      unset NODE_EXTRA_CA_CERTS
+    fi
+  fi
+  BROWSER_FIXTURE_NODE_CA_PATH=""
 }

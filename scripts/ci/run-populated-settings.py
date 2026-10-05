@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import struct
+import ssl
 import subprocess
 import time
 import urllib.error
@@ -21,9 +22,26 @@ parser.add_argument('--output', type=Path, required=True)
 parser.add_argument('--required-title', action='append', help='Require this exact populated journey title; repeat for each selected journey')
 parser.add_argument('command', nargs=argparse.REMAINDER)
 args = parser.parse_args()
-url = urllib.parse.urlsplit(args.url)
-if url.scheme != 'http' or url.hostname not in ('localhost', '127.0.0.1') or url.username or url.password or url.path or url.query or url.fragment:
-    parser.error('requires the fresh supported loopback HTTP test Server')
+try:
+    url = urllib.parse.urlsplit(args.url)
+    port = url.port
+except ValueError:
+    parser.error('invalid loopback test Server URL')
+if (len(args.url) > 2048 or url.scheme not in ('http', 'https') or
+        url.hostname not in ('localhost', '127.0.0.1') or url.username or url.password or
+        url.path or '?' in args.url or '#' in args.url or port is None or not 1 <= port <= 65535):
+    parser.error('requires the fresh supported loopback test Server')
+args.url = f'{url.scheme}://{url.hostname}:{port}'
+tls_context = None
+if url.scheme == 'https':
+    certificate = os.environ.get('NODE_EXTRA_CA_CERTS', '')
+    helper = Path(__file__).with_name('browser-fixture-tls.sh')
+    valid = subprocess.run(['bash', '-c',
+        'source "$1"; browser_fixture_uses_tls && validate_browser_fixture_tls && validate_browser_fixture_ca "$2"',
+        'fixture', str(helper), certificate], capture_output=True)
+    if valid.returncode != 0:
+        parser.error('HTTPS requires the validated disposable WebKit public CA')
+    tls_context = ssl.create_default_context(cafile=certificate)
 command = args.command[1:] if args.command[:1] == ['--'] else args.command
 if not command:
     parser.error('requires a browser command')
@@ -44,7 +62,7 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
         return None
 
 
-opener = urllib.request.build_opener(NoRedirect)
+opener = urllib.request.build_opener(NoRedirect, urllib.request.HTTPSHandler(context=tls_context))
 
 
 def call(path, method, body=None, token='', expected=200):

@@ -106,27 +106,94 @@ export async function openDownloadPage(page: Page, origin: string, storage: "opf
   return {jobID, bundle, checksum};
 }
 
+
+export async function offlineWriterCapability(page: Page) {
+  return page.evaluate(async () => {
+    if (!navigator.storage?.getDirectory || !("Worker" in window)) return {supported: false, reason: "missing-storage-worker"};
+    const source = `onmessage = async () => {
+      const name = "kinosail-test-capability-" + crypto.randomUUID();
+      let directory, handle, stage = "worker-api";
+      try {
+        if (typeof FileSystemFileHandle === "undefined" || !FileSystemFileHandle.prototype.createSyncAccessHandle) {
+          postMessage({supported: false, reason: "missing-sync-access-handle"}); return;
+        }
+        stage = "directory"; directory = await navigator.storage.getDirectory();
+        stage = "sync-handle"; handle = await (await directory.getFileHandle(name, {create: true})).createSyncAccessHandle();
+        stage = "write-read"; const bytes = new Uint8Array([7, 19]);
+        if (handle.write(bytes, {at: 0}) !== 2) throw new Error("short-write");
+        handle.flush();
+        const read = new Uint8Array(2);
+        if (handle.read(read, {at: 0}) !== 2 || read[0] !== 7 || read[1] !== 19) throw new Error("read-mismatch");
+        handle.close(); handle = undefined;
+        await directory.removeEntry(name); directory = undefined;
+        postMessage({supported: true, reason: "verified-worker-read-write"});
+      } catch (error) {
+        try { handle?.close(); if (directory) await directory.removeEntry(name); } catch {}
+        if (["directory", "sync-handle"].includes(stage) && error instanceof DOMException) postMessage({supported: false, reason: stage + ":" + error.name});
+        else postMessage({error: stage + ":" + (error instanceof DOMException ? error.name : "Error")});
+      }
+    };`;
+    const url = URL.createObjectURL(new Blob([source], {type: "text/javascript"}));
+    const worker = new Worker(url);
+    try {
+      return await new Promise<{supported: boolean; reason: string}>((resolve, reject) => {
+        const timeout = setTimeout(() => reject(new Error("Offline capability probe timed out")), 5000);
+        worker.onmessage = ({data}) => {
+          clearTimeout(timeout);
+          if (data.error) reject(new Error("Offline capability probe: " + data.error));
+          else resolve(data);
+        };
+        worker.onerror = () => {clearTimeout(timeout); reject(new Error("Offline capability worker failed"));};
+        worker.postMessage(null);
+      });
+    } finally {worker.terminate(); URL.revokeObjectURL(url);}
+  });
+}
+
 export async function inspectDownload(page: Page, jobID: string) {
   return page.evaluate(async (id) => {
     type Job = {id: string; bytes: number; state: string; readyOffline: boolean; storage: string; sha256: string; transferID: string; profileID: string; itemID: string};
     type Chunk = {id: string; jobID: string; offset: number; length: number; sha256: string; data?: ArrayBuffer};
-    const database = await new Promise<IDBDatabase>((resolve, reject) => {
-      const request = indexedDB.open("kinosail-offline-v1");
-      request.onsuccess = () => resolve(request.result); request.onerror = () => reject(request.error);
-    });
-    const records = await new Promise<{job?: Job; chunks: Chunk[]}>((resolve, reject) => {
-      const transaction = database.transaction(["jobs", "chunks"], "readonly");
-      const job = transaction.objectStore("jobs").get(id), chunks = transaction.objectStore("chunks").index("jobID").getAll(id);
-      transaction.oncomplete = () => resolve({job: job.result, chunks: chunks.result});
-      transaction.onabort = () => reject(transaction.error);
-    });
-    database.close();
-    const hash = async (data: ArrayBuffer) => [...new Uint8Array(await crypto.subtle.digest("SHA-256", data))].map((byte) => byte.toString(16).padStart(2, "0")).join("");
-    let file: File | undefined;
-    if (records.job?.storage === "opfs") file = await (await (await navigator.storage.getDirectory()).getFileHandle(id)).getFile();
-    const chunks = await Promise.all(records.chunks.sort((a, b) => a.offset - b.offset).map(async (chunk) => ({offset: chunk.offset, length: chunk.length, sha256: chunk.sha256, actual: await hash(file ? await file.slice(chunk.offset, chunk.offset + chunk.length).arrayBuffer() : chunk.data!)})));
-    const bytes = file ? await file.arrayBuffer() : await new Blob(records.chunks.sort((a, b) => a.offset - b.offset).map((chunk) => chunk.data!)).arrayBuffer();
-    const locks = await navigator.locks.query();
-    return {job: records.job, chunks, fileSize: bytes.byteLength, fileHash: await hash(bytes), locks: locks.held.map((lock) => lock.name)};
+    let stage = "idb-open", database: IDBDatabase | undefined;
+    try {
+      database = await new Promise<IDBDatabase>((resolve, reject) => {
+        const request = indexedDB.open("kinosail-offline-v1");
+        request.onsuccess = () => resolve(request.result); request.onerror = () => reject(request.error);
+      });
+      stage = "idb-readonly-getAll";
+      const records = await new Promise<{job?: Job; chunks: Chunk[]}>((resolve, reject) => {
+        const transaction = database!.transaction(["jobs", "chunks"], "readonly");
+        const job = transaction.objectStore("jobs").get(id), chunks = transaction.objectStore("chunks").index("jobID").getAll(id);
+        transaction.oncomplete = () => resolve({job: job.result, chunks: chunks.result});
+        transaction.onabort = () => reject(transaction.error);
+      });
+      database.close(); database = undefined;
+      const hash = async (data: ArrayBuffer) => [...new Uint8Array(await crypto.subtle.digest("SHA-256", data))].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+      stage = "opfs-file";
+      let file: File | undefined;
+      if (records.job?.storage === "opfs") file = await (await (await navigator.storage.getDirectory()).getFileHandle(id)).getFile();
+      const stored = records.chunks.sort((a, b) => a.offset - b.offset), chunks = [];
+      for (const chunk of stored) {
+        stage = "chunk-read";
+        const bytes = file ? await file.slice(chunk.offset, chunk.offset + chunk.length).arrayBuffer() : chunk.data!;
+        stage = "chunk-digest";
+        chunks.push({offset: chunk.offset, length: chunk.length, sha256: chunk.sha256, actual: await hash(bytes)});
+      }
+      stage = file ? "opfs-whole-file-read" : "indexeddb-whole-file-copy";
+      // IndexedDB already returned the real bytes. Blob reads can use WebKit
+      // network machinery which Playwright offline emulation disables.
+      const combined = new Uint8Array(file ? 0 : stored.reduce((size, chunk) => size + chunk.data!.byteLength, 0));
+      let offset = 0;
+      for (const chunk of stored) {if (file) break; combined.set(new Uint8Array(chunk.data!), offset); offset += chunk.data!.byteLength;}
+      const bytes = file ? await file.arrayBuffer() : combined.buffer;
+      stage = "whole-file-digest";
+      const fileHash = await hash(bytes);
+      stage = "locks-query";
+      const locks = await navigator.locks.query();
+      return {job: records.job, chunks, fileSize: bytes.byteLength, fileHash, locks: locks.held.map((lock) => lock.name)};
+    } catch (error) {
+      const name = error instanceof DOMException ? error.name : "Error";
+      throw new Error("Offline storage inspection failed at " + stage + ": " + name);
+    } finally {database?.close();}
   }, jobID);
 }

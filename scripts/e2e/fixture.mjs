@@ -1,6 +1,6 @@
 // Disposable host fixture: real app binaries, synthetic media, no containers.
 import { spawn, spawnSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync, lstatSync, openSync, readSync, closeSync, constants } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, lstatSync, openSync, fstatSync, readSync, closeSync, constants } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -58,8 +58,9 @@ for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => {
 controlTimer = setInterval(() => {
   let fd;
   try {
-    if (!lstatSync(controlPath).isFile()) return;
-    fd = openSync(controlPath, constants.O_RDONLY | constants.O_NOFOLLOW);
+    fd = openSync(controlPath, constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK);
+    const control = fstatSync(fd);
+    if (!control.isFile() || control.size > 128) return;
     const body = Buffer.alloc(129);
     const size = readSync(fd, body, 0, body.length, 0);
     if (size > 128) return;

@@ -37,7 +37,7 @@ os.link(media / "Layout Example.en.srt", media / "Layout Example.fr.srt")
 results = {}
 initial_diff_hash = hashlib.sha256(subprocess.check_output(["git", "diff", "HEAD"], cwd=root)).hexdigest()
 initial_scripts = {name: hashlib.sha256((root / "scripts/testing" / name).read_bytes()).hexdigest()
-                   for name in ["test-layout-stability-local.py", "layout-stability-local.mjs", "layout-stability-flows.mjs", "layout-stability-bookmarks.mjs", "layout-stability-subtitle-search.mjs", "layout-stability-subtitle-background.mjs"]}
+                   for name in ["test-layout-stability-local.py", "layout-stability-local.mjs", "layout-stability-flows.mjs", "layout-stability-bookmarks.mjs", "layout-stability-subtitle-search.mjs", "layout-stability-subtitle-background.mjs", "navigation-diagnostics.mjs"]}
 settings = {key: value for key, value in os.environ.items() if key.startswith("KINOSAIL_LAYOUT_")}
 def write_receipt():
     final_revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
@@ -83,6 +83,7 @@ for app in os.environ.get("KINOSAIL_LAYOUT_APPS", "player,subtitles").split(",")
                     "fixture", str(trust_helper), str(binary), str(app_run), suffix],
                     env=env | {"KINOSAIL_BROWSER_TEST": "1", "KINOSAIL_BROWSER_PROJECT": "webkit"}, check=True, capture_output=True, text=True)
                 installed_trust = install.stdout
+                env["NODE_EXTRA_CA_CERTS"] = str(app_run / "browser-fixture-ca.crt")
                 tls_context = ssl.create_default_context(cafile=str(app_run / "browser-fixture-ca.crt"))
             server = subprocess.Popen([str(binary)], env=env, stdout=log, stderr=log)
             for _ in range(120):

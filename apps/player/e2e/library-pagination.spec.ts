@@ -1,4 +1,6 @@
+import { EventEmitter } from "node:events";
 import { expect, test } from "@playwright/test";
+import { openPaginationLibrary } from "./library-pagination-fixture";
 
 const origin = process.env.KINOSAIL_LIBRARY_BROWSER_URL;
 test.skip(!origin, "requires TestLibraryPaginationBrowserJourney disposable Go Server");
@@ -22,7 +24,7 @@ for (const width of [390, 1440]) {
 		const api = await response.json();
 		expect(api.total).toBe(30);
 		expect(api.items).toHaveLength(4);
-		await page.goto(`${origin}/?view=shows&limit=4`);
+		await openPaginationLibrary(page, `${origin}/?view=shows&limit=4`, info);
 		const bundle = await page.locator('script[src^="/static/main.kinosail.bundle.js"]').getAttribute("src");
 		expect(new URL(bundle!, origin).searchParams.get("v")).not.toBe("34-htmx4");
 		await loadAll(page);
@@ -36,10 +38,54 @@ for (const width of [390, 1440]) {
 }
 
 test("real Server mixed pages keep both Show and Movie cards", async ({ page }, info) => {
-	await page.goto(`${origin}/?q=Pagination&limit=4`);
+	await openPaginationLibrary(page, `${origin}/?q=Pagination&limit=4`, info);
 	await loadAll(page);
 	expect((await page.locator('[data-library-group="shows"] .card h2').allTextContents()).sort()).toEqual(showTitles);
 	expect((await page.locator('[data-library-group="movies"] .card h2').allTextContents()).sort()).toEqual(movieTitles);
 	await expect(page.locator("#library .card")).toHaveCount(36);
 	await page.screenshot({ path: info.outputPath("mixed-loaded.png"), fullPage: true });
+});
+
+test("Library remains usable while a decorative image is pending", async ({page}, info) => {
+  test.setTimeout(12_000);
+  let release: () => void = () => {};
+  const gate = new Promise<void>(resolve => {release = resolve;});
+  let held = 0;
+  await page.route("**/static/cinema-backdrop.jpg*", async route => {
+    const response = await route.fetch();
+    expect(response.status()).toBe(200);
+    held++;
+    await gate;
+    await route.fulfill({response});
+  });
+  await page.addInitScript(() => document.addEventListener("DOMContentLoaded", () => {
+    const image = document.createElement("img");
+    image.alt = ""; image.src = "/static/cinema-backdrop.jpg?pagination-test";
+    document.body.append(image);
+  }, {once:true}));
+  try {
+    await openPaginationLibrary(page, origin + "/?view=shows&limit=4", info);
+    await expect.poll(() => held).toBeGreaterThan(0);
+    await loadAll(page);
+    expect((await page.locator("#library .show-details h2").allTextContents()).sort()).toEqual(showTitles);
+    expect(await page.evaluate(() => document.readyState)).not.toBe("complete");
+    await info.attach("pending-image-library-result", {contentType:"application/json", body:JSON.stringify({held, titles:showTitles.length, fixture:"real Server image response gated after HTTP200; all real catalog pages loaded"})});
+  } finally {release();}
+});
+
+test("Navigation failure diagnostics remain bounded with a stalled renderer", async ({}, info) => {
+  const original = new Error("Synthetic navigation timeout");
+  const page = new EventEmitter() as EventEmitter & {goto:()=>Promise<never>; evaluate:()=>Promise<never>; url:()=>string};
+  page.goto = async () => {throw original;};
+  page.evaluate = () => new Promise(()=>{});
+  page.url = () => "http://localhost:39060/login?token=synthetic-private";
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    await expect(Promise.race([
+      openPaginationLibrary(page as unknown as import("@playwright/test").Page, "http://localhost:39060/", info),
+      new Promise((_, reject)=>{timer=setTimeout(()=>reject(new Error("Unbounded diagnostic")),1100);}),
+    ])).rejects.toBe(original);
+    expect(page.listenerCount("request")).toBe(0);
+    expect(page.listenerCount("requestfailed")).toBe(0);
+  } finally {clearTimeout(timer);}
 });
