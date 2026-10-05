@@ -92,5 +92,16 @@ class ProjectionControls(unittest.TestCase):
         with self.assertRaises(ValueError): admit_projection(value,"runtime",SELECTED)
 
 
+    def test_exhausted_release_budget_is_diagnostic_only_and_never_runtime_acceptance(self):
+        for green in (True, False):
+            value = sample(green)
+            value["cases"][0]["data"]["failureStage"] = "release-budget-exhausted"
+            self.assertEqual(classify(admit_projection(value, "runtime", SELECTED), DIGEST), "prerequisite-blocked")
+        value = sample(False)
+        value["cases"][0]["data"]["failureStage"] = "unrecognized-release-diagnostic"
+        with self.assertRaises(ValueError):
+            admit_projection(value, "runtime", SELECTED)
+
+
 if __name__ == "__main__":
     unittest.main()

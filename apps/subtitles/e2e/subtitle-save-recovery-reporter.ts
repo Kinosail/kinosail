@@ -11,7 +11,7 @@ const CASES = {
   "save-body-phone": "R06 Save body held after completed write - phone",
   "save-body-desktop": "R06 Save body held after completed write - desktop",
 } as const;
-const STAGES = ["auth","preview","witness","deadline","new-edit","late-response","navigation","settlement"];
+const STAGES = ["auth","preview","witness","deadline","new-edit","late-response","navigation","settlement","release-budget-exhausted"];
 const ASSERTIONS: readonly AssertionID[] = [
   "actual-save-completed","actual-history-once","actual-recovery-retained","response-hold-eligible",
   "editing-unlocked-by-45s","finite-truthful-status","original-retained-if-uncertain","newer-edit-accepted",

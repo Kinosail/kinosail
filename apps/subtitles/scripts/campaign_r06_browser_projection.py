@@ -9,7 +9,7 @@ CASES = {
     "save-body-phone": "R06 Save body held after completed write - phone",
     "save-body-desktop": "R06 Save body held after completed write - desktop",
 }
-STAGES = ("auth", "preview", "witness", "deadline", "new-edit", "late-response", "navigation", "settlement")
+STAGES = ("auth", "preview", "witness", "deadline", "new-edit", "late-response", "navigation", "settlement", "release-budget-exhausted")
 ASSERTIONS = (
     "actual-save-completed", "actual-history-once", "actual-recovery-retained", "response-hold-eligible",
     "editing-unlocked-by-45s", "finite-truthful-status", "original-retained-if-uncertain", "newer-edit-accepted",

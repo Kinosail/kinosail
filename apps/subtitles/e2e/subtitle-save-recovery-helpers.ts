@@ -18,7 +18,7 @@ export type AssertionID = typeof ASSERTION_IDS[number];
 export type JSONValue = null | boolean | number | string | JSONObject | JSONValue[];
 export type JSONObject = { [key: string]: JSONValue };
 export function isObject(value: JSONValue): value is JSONObject { return value !== null && typeof value === "object" && !Array.isArray(value); }
-export type Stage = "auth" | "preview" | "witness" | "deadline" | "new-edit" | "late-response" | "navigation" | "settlement";
+export type Stage = "auth" | "preview" | "witness" | "deadline" | "new-edit" | "late-response" | "navigation" | "settlement" | "release-budget-exhausted";
 type Entry = { id: string; title: string; mode: "headers" | "body"; width: 390 | 1440 };
 type Snapshot = {
   protocol: "unreached" | "legacy" | "prepared";
@@ -216,7 +216,13 @@ export async function runSaveCase(page: Page, _info: TestInfo, entry: Entry): Pr
       newStatus = (await page.locator("#inspector-status").textContent()) || ""; record("newer-edit-accepted", edited); }
     result.stage = "late-response";
     result.releaseAttempted = true;
-    if ((await page.request.get(origin+"/__r06/release", { timeout:remaining(3000) })).status() !== 204) throw new Error("fixed-fixture-boundary");
+    const releaseTimeout = remaining(3000);
+    try {
+      if ((await page.request.get(origin+"/__r06/release", { timeout:releaseTimeout })).status() !== 204) throw new Error("fixed-fixture-boundary");
+    } catch (error) {
+      if (releaseTimeout === 1) result.failureStage = "release-budget-exhausted";
+      throw error;
+    }
     result.holdDurationMs = performance.now()-witnessAt;
     let settled = false;
     try {
