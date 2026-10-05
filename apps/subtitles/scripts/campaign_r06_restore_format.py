@@ -13,6 +13,8 @@ import time
 from campaign_r06_format import formatter_command, read_source, tool_pin
 from campaign_r06_browser_sources import identity, tracked_sources, git
 from campaign_r06_restore_tokens import equivalent
+from campaign_r06_restore_projection import (pin, blob, matches_pin, format_record,
+                                             complete_files, unadmitted_record)
 
 ROOT = Path(__file__).resolve().parents[3]
 OUTPUT = ROOT / ".verification/campaign-proof/R06"
@@ -75,45 +77,9 @@ def require_base_ancestry():
     git("merge-base", "--is-ancestor", BASE_COMMIT, "HEAD")
 
 
-def pin(data):
-    return {"bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
-
-
-def blob(data):
-    return hashlib.sha1(("blob " + str(len(data)) + "\0").encode() + data).hexdigest()
-
-
-def matches_pin(data, expected):
-    return type(data) is bytes and type(expected) is dict and pin(data) == expected
-
-
 def phase_accepted(exit_code, timed_out, group_stopped, capture_settled, capture_failed=False):
     return (type(exit_code) is int and exit_code == 0 and type(timed_out) is bool and not timed_out
             and group_stopped is True and capture_settled is True and capture_failed is False)
-
-
-def format_record(*, path, original, output, exit_code, stderr):
-    if type(path) is not str or path not in GO_FILES:
-        raise ValueError("format-path")
-    for data, cap in ((original, INPUT_CAP), (output, OUTPUT_CAP)):
-        if type(data) is not bytes or not 0 < len(data) <= cap or b"\0" in data:
-            raise ValueError("format-bytes")
-        data.decode("utf-8")
-    if type(exit_code) is not int or exit_code != 0 or type(stderr) is not bytes or stderr:
-        raise ValueError("format-result")
-    if len(output.splitlines()) > 300:
-        raise ValueError("format-file-lines")
-    if not equivalent(original, output):
-        raise ValueError("format-token-change")
-    return {"path": path, "original": pin(original), "formatted": pin(output),
-            "formattedLines": len(output.splitlines()), "changed": original != output,
-            "tokensPreserved": True, "formattedSourceBase64": base64.b64encode(output).decode("ascii")}
-
-
-def complete_files(records):
-    return (type(records) is list and len(records) == len(GO_FILES)
-            and all(type(row) is dict and row.get("tokensPreserved") is True for row in records)
-            and [row.get("path") for row in records] == list(GO_FILES))
 
 
 def signal_owned(pid):
@@ -201,6 +167,8 @@ def input_sources():
         inputs[name] = data
     names = (MANIFEST_PATH, "apps/subtitles/scripts/campaign_r06_restore_format.py",
              "apps/subtitles/scripts/campaign_r06_restore_tokens.py",
+             "apps/subtitles/scripts/campaign_r06_restore_projection.py",
+             "apps/subtitles/scripts/test_campaign_r06_restore_projection.py",
              "apps/subtitles/scripts/test_campaign_r06_restore_format.py",
              ".github/workflows/layout-stability.yml", "scripts/ci/run-campaign-proof.sh",
              "go.work", "apps/subtitles/go.mod")
@@ -243,7 +211,7 @@ def main():
     results = {"schemaVersion": 1, "mode": "restore-source-format", "files": []}
     manifest = {"mode": "restore-source-format", "status": "prerequisite-blocked"}
     before = tracked = inputs = tool = tool_identity = None
-    complete, stage = False, "admission"
+    complete, stage, diagnostic = False, "admission", None
     try:
         before = identity()
         if before["revision"] != os.environ.get("GITHUB_SHA") or git("status", "--porcelain"):
@@ -274,8 +242,13 @@ def main():
             if not phase_accepted(phase["exitCode"], phase["timedOut"],
                                   phase["ownedGroupStopped"], phase["captureSettled"], phase["captureFailed"]):
                 raise ValueError("formatter-settlement")
-            results["files"].append(format_record(path=name, original=inputs[name], output=output,
-                                                  exit_code=phase["exitCode"], stderr=errors))
+            try:
+                results["files"].append(format_record(path=name, original=inputs[name], output=output,
+                                                      exit_code=phase["exitCode"], stderr=errors))
+            except ValueError as error:
+                if failure_code(error) == "format-token-change":
+                    diagnostic = (name, output, errors, phase)
+                raise
         complete = complete_files(results["files"])
     except (OSError, ValueError, subprocess.SubprocessError) as error:
         receipt.update(errorClass=type(error).__name__, failureStage=stage, failureCode=failure_code(error))
@@ -287,6 +260,13 @@ def main():
                     and all(read_source(name) == data for name, data in inputs.items()))
             except (OSError, ValueError, subprocess.SubprocessError):
                 receipt["sourceUnchanged"] = False
+    if diagnostic is not None:
+        name, output, errors, phase = diagnostic
+        rejected = unadmitted_record(path=name, original=inputs[name], output=output,
+            expected=GO_PINS[name], phase=phase, stderr=errors,
+            source_unchanged=receipt["sourceUnchanged"], failure_code="format-token-change")
+        if rejected is not None:
+            results["unadmittedFormat"] = rejected
     if complete and receipt["sourceUnchanged"]:
         receipt["result"] = "formatted-source-projection"
     if not safe_write({"receipt.json": receipt, "results.json": results, "source-manifest.json": manifest}):

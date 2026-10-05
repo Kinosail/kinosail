@@ -1,0 +1,292 @@
+{
+  "schema": "r06-restore-formatter-diagnostic-package-v1",
+  "status": "source-reviewed-root-ram-controls-passed-manifest-unreviewed-hosted-unrun",
+  "previousOwnershipManifest": {
+    "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/formatter-source-manifest.json",
+    "bytes": 13750,
+    "lines": 298,
+    "sha256": "a5346545dd43b222f03ca70943d7f3accf536dc19ae1d791554de2669fb4af3e",
+    "blob": "71db66276ce933e0f8418e0287149c30090b7f35",
+    "getVerified": true
+  },
+  "fixtureSourceManifest": {
+    "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture-source-manifest.json",
+    "bytes": 12986,
+    "lines": 287,
+    "sha256": "e97a2c9eab90a1324bfdf7a506c5e6234709a372775e3d3c6d5fc5295a41d373",
+    "blob": "91b822165e467d7682ad5eb221b267a20fec5dec",
+    "getVerified": true
+  },
+  "unchangedComparator": {
+    "path": "apps/subtitles/scripts/campaign_r06_restore_tokens.py",
+    "blob": "ea9819030c92c9b7c21c072aa812e4d49154f10c",
+    "bytes": 8096,
+    "lines": 198,
+    "sha256": "d3a32cc0b1ded64e1e21fd598798ef9b8fcc8c1fda9cdb93f186e45ca3b12693",
+    "getVerified": true
+  },
+  "unchangedExistingControls": {
+    "path": "apps/subtitles/scripts/test_campaign_r06_restore_format.py",
+    "bytes": 14053,
+    "lines": 253,
+    "sha256": "4a4ceb02731f6bb471a0594848aecf0cb6057903bd66cf08e71b4e66c06ed7b7",
+    "blob": "237e5baee902207dc5d6094d191c6afaa5a36404",
+    "getVerified": true
+  },
+  "sources": [
+    {"path":"apps/subtitles/scripts/test_campaign_r06_restore_projection.py","bytes":6807,"lines":127,"sha256":"4edcfb6c2fd838ecc1a31b4a001798c51691a36ef66dc21bf67dc3643db95505","tests":12,"blob":"bc1c41731decc1cc0f450daf3eb9b1e0f369cc7c","getVerified":true},
+    {"path":"apps/subtitles/scripts/campaign_r06_restore_projection.py","bytes":4155,"lines":96,"sha256":"528cad4273865b83f4671bd7aa2d0acc0434eb1379707c9d42e9ae75c7cc17f8","blob":"3462ba762375d77c484c2d5f0c4168f91a1f7d3c","getVerified":true},
+    {"path":"apps/subtitles/scripts/campaign_r06_restore_format.py","bytes":15308,"lines":279,"sha256":"659e69f98edfa2c8283b087366ee794fdaeaeffb5abc34c77cb989b8dcc72bc6","blob":"250bcdb13c6a0b467004176509c20d4baf9958a9","getVerified":true}
+  ],
+  "stagingOrder": [
+    {
+      "blob": "bc1c41731decc1cc0f450daf3eb9b1e0f369cc7c",
+      "role": "12 failure-first controls before implementation"
+    },
+    {
+      "blob": "3462ba762375d77c484c2d5f0c4168f91a1f7d3c",
+      "role": "verbatim extraction and guarded unadmitted projection"
+    },
+    {
+      "blob": "250bcdb13c6a0b467004176509c20d4baf9958a9",
+      "role": "strict rejection capture and post-integrity diagnostic integration"
+    }
+  ],
+  "extraction": {
+    "previousDriver": {
+      "path": "apps/subtitles/scripts/campaign_r06_restore_format.py",
+      "bytes": 15898,
+      "lines": 299,
+      "sha256": "1e28717ca093ca4b970c89826cf6c859bf1afd12a738a3ef5b27f684104e5330",
+      "blob": "2ad8d3ff9ba90726f4f9f2f6d5e552ecb27aa0e8",
+      "getVerified": true
+    },
+    "functions": [
+      {
+        "name": "pin",
+        "bytes": 91,
+        "sha256": "c27b9f87b830eda11777805c802e72e9acb55cab54ba13bfd76dc6e43db0043c",
+        "bodyByteExact": true
+      },
+      {
+        "name": "blob",
+        "bytes": 103,
+        "sha256": "568f6072ab0cbcdcc0165123dd7e533005ba6bc9090999254e68160ea44a7f7c",
+        "bodyByteExact": true
+      },
+      {
+        "name": "matches_pin",
+        "bytes": 117,
+        "sha256": "8313326c96457cf11de0dd7df378da0f6f4282be4a2db0d398ae8a9220cc46a0",
+        "bodyByteExact": true
+      },
+      {
+        "name": "format_record",
+        "bytes": 960,
+        "sha256": "6ea9ea35b85d67c640bcbe3a1541908413f57cf40132494fdcaf797dca34a7d0",
+        "bodyByteExact": true
+      },
+      {
+        "name": "complete_files",
+        "bytes": 266,
+        "sha256": "edcab7d3906aeceef390b043cb1f79fc09f626383806e1bcc9e80e4235cbf366",
+        "bodyByteExact": true
+      }
+    ],
+    "freeVariableBindings": {
+      "base64": "same standard-library module",
+      "hashlib": "same standard-library module",
+      "equivalent": "same campaign_r06_restore_tokens.equivalent",
+      "pin": "same verbatim relocated function",
+      "GO_FILES": "same ordered fourteen immutable path values",
+      "INPUT_CAP": 262144,
+      "OUTPUT_CAP": 524288
+    },
+    "fullDriverIntegrationInverseExact": true
+  },
+  "controlCollection": {
+    "modules": [
+      {"path":"apps/subtitles/scripts/test_campaign_r06_restore_format.py","blob":"237e5baee902207dc5d6094d191c6afaa5a36404","methods":22},
+      {"path":"apps/subtitles/scripts/test_campaign_r06_restore_projection.py","blob":"bc1c41731decc1cc0f450daf3eb9b1e0f369cc7c","methods":12}
+    ],
+    "totalMethods": 34,
+    "executionOwner": "root",
+    "workflowSelectorAdopted": false,
+    "frozenSteps": [
+      {"name":"Verify Restore formatter controls","condition":"env.CAMPAIGN_PROOF == 'R06' && env.CAMPAIGN_R06_SUITE == 'restore-source-format'","timeoutMinutes":1,"cwd":".","run":"python3 -B -m unittest discover -s apps/subtitles/scripts -p test_campaign_r06_restore_format.py","methods":22},
+      {"name":"Verify Restore rejected-source projection controls","condition":"env.CAMPAIGN_PROOF == 'R06' && env.CAMPAIGN_R06_SUITE == 'restore-source-format'","timeoutMinutes":1,"cwd":".","run":"python3 -B -m unittest discover -s apps/subtitles/scripts -p test_campaign_r06_restore_projection.py","methods":12}
+    ],
+    "selectorSourceFrozen": true,
+    "previousCombinedSelector": "superseded by the two fixed root-owned workflow steps"
+  },
+  "rootRAMControlEvidence": {
+    "reportedBy": "root",
+    "passed": 34,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "oldMethods": 22,
+    "newMethods": 12,
+    "unmockedIOAndProcessesBlocked": true,
+    "actualFormatterOrApplication": false,
+    "independentSourceReview": true,
+    "reviewerExecutedControls": false
+  },
+  "schemaChange": {
+    "artifact": "results.json",
+    "optionalField": "unadmittedFormat",
+    "closedFields": [
+      "path",
+      "admitted",
+      "sourceOnly",
+      "failureCode",
+      "tokensPreserved",
+      "original",
+      "formatted",
+      "formattedLines",
+      "formattedSourceBase64"
+    ],
+    "flags": {
+      "admitted": false,
+      "sourceOnly": true,
+      "tokensPreserved": false
+    },
+    "failureCode": "format-token-change",
+    "originalFields": [
+      "gitBlob",
+      "bytes",
+      "sha256"
+    ],
+    "formattedFields": [
+      "bytes",
+      "sha256"
+    ],
+    "lineCap": 300,
+    "sourceEncoding": "bounded UTF8/NUL-free bytes encoded as Base64",
+    "noRawStderrEnvironmentCommandsOrRuntimeData": true
+  },
+  "guards": [
+    "Only the actual existing format-token-change rejection can stage one candidate diagnostic.",
+    "Known fourteen-path input and exact Git-blob/SHA256/byte tuple must match the unchanged fixture input.",
+    "Exit must be integer0, stderr bytes empty, deadline false, capture settled/no fault and owned group stopped.",
+    "Output remains within524288 bytes, input262144 bytes, UTF8/NUL-free and <=300 lines.",
+    "Independent final entire tracked/source/tree/tool equality must be true before publishing; drift omits the record.",
+    "Five accepted records remain partial; diagnostic never enters files, complete_files, accepted counts or success.",
+    "Original blocked receipt/failureCode and exit2 remain unchanged; no canonical auto-adoption."
+  ],
+  "sourceInputPins": {
+    "previous": 25,
+    "current": 27,
+    "addedPaths": [
+      "apps/subtitles/scripts/campaign_r06_restore_projection.py",
+      "apps/subtitles/scripts/test_campaign_r06_restore_projection.py"
+    ],
+    "oldInputPathsRetained": true,
+    "fixtureInputsUnchanged": true,
+    "existingControlAndComparatorUnchanged": true,
+    "driverReplacementBound": "250bcdb13c6a0b467004176509c20d4baf9958a9",
+    "workflowAndRouterPinsDerivedAtFreshHead": true
+  },
+  "historicalPartialFormatting": [
+    {
+      "run": "37344343769",
+      "artifact": "11360325617",
+      "head": "bc964d97a19cd4544fdebe5cd32335f0f2464256",
+      "tree": "ae8dd7c0d07e8dd00ecf96143263a85b021b422d",
+      "zipBytes": 505975,
+      "zipSha256": "414ca5e8d5c239edafc0825f3ada8edd0de43c65b6ccda528f35b4b013642f13",
+      "rootAdmitted": true,
+      "hostedControlsPassed": 22,
+      "settledZeroExitEmptyStderrPhases": 5,
+      "acceptedEquivalentOutputs": 4,
+      "unprocessedInputs": 9,
+      "failureStage": "formatter",
+      "failureCode": "format-token-change",
+      "sourceUnchanged": true,
+      "compilerExecuted": false,
+      "applicationExecuted": false,
+      "browserExecuted": false,
+      "rejected": {
+        "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_http_test.go",
+        "bytes": 6136,
+        "sha256": "ea2cac672a6fafb2d1e7894619478b1d5a19a2f611c7b25d6d547a8411a2ea9a",
+        "sourceExported": false,
+        "causeProved": false
+      }
+    },
+    {
+      "run": "37349197891",
+      "artifact": "11361578573",
+      "head": "4d17c543a42ccefcbc3b97ee074e527c9000aeba",
+      "tree": "2a23c3503d6db6da8a91ce12bb5444620f5e4d47",
+      "zipBytes": 508131,
+      "zipSha256": "d08fdecbc4fd3b437dd2f1a30ace6cde7b8fab954a2439d70b26c0d97dace317",
+      "rootAdmitted": true,
+      "hostedControlsPassed": 22,
+      "settledZeroExitEmptyStderrPhases": 6,
+      "acceptedEquivalentOutputs": 5,
+      "unprocessedInputs": 8,
+      "failureStage": "formatter",
+      "failureCode": "format-token-change",
+      "sourceUnchanged": true,
+      "compilerExecuted": false,
+      "applicationExecuted": false,
+      "browserExecuted": false,
+      "httpAccepted": {
+        "bytes": 6127,
+        "lines": 207,
+        "sha256": "c1b6b0e0c6fecd90220d03fb14ecf9c5ed83fc656b680a0c194a3faa94462a73",
+        "priorRejectionCauseProved": false
+      },
+      "rejected": {
+        "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_main_test.go",
+        "bytes": 5447,
+        "sha256": "9ddf2e4a5136dc0cf1f6954e324d001b78a51f0fc79459405ce357d6721e6a89",
+        "sourceExported": false,
+        "causeProved": false
+      }
+    }
+  ],
+  "integration": {
+    "owner": "root",
+    "freshMainRequired": true,
+    "staleBranchWorkflowAssumedAdopted": false,
+    "workflowOrRouterEditsAuthored": false,
+    "refsCreated": false,
+    "localFilesWritten": false,
+    "Q47MergedRoutingPreservationRequired": true,
+    "rootIntegrationContext": {
+      "sources": [
+        {"path":".github/workflows/layout-stability.yml","blob":"8f912a1b176cab1ac82c0a798b3664ab8b31c67b","bytes":13048,"lines":257,"sha256":"f53fd4972879f3c448803c65ef0cbe9c267fb524d581e1ae8b9f4f444c364ea5","owner":"root","role":"runtime-input-source","getVerified":true},
+        {"path":"scripts/ci/run-campaign-proof.sh","blob":"c24134abadaac30909b06784fb1c6d90a8b48bd0","bytes":1335,"lines":36,"sha256":"d755aa8bb61f8b06613421a0c226102d0f3b07c6860c90a1fad06cfee05a7e16","owner":"root","role":"runtime-input-source","getVerified":true},
+        {"path":"scripts/ci/test_campaign_proof.py","blob":"352855862b3e6833a68d0a2a80a5b9e0c091ad6c","bytes":7874,"lines":123,"sha256":"ad3a4ed95aa25ff05d87b64e328811f5453287cc4c2a14041db81b96ddd1d22e","owner":"root","role":"integration-context-only","getVerified":true}
+      ],
+      "sourceSnapshotFrozen": true,
+      "independentSourceClearanceReportedBy": "root",
+      "rootTestRuntimeInput": false,
+      "runtimeInputCount": 27,
+      "integratedTreePending": true,
+      "publicationOrHostedExecutionAssumed": false
+    }
+  },
+  "currentPackageExecution": {
+    "actualFormatter": false,
+    "compiler": false,
+    "publicControls": false,
+    "browser": false
+  },
+  "remainingGates": [
+    "independent documentary exact-pin review",
+    "root fresh-main tree/workflow/unit selector integration",
+    "serialized hosted34 controls and guarded source formatter",
+    "actual rejected source diagnostic admission before cause attribution",
+    "all fourteen canonical outputs/token/line admission and explicit root adoption",
+    "compiler/lint/G704/public Restore controls/browser/normal gates remain separate"
+  ],
+  "remainingLimits": [
+    "Both historical rejected sources were unexported; exact Main and prior HTTP causes remain unproved.",
+    "Root34/34 is pure mocked RAM evidence, not actual formatter/Go/browser acceptance.",
+    "Current three-source diagnostic package has no hosted formatter execution.",
+    "Fixture and strict comparator identities are unchanged; no product or auth change."
+  ]
+}

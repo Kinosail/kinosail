@@ -2,7 +2,7 @@
   "schema": "r06-restore-source-format-package-v1",
   "baseCommit": "bd1ea2e148787ae8d4a0a46640bc2a965e10fe6a",
   "baseTree": "6070e86cc8a3522810218d311cc2d5d6246f02d0",
-  "status": "source-separator-corrected-unreviewed-unformatted-unrun",
+  "status": "source-code-reviewed-root34-RAM-controls-passed-manifest-unreviewed-hosted-unrun",
   "fixtureSourceManifest": {
     "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture-source-manifest.json",
     "bytes": 12986,
@@ -12,30 +12,11 @@
     "getVerified": true
   },
   "sources": [
-    {
-      "path": "apps/subtitles/scripts/test_campaign_r06_restore_format.py",
-      "bytes": 14053,
-      "lines": 253,
-      "sha256": "4a4ceb02731f6bb471a0594848aecf0cb6057903bd66cf08e71b4e66c06ed7b7",
-      "blob": "237e5baee902207dc5d6094d191c6afaa5a36404",
-      "getVerified": true
-    },
-    {
-      "path": "apps/subtitles/scripts/campaign_r06_restore_tokens.py",
-      "blob": "ea9819030c92c9b7c21c072aa812e4d49154f10c",
-      "bytes": 8096,
-      "lines": 198,
-      "sha256": "d3a32cc0b1ded64e1e21fd598798ef9b8fcc8c1fda9cdb93f186e45ca3b12693",
-      "getVerified": true
-    },
-    {
-      "path": "apps/subtitles/scripts/campaign_r06_restore_format.py",
-      "bytes": 15898,
-      "lines": 299,
-      "sha256": "1e28717ca093ca4b970c89826cf6c859bf1afd12a738a3ef5b27f684104e5330",
-      "blob": "2ad8d3ff9ba90726f4f9f2f6d5e552ecb27aa0e8",
-      "getVerified": true
-    }
+    {"path":"apps/subtitles/scripts/test_campaign_r06_restore_format.py","bytes":14053,"lines":253,"sha256":"4a4ceb02731f6bb471a0594848aecf0cb6057903bd66cf08e71b4e66c06ed7b7","blob":"237e5baee902207dc5d6094d191c6afaa5a36404","getVerified":true},
+    {"path":"apps/subtitles/scripts/campaign_r06_restore_tokens.py","blob":"ea9819030c92c9b7c21c072aa812e4d49154f10c","bytes":8096,"lines":198,"sha256":"d3a32cc0b1ded64e1e21fd598798ef9b8fcc8c1fda9cdb93f186e45ca3b12693","getVerified":true},
+    {"path":"apps/subtitles/scripts/campaign_r06_restore_format.py","bytes":15308,"lines":279,"sha256":"659e69f98edfa2c8283b087366ee794fdaeaeffb5abc34c77cb989b8dcc72bc6","blob":"250bcdb13c6a0b467004176509c20d4baf9958a9","getVerified":true},
+    {"path":"apps/subtitles/scripts/test_campaign_r06_restore_projection.py","bytes":6807,"lines":127,"sha256":"4edcfb6c2fd838ecc1a31b4a001798c51691a36ef66dc21bf67dc3643db95505","tests":12,"blob":"bc1c41731decc1cc0f450daf3eb9b1e0f369cc7c","getVerified":true},
+    {"path":"apps/subtitles/scripts/campaign_r06_restore_projection.py","bytes":4155,"lines":96,"sha256":"528cad4273865b83f4671bd7aa2d0acc0434eb1379707c9d42e9ae75c7cc17f8","blob":"3462ba762375d77c484c2d5f0c4168f91a1f7d3c","getVerified":true}
   ],
   "testFirstOrder": [
     {
@@ -75,6 +56,19 @@
     {
       "blob": "4b19b62fbc487ec611188240e36b732a27fbddbe",
       "role": "fixed-command-classification-and-base-availability-check"
+    },
+    {
+      "blob": "bc1c41731decc1cc0f450daf3eb9b1e0f369cc7c",
+      "controls": 12,
+      "role": "diagnostic-controls-before-implementation"
+    },
+    {
+      "blob": "3462ba762375d77c484c2d5f0c4168f91a1f7d3c",
+      "role": "verbatim-extraction-and-strict-unadmitted-source-projection"
+    },
+    {
+      "blob": "250bcdb13c6a0b467004176509c20d4baf9958a9",
+      "role": "post-integrity-diagnostic-integration"
     }
   ],
   "formatterMode": "restore-source-format",
@@ -119,90 +113,20 @@
     }
   ],
   "rawInputs": [
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_assertions_test.go",
-      "blob": "0c72a93cf599390ecfa42a1b08ebbbe7e0c8bd6b",
-      "bytes": 6490,
-      "sha256": "82261355e73118d9cad07c3f6fa289ac29a0d6343efb8db669926b96087191c0"
-    },
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_controls_test.go",
-      "blob": "ef0599a3a672d09603f5619b69cb1eee3fd2a770",
-      "bytes": 4697,
-      "sha256": "d7be68372506e6813b40b7a5b2c9080a53af634a8a0ab95e8369c1b18bddacdb"
-    },
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_exchange_test.go",
-      "blob": "ddf89b521e9884a06a9e479acb17ecfb7322dff0",
-      "bytes": 4659,
-      "sha256": "d809df7ca579c2c612616d0448cdc056d7dba5c32cddea8d15adb276e8380414"
-    },
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_filesystem_test.go",
-      "blob": "95e46d54ad38b19aae445e7886a9a10579e3e6ce",
-      "bytes": 1960,
-      "sha256": "14ad292f5db92043f44cdba9f62abcdd6a2f875da9e616508aa7ae04da8db0b1"
-    },
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_http_test.go",
-      "blob": "4b7aba7bd5b3329d22415cc0d14267347b712785",
-      "bytes": 6019,
-      "sha256": "3fc6d6b53a69bc6cbd2b9240db34a8c5139425e0829fb980ac44193dad7b7d2a"
-    },
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_main_test.go",
-      "blob": "5b71ecc1bc3e94be6b516595bea89ac487f88500",
-      "bytes": 4725,
-      "sha256": "b808cdca52ea70579a5550a1c049e9f14e5213efafcef85ea8575630b7354f49"
-    },
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_owner_enrollment_test.go",
-      "blob": "8c570ea7cf23f1c60b01950fee8ba5122b64ccf0",
-      "bytes": 5019,
-      "sha256": "d856b68f17840df1c7b8ccd857dbb4cd2e8397ae89307ef73401ba3fefb4913b"
-    },
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_owner_test.go",
-      "blob": "ce0d824a454b4dda4aff3e714f57fd214740deff",
-      "bytes": 1374,
-      "sha256": "b4d54051e32adc3ad26f14d61f9b223f10cdd5ae5fd9f1e96769126a4212df43"
-    },
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_requests_test.go",
-      "blob": "ba48bfa05ec50dfb01bcfa223f4b1b6ca9ad93c0",
-      "bytes": 7174,
-      "sha256": "4e2a98772c1d468a16c94c7da6044866d0a972d50209ede130cad0a400c349be"
-    },
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_routes_test.go",
-      "blob": "0f3c734bc5fa27c2c9d7d33086e3c9a076aecaef",
-      "bytes": 3109,
-      "sha256": "c18118c650b89746167032518b3add2dac3a7d08ce7da3d6a35d3063091e84e8"
-    },
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_routing_test.go",
-      "blob": "6bc8920c88227466f3c1185dfcc94e41fd48d20b",
-      "bytes": 6144,
-      "sha256": "e4bc645a6e7d1c2705b09dc4b9a62a4def57208198574b253212ccabc880d1c3"
-    },
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_target_test.go",
-      "blob": "5cffb6dc125fc4827e3926a05f6a7a8dc232e00a",
-      "bytes": 4606,
-      "sha256": "a2a985b832eb447129f7223737c1c083399b03478ee8ab992923d13e92928fe9"
-    },
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_transport_test.go",
-      "blob": "bef80ffe1957e026697b8ff738c125a0e20f9ae9",
-      "bytes": 4928,
-      "sha256": "8641139e8acd6fcf7f6b553f06d1cb0a6443c4d1d78b29c5413579d96319aaf6"
-    },
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_witness_test.go",
-      "blob": "055dc7a72a1944d34379157aa5ce02102a84ae3a",
-      "bytes": 8214,
-      "sha256": "328020a75bb82707eedc78dd2951b0d8504f3f85e9b2cf07712fa990f3f468fd"
-    }
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_assertions_test.go","blob":"0c72a93cf599390ecfa42a1b08ebbbe7e0c8bd6b","bytes":6490,"sha256":"82261355e73118d9cad07c3f6fa289ac29a0d6343efb8db669926b96087191c0"},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_controls_test.go","blob":"ef0599a3a672d09603f5619b69cb1eee3fd2a770","bytes":4697,"sha256":"d7be68372506e6813b40b7a5b2c9080a53af634a8a0ab95e8369c1b18bddacdb"},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_exchange_test.go","blob":"ddf89b521e9884a06a9e479acb17ecfb7322dff0","bytes":4659,"sha256":"d809df7ca579c2c612616d0448cdc056d7dba5c32cddea8d15adb276e8380414"},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_filesystem_test.go","blob":"95e46d54ad38b19aae445e7886a9a10579e3e6ce","bytes":1960,"sha256":"14ad292f5db92043f44cdba9f62abcdd6a2f875da9e616508aa7ae04da8db0b1"},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_http_test.go","blob":"4b7aba7bd5b3329d22415cc0d14267347b712785","bytes":6019,"sha256":"3fc6d6b53a69bc6cbd2b9240db34a8c5139425e0829fb980ac44193dad7b7d2a"},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_main_test.go","blob":"5b71ecc1bc3e94be6b516595bea89ac487f88500","bytes":4725,"sha256":"b808cdca52ea70579a5550a1c049e9f14e5213efafcef85ea8575630b7354f49"},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_owner_enrollment_test.go","blob":"8c570ea7cf23f1c60b01950fee8ba5122b64ccf0","bytes":5019,"sha256":"d856b68f17840df1c7b8ccd857dbb4cd2e8397ae89307ef73401ba3fefb4913b"},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_owner_test.go","blob":"ce0d824a454b4dda4aff3e714f57fd214740deff","bytes":1374,"sha256":"b4d54051e32adc3ad26f14d61f9b223f10cdd5ae5fd9f1e96769126a4212df43"},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_requests_test.go","blob":"ba48bfa05ec50dfb01bcfa223f4b1b6ca9ad93c0","bytes":7174,"sha256":"4e2a98772c1d468a16c94c7da6044866d0a972d50209ede130cad0a400c349be"},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_routes_test.go","blob":"0f3c734bc5fa27c2c9d7d33086e3c9a076aecaef","bytes":3109,"sha256":"c18118c650b89746167032518b3add2dac3a7d08ce7da3d6a35d3063091e84e8"},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_routing_test.go","blob":"6bc8920c88227466f3c1185dfcc94e41fd48d20b","bytes":6144,"sha256":"e4bc645a6e7d1c2705b09dc4b9a62a4def57208198574b253212ccabc880d1c3"},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_target_test.go","blob":"5cffb6dc125fc4827e3926a05f6a7a8dc232e00a","bytes":4606,"sha256":"a2a985b832eb447129f7223737c1c083399b03478ee8ab992923d13e92928fe9"},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_transport_test.go","blob":"bef80ffe1957e026697b8ff738c125a0e20f9ae9","bytes":4928,"sha256":"8641139e8acd6fcf7f6b553f06d1cb0a6443c4d1d78b29c5413579d96319aaf6"},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_witness_test.go","blob":"055dc7a72a1944d34379157aa5ce02102a84ae3a","bytes":8214,"sha256":"328020a75bb82707eedc78dd2951b0d8504f3f85e9b2cf07712fa990f3f468fd"}
   ],
   "safeArtifacts": [
     "receipt.json",
@@ -211,7 +135,7 @@
     "artifact-manifest.json"
   ],
   "artifactDirectory": ".verification/campaign-proof/R06",
-  "controlsExecuted": false,
+  "controlsExecuted": true,
   "formatterExecuted": false,
   "compilationExecuted": false,
   "applicationExecuted": false,
@@ -229,7 +153,7 @@
     "artifactBytesEach": 4194304
   },
   "preservationBoundary": [
-    "Raw Go inputs are Git-blob/SHA256/size pinned to the updated22-source manifest; exact revised-source review remains pending.",
+    "All14 raw Go inputs and independently reviewed22-source fixture manifest remain byte/hash exact in this diagnostic package.",
     "Only the stock existing Subtitles formatter configuration is invoked through stdin; no application or compiler invocation.",
     "Lexer is restricted to reviewed inputs, not a general Go parser; comments/literals/import bindings/declaration order are exact.",
     "Only Go automatic/optional semicolons, exact import-spec sorting and recognized call/composite-list final commas normalize.",
@@ -238,30 +162,31 @@
     "Natural EOF preserves the leader result; timeout signaling targets the owned group even after leader exit.",
     "Every admitted file requires zero stderr, exit0, no deadline and proven capture/group settlement.",
     "Checkout GITHUB_SHA/base ancestry, entire tracked source/tree, explicit inputs and formatter identity are checked before/after.",
-    "Canonical source is static and allowlisted; raw stderr/errors/environment/auth/URLs/runtime output are not exported.",
+    "Canonical and explicitly unadmitted source are static/allowlisted; raw stderr/errors/environment/auth/runtimeURLs/output are not exported.",
     "All sources/artifacts are retained; formatter writes no tracked inputs and never auto-adopts outputs.",
     "An unexpected capture exception still signals/joins the owned group; captureFailed permanently blocks canonical admission.",
-    "Fixture-only structural lint repair preserves all failure literals and four Test names; harness body is unchanged apart from six raw pins and approved manifest identity constants.",
-    "Only one raw HTTP blank separator changes; strict token helper/stock formatter/process admission remain exact."
+    "Historical fixture lint refactor remains exact; five projection function bodies relocate byte-exact with original bindings/public names.",
+    "Historical HTTP blank separator is retained; this diagnostic package changes no fixture or strict comparator.",
+    "Optional unadmittedFormat is isolated from accepted files/counts/success, requires all process and final integrity guards and retains exit2."
   ],
   "remainingGates": [
-    "independent exact revised22source/formatter package review",
-    "hosted22 pure controls",
-    "exact guarded tree integration by root",
-    "stock hosted formatter/source-tool/process admission",
-    "canonical token/comment/literal and <=300-line artifact review",
-    "root canonical adoption",
-    "actual compiler/G704/public-control/browser gates remain separate"
+    "independent exact documentary/pin review",
+    "root fresh-main tree/workflow and34-unit selector integration",
+    "hosted34 controls and serialized stock source formatter/process admission",
+    "explicit unadmitted-source diagnostic review before cause attribution",
+    "all14 canonical token/comment/literal/<=300-line admission and root adoption",
+    "compiler/lint/G704/public Restore/browser and normal gates remain separate"
   ],
   "remainingLimits": [
-    "Root reports previous4b19 diagnostic22 RAM controls passed; current pin-only snapshot and actual formatter phases remain unrun.",
+    "Root34/34 pure RAM controls passed with0 failures/errors/skips; current diagnostic package has no hosted formatter execution.",
     "Captured formatter stdout/stderr size checks occur after communicate, following the admitted stock formatter design; stdin is pinned and bounded.",
     "No claim of general Go grammar validation, compilation, auth, Save/Restore effects or runtime acceptance.",
-    "Historical37344343769 passed22 controls/five stock phases but blocked token-change on HTTP; rejected source/cause unproved, detailed in lintRefactor manifest."
+    "Historical37344343769 passed22 controls/five stock phases but blocked token-change on HTTP; rejected source/cause unproved, detailed in lintRefactor manifest.",
+    "Historical4d17 run37349197891 is admitted partial: six settled phases/five equivalent outputs, unexported Main5447B token-change; exact cause remains unproved."
   ],
   "previousManifest": {
-    "blob": "49ba98867ec35085cf1ef0c3ffa91cff296caf9a",
-    "sha256": "57c5baa4eab5b4612973a9cceafeae3fd8f9c92f0d7424005b5da7a50cc658ae"
+    "blob": "71db66276ce933e0f8418e0287149c30090b7f35",
+    "sha256": "a5346545dd43b222f03ca70943d7f3accf536dc19ae1d791554de2669fb4af3e"
   },
   "historicalHostedControl": {
     "run": "37336041327",
@@ -294,5 +219,70 @@
     "blob": "237e5baee902207dc5d6094d191c6afaa5a36404",
     "controls": 22,
     "change": "all 22 methods/assertions retained; two expected manifest identity literals repinned; grouping proposal not adopted"
+  },
+  "controlsExecutionKind": "root-pure-RAM-all-unmocked-IO-and-processes-blocked",
+  "diagnosticProjectionManifest": {
+    "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/formatter-projection-source-manifest.json",
+    "bytes": 12502,
+    "lines": 292,
+    "sha256": "36b2d6d5ded4a9bed009d7299397cd9e51c7ea808db2c1e9754eb8db73b9b4a2",
+    "blob": "50f8d6ad9e0cd45a42b1c75091307a40a7c07fa2",
+    "getVerified": true
+  },
+  "controlCollection": {
+    "modules": [
+      {"path":"apps/subtitles/scripts/test_campaign_r06_restore_format.py","blob":"237e5baee902207dc5d6094d191c6afaa5a36404","methods":22},
+      {"path":"apps/subtitles/scripts/test_campaign_r06_restore_projection.py","blob":"bc1c41731decc1cc0f450daf3eb9b1e0f369cc7c","methods":12}
+    ],
+    "totalMethods": 34,
+    "executionOwner": "root",
+    "workflowSelectorAdopted": false,
+    "frozenSteps": [
+      {"name":"Verify Restore formatter controls","condition":"env.CAMPAIGN_PROOF == 'R06' && env.CAMPAIGN_R06_SUITE == 'restore-source-format'","timeoutMinutes":1,"cwd":".","run":"python3 -B -m unittest discover -s apps/subtitles/scripts -p test_campaign_r06_restore_format.py","methods":22},
+      {"name":"Verify Restore rejected-source projection controls","condition":"env.CAMPAIGN_PROOF == 'R06' && env.CAMPAIGN_R06_SUITE == 'restore-source-format'","timeoutMinutes":1,"cwd":".","run":"python3 -B -m unittest discover -s apps/subtitles/scripts -p test_campaign_r06_restore_projection.py","methods":12}
+    ],
+    "selectorSourceFrozen": true,
+    "previousCombinedSelector": "superseded by the two fixed root-owned workflow steps"
+  },
+  "diagnosticControlSnapshot": {
+    "blob": "bc1c41731decc1cc0f450daf3eb9b1e0f369cc7c",
+    "controls": 12,
+    "combinedControls": 34,
+    "rootRAMPassed": 34,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "unmockedIOAndProcessesBlocked": true
+  },
+  "integrationOwnership": {
+    "owner": "root",
+    "freshMainRequired": true,
+    "Q47MergedRoutingPreservationRequired": true,
+    "staleBranchWorkflowAssumedAdopted": false,
+    "workflowRouterOrRootTestsAuthored": false,
+    "rootIntegrationContext": {
+      "sources": [
+        {"path":".github/workflows/layout-stability.yml","blob":"8f912a1b176cab1ac82c0a798b3664ab8b31c67b","bytes":13048,"lines":257,"sha256":"f53fd4972879f3c448803c65ef0cbe9c267fb524d581e1ae8b9f4f444c364ea5","owner":"root","role":"runtime-input-source","getVerified":true},
+        {"path":"scripts/ci/run-campaign-proof.sh","blob":"c24134abadaac30909b06784fb1c6d90a8b48bd0","bytes":1335,"lines":36,"sha256":"d755aa8bb61f8b06613421a0c226102d0f3b07c6860c90a1fad06cfee05a7e16","owner":"root","role":"runtime-input-source","getVerified":true},
+        {"path":"scripts/ci/test_campaign_proof.py","blob":"352855862b3e6833a68d0a2a80a5b9e0c091ad6c","bytes":7874,"lines":123,"sha256":"ad3a4ed95aa25ff05d87b64e328811f5453287cc4c2a14041db81b96ddd1d22e","owner":"root","role":"integration-context-only","getVerified":true}
+      ],
+      "sourceSnapshotFrozen": true,
+      "independentSourceClearanceReportedBy": "root",
+      "rootTestRuntimeInput": false,
+      "runtimeInputCount": 27,
+      "integratedTreePending": true,
+      "publicationOrHostedExecutionAssumed": false
+    }
+  },
+  "sourceInputPins": {
+    "previous": 25,
+    "current": 27,
+    "addedPaths": [
+      "apps/subtitles/scripts/campaign_r06_restore_projection.py",
+      "apps/subtitles/scripts/test_campaign_r06_restore_projection.py"
+    ],
+    "oldInputPathsRetained": true,
+    "driverReplacementBound": "250bcdb13c6a0b467004176509c20d4baf9958a9",
+    "workflowAndRouterPinsDerivedAtFreshHead": true
   }
 }
