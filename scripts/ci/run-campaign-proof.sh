@@ -13,6 +13,12 @@ case "$q47_suite" in
   *) exit 2 ;;
 esac
 if [[ "$1" != Q47 && "$q47_suite" != source-format ]]; then exit 2; fi
+r18_suite="${CAMPAIGN_R18_SUITE-source-format}"
+case "$r18_suite" in
+  source-format) ;;
+  *) exit 2 ;;
+esac
+if [[ "$1" != R18 && "$r18_suite" != source-format ]]; then exit 2; fi
 case "$1" in
   R06)
     if [[ "$r06_suite" == protocol ]]; then
@@ -22,6 +28,7 @@ case "$1" in
     else
       exec python3 apps/subtitles/scripts/campaign-r06-browser.py
     fi ;;
+  R18) exec python3 apps/player/scripts/campaign-r18-format-public.py ;;
   Q14) exec python3 apps/player/scripts/campaign-q14-public.py ;;
   Q09) exec python3 apps/player/scripts/campaign-q09-public.py ;;
   Q47)

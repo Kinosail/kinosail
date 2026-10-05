@@ -1,0 +1,232 @@
+{
+  "schemaVersion": 1,
+  "id": "R18",
+  "kind": "source-only-public-formatter-checkpoint",
+  "repository": "Kinosail/kinosail",
+  "ownership": {
+    "owner": "web_progress",
+    "paths": ["apps/player/scripts/campaign-r18-format-public.py","apps/player/scripts/campaign_r18_format_public_artifacts.py","apps/player/scripts/campaign_r18_format_public_files.py","apps/player/scripts/test_campaign_r18_format_public.py","scripts/ci/r18_format_public_controls.py","scripts/ci/test_r18_format_public_controls.py"],
+    "preparation": "Append-only unreferenced blobs only; no local source, runtime, artifact directory or ref changed.",
+    "rootReserved": ["workflow","router","stock formatter setup","source and tree integration","canonical adoption","refs","PRs","dispatch","serial hosted execution"],
+    "prohibited": ["Go or formatter execution in this preparation","cleanup or overwrite","automatic canonical adoption","account, credential, device, media or deployment changes"]
+  },
+  "sources": [
+    {"path":"apps/player/scripts/campaign-r18-format-public.py","blob":"b7ad9f7c311c4bdc1e8f5ba3fea8bb13b2ae1d42","sha256":"85d3e3b1727d0762656f78b888b823958edc72a3efbb0b7d2523616d946c0e41","bytes":21673,"lines":188},
+    {"path":"apps/player/scripts/campaign_r18_format_public_artifacts.py","blob":"3eb11f30dda02aca581c84e9e9f775b4363dfb71","sha256":"11d28fb8f1bf2e7c983ba9f60f2fc6fca3fb42019cd50e9349119518b22731eb","bytes":17100,"lines":252},
+    {"path":"apps/player/scripts/campaign_r18_format_public_files.py","blob":"6dd31eb59ea881f60ddc568d30c13a15ca31071c","sha256":"08fba5901277d3fedaf0e8bec52dd8c9a641419f0590409b049c4739a42c5638","bytes":4662,"lines":110},
+    {"path":"apps/player/scripts/test_campaign_r18_format_public.py","blob":"ff3be3283cc8c5e35d23b697592fa5571f2acc89","sha256":"165236e17c8c9fb8eaf0724a762980d61b8b67b24d8eb176b2b197fb57542529","bytes":31306,"lines":254}
+  ],
+  "sourceAggregate": {
+    "sha256": "ac69880bf6ed476e50871c0cfe20eafdc9ee85ad20651fa86b47148adb769321",
+    "recipe": "SHA256 of UTF-8 compact JSON source array, ASCII path ascending; row key order path,blob,sha256,bytes,lines; no trailing newline.",
+    "getVerified": true,
+    "includesThisManifest": false,
+    "linesRecipe": "LF characters; each source ends with LF.",
+    "sourceLineLimit": 300
+  },
+  "historicalRetention": [
+    {"role":"original 14-method test-first source","path":"apps/player/scripts/test_campaign_r18_format_public.py","blob":"36184f5632bdf1810bb39d18d8b957876eb31a02","sha256":"f6280ddfa4091cd569e9b8680d6927969c31157fa7e630d0d8c26d89307f18ca","bytes":27766,"lines":196},
+    {"role":"retained 17-method file-boundary extension","path":"apps/player/scripts/test_campaign_r18_format_public.py","blob":"f3f51bb77c657ee5402408384dfe35f583244369","sha256":"0dbb4ba115aa850d38a220777b9167c2463206a60a7a19a49ace225fd8ce8d94","bytes":29983,"lines":229},
+    {"role":"final 19-method source; unchanged by depth correction","path":"apps/player/scripts/test_campaign_r18_format_public.py","blob":"ff3be3283cc8c5e35d23b697592fa5571f2acc89","sha256":"165236e17c8c9fb8eaf0724a762980d61b8b67b24d8eb176b2b197fb57542529","bytes":31306,"lines":254},
+    {"role":"pre-depth wrapper; retained","path":"apps/player/scripts/campaign-r18-format-public.py","blob":"b592edf0ec491fb10cfd8c92abff4c274f16e89d","sha256":"547ef189548cd62eb97e360967b267d8ed364eed86d64ac706f9b7e0ff6869f2","bytes":21673,"lines":188},
+    {"role":"pre-depth artifact helper; retained","path":"apps/player/scripts/campaign_r18_format_public_artifacts.py","blob":"19612417c724350c4b724646297b5a4f7895307d","sha256":"b748b236637c4938ba10a3850d441ed1774659e9fe45ad7a4529ff0269dd320c","bytes":16442,"lines":230},
+    {"role":"prior source-clear ownership manifest; retained byte-exact","path":"engineering/qa/2026-10-05-r18-public-contract-checkpoint/format-public-source-manifest.json","blob":"6f34985687c5f02313bfbe0797f7e538e1d643c1","sha256":"5c9bcb9bd66f0744870f239ea776a4a68c6b9cb32a07f042ec61b88c4711de90","bytes":19774,"lines":266}
+  ],
+  "sourceReview": {
+    "status": "Independent corrected-wrapper source review clear; parent separately reports corrected RAM controls.",
+    "correctedInverse": "Remove only bounded_json_nesting and its one safe_json call to recover artifact helper19612417 byte-for-byte. Reverse the sole helper OID/SHA/bytes tuple to recover wrapperb592edf0 byte-for-byte.",
+    "testsUnchangedByCorrection": true,
+    "filesHelperUnchangedByCorrection": true,
+    "allPriorBlobsReceiptsAndArtifactsPreserved": true,
+    "localDependencySymlinksPreserved": true,
+    "q15SourcePackagePreserved": true
+  },
+  "evidence": {
+    "depthRED": {
+      "provenance": "Parent-reported executed pure RAM controls; frozen in parent RAM r18_wrapper_controls_completion.",
+      "runUTC": "2026-10-05T17:57:40Z",
+      "sourcePackageAggregate": "5148f051998a7be95331d27984a0af375484b624948ca7ad8e208c490518e9ed",
+      "wrapperBlob": "b592edf0ec491fb10cfd8c92abff4c274f16e89d",
+      "artifactHelperBlob": "19612417c724350c4b724646297b5a4f7895307d",
+      "testBlob": "ff3be3283cc8c5e35d23b697592fa5571f2acc89",
+      "test": "test_json_duplicate_nonfinite_invalid_utf8_or_depth_is_blocked",
+      "sourceLocation": "apps/player/scripts/test_campaign_r18_format_public.py:110",
+      "methods": 19,
+      "passed": 18,
+      "failed": 1,
+      "errors": 0,
+      "skips": 0,
+      "input": {"kind":"1200-level array of 2400 ASCII bytes","recipe":"b'[' * 1200 + b']' * 1200","sha256":"3c0d14f70296599e00c148597fb86bb17621f6faaebf7d2bf6ed6a98331e4019"},
+      "expected": "ValueError",
+      "observed": "Interpreter JSON decoder accepted the deep array.",
+      "classification": "pure-parser resource-boundary RED",
+      "ioAndProcessGuardsHeld": true,
+      "formatterOrGoExecuted": false
+    },
+    "correctedRAM": {
+      "provenance": "Parent reported all19 exact corrected controls plus four depth boundary probes PASS after source correction.",
+      "sourcePackageAggregate": "ac69880bf6ed476e50871c0cfe20eafdc9ee85ad20651fa86b47148adb769321",
+      "testBlob": "ff3be3283cc8c5e35d23b697592fa5571f2acc89",
+      "methodsPassed": 19,
+      "depthBoundaryProbesPassed": 4,
+      "detailedProbeVectorsAndTerminalReceiptHashes": "Not supplied in this preparation; retained by parent. No invented timestamp, vector or receipt hash.",
+      "scope": "Pure RAM control/probe execution only; no actual formatter, Go compiler, Server or browser runtime proof."
+    }
+  },
+  "selection": {
+    "noCLIOptions": true,
+    "requiredEnvironment": {
+      "CAMPAIGN_PROOF": "R18",
+      "CAMPAIGN_R18_SUITE": "source-format",
+      "GITHUB_ACTIONS": "true",
+      "RUNNER_OS": "Linux"
+    },
+    "githubSHA": "Exact 40 lowercase hex characters; must be the root-reviewed hosted integration SHA.",
+    "runnerTemp": "Required canonical absolute directory; cleared descriptor chain rejects symlink traversal.",
+    "privateOutput": "Choose one absent immediate RUNNER_TEMP/r18-document-format-<32 lowercase hex> child; eight bounded collision attempts.",
+    "wrapperMustNotPrecreatePrivateDirectory": true,
+    "existingPrivateAndArtifactDirectoriesPreserved": true,
+    "architectureMetadataRoute": false,
+    "rootWorkflowRoute": null,
+    "rootIntegrationRevision": null,
+    "rootIntegrationTree": null
+  },
+  "captureAndImports": {
+    "embeddedReader": "Exact5e1c5e36 reader bytes are hash/blob verified before definitions execute; its current source is checked through that same cleared reader.",
+    "sourceCapture": "Capture and OID/SHA/byte-pin all11 custom sources before any other custom definitions execute. Each source <=32768 bytes; total <=262144 bytes.",
+    "moduleExecution": "Compile and execute the captured verified bytes in memory under fixed names; never reopen a checked source through a filesystem import loader.",
+    "ownedChild": "Fixed Python -B -I -c entry loads the seven captured R18 definition modules, then invokes the exact pinned formatter driver with required --expected-revision SHA and --output fresh path.",
+    "childArgumentCap": 120000,
+    "existingFormatterDownstreamChild": "Preserved byte-identical to independently cleared7525dbf7/50dd213f; its protected source-only child seam is unchanged.",
+    "processHelper": "Only execute from exact capturedc88075fb and its7bb61197 definitions. Pass fixed Player cwd and existing sanitized offline env.",
+    "unreachable": ["Go compile phase","Go test binary phase","overlay functions","R06 action functions","arbitrary commands","dynamic media or native operations"]
+  },
+  "boundaries": {
+    "wrapperSeconds": 90,
+    "ownedExecutionWorkSecondsMaximum": 72,
+    "cleanupAndArtifactReservationSeconds": 18,
+    "existingExecuteSettlementAllowanceSeconds": 7,
+    "formatterStageSeconds": 60,
+    "formatterIOSeconds": 10,
+    "formatterOwnedLeaderReapSeconds": 3,
+    "interpreterIndependentCombinedJSONDepth": 32,
+    "depthPolicy": "Scan ASCII object/array delimiters before json.loads; quoted delimiters and backslash-escaped bytes do not change depth. Syntax, UTF-8, duplicate keys and nonfinite rejection remain authoritative.",
+    "artifactByteCaps": {
+      "receipt.json": 524288,
+      "results.json": 131072,
+      "source-manifest.json": 16777216,
+      "artifact-manifest.json": 4096
+    },
+    "sourceAndToolBounds": "Existing 20000 tracked-file/16MiB-per-file/512MiB-total and 128-tool/512MiB budgets remain authoritative.",
+    "outerSupervisor": "Root must independently enforce the process bound; source timers cannot forcibly interrupt an uncooperative kernel syscall.",
+    "noBroadeningOfCanonicalSemantics": true
+  },
+  "artifacts": {
+    "allowlist": ["receipt.json","results.json","source-manifest.json","artifact-manifest.json"],
+    "privateReads": "Stream directory entries under held descriptor; exact four regular files, per-file bounds, descriptor-owned stable reads and named/fresh-chain identity checks.",
+    "schemas": "Reject duplicate/nonfinite/invalid UTF-8/excess-depth JSON and all unknown nested receipt/result/source/packet/binding fields; validate exact source/tool identities and all artifact byte/hash bindings.",
+    "outerAdmission": "Require natural driver exit0 for complete canonical proposals, exit2 for safely classified prerequisite evidence, and owned leader/group/capture settlement; stdout summary must match bound receipt classification.",
+    "publication": "After complete admission only, copy the four exact safe bytes exclusively into fresh .verification/campaign-proof/R18 using nofollow directory descriptors and O_EXCL leaves; verify exact copied bytes.",
+    "preserveOnFailure": "Never delete, clean, overwrite or reuse existing evidence; partial publication remains incomplete and preserved.",
+    "extraArtifactsForbidden": true
+  },
+  "proposalBoundary": {
+    "stockCommand": ["validated golangci-lint binary","fmt","--stdin","--config","apps/player/.golangci.yml"],
+    "inputFiles": [
+      {"path":"apps/player/internal/server/home_assistant_document_targets_test.go","blob":"69f15a59a3291dbedcef0df575f851e4c95c4d50","sha256":"18ab485d6f82196554b598152a15984f44db06cc2620e5cd04f17b2b9bccb0c5","bytes":4465,"lines":91},
+      {"path":"apps/player/internal/server/home_assistant_document_targets_helpers_test.go","blob":"1750f363773b4d86b200434a0bf387bc60eecb4b","sha256":"8de16a1fbb631a76bf22378c3fca25e6cff7dfda55239437e58e8ed377316cb8","bytes":7998,"lines":232}
+    ],
+    "maximumCanonicalLines": 300,
+    "autoAdoption": false,
+    "semanticsVerified": false,
+    "incumbentDefectRED": false,
+    "r18FeatureAccepted": false,
+    "downstreamAcceptance": "Root must independently review/adopt exact canonical assertions, comments and bodies and update Go/callsite pins before separate90s compiler and45s exact public-contract runtime admission.",
+    "nativeContract": "Preserve original four test bodies, repeated twice, including native strict JSON/no-claim controls. Six absent-new-claim records are prerequisites, never new incumbent RED."
+  },
+  "references": {
+    "exactDocumentLinks": [
+      {"path":"engineering/qa/2026-10-05-r18-public-contract-checkpoint/FORMAT.md","blob":"72def2bf1b13518db9305ad6ae08b7e8de891bb9","sha256":"927ebd84c815b52810f8642983ad7e9b80b07a46935fad7605151071b3bf8dd3","bytes":16597,"lines":88,"blobAPI":"https://api.github.com/repos/Kinosail/kinosail/git/blobs/72def2bf1b13518db9305ad6ae08b7e8de891bb9"},
+      {"path":"engineering/qa/2026-10-05-r18-public-contract-checkpoint/DRIVER.md","blob":"d56cffddf608783a243702526e2109e10b671dd5","sha256":"b8b0025033108eb1b349271503347e97cc5a2bcff2f8e9bdec8a8be1c4957ec0","bytes":22028,"lines":122,"blobAPI":"https://api.github.com/repos/Kinosail/kinosail/git/blobs/d56cffddf608783a243702526e2109e10b671dd5"},
+      {"path":"engineering/qa/2026-10-05-r18-public-contract-checkpoint/CONTRACT.md","blob":"5cc804851fb12b9a9d6da13197e774aa0dad93ae","sha256":"1c23d19aa66ee84e298a9da1ca13efb5dd5d477e547b6ed719e68ec60e98086b","bytes":17973,"lines":262,"blobAPI":"https://api.github.com/repos/Kinosail/kinosail/git/blobs/5cc804851fb12b9a9d6da13197e774aa0dad93ae"}
+    ],
+    "formatterSources": [
+      {"path":"apps/player/scripts/campaign_r18_document_format_process.py","blob":"50dd213f5a2c4a7fdeb5de1b8038ec0e97877bc1","sha256":"4aaec370c9a099a8eb08910f7adce1d1acf24fc6c054ac9ce6d114598442ad07","bytes":10254,"lines":234},
+      {"path":"apps/player/scripts/campaign_r18_document_format.py","blob":"7525dbf7e7457c711d25be61760373662b116de1","sha256":"a451639beefbf1b015617593ddae4debd41fe8de8781b4f6b5601066cc028d64","bytes":13771,"lines":258},
+      {"path":"apps/player/scripts/test_campaign_r18_document_format.py","blob":"1ab19b3df86e3f3bf887194749745db36cd7133d","sha256":"6ef0a11ff1ec2727be218d78ff8eef35c52233297054effdd1cb59255e661f39","bytes":25161,"lines":167}
+    ],
+    "formatterAggregate": "7fda083bf9adfc20aa52ab1e1426c557a7f2402c6d0a9c06f83f2424d7c1e90b",
+    "driverSourceManifest": [
+      {"path":"apps/player/scripts/campaign-r18-document-contract.py","blob":"cd3994a3b83677d84f81e708c32d081267154570","sha256":"257736615cfca467874775c6b562f5059bb797c9848945e8ab6d4911415b8ca4","bytes":11663,"lines":215},
+      {"path":"apps/player/scripts/campaign_r18_document_admission.py","blob":"8dcfaed7534a87dbd147740e16f9015772a4f6d9","sha256":"598ffa43a1a9d62388c6048e822f0caa5b7af1e871ad71b7f56d4b3f1144182b","bytes":4096,"lines":85},
+      {"path":"apps/player/scripts/campaign_r18_document_events.py","blob":"8fa40854f7e5e55bdd31eb1bb23ad1c2c903cf17","sha256":"da42ba31d5e7334e065bb66822d139720dd6d52b1cd887cabe12016cbeaa0a57","bytes":7028,"lines":158},
+      {"path":"apps/player/scripts/campaign_r18_document_inputs.py","blob":"5e1c5e36abc4ec60fe13030e8a4bce3fc35f6672","sha256":"c64cfa8f8b85320c3d110c83ca3e7c8745f1ee894eb471fd1276829e0381ae98","bytes":6702,"lines":185},
+      {"path":"apps/player/scripts/campaign_r18_document_sources.py","blob":"c5ce4f7fe606b5005b82b12675c9c46324a83fdb","sha256":"2a440beb92138f6b3dbf9e70c44d5155f2f92fdcdcb519699c330485d0e9abd4","bytes":9032,"lines":208},
+      {"path":"apps/player/scripts/test_campaign_r18_document_admission.py","blob":"d031fee90af7af4d965eb631c560815a56dfcf00","sha256":"7c12f320a7ea6727fd51206371c4c91a5c87cea3c935216155e114e35f1707b3","bytes":9015,"lines":181},
+      {"path":"apps/player/scripts/test_campaign_r18_document_events.py","blob":"12ef0bc999d14a40f23eb08c9ad31abaaa4f7652","sha256":"af1fbbde3172d6b7f1f78eb26956a6307bf40544b6b499f36c950090b32e39ce","bytes":8225,"lines":173},
+      {"path":"apps/player/scripts/test_campaign_r18_document_inputs.py","blob":"df5db8687e79a50f93fe4b0b68e92b3ae65622ea","sha256":"0fb3358eefe88139d57e3d2236734c5f7441d82638310dfbd80e11029c60a3ef","bytes":7269,"lines":125}
+    ],
+    "baseAnchor": {
+      "revision": "bd1ea2e148787ae8d4a0a46640bc2a965e10fe6a",
+      "tree": "6070e86cc8a3522810218d311cc2d5d6246f02d0",
+      "meaning": "Historical mandatory full-history anchor only; not a latest-main assertion."
+    }
+  },
+  "remainingAcceptance": ["Independent exact new bootstrap source review and parent pure mocked controls; these 19 new controls have not run","Root hosted captured-control bootstrap and exact nineteen-result admission","Root exact full tree and history integration","Root workflow/router/setup review","Stock hosted formatter execution","Four-file actual publication and process settlement","Canonical semantic/assertion/callsite review and explicit adoption","Separate Go compilation and exact eight-record public runtime","Separate actual browser/authenticated Profile/lifecycle/device acceptance"],
+  "hostedControls": {
+    "status": "Concrete two-source bootstrap staged, pending independent exact source review and parent RAM controls; no hosted execution.",
+    "observedTooling": [
+      {"path":".github/workflows/ci.yml","blob":"71b076c991d8c20f45bde4e705295016a46ae84f","observation":"Normal Python discovery is confined to scripts/ci and engineering/documentation."},
+      {"path":".github/workflows/app.yml","blob":"bd2793b547678fc9fec33a5b172daae370218e0e","observation":"Player Python checks use explicit startup and HLS scripts; no app-script unittest discovery requirement was found."}
+    ],
+    "newSourcePathRequired": true,
+    "testSourceMustRemain": "ff3be3283cc8c5e35d23b697592fa5571f2acc89",
+    "proposal": ["Use a fresh bounded Python stdin process with the exact cleared descriptor reader loaded from captured/pinned5e1c5e36 bytes under a private bootstrap alias; do not prepopulate campaign_* module names.","Descriptor-read fixed wrapper path, <=32768 bytes; require b7ad9f7c OID,85d3e3b1 SHA256 and21673 bytes before compile/exec.","Create only ModuleType r18_public_under_test with fixed __file__; exec captured wrapper bytes under that non-main name. Never invoke main or add a pathname loader.","Call only load_package(deadline), which captures/verifies all11 fixed custom source bytes before executing definition modules in memory.","Descriptor-read exact fixed test path, <=32768 bytes; require ff3be328 OID,165236e1 SHA256 and31306 bytes before compile/exec as a non-main test module.","All test imports resolve the captured sys.modules aliases. Select only PublicControls; require the exact19 unique names below and complete pass/failure/error/skip accounting.","Run under root's existing real I/O/process guards and fixed external bound. Publish only safe names/counts/status, no raw exception/output/auth/path details. No formatter, Go, main, fixture, native or browser action."],
+    "exactMethods": ["test_only_exact_hosted_selection_without_cli_options","test_missing_selection_never_uses_a_suite_default","test_complete_bound_pair_is_only_a_proposal","test_safe_missing_history_prerequisite_remains_publishable_without_adoption","test_json_duplicate_nonfinite_invalid_utf8_or_depth_is_blocked","test_unknown_missing_extra_or_unbound_artifacts_are_blocked","test_actual_wrapper_status_and_every_settlement_flag_are_required","test_unknown_or_private_receipt_and_packet_fields_are_blocked","test_wrong_revision_candidate_packet_hash_or_after_state_is_blocked","test_source_path_duplicate_mode_and_tool_count_boundaries_are_blocked","test_summary_capture_never_exports_private_output_or_unknown_fields","test_exact_driver_arguments_include_required_fresh_output","test_fresh_private_name_is_not_created_and_collisions_are_preserved","test_extra_private_file_rejects_before_any_read","test_existing_public_directory_never_writes_or_deletes","test_source_capture_rejects_any_changed_size_blob_or_sha_before_import","test_summary_duplicate_nonfinite_or_wrong_phase_is_not_complete","test_invalid_admission_never_calls_publisher","test_publication_failure_preserves_every_artifact_without_cleanup"],
+    "rootWorkflowAndSupervisorRemainUnchangedHere": true,
+    "proposalKind": "Historical stdin proposal retained below; superseded by the fixed scripts/ci bootstrap without changing wrapper/test bytes.",
+    "sources": [
+      {"path":"scripts/ci/r18_format_public_controls.py","blob":"478195e2c650a27be475cd8186f915d72d4c09a0","sha256":"f39f55458074165890de66c073e9907fddaf4b330d2866b015fe3592b538155c","bytes":23506,"lines":289},
+      {"path":"scripts/ci/test_r18_format_public_controls.py","blob":"20f5feaac00d816ec0a754dc83b6bb584c142ead","sha256":"8e45eb96543156155cf356fab814a6274fa42d0cb425ebb990d87759c78d75d0","bytes":214571,"lines":291}
+    ],
+    "aggregate": {
+      "sha256": "77722bdeec1640c5505dcbef9e599a71b8cefbac660759ae4a243392a44fe38a",
+      "recipe": "SHA256 of UTF-8 compact JSON source rows, ASCII path ascending; row key order path,blob,sha256,bytes,lines; no trailing newline.",
+      "getVerified": true
+    },
+    "entrypoint": {
+      "path": "scripts/ci/r18_format_public_controls.py",
+      "argv": ["python3","-B","scripts/ci/r18_format_public_controls.py"],
+      "cliOptions": false,
+      "internalDeadlineSeconds": 20,
+      "requiredEnvironment": {"GITHUB_ACTIONS":"true","RUNNER_OS":"Linux","CAMPAIGN_PROOF":"R18","CAMPAIGN_R18_SUITE":"source-format","GITHUB_SHA":"lowercase exact 40 hex"},
+      "rootSupervisor": {"timeoutSeconds":30,"killAfterSeconds":2,"stepMinutes":1},
+      "rootRoutingAndFullTree": null
+    },
+    "preparedControls": {
+      "path": "scripts/ci/test_r18_format_public_controls.py",
+      "methods": ["test_selection_is_fixed_and_never_defaults_or_accepts_cli","test_uppercase_nonstring_and_wrong_length_revision_reject","test_exact_wrapper_and_test_full_identities_are_required","test_capture_rejects_unlisted_path_or_alias_without_reader_call","test_both_sources_are_captured_before_wrapper_or_test_definitions","test_symlink_nonregular_size_stability_deadline_and_close_reject_before_source_execution","test_wrong_captured_wrapper_or_test_hash_never_executes_them","test_capture_checks_deadline_before_and_after_descriptor_read","test_all_eleven_source_bytes_names_and_module_aliases_are_required","test_extra_missing_package_source_or_wrong_fixed_pin_prevents_test_execution","test_only_nonmain_fixed_aliases_and_pinned_bytes_may_execute","test_occupied_alias_is_not_overwritten","test_only_exact_publiccontrols_class_and_nineteen_names_are_selected","test_real_default_io_process_and_wait_are_blocked_and_restored","test_full_nineteen_terminal_pass_records_are_required_for_green","test_failure_error_skip_expected_failure_and_unexpected_success_cannot_be_green","test_subtest_failure_or_error_is_terminal_parent_failure","test_deadline_incomplete_duplicate_or_unknown_events_never_admit","test_closed_report_never_exports_raw_exception_paths_or_output"],
+      "count": 19,
+      "frozenBeforeImplementation": true,
+      "localOrParentRun": false,
+      "fixtureBytes": "Captured exact wrapper/test/11-source golden bytes embedded only for pure memory mocks; no accounts, credentials, raw outputs or actual application fixtures."
+    },
+    "captureProtocol": ["Normal scripts/ci test discovery imports only r18_format_public_controls; no top-level source reads/processes. Embedded reader definitions use exact 5e1c5e36 OID/SHA/bytes under private non-main r18_controls_capture_reader.","Before any wrapper or original test definitions execute, descriptor-capture both fixed paths through the cleared NOFOLLOW/NONBLOCK/CLOEXEC reader (32768 bytes each) with exact OID/SHA/size and before/after stability/fresh-chain checks/checked close. Rejection prevents their execution.","Load only verified captured wrapper bytes as r18_public_under_test, call only load_package(deadline), then require the exact 11 CODE_PINS, full bytes/hash identities, exact modules and non-main names/fixed __file__ paths; aggregate source bytes <=262144.","All definition imports are restricted to already-loaded allowlisted standard modules and captured fixed package aliases; no pathname custom loader, arbitrary module or main call. Execute original ff3be328 test definitions only after closure verification as r18_fixed_public_controls.","Select only PublicControls with its fixed class/module identity and exact 19 unique method names. Mock-only defaults reject unmocked file/descriptor/network/process/thread/wait actions; deliberate per-test mocks may replace defaults.","SafeResult retains fixed parent names/status only, handles failed/error subtests and rejects unexpected/duplicate/incomplete parent events. Skip/expected-failure/unexpected-success/errors/failures cannot be green. No traceback, exception payload, private output or paths are projected.","Internal monotonic checkpoints span capture, source closure and all test starts/stops. They cannot forcibly terminate a stalled kernel call or uncooperative Python test; parent external 30-second timeout/2-second kill and actual settled process remain mandatory.","This controls bootstrap invokes no formatter, Go compiler/test, source adoption, application, media/native/browser, publication/export or cleanup path; four-file formatter admission remains unchanged and separately unexecuted."],
+    "reportSchema": {
+      "closedTopFields": ["schemaVersion","id","suite","phase","classification","count","passed","failed","errors","skipped","records","formatterExecuted","goExecuted","autoAdoption","semanticsVerified"],
+      "constants": {"schemaVersion":1,"id":"R18","suite":"source-format","phase":"source-format-controls","formatterExecuted":false,"goExecuted":false,"autoAdoption":false,"semanticsVerified":false},
+      "classifications": ["source-controls-green","controls-failed","prerequisite-blocked"],
+      "recordFields": ["test","status"],
+      "statuses": ["pass","fail","error","skip","incomplete"],
+      "greenRequires": "All exact nineteen parents started once, terminal pass once and stopped once before deadline; no skips/faults/incomplete events. Parent process/deadline/complete JSON admission is a separate required gate."
+    },
+    "retention": {
+      "formatterRowsExact": "ac69880bf6ed476e50871c0cfe20eafdc9ee85ad20651fa86b47148adb769321",
+      "wrapper": "b7ad9f7c311c4bdc1e8f5ba3fea8bb13b2ae1d42",
+      "original19Tests": "ff3be3283cc8c5e35d23b697592fa5571f2acc89",
+      "original14Tests": "36184f5632bdf1810bb39d18d8b957876eb31a02",
+      "newPreparedTests": "20f5feaac00d816ec0a754dc83b6bb584c142ead",
+      "inverse": "Both new scripts/ci paths were absent and no existing source changed: remove those additions to recover the prior source tree. Reverse the explicitly added ownership/bootstrap metadata to recover the prior JSON object; retain original manifest6f349856 bytes by exact pin rather than inferring textual formatting."
+    }
+  }
+}
