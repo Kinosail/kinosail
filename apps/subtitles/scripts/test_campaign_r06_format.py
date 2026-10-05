@@ -52,7 +52,12 @@ class R06FormatAdmissionTests(unittest.TestCase):
     def test_only_reviewed_save_production_go_paths_extend_fixture_list(self):
         prefix = "apps/subtitles/engineering/qa/2026-10-05-save-browser/fixture/"
         self.assertEqual(GO_FILES, tuple(prefix+name for name in
-            ("main_test.go", "transport_test.go", "witness_test.go", "fixture_test.go", "owner_test.go")) + (
+            (
+                     "main_test.go", "transport_test.go", "witness_test.go", "fixture_test.go", "owner_test.go",
+                     "filesystem_test.go", "http_test.go", "routing_test.go", "transport_hold_test.go",
+                     "witness_effects_test.go", "owner_enrollment_test.go", "control_requests_test.go",
+                     "control_owned_test.go", "control_faults_test.go",
+                 )) + (
             "apps/subtitles/internal/server/assets.go",
             "apps/subtitles/internal/server/subtitle_inspector.go",
         ))
@@ -64,6 +69,10 @@ class R06FormatAdmissionTests(unittest.TestCase):
                      "apps/subtitles/internal/server/auth.go"):
             with self.subTest(path=path), self.assertRaises(ValueError):
                 self.call(path=path)
+
+    def test_formatted_file_cannot_exceed_existing_300_line_limit(self):
+        with self.assertRaisesRegex(ValueError, "^format-file-lines$"):
+            self.call(output=b"package main\n" + b"\n"*300)
 
 if __name__ == "__main__":
     unittest.main()

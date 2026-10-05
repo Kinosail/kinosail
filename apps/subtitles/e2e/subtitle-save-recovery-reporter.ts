@@ -1,6 +1,7 @@
 import type { FullConfig, FullResult, Reporter, Suite, TestCase, TestError, TestResult } from "@playwright/test/reporter";
 import type { AssertionID, JSONObject, JSONValue, SafeCase } from "./subtitle-save-recovery-helpers";
-import { constants, closeSync, lstatSync, openSync, readFileSync, writeFileSync } from "node:fs";
+import { constants, closeSync, openSync, writeFileSync } from "node:fs";
+import { readAttachment } from "./subtitle-save-attachment-reader.cjs";
 import { isAbsolute } from "node:path";
 
 const SCHEMA = "r06-save-browser-v1";
@@ -133,9 +134,7 @@ export default class SaveReporter implements Reporter {
       if (attachment.body) bytes = attachment.body;
       else {
         if (!attachment.path) throw new Error();
-        const info = lstatSync(attachment.path);
-        if (!info.isFile() || info.isSymbolicLink() || info.size > 32768) throw new Error();
-        bytes = readFileSync(attachment.path);
+        bytes = readAttachment(attachment.path);
       }
       if (bytes.length > 32768) throw new Error();
       const parsed: JSONValue = JSON.parse(bytes.toString("utf8"));

@@ -44,6 +44,7 @@ for (const operation of ["apply", "restore"]) {
 test("failed save unlocks controls and preserves the user's text", { tag: "@smoke" }, async () => {
   const view = inspectorFixture(); await view.ready(); await view.preview();
   view.form.elements.text.value = "keep this correction";
+  const saveBegin = view.requests.length;
   const pending = view.node("apply-subtitle").listeners.click();
   await flush(); view.respond(view.requests.at(-1), view.receipt("prepared"), 201); await flush();
   const activation = view.requests.at(-1);
@@ -52,8 +53,8 @@ test("failed save unlocks controls and preserves the user's text", { tag: "@smok
   view.respond(view.requests.at(-1), view.receipt("completed", "failed", 500)); await flush();
   view.respond(view.requests.at(-2), view.review("en", "EN current"));
   view.respond(view.requests.at(-1), { pageSize: 20, matched: 0, history: [] }); await pending;
-  expect(view.requests.filter(request => request.url.endsWith("/apply"))).toHaveLength(1);
-  expect(view.requests.filter(request => request.options.method === "POST")).toHaveLength(2);
+  expect(view.requests.slice(saveBegin).filter(request => request.url.endsWith("/apply"))).toHaveLength(1);
+  expect(view.requests.slice(saveBegin).filter(request => request.options.method === "POST")).toHaveLength(2);
   expect(view.form.elements.text.value).toBe("keep this correction");
   expect(view.form.elements.text.disabled).toBe(false);
   expect(view.node("inspector-status").textContent).toBe("Save completion is unknown. Changes may have been written. Your edit is kept; check current subtitle and History before trying again.");

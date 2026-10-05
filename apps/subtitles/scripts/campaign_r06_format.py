@@ -16,7 +16,12 @@ import time
 ROOT = Path(__file__).resolve().parents[3]
 OUTPUT = ROOT / ".verification/campaign-proof/R06"
 GO_FILES = tuple("apps/subtitles/engineering/qa/2026-10-05-save-browser/fixture/" + name
-                 for name in ("main_test.go", "transport_test.go", "witness_test.go", "fixture_test.go", "owner_test.go")) + (
+                 for name in (
+                     "main_test.go", "transport_test.go", "witness_test.go", "fixture_test.go", "owner_test.go",
+                     "filesystem_test.go", "http_test.go", "routing_test.go", "transport_hold_test.go",
+                     "witness_effects_test.go", "owner_enrollment_test.go", "control_requests_test.go",
+                     "control_owned_test.go", "control_faults_test.go",
+                 )) + (
     "apps/subtitles/internal/server/assets.go", "apps/subtitles/internal/server/subtitle_inspector.go",
 )
 FORMAT_FILE_LIMIT = len(GO_FILES)
@@ -43,6 +48,8 @@ def format_record(*, path, original, output, exit_code, stderr):
         raise ValueError("format-encoding") from None
     if b"\0" in original or b"\0" in output:
         raise ValueError("format-encoding")
+    if len(output.splitlines()) > 300:
+        raise ValueError("format-file-lines")
     return {"path": path, "original": pin(original), "formatted": pin(output),
             "changed": original != output,
             "formattedSourceBase64": base64.b64encode(output).decode("ascii")}
