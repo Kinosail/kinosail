@@ -56,7 +56,7 @@ def preflight(tools):
     require_version([str(tools["go"]), "version"], r"go version go1\.27(?:\.[0-9]+)? linux/amd64", ROOT)
     require_version([str(tools["node"]), "--version"], r"v26\.[0-9]+\.[0-9]+", ROOT)
     require_version([str(tools["ruby"]), "--version"], r"ruby 3\.4\.[^\n]{1,300}", ROOT)
-    require_version([str(tools["bundle"]), "--version"], r"Bundler version 4\.0\.16", ROOT)
+    require_version([str(tools["bundle"]), "--version"], r"(?:Bundler version )?4\.0\.16", ROOT)
     env = environment() | {"BUNDLE_GEMFILE": str(ROOT / "engineering/documentation/Gemfile")}
     result, _private = execute([str(tools["bundle"]), "check"], 10, ROOT / "engineering/documentation", env,
                               label="dependency-check")
