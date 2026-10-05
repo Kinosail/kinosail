@@ -71,7 +71,7 @@ async function installClock(page: Page) {
     };
     const observer = new MutationObserver(sample);
     observer.observe(form, {subtree:true,attributes:true,attributeFilter:["disabled","readonly"]});
-    button.addEventListener("click", () => { clicked = performance.now(); queueMicrotask(sample); }, {capture:true,once:true});
+    button.addEventListener("click", () => { clicked = performance.now(); }, {capture:true,once:true});
     (window as Window & {__r06SaveClock:()=>BrowserClock}).__r06SaveClock = () => {
       sample(); return {elapsed:clicked === null ? -1 : performance.now()-clicked,unlocked};
     };
