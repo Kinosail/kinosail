@@ -16,6 +16,7 @@ from campaign_r06_browser_sources import (APP, FIXTURE, GO_CASES, OUTPUT, PACKAG
                                          GoProjection, fingerprint, identity, inspector_identity, pin, private_result, tracked_sources)
 
 SAFE_NAMES = ("receipt.json","results.json","source-manifest.json","artifact-manifest.json")
+TOOL_BYTE_LIMITS = {"go":64*1024*1024,"node":192*1024*1024,"pnpm":64*1024*1024}
 SUITES = {
     "save-headers":("headers",["save-headers-desktop","save-headers-phone"],"^R06 Save headers held after completed write - (phone|desktop)$"),
     "save-body":("body",["save-body-desktop","save-body-phone"],"^R06 Save body held after completed write - (phone|desktop)$"),
@@ -39,7 +40,7 @@ def tools_state(preflight=None):
             info = path.lstat()
             preflight[name].update(bytes=info.st_size,mode=info.st_mode & 0o777,
                                    regular=stat.S_ISREG(info.st_mode))
-        state[name] = fingerprint(path,64*1024*1024,True)
+        state[name] = fingerprint(path,TOOL_BYTE_LIMITS[name],True)
     return state
 
 
