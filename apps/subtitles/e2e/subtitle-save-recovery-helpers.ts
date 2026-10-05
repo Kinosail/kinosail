@@ -203,13 +203,19 @@ export async function runSaveCase(page: Page, _info: TestInfo, entry: Entry): Pr
     }
     result.saveClickToUnlockMs = observedClock.unlocked;
     record("editing-unlocked-by-45s", result.saveClickToUnlockMs !== null && result.saveClickToUnlockMs <= 45000);
-    const status = (await page.locator("#inspector-status").textContent()) || "";
+    const observed = await page.evaluate(() => {
+      const status = document.getElementById("inspector-status");
+      const text = document.querySelector('textarea[name="text"]');
+      if (!(status instanceof HTMLElement) || !(text instanceof HTMLTextAreaElement)) throw new Error("fixed-observation-boundary");
+      return { status: status.textContent || "", text: text.value };
+    });
+    const status = observed.status;
     state = await snapshot(page, origin);
     const savedClaim = /subtitle saved/i.test(status);
     const authoritativeSaved = savedClaim && state.protocol === "prepared" && state.browserCompletedReads > 0 && state.browserSavedInspections > 0;
     const uncertain = /confirm|unknown|unavailable|lost|timed out|taking longer/i.test(status);
     record("finite-truthful-status", authoritativeSaved || (uncertain && !/not saved|rolled back|nothing.*saved/i.test(status)));
-    record("original-retained-if-uncertain", authoritativeSaved || (await text.inputValue()) === SAVED);
+    record("original-retained-if-uncertain", authoritativeSaved || observed.text === SAVED);
     result.stage = "new-edit";
     let edited = false, newStatus = "";
     if (await text.isEditable()) { await text.fill(NEWER); edited = (await text.inputValue()) === NEWER;
