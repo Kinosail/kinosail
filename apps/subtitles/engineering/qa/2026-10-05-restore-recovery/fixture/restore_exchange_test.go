@@ -59,8 +59,7 @@ func (exchange *restoreExchange) send(t *testing.T, ctx context.Context, target 
 	response, err := client.Do(request)
 	if err != nil { if response != nil { closeRestoreControlBody(t, response) }; exchange.failed <- true; return }
 	defer func() { closeRestoreControlBody(t, response) }()
-	exchange.response <- response
-	select { case <-exchange.consumed: case <-ctx.Done(): }
+	exchange.publish(ctx, response)
 }
 func closeRestoreControlBody(t *testing.T, response *http.Response) {
 	if err := response.Body.Close(); err != nil { t.Error("Restore owned response body close failed") }
@@ -101,4 +100,9 @@ func (exchange *restoreExchange) stop(t *testing.T) {
 	joinRestoreChannel(t, exchange.requestDone, "Restore owned request did not settle")
 	if exchange.bodyReadDone != nil { joinRestoreChannel(t, exchange.bodyReadDone, "Restore owned body reader did not settle") }
 	if !exchange.rig.stop() { t.Error("Restore owned fixture descriptor did not close") }
+}
+
+func (exchange *restoreExchange) publish(ctx context.Context, response *http.Response) {
+	exchange.response <- response
+	select { case <-exchange.consumed: case <-ctx.Done(): }
 }

@@ -80,6 +80,14 @@ class CampaignProofTests(unittest.TestCase):
         self.assertIn("if: always() && inputs.architecture_metadata && inputs.campaign_r06_suite != 'restore-source-format'", source)
         self.assertIn('if [ "$CAMPAIGN_R06_SUITE" == restore-source-format ] && [ "${{ inputs.architecture_metadata }}" == true ]; then exit 2; fi', source)
 
+    def test_restore_source_format_checkout_retains_required_base_history(self):
+        source = LAYOUT.read_text()
+        campaign = source.split('  campaign-proof:\n')[1]
+        checkout = campaign.split('      - name: Validate explicit proof selection')[0]
+        self.assertIn("fetch-depth: ${{ inputs.campaign_r06_suite == 'restore-source-format' && '0' || '1' }}", checkout)
+        self.assertIn('timeout-minutes: 2', checkout)
+        self.assertNotIn('fetch-depth:', source.split('  campaign-proof:\n')[0])
+        self.assertIn('persist-credentials: false', checkout)
 
 
 if __name__ == '__main__':

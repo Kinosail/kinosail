@@ -5,19 +5,19 @@
   "status": "source-authored-unreviewed-unformatted-unrun",
   "fixtureSourceManifest": {
     "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture-source-manifest.json",
-    "bytes": 12397,
-    "lines": 282,
-    "sha256": "c11d4ad273606fd6c7c8144c94627b83ec2358d9828564cc7980eb4a6a593bed",
-    "blob": "42ba2ecc500a8b7fa42a90077dbc7da2df5db8fc",
+    "bytes": 12758,
+    "lines": 285,
+    "sha256": "8e46680fd34692d1be5090726d16833a1693d276d10c5f677c2aa74e6909a604",
+    "blob": "bf9ae2b849da6cb83d9f7b87780f06353596d1ad",
     "getVerified": true
   },
   "sources": [
     {
       "path": "apps/subtitles/scripts/test_campaign_r06_restore_format.py",
-      "bytes": 11788,
-      "lines": 219,
-      "sha256": "c693a1dfd40b35b2b974dd836a52216cc0ef7d08d6ee8ed2aacaa9acfb324b76",
-      "blob": "55d88a6fce60fc5796e0295176450d141fffbe7f",
+      "blob": "9a6e4e9da86afcde01e2424d208e3eb68f974b24",
+      "bytes": 14053,
+      "lines": 253,
+      "sha256": "bcf8ff71ac94d38e7352f004c661ed4f363640731acda2f704bd7f0cb5d7b292",
       "getVerified": true
     },
     {
@@ -30,10 +30,10 @@
     },
     {
       "path": "apps/subtitles/scripts/campaign_r06_restore_format.py",
-      "bytes": 14932,
-      "lines": 276,
-      "sha256": "3172e487c53a2f31e1566493516631b7f88e8bae84af4e9090e9a0889f327754",
-      "blob": "1d811ebdb5ddc3083caa2b7c86dc10ca8578c67b",
+      "blob": "2f69a0ca609ec3e4df72166decdc9770b7c87920",
+      "bytes": 15898,
+      "lines": 299,
+      "sha256": "f92f09d7a13f61cf9e033e31c6e9f591f0be578c6ec6693f6eebef556e98421e",
       "getVerified": true
     }
   ],
@@ -66,6 +66,15 @@
     {
       "blob": "1d811ebdb5ddc3083caa2b7c86dc10ca8578c67b",
       "role": "capture-error-owned-cleanup-repair"
+    },
+    {
+      "blob": "e9761f179bc6bc28fb3776e328290d608e93e653",
+      "controls": 22,
+      "role": "Git-admission-control-before-classification"
+    },
+    {
+      "blob": "4b19b62fbc487ec611188240e36b732a27fbddbe",
+      "role": "fixed-command-classification-and-base-availability-check"
     }
   ],
   "formatterMode": "restore-source-format",
@@ -112,21 +121,21 @@
   "rawInputs": [
     {
       "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_assertions_test.go",
-      "blob": "f3825cc3c1c8bee8c87d12cfd852730e7723251b",
-      "bytes": 6096,
-      "sha256": "7ae57f6c17f746f871f7904646e7bcce85bed9424f776912d2fc0950d2c80388"
+      "blob": "0c72a93cf599390ecfa42a1b08ebbbe7e0c8bd6b",
+      "bytes": 6490,
+      "sha256": "82261355e73118d9cad07c3f6fa289ac29a0d6343efb8db669926b96087191c0"
     },
     {
       "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_controls_test.go",
-      "blob": "b2dcbeee520d5d81f28bb972aba24a0d0695241e",
-      "bytes": 4424,
-      "sha256": "3788361e7d2905c18bb6f594b0f6ce2f14a7db50ca31c45229bad6c20496227e"
+      "blob": "ef0599a3a672d09603f5619b69cb1eee3fd2a770",
+      "bytes": 4697,
+      "sha256": "d7be68372506e6813b40b7a5b2c9080a53af634a8a0ab95e8369c1b18bddacdb"
     },
     {
       "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_exchange_test.go",
-      "blob": "b2bc96f3afd84a8521b3706142949263a0e9b4a3",
-      "bytes": 4534,
-      "sha256": "0355a8a406e099725643c61f6651c1017521b0d44e358a4f7f78e0408c685534"
+      "blob": "ddf89b521e9884a06a9e479acb17ecfb7322dff0",
+      "bytes": 4659,
+      "sha256": "d809df7ca579c2c612616d0448cdc056d7dba5c32cddea8d15adb276e8380414"
     },
     {
       "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_filesystem_test.go",
@@ -136,9 +145,9 @@
     },
     {
       "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_http_test.go",
-      "blob": "37736e36eceed711e444f48aa487596b0029167d",
-      "bytes": 5839,
-      "sha256": "cbb2eb379d3c0e7ae46578f9f6bbe394e205dc2c8254824318aa336f2e3116ae"
+      "blob": "7b108781419303977eccd33e28241f4023766bba",
+      "bytes": 6018,
+      "sha256": "5efa10db3ffbcf70296fe0389e866de415e7ed6c365bb72b71b703325eab7798"
     },
     {
       "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_main_test.go",
@@ -160,9 +169,9 @@
     },
     {
       "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_requests_test.go",
-      "blob": "8d3d89c2f9b18ef55efe8a293939c0e19fa34d66",
-      "bytes": 7199,
-      "sha256": "8740185a8026035330e389c3da2c187e86179246ca51050f9439f670d0fc8dbd"
+      "blob": "ba48bfa05ec50dfb01bcfa223f4b1b6ca9ad93c0",
+      "bytes": 7174,
+      "sha256": "4e2a98772c1d468a16c94c7da6044866d0a972d50209ede130cad0a400c349be"
     },
     {
       "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_routes_test.go",
@@ -172,9 +181,9 @@
     },
     {
       "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_routing_test.go",
-      "blob": "de74fd8dcd6a135f3d40661c6a662a93f353ab48",
-      "bytes": 5966,
-      "sha256": "73e0e68c47ae199746d7d92c68cd332e95ed91aeb45b38bb1b5ea178525e014d"
+      "blob": "6bc8920c88227466f3c1185dfcc94e41fd48d20b",
+      "bytes": 6144,
+      "sha256": "e4bc645a6e7d1c2705b09dc4b9a62a4def57208198574b253212ccabc880d1c3"
     },
     {
       "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_target_test.go",
@@ -220,7 +229,7 @@
     "artifactBytesEach": 4194304
   },
   "preservationBoundary": [
-    "Raw Go inputs are Git-blob/SHA256/size pinned to the independently clear22-source manifest.",
+    "Raw Go inputs are Git-blob/SHA256/size pinned to the updated22-source manifest; exact revised-source review remains pending.",
     "Only the stock existing Subtitles formatter configuration is invoked through stdin; no application or compiler invocation.",
     "Lexer is restricted to reviewed inputs, not a general Go parser; comments/literals/import bindings/declaration order are exact.",
     "Only Go automatic/optional semicolons, exact import-spec sorting and recognized call/composite-list final commas normalize.",
@@ -231,11 +240,12 @@
     "Checkout GITHUB_SHA/base ancestry, entire tracked source/tree, explicit inputs and formatter identity are checked before/after.",
     "Canonical source is static and allowlisted; raw stderr/errors/environment/auth/URLs/runtime output are not exported.",
     "All sources/artifacts are retained; formatter writes no tracked inputs and never auto-adopts outputs.",
-    "An unexpected capture exception still signals/joins the owned group; captureFailed permanently blocks canonical admission."
+    "An unexpected capture exception still signals/joins the owned group; captureFailed permanently blocks canonical admission.",
+    "Fixture-only structural lint repair preserves all failure literals and four Test names; harness body is unchanged apart from six raw pins and approved manifest identity constants."
   ],
   "remainingGates": [
-    "independent exact package review",
-    "hosted20 pure controls",
+    "independent exact revised22source/formatter package review",
+    "hosted22 pure controls",
     "exact guarded tree integration by root",
     "stock hosted formatter/source-tool/process admission",
     "canonical token/comment/literal and <=300-line artifact review",
@@ -243,16 +253,44 @@
     "actual compiler/G704/public-control/browser gates remain separate"
   ],
   "remainingLimits": [
-    "No Python controls or formatter have executed; fake process controls are source only.",
+    "Root reports previous4b19 diagnostic22 RAM controls passed; current pin-only snapshot and actual formatter phases remain unrun.",
     "Captured formatter stdout/stderr size checks occur after communicate, following the admitted stock formatter design; stdin is pinned and bounded.",
     "No claim of general Go grammar validation, compilation, auth, Save/Restore effects or runtime acceptance."
   ],
   "previousManifest": {
-    "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/formatter-source-manifest.json",
-    "bytes": 10935,
-    "lines": 240,
-    "sha256": "7cccd6d8b053c227269f5da60162c3a6990a1f4ef55f6a165ca12db2046158c4",
-    "blob": "bdaf686ee71096af679bf2ef7bf41dec2a5d6715",
-    "getVerified": true
+    "blob": "635b93ca08cce5ffaec7ba01b1e6846d07dbb017",
+    "sha256": "30de319c59d10405514c1d56deb12d0b17f516e2e3bba29b7bef1ff167f9551e"
+  },
+  "historicalHostedControl": {
+    "run": "37336041327",
+    "artifact": "11355264950",
+    "zipBytes": 1208,
+    "zipSha256": "89c2ae77f771705b59bf125c38c4bfd3d4842bd4084b7163ae9f1116c0914833",
+    "parentReportedControlsPassed": 20,
+    "formatterPhases": 0,
+    "errorClass": "CalledProcessError",
+    "failureStage": "admission",
+    "failureCode": "unclassified",
+    "classification": "formatter-prerequisite-blocked; actual failing command unproved"
+  },
+  "admissionDiagnostic": {
+    "fixedGitCodes": 7,
+    "rawCommandOrStderrExported": false,
+    "baseObjectCheckRequired": true,
+    "originalAncestryCheckRequired": true,
+    "shallowCheckoutExplanation": "source-supported hypothesis; no retrospective exact-command attribution",
+    "actionPrimarySource": "https://github.com/actions/checkout/blob/3d3c42e5aac5ba805825da76410c181273ba90b1/action.yml",
+    "workflowRepairOwner": "root"
+  },
+  "lintRefactor": {
+    "manifestBlob": "68e179df8cfdd110a482b752619b1e5173cb7c22",
+    "sha256": "3cf5eb6f9001d9e8245fc74cec0afa5423e6fd4cb9fc5f144600b7d2d65b027a",
+    "changedGoFiles": 6,
+    "fixtureGoFiles": 14
+  },
+  "currentControlSnapshot": {
+    "blob": "9a6e4e9da86afcde01e2424d208e3eb68f974b24",
+    "controls": 22,
+    "change": "approved manifest identity constants only; no test-body assertions removed"
   }
 }

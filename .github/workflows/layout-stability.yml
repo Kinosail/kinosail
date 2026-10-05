@@ -121,8 +121,10 @@ jobs:
       CAMPAIGN_R06_SUITE: ${{ inputs.campaign_r06_suite || 'protocol' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        timeout-minutes: 2
         with:
           persist-credentials: false
+          fetch-depth: ${{ inputs.campaign_r06_suite == 'restore-source-format' && '0' || '1' }}
       - name: Validate explicit proof selection
         id: selection
         run: |

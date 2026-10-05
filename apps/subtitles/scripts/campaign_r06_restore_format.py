@@ -18,21 +18,21 @@ ROOT = Path(__file__).resolve().parents[3]
 OUTPUT = ROOT / ".verification/campaign-proof/R06"
 BASE_COMMIT = "bd1ea2e148787ae8d4a0a46640bc2a965e10fe6a"
 MANIFEST_PATH = "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture-source-manifest.json"
-MANIFEST_BLOB = "42ba2ecc500a8b7fa42a90077dbc7da2df5db8fc"
-MANIFEST_SHA256 = "c11d4ad273606fd6c7c8144c94627b83ec2358d9828564cc7980eb4a6a593bed"
+MANIFEST_BLOB = "bf9ae2b849da6cb83d9f7b87780f06353596d1ad"
+MANIFEST_SHA256 = "8e46680fd34692d1be5090726d16833a1693d276d10c5f677c2aa74e6909a604"
 PREFIX = "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/"
 GO_PINS = {
-    PREFIX + "restore_assertions_test.go": ("f3825cc3c1c8bee8c87d12cfd852730e7723251b", "7ae57f6c17f746f871f7904646e7bcce85bed9424f776912d2fc0950d2c80388", 6096),
-    PREFIX + "restore_controls_test.go": ("b2dcbeee520d5d81f28bb972aba24a0d0695241e", "3788361e7d2905c18bb6f594b0f6ce2f14a7db50ca31c45229bad6c20496227e", 4424),
-    PREFIX + "restore_exchange_test.go": ("b2bc96f3afd84a8521b3706142949263a0e9b4a3", "0355a8a406e099725643c61f6651c1017521b0d44e358a4f7f78e0408c685534", 4534),
+    PREFIX + "restore_assertions_test.go": ("0c72a93cf599390ecfa42a1b08ebbbe7e0c8bd6b", "82261355e73118d9cad07c3f6fa289ac29a0d6343efb8db669926b96087191c0", 6490),
+    PREFIX + "restore_controls_test.go": ("ef0599a3a672d09603f5619b69cb1eee3fd2a770", "d7be68372506e6813b40b7a5b2c9080a53af634a8a0ab95e8369c1b18bddacdb", 4697),
+    PREFIX + "restore_exchange_test.go": ("ddf89b521e9884a06a9e479acb17ecfb7322dff0", "d809df7ca579c2c612616d0448cdc056d7dba5c32cddea8d15adb276e8380414", 4659),
     PREFIX + "restore_filesystem_test.go": ("95e46d54ad38b19aae445e7886a9a10579e3e6ce", "14ad292f5db92043f44cdba9f62abcdd6a2f875da9e616508aa7ae04da8db0b1", 1960),
-    PREFIX + "restore_http_test.go": ("37736e36eceed711e444f48aa487596b0029167d", "cbb2eb379d3c0e7ae46578f9f6bbe394e205dc2c8254824318aa336f2e3116ae", 5839),
+    PREFIX + "restore_http_test.go": ("7b108781419303977eccd33e28241f4023766bba", "5efa10db3ffbcf70296fe0389e866de415e7ed6c365bb72b71b703325eab7798", 6018),
     PREFIX + "restore_main_test.go": ("5b71ecc1bc3e94be6b516595bea89ac487f88500", "b808cdca52ea70579a5550a1c049e9f14e5213efafcef85ea8575630b7354f49", 4725),
     PREFIX + "restore_owner_enrollment_test.go": ("8c570ea7cf23f1c60b01950fee8ba5122b64ccf0", "d856b68f17840df1c7b8ccd857dbb4cd2e8397ae89307ef73401ba3fefb4913b", 5019),
     PREFIX + "restore_owner_test.go": ("ce0d824a454b4dda4aff3e714f57fd214740deff", "b4d54051e32adc3ad26f14d61f9b223f10cdd5ae5fd9f1e96769126a4212df43", 1374),
-    PREFIX + "restore_requests_test.go": ("8d3d89c2f9b18ef55efe8a293939c0e19fa34d66", "8740185a8026035330e389c3da2c187e86179246ca51050f9439f670d0fc8dbd", 7199),
+    PREFIX + "restore_requests_test.go": ("ba48bfa05ec50dfb01bcfa223f4b1b6ca9ad93c0", "4e2a98772c1d468a16c94c7da6044866d0a972d50209ede130cad0a400c349be", 7174),
     PREFIX + "restore_routes_test.go": ("0f3c734bc5fa27c2c9d7d33086e3c9a076aecaef", "c18118c650b89746167032518b3add2dac3a7d08ce7da3d6a35d3063091e84e8", 3109),
-    PREFIX + "restore_routing_test.go": ("de74fd8dcd6a135f3d40661c6a662a93f353ab48", "73e0e68c47ae199746d7d92c68cd332e95ed91aeb45b38bb1b5ea178525e014d", 5966),
+    PREFIX + "restore_routing_test.go": ("6bc8920c88227466f3c1185dfcc94e41fd48d20b", "e4bc645a6e7d1c2705b09dc4b9a62a4def57208198574b253212ccabc880d1c3", 6144),
     PREFIX + "restore_target_test.go": ("5cffb6dc125fc4827e3926a05f6a7a8dc232e00a", "a2a985b832eb447129f7223737c1c083399b03478ee8ab992923d13e92928fe9", 4606),
     PREFIX + "restore_transport_test.go": ("bef80ffe1957e026697b8ff738c125a0e20f9ae9", "8641139e8acd6fcf7f6b553f06d1cb0a6443c4d1d78b29c5413579d96319aaf6", 4928),
     PREFIX + "restore_witness_test.go": ("055dc7a72a1944d34379157aa5ce02102a84ae3a", "328020a75bb82707eedc78dd2951b0d8504f3f85e9b2cf07712fa990f3f468fd", 8214),
@@ -49,6 +49,30 @@ PER_FILE_SECONDS, SHUTDOWN_SECONDS = 10, 2
 FAILURE_CODES = frozenset(("format-path format-bytes format-result format-file-lines format-token-change "
     "manifest-identity manifest-base fixture-input-identity dependency-identity checkout-identity "
     "fresh-output-required formatter-unavailable formatter-settlement").split())
+
+COMMAND_FAILURES = {
+    ("git", "rev-parse", "HEAD"): "git-head-read-failed",
+    ("git", "rev-parse", "HEAD^{tree}"): "git-tree-read-failed",
+    ("git", "diff", "HEAD", "--name-only", "-z"): "git-tracked-diff-failed",
+    ("git", "status", "--porcelain"): "git-worktree-status-failed",
+    ("git", "ls-files", "--stage", "-z"): "git-source-index-failed",
+    ("git", "cat-file", "-e", BASE_COMMIT + "^{commit}"): "git-base-object-unavailable",
+    ("git", "merge-base", "--is-ancestor", BASE_COMMIT, "HEAD"): "git-base-ancestry-failed",
+}
+
+
+def failure_code(error):
+    if type(error) is subprocess.CalledProcessError:
+        command = error.cmd
+        if type(command) in (list, tuple) and all(type(part) is str for part in command):
+            return COMMAND_FAILURES.get(tuple(command), "unclassified")
+        return "unclassified"
+    return str(error) if type(error) is ValueError and str(error) in FAILURE_CODES else "unclassified"
+
+
+def require_base_ancestry():
+    git("cat-file", "-e", BASE_COMMIT + "^{commit}")
+    git("merge-base", "--is-ancestor", BASE_COMMIT, "HEAD")
 
 
 def pin(data):
@@ -224,7 +248,7 @@ def main():
         before = identity()
         if before["revision"] != os.environ.get("GITHUB_SHA") or git("status", "--porcelain"):
             raise ValueError("checkout-identity")
-        git("merge-base", "--is-ancestor", BASE_COMMIT, "HEAD")
+        require_base_ancestry()
         if OUTPUT.exists() and any(OUTPUT.iterdir()):
             raise ValueError("fresh-output-required")
         inputs = input_sources()
@@ -254,8 +278,7 @@ def main():
                                                   exit_code=phase["exitCode"], stderr=errors))
         complete = complete_files(results["files"])
     except (OSError, ValueError, subprocess.SubprocessError) as error:
-        code = str(error) if type(error) is ValueError and str(error) in FAILURE_CODES else "unclassified"
-        receipt.update(errorClass=type(error).__name__, failureStage=stage, failureCode=code)
+        receipt.update(errorClass=type(error).__name__, failureStage=stage, failureCode=failure_code(error))
     finally:
         if before is not None and tracked is not None and inputs is not None and tool_identity is not None:
             try:

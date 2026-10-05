@@ -80,11 +80,7 @@ func (f *restoreRig) servePreparation(target *restoreTarget, writer http.Respons
 	f.mu.Unlock()
 	if !allowed { http.Error(writer, "Restore-only fixture boundary", http.StatusMethodNotAllowed); return }
 	response := f.capture(request)
-	var receipt restorePublicReceipt
-	if response.status == http.StatusCreated {
-		if response.overflow || json.Unmarshal(response.body.Bytes(), &receipt) != nil ||
-			!validPreparedRestore(receipt, input.Item) || !target.registerReceipt(receipt) { f.failBoundary() }
-	}
+	f.registerPreparedRestoreResponse(target, response, input.Item)
 	if !writeRestoreActual(writer, response) && request.Context().Err() == nil { f.failBoundary() }
 }
 
@@ -130,4 +126,12 @@ func proveRestoreInspectionBodyPending(t *testing.T, target *restoreTarget, f *r
 	case <-time.After(3*time.Second): t.Fatal("Restore released inspection body did not settle")
 	}
 	return exchange.receipt(t, response)
+}
+
+func (f *restoreRig) registerPreparedRestoreResponse(target *restoreTarget, response *restoreCapture, item string) {
+	var receipt restorePublicReceipt
+	if response.status == http.StatusCreated {
+		if response.overflow || json.Unmarshal(response.body.Bytes(), &receipt) != nil ||
+			!validPreparedRestore(receipt, item) || !target.registerReceipt(receipt) { f.failBoundary() }
+	}
 }

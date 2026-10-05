@@ -83,15 +83,7 @@ func assertRestoreInspection(t *testing.T, body []byte, item string, first, late
 		!view.Restorable || view.Current == nil || len(view.Current.Cues) != 2 {
 		t.Fatal("Restore inspected identity, recovery or cue count invalid")
 	}
-	for index, cue := range view.Current.Cues {
-		at, text := first, "Fictional original line"
-		if index == 1 {
-			at, text = later, "Fictional later line"
-		}
-		if cue.Start != at || cue.End != at+1 || cue.Text != text {
-			t.Fatal("Restore inspected cues differ from independent expected times and text")
-		}
-	}
+	assertRestoreInspectionCues(t, view, first, later)
 }
 
 func assertRestoreHistory(t *testing.T, target *restoreTarget, rig *restoreRig, restored bool) {
@@ -110,13 +102,7 @@ func assertRestoreHistory(t *testing.T, target *restoreTarget, rig *restoreRig, 
 		t.Fatal("Restore History must contain only the actual admitted changes")
 	}
 	for index, event := range history.History {
-		action, reason := "updated", "manual"
-		if restored && index == 0 {
-			action, reason = "restored", "restore"
-		}
-		if event.ID != rig.item || event.Language != "en" || event.Action != action || event.Reason != reason {
-			t.Fatal("Restore History identity or factual action differs")
-		}
+		assertRestoreHistoryEvent(t, event.ID, event.Language, event.Action, event.Reason, rig.item, index, restored)
 	}
 }
 
@@ -170,4 +156,28 @@ func validRestoreOperationID(id string) bool {
 		}
 	}
 	return true
+}
+
+func assertRestoreInspectionCues(t *testing.T, view restoreInspection, first, later float64) {
+	t.Helper()
+	for index, cue := range view.Current.Cues {
+		at, text := first, "Fictional original line"
+		if index == 1 {
+			at, text = later, "Fictional later line"
+		}
+		if cue.Start != at || cue.End != at+1 || cue.Text != text {
+			t.Fatal("Restore inspected cues differ from independent expected times and text")
+		}
+	}
+}
+
+func assertRestoreHistoryEvent(t *testing.T, id, language, actualAction, actualReason, item string, index int, restored bool) {
+	t.Helper()
+	action, reason := "updated", "manual"
+	if restored && index == 0 {
+		action, reason = "restored", "restore"
+	}
+	if id != item || language != "en" || actualAction != action || actualReason != reason {
+		t.Fatal("Restore History identity or factual action differs")
+	}
 }

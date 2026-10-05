@@ -59,9 +59,9 @@ func restoreControlGETWithin(t *testing.T, target *restoreTarget, f *restoreRig,
 	t.Helper()
 	return restoreControlWithin(t, target, f, http.MethodGet, path, nil, "", remaining)
 }
-func restoreControlPOST(t *testing.T, target *restoreTarget, f *restoreRig, suffix, body, operation string) restoreControlResponse {
+func restoreControlPOST(t *testing.T, target *restoreTarget, f *restoreRig, body, operation string) restoreControlResponse {
 	t.Helper()
-	return restoreControlJSON(t, target, f, http.MethodPost, "/api/v1/subtitle-library/"+f.item+suffix, []byte(body), operation)
+	return restoreControlJSON(t, target, f, http.MethodPost, "/api/v1/subtitle-library/"+f.item+"/restore", []byte(body), operation)
 }
 func restoreControlJSON(t *testing.T, target *restoreTarget, f *restoreRig, method, path string, body []byte, operation string) restoreControlResponse {
 	t.Helper()
@@ -101,7 +101,7 @@ func waitRestoreHold(t *testing.T, target *restoreTarget, f *restoreRig) restore
 	t.Fatal("Restore effects and hold did not become eligible")
 	return restoreSnapshot{}
 }
-func assertRestoreCount(t *testing.T, target *restoreTarget, f *restoreRig, expected int) {
+func assertRestoreCount(t *testing.T, target *restoreTarget, f *restoreRig) {
 	t.Helper()
 	response := restoreControlGET(t, target, f, "/api/v1/subtitle-library?view=history")
 	var data struct { History []struct { ID, Action, Reason, Language string } }
@@ -110,7 +110,7 @@ func assertRestoreCount(t *testing.T, target *restoreTarget, f *restoreRig, expe
 	for _, event := range data.History {
 		if event.ID == f.item && event.Action == "restored" && event.Reason == "restore" && event.Language == "en" { count++ }
 	}
-	if count != expected { t.Fatal("Restore replay changed actual History effects") }
+	if count != 1 { t.Fatal("Restore replay changed actual History effects") }
 }
 func assertRestoreTransportSettled(t *testing.T, target *restoreTarget, f *restoreRig) {
 	t.Helper()

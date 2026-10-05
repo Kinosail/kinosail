@@ -173,11 +173,45 @@ class RestoreFormatControls(unittest.TestCase):
         self.assertFalse(formatter.phase_accepted(receipt["exitCode"], receipt["timedOut"],
                                                   receipt["ownedGroupStopped"], receipt["captureSettled"]))
 
+    def test_git_admission_failure_codes_are_exact_and_private(self):
+        commands = (
+            (("git", "rev-parse", "HEAD"), "git-head-read-failed"),
+            (("git", "rev-parse", "HEAD^{tree}"), "git-tree-read-failed"),
+            (("git", "diff", "HEAD", "--name-only", "-z"), "git-tracked-diff-failed"),
+            (("git", "status", "--porcelain"), "git-worktree-status-failed"),
+            (("git", "ls-files", "--stage", "-z"), "git-source-index-failed"),
+            (("git", "cat-file", "-e", formatter.BASE_COMMIT + "^{commit}"), "git-base-object-unavailable"),
+            (("git", "merge-base", "--is-ancestor", formatter.BASE_COMMIT, "HEAD"), "git-base-ancestry-failed"),
+        )
+        for command, code in commands:
+            with self.subTest(code=code):
+                error = subprocess.CalledProcessError(128, list(command),
+                    output=b"fictional private output", stderr=b"fictional private target")
+                self.assertEqual(formatter.failure_code(error), code)
+        for command in ("git show private", ["git", "show", "private"],
+                        ["git", ["malformed"]], ("git", "merge-base", "--is-ancestor", "foreign", "HEAD")):
+            self.assertEqual(formatter.failure_code(subprocess.CalledProcessError(1, command)), "unclassified")
+
+    def test_missing_base_blocks_before_unchanged_ancestry_check(self):
+        calls = []
+        def missing(*arguments):
+            calls.append(arguments)
+            raise subprocess.CalledProcessError(128, ["git", *arguments])
+        with patch.object(formatter, "git", side_effect=missing), self.assertRaises(subprocess.CalledProcessError) as raised:
+            formatter.require_base_ancestry()
+        self.assertEqual(calls, [("cat-file", "-e", formatter.BASE_COMMIT + "^{commit}")])
+        self.assertEqual(formatter.failure_code(raised.exception), "git-base-object-unavailable")
+        with patch.object(formatter, "git", return_value=b"") as valid:
+            formatter.require_base_ancestry()
+        self.assertEqual(valid.call_args_list, [
+            unittest.mock.call("cat-file", "-e", formatter.BASE_COMMIT + "^{commit}"),
+            unittest.mock.call("merge-base", "--is-ancestor", formatter.BASE_COMMIT, "HEAD")])
+
     def test_manifest_base_and_raw_identity_are_fixed(self):
         self.assertEqual(formatter.BASE_COMMIT, "bd1ea2e148787ae8d4a0a46640bc2a965e10fe6a")
-        self.assertEqual(formatter.MANIFEST_BLOB, "42ba2ecc500a8b7fa42a90077dbc7da2df5db8fc")
+        self.assertEqual(formatter.MANIFEST_BLOB, "bf9ae2b849da6cb83d9f7b87780f06353596d1ad")
         self.assertEqual(formatter.MANIFEST_SHA256,
-                         "c11d4ad273606fd6c7c8144c94627b83ec2358d9828564cc7980eb4a6a593bed")
+                         "8e46680fd34692d1be5090726d16833a1693d276d10c5f677c2aa74e6909a604")
         expected = formatter.pin(b"source")
         self.assertTrue(formatter.matches_pin(b"source", expected))
         self.assertFalse(formatter.matches_pin(b"changed", expected))

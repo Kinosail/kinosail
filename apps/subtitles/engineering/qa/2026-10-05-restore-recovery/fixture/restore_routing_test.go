@@ -73,7 +73,7 @@ func (f *restoreRig) servePost(target *restoreTarget, writer http.ResponseWriter
 func (f *restoreRig) serveSetup(target *restoreTarget, writer http.ResponseWriter, request *http.Request) {
 	data, valid := restoreRequestBody(request)
 	var input restoreSetupInput
-	if !valid || json.Unmarshal(data, &input) != nil || !input.fixedOptions() || !input.noExternalPayload() || request.Header.Get("X-Kinosail-Operation") != "" {
+	if invalidRestoreSetupInput(data, valid, &input, request) {
 		http.Error(writer, "Restore-only fixture boundary", http.StatusMethodNotAllowed); return
 	}
 	f.mu.Lock(); f.state.SetupSaveAttempts++; allowed := f.state.SetupSaveAttempts == 1 && f.state.RestoreAttempts == 0; f.mu.Unlock()
@@ -105,4 +105,9 @@ func (input restoreSetupInput) fixedOptions() bool {
 }
 func (input restoreSetupInput) noExternalPayload() bool {
 	return input.Text == "" && input.Data == "" && input.DraftID == "" && len(input.Anchors) == 0
+}
+
+func invalidRestoreSetupInput(data []byte, valid bool, input *restoreSetupInput, request *http.Request) bool {
+	return !valid || json.Unmarshal(data, input) != nil || !input.fixedOptions() ||
+		!input.noExternalPayload() || request.Header.Get("X-Kinosail-Operation") != ""
 }

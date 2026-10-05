@@ -2,7 +2,7 @@
   "schema": "r06-restore-fixture-source-v1",
   "baseCommit": "bd1ea2e148787ae8d4a0a46640bc2a965e10fe6a",
   "baseTree": "6070e86cc8a3522810218d311cc2d5d6246f02d0",
-  "status": "source-complete-unreviewed-unformatted-uncompiled-unrun",
+  "status": "source-refactored-unreviewed-unformatted-uncompiled-unrun",
   "publication": "append-only-unreferenced-blobs",
   "testFirstManifest": {
     "blob": "984865fb48e89b48fda0f953dcaa804ed1fe4d8d",
@@ -11,7 +11,8 @@
   "previousManifests": [
     "21a9713050c9f0410b7c496e8c4c06dc46b5528d",
     "fd17afe4eb98cf1982113265d6e9a2f90dabd04d",
-    "eedf17e831df2ac12d062d94021f3a2f8c617444"
+    "eedf17e831df2ac12d062d94021f3a2f8c617444",
+    "42ba2ecc500a8b7fa42a90077dbc7da2df5db8fc"
   ],
   "fixtureImplementationAuthored": true,
   "actualControlRuntime": false,
@@ -79,26 +80,26 @@
     },
     {
       "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_assertions_test.go",
-      "blob": "f3825cc3c1c8bee8c87d12cfd852730e7723251b",
-      "bytes": 6096,
-      "lines": 173,
-      "sha256": "7ae57f6c17f746f871f7904646e7bcce85bed9424f776912d2fc0950d2c80388",
+      "bytes": 6490,
+      "lines": 183,
+      "sha256": "82261355e73118d9cad07c3f6fa289ac29a0d6343efb8db669926b96087191c0",
+      "blob": "0c72a93cf599390ecfa42a1b08ebbbe7e0c8bd6b",
       "getVerified": true
     },
     {
       "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_controls_test.go",
-      "blob": "b2dcbeee520d5d81f28bb972aba24a0d0695241e",
-      "bytes": 4424,
-      "lines": 101,
-      "sha256": "3788361e7d2905c18bb6f594b0f6ce2f14a7db50ca31c45229bad6c20496227e",
+      "bytes": 4697,
+      "lines": 112,
+      "sha256": "d7be68372506e6813b40b7a5b2c9080a53af634a8a0ab95e8369c1b18bddacdb",
+      "blob": "ef0599a3a672d09603f5619b69cb1eee3fd2a770",
       "getVerified": true
     },
     {
       "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_exchange_test.go",
-      "blob": "b2bc96f3afd84a8521b3706142949263a0e9b4a3",
-      "bytes": 4534,
-      "lines": 104,
-      "sha256": "0355a8a406e099725643c61f6651c1017521b0d44e358a4f7f78e0408c685534",
+      "bytes": 4659,
+      "lines": 108,
+      "sha256": "d809df7ca579c2c612616d0448cdc056d7dba5c32cddea8d15adb276e8380414",
+      "blob": "ddf89b521e9884a06a9e479acb17ecfb7322dff0",
       "getVerified": true
     },
     {
@@ -111,10 +112,10 @@
     },
     {
       "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_http_test.go",
-      "blob": "37736e36eceed711e444f48aa487596b0029167d",
-      "bytes": 5839,
-      "lines": 133,
-      "sha256": "cbb2eb379d3c0e7ae46578f9f6bbe394e205dc2c8254824318aa336f2e3116ae",
+      "bytes": 6018,
+      "lines": 137,
+      "sha256": "5efa10db3ffbcf70296fe0389e866de415e7ed6c365bb72b71b703325eab7798",
+      "blob": "7b108781419303977eccd33e28241f4023766bba",
       "getVerified": true
     },
     {
@@ -143,10 +144,10 @@
     },
     {
       "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_requests_test.go",
-      "blob": "8d3d89c2f9b18ef55efe8a293939c0e19fa34d66",
-      "bytes": 7199,
+      "bytes": 7174,
       "lines": 139,
-      "sha256": "8740185a8026035330e389c3da2c187e86179246ca51050f9439f670d0fc8dbd",
+      "sha256": "4e2a98772c1d468a16c94c7da6044866d0a972d50209ede130cad0a400c349be",
+      "blob": "ba48bfa05ec50dfb01bcfa223f4b1b6ca9ad93c0",
       "getVerified": true
     },
     {
@@ -159,10 +160,10 @@
     },
     {
       "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_routing_test.go",
-      "blob": "de74fd8dcd6a135f3d40661c6a662a93f353ab48",
-      "bytes": 5966,
-      "lines": 108,
-      "sha256": "73e0e68c47ae199746d7d92c68cd332e95ed91aeb45b38bb1b5ea178525e014d",
+      "bytes": 6144,
+      "lines": 113,
+      "sha256": "e4bc645a6e7d1c2705b09dc4b9a62a4def57208198574b253212ccabc880d1c3",
+      "blob": "6bc8920c88227466f3c1185dfcc94e41fd48d20b",
       "getVerified": true
     },
     {
@@ -243,7 +244,7 @@
   "staticChecks": {
     "fixtureGoFiles": 14,
     "newHelperGoFiles": 12,
-    "maximumRawGoLines": 173,
+    "maximumRawGoLines": 183,
     "matchedMissingHelperNames": [],
     "allRawFilesWithin300": true,
     "notACompilerOrLinter": true
@@ -263,10 +264,12 @@
     "Cancel/release and server shutdown precede owned reader joins and checked os.Root.Close; roots and evidence are retained without deletion.",
     "Fresh fixture120s, one case110s, product45s, observation55s, pair230s/external235s remain unchanged.",
     "Exchange receipt copies status/header/body only after both owned joins confirm completion; the unchanged3s failure records abort the copy.",
+    "Six fixture files structurally extract the seven CI-reported complexity sites; all four Test names and every Fatal/Error literal remain exact.",
+    "The always-/restore suffix and always-one History-count arguments become the same fixed literals; no predicate/HTTP/effect assertion is removed.",
     "No product defect or G704/format/compiler/control/browser acceptance is claimed from source review or RAM symbol checks."
   ],
   "remainingGates": [
-    "independent exact22source review",
+    "independent exact22source refactor review",
     "hosted strict formatting and300line caps",
     "compiled binary/source/descriptor provenance",
     "actual four public controls and bounded request/body deadline behavior",
