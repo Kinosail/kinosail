@@ -229,6 +229,10 @@ jobs:
         if: env.CAMPAIGN_PROOF == 'R18'
         timeout-minutes: 1
         run: python3 -B -m unittest discover -s apps/player/scripts -p test_campaign_r18_document_format.py
+      - name: Verify fixed R18 bootstrap stage controls
+        if: env.CAMPAIGN_PROOF == 'R18'
+        timeout-minutes: 1
+        run: timeout --kill-after=2s 10s python3 -B -m unittest discover -s scripts/ci -p test_r18_format_public_control_stages.py
       - name: Verify fixed R18 formatter-public controls
         if: env.CAMPAIGN_PROOF == 'R18'
         timeout-minutes: 1

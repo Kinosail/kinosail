@@ -5,7 +5,7 @@
   "repository": "Kinosail/kinosail",
   "ownership": {
     "owner": "web_progress",
-    "paths": ["apps/player/scripts/campaign-r18-format-public.py","apps/player/scripts/campaign_r18_format_public_artifacts.py","apps/player/scripts/campaign_r18_format_public_files.py","apps/player/scripts/test_campaign_r18_format_public.py","scripts/ci/r18_format_public_controls.py","scripts/ci/test_r18_format_public_controls.py"],
+    "paths": ["apps/player/scripts/campaign-r18-format-public.py","apps/player/scripts/campaign_r18_format_public_artifacts.py","apps/player/scripts/campaign_r18_format_public_files.py","apps/player/scripts/test_campaign_r18_format_public.py","scripts/ci/r18_format_public_controls.py","scripts/ci/test_r18_format_public_controls.py","scripts/ci/test_r18_format_public_control_stages.py"],
     "preparation": "Append-only unreferenced blobs only; no local source, runtime, artifact directory or ref changed.",
     "rootReserved": ["workflow","router","stock formatter setup","source and tree integration","canonical adoption","refs","PRs","dispatch","serial hosted execution"],
     "prohibited": ["Go or formatter execution in this preparation","cleanup or overwrite","automatic canonical adoption","account, credential, device, media or deployment changes"]
@@ -30,7 +30,12 @@
     {"role":"final 19-method source; unchanged by depth correction","path":"apps/player/scripts/test_campaign_r18_format_public.py","blob":"ff3be3283cc8c5e35d23b697592fa5571f2acc89","sha256":"165236e17c8c9fb8eaf0724a762980d61b8b67b24d8eb176b2b197fb57542529","bytes":31306,"lines":254},
     {"role":"pre-depth wrapper; retained","path":"apps/player/scripts/campaign-r18-format-public.py","blob":"b592edf0ec491fb10cfd8c92abff4c274f16e89d","sha256":"547ef189548cd62eb97e360967b267d8ed364eed86d64ac706f9b7e0ff6869f2","bytes":21673,"lines":188},
     {"role":"pre-depth artifact helper; retained","path":"apps/player/scripts/campaign_r18_format_public_artifacts.py","blob":"19612417c724350c4b724646297b5a4f7895307d","sha256":"b748b236637c4938ba10a3850d441ed1774659e9fe45ad7a4529ff0269dd320c","bytes":16442,"lines":230},
-    {"role":"prior source-clear ownership manifest; retained byte-exact","path":"engineering/qa/2026-10-05-r18-public-contract-checkpoint/format-public-source-manifest.json","blob":"6f34985687c5f02313bfbe0797f7e538e1d643c1","sha256":"5c9bcb9bd66f0744870f239ea776a4a68c6b9cb32a07f042ec61b88c4711de90","bytes":19774,"lines":266}
+    {"role":"prior source-clear ownership manifest; retained byte-exact","path":"engineering/qa/2026-10-05-r18-public-contract-checkpoint/format-public-source-manifest.json","blob":"6f34985687c5f02313bfbe0797f7e538e1d643c1","sha256":"5c9bcb9bd66f0744870f239ea776a4a68c6b9cb32a07f042ec61b88c4711de90","bytes":19774,"lines":266},
+    {"role":"prior independently source-clear bootstrap ownership manifest","path":"engineering/qa/2026-10-05-r18-public-contract-checkpoint/format-public-source-manifest.json","blob":"1df9079a3969180a66f433858c7ef76b86febab9","sha256":"5af7fdfa2f0517a3b4e994d2e2f85c1b0048d2af374c28c68a68e45e86b420b9","bytes":26514,"lines":232},
+    {"role":"pre-diagnostic independently source-clear bootstrap, retained","path":"scripts/ci/r18_format_public_controls.py","blob":"478195e2c650a27be475cd8186f915d72d4c09a0","sha256":"f39f55458074165890de66c073e9907fddaf4b330d2866b015fe3592b538155c","bytes":23506,"lines":289},
+    {"role":"mixed-schema diagnostic draft, excluded from final admission; root complete RAM baseline only","path":"scripts/ci/test_r18_format_public_control_stages.py","blob":"0cce9306bc8f3d67b75a62670452e629503706eb","sha256":"a55b7075e5a3f2afa80d0a0a4e88b6c8d0b6d70278f12cc54c7a1818d503cb51","bytes":10684,"lines":176},
+    {"role":"unexecuted earlier diagnostic contract draft; retained","path":"scripts/ci/test_r18_format_public_control_stages.py","blob":"f2f9da39eca06dcb0ba04c8aaf748255da7dd628","sha256":"9aac0641c296eb70910f59551e4ce5a7984af94593187c43203d78b059a52d04","bytes":10595,"lines":175},
+    {"role":"unexecuted intermediate diagnostic draft; retained","path":"scripts/ci/test_r18_format_public_control_stages.py","blob":"6d2f560002dc81a1f159b812fc4b9b9b6bab8a55","sha256":"a9748a10089091dfb51a486cb86ffadc70a662ec5c41bec9f794b6036780e21e","bytes":10691,"lines":176}
   ],
   "sourceReview": {
     "status": "Independent corrected-wrapper source review clear; parent separately reports corrected RAM controls.",
@@ -172,9 +177,9 @@
       "meaning": "Historical mandatory full-history anchor only; not a latest-main assertion."
     }
   },
-  "remainingAcceptance": ["Independent exact new bootstrap source review and parent pure mocked controls; these 19 new controls have not run","Root hosted captured-control bootstrap and exact nineteen-result admission","Root exact full tree and history integration","Root workflow/router/setup review","Stock hosted formatter execution","Four-file actual publication and process settlement","Canonical semantic/assertion/callsite review and explicit adoption","Separate Go compilation and exact eight-record public runtime","Separate actual browser/authenticated Profile/lifecycle/device acceptance"],
+  "remainingAcceptance": ["Independent exact diagnostic source/schema-control review and parent final nine+retained nineteen pure controls; then one changed-head hosted guarded bootstrap","Root hosted captured-control bootstrap and exact nineteen-result admission","Root exact full tree and history integration","Root workflow/router/setup review","Stock hosted formatter execution","Four-file actual publication and process settlement","Canonical semantic/assertion/callsite review and explicit adoption","Separate Go compilation and exact eight-record public runtime","Separate actual browser/authenticated Profile/lifecycle/device acceptance"],
   "hostedControls": {
-    "status": "Concrete two-source bootstrap staged, pending independent exact source review and parent RAM controls; no hosted execution.",
+    "status": "Changed diagnostic source and schema-corrected nine controls staged; exact independent review/parent RAM/changed-head hosted acceptance pending.",
     "observedTooling": [
       {"path":".github/workflows/ci.yml","blob":"71b076c991d8c20f45bde4e705295016a46ae84f","observation":"Normal Python discovery is confined to scripts/ci and engineering/documentation."},
       {"path":".github/workflows/app.yml","blob":"bd2793b547678fc9fec33a5b172daae370218e0e","observation":"Player Python checks use explicit startup and HLS scripts; no app-script unittest discovery requirement was found."}
@@ -186,11 +191,12 @@
     "rootWorkflowAndSupervisorRemainUnchangedHere": true,
     "proposalKind": "Historical stdin proposal retained below; superseded by the fixed scripts/ci bootstrap without changing wrapper/test bytes.",
     "sources": [
-      {"path":"scripts/ci/r18_format_public_controls.py","blob":"478195e2c650a27be475cd8186f915d72d4c09a0","sha256":"f39f55458074165890de66c073e9907fddaf4b330d2866b015fe3592b538155c","bytes":23506,"lines":289},
+      {"path":"scripts/ci/r18_format_public_controls.py","blob":"a3f6cc715e1e62db404f4bb3b6fe45bf698e54cc","sha256":"c3e2f71665f5a0d3f854e143a7c9d695071f979ac94764fbec385fa78b42c553","bytes":25785,"lines":296},
+      {"path":"scripts/ci/test_r18_format_public_control_stages.py","blob":"e346624f459007ba3fd5fda3ff18e96984b0018d","sha256":"f1ec362c081e2816ad4e365bffc5ceb7437b21bf77d5d732a1314dec4dc37f29","bytes":11137,"lines":184},
       {"path":"scripts/ci/test_r18_format_public_controls.py","blob":"20f5feaac00d816ec0a754dc83b6bb584c142ead","sha256":"8e45eb96543156155cf356fab814a6274fa42d0cb425ebb990d87759c78d75d0","bytes":214571,"lines":291}
     ],
     "aggregate": {
-      "sha256": "77722bdeec1640c5505dcbef9e599a71b8cefbac660759ae4a243392a44fe38a",
+      "sha256": "22287e2982ae60355f9c542eab31b84e915e860eaab73855e4dde97ed2ad2d4b",
       "recipe": "SHA256 of UTF-8 compact JSON source rows, ASCII path ascending; row key order path,blob,sha256,bytes,lines; no trailing newline.",
       "getVerified": true
     },
@@ -218,7 +224,9 @@
       "classifications": ["source-controls-green","controls-failed","prerequisite-blocked"],
       "recordFields": ["test","status"],
       "statuses": ["pass","fail","error","skip","incomplete"],
-      "greenRequires": "All exact nineteen parents started once, terminal pass once and stopped once before deadline; no skips/faults/incomplete events. Parent process/deadline/complete JSON admission is a separate required gate."
+      "greenRequires": "All exact nineteen parents started once, terminal pass once and stopped once before deadline; no skips/faults/incomplete events. Parent process/deadline/complete JSON admission is a separate required gate.",
+      "prerequisiteOnlyOptionalField": {"diagnostic":{"closedFields":["stage","reason"],"stageEnumRef":"hostedControls.diagnosticBoundary.stages","reasonEnumRef":"hostedControls.diagnosticBoundary.reasons"}},
+      "noDiagnosticOn": ["source-controls-green","controls-failed"]
     },
     "retention": {
       "formatterRowsExact": "ac69880bf6ed476e50871c0cfe20eafdc9ee85ad20651fa86b47148adb769321",
@@ -226,7 +234,50 @@
       "original19Tests": "ff3be3283cc8c5e35d23b697592fa5571f2acc89",
       "original14Tests": "36184f5632bdf1810bb39d18d8b957876eb31a02",
       "newPreparedTests": "20f5feaac00d816ec0a754dc83b6bb584c142ead",
-      "inverse": "Both new scripts/ci paths were absent and no existing source changed: remove those additions to recover the prior source tree. Reverse the explicitly added ownership/bootstrap metadata to recover the prior JSON object; retain original manifest6f349856 bytes by exact pin rather than inferring textual formatting."
+      "inverse": "Remove only the added fixed enum/report helpers and prepare/main markers/report projection, restore original NAMES and paired PACKAGE_PINS declarations: exact478195e2 byte-for-byte confirmed in JS RAM. SafeResult/run_controls block is byte-exact."
+    },
+    "priorSourcePair": {
+      "sources": [{"path":"scripts/ci/r18_format_public_controls.py","blob":"478195e2c650a27be475cd8186f915d72d4c09a0","sha256":"f39f55458074165890de66c073e9907fddaf4b330d2866b015fe3592b538155c","bytes":23506,"lines":289},{"path":"scripts/ci/test_r18_format_public_controls.py","blob":"20f5feaac00d816ec0a754dc83b6bb584c142ead","sha256":"8e45eb96543156155cf356fab814a6274fa42d0cb425ebb990d87759c78d75d0","bytes":214571,"lines":291}],
+      "aggregate": "77722bdeec1640c5505dcbef9e599a71b8cefbac660759ae4a243392a44fe38a",
+      "sourceReview": "Independently source-clear; parent pure new19 and actual captured bridge original19 pass were reported separately.",
+      "parityLimit": "Bridge used Path.resolve identity under local IO hold; it is not actual hosted path/import/descriptor behavior."
+    },
+    "diagnosticControls": {
+      "source": {"path":"scripts/ci/test_r18_format_public_control_stages.py","blob":"e346624f459007ba3fd5fda3ff18e96984b0018d","sha256":"f1ec362c081e2816ad4e365bffc5ceb7437b21bf77d5d732a1314dec4dc37f29","bytes":11137,"lines":184},
+      "methods": ["test_all_stages_and_reason_enums_are_exact_and_closed","test_exact_prepare_markers_and_captures_retain_original_protocol","test_every_prepare_fault_is_distinct_before_any_later_boundary","test_known_codes_are_fixed_but_private_messages_or_classes_never_export","test_selection_failure_reports_only_fixed_stage_and_reason","test_main_exports_fixed_prepare_stage_without_private_exception_payload","test_selection_and_run_faults_cannot_masquerade_as_zero_count_root_failure","test_existing_nineteen_result_schema_is_unchanged_and_only_completed_green_exits_zero","test_stage_reporting_preserves_sys_path_bytecode_and_all_frozen_source_pins"],
+      "count": 9,
+      "testFirstPreparation": "Nine proposed stage controls were frozen before diagnostic source; initial0cce schema rewrite changed only its first reference. Parent RAM baseline is retained; affected field assertions are fixture/schema failures. Finale346 corrects field references and adds explicit absence checks without deleting names/assertions or altering20f5/ff3.",
+      "pureNegativeMethodsRunByAuthor": false,
+      "rootFinalRuntimeAdmission": null,
+      "dependency": {"path":"scripts/ci/test_r18_format_public_controls.py","blob":"20f5feaac00d816ec0a754dc83b6bb584c142ead","sha256":"8e45eb96543156155cf356fab814a6274fa42d0cb425ebb990d87759c78d75d0","bytes":214571,"lines":291}
+    },
+    "hostedFailure": {
+      "runID": 37359650696,
+      "jobID": 111930748327,
+      "revisionPrefix": "3a8362fa",
+      "treePrefix": "45f45e93",
+      "observedAt": "2026-10-05T18:58:32.003Z",
+      "formatterControls": {"count":13,"passed":13},
+      "bootstrap": {"exitCode":2,"classification":"prerequisite-blocked","count":0,"records":[]},
+      "actualProof": "skipped",
+      "uploadedProofFiles": 0,
+      "formatterDriverAccepted": false,
+      "goAccepted": false,
+      "incumbentRED": false,
+      "cause": "Unproved: initial empty report is also retained if a test-run exception interrupts partial accounting.",
+      "decodedAPIJobLog": {"sha256":"bb331dbf66e6fad288b3603101dd5ee3951e8cc410fdf121d88da63d6f4617c4","bytes":43368,"contentPrivate":true},
+      "noSameHeadRetry": true
+    },
+    "diagnosticBoundary": {
+      "scope": "Only bootstrap main prerequisite-blocked reports gain one closed diagnostic field. Green and controls-failed main reports and SafeResult/run_controls base schema remain exact.",
+      "field": "diagnostic",
+      "closedFields": ["stage","reason"],
+      "stages": ["selection","root","reader-definitions","wrapper-capture","test-capture","wrapper-definitions","package-load","package-validation","test-definitions","test-selection","test-execution","complete"],
+      "reasons": ["none","selection-prerequisite","revision-prerequisite","root-prerequisite","input-deadline","controls-deadline","regular-size-boundary","opened-input-changed","input-growth","descriptor-input-changed","named-input-changed","descriptor-close-unconfirmed","captured-source-size","captured-source-identity","captured-module-boundary","uncaptured-definition-import","package-pins","package-closure","package-module","package-byte-bound","test-class","test-alias","test-method-closure","mock-only-boundary","unexpected-test","duplicate-test","unexpected-terminal","unexpected-stop","directory-path-boundary","regular-path-boundary","input-limit","os-error","import-error","type-error","value-error","runtime-error","recursion-error","interrupted","unclassified","control-results"],
+      "forbidden": ["arbitrary exception messages","exception class strings","filenames or paths","environment values","captured output","tokens or cookies","import/path workaround","formatter or product acceptance"],
+      "reasonMapping": "Only exact fixed trusted source codes or fixed builtin-type categories project. Unknown details map to unclassified; no stringification of exceptions.",
+      "partialAccountingLimit": "If run_controls raises, main retains initial count0/empty records and adds test-execution/reason. That diagnostic does not establish that no test started.",
+      "inverse": "Remove only the added fixed enum/report helpers and prepare/main markers/report projection, restore original NAMES and paired PACKAGE_PINS declarations: exact478195e2 byte-for-byte confirmed in JS RAM. SafeResult/run_controls block is byte-exact."
     }
   }
 }

@@ -110,5 +110,18 @@ class CampaignProofTests(unittest.TestCase):
         self.assertIn("inputs.campaign_proof != 'R18'", source)
 
 
+    def test_r18_bootstrap_diagnostics_are_fixed_and_bounded_before_controls(self):
+        source = LAYOUT.read_text().split('  campaign-proof:\n')[1]
+        name = 'name: Verify fixed R18 bootstrap stage controls'
+        command = 'timeout --kill-after=2s 10s python3 -B -m unittest discover -s scripts/ci -p test_r18_format_public_control_stages.py'
+        self.assertEqual(source.count(command), 1)
+        step = source.split(name)[1].split('      - name: Verify fixed R18 formatter-public controls')[0]
+        self.assertIn("if: env.CAMPAIGN_PROOF == 'R18'", step)
+        self.assertIn('timeout-minutes: 1', step)
+        self.assertIn('run: ' + command, step)
+        self.assertLess(source.index('name: Verify fixed R18 formatter controls'), source.index(name))
+        self.assertLess(source.index(name), source.index('name: Verify fixed R18 formatter-public controls'))
+
+
 if __name__ == '__main__':
     unittest.main()
