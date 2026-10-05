@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-func enrollOwner(t *testing.T, target *ownedTarget, f *fixture) (*http.Client, string, error) {
+func enrollOwner(t *testing.T, target *ownedTarget) (*http.Client, string, error) {
 	client := target.privateClient(15 * time.Second)
 	t.Cleanup(client.CloseIdleConnections)
 	jar, err := cookiejar.New(nil)
@@ -25,19 +25,19 @@ func enrollOwner(t *testing.T, target *ownedTarget, f *fixture) (*http.Client, s
 	if err != nil {
 		return nil, "", err
 	}
-	key, err := setupOwner(t, target, f, client, password)
+	key, err := setupOwner(t, target, client, password)
 	if err != nil {
 		return nil, "", err
 	}
-	csrf, err := enrollmentToken(t, target, f, client)
+	csrf, err := enrollmentToken(t, target, client)
 	if err != nil {
 		return nil, "", err
 	}
 	code := servertest.TestTOTP(t, key, time.Now())
-	if err = confirmOwnerMFA(t, target, f, client, csrf, code); err != nil {
+	if err = confirmOwnerMFA(t, target, client, csrf, code); err != nil {
 		return nil, "", err
 	}
-	current, err := currentOwnerToken(t, target, f, client)
+	current, err := currentOwnerToken(t, target, client)
 	if err != nil {
 		return nil, "", err
 	}

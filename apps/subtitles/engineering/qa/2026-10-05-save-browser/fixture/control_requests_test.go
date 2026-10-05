@@ -21,8 +21,9 @@ func bootstrapControl(t *testing.T, target *ownedTarget, mode string, prepared b
 		t.Fatal("real Server fixture construction failed")
 	}
 	t.Cleanup(func() { f.controlStop(t) })
-	client, csrf, err := enrollOwner(t, target, f)
+	client, csrf, err := enrollOwner(t, target)
 	if err != nil {
+		f.failBoundary()
 		t.Fatal("actual TLS Owner/MFA/CSRF prerequisite failed")
 	}
 	t.Cleanup(client.CloseIdleConnections)
