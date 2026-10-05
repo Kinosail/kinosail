@@ -11,7 +11,7 @@ import sys
 import threading
 import time
 
-from campaign_q14_admission import SPECS, admit, complete, go_boundary
+from campaign_q14_admission import SPECS, admit, complete, go_boundary, cache_diagnostic
 from campaign_q14_suites import SUITES
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -118,6 +118,7 @@ def run(command, cwd, environment, seconds, label, command_seconds=None, suite="
                        outputBytes=captured["bytes"], outputSHA256=captured["hasher"].hexdigest(),
                        outputOverflow=captured["overflow"])
     raw = bytes(captured["data"])
+    receipt["cacheDiagnostic"] = cache_diagnostic(raw) if suite == "bfcache" and label not in ("collection", "compile") else None
     receipt["goBoundary"] = go_boundary(raw) if label not in ("collection", "compile") else None
     reports = [line[len(b"Q14_PROOF_RESULT "):] for line in raw.splitlines() if line.startswith(b"Q14_PROOF_RESULT ")]
     try:
@@ -144,6 +145,7 @@ def manifest(revision):
     paths.update({str(Path(__file__).relative_to(ROOT)), CLIP,
                   "apps/player/e2e/browse-return-proof-reporter.ts", "go.work", "go.work.sum",
                   "apps/player/scripts/campaign_q14_admission.py", "apps/player/scripts/test_campaign_q14_public.py",
+                  "apps/player/scripts/test_campaign_q14_cache_diagnostic.py",
                   "apps/player/scripts/campaign_q14_suites.py", "apps/player/scripts/test_campaign_q14_suites.py",
                   "apps/player/internal/server/browse_return_browser_test.go",
                   "apps/player/go.mod", "apps/player/go.sum", "packages/go.mod", "packages/go.sum",

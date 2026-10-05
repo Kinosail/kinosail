@@ -275,6 +275,22 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends "$RUNNER_TEMP/startup-ffmpeg.deb"
           echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
+      - name: Verify HLS source-version freshness
+        if: inputs.app == 'player' && matrix.engine == 'chromium'
+        env:
+          GOMAXPROCS: "4"
+        run: python3 apps/player/scripts/test-hls-source-version.py
+      - name: Keep safe HLS source-version evidence
+        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: player-hls-source-version-evidence
+          include-hidden-files: true
+          path: |
+            .verification/hls-source-version/*/receipt.json
+            .verification/hls-source-version/*/SHA256SUMS
+          retention-days: 14
+          if-no-files-found: error
       - name: Verify bounded startup and request boundary
         if: inputs.app == 'player' && matrix.engine == 'chromium'
         env:

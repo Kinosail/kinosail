@@ -87,7 +87,7 @@ if (selected("shows")) for (const viaDetails of [false, true]) {
     await action.click();
     if (viaDetails) {
       await expect(page.locator("body.show-detail")).toBeVisible();
-      await page.locator("a.episode-preview").click();
+      await page.locator(".episode-ledger a.episode").click();
     }
     await expect(page.locator("body.player-page")).toBeVisible();
     expect(await page.locator("body").getAttribute("data-viewer-profile")).toBe(before.state.profile);

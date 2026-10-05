@@ -1,4 +1,5 @@
 """Strict safe receipt admission; no app, browser or external tool execution."""
+import json
 import math
 import re
 
@@ -188,3 +189,33 @@ def go_boundary(raw):
     if len(failed) == 1 and not passed and re.search(rb"(?m)^FAIL\r?$", raw):
         return "completed-fail"
     return "incomplete"
+
+
+CACHE_REASONS = ["unload-listener","unload-handler","response-cache-control-no-store","response-cache-control-no-store-with-cookie-modification","related-active-contents","masked","websocket","outstanding-network-request","other"]
+
+
+def cache_diagnostic(raw):
+    """Admit bounded reason codes only; never copy frame metadata or error text."""
+    lines = [line[21:] for line in raw.splitlines() if line.startswith(b"Q14_CACHE_DIAGNOSTIC ")]
+    if len(lines) != 1 or len(lines[0]) > 4096:
+        return None
+    try:
+        value = json.loads(lines[0])
+    except (ValueError, TypeError):
+        return None
+    if not fields(value, "schemaVersion supported present frameCount reasons truncated navigationType"):
+        return None
+    if type(value["schemaVersion"]) is not int or value["schemaVersion"] != 1:
+        return None
+    if not all(type(value[key]) is bool for key in ("supported", "present", "truncated")) or not integer(value["frameCount"], 0, 64):
+        return None
+    reasons = value["reasons"]
+    if not isinstance(reasons, list) or len(reasons) > 16 or not all(isinstance(reason, str) and reason in CACHE_REASONS for reason in reasons):
+        return None
+    if reasons != sorted(set(reasons)) or value["navigationType"] not in ("navigate", "reload", "back_forward", "prerender", "unknown"):
+        return None
+    if value["present"] and (not value["supported"] or value["frameCount"] < 1):
+        return None
+    if not value["present"] and (value["frameCount"] != 0 or reasons):
+        return None
+    return value

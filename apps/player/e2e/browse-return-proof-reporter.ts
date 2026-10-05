@@ -111,6 +111,17 @@ function observation(input: unknown, name: string) {
   }
   return { state, peer };
 }
+
+function cacheDiagnosticObservation(value: unknown) {
+  const allowed = ["unload-listener","unload-handler","response-cache-control-no-store","response-cache-control-no-store-with-cookie-modification","related-active-contents","masked","websocket","outstanding-network-request","other"];
+  if (!exact(value, ["schemaVersion", "supported", "present", "frameCount", "reasons", "truncated", "navigationType"])) return null;
+  if (value.schemaVersion !== 1 || typeof value.supported !== "boolean" || typeof value.present !== "boolean" || typeof value.truncated !== "boolean" || !integer(value.frameCount, 0, 64)) return null;
+  if (!Array.isArray(value.reasons) || value.reasons.length > 16 || !value.reasons.every(reason => typeof reason === "string" && allowed.includes(reason))) return null;
+  if (JSON.stringify(value.reasons) !== JSON.stringify([...new Set(value.reasons)].sort()) || typeof value.navigationType !== "string" || ![...navigationTypes, "unknown"].includes(value.navigationType)) return null;
+  if (value.present && (!value.supported || value.frameCount < 1) || !value.present && (value.frameCount !== 0 || value.reasons.length)) return null;
+  return { schemaVersion: 1, supported: value.supported, present: value.present, frameCount: value.frameCount, reasons: value.reasons, truncated: value.truncated, navigationType: value.navigationType };
+}
+
 function failure(error: TestError) {
   const message = error.message || "";
   const labels = ["Q14 acceptance: return to the same public browse URL", "Q14 acceptance: selected title action regains focus", "Q14 acceptance: same settled browse position", "Q14 Home acceptance: original action regains focus", "Q14 Home acceptance: settled horizontal position", "Q14 Home acceptance: settled vertical position", "fixture prerequisite:", "BFCache prerequisite:", "cold boundary prerequisite:", "cold search prerequisite:", "HTMX prerequisite:", "Home prerequisite:", "Home cold prerequisite:", "destination prerequisite:"];
@@ -135,6 +146,12 @@ export default class BrowseReturnProofReporter implements Reporter {
     const attachments: { name: string; bytes: number; sha256: string; observation: ReturnType<typeof observation> }[] = [], names = new Set<string>();
     if (result.attachments.length > 64 || result.errors.length > 16) this.invalid();
     for (const item of result.attachments.slice(0, 64)) {
+      if (suiteName === "bfcache" && file === files[2] && item.name === "native-cache-diagnostic" && item.contentType === "application/json" && item.body && item.body.length <= 4096) {
+        try {
+          const diagnostic = cacheDiagnosticObservation(JSON.parse(item.body.toString("utf8")));
+          if (diagnostic) console.log("Q14_CACHE_DIAGNOSTIC " + JSON.stringify(diagnostic));
+        } catch { /* Diagnostic rejection never changes product assertions. */ }
+      }
       if (!item.body || item.contentType !== "application/json" || !attachmentNames.includes(item.name)) continue;
       if (item.body.length < 1 || item.body.length > 1_000_000 || names.has(item.name) || attachments.length >= 16) { this.invalid(); continue; }
       names.add(item.name);
