@@ -1,6 +1,6 @@
 {
   "schema": "r06-restore-formatter-diagnostic-package-v1",
-  "status": "source-reviewed-root-ram-controls-passed-manifest-unreviewed-hosted-unrun",
+  "status": "qualified-source-reviewed-root50-RAM-passed-documentary-review-pending-hosted-unrun",
   "previousOwnershipManifest": {
     "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/formatter-source-manifest.json",
     "bytes": 13750,
@@ -17,14 +17,6 @@
     "blob": "91b822165e467d7682ad5eb221b267a20fec5dec",
     "getVerified": true
   },
-  "unchangedComparator": {
-    "path": "apps/subtitles/scripts/campaign_r06_restore_tokens.py",
-    "blob": "ea9819030c92c9b7c21c072aa812e4d49154f10c",
-    "bytes": 8096,
-    "lines": 198,
-    "sha256": "d3a32cc0b1ded64e1e21fd598798ef9b8fcc8c1fda9cdb93f186e45ca3b12693",
-    "getVerified": true
-  },
   "unchangedExistingControls": {
     "path": "apps/subtitles/scripts/test_campaign_r06_restore_format.py",
     "bytes": 14053,
@@ -36,21 +28,17 @@
   "sources": [
     {"path":"apps/subtitles/scripts/test_campaign_r06_restore_projection.py","bytes":6807,"lines":127,"sha256":"4edcfb6c2fd838ecc1a31b4a001798c51691a36ef66dc21bf67dc3643db95505","tests":12,"blob":"bc1c41731decc1cc0f450daf3eb9b1e0f369cc7c","getVerified":true},
     {"path":"apps/subtitles/scripts/campaign_r06_restore_projection.py","bytes":4155,"lines":96,"sha256":"528cad4273865b83f4671bd7aa2d0acc0434eb1379707c9d42e9ae75c7cc17f8","blob":"3462ba762375d77c484c2d5f0c4168f91a1f7d3c","getVerified":true},
-    {"path":"apps/subtitles/scripts/campaign_r06_restore_format.py","bytes":15308,"lines":279,"sha256":"659e69f98edfa2c8283b087366ee794fdaeaeffb5abc34c77cb989b8dcc72bc6","blob":"250bcdb13c6a0b467004176509c20d4baf9958a9","getVerified":true}
+    {"path":"apps/subtitles/scripts/campaign_r06_restore_format.py","bytes":15393,"lines":280,"sha256":"b9e6458d77dd24af0d7eb060b1cb4a740d839eefbc2cfdacec7d3815a00114b8","blob":"78874a0b92d2e4ca6980d4690e58d12d380ec968","getVerified":true},
+    {"path":"apps/subtitles/scripts/campaign_r06_restore_tokens.py","bytes":8541,"lines":210,"sha256":"a8feae66139a550093fc73dccb0495dacd75d14f6d33db69399cd2b42c7f889d","blob":"5d18ad05dc9d6d80d949f328f1afbf58b2de7193","getVerified":true},
+    {"path":"apps/subtitles/scripts/test_campaign_r06_restore_qualified_tokens.py","bytes":20561,"lines":235,"sha256":"19a6d84d338e62f9bc1eb08744780d7019b773c83d7758b3303b6a7a46e36254","methods":16,"blob":"937860954a5914213e1fe182cae4f04d2814a440","getVerified":true}
   ],
   "stagingOrder": [
-    {
-      "blob": "bc1c41731decc1cc0f450daf3eb9b1e0f369cc7c",
-      "role": "12 failure-first controls before implementation"
-    },
-    {
-      "blob": "3462ba762375d77c484c2d5f0c4168f91a1f7d3c",
-      "role": "verbatim extraction and guarded unadmitted projection"
-    },
-    {
-      "blob": "250bcdb13c6a0b467004176509c20d4baf9958a9",
-      "role": "strict rejection capture and post-integrity diagnostic integration"
-    }
+    {"blob":"bc1c41731decc1cc0f450daf3eb9b1e0f369cc7c","role":"12 failure-first controls before implementation"},
+    {"blob":"3462ba762375d77c484c2d5f0c4168f91a1f7d3c","role":"verbatim extraction and guarded unadmitted projection"},
+    {"blob":"250bcdb13c6a0b467004176509c20d4baf9958a9","role":"strict rejection capture and post-integrity diagnostic integration"},
+    {"blob":"937860954a5914213e1fe182cae4f04d2814a440","role":"16 actual-pair/protection controls before qualified correction"},
+    {"blob":"5d18ad05dc9d6d80d949f328f1afbf58b2de7193","role":"fixed qualified selector correction"},
+    {"blob":"78874a0b92d2e4ca6980d4690e58d12d380ec968","role":"one fixed input path"}
   ],
   "extraction": {
     "previousDriver": {
@@ -62,36 +50,11 @@
       "getVerified": true
     },
     "functions": [
-      {
-        "name": "pin",
-        "bytes": 91,
-        "sha256": "c27b9f87b830eda11777805c802e72e9acb55cab54ba13bfd76dc6e43db0043c",
-        "bodyByteExact": true
-      },
-      {
-        "name": "blob",
-        "bytes": 103,
-        "sha256": "568f6072ab0cbcdcc0165123dd7e533005ba6bc9090999254e68160ea44a7f7c",
-        "bodyByteExact": true
-      },
-      {
-        "name": "matches_pin",
-        "bytes": 117,
-        "sha256": "8313326c96457cf11de0dd7df378da0f6f4282be4a2db0d398ae8a9220cc46a0",
-        "bodyByteExact": true
-      },
-      {
-        "name": "format_record",
-        "bytes": 960,
-        "sha256": "6ea9ea35b85d67c640bcbe3a1541908413f57cf40132494fdcaf797dca34a7d0",
-        "bodyByteExact": true
-      },
-      {
-        "name": "complete_files",
-        "bytes": 266,
-        "sha256": "edcab7d3906aeceef390b043cb1f79fc09f626383806e1bcc9e80e4235cbf366",
-        "bodyByteExact": true
-      }
+      {"name":"pin","bytes":91,"sha256":"c27b9f87b830eda11777805c802e72e9acb55cab54ba13bfd76dc6e43db0043c","bodyByteExact":true},
+      {"name":"blob","bytes":103,"sha256":"568f6072ab0cbcdcc0165123dd7e533005ba6bc9090999254e68160ea44a7f7c","bodyByteExact":true},
+      {"name":"matches_pin","bytes":117,"sha256":"8313326c96457cf11de0dd7df378da0f6f4282be4a2db0d398ae8a9220cc46a0","bodyByteExact":true},
+      {"name":"format_record","bytes":960,"sha256":"6ea9ea35b85d67c640bcbe3a1541908413f57cf40132494fdcaf797dca34a7d0","bodyByteExact":true},
+      {"name":"complete_files","bytes":266,"sha256":"edcab7d3906aeceef390b043cb1f79fc09f626383806e1bcc9e80e4235cbf366","bodyByteExact":true}
     ],
     "freeVariableBindings": {
       "base64": "same standard-library module",
@@ -107,9 +70,10 @@
   "controlCollection": {
     "modules": [
       {"path":"apps/subtitles/scripts/test_campaign_r06_restore_format.py","blob":"237e5baee902207dc5d6094d191c6afaa5a36404","methods":22},
-      {"path":"apps/subtitles/scripts/test_campaign_r06_restore_projection.py","blob":"bc1c41731decc1cc0f450daf3eb9b1e0f369cc7c","methods":12}
+      {"path":"apps/subtitles/scripts/test_campaign_r06_restore_projection.py","blob":"bc1c41731decc1cc0f450daf3eb9b1e0f369cc7c","methods":12},
+      {"path":"apps/subtitles/scripts/test_campaign_r06_restore_qualified_tokens.py","blob":"937860954a5914213e1fe182cae4f04d2814a440","methods":16}
     ],
-    "totalMethods": 34,
+    "totalMethods": 50,
     "executionOwner": "root",
     "workflowSelectorAdopted": false,
     "frozenSteps": [
@@ -117,7 +81,15 @@
       {"name":"Verify Restore rejected-source projection controls","condition":"env.CAMPAIGN_PROOF == 'R06' && env.CAMPAIGN_R06_SUITE == 'restore-source-format'","timeoutMinutes":1,"cwd":".","run":"python3 -B -m unittest discover -s apps/subtitles/scripts -p test_campaign_r06_restore_projection.py","methods":12}
     ],
     "selectorSourceFrozen": true,
-    "previousCombinedSelector": "superseded by the two fixed root-owned workflow steps"
+    "previousCombinedSelector": "superseded by the two fixed root-owned workflow steps",
+    "additionalHostedStep": {
+      "path": "apps/subtitles/scripts/test_campaign_r06_restore_qualified_tokens.py",
+      "methods": 16,
+      "timeoutMinutes": 1,
+      "owner": "root",
+      "selectorPending": true
+    },
+    "fixedStepSnapshotRole": "prior root-owned22/12 steps retained; new16 step is root-owned pending"
   },
   "rootRAMControlEvidence": {
     "reportedBy": "root",
@@ -175,77 +147,21 @@
     "Original blocked receipt/failureCode and exit2 remain unchanged; no canonical auto-adoption."
   ],
   "sourceInputPins": {
-    "previous": 25,
-    "current": 27,
+    "previous": 27,
+    "current": 28,
     "addedPaths": [
-      "apps/subtitles/scripts/campaign_r06_restore_projection.py",
-      "apps/subtitles/scripts/test_campaign_r06_restore_projection.py"
+      "apps/subtitles/scripts/test_campaign_r06_restore_qualified_tokens.py"
     ],
     "oldInputPathsRetained": true,
     "fixtureInputsUnchanged": true,
-    "existingControlAndComparatorUnchanged": true,
-    "driverReplacementBound": "250bcdb13c6a0b467004176509c20d4baf9958a9",
-    "workflowAndRouterPinsDerivedAtFreshHead": true
+    "driverReplacementBound": "78874a0b92d2e4ca6980d4690e58d12d380ec968",
+    "workflowAndRouterPinsDerivedAtFreshHead": true,
+    "existingControlsUnchanged": true,
+    "comparatorNarrowlyCorrected": true
   },
   "historicalPartialFormatting": [
-    {
-      "run": "37344343769",
-      "artifact": "11360325617",
-      "head": "bc964d97a19cd4544fdebe5cd32335f0f2464256",
-      "tree": "ae8dd7c0d07e8dd00ecf96143263a85b021b422d",
-      "zipBytes": 505975,
-      "zipSha256": "414ca5e8d5c239edafc0825f3ada8edd0de43c65b6ccda528f35b4b013642f13",
-      "rootAdmitted": true,
-      "hostedControlsPassed": 22,
-      "settledZeroExitEmptyStderrPhases": 5,
-      "acceptedEquivalentOutputs": 4,
-      "unprocessedInputs": 9,
-      "failureStage": "formatter",
-      "failureCode": "format-token-change",
-      "sourceUnchanged": true,
-      "compilerExecuted": false,
-      "applicationExecuted": false,
-      "browserExecuted": false,
-      "rejected": {
-        "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_http_test.go",
-        "bytes": 6136,
-        "sha256": "ea2cac672a6fafb2d1e7894619478b1d5a19a2f611c7b25d6d547a8411a2ea9a",
-        "sourceExported": false,
-        "causeProved": false
-      }
-    },
-    {
-      "run": "37349197891",
-      "artifact": "11361578573",
-      "head": "4d17c543a42ccefcbc3b97ee074e527c9000aeba",
-      "tree": "2a23c3503d6db6da8a91ce12bb5444620f5e4d47",
-      "zipBytes": 508131,
-      "zipSha256": "d08fdecbc4fd3b437dd2f1a30ace6cde7b8fab954a2439d70b26c0d97dace317",
-      "rootAdmitted": true,
-      "hostedControlsPassed": 22,
-      "settledZeroExitEmptyStderrPhases": 6,
-      "acceptedEquivalentOutputs": 5,
-      "unprocessedInputs": 8,
-      "failureStage": "formatter",
-      "failureCode": "format-token-change",
-      "sourceUnchanged": true,
-      "compilerExecuted": false,
-      "applicationExecuted": false,
-      "browserExecuted": false,
-      "httpAccepted": {
-        "bytes": 6127,
-        "lines": 207,
-        "sha256": "c1b6b0e0c6fecd90220d03fb14ecf9c5ed83fc656b680a0c194a3faa94462a73",
-        "priorRejectionCauseProved": false
-      },
-      "rejected": {
-        "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_main_test.go",
-        "bytes": 5447,
-        "sha256": "9ddf2e4a5136dc0cf1f6954e324d001b78a51f0fc79459405ce357d6721e6a89",
-        "sourceExported": false,
-        "causeProved": false
-      }
-    }
+    {"run":"37344343769","artifact":"11360325617","head":"bc964d97a19cd4544fdebe5cd32335f0f2464256","tree":"ae8dd7c0d07e8dd00ecf96143263a85b021b422d","zipBytes":505975,"zipSha256":"414ca5e8d5c239edafc0825f3ada8edd0de43c65b6ccda528f35b4b013642f13","rootAdmitted":true,"hostedControlsPassed":22,"settledZeroExitEmptyStderrPhases":5,"acceptedEquivalentOutputs":4,"unprocessedInputs":9,"failureStage":"formatter","failureCode":"format-token-change","sourceUnchanged":true,"compilerExecuted":false,"applicationExecuted":false,"browserExecuted":false,"rejected":{"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_http_test.go","bytes":6136,"sha256":"ea2cac672a6fafb2d1e7894619478b1d5a19a2f611c7b25d6d547a8411a2ea9a","sourceExported":false,"causeProved":false}},
+    {"run":"37349197891","artifact":"11361578573","head":"4d17c543a42ccefcbc3b97ee074e527c9000aeba","tree":"2a23c3503d6db6da8a91ce12bb5444620f5e4d47","zipBytes":508131,"zipSha256":"d08fdecbc4fd3b437dd2f1a30ace6cde7b8fab954a2439d70b26c0d97dace317","rootAdmitted":true,"hostedControlsPassed":22,"settledZeroExitEmptyStderrPhases":6,"acceptedEquivalentOutputs":5,"unprocessedInputs":8,"failureStage":"formatter","failureCode":"format-token-change","sourceUnchanged":true,"compilerExecuted":false,"applicationExecuted":false,"browserExecuted":false,"httpAccepted":{"bytes":6127,"lines":207,"sha256":"c1b6b0e0c6fecd90220d03fb14ecf9c5ed83fc656b680a0c194a3faa94462a73","priorRejectionCauseProved":false},"rejected":{"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_main_test.go","bytes":5447,"sha256":"9ddf2e4a5136dc0cf1f6954e324d001b78a51f0fc79459405ce357d6721e6a89","sourceExported":false,"causeProved":false}}
   ],
   "integration": {
     "owner": "root",
@@ -264,9 +180,10 @@
       "sourceSnapshotFrozen": true,
       "independentSourceClearanceReportedBy": "root",
       "rootTestRuntimeInput": false,
-      "runtimeInputCount": 27,
+      "runtimeInputCount": 28,
       "integratedTreePending": true,
-      "publicationOrHostedExecutionAssumed": false
+      "publicationOrHostedExecutionAssumed": false,
+      "sourceSnapshotRole": "previous frozen root sources; upcoming16-control selector remains root-owned"
     }
   },
   "currentPackageExecution": {
@@ -276,17 +193,48 @@
     "browser": false
   },
   "remainingGates": [
-    "independent documentary exact-pin review",
-    "root fresh-main tree/workflow/unit selector integration",
-    "serialized hosted34 controls and guarded source formatter",
-    "actual rejected source diagnostic admission before cause attribution",
-    "all fourteen canonical outputs/token/line admission and explicit root adoption",
-    "compiler/lint/G704/public Restore controls/browser/normal gates remain separate"
+    "independent documentary/pin review",
+    "root fresh-main exact tree and fixed50-control step integration",
+    "hosted50 controls and serialized stock source formatter/process admission",
+    "all14 canonical token/comment/literal/<=300-line admission and explicit root adoption",
+    "compiler/lint/G704/public Restore/browser and normal gates remain separate"
   ],
   "remainingLimits": [
-    "Both historical rejected sources were unexported; exact Main and prior HTTP causes remain unproved.",
-    "Root34/34 is pure mocked RAM evidence, not actual formatter/Go/browser acceptance.",
-    "Current three-source diagnostic package has no hosted formatter execution.",
-    "Fixture and strict comparator identities are unchanged; no product or auth change."
-  ]
+    "Root50/50 pure RAM controls passed with0 failures/errors/skips, separately from actual formatting/Go/browser acceptance.",
+    "Captured formatter stdout/stderr size checks occur after communicate; pinned stdin remains bounded.",
+    "No general Go grammar/compiler or application/auth/effects/runtime claim.",
+    "Earlier HTTP and Main rejected histories remain blocked and unexported at those runs; only later37356459910 exports Main as unadmitted.",
+    "Independent later Main diagnostic comparison shows exactly one final server.Config comma; current corrected package hosted formatting remains unrun."
+  ],
+  "comparatorBeforeQualifiedCorrection": {
+    "path": "apps/subtitles/scripts/campaign_r06_restore_tokens.py",
+    "blob": "ea9819030c92c9b7c21c072aa812e4d49154f10c",
+    "bytes": 8096,
+    "lines": 198,
+    "sha256": "d3a32cc0b1ded64e1e21fd598798ef9b8fcc8c1fda9cdb93f186e45ca3b12693",
+    "getVerified": true
+  },
+  "qualifiedCorrection": {
+    "previousComparator": {"path":"apps/subtitles/scripts/campaign_r06_restore_tokens.py","blob":"ea9819030c92c9b7c21c072aa812e4d49154f10c","bytes":8096,"lines":198,"sha256":"d3a32cc0b1ded64e1e21fd598798ef9b8fcc8c1fda9cdb93f186e45ca3b12693","getVerified":true},
+    "currentComparator": {"path":"apps/subtitles/scripts/campaign_r06_restore_tokens.py","bytes":8541,"lines":210,"sha256":"a8feae66139a550093fc73dccb0495dacd75d14f6d33db69399cd2b42c7f889d","blob":"5d18ad05dc9d6d80d949f328f1afbf58b2de7193","getVerified":true},
+    "currentControl": {"path":"apps/subtitles/scripts/test_campaign_r06_restore_qualified_tokens.py","bytes":20561,"lines":235,"sha256":"19a6d84d338e62f9bc1eb08744780d7019b773c83d7758b3303b6a7a46e36254","methods":16,"blob":"937860954a5914213e1fe182cae4f04d2814a440","getVerified":true},
+    "previousDriver": {"path":"apps/subtitles/scripts/campaign_r06_restore_format.py","bytes":15308,"lines":279,"sha256":"659e69f98edfa2c8283b087366ee794fdaeaeffb5abc34c77cb989b8dcc72bc6","blob":"250bcdb13c6a0b467004176509c20d4baf9958a9","getVerified":true},
+    "currentDriver": {"path":"apps/subtitles/scripts/campaign_r06_restore_format.py","bytes":15393,"lines":280,"sha256":"b9e6458d77dd24af0d7eb060b1cb4a740d839eefbc2cfdacec7d3815a00114b8","blob":"78874a0b92d2e4ca6980d4690e58d12d380ec968","getVerified":true},
+    "stagingOrder": ["937860954a5914213e1fe182cae4f04d2814a440","5d18ad05dc9d6d80d949f328f1afbf58b2de7193","78874a0b92d2e4ca6980d4690e58d12d380ec968"],
+    "tokenInverseExact": true,
+    "driverInverseExact": true,
+    "braceKind": {"API":"brace_kind(previous, types, closed, parent)","declarationAndBodyBytesUnchanged":true,"hashExcludesOnlyFollowingBlankSeparators":true,"sha256":"36e13d37d252583bca49b3f4606b1b2d72be973b37ba01d2f74edae73747c8c1"},
+    "qualifiedHelper": {"sha256":"e15309a80554d79a455ff813eba3c1e3d36b29623405238bd3e7d8baf34e619f","recognition":"exact server . Config significant-token selector with no preceding dot; no other qualified type or block newly accepted"},
+    "rawMain": {"blob":"5b71ecc1bc3e94be6b516595bea89ac487f88500","bytes":4725,"sha256":"b808cdca52ea70579a5550a1c049e9f14e5213efafcef85ea8575630b7354f49"},
+    "unadmittedDiagnosticMain": {"blob":"21b445622772471c1af71fb7c20cd28a1273aca2","bytes":5447,"sha256":"9ddf2e4a5136dc0cf1f6954e324d001b78a51f0fc79459405ce357d6721e6a89","admitted":false,"sourceOnly":true,"tokensPreserved":false,"autoAdopted":false},
+    "diagnosticRun": {"run":"37356459910","artifact":"11365400113","head":"2ed4b5f775c3ac58deb01ff3d3657bd92c412f03","independentArtifactAdmission":true,"trackedSources":7090,"ownedSources":34,"explicitInputs":27,"settledZeroExitEmptyStderrPhases":6,"acceptedEquivalentOutputs":5,"compilerExecuted":false,"applicationExecuted":false,"browserExecuted":false,"normalizedDifference":"one final comma in server.Config; every other normalized token equal under prior comparator"},
+    "failureFirstRootRAM": {"reportedBy":"root","methods":16,"passed":13,"failed":3,"errors":0,"skips":0,"failedNames":["test_actual_main_pair_is_format_equivalent","test_exact_server_config_final_comma","test_selector_comments_remain_exact"],"comparatorBlob":"ea9819030c92c9b7c21c072aa812e4d49154f10c","actualFormatterOrApplication":false},
+    "currentCombinedRAM": {"reportedBy":"root","methods":50,"passed":50,"failures":0,"errors":0,"skips":0,"executedUTC":"2026-10-05 18:52:57 UTC","oldMethods":22,"projectionMethods":12,"qualifiedMethods":16,"unmockedIOAndProcessesBlocked":true,"formatterOrGoExecuted":false},
+    "sourceInputPins": {"previous":27,"current":28,"addedPath":"apps/subtitles/scripts/test_campaign_r06_restore_qualified_tokens.py"},
+    "unchanged": {"fourteenRawGo":true,"fixtureSourceManifest":true,"old22Controls":true,"projection12Controls":true,"projectionHelper":true,"commentsLiteralsFieldsValuesOrderInternalCommasImports":true,"groupedTypeConstraints":true},
+    "currentHostedFormatting": false,
+    "currentCompilerOrPublicRuntime": false,
+    "remaining": "root exact-tree/fixed hosted control step, all14 actual canonical/token/line admission and explicit adoption, compile/lint/public controls/browser remain separate",
+    "sourceReview": {"independent":true,"exactTrioCleared":true,"semanticOrCompilerApproval":false}
+  }
 }

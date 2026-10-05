@@ -167,6 +167,7 @@ def input_sources():
         inputs[name] = data
     names = (MANIFEST_PATH, "apps/subtitles/scripts/campaign_r06_restore_format.py",
              "apps/subtitles/scripts/campaign_r06_restore_tokens.py",
+             "apps/subtitles/scripts/test_campaign_r06_restore_qualified_tokens.py",
              "apps/subtitles/scripts/campaign_r06_restore_projection.py",
              "apps/subtitles/scripts/test_campaign_r06_restore_projection.py",
              "apps/subtitles/scripts/test_campaign_r06_restore_format.py",

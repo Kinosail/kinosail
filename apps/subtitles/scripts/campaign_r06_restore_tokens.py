@@ -156,6 +156,17 @@ def brace_kind(previous, types, closed, parent):
     return "block"
 
 
+
+def qualified_config(output):
+    significant = []
+    for token in reversed(output):
+        if token[0] != "comment":
+            significant.append(token)
+            if len(significant) == 4:
+                break
+    return (significant[:3] == [("word", "Config"), ("op", "."), ("word", "server")]
+            and (len(significant) < 4 or significant[3] != ("op", ".")))
+
 def normalize(tokens):
     tokens = imports(tokens)
     types = set(BUILTIN_TYPES | OWNED_TYPES)
@@ -169,7 +180,8 @@ def normalize(tokens):
         previous = next((entry for entry in reversed(output) if entry[0] != "comment"), None)
         if kind == "op" and value in ("(", "[", "{"):
             if value == "{":
-                frame = brace_kind(previous, types, last_closed, stack[-1][1] if stack else None)
+                frame = ("list" if qualified_config(output) else
+                         brace_kind(previous, types, last_closed, stack[-1][1] if stack else None))
             elif value == "(":
                 frame = "list" if previous and (previous[0] == "word" and
                         previous[1] not in KEYWORDS or previous == ("word", "func") or

@@ -119,5 +119,18 @@ class CampaignProofTests(unittest.TestCase):
         self.assertLess(source.index('name: Verify Restore rejected-source projection controls'), source.index('name: Run exact owned public proof'))
 
 
+    def test_restore_qualified_source_controls_are_fixed_and_bounded_before_proof(self):
+        source = LAYOUT.read_text().split('  campaign-proof:\n')[1]
+        name = 'name: Verify Restore qualified-type controls'
+        command = 'timeout --kill-after=2s 10s python3 -B -m unittest discover -s apps/subtitles/scripts -p test_campaign_r06_restore_qualified_tokens.py'
+        self.assertEqual(source.count(command), 1)
+        step = source.split(name)[1].split('      - name: Run exact owned public proof')[0]
+        self.assertIn("if: env.CAMPAIGN_PROOF == 'R06' && env.CAMPAIGN_R06_SUITE == 'restore-source-format'", step)
+        self.assertIn('timeout-minutes: 1', step)
+        self.assertIn('run: ' + command, step)
+        self.assertLess(source.index('name: Verify Restore rejected-source projection controls'), source.index(name))
+        self.assertLess(source.index(name), source.index('name: Run exact owned public proof'))
+
+
 if __name__ == '__main__':
     unittest.main()

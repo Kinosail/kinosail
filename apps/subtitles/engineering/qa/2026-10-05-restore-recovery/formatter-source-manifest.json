@@ -2,7 +2,7 @@
   "schema": "r06-restore-source-format-package-v1",
   "baseCommit": "bd1ea2e148787ae8d4a0a46640bc2a965e10fe6a",
   "baseTree": "6070e86cc8a3522810218d311cc2d5d6246f02d0",
-  "status": "source-code-reviewed-root34-RAM-controls-passed-manifest-unreviewed-hosted-unrun",
+  "status": "qualified-source-reviewed-root50-RAM-passed-documentary-review-pending-hosted-unrun",
   "fixtureSourceManifest": {
     "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture-source-manifest.json",
     "bytes": 12986,
@@ -13,63 +13,28 @@
   },
   "sources": [
     {"path":"apps/subtitles/scripts/test_campaign_r06_restore_format.py","bytes":14053,"lines":253,"sha256":"4a4ceb02731f6bb471a0594848aecf0cb6057903bd66cf08e71b4e66c06ed7b7","blob":"237e5baee902207dc5d6094d191c6afaa5a36404","getVerified":true},
-    {"path":"apps/subtitles/scripts/campaign_r06_restore_tokens.py","blob":"ea9819030c92c9b7c21c072aa812e4d49154f10c","bytes":8096,"lines":198,"sha256":"d3a32cc0b1ded64e1e21fd598798ef9b8fcc8c1fda9cdb93f186e45ca3b12693","getVerified":true},
-    {"path":"apps/subtitles/scripts/campaign_r06_restore_format.py","bytes":15308,"lines":279,"sha256":"659e69f98edfa2c8283b087366ee794fdaeaeffb5abc34c77cb989b8dcc72bc6","blob":"250bcdb13c6a0b467004176509c20d4baf9958a9","getVerified":true},
+    {"path":"apps/subtitles/scripts/campaign_r06_restore_tokens.py","bytes":8541,"lines":210,"sha256":"a8feae66139a550093fc73dccb0495dacd75d14f6d33db69399cd2b42c7f889d","blob":"5d18ad05dc9d6d80d949f328f1afbf58b2de7193","getVerified":true},
+    {"path":"apps/subtitles/scripts/campaign_r06_restore_format.py","bytes":15393,"lines":280,"sha256":"b9e6458d77dd24af0d7eb060b1cb4a740d839eefbc2cfdacec7d3815a00114b8","blob":"78874a0b92d2e4ca6980d4690e58d12d380ec968","getVerified":true},
     {"path":"apps/subtitles/scripts/test_campaign_r06_restore_projection.py","bytes":6807,"lines":127,"sha256":"4edcfb6c2fd838ecc1a31b4a001798c51691a36ef66dc21bf67dc3643db95505","tests":12,"blob":"bc1c41731decc1cc0f450daf3eb9b1e0f369cc7c","getVerified":true},
-    {"path":"apps/subtitles/scripts/campaign_r06_restore_projection.py","bytes":4155,"lines":96,"sha256":"528cad4273865b83f4671bd7aa2d0acc0434eb1379707c9d42e9ae75c7cc17f8","blob":"3462ba762375d77c484c2d5f0c4168f91a1f7d3c","getVerified":true}
+    {"path":"apps/subtitles/scripts/campaign_r06_restore_projection.py","bytes":4155,"lines":96,"sha256":"528cad4273865b83f4671bd7aa2d0acc0434eb1379707c9d42e9ae75c7cc17f8","blob":"3462ba762375d77c484c2d5f0c4168f91a1f7d3c","getVerified":true},
+    {"path":"apps/subtitles/scripts/test_campaign_r06_restore_qualified_tokens.py","bytes":20561,"lines":235,"sha256":"19a6d84d338e62f9bc1eb08744780d7019b773c83d7758b3303b6a7a46e36254","methods":16,"blob":"937860954a5914213e1fe182cae4f04d2814a440","getVerified":true}
   ],
   "testFirstOrder": [
-    {
-      "blob": "ff26831ebf4a659fb6b13ebc32e18976058173b3",
-      "controls": 16
-    },
-    {
-      "blob": "b7dd08c325f60cba48258f22f30be03d762d00e7",
-      "controls": 17
-    },
-    {
-      "blob": "8f3b6edb389e75c5b69962a7157fb1599c9896e9",
-      "controls": 19
-    },
-    {
-      "blob": "ea9819030c92c9b7c21c072aa812e4d49154f10c",
-      "role": "token-implementation"
-    },
-    {
-      "blob": "f8d5a0a3cc0b0fe0e559f22a934d5b8ce8fc563a",
-      "role": "harness-implementation"
-    },
-    {
-      "blob": "55d88a6fce60fc5796e0295176450d141fffbe7f",
-      "controls": 20,
-      "role": "capture-error-regression-before-repair"
-    },
-    {
-      "blob": "1d811ebdb5ddc3083caa2b7c86dc10ca8578c67b",
-      "role": "capture-error-owned-cleanup-repair"
-    },
-    {
-      "blob": "e9761f179bc6bc28fb3776e328290d608e93e653",
-      "controls": 22,
-      "role": "Git-admission-control-before-classification"
-    },
-    {
-      "blob": "4b19b62fbc487ec611188240e36b732a27fbddbe",
-      "role": "fixed-command-classification-and-base-availability-check"
-    },
-    {
-      "blob": "bc1c41731decc1cc0f450daf3eb9b1e0f369cc7c",
-      "controls": 12,
-      "role": "diagnostic-controls-before-implementation"
-    },
-    {
-      "blob": "3462ba762375d77c484c2d5f0c4168f91a1f7d3c",
-      "role": "verbatim-extraction-and-strict-unadmitted-source-projection"
-    },
-    {
-      "blob": "250bcdb13c6a0b467004176509c20d4baf9958a9",
-      "role": "post-integrity-diagnostic-integration"
-    }
+    {"blob":"ff26831ebf4a659fb6b13ebc32e18976058173b3","controls":16},
+    {"blob":"b7dd08c325f60cba48258f22f30be03d762d00e7","controls":17},
+    {"blob":"8f3b6edb389e75c5b69962a7157fb1599c9896e9","controls":19},
+    {"blob":"ea9819030c92c9b7c21c072aa812e4d49154f10c","role":"token-implementation"},
+    {"blob":"f8d5a0a3cc0b0fe0e559f22a934d5b8ce8fc563a","role":"harness-implementation"},
+    {"blob":"55d88a6fce60fc5796e0295176450d141fffbe7f","controls":20,"role":"capture-error-regression-before-repair"},
+    {"blob":"1d811ebdb5ddc3083caa2b7c86dc10ca8578c67b","role":"capture-error-owned-cleanup-repair"},
+    {"blob":"e9761f179bc6bc28fb3776e328290d608e93e653","controls":22,"role":"Git-admission-control-before-classification"},
+    {"blob":"4b19b62fbc487ec611188240e36b732a27fbddbe","role":"fixed-command-classification-and-base-availability-check"},
+    {"blob":"bc1c41731decc1cc0f450daf3eb9b1e0f369cc7c","controls":12,"role":"diagnostic-controls-before-implementation"},
+    {"blob":"3462ba762375d77c484c2d5f0c4168f91a1f7d3c","role":"verbatim-extraction-and-strict-unadmitted-source-projection"},
+    {"blob":"250bcdb13c6a0b467004176509c20d4baf9958a9","role":"post-integrity-diagnostic-integration"},
+    {"blob":"937860954a5914213e1fe182cae4f04d2814a440","controls":16,"role":"actual-Main-compatibility-controls-before-correction"},
+    {"blob":"5d18ad05dc9d6d80d949f328f1afbf58b2de7193","role":"exact-qualified-server.Config-normalization"},
+    {"blob":"78874a0b92d2e4ca6980d4690e58d12d380ec968","role":"one-fixed-new-control-input-path"}
   ],
   "formatterMode": "restore-source-format",
   "command": [
@@ -96,21 +61,9 @@
     "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_witness_test.go"
   ],
   "fixedDependencies": [
-    {
-      "path": "apps/subtitles/scripts/campaign_r06_format.py",
-      "sha256": "0627baac73b256fc6ec6a2788b06ce97f7a0e0faede8abbbedbb70f6fc93d1c2",
-      "gitBlob": "f59d2d1d1f43ed13e51656e30f9bdb6bddf7679d"
-    },
-    {
-      "path": "apps/subtitles/scripts/campaign_r06_browser_sources.py",
-      "sha256": "20a342625421d6ec7bc90df15bfa79c1ef2d3ef2deb915b0bab4cd334944e258",
-      "gitBlob": "57360b7b6a2f8037c99fd656b19b1c8e51c18571"
-    },
-    {
-      "path": "apps/subtitles/.golangci.yml",
-      "sha256": "389f5d87f20f6ea354dc36be94150e4057a09e1fd31a5cfb6aa14de96953eafd",
-      "gitBlob": "d63849acf919209a9da64cdc687d6d63f073f01c"
-    }
+    {"path":"apps/subtitles/scripts/campaign_r06_format.py","sha256":"0627baac73b256fc6ec6a2788b06ce97f7a0e0faede8abbbedbb70f6fc93d1c2","gitBlob":"f59d2d1d1f43ed13e51656e30f9bdb6bddf7679d"},
+    {"path":"apps/subtitles/scripts/campaign_r06_browser_sources.py","sha256":"20a342625421d6ec7bc90df15bfa79c1ef2d3ef2deb915b0bab4cd334944e258","gitBlob":"57360b7b6a2f8037c99fd656b19b1c8e51c18571"},
+    {"path":"apps/subtitles/.golangci.yml","sha256":"389f5d87f20f6ea354dc36be94150e4057a09e1fd31a5cfb6aa14de96953eafd","gitBlob":"d63849acf919209a9da64cdc687d6d63f073f01c"}
   ],
   "rawInputs": [
     {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_assertions_test.go","blob":"0c72a93cf599390ecfa42a1b08ebbbe7e0c8bd6b","bytes":6490,"sha256":"82261355e73118d9cad07c3f6fa289ac29a0d6343efb8db669926b96087191c0"},
@@ -166,23 +119,22 @@
     "All sources/artifacts are retained; formatter writes no tracked inputs and never auto-adopts outputs.",
     "An unexpected capture exception still signals/joins the owned group; captureFailed permanently blocks canonical admission.",
     "Historical fixture lint refactor remains exact; five projection function bodies relocate byte-exact with original bindings/public names.",
-    "Historical HTTP blank separator is retained; this diagnostic package changes no fixture or strict comparator.",
+    "Historical HTTP blank separator and all14raw Go sources remain exact; only the fixed qualified server.Config final-comma recognition is added to the comparator.",
     "Optional unadmittedFormat is isolated from accepted files/counts/success, requires all process and final integrity guards and retains exit2."
   ],
   "remainingGates": [
-    "independent exact documentary/pin review",
-    "root fresh-main tree/workflow and34-unit selector integration",
-    "hosted34 controls and serialized stock source formatter/process admission",
-    "explicit unadmitted-source diagnostic review before cause attribution",
-    "all14 canonical token/comment/literal/<=300-line admission and root adoption",
+    "independent documentary/pin review",
+    "root fresh-main exact tree and fixed50-control step integration",
+    "hosted50 controls and serialized stock source formatter/process admission",
+    "all14 canonical token/comment/literal/<=300-line admission and explicit root adoption",
     "compiler/lint/G704/public Restore/browser and normal gates remain separate"
   ],
   "remainingLimits": [
-    "Root34/34 pure RAM controls passed with0 failures/errors/skips; current diagnostic package has no hosted formatter execution.",
-    "Captured formatter stdout/stderr size checks occur after communicate, following the admitted stock formatter design; stdin is pinned and bounded.",
-    "No claim of general Go grammar validation, compilation, auth, Save/Restore effects or runtime acceptance.",
-    "Historical37344343769 passed22 controls/five stock phases but blocked token-change on HTTP; rejected source/cause unproved, detailed in lintRefactor manifest.",
-    "Historical4d17 run37349197891 is admitted partial: six settled phases/five equivalent outputs, unexported Main5447B token-change; exact cause remains unproved."
+    "Root50/50 pure RAM controls passed with0 failures/errors/skips, separately from actual formatting/Go/browser acceptance.",
+    "Captured formatter stdout/stderr size checks occur after communicate; pinned stdin remains bounded.",
+    "No general Go grammar/compiler or application/auth/effects/runtime claim.",
+    "Earlier HTTP and Main rejected histories remain blocked and unexported at those runs; only later37356459910 exports Main as unadmitted.",
+    "Independent later Main diagnostic comparison shows exactly one final server.Config comma; current corrected package hosted formatting remains unrun."
   ],
   "previousManifest": {
     "blob": "71db66276ce933e0f8418e0287149c30090b7f35",
@@ -223,18 +175,19 @@
   "controlsExecutionKind": "root-pure-RAM-all-unmocked-IO-and-processes-blocked",
   "diagnosticProjectionManifest": {
     "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/formatter-projection-source-manifest.json",
-    "bytes": 12502,
-    "lines": 292,
-    "sha256": "36b2d6d5ded4a9bed009d7299397cd9e51c7ea808db2c1e9754eb8db73b9b4a2",
-    "blob": "50f8d6ad9e0cd45a42b1c75091307a40a7c07fa2",
+    "bytes": 17622,
+    "lines": 240,
+    "sha256": "14f08e8b35b6b94bd427907f32095d1d8b0c63f0aba3b5360e9335c1c608a454",
+    "blob": "d9a9aca6c73ca4830cf412da00d01f1ecbb2277e",
     "getVerified": true
   },
   "controlCollection": {
     "modules": [
       {"path":"apps/subtitles/scripts/test_campaign_r06_restore_format.py","blob":"237e5baee902207dc5d6094d191c6afaa5a36404","methods":22},
-      {"path":"apps/subtitles/scripts/test_campaign_r06_restore_projection.py","blob":"bc1c41731decc1cc0f450daf3eb9b1e0f369cc7c","methods":12}
+      {"path":"apps/subtitles/scripts/test_campaign_r06_restore_projection.py","blob":"bc1c41731decc1cc0f450daf3eb9b1e0f369cc7c","methods":12},
+      {"path":"apps/subtitles/scripts/test_campaign_r06_restore_qualified_tokens.py","blob":"937860954a5914213e1fe182cae4f04d2814a440","methods":16}
     ],
-    "totalMethods": 34,
+    "totalMethods": 50,
     "executionOwner": "root",
     "workflowSelectorAdopted": false,
     "frozenSteps": [
@@ -242,7 +195,15 @@
       {"name":"Verify Restore rejected-source projection controls","condition":"env.CAMPAIGN_PROOF == 'R06' && env.CAMPAIGN_R06_SUITE == 'restore-source-format'","timeoutMinutes":1,"cwd":".","run":"python3 -B -m unittest discover -s apps/subtitles/scripts -p test_campaign_r06_restore_projection.py","methods":12}
     ],
     "selectorSourceFrozen": true,
-    "previousCombinedSelector": "superseded by the two fixed root-owned workflow steps"
+    "previousCombinedSelector": "superseded by the two fixed root-owned workflow steps",
+    "additionalHostedStep": {
+      "path": "apps/subtitles/scripts/test_campaign_r06_restore_qualified_tokens.py",
+      "methods": 16,
+      "timeoutMinutes": 1,
+      "owner": "root",
+      "selectorPending": true
+    },
+    "fixedStepSnapshotRole": "prior root-owned22/12 steps retained; new16 step is root-owned pending"
   },
   "diagnosticControlSnapshot": {
     "blob": "bc1c41731decc1cc0f450daf3eb9b1e0f369cc7c",
@@ -269,20 +230,45 @@
       "sourceSnapshotFrozen": true,
       "independentSourceClearanceReportedBy": "root",
       "rootTestRuntimeInput": false,
-      "runtimeInputCount": 27,
+      "runtimeInputCount": 28,
       "integratedTreePending": true,
-      "publicationOrHostedExecutionAssumed": false
+      "publicationOrHostedExecutionAssumed": false,
+      "sourceSnapshotRole": "previous frozen root sources; upcoming16-control selector remains root-owned"
     }
   },
   "sourceInputPins": {
-    "previous": 25,
-    "current": 27,
+    "previous": 27,
+    "current": 28,
     "addedPaths": [
-      "apps/subtitles/scripts/campaign_r06_restore_projection.py",
-      "apps/subtitles/scripts/test_campaign_r06_restore_projection.py"
+      "apps/subtitles/scripts/test_campaign_r06_restore_qualified_tokens.py"
     ],
     "oldInputPathsRetained": true,
-    "driverReplacementBound": "250bcdb13c6a0b467004176509c20d4baf9958a9",
-    "workflowAndRouterPinsDerivedAtFreshHead": true
+    "driverReplacementBound": "78874a0b92d2e4ca6980d4690e58d12d380ec968",
+    "workflowAndRouterPinsDerivedAtFreshHead": true,
+    "existingControlsUnchanged": true,
+    "comparatorNarrowlyCorrected": true
+  },
+  "qualifiedCorrection": {
+    "previousComparator": {"path":"apps/subtitles/scripts/campaign_r06_restore_tokens.py","blob":"ea9819030c92c9b7c21c072aa812e4d49154f10c","bytes":8096,"lines":198,"sha256":"d3a32cc0b1ded64e1e21fd598798ef9b8fcc8c1fda9cdb93f186e45ca3b12693","getVerified":true},
+    "currentComparator": {"path":"apps/subtitles/scripts/campaign_r06_restore_tokens.py","bytes":8541,"lines":210,"sha256":"a8feae66139a550093fc73dccb0495dacd75d14f6d33db69399cd2b42c7f889d","blob":"5d18ad05dc9d6d80d949f328f1afbf58b2de7193","getVerified":true},
+    "currentControl": {"path":"apps/subtitles/scripts/test_campaign_r06_restore_qualified_tokens.py","bytes":20561,"lines":235,"sha256":"19a6d84d338e62f9bc1eb08744780d7019b773c83d7758b3303b6a7a46e36254","methods":16,"blob":"937860954a5914213e1fe182cae4f04d2814a440","getVerified":true},
+    "previousDriver": {"path":"apps/subtitles/scripts/campaign_r06_restore_format.py","bytes":15308,"lines":279,"sha256":"659e69f98edfa2c8283b087366ee794fdaeaeffb5abc34c77cb989b8dcc72bc6","blob":"250bcdb13c6a0b467004176509c20d4baf9958a9","getVerified":true},
+    "currentDriver": {"path":"apps/subtitles/scripts/campaign_r06_restore_format.py","bytes":15393,"lines":280,"sha256":"b9e6458d77dd24af0d7eb060b1cb4a740d839eefbc2cfdacec7d3815a00114b8","blob":"78874a0b92d2e4ca6980d4690e58d12d380ec968","getVerified":true},
+    "stagingOrder": ["937860954a5914213e1fe182cae4f04d2814a440","5d18ad05dc9d6d80d949f328f1afbf58b2de7193","78874a0b92d2e4ca6980d4690e58d12d380ec968"],
+    "tokenInverseExact": true,
+    "driverInverseExact": true,
+    "braceKind": {"API":"brace_kind(previous, types, closed, parent)","declarationAndBodyBytesUnchanged":true,"hashExcludesOnlyFollowingBlankSeparators":true,"sha256":"36e13d37d252583bca49b3f4606b1b2d72be973b37ba01d2f74edae73747c8c1"},
+    "qualifiedHelper": {"sha256":"e15309a80554d79a455ff813eba3c1e3d36b29623405238bd3e7d8baf34e619f","recognition":"exact server . Config significant-token selector with no preceding dot; no other qualified type or block newly accepted"},
+    "rawMain": {"blob":"5b71ecc1bc3e94be6b516595bea89ac487f88500","bytes":4725,"sha256":"b808cdca52ea70579a5550a1c049e9f14e5213efafcef85ea8575630b7354f49"},
+    "unadmittedDiagnosticMain": {"blob":"21b445622772471c1af71fb7c20cd28a1273aca2","bytes":5447,"sha256":"9ddf2e4a5136dc0cf1f6954e324d001b78a51f0fc79459405ce357d6721e6a89","admitted":false,"sourceOnly":true,"tokensPreserved":false,"autoAdopted":false},
+    "diagnosticRun": {"run":"37356459910","artifact":"11365400113","head":"2ed4b5f775c3ac58deb01ff3d3657bd92c412f03","independentArtifactAdmission":true,"trackedSources":7090,"ownedSources":34,"explicitInputs":27,"settledZeroExitEmptyStderrPhases":6,"acceptedEquivalentOutputs":5,"compilerExecuted":false,"applicationExecuted":false,"browserExecuted":false,"normalizedDifference":"one final comma in server.Config; every other normalized token equal under prior comparator"},
+    "failureFirstRootRAM": {"reportedBy":"root","methods":16,"passed":13,"failed":3,"errors":0,"skips":0,"failedNames":["test_actual_main_pair_is_format_equivalent","test_exact_server_config_final_comma","test_selector_comments_remain_exact"],"comparatorBlob":"ea9819030c92c9b7c21c072aa812e4d49154f10c","actualFormatterOrApplication":false},
+    "currentCombinedRAM": {"reportedBy":"root","methods":50,"passed":50,"failures":0,"errors":0,"skips":0,"executedUTC":"2026-10-05 18:52:57 UTC","oldMethods":22,"projectionMethods":12,"qualifiedMethods":16,"unmockedIOAndProcessesBlocked":true,"formatterOrGoExecuted":false},
+    "sourceInputPins": {"previous":27,"current":28,"addedPath":"apps/subtitles/scripts/test_campaign_r06_restore_qualified_tokens.py"},
+    "unchanged": {"fourteenRawGo":true,"fixtureSourceManifest":true,"old22Controls":true,"projection12Controls":true,"projectionHelper":true,"commentsLiteralsFieldsValuesOrderInternalCommasImports":true,"groupedTypeConstraints":true},
+    "currentHostedFormatting": false,
+    "currentCompilerOrPublicRuntime": false,
+    "remaining": "root exact-tree/fixed hosted control step, all14 actual canonical/token/line admission and explicit adoption, compile/lint/public controls/browser remain separate",
+    "sourceReview": {"independent":true,"exactTrioCleared":true,"semanticOrCompilerApproval":false}
   }
 }
