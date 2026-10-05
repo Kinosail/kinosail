@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "boundary": "Source-prepared protocol expectations before implementation; no reporter/browser execution",
+  "reportSchemaVersion": 2,
+  "suiteCounts": {"primary": 2, "cold": 2, "bfcache": 1, "htmx": 1, "shows": 2, "search": 1, "safety": 10, "home": 3, "all": 9},
+  "allBoundary": "Original nine-case hosted collection only; ordinary Go all selection unchanged",
+  "attachmentSets": {
+    "primary": ["before-state", "player-state", "returned-state", "served-browse-asset"],
+    "cold": ["before-state", "player-state", "cold-boundary-state", "returned-state", "served-browse-asset"],
+    "bfcache": ["before-state", "player-state", "native-cache-boundary-state", "returned-state", "served-browse-asset"],
+    "htmx": ["before-state", "letter-state", "htmx-boundary-state", "returned-state", "served-browse-asset"],
+    "shows": ["before-state", "player-state", "returned-state", "served-browse-asset"],
+    "search": ["original-url-state", "before-state", "cold-boundary-state", "returned-state"],
+    "safetyRejection": ["before-state", "player-state", "served-browse-asset", "safe-rejection"],
+    "safetyAnotherTab": ["before-state", "player-state", "served-browse-asset"],
+    "homeVisible": ["home-before-state", "home-player-state", "home-returned-state", "served-browse-asset"],
+    "homeColdResume": ["home-before-state", "home-player-state", "home-cold-boundary-state", "home-returned-state", "served-browse-asset"],
+    "homeColdDestination": ["home-before-state", "home-cold-boundary-state", "home-returned-state", "served-browse-asset"]
+  },
+  "document": {"idSHA256": "lowercase SHA-256 of fixture UUID, or null for invalid identity", "shows": "0..16 exact {persisted:boolean} objects", "histories": "integer 0..256"},
+  "navigation": ["navigate", "reload", "back_forward", "prerender"],
+  "browseAction": {"focused": null, "focusedBrowse": {"view": "movies"}, "selected": {"href": null, "browse": {"view": "movies"}, "top": 120, "bottom": 360}},
+  "mediaAction": {"focused": "/watch/0000000000000000", "focusedBrowse": null, "selected": {"href": "/watch/0000000000000000", "browse": null, "top": 120, "bottom": 360}},
+  "knownQueries": {"view": ["all", "movies", "shows"], "q": ["Return Movie", "Return Show"], "sort": ["title"], "offset": "0..1000000 decimal string", "limit": "1..200 decimal string", "letter": "one A-Z fixture letter", "lang": "bounded existing two-letter language pattern"},
+  "failureLabels": {
+    "acceptance": ["Q14 acceptance: return to the same public browse URL", "Q14 acceptance: selected title action regains focus", "Q14 acceptance: same settled browse position", "Q14 Home acceptance: original action regains focus", "Q14 Home acceptance: settled horizontal position", "Q14 Home acceptance: settled vertical position"],
+    "prerequisite": ["fixture prerequisite:", "BFCache prerequisite:", "cold boundary prerequisite:", "cold search prerequisite:", "HTMX prerequisite:", "Home prerequisite:", "Home cold prerequisite:", "destination prerequisite:"],
+    "unknown": {"phase": "unclassified", "label": null, "location": "known spec/helper basename and bounded positive line/column, or null; never error text/path"}
+  },
+  "safetyNames": ["external origin", "protocol-relative origin", "non-browse route", "duplicate query", "unknown query", "oversized query", "excessive extent", "different profile", "different destination"],
+  "safetyObservation": {"name": "different profile", "href": "/watch/0000000000000000", "noBrowseRequests": true},
+  "bounds": {"attachmentBodyBytes": 1000000, "attachmentsPerCase": 16, "collectedCases": 22, "caseResults": 22, "globalErrors": 16, "failuresPerCase": 16, "titlesAndHrefs": 64, "peerRequests": 256, "navigationEntries": 4, "coordinateAbsolute": 10000000, "durationMs": 60000, "retry": 0},
+  "negativeControls": [
+    {"name": "primitive/null/array observation", "expected": "null observation, no boundary acceptance"},
+    {"name": "unknown object fields or nested types", "expected": "never copied; invalid known shape cannot certify"},
+    {"name": "unknown raw route/query/duplicate query/fragment", "expected": "no raw href output; invalid action or observation cannot certify"},
+    {"name": "non-finite/out-of-bound coordinate", "expected": "null/invalid observation, no acceptance"},
+    {"name": "invalid UUID or navigation enum", "expected": "no raw UUID/navigation output; boundary cannot certify"},
+    {"name": "oversized arrays or attachment body", "expected": "bounded global error/invalid observation, no empty GREEN"},
+    {"name": "unknown file/title/suite", "expected": "fixed safe error, no arbitrary name output or accepted report"},
+    {"name": "missing/duplicate required attachment", "expected": "strict root admission incomplete"},
+    {"name": "BFCache non-persisted pageshow", "expected": "prerequisite failure, never automatic product RED"},
+    {"name": "safety rejection name/href/bool mismatch", "expected": "null rejection observation or strict admission failure"},
+    {"name": "different native document digest on claimed BFCache", "expected": "boundary rejection"},
+    {"name": "same native document digest on claimed cold Back", "expected": "boundary rejection"},
+    {"name": "new native pageshow on claimed same-document HTMX", "expected": "boundary rejection"},
+    {"name": "search before values equal original values", "expected": "changed-URL boundary rejection"}
+  ]
+}

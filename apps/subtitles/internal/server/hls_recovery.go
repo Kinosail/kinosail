@@ -26,6 +26,7 @@ func (manager *hlsManager) retrySoftwareHLSEncode(ctx context.Context, item libr
 	manager.settings.hardware.RecordProcessingFailure(colored)
 	retried := false
 	for _, fallback := range candidates {
+		fallback.Cache = options.Cache
 		if _, err := os.Stat(filepath.Join(directory, "index.m3u8")); err == nil {
 			break
 		}
@@ -37,7 +38,7 @@ func (manager *hlsManager) retrySoftwareHLSEncode(ctx context.Context, item libr
 			break
 		}
 		retried = true
-		job.err = manager.encodeVariants(item, directory, fallback, recipe)
+		job.err = manager.encodeVariants(ctx, item, directory, fallback, recipe)
 		if job.err == nil || !transcodehardware.HardwareFailure(hlsDiagnostic(job.err)) {
 			break
 		}

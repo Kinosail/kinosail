@@ -1,0 +1,15 @@
+# Q14 combined-source canonical and cache-admission evidence
+
+Reviewed source: e45dd3cde5ad45ca2c50f1b27d29f60239a3b217; tree 8c221e80b567bff07b25c0986db5b0826c72d66a. Run: [37248161394](https://github.com/Kinosail/kinosail/actions/runs/37248161394); artifact 11319409801.
+
+Strict RAM admission verified exactly four regular JSON files and all three manifest bindings. ZIP: 256,712 bytes; SHA-256 75661697ae6279de6a7caa6e3d1555487f81f352a25949e2dadb84114c8ad00d. Selected inputs: 160; canonical SHA-256 be6b029315fa48b4b802c1860ee41203c853136be11001deb3d1010dadd14251. Executed test binary: 68,816,603 bytes; SHA-256 e19b2425362004a683f0508ca833115ee16657667a40ba3abaa6a29082433577.
+
+Collection passed in 0.615 seconds; compilation passed in 51.509 seconds. Actual full-Chromium/Go execution completed in 10.441 seconds with normal failure. Retry zero and owned process/capture settlement remained intact. The unchanged persisted-pageshow prerequisite failed at line 53. Cache-specific product assertions were not reached. The final sourceUnchanged field is absent because the prerequisite stops the driver; no unchanged-source completion claim is invented.
+
+The separate exact diagnostic reports support/presence true, one frame, back_forward navigation, no truncation, and fixed codes masked, other, response-cache-control-no-store. No URL, frame name or ID, credential, unknown raw reason, or raw error is exported. These codes identify an admission boundary without establishing every cause or product failure. Production cache and authorization policy, browser launch flags, all original admission/product assertions, deadlines, retries and required gates remain unchanged. [Chrome cache policy guidance](https://developer.chrome.com/docs/web-platform/bfcache-ccns) describes no-store exceptions; [the reason API documentation](https://developer.chrome.com/docs/web-platform/bfcache-notrestoredreasons) explains masked and changing reason codes.
+
+Fresh architecture metadata was independently verified against every one of 6,986 Git blobs and 311,509,819 source bytes; canonical SHA-256 dbb4a1b341b70fe00af7fff6acd8f511567e497ff0bb1255e503aaa9edfa59e2. All 14 canonical source pins, structural graph fields and every Go symbol/line record matched. The unchanged official generator rendered both documents into RAM and matched both hosted HTML bindings before Git staging.
+
+Player: 772,968 bytes; SHA-256 72573ad07e982b16023cb2cbcef1b1ef5b2e88437a7a3ab14ead423881103b49. Subtitles: 822,161 bytes; SHA-256 0e64ef54ea8bbf58523e4191001ee3cfcda9ba617a64e1057c1a3e3f9d767e8d.
+
+This documentation-only child preserves all product, driver, fixture, test, workflow, security, projection and incoming-main bytes. Both prior generated pages and full parent history remain preserved. Final protected CI and remaining combined-head public journeys remain required. Historical 20 of 22 unique passing cases and four green gates apply to 2c8/ac71, not this combined source. No fresh device/simulator, media decoding, independent visual acceptance, local runtime or dependency-cache completeness is claimed. Local writes, builds, cleanup and Library publication remain held.

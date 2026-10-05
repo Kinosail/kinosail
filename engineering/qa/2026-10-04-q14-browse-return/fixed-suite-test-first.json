@@ -1,0 +1,18 @@
+{
+  "kind": "fictional-admission-control",
+  "result": "RED-interface-missing",
+  "exitCode": 1,
+  "tests": 3,
+  "subtest_errors": 42,
+  "error_class": "TypeError",
+  "missing_interface": "admit(report, collection, suite)",
+  "public_product_runtime": false,
+  "log": {
+    "bytes": 43870,
+    "sha256": "c129855370375397dd80f4aaa3938f2c59e3dc931b99af82c022f4d5035d53ef"
+  },
+  "tests_pin": {
+    "bytes": 3319,
+    "sha256": "ba2e56cc3ec146ed940da25b4378d2d3d842be345a00e6674fd3811365f13ca7"
+  }
+}

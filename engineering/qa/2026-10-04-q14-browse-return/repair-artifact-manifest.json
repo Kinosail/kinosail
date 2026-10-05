@@ -1,0 +1,23 @@
+{
+  "artifacts": {
+    "repair-analysis.md": {
+      "bytes": 6497,
+      "sha256": "fcd6b5bae3d35d13c9593e2bbeac35f77304b1170ed604df4131458d3c1787ea"
+    },
+    "repair-handoff.json": {
+      "bytes": 3273,
+      "sha256": "4d6fc90ccd69f61c19cb7e7d803666385513c5d1546b560bcb48657eb230f292"
+    },
+    "repair-source-manifest.json": {
+      "bytes": 36815,
+      "sha256": "63821140bc3c582df66c82acda054717dff506f6b7124caad4a37086379f0c88"
+    },
+    "repair-static-controls.json": {
+      "bytes": 4277,
+      "sha256": "6e5c24d2f3dddac70b07d594e9c523491e76451c9544c0cd41d90c68aa5d46b6"
+    }
+  },
+  "canonicalSHA256": "5aece35c662290264f05030b1063bdcbd58c2e18a233e9992b14e0a863c2eeaa",
+  "recipe": "UTF-8 sorted name<TAB>lowercase SHA-256<LF>, trailing LF",
+  "schema": 1
+}

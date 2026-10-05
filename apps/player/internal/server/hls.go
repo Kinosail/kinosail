@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"os"
 	"os/exec"
 	"path/filepath"
 	"strconv"
@@ -26,6 +25,8 @@ type hlsJob struct {
 	startNumber     int
 	requestID       string
 	playbackSession string
+	cachePolicy     string
+	replacing       bool
 }
 
 type hlsManager struct {
@@ -99,7 +100,7 @@ func hlsInvalidSeek(writer http.ResponseWriter, request *http.Request) {
 	localizedError(writer, request, "seek is outside the playable duration", http.StatusBadRequest)
 }
 
-func (manager *hlsManager) prepare(ctx context.Context, item library.Item, recipe hlsRecipe) error { //nolint:cyclop // Final cache, active job, and restart recovery are distinct playback states.
+func (manager *hlsManager) prepareAttempt(ctx context.Context, item library.Item, recipe hlsRecipe) error { //nolint:cyclop // Final cache, active job, and restart recovery are distinct playback states.
 	if manager.cache == "" {
 		return errors.New("compatible playback is not configured")
 	}
@@ -111,14 +112,10 @@ func (manager *hlsManager) prepare(ctx context.Context, item library.Item, recip
 	recipe = localHLSRecipe(resolved)
 	key := hlsRecipeKey(item.ID, recipe)
 	playlist := filepath.Join(manager.cache, key, "index.m3u8")
-	options, err := manager.settings.transcodingFor(recipe.codec)
+	options, err := manager.hlsSettings(item, recipe)
 	if err != nil {
 		return err
 	}
-	if recipe.subtitlePath != "" {
-		options.Cache += ":subtitle=" + sourceVersion(recipe.subtitlePath)
-	}
-	options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=13"
 	if startupActualPlayback(ctx) {
 		manager.startup.playback(key)
 	}
@@ -143,13 +140,16 @@ func (manager *hlsManager) prepare(ctx context.Context, item library.Item, recip
 			if job.err != nil {
 				return observedHLSReadinessError(job.err, job)
 			}
-			return manager.prepare(ctx, item, recipe)
+			return errHLSIdentityChanged
 		case <-ticker.C:
 		}
 	}
 }
 
 func (manager *hlsManager) encodeVariants(ctx context.Context, item library.Item, directory string, options transcodeSettings, recipe hlsRecipe, startNumber int) error {
+	if err := playback.BindHLSSource(directory, item.Path, options.Cache); err != nil {
+		return err
+	}
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	facts := mediaFactsFor(item, manager.probe.facts(ctx, item))
@@ -166,10 +166,10 @@ func (manager *hlsManager) encodeVariants(ctx context.Context, item library.Item
 	window.subtitleTime = start
 	if recipe.mode != "transcode" {
 		quality := sourceQuality(facts, recipe.maxBitrate)
-		results := make(chan error, 1)
-		go func() {
-			results <- manager.encodeVariant(ctx, item, directory, quality.Label, strconv.Itoa(quality.Width), strconv.FormatInt((quality.Bitrate-128_000)/1000, 10)+"k", "128k", facts.Duration, options, recipe, window, start, startNumber)
-		}()
+		results, stop := playback.StartHLSWorker(ctx, func(ctx context.Context) error {
+			return manager.encodeVariant(ctx, item, directory, quality.Label, strconv.Itoa(quality.Width), strconv.FormatInt((quality.Bitrate-128_000)/1000, 10)+"k", "128k", facts.Duration, options, recipe, window, start, startNumber)
+		})
+		defer stop()
 		if startNumber > 0 {
 			return <-results
 		}
@@ -183,10 +183,10 @@ func (manager *hlsManager) encodeVariants(ctx context.Context, item library.Item
 	if len(facts.Audio) > 0 {
 		audioBitrate = min(128_000, max(1_000, qualities[0].Bitrate/4))
 	}
-	results := make(chan error, 1)
-	go func() {
-		results <- manager.encodePresentation(ctx, item, directory, options, window, qualities, audioBitrate, start, startNumber)
-	}()
+	results, stop := playback.StartHLSWorker(ctx, func(ctx context.Context) error {
+		return manager.encodePresentation(ctx, item, directory, options, window, qualities, audioBitrate, start, startNumber)
+	})
+	defer stop()
 	if startNumber > 0 {
 		return <-results
 	}
@@ -261,25 +261,6 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 		return err
 	}
 	return finalizePlaylist(playlist)
-}
-
-func (manager *hlsManager) ensureHLSJob(ctx context.Context, item library.Item, key string, options transcodeSettings, recipe hlsRecipe) (*hlsJob, error) {
-	manager.mu.Lock()
-	defer manager.mu.Unlock()
-	job := manager.jobs[key]
-	if job == nil {
-		//nolint:gosec // G703: key is a scanned hexadecimal ID plus a validated track number.
-		if err := os.RemoveAll(filepath.Join(manager.cache, key)); err != nil {
-			return nil, err
-		}
-		jobContext, created := manager.newHLSJob(ctx, 0)
-		job = created
-		manager.jobs[key] = job
-		//nolint:contextcheck // Encoding uses the Server lifecycle so a disconnected request does not destroy shared output.
-		go manager.encode(jobContext, item, job, key, options, recipe, 0, false)
-	}
-	adoptStartupJob(ctx, job)
-	return job, nil
 }
 
 func (manager *hlsManager) availableHLSQualities(facts MediaFacts, recipe hlsRecipe, options transcodeSettings) []PlaybackQuality {

@@ -26,11 +26,15 @@ func TestPlannedHLSLoadingDoesNotRepeatPlaybackEnrichment(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
+			if operation == "software recovery" {
+				recipe.mode = "transcode"
+			}
+			options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=13"
 			key := hlsRecipeKey(item.ID, recipe)
 			directory := filepath.Join(manager.cache, key)
 			switch operation {
 			case "playlist":
-				identity := options.Cache + ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=13"
+				identity := options.Cache
 				writeHLSLoadingFile(t, filepath.Join(directory, "index.m3u8"), "#EXTM3U\n#KINOSAIL-TRANSCODER:"+identity+"\n#EXT-X-STREAM-INF:BANDWIDTH=1000000\n1080p/index.m3u8\n")
 				writeHLSLoadingFile(t, filepath.Join(directory, ".seekable"), identity)
 				err = manager.prepare(t.Context(), item, recipe)
@@ -38,11 +42,13 @@ func TestPlannedHLSLoadingDoesNotRepeatPlaybackEnrichment(t *testing.T) {
 				writeHLSLoadingFile(t, filepath.Join(directory, "1080p/segment-00075.m4s"), "segment")
 				err = manager.prepareSegment(t.Context(), item, recipe, "1080p/segment-00075.m4s")
 			case "encode":
+				if err := os.MkdirAll(directory, 0o700); err != nil {
+					t.Fatal(err)
+				}
 				err = manager.encodeVariants(t.Context(), item, directory, options, recipe, 0)
 			case "software recovery":
 				options.Accelerator = "cuda"
 				options.HardwareDecode = true
-				recipe.mode = "transcode"
 				job := &hlsJob{err: errors.New("device setup failed")}
 				if !manager.retrySoftwareHLSEncode(t.Context(), item, job, directory, options, recipe, 0, false) {
 					t.Fatalf("software recovery failed: %v", job.err)

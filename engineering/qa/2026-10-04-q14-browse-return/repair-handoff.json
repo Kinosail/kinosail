@@ -1,0 +1,77 @@
+{
+  "baseRED": {
+    "artifact": "11312936358",
+    "casesPerRepeat": 2,
+    "establishedFailure": "visible Player Back loses root browse URL query",
+    "failed": 4,
+    "laterExtentFocusScrollAssertions": "masked",
+    "otherSevenCanonicalJourneys": "unrun",
+    "primaryRepeats": 2,
+    "revision": "0b48de6259becc7ed96ac3f0eaa0bc55e392827d",
+    "run": "37227784862"
+  },
+  "branch": "codex/qol-browse-return-main",
+  "candidateOfflineComposition": {
+    "assetPaths": [
+      "packages/webassets/static/offline-identity.js",
+      "packages/webassets/static/pwa-library.js",
+      "packages/webassets/static/pwa.js",
+      "packages/webassets/static/pwa-navigation.js",
+      "packages/webassets/static/pwa-browse-return.js",
+      "packages/webassets/static/pwa-settings.js",
+      "packages/webassets/static/shortcuts.js"
+    ],
+    "baselineBytes": 45035,
+    "baselineSHA256": "3d496d22ad5c1bca9fc9e25ffef3db29f145764348ee1ee565b2db2c1ba29401",
+    "candidateBytes": 56863,
+    "candidateSHA256": "aa631a0ce9a1559ec5ce3a485e79557ba6680bbfa3ccfb0af94bdb619481d348",
+    "claim": "offline reconstruction only, not served candidate asset proof",
+    "recipe": "concatenate assetPaths in given order, matching Go append/joinScripts"
+  },
+  "canonicalJourneySourcesRetained": true,
+  "checkout": "/Users/mikeo/Documents/Codex/2026-10-04/task-2/r03-progress",
+  "hashRecipe": "UTF-8 sorted path<TAB>lowercase SHA-256<LF>, trailing LF",
+  "id": "Q14",
+  "integrationOwner": "root",
+  "localExecution": "held by parent; source/static only",
+  "localeBoundary": "three English fallback IDs in all108 Player catalogs, existing entries/prefix preserved; new translated labels unproved",
+  "main": "NO: runtime GREEN, independent clearance and root-owned protected integration/ancestry pending",
+  "newSafetyCases": 10,
+  "ownedProcessState": "none; no runtime process launched in this task",
+  "productInputCount": 115,
+  "productRevision": "e933ac422885ce6fd8d87edcc8ade28061ea68b3",
+  "productSHA256": "7aaf31fbef9c279c56154b166803023e29e0ed02249d2872770ef4dc51c2819b",
+  "publicAPIBoundary": "no new endpoint/fields; Go ParseBrowse, canonical watch URLs and authentication/no-referrer remain exact",
+  "publishing": "no push/PR/merge/deployment by author",
+  "remaining": [
+    "Go compile/tests",
+    "JavaScript syntax/collection",
+    "primary GREEN",
+    "other seven canonical journeys",
+    "10 safety cases",
+    "failure/cancellation responsive renders",
+    "Subtitles consumer",
+    "protected checks",
+    "merge ancestry"
+  ],
+  "review": "pending exact source review",
+  "rootOwnedProvenanceAddition": [
+    "packages/webassets/static/pwa-browse-return.js"
+  ],
+  "schema": 1,
+  "sourceCommits": [
+    "c8a6c3c502af38fc0c334ee1d9e6d56070e2e965",
+    "ecfe32126d30722b57f4f993717d4503021a5c21",
+    "e933ac422885ce6fd8d87edcc8ade28061ea68b3"
+  ],
+  "sourceInputCount": 157,
+  "sourceSHA256": "fcd0ba3a2ace1ca413ba064f8e2b26885836678f3130e64c4145033c939ec667",
+  "state": "source candidate; independent review pending, runtime GREEN unproved",
+  "testFirst": "c8a6c3c502af38fc0c334ee1d9e6d56070e2e965",
+  "tokens": {
+    "PlayerContentDerivedAsset": "unchanged",
+    "PlayerMain": "36-htmx4",
+    "SubtitlesMain": "20-htmx4",
+    "downloads": "unchanged"
+  }
+}
