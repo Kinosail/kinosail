@@ -50,7 +50,7 @@ test('an obsolete Apple Play rejection respects later fullscreen dismissal @smok
 
 // Native Pause is an Apple platform action unavailable in populated Chromium.
 // This existing simulated-Apple fixture isolates the event seam; physical/Toy Story attribution stays separate.
-test('simulated native Apple Pause cancels pending Play without a startup failure @smoke', async ({page}, info) => {
+for (const delivery of ['immediate', 'queued pause']) test(`simulated native Apple Pause cancels pending Play without a startup failure with ${delivery} @smoke`, async ({page}, info) => {
   const observations: Array<Record<string, unknown>> = [];
   const observe = async (stage: string) => observations.push(await page.evaluate(label => {
     const video = document.querySelector('video') as HTMLVideoElement & {webkitDisplayingFullscreen: boolean};
@@ -79,4 +79,23 @@ test('simulated native Apple Pause cancels pending Play without a startup failur
   await page.getByRole('button', {name: 'Play', exact: true}).tap();
   await expect(page.locator('video')).toHaveJSProperty('paused', false);
   await expect(page.locator('.player-control-feedback')).toBeHidden();
+});
+
+
+// Current errors are the counter-control: cancellation must not suppress a genuine rejection.
+for (const failure of ['AbortError', 'NotSupportedError']) test(`current Apple Play ${failure} retains feedback and a fresh Play gesture @smoke`, async ({page}, info) => {
+  await pendingPlay(page);
+  await page.evaluate(name => (window as Window & {rejectPendingPlay: (value: string) => void}).rejectPendingPlay(name), failure);
+  await expect(page.locator('.player-control-feedback')).toBeVisible();
+  await expect(page.locator('.player-control-feedback')).toContainText('Playback could not start');
+  await expect(page.locator('video')).toHaveJSProperty('paused', true);
+  await expect(page.locator('video')).toHaveJSProperty('controls', false);
+  await expect(page.getByRole('button', {name: 'Play', exact: true})).toBeVisible();
+  await info.attach(`current-apple-rejection-${failure}`, {body: JSON.stringify({failure, feedbackVisible: true,
+    freshPlayAvailable: true, boundary: 'simulated Apple API/deferred Play; genuine current rejection control'}),
+    contentType: 'application/json'});
+  await page.evaluate(() => (window as Window & {setPlayPending: (value: boolean) => void}).setPlayPending(false));
+  await page.getByRole('button', {name: 'Play', exact: true}).tap();
+  await expect(page.locator('video')).toHaveJSProperty('paused', false);
+  await expect(page.locator('video')).toHaveJSProperty('webkitDisplayingFullscreen', true);
 });

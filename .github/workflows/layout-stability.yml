@@ -77,7 +77,7 @@ jobs:
           KINOSAIL_BROWSER_MATRIX: full
           KINOSAIL_TEST_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
           PLAYWRIGHT_JSON_OUTPUT_NAME: ../../../.verification/layout-fixtures/results.json
-        run: pnpm --dir apps/player/e2e exec playwright test --config layout-stability.config.ts --project "${{ matrix.browser }}" --reporter=list,json layout-stability.spec.ts skeleton-layout.spec.ts player-apple-intent.spec.ts
+        run: pnpm --dir apps/player/e2e exec playwright test --config layout-stability.config.ts --project "${{ matrix.browser }}" --reporter=list,json layout-stability.spec.ts skeleton-layout.spec.ts player-apple-intent.spec.ts player-apple-launch.spec.ts
       - name: Measure disposable native Servers
         env:
           KINOSAIL_LAYOUT_BROWSER: ${{ matrix.browser }}
