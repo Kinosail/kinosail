@@ -13,56 +13,75 @@ import (
 	"time"
 )
 
-type publicCue struct { Start, End float64; Text string }
+type publicCue struct {
+	Start, End float64
+	Text       string
+}
 type publicReview struct {
 	Fingerprint string
-	Restorable bool
-	Current *struct { Cues []publicCue }
+	Restorable  bool
+	Current     *struct{ Cues []publicCue }
 }
-type publicReceipt struct { ID, Action, Item, State, Outcome string; Status int }
+type publicReceipt struct {
+	ID, Action, Item, State, Outcome string
+	Status                           int
+}
 
 func savedCues(review publicReview) bool {
 	return review.Current != nil && len(review.Current.Cues) == 2 &&
-		review.Current.Cues[0] == (publicCue{1,2,"Fictional reviewed line"}) &&
-		review.Current.Cues[1] == (publicCue{4,5,"Fictional reviewed later line"})
+		review.Current.Cues[0] == (publicCue{1, 2, "Fictional reviewed line"}) &&
+		review.Current.Cues[1] == (publicCue{4, 5, "Fictional reviewed later line"})
 }
 
 func (f *fixture) publicRead(ctx context.Context, original *http.Request, path string, value any) ([]byte, bool) {
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, f.origin+path, nil)
-	if err != nil { return nil, false }
+	if err != nil {
+		return nil, false
+	}
 	request.Header.Set("Cookie", original.Header.Get("Cookie"))
 	request.Header.Set("Origin", f.origin)
 	request.Header.Set("User-Agent", "R06-private-witness")
 	client := *f.tls.Client()
-	client.Timeout = 2*time.Second
+	client.Timeout = 2 * time.Second
 	response, err := client.Do(request)
-	if err != nil { return nil, false }
+	if err != nil {
+		return nil, false
+	}
 	defer response.Body.Close()
 	data, err := io.ReadAll(io.LimitReader(response.Body, privateResponseLimit+1))
-	if err != nil || len(data) > privateResponseLimit || response.StatusCode != 200 { return nil, false }
-	if value != nil && json.Unmarshal(data, value) != nil { return nil, false }
+	if err != nil || len(data) > privateResponseLimit || response.StatusCode != 200 {
+		return nil, false
+	}
+	if value != nil && json.Unmarshal(data, value) != nil {
+		return nil, false
+	}
 	return data, true
 }
 
 func (f *fixture) witness(ctx context.Context, request *http.Request, id, operation string, status int) bool {
-	if operation == "" && status != 200 || operation != "" && status != 202 { return false }
+	if operation == "" && status != 200 || operation != "" && status != 202 {
+		return false
+	}
 	for {
 		eligible := f.observeEffects(ctx, request, id, operation)
-		if eligible { return true }
+		if eligible {
+			return true
+		}
 		select {
-		case <-ctx.Done(): return false
-		case <-time.After(100*time.Millisecond):
+		case <-ctx.Done():
+			return false
+		case <-time.After(100 * time.Millisecond):
 		}
 	}
 }
 
 func (f *fixture) observeEffects(ctx context.Context, request *http.Request, id, operation string) bool {
-	base := "/api/v1/subtitle-library/"+id
+	base := "/api/v1/subtitle-library/" + id
 	var view publicReview
 	_, inspected := f.publicRead(ctx, request, base+"/inspect?language=en", &view)
 	exported, exportedOK := f.publicRead(ctx, request, base+"/export?language=en&format=srt", nil)
 	current, currentErr := os.ReadFile(f.target)
-	recovery, recoveryErr := os.ReadFile(f.target+".kinosail.bak")
+	recovery, recoveryErr := os.ReadFile(f.target + ".kinosail.bak")
 	digest := sha256.Sum256(current)
 	inspection := inspected && savedCues(view) && view.Restorable &&
 		view.Fingerprint == hex.EncodeToString(digest[:])
@@ -71,7 +90,7 @@ func (f *fixture) observeEffects(ctx context.Context, request *http.Request, id,
 	recovered := recoveryErr == nil && bytes.Equal(recovery, []byte(initialSRT))
 	var history struct {
 		Matched int
-		History []struct { ID, Action, Reason, Language string }
+		History []struct{ ID, Action, Reason, Language string }
 	}
 	_, historyOK := f.publicRead(ctx, request, "/api/v1/subtitle-library?view=history", &history)
 	once := historyOK && history.Matched == 1 && len(history.History) == 1 &&
@@ -96,7 +115,9 @@ func (f *fixture) observeEffects(ctx context.Context, request *http.Request, id,
 }
 
 func (f *fixture) recordBrowserRead(request *http.Request, response *capturedResponse) {
-	if strings.HasPrefix(request.UserAgent(), "R06-private-") || response.status != 200 { return }
+	if strings.HasPrefix(request.UserAgent(), "R06-private-") || response.status != 200 {
+		return
+	}
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if f.preparedID != "" && request.URL.Path == "/api/v1/subtitle-operations/"+f.preparedID {

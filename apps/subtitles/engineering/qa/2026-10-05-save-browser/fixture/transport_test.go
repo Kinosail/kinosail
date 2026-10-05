@@ -15,18 +15,22 @@ import (
 const privateResponseLimit = 65536
 
 type capturedResponse struct {
-	header http.Header
-	status int
-	body bytes.Buffer
+	header   http.Header
+	status   int
+	body     bytes.Buffer
 	overflow bool
 }
 
 func (capture *capturedResponse) Header() http.Header { return capture.header }
 func (capture *capturedResponse) WriteHeader(status int) {
-	if capture.status == 0 { capture.status = status }
+	if capture.status == 0 {
+		capture.status = status
+	}
 }
 func (capture *capturedResponse) Write(data []byte) (int, error) {
-	if capture.status == 0 { capture.status = 200 }
+	if capture.status == 0 {
+		capture.status = 200
+	}
 	if capture.body.Len()+len(data) > privateResponseLimit {
 		capture.overflow = true
 		return 0, errors.New("private response bound exceeded")
@@ -35,9 +39,11 @@ func (capture *capturedResponse) Write(data []byte) (int, error) {
 }
 
 func (f *fixture) capture(request *http.Request) *capturedResponse {
-	response := &capturedResponse{header:make(http.Header)}
+	response := &capturedResponse{header: make(http.Header)}
 	f.app.ServeHTTP(response, request)
-	if response.status == 0 { response.status = 200 }
+	if response.status == 0 {
+		response.status = 200
+	}
 	if response.overflow {
 		f.mu.Lock()
 		f.state.BoundaryFailed = true
@@ -92,7 +98,7 @@ func (f *fixture) serve(writer http.ResponseWriter, request *http.Request) {
 	}
 	if request.Method == http.MethodPost &&
 		(request.URL.Path == "/setup" || request.URL.Path == "/login" ||
-		request.URL.Path == "/account/mfa/enable") {
+			request.URL.Path == "/account/mfa/enable") {
 		f.app.ServeHTTP(writer, request)
 		return
 	}
@@ -101,7 +107,10 @@ func (f *fixture) serve(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	if request.Method == http.MethodPost && strings.HasSuffix(request.URL.Path, "/preview") {
-		if !f.safePreview(request) { http.Error(writer, "Save-only fixture boundary", 405); return }
+		if !f.safePreview(request) {
+			http.Error(writer, "Save-only fixture boundary", 405)
+			return
+		}
 		f.app.ServeHTTP(writer, request)
 		return
 	}
@@ -116,14 +125,19 @@ func (f *fixture) serve(writer http.ResponseWriter, request *http.Request) {
 func readPrivateBody(request *http.Request) ([]byte, bool) {
 	data, err := io.ReadAll(io.LimitReader(request.Body, privateResponseLimit+1))
 	request.Body.Close()
-	if err != nil || len(data) > privateResponseLimit { return nil, false }
+	if err != nil || len(data) > privateResponseLimit {
+		return nil, false
+	}
 	request.Body = io.NopCloser(bytes.NewReader(data))
 	return data, true
 }
 
 func (f *fixture) safePreview(request *http.Request) bool {
 	data, valid := readPrivateBody(request)
-	var input struct { Language, Text string; AutomaticSync bool }
+	var input struct {
+		Language, Text string
+		AutomaticSync  bool
+	}
 	return valid && json.Unmarshal(data, &input) == nil && input.Language == "en" &&
 		input.Text == savedSRT && !input.AutomaticSync
 }
@@ -134,14 +148,14 @@ func (f *fixture) prepare(writer http.ResponseWriter, request *http.Request) {
 	allowed := f.state.PrepareAttempts == 1 && f.state.SaveAttempts == 0
 	f.mu.Unlock()
 	data, valid := readPrivateBody(request)
-	var input struct { Action, Item string }
+	var input struct{ Action, Item string }
 	if !allowed || !valid || json.Unmarshal(data, &input) != nil ||
 		input.Action != "apply" || !itemID.MatchString(input.Item) {
 		http.Error(writer, "Save-only fixture boundary", 405)
 		return
 	}
 	response := f.capture(request)
-	var receipt struct { ID, Action, Item, State string }
+	var receipt struct{ ID, Action, Item, State string }
 	if response.status == 201 && json.Unmarshal(response.body.Bytes(), &receipt) == nil &&
 		operationID.MatchString(receipt.ID) && receipt.Action == "apply" &&
 		receipt.Item == input.Item && receipt.State == "prepared" {
@@ -158,7 +172,7 @@ func (f *fixture) save(writer http.ResponseWriter, request *http.Request, id str
 	header := request.Header.Get("X-Kinosail-Operation")
 	allowed := f.state.SaveAttempts == 1 &&
 		((f.state.PrepareAttempts == 0 && header == "") ||
-		(header != "" && header == f.preparedID && id == f.preparedItem))
+			(header != "" && header == f.preparedID && id == f.preparedItem))
 	f.mu.Unlock()
 	if !allowed || !f.safePreview(request) {
 		http.Error(writer, "Save-only fixture boundary", 405)
@@ -170,7 +184,9 @@ func (f *fixture) save(writer http.ResponseWriter, request *http.Request, id str
 	f.responseHeader = response.header.Clone()
 	f.state.ResponseStatus = response.status
 	f.state.Protocol = "legacy"
-	if header != "" { f.state.Protocol = "prepared" }
+	if header != "" {
+		f.state.Protocol = "prepared"
+	}
 	f.mu.Unlock()
 	ctx, cancel := context.WithTimeout(f.ctx, 10*time.Second)
 	defer cancel()
@@ -188,26 +204,47 @@ func (f *fixture) save(writer http.ResponseWriter, request *http.Request, id str
 	close(f.eligible)
 	defer func() { f.mu.Lock(); f.state.ActiveHolds--; f.mu.Unlock() }()
 	if f.mode == "body" {
-		for name, values := range response.header { writer.Header()[name] = append([]string(nil), values...) }
-		if writer.Header().Get("Content-Length") == "" { writer.Header().Set("Content-Length", strconv.Itoa(response.body.Len())) }
-		writer.WriteHeader(response.status)
-		if flush, ok := writer.(http.Flusher); ok { flush.Flush() } else {
-			f.mu.Lock(); f.state.BoundaryFailed = true; f.mu.Unlock(); return
+		for name, values := range response.header {
+			writer.Header()[name] = append([]string(nil), values...)
 		}
-		f.mu.Lock(); f.state.HeadersReleased = true; f.mu.Unlock()
+		if writer.Header().Get("Content-Length") == "" {
+			writer.Header().Set("Content-Length", strconv.Itoa(response.body.Len()))
+		}
+		writer.WriteHeader(response.status)
+		if flush, ok := writer.(http.Flusher); ok {
+			flush.Flush()
+		} else {
+			f.mu.Lock()
+			f.state.BoundaryFailed = true
+			f.mu.Unlock()
+			return
+		}
+		f.mu.Lock()
+		f.state.HeadersReleased = true
+		f.mu.Unlock()
 	}
-	timer := time.NewTimer(80*time.Second)
+	timer := time.NewTimer(80 * time.Second)
 	defer timer.Stop()
 	select {
 	case <-f.released:
 	case <-request.Context().Done():
-		f.mu.Lock(); f.state.ClientCancelled = true; f.mu.Unlock(); return
-	case <-f.ctx.Done(): return
+		f.mu.Lock()
+		f.state.ClientCancelled = true
+		f.mu.Unlock()
+		return
+	case <-f.ctx.Done():
+		return
 	case <-timer.C:
-		f.mu.Lock(); f.state.HoldExpired = true; f.mu.Unlock(); return
+		f.mu.Lock()
+		f.state.HoldExpired = true
+		f.mu.Unlock()
+		return
 	}
 	if request.Context().Err() != nil {
-		f.mu.Lock(); f.state.ClientCancelled = true; f.mu.Unlock(); return
+		f.mu.Lock()
+		f.state.ClientCancelled = true
+		f.mu.Unlock()
+		return
 	}
 	complete := false
 	if f.mode == "headers" {
@@ -219,7 +256,11 @@ func (f *fixture) save(writer http.ResponseWriter, request *http.Request, id str
 	f.mu.Lock()
 	f.state.HeadersReleased = true
 	f.state.BodyReleased, f.state.ResponseBodyWritten = complete, complete
-	if request.Context().Err() != nil { f.state.ClientCancelled = true }
-	if !complete && !f.state.ClientCancelled { f.state.BoundaryFailed = true }
+	if request.Context().Err() != nil {
+		f.state.ClientCancelled = true
+	}
+	if !complete && !f.state.ClientCancelled {
+		f.state.BoundaryFailed = true
+	}
 	f.mu.Unlock()
 }
