@@ -22,7 +22,8 @@ def pin(data):
 
 def fingerprint(path, limit=128*1024*1024, executable=False):
     info = path.lstat()
-    if not stat.S_ISREG(info.st_mode) or not 0 < info.st_size <= limit or executable and not info.st_mode & 0o111:
+    if (not stat.S_ISREG(info.st_mode) or not 0 <= info.st_size <= limit
+            or executable and (info.st_size == 0 or not info.st_mode & 0o111)):
         raise ValueError("file-shape")
     digest = hashlib.sha256()
     git_digest = hashlib.sha1(("blob "+str(info.st_size)+"\0").encode())
