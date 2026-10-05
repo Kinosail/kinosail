@@ -209,9 +209,9 @@ class RestoreFormatControls(unittest.TestCase):
 
     def test_manifest_base_and_raw_identity_are_fixed(self):
         self.assertEqual(formatter.BASE_COMMIT, "bd1ea2e148787ae8d4a0a46640bc2a965e10fe6a")
-        self.assertEqual(formatter.MANIFEST_BLOB, "91b822165e467d7682ad5eb221b267a20fec5dec")
+        self.assertEqual(formatter.MANIFEST_BLOB, "8a2b3396e1c372b6b5732eb034f4ae0da8016760")
         self.assertEqual(formatter.MANIFEST_SHA256,
-                         "e97a2c9eab90a1324bfdf7a506c5e6234709a372775e3d3c6d5fc5295a41d373")
+                         "776916da74d6a165ab157f975b85e668c917552572dfec3a91ec9a7869321aa3")
         expected = formatter.pin(b"source")
         self.assertTrue(formatter.matches_pin(b"source", expected))
         self.assertFalse(formatter.matches_pin(b"changed", expected))

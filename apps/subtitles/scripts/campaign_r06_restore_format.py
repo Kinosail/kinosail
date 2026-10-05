@@ -20,24 +20,24 @@ ROOT = Path(__file__).resolve().parents[3]
 OUTPUT = ROOT / ".verification/campaign-proof/R06"
 BASE_COMMIT = "bd1ea2e148787ae8d4a0a46640bc2a965e10fe6a"
 MANIFEST_PATH = "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture-source-manifest.json"
-MANIFEST_BLOB = "91b822165e467d7682ad5eb221b267a20fec5dec"
-MANIFEST_SHA256 = "e97a2c9eab90a1324bfdf7a506c5e6234709a372775e3d3c6d5fc5295a41d373"
+MANIFEST_BLOB = "8a2b3396e1c372b6b5732eb034f4ae0da8016760"
+MANIFEST_SHA256 = "776916da74d6a165ab157f975b85e668c917552572dfec3a91ec9a7869321aa3"
 PREFIX = "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/"
 GO_PINS = {
     PREFIX + "restore_assertions_test.go": ("0c72a93cf599390ecfa42a1b08ebbbe7e0c8bd6b", "82261355e73118d9cad07c3f6fa289ac29a0d6343efb8db669926b96087191c0", 6490),
     PREFIX + "restore_controls_test.go": ("ef0599a3a672d09603f5619b69cb1eee3fd2a770", "d7be68372506e6813b40b7a5b2c9080a53af634a8a0ab95e8369c1b18bddacdb", 4697),
-    PREFIX + "restore_exchange_test.go": ("ddf89b521e9884a06a9e479acb17ecfb7322dff0", "d809df7ca579c2c612616d0448cdc056d7dba5c32cddea8d15adb276e8380414", 4659),
+    PREFIX + "restore_exchange_test.go": ("96dceb7318df112838f2d409d8647e7a5bcfbc18", "b694f5a9f2060daac8fcc08e77076030b6d3a34733b9eb2f38da557763a0bfa1", 4926),
     PREFIX + "restore_filesystem_test.go": ("95e46d54ad38b19aae445e7886a9a10579e3e6ce", "14ad292f5db92043f44cdba9f62abcdd6a2f875da9e616508aa7ae04da8db0b1", 1960),
-    PREFIX + "restore_http_test.go": ("4b7aba7bd5b3329d22415cc0d14267347b712785", "3fc6d6b53a69bc6cbd2b9240db34a8c5139425e0829fb980ac44193dad7b7d2a", 6019),
-    PREFIX + "restore_main_test.go": ("5b71ecc1bc3e94be6b516595bea89ac487f88500", "b808cdca52ea70579a5550a1c049e9f14e5213efafcef85ea8575630b7354f49", 4725),
+    PREFIX + "restore_http_test.go": ("96e2101833c66403eeed164552e696f7d0c52cba", "c1b6b0e0c6fecd90220d03fb14ecf9c5ed83fc656b680a0c194a3faa94462a73", 6127),
+    PREFIX + "restore_main_test.go": ("21b445622772471c1af71fb7c20cd28a1273aca2", "9ddf2e4a5136dc0cf1f6954e324d001b78a51f0fc79459405ce357d6721e6a89", 5447),
     PREFIX + "restore_owner_enrollment_test.go": ("8c570ea7cf23f1c60b01950fee8ba5122b64ccf0", "d856b68f17840df1c7b8ccd857dbb4cd2e8397ae89307ef73401ba3fefb4913b", 5019),
-    PREFIX + "restore_owner_test.go": ("ce0d824a454b4dda4aff3e714f57fd214740deff", "b4d54051e32adc3ad26f14d61f9b223f10cdd5ae5fd9f1e96769126a4212df43", 1374),
-    PREFIX + "restore_requests_test.go": ("ba48bfa05ec50dfb01bcfa223f4b1b6ca9ad93c0", "4e2a98772c1d468a16c94c7da6044866d0a972d50209ede130cad0a400c349be", 7174),
-    PREFIX + "restore_routes_test.go": ("0f3c734bc5fa27c2c9d7d33086e3c9a076aecaef", "c18118c650b89746167032518b3add2dac3a7d08ce7da3d6a35d3063091e84e8", 3109),
-    PREFIX + "restore_routing_test.go": ("6bc8920c88227466f3c1185dfcc94e41fd48d20b", "e4bc645a6e7d1c2705b09dc4b9a62a4def57208198574b253212ccabc880d1c3", 6144),
-    PREFIX + "restore_target_test.go": ("5cffb6dc125fc4827e3926a05f6a7a8dc232e00a", "a2a985b832eb447129f7223737c1c083399b03478ee8ab992923d13e92928fe9", 4606),
-    PREFIX + "restore_transport_test.go": ("bef80ffe1957e026697b8ff738c125a0e20f9ae9", "8641139e8acd6fcf7f6b553f06d1cb0a6443c4d1d78b29c5413579d96319aaf6", 4928),
-    PREFIX + "restore_witness_test.go": ("055dc7a72a1944d34379157aa5ce02102a84ae3a", "328020a75bb82707eedc78dd2951b0d8504f3f85e9b2cf07712fa990f3f468fd", 8214),
+    PREFIX + "restore_owner_test.go": ("687b5b542433ad9f91faf2475039dbb1d9926f60", "1fd267854c88a2aa23bb9dabb261033448919f3bf590a636fa88cfd3a5b58cb6", 1373),
+    PREFIX + "restore_requests_test.go": ("e789fb0fe27471106ee509b65867a6190229d8d5", "7bbb33bf545f6563cf5eefcc36d1d7fb046a6a1f6ad6c0d858e6b42761d6b697", 7329),
+    PREFIX + "restore_routes_test.go": ("f635cfb15f244fe69c8797c7eb0e0342979929f8", "ee742a4ac5decc9d60e60657356560528cc961b957ad4c0dffc46e5058aac434", 3168),
+    PREFIX + "restore_routing_test.go": ("44063dde743dd1a43c9b39987388a112bb21ff8d", "df68268c7c7819fce2338590d1c88350285bcd6adf64c3ecd12b18aa6e44dfce", 6305),
+    PREFIX + "restore_target_test.go": ("839aa6185bda860cf48a38e99b657b9277742226", "6e996fb624a949dc12fd79d211d3bc38651c635de0d2ab37a1c6e7a01710eea8", 4621),
+    PREFIX + "restore_transport_test.go": ("8f090a9f9606bb6fb04092854971b3d542445271", "503f6c1d469dacb67d7eb92df0cf16fabd5b12f07c7c6be7839a6e08edecb4dd", 5001),
+    PREFIX + "restore_witness_test.go": ("6bdb0fa8f2c0e4905ef3911f3139eb9571c03988", "b6c9bdcfa25152fc6b2e2a887e0020955adf11ce4e437978016d07f0e33e615a", 8319),
 }
 GO_FILES = tuple(GO_PINS)
 DEPENDENCIES = {

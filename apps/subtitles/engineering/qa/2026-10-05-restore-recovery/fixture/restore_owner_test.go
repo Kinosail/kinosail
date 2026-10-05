@@ -57,4 +57,3 @@ func restoreResponseStatus(response *http.Response) int {
 	}
 	return response.StatusCode
 }
-

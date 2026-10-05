@@ -8,8 +8,8 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"sync"
-	"time"
 	"testing"
+	"time"
 )
 
 // The socket target is allocated before any root input is read. Destination
@@ -126,20 +126,28 @@ func (deniedTransport) RoundTrip(*http.Request) (*http.Response, error) {
 func newRestoreTarget(t *testing.T) *restoreTarget {
 	t.Helper()
 	target, err := newOwnedRestoreTarget()
-	if err != nil { t.Fatal("Restore independent loopback target unavailable") }
-	t.Cleanup(func() { if !target.stop() { t.Error("Restore owned listener did not close") } })
+	if err != nil {
+		t.Fatal("Restore independent loopback target unavailable")
+	}
+	t.Cleanup(func() {
+		if !target.stop() {
+			t.Error("Restore owned listener did not close")
+		}
+	})
 	return target
 }
 
 type restoreCheckedListener struct {
 	net.Listener
 	closeOnce sync.Once
-	closeErr error
+	closeErr  error
 }
+
 func (listener *restoreCheckedListener) Close() error {
 	listener.closeOnce.Do(func() { listener.closeErr = listener.Listener.Close() })
 	return listener.closeErr
 }
+
 func (target *restoreTarget) stop() bool {
 	target.stopOnce.Do(func() {
 		target.tls.CloseClientConnections()
@@ -150,10 +158,13 @@ func (target *restoreTarget) stop() bool {
 }
 
 func (target *restoreTarget) installControlOwner(client *http.Client, csrf string) {
-	target.mu.Lock(); defer target.mu.Unlock()
+	target.mu.Lock()
+	defer target.mu.Unlock()
 	target.controlClient, target.controlCSRF = client, csrf
 }
+
 func (target *restoreTarget) controlOwner() (*http.Client, string) {
-	target.mu.Lock(); defer target.mu.Unlock()
+	target.mu.Lock()
+	defer target.mu.Unlock()
 	return target.controlClient, target.controlCSRF
 }

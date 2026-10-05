@@ -2,7 +2,7 @@
   "schema": "r06-restore-fixture-source-v1",
   "baseCommit": "bd1ea2e148787ae8d4a0a46640bc2a965e10fe6a",
   "baseTree": "6070e86cc8a3522810218d311cc2d5d6246f02d0",
-  "status": "source-separator-corrected-unreviewed-unformatted-uncompiled-unrun",
+  "status": "canonical-source-adoption-prepared-unintegrated-uncompiled-unrun",
   "publication": "append-only-unreferenced-blobs",
   "testFirstManifest": {
     "blob": "984865fb48e89b48fda0f953dcaa804ed1fe4d8d",
@@ -13,7 +13,8 @@
     "fd17afe4eb98cf1982113265d6e9a2f90dabd04d",
     "eedf17e831df2ac12d062d94021f3a2f8c617444",
     "42ba2ecc500a8b7fa42a90077dbc7da2df5db8fc",
-    "bf9ae2b849da6cb83d9f7b87780f06353596d1ad"
+    "bf9ae2b849da6cb83d9f7b87780f06353596d1ad",
+    "91b822165e467d7682ad5eb221b267a20fec5dec"
   ],
   "fixtureImplementationAuthored": true,
   "actualControlRuntime": false,
@@ -79,118 +80,20 @@
       "sha256": "0c4f08db6bc2f6c262657837d7193cd6f467f53e69aa14d3453f6c189a057130",
       "getVerified": true
     },
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_assertions_test.go",
-      "bytes": 6490,
-      "lines": 183,
-      "sha256": "82261355e73118d9cad07c3f6fa289ac29a0d6343efb8db669926b96087191c0",
-      "blob": "0c72a93cf599390ecfa42a1b08ebbbe7e0c8bd6b",
-      "getVerified": true
-    },
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_controls_test.go",
-      "bytes": 4697,
-      "lines": 112,
-      "sha256": "d7be68372506e6813b40b7a5b2c9080a53af634a8a0ab95e8369c1b18bddacdb",
-      "blob": "ef0599a3a672d09603f5619b69cb1eee3fd2a770",
-      "getVerified": true
-    },
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_exchange_test.go",
-      "bytes": 4659,
-      "lines": 108,
-      "sha256": "d809df7ca579c2c612616d0448cdc056d7dba5c32cddea8d15adb276e8380414",
-      "blob": "ddf89b521e9884a06a9e479acb17ecfb7322dff0",
-      "getVerified": true
-    },
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_filesystem_test.go",
-      "blob": "95e46d54ad38b19aae445e7886a9a10579e3e6ce",
-      "bytes": 1960,
-      "lines": 70,
-      "sha256": "14ad292f5db92043f44cdba9f62abcdd6a2f875da9e616508aa7ae04da8db0b1",
-      "getVerified": true
-    },
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_http_test.go",
-      "bytes": 6019,
-      "lines": 138,
-      "sha256": "3fc6d6b53a69bc6cbd2b9240db34a8c5139425e0829fb980ac44193dad7b7d2a",
-      "blob": "4b7aba7bd5b3329d22415cc0d14267347b712785",
-      "getVerified": true
-    },
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_main_test.go",
-      "blob": "5b71ecc1bc3e94be6b516595bea89ac487f88500",
-      "bytes": 4725,
-      "lines": 129,
-      "sha256": "b808cdca52ea70579a5550a1c049e9f14e5213efafcef85ea8575630b7354f49",
-      "getVerified": true
-    },
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_owner_enrollment_test.go",
-      "blob": "8c570ea7cf23f1c60b01950fee8ba5122b64ccf0",
-      "bytes": 5019,
-      "lines": 132,
-      "sha256": "d856b68f17840df1c7b8ccd857dbb4cd2e8397ae89307ef73401ba3fefb4913b",
-      "getVerified": true
-    },
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_owner_test.go",
-      "blob": "ce0d824a454b4dda4aff3e714f57fd214740deff",
-      "bytes": 1374,
-      "lines": 60,
-      "sha256": "b4d54051e32adc3ad26f14d61f9b223f10cdd5ae5fd9f1e96769126a4212df43",
-      "getVerified": true
-    },
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_requests_test.go",
-      "bytes": 7174,
-      "lines": 139,
-      "sha256": "4e2a98772c1d468a16c94c7da6044866d0a972d50209ede130cad0a400c349be",
-      "blob": "ba48bfa05ec50dfb01bcfa223f4b1b6ca9ad93c0",
-      "getVerified": true
-    },
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_routes_test.go",
-      "blob": "0f3c734bc5fa27c2c9d7d33086e3c9a076aecaef",
-      "bytes": 3109,
-      "lines": 74,
-      "sha256": "c18118c650b89746167032518b3add2dac3a7d08ce7da3d6a35d3063091e84e8",
-      "getVerified": true
-    },
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_routing_test.go",
-      "bytes": 6144,
-      "lines": 113,
-      "sha256": "e4bc645a6e7d1c2705b09dc4b9a62a4def57208198574b253212ccabc880d1c3",
-      "blob": "6bc8920c88227466f3c1185dfcc94e41fd48d20b",
-      "getVerified": true
-    },
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_target_test.go",
-      "blob": "5cffb6dc125fc4827e3926a05f6a7a8dc232e00a",
-      "bytes": 4606,
-      "lines": 159,
-      "sha256": "a2a985b832eb447129f7223737c1c083399b03478ee8ab992923d13e92928fe9",
-      "getVerified": true
-    },
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_transport_test.go",
-      "blob": "bef80ffe1957e026697b8ff738c125a0e20f9ae9",
-      "bytes": 4928,
-      "lines": 103,
-      "sha256": "8641139e8acd6fcf7f6b553f06d1cb0a6443c4d1d78b29c5413579d96319aaf6",
-      "getVerified": true
-    },
-    {
-      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_witness_test.go",
-      "blob": "055dc7a72a1944d34379157aa5ce02102a84ae3a",
-      "bytes": 8214,
-      "lines": 147,
-      "sha256": "328020a75bb82707eedc78dd2951b0d8504f3f85e9b2cf07712fa990f3f468fd",
-      "getVerified": true
-    },
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_assertions_test.go","bytes":6490,"lines":183,"sha256":"82261355e73118d9cad07c3f6fa289ac29a0d6343efb8db669926b96087191c0","blob":"0c72a93cf599390ecfa42a1b08ebbbe7e0c8bd6b","getVerified":true},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_controls_test.go","bytes":4697,"lines":112,"sha256":"d7be68372506e6813b40b7a5b2c9080a53af634a8a0ab95e8369c1b18bddacdb","blob":"ef0599a3a672d09603f5619b69cb1eee3fd2a770","getVerified":true},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_exchange_test.go","bytes":4926,"lines":157,"sha256":"b694f5a9f2060daac8fcc08e77076030b6d3a34733b9eb2f38da557763a0bfa1","blob":"96dceb7318df112838f2d409d8647e7a5bcfbc18","getVerified":true},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_filesystem_test.go","blob":"95e46d54ad38b19aae445e7886a9a10579e3e6ce","bytes":1960,"lines":70,"sha256":"14ad292f5db92043f44cdba9f62abcdd6a2f875da9e616508aa7ae04da8db0b1","getVerified":true},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_http_test.go","bytes":6127,"lines":207,"sha256":"c1b6b0e0c6fecd90220d03fb14ecf9c5ed83fc656b680a0c194a3faa94462a73","blob":"96e2101833c66403eeed164552e696f7d0c52cba","getVerified":true},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_main_test.go","blob":"21b445622772471c1af71fb7c20cd28a1273aca2","bytes":5447,"lines":156,"sha256":"9ddf2e4a5136dc0cf1f6954e324d001b78a51f0fc79459405ce357d6721e6a89","getVerified":true},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_owner_enrollment_test.go","blob":"8c570ea7cf23f1c60b01950fee8ba5122b64ccf0","bytes":5019,"lines":132,"sha256":"d856b68f17840df1c7b8ccd857dbb4cd2e8397ae89307ef73401ba3fefb4913b","getVerified":true},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_owner_test.go","blob":"687b5b542433ad9f91faf2475039dbb1d9926f60","bytes":1373,"lines":59,"sha256":"1fd267854c88a2aa23bb9dabb261033448919f3bf590a636fa88cfd3a5b58cb6","getVerified":true},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_requests_test.go","bytes":7329,"lines":205,"sha256":"7bbb33bf545f6563cf5eefcc36d1d7fb046a6a1f6ad6c0d858e6b42761d6b697","blob":"e789fb0fe27471106ee509b65867a6190229d8d5","getVerified":true},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_routes_test.go","blob":"f635cfb15f244fe69c8797c7eb0e0342979929f8","bytes":3168,"lines":111,"sha256":"ee742a4ac5decc9d60e60657356560528cc961b957ad4c0dffc46e5058aac434","getVerified":true},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_routing_test.go","bytes":6305,"lines":189,"sha256":"df68268c7c7819fce2338590d1c88350285bcd6adf64c3ecd12b18aa6e44dfce","blob":"44063dde743dd1a43c9b39987388a112bb21ff8d","getVerified":true},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_target_test.go","blob":"839aa6185bda860cf48a38e99b657b9277742226","bytes":4621,"lines":170,"sha256":"6e996fb624a949dc12fd79d211d3bc38651c635de0d2ab37a1c6e7a01710eea8","getVerified":true},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_transport_test.go","blob":"8f090a9f9606bb6fb04092854971b3d542445271","bytes":5001,"lines":169,"sha256":"503f6c1d469dacb67d7eb92df0cf16fabd5b12f07c7c6be7839a6e08edecb4dd","getVerified":true},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_witness_test.go","blob":"6bdb0fa8f2c0e4905ef3911f3139eb9571c03988","bytes":8319,"lines":228,"sha256":"b6c9bdcfa25152fc6b2e2a887e0020955adf11ce4e437978016d07f0e33e615a","getVerified":true},
     {
       "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/test-contract.json",
       "blob": "4d635e169064fadf08adf56240c72682ca2b3d1b",
@@ -272,7 +175,7 @@
   ],
   "remainingGates": [
     "independent exact22source refactor review",
-    "hosted strict formatting and300line caps",
+    "independent canonical adoption and exact pin-transition review",
     "compiled binary/source/descriptor provenance",
     "actual four public controls and bounded request/body deadline behavior",
     "actual collection and exact headers pair",
@@ -283,5 +186,22 @@
     "No actual deadline-stall control has executed for the new Within seam.",
     "The first browser proof is only Restore headers and following inspection body; newer-preview/failed-after-effects/lifecycle follow-ups remain separate.",
     "The current authoritative outcome guard binds the first observed inspection terminal; a later successful reconciliation read after cancellation needs explicit future observer coverage before counting it as delivered old-response proof."
+  ],
+  "canonicalAdoption": {"explicitPreparation":true,"integrationOwner":"root","integrated":false,"autoAdoption":false,"formatterEvidence":{"run":"37361042137","job":"111935415705","artifact":"11367260195","head":"1a3e182d96b164c52426436555b136aea6ea8d7f","tree":"fccdf81f59d845c16fbe3c2f5b223b278d2ae351","zipBytes":528543,"zipSha256":"b1cb0fda3a67c1765a8828880c59ec5af7117d928b9068c3721617d863d252c8","rootAndIndependentAdmitted":true},"rawInputManifest":{"blob":"91b822165e467d7682ad5eb221b267a20fec5dec","sha256":"e97a2c9eab90a1324bfdf7a506c5e6234709a372775e3d3c6d5fc5295a41d373"},"canonicalGoFiles":14,"changedGoFiles":10,"unchangedGoFiles":4,"maximumCanonicalGoLines":228,"compilerExecuted":false,"publicControlsExecuted":false,"browserExecuted":false,"adoptionManifestPath":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/canonical-adoption-source-manifest.json"},
+  "priorReviewedRawGoInputs": [
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_assertions_test.go","bytes":6490,"lines":183,"sha256":"82261355e73118d9cad07c3f6fa289ac29a0d6343efb8db669926b96087191c0","blob":"0c72a93cf599390ecfa42a1b08ebbbe7e0c8bd6b","getVerified":true},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_controls_test.go","bytes":4697,"lines":112,"sha256":"d7be68372506e6813b40b7a5b2c9080a53af634a8a0ab95e8369c1b18bddacdb","blob":"ef0599a3a672d09603f5619b69cb1eee3fd2a770","getVerified":true},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_exchange_test.go","bytes":4659,"lines":108,"sha256":"d809df7ca579c2c612616d0448cdc056d7dba5c32cddea8d15adb276e8380414","blob":"ddf89b521e9884a06a9e479acb17ecfb7322dff0","getVerified":true},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_filesystem_test.go","blob":"95e46d54ad38b19aae445e7886a9a10579e3e6ce","bytes":1960,"lines":70,"sha256":"14ad292f5db92043f44cdba9f62abcdd6a2f875da9e616508aa7ae04da8db0b1","getVerified":true},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_http_test.go","bytes":6019,"lines":138,"sha256":"3fc6d6b53a69bc6cbd2b9240db34a8c5139425e0829fb980ac44193dad7b7d2a","blob":"4b7aba7bd5b3329d22415cc0d14267347b712785","getVerified":true},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_main_test.go","blob":"5b71ecc1bc3e94be6b516595bea89ac487f88500","bytes":4725,"lines":129,"sha256":"b808cdca52ea70579a5550a1c049e9f14e5213efafcef85ea8575630b7354f49","getVerified":true},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_owner_enrollment_test.go","blob":"8c570ea7cf23f1c60b01950fee8ba5122b64ccf0","bytes":5019,"lines":132,"sha256":"d856b68f17840df1c7b8ccd857dbb4cd2e8397ae89307ef73401ba3fefb4913b","getVerified":true},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_owner_test.go","blob":"ce0d824a454b4dda4aff3e714f57fd214740deff","bytes":1374,"lines":60,"sha256":"b4d54051e32adc3ad26f14d61f9b223f10cdd5ae5fd9f1e96769126a4212df43","getVerified":true},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_requests_test.go","bytes":7174,"lines":139,"sha256":"4e2a98772c1d468a16c94c7da6044866d0a972d50209ede130cad0a400c349be","blob":"ba48bfa05ec50dfb01bcfa223f4b1b6ca9ad93c0","getVerified":true},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_routes_test.go","blob":"0f3c734bc5fa27c2c9d7d33086e3c9a076aecaef","bytes":3109,"lines":74,"sha256":"c18118c650b89746167032518b3add2dac3a7d08ce7da3d6a35d3063091e84e8","getVerified":true},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_routing_test.go","bytes":6144,"lines":113,"sha256":"e4bc645a6e7d1c2705b09dc4b9a62a4def57208198574b253212ccabc880d1c3","blob":"6bc8920c88227466f3c1185dfcc94e41fd48d20b","getVerified":true},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_target_test.go","blob":"5cffb6dc125fc4827e3926a05f6a7a8dc232e00a","bytes":4606,"lines":159,"sha256":"a2a985b832eb447129f7223737c1c083399b03478ee8ab992923d13e92928fe9","getVerified":true},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_transport_test.go","blob":"bef80ffe1957e026697b8ff738c125a0e20f9ae9","bytes":4928,"lines":103,"sha256":"8641139e8acd6fcf7f6b553f06d1cb0a6443c4d1d78b29c5413579d96319aaf6","getVerified":true},
+    {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_witness_test.go","blob":"055dc7a72a1944d34379157aa5ce02102a84ae3a","bytes":8214,"lines":147,"sha256":"328020a75bb82707eedc78dd2951b0d8504f3f85e9b2cf07712fa990f3f468fd","getVerified":true}
   ]
 }
