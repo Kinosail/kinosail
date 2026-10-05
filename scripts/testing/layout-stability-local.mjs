@@ -1,3 +1,5 @@
+import {installLayoutFailureReporter} from "./layout-stability-failure.mjs";
+import {layoutResponseHandler} from "./layout-stability-routing.mjs";
 import {navigationDiagnostics} from "./navigation-diagnostics.mjs";
 import {createRequire} from "node:module";
 import {writeFile} from "node:fs/promises";
@@ -14,8 +16,8 @@ let phase = "browser-launch", activePage, browser, authContext, activeCase, navi
 const loginResponses = [];
 let requestStatus, requestContentType;
 const reports = [], flows = [], flowProbe = {stage: "not-started"};
-process.once("uncaughtException", async error => {
-  const failure = {app, engine, stage: phase, activeCase, flowStage: flowProbe.stage,
+installLayoutFailureReporter(async error => {
+  return {result: "failed", app, engine, stage: phase, activeCase, flowStage: flowProbe.stage,
     errorClass: ["TimeoutError", "TypeError", "ReferenceError", "SyntaxError"].includes(error.name) ? error.name : "Error",
     completedCases: reports.length, completedFlows: flows.length, media: flowProbe.media, probe: flowProbe.geometry, loginResponses,
     requestStatus, requestContentType, navigation: flowProbe.navigation || await navigation?.snapshot(),
@@ -23,10 +25,7 @@ process.once("uncaughtException", async error => {
       (/unable to verify|self.signed certificate|unable to get local issuer/i.test(String(error.message)) ? "UNTRUSTED_CERTIFICATE" : undefined),
     authCookieCount: authContext ? await authContext.cookies().then(c=>c.length).catch(()=>undefined) : undefined,
     pageState: activePage ? (new URL(activePage.url()).pathname === "/login" ? "login" : "other") : "not-created"};
-  await writeFile(join(run, "failure.json"), JSON.stringify(failure, null, 2));
-  await browser?.close();
-  process.exit(1);
-});
+}, failure => writeFile(join(run, "failure.json"), JSON.stringify(failure, null, 2)), () => browser?.close());
 browser = await ({chromium, webkit, firefox}[engine]).launch(engine === "chromium" && process.platform === "darwin" ? {channel: "chrome"} : {});
 const context = authContext = await browser.newContext({baseURL, ignoreHTTPSErrors: false, reducedMotion: "reduce"});
 const page = activePage = await context.newPage();
@@ -135,14 +134,7 @@ try {
     const page = activePage = await context.newPage();
 navigation = navigationDiagnostics(page);
     // Delay real response bytes, without substituting mock markup or media.
-    await page.route("**/*", async route => {
-      const request = route.request(), url = new URL(request.url());
-      if ((variant==="slow-css"&&request.resourceType()==="stylesheet") || url.pathname.endsWith(".woff2") || (url.pathname.endsWith(".js")&&!url.pathname.endsWith("/theme.js")) || /\/api\/v1\/subtitle-library\/[^/]+\/inspect/.test(url.pathname) || request.resourceType() === "image") {
-        const response = await route.fetch();
-        await new Promise(resolve => setTimeout(resolve, variant==="slow-css"&&request.resourceType()==="script"?2400:1200));
-        await route.fulfill({response});
-      } else await route.continue();
-    });
+    await page.route("**/*", layoutResponseHandler(context, variant));
     const name = `${viewport.width}-${variant}-${path.replace(/[^a-z0-9]+/gi, "-")}`;
     const response=await page.goto(path, {waitUntil: "commit"});
     await page.locator("body").waitFor({state: "visible"});

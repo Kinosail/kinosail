@@ -23,14 +23,16 @@ Hosted commands for the final PR head:
   Android compilation/unit checks use the existing Android job. Neither job
   establishes physical playback, focus, casting, or background behavior.
 
-At reviewed head e18a2cc, both populated Chromium jobs passed, including the new
-real-process runner. Complete deep and layout runs failed with specific Go,
-scanner, cross-browser fixture, and security findings. Their repairs remain
-pending a new exact-head run. Focused local repairs passed the public startup race,
-Subtitles compact status/scroll journeys, Firefox real pagination, and six
-Chromium/Firefox/WebKit download recovery cases. Already-DCL Linux navigation
-failures remain unreproduced; new bounded diagnostics record transport state.
-The final report records run and artifact URLs.
+At head 29cd65f7, the real-process runner passed 32 tests with six app-specific
+skips locally and in independent review. The local checkpoint suite passed 18
+cases. Hosted Linux still failed WebKit layout, Firefox setup load, WebKit
+cross-tab Resume, and the fixture TLS protocol security check. Layout response
+cancellation and failure collection now have focused red/green regressions.
+Firefox setup now waits for DOM readiness and the Name field while a real
+decorative image remains pending. The TLS fixture explicitly requires TLS1.2.
+The WebKit ownership failure remains unreproduced locally; its original
+ownership and integrity assertions retain bounded failure diagnostics.
+Fresh exact-head hosted checks are required.
 
 | User journey | Existing executable owner | New real-process coverage / current gap |
 | --- | --- | --- |
@@ -64,5 +66,5 @@ revocation, My List/collection persistence, sidecar save/undo, and decoded
 media/range delivery. The runner includes applicable negative inputs and
 no-mutation assertions. Real Player audio/EPUB/comic/photo and both-app process-restart journeys
 passed. M4B audiobook playback/resume passed; PDF native rendering and external/device
-variants remain unfinished. Storage and hosted results must resolve before certifying
+variants remain unfinished. Required hosted results must resolve before certifying
 those or claiming complete active-app journey verification.

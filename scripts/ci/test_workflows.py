@@ -15,6 +15,16 @@ class WorkflowSecurityTests(unittest.TestCase):
         tooling = (ROOT / 'Makefile').read_text().split('tooling-check:')[1].split('\n\n')[0]
         self.assertIn('\t@' + command, tooling)
 
+    def test_layout_failure_contracts_and_modules_are_reproducible(self):
+        command = 'node --test scripts/testing/navigation-diagnostics.test.mjs scripts/testing/layout-stability-failure.test.mjs'
+        self.assertIn('      - run: ' + command, (WORKFLOWS / 'ci.yml').read_text())
+        self.assertIn('\t@' + command, (ROOT / 'Makefile').read_text())
+        launcher = (ROOT / 'scripts/testing/test-layout-stability-local.py').read_text()
+        for name in ('layout-stability-routing.mjs', 'layout-stability-failure.mjs'):
+            self.assertIn('"' + name + '"', launcher)
+        self.assertIn('import "./layout-response-lifecycle-tests";',
+                      (ROOT / 'apps/player/e2e/layout-stability.spec.ts').read_text())
+
     def test_startup_boundary_has_hosted_public_interface_evidence(self):
         app = (WORKFLOWS / 'app.yml').read_text()
         self.assertIn('name: Verify bounded startup and request boundary', app)

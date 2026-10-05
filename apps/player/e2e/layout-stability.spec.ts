@@ -1,3 +1,4 @@
+import "./layout-response-lifecycle-tests";
 import {readFile} from "node:fs/promises";
 import {expect, test} from "@playwright/test";
 
