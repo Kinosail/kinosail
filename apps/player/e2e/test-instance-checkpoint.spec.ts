@@ -1,4 +1,4 @@
-import { expect, test, type Page, type Request, type TestInfo } from "@playwright/test";
+import { expect, test, type Page, type Request as PlaywrightRequest, type TestInfo } from "@playwright/test";
 import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { configureTestInstance, login } from "./test-instance-helpers";
@@ -65,8 +65,8 @@ async function observeExit(page: Page, id: string, key: string) {
         () => record("progress-rejected"));
       return flight;
     };
-    addEventListener("pagehide", event => record("pagehide-before-player", {persisted: event.persisted}), {capture: true});
-    addEventListener("pagehide", event => record("pagehide-after-player", {persisted: event.persisted}));
+    addEventListener("pagehide", event => record("pagehide-capture-observer", {persisted: event.persisted}), {capture: true});
+    addEventListener("pagehide", event => record("pagehide-observer", {persisted: event.persisted}));
     document.addEventListener("visibilitychange", () => record("visibilitychange"), {capture: true});
     video.addEventListener("kinosail:page-exit", () => {
       try {
@@ -161,7 +161,7 @@ test("Library exit checkpoints actual playing time before teardown without reset
     const leaveAt = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
     const beforeExit = await checkpoint(page, id, session);
     const writes: Array<{seconds: number; revision: number; sessionMatches: boolean}> = [];
-    const observeRequest = (request: Request) => {
+    const observeRequest = (request: PlaywrightRequest) => {
       if (new URL(request.url()).pathname !== `/progress/${id}` || request.method() !== "POST") return;
       const form = new URLSearchParams(request.postData() || "");
       writes.push({seconds: Number(form.get("seconds")), revision: Number(form.get("revision")),
