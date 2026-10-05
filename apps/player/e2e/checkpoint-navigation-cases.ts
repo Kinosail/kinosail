@@ -216,7 +216,7 @@ test.describe("acknowledged Library navigation", () => {
   test("a newer same-tab destination withdraws a pending Library checkpoint navigation", {tag: "@smoke"}, async ({page}, testInfo) => {
     test.skip(phase !== "candidate", "historical sources are reserved for the original checkpoint reproductions");
     // Both destinations/store are populated. Held transports expose the otherwise brief intent race.
-    const {watch, media, id, session} = await openMovie(page, {key: "kinosail:checkpoint-newer-destination", iteration: 0, testInfo});
+    const {media, id, session} = await openMovie(page, {key: "kinosail:checkpoint-newer-destination", iteration: 0, testInfo});
     await media.evaluate((video: HTMLVideoElement) => video.play());
     const start = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
     await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(start + 0.3);
