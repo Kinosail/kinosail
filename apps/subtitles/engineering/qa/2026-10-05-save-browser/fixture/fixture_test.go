@@ -81,3 +81,80 @@ func assertReleased(t *testing.T, f *fixture) {
 		t.Fatal("actual released response did not settle as a complete body write")
 	}
 }
+
+const pureOwnedAuthority = "127.0.0.1:43107"
+
+func pureAdmissionFixture() *fixture {
+	return &fixture{authority: pureOwnedAuthority}
+}
+
+func pureAdmissionRequest(t *testing.T, target string) *http.Request {
+	t.Helper()
+	request, err := http.NewRequestWithContext(t.Context(), http.MethodGet, target, nil)
+	if err != nil {
+		t.Fatal("pure admission request construction failed")
+	}
+	return request
+}
+
+func assertPureOwnerAdmission(t *testing.T, f *fixture) {
+	t.Helper()
+	for _, path := range []string{"/setup", "/account"} {
+		request := pureAdmissionRequest(t, "https://"+pureOwnedAuthority+path)
+		if !f.admittedPrivateRequest(request) {
+			t.Fatal("fixed Owner route unexpectedly rejected")
+		}
+	}
+}
+
+func assertPureAdmissionState(t *testing.T, f *fixture, before safeSnapshot) {
+	t.Helper()
+	if f.snapshot() != before {
+		t.Error("pure admission changed fixture state")
+	}
+}
+
+func TestOwnedRouteRejectsForeignTargets(t *testing.T) {
+	f := pureAdmissionFixture()
+	before := f.snapshot()
+	defer assertPureAdmissionState(t, f, before)
+	assertPureOwnerAdmission(t, f)
+	cases := []struct{ name, target string }{
+		{"external-https", "https://example.invalid/account"},
+		{"http", "http://127.0.0.1:43107/account"},
+		{"foreign-loopback-port", "https://127.0.0.1:43108/account"},
+		{"protocol-relative", "//127.0.0.1:43107/account"},
+		{"traversal-alias", "https://127.0.0.1:43107/../account"},
+		{"query-alias", "https://127.0.0.1:43107/account?ignored=true"},
+	}
+	for _, sample := range cases {
+		t.Run(sample.name, func(t *testing.T) {
+			request := pureAdmissionRequest(t, sample.target)
+			if f.admittedPrivateRequest(request) {
+				t.Fatal("foreign target was admitted")
+			}
+		})
+	}
+}
+
+func TestOwnedRouteRejectsUnregisteredIDs(t *testing.T) {
+	f := pureAdmissionFixture()
+	before := f.snapshot()
+	defer assertPureAdmissionState(t, f, before)
+	assertPureOwnerAdmission(t, f)
+	cases := []struct{ name, path string }{
+		{"inspection", "/api/v1/subtitle-library/0123456789abcdef/inspect?language=en"},
+		{"export", "/api/v1/subtitle-library/0123456789abcdef/export?language=en&format=srt"},
+		{"preview", "/api/v1/subtitle-library/0123456789abcdef/preview"},
+		{"apply", "/api/v1/subtitle-library/0123456789abcdef/apply"},
+		{"receipt", "/api/v1/subtitle-operations/0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"},
+	}
+	for _, sample := range cases {
+		t.Run(sample.name, func(t *testing.T) {
+			request := pureAdmissionRequest(t, "https://"+pureOwnedAuthority+sample.path)
+			if f.admittedPrivateRequest(request) {
+				t.Fatal("unregistered route was admitted")
+			}
+		})
+	}
+}
