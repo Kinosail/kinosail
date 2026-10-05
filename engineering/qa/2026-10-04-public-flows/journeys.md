@@ -16,23 +16,25 @@ Hosted commands for the final PR head:
   `worker-message-security.spec.ts`, `player-experience.spec.ts`, and
   `player-direct-fallback.spec.ts`, with no smoke filter: 57 local assertions.
 - Each app's added real-process step runs `scripts/e2e/run.sh <app>`.
-  It now discovers 38 setup/test executions across both apps (32 passed,
+  It now discovers 42 setup/test executions across both apps (36 passed,
   six app-specific skips on repaired latest-main source). Player's
   subtitle-editing skip remains a scope boundary.
 - Swift compilation/contract tests use `make -C apps/player client-check`.
   Android compilation/unit checks use the existing Android job. Neither job
   establishes physical playback, focus, casting, or background behavior.
 
-At head 29cd65f7, the real-process runner passed 32 tests with six app-specific
-skips locally and in independent review. The local checkpoint suite passed 18
-cases. Hosted Linux still failed WebKit layout, Firefox setup load, WebKit
-cross-tab Resume, and the fixture TLS protocol security check. Layout response
-cancellation and failure collection now have focused red/green regressions.
-Firefox setup now waits for DOM readiness and the Name field while a real
-decorative image remains pending. The TLS fixture explicitly requires TLS1.2.
-The WebKit ownership failure remains unreproduced locally; its original
-ownership and integrity assertions retain bounded failure diagnostics.
-Fresh exact-head hosted checks are required.
+The latest local real-process run passed 36 tests with six app-specific skips,
+using runtime `0f4b97c8` plus the checksummed download/caption additions.
+The earlier `29cd65f7` 32-pass/six-skip run remains independently reviewed
+historical evidence. Hosted `9e940771` passed both complete Go race/coverage
+suites and four browser groups; Player WebKit Resume and two Subtitles Firefox
+flaky login retries failed. A real job-lock ordering regression now reproduces
+the peer Resume class and passes after the minimal shared control repair.
+Independent native WebKit passed 11 ownership checks; the real Go-backed suite
+passed 16. Browser-owned Blob routing and usable login readiness have focused
+red/green checks. The dashboard helper already waits for DOM readiness; its
+hosted Firefox stall remains unexplained. Current-head hosted and independent
+results remain required, including the strict flaky-test policy.
 
 | User journey | Existing executable owner | New real-process coverage / current gap |
 | --- | --- | --- |
@@ -44,7 +46,8 @@ Fresh exact-head hosted checks are required.
 | My List, playlists and collections | Both apps `playlist*_test.go`, `collection*_test.go`; `packages/servertest/api_parity_scenarios.go` | Real-process playlist, My List/collection lifecycle, reload persistence and rejection/no-mutation checks passed |
 | Direct First, compatibility and original playback | Player `playback_*_test.go`, `hls_*_test.go`; both apps `e2e/player-direct-fallback.spec.ts` | Real Player decoded frames/ranges passed; Subtitles source/decode expectation passed; full format matrix remains a gap |
 | Offline failure, retry, source transitions | Player `e2e/player-experience.spec.ts`; `e2e/download-resilience.spec.ts` | Complete affected recovery files in 57 pass; real offline decode/network loss remains separate |
-| Download preparation, tracks, pause, resume, transfer and ownership | Player `offline_download_test.go`, `downloads_boundary_test.go`, `download_concurrency_test.go`; `e2e/download-pause*.spec.ts`, `download-transfer-recovery.spec.ts` | Six local native browser pause/offline/resume and exact integrity cases passed; real Server/hosted full matrices remain required |
+| Download preparation, tracks, pause, resume, transfer and ownership | Player `offline_download_test.go`, `downloads_boundary_test.go`, `download_concurrency_test.go`; `e2e/download-pause*.spec.ts`, `download-transfer-recovery.spec.ts` | New runner passed original preparation, full/source SHA, manifest/ranges and invalid-request no-mutation/owned cleanup on both apps; native Go-backed pause/ownership passed 16 checks; hosted matrix pending |
+| Source subtitle cues, Off and re-enable | Both apps player templates; Player `e2e/player-subtitles-*.spec.ts` | New runner decoded real timed English cues on both apps; Off/on preserves source; failure/retry remains owned by existing browser suites |
 | Resume progress, history, chapters, bookmarks and skip markers | Player `reader_progress_test.go`, `media_bookmarks_test.go`, `playback_timeline_test.go`; shared API parity scenarios | Real video progress/rejection passed; other media variants await legacy hosted evidence |
 | Music/audiobooks, audio tracks and queues | Both apps `album_test.go`, Player `audiobook_test.go`, `audio_tracks_test.go`, `audio_formats_test.go` | Existing handler/media owners; Player real AAC album/queue and chaptered M4B playback/resume passed |
 | Books, comics, PDFs, photos and archive boundaries | Player `books_test.go`, `reader_boundary_test.go`, `reader_archive_trust_http_test.go`; native reader/photo tests | Existing source coverage; Player EPUB/comic/photo passed; PDF document/ranges passed with rendering partial |

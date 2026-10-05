@@ -29,7 +29,12 @@ The existing hosted Chromium job runs this suite for each affected app.
 Its artifacts include the checksummed context and runner results.
 Player skips subtitle editing because that operation belongs to Subtitles.
 Subtitles skips the five Player media/reader journeys. PDF checks cover
-document delivery and byte ranges; native PDF rendering remains a boundary. Both apps
+document delivery and byte ranges; native PDF rendering remains a boundary. Both apps also prepare an original download, verify full and ranged bytes
+against the source SHA-256, reject invalid preparation/range/removal requests
+without changing jobs or media, and remove only the created job. Caption
+journeys decode the real sidecar cues and select Off and English again.
+Server preparation does not prove browser-local storage or transfer ownership;
+the existing native-browser pause/ownership suites retain those assertions. Both apps
 restart their real Go child while retaining session, list and progress data.
 
 This suite adds process and persistence coverage to the existing tests.
