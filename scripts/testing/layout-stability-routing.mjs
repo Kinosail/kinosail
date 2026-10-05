@@ -4,7 +4,11 @@ export function layoutResponseHandler(context, variant) {
   context.once("close", () => { closed = true; });
   return async route => {
     try {
-      const request = route.request(), url = new URL(request.url());
+      const request = route.request(), value = request.url();
+      if (typeof value !== "string" || value.length > 1048576) throw new Error("Invalid layout resource URL");
+      const url = new URL(value);
+      if (["blob:", "data:"].includes(url.protocol)) { await route.continue(); return; }
+      if (!["http:", "https:"].includes(url.protocol)) throw new Error("Unsupported layout resource protocol");
       if ((variant === "slow-css" && request.resourceType() === "stylesheet") || url.pathname.endsWith(".woff2") ||
           (url.pathname.endsWith(".js") && !url.pathname.endsWith("/theme.js")) ||
           /\/api\/v1\/subtitle-library\/[^/]+\/inspect/.test(url.pathname) || request.resourceType() === "image") {

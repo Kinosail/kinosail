@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { downloadChunk, downloadHash, downloadIsolated, downloadServer, downloadPeer, openDownloadPage, inspectDownload, attachDownloadEnvironment } from "./download-pause-fixture";
+import "./download-pause-visibility-tests";
 
 test.skip(!downloadServer && !downloadIsolated, "requires an explicit disposable native download transport runner");
 test.use({serviceWorkers: "allow"});

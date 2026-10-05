@@ -1,5 +1,5 @@
 import { createHmac } from "node:crypto";
-import { type Browser, type Page } from "@playwright/test";
+import { expect, type Browser, type Page } from "@playwright/test";
 
 function totp(): string {
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
@@ -13,7 +13,8 @@ function totp(): string {
 }
 
 export async function login(page: Page) {
-  await page.goto("/login");
+  await page.goto("/login", { waitUntil: "domcontentloaded" });
+  await expect(page.getByLabel("Name")).toBeVisible();
   await page.getByLabel("Name").fill(process.env.KINOSAIL_E2E_OWNER_NAME ?? "Owner");
   await page.getByLabel("Password", { exact: true }).fill(process.env.KINOSAIL_E2E_OWNER_PASSWORD ?? "test-instance-password");
   await page.getByLabel("6-digit code").fill(totp());
