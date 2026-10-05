@@ -1,0 +1,50 @@
+name: Exact Apple repair architecture snapshot
+on:
+  push:
+    branches: [codex/apple-architecture-proof-20261005]
+permissions:
+  contents: read
+concurrency:
+  group: apple-architecture-proof-20261005
+  cancel-in-progress: false
+jobs:
+  regenerate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      GOMAXPROCS: "2"
+      GOFLAGS: "-p=1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 572e33f28045995d0c95ac50490aaa4231280acb
+          persist-credentials: false
+      - run: test ! -e .gates-disabled
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version-file: go.work
+          cache: false
+      - name: Warm bounded dependencies without rewriting source
+        run: |
+          timeout 120s bash scripts/ci/prepare-campaign-go.sh player
+          timeout 120s bash scripts/ci/prepare-campaign-go.sh subtitles
+      - name: Run the existing canonical generator for both products
+        env:
+          GOPROXY: "off"
+        run: |
+          test "$(git rev-parse HEAD)" = 572e33f28045995d0c95ac50490aaa4231280acb
+          timeout 120s python3 scripts/tooling/generate-architecture-explorer.py player
+          timeout 120s python3 scripts/tooling/generate-architecture-explorer.py subtitles
+          timeout 120s python3 scripts/tooling/generate-architecture-explorer.py player --check
+          timeout 120s python3 scripts/tooling/generate-architecture-explorer.py subtitles --check
+          git rev-parse HEAD
+          sha256sum scripts/tooling/generate-architecture-explorer.py apps/player/docs/architecture-explorer/index.html apps/subtitles/docs/architecture-explorer/index.html
+          git diff --stat
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: apple-canonical-architecture-572e33f28045995d0c95ac50490aaa4231280acb
+          path: |
+            apps/player/docs/architecture-explorer/index.html
+            apps/subtitles/docs/architecture-explorer/index.html
+          if-no-files-found: error
+          retention-days: 3
