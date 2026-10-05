@@ -8,21 +8,27 @@ import (
 	"testing"
 )
 
-var setupKey = regexp.MustCompile("<code>([A-Z2-7]{32})</code>")
-var setupCSRF = regexp.MustCompile("name=\"_csrf\" value=\"([A-Za-z0-9_-]{43})\"")
-var pageCSRF = regexp.MustCompile("name=\"kinosail-csrf\" content=\"([A-Za-z0-9_-]{43})\"")
+var (
+	setupKey  = regexp.MustCompile("<code>([A-Z2-7]{32})</code>")
+	setupCSRF = regexp.MustCompile("name=\"_csrf\" value=\"([A-Za-z0-9_-]{43})\"")
+	pageCSRF  = regexp.MustCompile("name=\"kinosail-csrf\" content=\"([A-Za-z0-9_-]{43})\"")
+)
 
-func ownerResponse(t *testing.T, f *fixture, client *http.Client, stage, method, path, form string) (*http.Response, error) {
- endpoint, err := privateURL(f.authority, path)
- if err != nil { return nil, err }
- request, err := http.NewRequestWithContext(t.Context(), method, endpoint, strings.NewReader(form))
- if err != nil { return nil, err }
-	request.Header.Set("Origin", f.origin)
+func ownerResponse(t *testing.T, target *ownedTarget, f *fixture, client *http.Client, stage, method, path, form string) (*http.Response, error) {
+	endpoint, err := target.endpoint(path)
+	if err != nil {
+		return nil, err
+	}
+	request, err := http.NewRequestWithContext(t.Context(), method, endpoint, strings.NewReader(form))
+	if err != nil {
+		return nil, err
+	}
+	request.Header.Set("Origin", target.origin)
 	request.Header.Set("User-Agent", "R06-private-control")
 	if method == http.MethodPost {
 		request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	}
-	if !f.admittedPrivateRequest(request) {
+	if !target.admittedRequest(request) {
 		return nil, errors.New("private request boundary unavailable")
 	}
 	response, err := client.Do(request)
@@ -33,9 +39,9 @@ func ownerResponse(t *testing.T, f *fixture, client *http.Client, stage, method,
 	return response, err
 }
 
-func setupOwner(t *testing.T, f *fixture, client *http.Client, password string) (string, error) {
+func setupOwner(t *testing.T, target *ownedTarget, f *fixture, client *http.Client, password string) (string, error) {
 	form := "name=Fictional+Owner&password=" + password + "&totp=true&updateMode=manual"
-	response, err := ownerResponse(t, f, client, "setup", http.MethodPost, "/setup", form)
+	response, err := ownerResponse(t, target, f, client, "setup", http.MethodPost, "/setup", form)
 	if err != nil {
 		return "", errors.New("setup unavailable")
 	}
@@ -68,9 +74,9 @@ func secureOwnerCookie(cookies []*http.Cookie) bool {
 	return false
 }
 
-func enrollmentToken(t *testing.T, f *fixture, client *http.Client) (string, error) {
+func enrollmentToken(t *testing.T, target *ownedTarget, f *fixture, client *http.Client) (string, error) {
 	// Setup sets the response cookie; request-bound CSRF comes from a real authenticated page.
-	response, err := ownerResponse(t, f, client, "enrollment", http.MethodGet, "/account", "")
+	response, err := ownerResponse(t, target, f, client, "enrollment", http.MethodGet, "/account", "")
 	if err != nil {
 		return "", errors.New("authenticated enrollment page unavailable")
 	}
@@ -89,9 +95,9 @@ func enrollmentToken(t *testing.T, f *fixture, client *http.Client) (string, err
 	return string(tokens[0][1]), nil
 }
 
-func confirmOwnerMFA(t *testing.T, f *fixture, client *http.Client, csrf, code string) error {
+func confirmOwnerMFA(t *testing.T, target *ownedTarget, f *fixture, client *http.Client, csrf, code string) error {
 	form := "_csrf=" + csrf + "&code=" + code
-	response, err := ownerResponse(t, f, client, "mfa", http.MethodPost, "/account/mfa/enable", form)
+	response, err := ownerResponse(t, target, f, client, "mfa", http.MethodPost, "/account/mfa/enable", form)
 	if err != nil {
 		return errors.New("MFA confirmation unavailable")
 	}
@@ -105,8 +111,8 @@ func confirmOwnerMFA(t *testing.T, f *fixture, client *http.Client, csrf, code s
 	return nil
 }
 
-func currentOwnerToken(t *testing.T, f *fixture, client *http.Client) (string, error) {
-	response, err := ownerResponse(t, f, client, "current", http.MethodGet, "/?view=library", "")
+func currentOwnerToken(t *testing.T, target *ownedTarget, f *fixture, client *http.Client) (string, error) {
+	response, err := ownerResponse(t, target, f, client, "current", http.MethodGet, "/?view=library", "")
 	if err != nil {
 		return "", errors.New("current Owner page unavailable")
 	}

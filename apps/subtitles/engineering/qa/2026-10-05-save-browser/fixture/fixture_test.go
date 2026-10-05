@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"net/http"
+	"net/url"
 	"os"
 	"testing"
 	"time"
@@ -23,9 +24,18 @@ func TestSaveBodyReceiptActualCompletion(t *testing.T)    { checkRealFault(t, "b
 
 func checkRealFault(t *testing.T, mode string, prepared bool) {
 	t.Helper()
-	f, client, path, input, headers := bootstrapControl(t, mode, prepared)
+	target, err := newOwnedTarget()
+	if err != nil {
+		t.Fatal("real Server fixture construction failed")
+	}
+	t.Cleanup(func() {
+		if !target.stop() {
+			t.Error("owned fixture descriptor did not close")
+		}
+	})
+	f, client, path, input, headers := bootstrapControl(t, target, mode, prepared)
 	defer f.controlStop(t)
-	exchange := startOwnedSave(t, f, client, path, input, headers)
+	exchange := startOwnedSave(t, target, client, path, input, headers)
 	defer exchange.stop(t, f)
 	awaitEligible(t, f, exchange)
 	assertEligible(t, f.snapshot())
@@ -85,7 +95,12 @@ func assertReleased(t *testing.T, f *fixture) {
 const pureOwnedAuthority = "127.0.0.1:43107"
 
 func pureAdmissionFixture() *fixture {
-	return &fixture{authority: pureOwnedAuthority}
+	target := &ownedTarget{
+		authority: pureOwnedAuthority, origin: "https://" + pureOwnedAuthority,
+		routes: make(map[string]url.URL),
+	}
+	target.seedFixedRoutes()
+	return &fixture{target: target}
 }
 
 func pureAdmissionRequest(t *testing.T, target string) *http.Request {

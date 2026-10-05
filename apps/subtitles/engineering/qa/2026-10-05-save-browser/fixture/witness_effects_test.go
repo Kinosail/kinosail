@@ -10,11 +10,11 @@ import (
 
 type witnessedFiles struct{ saved, inspected, recovered bool }
 
-func (f *fixture) fileEffects(ctx context.Context, request *http.Request, id string) witnessedFiles {
+func (f *fixture) fileEffects(ctx context.Context, target *ownedTarget, request *http.Request, id string) witnessedFiles {
 	base := "/api/v1/subtitle-library/" + id
 	var view publicReview
-	_, inspected := f.publicRead(ctx, request, base+"/inspect?language=en", &view)
-	exported, exportedOK := f.publicRead(ctx, request, base+"/export?language=en&format=srt", nil)
+	_, inspected := f.publicRead(ctx, target, request, base+"/inspect?language=en", &view)
+	exported, exportedOK := f.publicRead(ctx, target, request, base+"/export?language=en&format=srt", nil)
 	current, currentErr := f.readFixtureSubtitle(false)
 	recovery, recoveryErr := f.readFixtureSubtitle(true)
 	digest := sha256.Sum256(current)
@@ -25,12 +25,12 @@ func (f *fixture) fileEffects(ctx context.Context, request *http.Request, id str
 	}
 }
 
-func (f *fixture) historyOnce(ctx context.Context, request *http.Request, id string) bool {
+func (f *fixture) historyOnce(ctx context.Context, target *ownedTarget, request *http.Request, id string) bool {
 	var history struct {
 		Matched int
 		History []struct{ ID, Action, Reason, Language string }
 	}
-	_, historyOK := f.publicRead(ctx, request, "/api/v1/subtitle-library?view=history", &history)
+	_, historyOK := f.publicRead(ctx, target, request, "/api/v1/subtitle-library?view=history", &history)
 	if !historyOK || history.Matched != 1 {
 		return false
 	}
@@ -41,12 +41,12 @@ func (f *fixture) historyOnce(ctx context.Context, request *http.Request, id str
 	return event.ID == id && event.Action == "updated" && event.Reason == "manual" && event.Language == "en"
 }
 
-func (f *fixture) receiptEffects(ctx context.Context, request *http.Request, id, operation string) (bool, bool) {
+func (f *fixture) receiptEffects(ctx context.Context, target *ownedTarget, request *http.Request, id, operation string) (bool, bool) {
 	if operation == "" {
 		return false, false
 	}
 	var receipt publicReceipt
-	_, receiptOK := f.publicRead(ctx, request, "/api/v1/subtitle-operations/"+operation, &receipt)
+	_, receiptOK := f.publicRead(ctx, target, request, "/api/v1/subtitle-operations/"+operation, &receipt)
 	completed := receiptOK && completedReceipt(receipt, operation, id)
 	return completed, completed && succeededReceipt(receipt)
 }

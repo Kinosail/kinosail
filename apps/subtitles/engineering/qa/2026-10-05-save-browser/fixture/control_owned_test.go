@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"net"
 	"net/http"
 	"sync"
 	"testing"
@@ -19,26 +20,37 @@ type ownedSave struct {
 	cancel       context.CancelFunc
 }
 
-func startOwnedSave(t *testing.T, f *fixture, client *http.Client, path string, input []byte, headers http.Header) *ownedSave {
+func startOwnedSave(t *testing.T, target *ownedTarget, client *http.Client, path string, input []byte, headers http.Header) *ownedSave {
 	t.Helper()
 	ctx, cancel := context.WithTimeout(t.Context(), 20*time.Second)
-	exchange := &ownedSave{response: make(chan *http.Response, 1), failed: make(chan bool, 1),
-		requestDone: make(chan struct{}), consumed: make(chan struct{}), cancel: cancel}
-	go exchange.send(t, ctx, f, client, path, input, headers)
+	exchange := &ownedSave{
+		response: make(chan *http.Response, 1), failed: make(chan bool, 1),
+		requestDone: make(chan struct{}), consumed: make(chan struct{}), cancel: cancel,
+	}
+	go exchange.send(t, ctx, target, client, path, input, headers)
 	return exchange
 }
 
-func (exchange *ownedSave) send(t *testing.T, ctx context.Context, f *fixture, client *http.Client, path string, input []byte, headers http.Header) {
+func (exchange *ownedSave) send(t *testing.T, ctx context.Context, target *ownedTarget, client *http.Client, path string, input []byte, headers http.Header) {
 	defer close(exchange.requestDone)
-	request, err := f.privateRequest(ctx, http.MethodPost, path, bytes.NewReader(input))
+	endpoint, err := target.endpoint(path)
+	if err != nil {
+		exchange.failed <- true
+		return
+	}
+	request, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, bytes.NewReader(input))
 	if err != nil {
 		exchange.failed <- true
 		return
 	}
 	request.Header = headers.Clone()
 	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("Origin", f.origin)
+	request.Header.Set("Origin", target.origin)
 	request.Header.Set("User-Agent", "R06-private-control")
+	if !target.admittedRequest(request) {
+		exchange.failed <- true
+		return
+	}
 	response, err := client.Do(request)
 	if err != nil {
 		if response != nil {
@@ -93,4 +105,24 @@ func (f *fixture) controlStop(t *testing.T) {
 	if !f.stop() {
 		t.Error("owned fixture descriptor did not close")
 	}
+}
+
+type checkedListener struct {
+	net.Listener
+	closeOnce sync.Once
+	closeErr  error
+}
+
+func (listener *checkedListener) Close() error {
+	listener.closeOnce.Do(func() { listener.closeErr = listener.Listener.Close() })
+	return listener.closeErr
+}
+
+func (target *ownedTarget) stop() bool {
+	target.stopOnce.Do(func() {
+		target.tls.CloseClientConnections()
+		target.tls.Close()
+		target.closeOK = target.listener.Close() == nil
+	})
+	return target.closeOK
 }

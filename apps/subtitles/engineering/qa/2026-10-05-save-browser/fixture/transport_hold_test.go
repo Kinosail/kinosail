@@ -7,9 +7,9 @@ import (
 	"time"
 )
 
-func (f *fixture) save(writer http.ResponseWriter, request *http.Request, id string) {
+func (f *fixture) save(target *ownedTarget, writer http.ResponseWriter, request *http.Request, id string) {
 	header := request.Header.Get("X-Kinosail-Operation")
-	if !f.admitSave(id, header) || !f.safePreview(request) {
+	if !target.ownsItem(id) || !f.admitSave(id, header) || !f.safePreview(request) {
 		http.Error(writer, "Save-only fixture boundary", http.StatusMethodNotAllowed)
 		return
 	}
@@ -19,7 +19,7 @@ func (f *fixture) save(writer http.ResponseWriter, request *http.Request, id str
 	stop := f.cancelOnLifecycle(cancel)
 	defer stop()
 	defer cancel()
-	if response.overflow || !f.witness(ctx, request, id, header, response.status) {
+	if response.overflow || !f.witness(ctx, target, request, id, header, response.status) {
 		f.failBoundary()
 		writeActual(writer, response)
 		return

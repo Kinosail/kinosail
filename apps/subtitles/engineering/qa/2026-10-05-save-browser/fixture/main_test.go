@@ -5,9 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"flag"
-	"net"
 	"net/http"
-	"net/http/httptest"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -56,9 +54,9 @@ type safeSnapshot struct {
 }
 
 type fixture struct {
-	tls                      *httptest.Server
+	target                   *ownedTarget
 	app                      http.Handler
-	origin, authority, mode  string
+	mode                     string
 	files                    *os.Root
 	cancel                   context.CancelFunc
 	ctx                      context.Context
@@ -73,7 +71,7 @@ type fixture struct {
 	cleanupFailed            bool
 }
 
-func newFixture(root, mode string) (*fixture, error) {
+func newFixture(target *ownedTarget, root, mode string) (*fixture, error) {
 	if mode != "headers" && mode != "body" || root == "" || !filepath.IsAbs(root) {
 		return nil, errors.New("invalid fixture admission")
 	}
@@ -82,42 +80,23 @@ func newFixture(root, mode string) (*fixture, error) {
 		return nil, err
 	}
 	ctx, cancel := context.WithCancel(context.Background())
-	f := &fixture{files: files, mode: mode, cancel: cancel, ctx: ctx,
+	f := &fixture{
+		target: target, files: files, mode: mode, cancel: cancel, ctx: ctx,
 		eligible: make(chan struct{}), released: make(chan struct{}),
-		state: safeSnapshot{Protocol: "unreached"}}
-	f.tls = httptest.NewUnstartedServer(http.HandlerFunc(f.serve))
-	if !f.admitListener() {
-		f.tls.Close()
-		cancel()
-		if closeErr := files.Close(); closeErr != nil {
-			return nil, closeErr
-		}
-		return nil, errors.New("fixture listener is not owned loopback")
+		state: safeSnapshot{Protocol: "unreached"},
 	}
 	unavailableTool := filepath.Join(root, "unavailable-media-tool")
 	f.app = server.New(server.Config{
-		Lifecycle: ctx, SubtitleApp: true, RequireAuth: true, AuthURL: f.origin,
+		Lifecycle: ctx, SubtitleApp: true, RequireAuth: true, AuthURL: target.origin,
 		MediaDir: filepath.Join(root, "media"), DataDir: filepath.Join(root, "data"),
 		CacheDir: filepath.Join(root, "cache"), FFmpeg: unavailableTool, FFprobe: unavailableTool,
 		FPCalc: unavailableTool,
 	})
-	f.tls.StartTLS()
+	target.tls.Config.Handler = http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		f.serve(target, writer, request)
+	})
+	target.tls.StartTLS()
 	return f, nil
-}
-
-func (f *fixture) admitListener() bool {
-	authority := f.tls.Listener.Addr().String()
-	host, port, err := net.SplitHostPort(authority)
-	if err != nil || port == "" {
-		return false
-	}
-	address := net.ParseIP(host)
-	if address == nil || !address.IsLoopback() {
-		return false
-	}
-	f.authority = authority
-	f.origin = "https://" + authority
-	return true
 }
 
 func (f *fixture) failBoundary() {
@@ -138,9 +117,8 @@ func (f *fixture) stop() bool {
 	f.stopOnce.Do(func() {
 		f.cancel()
 		f.release()
-		f.tls.CloseClientConnections()
-		f.tls.Close()
-		if err := f.files.Close(); err != nil {
+		networkOK := f.target.stop()
+		if err := f.files.Close(); err != nil || !networkOK {
 			f.mu.Lock()
 			f.state.BoundaryFailed, f.cleanupFailed = true, true
 			f.mu.Unlock()
@@ -161,7 +139,16 @@ func runFixture() (exit int) {
 	if !*fixtureServe {
 		return 2
 	}
-	f, err := newFixture(*fixtureRoot, *fixtureMode)
+	target, err := newOwnedTarget()
+	if err != nil {
+		return 2
+	}
+	defer func() {
+		if !target.stop() {
+			exit = 2
+		}
+	}()
+	f, err := newFixture(target, *fixtureRoot, *fixtureMode)
 	if err != nil {
 		return 2
 	}
@@ -172,7 +159,7 @@ func runFixture() (exit int) {
 	}()
 	if json.NewEncoder(os.Stdout).Encode(struct {
 		Kind, Origin string `json:",omitempty"`
-	}{"r06-save-fixture-v1", f.origin}) != nil {
+	}{"r06-save-fixture-v1", target.origin}) != nil {
 		return 2
 	}
 	stopping := make(chan os.Signal, 1)

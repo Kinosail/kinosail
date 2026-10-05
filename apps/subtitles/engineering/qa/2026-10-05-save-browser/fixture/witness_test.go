@@ -36,17 +36,21 @@ func savedCues(review publicReview) bool {
 		cues[1] == (publicCue{4, 5, "Fictional reviewed later line"})
 }
 
-func (f *fixture) publicRead(ctx context.Context, original *http.Request, path string, value any) ([]byte, bool) {
- endpoint, err := privateURL(f.authority, path)
- if err != nil { return nil, false }
- request, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, nil)
- if err != nil { return nil, false }
-	request.Header.Set("Origin", f.origin)
+func (f *fixture) publicRead(ctx context.Context, target *ownedTarget, original *http.Request, path string, value any) ([]byte, bool) {
+	endpoint, err := target.endpoint(path)
+	if err != nil {
+		return nil, false
+	}
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, nil)
+	if err != nil {
+		return nil, false
+	}
+	request.Header.Set("Origin", target.origin)
 	request.Header.Set("Cookie", original.Header.Get("Cookie"))
 	request.Header.Set("User-Agent", "R06-private-witness")
-	client := f.privateClient(2 * time.Second)
+	client := target.privateClient(2 * time.Second)
 	defer client.CloseIdleConnections()
-	if !f.admittedPrivateRequest(request) {
+	if !target.admittedRequest(request) {
 		return nil, false
 	}
 	response, err := client.Do(request)
@@ -64,12 +68,12 @@ func (f *fixture) publicRead(ctx context.Context, original *http.Request, path s
 	return data, true
 }
 
-func (f *fixture) witness(ctx context.Context, request *http.Request, id, operation string, status int) bool {
+func (f *fixture) witness(ctx context.Context, target *ownedTarget, request *http.Request, id, operation string, status int) bool {
 	if operation == "" && status != http.StatusOK || operation != "" && status != http.StatusAccepted {
 		return false
 	}
 	for {
-		if f.observeEffects(ctx, request, id, operation) {
+		if f.observeEffects(ctx, target, request, id, operation) {
 			return true
 		}
 		select {
@@ -80,10 +84,10 @@ func (f *fixture) witness(ctx context.Context, request *http.Request, id, operat
 	}
 }
 
-func (f *fixture) observeEffects(ctx context.Context, request *http.Request, id, operation string) bool {
-	effects := f.fileEffects(ctx, request, id)
-	once := f.historyOnce(ctx, request, id)
-	completed, succeeded := f.receiptEffects(ctx, request, id, operation)
+func (f *fixture) observeEffects(ctx context.Context, target *ownedTarget, request *http.Request, id, operation string) bool {
+	effects := f.fileEffects(ctx, target, request, id)
+	once := f.historyOnce(ctx, target, request, id)
+	completed, succeeded := f.receiptEffects(ctx, target, request, id, operation)
 	f.mu.Lock()
 	f.state.ActualSaved, f.state.InspectionMatches = effects.saved, effects.inspected
 	f.state.RecoveryMatches, f.state.HistoryOnce = effects.recovered, once

@@ -94,15 +94,15 @@ func (f *fixture) servePreview(writer http.ResponseWriter, request *http.Request
 	f.app.ServeHTTP(writer, request)
 }
 
-func (f *fixture) prepare(writer http.ResponseWriter, request *http.Request) {
+func (f *fixture) prepare(target *ownedTarget, writer http.ResponseWriter, request *http.Request) {
 	allowed := f.admitPreparation()
 	item, valid := preparationItem(request)
-	if !allowed || !valid {
+	if !allowed || !valid || !target.ownsItem(item) {
 		http.Error(writer, "Save-only fixture boundary", http.StatusMethodNotAllowed)
 		return
 	}
 	response := f.capture(request)
-	f.recordPreparation(response, item)
+	f.recordPreparation(target, response, item)
 	writeActual(writer, response)
 }
 
@@ -122,12 +122,16 @@ func preparationItem(request *http.Request) (string, bool) {
 	return input.Item, input.Action == "apply" && itemID.MatchString(input.Item)
 }
 
-func (f *fixture) recordPreparation(response *capturedResponse, item string) {
+func (f *fixture) recordPreparation(target *ownedTarget, response *capturedResponse, item string) {
 	var receipt publicReceipt
-	if response.status != http.StatusCreated || json.Unmarshal(response.body.Bytes(), &receipt) != nil {
+	if response.overflow || response.body.Len() > privateResponseLimit || response.status != http.StatusCreated || json.Unmarshal(response.body.Bytes(), &receipt) != nil {
 		return
 	}
 	if !operationID.MatchString(receipt.ID) || receipt.Action != "apply" || receipt.Item != item || receipt.State != "prepared" {
+		return
+	}
+	if !target.registerReceipt(receipt) {
+		f.failBoundary()
 		return
 	}
 	f.mu.Lock()

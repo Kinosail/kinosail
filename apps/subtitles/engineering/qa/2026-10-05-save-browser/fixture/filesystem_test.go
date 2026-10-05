@@ -29,14 +29,14 @@ func initializeFixtureFiles(root *os.Root) error {
 		return errors.New("fixture directory must be empty")
 	}
 	for _, name := range []string{"media", "data", "cache"} {
-		if err = root.Mkdir(name, 0700); err != nil {
+		if err = root.Mkdir(name, 0o700); err != nil {
 			return errors.New("fixture directory unavailable")
 		}
 	}
-	if err = root.WriteFile("media/R06 Fictional Save.mp4", []byte("R06 Save-only indexed fixture; no decoded media"), 0600); err != nil {
+	if err = root.WriteFile("media/R06 Fictional Save.mp4", []byte("R06 Save-only indexed fixture; no decoded media"), 0o600); err != nil {
 		return errors.New("fictional fixture unavailable")
 	}
-	if err = root.WriteFile(fixtureTarget, []byte(initialSRT), 0600); err != nil {
+	if err = root.WriteFile(fixtureTarget, []byte(initialSRT), 0o600); err != nil {
 		return errors.New("fictional fixture unavailable")
 	}
 	return nil
