@@ -181,7 +181,11 @@ func readSubtitleOperation(t *testing.T, handler http.Handler, id string) subtit
 
 func waitSubtitleOperation(t *testing.T, handler http.Handler, id string) subtitleOperationReceipt {
 	t.Helper()
-	deadline := time.Now().Add(5 * time.Second)
+	wait := 5 * time.Second
+	if readSubtitleOperation(t, handler, id).Action == "audio" {
+		wait = subtitleOperationAudioWait
+	}
+	deadline := time.Now().Add(wait)
 	for time.Now().Before(deadline) {
 		receipt := readSubtitleOperation(t, handler, id)
 		if receipt.State == "completed" {

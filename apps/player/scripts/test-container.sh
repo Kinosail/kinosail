@@ -7,6 +7,9 @@ repo="$(git -C "$app" rev-parse --show-toplevel)"
 cd "$app"
 # shellcheck source=scripts/ci/test-container-transport.sh
 source "$repo/scripts/ci/test-container-transport.sh"
+# shellcheck source=scripts/ci/browser-fixture-tls.sh
+source "$repo/scripts/ci/browser-fixture-tls.sh"
+validate_browser_fixture_tls
 # shellcheck source=apps/player/scripts/test-browser-journeys.sh
 source "$app/scripts/test-browser-journeys.sh"
 case "${KINOSAIL_BROWSER_SMOKE:-}" in
@@ -49,6 +52,7 @@ remove_state_volumes() {
 }
 
 cleanup() {
+  remove_browser_fixture_trust
   exec 9>&- 2>/dev/null || true
   if ((${#mcp_jobs[@]})); then
     kill "${mcp_jobs[@]}" >/dev/null 2>&1 || true
@@ -154,29 +158,6 @@ if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
   "$engine" "${run[@]}" --rm --entrypoint sh "$image" -c 'ffmpeg -hide_banner -loglevel error -f lavfi -i testsrc2=size=640x360:rate=24:duration=12 -f lavfi -i sine=frequency=440:duration=12 -c:v libx264 -threads 1 -preset veryfast -crf 32 -pix_fmt yuv420p -c:a aac -movflags +faststart /tmp/direct-retry-control.mp4 && cat /tmp/direct-retry-control.mp4' >"$media_dir/Direct Retry Control.mp4"
   chmod a+r "$media_dir/Direct Retry Control.mp4"
 fi
-start_server() {
-  local publish="127.0.0.1::38127"
-  local auth_url=""
-  local scheme="https"
-  local tls_environment=()
-  if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
-    scheme="http"
-    tls_environment=(--env KINOSAIL_TLS_ENABLED=false)
-  fi
-  if [[ $# -eq 1 ]]; then
-    publish="127.0.0.1:$1:38127"
-    auth_url="$scheme://localhost:$1"
-  fi
-  container="$("$engine" "${run[@]}" --detach --publish "$publish" "${tls_environment[@]}" --env "KINOSAIL_AUTH_URL=$auth_url" --env KINOSAIL_BACKUP_DIR=/backups --env KINOSAIL_BACKUP_KEY=container-test-backup-key --volume "$config_volume:/config" --volume "$cache_volume:/cache" --volume "$backup_volume:/backups" --volume "$media_dir:/media:ro" "$image")"
-  mapped_port="$("$engine" port "$container" 38127/tcp)"
-  url="$scheme://localhost:${mapped_port##*:}"
-  health_host="${auth_url#*://}"
-  if [[ -z "$health_host" ]]; then
-    health_host="localhost:38127"
-  fi
-
-  wait_container_test_health "$url" "$health_host"
-}
 
 start_fresh_server() {
   local fixed_port="$1"
@@ -191,6 +172,10 @@ start_fresh_server() {
   backup_volume="kinosail-test-backups-$suffix"
   create_state_volumes
   start_server "$fixed_port"
+  if browser_fixture_uses_tls; then
+    remove_browser_fixture_trust
+    trust_browser_fixture_tls "$engine" "$container" "$mcp_dir" "$suffix"
+  fi
 }
 
 start_server
@@ -198,6 +183,9 @@ port="${url##*:}"
 "$engine" rm --force "$container" >/dev/null
 container=""
 start_server "$port"
+if browser_fixture_uses_tls; then
+  trust_browser_fixture_tls "$engine" "$container" "$mcp_dir" "$suffix"
+fi
 expect_status 401 "$url/api/v1/settings"
 expect_status 403 --request POST --header 'Origin: https://attacker.example' --data 'name=Attacker&password=attacker-password' "$url/setup"
 expect_status 421 --header 'Host: attacker.example' "$url/healthz"

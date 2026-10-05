@@ -4,6 +4,10 @@ import {installPlayerExperienceFixture} from "./player-experience-fixture";
 
 test.describe("touch fullscreen @smoke", () => {
 test.use({hasTouch: true, ignoreHTTPSErrors: false});
+test.beforeEach(async ({page, hasTouch}) => {
+  // Firefox touch emulation does not populate this browser capability.
+  await page.evaluate(touch => Object.defineProperty(navigator, "maxTouchPoints", {configurable: true, value: touch ? 1 : 0}), hasTouch);
+});
 installPlayerExperienceFixture();
 
 test.afterEach(async ({browserName}, testInfo) => {
@@ -86,7 +90,7 @@ test("limited native fullscreen preserves limited in-band choices when both full
     Object.defineProperty(video.closest(".media-stage"), "requestFullscreen", {value: async () => {
       (window as Window & {containerCalls: number}).containerCalls++;
     }});
-    video.playsInline = true;
+    video.setAttribute("playsinline", "");
   });
   const video = page.locator("video");
   await page.getByRole("button", {name: "Settings", exact: true}).tap();
@@ -95,7 +99,7 @@ test("limited native fullscreen preserves limited in-band choices when both full
   await expect(page.getByRole("button", {name: "Enter fullscreen"})).toHaveAttribute("title", /native player and subtitle menu/);
   await page.getByRole("button", {name: "Play", exact: true}).first().tap();
   await expect(video).toHaveJSProperty("webkitDisplayingFullscreen", true);
-  await expect(video).toHaveJSProperty("playsInline", true);
+  await expect(video).toHaveAttribute("playsinline", "");
   await page.getByRole("button", {name: "Pause", exact: true}).first().tap();
   await page.getByRole("button", {name: "Play", exact: true}).first().tap();
   expect(await page.evaluate(() => (window as Window & {nativeCalls: boolean[]}).nativeCalls)).toEqual([true]);

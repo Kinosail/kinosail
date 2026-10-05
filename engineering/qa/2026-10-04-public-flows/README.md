@@ -12,10 +12,10 @@ discovery candidates, not passing coverage. One operation can have many input,
 role, state, and format variants. A passing assertion covers only its subset.
 Dynamic route variants and every native control require further review.
 
-Current counts: 31 partial contracts passed on an earlier working revision;
-851 entries were not run; 38 native entries are blocked by device/build
-capacity. The final committed real-process suite awaits hosted verification.
-These counts do not support an all-flows-tested claim.
+The original inventory statuses describe the initial audit, not the current
+runner totals. The repaired real-process suite passed 32 executions, with six
+app-specific skips, on RAM source composed with main a57dfc29. Hosted exact-head verification
+remains required. These results do not support an all-flows-tested claim.
 
 | Public journey | Executable coverage | Current evidence |
 | --- | --- | --- |
@@ -26,27 +26,39 @@ These counts do not support an all-flows-tested claim.
 | Session timeout and auth boundaries | `public-flows.e2e.ts` | Both passed; rejected writes leave settings unchanged |
 | Phone/desktop library and settings | `public-flows.e2e.ts` | Populated renders passed at 390/1440px |
 | Playlist import/reorder/delete | `media-flows.e2e.ts` | Both passed; rejected reorder leaves membership unchanged |
-| Real Direct First playback and byte ranges | `media-flows.e2e.ts` | Player passed; corrected Subtitles expectation awaits rerun |
-| Subtitle preview/save/stale-save/restore | `media-flows.e2e.ts` | Preview, rejection and stale-save passed; corrected restore status awaits rerun |
+| Real Direct First playback and byte ranges | `media-flows.e2e.ts` | Both real apps passed |
+| Subtitle preview/save/stale-save/restore | `media-flows.e2e.ts` | Subtitles preview/save/rejection/stale-save/restore passed |
 | Direct-only/HLS/offline recovery | Existing `player-experience` and `player-direct-fallback` Playwright suites | Final focused run passed 57 checks with passkeys and worker security |
+| Album and natural queue advance | `audio-readers.e2e.ts` | Player decoded both real AAC tracks; negative progress leaves queue unchanged |
+| Chaptered audiobook | audio-formats.e2e.ts | Real AAC decode, chapter seek, speed/timer and resume passed |
+| PDF reader | audio-formats.e2e.ts | Document/ranges passed; native PDF rendering remains partial |
+| EPUB, comic and photo | `audio-readers.e2e.ts` | Player decoded content and persisted chapter position; archive negatives passed |
+| Real process restart | `process-restart.e2e.ts` | Both apps retained session, list and progress after replacing the Go child |
 | Other web/API roles, states and operations | Inventory candidate test paths | Not run; hosted existing suites remain required |
 | Apple iOS/tvOS/watchOS and App Intents | Native `Tests/`, `make -C apps/player client-check` | Not run; source tests do not prove devices |
 | Android/mobile/TV/Wear OS | Existing Gradle unit and instrumented tests | Not run; emulator/device and build capacity required |
 
-Two production defects were confirmed before fixes. Both apps accepted an
+Production defects were confirmed before fixes. Both apps accepted an
 unknown Viewer rating and persisted the profile. Shared policy validation now
 rejects that value before persistence. The browser also treated an active HLS
 source as Direct Play and retained a stale pending start position. Two focused
 source changes preserve HLS recovery and the active playback position.
-Existing regression assertions were kept unchanged.
+Existing regression assertions were kept unchanged. A later real-process
+negative matrix confirmed that missing or null progress seconds reset saved
+state in both apps. The shared adapter now requires seconds and retains an
+explicit zero reset. Eighteen rejected input cases preserve the complete
+progress state, including its mutation timestamp.
 
 The first browser run had six failures: three disk errors and three HLS
 assertions. A healthy focused rerun reproduced all three HLS assertions.
 After both fixes, all 57 selected existing Chromium checks passed.
-The earlier real-process run had 19 passes, two test-expectation failures,
-and one unsupported Player subtitle-editing skip. Corrected expectations
-were not rerun: ENOSPC prevented the app from starting. No failure was
-converted into a product skip. The complete runner remains a hosted gate.
+The earlier incomplete real-process run was superseded by the repaired
+32-pass/six-skip run. Player's full reconciled local Go suite passed with
+90.3% total coverage. Subtitles' full local race/atomic coverage suite passed
+after fixture repairs; that frozen run predates the final progress-presence
+fix. Both apps' focused progress/API race suites and the shared affected
+race suites passed after that production fix. Linux hosted gates remain
+the authority for the committed revision.
 
 `local-evidence.json` records hashes, data, environment, and run results.
 Private reports remain under
@@ -66,5 +78,6 @@ Reconciliation with main added three subtitle-operation API entries. Their
 prepared/running/completed/unknown protocol is owned by the existing
 `subtitle_operation_*_test.go` suites and R06 browser recovery journeys.
 See `journeys.md` for journey-level ownership and hosted verification commands.
-The new automation-key and My List/collection process journeys are executable
-but unrun locally because of the storage boundary.
+The new automation-key and My List/collection process journeys passed on
+reconciled RAM source. Audiobook playback passed; PDF document delivery passed with native rendering
+still partial. Other existing owners and external/device boundaries remain explicit.

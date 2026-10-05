@@ -1,10 +1,11 @@
 // Disposable host fixture: real app binaries, synthetic media, no containers.
 import { spawn, spawnSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, lstatSync, openSync, readSync, closeSync, constants } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 const [app, port] = process.argv.slice(2);
-if (!['player', 'subtitles'].includes(app) || !/^\d{1,5}$/.test(port) || +port < 1024 || +port > 65535) throw new Error('invalid fixture app/port');
+if (process.argv.length !== 4 || !['player', 'subtitles'].includes(app) || !/^\d{1,5}$/.test(port) || +port < 1024 || +port > 65535) throw new Error('invalid fixture app/port');
 const runtime = Object.fromEntries(['PATH', 'TMPDIR', 'TMP', 'TEMP', 'LANG', 'LC_ALL', 'LC_CTYPE', 'TZ', 'SystemRoot', 'WINDIR'].filter(key => process.env[key] !== undefined).map(key => [key, process.env[key]]));
 const root = mkdtempSync(join(tmpdir(), `kinosail-e2e-${app}-`));
 for (const dir of ['media/Movies', 'data', 'cache', 'backups']) mkdirSync(join(root, dir), { recursive: true });
@@ -12,8 +13,62 @@ const media = join(root, 'media/Movies');
 const generated = spawnSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-f', 'lavfi', '-i', 'testsrc2=size=320x180:rate=24', '-f', 'lavfi', '-i', 'sine=frequency=220:sample_rate=48000', '-t', '8', '-c:v', 'libx264', '-preset', 'ultrafast', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-movflags', '+faststart', join(media, 'Example Movie.mp4')], { stdio: 'inherit', env: runtime });
 if (generated.status !== 0) { rmSync(root, { recursive: true, force: true }); throw new Error('FFmpeg fixture failed'); }
 writeFileSync(join(media, 'Example Movie.en.srt'), '1\n00:00:00,000 --> 00:00:03,000\nExample dialogue.\n\n2\n00:00:03,500 --> 00:00:07,000\nA second line.\n');
+if (app === 'player') {
+  const extra = spawnSync('python3', [fileURLToPath(new URL('./media-fixture.py', import.meta.url)), media], { stdio: 'inherit', env: runtime });
+  if (extra.status !== 0) { rmSync(root, { recursive: true, force: true }); throw new Error('reader/audio fixture failed'); }
+}
 const binary = process.env[`KINOSAIL_E2E_${app.toUpperCase()}_BINARY`] ?? join(process.cwd(), '.e2e/bin', app);
-const child = spawn(binary, [], { stdio: 'inherit', env: { ...runtime, KINOSAIL_LISTEN: `127.0.0.1:${port}`, KINOSAIL_TLS_ENABLED: 'false', KINOSAIL_MEDIA_DIR: join(root, 'media'), KINOSAIL_DATA_DIR: join(root, 'data'), KINOSAIL_CACHE_DIR: join(root, 'cache'), KINOSAIL_BACKUP_DIR: join(root, 'backups'), KINOSAIL_LIBRARIES: '["Movies"]', KINOSAIL_SCAN_INTERVAL: '24h', KINOSAIL_BACKUP_INTERVAL: '24h', KINOSAIL_SERVER_NAME: 'Kinosail E2E Fixture' } });
-for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => child.kill(signal));
-child.on('error', error => { rmSync(root, { recursive: true, force: true }); throw error; });
-child.on('exit', code => { rmSync(root, { recursive: true, force: true }); process.exitCode = code ?? 0; });
+const stateDirectory = join(process.cwd(), '.e2e/fixtures');
+const statePath = join(stateDirectory, port + '.json');
+const controlPath = join(stateDirectory, port + '.restart');
+let child, stopping = false, restarting = false, generation = 0, timer, controlTimer;
+const childEnv = { ...runtime, KINOSAIL_LISTEN: `127.0.0.1:${port}`, KINOSAIL_TLS_ENABLED: 'false', KINOSAIL_MEDIA_DIR: join(root, 'media'), KINOSAIL_DATA_DIR: join(root, 'data'), KINOSAIL_CACHE_DIR: join(root, 'cache'), KINOSAIL_BACKUP_DIR: join(root, 'backups'), KINOSAIL_LIBRARIES: '["Movies"]', KINOSAIL_SCAN_INTERVAL: '24h', KINOSAIL_BACKUP_INTERVAL: '24h', KINOSAIL_SERVER_NAME: 'Kinosail E2E Fixture' };
+function cleanup() {
+  clearInterval(controlTimer);
+  rmSync(controlPath, { force: true });
+  rmSync(statePath, { force: true });
+  rmSync(root, { recursive: true, force: true });
+}
+try {
+  mkdirSync(stateDirectory, { recursive: true });
+  if (lstatSync(stateDirectory).isSymbolicLink()) throw new Error('invalid fixture receipt directory');
+  try { lstatSync(controlPath); throw new Error('fixture control already exists'); } catch (error) { if (error.code !== 'ENOENT') throw error; }
+  writeFileSync(statePath, '', { flag: 'wx', mode: 0o600 });
+} catch (error) { rmSync(root, { recursive: true, force: true }); throw error; }
+function launch() {
+  child = spawn(binary, [], { stdio: 'inherit', env: childEnv });
+  writeFileSync(statePath, JSON.stringify({ app, port, supervisorPID: process.pid, childPID: child.pid, generation }));
+  child.on('error', error => { cleanup(); throw error; });
+  child.on('exit', code => {
+    clearTimeout(timer);
+    if (restarting && !stopping) { restarting = false; generation++; launch(); }
+    else { cleanup(); process.exitCode = code ?? 0; }
+  });
+}
+function stopChild(signal) {
+  child.kill(signal);
+  timer = setTimeout(() => child.kill('SIGKILL'), 5000);
+  timer.unref();
+}
+for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => {
+  stopping = true;
+  stopChild(signal);
+});
+// A request can select only this supervisor's current child, never a caller PID.
+controlTimer = setInterval(() => {
+  let fd;
+  try {
+    if (!lstatSync(controlPath).isFile()) return;
+    fd = openSync(controlPath, constants.O_RDONLY | constants.O_NOFOLLOW);
+    const body = Buffer.alloc(129);
+    const size = readSync(fd, body, 0, body.length, 0);
+    if (size > 128) return;
+    const request = JSON.parse(body.subarray(0, size).toString('utf8'));
+    if (!request || body.subarray(0, size).toString('utf8') !== JSON.stringify(request) || Object.keys(request).sort().join(',') !== 'childPID,generation' || request.childPID !== child.pid || request.generation !== generation || stopping || restarting || generation >= 3) return;
+    restarting = true;
+    stopChild('SIGTERM');
+  } catch (error) { if (error.code !== 'ENOENT') console.error('invalid fixture restart request'); }
+  finally { if (fd !== undefined) closeSync(fd); rmSync(controlPath, { force: true }); }
+}, 100);
+controlTimer.unref();
+launch();

@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
 
 // JellyfinDownloadFixture supplies authenticated, trusted compatibility handlers.
@@ -35,7 +36,17 @@ func (fixture JellyfinDownloadFixture) ResumesConditionallyAcrossReplacementAndR
 	if original.Code != http.StatusOK || original.Body.String() != "0123456789" || !strings.HasPrefix(original.Header().Get("ETag"), `"`) || !strings.HasPrefix(original.Header().Get("Repr-Digest"), "sha-256=:") {
 		t.Fatalf("original = %d %q %v", original.Code, original.Body.String(), original.Header())
 	}
+	before, err := os.Stat(path)
+	if err != nil {
+		t.Fatal(err)
+	}
 	if err := os.WriteFile(path, []byte("abcdefghij"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	// Same-size writes can share an mtime on coarse filesystems. Model an actual
+	// source-version change without sleeping or weakening conditional resume.
+	changed := before.ModTime().Add(2 * time.Second)
+	if err := os.Chtimes(path, changed, changed); err != nil {
 		t.Fatal(err)
 	}
 	resumed := jellyfinRange(t, handler, downloadURL, token, "bytes=5-", original.Header().Get("ETag"))

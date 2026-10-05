@@ -15,7 +15,9 @@ and the Chromium version required by `@e2e-dev/web`.
 The script builds selected app binaries and removes them when it exits.
 Each process uses a separate loopback port and temporary media, data, cache,
 and backup directories. The fixture generates a moving eight-second movie,
-AAC audio, and two English subtitle cues. It removes its directories on exit.
+AAC audio, and two English subtitle cues. Player also receives a two-track
+album, a chaptered 24-second audiobook, a two-chapter EPUB, a two-page comic,
+a photo, and an original PDF. It removes its directories on exit.
 No container, shared deployment, or personal media directory is used.
 
 The context manifest records the command, revision, environment, and result.
@@ -26,6 +28,9 @@ Traces are disabled to bound storage use. A failed command remains a failure.
 The existing hosted Chromium job runs this suite for each affected app.
 Its artifacts include the checksummed context and runner results.
 Player skips subtitle editing because that operation belongs to Subtitles.
+Subtitles skips the five Player media/reader journeys. PDF checks cover
+document delivery and byte ranges; native PDF rendering remains a boundary. Both apps
+restart their real Go child while retaining session, list and progress data.
 
 This suite adds process and persistence coverage to the existing tests.
 It does not prove all media formats, browsers, external providers, or devices.

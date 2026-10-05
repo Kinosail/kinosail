@@ -30,10 +30,33 @@ describe('populated public contracts', { session: 'owner' }, () => {
     const saved = await api(browser, `/api/v1/items/${item.id}/watch-progress`);
     expect(saved.status).toBe(200);
     expect(saved.data.seconds).toBe(3);
-    for (const input of [{ seconds: -1 }, { seconds: '3' }, { seconds: 1000000001 }, { seconds: 1, unknown: true }]) {
-      expect((await api(browser, path, 'PUT', input)).status, JSON.stringify(input)).toBe(400);
-      expect((await api(browser, `/api/v1/items/${item.id}/watch-progress`)).data).toEqual(saved.data);
+    const cases = [
+      ['omitted', '{}'], ['null body', 'null'], ['null seconds', '{"seconds":null}'],
+      ['missing seconds with watched', '{"watched":true}'], ['wrong type', '{"seconds":"3"}'],
+      ['boolean', '{"seconds":true}'], ['negative', '{"seconds":-1}'],
+      ['too large', '{"seconds":1000000001}'], ['nonfinite', '{"seconds":1e999}'],
+      ['NaN encoding', '{"seconds":NaN}'], ['Infinity encoding', '{"seconds":Infinity}'],
+      ['unknown', '{"seconds":1,"unknown":true}'], ['duplicate', '{"seconds":1,"seconds":2}'],
+      ['conflicting case', '{"seconds":1,"Seconds":2}'], ['malformed', '{'], ['array', '[]'],
+      ['trailing JSON', '{"seconds":1}{"seconds":2}'],
+      ['oversized', ' '.repeat(1024 * 1024) + '{"seconds":1}'],
+    ];
+    const results = [];
+    for (const [name, body] of cases) {
+      expect((await api(browser, path, 'PUT', { seconds: 3, watched: false })).status).toBe(200);
+      const baseline = (await api(browser, path.replace(/\/progress$/, ''))).data.item.progress;
+      expect(baseline.updated).toMatch(/^\d{4}-\d\d-\d\dT/);
+      const status = await browser.evaluate(async ({ path, body }) => {
+        const csrf = document.querySelector<HTMLMetaElement>('meta[name="kinosail-csrf"]')!.content;
+        return (await fetch(path, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-Kinosail-CSRF': csrf }, body })).status;
+      }, { path, body });
+      const after = (await api(browser, path.replace(/\/progress$/, ''))).data.item.progress;
+      results.push({ name, status, unchanged: JSON.stringify(after) === JSON.stringify(baseline) });
     }
+    expect(results).toEqual(cases.map(([name]) => ({ name, status: name === 'oversized' ? 413 : 400, unchanged: true })));
+    expect((await api(browser, path, 'PUT', { seconds: 0 })).status).toBe(200);
+    expect((await api(browser, path.replace(/\/progress$/, '/watch-progress'))).data.seconds).toBe(0);
+
   });
 
   test('invalid Viewer creation cannot change profiles', async ({ app, browser }) => {

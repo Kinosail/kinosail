@@ -76,6 +76,7 @@ export async function openCaptionPlayer(page: Page, origin: string) {
     await page.locator("video").evaluate(async (video: HTMLVideoElement) => { video.muted = true; video.currentTime = 2; await video.play(); });
     await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(2.1);
     await page.getByRole("button", {name: "Settings", exact: true}).first().click();
+    await page.locator("[data-subtitles]").selectOption("0");
     return { version, checksum };
   } else {
     await page.goto(origin);

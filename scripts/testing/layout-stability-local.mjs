@@ -9,11 +9,11 @@ const {chromium, webkit, firefox} = require("@playwright/test");
 const AxeBuilder = require("@axe-core/playwright").default;
 const baseURL = process.env.KINOSAIL_E2E_URL, app = process.env.KINOSAIL_LAYOUT_APP, run = process.env.KINOSAIL_LAYOUT_RUN;
 const engine = process.env.KINOSAIL_LAYOUT_BROWSER || "chromium";
-let phase = "browser-launch", activePage, browser, authContext;
+let phase = "browser-launch", activePage, browser, authContext, activeCase;
 const loginResponses = [];
 const reports = [], flows = [], flowProbe = {stage: "not-started"};
 process.once("uncaughtException", async error => {
-  const failure = {app, engine, stage: phase, flowStage: flowProbe.stage,
+  const failure = {app, engine, stage: phase, activeCase, flowStage: flowProbe.stage,
     errorClass: ["TimeoutError", "TypeError", "ReferenceError", "SyntaxError"].includes(error.name) ? error.name : "Error",
     completedCases: reports.length, completedFlows: flows.length, media: flowProbe.media, probe: flowProbe.geometry, loginResponses,
     authCookieCount: phase.startsWith("login") && authContext ? await authContext.cookies().then(c=>c.length).catch(()=>undefined) : undefined,
@@ -110,6 +110,7 @@ if(app==="subtitles"&&process.env.KINOSAIL_LAYOUT_VARIANTS)cases.push({viewport:
 try {
   for (const {viewport,path,variant,scale,motion,apple,savedTabs} of cases) {
     phase = "measure-case";
+    activeCase = {viewport, path, variant};
     const context = await browser.newContext({baseURL, storageState: path === "/login" ? undefined : auth,
       viewport, ignoreHTTPSErrors: false, reducedMotion: motion||"reduce"});
     if(scale)await context.addInitScript(scale=>{const apply=()=>{if(!document.documentElement)return false;document.documentElement.style.fontSize=scale;return true;};if(!apply()){const observer=new MutationObserver(()=>{if(apply())observer.disconnect();});observer.observe(document,{childList:true});}},scale);
@@ -174,7 +175,9 @@ try {
     if(path.startsWith("/watch/")&&viewport.width===390&&!apple){
       const settingsButton=page.getByRole("button",{name:"Settings",exact:true});
       const stage=await page.locator(".media-stage").boundingBox();await page.mouse.move(stage.x+10,stage.y+10);
+      phase = "settings-open";
       await settingsButton.click();await page.locator(".player-settings").waitFor({state:"visible"});
+      phase = "settings-keyboard-close";
       await page.keyboard.press("Escape");await page.locator(".player-settings").waitFor({state:"hidden"});
       reports.at(-1).settingsKeyboard={closed:true,focusRestored:await settingsButton.evaluate(n=>n===document.activeElement)};
     }

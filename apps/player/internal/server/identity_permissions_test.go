@@ -36,6 +36,8 @@ func TestViewerPolicyRestrictsLibrariesRemoteScheduleAndTranscoding(t *testing.T
 	if denied.Code != http.StatusForbidden {
 		t.Fatalf("transcode = %d %q", denied.Code, denied.Body.String())
 	}
+	prepared := apiCall(t, handler, viewer.Value, http.MethodPost, "/api/v1/items/"+id+"/playback-prepare", map[string]any{"source": preparationSource(id)})
+	assertAPIBody(t, prepared, http.StatusForbidden)
 	start, end := time.Now().Add(2*time.Hour).Format("15:04"), time.Now().Add(3*time.Hour).Format("15:04")
 	policy = "id=" + profileID + "&rating=all&libraries=Movies&start=" + start + "&end=" + end
 	request = requestWithCookieRequest(t, http.MethodPost, "/settings/profiles/permissions", policy, owner)

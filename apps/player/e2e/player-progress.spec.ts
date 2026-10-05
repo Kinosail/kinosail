@@ -41,9 +41,10 @@ test.beforeEach(async ({ page }, testInfo) => {
     const playbackTraceMethod = 'direct', setPlayerTime = seconds => player.currentTime = seconds;
     const requestPlay = async () => {}, playerStorage = {get: () => '', set: () => {}};
     const playbackTrace = () => {}, flushPlaybackTrace = () => {};
-    let position = 42, paused = true;
-    Object.defineProperties(player, {currentTime: {get: () => position, set: value => position = value}, duration: {value: 100}, readyState: {value: 4}, paused: {get: () => paused}, load: {value: () => {}}});
-    Object.assign(window, {setPaused: value => paused = value, prepare: value => playbackPreparation = value});
+    let position = 42, paused = true, ended = false;
+    Object.defineProperties(player, {currentTime: {get: () => position, set: value => position = value}, duration: {value: 100}, readyState: {value: 4}, paused: {get: () => paused}, ended: {get: () => ended}, load: {value: () => {}}});
+    player.addEventListener('ended', () => { ended = true; });
+    Object.assign(window, {setEnded: value => ended = value, setPaused: value => paused = value, prepare: value => playbackPreparation = value});
     addEventListener('pagehide', () => player.dispatchEvent(new Event('kinosail:page-exit')));
   ` + source });
 });
@@ -217,6 +218,8 @@ test("watched failure on the last title survives later pause and hiding events",
   await page.locator("video").dispatchEvent("ended");
   await expect(page.locator("[data-progress-status]")).toHaveText("Watched status is not saved. Retry while this page is open.");
   await expect(page.locator("[data-progress-continue]")).toBeHidden();
+  // A later seek can clear ended; the pending watched revision must still win.
+  await page.evaluate(() => (window as Window & {setEnded(value: boolean): void}).setEnded(false));
   await pauseAt(page, 100);
   await page.evaluate(() => dispatchEvent(new Event("pagehide")));
   await expect.poll(() => requests.length).toBe(2);

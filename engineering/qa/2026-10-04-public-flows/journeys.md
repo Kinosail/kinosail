@@ -16,7 +16,8 @@ Hosted commands for the final PR head:
   `worker-message-security.spec.ts`, `player-experience.spec.ts`, and
   `player-direct-fallback.spec.ts`, with no smoke filter: 57 local assertions.
 - Each app's added real-process step runs `scripts/e2e/run.sh <app>`.
-  It now discovers 26 setup/test executions across both apps. Player's
+  It now discovers 38 setup/test executions across both apps (32 passed,
+  six app-specific skips on repaired latest-main source). Player's
   subtitle-editing skip remains a scope boundary.
 - Swift compilation/contract tests use `make -C apps/player client-check`.
   Android compilation/unit checks use the existing Android job. Neither job
@@ -37,8 +38,8 @@ before using them as proof. The final report records run/artifact URLs.
 | Offline failure, retry, source transitions | Player `e2e/player-experience.spec.ts`; `e2e/download-resilience.spec.ts` | Complete affected recovery files in 57 pass; real offline decode/network loss remains separate |
 | Download preparation, tracks, pause, resume, transfer and ownership | Player `offline_download_test.go`, `downloads_boundary_test.go`, `download_concurrency_test.go`; `e2e/download-pause*.spec.ts`, `download-transfer-recovery.spec.ts` | Owned by populated legacy journeys; current-head hosted pending |
 | Resume progress, history, chapters, bookmarks and skip markers | Player `reader_progress_test.go`, `media_bookmarks_test.go`, `playback_timeline_test.go`; shared API parity scenarios | Real video progress/rejection passed; other media variants await legacy hosted evidence |
-| Music/audiobooks, audio tracks and queues | Both apps `album_test.go`, Player `audiobook_test.go`, `audio_tracks_test.go`, `audio_formats_test.go` | Existing handler/media owners; populated process audio journey remains uncovered in new runner |
-| Books, comics, PDFs, photos and archive boundaries | Player `books_test.go`, `reader_boundary_test.go`, `reader_archive_trust_http_test.go`; native reader/photo tests | Existing source coverage; real process reader/photo journeys remain uncovered in new runner |
+| Music/audiobooks, audio tracks and queues | Both apps `album_test.go`, Player `audiobook_test.go`, `audio_tracks_test.go`, `audio_formats_test.go` | Existing handler/media owners; Player real AAC album/queue and chaptered M4B playback/resume passed |
+| Books, comics, PDFs, photos and archive boundaries | Player `books_test.go`, `reader_boundary_test.go`, `reader_archive_trust_http_test.go`; native reader/photo tests | Existing source coverage; Player EPUB/comic/photo passed; PDF document/ranges passed with rendering partial |
 | Casting, receivers, watch rooms and remote players | Player `remote_players_test.go`, `live_events_test.go`; shared API parity collaboration scenarios | Fixture coverage only; real receiver/casting/device integrations blocked |
 | Server/library/scanning/playback/subtitle configuration | Both apps `settings_*_test.go`, `scan_test.go`; Player `e2e/settings-discovery.spec.ts`, `layout-audit-configuration.spec.ts` | Account/configuration reachable at phone/desktop; other save/control journeys owned by existing tests |
 | Metadata providers, editing, refresh and maintenance | Both apps `metadata*_test.go`, `maintenance_test.go`; shared API parity contracts | Existing fake-service tests; real provider credentials remain blocked |
@@ -46,7 +47,7 @@ before using them as proof. The final report records run/artifact URLs.
 | Quick Connect, SSO, trusted HTTPS and public access | Both apps `quick_connect_test.go`, `trusted_https_test.go`; Player `oidc*_test.go`, `remote_access_security_test.go` | Source/service fixtures owned; public DNS/TLS and real IdP remain blocked |
 | Jellyfin/Home Assistant integration and Supporter account | Player `jellyfin_*_test.go`, both apps `supporter*_test.go`; `e2e/jellyfin-setup.spec.ts`, `home-assistant.spec.ts` | Existing fixture coverage; live external integration remains blocked |
 | Subtitle dashboard, wanted, history, language/provider configuration | Subtitles `subtitle_provider_test.go`, `subtitle_onboarding_test.go`, `subtitle_*_test.go`; `e2e/subtitle-dashboard.spec.ts`, `subtitle-history.spec.ts` | Existing fake provider/populated journeys; new runner has local English sidecar only |
-| Subtitle inspect, preview, manual/automatic sync, save, undo and replacement | Subtitles `subtitle_edit*_test.go`, `subtitle_*input*_test.go`; `e2e/subtitle-inspector*.spec.ts` | Preview/rejection/stale save passed; corrected restore expectation unrun; automatic/provider variants owned by legacy tests |
+| Subtitle inspect, preview, manual/automatic sync, save, undo and replacement | Subtitles `subtitle_edit*_test.go`, `subtitle_*input*_test.go`; `e2e/subtitle-inspector*.spec.ts` | Preview/rejection/stale save passed; restore passed; automatic/provider variants owned by legacy tests |
 | Prepared subtitle operation, uncertain response and factual recovery | Subtitles `subtitle_operation_*_test.go`; `e2e/subtitle-action-recovery*.spec.ts` | Added on reconciled main; legacy prepared-operation checks own protocol; current-head hosted pending |
 | Apple browse/setup/details/music/readers/photos/downloads/settings | `apps/player/apps/native/Tests/`; screen rows identify feature owners | All 25 feature screen entries blocked locally; source tests are executable, not device proof |
 | Apple TV focus/Top Shelf, Watch remote/heart and App Intents | Native `TVOSFocusTests.swift`, `TopShelfTests.swift`, `WatchRemoteTests.swift`, `LibraryIntentTests.swift`; Watch sources | Runtime/device checks blocked; no macOS substitute claimed |
@@ -55,6 +56,7 @@ before using them as proof. The final report records run/artifact URLs.
 The genuinely new process gaps targeted here are scoped key issuance and
 revocation, My List/collection persistence, sidecar save/undo, and decoded
 media/range delivery. The runner includes applicable negative inputs and
-no-mutation assertions. Broader real audio/reader/photo/process-restart journeys
-remain unfinished. Storage and hosted results must resolve before certifying
+no-mutation assertions. Real Player audio/EPUB/comic/photo and both-app process-restart journeys
+passed. M4B audiobook playback/resume passed; PDF native rendering and external/device
+variants remain unfinished. Storage and hosted results must resolve before certifying
 those or claiming complete active-app journey verification.

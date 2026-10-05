@@ -64,6 +64,8 @@ func TestViewerCannotReachContentOutsideGrantedLibraries(t *testing.T) { //nolin
 		{http.MethodGet, "/download/" + restrictedID, nil, http.StatusNotFound},
 		{http.MethodGet, "/api/v1/items/" + restrictedID, nil, http.StatusNotFound},
 		{http.MethodGet, "/api/v1/items/" + restrictedID + "/playback", nil, http.StatusNotFound},
+		{http.MethodPost, "/api/v1/items/" + restrictedID + "/playback-prepare", map[string]any{"source": "/media/" + restrictedID}, http.StatusNotFound},
+		{http.MethodDelete, "/api/v1/items/" + restrictedID + "/playback-prepare", nil, http.StatusNotFound},
 		{http.MethodPut, "/api/v1/items/" + restrictedID + "/progress", map[string]any{"seconds": 30}, http.StatusNotFound},
 		{http.MethodPut, "/api/v1/items/" + restrictedID + "/list", map[string]any{"listed": true}, http.StatusNotFound},
 		{http.MethodPost, "/api/v1/items/" + restrictedID + "/downloads", map[string]any{"quality": "original"}, http.StatusNotFound},

@@ -142,7 +142,7 @@ func assertSubtitleOperationHeldThroughCancellation(t *testing.T, handler http.H
 
 func waitSubtitleOperationSettled(t *testing.T, path string) {
 	t.Helper()
-	deadline := time.Now().Add(5 * time.Second)
+	deadline := time.Now().Add(subtitleOperationAudioWait)
 	for time.Now().Before(deadline) {
 		if data, err := os.ReadFile(path); err == nil && string(data) == "settled\n" {
 			return

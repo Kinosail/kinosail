@@ -43,3 +43,29 @@ run_populated_player_journeys() {
     --required-title 'Library exit checkpoints actual playing time before teardown without reset-position overwrite' \
     -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-checkpoint.spec.ts --grep=@smoke --workers=1
 }
+
+# Container state is owned by test-container.sh.
+# shellcheck disable=SC2154
+start_server() {
+  local publish="127.0.0.1::38127"
+  local auth_url=""
+  local scheme="https"
+  local tls_environment=(--env KINOSAIL_TLS_ENABLED=true)
+  if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]] && ! browser_fixture_uses_tls; then
+    scheme="http"
+    tls_environment=(--env KINOSAIL_TLS_ENABLED=false)
+  fi
+  if [[ $# -eq 1 ]]; then
+    publish="127.0.0.1:$1:38127"
+    auth_url="$scheme://localhost:$1"
+  fi
+  container="$("$engine" "${run[@]}" --detach --publish "$publish" "${tls_environment[@]}" --env "KINOSAIL_AUTH_URL=$auth_url" --env KINOSAIL_BACKUP_DIR=/backups --env KINOSAIL_BACKUP_KEY=container-test-backup-key --volume "$config_volume:/config" --volume "$cache_volume:/cache" --volume "$backup_volume:/backups" --volume "$media_dir:/media:ro" "$image")"
+  mapped_port="$("$engine" port "$container" 38127/tcp)"
+  url="$scheme://localhost:${mapped_port##*:}"
+  health_host="${auth_url#*://}"
+  if [[ -z "$health_host" ]]; then
+    health_host="localhost:38127"
+  fi
+
+  wait_container_test_health "$url" "$health_host"
+}

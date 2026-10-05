@@ -50,10 +50,10 @@ printf '%s' '{"streams":[{"index":0,"codec_type":"video","codec_name":"hevc","pr
 	decodeJellyfin(t, transcode, &delivery)
 	compatible := httptest.NewRecorder()
 	handler.ServeHTTP(compatible, httptest.NewRequestWithContext(t.Context(), http.MethodGet, delivery.MediaSources[0].TranscodingURL, nil))
-	if compatible.Code != http.StatusOK || !strings.Contains(compatible.Body.String(), "#EXTM3U") || !strings.Contains(compatible.Body.String(), "540p/index.m3u8?playSessionId=") {
+	if compatible.Code != http.StatusOK || !strings.Contains(compatible.Body.String(), "#EXTM3U") || !strings.Contains(compatible.Body.String(), "1080p/index.m3u8?playSessionId=") || strings.Contains(compatible.Body.String(), "540p/index.m3u8") {
 		t.Fatalf("transcode delivery = %d %q", compatible.Code, compatible.Body.String())
 	}
-	variantURL := strings.Replace(delivery.MediaSources[0].TranscodingURL, "/index.m3u8", "/540p/index.m3u8", 1)
+	variantURL := strings.Replace(delivery.MediaSources[0].TranscodingURL, "/index.m3u8", "/1080p/index.m3u8", 1)
 	noCapabilityVariant := jellyfinCall(t, handler, http.MethodGet, strings.Split(variantURL, "?")[0], "", "")
 	if noCapabilityVariant.Code != http.StatusUnauthorized {
 		t.Fatalf("transcode variant without capability = %d %q", noCapabilityVariant.Code, noCapabilityVariant.Body.String())

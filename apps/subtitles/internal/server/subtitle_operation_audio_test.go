@@ -16,6 +16,12 @@ import (
 // The executable supplies fictional silence at the process boundary; it is
 // not an encoder or an internal audio-manager replacement. Native playback
 // and actual lost-write response evidence remain separate journeys.
+// Full-minute PCM is required by the real analysis operation. Race and atomic
+// coverage take 14.56s for this fixture on the local control, exceeding 5s.
+// Keep process-start and held-child checks short; only draining/analysis waits
+// receive this bounded allowance. This is not the production operation deadline.
+const subtitleOperationAudioWait = time.Minute
+
 func TestSubtitleActionLegacyAudioPublicControl(t *testing.T) {
 	handler, base, target, calls, _ := subtitleOperationAudioFixture(t, false)
 	response := requestJSON(t, handler, http.MethodPost, base+"/audio", `{"language":"en"}`)
@@ -78,7 +84,7 @@ func TestSubtitlePreparedAudioCannotBypassActiveLegacyAnalysis(t *testing.T) {
 		if status != http.StatusOK {
 			t.Fatalf("legacy analysis after release = %d", status)
 		}
-	case <-time.After(5 * time.Second):
+	case <-time.After(subtitleOperationAudioWait):
 		t.Fatal("legacy analysis did not settle within its bounded fixture wait")
 	}
 	assertSubtitleActionBytes(t, target, []byte(subtitleActionInitial))

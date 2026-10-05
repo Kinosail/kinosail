@@ -38,6 +38,11 @@ func TestLetterJumpUsesTheActiveLocaleForAccentedTitles(t *testing.T) { //nolint
 		if err := os.WriteFile(filepath.Join(mediaDir, name), []byte("video"), 0o600); err != nil {
 			t.Fatal(err)
 		}
+		// Explicit metadata keeps title bytes independent of filesystem normalization.
+		title := strings.TrimSuffix(name, ".mp4")
+		if err := os.WriteFile(filepath.Join(mediaDir, title+".nfo"), []byte("<movie><title>"+title+"</title></movie>"), 0o600); err != nil {
+			t.Fatal(err)
+		}
 	}
 	handler := server.New(server.Config{MediaDir: mediaDir})
 	response := apiCall(t, handler, "", http.MethodGet, "/api/v1/library?view=movies&lang=en&letter=a", nil)

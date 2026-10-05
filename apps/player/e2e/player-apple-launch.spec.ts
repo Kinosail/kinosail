@@ -26,7 +26,7 @@ test.describe("Apple launch policy @smoke", () => {
     await video.dispatchEvent("suspend");
     await expect(video).toHaveJSProperty("paused", true);
     await expect(video).toHaveJSProperty("muted", false);
-    await expect(video).toHaveJSProperty("playsInline", false);
+    await expect(video).not.toHaveAttribute("playsinline");
     await expect(page.locator("[data-player-status]")).toBeHidden();
     await expect(page.getByRole("button", {name: "Play", exact: true})).toHaveCount(1);
     await expect(page.getByRole("button", {name: "Play", exact: true})).toBeVisible();
