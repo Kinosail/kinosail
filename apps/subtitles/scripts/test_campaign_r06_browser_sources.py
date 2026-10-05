@@ -3,9 +3,10 @@ import hashlib
 import io
 import stat
 from types import SimpleNamespace
+from unittest.mock import patch
 import unittest
 
-from campaign_r06_browser_sources import fingerprint
+from campaign_r06_browser_sources import fingerprint, inspector_identity
 
 
 class MemoryFile:
@@ -14,6 +15,9 @@ class MemoryFile:
         self.mode = mode
         self.size = len(data) if size is None else size
         self.opened = 0
+
+    def read_bytes(self):
+        return self.data
 
     def lstat(self):
         return SimpleNamespace(st_mode=self.mode, st_size=self.size)
@@ -68,6 +72,22 @@ class SourceFingerprintControls(unittest.TestCase):
             "mode": 0o755, "gitBlob": hashlib.sha1(b"blob 11\0" + data).hexdigest(),
         })
         self.assertEqual(path.opened, 1)
+
+
+    def test_delivered_inspector_hash_includes_save_controller_in_order(self):
+        files = {name: MemoryFile(data) for name, data in (
+            ("subtitle-source-cues.js", b"SOURCE;\n"),
+            ("subtitle-save-operation.js", b"SAVE;\n"),
+            ("subtitle-inspector.js", b"INSPECT;\n"),
+        )}
+        class StaticFiles:
+            def __truediv__(self, name):
+                return self if name == "internal/server/static" else files[name]
+        with patch("campaign_r06_browser_sources.APP", StaticFiles()):
+            result = inspector_identity()
+        expected = b"SOURCE;\nSAVE;\nINSPECT;\n"
+        self.assertEqual(result, {"bytes":len(expected), "sha256":hashlib.sha256(expected).hexdigest()})
+        self.assertEqual([value.opened for value in files.values()], [1, 1, 1])
 
 
 if __name__ == "__main__":

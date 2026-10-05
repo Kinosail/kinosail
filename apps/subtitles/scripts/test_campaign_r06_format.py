@@ -1,6 +1,7 @@
 """Protect bounded hosted formatting projection; no formatter or files execute."""
 import base64
 import hashlib
+import campaign_r06_format
 import unittest
 
 from campaign_r06_format import GO_FILES, format_record
@@ -46,6 +47,23 @@ class R06FormatAdmissionTests(unittest.TestCase):
         for stderr in (b"private fixture diagnostic", None, ""):
             with self.subTest(kind=type(stderr).__name__), self.assertRaises(ValueError):
                 self.call(stderr=stderr)
+
+
+    def test_only_reviewed_save_production_go_paths_extend_fixture_list(self):
+        prefix = "apps/subtitles/engineering/qa/2026-10-05-save-browser/fixture/"
+        self.assertEqual(GO_FILES, tuple(prefix+name for name in
+            ("main_test.go", "transport_test.go", "witness_test.go", "fixture_test.go", "owner_test.go")) + (
+            "apps/subtitles/internal/server/assets.go",
+            "apps/subtitles/internal/server/subtitle_inspector.go",
+        ))
+        self.assertEqual(getattr(campaign_r06_format, "FORMAT_FILE_LIMIT", None), len(GO_FILES))
+        for path in GO_FILES[-2:]:
+            with self.subTest(path=path):
+                self.assertEqual(self.call(path=path)["path"], path)
+        for path in ("apps/subtitles/internal/server/server.go",
+                     "apps/subtitles/internal/server/auth.go"):
+            with self.subTest(path=path), self.assertRaises(ValueError):
+                self.call(path=path)
 
 if __name__ == "__main__":
     unittest.main()

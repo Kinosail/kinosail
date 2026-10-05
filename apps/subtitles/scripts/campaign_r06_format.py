@@ -16,7 +16,10 @@ import time
 ROOT = Path(__file__).resolve().parents[3]
 OUTPUT = ROOT / ".verification/campaign-proof/R06"
 GO_FILES = tuple("apps/subtitles/engineering/qa/2026-10-05-save-browser/fixture/" + name
-                 for name in ("main_test.go", "transport_test.go", "witness_test.go", "fixture_test.go", "owner_test.go"))
+                 for name in ("main_test.go", "transport_test.go", "witness_test.go", "fixture_test.go", "owner_test.go")) + (
+    "apps/subtitles/internal/server/assets.go", "apps/subtitles/internal/server/subtitle_inspector.go",
+)
+FORMAT_FILE_LIMIT = len(GO_FILES)
 SAFE_NAMES = ("receipt.json", "results.json", "source-manifest.json", "artifact-manifest.json")
 INPUT_CAP, OUTPUT_CAP = 256 * 1024, 512 * 1024
 
@@ -105,7 +108,7 @@ def main():
     receipt = {"id": "R06", "schemaVersion": 1, "mode": "source-format",
                "result": "prerequisite-blocked", "sourceUnchanged": False,
                "compilerExecuted": False, "applicationExecuted": False, "browserExecuted": False,
-               "limits": {"files": 5, "perFileSeconds": 10, "shutdownSeconds": 2,
+               "limits": {"files": FORMAT_FILE_LIMIT, "perFileSeconds": 10, "shutdownSeconds": 2,
                           "inputBytes": INPUT_CAP, "outputBytes": OUTPUT_CAP}, "phases": []}
     results = {"schemaVersion": 1, "mode": "source-format", "files": []}
     manifest = {"mode": "source-format", "status": "prerequisite-blocked"}

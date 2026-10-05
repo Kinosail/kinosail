@@ -25,9 +25,11 @@ var (
 	subtitleStatusJS []byte
 	//go:embed static/subtitle-inspector.js
 	subtitleInspectorAppJS []byte
+	//go:embed static/subtitle-save-operation.js
+	subtitleSaveOperationJS []byte
 	//go:embed static/subtitle-source-cues.js
 	subtitleSourceCuesJS []byte
-	subtitleInspectorJS  = append(append([]byte(nil), subtitleSourceCuesJS...), subtitleInspectorAppJS...)
+	subtitleInspectorJS  = joinScripts(subtitleSourceCuesJS, subtitleSaveOperationJS, subtitleInspectorAppJS)
 	//go:embed static/subtitle-inspector.css
 	subtitleInspectorCSS []byte
 	//go:embed static/subtitle-dashboard.css
