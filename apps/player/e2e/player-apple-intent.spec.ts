@@ -2,6 +2,8 @@ import {writeFile} from 'node:fs/promises';
 import {expect, test} from '@playwright/test';
 import {installPlayerExperienceFixture} from './player-experience-fixture';
 
+declare const playbackRequest: number;
+
 test.use({hasTouch: true, viewport: {width: 390, height: 844}, ignoreHTTPSErrors: false});
 installPlayerExperienceFixture(false, true);
 
@@ -43,4 +45,97 @@ test('an obsolete Apple Play rejection respects later fullscreen dismissal @smok
   await expect(page.locator('video')).toHaveJSProperty('paused', true);
   await expect(page.getByRole('button', {name: 'Play', exact: true})).toBeVisible();
   expect(await page.locator('.player-control-feedback').isVisible()).toBe(false);
+});
+
+
+// Native Pause is an Apple platform action unavailable in populated Chromium.
+// This existing simulated-Apple fixture isolates the event seam; physical/Toy Story attribution stays separate.
+for (const delivery of ['immediate', 'queued pause']) test(`simulated native Apple Pause cancels pending Play without a startup failure with ${delivery} @smoke`, async ({page}, info) => {
+  const observations: Array<Record<string, unknown>> = [];
+  const observe = async (stage: string) => observations.push(await page.evaluate(label => {
+    const video = document.querySelector('video') as HTMLVideoElement & {webkitDisplayingFullscreen: boolean};
+    const feedback = document.querySelector('.player-control-feedback') as HTMLElement | null;
+    return {stage: label, elapsedMs: Math.round(performance.now()), paused: video.paused,
+      fullscreen: video.webkitDisplayingFullscreen, requestGeneration: typeof playbackRequest === 'number' ? playbackRequest : null,
+      feedbackVisible: Boolean(feedback && !feedback.hidden && feedback.getClientRects().length),
+      feedbackText: feedback?.textContent?.trim() || ''};
+  }, stage));
+  await pendingPlay(page);
+  await observe('play-promise-pending');
+  await page.locator('video').evaluate((media: HTMLVideoElement) => media.pause());
+  await observe('native-pause');
+  await page.evaluate(() => (window as Window & {rejectPendingPlay: (name: string) => void}).rejectPendingPlay('AbortError'));
+  await page.waitForTimeout(0);
+  await observe('interrupted-play-rejected');
+  await page.screenshot({path: info.outputPath('native-pause-after-interruption.png'), fullPage: true});
+  await info.attach('native-pause-intent-observation', {body: JSON.stringify({observations,
+    hypothesis: 'Pause makes the earlier pending Play obsolete', media: 'simulated Apple API/deferred Play, no decoded frames'}),
+    contentType: 'application/json'});
+  expect(observations.at(-1)?.feedbackVisible).toBe(false);
+  await expect(page.locator('video')).toHaveJSProperty('paused', true);
+  await expect(page.locator('video')).toHaveJSProperty('webkitDisplayingFullscreen', true);
+  await expect(page.locator('.player-control-feedback')).toBeHidden();
+  await page.evaluate(() => (window as Window & {setPlayPending: (value: boolean) => void}).setPlayPending(false));
+  await page.getByRole('button', {name: 'Play', exact: true}).tap();
+  await expect(page.locator('video')).toHaveJSProperty('paused', false);
+  await expect(page.locator('.player-control-feedback')).toBeHidden();
+});
+
+
+// Current errors are the counter-control: cancellation must not suppress a genuine rejection.
+for (const failure of ['AbortError', 'NotSupportedError']) test(`current Apple Play ${failure} retains feedback and a fresh Play gesture @smoke`, async ({page}, info) => {
+  await pendingPlay(page);
+  await page.evaluate(name => (window as Window & {rejectPendingPlay: (value: string) => void}).rejectPendingPlay(name), failure);
+  await expect(page.locator('.player-control-feedback')).toBeVisible();
+  await expect(page.locator('.player-control-feedback')).toContainText('Playback could not start');
+  await expect(page.locator('video')).toHaveJSProperty('paused', true);
+  await expect(page.locator('video')).toHaveJSProperty('controls', false);
+  await expect(page.getByRole('button', {name: 'Play', exact: true})).toBeVisible();
+  await info.attach(`current-apple-rejection-${failure}`, {body: JSON.stringify({failure, feedbackVisible: true,
+    freshPlayAvailable: true, boundary: 'simulated Apple API/deferred Play; genuine current rejection control'}),
+    contentType: 'application/json'});
+  await page.evaluate(() => (window as Window & {setPlayPending: (value: boolean) => void}).setPlayPending(false));
+  await page.getByRole('button', {name: 'Play', exact: true}).tap();
+  await expect(page.locator('video')).toHaveJSProperty('paused', false);
+  await expect(page.locator('video')).toHaveJSProperty('webkitDisplayingFullscreen', true);
+});
+
+
+// One event-loop turn injects platform ordering; this does not assert a physical trusted gesture.
+test('queued pause from an older attempt cannot cancel newer Apple control Play @smoke', async ({page}) => {
+  await pendingPlay(page);
+  await page.evaluate(() => {
+    const state = window as Window & {setPlayPending: (value: boolean) => void};
+    document.querySelector('video')!.pause();
+    state.setPlayPending(false);
+    (document.querySelector('[data-player-toggle]') as HTMLButtonElement).click();
+  });
+  await expect(page.locator('video')).toHaveJSProperty('paused', false);
+  await page.evaluate(() => (window as Window & {rejectPendingPlay: (name: string) => void}).rejectPendingPlay('AbortError'));
+  await expect(page.locator('video')).toHaveJSProperty('paused', false);
+  await expect(page.locator('video')).toHaveJSProperty('webkitDisplayingFullscreen', true);
+  await expect(page.locator('.player-control-feedback')).toBeHidden();
+});
+
+test('a stale synchronous Apple Play throw cannot clear a newer pending attempt @smoke', async ({page}) => {
+  await page.evaluate(() => {
+    const video = document.querySelector('video')!;
+    const original = video.play.bind(video);
+    let first = true;
+    Object.defineProperty(video, 'play', {configurable: true, value: () => {
+      if (first) { first = false; throw new DOMException('synthetic current rejection', 'NotSupportedError'); }
+      return original();
+    }});
+    (window as Window & {setPlayPending: (value: boolean) => void}).setPlayPending(true);
+    const play = document.querySelector('[data-player-toggle]') as HTMLButtonElement;
+    play.click(); play.click();
+  });
+  await expect(page.locator('video')).toHaveJSProperty('paused', false);
+  await page.locator('video').evaluate((video: HTMLVideoElement) => video.pause());
+  await page.evaluate(() => (window as Window & {rejectPendingPlay: (name: string) => void}).rejectPendingPlay('AbortError'));
+  await page.waitForTimeout(0);
+  const feedbackVisible = await page.locator('.player-control-feedback').isVisible();
+  expect(feedbackVisible).toBe(false);
+  await expect(page.locator('video')).toHaveJSProperty('paused', true);
+  await expect(page.locator('video')).toHaveJSProperty('webkitDisplayingFullscreen', true);
 });
