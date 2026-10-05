@@ -79,23 +79,30 @@ func enrollOwner(t *testing.T, f *fixture) (*http.Client, string, error) {
 }
 
 func controlResponseStatus(response *http.Response) int {
-	if response == nil { return 0 }
+	if response == nil {
+		return 0
+	}
 	return response.StatusCode
 }
 
 type controlDiagnostic struct {
-	stage string
-	responseStatus int
+	stage                             string
+	responseStatus                    int
 	transport, read, bounded, decoded bool
 }
 
 func controlRoute(path string) string {
 	switch {
-	case path == "/api/v1/subtitle-library?view=library": return "catalog"
-	case strings.HasSuffix(path, "/inspect?language=en"): return "inspection"
-	case strings.HasSuffix(path, "/preview"): return "preview"
-	case path == "/api/v1/subtitle-operations": return "prepare"
-	default: return "unknown"
+	case path == "/api/v1/subtitle-library?view=library":
+		return "catalog"
+	case strings.HasSuffix(path, "/inspect?language=en"):
+		return "inspection"
+	case strings.HasSuffix(path, "/preview"):
+		return "preview"
+	case path == "/api/v1/subtitle-operations":
+		return "prepare"
+	default:
+		return "unknown"
 	}
 }
 
