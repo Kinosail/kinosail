@@ -39,6 +39,8 @@ tooling-check:
 	@node scripts/tooling/test-script-lint.mjs
 	@node --test scripts/quality/browser-script-bundles.test.mjs
 	@node --test scripts/ci/prepare-codeql-js.test.mjs
+	@node --test apps/subtitles/engineering/qa/2026-10-05-save-browser/subtitle-save-operation.test.cjs
+	@node --test apps/subtitles/engineering/qa/2026-10-05-save-browser/subtitle-save-attachment-reader.test.cjs
 	@python3 scripts/tooling/test-verify-deleted-e2e.py
 	@./scripts/tooling/test-architecture-explorer.py
 	@./scripts/tooling/test-deploy-nox-app.sh
