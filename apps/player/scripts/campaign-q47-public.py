@@ -12,6 +12,7 @@ import time
 import campaign_q47_execution as processes
 from campaign_q47_execution import Peer, execute, complete, environment
 from campaign_q47_admission import admit, selector_valid
+from campaign_q47_dependencies import receipt_stage
 from campaign_q47_sources import ROOT, APP, BASE, FIXTURE_FILES, canonical, source_snapshot, dependencies, generated, fingerprint, private_report
 
 OUTPUT = ROOT / ".verification/campaign-proof/Q47"
@@ -118,7 +119,7 @@ def main():
     before = after = dependency_pins = built = binary_pin = None
     tools = cli = binary = site = temporary = None
     receipt = {"schemaVersion": 1, "campaign": "Q47", "kind": "public-baseline", "base": BASE,
-               "result": "incomplete", "blockedPhase": None, "sourceUnchanged": None,
+               "result": "incomplete", "blockedPhase": None, "dependencyStage": None, "sourceUnchanged": None,
                "dependenciesUnchanged": None, "generatedUnchanged": None, "binaryUnchanged": None,
                "ownedProcessesSettled": None, "limits": LIMITS, "bounds": BOUNDS, "commands": COMMANDS, "processes": []}
     results = {"schemaVersion": 1, "campaign": "Q47", "suite": "primary", "collection": None, "runs": [],
@@ -196,6 +197,7 @@ def main():
         receipt["result"] = results["classification"] = classes[0]
     except (OSError, ValueError, RuntimeError, KeyError, TypeError, StopIteration, UnicodeError, KeyboardInterrupt):
         receipt["blockedPhase"] = phase
+        receipt["dependencyStage"] = receipt_stage(phase)
         receipt["result"] = results["classification"] = "incomplete"
     finally:
         receipt["processes"] = processes.PROCESS_RECORDS
