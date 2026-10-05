@@ -1,0 +1,281 @@
+{
+  "schema": "r06-restore-runtime-test-first-v1",
+  "status": "source proposal; no runtime executed",
+  "fixtureManifest": {
+    "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture-source-manifest.json",
+    "blob": "62bf1292673af484aa170bb0534d66677e8f250d",
+    "bytes": 19363,
+    "lines": 208,
+    "sha256": "b627c147c2a3f569ce6df2f9122a15a9fcefdb6a348216640fc8b5cf15e5a9a7",
+    "getVerified": true,
+    "kind": "published-startup-corrected-raw-input-manifest"
+  },
+  "frozenPublicContract": {
+    "blob": "4d635e169064fadf08adf56240c72682ca2b3d1b",
+    "sourceOnly": true,
+    "changed": false
+  },
+  "suites": [
+    "restore-controls",
+    "restore-headers",
+    "restore-inspect-body"
+  ],
+  "publicControlNames": [
+    "TestRestoreLegacySwapPublicControl",
+    "TestRestorePreparedReceiptPublicControl",
+    "TestRestoreHeldHeadersPublicControl",
+    "TestRestoreHeldInspectionBodyPublicControl"
+  ],
+  "cases": [
+    {
+      "id": "r06-restore-headers-desktop",
+      "title": "R06 Restore held headers releases desktop editor",
+      "width": 1280,
+      "height": 900,
+      "fault": "restore-204-headers"
+    },
+    {
+      "id": "r06-restore-headers-phone",
+      "title": "R06 Restore held headers releases phone editor",
+      "width": 390,
+      "height": 844,
+      "fault": "restore-204-headers"
+    },
+    {
+      "id": "r06-restore-inspect-body-desktop",
+      "title": "R06 Restore held inspection body releases desktop editor",
+      "width": 1280,
+      "height": 900,
+      "fault": "post-restore-inspect-200-body"
+    },
+    {
+      "id": "r06-restore-inspect-body-phone",
+      "title": "R06 Restore held inspection body releases phone editor",
+      "width": 390,
+      "height": 844,
+      "fault": "post-restore-inspect-200-body"
+    }
+  ],
+  "assertionIDs": [
+    "actual-restore",
+    "history-once",
+    "recovery-swapped",
+    "hold-proven",
+    "editor-released-by-45s",
+    "finite-truthful-outcome",
+    "original-correction-kept",
+    "original-import-kept",
+    "library-navigation",
+    "back-current-subtitle",
+    "no-restore-replay",
+    "fixture-settled"
+  ],
+  "budgets": {
+    "compile": {
+      "active": 90,
+      "total": 95
+    },
+    "controls": {
+      "active": 60,
+      "total": 65
+    },
+    "collection": {
+      "active": 15,
+      "total": 20
+    },
+    "browserPair": {
+      "active": 230,
+      "total": 235
+    },
+    "absoluteSettlementReserve": 5,
+    "case": 110,
+    "fixture": 120,
+    "workers": 1,
+    "retries": 0,
+    "unlockMilliseconds": 45000,
+    "observationGraceMilliseconds": 10000
+  },
+  "artifactNames": [
+    "receipt.json",
+    "results.json",
+    "source-manifest.json",
+    "artifact-manifest.json"
+  ],
+  "acceptance": {
+    "fullSourceTreeBeforeAfter": true,
+    "exactFixedInputPins": true,
+    "stableDescriptorAndCheckedClose": true,
+    "actualTestBinaryBeforeAfter": true,
+    "actualGoNodePnpmBeforeAfter": true,
+    "installedPlaywrightClosureBeforeAfter": true,
+    "actualChromiumAndHeadlessExecutableBeforeAfter": true,
+    "fullCollectionBeforeSelectedPair": true,
+    "exactNamedControls": true,
+    "all12AssertionsPerCase": true,
+    "distinctRestoreAndInspectionTerminals": true,
+    "exactSoftErrorMultiset": true,
+    "allOwnedGroupsCaptureAndFixtureSettlement": true,
+    "noUnknownRetrySkipOrPartialAcceptance": true
+  },
+  "isolatedCoverageGap": "Malformed source, process, closure and artifact admission failures are outside the populated E2E product journey.",
+  "publication": {
+    "author": "source-only detached blobs",
+    "integrationOwner": "root",
+    "refs": false,
+    "jobs": false,
+    "localFiles": false,
+    "generatedMetadata": false,
+    "production": false
+  },
+  "implementationBoundaries": [
+    "No existing Go14, TS6, Save helper or test changes.",
+    "No new routes, credential shortcuts, fabricated Owner response, write retry or fixture-only product acceptance.",
+    "No real-data deletion or media/encoder/device/deployment work."
+  ],
+  "remaining": [
+    "Freeze and independently review all revised failure-first tests before implementation publication.",
+    "Independent exact source review and root integration.",
+    "Hosted compiler/lint/public controls and both selected browser pairs.",
+    "Required checks, protected ordinary merge and fresh main ancestry."
+  ],
+  "historicalFormatterInput": {
+    "commit": "1a3e182d96b164c52426436555b136aea6ea8d7f",
+    "tree": "fccdf81f59d845c16fbe3c2f5b223b278d2ae351"
+  },
+  "adoptionBaseline": {
+    "commit": "3d65d3a75973122ad795e24d539425826a40182e",
+    "tree": "76c21f9606c95b1fbeaf34251d7c2c0191efc2ec",
+    "canonicalFixtureManifest": "8a2b3396e1c372b6b5732eb034f4ae0da8016760",
+    "role": "historical admitted canonical adoption; current Main/files are later raw startup inputs"
+  },
+  "modeDependencies": {
+    "restore-controls": [
+      "go",
+      "compiled-fixture"
+    ],
+    "restore-headers": [
+      "go",
+      "compiled-fixture",
+      "node",
+      "pnpm",
+      "chromium",
+      "headless",
+      "selected-installed-importer-closure"
+    ],
+    "restore-inspect-body": [
+      "go",
+      "compiled-fixture",
+      "node",
+      "pnpm",
+      "chromium",
+      "headless",
+      "selected-installed-importer-closure"
+    ]
+  },
+  "independentReviewRepairs": {
+    "priorManifest": "9aff0c2677bf2628480e98d55b9aefca78af309d",
+    "original71MethodBodiesPreserved": true,
+    "frozenTestsBeforeRepairBlobs": true,
+    "methods": 92,
+    "closedStates": [
+      "unreached",
+      "partial",
+      "full"
+    ],
+    "repairBoundaries": [
+      "nonblocking nofollow reader flags",
+      "finite numeric JSON decoding",
+      "ordered public control terminals",
+      "descriptor-owned bounded package traversal with checked close",
+      "closed receipt/results/source and nested schemas in every classification",
+      "fixed descriptive limits and safe failure enums; positive receipts have no failure",
+      "non-null valid inspector SHA256 mandatory for accepted artifacts; served null cannot bind receipt null"
+    ],
+    "ramMockControls": {
+      "passed": 92,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "unmockedIOAndProcessesDenied": true,
+      "entryScenariosPassed": 8
+    },
+    "actualCompilerBrowserRun": false,
+    "startupInputPins": "Published2b816fa8 raw startup Main/files and fixture62bf inputs; current stock formatter qualification pending; historical3d65 canonical adoption retained.",
+    "prior85MethodBodiesPreserved": true,
+    "prior87MethodBodiesPreserved": true
+  },
+  "currentInputBaseline": {
+    "commit": "2b816fa8484279aa906116446f305d8f49ceb66d",
+    "tree": "d511ed8f7634e6c82c8ec847eadcb9a8ab39bf65",
+    "kind": "published-startup-corrected-raw-inputs",
+    "formatterQualification": "pending",
+    "canonicalOutputs": null
+  },
+  "startupRawInputs": [
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_main_test.go",
+      "blob": "8b53d7a674a4099d5b318ae35d4fd0bff41d549e",
+      "bytes": 9238,
+      "lines": 251,
+      "sha256": "09e1ca5c0277ba72237cfdbb9ad880cca048d13d01ec31ea55ae1b77e946a9d4",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_filesystem_test.go",
+      "blob": "e330d8bb78d411b32565ccb6c98d626eba9c6230",
+      "bytes": 7649,
+      "lines": 212,
+      "sha256": "37b2c37f8534cc220871f6892c2b0e76be9e77ad7e7683be561d24b322000685",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture-source-manifest.json",
+      "blob": "62bf1292673af484aa170bb0534d66677e8f250d",
+      "bytes": 19363,
+      "lines": 208,
+      "sha256": "b627c147c2a3f569ce6df2f9122a15a9fcefdb6a348216640fc8b5cf15e5a9a7",
+      "getVerified": true
+    }
+  ],
+  "startupRuntimeLimit": {
+    "addedUnitMethods": [
+      "TestRestoreStartupSettingsSeedIsPrivate",
+      "TestRestoreStartupSeedImportsWithoutChangingMedia",
+      "TestRestoreStartupUsesOnlyOwnedHardwareTarget",
+      "TestRestoreStartupRejectsExistingHardwareTargets"
+    ],
+    "addedUnitsExecuted": false,
+    "originalPublicSelectionUnchanged": true,
+    "compiledOrSelectedPublicRunDoesNotExecuteAddedUnits": true,
+    "currentFormatterQualified": false,
+    "canonicalOutputs": null,
+    "hostedIsolationAcceptance": false,
+    "rootReportedCI": {
+      "run": "37372980574",
+      "status": "terminal-failure; selector cancelled/no app execution"
+    },
+    "rootReportedFormatter": {
+      "run": "37373053334",
+      "status": "runner0/no steps; unqualified"
+    },
+    "noRepeatedDispatch": true
+  },
+  "rawBindingTransition": {
+    "priorRuntimeManifest": "9eba25375755fb6ed8ac0036fa92a9ff462e80d8",
+    "failureFirst": {
+      "methods": 92,
+      "passed": 88,
+      "failures": 4,
+      "errors": 0,
+      "skips": 0
+    },
+    "after": {
+      "methods": 92,
+      "passed": 92,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "original87ByteExact": true
+  }
+}

@@ -132,5 +132,63 @@ class CampaignProofTests(unittest.TestCase):
         self.assertLess(source.index(name), source.index('name: Run exact owned public proof'))
 
 
+    def test_restore_runtime_dispatch_is_fixed_and_rejects_foreign_selection(self):
+        from unittest import mock
+        for suite in ('restore-controls', 'restore-headers', 'restore-inspect-body'):
+            with self.subTest(suite=suite), mock.patch.dict(os.environ, {'CAMPAIGN_R06_SUITE': suite}):
+                actual = self.call('R06')
+                self.assertEqual(actual.returncode, 0, actual.stderr)
+                self.assertEqual(actual.stdout.splitlines(), ['apps/subtitles/scripts/campaign-r06-restore-browser.py'])
+                for value in ('Q14', 'Q09', 'Q47'):
+                    self.assertEqual(self.call(value).returncode, 2)
+                    self.assertEqual(self.call(value).stdout, '')
+        for suite in ('restore', 'restore-controls;echo unsafe', 'restore-headers\nrestore-inspect-body'):
+            with self.subTest(suite=suite), mock.patch.dict(os.environ, {'CAMPAIGN_R06_SUITE': suite}):
+                actual = self.call('R06')
+                self.assertEqual(actual.returncode, 2)
+                self.assertEqual(actual.stdout, '')
+
+    def test_restore_runtime_choices_and_router_are_closed(self):
+        workflow, router = LAYOUT.read_text(), ROUTER.read_text()
+        choices = 'options: [protocol, save-controls, save-headers, save-body, source-format, restore-source-format, restore-controls, restore-headers, restore-inspect-body]'
+        modes = 'protocol|save-controls|save-headers|save-body|source-format|restore-source-format|restore-controls|restore-headers|restore-inspect-body) ;;'
+        self.assertIn(choices, workflow)
+        self.assertEqual(workflow.count(modes), 1)
+        self.assertEqual(router.count(modes), 1)
+        branch = 'elif [[ "$r06_suite" == restore-controls || "$r06_suite" == restore-headers || "$r06_suite" == restore-inspect-body ]]; then\n      exec python3 apps/subtitles/scripts/campaign-r06-restore-browser.py'
+        self.assertEqual(router.count(branch), 1)
+
+    def test_restore_runtime_browser_dependencies_exclude_go_only_controls(self):
+        source = LAYOUT.read_text().split('  campaign-proof:\n')[1]
+        browser_conditions = [line for line in source.splitlines() if line.strip().startswith('if: (steps.selection.outputs.app')]
+        self.assertEqual(len(browser_conditions), 3)
+        for condition in browser_conditions:
+            self.assertIn("env.CAMPAIGN_R06_SUITE == 'restore-headers'", condition)
+            self.assertIn("env.CAMPAIGN_R06_SUITE == 'restore-inspect-body'", condition)
+            self.assertNotIn("env.CAMPAIGN_R06_SUITE == 'restore-controls'", condition)
+        self.assertIn("env.CAMPAIGN_R06_SUITE != 'source-format' && env.CAMPAIGN_R06_SUITE != 'restore-source-format' && env.CAMPAIGN_PROOF != 'Q47'", source)
+
+    def test_restore_runtime_controls_are_fixed_bounded_and_precede_proof(self):
+        source = LAYOUT.read_text().split('  campaign-proof:\n')[1]
+        name = 'name: Verify Restore runtime admission controls'
+        command = 'timeout --kill-after=2s 10s python3 -B -m unittest ' + ' '.join(
+            'test_campaign_r06_restore_runtime_' + part for part in ('selection', 'sources', 'process', 'controls', 'projection', 'tools'))
+        self.assertEqual(source.count('run: ' + command), 1)
+        step = source.split(name)[1].split('      - name: Run exact owned public proof')[0]
+        self.assertIn("if: env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'restore-controls' || env.CAMPAIGN_R06_SUITE == 'restore-headers' || env.CAMPAIGN_R06_SUITE == 'restore-inspect-body')", step)
+        self.assertIn('timeout-minutes: 1', step)
+        self.assertIn('PYTHONPATH: apps/subtitles/scripts', step)
+        self.assertLess(source.index(name), source.index('name: Run exact owned public proof'))
+
+    def test_restore_runtime_rejects_metadata_before_prerequisites(self):
+        source = LAYOUT.read_text().split('  campaign-proof:\n')[1]
+        validation = source.split('      - uses: actions/setup-go')[0]
+        guard = 'restore-controls|restore-headers|restore-inspect-body)\n              if [ "${{ inputs.architecture_metadata }}" == true ]; then exit 2; fi ;;'
+        self.assertEqual(validation.count(guard), 1)
+        collector = source.split('name: Collect bounded canonical source metadata')[1].split('      - name: Keep safe campaign proof')[0]
+        for suite in ('restore-controls', 'restore-headers', 'restore-inspect-body'):
+            self.assertIn("inputs.campaign_r06_suite != '" + suite + "'", collector)
+
+
 if __name__ == '__main__':
     unittest.main()

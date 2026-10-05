@@ -3,7 +3,7 @@ set -euo pipefail
 [[ "$#" == 1 ]] || exit 2
 r06_suite="${CAMPAIGN_R06_SUITE-protocol}"
 case "$r06_suite" in
-  protocol|save-controls|save-headers|save-body|source-format|restore-source-format) ;;
+  protocol|save-controls|save-headers|save-body|source-format|restore-source-format|restore-controls|restore-headers|restore-inspect-body) ;;
   *) exit 2 ;;
 esac
 if [[ "$1" != R06 && "$r06_suite" != protocol ]]; then exit 2; fi
@@ -21,6 +21,8 @@ case "$1" in
       exec python3 apps/subtitles/scripts/campaign_r06_format.py
     elif [[ "$r06_suite" == restore-source-format ]]; then
       exec python3 apps/subtitles/scripts/campaign_r06_restore_format.py
+    elif [[ "$r06_suite" == restore-controls || "$r06_suite" == restore-headers || "$r06_suite" == restore-inspect-body ]]; then
+      exec python3 apps/subtitles/scripts/campaign-r06-restore-browser.py
     else
       exec python3 apps/subtitles/scripts/campaign-r06-browser.py
     fi ;;
