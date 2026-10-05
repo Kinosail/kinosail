@@ -92,12 +92,12 @@ func newRestoreRig(target *restoreTarget, directory, mode string) (*restoreRig, 
 		target: target, files: files, ctx: ctx, cancel: cancel, mode: mode,
 		eligible: make(chan struct{}), released: make(chan struct{}), state: restoreSnapshot{Protocol: "unreached"},
 	}
-	tool := filepath.Join(directory, "unavailable-media-tool")
-	f.app = server.New(server.Config{
-		Lifecycle: ctx, SubtitleApp: true, RequireAuth: true, AuthURL: target.origin,
-		MediaDir: filepath.Join(directory, "media"), DataDir: filepath.Join(directory, "data"),
-		CacheDir: filepath.Join(directory, "cache"), FFmpeg: tool, FFprobe: tool, FPCalc: tool,
-	})
+	actualConfig, err := restoreApplicationConfig(ctx, directory, target.origin)
+	if err != nil {
+		cancel()
+		return nil, errors.Join(err, files.Close())
+	}
+	f.app = server.New(actualConfig)
 	target.tls.Config.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { f.serve(target, w, r) })
 	target.tls.StartTLS()
 	return f, nil
@@ -153,4 +153,99 @@ func runRestoreFixture() (exit int) {
 	case <-time.After(120 * time.Second):
 	}
 	return 0
+}
+
+const restoreHardwareSentinel = "unavailable-hardware-devices"
+
+func restoreApplicationConfig(ctx context.Context, directory, origin string) (server.Config, error) {
+	devices, err := restoreHardwareTargets(directory)
+	if err != nil {
+		return server.Config{}, err
+	}
+	tool := filepath.Join(directory, "unavailable-media-tool")
+	return server.Config{
+		Lifecycle: ctx, SubtitleApp: true, RequireAuth: true, AuthURL: origin,
+		MediaDir: filepath.Join(directory, "media"), DataDir: filepath.Join(directory, "data"),
+		CacheDir: filepath.Join(directory, "cache"), FFmpeg: tool, FFprobe: tool, FPCalc: tool,
+		HardwareDevices: devices, ProbeHardware: false, DLNAURL: "",
+	}, nil
+}
+
+func restoreHardwareTargets(directory string) ([]string, error) {
+	root, err := os.OpenRoot(directory)
+	if err != nil {
+		return nil, errors.New("Restore hardware root unavailable")
+	}
+	_, statErr := root.Lstat(restoreHardwareSentinel)
+	closeErr := root.Close()
+	if !errors.Is(statErr, os.ErrNotExist) || closeErr != nil {
+		return nil, errors.New("Restore hardware target must be absent")
+	}
+	return []string{filepath.Join(directory, restoreHardwareSentinel)}, nil
+}
+
+// These isolated controls cover startup accesses that the Restore journey's
+// admitted public routes cannot observe. They never invoke the application.
+func TestRestoreStartupUsesOnlyOwnedHardwareTarget(t *testing.T) {
+	directory := newRestoreStartupDirectory(t)
+	configured, err := restoreApplicationConfig(context.Background(), directory, "https://127.0.0.1:1")
+	if err != nil {
+		t.Fatal("Restore startup configuration unavailable")
+	}
+	if len(configured.HardwareDevices) != 1 {
+		t.Fatal("Restore startup must avoid default host hardware discovery")
+	}
+	want := filepath.Join(directory, restoreHardwareSentinel)
+	if configured.HardwareDevices[0] != want || configured.ProbeHardware || configured.DLNAURL != "" {
+		t.Fatal("Restore startup hardware or discovery isolation changed")
+	}
+	if _, err = os.Lstat(want); !errors.Is(err, os.ErrNotExist) {
+		t.Fatal("Restore startup hardware target must remain nonexistent")
+	}
+	if configured.DataDir != filepath.Join(directory, "data") || !configured.RequireAuth || configured.AuthURL != "https://127.0.0.1:1" {
+		t.Fatal("Restore startup must preserve owned state and authentication")
+	}
+}
+
+func TestRestoreStartupRejectsExistingHardwareTargets(t *testing.T) {
+	cases := []struct {
+		name   string
+		create func(string) error
+	}{
+		{"file", func(path string) error { return os.WriteFile(path, []byte("owned sentinel"), 0o600) }},
+		{"directory", func(path string) error { return os.Mkdir(path, 0o700) }},
+		{"dangling-symlink", func(path string) error { return os.Symlink("owned-missing-target", path) }},
+	}
+	for _, testCase := range cases {
+		t.Run(testCase.name, func(t *testing.T) {
+			directory := newRestoreStartupDirectory(t)
+			path := filepath.Join(directory, restoreHardwareSentinel)
+			if err := testCase.create(path); err != nil {
+				t.Fatal("Restore hardware rejection fixture unavailable")
+			}
+			before, err := os.Lstat(path)
+			if err != nil {
+				t.Fatal("Restore hardware rejection witness unavailable")
+			}
+			configured, err := restoreApplicationConfig(context.Background(), directory, "https://127.0.0.1:1")
+			if err == nil || len(configured.HardwareDevices) != 0 {
+				t.Fatal("Restore must reject an existing hardware target before application startup")
+			}
+			assertRestoreHardwareWitness(t, path, before)
+		})
+	}
+}
+
+func assertRestoreHardwareWitness(t *testing.T, path string, before os.FileInfo) {
+	t.Helper()
+	after, err := os.Lstat(path)
+	if err != nil || !os.SameFile(before, after) || before.Mode() != after.Mode() || before.Size() != after.Size() {
+		t.Fatal("Restore hardware rejection must preserve its owned witness")
+	}
+	if before.Mode().IsRegular() {
+		contents, readErr := os.ReadFile(path)
+		if readErr != nil || string(contents) != "owned sentinel" {
+			t.Fatal("Restore hardware rejection changed owned bytes")
+		}
+	}
 }

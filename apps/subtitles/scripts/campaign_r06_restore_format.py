@@ -20,16 +20,16 @@ ROOT = Path(__file__).resolve().parents[3]
 OUTPUT = ROOT / ".verification/campaign-proof/R06"
 BASE_COMMIT = "bd1ea2e148787ae8d4a0a46640bc2a965e10fe6a"
 MANIFEST_PATH = "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture-source-manifest.json"
-MANIFEST_BLOB = "8a2b3396e1c372b6b5732eb034f4ae0da8016760"
-MANIFEST_SHA256 = "776916da74d6a165ab157f975b85e668c917552572dfec3a91ec9a7869321aa3"
+MANIFEST_BLOB = "62bf1292673af484aa170bb0534d66677e8f250d"
+MANIFEST_SHA256 = "b627c147c2a3f569ce6df2f9122a15a9fcefdb6a348216640fc8b5cf15e5a9a7"
 PREFIX = "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/"
 GO_PINS = {
     PREFIX + "restore_assertions_test.go": ("0c72a93cf599390ecfa42a1b08ebbbe7e0c8bd6b", "82261355e73118d9cad07c3f6fa289ac29a0d6343efb8db669926b96087191c0", 6490),
     PREFIX + "restore_controls_test.go": ("ef0599a3a672d09603f5619b69cb1eee3fd2a770", "d7be68372506e6813b40b7a5b2c9080a53af634a8a0ab95e8369c1b18bddacdb", 4697),
     PREFIX + "restore_exchange_test.go": ("96dceb7318df112838f2d409d8647e7a5bcfbc18", "b694f5a9f2060daac8fcc08e77076030b6d3a34733b9eb2f38da557763a0bfa1", 4926),
-    PREFIX + "restore_filesystem_test.go": ("95e46d54ad38b19aae445e7886a9a10579e3e6ce", "14ad292f5db92043f44cdba9f62abcdd6a2f875da9e616508aa7ae04da8db0b1", 1960),
+    PREFIX + "restore_filesystem_test.go": ("e330d8bb78d411b32565ccb6c98d626eba9c6230", "37b2c37f8534cc220871f6892c2b0e76be9e77ad7e7683be561d24b322000685", 7649),
     PREFIX + "restore_http_test.go": ("96e2101833c66403eeed164552e696f7d0c52cba", "c1b6b0e0c6fecd90220d03fb14ecf9c5ed83fc656b680a0c194a3faa94462a73", 6127),
-    PREFIX + "restore_main_test.go": ("21b445622772471c1af71fb7c20cd28a1273aca2", "9ddf2e4a5136dc0cf1f6954e324d001b78a51f0fc79459405ce357d6721e6a89", 5447),
+    PREFIX + "restore_main_test.go": ("8b53d7a674a4099d5b318ae35d4fd0bff41d549e", "09e1ca5c0277ba72237cfdbb9ad880cca048d13d01ec31ea55ae1b77e946a9d4", 9238),
     PREFIX + "restore_owner_enrollment_test.go": ("8c570ea7cf23f1c60b01950fee8ba5122b64ccf0", "d856b68f17840df1c7b8ccd857dbb4cd2e8397ae89307ef73401ba3fefb4913b", 5019),
     PREFIX + "restore_owner_test.go": ("687b5b542433ad9f91faf2475039dbb1d9926f60", "1fd267854c88a2aa23bb9dabb261033448919f3bf590a636fa88cfd3a5b58cb6", 1373),
     PREFIX + "restore_requests_test.go": ("e789fb0fe27471106ee509b65867a6190229d8d5", "7bbb33bf545f6563cf5eefcc36d1d7fb046a6a1f6ad6c0d858e6b42761d6b697", 7329),
