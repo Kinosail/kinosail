@@ -8,12 +8,15 @@ import threading
 import time
 from hls_timeline_http import PublicServer, source_state
 from hls_timeline_packets import manifest_facts, safe_encoder_lifecycle
+from hls_timeline_preparation import prepare_scene
 from hls_followon_public import check, bounded_bytes, encoder_count, sample_resources, prepare_once
 
 
 def controls(root, run, binary, receipt):
     for name, extension, codec in [('audio-only', '.flac', 'flac'),
-                                   ('audiobook', '.m4b', 'alac'), ('hevc-video', '.mkv', 'ac3')]:
+                                   ('audiobook', '.m4b', 'alac'), ('hevc-video', '.mkv', 'ac3'),
+                                   ('hevc-cold', '.mkv', 'ac3')]:
+        hevc = name.startswith('hevc-')
         case = {'name': name, 'result': 'failed', 'failures': [],
                 'boundary': 'Public preparation and complete audio delivery; HEVC video identity/timing not certified'}
         receipt['cases'].append(case)
@@ -22,10 +25,10 @@ def controls(root, run, binary, receipt):
         media.mkdir(parents=True)
         source = media / ('Fixture' + extension)
         command = ['ffmpeg', '-nostdin', '-v', 'error']
-        if name == 'hevc-video':
+        if hevc:
             command += ['-f', 'lavfi', '-i', 'testsrc2=s=320x180:r=24:d=10']
         command += ['-f', 'lavfi', '-i', 'sine=frequency=440:sample_rate=48000:duration=10']
-        if name == 'hevc-video':
+        if hevc:
             command += ['-c:v', 'libx265', '-preset', 'ultrafast', '-threads', '1',
                         '-x265-params', 'pools=1:frame-threads=1:keyint=48:min-keyint=48:scenecut=0']
         command += ['-c:a', codec, '-ac', '2', str(source)]
@@ -52,7 +55,7 @@ def controls(root, run, binary, receipt):
             try:
                 api.authorize()
                 item = next(i for i in api.call('/api/v1/library')['items'] if i['title'] == 'Fixture')
-                query = '?videoCodecs=hevc&audioCodecs=aac' if name == 'hevc-video' else '?videoCodecs=h264&audioCodecs=aac'
+                query = '?videoCodecs=hevc&audioCodecs=aac' if hevc else '?videoCodecs=h264&audioCodecs=aac'
                 plan = api.call('/api/v1/items/' + item['id'] + '/playback' + query)
                 check(plan['compatiblePlan']['mode'] == 'audio-transcode', 'control_compatibility_mode')
                 case['itemKind'], case['mode'] = item['kind'], plan['compatiblePlan']['mode']
@@ -65,10 +68,14 @@ def controls(root, run, binary, receipt):
                 status, _, _ = api.http(prepare, 'POST', {'source': hls}, authenticated=False)
                 check(status == 401 and not roots() and encoder_count(server, source) == 0, 'control_unauthenticated_side_effect')
                 case['unauthenticatedPreparation'] = {'status': status, 'cacheUnchanged': True}
-                prepare_once(api, prepare, hls, log_path, server, source, case)
-                check(case['preparationAttempt']['completionState'] == 'ready', 'control_preparation_not_ready')
-                value = api.call(prepare, 'POST', {'source': hls}, 202)
-                check(value['state'] == 'ready', 'control_public_preparation_not_ready')
+                if name == 'hevc-cold':
+                    prepare_scene(api, prepare, hls, cache, item['id'], server, source, case,
+                                  encoder_count, check, bounded_bytes, cold=True)
+                else:
+                    prepare_once(api, prepare, hls, log_path, server, source, case)
+                    check(case['preparationAttempt']['completionState'] == 'ready', 'control_preparation_not_ready')
+                    value = api.call(prepare, 'POST', {'source': hls}, 202)
+                    check(value['state'] == 'ready', 'control_public_preparation_not_ready')
                 status, master, _ = api.http(hls)
                 check(status == 200, 'control_master_http_' + str(status))
                 renditions = re.findall(r'^(?:[1-9][0-9]{2,3}p|audio)/index\.m3u8$', master.decode(), re.M)
@@ -83,16 +90,33 @@ def controls(root, run, binary, receipt):
                 check(0 < len(segments) <= 16, 'control_fragment_bound')
                 case['publicVariant'] = facts
                 fragments = [init]
+                case['fragmentAudioPackets'] = []
                 for filename in segments:
                     status, data, _ = api.http(base + filename)
                     check(status == 200 and data, 'control_fragment_http_' + str(status))
                     fragments.append(data)
+                    fragment = directory / 'fragment.mp4'
+                    fragment.write_bytes(init + data)
+                    packets = subprocess.check_output(['ffprobe', '-v', 'error', '-select_streams', 'a:0',
+                        '-read_intervals', '%+#4096', '-show_packets', '-show_entries', 'packet=pts_time,duration_time',
+                        '-of', 'json', str(fragment)], timeout=30)
+                    check(len(packets) <= 1024 * 1024, 'control_audio_packet_bound')
+                    rows = json.loads(packets).get('packets', [])
+                    check(len(rows) < 4096, 'control_audio_packet_bound')
+                    case['fragmentAudioPackets'].append({'segment': filename, 'packets': len(rows),
+                        'first': rows[0] if rows else None, 'last': rows[-1] if rows else None})
                 joined = directory / 'public.mp4'
                 joined.write_bytes(b''.join(fragments))
                 pcm = subprocess.check_output(['ffmpeg', '-nostdin', '-v', 'error', '-i', str(joined),
-                    '-map', '0:a:0', '-ac', '1', '-ar', '16000', '-f', 's16le', '-'], timeout=30)
-                check(9.8 * 16000 * 2 <= len(pcm) <= 10.2 * 16000 * 2, 'control_audio_duration')
+                    '-map', '0:a:0', '-t', '12', '-ac', '1', '-ar', '16000', '-f', 's16le', '-'], timeout=30)
                 case['decodedAudioSamples'], case['publicFragments'] = len(pcm) // 2, len(segments)
+                source_pcm = subprocess.check_output(['ffmpeg', '-nostdin', '-v', 'error', '-i', str(source),
+                    '-map', '0:a:0', '-ac', '1', '-ar', '16000', '-f', 's16le', '-'], timeout=30)
+                check(0 < len(source_pcm) <= 512 * 1024 and len(source_pcm) % 2 == 0, 'control_source_audio_bound')
+                case['sourceAudioSamples'] = len(source_pcm) // 2
+                check(9.8 * 16000 * 2 <= len(pcm) <= 10.2 * 16000 * 2, 'control_audio_duration')
+                check(abs(len(pcm) - len(source_pcm)) <= 0.1 * 16000 * 2, 'control_audio_sample_count')
+                check(all(p['packets'] for p in case['fragmentAudioPackets']), 'control_fragment_audio_missing')
                 case['result'] = 'passed'
             except Exception as error:
                 case['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__

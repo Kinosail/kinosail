@@ -29,7 +29,7 @@ RUN.mkdir(parents=True)
 binary = RUN / 'player'
 receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
     'result': 'failed', 'cases': [], 'command': 'python3 apps/player/scripts/test-hls-followon.py --suite ' + suite,
-    'suite': suite, 'expectedCases': 9 if suite == 'all' else 7,
+    'suite': suite, 'expectedCases': 10 if suite == 'all' else 8,
     'knownUnrepairedCases': ['nonkey-mkv', 'nonkey-mp4'],
     'boundary': 'Synthetic authenticated public Server delivery; native/Safari/iOS and Nox acceptance separate.',
     'productionMediaOrCacheModified': False, 'fixtureSeconds': 32, 'fixtureFrameRate': 24}
