@@ -15,9 +15,9 @@ func assertCopiedAudioPackets(t *testing.T, ctx context.Context, source, deliver
 	if err != nil {
 		t.Fatal(err)
 	}
-	expected := copiedAudioPackets(t, ctx, ffprobe, source)
-	actual := copiedAudioPackets(t, ctx, ffprobe, delivered)
-	expected = audibleCopiedSourcePackets(t, expected)
+	sourceProbe := copiedAudioPackets(t, ctx, ffprobe, source)
+	actual := copiedAudioPackets(t, ctx, ffprobe, delivered).Packets
+	expected := audibleCopiedSourcePackets(t, sourceProbe)
 	assertCopiedAudioPacketCount(t, expected, actual)
 	for index := range expected {
 		if actual[index].Hash != expected[index].Hash {
@@ -29,28 +29,36 @@ func assertCopiedAudioPackets(t *testing.T, ctx context.Context, source, deliver
 }
 
 type copiedAudioPacket struct {
-	PTS  string `json:"pts_time"`
-	DTS  string `json:"dts_time"`
-	Hash string `json:"data_hash"`
-	Side []struct {
-		Skip int `json:"skip_samples"`
+	PTS      string `json:"pts_time"`
+	DTS      string `json:"dts_time"`
+	Duration string `json:"duration_time"`
+	Hash     string `json:"data_hash"`
+	Side     []struct {
+		Skip    int `json:"skip_samples"`
+		Discard int `json:"discard_padding"`
 	} `json:"side_data_list"`
 }
 
-func copiedAudioPackets(t *testing.T, ctx context.Context, ffprobe, path string) []copiedAudioPacket {
+type copiedAudioProbe struct {
+	Packets []copiedAudioPacket `json:"packets"`
+	Streams []struct {
+		SampleRate string `json:"sample_rate"`
+		Padding    int    `json:"initial_padding"`
+	} `json:"streams"`
+}
+
+func copiedAudioPackets(t *testing.T, ctx context.Context, ffprobe, path string) copiedAudioProbe {
 	t.Helper()
-	command := exec.CommandContext(ctx, ffprobe, "-v", "error", "-select_streams", "a:0", "-show_packets", "-show_data_hash", "sha256", "-show_entries", "packet=pts_time,dts_time,data_hash,side_data_list", "-of", "json", path) //nolint:gosec // Discovered tool and generated fixture.
+	command := exec.CommandContext(ctx, ffprobe, "-v", "error", "-select_streams", "a:0", "-show_packets", "-show_data_hash", "sha256", "-show_entries", "packet=pts_time,dts_time,duration_time,data_hash,side_data_list:packet_side_data=skip_samples,discard_padding:stream=sample_rate,initial_padding", "-of", "json", path) //nolint:gosec // Discovered tool and generated fixture.
 	data, err := command.Output()
 	if err != nil {
 		t.Fatal(err)
 	}
-	var value struct {
-		Packets []copiedAudioPacket `json:"packets"`
-	}
+	var value copiedAudioProbe
 	if json.Unmarshal(data, &value) != nil {
 		t.Fatal("invalid audio packet metadata")
 	}
-	return value.Packets
+	return value
 }
 
 func assertCopiedAudioPacketCount(t *testing.T, expected, actual []copiedAudioPacket) {
@@ -83,22 +91,43 @@ func assertCopiedAudioPacketClock(t *testing.T, index int, source, delivered cop
 	}
 }
 
-func audibleCopiedSourcePackets(t *testing.T, expected []copiedAudioPacket) []copiedAudioPacket {
+func audibleCopiedSourcePackets(t *testing.T, probe copiedAudioProbe) []copiedAudioPacket {
 	t.Helper()
-	sourceCount := len(expected)
-	// AAC encoder delay is explicitly fully discarded by source metadata. HLS
-	// omits only this negative-PTS priming packet; all audible payloads are required.
-	if len(expected) > 0 && len(expected[0].Side) == 1 && expected[0].Side[0].Skip == 1024 {
-		pts, err := strconv.ParseFloat(expected[0].PTS, 64)
-		if err != nil || math.IsNaN(pts) || math.IsInf(pts, 0) || pts >= 0 {
-			t.Fatal("AAC priming PTS is not the explicit negative source packet")
-		}
-		if pts < 0 {
-			expected = expected[1:]
-		}
+	if len(probe.Streams) != 1 || probe.Streams[0].SampleRate != "44100" || probe.Streams[0].Padding != 1024 || len(probe.Packets) < 2 {
+		t.Fatal("source fixture must retain explicit 1024-sample AAC encoder padding")
 	}
-	if sourceCount == len(expected) {
-		t.Fatal("source fixture must retain its explicit fully skipped1024-sample priming packet")
+	first := probe.Packets[0]
+	if len(first.Side) > 1 {
+		t.Fatal("ambiguous AAC priming side data")
 	}
-	return expected
+	if len(first.Side) == 1 && (first.Side[0].Skip != 1024 || first.Side[0].Discard != 0) {
+		t.Fatal("AAC packet skip metadata conflicts with explicit encoder padding")
+	}
+	assertCopiedPrimerClock(t, first, probe.Packets[1])
+	return probe.Packets[1:]
+}
+
+func assertCopiedPrimerClock(t *testing.T, first, next copiedAudioPacket) {
+	t.Helper()
+	// FFprobe6 reports Matroska CodecDelay as stream initial_padding. FFprobe9
+	// also exposes Skip Samples on this packet. Both explicitly discard the same
+	// entire negative-PTS packet; timestamps alone never permit an exclusion.
+	pts := copiedFiniteAudioTime(t, first.PTS)
+	dts := copiedFiniteAudioTime(t, first.DTS)
+	duration := copiedFiniteAudioTime(t, first.Duration)
+	if pts >= 0 || dts != pts || math.Abs(duration-1024.0/44100) > 0.001001 || math.Abs(pts+duration) > 0.001001 {
+		t.Fatal("AAC initial padding does not fully cover the first negative packet")
+	}
+	if next := copiedFiniteAudioTime(t, next.PTS); next < 0 || next > 0.001001 {
+		t.Fatal("AAC audible packet sequence does not start at zero")
+	}
+}
+
+func copiedFiniteAudioTime(t *testing.T, value string) float64 {
+	t.Helper()
+	parsed, err := strconv.ParseFloat(value, 64)
+	if err != nil || math.IsNaN(parsed) || math.IsInf(parsed, 0) {
+		t.Fatal("malformed AAC packet timestamp or duration")
+	}
+	return parsed
 }

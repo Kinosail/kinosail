@@ -131,7 +131,11 @@ func refillCopiedHLSMedia(t *testing.T, config server.Config, ffmpeg, ffprobe, b
 	if err := os.Remove(target); err != nil {
 		t.Fatal(err)
 	}
-	complete := bytes.Clone(initialization)
+	refilledInitialization := speedTestGET(t, t.Context(), h, base+"init.mp4")
+	if !bytes.Equal(initialization, refilledInitialization) {
+		t.Fatal("valid cached initialization changed while a different fragment was evicted")
+	}
+	complete := bytes.Clone(refilledInitialization)
 	for _, segment := range segments {
 		data := speedTestGET(t, t.Context(), h, base+segment)
 		complete = append(complete, data...)

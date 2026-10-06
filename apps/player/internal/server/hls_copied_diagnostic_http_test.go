@@ -36,9 +36,29 @@ func retainCopiedFailureFacts(t *testing.T, ffmpeg, ffprobe, source, cache strin
 		}
 		copiedSourcePacketFacts(t, ctx, ffprobe, source)
 		copiedSourceStreamFacts(t, ctx, ffprobe, source)
+		copiedAbsoluteSeekFacts(t, ctx, ffmpeg, source)
 		copiedCertificateFacts(t, cache)
 		copiedOperationFacts(t, logs)
 	})
+}
+
+// This external-tool contrast diagnoses file-start versus absolute input -ss.
+// It is failure evidence, not an application correctness assertion or repair.
+func copiedAbsoluteSeekFacts(t *testing.T, ctx context.Context, ffmpeg, source string) {
+	t.Helper()
+	for _, absolute := range []string{"0", "1"} {
+		command := exec.CommandContext(ctx, ffmpeg, "-v", "error", "-ss", "8", "-seek_timestamp", absolute, "-i", source, "-map", "0:v:0", "-c:v", "copy", "-copypriorss", "0", "-frames:v", "1", "-f", "framecrc", "-") //nolint:gosec // Fixed seek and owned synthetic source.
+		data, err := command.Output()
+		if err != nil {
+			t.Logf("copied absolute seek contrast unavailable: absolute=%s", absolute)
+			continue
+		}
+		for _, line := range strings.Split(string(data), "\n") {
+			if len(line) <= 160 && (strings.HasPrefix(line, "#tb ") || strings.HasPrefix(line, "0,")) {
+				t.Logf("copied absolute seek contrast: absolute=%s %s", absolute, line)
+			}
+		}
+	}
 }
 
 func copiedSourcePacketFacts(t *testing.T, ctx context.Context, ffprobe, source string) {

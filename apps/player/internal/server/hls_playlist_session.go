@@ -42,7 +42,7 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 			return
 		}
 	}
-	if filepath.Base(name) == "index.m3u8" || cachedErr == nil {
+	if filepath.Base(name) == "index.m3u8" || cachedErr == nil && filepath.Ext(name) != ".m4s" {
 		if !manager.prepareRecipePlaylist(writer, request, item, recipe) {
 			return
 		}
