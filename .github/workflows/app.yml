@@ -249,19 +249,6 @@ jobs:
           build-args: |
             VERSION=ci
             REVISION=${{ github.sha }}
-      - name: Test populated browsers
-        working-directory: apps/${{ inputs.app }}
-        env:
-          CONTAINER_ENGINE: docker
-          KINOSAIL_BROWSER_TEST: "1"
-          KINOSAIL_BROWSER_MATRIX: ${{ fromJSON(inputs.plan).deep && 'full' || '' }}
-          KINOSAIL_BROWSER_PROJECT: ${{ matrix.engine }}
-          KINOSAIL_BROWSER_SMOKE: ${{ !fromJSON(inputs.plan).deep && '1' || '' }}
-          KINOSAIL_BROWSER_WORKERS: ${{ inputs.app == 'player' && '3' || '1' }}
-          KINOSAIL_E2E_OUTPUT_DIR: ${{ runner.temp }}/${{ inputs.app }}-${{ matrix.engine }}-e2e-artifact/browser-results
-          KINOSAIL_TEST_IMAGE: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
-          KINOSAIL_TEST_IMAGE_READY: "1"
-        run: python3 ../../scripts/ci/e2e-artifact.py --output "${{ runner.temp }}/${{ inputs.app }}-${{ matrix.engine }}-e2e-artifact" -- ./scripts/test-container.sh
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         if: inputs.app == 'player' && matrix.engine == 'chromium'
         with:
@@ -275,6 +262,53 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends "$RUNNER_TEMP/startup-ffmpeg.deb"
           echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
+      - name: Test populated browsers
+        working-directory: apps/${{ inputs.app }}
+        env:
+          CONTAINER_ENGINE: docker
+          KINOSAIL_BROWSER_TEST: "1"
+          KINOSAIL_BROWSER_MATRIX: ${{ fromJSON(inputs.plan).deep && 'full' || '' }}
+          KINOSAIL_BROWSER_PROJECT: ${{ matrix.engine }}
+          KINOSAIL_BROWSER_SMOKE: ${{ !fromJSON(inputs.plan).deep && '1' || '' }}
+          KINOSAIL_BROWSER_WORKERS: ${{ inputs.app == 'player' && '3' || '1' }}
+          KINOSAIL_E2E_OUTPUT_DIR: ${{ runner.temp }}/${{ inputs.app }}-${{ matrix.engine }}-e2e-artifact/browser-results
+          KINOSAIL_TEST_IMAGE: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
+          KINOSAIL_TEST_IMAGE_READY: "1"
+        run: python3 ../../scripts/ci/e2e-artifact.py --output "${{ runner.temp }}/${{ inputs.app }}-${{ matrix.engine }}-e2e-artifact" -- ./scripts/test-container.sh
+      - name: Verify cold and damaged HLS cache reopen
+        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        env:
+          GOMAXPROCS: "2"
+        run: python3 apps/player/scripts/test-hls-cache-reopen.py
+      - name: Keep safe HLS cache reopen evidence
+        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: player-hls-cache-reopen-evidence
+          include-hidden-files: true
+          path: |
+            .verification/hls-cache-reopen/*/receipt.json
+            .verification/hls-cache-reopen/*/SHA256SUMS
+          retention-days: 14
+          if-no-files-found: error
+      - name: Verify prepared copied-video timeline
+        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        env:
+          GOMAXPROCS: "2"
+        run: |
+          python3 -B apps/player/scripts/test_hls_timeline_packets.py
+          python3 apps/player/scripts/test-hls-prepared-timeline.py
+      - name: Keep safe prepared timeline evidence
+        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: player-prepared-timeline-evidence
+          include-hidden-files: true
+          path: |
+            .verification/hls-prepared-timeline/*/receipt.json
+            .verification/hls-prepared-timeline/*/SHA256SUMS
+          retention-days: 14
+          if-no-files-found: error
       - name: Verify HLS source-version freshness
         if: inputs.app == 'player' && matrix.engine == 'chromium'
         env:

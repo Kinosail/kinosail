@@ -18,7 +18,10 @@ const startupQueueLimit = 3
 type startupEncodingKey struct{}
 
 // Shared ownership exists before an encoder so playback can adopt cache refills.
-type startupEncoding struct{ adopted atomic.Bool }
+type startupEncoding struct {
+	adopted  atomic.Bool
+	timeline *copiedHLSTimeline
+}
 
 type startupRequest struct {
 	request  *http.Request
