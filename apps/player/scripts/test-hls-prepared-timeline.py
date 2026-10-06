@@ -36,6 +36,13 @@ def check(condition, failure):
         raise RuntimeError(failure)
 
 
+def bounded_bytes(path, limit, failure):
+    with path.open("rb") as file:
+        data = file.read(limit + 1)
+    check(0 < len(data) <= limit, failure)
+    return data
+
+
 def fixture(name, gop, keys):
     path = RUN / (name + ".mkv")
     command = ["ffmpeg", "-nostdin", "-v", "error", "-f", "lavfi", "-i", "testsrc2=s=640x360:r=24:d=96",
@@ -148,9 +155,9 @@ def journey(name, original, metadata):
                 and (root / ".startup").exists(), "prepared_worker_not_joined")
             physical = list(root.glob("*p/index.m3u8"))
             check(len(physical) == 1, "single_prepared_rendition")
-            prepared_facts, _ = manifest_facts(physical[0].read_bytes())
-            prepared_init = (physical[0].parent / "init.mp4").read_bytes()
-            check(0 < len(prepared_init) <= 2 * 1024 * 1024, "prepared_initialization_bound")
+            prepared_facts, _ = manifest_facts(bounded_bytes(physical[0], 1024 * 1024, "prepared_manifest_bound"))
+            prepared_init = bounded_bytes(physical[0].parent / "init.mp4", 2 * 1024 * 1024,
+                "prepared_initialization_bound")
             case["preparedInitSHA256"] = hashlib.sha256(prepared_init).hexdigest()
             case["beforeFirstHLSGET"] = {"ownedFFmpeg": 0, "seekableMarker": True, "startupMarker": True,
                 "authenticatedMediaGETs": 0, "stoppedSamples": stopped_samples, "physicalVariant": prepared_facts}
