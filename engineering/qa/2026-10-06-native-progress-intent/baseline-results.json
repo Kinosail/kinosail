@@ -1,0 +1,47 @@
+{
+  "completedUTC": "2026-10-06T20:19:08.199567+00:00",
+  "PR479SourceSHA": "6cd20174578d4a4bef3592875d01922430f61281",
+  "e30SourceSHA": "e30de246899d583802d08038cf8623f34bc2eaa4",
+  "specSHA256": "1c02bb017e97ef8616bbbdb714315f689dffbba516c3b00c39f8396012a98f3b",
+  "productGREEN": false,
+  "validExpectedRED": true,
+  "sourceOwnership": "PR479 owner01a108db/implementation01a108dd retains production changes",
+  "cases": [
+    "Unplayed zero-clock Watch/Library preserves public progress",
+    "Same-dispatch preparation playing does not confer activity",
+    "Queued preparation playing after canplay does not confer activity",
+    "Native first zero seek supersedes unfinished automatic source restore and saves",
+    "Native first nonzero seek supersedes unfinished automatic source restore and saves"
+  ],
+  "runs": [
+    {
+      "name": "e30",
+      "project": "chromium",
+      "startUTC": "2026-10-06T20:17:51.933Z",
+      "durationMs": 11554.7,
+      "pass": 0,
+      "semanticRED": 1
+    },
+    {
+      "name": "6cd-chromium",
+      "project": "chromium",
+      "startUTC": "2026-10-06T20:18:05.860Z",
+      "durationMs": 53484.011,
+      "pass": 1,
+      "semanticRED": 4
+    },
+    {
+      "name": "6cd-webkit",
+      "project": "webkit",
+      "startUTC": "2026-10-06T20:19:01.716Z",
+      "durationMs": 6356.559,
+      "pass": 1,
+      "semanticRED": 4
+    }
+  ],
+  "pageErrors": 0,
+  "productionEdits": false,
+  "NoxRequests": 0,
+  "physicalDeviceProof": false,
+  "requiredFollowup": "Owner exact repair, focused GREEN, independent492 safeguards and protected required checks; no deployment implied"
+}
