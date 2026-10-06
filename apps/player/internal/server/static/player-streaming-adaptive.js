@@ -43,7 +43,7 @@ const useOriginal = (forcePlay = false, retainedTime) => {
   if (qualityState) qualityState.textContent = "Original";
   showPlaybackMode(false, true);
 };
-const streamOffset = (seconds) => fullDuration && seconds >= 0.1 && seconds < fullDuration ? Math.floor(seconds * 10) / 10 : 0;
+const streamOffset = (seconds) => Number.isFinite(seconds) && seconds >= 0.1 && seconds <= 604800 && (!fullDuration || seconds < fullDuration) ? Math.floor(seconds * 10) / 10 : 0;
 const streamAt = (seconds) => {
   const offset = streamOffset(seconds);
   const source = new URL(stream, playbackURLBase);
@@ -152,11 +152,16 @@ const startAdaptive = async (resume = false) => {
       if (resume) resumeAfterSourceChange(false, true, target);
       const selected = streamAt(target);
       adaptiveActive = true;
+      adaptiveSeekSwitch = resume;
       playbackTimelineOffset = selected.offset;
-      playbackTimelineSeek = undefined;
+      // Keep old decoder events from reporting its clock plus the new offset.
+      playbackTimelineSeek = selected.offset || target === 0 ? target : undefined;
       playbackTraceMethod = "native-hls";
       playbackTrace("source-compatible", "native-hls");
-      player.addEventListener("loadedmetadata", () => { adaptiveSeekSwitch = false; }, {once: true});
+      player.addEventListener("loadedmetadata", () => {
+        if (generation !== adaptiveGeneration) return;
+        adaptiveSeekSwitch = false; playbackTimelineSeek = undefined;
+      }, {once: true});
       player.src = selected.source;
       player.load();
     } else {
