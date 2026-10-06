@@ -18,6 +18,13 @@ class WorkflowSecurityTests(unittest.TestCase):
         self.assertIn('sha256sum --check', step)
         self.assertIn('echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"', step)
 
+    def test_subtitles_full_browser_selection_covers_progress_restoration(self):
+        # Explicit fixture selection otherwise leaves the new regression local-only.
+        script = (ROOT / 'apps/subtitles/scripts/test-container.sh').read_text()
+        selection = re.search(r'^  browser_args=\(([^)]+)\)', script, re.M)
+        self.assertIsNotNone(selection)
+        self.assertIn('player-unplayed-progress.spec.ts', selection.group(1).split())
+
     def test_startup_boundary_has_hosted_public_interface_evidence(self):
         app = (WORKFLOWS / 'app.yml').read_text()
         self.assertIn('name: Verify bounded startup and request boundary', app)

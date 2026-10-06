@@ -114,4 +114,3 @@ export async function installRadioCancellation(page: Page) {
   expect(writes).toEqual([]);
   return {writes, errors, adapterRequests, stored};
 }
-
