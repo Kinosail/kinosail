@@ -144,6 +144,8 @@ def journey(name, original, metadata, offset=0):
             case["mode"] = plan["compatiblePlan"]["mode"]
             check(case["mode"] == "remux", "fixture_must_remux")
             case["logicalDurationSeconds"] = plan["duration"]
+            file_version = plan.get("media", {}).get("fileVersion", "")
+            case["selectedSourceSnapshotMatches"] = file_version == str(before["sizeBytes"]) + ":" + before["mtimeNanoseconds"]
             check(abs(plan["duration"] - metadata["durationSeconds"]) < 0.1, "plan_duration")
             hls = plan["compatible"]
             if offset:
@@ -172,6 +174,11 @@ def journey(name, original, metadata, offset=0):
             roots = [p for p in cache.iterdir() if p.name.startswith(item_id + "-plan-")]
             check(len(roots) == 1, "one_exact_recipe_cache")
             root = roots[0]
+            recipe_token = hls.split("/p/", 1)[1].split("/", 1)[0]
+            case["preparedRecipeMatches"] = root.name == item_id + "-plan-" + recipe_token
+            suffix = re.search(r"-o([0-9]+)$", root.name)
+            case["preparedRecipeOffsetMilliseconds"] = int(suffix[1]) if suffix else 0
+            check(case["preparedRecipeMatches"], "prepared_recipe_identity")
             limit, stopped_samples = time.monotonic() + 10, 0
             while time.monotonic() < limit:
                 stopped = encoder_count(server, source) == 0 and (root / ".seekable").exists() and (root / ".startup").exists()
@@ -276,6 +283,20 @@ def journey(name, original, metadata, offset=0):
             except subprocess.TimeoutExpired:
                 server.kill()
                 server.wait()
+            log.flush()
+            private_log = bounded_bytes(directory / "server.log", 2 * 1024 * 1024, "private_log_bound").decode("utf-8")
+            starts = []
+            for line in private_log.splitlines():
+                if 'msg="HLS transcode started"' not in line:
+                    continue
+                values = {key: re.search(r"\b" + key + r"=(-?[0-9]+)\b", line)
+                    for key in ["input_seek_ms", "segment_start"]}
+                mode = re.search(r"\bmode=(remux|audio-transcode|transcode)\b", line)
+                work = re.search(r"\bwork_class=(background|playback)\b", line)
+                if all(values.values()) and mode and work:
+                    starts.append({key: int(value[1]) for key, value in values.items()} | {"mode": mode[1], "workClass": work[1]})
+            case["encoderStarts"] = starts[:32]
+            case["encoderStartsBounded"] = len(starts) <= 32
             after = source_state(source)
             case["sourceAfter"] = after
             case["sourceUnchanged"] = before == after
