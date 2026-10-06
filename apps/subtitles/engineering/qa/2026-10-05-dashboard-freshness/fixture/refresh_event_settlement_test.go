@@ -65,18 +65,7 @@ func (stream *r16CapturedStream) StopAndJoin(ctx context.Context) bool {
 
 func (target *r16Target) stop(ctx context.Context) bool {
 	target.stopOnce.Do(func() {
-		target.mu.Lock()
-		streams := make([]*r16CapturedStream, 0, len(target.streams))
-		for stream := range target.streams {
-			streams = append(streams, stream)
-		}
-		target.mu.Unlock()
-		streamsJoined := true
-		readersJoined := true
-		for _, stream := range streams {
-			streamsJoined = stream.StopAndJoin(ctx) && streamsJoined
-			readersJoined = stream.joined() && readersJoined
-		}
+		streamsJoined, readersJoined := target.joinStreams(ctx)
 		if target.client != nil {
 			target.client.CloseIdleConnections()
 		}
@@ -135,4 +124,20 @@ func (target *r16Target) waitRequests(ctx context.Context) bool {
 			return false
 		}
 	}
+}
+
+func (target *r16Target) joinStreams(ctx context.Context) (bool, bool) {
+	target.mu.Lock()
+	streams := make([]*r16CapturedStream, 0, len(target.streams))
+	for stream := range target.streams {
+		streams = append(streams, stream)
+	}
+	target.mu.Unlock()
+	streamsJoined := true
+	readersJoined := true
+	for _, stream := range streams {
+		streamsJoined = stream.StopAndJoin(ctx) && streamsJoined
+		readersJoined = stream.joined() && readersJoined
+	}
+	return streamsJoined, readersJoined
 }

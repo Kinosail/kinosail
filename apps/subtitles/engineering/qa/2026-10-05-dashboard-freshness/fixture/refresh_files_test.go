@@ -1,6 +1,8 @@
 package main
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"errors"
 	"io"
 	"os"
@@ -120,7 +122,21 @@ func r16AllocateRoot(parent string) (string, error) {
 	if parent == "" {
 		return os.MkdirTemp("", "kinosail-r16-public-")
 	}
-	return os.MkdirTemp(filepath.Clean(parent), "kinosail-r16-public-")
+	suffix := make([]byte, 16)
+	if _, err := rand.Read(suffix); err != nil {
+		return "", errors.New("owned R16 directory identity unavailable")
+	}
+	root, err := os.OpenRoot(parent)
+	if err != nil {
+		return "", errors.New("owned R16 parent root unavailable")
+	}
+	name := "kinosail-r16-public-" + hex.EncodeToString(suffix)
+	createErr := root.Mkdir(name, 0o700)
+	closeErr := root.Close()
+	if errors.Join(createErr, closeErr) != nil {
+		return "", errors.New("owned R16 retained child unavailable")
+	}
+	return filepath.Join(parent, name), nil
 }
 
 func r16ValidateParent(parent string) error {

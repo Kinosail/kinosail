@@ -35,14 +35,15 @@ func newR16PublicFixture(t *testing.T, providerEnabled bool) r16PublicFixture {
 			t.Error("owned R16 fixture cleanup did not settle")
 		}
 	})
-	if !f.initialize(t, lifecycle, providerEnabled) {
+	if !f.initialize(t, providerEnabled) {
 		t.Fatal("owned R16 public fixture prerequisites were not established")
 	}
 	return f
 }
 
-func (f *r16Fixture) initialize(t *testing.T, lifecycle context.Context, providerEnabled bool) bool {
+func (f *r16Fixture) initialize(t *testing.T, providerEnabled bool) bool {
 	t.Helper()
+	lifecycle := f.target.lifecycle
 	files, err := r16CreateFiles(providerEnabled)
 	if err != nil {
 		return false

@@ -57,27 +57,17 @@ func (target *r16Target) openEvents(parent context.Context, cursor string, heade
 }
 
 func (target *r16Target) beginStream(ctx context.Context, stream *r16CapturedStream, cursor string, budget time.Duration) bool {
-	endpoint, err := target.endpoint(http.MethodGet, "/api/v1/events")
-	if err != nil || target.client == nil {
-		return false
-	}
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, nil)
+	request, err := target.eventRequest(ctx, cursor)
 	if err != nil {
-		return false
-	}
-	target.headers(request, r16Owner)
-	request.Header.Set("Accept", "text/event-stream")
-	if cursor != "" {
-		request.Header.Set("Last-Event-ID", cursor)
-	}
-	if !target.admitted(request) {
 		return false
 	}
 	timer := time.AfterFunc(budget, stream.cancel)
 	response, requestErr := target.client.Do(request)
 	stopped := timer.Stop()
 	if requestErr != nil {
-		target.failedStreamResponse(response)
+		if response != nil && response.Body.Close() != nil {
+			target.fail()
+		}
 		return false
 	}
 	stream.response = response
@@ -137,7 +127,6 @@ func r16AddFrameLine(frame *r16Frame, line string) bool {
 	default:
 		return false
 	}
-	return true
 }
 
 func (stream *r16CapturedStream) publish(ctx context.Context, frame r16Frame) bool {
@@ -202,8 +191,22 @@ func r16FrameData(frame *r16Frame, value string) bool {
 	return true
 }
 
-func (target *r16Target) failedStreamResponse(response *http.Response) {
-	if r16CloseFailedResponse(response) != nil {
-		target.fail()
+func (target *r16Target) eventRequest(ctx context.Context, cursor string) (*http.Request, error) {
+	endpoint, err := target.endpoint(http.MethodGet, "/api/v1/events")
+	if err != nil || target.client == nil {
+		return nil, errors.New("owned R16 event request unavailable")
 	}
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, nil)
+	if err != nil {
+		return nil, errors.New("owned R16 event request unavailable")
+	}
+	target.headers(request, r16Owner)
+	request.Header.Set("Accept", "text/event-stream")
+	if cursor != "" {
+		request.Header.Set("Last-Event-ID", cursor)
+	}
+	if !target.admitted(request) {
+		return nil, errors.New("owned R16 event request unavailable")
+	}
+	return request, nil
 }
