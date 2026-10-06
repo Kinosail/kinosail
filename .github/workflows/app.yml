@@ -279,7 +279,9 @@ jobs:
         if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
         env:
           GOMAXPROCS: "2"
-        run: python3 apps/player/scripts/test-hls-prepared-timeline.py
+        run: |
+          python3 -B apps/player/scripts/test_hls_timeline_packets.py
+          python3 apps/player/scripts/test-hls-prepared-timeline.py
       - name: Keep safe prepared timeline evidence
         if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
@@ -289,6 +291,22 @@ jobs:
           path: |
             .verification/hls-prepared-timeline/*/receipt.json
             .verification/hls-prepared-timeline/*/SHA256SUMS
+          retention-days: 14
+          if-no-files-found: error
+      - name: Verify cold and damaged HLS cache reopen
+        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        env:
+          GOMAXPROCS: "2"
+        run: python3 apps/player/scripts/test-hls-cache-reopen.py
+      - name: Keep safe HLS cache reopen evidence
+        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: player-hls-cache-reopen-evidence
+          include-hidden-files: true
+          path: |
+            .verification/hls-cache-reopen/*/receipt.json
+            .verification/hls-cache-reopen/*/SHA256SUMS
           retention-days: 14
           if-no-files-found: error
       - name: Verify HLS source-version freshness

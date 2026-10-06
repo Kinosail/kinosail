@@ -164,6 +164,9 @@ def journey(name, original, metadata, offset=0, cold=False):
                     packet_facts["segment"] = filename
                     packet_facts["advertisedSeconds"] = advertised_lengths[filename]
                     packet_facts.update(fragment_audio(fragment))
+                    if (not packet_facts["audioPacketOrderValid"] or packet_facts["maximumAudioGapSeconds"] > 0.05
+                            or packet_facts["maximumAudioOverlapSeconds"] > 0.05):
+                        case["failures"].append("interior_audio_discontinuity")
                     if abs(packet_facts["firstAudioTime"] - packet_facts["firstVideoTime"]) > 0.15:
                         case["failures"].append("fragment_audio_video_start")
                     if previous_audio_end is not None and abs(packet_facts["firstAudioTime"] - previous_audio_end) > 0.05:

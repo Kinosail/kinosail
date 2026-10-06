@@ -97,13 +97,24 @@ def fragment_audio(path):
     if result.returncode or len(result.stdout) > 2 * 1024 * 1024:
         raise RuntimeError("public_audio_probe")
     packets = json.loads(result.stdout).get("packets", [])
+    return audio_packet_facts(packets)
+
+
+def audio_packet_facts(packets):
     if not 0 < len(packets) < 4096:
         raise RuntimeError("public_audio_packet_bound")
     points, ends = [], []
     for packet in packets:
-        point, duration = float(packet["pts_time"]), float(packet["duration_time"])
+        try:
+            point, duration = float(packet["pts_time"]), float(packet["duration_time"])
+        except (KeyError, TypeError, ValueError):
+            raise RuntimeError("public_audio_packet_timing") from None
         if not math.isfinite(point) or not math.isfinite(duration) or duration <= 0:
             raise RuntimeError("public_audio_packet_timing")
         points.append(point)
         ends.append(point + duration)
-    return {"audioPackets": len(packets), "firstAudioTime": min(points), "lastAudioEnd": max(ends)}
+    adjacent = [point - end for point, end in zip(points[1:], ends[:-1])]
+    return {"audioPackets": len(packets), "firstAudioTime": min(points), "lastAudioEnd": max(ends),
+        "audioPacketOrderValid": all(a < b for a, b in zip(points, points[1:])),
+        "maximumAudioGapSeconds": max([0] + adjacent),
+        "maximumAudioOverlapSeconds": max([0] + [-value for value in adjacent])}
