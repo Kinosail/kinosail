@@ -56,7 +56,7 @@ func TestPlannedHLSDeliversTheTransformationChosenByPlaybackPlanning(t *testing.
 			if playlist.Code != http.StatusOK || err != nil {
 				t.Fatalf("planned HLS = %d arguments=%q err=%v", playlist.Code, used, err)
 			}
-			if !strings.Contains(playlist.Body.String(), ":hls=13") {
+			if !strings.Contains(playlist.Body.String(), ":hls=14") {
 				t.Fatalf("planned HLS cache version is stale: %q", playlist.Body.String())
 			}
 			for _, value := range test.want {
