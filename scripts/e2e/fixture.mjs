@@ -10,7 +10,7 @@ const runtime = Object.fromEntries(['PATH', 'TMPDIR', 'TMP', 'TEMP', 'LANG', 'LC
 const root = mkdtempSync(join(tmpdir(), `kinosail-e2e-${app}-`));
 for (const dir of ['media/Movies', 'data', 'cache', 'backups']) mkdirSync(join(root, dir), { recursive: true });
 const media = join(root, 'media/Movies');
-const generated = spawnSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-f', 'lavfi', '-i', 'testsrc2=size=320x180:rate=24', '-f', 'lavfi', '-i', 'sine=frequency=220:sample_rate=48000', '-t', '16', '-c:v', 'libx264', '-preset', 'ultrafast', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-movflags', '+faststart', join(media, 'Example Movie.mp4')], { stdio: 'inherit', env: runtime });
+const generated = spawnSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-f', 'lavfi', '-i', 'testsrc2=size=320x180:rate=24', '-f', 'lavfi', '-i', 'sine=frequency=220:sample_rate=48000', '-t', '16', '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '30', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-movflags', '+faststart', join(media, 'Example Movie.mp4')], { stdio: 'inherit', env: runtime });
 if (generated.status !== 0) { rmSync(root, { recursive: true, force: true }); throw new Error('FFmpeg fixture failed'); }
 writeFileSync(join(media, 'Example Movie.en.srt'), '1\n00:00:00,000 --> 00:00:03,000\nExample dialogue.\n\n2\n00:00:03,500 --> 00:00:07,000\nA second line.\n');
 if (app === 'player') {

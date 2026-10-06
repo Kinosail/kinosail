@@ -132,10 +132,18 @@ class E2EFixtureTests(unittest.TestCase):
             ffmpeg.chmod(0o755)
             receipt = root / "started.json"
             app = tools / "app"
+            # Interrupt a direct receipt replacement before the strict reader
+            # can parse it; publishing a complete sibling then renaming is safe.
             app.write_text("#!" + sys.executable + "\nimport json, os, time\nfrom pathlib import Path\n"
-                "data = Path(os.environ['KINOSAIL_DATA_DIR'])\n"
+                + f"receipt = Path({str(receipt)!r})\n"
+                + "write_text = Path.write_text\ndef interrupted_write(path, contents, *args, **kwargs):\n"
+                + "    if path == receipt and path.exists():\n        path.open('w').close()\n        json.loads(path.read_text())\n"
+                + "    return write_text(path, contents, *args, **kwargs)\nPath.write_text = interrupted_write\n"
+                + "data = Path(os.environ['KINOSAIL_DATA_DIR'])\n"
                 "marker = data / 'persistent'\nmarker.write_text(marker.read_text() if marker.exists() else 'original')\n"
-                + f"Path({str(receipt)!r}).write_text(json.dumps({{'pid':os.getpid(),'data':str(data),'marker':marker.read_text()}}))\n"
+                + "pending = receipt.with_suffix('.pending')\n"
+                + "pending.write_text(json.dumps({'pid':os.getpid(),'data':str(data),'marker':marker.read_text()}))\n"
+                + "pending.replace(receipt)\n"
                 + "while True: time.sleep(0.1)\n")
             app.chmod(0o755)
             env = {key: os.environ[key] for key in SAFE if key in os.environ}
