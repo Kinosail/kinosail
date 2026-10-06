@@ -208,7 +208,7 @@ finally:
     target = RUN / 'receipt.json'
     target.write_text(json.dumps(receipt, indent=2, allow_nan=False) + '\n')
     files = [Path(__file__)] + [Path(__file__).with_name(n) for n in
-        ['hls_followon_public.py', 'hls_followon_frames.py', 'hls_followon_controls.py', 'hls_timeline_http.py',
+        ['hls_followon_public.py', 'hls_followon_frames.py', 'hls_followon_controls.py', 'hls_followon_hevc.py', 'hls_timeline_http.py',
          'hls_timeline_packets.py', 'hls_timeline_fixture.py', 'hls_timeline_preparation.py']]
     checksums = {str(p.relative_to(ROOT)): sha(p) for p in files} | {'receipt.json': sha(target)}
     (RUN / 'SHA256SUMS').write_text(''.join(f'{v}  {k}\n' for k, v in checksums.items()))

@@ -7,9 +7,10 @@ import subprocess
 import threading
 import time
 from hls_timeline_http import PublicServer, source_state
-from hls_timeline_packets import manifest_facts, safe_encoder_lifecycle
+from hls_timeline_packets import manifest_facts, safe_encoder_lifecycle, safe_seek_phases
 from hls_timeline_preparation import prepare_scene
 from hls_followon_public import check, bounded_bytes, encoder_count, sample_resources, prepare_once
+from hls_followon_hevc import evidence, seek_diagnostics
 
 
 def controls(root, run, binary, receipt):
@@ -114,6 +115,14 @@ def controls(root, run, binary, receipt):
                     '-map', '0:a:0', '-ac', '1', '-ar', '16000', '-f', 's16le', '-'], timeout=30)
                 check(0 < len(source_pcm) <= 512 * 1024 and len(source_pcm) % 2 == 0, 'control_source_audio_bound')
                 case['sourceAudioSamples'] = len(source_pcm) // 2
+                if hevc:
+                    evidence(source, joined, case)
+                if name == 'hevc-cold':
+                    try:
+                        seek_diagnostics(source, joined, directory, case)
+                    except Exception as error:
+                        case.setdefault('offlineSeekDiagnostic', {})['failureClass'] = (
+                            str(error) if isinstance(error, RuntimeError) else type(error).__name__)
                 check(9.8 * 16000 * 2 <= len(pcm) <= 10.2 * 16000 * 2, 'control_audio_duration')
                 check(abs(len(pcm) - len(source_pcm)) <= 0.1 * 16000 * 2, 'control_audio_sample_count')
                 check(all(p['packets'] for p in case['fragmentAudioPackets']), 'control_fragment_audio_missing')
@@ -135,6 +144,7 @@ def controls(root, run, binary, receipt):
                     server.wait(timeout=5)
                 log.flush()
                 private = bounded_bytes(log_path, 2 * 1024 * 1024, 'control_private_log_bound').decode()
+                case.update(safe_seek_phases(private))
                 lifecycle = safe_encoder_lifecycle(private)
                 case['encoderLifecycle'] = lifecycle
                 case['workerBound'] = (resources['samples'] > 0 and resources['samplingErrors'] == 0
