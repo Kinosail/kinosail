@@ -3,7 +3,14 @@
 export function navigationDiagnostics(page, baseURL) {
   const pending = new Map(), failed = [], mainFrameResponses = [], started = performance.now();
   let origin;
-  try {if(typeof baseURL==="string"&&baseURL.length<=2048){const url=new URL(baseURL);if(["http:","https:"].includes(url.protocol)&&!url.username&&!url.password)origin=url.origin;}} catch {}
+  try {
+    if (typeof baseURL === "string" && baseURL.length <= 2048) {
+      const url = new URL(baseURL);
+      if (["http:", "https:"].includes(url.protocol) && !url.username && !url.password) {
+        origin = url.origin;
+      }
+    }
+  } catch {}
   const owned = value => {
     try {
       if (typeof value !== "string" || value.length > 2048) return;
@@ -28,8 +35,11 @@ export function navigationDiagnostics(page, baseURL) {
     if (failed.length < 20) failed.push(metadata(request));
   };
   const response = value => {
-    const request=value.request(),status=value.status();
-    if(request.isNavigationRequest()&&request.frame()===page.mainFrame()&&Number.isInteger(status)&&status>=100&&status<=599&&mainFrameResponses.length<20)mainFrameResponses.push({path:path(value.url()),status});
+    const request = value.request(), status = value.status();
+    if (request.isNavigationRequest() && request.frame() === page.mainFrame() &&
+        Number.isInteger(status) && status >= 100 && status <= 599 && mainFrameResponses.length < 20) {
+      mainFrameResponses.push({path: path(value.url()), status});
+    }
   };
   page.on("request",start); page.on("requestfinished",finish); page.on("requestfailed",fail);page.on("response",response);
   return {
@@ -52,8 +62,16 @@ export function navigationDiagnostics(page, baseURL) {
 }
 function diagnosticErrorCategory(error) {
   if (!error) return "none";
-  if(error.name==="TimeoutError")return "timeout";
-  if(typeof error.message!=="string"||error.message.length>8192)return "other";
-  for(const [category,patterns] of [["certificate",["ERR_CERT_AUTHORITY_INVALID","SEC_ERROR_UNKNOWN_ISSUER"]],["refused",["ERR_CONNECTION_REFUSED","NS_ERROR_CONNECTION_REFUSED"]],["interrupted",["ERR_ABORTED","NS_BINDING_ABORTED"]],["closed",["Target page, context or browser has been closed"]]])if(patterns.some(value=>error.message.includes(value)))return category;
+  if (error.name === "TimeoutError") return "timeout";
+  if (typeof error.message !== "string" || error.message.length > 8192) return "other";
+  const categories = [
+    ["certificate", ["ERR_CERT_AUTHORITY_INVALID", "SEC_ERROR_UNKNOWN_ISSUER"]],
+    ["refused", ["ERR_CONNECTION_REFUSED", "NS_ERROR_CONNECTION_REFUSED"]],
+    ["interrupted", ["ERR_ABORTED", "NS_BINDING_ABORTED"]],
+    ["closed", ["Target page, context or browser has been closed"]],
+  ];
+  for (const [category, patterns] of categories) {
+    if (patterns.some(value => error.message.includes(value))) return category;
+  }
   return "other";
 }
