@@ -68,6 +68,8 @@ def fixture(name, gop, keys, rate="24", frames=2304, extension=".mkv"):
     expected = [float(v) for v in keys.split(",")]
     check(len(times) == len(expected) and all(abs(a-b) < 0.05 for a, b in zip(times, expected)), "fixture_keyframes")
     check(abs(duration - expected_duration) < 0.1, "fixture_duration")
+    if name == "fractional15s":
+        check(any(abs(v - round(v, 3)) > 0.00001 for v in times), "fixture_submillisecond_keyframe")
     return path, {"command": command, "sha256": sha(path), "durationSeconds": duration, "videoDurationSeconds": expected_duration, "frameRate": frame_rate,
         "videoFrames": frames, "keyframesSeconds": times}
 
@@ -295,7 +297,7 @@ try:
         journey(name, source, metadata)
         if name == "cluster15s":
             journey(name + "resume15s", source, metadata, 15)
-    source, metadata = fixture("fractional15s", 3000, "0,15.015,16.016,18.018,36.036,60.06,84.084",
+    source, metadata = fixture("fractional15s", 3000, "0,15.0483,16.0493,18.0513,36.0693,60.0933,84.1173",
         "30000/1001", 2880, ".mp4")
     journey("fractional15s", source, metadata)
     if len(receipt["cases"]) == 5 and all(case["result"] == "passed" for case in receipt["cases"]):
