@@ -2,6 +2,7 @@
 import copy
 import unittest
 from hls_nonkey_renderer import renderer_facts
+import hls_nonkey_renderer
 
 
 def capture(count, first=0):
@@ -31,12 +32,13 @@ class RendererIntegrity(unittest.TestCase):
             self.assertFalse(facts['requestedIdentityMatches'])
 
     def test_duplicate_hash_clock_skipped_counter_and_decoder_fault_remain_unqualified(self):
-        for fault in ['hash', 'clock', 'counter', 'ended', 'errorCode', 'captureErrors']:
+        for fault in ['hash', 'clock', 'counter', 'ended', 'errorCode', 'captureErrors', 'failureClass']:
             public = capture(2, 2)
             if fault == 'hash': public['rows'][1][2] = public['rows'][0][2]
             elif fault == 'clock': public['rows'][1][0] = public['rows'][0][0]
             elif fault == 'counter': public['rows'][1][1] += 1
             elif fault == 'ended': public['ended'] = False
+            elif fault == 'failureClass': public['failureClass'] = 'renderer_deadline'
             else: public[fault] = 1
             with self.subTest(fault=fault):
                 facts = renderer_facts(capture(4), public, [n / 24 for n in range(4)], 2 / 24)
@@ -79,6 +81,27 @@ class RendererIntegrity(unittest.TestCase):
         facts = renderer_facts(capture(4), public, [n / 24 for n in range(4)], 2 / 24)
         self.assertTrue(facts['requestedIdentityMatches'])
         self.assertFalse(facts['publicSourceClockMatches'])
+
+    def test_all_initializations_and_unchanged_reference_are_required(self):
+        network = {'master': 200, 'variant': 200, 'initializationSHA256s': ['a' * 64],
+            'successfulFragments': 10, 'unexpectedMediaRequests': 0, 'failedMediaResponses': 0}
+        self.assertTrue(hls_nonkey_renderer.renderer_delivery_matches(network, 'a' * 64, 10, True))
+        self.assertFalse(hls_nonkey_renderer.renderer_delivery_matches(network, 'a' * 64, 10, False))
+        network['initializationSHA256s'] = ['b' * 64, 'a' * 64]
+        self.assertFalse(hls_nonkey_renderer.renderer_delivery_matches(network, 'a' * 64, 10, True))
+        network['initializationSHA256s'] = []
+        self.assertFalse(hls_nonkey_renderer.renderer_delivery_matches(network, 'a' * 64, 10, True))
+
+    def test_complete_pixels_do_not_waive_failed_process_or_unjoined_browser(self):
+        process = {'exitCode': 0, 'timedOut': False, 'ownedGroupJoined': True,
+            'browserOwnershipVerified': True, 'liveOwnedProcesses': 0, 'joinedSamples': 2}
+        self.assertTrue(hls_nonkey_renderer.renderer_process_accepted(process, {}))
+        for key, bad in [('exitCode', 1), ('timedOut', True), ('ownedGroupJoined', False),
+                         ('browserOwnershipVerified', False), ('liveOwnedProcesses', 1), ('joinedSamples', 1)]:
+            value = process | {key: bad}
+            with self.subTest(key=key):
+                self.assertFalse(hls_nonkey_renderer.renderer_process_accepted(value, {}))
+        self.assertFalse(hls_nonkey_renderer.renderer_process_accepted(process, {'failureClass': 'renderer_deadline'}))
 
 
 if __name__ == '__main__':

@@ -175,12 +175,10 @@ def journey(name, original, metadata, offset=0, cold=False, one_shot=False, audi
                                directory, metadata, offset, case)
                 if browser_reference:
                     reference_id = next(i['id'] for i in api.call('/api/v1/library')['items'] if i['title'] == 'Reference')
-                    public_renderer(api, item_id, reference_id, metadata, offset, hls, directory, case, ROOT)
+                    public_renderer(api, item_id, reference_id, metadata, offset, hls, directory, case, ROOT,
+                                    browser_reference)
                     if case['publicRenderer']['result'] != 'passed':
                         case['failures'].append('public_renderer')
-                    reference_state = source_state(browser_reference)
-                    case['browserReferenceSource'].update(after=reference_state,
-                        sourceUnchanged=case['browserReferenceSource']['before'] == reference_state)
             case['result'] = 'passed' if not case['failures'] else 'failed'
         except Exception as error:
             case['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
@@ -254,6 +252,7 @@ finally:
          'test_hls_nonkey_initialization.py',
          'hls_nonkey_fragment.py', 'test_hls_nonkey_fragment.py',
          'hls_nonkey_renderer.py', 'test_hls_nonkey_renderer.py',
+         'hls_nonkey_process.py', 'test_hls_nonkey_process.py',
          'hls_timeline_packets.py', 'hls_timeline_fixture.py', 'hls_timeline_preparation.py']]
     files.append(ROOT / 'apps/player/e2e/hls-public-renderer.mjs')
     checksums = {str(p.relative_to(ROOT)): sha(p) for p in files} | {'receipt.json': sha(target)}

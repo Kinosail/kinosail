@@ -3,9 +3,9 @@ from collections import Counter
 import json
 import math
 import re
-import subprocess
 from hls_followon_public import check, bounded_bytes
-from hls_timeline_http import sha
+from hls_timeline_http import sha, source_state
+from hls_nonkey_process import owned_command
 
 
 def capture_rows(value):
@@ -16,7 +16,7 @@ def capture_rows(value):
             and math.isfinite(row[0]) and -1 <= row[0] <= 120
             and type(row[1]) is int and 0 < row[1] <= 8192
             and isinstance(row[2], str) and re.fullmatch('[a-f0-9]{64}', row[2]), 'renderer_row_shape')
-    qualified = (bool(rows) and value.get('ended') is True and value.get('errorCode') == 0
+    qualified = (bool(rows) and not value.get('failureClass') and value.get('ended') is True and value.get('errorCode') == 0
         and value.get('captureErrors') == 0 and value.get('width') == 640 and value.get('height') == 360
         and rows[0][1] == 1 and all(a[0] < b[0] and b[1] == a[1] + 1 for a, b in zip(rows, rows[1:]))
         and len({row[2] for row in rows}) == len(rows))
@@ -51,7 +51,22 @@ def renderer_facts(reference, public, source_pts, requested):
         'duplicatePublicSourceIndices': [n for n, count in Counter(mapped).items() if count > 1]}
 
 
-def public_renderer(api, item_id, reference_id, metadata, offset, hls, directory, case, root):
+def renderer_delivery_matches(network, init_sha, segment_count, reference_unchanged):
+    values = network.get('initializationSHA256s', [])
+    return (reference_unchanged and network.get('master') == 200 and network.get('variant') == 200
+        and isinstance(values, list) and 0 < len(values) <= 32 and all(v == init_sha for v in values)
+        and network.get('successfulFragments') == segment_count
+        and network.get('unexpectedMediaRequests') == 0 and network.get('failedMediaResponses') == 0)
+
+
+def renderer_process_accepted(process, data):
+    return (process.get('exitCode') == 0 and process.get('timedOut') is False
+        and process.get('ownedGroupJoined') is True and process.get('browserOwnershipVerified') is True
+        and process.get('liveOwnedProcesses') == 0 and process.get('joinedSamples', 0) >= 2
+        and not data.get('failureClass'))
+
+
+def public_renderer(api, item_id, reference_id, metadata, offset, hls, directory, case, root, reference_source):
     result = {'boundary': 'Actual disposable public Server/browser; native/iOS/live acceptance separate'}
     case['publicRenderer'] = result
     check(re.fullmatch('[a-f0-9]{16}', item_id) and re.fullmatch('[a-f0-9]{16}', reference_id),
@@ -62,28 +77,30 @@ def public_renderer(api, item_id, reference_id, metadata, offset, hls, directory
     command = ['node', str(root / 'apps/player/e2e/hls-public-renderer.mjs'), str(target)]
     private = json.dumps({'url': api.url, 'token': api.token, 'itemID': item_id,
         'referenceID': reference_id, 'hls': hls})
-    try:
-        process = subprocess.run(command, input=private.encode(), capture_output=True, timeout=260)
-        check(len(process.stdout) <= 65536 and len(process.stderr) <= 65536, 'renderer_log_bound')
-        log = directory / 'browser-stderr.log'
-        log.write_bytes(process.stderr)
-        result.update(exitCode=process.returncode, privateLogSHA256=sha(log))
-    except subprocess.TimeoutExpired:
-        result['failureClass'] = 'renderer_process_timeout'
+    process = owned_command(command, private.encode(), 260, target.with_name(target.name + '.owner'))
+    check(len(process['stdout']) <= 65536 and len(process['stderr']) <= 65536, 'renderer_log_bound')
+    log = directory / 'browser-stderr.log'
+    log.write_bytes(process['stderr'])
+    result.update(process={k: v for k, v in process.items() if k not in ['stdout', 'stderr']},
+                  privateLogSHA256=sha(log))
     raw = bounded_bytes(target, 512 * 1024, 'renderer_receipt_bound')
     data = json.loads(raw)
+    result['processQualified'] = renderer_process_accepted(process, data)
     result['privateReceiptSHA256'] = sha(target)
+    after = source_state(reference_source)
+    unchanged = case['browserReferenceSource']['before'] == after
+    case['browserReferenceSource'].update(after=after, sourceUnchanged=unchanged)
+    if not unchanged:
+        case['failures'].append('renderer_reference_mutated')
     result['runtime'] = {key: data.get(key) for key in ['browserVersion', 'playbackRate', 'reference', 'public']}
     result.update(renderer_facts(data.get('reference', {}), data.get('public', {}),
                                 metadata['sourceFramePTS'], metadata['sourceTimeOriginSeconds'] + offset))
     network = data.get('public', {}).get('network', {})
-    result['actualPlannedRecipeDelivered'] = (network.get('master') == 200 and network.get('variant') == 200
-        and network.get('initializationSHA256') == case['initializationSHA256']
-        and network.get('successfulFragments') == case['publicVariant']['segmentCount']
-        and network.get('unexpectedMediaRequests') == 0 and network.get('failedMediaResponses') == 0)
+    result['actualPlannedRecipeDelivered'] = renderer_delivery_matches(network, case['initializationSHA256'],
+        case['publicVariant']['segmentCount'], unchanged)
     # Keep complete compact rows once; do not duplicate them in runtime metadata.
     for value in result['runtime'].values():
         if isinstance(value, dict):
             value.pop('rows', None)
-    result['result'] = 'passed' if (result['requestedIdentityMatches'] and result['publicSourceClockMatches']
+    result['result'] = 'passed' if (result['processQualified'] and result['requestedIdentityMatches'] and result['publicSourceClockMatches']
         and result['actualPlannedRecipeDelivered']) else 'failed'

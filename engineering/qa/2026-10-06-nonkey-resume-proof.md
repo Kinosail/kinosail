@@ -110,3 +110,10 @@ Safari, iOS, simulator and Nox remain separate acceptance boundaries.
 The public adapter's native movie clock must match independent source PTS within
 1 ms for every mapped displayed frame. Pixel identity cannot hide a wrong clock.
 Retain buffered ranges, native/reported times and all bounded lifecycle events.
+
+Independent review found that a Python timeout killing only Node could leave
+Chromium descendants running. Before hosting, cover timeout and ordinary leader
+exit with a retained descendant, and prove an unrelated process survives. Run
+the renderer in its own process session. Bound terminate, kill and join checks
+for that process group only. Retain timeout evidence and require zero live owned
+processes across repeated samples. Never use a global browser/process cleanup.
