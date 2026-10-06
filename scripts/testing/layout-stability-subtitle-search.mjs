@@ -47,7 +47,7 @@ export async function measureSubtitleSearch(page, viewport, results, probe) {
   });
   for (const [state, query, injected] of [["pending-success", "Layout", false], ["pending-failure", "Missing", true], ["retry-real-link", "Missing", false], ["retry-empty", "no-synthetic-match", false]]) {
     fail = injected;
-    if (state !== "retry-real-link") await search.focus();
+    if (state !== "retry-real-link") {await search.scrollIntoViewIfNeeded(); await search.focus();}
     else {const link=page.getByRole("link",{name:"Reload view",exact:true});await link.scrollIntoViewIfNeeded();await link.focus();}
     const before = await geometry();
     const content = await page.locator("#subtitle-content").elementHandle();

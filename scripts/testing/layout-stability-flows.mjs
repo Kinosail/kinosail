@@ -9,9 +9,9 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
     const context = await browser.newContext({...options,viewport,ignoreHTTPSErrors:false,reducedMotion:"reduce",serviceWorkers:"block"});
     const page = await context.newPage();
     if(inspectorPath&&viewport.width===320)await context.addInitScript(()=>{const apply=()=>{if(!document.documentElement)return false;document.documentElement.style.fontSize="200%";return true;};if(!apply()){const observer=new MutationObserver(()=>{if(apply())observer.disconnect();});observer.observe(document,{childList:true});}});
-    const navigation = navigationDiagnostics(page);
+    const navigation = navigationDiagnostics(page,options.baseURL);
     try {await page.goto(inspectorPath ? "/?view=library" : "/?view=movies",{waitUntil:"domcontentloaded"});}
-    catch (error) {probe.navigation = await navigation.snapshot(); throw error;}
+    catch (error) {probe.navigation = await navigation.snapshot(error); throw error;}
     finally {navigation.stop();}
     probe.stage="HTMX-search";
     if (inspectorPath) {await measureSubtitleSearch(page,viewport,results,probe);await context.close();continue;}

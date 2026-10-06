@@ -14,7 +14,7 @@ and the Chromium version required by `@e2e-dev/web`.
 
 The script builds selected app binaries and removes them when it exits.
 Each process uses a separate loopback port and temporary media, data, cache,
-and backup directories. The fixture generates a moving eight-second movie,
+and backup directories. The fixture generates a moving 16-second movie,
 AAC audio, and two English subtitle cues. Player also receives a two-track
 album, a chaptered 24-second audiobook, a two-chapter EPUB, a two-page comic,
 a photo, and an original PDF. It removes its directories on exit.

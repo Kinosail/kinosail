@@ -21,7 +21,7 @@ installLayoutFailureReporter(async error => {
     locations: layoutFailureLocations(error),
     errorClass: ["TimeoutError", "TypeError", "ReferenceError", "SyntaxError"].includes(error.name) ? error.name : "Error",
     completedCases: reports.length, completedFlows: flows.length, media: flowProbe.media, probe: flowProbe.geometry, loginResponses,
-    requestStatus, requestContentType, navigation: flowProbe.navigation || await navigation?.snapshot(),
+    requestStatus, requestContentType, navigation: flowProbe.navigation || await navigation?.snapshot(error),
     requestErrorCode: ["CERT_HAS_EXPIRED", "DEPTH_ZERO_SELF_SIGNED_CERT", "SELF_SIGNED_CERT_IN_CHAIN", "UNABLE_TO_VERIFY_LEAF_SIGNATURE", "UNABLE_TO_GET_ISSUER_CERT_LOCALLY"].find(code => error.code === code || String(error.message).includes(code)) ||
       (/unable to verify|self.signed certificate|unable to get local issuer/i.test(String(error.message)) ? "UNTRUSTED_CERTIFICATE" : undefined),
     authCookieCount: authContext ? await authContext.cookies().then(c=>c.length).catch(()=>undefined) : undefined,
@@ -30,7 +30,7 @@ installLayoutFailureReporter(async error => {
 browser = await ({chromium, webkit, firefox}[engine]).launch(engine === "chromium" && process.platform === "darwin" ? {channel: "chrome"} : {});
 const context = authContext = await browser.newContext({baseURL, ignoreHTTPSErrors: false, reducedMotion: "reduce"});
 const page = activePage = await context.newPage();
-navigation = navigationDiagnostics(page);
+navigation = navigationDiagnostics(page,baseURL);
 page.on("response", response => {if(response.request().method()==="POST"&&new URL(response.url()).pathname==="/login")loginResponses.push(response.status());});
 phase = "login-page";
 await page.goto("/login");
@@ -135,7 +135,7 @@ try {
     if(traced)await context.tracing.start({screenshots:true,snapshots:true});
     await context.addInitScript(observe);
     const page = activePage = await context.newPage();
-navigation = navigationDiagnostics(page);
+navigation = navigationDiagnostics(page,baseURL);
     // Delay real response bytes, without substituting mock markup or media.
     await page.route("**/*", layoutResponseHandler(context, variant));
     const name = `${viewport.width}-${variant}-${path.replace(/[^a-z0-9]+/gi, "-")}`;
