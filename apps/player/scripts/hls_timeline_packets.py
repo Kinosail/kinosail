@@ -61,4 +61,15 @@ def safe_seek_phases(private_log):
         if all(values.values()) and mode and work:
             starts.append({key: int(value[1]) for key, value in values.items()} | {"mode": mode[1], "workClass": work[1]})
     return {"encoderStarts": starts[:32], "encoderStartsBounded": len(starts) <= 32}
-    
+
+
+def manifest_facts(data):
+    text = data.decode("utf-8")
+    lengths = [float(v) for v in re.findall(r"^#EXTINF:([0-9.]+),", text, re.M)]
+    segments = re.findall(r"^segment-[0-9]{5}\.m4s$", text, re.M)
+    if not (0 < len(segments) <= 100 and len(lengths) == len(segments)
+            and all(math.isfinite(v) and 0 < v <= 60 for v in lengths)):
+        raise RuntimeError("variant_segment_shape")
+    return {"sha256": hashlib.sha256(data).hexdigest(), "playlistType": "VOD" if "#EXT-X-PLAYLIST-TYPE:VOD" in text else "EVENT",
+        "endlist": "#EXT-X-ENDLIST" in text, "durationSeconds": sum(lengths),
+        "segmentCount": len(segments)}, list(zip(segments, lengths))

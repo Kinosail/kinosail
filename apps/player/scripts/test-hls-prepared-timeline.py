@@ -9,7 +9,6 @@ same init, admission bounds, and unauthenticated rejection. No playlist mocks.
 import hashlib
 import itertools
 import json
-import math
 import os
 from pathlib import Path
 import re
@@ -19,7 +18,7 @@ import subprocess
 import threading
 import time
 from hls_timeline_http import PublicServer, sha, source_state
-from hls_timeline_packets import fragment_packets, decoded_identity, safe_seek_phases
+from hls_timeline_packets import fragment_packets, decoded_identity, safe_seek_phases, manifest_facts
 from hls_timeline_fixture import fixture
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -71,17 +70,6 @@ def item_hls_roots(cache, item_id):
         entries = list(itertools.islice(stream, 4097))
     check(len(entries) <= 4096, "cache_inventory_bound")
     return sorted(p.name for p in entries if p.name == item_id or p.name.startswith(item_id + "-"))
-
-
-def manifest_facts(data):
-    text = data.decode("utf-8")
-    lengths = [float(v) for v in re.findall(r"^#EXTINF:([0-9.]+),", text, re.M)]
-    segments = re.findall(r"^segment-[0-9]{5}\.m4s$", text, re.M)
-    check(0 < len(segments) <= 100 and len(lengths) == len(segments)
-        and all(math.isfinite(v) and 0 < v <= 60 for v in lengths), "variant_segment_shape")
-    return {"sha256": hashlib.sha256(data).hexdigest(), "playlistType": "VOD" if "#EXT-X-PLAYLIST-TYPE:VOD" in text else "EVENT",
-        "endlist": "#EXT-X-ENDLIST" in text, "durationSeconds": sum(lengths),
-        "segmentCount": len(segments)}, list(zip(segments, lengths))
 
 
 def journey(name, original, metadata, offset=0):
