@@ -34,6 +34,7 @@ def seek_diagnostics(directory, source, key):
     candidates = [
         ("legacy", ["-ss", format(key, ".9f")], []),
         ("legacy-prior0", ["-ss", format(key, ".9f")], ["-copypriorss:v", "0"]),
+        ("legacy-prior0-all", ["-ss", format(key, ".9f")], ["-copypriorss", "0"]),
         ("output-dts", ["-copyts"], ["-ss", cutoff, "-copypriorss:v", "0"]),
         ("padded-dts", ["-copyts", "-ss", format(key + 0.14, ".9f")], ["-ss", cutoff, "-copypriorss:v", "0"]),
         ("copyts", ["-copyts", "-ss", format(key, ".9f")], []),
@@ -63,5 +64,38 @@ def seek_diagnostics(directory, source, key):
                 row["firstThreeSourceFramesMatch"] = actual["exitStatus"] == 0 and actual["frames"] == 3 and actual == reference
                 row["firstThreeFrames"] = actual
         rows.append(row)
-    return {"sourceSHA256": hashlib.sha256(source.read_bytes()).hexdigest(),
+    return {"boundaryCertificate": boundary_certificate(source),
+        "sourceSHA256": hashlib.sha256(source.read_bytes()).hexdigest(),
         "sourceKeySeconds": key, "sourceKeyDTSSeconds": dts, "referenceOffsetSeconds": max(0, key - 0.000001), "reference": reference, "candidates": rows}
+
+def boundary_certificate(source):
+    probe = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0",
+        "-show_packets", "-show_entries", "packet=pts_time,flags", "-of", "json", str(source)],
+        capture_output=True, timeout=30)
+    if probe.returncode or len(probe.stdout) > 2 * 1024 * 1024:
+        raise RuntimeError("boundary_probe_bound")
+    keys = [float(p["pts_time"]) for p in json.loads(probe.stdout).get("packets", [])
+        if "K" in p.get("flags", "")]
+    result = subprocess.run(["ffmpeg", "-nostdin", "-v", "error", "-threads", "1", "-copyts",
+        "-i", str(source), "-map", "0:v:0", "-an", "-sn", "-dn", "-c:v", "copy", "-copytb", "1",
+        "-bsf:v", "filter_units=pass_types=5", "-f", "framehash", "pipe:1"],
+        capture_output=True, timeout=30)
+    if len(result.stdout) > 1024 * 1024:
+        raise RuntimeError("boundary_certificate_bound")
+    base, pts, empty = 0, [], 0
+    for line in result.stdout.decode().splitlines():
+        if line.startswith("#tb 0: "):
+            numerator, denominator = line.removeprefix("#tb 0: ").split("/")
+            base = int(numerator) / int(denominator)
+        if not line or line.startswith("#"):
+            continue
+        fields = line.split(",")
+        if len(fields) != 6 or not base:
+            raise RuntimeError("boundary_certificate_shape")
+        if int(fields[4]) == 0:
+            empty += 1
+        else:
+            pts.append(int(fields[2]) * base)
+    return {"exitStatus": result.returncode, "sourceKeyCount": len(keys),
+        "certifiedIDRCount": len(pts), "emptyPackets": empty,
+        "allSourceKeysCertified": len(keys) == len(pts) and all(abs(a-b) <= 0.001 for a, b in zip(keys, pts))}
