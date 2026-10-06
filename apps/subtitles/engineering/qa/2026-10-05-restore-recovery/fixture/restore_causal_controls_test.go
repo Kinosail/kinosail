@@ -197,8 +197,10 @@ func TestRestoreCompletionIdentityBoundary(t *testing.T) {
 	ctx, cancel := context.WithCancel(t.Context())
 	defer cancel()
 	item := "0123456789abcdef"
-	f := &restoreRig{ctx: ctx, target: &restoreTarget{item: item}, restoreHeaders: make(http.Header),
-		state: restoreSnapshot{Protocol: "legacy", RestoreAttempts: 1, ResponseStatus: http.StatusNoContent}}
+	f := &restoreRig{
+		ctx: ctx, target: &restoreTarget{item: item}, restoreHeaders: make(http.Header),
+		state: restoreSnapshot{Protocol: "legacy", RestoreAttempts: 1, ResponseStatus: http.StatusNoContent},
+	}
 	if !f.causalCompletionWitness(item).Bodyless {
 		t.Fatal("empty captured204 identity unavailable")
 	}
