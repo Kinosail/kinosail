@@ -29,10 +29,12 @@ RUN.mkdir(parents=True)
 binary = RUN / 'player'
 receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
     'result': 'failed', 'cases': [], 'command': 'python3 apps/player/scripts/test-hls-followon.py --suite ' + suite,
-    'suite': suite, 'expectedCases': 10 if suite == 'all' else 6,
+    'suite': suite, 'expectedCases': 11 if suite == 'all' else 6,
     'acceptedRepairScope': 'Plain H264 copied-video audio conversion; regular remux, audio-only and audiobook controls',
     'knownUnrepairedCases': ['nonkey-mkv', 'nonkey-mp4', 'hevc-video'],
-    'outsideAcceptedScopeCases': [] if suite == 'all' else ['nonkey-mkv', 'nonkey-mp4', 'hevc-video', 'hevc-cold'],
+    'regressionCasesRequiringQualification': ['hevc-interrupted-preparation'] if suite == 'all' else [],
+    'outsideAcceptedScopeCases': [] if suite == 'all' else
+        ['nonkey-mkv', 'nonkey-mp4', 'hevc-video', 'hevc-cold', 'hevc-interrupted-preparation'],
     'boundary': 'Synthetic authenticated public Server delivery; native/Safari/iOS and Nox acceptance separate.',
     'productionMediaOrCacheModified': False, 'fixtureSeconds': 32, 'fixtureFrameRate': 24}
 
@@ -210,7 +212,8 @@ finally:
     target = RUN / 'receipt.json'
     target.write_text(json.dumps(receipt, indent=2, allow_nan=False) + '\n')
     files = [Path(__file__)] + [Path(__file__).with_name(n) for n in
-        ['hls_followon_public.py', 'hls_followon_frames.py', 'hls_followon_controls.py', 'hls_followon_hevc.py', 'hls_timeline_http.py',
+        ['hls_followon_public.py', 'hls_followon_frames.py', 'hls_followon_controls.py', 'hls_followon_hevc.py',
+         'hls_followon_cancel.py', 'hls_timeline_http.py',
          'hls_timeline_packets.py', 'hls_timeline_fixture.py', 'hls_timeline_preparation.py']]
     checksums = {str(p.relative_to(ROOT)): sha(p) for p in files} | {'receipt.json': sha(target)}
     (RUN / 'SHA256SUMS').write_text(''.join(f'{v}  {k}\n' for k, v in checksums.items()))
