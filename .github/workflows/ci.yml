@@ -51,12 +51,13 @@ jobs:
         with:
           persist-credentials: false
       - run: test ! -e .gates-disabled
-      - run: make max-loc
-      - run: python3 scripts/quality/check-dependency-integrity.py --browser-only
-      - run: python3 -m unittest discover -s scripts/ci -p 'test_*.py'
-      - run: node --test scripts/testing/navigation-diagnostics.test.mjs scripts/testing/layout-stability-failure.test.mjs scripts/testing/layout-stability-subtitle-background.test.mjs
-      - run: ./scripts/ci/validate-workflows.sh
-      - run: ./scripts/ci/check-source-tools.sh
+      - parallel:
+          - run: make max-loc
+          - run: python3 scripts/quality/check-dependency-integrity.py --browser-only
+          - run: python3 -m unittest discover -s scripts/ci -p 'test_*.py'
+          - run: node --test scripts/testing/navigation-diagnostics.test.mjs scripts/testing/layout-stability-failure.test.mjs scripts/testing/layout-stability-subtitle-background.test.mjs
+          - run: ./scripts/ci/validate-workflows.sh
+          - run: ./scripts/ci/check-source-tools.sh
 
   tooling:
     needs: plan
