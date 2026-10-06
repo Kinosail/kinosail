@@ -1,0 +1,306 @@
+{
+  "recordedUTC": "2026-10-06T21:09:38.273569+00:00",
+  "exactCandidate": "b979e860cee47345c70eb2be0296c939faf9b306",
+  "sourceEquivalentRepair": "653966615b54b2e080ddecc8d33b96ef63c05a64",
+  "sourceSHA256": "bd4e5d6f96b26b39a3c66ce68e520d610eb9a1e8a6f0e981b70f321cbbab8d99",
+  "sourceBytes": 138458,
+  "sourceChunks": 14,
+  "specSHA256": "8a553de8ff5d5621922267a4a9483086b2d91e3864c21eb3c0fa5a63759e6a65",
+  "inventorySHA256": "70e05b7f1085bbd38daa74341d74533315b16380c1e72ca5230a206298ce8727",
+  "host": {
+    "os": "macOS",
+    "version": "27.0",
+    "build": "26A428"
+  },
+  "decision": "F2 cancellation reproduced as a controlled runtime failure in both browsers; direct metadata guard and superseded metadata controls pass.",
+  "proofClass": "Isolated actual production browser listeners/projection, controlled decoder source/events and intercepted supported HTTP routes.",
+  "nativeClockQualification": "Native raw0 projects to movie20 in the selected window and models a same-position seeking/seeked event. Raw15->movie35 is the changed-position case. Neither case proves trusted native UI event delivery.",
+  "controls": [
+    "Active direct metadata re-establishes a finite managed target; paused original native0 then posts0 and public fixture reads0.",
+    "Captured retired gen1 metadata callback plus retired seeked retain gen3 pending projected20/full100 over old raw50; active metadata and Library exit stay unplayed with zero POSTs."
+  ],
+  "noProductionFixWritten": true,
+  "liveNoxRequests": 0,
+  "deviceUIActions": 0,
+  "builds": 0,
+  "dependencyDownloads": 0,
+  "expectedBaselineExit": 1,
+  "suiteExecutionTimeIsNotPlaybackLatency": true,
+  "ownerNext": "Integrate the test-only commit into the sole PR479 owner branch. Repair managed flag/target cancellation coherence. Run all four cases GREEN while retaining original intent and PR492 safeguards, then complete required protected delivery. The broader 49 live retests remain held.",
+  "runs": [
+    {
+      "browser": "chromium",
+      "reportSHA256": "1bbe478ff78d9973681626de44045dcc3a1b8e8686c0c0dd90625a3c6a212760",
+      "stats": {
+        "startTime": "2026-10-06T21:06:40.461Z",
+        "duration": 36650.608,
+        "expected": 2,
+        "skipped": 0,
+        "unexpected": 2,
+        "flaky": 0
+      },
+      "cases": [
+        {
+          "title": "paused native decoder seek 0 after canceled restore checkpoints movie 20",
+          "classification": "expected semantic RED at checkpoint assertion",
+          "attempts": 1,
+          "durationMs": 1344,
+          "finalApp": {
+            "managed": false,
+            "target": null,
+            "offset": 20,
+            "held": null,
+            "generation": 1,
+            "adaptive": true,
+            "switching": false,
+            "resume": null,
+            "played": false
+          },
+          "finalDecoder": {
+            "raw": 0,
+            "projected": 20,
+            "duration": 100,
+            "ready": 4,
+            "paused": true,
+            "seeking": false,
+            "loads": 1,
+            "setters": 1,
+            "playCalls": 0,
+            "nativeMetadataCallbacks": 1
+          },
+          "finalWrites": [],
+          "finalPublicProgress": {
+            "seconds": 20,
+            "watched": false
+          }
+        },
+        {
+          "title": "paused native decoder seek 15 after canceled restore checkpoints movie 35",
+          "classification": "expected semantic RED at checkpoint assertion",
+          "attempts": 1,
+          "durationMs": 1280,
+          "finalApp": {
+            "managed": false,
+            "target": null,
+            "offset": 20,
+            "held": null,
+            "generation": 1,
+            "adaptive": true,
+            "switching": false,
+            "resume": null,
+            "played": false
+          },
+          "finalDecoder": {
+            "raw": 15,
+            "projected": 35,
+            "duration": 100,
+            "ready": 4,
+            "paused": true,
+            "seeking": false,
+            "loads": 1,
+            "setters": 1,
+            "playCalls": 0,
+            "nativeMetadataCallbacks": 1
+          },
+          "finalWrites": [],
+          "finalPublicProgress": {
+            "seconds": 20,
+            "watched": false
+          }
+        },
+        {
+          "title": "direct replacement metadata renews the finite managed target before native zero",
+          "classification": "passing control",
+          "attempts": 1,
+          "durationMs": 437,
+          "finalApp": {
+            "managed": false,
+            "target": null,
+            "offset": 0,
+            "held": null,
+            "generation": 1,
+            "adaptive": false,
+            "switching": false,
+            "resume": null,
+            "played": true
+          },
+          "finalDecoder": {
+            "raw": 0,
+            "projected": 0,
+            "duration": 100,
+            "ready": 4,
+            "paused": true,
+            "seeking": false,
+            "loads": 1,
+            "setters": 2,
+            "playCalls": 0,
+            "nativeMetadataCallbacks": 0
+          },
+          "finalWrites": [
+            {
+              "seconds": "0",
+              "session": "cancellation-test-session",
+              "revision": "1",
+              "watched": "false"
+            }
+          ],
+          "finalPublicProgress": {
+            "seconds": 0,
+            "watched": false
+          }
+        },
+        {
+          "title": "retired native metadata and seeked retain newer replacement projection without progress intent",
+          "classification": "passing control",
+          "attempts": 1,
+          "durationMs": 420,
+          "finalApp": null,
+          "finalDecoder": {},
+          "finalWrites": [],
+          "finalPublicProgress": {
+            "seconds": 20,
+            "watched": false
+          }
+        }
+      ]
+    },
+    {
+      "browser": "webkit",
+      "reportSHA256": "d00b7b0361849206a28254a89e37bb36a13c2d4aa62528e1994e43ab5e26c4f1",
+      "stats": {
+        "startTime": "2026-10-06T21:07:41.366Z",
+        "duration": 6023.235,
+        "expected": 2,
+        "skipped": 0,
+        "unexpected": 2,
+        "flaky": 0
+      },
+      "cases": [
+        {
+          "title": "paused native decoder seek 0 after canceled restore checkpoints movie 20",
+          "classification": "expected semantic RED at checkpoint assertion",
+          "attempts": 1,
+          "durationMs": 1619,
+          "finalApp": {
+            "managed": false,
+            "target": null,
+            "offset": 20,
+            "held": null,
+            "generation": 1,
+            "adaptive": true,
+            "switching": false,
+            "resume": null,
+            "played": false
+          },
+          "finalDecoder": {
+            "raw": 0,
+            "projected": 20,
+            "duration": 100,
+            "ready": 4,
+            "paused": true,
+            "seeking": false,
+            "loads": 1,
+            "setters": 1,
+            "playCalls": 0,
+            "nativeMetadataCallbacks": 1
+          },
+          "finalWrites": [],
+          "finalPublicProgress": {
+            "seconds": 20,
+            "watched": false
+          }
+        },
+        {
+          "title": "paused native decoder seek 15 after canceled restore checkpoints movie 35",
+          "classification": "expected semantic RED at checkpoint assertion",
+          "attempts": 1,
+          "durationMs": 1435,
+          "finalApp": {
+            "managed": false,
+            "target": null,
+            "offset": 20,
+            "held": null,
+            "generation": 1,
+            "adaptive": true,
+            "switching": false,
+            "resume": null,
+            "played": false
+          },
+          "finalDecoder": {
+            "raw": 15,
+            "projected": 35,
+            "duration": 100,
+            "ready": 4,
+            "paused": true,
+            "seeking": false,
+            "loads": 1,
+            "setters": 1,
+            "playCalls": 0,
+            "nativeMetadataCallbacks": 1
+          },
+          "finalWrites": [],
+          "finalPublicProgress": {
+            "seconds": 20,
+            "watched": false
+          }
+        },
+        {
+          "title": "direct replacement metadata renews the finite managed target before native zero",
+          "classification": "passing control",
+          "attempts": 1,
+          "durationMs": 714,
+          "finalApp": {
+            "managed": false,
+            "target": null,
+            "offset": 0,
+            "held": null,
+            "generation": 1,
+            "adaptive": false,
+            "switching": false,
+            "resume": null,
+            "played": true
+          },
+          "finalDecoder": {
+            "raw": 0,
+            "projected": 0,
+            "duration": 100,
+            "ready": 4,
+            "paused": true,
+            "seeking": false,
+            "loads": 1,
+            "setters": 2,
+            "playCalls": 0,
+            "nativeMetadataCallbacks": 0
+          },
+          "finalWrites": [
+            {
+              "seconds": "0",
+              "session": "cancellation-test-session",
+              "revision": "1",
+              "watched": "false"
+            }
+          ],
+          "finalPublicProgress": {
+            "seconds": 0,
+            "watched": false
+          }
+        },
+        {
+          "title": "retired native metadata and seeked retain newer replacement projection without progress intent",
+          "classification": "passing control",
+          "attempts": 1,
+          "durationMs": 576,
+          "finalApp": null,
+          "finalDecoder": {},
+          "finalWrites": [],
+          "finalPublicProgress": {
+            "seconds": 20,
+            "watched": false
+          }
+        }
+      ]
+    }
+  ],
+  "privateArtifacts": "task7/pr479-intent-regression-evidence/cancellation-b979e860: full reports, JSON event/state/write/readback attachments, traces and failure captures",
+  "repeat": "From apps/player/e2e, set KINOSAIL_REGRESSION_PLAYER_SOURCE to the immutable candidate production assembly. Run pnpm test player-native-cancellation-regression.spec.ts --project=chromium --workers=1 --retries=0, then WebKit serially with KINOSAIL_BROWSER_PROJECT=webkit. Set private artifact/output directories and video off. Both baseline exits are 1; semantic failures are expected until owner repair."
+}
