@@ -85,6 +85,10 @@ func (manager *hlsManager) waitForRecipeSegment(request *http.Request, item libr
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 		if err := manager.prepareSegment(segmentContext, item, recipe, name); err != nil {
 			slog.WarnContext(request.Context(), "HLS segment preparation failed", "diagnostic", "[PLAYBACK-HLS]", "request_id", requestActivityID(request.Context()), "error", hlsDiagnostic(err, item.Path))
+			if !errors.Is(err, os.ErrNotExist) {
+				cancel()
+				return false
+			}
 		}
 	}
 	ready := waitForHLSFile(segmentContext, path)

@@ -54,7 +54,8 @@ jobs:
         with:
           go-version-file: apps/${{ inputs.app }}/go.mod
           cache-dependency-path: "**/go.sum"
-      - run: sudo apt-get update && sudo apt-get install -y libarchive-tools
+      - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libarchive-tools ffmpeg
+      - run: ffmpeg -version && ffprobe -version
       - env:
           APP: ${{ inputs.app }}
           KINOSAIL_GO_TEST_MODE: ${{ fromJSON(inputs.plan).deep && 'deep' || 'quick' }}

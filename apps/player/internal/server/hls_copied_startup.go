@@ -42,7 +42,9 @@ func copiedHLSSeekArguments(arguments []string, timeline *copiedHLSTimeline, num
 		return nil, errCopiedHLSIndex
 	}
 	// FFmpeg can demux an earlier key for input -ss. Do not copy that preroll.
-	arguments = append(arguments, "-copypriorss", "0")
+	if number == 0 {
+		return append(arguments, "-copypriorss", "0"), nil
+	}
 	if number > 0 {
 		if timeline.Clock == nil {
 			return nil, errCopiedHLSIndex
@@ -50,11 +52,10 @@ func copiedHLSSeekArguments(arguments []string, timeline *copiedHLSTimeline, num
 		start := timeline.point(number)
 		floor := math.Floor(start*1_000_000) / 1_000_000
 		offset := start - timeline.point(0) + *timeline.Clock - (start - floor)
-		arguments = append(arguments, "-output_ts_offset", copiedHLSTime(offset))
-		// The mux clock restores copied video DTS; audio already keeps its source
-		// presentation offset. Avoid adding that clock twice at a refill boundary.
-		clock := copiedHLSTime(*timeline.Clock)
-		arguments = append(arguments, "-bsf:a", "setts=pts=PTS-"+clock+"/TB:dts=DTS-"+clock+"/TB")
+		// AAC can precede the IDR PTS by the measured decode clock. Preserve
+		// that boundary packet, drop earlier GOP audio without changing payloads,
+		// and restore one shared mux clock.
+		arguments = append(arguments, "-copypriorss:v", "0", "-copypriorss:a", "1", "-bsf:a", "noise=amount=0:drop=lt(pts*tb\\,"+copiedHLSTime(-*timeline.Clock)+")", "-output_ts_offset", copiedHLSTime(offset))
 	}
 	return arguments, nil
 }

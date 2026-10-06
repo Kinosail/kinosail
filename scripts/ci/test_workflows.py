@@ -8,6 +8,14 @@ WORKFLOWS = ROOT / '.github/workflows'
 
 
 class WorkflowSecurityTests(unittest.TestCase):
+    def test_go_media_http_journeys_install_real_codec_tools(self):
+        race = (WORKFLOWS / 'app.yml').read_text().split('  race:')[1].split('  security:')[0]
+        install = 'sudo apt-get install -y --no-install-recommends libarchive-tools ffmpeg'
+        self.assertIn(install, race)
+        self.assertLess(race.index(install), race.index('./scripts/ci/test-go.sh'))
+        self.assertIn('ffmpeg -version', race)
+        self.assertIn('ffprobe -version', race)
+
     def test_navigation_diagnostics_contracts_run_in_policy_and_tooling(self):
         command = 'node --test scripts/testing/navigation-diagnostics.test.mjs'
         static = (WORKFLOWS / 'ci.yml').read_text().split('  static:')[1].split('  tooling:')[0]
