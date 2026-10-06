@@ -30,19 +30,31 @@ func TestCachedScanFactsUsesScanVersionWithoutReadingMedia(t *testing.T) { //nol
 	if _, err := os.Stat(calls); !os.IsNotExist(err) {
 		t.Fatalf("scan lookup ran probe: %v", err)
 	}
-	probe.Facts(t.Context(), item)
+	if facts := probe.Facts(t.Context(), item); facts.Video.Codec != "h264" {
+		t.Fatalf("initial probe facts = %#v", facts)
+	}
+	if data, err := os.ReadFile(calls); err != nil || string(data) != "x" {
+		t.Fatalf("initial probe execution = %q, %v", data, err)
+	}
+	if _, err := os.Stat(probe.cachePath(item.ID)); err != nil {
+		t.Fatalf("initial probe cache persistence = %v", err)
+	}
 	if err := os.Remove(path); err != nil {
 		t.Fatal(err)
 	}
 	restarted := New(executable)
 	restarted.ConfigureCache(root)
-	for _, reader := range []*Probe{probe, restarted} {
-		if facts, found := reader.CachedScanFacts(item); !found || facts.Video.Codec != "h264" {
-			t.Fatalf("scan facts = %#v, %v", facts, found)
+	readers := []struct {
+		name  string
+		probe *Probe
+	}{{"memory", probe}, {"restarted", restarted}}
+	for _, reader := range readers {
+		if facts, found := reader.probe.CachedScanFacts(item); !found || facts.Video.Codec != "h264" {
+			t.Fatalf("%s scan facts = %#v, %v", reader.name, facts, found)
 		}
-		assertStaleScanRejected(t, item, reader.CachedScanFacts)
-		if _, found := reader.CachedFacts(item); found {
-			t.Fatal("live lookup accepted a removed source")
+		assertStaleScanRejected(t, item, reader.probe.CachedScanFacts)
+		if _, found := reader.probe.CachedFacts(item); found {
+			t.Fatalf("%s live lookup accepted a removed source", reader.name)
 		}
 	}
 	if data, err := os.ReadFile(calls); err != nil || string(data) != "x" {
