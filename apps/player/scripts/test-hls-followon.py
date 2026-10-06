@@ -17,6 +17,7 @@ from hls_timeline_packets import safe_encoder_lifecycle, safe_seek_phases
 from hls_timeline_preparation import prepare_scene
 from hls_followon_public import check, bounded_bytes, encoder_count, sample_resources, prepare_once, measure
 from hls_followon_frames import stream_metadata
+from hls_followon_controls import controls
 
 ROOT = Path(__file__).resolve().parents[3]
 RUN = ROOT / '.verification/hls-followon' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
@@ -190,7 +191,8 @@ try:
     ac3, ac3_metadata = convert(sparse, sparse_metadata, 'sparse-ac3', ac3=True)
     journey('audio-sparse-cold', ac3, ac3_metadata, cold=True, audio_conversion=True)
     journey('audio-sparse-prepared', ac3, ac3_metadata, audio_conversion=True)
-    if len(receipt['cases']) == 5 and all(c['result'] == 'passed' for c in receipt['cases']):
+    controls(ROOT, RUN, binary, receipt)
+    if len(receipt['cases']) == 8 and all(c['result'] == 'passed' for c in receipt['cases']):
         receipt['result'] = 'passed'
 except Exception as error:
     receipt['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
@@ -198,7 +200,7 @@ finally:
     target = RUN / 'receipt.json'
     target.write_text(json.dumps(receipt, indent=2, allow_nan=False) + '\n')
     files = [Path(__file__)] + [Path(__file__).with_name(n) for n in
-        ['hls_followon_public.py', 'hls_followon_frames.py', 'hls_timeline_http.py',
+        ['hls_followon_public.py', 'hls_followon_frames.py', 'hls_followon_controls.py', 'hls_timeline_http.py',
          'hls_timeline_packets.py', 'hls_timeline_fixture.py', 'hls_timeline_preparation.py']]
     checksums = {str(p.relative_to(ROOT)): sha(p) for p in files} | {'receipt.json': sha(target)}
     (RUN / 'SHA256SUMS').write_text(''.join(f'{v}  {k}\n' for k, v in checksums.items()))
