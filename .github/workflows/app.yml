@@ -275,6 +275,22 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends "$RUNNER_TEMP/startup-ffmpeg.deb"
           echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
+      - name: Verify prepared copied-video timeline
+        if: inputs.app == 'player' && matrix.engine == 'chromium'
+        env:
+          GOMAXPROCS: "2"
+        run: python3 apps/player/scripts/test-hls-prepared-timeline.py
+      - name: Keep safe prepared timeline evidence
+        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: player-prepared-timeline-evidence
+          include-hidden-files: true
+          path: |
+            .verification/hls-prepared-timeline/*/receipt.json
+            .verification/hls-prepared-timeline/*/SHA256SUMS
+          retention-days: 14
+          if-no-files-found: error
       - name: Verify HLS source-version freshness
         if: inputs.app == 'player' && matrix.engine == 'chromium'
         env:
