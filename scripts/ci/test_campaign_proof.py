@@ -40,7 +40,7 @@ class CampaignProofTests(unittest.TestCase):
     def test_focused_route_does_not_replace_normal_ci(self):
         source = LAYOUT.read_text()
         self.assertIn('campaign_proof:', source)
-        self.assertIn('options: [none, R06, Q14, Q09, Q47]', source)
+        self.assertIn('options: [none, R06, Q14, Q09, Q47, R18]', source)
         self.assertIn("if: github.event_name != 'workflow_dispatch' || inputs.campaign_proof == 'none'", source)
         self.assertIn("if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof != 'none'", source)
         self.assertIn('name: Bounded campaign proof', source)
@@ -78,6 +78,49 @@ class CampaignProofTests(unittest.TestCase):
         self.assertIn('timeout 180s npm ci --prefix engineering/documentation --ignore-scripts', source)
         self.assertIn('timeout --kill-after=2s 10s node --test engineering/documentation/test-install-builder.cjs engineering/documentation/test-install-builder-recovery.cjs', source)
         self.assertLess(source.index('name: Verify fixed Compose recovery controls'), source.index('name: Run exact owned public proof'))
+
+
+    def test_r18_source_formatter_has_exact_selection_and_owned_driver(self):
+        source = LAYOUT.read_text().split('  campaign-proof:\n')[1]
+        router = ROUTER.read_text()
+        self.assertIn('options: [none, R06, Q14, Q09, Q47, R18]', LAYOUT.read_text())
+        self.assertIn('campaign_r18_suite:', LAYOUT.read_text())
+        self.assertIn('CAMPAIGN_R18_SUITE', source)
+        self.assertIn('case "$CAMPAIGN_R18_SUITE" in', source)
+        self.assertIn('source-format) ;;', source)
+        self.assertIn('if [ "$CAMPAIGN_PROOF" == R18 ] && [ "${{ inputs.architecture_metadata }}" == true ]; then exit 2; fi', source)
+        self.assertIn('R18) exec python3 apps/player/scripts/campaign-r18-format-public.py ;;', router)
+        self.assertIn('r18_suite="${CAMPAIGN_R18_SUITE-source-format}"', router)
+        self.assertIn('case "$r18_suite" in', router)
+
+    def test_r18_source_formatter_has_bounded_setup_controls_and_four_artifacts(self):
+        source = LAYOUT.read_text().split('  campaign-proof:\n')[1]
+        checkout = source.split('      - name: Validate explicit proof selection')[0]
+        self.assertIn("fetch-depth: ${{ inputs.campaign_proof == 'R18' && '0' || '1' }}", checkout)
+        self.assertIn('timeout-minutes: 2', checkout)
+        self.assertIn("env.CAMPAIGN_R06_SUITE == 'source-format' || env.CAMPAIGN_PROOF == 'R18'", source)
+        self.assertIn("env.CAMPAIGN_PROOF != 'R18'", source)
+        self.assertIn('name: Verify fixed R18 formatter controls', source)
+        self.assertIn('name: Verify fixed R18 formatter-public controls', source)
+        self.assertIn('python3 -B -m unittest discover -s apps/player/scripts -p test_campaign_r18_document_format.py', source)
+        self.assertIn('timeout --kill-after=2s 30s python3 -B scripts/ci/r18_format_public_controls.py', source)
+        self.assertLess(source.index('name: Verify fixed R18 formatter-public controls'), source.index('name: Run exact owned public proof'))
+        for name in ('receipt.json', 'results.json', 'source-manifest.json', 'artifact-manifest.json'):
+            self.assertIn(f'            .verification/campaign-proof/R18/{name}\n', source)
+        self.assertIn("inputs.campaign_proof != 'R18'", source)
+
+
+    def test_r18_bootstrap_diagnostics_are_fixed_and_bounded_before_controls(self):
+        source = LAYOUT.read_text().split('  campaign-proof:\n')[1]
+        name = 'name: Verify fixed R18 bootstrap stage controls'
+        command = 'timeout --kill-after=2s 10s python3 -B -m unittest discover -s scripts/ci -p test_r18_format_public_control_stages.py'
+        self.assertEqual(source.count(command), 1)
+        step = source.split(name)[1].split('      - name: Verify fixed R18 formatter-public controls')[0]
+        self.assertIn("if: env.CAMPAIGN_PROOF == 'R18'", step)
+        self.assertIn('timeout-minutes: 1', step)
+        self.assertIn('run: ' + command, step)
+        self.assertLess(source.index('name: Verify fixed R18 formatter controls'), source.index(name))
+        self.assertLess(source.index(name), source.index('name: Verify fixed R18 formatter-public controls'))
 
 
 if __name__ == '__main__':

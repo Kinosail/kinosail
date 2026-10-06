@@ -15,7 +15,7 @@ on:
       campaign_proof:
         description: Run one bounded campaign proof instead of layout diagnosis
         type: choice
-        options: [none, R06, Q14, Q09, Q47]
+        options: [none, R06, Q14, Q09, Q47, R18]
         default: none
       campaign_q14_suite:
         description: Select one fixed Q14 public suite; primary keeps its two repeats
@@ -31,6 +31,11 @@ on:
         description: Select one fixed Q47 public suite, each repeated twice
         type: choice
         options: [source-format, primary, recovery, supersession, contracts]
+        default: source-format
+      campaign_r18_suite:
+        description: Run only the fixed R18 source formatter
+        type: choice
+        options: [source-format]
         default: source-format
       architecture_metadata:
         description: Collect bounded source metadata for canonical architecture regeneration
@@ -125,10 +130,13 @@ jobs:
       CAMPAIGN_Q14_SUITE: ${{ inputs.campaign_q14_suite || 'primary' }}
       CAMPAIGN_R06_SUITE: ${{ inputs.campaign_r06_suite || 'protocol' }}
       CAMPAIGN_Q47_SUITE: ${{ inputs.campaign_q47_suite || 'source-format' }}
+      CAMPAIGN_R18_SUITE: ${{ inputs.campaign_r18_suite || 'source-format' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        timeout-minutes: 2
         with:
           persist-credentials: false
+          fetch-depth: ${{ inputs.campaign_proof == 'R18' && '0' || '1' }}
       - name: Validate explicit proof selection
         id: selection
         run: |
@@ -149,9 +157,15 @@ jobs:
           esac
           if [ "$CAMPAIGN_PROOF" != Q47 ] && [ "$CAMPAIGN_Q47_SUITE" != source-format ]; then exit 2; fi
           if [ "$CAMPAIGN_PROOF" == Q47 ] && [ "${{ inputs.architecture_metadata }}" == true ]; then exit 2; fi
+          case "$CAMPAIGN_R18_SUITE" in
+            source-format) ;;
+            *) exit 2 ;;
+          esac
+          if [ "$CAMPAIGN_PROOF" != R18 ] && [ "$CAMPAIGN_R18_SUITE" != source-format ]; then exit 2; fi
+          if [ "$CAMPAIGN_PROOF" == R18 ] && [ "${{ inputs.architecture_metadata }}" == true ]; then exit 2; fi
           case "$CAMPAIGN_PROOF" in
             R06) echo app=subtitles >> "$GITHUB_OUTPUT" ;;
-            Q14|Q09|Q47) echo app=player >> "$GITHUB_OUTPUT" ;;
+            Q14|Q09|Q47|R18) echo app=player >> "$GITHUB_OUTPUT" ;;
             *) exit 2 ;;
           esac
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
@@ -167,19 +181,19 @@ jobs:
           bundler-cache: true
           working-directory: engineering/documentation
       - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
-        if: (steps.selection.outputs.app == 'player' && (env.CAMPAIGN_PROOF != 'Q47' || env.CAMPAIGN_Q47_SUITE != 'source-format')) || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
+        if: (steps.selection.outputs.app == 'player' && env.CAMPAIGN_PROOF != 'R18' && (env.CAMPAIGN_PROOF != 'Q47' || env.CAMPAIGN_Q47_SUITE != 'source-format')) || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
         with:
           version: 11.22.0
           install: false
           node-version-file: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
-        if: (steps.selection.outputs.app == 'player' && (env.CAMPAIGN_PROOF != 'Q47' || env.CAMPAIGN_Q47_SUITE != 'source-format')) || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
+        if: (steps.selection.outputs.app == 'player' && env.CAMPAIGN_PROOF != 'R18' && (env.CAMPAIGN_PROOF != 'Q47' || env.CAMPAIGN_Q47_SUITE != 'source-format')) || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
         with:
           node-version: "26"
           package-manager-cache: false
       - run: sudo apt-get update && sudo apt-get install -y libarchive-tools
       - name: Install existing source formatter
-        if: env.CAMPAIGN_R06_SUITE == 'source-format'
+        if: env.CAMPAIGN_R06_SUITE == 'source-format' || env.CAMPAIGN_PROOF == 'R18'
         timeout-minutes: 2
         uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a
         with:
@@ -194,7 +208,7 @@ jobs:
       - name: Prepare bounded browser prerequisites
         env:
           APP: ${{ steps.selection.outputs.app }}
-        if: (steps.selection.outputs.app == 'player' && (env.CAMPAIGN_PROOF != 'Q47' || env.CAMPAIGN_Q47_SUITE != 'source-format')) || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
+        if: (steps.selection.outputs.app == 'player' && env.CAMPAIGN_PROOF != 'R18' && (env.CAMPAIGN_PROOF != 'Q47' || env.CAMPAIGN_Q47_SUITE != 'source-format')) || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
         run: |
           if [ "$APP" == subtitles ]; then
             timeout 180s pnpm --dir apps/subtitles/e2e install --frozen-lockfile
@@ -211,10 +225,22 @@ jobs:
         if: env.CAMPAIGN_PROOF == 'Q47' && env.CAMPAIGN_Q47_SUITE != 'source-format'
         timeout-minutes: 1
         run: timeout --kill-after=2s 10s node --test engineering/documentation/test-install-builder.cjs engineering/documentation/test-install-builder-recovery.cjs
+      - name: Verify fixed R18 formatter controls
+        if: env.CAMPAIGN_PROOF == 'R18'
+        timeout-minutes: 1
+        run: python3 -B -m unittest discover -s apps/player/scripts -p test_campaign_r18_document_format.py
+      - name: Verify fixed R18 bootstrap stage controls
+        if: env.CAMPAIGN_PROOF == 'R18'
+        timeout-minutes: 1
+        run: timeout --kill-after=2s 10s python3 -B -m unittest discover -s scripts/ci -p test_r18_format_public_control_stages.py
+      - name: Verify fixed R18 formatter-public controls
+        if: env.CAMPAIGN_PROOF == 'R18'
+        timeout-minutes: 1
+        run: timeout --kill-after=2s 30s python3 -B scripts/ci/r18_format_public_controls.py
       - name: Run exact owned public proof
         run: bash scripts/ci/run-campaign-proof.sh "$CAMPAIGN_PROOF"
       - name: Collect bounded canonical source metadata
-        if: always() && inputs.architecture_metadata && inputs.campaign_proof != 'Q47'
+        if: always() && inputs.architecture_metadata && inputs.campaign_proof != 'Q47' && inputs.campaign_proof != 'R18'
         run: |
           timeout 120s bash scripts/ci/prepare-campaign-go.sh player
           timeout 120s bash scripts/ci/prepare-campaign-go.sh subtitles
@@ -241,6 +267,10 @@ jobs:
             .verification/campaign-proof/Q47/results.json
             .verification/campaign-proof/Q47/source-manifest.json
             .verification/campaign-proof/Q47/artifact-manifest.json
+            .verification/campaign-proof/R18/receipt.json
+            .verification/campaign-proof/R18/results.json
+            .verification/campaign-proof/R18/source-manifest.json
+            .verification/campaign-proof/R18/artifact-manifest.json
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 3
