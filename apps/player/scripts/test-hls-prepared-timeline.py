@@ -3,7 +3,7 @@
 
 A 15s first GOP exceeds the 8s warm target but cannot establish the configured
 2s segment cadence. Stop/join preparation before any HLS GET can adopt it.
-Protect full timeline, future URLs, real decoded continuation, unchanged source,
+Protect full timeline, every future URL, exact decoded source frames, unchanged source,
 same init, admission bounds, and unauthenticated rejection. No playlist mocks.
 """
 import hashlib
@@ -18,7 +18,7 @@ import subprocess
 import threading
 import time
 from hls_timeline_http import PublicServer, sha, source_state
-from hls_timeline_packets import fragment_packets
+from hls_timeline_packets import fragment_packets, decoded_identity
 
 ROOT = Path(__file__).resolve().parents[3]
 RUN = ROOT / ".verification/hls-prepared-timeline" / time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
@@ -102,8 +102,8 @@ def manifest_facts(data):
         "segmentCount": len(segments)}, list(zip(segments, lengths))
 
 
-def journey(name, original, metadata):
-    case = {"name": name, "result": "failed", "fixture": metadata, "failures": []}
+def journey(name, original, metadata, offset=0):
+    case = {"name": name, "result": "failed", "fixture": metadata, "resumeOffsetSeconds": offset, "failures": []}
     receipt["cases"].append(case)
     directory, media = RUN / name, RUN / name / "media"
     media.mkdir(parents=True)
@@ -137,6 +137,10 @@ def journey(name, original, metadata):
             case["logicalDurationSeconds"] = plan["duration"]
             check(abs(plan["duration"] - 96) < 0.1, "plan_duration")
             hls = plan["compatible"]
+            if offset:
+                hls = hls.replace("/index.m3u8", "-o" + str(offset * 1000) + "/index.m3u8")
+            logical_duration = plan["duration"] - offset
+            case["expectedTimelineSeconds"] = logical_duration
             check(re.fullmatch(r"/hls/[a-f0-9]{16}/p/r-[a-zA-Z0-9-]+/index\.m3u8", hls) is not None, "planned_remux_route")
             cache = directory / "cache"
             prepare = "/api/v1/items/" + item_id + "/playback-prepare"
@@ -185,23 +189,25 @@ def journey(name, original, metadata):
             check(status == 200, "variant_http_" + str(status))
             facts, segments = manifest_facts(variant)
             case["publicVariant"] = facts
-            if facts["playlistType"] != "VOD" or not facts["endlist"] or abs(facts["durationSeconds"] - plan["duration"]) > 0.1:
+            if facts["playlistType"] != "VOD" or not facts["endlist"] or abs(facts["durationSeconds"] - logical_duration) > 0.1:
                 case["failures"].append("public_full_timeline")
             elapsed, selected = 0.0, []
             for filename, duration in segments:
                 selected.append(filename)
                 elapsed += duration
-                if elapsed >= 26:
-                    break
+
             case["advertisedContinuationSeconds"] = elapsed
-            if elapsed < 26:
+            if elapsed < logical_duration - 0.1:
                 case["failures"].append("future_uri_missing")
             fragments, previous_end = [], None
             case["publicFragments"] = []
             advertised_lengths = dict(segments)
             for filename in ["init.mp4"] + selected:
                 status, data, _ = api.http(base + filename)
-                check(status == 200 and len(data) > 0, "public_fragment_http_" + str(status))
+                if status != 200 or not data:
+                    case["failures"].append("public_fragment_http_" + str(status))
+                    case["unavailableSegment"] = filename
+                    break
                 fragments.append(data)
                 if filename != "init.mp4":
                     fragment = directory / "fragment-probe.mp4"
@@ -212,6 +218,12 @@ def journey(name, original, metadata):
                     case["publicFragments"].append(packet_facts)
                     if abs(packet_facts["videoSpanSeconds"] - advertised_lengths[filename]) > 0.15:
                         case["failures"].append("fragment_video_duration")
+                    independent = decoded_identity(fragment)
+                    packet_facts["independentDecodedFrames"] = independent["frames"]
+                    if not packet_facts["keyframePackets"] or independent["frames"] != packet_facts["videoPackets"]:
+                        case["failures"].append("fragment_independent_decode")
+                    if abs(packet_facts["videoPackets"] / metadata["frameRate"] - advertised_lengths[filename]) > 0.15:
+                        case["failures"].append("fragment_video_density")
                     if packet_facts["videoPackets"]:
                         if previous_end is not None and abs(packet_facts["firstVideoTime"] - previous_end) > 0.15:
                             case["failures"].append("fragment_video_discontinuity")
@@ -228,8 +240,16 @@ def journey(name, original, metadata):
             case["decodedContinuationSeconds"] = case["decodedFrames"] / metadata["frameRate"]
             if abs(case["decodedContinuationSeconds"] - elapsed) > 0.15:
                 case["failures"].append("advertised_continuation_timing")
-            if result.returncode or case["decodedFrames"] < 600:
+            expected_frames = (96 - offset) * metadata["frameRate"]
+            if result.returncode or case["decodedFrames"] != expected_frames:
                 case["failures"].append("decoded_continuation")
+            reference, actual = decoded_identity(source, offset), decoded_identity(decoded)
+            case["referenceDecodedFrames"] = reference["frames"]
+            case["decodedSourceMatches"] = actual == reference
+            case["referenceFrameSHA256"] = reference["sha256"]
+            case["publicFrameSHA256"] = actual["sha256"]
+            if not case["decodedSourceMatches"]:
+                case["failures"].append("resume_source_frames")
             status, init, _ = api.http(base + "init.mp4")
             check(status == 200 and init == fragments[0], "same_initialization")
             case["originalInitSHA256"] = hashlib.sha256(init).hexdigest()
@@ -261,10 +281,14 @@ try:
     receipt["encoderVersions"] = {tool: subprocess.check_output([tool, "-version"], text=True).splitlines()[0]
         for tool in ["ffmpeg", "ffprobe"]}
     controls = ",".join(str(v) for v in range(0, 96, 2))
-    for name, gop, keys in [("control2s", 48, controls), ("irregular15s", 2400, "0,15,36,60,84")]:
+    fixtures = [("control2s", 48, controls), ("irregular15s", 2400, "0,15,36,60,84"),
+        ("cluster15s", 2400, "0,15,16,18,36,60,84")]
+    for name, gop, keys in fixtures:
         source, metadata = fixture(name, gop, keys)
         journey(name, source, metadata)
-    if len(receipt["cases"]) == 2 and all(case["result"] == "passed" for case in receipt["cases"]):
+        if name == "cluster15s":
+            journey(name + "resume15s", source, metadata, 15)
+    if len(receipt["cases"]) == 4 and all(case["result"] == "passed" for case in receipt["cases"]):
         receipt["result"] = "passed"
 except Exception as error:
     receipt["failureClass"] = str(error) if isinstance(error, RuntimeError) else type(error).__name__

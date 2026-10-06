@@ -1,6 +1,8 @@
 """Numeric packet evidence for real synthetic public HLS fragments."""
+import hashlib
 import json
 import math
+import re
 import subprocess
 
 
@@ -29,3 +31,19 @@ def fragment_packets(path):
     return {"videoPackets": len(packets), "keyframePackets": keys,
         "firstVideoTime": first, "lastVideoEnd": last,
         "videoSpanSeconds": last - first if points else 0}
+
+
+
+def decoded_identity(path, offset=0):
+    command = ["ffmpeg", "-nostdin", "-v", "error", "-xerror", "-threads", "2", "-i", str(path)]
+    if offset:
+        command += ["-ss", str(offset)]
+    command += ["-an", "-fps_mode", "passthrough", "-f", "framemd5", "pipe:1"]
+    result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=60)
+    if result.returncode or len(result.stdout) > 2 * 1024 * 1024:
+        raise RuntimeError("public_fragment_decode")
+    hashes = [line.rsplit(b",", 1)[-1].strip() for line in result.stdout.splitlines()
+        if line and not line.startswith(b"#")]
+    if len(hashes) > 2304 or any(re.fullmatch(rb"[a-f0-9]{32}", value) is None for value in hashes):
+        raise RuntimeError("decoded_fixture_bound")
+    return {"frames": len(hashes), "sha256": hashlib.sha256(b"\n".join(hashes)).hexdigest()}
