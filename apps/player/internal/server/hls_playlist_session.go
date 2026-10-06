@@ -42,7 +42,8 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 		writer.Header().Set("Cache-Control", "no-store")
 	}
 	path := filepath.Join(manager.cache, key, localName)
-	if filepath.Ext(name) == ".m3u8" && serveHLSPlaylistWithSession(writer, request, path, start, hlsPlaybackDuration(recipe, duration)) {
+	projection := manager.recipePlaylistProjection(request.Context(), item, recipe, key, localName)
+	if filepath.Ext(name) == ".m3u8" && serveHLSPlaylistWithSession(writer, request, path, start, hlsPlaybackDuration(recipe, duration), projection) {
 		return
 	}
 	if filepath.Ext(name) == ".m4s" {
@@ -140,21 +141,24 @@ func localHLSFile(name string) (string, bool) {
 	return localName, err == nil && hlsFile(name)
 }
 
-func serveHLSPlaylistWithSession(writer http.ResponseWriter, request *http.Request, path string, start int, duration float64) bool {
+func serveHLSPlaylistWithSession(writer http.ResponseWriter, request *http.Request, path string, start int, duration float64, projection ...func([]byte) []byte) bool {
 	playID := jellyfinPlaySessionQuery(request)
 	if playID != "" && !validPlaybackSession(playID) {
 		return false
 	}
-	//nolint:gosec // G703: serveRecipe constructs path from the HLS allowlist.
-	manifest, err := os.ReadFile(path)
+	manifest, err := playback.ReadHLSPlaylist(path)
 	if err != nil {
 		localizedNotFound(writer, request)
 		return true
 	}
 	if playID == "" {
-		manifest = completeHLSVOD(manifest, duration)
+		manifest = projectHLSPlaylist(manifest, duration, projection...)
 	} else {
-		manifest = hlsPlaylistWithSession(manifest, playID, jellyfinMediaQueryToken(request), start, duration)
+		manifest = hlsPlaylistWithSession(manifest, playID, jellyfinMediaQueryToken(request), start, duration, projection...)
+	}
+	if manifest == nil {
+		localizedNotFound(writer, request)
+		return true
 	}
 	if ticket, ok := request.Context().Value(castTicketKey{}).(string); ok {
 		manifest = hlsPlaylistWithQuery(manifest, url.Values{"ticket": {ticket}})
@@ -166,7 +170,7 @@ func serveHLSPlaylistWithSession(writer http.ResponseWriter, request *http.Reque
 	return true
 }
 
-func hlsPlaylistWithSession(manifest []byte, playID, token string, start int, duration float64) []byte {
+func hlsPlaylistWithSession(manifest []byte, playID, token string, start int, duration float64, projection ...func([]byte) []byte) []byte {
 	query := url.Values{"playSessionId": {playID}}
 	if token != "" {
 		query.Set("api_key", token)
@@ -174,7 +178,10 @@ func hlsPlaylistWithSession(manifest []byte, playID, token string, start int, du
 	if start > 0 {
 		query.Set("start", strconv.Itoa(start))
 	}
-	manifest = completeHLSVOD(manifest, duration)
+	manifest = projectHLSPlaylist(manifest, duration, projection...)
+	if manifest == nil {
+		return nil
+	}
 	text := strings.Replace(string(manifest), "#EXT-X-PLAYLIST-TYPE:VOD\n", "#EXT-X-PLAYLIST-TYPE:VOD\n#EXT-X-START:TIME-OFFSET="+strconv.Itoa(start)+",PRECISE=YES\n", 1)
 	text = strings.Replace(text, "#EXT-X-PLAYLIST-TYPE:EVENT\n", "#EXT-X-PLAYLIST-TYPE:EVENT\n#EXT-X-START:TIME-OFFSET="+strconv.Itoa(start)+",PRECISE=YES\n", 1)
 	return hlsPlaylistWithQuery([]byte(text), query)

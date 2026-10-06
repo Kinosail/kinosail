@@ -39,23 +39,24 @@ func (manager *hlsManager) missingStartupSegment(item library.Item, recipe hlsRe
 	}
 	defer root.Close()
 	duration := hlsPlaybackDuration(recipe, manager.probe.duration(manager.ctx, item))
+	projection := manager.copiedStartupProjection(item, recipe, directory)
 	for _, rendition := range strings.Split(string(master), "\n") {
 		if !hlsFile(rendition) || !strings.HasSuffix(rendition, "/index.m3u8") {
 			continue
 		}
-		if name := missingStartupRendition(root, directory, key, rendition, duration); name != "" {
+		if name := missingStartupRendition(root, directory, key, rendition, duration, projection); name != "" {
 			return name
 		}
 	}
 	return ""
 }
 
-func missingStartupRendition(root *os.Root, directory, key, rendition string, duration float64) string {
+func missingStartupRendition(root *os.Root, directory, key, rendition string, duration float64, projection ...func([]byte) []byte) string {
 	manifest, err := playback.ReadHLSPlaylist(filepath.Join(directory, rendition))
 	if err != nil {
 		return ""
 	}
-	segments, _ := startupWindowSegments(manifest, duration)
+	segments, _ := startupWindowSegments(manifest, duration, projection...)
 	for _, segment := range segments {
 		name := filepath.Join(filepath.Dir(rendition), segment)
 		if _, err := root.Stat(filepath.Join(key, name)); os.IsNotExist(err) {
@@ -85,10 +86,10 @@ func (manager *hlsManager) startupWindowReady(item library.Item, recipe hlsRecip
 	}
 	defer root.Close()
 	duration := hlsPlaybackDuration(recipe, manager.probe.duration(manager.ctx, item))
-	return startupMasterReady(root, directory, key, master, duration)
+	return startupMasterReady(root, directory, key, master, duration, manager.copiedStartupProjection(item, recipe, directory))
 }
 
-func startupMasterReady(root *os.Root, directory, key string, master []byte, duration float64) bool {
+func startupMasterReady(root *os.Root, directory, key string, master []byte, duration float64, projection ...func([]byte) []byte) bool {
 	count := 0
 	for _, name := range strings.Split(string(master), "\n") {
 		if name == "" || strings.HasPrefix(name, "#") {
@@ -97,7 +98,7 @@ func startupMasterReady(root *os.Root, directory, key string, master []byte, dur
 		if !hlsFile(name) || !strings.HasSuffix(name, "/index.m3u8") {
 			return false
 		}
-		if !startupRenditionReady(root, directory, key, name, duration) {
+		if !startupRenditionReady(root, directory, key, name, duration, projection...) {
 			return false
 		}
 		count++
@@ -110,12 +111,12 @@ func startupAssetReady(root *os.Root, name string) bool {
 	return err == nil && info.Mode().IsRegular() && info.Size() > 0
 }
 
-func startupRenditionReady(root *os.Root, directory, key, playlist string, duration float64) bool {
+func startupRenditionReady(root *os.Root, directory, key, playlist string, duration float64, projection ...func([]byte) []byte) bool {
 	manifest, err := playback.ReadHLSPlaylist(filepath.Join(directory, playlist))
 	if err != nil || !startupAssetReady(root, filepath.Join(key, filepath.Dir(playlist), "init.mp4")) {
 		return false
 	}
-	segments, valid := startupWindowSegments(manifest, duration)
+	segments, valid := startupWindowSegments(manifest, duration, projection...)
 	if !valid {
 		return false
 	}
@@ -127,8 +128,8 @@ func startupRenditionReady(root *os.Root, directory, key, playlist string, durat
 	return true
 }
 
-func startupWindowSegments(manifest []byte, playableDuration float64) ([]string, bool) {
-	manifest = completeHLSVOD(manifest, playableDuration)
+func startupWindowSegments(manifest []byte, playableDuration float64, projection ...func([]byte) []byte) ([]string, bool) {
+	manifest = projectHLSPlaylist(manifest, playableDuration, projection...)
 	var segments []string
 	duration, segmentDuration := 0.0, 0.0
 	for _, name := range strings.Split(string(manifest), "\n") {
