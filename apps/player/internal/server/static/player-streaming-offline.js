@@ -87,6 +87,14 @@ window.KinosailOfflineMedia?.source(itemID).then(async (source) => {
   player.load();
   showPlaybackMode(false, true);
 }).catch(() => {});
+player.addEventListener("kinosail:navigation", () => {
+  if (isPictureInPicture()) return;
+  adaptiveGeneration += 1;
+  cancelNetworkRecovery();
+  clearBufferingRecovery();
+  pendingResume?.cancel();
+  hls?.stopLoad();
+});
 const streaming = {destroy: () => {
   if (player.dataset.offline === "true") void window.KinosailOfflineMedia?.saveProgress(player, player.ended);
   detachOfflineProgress?.();

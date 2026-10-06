@@ -1,5 +1,6 @@
 import { expect, test, type Page, type Route } from "@playwright/test";
 import { readFile } from "node:fs/promises";
+import {establishPlayedThenPaused, progressFixtureHTML} from './player-progress-fixture';
 
 // Isolated HTTP failure/ordering coverage; see engineering/qa/2026-10-04-r03-progress.
 const source = (await Promise.all(["player-progress.js", "player-progress-navigation.js"].map(path =>
@@ -21,17 +22,7 @@ test.beforeEach(async ({ page }, testInfo) => {
     if (aborted) return route.abort("failed");
     await route.fulfill({ status, headers: { "X-Request-ID": "qa-request-03" }, body: status === 204 ? "" : "private-server-error?token=synthetic" });
   });
-  await page.route(`${fixtureOrigin}/`, route => route.fulfill({ contentType: "text/html", body: `
-    <!doctype html><html lang="en"><head><meta charset="utf-8"><title>R03 fixture</title></head>
-    <body data-viewer-profile="qa-viewer"><main class="player-shell">
-      <video data-progress="/progress/movie?playbackToken=synthetic" data-start="0"></video>
-      <div class="player-progress-notice" data-progress-notice hidden>
-        <span role="status" aria-live="polite" data-progress-status></span>
-        <button class="quiet" type="button" data-progress-retry>Retry saving position</button>
-        <button class="quiet" type="button" data-progress-continue hidden>Continue without saving</button>
-      </div>
-      <label>Audio track <select data-audio-track><option value="0">Original</option><option value="1">Other</option></select></label><small data-audio-status></small>
-    </main></body></html>` }));
+  await page.route(`${fixtureOrigin}/`, route => route.fulfill({contentType: "text/html", body: progressFixtureHTML}));
   await page.route("**/watch/next", route => route.fulfill({ contentType: "text/html", body: "<h1>Next episode</h1>" }));
   await page.route("**/api/v1/test-queue", route => route.fulfill({json: {items: [{id: "movie"}, {id: "next", title: "Next song", stream: "/media/next"}]}}));
   await page.goto("/");
@@ -51,7 +42,7 @@ test.beforeEach(async ({ page }, testInfo) => {
     addEventListener('pagehide', () => player.dispatchEvent(new Event('kinosail:page-exit')));
   ` + source });
   // This ordering fixture starts after playback has reached its paused position.
-  await page.locator("video").dispatchEvent("playing");
+  await establishPlayedThenPaused(page);
 });
 
 async function pauseAt(page: Page, seconds: number) {

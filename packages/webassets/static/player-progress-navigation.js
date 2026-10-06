@@ -44,6 +44,7 @@ document.addEventListener("click", event => {
     if (progressNavigation !== navigation) return;
     if (!ownsProgressNavigation()) { cancelProgressNavigation(); return; }
     cancelProgressNavigation();
+    player.dispatchEvent(new Event("kinosail:navigation"));
     location.assign(navigation.target);
   };
   progressNavigation = navigation;
@@ -52,6 +53,21 @@ document.addEventListener("click", event => {
   void save(false, true);
   // An existing authentication/policy failure can return before sendProgress refreshes the notice.
   if (progressFailure && !retryableProgress()) showProgressFailure();
+});
+// Wait for every listener's cancellation decision before stopping an accepted
+// departure. Watched submissions replay here after their checkpoint is saved.
+document.addEventListener("click", event => {
+  const link = event.target.closest?.('a[href]');
+  if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey ||
+      !link || link.hasAttribute("download") || link.target && link.target !== "_self" ||
+      link.origin !== location.origin || link.pathname !== "/" || link.search || link.hash) return;
+  setTimeout(() => { if (!event.defaultPrevented) player.dispatchEvent(new Event("kinosail:navigation")); });
+});
+document.addEventListener("submit", event => {
+  const form = event.target;
+  if (!(form instanceof HTMLFormElement) || form.target && form.target !== "_self" ||
+      new URL(form.action).origin !== location.origin || new URL(form.action).pathname !== `/watched/${progressItem()}`) return;
+  setTimeout(() => { if (!event.defaultPrevented) player.dispatchEvent(new Event("kinosail:navigation")); });
 });
 // Manual watched status must follow the current page's final position write.
 document.addEventListener("submit", event => {
