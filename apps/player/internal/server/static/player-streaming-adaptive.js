@@ -7,7 +7,7 @@ const resumeAfterSourceChange = (forcePlay = false, sourceReady = false, retaine
     if (pendingResume?.resume !== resume) return;
     const {seconds, playing} = pendingResume;
     pendingResume = undefined;
-    if (Number.isFinite(seconds) && seconds >= 0 && seconds < player.duration && Math.abs(player.currentTime - seconds) >= 0.1) player.currentTime = seconds;
+    if (Number.isFinite(seconds) && seconds >= 0 && seconds < player.duration && Math.abs(player.currentTime - seconds) >= 0.1) setPlayerTime(seconds);
     if (playing) requestPlay("source-change").catch(() => {});
   };
   const cancel = () => {

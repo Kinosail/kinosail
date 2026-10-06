@@ -9,6 +9,9 @@ repo="$(git -C "$app" rev-parse --show-toplevel)"
 cd "$app"
 # shellcheck source=scripts/ci/test-container-transport.sh
 source "$repo/scripts/ci/test-container-transport.sh"
+# shellcheck source=scripts/ci/browser-fixture-tls.sh
+source "$repo/scripts/ci/browser-fixture-tls.sh"
+validate_browser_fixture_tls
 case "${KINOSAIL_BROWSER_SMOKE:-}" in
   ""|1) ;;
   *) echo 'unsupported browser smoke mode' >&2; exit 2 ;;
@@ -33,6 +36,7 @@ if [[ -z "$engine" ]]; then
 fi
 
 cleanup() {
+  remove_browser_fixture_trust
   if ((${#mcp_jobs[@]})); then
     kill "${mcp_jobs[@]}" >/dev/null 2>&1 || true
     wait "${mcp_jobs[@]}" >/dev/null 2>&1 || true
@@ -142,8 +146,8 @@ start_server() {
   local publish="127.0.0.1::38128"
   local auth_url=""
   local scheme="https"
-  local tls_environment=()
-  if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
+  local tls_environment=(--env KINOSAIL_TLS_ENABLED=true)
+  if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]] && ! browser_fixture_uses_tls; then
     scheme="http"
     tls_environment=(--env KINOSAIL_TLS_ENABLED=false)
   fi
@@ -178,6 +182,9 @@ port="${url##*:}"
 "$engine" rm --force "$container" >/dev/null
 container=""
 start_server "$port"
+if browser_fixture_uses_tls; then
+  trust_browser_fixture_tls "$engine" "$container" "$mcp_dir" "$suffix"
+fi
 
 expect_status 401 "$url/api/v1/settings"
 expect_status 403 --request POST --header 'Origin: https://attacker.example' --data 'name=Attacker&password=attacker-password' "$url/setup"
@@ -204,7 +211,7 @@ expect_status 303 --cookie "$media_dir/cookies" --header "Origin: $url" --header
 if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
   fixture_dir="$mcp_dir/ui-fixtures"
   KINOSAIL_UI_FIXTURE_DIR="$fixture_dir" go test ./internal/server -run TestWriteUIStateFixtures -count=1
-  browser_args=(polish-shell.spec.ts subtitle-dashboard.spec.ts subtitle-history.spec.ts subtitle-inspector-races.spec.ts subtitle-inspector-layout.spec.ts subtitle-inspector-loading.spec.ts subtitle-pairing.spec.ts subtitle-merged-group.spec.ts supporter-badge-layout.spec.ts test-instance.spec.ts session-resume.spec.ts test-instance-session-persistence.spec.ts)
+  browser_args=(player-unplayed-progress.spec.ts polish-shell.spec.ts subtitle-dashboard.spec.ts subtitle-history.spec.ts subtitle-inspector-races.spec.ts subtitle-inspector-layout.spec.ts subtitle-inspector-loading.spec.ts subtitle-pairing.spec.ts subtitle-merged-group.spec.ts supporter-badge-layout.spec.ts test-instance.spec.ts session-resume.spec.ts test-instance-session-persistence.spec.ts)
   if [[ "${KINOSAIL_BROWSER_SMOKE:-}" == "1" ]]; then browser_args+=(--grep=@smoke); fi
   KINOSAIL_TEST_INSTANCE=1 KINOSAIL_UI_FIXTURE_DIR="$fixture_dir" KINOSAIL_SUBTITLE_MERGED_FIXTURE_DIR="$fixture_dir/subtitle-merged" KINOSAIL_E2E_MEDIA_DIR="$media_dir" KINOSAIL_TEST_TOTP_SECRET="$secret" KINOSAIL_E2E_URL="$url" KINOSAIL_E2E_OUTPUT_DIR="${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}" pnpm --dir e2e test "${browser_args[@]}" --workers="${KINOSAIL_E2E_WORKERS:-1}"
   exit

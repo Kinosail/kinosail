@@ -104,7 +104,7 @@ if (castButtons.length && typeof remote?.prompt === "function") {
   player.addEventListener("webkitcurrentplaybacktargetiswirelesschanged", () => castStatus(player.webkitCurrentPlaybackTargetIsWireless ? "connected" : "disconnected"));
   castButtons.forEach((button) => button.addEventListener("click", () => player.webkitShowPlaybackTargetPicker()));
 } else setCastAvailability(false);
-document.querySelectorAll("[data-seek]").forEach((button) => button.addEventListener("click", () => { setPlayerTime(Number(button.dataset.seek)); button.dataset.skipped = "true"; }));
+document.querySelectorAll("[data-seek]").forEach((button) => button.addEventListener("click", () => { setPlayerTime(Number(button.dataset.seek), true); button.dataset.skipped = "true"; }));
 const chapters = [...document.querySelectorAll("[data-chapter]")];
 const syncChapter = () => chapters.forEach((button) => {
   const current = player.currentTime >= Number(button.dataset.start) && player.currentTime < Number(button.dataset.end);
@@ -134,7 +134,7 @@ player.addEventListener("seeking", () => {
     if (player.currentTime >= Number(marker.dataset.start) && player.currentTime < Number(marker.dataset.seek)) marker.dataset.skipped = "true";
   }
 });
-player.addEventListener("seeked", () => { managedSeek = false; });
+player.addEventListener("seeked", () => { managedSeek = false; managedSeekTarget = undefined; });
 player.addEventListener("timeupdate", () => {
   if (playbackPreparation) return;
   for (const marker of markers) {

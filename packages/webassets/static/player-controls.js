@@ -186,8 +186,8 @@ if (controls && player.tagName === "VIDEO") {
     requestPlay("control").catch(() => {});
     if (navigator.maxTouchPoints > 0 && !document.fullscreenElement && !player.webkitDisplayingFullscreen) enterFullscreen().catch(reportFullscreenFailure);
   }));
-  controls.querySelectorAll("[data-player-back]").forEach((button) => button.addEventListener("click", () => { player.currentTime = Math.max(0, player.currentTime - 10); }));
-  controls.querySelectorAll("[data-player-forward]").forEach((button) => button.addEventListener("click", () => { player.currentTime = Math.min(player.duration || Infinity, player.currentTime + 10); }));
+  controls.querySelectorAll("[data-player-back]").forEach((button) => button.addEventListener("click", () => { setPlayerTime(Math.max(0, player.currentTime - 10), true); }));
+  controls.querySelectorAll("[data-player-forward]").forEach((button) => button.addEventListener("click", () => { setPlayerTime(Math.min(player.duration || Infinity, player.currentTime + 10), true); }));
   seek?.addEventListener("input", () => { scrubPosition = Number(seek.value); syncControls(); showSeekPreview(scrubPosition); });
   seek?.addEventListener("pointermove", (event) => {
     const bounds = seek.getBoundingClientRect();
@@ -198,7 +198,7 @@ if (controls && player.tagName === "VIDEO") {
   seek?.addEventListener("change", () => {
     const position = Number(seek.value);
     scrubPosition = undefined;
-    if (Number.isFinite(position) && position >= 0 && position <= Number(seek.max)) player.currentTime = position;
+    if (Number.isFinite(position) && position >= 0 && position <= Number(seek.max)) setPlayerTime(position, true);
     syncControls();
     hideSeekPreview();
   });
@@ -263,7 +263,7 @@ if (controls && player.tagName === "VIDEO") {
       const duration = Number.isFinite(player.duration) ? player.duration : Number(player.dataset.duration);
       if (!(duration > 0)) return;
       event.preventDefault();
-      player.currentTime = Math.max(0, Math.min(duration, player.currentTime + (key === "arrowright" ? 10 : -10)));
+      setPlayerTime(Math.max(0, Math.min(duration, player.currentTime + (key === "arrowright" ? 10 : -10))), true);
     }
   });
   if (settingsPanel) {

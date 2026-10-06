@@ -51,12 +51,25 @@ const playbackTrace = (event, detail = "", quality = "") => {
   playbackTraceQueue.push(JSON.stringify({session: playbackSession, event, sequence: ++playbackTraceSequence, elapsedMs: traceNumber(performance.now() - playbackTraceStarted), positionMs: traceNumber(player.currentTime * 1000), durationMs: traceNumber(player.duration * 1000), bufferedAheadMs: traceNumber(bufferedAhead() * 1000), readyState: player.readyState, networkState: player.networkState, paused: player.paused, method: playbackTraceMethod, detail: traceToken(detail), quality: traceToken(quality), visibility: document.visibilityState, errorCode: player.error?.code || 0, droppedFrames: frames?.droppedVideoFrames || 0, totalFrames: frames?.totalVideoFrames || 0}));
   if (["playing", "waiting", "stalled", "error", "hls-error", "play-rejected"].includes(event)) setTimeout(flushPlaybackTrace);
 };
-let managedSeek = false;
-const setPlayerTime = (seconds) => { managedSeek = true; player.currentTime = seconds; };
+// The browser also restores a direct source's saved #t fragment without a setter.
+let managedSeek = Boolean(player.getAttribute("src")?.includes("#t=") && (player.seeking || !player.readyState));
+let managedSeekTarget = managedSeek ? Number(player.dataset.start) || 0 : undefined;
+const setPlayerTime = (seconds, user = false) => {
+  if (user) player.dispatchEvent(new Event("kinosail:seek-intent"));
+  managedSeek = true; managedSeekTarget = seconds; player.currentTime = seconds;
+  managedSeekTarget = player.currentTime;
+};
+player.addEventListener("seeking", () => {
+  if (managedSeek && Number.isFinite(managedSeekTarget) && player.currentTime !== managedSeekTarget && !playbackPreparation) managedSeek = false;
+});
 let playbackPreparation;
 let preparationPausePending = 0;
 let preparationSeek;
-player.addEventListener("emptied", () => { preparationSeek = undefined; });
+player.addEventListener("emptied", () => {
+  preparationSeek = undefined;
+  managedSeekTarget = player.getAttribute("src")?.includes("#t=") ? Number(player.dataset.start) || 0 : undefined;
+  managedSeek = Number.isFinite(managedSeekTarget);
+});
 let playbackRequest = 0;
 let pendingApplePlay;
 const withdrawPlaybackRequest = () => {
