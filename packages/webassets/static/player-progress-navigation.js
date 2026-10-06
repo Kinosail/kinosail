@@ -1,7 +1,7 @@
 // Keep explicit Library navigation alive until its latest owned checkpoint is acknowledged.
 // Browser Back and tab close still use the separate pagehide keepalive fallback.
 function progressNavigationAllowed() {
-  return !playbackPreparation && !isPictureInPicture() && player.dataset.castActive !== "true" &&
+  return progressChanged() && !playbackPreparation && !isPictureInPicture() && player.dataset.castActive !== "true" &&
     player.dataset.offline !== "true" && player.readyState >= HTMLMediaElement.HAVE_METADATA &&
     !player.ended && !pendingProgress?.watched && Boolean(progressItem()) && progressProfile().length <= 128 &&
     Number.isFinite(player.currentTime) && player.currentTime >= 0 && player.currentTime <= 31536000;
@@ -44,6 +44,7 @@ document.addEventListener("click", event => {
     if (progressNavigation !== navigation) return;
     if (!ownsProgressNavigation()) { cancelProgressNavigation(); return; }
     cancelProgressNavigation();
+    player.dispatchEvent(new Event("kinosail:navigation"));
     location.assign(navigation.target);
   };
   progressNavigation = navigation;
@@ -51,5 +52,43 @@ document.addEventListener("click", event => {
   if (progressNotice) progressNotice.hidden = false;
   void save(false, true);
   // An existing authentication/policy failure can return before sendProgress refreshes the notice.
+  if (progressFailure && !retryableProgress()) showProgressFailure();
+});
+// Wait for every listener's cancellation decision before stopping an accepted
+// departure. Watched submissions replay here after their checkpoint is saved.
+document.addEventListener("click", event => {
+  const link = event.target.closest?.('a[href]');
+  if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey ||
+      !link || link.hasAttribute("download") || link.target && link.target !== "_self" ||
+      link.origin !== location.origin || link.pathname !== "/" || link.search || link.hash) return;
+  setTimeout(() => { if (!event.defaultPrevented) player.dispatchEvent(new Event("kinosail:navigation")); });
+});
+document.addEventListener("submit", event => {
+  const form = event.target;
+  if (!(form instanceof HTMLFormElement) || form.target && form.target !== "_self" ||
+      new URL(form.action).origin !== location.origin || new URL(form.action).pathname !== `/watched/${progressItem()}`) return;
+  setTimeout(() => { if (!event.defaultPrevented) player.dispatchEvent(new Event("kinosail:navigation")); });
+});
+// Manual watched status must follow the current page's final position write.
+document.addEventListener("submit", event => {
+  const form = event.target;
+  if (!(form instanceof HTMLFormElement) || new URL(form.action).origin !== location.origin ||
+      new URL(form.action).pathname !== `/watched/${progressItem()}` || !progressNavigationAllowed()) return;
+  event.preventDefault();
+  if (progressNavigation) return;
+  requestPause();
+  const navigation = {profile: progressProfile(), item: progressItem(), source: player.currentSrc || player.src,
+    request: playbackRequest, deadline: performance.now() + 8000, leave: undefined};
+  navigation.leave = () => {
+    if (progressNavigation !== navigation || !ownsProgressNavigation()) { cancelProgressNavigation(); return; }
+    cancelProgressNavigation();
+    if (!form.checkValidity()) return;
+    progressPlayedItem = undefined;
+    form.requestSubmit(event.submitter);
+  };
+  progressNavigation = navigation;
+  progressContinuation = navigation.leave;
+  if (progressNotice) progressNotice.hidden = false;
+  void save(false, true);
   if (progressFailure && !retryableProgress()) showProgressFailure();
 });

@@ -7,6 +7,9 @@ repo="$(git -C "$app" rev-parse --show-toplevel)"
 cd "$app"
 # shellcheck source=scripts/ci/test-container-transport.sh
 source "$repo/scripts/ci/test-container-transport.sh"
+# shellcheck source=scripts/ci/browser-fixture-tls.sh
+source "$repo/scripts/ci/browser-fixture-tls.sh"
+validate_browser_fixture_tls
 # shellcheck source=apps/player/scripts/test-browser-journeys.sh
 source "$app/scripts/test-browser-journeys.sh"
 case "${KINOSAIL_BROWSER_SMOKE:-}" in
@@ -49,6 +52,7 @@ remove_state_volumes() {
 }
 
 cleanup() {
+  remove_browser_fixture_trust
   exec 9>&- 2>/dev/null || true
   if ((${#mcp_jobs[@]})); then
     kill "${mcp_jobs[@]}" >/dev/null 2>&1 || true
@@ -158,8 +162,8 @@ start_server() {
   local publish="127.0.0.1::38127"
   local auth_url=""
   local scheme="https"
-  local tls_environment=()
-  if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
+  local tls_environment=(--env KINOSAIL_TLS_ENABLED=true)
+  if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]] && ! browser_fixture_uses_tls; then
     scheme="http"
     tls_environment=(--env KINOSAIL_TLS_ENABLED=false)
   fi
@@ -178,26 +182,15 @@ start_server() {
   wait_container_test_health "$url" "$health_host"
 }
 
-start_fresh_server() {
-  local fixed_port="$1"
-  if [[ -n "$container" ]]; then
-    "$engine" rm --force "$container" >/dev/null
-    container=""
-  fi
-  remove_state_volumes
-  suffix="$$-$RANDOM"
-  config_volume="kinosail-test-config-$suffix"
-  cache_volume="kinosail-test-cache-$suffix"
-  backup_volume="kinosail-test-backups-$suffix"
-  create_state_volumes
-  start_server "$fixed_port"
-}
 
 start_server
 port="${url##*:}"
 "$engine" rm --force "$container" >/dev/null
 container=""
 start_server "$port"
+if browser_fixture_uses_tls; then
+  trust_browser_fixture_tls "$engine" "$container" "$mcp_dir" "$suffix"
+fi
 expect_status 401 "$url/api/v1/settings"
 expect_status 403 --request POST --header 'Origin: https://attacker.example' --data 'name=Attacker&password=attacker-password' "$url/setup"
 expect_status 421 --header 'Host: attacker.example' "$url/healthz"

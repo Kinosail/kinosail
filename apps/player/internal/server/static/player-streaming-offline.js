@@ -14,7 +14,7 @@ window.KinosailOfflineMedia?.source(itemID).then(async (source) => {
   const fallbackAdaptive = Boolean(stream) && (Boolean(retainedSource) || !direct) && (adaptiveActive || playbackTraceMethod !== "direct");
   const fallbackTraceMethod = fallbackAdaptive ? playbackTraceMethod : "direct";
   const fallbackTimelineOffset = fallbackAdaptive ? playbackTimelineOffset : 0;
-  const fallbackTime = pendingResume?.seconds ?? (player.readyState ? player.currentTime : Number(player.dataset.start) || 0);
+  const fallbackTime = player.readyState && player.currentTime > 0 ? player.currentTime : pendingResume?.seconds ?? (Number(player.dataset.start) || 0);
   const offlineJob = decodeURIComponent(source.split("/").at(-1) || "");
   pendingResume?.cancel();
   const audioChoice = document.querySelector("[data-audio-track]");
@@ -87,6 +87,14 @@ window.KinosailOfflineMedia?.source(itemID).then(async (source) => {
   player.load();
   showPlaybackMode(false, true);
 }).catch(() => {});
+player.addEventListener("kinosail:navigation", () => {
+  if (isPictureInPicture()) return;
+  adaptiveGeneration += 1;
+  cancelNetworkRecovery();
+  clearBufferingRecovery();
+  pendingResume?.cancel();
+  hls?.stopLoad();
+});
 const streaming = {destroy: () => {
   if (player.dataset.offline === "true") void window.KinosailOfflineMedia?.saveProgress(player, player.ended);
   detachOfflineProgress?.();

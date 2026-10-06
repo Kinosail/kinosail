@@ -155,10 +155,10 @@ if ("mediaSession" in navigator) {
   });
   const actions = {
     play: () => requestPlay("media-session"), pause: () => requestPause(),
-    seekbackward: ({seekOffset = 10}) => { player.currentTime = Math.max(0, player.currentTime - seekOffset); },
-    seekforward: ({seekOffset = 10}) => { player.currentTime = Math.min(player.duration, player.currentTime + seekOffset); },
-    seekto: ({seekTime}) => { player.currentTime = seekTime; },
-    stop: () => { requestPause(); player.currentTime = 0; },
+    seekbackward: ({seekOffset = 10}) => { setPlayerTime(Math.max(0, player.currentTime - seekOffset), true); },
+    seekforward: ({seekOffset = 10}) => { setPlayerTime(Math.min(player.duration, player.currentTime + seekOffset), true); },
+    seekto: ({seekTime}) => { setPlayerTime(seekTime, true); },
+    stop: () => { requestPause(); setPlayerTime(0, true); },
   };
   if (player.dataset.next) actions.nexttrack = () => location.assign(player.dataset.next);
   for (const [action, handler] of Object.entries(actions)) {
