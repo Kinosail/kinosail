@@ -45,15 +45,16 @@ def fixture(name, gop, keys):
         "-c:a", "aac", "-ac", "2", str(path)]
     subprocess.run(command, check=True, timeout=120, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     probe = subprocess.check_output(["ffprobe", "-v", "error", "-select_streams", "v:0", "-skip_frame", "nokey",
-        "-show_entries", "frame=best_effort_timestamp_time:format=duration",
+        "-show_entries", "frame=best_effort_timestamp_time:format=duration:stream=avg_frame_rate",
         "-of", "json", str(path)], timeout=30)
     facts = json.loads(probe)
     times = [float(f["best_effort_timestamp_time"]) for f in facts["frames"] if "best_effort_timestamp_time" in f]
     duration = float(facts["format"]["duration"])
+    check(facts["streams"][0]["avg_frame_rate"] == "24/1", "fixture_frame_rate")
     expected = [float(v) for v in keys.split(",")]
     check(len(times) == len(expected) and all(abs(a-b) < 0.05 for a, b in zip(times, expected)), "fixture_keyframes")
     check(abs(duration - 96) < 0.1, "fixture_duration")
-    return path, {"command": command, "sha256": sha(path), "durationSeconds": duration, "keyframesSeconds": times}
+    return path, {"command": command, "sha256": sha(path), "durationSeconds": duration, "frameRate": 24, "keyframesSeconds": times}
 
 
 def encoder_count(server):
@@ -148,6 +149,9 @@ def journey(name, original, metadata):
             physical = list(root.glob("*p/index.m3u8"))
             check(len(physical) == 1, "single_prepared_rendition")
             prepared_facts, _ = manifest_facts(physical[0].read_bytes())
+            prepared_init = (physical[0].parent / "init.mp4").read_bytes()
+            check(0 < len(prepared_init) <= 2 * 1024 * 1024, "prepared_initialization_bound")
+            case["preparedInitSHA256"] = hashlib.sha256(prepared_init).hexdigest()
             case["beforeFirstHLSGET"] = {"ownedFFmpeg": 0, "seekableMarker": True, "startupMarker": True,
                 "authenticatedMediaGETs": 0, "stoppedSamples": stopped_samples, "physicalVariant": prepared_facts}
             status, master, _ = api.http(hls)
@@ -175,21 +179,24 @@ def journey(name, original, metadata):
                 status, data, _ = api.http(base + filename)
                 check(status == 200 and len(data) > 0, "public_fragment_http_" + str(status))
                 fragments.append(data)
-            check(len(fragments[0]) < 2 * 1024 * 1024, "initialization_bound")
+            check(fragments[0] == prepared_init, "prepared_initialization_preserved")
             decoded = directory / "public-fragments.mp4"
             decoded.write_bytes(b"".join(fragments))
             result = subprocess.run(["ffmpeg", "-nostdin", "-v", "error", "-xerror", "-threads", "2",
-                "-i", str(decoded), "-progress", "pipe:1", "-f", "null", "-"],
+                "-i", str(decoded), "-progress", "pipe:1", "-fps_mode", "passthrough", "-f", "null", "-"],
                 capture_output=True, timeout=40)
             frames = [int(v) for v in re.findall(rb"^frame=([0-9]+)$", result.stdout, re.M)]
             case["decodedFrames"] = max(frames, default=0)
             case["decodeExitStatus"] = result.returncode
+            case["decodedContinuationSeconds"] = case["decodedFrames"] / metadata["frameRate"]
+            if abs(case["decodedContinuationSeconds"] - elapsed) > 0.15:
+                case["failures"].append("advertised_continuation_timing")
             if result.returncode or case["decodedFrames"] < 600:
                 case["failures"].append("decoded_continuation")
             status, init, _ = api.http(base + "init.mp4")
             check(status == 200 and init == fragments[0], "same_initialization")
             case["originalInitSHA256"] = hashlib.sha256(init).hexdigest()
-            case["workerBound"] = resources["peakOwnedFFmpeg"] <= 1 and resources["samplingErrors"] == 0
+            case["workerBound"] = resources["samples"] > 0 and resources["peakOwnedFFmpeg"] == 1 and resources["samplingErrors"] == 0
             check(case["workerBound"], "owned_encoder_bound")
             case["result"] = "passed" if not case["failures"] else "failed"
         except Exception as error:
