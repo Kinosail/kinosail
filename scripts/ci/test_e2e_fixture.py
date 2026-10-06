@@ -170,7 +170,7 @@ class E2EFixtureTests(unittest.TestCase):
             try:
                 metadata = root / ".e2e/fixtures/49123.json"
                 deadline = time.monotonic() + 5
-                while not receipt.exists() and time.monotonic() < deadline:
+                while (not receipt.exists() or not metadata.exists()) and time.monotonic() < deadline:
                     time.sleep(0.02)
                 self.assertTrue(metadata.exists(), "owned supervisor receipt missing")
                 initial = json.loads(metadata.read_text())
@@ -195,7 +195,7 @@ class E2EFixtureTests(unittest.TestCase):
                 (root / "race-armed").write_text("owned fixture fault")
                 control.write_text("{}")
                 deadline = time.monotonic() + 2
-                while control.exists() and time.monotonic() < deadline:
+                while (control.exists() or (root / "race-armed").exists()) and time.monotonic() < deadline:
                     time.sleep(0.02)
                 self.assertFalse(control.exists(), "nonregular control blocked the supervisor")
                 self.assertEqual(json.loads(metadata.read_text())["generation"], 0)

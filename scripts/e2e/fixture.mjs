@@ -1,6 +1,6 @@
 // Disposable host fixture: real app binaries, synthetic media, no containers.
 import { spawn, spawnSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync, lstatSync, openSync, fstatSync, readSync, closeSync, constants, renameSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, lstatSync, openSync, fstatSync, readSync, closeSync, constants, renameSync, linkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -20,32 +20,68 @@ if (app === 'player') {
 const binary = process.env[`KINOSAIL_E2E_${app.toUpperCase()}_BINARY`] ?? join(process.cwd(), '.e2e/bin', app);
 const stateDirectory = join(process.cwd(), '.e2e/fixtures');
 const statePath = join(stateDirectory, port + '.json');
+const pendingPath = statePath + '.pending';
 const controlPath = join(stateDirectory, port + '.restart');
 let child, stopping = false, restarting = false, generation = 0, timer, controlTimer;
+let pendingFD, pendingIdentity, receiptIdentity;
 const childEnv = { ...runtime, KINOSAIL_LISTEN: `127.0.0.1:${port}`, KINOSAIL_TLS_ENABLED: 'false', KINOSAIL_MEDIA_DIR: join(root, 'media'), KINOSAIL_DATA_DIR: join(root, 'data'), KINOSAIL_CACHE_DIR: join(root, 'cache'), KINOSAIL_BACKUP_DIR: join(root, 'backups'), KINOSAIL_LIBRARIES: '["Movies"]', KINOSAIL_SCAN_INTERVAL: '24h', KINOSAIL_BACKUP_INTERVAL: '24h', KINOSAIL_SERVER_NAME: 'Kinosail E2E Fixture' };
+function owns(path, identity) {
+  if (!identity) return false;
+  try { const current = lstatSync(path); return current.dev === identity.dev && current.ino === identity.ino; }
+  catch (error) { if (error.code !== 'ENOENT') throw error; return false; }
+}
 function cleanup() {
   clearInterval(controlTimer);
-  rmSync(controlPath, { force: true });
-  rmSync(statePath, { force: true });
+  if (pendingFD !== undefined) { closeSync(pendingFD); pendingFD = undefined; }
+  if (owns(pendingPath, pendingIdentity)) rmSync(pendingPath);
+  if (owns(statePath, receiptIdentity)) {
+    rmSync(controlPath, { force: true });
+    rmSync(statePath);
+  }
   rmSync(root, { recursive: true, force: true });
 }
 try {
   mkdirSync(stateDirectory, { recursive: true });
   if (lstatSync(stateDirectory).isSymbolicLink()) throw new Error('invalid fixture receipt directory');
   try { lstatSync(controlPath); throw new Error('fixture control already exists'); } catch (error) { if (error.code !== 'ENOENT') throw error; }
-  writeFileSync(statePath, '', { flag: 'wx', mode: 0o600 });
+  try { lstatSync(statePath); throw new Error('fixture receipt already exists'); } catch (error) { if (error.code !== 'ENOENT') throw error; }
+  pendingFD = openSync(pendingPath, 'wx', 0o600);
+  pendingIdentity = fstatSync(pendingFD);
 } catch (error) { rmSync(root, { recursive: true, force: true }); throw error; }
 function launch() {
+  if (pendingFD === undefined) {
+    try {
+      pendingFD = openSync(pendingPath, 'wx', 0o600);
+      pendingIdentity = fstatSync(pendingFD);
+    } catch (error) { cleanup(); throw error; }
+  }
   child = spawn(binary, [], { stdio: 'inherit', env: childEnv });
-  const pending = statePath + '.pending';
-  writeFileSync(pending, JSON.stringify({ app, port, supervisorPID: process.pid, childPID: child.pid, generation }), { flag: 'wx', mode: 0o600 });
-  renameSync(pending, statePath);
   child.on('error', error => { cleanup(); throw error; });
   child.on('exit', code => {
     clearTimeout(timer);
     if (restarting && !stopping) { restarting = false; generation++; launch(); }
-    else { cleanup(); process.exitCode = code ?? 0; }
+    else { cleanup(); process.exitCode ??= code ?? 0; }
   });
+  if (!Number.isInteger(child.pid)) return; // The error event owns failed-spawn cleanup.
+  try {
+    writeFileSync(pendingFD, JSON.stringify({ app, port, supervisorPID: process.pid, childPID: child.pid, generation }));
+    closeSync(pendingFD); pendingFD = undefined;
+    if (!owns(pendingPath, pendingIdentity)) throw new Error('fixture pending receipt ownership lost');
+    if (generation === 0) linkSync(pendingPath, statePath);
+    else {
+      if (!owns(statePath, receiptIdentity)) throw new Error('fixture receipt ownership lost');
+      renameSync(pendingPath, statePath);
+    }
+    receiptIdentity = pendingIdentity;
+    if (generation === 0) rmSync(pendingPath);
+    pendingIdentity = undefined;
+  } catch (error) {
+    clearInterval(controlTimer);
+    stopping = true;
+    process.exitCode = 1;
+    console.error('fixture receipt publication failed', app, generation, error.code === 'EEXIST' ? 'conflict' : 'publication');
+    stopChild('SIGTERM'); // Keep the supervisor alive until its owned child exits.
+  }
 }
 function stopChild(signal) {
   child.kill(signal);
