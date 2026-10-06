@@ -82,17 +82,18 @@ jobs:
           cache-to: type=gha,mode=max,scope=${{ needs.preflight.outputs.app }}-linux/${{ matrix.arch }}
           sbom: true
           provenance: mode=max
-      - name: Test production image by digest
-        env:
-          APP: ${{ needs.preflight.outputs.app }}
-          IMAGE: ghcr.io/kinosail/kinosail-${{ needs.preflight.outputs.app }}@${{ steps.build.outputs.digest }}
-        run: ./scripts/ci/test-image.sh "$APP" "$IMAGE"
-      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
-        with:
-          image-ref: ghcr.io/kinosail/kinosail-${{ needs.preflight.outputs.app }}@${{ steps.build.outputs.digest }}
-          severity: CRITICAL,HIGH
-          ignore-unfixed: true
-          exit-code: "1"
+      - parallel:
+          - name: Test production image by digest
+            env:
+              APP: ${{ needs.preflight.outputs.app }}
+              IMAGE: ghcr.io/kinosail/kinosail-${{ needs.preflight.outputs.app }}@${{ steps.build.outputs.digest }}
+            run: ./scripts/ci/test-image.sh "$APP" "$IMAGE"
+          - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+            with:
+              image-ref: ghcr.io/kinosail/kinosail-${{ needs.preflight.outputs.app }}@${{ steps.build.outputs.digest }}
+              severity: CRITICAL,HIGH
+              ignore-unfixed: true
+              exit-code: "1"
       - name: Export verified digest
         env:
           DIGEST: ${{ steps.build.outputs.digest }}
