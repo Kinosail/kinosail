@@ -83,6 +83,9 @@ class CampaignProofTests(unittest.TestCase):
         self.assertIn('KINOSAIL_HLS_RENDERER: "1"', proof)
         self.assertIn('run: python3 apps/player/scripts/test-hls-followon.py\n', proof)
         self.assertNotIn('KINOSAIL_HLS_RENDERER', (ROOT / '.github/workflows/app.yml').read_text())
+        driver = (ROOT / 'apps/player/scripts/test-hls-followon.py').read_text()
+        self.assertIn("if case['publicRenderer']['result'] != 'passed':", driver)
+        self.assertIn("case['failures'].append('public_renderer')", driver)
 
     def test_hevc_preparation_adds_a_separate_required_public_gate(self):
         # Completed, stopped and adopted ownership can pass audio6 while losing

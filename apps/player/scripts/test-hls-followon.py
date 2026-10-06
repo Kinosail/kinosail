@@ -176,6 +176,8 @@ def journey(name, original, metadata, offset=0, cold=False, one_shot=False, audi
                 if browser_reference:
                     reference_id = next(i['id'] for i in api.call('/api/v1/library')['items'] if i['title'] == 'Reference')
                     public_renderer(api, item_id, reference_id, metadata, offset, hls, directory, case, ROOT)
+                    if case['publicRenderer']['result'] != 'passed':
+                        case['failures'].append('public_renderer')
                     reference_state = source_state(browser_reference)
                     case['browserReferenceSource'].update(after=reference_state,
                         sourceUnchanged=case['browserReferenceSource']['before'] == reference_state)
