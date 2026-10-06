@@ -203,3 +203,11 @@ class RestoreToolControls(unittest.TestCase):
             value=tools.installed_closure({"playwright":"/owned/root"})
         self.assertEqual(value["files"][0]["path"],"owned.js")
         closed.assert_called_once_with(7)
+
+class RestoreDependencyDiagnosticControls(unittest.TestCase):
+    def test_only_closed_dependency_reason_values_are_exported(self):
+        for reason in ("source-shape", "source-parent", "tool-unavailable", "tool-resolution"):
+            self.assertEqual(tools.dependency_reason(ValueError(reason)), reason)
+        for error in (ValueError("private path /unreviewed/value"), ValueError("source-shape", "private"),
+                      OSError("private target"), RuntimeError("private text")):
+            self.assertEqual(tools.dependency_reason(error), "unclassified")

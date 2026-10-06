@@ -201,3 +201,11 @@ def capture(phases, suite="restore-headers", context=None):
     if installed_closure(roots) != closure or not valid_tools(records, suite): raise ValueError("tool-drift")
     return {"executables": records, "installedClosure": closure,
             "limits": "Selected executable and three transitive package roots only; system libraries and whole runner not fingerprinted."}
+
+
+def dependency_reason(error):
+    known = {"source-path", "source-parent", "source-shape", "source-deadline", "source-overflow",
+             "source-drift", "source-close", "tool-unavailable", "tool-metadata", "tool-resolution"}
+    if type(error) is ValueError and len(error.args) == 1 and type(error.args[0]) is str and error.args[0] in known:
+        return error.args[0]
+    return "unclassified"

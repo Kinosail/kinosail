@@ -17,7 +17,7 @@ MODULES = {
     "campaign_r06_restore_runtime_process": (5682, "de8db722f69ae408b79959a4a152ea12fdd7f5cf4220cbbdb065a17c7ce7f158", "fb260e072eaae501ac9a85eb5d98d20eab5f801d"),
     "campaign_r06_restore_runtime_controls": (6376, '5f7d11b118f4fa6037dc01c10e03a1478210dec390580ebe06a9ab178953cf7b', '6c5366c48d60182a5db8f3980696ea1ae0ae4e01'),
     "campaign_r06_restore_runtime_projection": (11753, "7bb2c80874b6d81b6ae5db3585c8bdbc2508c7ef34d96c055dae74af43b34686", "5b61d4ff7daf5f563f57579f4319d61244812965"),
-    "campaign_r06_restore_runtime_tools": (11414, "4ebeb2119d6b4649e0959a93ee4cb72b8babb529ca8c429e9661a726606c2f2e", "33a0655efbbb5a2abfa2c39cfa17bcccf57405ba"),
+    "campaign_r06_restore_runtime_tools": (11818, '8c7f99fab030618b1dfd0deb0532177523b26510040a07745d61d914c4ec40d5', 'fed1df727de30355c99421e835a2a1b056aa6741'),
     "campaign_r06_restore_runtime_artifacts": (20951, "152fd639bef4c805981f57b94042eef451985a76fb0c21b5dcc1a036e6795cce", "d9a4cfcd554d72d395dc6e24218bc9a1e9ea6af7"),
 }
 
@@ -95,7 +95,7 @@ def main():
     result = {"schemaVersion": 1, "controls": None, "collection": None, "browser": None}
     source = {"schemaVersion": 1, "revision": receipt["revision"], "tree": None, "status": "unreached"}
     first, ledger, package, context = None, None, None, {}
-    stage, exit_code = "checkout", 2
+    stage, exit_code, failure_reason = "checkout", 2, "none"
     names = ("R06_RESTORE_FIXTURE_BINARY", "R06_RESTORE_PRIVATE_ROOT", "R06_RESTORE_PRIVATE_OUTPUT",
              "R06_RESTORE_SAFE_RESULTS", "R06_RESTORE_REPORT_MODE")
     previous = {name: os.environ.get(name) for name in names}
@@ -162,6 +162,7 @@ def main():
         stage = "integrity"
     except Exception as error:
         receipt["failure"] = {"stage": stage, "class": a.safe_failure_class(error)}
+        failure_reason = t.dependency_reason(error) if stage == "dependencies" else "unclassified"
     finally:
         for name, value in previous.items():
             if value is None: os.environ.pop(name, None)
@@ -192,7 +193,7 @@ def main():
         bodies = a.seal({"receipt.json": receipt, "results.json": result, "source-manifest.json": source})
         a.admit_bundle(bodies, receipt["revision"], receipt["tree"])
     a.write_bundle(output, bodies)
-    print(json.dumps({"id": "R06", "suite": suite, "classification": receipt["classification"]}))
+    print(json.dumps({"id": "R06", "suite": suite, "classification": receipt["classification"], "failureReason": failure_reason}))
     return exit_code
 
 
