@@ -10,11 +10,20 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-func (manager *hlsManager) reusableCopiedHLS(ctx context.Context, directory, source, policy string, recipe hlsRecipe) bool {
-	if ctx.Err() != nil || !cacheFresh(filepath.Join(directory, "index.m3u8"), source, policy) && !seekCacheFresh(directory, source, policy) {
+func (manager *hlsManager) copiedHLSVideo(ctx context.Context, item library.Item, recipe hlsRecipe) bool {
+	if recipe.mode == "remux" {
+		return true
+	}
+	return recipe.mode == "audio-transcode" && !recipe.dialogueBoost && !recipe.normalizeLoudness &&
+		len(recipe.omitted) == 0 && item.Kind != "audio" && item.Kind != "audiobook" &&
+		manager.probe.facts(ctx, item).Video.Codec == "h264"
+}
+
+func (manager *hlsManager) reusableCopiedHLS(ctx context.Context, item library.Item, directory, policy string, recipe hlsRecipe) bool {
+	if ctx.Err() != nil || !cacheFresh(filepath.Join(directory, "index.m3u8"), item.Path, policy) && !seekCacheFresh(directory, item.Path, policy) {
 		return false
 	}
-	if recipe.mode != "remux" || !manager.copiedHLSTimelinePresent(directory) {
+	if !manager.copiedHLSVideo(ctx, item, recipe) || !manager.copiedHLSTimelinePresent(directory) {
 		// Ordinary cold streams retain their pre-index cache and seek behavior.
 		return true
 	}
@@ -89,7 +98,7 @@ func (manager *hlsManager) copiedPlaylistProjection(ctx context.Context, item li
 }
 
 func (manager *hlsManager) copiedStartupProjection(item library.Item, recipe hlsRecipe, directory string) func([]byte) []byte {
-	if recipe.mode != "remux" {
+	if !manager.copiedHLSVideo(manager.ctx, item, recipe) {
 		return nil
 	}
 	options, err := manager.hlsSettings(item, recipe)
@@ -126,7 +135,7 @@ func copiedHLSInputTime(value float64) string {
 }
 
 func (manager *hlsManager) recipePlaylistProjection(ctx context.Context, item library.Item, recipe hlsRecipe, key, name string) func([]byte) []byte {
-	if recipe.mode != "remux" || filepath.Dir(name) == "." || filepath.Ext(name) != ".m3u8" {
+	if filepath.Dir(name) == "." || filepath.Ext(name) != ".m3u8" || !manager.copiedHLSVideo(ctx, item, recipe) {
 		return nil
 	}
 	options, err := manager.hlsSettings(item, recipe)

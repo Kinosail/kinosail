@@ -40,7 +40,7 @@ class CampaignProofTests(unittest.TestCase):
     def test_focused_route_does_not_replace_normal_ci(self):
         source = LAYOUT.read_text()
         self.assertIn('campaign_proof:', source)
-        self.assertIn('options: [none, R06, Q14, Q09, Q47]', source)
+        self.assertIn('options: [none, R06, Q14, Q09, Q47, HLS]', source)
         self.assertIn("if: github.event_name != 'workflow_dispatch' || inputs.campaign_proof == 'none'", source)
         self.assertIn("if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof != 'none'", source)
         self.assertIn('name: Bounded campaign proof', source)
@@ -49,8 +49,34 @@ class CampaignProofTests(unittest.TestCase):
         self.assertNotIn('campaign_proof', (ROOT / '.github/workflows/ci.yml').read_text())
         self.assertNotIn('campaign_proof', (ROOT / '.github/workflows/app.yml').read_text())
 
+    def test_hls_followon_is_manual_bounded_and_keeps_only_receipts(self):
+        source = LAYOUT.read_text()
+        self.assertIn("inputs.campaign_proof != 'none' && inputs.campaign_proof != 'HLS'", source)
+        proof = source.split('  hls-followon:\n')[1]
+        self.assertIn("if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof == 'HLS'", proof)
+        self.assertIn('timeout-minutes: 15', proof)
+        self.assertIn('b4e72894ad26c809ed0104805f5415a97be75212b9fcf9d60b89ad25bb3d43e3', proof)
+        self.assertIn('python3 apps/player/scripts/test-hls-followon.py', proof)
+        self.assertIn('.verification/hls-followon/*/receipt.json', proof)
+        self.assertIn('.verification/hls-followon/*/SHA256SUMS', proof)
+        self.assertNotIn('server.log', proof)
+
+    def test_accepted_audio_regressions_run_in_required_player_suite(self):
+        # The repaired scope must be gated while the full manual counterevidence
+        # remains strict; a workflow dispatch cannot substitute for required CI.
+        source = (ROOT / '.github/workflows/app.yml').read_text()
+        step = source.split('      - name: Verify copied-video audio and legacy preparation\n')[1]
+        self.assertIn("if: always() && inputs.app == 'player' && matrix.engine == 'chromium'", step)
+        self.assertIn('python3 apps/player/scripts/test-hls-followon.py --suite audio', step)
+        self.assertIn('name: player-hls-audio-conversion-evidence', step)
+        self.assertIn('.verification/hls-followon/*/receipt.json', step)
+        self.assertIn('.verification/hls-followon/*/SHA256SUMS', step)
+        manual = LAYOUT.read_text().split('  hls-followon:\n')[1]
+        self.assertIn('run: python3 apps/player/scripts/test-hls-followon.py\n', manual)
+        self.assertNotIn('--suite audio', manual)
+
     def test_artifact_paths_are_exact_safe_json_only(self):
-        source = LAYOUT.read_text().split('  campaign-proof:\n')[1]
+        source = LAYOUT.read_text().split('  campaign-proof:\n')[1].split('\n  hls-followon:\n')[0]
         for value in ('R06', 'Q14', 'Q09'):
             for name in ('receipt.json', 'results.json', 'source-manifest.json', 'artifact-manifest.json'):
                 self.assertIn(f'            .verification/campaign-proof/{value}/{name}\n', source)
