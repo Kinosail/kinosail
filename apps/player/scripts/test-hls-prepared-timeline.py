@@ -118,7 +118,7 @@ def journey(name, original, metadata):
             case["logicalDurationSeconds"] = plan["duration"]
             check(abs(plan["duration"] - 96) < 0.1, "plan_duration")
             hls = plan["compatible"]
-            check(re.fullmatch(r"/hls/[a-f0-9]{16}/p/m-[a-zA-Z0-9-]+/index\.m3u8", hls) is not None, "planned_remux_route")
+            check(re.fullmatch(r"/hls/[a-f0-9]{16}/p/r-[a-zA-Z0-9-]+/index\.m3u8", hls) is not None, "planned_remux_route")
             cache = directory / "cache"
             prepare = "/api/v1/items/" + item_id + "/playback-prepare"
             status, _, _ = api.http(prepare, "POST", {"source": hls}, authenticated=False)
