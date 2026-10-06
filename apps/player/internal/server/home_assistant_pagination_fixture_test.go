@@ -10,11 +10,9 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"os"
+	"strconv"
 	"testing"
 	"time"
-
-	"github.com/MikeO7/kinosail-player/internal/server"
-	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
 // Only disposable fictional media is scanned. These bytes are not decode proof.
@@ -49,14 +47,7 @@ func newQ12PaginationFixture(t *testing.T) *q12PaginationFixture {
 		}
 	}()
 	q12PopulateMedia(t, root)
-	handler, owner := (servertest.APIFixture{
-		NewHandler: func(_ string, data string) http.Handler {
-			q12WriteLibrarySettings(t, data)
-			return server.New(server.Config{Lifecycle: t.Context(), MediaDir: media, DataDir: data,
-				CacheDir: t.TempDir(), RequireAuth: true, FFmpeg: "/q12-unavailable", FFprobe: "/q12-unavailable"})
-		},
-		TOTP: testTOTP,
-	}).Server(t)
+	handler, owner := q12PaginationServer(t, media)
 	assertAPIBody(t, apiCall(t, handler, owner, http.MethodPut, "/api/v1/settings/home-assistant",
 		map[string]any{"enabled": true}), http.StatusOK)
 	var offered struct{ Code string }
@@ -138,7 +129,7 @@ func (fixture *q12PaginationFixture) get(t *testing.T, token, target string) (in
 }
 
 func q12PageTarget(route, query string, offset, limit int) string {
-	values := url.Values{"limit": {fmt.Sprint(limit)}, "offset": {fmt.Sprint(offset)}}
+	values := url.Values{"limit": {strconv.Itoa(limit)}, "offset": {strconv.Itoa(offset)}}
 	if query != "" {
 		values.Set("q", query)
 	}
