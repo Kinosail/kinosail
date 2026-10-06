@@ -1,3 +1,4 @@
+import {navigationDiagnostics} from "./navigation-diagnostics.mjs";
 import {link, unlink} from "node:fs/promises";
 import {join, resolve} from "node:path";
 
@@ -20,29 +21,49 @@ export async function measureSubtitleBackground(browser, options, results, probe
       return {ok:response.ok,status:response.status,authorizedLanding:new URL(response.url).pathname==="/"};
     } finally {clearTimeout(timer);}
   });
-  let linked = false, countBefore = 0;
-  probe.stage = "subtitle-background-discovery";
+  let linked = false, countBefore = 0, phaseStarted = performance.now(), failed = false;
+  const navigation = navigationDiagnostics(page, options.baseURL);
+  const setPhase = phase => {
+    phaseStarted = performance.now();
+    probe.operationPhase = phase;
+    probe.stage = "subtitle-background-" + phase;
+  };
+  const retainFailure = async error => {
+    failed = true;
+    probe.elapsedMs = Math.min(600000, Math.max(0, Math.round(performance.now() - phaseStarted)));
+    probe.navigation = await navigation.snapshot(error);
+  };
+  setPhase("navigation");
   try {
     await page.goto("/?view=library",{waitUntil:"domcontentloaded"});
+    setPhase("baseline-geometry");
     const before = await geometry(); countBefore = await page.locator(".subtitle-file").count();
     if(!countBefore)throw new Error("Populated synthetic Library required");
+    setPhase("discovery-link");
     await link(join(root,"Layout Example.mp4"),added); linked = true;
+    setPhase("scan-request");
     const discovery = await scan();
     results.push({flow:"subtitle-background-scan-request",browserOrigin:true,scanStatus:discovery.status,authorizedLanding:discovery.authorizedLanding,stable:discovery.ok&&discovery.authorizedLanding});
     if(!discovery.ok||!discovery.authorizedLanding)throw new Error("Synthetic discovery scan failed");
-    probe.stage = "subtitle-background-normal-poll";
+    setPhase("normal-poll");
     await page.locator("#subtitle-update").waitFor({state:"visible",timeout:75_000});
+    setPhase("pending-geometry");
     const after = await geometry(), countAfter = await page.locator(".subtitle-file").count();
     const stable = countBefore>0 && countBefore===countAfter && before.every((first,index)=>first.present&&after[index]?.present&&["x","documentY","width","height"].every(key=>Math.abs(first[key]-after[index][key])<=1));
     results.push({flow:"subtitle-background-update",realFixtureDiscovery:true,normalPoll:true,scanStatus:discovery.status,countBefore,countAfter,before,after,noticeVisible:true,stable});
+    setPhase("user-refresh");
     await page.locator("#subtitle-update [data-subtitle-refresh]").click();
     await page.waitForFunction(()=>document.querySelector("#main")?.getAttribute("aria-busy")!=="true");
+    setPhase("refreshed-count");
     const refreshedCount = await page.locator(".subtitle-file").count();
     results.push({flow:"subtitle-background-user-refresh",refreshedCount,expectedCount:countBefore+1,stable:refreshedCount===countBefore+1});
+  } catch (error) {
+    await retainFailure(error);
+    throw error;
   } finally {
     try {
       if(linked){
-        const priorStage=probe.stage; probe.stage="subtitle-background-cleanup";
+        const priorStage=probe.stage; if(!failed)setPhase("cleanup");
         await unlink(added);
         const cleanup=await scan(), authorized=cleanup.ok&&cleanup.authorizedLanding;
         if(authorized)await page.goto("/?view=library",{waitUntil:"domcontentloaded",timeout:20_000});
@@ -52,6 +73,13 @@ export async function measureSubtitleBackground(browser, options, results, probe
         if(!stable)throw new Error("Synthetic catalogue restoration failed");
         probe.stage=priorStage;
       }
-    } finally {await context.close();}
+    } catch (error) {
+      if (!failed) await retainFailure(error);
+      throw error;
+    } finally {
+      navigation.stop();
+      if (!failed) { delete probe.operationPhase; delete probe.elapsedMs; }
+      await context.close();
+    }
   }
 }

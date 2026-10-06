@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strconv"
@@ -114,6 +115,9 @@ func (manager *hlsManager) prepareAttempt(ctx context.Context, item library.Item
 	recipe = localHLSRecipe(resolved)
 	key := hlsRecipeKey(item.ID, recipe)
 	playlist := filepath.Join(manager.cache, key, "index.m3u8")
+	if _, err := manager.readHLSMasterRenditions(filepath.Dir(playlist)); err != nil && !errors.Is(err, os.ErrNotExist) {
+		return err
+	}
 	options, err := manager.hlsSettings(item, recipe)
 	if err != nil {
 		return err
@@ -255,6 +259,7 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 		seek := ffmpegSeconds(start)
 		if timeline != nil {
 			seek = copiedHLSInputTime(start)
+			arguments = append(arguments, "-seek_timestamp", "1")
 		}
 		arguments = append(arguments, "-ss", seek)
 	}
@@ -284,16 +289,4 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 		return err
 	}
 	return finalizePlaylist(playlist)
-}
-
-func (manager *hlsManager) availableHLSQualities(facts MediaFacts, recipe hlsRecipe, options transcodeSettings) []PlaybackQuality {
-	qualities := hlsTranscodeQualities(facts, recipe)
-	capacity := manager.workloads.EncodingCapacity()
-	if options.Accelerator != "none" {
-		capacity = 1
-	}
-	if len(qualities) > capacity {
-		qualities = qualities[len(qualities)-capacity:]
-	}
-	return qualities
 }

@@ -29,7 +29,7 @@ func (manager *hlsManager) startupMarker(key string, prepared bool) {
 func (manager *hlsManager) missingStartupSegment(item library.Item, recipe hlsRecipe) string {
 	key := hlsRecipeKey(item.ID, recipe)
 	directory := filepath.Join(manager.cache, key)
-	master, err := playback.ReadHLSPlaylist(filepath.Join(directory, "index.m3u8"))
+	names, err := manager.readHLSMasterRenditions(directory)
 	if err != nil {
 		return ""
 	}
@@ -40,10 +40,7 @@ func (manager *hlsManager) missingStartupSegment(item library.Item, recipe hlsRe
 	defer root.Close()
 	duration := hlsPlaybackDuration(recipe, manager.probe.duration(manager.ctx, item))
 	projection := manager.copiedStartupProjection(item, recipe, directory)
-	for _, rendition := range strings.Split(string(master), "\n") {
-		if !hlsFile(rendition) || !strings.HasSuffix(rendition, "/index.m3u8") {
-			continue
-		}
+	for _, rendition := range names {
 		if name := missingStartupRendition(root, directory, key, rendition, duration, projection); name != "" {
 			return name
 		}
@@ -73,14 +70,14 @@ func (manager *hlsManager) startupWindowReady(item library.Item, recipe hlsRecip
 	key := hlsRecipeKey(item.ID, recipe)
 	directory := filepath.Join(manager.cache, key)
 	options, err := manager.seekSettings(item, recipe, directory)
-	if err != nil || !masterFresh(filepath.Join(directory, "index.m3u8"), item.Path, options.Cache) {
+	if err != nil || !manager.initializationsReady(directory) || !masterFresh(filepath.Join(directory, "index.m3u8"), item.Path, options.Cache) {
 		return false
 	}
 	if manager.completeHEVCStartup(manager.ctx, item, recipe) &&
 		!cacheFresh(filepath.Join(directory, "index.m3u8"), item.Path, options.Cache) {
 		return false
 	}
-	master, err := playback.ReadHLSPlaylist(filepath.Join(directory, "index.m3u8"))
+	names, err := manager.readHLSMasterRenditions(directory)
 	if err != nil {
 		return false
 	}
@@ -90,24 +87,16 @@ func (manager *hlsManager) startupWindowReady(item library.Item, recipe hlsRecip
 	}
 	defer root.Close()
 	duration := hlsPlaybackDuration(recipe, manager.probe.duration(manager.ctx, item))
-	return startupMasterReady(root, directory, key, master, duration, manager.copiedStartupProjection(item, recipe, directory))
+	return startupMasterReady(root, directory, key, names, duration, manager.copiedStartupProjection(item, recipe, directory))
 }
 
-func startupMasterReady(root *os.Root, directory, key string, master []byte, duration float64, projection ...func([]byte) []byte) bool {
-	count := 0
-	for _, name := range strings.Split(string(master), "\n") {
-		if name == "" || strings.HasPrefix(name, "#") {
-			continue
-		}
-		if !hlsFile(name) || !strings.HasSuffix(name, "/index.m3u8") {
-			return false
-		}
+func startupMasterReady(root *os.Root, directory, key string, names []string, duration float64, projection ...func([]byte) []byte) bool {
+	for _, name := range names {
 		if !startupRenditionReady(root, directory, key, name, duration, projection...) {
 			return false
 		}
-		count++
 	}
-	return count > 0
+	return len(names) > 0
 }
 
 func startupAssetReady(root *os.Root, name string) bool {

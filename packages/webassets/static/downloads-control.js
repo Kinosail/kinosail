@@ -7,6 +7,7 @@ function activeOfflineDownloadButton(button, owner) {
     : offlineMessage("offlinePause", "Pause download");
 }
 
+const offlineResumeWaits = new WeakSet();
 async function syncOfflineDownloadButton(button, detail) {
   const jobID = button.dataset.jobId;
   const owner = offlineTransfers.get(jobID);
@@ -16,14 +17,16 @@ async function syncOfflineDownloadButton(button, detail) {
     button.disabled = false;
     return;
   }
-  if (detail.state !== "needs_attention" || !navigator.locks?.query) return;
-  let locks;
-  try { locks = await navigator.locks.query(); }
-  catch (_) { return; }
-  if (!button.isConnected || offlineTransfers.has(jobID) || offlineStatuses.get(jobID) !== detail) return;
-  if (locks.held.some((lock) => lock.name === offlineJobLockName(jobID))) return;
-  button.textContent = offlineMessage("offlineResume", "Resume on this device");
-  button.disabled = false;
+  if (detail.state !== "needs_attention" || offlineResumeWaits.has(button)) return;
+  offlineResumeWaits.add(button);
+  try {
+    await withOfflineJobLock(jobID, () => {
+      if (!button.isConnected || offlineTransfers.has(jobID) || offlineStatuses.get(jobID)?.state !== "needs_attention") return;
+      button.textContent = offlineMessage("offlineResume", "Resume on this device");
+      button.disabled = false;
+    });
+  } catch (_) { /* Transfer admission still requires a supported lock manager. */ }
+  finally { offlineResumeWaits.delete(button); }
 }
 
 function controlOfflineDownload(button) {

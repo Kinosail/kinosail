@@ -85,3 +85,26 @@ remove_browser_fixture_trust() {
   fi
   BROWSER_FIXTURE_NODE_CA_PATH=""
 }
+
+trust_native_browser_fixture_tls() {
+  validate_browser_fixture_tls || return
+  if ! browser_fixture_uses_tls; then return; fi
+  if [[ $# != 3 || "${#1}" -gt 4096 || "${#2}" -gt 4096 || "${#3}" -gt 32 || "${1:-}" != /* || ! -f "${1:-}" || ! -x "${1:-}" || -L "${1:-}" || "${2:-}" != /* || ! -d "${2:-}" || -L "${2:-}" || ! "${3:-}" =~ ^[0-9]+-[0-9]+$ ]]; then
+    echo 'invalid native browser fixture trust arguments' >&2
+    return 2
+  fi
+  local certificate="$2/browser-fixture-ca.crt"
+  if [[ -L "$certificate" ]]; then echo 'invalid browser fixture export path' >&2; return 2; fi
+  "$1" tls-certificate >"$certificate" || return
+  install_browser_fixture_ca "$certificate" "$3"
+}
+
+# The installing shell owns cleanup; EOF from its Python caller ends that lease.
+hold_native_browser_fixture_tls() {
+  trap remove_browser_fixture_trust EXIT
+  trap 'exit 143' TERM
+  trap 'exit 130' INT
+  trust_native_browser_fixture_tls "$@" || return
+  printf 'ready\n'
+  while IFS= read -r; do :; done
+}

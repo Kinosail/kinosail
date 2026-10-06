@@ -3,6 +3,7 @@ package server_test
 import (
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -50,23 +51,60 @@ printf '%s' '{"streams":[{"index":0,"codec_type":"video","codec_name":"hevc","pr
 	decodeJellyfin(t, transcode, &delivery)
 	compatible := httptest.NewRecorder()
 	handler.ServeHTTP(compatible, httptest.NewRequestWithContext(t.Context(), http.MethodGet, delivery.MediaSources[0].TranscodingURL, nil))
-	if compatible.Code != http.StatusOK || !strings.Contains(compatible.Body.String(), "#EXTM3U") || !strings.Contains(compatible.Body.String(), "540p/index.m3u8?playSessionId=") {
-		t.Fatalf("transcode delivery = %d %q", compatible.Code, compatible.Body.String())
-	}
-	variantURL := strings.Replace(delivery.MediaSources[0].TranscodingURL, "/index.m3u8", "/540p/index.m3u8", 1)
-	noCapabilityVariant := jellyfinCall(t, handler, http.MethodGet, strings.Split(variantURL, "?")[0], "", "")
-	if noCapabilityVariant.Code != http.StatusUnauthorized {
-		t.Fatalf("transcode variant without capability = %d %q", noCapabilityVariant.Code, noCapabilityVariant.Body.String())
-	}
-	variant := jellyfinCall(t, handler, http.MethodGet, variantURL, "", "")
-	if variant.Code != http.StatusOK || !strings.Contains(variant.Body.String(), "#EXTINF") || !strings.Contains(variant.Body.String(), "segment-00000.m4s?playSessionId=") || !strings.Contains(variant.Body.String(), `URI="init.mp4?playSessionId=`) {
-		t.Fatalf("transcode variant = %d %q", variant.Code, variant.Body.String())
-	}
-	segment := jellyfinCall(t, handler, http.MethodGet, strings.Replace(variantURL, "/index.m3u8", "/segment-00000.m4s", 1), "", "")
-	if segment.Code != http.StatusOK || segment.Body.String() != "segment" {
-		t.Fatalf("transcode segment = %d %q", segment.Code, segment.Body.String())
-	}
+	assertAPIBody(t, compatible, http.StatusOK, "#EXTM3U", "1080p/index.m3u8?playSessionId=")
+	assertCapabilityTranscodeRenditions(t, handler, delivery.MediaSources[0].TranscodingURL, compatible.Body.String())
 	assertRejectedJellyfinTranscodeChildren(t, handler, id, token, cache)
+}
+
+// Adaptive ladders depend on available encoder capacity; every advertised
+// rendition must obey the client's 1080p policy and retain its capability.
+func assertCapabilityTranscodeRenditions(t *testing.T, handler http.Handler, masterURL, manifest string) {
+	t.Helper()
+	master, err := url.Parse(masterURL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	count := 0
+	for _, line := range strings.Split(manifest, "\n") {
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		child := capabilityRenditionURL(t, master, line)
+		assertCapabilityTranscodeChild(t, handler, child)
+		count++
+	}
+	if count == 0 {
+		t.Fatal("no advertised adaptive renditions")
+	}
+}
+
+func capabilityRenditionURL(t *testing.T, master *url.URL, line string) *url.URL {
+	t.Helper()
+	child, err := url.Parse(line)
+	if err != nil || child.Scheme+child.Host+child.Fragment != "" || child.User != nil {
+		t.Fatal("invalid adaptive child URL")
+	}
+	allowed := map[string]bool{"540p/index.m3u8": true, "720p/index.m3u8": true, "1080p/index.m3u8": true}
+	if !allowed[child.Path] {
+		t.Fatalf("rendition exceeds capability policy: %s", child.Path)
+	}
+	if len(child.Query()) != 1 || child.Query().Get("playSessionId") == "" || child.Query().Get("playSessionId") != master.Query().Get("playSessionId") {
+		t.Fatal("adaptive child lost its delivery capability")
+	}
+	child.Path = strings.TrimSuffix(master.Path, "index.m3u8") + child.Path
+	return child
+}
+
+func assertCapabilityTranscodeChild(t *testing.T, handler http.Handler, child *url.URL) {
+	t.Helper()
+	assertAPIBody(t, jellyfinCall(t, handler, http.MethodGet, child.Path, "", ""), http.StatusUnauthorized)
+	variant := jellyfinCall(t, handler, http.MethodGet, child.String(), "", "")
+	assertAPIBody(t, variant, http.StatusOK, "#EXTINF", "segment-00000.m4s?playSessionId=", "URI=\"init.mp4?playSessionId=")
+	child.Path = strings.TrimSuffix(child.Path, "index.m3u8") + "segment-00000.m4s"
+	segment := jellyfinCall(t, handler, http.MethodGet, child.String(), "", "")
+	if segment.Code != http.StatusOK || segment.Body.String() != "segment" {
+		t.Fatalf("transcode segment: %d", segment.Code)
+	}
 }
 
 func TestAutomaticPlaybackStartsDirectWithAdaptiveFallback(t *testing.T) { //nolint:cyclop // One adapter matrix proves direct-first playback and its adaptive fallback.

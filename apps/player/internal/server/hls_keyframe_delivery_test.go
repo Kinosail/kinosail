@@ -38,7 +38,11 @@ func assertCopiedHLSAudio(t *testing.T, ffmpeg, ffprobe, audio string) {
 	ctx, cancel := context.WithCancel(t.Context())
 	defer cancel()
 	media := independentHLSMedia(t, ctx, ffmpeg, audio)
-	handler, id := formatTestItem(t, server.Config{Lifecycle: ctx, MediaDir: media, CacheDir: t.TempDir(), FFmpeg: ffmpeg, FFprobe: ffprobe})
+	logs := captureCopiedLogs(t)
+	cache := t.TempDir()
+	retainCopiedFailureFacts(t, ffmpeg, ffprobe, filepath.Join(media, "Episode.S01E01.mkv"), cache, logs)
+	retainCopiedPlaylistFacts(t, cache)
+	handler, id := formatTestItem(t, server.Config{Lifecycle: ctx, MediaDir: media, CacheDir: cache, FFmpeg: ffmpeg, FFprobe: ffprobe})
 	var info struct {
 		Compatible     string
 		CompatiblePlan playback.PlaybackPlan

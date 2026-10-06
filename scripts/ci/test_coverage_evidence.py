@@ -7,13 +7,13 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 class CoverageEvidenceTests(unittest.TestCase):
-    def test_manual_evidence_keeps_original_deep_gate_and_only_profiles(self):
+    def test_deep_evidence_keeps_original_gate_and_only_profiles(self):
         ci = (ROOT / '.github/workflows/ci.yml').read_text()
         app = (ROOT / '.github/workflows/app.yml').read_text()
         race = app.split('  race:\n', 1)[1].split('\n  security:', 1)[0]
         self.assertEqual(race.count('run: ./scripts/ci/test-go.sh "$APP"'), 1)
         self.assertNotIn('continue-on-error', race)
-        self.assertIn("always() && github.event_name == 'workflow_dispatch' && inputs.coverage_diagnostic && fromJSON(inputs.plan).deep", race)
+        self.assertIn("always() && fromJSON(inputs.plan).deep", race)
         self.assertIn('go tool cover -func=.verification/coverage.out > .verification/coverage-functions.txt', race)
         self.assertIn('apps/${{ inputs.app }}/.verification/coverage.out', race)
         self.assertIn('apps/${{ inputs.app }}/.verification/coverage-functions.txt', race)

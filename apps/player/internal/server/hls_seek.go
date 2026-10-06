@@ -135,11 +135,8 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 	recipe = localHLSRecipe(resolved)
 	key, directory := hlsRecipeKey(item.ID, recipe), filepath.Join(manager.cache, hlsRecipeKey(item.ID, recipe))
 	path := filepath.Join(directory, name)
-	if _, err := os.Stat(path); err == nil {
-		return nil
-	}
 	duration := manager.probe.duration(ctx, item)
-	manifest, err := os.ReadFile(filepath.Join(filepath.Dir(path), "index.m3u8")) //nolint:gosec // The path passed the HLS file allowlist.
+	manifest, err := manager.readHLSRecipeManifest(filepath.Dir(path))
 	if err != nil {
 		return err
 	}
@@ -156,8 +153,20 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 	} else if manager.copiedHLSTimelinePresent(directory) {
 		return errCopiedHLSIndex
 	}
-	if !valid || offset >= hlsPlaybackDuration(recipe, duration) {
+	playable := hlsPlaybackDuration(recipe, duration)
+	if valid && offset >= playable && !manager.copiedHLSTimelinePresent(directory) && manager.copiedHLSVideo(ctx, item, recipe) && manager.initializationsReady(directory) {
+		// A completed copied window may retain an earlier source IDR. Only
+		// measured generated media, bounded by the source, extends its duration.
+		end, endpointErr := manager.copiedHLSEndpoint(ctx, filepath.Dir(path), options.Cache, manifest)
+		if endpointErr == nil && end <= duration {
+			playable = end
+		}
+	}
+	if !valid || offset >= playable && !manager.completedAudioHLSFinalSegment(ctx, item, filepath.Dir(path), name, manifest, offset, playable) {
 		return errors.New("HLS segment is outside the playable duration")
+	}
+	if _, err := os.Stat(path); err == nil {
+		return nil
 	}
 	seekRecipe := recipe
 	seekRecipe.offset += offset
@@ -218,18 +227,6 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 		go manager.encode(jobContext, item, job, key, options, seekRecipe, segment, true)
 		return nil
 	}
-}
-
-func (manager *hlsManager) seekSettings(item library.Item, recipe hlsRecipe, directory string) (transcodeSettings, error) {
-	options, err := manager.hlsSettings(item, recipe)
-	if err != nil {
-		return transcodeSettings{}, err
-	}
-	master, readErr := os.ReadFile(filepath.Join(directory, "index.m3u8"))
-	if readErr != nil || !strings.Contains(string(master), "#KINOSAIL-TRANSCODER:"+options.Cache+"\n") {
-		return transcodeSettings{}, errors.New("playback settings changed; start a new compatible stream")
-	}
-	return options, nil
 }
 
 type hlsEncodeOutcome struct {

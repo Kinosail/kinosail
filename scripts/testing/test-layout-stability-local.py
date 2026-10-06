@@ -7,13 +7,21 @@ import hmac
 import json
 import os
 import platform
+import selectors
 from pathlib import Path
 import socket
+import ssl
 import subprocess
 import time
 import urllib.request
 
 root = Path(__file__).resolve().parents[2]
+tls = os.environ.get("KINOSAIL_LAYOUT_BROWSER") == "webkit"
+trust_helper = root / "scripts/ci/browser-fixture-tls.sh"
+fixture_env = os.environ | {"KINOSAIL_BROWSER_TEST": "1", "KINOSAIL_BROWSER_PROJECT": "webkit"}
+if tls:
+    subprocess.run(["bash", "-c", 'source "$1"; validate_browser_fixture_tls',
+                    "fixture", str(trust_helper)], env=fixture_env, check=True)
 run = root / ".verification/layout" / time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
 run.mkdir(parents=True)
 revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
@@ -30,7 +38,7 @@ os.link(media / "Layout Example.en.srt", media / "Layout Example.fr.srt")
 results = {}
 initial_diff_hash = hashlib.sha256(subprocess.check_output(["git", "diff", "HEAD"], cwd=root)).hexdigest()
 initial_scripts = {name: hashlib.sha256((root / "scripts/testing" / name).read_bytes()).hexdigest()
-                   for name in ["test-layout-stability-local.py", "layout-stability-local.mjs", "layout-stability-flows.mjs", "layout-stability-bookmarks.mjs", "layout-stability-subtitle-search.mjs", "layout-stability-subtitle-background.mjs"]}
+                   for name in ["test-layout-stability-local.py", "layout-stability-local.mjs", "layout-stability-flows.mjs", "layout-stability-bookmarks.mjs", "layout-stability-subtitle-search.mjs", "layout-stability-subtitle-background.mjs", "navigation-diagnostics.mjs", "layout-stability-routing.mjs", "layout-stability-failure.mjs"]}
 settings = {key: value for key, value in os.environ.items() if key.startswith("KINOSAIL_LAYOUT_")}
 def write_receipt():
     final_revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
@@ -41,8 +49,8 @@ def write_receipt():
         "sourceDrift": final_revision != revision or initial_diff_hash != hashlib.sha256(subprocess.check_output(["git", "diff", "HEAD"], cwd=root)).hexdigest(),
         "results": results, "mediaCommand": generate,
         "browser": os.environ.get("KINOSAIL_LAYOUT_BROWSER", "chromium"),
-        "environment": f"{platform.system()} {platform.machine()}; native Go servers; supported loopback HTTP",
-        "boundaries": "Synthetic media/account; delayed real responses; no production, container, TLS or physical devices"}
+        "environment": f"{platform.system()} {platform.machine()}; native Go servers; loopback {'HTTPS with owned Linux runner CA trust' if tls else 'HTTP'}",
+        "boundaries": "Synthetic media/account; delayed real responses; no production, container, public TLS or physical devices"}
     (run / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
 atexit.register(write_receipt)
 for app in os.environ.get("KINOSAIL_LAYOUT_APPS", "player,subtitles").split(","):
@@ -50,28 +58,42 @@ for app in os.environ.get("KINOSAIL_LAYOUT_APPS", "player,subtitles").split(",")
     app_run.mkdir()
     binary = app_run / "server"
     results[app] = "not_completed"
-    env = dict(os.environ, GOCACHE="/tmp/kinosail-apple-go-cache", GOMAXPROCS="4")
+    env = dict(os.environ, GOCACHE=os.environ.get("GOCACHE", "/tmp/kinosail-apple-go-cache"), GOMAXPROCS="4")
     build = ["go", "-C", f"apps/{app}", "build", "-p=1", "-o", str(binary), "./cmd/kinosail"]
     subprocess.run(build, cwd=root, env=env, check=True)
     with socket.socket() as listener:
         listener.bind(("127.0.0.1", 0))
         port = listener.getsockname()[1]
-    url = f"http://localhost:{port}"
-    env.update(KINOSAIL_LISTEN=f"127.0.0.1:{port}", KINOSAIL_AUTH_URL=url, KINOSAIL_TLS_ENABLED="false",
+    url = f"{'https' if tls else 'http'}://localhost:{port}"
+    env.update(KINOSAIL_LISTEN=f"127.0.0.1:{port}", KINOSAIL_AUTH_URL=url, KINOSAIL_TLS_ENABLED="true" if tls else "false",
                KINOSAIL_DATA_DIR=str(app_run / "config"), KINOSAIL_MEDIA_DIR=str(media),
                KINOSAIL_CACHE_DIR=str(app_run / "cache"), KINOSAIL_BACKUP_DIR=str(app_run / "backups"),
                KINOSAIL_BACKUP_KEY="synthetic-layout-key", KINOSAIL_E2E_URL=url,
                KINOSAIL_LAYOUT_APP=app, KINOSAIL_LAYOUT_RUN=str(app_run), KINOSAIL_LAYOUT_MEDIA_ROOT=str(media), KINOSAIL_TEST_REVISION=revision)
     browser = ["node", "scripts/testing/layout-stability-local.mjs"]
     result = None
+    trust_owner, server, tls_context = None, None, None
     with (app_run / "server.log").open("w") as log:
-        server = subprocess.Popen([str(binary)], env=env, stdout=log, stderr=log)
         try:
+            if tls:
+                suffix = f"{os.getpid()}-{port}"
+                trust_owner = subprocess.Popen(["bash", "-c",
+                    'set -euo pipefail; source "$1"; hold_native_browser_fixture_tls "$2" "$3" "$4"',
+                    "fixture", str(trust_helper), str(binary), str(app_run), suffix],
+                    env=env | {"KINOSAIL_BROWSER_TEST": "1", "KINOSAIL_BROWSER_PROJECT": "webkit"},
+                    stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=log, text=True)
+                with selectors.DefaultSelector() as ready:
+                    ready.register(trust_owner.stdout, selectors.EVENT_READ)
+                    if not ready.select(timeout=30) or trust_owner.stdout.readline() != "ready\n":
+                        raise RuntimeError("Disposable TLS trust owner did not become ready")
+                env["NODE_EXTRA_CA_CERTS"] = str(app_run / "browser-fixture-ca.crt")
+                tls_context = ssl.create_default_context(cafile=str(app_run / "browser-fixture-ca.crt"))
+            server = subprocess.Popen([str(binary)], env=env, stdout=log, stderr=log)
             for _ in range(120):
                 if server.poll() is not None:
                     raise RuntimeError("Disposable Server exited before readiness")
                 try:
-                    with urllib.request.urlopen(url + "/healthz", timeout=1) as response:
+                    with urllib.request.urlopen(url + "/healthz", timeout=1, context=tls_context) as response:
                         if json.load(response) == {"status": "ok"}:
                             break
                 except (OSError, ValueError):
@@ -81,7 +103,7 @@ for app in os.environ.get("KINOSAIL_LAYOUT_APPS", "player,subtitles").split(",")
             setup = urllib.request.Request(url + "/api/v1/setup", data=json.dumps({"name": "Owner",
                 "password": "synthetic-layout-password", "device": "Disposable layout audit", "totp": True}).encode(),
                 headers={"Content-Type": "application/json"})
-            with urllib.request.urlopen(setup) as response:
+            with urllib.request.urlopen(setup, context=tls_context) as response:
                 created = json.load(response)
                 token, secret = created["token"], created["totp"]["secret"]
             digest = hmac.new(base64.b32decode(secret), int(time.time() // 30).to_bytes(8, "big"), hashlib.sha1).digest()
@@ -89,22 +111,34 @@ for app in os.environ.get("KINOSAIL_LAYOUT_APPS", "player,subtitles").split(",")
             code = str((int.from_bytes(digest[offset:offset + 4], "big") & 0x7fffffff) % 1000000).zfill(6)
             confirm = urllib.request.Request(url + "/api/v1/me/mfa", method="PUT",
                 data=json.dumps({"code": code}).encode(), headers={"Content-Type": "application/json", "Authorization": "Bearer " + token})
-            with urllib.request.urlopen(confirm):
+            with urllib.request.urlopen(confirm, context=tls_context):
                 pass
             env["KINOSAIL_LAYOUT_TOTP"] = secret
             disable = urllib.request.Request(url + "/api/v1/settings/onboarding", method="PUT",
                 data=b'{"enabled":false}', headers={"Content-Type": "application/json", "Authorization": "Bearer " + token})
-            with urllib.request.urlopen(disable):
+            with urllib.request.urlopen(disable, context=tls_context):
                 pass
             with (app_run / "browser.log").open("w") as browser_log:
                 result = subprocess.run(browser, cwd=root, env=env, stdout=browser_log, stderr=subprocess.STDOUT).returncode
         finally:
-            server.terminate()
-            try:
-                server.wait(timeout=10)
-            except subprocess.TimeoutExpired:
-                server.kill()
-                server.wait()
+            if server is not None:
+                server.terminate()
+                try:
+                    server.wait(timeout=10)
+                except subprocess.TimeoutExpired:
+                    server.kill()
+                    server.wait()
+            if trust_owner is not None:
+                trust_owner.stdin.close()
+                try:
+                    trust_owner.wait(timeout=10)
+                except subprocess.TimeoutExpired:
+                    trust_owner.terminate()
+                    trust_owner.wait(timeout=10)
+                finally:
+                    trust_owner.stdout.close()
+                if trust_owner.returncode != 0:
+                    raise RuntimeError("Disposable TLS trust owner cleanup failed")
             binary.unlink(missing_ok=True)
     results[app] = result
     binary.unlink(missing_ok=True)

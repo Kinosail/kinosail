@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/playback"
@@ -93,7 +94,7 @@ func (manager *hlsManager) hlsSettings(item library.Item, recipe hlsRecipe) (tra
 	if recipe.subtitlePath != "" {
 		options.Cache += ":subtitle=" + sourceVersion(recipe.subtitlePath)
 	}
-	options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=15"
+	options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=17"
 	if err := playback.ValidateHLSSource(item.Path, options.Cache); err != nil {
 		return transcodeSettings{}, err
 	}
@@ -116,4 +117,28 @@ func (manager *hlsManager) validateHLSPolicy(ctx context.Context, item library.I
 		return errHLSIdentityChanged
 	}
 	return nil
+}
+
+func (manager *hlsManager) availableHLSQualities(facts MediaFacts, recipe hlsRecipe, options transcodeSettings) []PlaybackQuality {
+	qualities := hlsTranscodeQualities(facts, recipe)
+	capacity := manager.workloads.EncodingCapacity()
+	if options.Accelerator != "none" {
+		capacity = 1
+	}
+	if len(qualities) > capacity {
+		qualities = qualities[len(qualities)-capacity:]
+	}
+	return qualities
+}
+
+func (manager *hlsManager) seekSettings(item library.Item, recipe hlsRecipe, directory string) (transcodeSettings, error) {
+	options, err := manager.hlsSettings(item, recipe)
+	if err != nil {
+		return transcodeSettings{}, err
+	}
+	master, readErr := manager.readHLSRecipeManifest(directory)
+	if readErr != nil || !strings.Contains(string(master), "#KINOSAIL-TRANSCODER:"+options.Cache+"\n") {
+		return transcodeSettings{}, errors.New("playback settings changed; start a new compatible stream")
+	}
+	return options, nil
 }

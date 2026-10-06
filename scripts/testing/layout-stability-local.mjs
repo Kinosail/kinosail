@@ -1,3 +1,6 @@
+import {installLayoutFailureReporter, layoutFailureLocations} from "./layout-stability-failure.mjs";
+import {layoutResponseHandler} from "./layout-stability-routing.mjs";
+import {navigationDiagnostics} from "./navigation-diagnostics.mjs";
 import {createRequire} from "node:module";
 import {writeFile} from "node:fs/promises";
 import {join} from "node:path";
@@ -9,22 +12,25 @@ const {chromium, webkit, firefox} = require("@playwright/test");
 const AxeBuilder = require("@axe-core/playwright").default;
 const baseURL = process.env.KINOSAIL_E2E_URL, app = process.env.KINOSAIL_LAYOUT_APP, run = process.env.KINOSAIL_LAYOUT_RUN;
 const engine = process.env.KINOSAIL_LAYOUT_BROWSER || "chromium";
-let phase = "browser-launch", activePage, browser, authContext;
+let phase = "browser-launch", operationPhase, activePage, browser, authContext, activeCase, navigation;
 const loginResponses = [];
+let requestStatus, requestContentType;
 const reports = [], flows = [], flowProbe = {stage: "not-started"};
-process.once("uncaughtException", async error => {
-  const failure = {app, engine, stage: phase, flowStage: flowProbe.stage,
+installLayoutFailureReporter(async error => {
+  return {result: "failed", app, engine, stage: phase, operationPhase: flowProbe.operationPhase || operationPhase, activeCase: phase === "measure-flows" ? undefined : activeCase, flowElapsedMs: flowProbe.elapsedMs, flowStage: flowProbe.stage,
+    locations: layoutFailureLocations(error),
     errorClass: ["TimeoutError", "TypeError", "ReferenceError", "SyntaxError"].includes(error.name) ? error.name : "Error",
     completedCases: reports.length, completedFlows: flows.length, media: flowProbe.media, probe: flowProbe.geometry, loginResponses,
-    authCookieCount: phase.startsWith("login") && authContext ? await authContext.cookies().then(c=>c.length).catch(()=>undefined) : undefined,
-    pageState: activePage ? (new URL(activePage.url()).pathname === "/login" ? "login" : "other") : "not-created"};
-  await writeFile(join(run, "failure.json"), JSON.stringify(failure, null, 2));
-  await browser?.close();
-  process.exit(1);
-});
+    requestStatus: phase === "measure-flows" ? undefined : requestStatus, requestContentType: phase === "measure-flows" ? undefined : requestContentType, navigation: flowProbe.navigation || await navigation?.snapshot(error),
+    requestErrorCode: ["CERT_HAS_EXPIRED", "DEPTH_ZERO_SELF_SIGNED_CERT", "SELF_SIGNED_CERT_IN_CHAIN", "UNABLE_TO_VERIFY_LEAF_SIGNATURE", "UNABLE_TO_GET_ISSUER_CERT_LOCALLY"].find(code => error.code === code || String(error.message).includes(code)) ||
+      (/unable to verify|self.signed certificate|unable to get local issuer/i.test(String(error.message)) ? "UNTRUSTED_CERTIFICATE" : undefined),
+    authCookieCount: authContext ? await authContext.cookies().then(c=>c.length).catch(()=>undefined) : undefined,
+    pageState: flowProbe.navigation ? flowProbe.navigation.identity : activePage ? (new URL(activePage.url()).pathname === "/login" ? "login" : "other") : "not-created"};
+}, failure => writeFile(join(run, "failure.json"), JSON.stringify(failure, null, 2)), () => browser?.close());
 browser = await ({chromium, webkit, firefox}[engine]).launch(engine === "chromium" && process.platform === "darwin" ? {channel: "chrome"} : {});
 const context = authContext = await browser.newContext({baseURL, ignoreHTTPSErrors: false, reducedMotion: "reduce"});
 const page = activePage = await context.newPage();
+navigation = navigationDiagnostics(page,baseURL);
 page.on("response", response => {if(response.request().method()==="POST"&&new URL(response.url()).pathname==="/login")loginResponses.push(response.status());});
 phase = "login-page";
 await page.goto("/login");
@@ -48,10 +54,14 @@ await page.waitForURL(url => url.pathname !== "/login");
 if (await page.getByRole("link", {name: "Not now"}).isVisible()) await page.getByRole("link", {name: "Not now"}).click();
 phase = "library-request";
 const response = await page.request.get("/api/v1/library");
+requestStatus = response.status();
+const contentType = response.headers()["content-type"]?.split(";")[0];
+requestContentType = ["application/json", "text/html", "text/plain"].includes(contentType) ? contentType : "other";
 const data = await response.json();
 const item = data.items.find(candidate => candidate.title === "Layout Example") || data.items[0];
 const auth = await context.storageState();
 const navProfile = app === "player" ? await page.locator("[data-mobile-tabs]").getAttribute("data-nav-profile") : undefined;
+navigation.stop();
 await context.close();
 function cls(shifts) {
   let maximum=0, sum=0, start=0, last=0;
@@ -110,6 +120,8 @@ if(app==="subtitles"&&process.env.KINOSAIL_LAYOUT_VARIANTS)cases.push({viewport:
 try {
   for (const {viewport,path,variant,scale,motion,apple,savedTabs} of cases) {
     phase = "measure-case";
+    operationPhase = "context-create";
+    activeCase = {viewport, path, variant};
     const context = await browser.newContext({baseURL, storageState: path === "/login" ? undefined : auth,
       viewport, ignoreHTTPSErrors: false, reducedMotion: motion||"reduce"});
     if(scale)await context.addInitScript(scale=>{const apply=()=>{if(!document.documentElement)return false;document.documentElement.style.fontSize=scale;return true;};if(!apply()){const observer=new MutationObserver(()=>{if(apply())observer.disconnect();});observer.observe(document,{childList:true});}},scale);
@@ -119,25 +131,25 @@ try {
       HTMLVideoElement.prototype.webkitEnterFullscreen=function(){this.dispatchEvent(new Event("webkitbeginfullscreen"));};
     });
     const traced=viewport.width===390&&(path==="/settings#access"||path.startsWith("/watch/"));
+    operationPhase = "trace-start";
     if(traced)await context.tracing.start({screenshots:true,snapshots:true});
     await context.addInitScript(observe);
     const page = activePage = await context.newPage();
+navigation = navigationDiagnostics(page,baseURL);
     // Delay real response bytes, without substituting mock markup or media.
-    await page.route("**/*", async route => {
-      const request = route.request(), url = new URL(request.url());
-      if ((variant==="slow-css"&&request.resourceType()==="stylesheet") || url.pathname.endsWith(".woff2") || (url.pathname.endsWith(".js")&&!url.pathname.endsWith("/theme.js")) || /\/api\/v1\/subtitle-library\/[^/]+\/inspect/.test(url.pathname) || request.resourceType() === "image") {
-        const response = await route.fetch();
-        await new Promise(resolve => setTimeout(resolve, variant==="slow-css"&&request.resourceType()==="script"?2400:1200));
-        await route.fulfill({response});
-      } else await route.continue();
-    });
+    await page.route("**/*", layoutResponseHandler(context, variant));
     const name = `${viewport.width}-${variant}-${path.replace(/[^a-z0-9]+/gi, "-")}`;
+    operationPhase = "navigate";
     const response=await page.goto(path, {waitUntil: "commit"});
+    operationPhase = "body-visible";
     await page.locator("body").waitFor({state: "visible"});
     if(variant==="slow-css") {await page.waitForFunction(()=>[...document.querySelectorAll('link[rel~="stylesheet"]')].every(link=>link.sheet));await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));}
     await page.waitForTimeout(200);
+    operationPhase = "initial-inspect";
     const initialState = await page.evaluate(inspect);
+    operationPhase = "initial-bookmark";
     initialState.bookmark = await page.evaluate(bookmarkSnapshot);
+    operationPhase = "initial-boxes";
     const initialBoxes=await page.evaluate(()=>window.layoutAudit.frames.at(-1)?.boxes||[]);
     if (engine === "chromium") {
       // CDP captures pixels without Playwright's font-readiness hook, which can
@@ -147,8 +159,10 @@ try {
       await writeFile(join(run, name + "-initial.png"), Buffer.from(capture.data, "base64"));
       await cdp.detach();
     }
+    operationPhase = "domcontentloaded";
     await page.waitForLoadState("domcontentloaded");
     await page.waitForTimeout(2400);
+    operationPhase = "settled-audit";
     const audit = await page.evaluate(() => ({...window.layoutAudit, overflow: document.documentElement.scrollWidth - innerWidth,
       font: document.fonts.check("15px Manrope"), skeleton: document.querySelectorAll(".request-skeleton").length}));
     const entries=audit.shifts.filter(s=>!s.recentInput);
@@ -156,6 +170,7 @@ try {
     const identifiedDOMCLS=cls(entries.filter(e=>e.sources?.some(s=>s.node)));
     const unattributedCLS=cls(entries.filter(e=>!e.sources?.some(s=>s.node)));
     const moved=boxesChanged(initialBoxes,audit.frames.at(-1)?.boxes||[]);
+    operationPhase = "settled-inspect";
     const finalState=await page.evaluate(inspect);
     finalState.bookmark=await page.evaluate(bookmarkSnapshot);
     const categoryStable=!initialState.category||JSON.stringify(initialState.sections)===JSON.stringify(finalState.sections);
@@ -174,7 +189,9 @@ try {
     if(path.startsWith("/watch/")&&viewport.width===390&&!apple){
       const settingsButton=page.getByRole("button",{name:"Settings",exact:true});
       const stage=await page.locator(".media-stage").boundingBox();await page.mouse.move(stage.x+10,stage.y+10);
+      phase = "settings-open";
       await settingsButton.click();await page.locator(".player-settings").waitFor({state:"visible"});
+      phase = "settings-keyboard-close";
       await page.keyboard.press("Escape");await page.locator(".player-settings").waitFor({state:"hidden"});
       reports.at(-1).settingsKeyboard={closed:true,focusRestored:await settingsButton.evaluate(n=>n===document.activeElement)};
     }

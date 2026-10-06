@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { registerSubtitleStatusLayoutTests } from "./subtitle-dashboard-status-tests";
 import { login } from "./subtitle-dashboard-helpers";
 import { registerSubtitleDefaultTests } from "./subtitle-defaults-tests";
 import { registerSubtitleHistoryTests } from "./subtitle-dashboard-history-tests";
@@ -10,12 +11,13 @@ test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated Ki
 // API response gates must intercept requests before the service worker.
 test.use({ serviceWorkers: "block" });
 test.describe.configure({ mode: "serial", timeout: 120_000 });
-test.beforeEach(async ({ page }) => login(page));
+test.beforeEach(async ({ page }, info) => login(page, info));
 
 registerSubtitleDefaultTests();
 registerSubtitleLanguageTests();
 registerSubtitleProviderTests();
 registerSubtitleLayoutTests();
+registerSubtitleStatusLayoutTests();
 
 registerSubtitleHistoryTests();
 

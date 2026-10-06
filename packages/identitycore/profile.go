@@ -169,8 +169,11 @@ func ProfilePolicyFromRequest(request *http.Request) ProfilePolicy {
 	}
 }
 
-// Valid rejects incomplete or malformed viewing schedules.
+// Valid rejects unknown ratings and incomplete or malformed viewing schedules.
 func (policy ProfilePolicy) Valid() error {
+	if policy.Rating != "" && policy.Rating != "family" && policy.Rating != "teen" && policy.Rating != "all" {
+		return errors.New("rating must be family, teen, or all")
+	}
 	if (policy.AccessStart == "") != (policy.AccessEnd == "") {
 		return errors.New("both viewing schedule times are required")
 	}

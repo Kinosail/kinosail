@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { downloadChunk, downloadBytes, downloadHash, firstBlockHash, downloadIsolated, downloadServer, downloadPeer, openDownloadPage, inspectDownload, attachDownloadEnvironment } from "./download-pause-fixture";
+import { downloadChunk, downloadBytes, downloadHash, firstBlockHash, downloadIsolated, downloadServer, downloadPeer, openDownloadPage, inspectDownload, offlineWriterCapability, attachDownloadEnvironment } from "./download-pause-fixture";
 
 test.skip(!downloadServer && !downloadIsolated, "requires an explicit disposable download transport runner");
 test.use({serviceWorkers: "allow"});
@@ -16,12 +16,15 @@ for (const width of downloadServer ? [390, 1440, 1920] : [storage === "opfs" ? 3
       await info.attach("served-download-bundle", {body: JSON.stringify(served), contentType: "application/json"});
       const button = page.locator("[data-download-device]"), status = page.locator("[data-download-device-status]");
       await expect(status).toHaveText("Not stored on this device");
+      const capability = await offlineWriterCapability(page);
+      const expectedStorage = storage === "opfs" && capability.supported ? "opfs" : "indexeddb";
+      await info.attach("offline-writer-capability", {body: JSON.stringify({requested: storage, expected: expectedStorage, ...capability}), contentType: "application/json"});
       await button.click();
       await expect.poll(async () => (await peer.stats()).ranges).toEqual([0, downloadChunk]);
       await expect.poll(async () => (await inspectDownload(page, served.jobID)).job?.bytes).toBe(downloadChunk);
       await expect(status).toContainText("Keep this page open");
       const before = await inspectDownload(page, served.jobID);
-      expect(before.job?.storage).toBe(storage);
+      expect(before.job?.storage).toBe(expectedStorage);
       expect(before.chunks).toEqual([{offset: 0, length: downloadChunk, sha256: firstBlockHash, actual: firstBlockHash}]);
       await info.attach("verified-first-block-before-pause", {body: JSON.stringify(before), contentType: "application/json"});
       await page.screenshot({path: info.outputPath(`${storage}-${width}-pending.png`), fullPage: true});

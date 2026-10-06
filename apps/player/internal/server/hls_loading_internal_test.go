@@ -29,7 +29,7 @@ func TestPlannedHLSLoadingDoesNotRepeatPlaybackEnrichment(t *testing.T) {
 			if operation == "software recovery" {
 				recipe.mode = "transcode"
 			}
-			options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=15"
+			options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=17"
 			key := hlsRecipeKey(item.ID, recipe)
 			directory := filepath.Join(manager.cache, key)
 			switch operation {
@@ -39,8 +39,10 @@ func TestPlannedHLSLoadingDoesNotRepeatPlaybackEnrichment(t *testing.T) {
 				writeHLSLoadingFile(t, filepath.Join(directory, ".seekable"), identity)
 				err = manager.prepare(t.Context(), item, recipe)
 			case "cached segment":
-				writeHLSLoadingFile(t, filepath.Join(directory, "1080p/segment-00075.m4s"), "segment")
-				err = manager.prepareSegment(t.Context(), item, recipe, "1080p/segment-00075.m4s")
+				writeHLSLoadingFile(t, filepath.Join(directory, "index.m3u8"), "#EXTM3U\n#KINOSAIL-TRANSCODER:"+options.Cache+"\n#EXT-X-STREAM-INF:BANDWIDTH=1000000\n1080p/index.m3u8\n")
+				writeHLSLoadingFile(t, filepath.Join(directory, "1080p/index.m3u8"), "#EXTM3U\n#EXT-X-MEDIA-SEQUENCE:1\n#EXTINF:4,\nsegment-00001.m4s\n#EXT-X-ENDLIST\n")
+				writeHLSLoadingFile(t, filepath.Join(directory, "1080p/segment-00001.m4s"), "segment")
+				err = manager.prepareSegment(t.Context(), item, recipe, "1080p/segment-00001.m4s")
 			case "encode":
 				if err := os.MkdirAll(directory, 0o700); err != nil {
 					t.Fatal(err)

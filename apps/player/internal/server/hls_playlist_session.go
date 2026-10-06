@@ -25,6 +25,12 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 		return
 	}
 	key := hlsRecipeKey(item.ID, recipe)
+	path := filepath.Join(manager.cache, key, localName)
+	if _, err := manager.readHLSMasterRenditions(filepath.Join(manager.cache, key)); err != nil && !errors.Is(err, os.ErrNotExist) {
+		slog.WarnContext(request.Context(), "HLS master rejected", "request_id", requestActivityID(request.Context()), "playback_session", requestPlaybackSession(request.Context()), "failure_class", "invalid-master")
+		localizedNotFound(writer, request)
+		return
+	}
 	start := 0
 	duration := 0.0
 	if filepath.Base(name) == "index.m3u8" {
@@ -33,6 +39,20 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 		if !validStart {
 			return
 		}
+	}
+	_, cachedErr := os.Stat(path)
+	if cachedErr == nil && filepath.Ext(name) == ".m4s" {
+		if err := manager.prepareSegment(request.Context(), item, recipe, name); err != nil {
+			localizedNotFound(writer, request)
+			return
+		}
+	}
+	preparePlaylist := filepath.Base(name) == "index.m3u8"
+	if filepath.Base(name) == "init.mp4" {
+		_, settingsErr := manager.seekSettings(item, recipe, filepath.Join(manager.cache, key))
+		preparePlaylist = settingsErr != nil || !manager.initializationsReady(filepath.Join(manager.cache, key))
+	}
+	if preparePlaylist {
 		if !manager.prepareRecipePlaylist(writer, request, item, recipe) {
 			return
 		}
@@ -41,7 +61,6 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 		writer.Header().Set("Content-Type", "application/vnd.apple.mpegurl")
 		writer.Header().Set("Cache-Control", "no-store")
 	}
-	path := filepath.Join(manager.cache, key, localName)
 	projection := manager.recipePlaylistProjection(request.Context(), item, recipe, key, localName)
 	if filepath.Ext(name) == ".m3u8" && serveHLSPlaylistWithSession(writer, request, path, start, hlsPlaybackDuration(recipe, duration), projection) {
 		return
@@ -85,6 +104,10 @@ func (manager *hlsManager) waitForRecipeSegment(request *http.Request, item libr
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 		if err := manager.prepareSegment(segmentContext, item, recipe, name); err != nil {
 			slog.WarnContext(request.Context(), "HLS segment preparation failed", "diagnostic", "[PLAYBACK-HLS]", "request_id", requestActivityID(request.Context()), "error", hlsDiagnostic(err, item.Path))
+			if !errors.Is(err, os.ErrNotExist) {
+				cancel()
+				return false
+			}
 		}
 	}
 	ready := waitForHLSFile(segmentContext, path)

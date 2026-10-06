@@ -1,4 +1,5 @@
 import { expect } from "@playwright/test";
+import { navigationDiagnostics } from "../../../scripts/testing/navigation-diagnostics.mjs";
 import { createHmac } from "node:crypto";
 
 export const supportedViewports = [{ width: 1440, height: 900 }, { width: 1024, height: 768 }, { width: 720, height: 450 }, { width: 568, height: 320 }, { width: 390, height: 844 }, { width: 320, height: 800 }];
@@ -15,7 +16,9 @@ function totp(): string {
   return ((digest.readUInt32BE(offset) & 0x7fffffff) % 1_000_000).toString().padStart(6, "0");
 }
 
-export async function login(page: import("@playwright/test").Page) {
+export async function login(page: import("@playwright/test").Page, info?: import("@playwright/test").TestInfo) {
+  const navigation = navigationDiagnostics(page,info?.project.use.baseURL);
+  try {
   await page.addInitScript(() => {
     if ("PublicKeyCredential" in window) Object.defineProperty(PublicKeyCredential, "isConditionalMediationAvailable", { value: async () => false });
   });
@@ -29,6 +32,10 @@ export async function login(page: import("@playwright/test").Page) {
     await page.getByRole("link", { name: "Not now" }).click();
   }
   await expect(page).toHaveURL("/");
+  } catch (error) {
+    await info?.attach("subtitle-login-navigation-failure", {contentType:"application/json", body:JSON.stringify(await navigation.snapshot(error))});
+    throw error;
+  } finally {navigation.stop();}
 }
 
 export async function setSubtitleLanguages(page: import("@playwright/test").Page, languages: string[]): Promise<number> {

@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strings"
 	"sync"
 	"testing"
@@ -27,6 +28,9 @@ type HLSSchedulerFixture struct {
 // HLSScheduler checks scheduling, complete publication, and hardware recovery through the app handler.
 func HLSScheduler(t *testing.T, newHandler func(HLSSchedulerConfig) http.Handler, playableHLS string) {
 	t.Helper()
+	// This contract needs the two-rendition budget, independent of host CPU limits.
+	previous := runtime.GOMAXPROCS(4)
+	t.Cleanup(func() { runtime.GOMAXPROCS(previous) })
 	fixture := HLSSchedulerFixture{New: func(config HLSSchedulerConfig) http.Handler {
 		config.FFprobe = HLSSchedulerProbe(t)
 		return newHandler(config)

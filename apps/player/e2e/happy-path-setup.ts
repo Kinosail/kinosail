@@ -1,3 +1,4 @@
+import {navigationDiagnostics} from "../../../scripts/testing/navigation-diagnostics.mjs";
 import { expect, type Page, type Request, type TestInfo } from "@playwright/test";
 import { holdNextLibraryPage, holdNextMainRequest } from "./request-holds";
 import { expectAccessible, openSettings, signOut, totp, type HappyPathState } from "./happy-path-helpers";
@@ -32,7 +33,7 @@ export async function startHappyPath(page: Page, testInfo: TestInfo): Promise<Ha
 		captureErrors = enabled;
 	};
 
-  await page.goto("/setup");
+  await openHappyPathSetup(page, testInfo);
   if (await page.getByRole("heading", { name: "Set up your Server." }).isVisible()) {
     await expectAccessible(page, capture);
     await expect(page.getByLabel("Setup code")).toHaveCount(0);
@@ -190,4 +191,17 @@ export async function startHappyPath(page: Page, testInfo: TestInfo): Promise<Ha
 	await expect(page.getByRole("heading", { name: "Arrival" })).toHaveCount(0);
 	await expectAccessible(page, capture);
   return { capture, errors, passkeyCreated };
+}
+
+export async function openHappyPathSetup(page: Page, testInfo: TestInfo) {
+  const navigation = navigationDiagnostics(page,testInfo.project.use.baseURL);
+  try {
+    await page.goto("/setup", {waitUntil: "domcontentloaded"});
+    await expect(page.getByLabel("Name", {exact: true})).toBeVisible();
+  } catch (error) {
+    await testInfo.attach("setup-navigation-failure", {
+      body: JSON.stringify(await navigation.snapshot(error)), contentType: "application/json",
+    });
+    throw error;
+  } finally { navigation.stop(); }
 }

@@ -1,5 +1,6 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { downloadChunk, downloadHash, downloadIsolated, downloadServer, downloadPeer, openDownloadPage, inspectDownload, attachDownloadEnvironment } from "./download-pause-fixture";
+import "./download-pause-visibility-tests";
 
 test.skip(!downloadServer && !downloadIsolated, "requires an explicit disposable native download transport runner");
 test.use({serviceWorkers: "allow"});
@@ -22,7 +23,14 @@ test("same Viewer Profile in another tab preserves the transfer owner until expl
     await expect(second.getByRole("button", {name: "Pause download", exact: true})).toHaveCount(0);
     await page.getByRole("button", {name: "Pause download", exact: true}).click();
     await expect.poll(async () => (await peer.stats()).closed).toBe(1);
-    await expect(second.getByRole("button", {name: "Resume on this device", exact: true})).toBeEnabled();
+    try {
+      await expect(second.getByRole("button", {name: "Resume on this device", exact: true})).toBeEnabled();
+    } catch (error) {
+      await info.attach("cross-tab-resume-failure", {contentType: "application/json",
+        body: JSON.stringify({owner: await ownershipSnapshot(page, served.jobID),
+          peer: await ownershipSnapshot(second, served.jobID), transport: await peer.stats()})});
+      throw error;
+    }
     await second.getByRole("button", {name: "Resume on this device", exact: true}).click();
     await expect(second.locator("[data-download-device-status]")).toHaveText("Saved and verified. Play to check compatibility.");
     const ready = await inspectDownload(second, served.jobID);
@@ -73,4 +81,52 @@ if (!downloadServer) test("isolated native profile boundary: changing Viewer Pro
     expect((await peer.stats()).removals).toBe(0);
     await info.attach("changed-profile-cancellation-retention", {body: JSON.stringify({stored: await inspectDownload(page, served.jobID), peer: await peer.stats()}), contentType: "application/json"});
   } finally { await context.close(); await peer.close(); }
+});
+
+
+test("cross-tab failure diagnostics stay bounded when a renderer stalls", async () => {
+  let evaluated = 0;
+  const page = {evaluate: () => { evaluated++; return new Promise(() => {}); }} as unknown as Page;
+  const result = await ownershipSnapshot(page, "aaaaaaaaaaaaaaaa");
+  expect(result).toEqual({unavailable: true});
+  expect(evaluated).toBe(2);
+});
+
+
+async function ownershipSnapshot(page: Page, jobID: string) {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const collected = Promise.all([page.evaluate(async id => {
+    const control = document.querySelector<HTMLButtonElement>("[data-download-device]");
+    const status = document.querySelector("[data-download-device-status]")?.textContent || "";
+    const locks = await navigator.locks.query();
+    const label = control?.textContent || "";
+    return {visible: document.visibilityState === "visible", focused: document.hasFocus(),
+      control: ["Pause download", "Resume on this device", "Download to this device"].includes(label) ? label : "other",
+      disabled: control?.disabled, pausedStatus: status.includes("Download paused."),
+      interruptedStatus: status.includes("Download interrupted."),
+      jobLockHeld: locks.held.some(lock => lock.name?.endsWith(id))};
+  }, jobID), inspectDownload(page, jobID)]).then(([browser, stored]) => ({
+    ...browser, state: ["ready", "needs_attention", "transferring"].includes(stored.job?.state || "") ? stored.job?.state : "other",
+    bytes: typeof stored.job?.bytes === "number" && Number.isSafeInteger(stored.job.bytes) && stored.job.bytes >= 0 && stored.job.bytes <= downloadChunk * 2 + 31 ? stored.job.bytes : undefined,
+    retainedFirstChunk: stored.chunks[0]?.length === downloadChunk && stored.chunks[0]?.actual === stored.chunks[0]?.sha256,
+    chunkCount: stored.chunks.length,
+  }));
+  try {
+    return await Promise.race([collected, new Promise<{unavailable: true}>(resolve => {
+      timer = setTimeout(() => resolve({unavailable: true}), 1000);
+    })]);
+  } catch { return {unavailable: true}; }
+  finally { clearTimeout(timer); }
+}
+
+
+test("cross-tab diagnostics report verified retained bytes without private record fields", async () => {
+  let count = 0;
+  const page = {evaluate: () => Promise.resolve(count++ === 0
+    ? {visible: true, focused: true, control: "Resume on this device", disabled: false, pausedStatus: true, jobLockHeld: false}
+    : {job: {state: "needs_attention", bytes: downloadChunk, profileID: "private record"},
+       chunks: [{length: downloadChunk, sha256: "verified", actual: "verified"}]})} as unknown as Page;
+  const snapshot = await ownershipSnapshot(page, "aaaaaaaaaaaaaaaa");
+  expect(snapshot).toMatchObject({retainedFirstChunk: true, bytes: downloadChunk, chunkCount: 1});
+  expect(JSON.stringify(snapshot)).not.toContain("private record");
 });

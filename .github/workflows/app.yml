@@ -54,7 +54,8 @@ jobs:
         with:
           go-version-file: apps/${{ inputs.app }}/go.mod
           cache-dependency-path: "**/go.sum"
-      - run: sudo apt-get update && sudo apt-get install -y libarchive-tools
+      - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libarchive-tools ffmpeg
+      - run: ffmpeg -version && ffprobe -version
       - env:
           APP: ${{ inputs.app }}
           KINOSAIL_GO_TEST_MODE: ${{ fromJSON(inputs.plan).deep && 'deep' || 'quick' }}
@@ -250,7 +251,7 @@ jobs:
             VERSION=ci
             REVISION=${{ github.sha }}
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        if: inputs.app == 'player' && matrix.engine == 'chromium'
+        if: matrix.engine == 'chromium'
         with:
           go-version-file: apps/player/go.mod
           cache-dependency-path: "**/go.sum"
@@ -275,6 +276,40 @@ jobs:
           KINOSAIL_TEST_IMAGE: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
           KINOSAIL_TEST_IMAGE_READY: "1"
         run: python3 ../../scripts/ci/e2e-artifact.py --output "${{ runner.temp }}/${{ inputs.app }}-${{ matrix.engine }}-e2e-artifact" -- ./scripts/test-container.sh
+      - name: Install public-flow runner
+        if: matrix.engine == 'chromium'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          pnpm --dir scripts/e2e install --frozen-lockfile
+      - name: Verify complete Player recovery suites
+        if: inputs.app == 'player' && matrix.engine == 'chromium'
+        env:
+          KINOSAIL_E2E_VIDEO: "off"
+        run: python3 scripts/ci/e2e-artifact.py --output "${{ runner.temp }}/player-recovery-e2e-artifact" -- pnpm --dir apps/player/e2e exec playwright test passkeys.spec.ts worker-message-security.spec.ts player-experience.spec.ts player-direct-fallback.spec.ts --trace off --workers=1
+      - name: Keep Player recovery evidence
+        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: player-recovery-e2e-${{ github.sha }}
+          path: ${{ runner.temp }}/player-recovery-e2e-artifact/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Verify public flows with tester-army e2e
+        if: matrix.engine == 'chromium'
+        env:
+          APP: ${{ inputs.app }}
+          E2E_TELEMETRY_DISABLED: "1"
+        run: scripts/e2e/run.sh "$APP"
+      - name: Keep public-flow evidence
+        if: always() && matrix.engine == 'chromium'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: ${{ inputs.app }}-public-flow-e2e-${{ github.sha }}
+          include-hidden-files: true
+          path: scripts/e2e/.e2e/runs/
+          retention-days: 30
+          if-no-files-found: error
       - name: Verify cold and damaged HLS cache reopen
         if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
         env:

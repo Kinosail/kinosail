@@ -2,7 +2,10 @@ package server
 
 import (
 	"errors"
+	"log/slog"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/MikeO7/kinosail/packages/library"
@@ -52,7 +55,8 @@ func (api apiServices) preparePlayback(writer http.ResponseWriter, request *http
 }
 
 func (api apiServices) startupSource(writer http.ResponseWriter, request *http.Request, item library.Item, source string) (startupRequest, bool) {
-	value := startupRequest{request: request, item: item, viewer: currentViewer(request).ID, key: "direct:" + item.ID}
+	// Own the queued request before post-handler middleware can mutate its forms.
+	value := startupRequest{request: request.Clone(request.Context()), item: item, viewer: currentViewer(request).ID, key: "direct:" + item.ID}
 	value.direct = source == "/media/"+item.ID
 	if value.direct {
 		return value, true
@@ -75,5 +79,10 @@ func (api apiServices) startupSource(writer http.ResponseWriter, request *http.R
 	}
 	value.recipe = localHLSRecipe(resolved)
 	value.key = hlsRecipeKey(item.ID, value.recipe)
+	if _, err := api.hls.readHLSMasterRenditions(filepath.Join(api.hls.cache, value.key)); err != nil && !errors.Is(err, os.ErrNotExist) {
+		slog.WarnContext(request.Context(), "HLS master rejected", "request_id", requestActivityID(request.Context()), "playback_session", requestPlaybackSession(request.Context()), "failure_class", "invalid-master")
+		apiNotFound(writer)
+		return value, false
+	}
 	return value, true
 }
