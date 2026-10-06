@@ -104,8 +104,10 @@ func q12PaginationPeer(t *testing.T, handler http.Handler) (*httptest.Server, *h
 		t.Fatal("Q12 loopback peer origin unavailable")
 	}
 	base := &http.Transport{Proxy: nil}
-	client := &http.Client{Timeout: 10 * time.Second, Transport: q12OriginTransport{origin: origin, base: base},
-		CheckRedirect: func(_ *http.Request, _ []*http.Request) error { return http.ErrUseLastResponse }}
+	client := &http.Client{
+		Timeout: 10 * time.Second, Transport: q12OriginTransport{origin: origin, base: base},
+		CheckRedirect: func(_ *http.Request, _ []*http.Request) error { return http.ErrUseLastResponse },
+	}
 	t.Cleanup(base.CloseIdleConnections)
 	return web, client
 }

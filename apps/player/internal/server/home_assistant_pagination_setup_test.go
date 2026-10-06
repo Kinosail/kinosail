@@ -12,8 +12,10 @@ func q12PaginationServer(t *testing.T, media string) (http.Handler, string) {
 	t.Helper()
 	data := t.TempDir()
 	q12WriteLibrarySettings(t, data)
-	handler := server.New(server.Config{Lifecycle: t.Context(), MediaDir: media, DataDir: data,
-		CacheDir: t.TempDir(), RequireAuth: true, FFmpeg: "/q12-unavailable", FFprobe: "/q12-unavailable"})
+	handler := server.New(server.Config{
+		Lifecycle: t.Context(), MediaDir: media, DataDir: data,
+		CacheDir: t.TempDir(), RequireAuth: true, FFmpeg: "/q12-unavailable", FFprobe: "/q12-unavailable",
+	})
 	setup := apiCall(t, handler, "", http.MethodPost, "/api/v1/setup", map[string]any{
 		"name": "Owner", "password": "owner-password", "device": "API test", "totp": true,
 		"automaticUpdates": false,
