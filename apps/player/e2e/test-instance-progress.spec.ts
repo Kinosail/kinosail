@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page, type TestInfo } from "@playwright/test";
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
@@ -18,6 +18,42 @@ async function serverProgress(page: Page, id: string) {
   expect(body.item).toHaveProperty("progress");
   expect(typeof body.item.progress).toBe("object");
   return body.item.progress;
+}
+
+// Real Go markup and the delivered CSS are required: bare progress fixtures miss
+// the mobile primary-player-actions rule overriding the notice's hidden state.
+async function inspectNotice(page: Page, testInfo: TestInfo, state: string, visible: boolean) {
+  const projections = [];
+  for (const viewport of [{width: 360, height: 800}, {width: 390, height: 844},
+    {width: 700, height: 900}, {width: 701, height: 900},
+    {width: 1440, height: 900}, {width: 1920, height: 1080}]) {
+    await page.setViewportSize(viewport);
+    const notice = page.locator("[data-progress-notice]");
+    const projection = await notice.evaluate(element => ({
+      hidden: (element as HTMLElement).hidden, display: getComputedStyle(element).display,
+      height: element.getBoundingClientRect().height, busy: element.getAttribute("aria-busy"),
+    }));
+    projections.push({state, viewport, ...projection});
+    if (state === "pending") {
+      expect(projection.busy).toBe("true");
+      await expect(page.locator("[data-progress-status]")).toHaveText("Saving progress…");
+      await expect(page.getByRole("button", {name: "Retry saving position", exact: true})).toBeDisabled();
+    }
+    await testInfo.attach(`${state}-${viewport.width}-computed`, {body: JSON.stringify(projection), contentType: "application/json"});
+    await page.screenshot({path: testInfo.outputPath(`${state}-${viewport.width}.png`), fullPage: true});
+    if (visible) {
+      await expect(notice).toBeVisible();
+      const retry = page.getByRole("button", {name: "Retry saving position", exact: true});
+      await expect(retry).toBeVisible();
+      expect((await retry.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+    } else {
+      expect(projection).toMatchObject({hidden: true, display: "none", height: 0});
+      await expect(notice).toBeHidden();
+      await expect(page.getByRole("button", {name: "Retry saving position", exact: true})).toBeHidden();
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+  await testInfo.attach(`${state}-responsive-notice`, {body: JSON.stringify(projections), contentType: "application/json"});
 }
 
 test.beforeEach(async ({page}) => {
@@ -68,21 +104,26 @@ test("populated player retries the latest progress through the real Server and r
   test.skip(baseline, "the baseline rejection reproduction is separate from repaired recovery");
   await login(page);
   const watch = await firstPlayable(page);
-  let fail = true;
+  let fail = false;
+  let hold = false;
   let release: (() => void) | undefined;
   const requests: Array<{seconds: number; revision: string}> = [];
   await page.route("**/progress/**", async route => {
     const body = new URLSearchParams(route.request().postData() || "");
     requests.push({seconds: Number(body.get("seconds")), revision: body.get("revision")!});
     if (fail) return route.fulfill({status: 503});
+    if (!hold) return route.continue();
     await new Promise<void>(resolve => release = resolve);
     await route.continue();
   });
   await page.goto(watch);
+  await inspectNotice(page, testInfo, "idle", false);
+  fail = true;
   const media = page.locator("video");
   await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThanOrEqual(2);
   await media.evaluate((video: HTMLVideoElement) => { video.pause(); video.currentTime = Math.min(video.duration / 3, 30); video.dispatchEvent(new Event("pause")); });
   await expect(page.locator("[data-progress-status]")).toHaveText("Your latest position is not saved. Retry while this page is open.");
+  await inspectNotice(page, testInfo, "failed", true);
   for (const viewport of [{width: 390, height: 844}, {width: 1440, height: 900}, {width: 1920, height: 1080}]) {
     await page.setViewportSize(viewport);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -93,14 +134,17 @@ test("populated player retries the latest progress through the real Server and r
   }
   const pending = requests.at(-1)!;
   fail = false;
+  hold = true;
   await page.getByRole("button", {name: "Retry saving position", exact: true}).click();
   await expect(page.locator("[data-progress-notice]")).toHaveAttribute("aria-busy", "true");
   await expect(page.locator("[data-progress-status]")).toHaveText("Saving progress…");
   await expect(page.getByRole("button", {name: "Retry saving position", exact: true})).toBeDisabled();
+  await inspectNotice(page, testInfo, "pending", true);
   await page.screenshot({path: testInfo.outputPath("pending-save.png"), fullPage: true});
   await expect.poll(() => Boolean(release)).toBe(true);
   release!();
   await expect(page.locator("[data-progress-notice]")).toBeHidden();
+  await inspectNotice(page, testInfo, "saved", false);
   const id = watch.split("/").at(-1)!;
   const state = await serverProgress(page, id);
   expect(state.seconds).toBeCloseTo(pending.seconds, 2);
