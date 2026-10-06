@@ -8,6 +8,16 @@ WORKFLOWS = ROOT / '.github/workflows'
 
 
 class WorkflowSecurityTests(unittest.TestCase):
+    def test_player_browser_engines_receive_verified_fixture_codecs(self):
+        # Actual HLS navigation fixtures spawn FFmpeg in every selected engine.
+        # Container codecs cannot satisfy a host fixture's executable dependency.
+        app = (WORKFLOWS / 'app.yml').read_text()
+        step = app.split('      - name: Install startup fixture codecs\n', 1)[1].split('      - name:', 1)[0]
+        self.assertIn("if: inputs.app == 'player'\n", step)
+        self.assertNotIn('matrix.engine', step)
+        self.assertIn('sha256sum --check', step)
+        self.assertIn('echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"', step)
+
     def test_startup_boundary_has_hosted_public_interface_evidence(self):
         app = (WORKFLOWS / 'app.yml').read_text()
         self.assertIn('name: Verify bounded startup and request boundary', app)

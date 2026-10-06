@@ -61,11 +61,11 @@ func (handlers MediaHandlers) dismissProgress(writer http.ResponseWriter, reques
 
 func (handlers MediaHandlers) progress(writer http.ResponseWriter, request *http.Request) {
 	var input struct {
-		Seconds       float64 `json:"seconds"`
-		Watched       *bool   `json:"watched"`
-		Session       string  `json:"session"`
-		Revision      uint64  `json:"revision"`
-		PlaybackToken string  `json:"playbackToken"`
+		Seconds       *float64 `json:"seconds"`
+		Watched       *bool    `json:"watched"`
+		Session       string   `json:"session"`
+		Revision      uint64   `json:"revision"`
+		PlaybackToken string   `json:"playbackToken"`
 	}
 	item, found := handlers.Index.VisibleItem(request, request.PathValue("id"))
 	if !found {
@@ -76,8 +76,8 @@ func (handlers MediaHandlers) progress(writer http.ResponseWriter, request *http
 		apiAction{err: err, status: http.StatusBadRequest}.serve(writer)
 		return
 	}
-	if input.Seconds < 0 {
-		apiAction{err: errors.New("progress seconds cannot be negative"), status: http.StatusBadRequest}.serve(writer)
+	if input.Seconds == nil || *input.Seconds < 0 {
+		apiAction{err: errors.New("progress seconds must be provided and non-negative"), status: http.StatusBadRequest}.serve(writer)
 		return
 	}
 	timeline, err := handlers.timeline(input.PlaybackToken)
@@ -85,10 +85,11 @@ func (handlers MediaHandlers) progress(writer http.ResponseWriter, request *http
 		apiAction{err: errors.New("playback token is invalid"), status: http.StatusBadRequest}.serve(writer)
 		return
 	}
+	seconds := *input.Seconds
 	if len(timeline.Omitted) > 0 {
-		input.Seconds = timeline.SourceTime(input.Seconds)
+		seconds = timeline.SourceTime(seconds)
 	}
-	accepted, err := handlers.Progress.SetRevision(request, item.ID, input.Seconds, input.Watched, input.Session, input.Revision)
+	accepted, err := handlers.Progress.SetRevision(request, item.ID, seconds, input.Watched, input.Session, input.Revision)
 	if err != nil {
 		apiAction{err: err, status: handlers.StoreStatus(err)}.serve(writer)
 		return
