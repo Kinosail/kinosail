@@ -18,6 +18,7 @@ import subprocess
 import threading
 import time
 from hls_timeline_http import PublicServer, sha, source_state
+from hls_timeline_packets import fragment_packets
 
 ROOT = Path(__file__).resolve().parents[3]
 RUN = ROOT / ".verification/hls-prepared-timeline" / time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
@@ -195,11 +196,26 @@ def journey(name, original, metadata):
             case["advertisedContinuationSeconds"] = elapsed
             if elapsed < 26:
                 case["failures"].append("future_uri_missing")
-            fragments = []
+            fragments, previous_end = [], None
+            case["publicFragments"] = []
+            advertised_lengths = dict(segments)
             for filename in ["init.mp4"] + selected:
                 status, data, _ = api.http(base + filename)
                 check(status == 200 and len(data) > 0, "public_fragment_http_" + str(status))
                 fragments.append(data)
+                if filename != "init.mp4":
+                    fragment = directory / "fragment-probe.mp4"
+                    fragment.write_bytes(fragments[0] + data)
+                    packet_facts = fragment_packets(fragment)
+                    packet_facts["segment"] = filename
+                    packet_facts["advertisedSeconds"] = advertised_lengths[filename]
+                    case["publicFragments"].append(packet_facts)
+                    if abs(packet_facts["videoSpanSeconds"] - advertised_lengths[filename]) > 0.15:
+                        case["failures"].append("fragment_video_duration")
+                    if packet_facts["videoPackets"]:
+                        if previous_end is not None and abs(packet_facts["firstVideoTime"] - previous_end) > 0.15:
+                            case["failures"].append("fragment_video_discontinuity")
+                        previous_end = packet_facts["lastVideoEnd"]
             check(fragments[0] == prepared_init, "prepared_initialization_preserved")
             decoded = directory / "public-fragments.mp4"
             decoded.write_bytes(b"".join(fragments))
@@ -255,7 +271,8 @@ except Exception as error:
 finally:
     target = RUN / "receipt.json"
     target.write_text(json.dumps(receipt, indent=2, allow_nan=False) + "\n")
-    files = [Path(__file__), Path(__file__).with_name("hls_timeline_http.py")]
+    files = [Path(__file__), Path(__file__).with_name("hls_timeline_http.py"),
+        Path(__file__).with_name("hls_timeline_packets.py")]
     checksums = {str(p.relative_to(ROOT)): sha(p) for p in files}
     checksums["receipt.json"] = sha(target)
     (RUN / "SHA256SUMS").write_text("".join(f"{v}  {k}\n" for k, v in checksums.items()))
