@@ -47,3 +47,18 @@ def decoded_identity(path, offset=0):
     if len(hashes) > 4096 or any(re.fullmatch(rb"[a-f0-9]{32}", value) is None for value in hashes):
         raise RuntimeError("decoded_fixture_bound")
     return {"frames": len(hashes), "sha256": hashlib.sha256(b"\n".join(hashes)).hexdigest()}
+
+
+def safe_seek_phases(private_log):
+    starts = []
+    for line in private_log.splitlines():
+        if 'msg="HLS transcode started"' not in line:
+            continue
+        values = {key: re.search(r"\b" + key + r"=(-?[0-9]+)\b", line)
+            for key in ["input_seek_ms", "segment_start"]}
+        mode = re.search(r"\bmode=(remux|audio-transcode|transcode)\b", line)
+        work = re.search(r"\bwork_class=(background|playback)\b", line)
+        if all(values.values()) and mode and work:
+            starts.append({key: int(value[1]) for key, value in values.items()} | {"mode": mode[1], "workClass": work[1]})
+    return {"encoderStarts": starts[:32], "encoderStartsBounded": len(starts) <= 32}
+    

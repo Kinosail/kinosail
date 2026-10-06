@@ -19,7 +19,8 @@ import subprocess
 import threading
 import time
 from hls_timeline_http import PublicServer, sha, source_state
-from hls_timeline_packets import fragment_packets, decoded_identity
+from hls_timeline_packets import fragment_packets, decoded_identity, safe_seek_phases
+from hls_timeline_fixture import fixture
 
 ROOT = Path(__file__).resolve().parents[3]
 RUN = ROOT / ".verification/hls-prepared-timeline" / time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
@@ -44,34 +45,6 @@ def bounded_bytes(path, limit, failure):
         data = file.read(limit + 1)
     check(0 < len(data) <= limit, failure)
     return data
-
-
-def fixture(name, gop, keys, rate="24", frames=2304, extension=".mkv"):
-    numerator, _, denominator = rate.partition("/")
-    frame_rate = float(numerator) / float(denominator or "1")
-    expected_duration = frames / frame_rate
-    path = RUN / (name + extension)
-    command = ["ffmpeg", "-nostdin", "-v", "error", "-f", "lavfi", "-i", f"testsrc2=s=640x360:r={rate}:d={expected_duration}",
-        "-f", "lavfi", "-i", f"sine=frequency=440:sample_rate=48000:duration={expected_duration}",
-        "-c:v", "libx264", "-threads", "2", "-preset", "veryfast", "-crf", "32", "-pix_fmt", "yuv420p",
-        "-g", str(gop), "-keyint_min", "1", "-sc_threshold", "0", "-force_key_frames", keys,
-        "-frames:v", str(frames), "-c:a", "aac", "-ac", "2", str(path)]
-    subprocess.run(command, check=True, timeout=120, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    probe = subprocess.check_output(["ffprobe", "-v", "error", "-select_streams", "v:0", "-skip_frame", "nokey",
-        "-show_entries", "frame=best_effort_timestamp_time:format=duration:stream=avg_frame_rate",
-        "-of", "json", str(path)], timeout=30)
-    facts = json.loads(probe)
-    times = [float(f["best_effort_timestamp_time"]) for f in facts["frames"] if "best_effort_timestamp_time" in f]
-    duration = float(facts["format"]["duration"])
-    actual_rate = facts["streams"][0]["avg_frame_rate"].split("/")
-    check(abs(float(actual_rate[0]) / float(actual_rate[1]) - frame_rate) < 0.001, "fixture_frame_rate")
-    expected = [float(v) for v in keys.split(",")]
-    check(len(times) == len(expected) and all(abs(a-b) < 0.05 for a, b in zip(times, expected)), "fixture_keyframes")
-    check(abs(duration - expected_duration) < 0.1, "fixture_duration")
-    if name == "fractional15s":
-        check(any(abs(v - round(v, 3)) > 0.00001 for v in times), "fixture_submillisecond_keyframe")
-    return path, {"command": command, "sha256": sha(path), "durationSeconds": duration, "videoDurationSeconds": expected_duration, "frameRate": frame_rate,
-        "videoFrames": frames, "keyframesSeconds": times}
 
 
 def encoder_count(server, source):
@@ -285,18 +258,7 @@ def journey(name, original, metadata, offset=0):
                 server.wait()
             log.flush()
             private_log = bounded_bytes(directory / "server.log", 2 * 1024 * 1024, "private_log_bound").decode("utf-8")
-            starts = []
-            for line in private_log.splitlines():
-                if 'msg="HLS transcode started"' not in line:
-                    continue
-                values = {key: re.search(r"\b" + key + r"=(-?[0-9]+)\b", line)
-                    for key in ["input_seek_ms", "segment_start"]}
-                mode = re.search(r"\bmode=(remux|audio-transcode|transcode)\b", line)
-                work = re.search(r"\bwork_class=(background|playback)\b", line)
-                if all(values.values()) and mode and work:
-                    starts.append({key: int(value[1]) for key, value in values.items()} | {"mode": mode[1], "workClass": work[1]})
-            case["encoderStarts"] = starts[:32]
-            case["encoderStartsBounded"] = len(starts) <= 32
+            case.update(safe_seek_phases(private_log))
             after = source_state(source)
             case["sourceAfter"] = after
             case["sourceUnchanged"] = before == after
@@ -314,11 +276,11 @@ try:
     fixtures = [("control2s", 48, controls), ("irregular15s", 2400, "0,15,36,60,84"),
         ("cluster15s", 2400, "0,15,16,18,36,60,84")]
     for name, gop, keys in fixtures:
-        source, metadata = fixture(name, gop, keys)
+        source, metadata = fixture(RUN, name, gop, keys)
         journey(name, source, metadata)
         if name == "cluster15s":
             journey(name + "resume15s", source, metadata, 15)
-    source, metadata = fixture("fractional15s", 3000, "0,15.0483,16.0493,18.0513,36.0693,60.0933,84.1173",
+    source, metadata = fixture(RUN, "fractional15s", 3000, "0,15.0483,16.0493,18.0513,36.0693,60.0933,84.1173",
         "30000/1001", 2880, ".mp4")
     journey("fractional15s", source, metadata)
     if len(receipt["cases"]) == 5 and all(case["result"] == "passed" for case in receipt["cases"]):
@@ -329,7 +291,7 @@ finally:
     target = RUN / "receipt.json"
     target.write_text(json.dumps(receipt, indent=2, allow_nan=False) + "\n")
     files = [Path(__file__), Path(__file__).with_name("hls_timeline_http.py"),
-        Path(__file__).with_name("hls_timeline_packets.py")]
+        Path(__file__).with_name("hls_timeline_packets.py"), Path(__file__).with_name("hls_timeline_fixture.py")]
     checksums = {str(p.relative_to(ROOT)): sha(p) for p in files}
     checksums["receipt.json"] = sha(target)
     (RUN / "SHA256SUMS").write_text("".join(f"{v}  {k}\n" for k, v in checksums.items()))
