@@ -1,9 +1,9 @@
 package main
 
 import (
- "encoding/json"
- "errors"
- "testing"
+	"encoding/json"
+	"errors"
+	"testing"
 )
 
 func TestR16HistoryProjectionEmptyOmissionContract(t *testing.T) {

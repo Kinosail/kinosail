@@ -20,8 +20,8 @@
  "newRecoveryControl": {
   "path": "apps/subtitles/engineering/qa/2026-10-05-dashboard-freshness/fixture/refresh_history_test.go",
   "bytes": 1075,
-  "gitBlob": "e2a291ab8f1387131e84d0d54f8800efac78c605",
-  "sha256": "025a322a15b918ad73aa30708ee3da0533d6230f55c3d9eb4290e4963d8e51f6",
+  "gitBlob": "5219c42184113bf4ca7ca6f0e1adfa22dfd98ab8",
+  "sha256": "9ae26cf4772e7a558169f9566685c827165fc5f158f284586d0ae4598f8fea19",
   "lines": 37,
   "purpose": "written-first empty omission versus present null/malformed/nonempty-required protocol regression; actual public controls unchanged"
 }
