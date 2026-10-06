@@ -5,6 +5,7 @@ import math
 import re
 import struct
 import subprocess
+import time
 
 
 def parse_frames(data):
@@ -45,10 +46,17 @@ def frame_facts(rows):
             'timestampedFrameSHA256': hashlib.sha256(repr(rows).encode()).hexdigest()}
 
 
-def stream_metadata(path):
+def remaining_timeout(deadline, limit):
+    budget = limit if deadline is None else min(limit, deadline - time.monotonic())
+    if budget <= 0:
+        raise RuntimeError('frame_evidence_deadline')
+    return budget
+
+
+def stream_metadata(path, deadline=None):
     data = subprocess.check_output(['ffprobe', '-v', 'error', '-show_entries',
         'format=start_time,duration:stream=index,codec_type,codec_name,time_base,start_time,duration,avg_frame_rate',
-        '-of', 'json', str(path)], timeout=30)
+        '-of', 'json', str(path)], timeout=remaining_timeout(deadline, 30))
     if len(data) > 65536:
         raise RuntimeError('stream_origin_bound')
     facts = json.loads(data)
@@ -57,7 +65,7 @@ def stream_metadata(path):
     return facts
 
 
-def decode_frames(path, offset=None):
+def decode_frames(path, offset=None, deadline=None):
     command = ['ffmpeg', '-nostdin', '-v', 'error', '-xerror', '-threads', '2']
     if offset is None:
         command += ['-copyts']
@@ -66,12 +74,12 @@ def decode_frames(path, offset=None):
         command += ['-ss', str(offset)]  # Output-side reference seek, never input seek.
     command += ['-an', '-frames:v', '4097', '-fps_mode', 'passthrough',
                 '-enc_time_base', '1:1000000', '-f', 'framemd5', 'pipe:1']
-    result = subprocess.run(command, capture_output=True, timeout=60)
+    result = subprocess.run(command, capture_output=True, timeout=remaining_timeout(deadline, 60))
     if result.returncode:
         raise RuntimeError('presentation_decode_failed')
     rows = parse_frames(result.stdout)
     facts = frame_facts(rows)
-    facts['containerPresentation'] = stream_metadata(path)
+    facts['containerPresentation'] = stream_metadata(path, deadline)
     return facts, rows
 
 

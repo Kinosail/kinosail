@@ -93,6 +93,8 @@ def measure(api, hls, directory, source, metadata, offset, prepared_init, case):
         failure.append('public_full_timeline')
     status, init, _ = api.http(base + 'init.mp4')
     check(status == 200 and init, 'initialization_unavailable')
+    if offset:
+        (directory / 'nonkey-init.mp4').write_bytes(init)
     if prepared_init is not None and init != prepared_init:
         failure.append('prepared_initialization_changed')
     case['initializationSHA256'] = hashlib.sha256(init).hexdigest()
