@@ -24,7 +24,8 @@ export async function login(page: Page) {
 }
 
 export async function loginViewer(page: Page, name: string, password: string) {
-  await page.goto("/login");
+  await page.goto("/login", { waitUntil: "domcontentloaded" });
+  await expect(page.getByLabel("Name")).toBeVisible();
   await page.getByLabel("Name").fill(name);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Sign in", exact: true }).click();

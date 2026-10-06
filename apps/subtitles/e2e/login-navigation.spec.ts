@@ -1,8 +1,21 @@
 import {expect,test} from "@playwright/test";
 import {login as dashboardLogin} from "./subtitle-dashboard-helpers";
-import {login as instanceLogin} from "./test-instance-helpers";
+import {login as instanceLogin, loginViewer, createViewer, removeViewer} from "./test-instance-helpers";
 
-for(const [name,login] of [["dashboard",dashboardLogin],["test-instance",instanceLogin]] as const) test(`The ${name} login submits real credentials while a decorative response is pending`,async ({page},info)=>{
+const logins=[
+  ["dashboard",dashboardLogin],
+  ["test-instance",instanceLogin],
+  ["Viewer",(page: import("@playwright/test").Page)=>loginViewer(page,"Navigation Viewer","navigation-viewer-password")],
+] as const;
+for(const [name,login] of logins) test(`The ${name} login submits real credentials while a decorative response is pending`,async ({page,browser},info)=>{
+  let viewerID:string|undefined,owner:import("@playwright/test").Page|undefined;
+  if(name==="Viewer") {
+    await instanceLogin(page);
+    viewerID=await createViewer(page,"Navigation Viewer","navigation-viewer-password");
+    owner=page;
+    const context=await browser.newContext({baseURL:new URL(page.url()).origin});
+    page=await context.newPage();
+  }
   let release!:()=>void,completed!:()=>void;
   const held=new Promise<void>(resolve=>{release=resolve;}),finished=new Promise<void>(resolve=>{completed=resolve;});
   let responseStatus:number|undefined;
@@ -22,5 +35,8 @@ for(const [name,login] of [["dashboard",dashboardLogin],["test-instance",instanc
     expect(responseStatus).toBe(200);
     await expect(page).not.toHaveURL(/\/login(?:\?|$)/);
     expect(await page.evaluate(async()=> (await fetch("/api/v1/me")).status)).toBe(200);
-  } finally {clearTimeout(timer);release();}
+  } finally {
+    clearTimeout(timer);release();
+    if(owner&&viewerID) {await page.context().close();await removeViewer(owner,viewerID);}
+  }
 });
