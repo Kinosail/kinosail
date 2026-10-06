@@ -1,0 +1,293 @@
+{
+  "schemaVersion": 1,
+  "id": "Q12",
+  "sourceId": "CP02",
+  "status": "source-prepared",
+  "runtimeVerified": false,
+  "repositories": [
+    {
+      "repo": "Kinosail/kinosail",
+      "ref": "e85544ebce14aab0454ea11d1fb01415dfbedd4f"
+    },
+    {
+      "repo": "Kinosail/kinosail-home-assistant",
+      "ref": "4c6fb5291429cbf9cbe25a87096ee5337f4fa134"
+    }
+  ],
+  "featureClassification": "adapter-continuation-opportunity",
+  "serverDefectEstablished": false,
+  "operation": {
+    "proposed": "library_page for continuation only",
+    "legacy": "library(query) returns list",
+    "request": {
+      "route": "GET /api/v1/home-assistant/library",
+      "defaultLimit": 200,
+      "limitBounds": [
+        1,
+        200
+      ],
+      "offsetBounds": [
+        0,
+        1000000
+      ],
+      "omitZeroOffset": true,
+      "queryMaxUTF8Bytes": 512,
+      "autoFetch": false
+    },
+    "result": [
+      "items",
+      "total",
+      "offset",
+      "limit"
+    ],
+    "transportPreserved": {
+      "deadlineSeconds": 10,
+      "responseMaxBytes": 2097152,
+      "tlsVerification": true,
+      "redirects": false
+    },
+    "initial": "library(query) delegation remains unchanged for initial browse/Search and every new Search",
+    "metadataCarrier": {
+      "listCompatible": true,
+      "page": "optional immutable response-owned total/offset/limit metadata on a list result",
+      "completeValidMetadata": "attach only after strict page validation",
+      "missingOrInvalidMetadata": "return legacy items unpaged; no count or Next",
+      "plainListClients": "unpaged, without client/type detection or additional call",
+      "clientLastPageState": false,
+      "legacyItemsOnlyAccepted": true
+    }
+  },
+  "identifier": {
+    "status": "proposed-not-implemented",
+    "namespace": "entry/@page/<base64url JSON>",
+    "payloadKeys": [
+      "version",
+      "entry",
+      "query",
+      "offset"
+    ],
+    "version": 1,
+    "encodedMaxChars": 2048,
+    "decodedMaxBytes": 1536,
+    "entryBound": true,
+    "canonicalEncoding": true,
+    "duplicateJSONFields": false,
+    "persistentState": false,
+    "playable": false,
+    "versionType": "exact integer; bool/float rejected",
+    "queryType": "string; fixed bounds and UTF-8 validation"
+  },
+  "scopes": {
+    "ownerHA": "actual public Server control",
+    "ordinaryViewerHA": "must reject without items or totals",
+    "ordinaryViewerLibrary": "separate actual public visibility control",
+    "adapterMocks": "isolated response/client controls",
+    "HAFrontend": "unproved"
+  },
+  "fixture": {
+    "visibleFiles": 201,
+    "restrictedFiles": 7,
+    "fictionalOnly": true,
+    "mediaDecode": false,
+    "rootContainment": "os.Root/t.TempDir",
+    "ownerGrant": "existing disposable setup/MFA/pairing",
+    "network": "loopback only",
+    "updateChecks": false,
+    "preconstructionGuard": "read actual disposable settings and require explicit false before Server.New",
+    "peerGuard": "owned native HTTP client exact loopback origin; proxy disabled, redirects denied",
+    "serverEgressBoundary": "configuration source guard only; no general background egress instrumentation proof",
+    "constructionExtraction": "byte-identical media-loop and peer/client bodies moved to helpers; root defer and cleanup timing/order preserved"
+  },
+  "cases": [
+    {"id":"GO01","scope":"public-server","behavior":"HA first/final pages","expected":{"total":208,"offsets":[0,200],"counts":[200,8],"limit":200,"uniqueOrderedIDs":208}},
+    {"id":"GO02","scope":"public-server","behavior":"query preserved across pages","expected":{"total":201,"offsets":[0,200],"counts":[200,1],"limit":200}},
+    {"id":"GO03","scope":"public-server","behavior":"empty out-of-date extent","expected":{"offset":400,"total":208,"count":0,"limit":200}},
+    {"id":"GO04","scope":"public-server","behavior":"invalid bounds and duplicate/unknown inputs","expected":{"status":400,"itemsOrTotalsExposed":false}},
+    {"id":"GO05","scope":"public-server","behavior":"ordinary Viewer denied HA","expected":{"status":403,"itemsOrTotalsExposed":false}},
+    {"id":"GO06","scope":"public-server","behavior":"restricted Viewer public Library","expected":{"total":201,"counts":[200,1],"hiddenVisible":false}},
+    {"id":"AP01","scope":"isolated-adapter","behavior":"strict additive continuation page preserves all ordered200 items and metadata/query","expected":{"requestMaxItems":200,"autoFetch":false}},
+    {"id":"AP02","scope":"isolated-adapter","behavior":"legacy list/wire/delegation preserved; optional immutable response-owned metadata with missing/invalid metadata unpaged"},
+    {"id":"AP03","scope":"isolated-adapter","behavior":"invalid input query/type/offset/limit denied before request"},
+    {"id":"AP04","scope":"isolated-adapter","behavior":"missing/bool/negative/wrong/inconsistent page metadata denied"},
+    {"id":"AP05","scope":"isolated-adapter","behavior":"invalid or duplicate IDs/cardinality denied"},
+    {"id":"AP06","scope":"isolated-adapter","behavior":"empty final page after changed Library accepted"},
+    {"id":"MS01","scope":"isolated-adapter","behavior":"browse preserves all200 playable IDs/count/titles/order alongside summary and one nonplayable Next"},
+    {"id":"MS02","scope":"isolated-adapter","behavior":"Search preserves all200 playable IDs/count/titles/order alongside summary and query-bound Next"},
+    {"id":"MS03","scope":"isolated-adapter","behavior":"follow Next preserves query/entry and advances offset"},
+    {"id":"MS04","scope":"isolated-adapter","behavior":"final/empty changed page has truthful count and no Next"},
+    {"id":"MS05","scope":"isolated-adapter","behavior":"malformed/foreign/oversize/padded/noncanonical/bool-version/float-version/non-string-query identifiers cause no request/playback"},
+    {"id":"MS06","scope":"isolated-adapter","behavior":"page identifier cannot resolve or call playback"},
+    {"id":"MS07","scope":"isolated-adapter","behavior":"short-library existing titles/items/Search unchanged"},
+    {"id":"MS08","scope":"isolated-adapter","behavior":"failure exposes only fixed errors, preserves query retries"},
+    {"id":"MS09","scope":"isolated-adapter","behavior":"NEW Search on continuing and final identifiers retains entry, resets offset0, one bounded request, exact fresh results","expected":{"variants":2,"queryChanged":true,"offset":0,"requestLimit":200,"foreignRequests":0}},
+    {"id":"MS10","scope":"isolated-adapter","behavior":"offset1000000 nonfinal response preserves ordered200 items/count but cannot emit an unusable Next","expected":{"total":1000201,"offset":1000000,"count":200,"next":0,"canSearch":true}},
+    {"id":"MS11","scope":"isolated-adapter","behavior":"lone-surrogate NEW query at initial/continuation locations gives fixed MediaSourceError before requests","expected":{"variants":2,"requests":0}},
+    {"id":"MS12","scope":"isolated-adapter","behavior":"items-only/invalid metadata initial browse and Search remain legacy unpaged without count/Next","expected":{"variants":2,"playablePerResult":200,"next":0}},
+    {"id":"GO07","scope":"fixture-prerequisite","behavior":"explicit updateChecks:false verified before Server construction; owned native peer rejects foreign origin","runtime":"unrun"}
+  ],
+  "proposedFiles": [
+    {
+      "repository": "Kinosail/kinosail",
+      "path": "apps/player/internal/server/home_assistant_pagination_fixture_test.go",
+      "allocated": true
+    },
+    {
+      "repository": "Kinosail/kinosail",
+      "path": "apps/player/internal/server/home_assistant_pagination_contract_test.go",
+      "allocated": true
+    },
+    {
+      "repository": "Kinosail/kinosail-home-assistant",
+      "path": "tests/test_api_pagination.py",
+      "allocated": true
+    },
+    {
+      "repository": "Kinosail/kinosail-home-assistant",
+      "path": "tests/test_media_source_pagination.py",
+      "allocated": true
+    },
+    {
+      "repository": "Kinosail/kinosail-home-assistant",
+      "path": "tests/test_pagination_public.py",
+      "allocated": false
+    }
+  ],
+  "results": {
+    "executed": 0,
+    "pass": 0,
+    "fail": 0,
+    "skip": 0,
+    "collection": "unrun",
+    "publicBridge": "unallocated"
+  },
+  "proposedEvidence": {
+    "allowlist": [
+      "receipt.json",
+      "results.json",
+      "source-manifest.json",
+      "artifact-manifest.json"
+    ],
+    "safe": [
+      "fixed case ID",
+      "status/phase enum",
+      "count",
+      "boolean",
+      "digest",
+      "revision",
+      "bound"
+    ],
+    "excluded": [
+      "credentials",
+      "origins",
+      "real paths",
+      "query strings",
+      "raw process output",
+      "error text",
+      "response bodies",
+      "private media"
+    ]
+  },
+  "order": [
+    "failure analysis/source pins",
+    "new test sources before product",
+    "independent source review",
+    "canonical Go formatting",
+    "root-coordinated bounded public Go controls twice",
+    "pinned HA collection and isolated public adapter baseline",
+    "reviewed live bridge separately",
+    "only admitted interface evidence permits product design/implementation",
+    "green protected gates and ordinary merge"
+  ],
+  "preparedTests": {
+    "unreferenced": true,
+    "registeredGoTests": 3,
+    "apiMethods": 9,
+    "mediaSourceMethods": 12,
+    "inferredCollectionCases": {
+      "api": 45,
+      "mediaSource": 34
+    },
+    "actualCollection": 0,
+    "executed": 0,
+    "pins": [
+      {
+        "repository": "Kinosail/kinosail",
+        "path": "apps/player/internal/server/home_assistant_pagination_fixture_test.go",
+        "bytes": 5831,
+        "lines": 142,
+        "sha256": "f567ef132f7eb7c48594893b7a77efa2931bedf2518e071e3b92231047f362e1",
+        "blob": "87b667e2181855b2e2fc10cf1c9b7ae403629152",
+        "GETVerified": true,
+        "methods": 0
+      },
+      {
+        "repository": "Kinosail/kinosail",
+        "path": "apps/player/internal/server/home_assistant_pagination_contract_test.go",
+        "bytes": 4206,
+        "lines": 99,
+        "sha256": "8709e6ec7ff5a4abda72da10c2d3122177191b6db881c7f8e6f03f679929905e",
+        "blob": "02112f1876cf66e1812eac8a137ceda2bef6adc4",
+        "GETVerified": true,
+        "methods": 3
+      },
+      {
+        "repository": "Kinosail/kinosail-home-assistant",
+        "path": "tests/test_api_pagination.py",
+        "bytes": 6782,
+        "lines": 132,
+        "sha256": "c82507de05a0d79b5c117d9305b728a488509af16e2eaf06a2c9e43dbc00880a",
+        "blob": "60b09a0c965958e82797b095f783e3fcfe00a5a3",
+        "GETVerified": true,
+        "methods": 9
+      },
+      {
+        "repository": "Kinosail/kinosail-home-assistant",
+        "path": "tests/test_media_source_pagination.py",
+        "bytes": 12763,
+        "lines": 237,
+        "sha256": "cf1e5d3f45c79ec5aa9b9789e95e14d50d6960e12f124be6ac0907688d990446",
+        "blob": "82725ab6a7ed1ae9b324c2593483e336bff72a78",
+        "GETVerified": true,
+        "methods": 12
+      }
+    ],
+    "sourceAggregateSHA256": "f4a48805cebd9b8cd6ad5ba84ed0a316e2bca847b26099b3d97735846d768033"
+  },
+  "presentation": {
+    "initialPlayableIDs": "all200 exact count, IDs, titles and response order",
+    "continuationSearch": "can_search=True must execute NEW query on same entry via library(new_query), reset offset0, exactly one request",
+    "offsetCeiling": "show truthful counts but no Next above1000000; Search remains available to refine",
+    "loneSurrogate": "fixed MediaSourceError: Kinosail search query is invalid; no request/playback",
+    "pagingFailures": "existing BrowseError/Unresolvable boundaries remain",
+    "HAFilterFrontend": "direct-method count tests do not prove displayed/total visibility; actual Core content_filter +frontend acceptance required"
+  },
+  "reviewRevision": {
+    "previousTestAggregateSHA256": "2ba60fed1993c8da31f0a3c4b753145c984a9329e5db226cd57c0047d45ae859",
+    "oldRegisteredFilesChanged": false,
+    "productChanged": false,
+    "baselineParserSlashRejection": "source feature absence, not diagnosed runtime regression",
+    "preservation": "removing documented insertions exactly restores both prior new test blobs",
+    "execution": "source-only; all actual collection/execution counts remain0",
+    "fixtureCorrection": {
+      "authorization": "disposable settings only",
+      "guardFirstBlob": "be05031e7928bfa3404d5b86c48df73e3e85f56c",
+      "guardFirstSHA256": "776450ef2747f439c5fd81d49484bc5084eabfc500b96c0d630d79fc329e3b95",
+      "guardFirstExecuted": false,
+      "correction": "add updateChecks:false only after source-prepared presence/false guard",
+      "originalFixtureBlob": "41689ef13a5a4b1662b0727d6168553503598ba9",
+      "originalRegisteredGoTestsUnchanged": true
+    },
+    "fixtureExtraction": {
+      "previousBlob": "c804188d39702f0d5a5b596f1e555ae6de74adcc",
+      "inferredComplexity": {
+        "factory": 4,
+        "population": 5,
+        "peer": 5
+      },
+      "inferredFactoryStatements": 32,
+      "mechanicalInverseExact": true,
+      "formatterAndLinterExecuted": false,
+      "limitsSource": "apps/player/.golangci.yml@e85544eb blob d63849acf919209a9da64cdc687d6d63f073f01c; unchanged cyclop10/funlen60lines40statements"
+    }
+  }
+}

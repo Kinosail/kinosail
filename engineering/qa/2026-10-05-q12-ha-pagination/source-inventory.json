@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "id": "Q12",
+  "boundary": "selected source inputs; not full trees or installed dependencies",
+  "sourceAggregateRecipe": "ASCII sorted repository/path<TAB>sha256<LF>",
+  "sourceAggregateSHA256": "acaa528fe0ff8dbaf3557fd1271a8bf2b785c43599923d8e0d1925e5b0413f95",
+  "runtimeVerified": false,
+  "agentsAbsent": [
+    {"repository":"Kinosail/kinosail-home-assistant","revision":"4c6fb5291429cbf9cbe25a87096ee5337f4fa134","paths":["AGENTS.md","custom_components/AGENTS.md","custom_components/kinosail/AGENTS.md","tests/AGENTS.md"],"result":"GitHub GET NOT_FOUND"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","paths":["packages/AGENTS.md","packages/homeassistant/AGENTS.md","apps/player/internal/AGENTS.md","apps/player/internal/server/AGENTS.md","engineering/AGENTS.md","engineering/qa/AGENTS.md"],"result":"GitHub GET NOT_FOUND"}
+  ],
+  "candidateAggregateSHA256": "f4a48805cebd9b8cd6ad5ba84ed0a316e2bca847b26099b3d97735846d768033",
+  "newUnreferencedCandidates": [
+    {"repository":"Kinosail/kinosail","path":"apps/player/internal/server/home_assistant_pagination_fixture_test.go","bytes":5831,"lines":142,"sha256":"f567ef132f7eb7c48594893b7a77efa2931bedf2518e071e3b92231047f362e1","blob":"87b667e2181855b2e2fc10cf1c9b7ae403629152","GETVerified":true,"methods":0},
+    {"repository":"Kinosail/kinosail","path":"apps/player/internal/server/home_assistant_pagination_contract_test.go","bytes":4206,"lines":99,"sha256":"8709e6ec7ff5a4abda72da10c2d3122177191b6db881c7f8e6f03f679929905e","blob":"02112f1876cf66e1812eac8a137ceda2bef6adc4","GETVerified":true,"methods":3},
+    {"repository":"Kinosail/kinosail-home-assistant","path":"tests/test_api_pagination.py","bytes":6782,"lines":132,"sha256":"c82507de05a0d79b5c117d9305b728a488509af16e2eaf06a2c9e43dbc00880a","blob":"60b09a0c965958e82797b095f783e3fcfe00a5a3","GETVerified":true,"methods":9},
+    {"repository":"Kinosail/kinosail-home-assistant","path":"tests/test_media_source_pagination.py","bytes":12763,"lines":237,"sha256":"cf1e5d3f45c79ec5aa9b9789e95e14d50d6960e12f124be6ac0907688d990446","blob":"82725ab6a7ed1ae9b324c2593483e336bff72a78","GETVerified":true,"methods":12}
+  ],
+  "inputs": [
+    {"repository":"Kinosail/kinosail-home-assistant","revision":"4c6fb5291429cbf9cbe25a87096ee5337f4fa134","path":".github/workflows/validate.yml","blob":"d28140accb328d101b1b47e085e1d556ba4efbc6","bytes":2147,"lines":75,"sha256":"556f4c14d025eea7c73738f364ef56f9b780a6d713f058bea989a7218de11f17"},
+    {"repository":"Kinosail/kinosail-home-assistant","revision":"4c6fb5291429cbf9cbe25a87096ee5337f4fa134","path":".python-version","blob":"a128d5c0d975a5b333e78950665709c8e2d88597","bytes":7,"lines":1,"sha256":"922fe0c3de073b01988e23348ea184456161678c5e329e6f34be89be24383f93"},
+    {"repository":"Kinosail/kinosail-home-assistant","revision":"4c6fb5291429cbf9cbe25a87096ee5337f4fa134","path":"Makefile","blob":"78c6faed5fed356bcf27e7a46787f332d6b0d043","bytes":1166,"lines":24,"sha256":"82df0c97c4d7f25a4cc9c6bc5694d634a53c94431b1d2d6dfc27bca9d0d7669f"},
+    {"repository":"Kinosail/kinosail-home-assistant","revision":"4c6fb5291429cbf9cbe25a87096ee5337f4fa134","path":"custom_components/kinosail/api.py","blob":"da454b1934c2f35c4b76bef8317d879e2fc6bc89","bytes":10403,"lines":249,"sha256":"2a36f688d20371eb4f76c9c8f833bcf27ac87432d2f17a402c2430811785758d"},
+    {"repository":"Kinosail/kinosail-home-assistant","revision":"4c6fb5291429cbf9cbe25a87096ee5337f4fa134","path":"custom_components/kinosail/const.py","blob":"b6d587894bf0ff58933e59129b1efe8fa7d575d5","bytes":467,"lines":24,"sha256":"b3eddbf74b52eb698b2bd512c41aff4e4e3b42bab7094d13fb4e76b7d7ccbde2"},
+    {"repository":"Kinosail/kinosail-home-assistant","revision":"4c6fb5291429cbf9cbe25a87096ee5337f4fa134","path":"custom_components/kinosail/manifest.json","blob":"28f781ce74060076262769461c4a2253c9c82495","bytes":430,"lines":14,"sha256":"4e3b5082cd83cb0ee64bf2b859c80fdaaccde72c8bd8a75be7092313d0bd190d"},
+    {"repository":"Kinosail/kinosail-home-assistant","revision":"4c6fb5291429cbf9cbe25a87096ee5337f4fa134","path":"custom_components/kinosail/media_source.py","blob":"737d960c38d7c744da175593cf7da4cb5286962c","bytes":4866,"lines":125,"sha256":"603a7199502920f9229dc1be702f0ca089231b2a3d25ad808174f3c9c8dcdd4b"},
+    {"repository":"Kinosail/kinosail-home-assistant","revision":"4c6fb5291429cbf9cbe25a87096ee5337f4fa134","path":"hacs.json","blob":"b0ddb35a6b9499153f0552b98ee02eeda498eb40","bytes":81,"lines":5,"sha256":"6a13866126f05d7c7d867be448ebc1e85dcdad6ef67635c8344d4b093e819f0d"},
+    {"repository":"Kinosail/kinosail-home-assistant","revision":"4c6fb5291429cbf9cbe25a87096ee5337f4fa134","path":"pyproject.toml","blob":"3d3e396a27f4864245ccba4fcdb8996710606899","bytes":1481,"lines":62,"sha256":"5c8bea5ccff35a9a09f3af3aad06ca81bf5035bc9675ae064ea7d7dbca66d882"},
+    {"repository":"Kinosail/kinosail-home-assistant","revision":"4c6fb5291429cbf9cbe25a87096ee5337f4fa134","path":"tests/conftest.py","blob":"8338b01e75e113fc1d8649f1c41afb0a6fa6f66d","bytes":265,"lines":11,"sha256":"af6faae30213296e9eb9622720fe3b399c12850c841157b867dacb29b1104631"},
+    {"repository":"Kinosail/kinosail-home-assistant","revision":"4c6fb5291429cbf9cbe25a87096ee5337f4fa134","path":"tests/helpers.py","blob":"3d4510351bf8135ea59f31546ae26da274ce05a7","bytes":1648,"lines":51,"sha256":"b8a6586e207651f0a911f4fb0fdaaa10c5135a2356ad8370231e317b30c098b0"},
+    {"repository":"Kinosail/kinosail-home-assistant","revision":"4c6fb5291429cbf9cbe25a87096ee5337f4fa134","path":"tests/test_api.py","blob":"5e49a189bd971dd492a8de149034af45eacf3ad3","bytes":6760,"lines":194,"sha256":"abc93855213f9c60aac9c129c6a9e136d38f5e0fe018d6011bccab3477820008"},
+    {"repository":"Kinosail/kinosail-home-assistant","revision":"4c6fb5291429cbf9cbe25a87096ee5337f4fa134","path":"tests/test_api_contracts.py","blob":"aa01642ba45e9d28df418c66dd811e0f901aa750","bytes":6686,"lines":150,"sha256":"239b1519a849414b87a7ca8b5205f12999ba3302183bb0c302ae2b440734a464"},
+    {"repository":"Kinosail/kinosail-home-assistant","revision":"4c6fb5291429cbf9cbe25a87096ee5337f4fa134","path":"tests/test_api_edges.py","blob":"d3950c490a6eef08bd0838a580b7123ac038be76","bytes":4987,"lines":125,"sha256":"180782f036a1110d50cd94d7668c21c2469491d83d32c90172cc40b67af9be88"},
+    {"repository":"Kinosail/kinosail-home-assistant","revision":"4c6fb5291429cbf9cbe25a87096ee5337f4fa134","path":"tests/test_media_source.py","blob":"ef358fc4362e37b0406d46bc7be8fc75472f47e2","bytes":7538,"lines":169,"sha256":"e5f7b3f57575e4a2487eb049c4bd34cfe3cb34be5153abb8d5647bc395565f0b"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"AGENTS.md","blob":"1972e460c934a674dd361643453cdcd7350fe754","bytes":10406,"lines":88,"sha256":"0f5bbff9cf4957b83f84a709d9857c6aec15379dcc5d32a0af92c0f8474aae81"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"apps/player/AGENTS.md","blob":"b9e55b9584981206c0229f738b8cfe49590eeea8","bytes":907,"lines":10,"sha256":"c179af5d738a1de2950aabedb32a366864b387817723da624d7a4cb4c1d21ee7"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"apps/player/CONTEXT.md","blob":"39d9ac6e3a95cdc9d15b6f1e330c2344a9709bb5","bytes":5317,"lines":138,"sha256":"66ba9ef20ffb954e531c821676bea917b9863affdd49845bbbda6da0ee224a97"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"apps/player/internal/server/api_keys.go","blob":"541d0a6dbee5e8ca75d0fc5dfae8e28dfa1f36b0","bytes":8094,"lines":167,"sha256":"3fae0801a3f673f99029ae53b1cfcb8eec6d0308ee5b78f17f805ae646849baa"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"apps/player/internal/server/api_library_fixture_test.go","blob":"928372509ee3f1d41cc57c6223375864b770df5e","bytes":641,"lines":21,"sha256":"dee7b0fc222a3219613f25f98c279482047fcb3268d68f5a9f492169aae1660f"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"apps/player/internal/server/api_test_helpers_test.go","blob":"1dff92a02e53cd6de99f842844b7c10381d73915","bytes":615,"lines":24,"sha256":"03c096e8e7a6811b1f857bb64bd8e7b4753cbd99114388088357d0f5f80d83db"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"apps/player/internal/server/home_assistant.go","blob":"59eb0ca00bfa7fa3510e10e0bb92735414f6d5b6","bytes":4856,"lines":107,"sha256":"c385cc6f3036682181a157ac7267e9fe972e940f59a71101474e44d5ad4605e6"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"apps/player/internal/server/home_assistant_test.go","blob":"d17af0d5589ff961555146a504af958f88dafdcb","bytes":12112,"lines":210,"sha256":"7b295e61178f80c9c35842b3f006bef0298073fed84e286cf03d34d48319325d"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"apps/player/internal/server/identity_permissions_test.go","blob":"ed385c0c603c729efcbc648a97a0281720a0607e","bytes":4125,"lines":98,"sha256":"c9c7cc41aeafa02ce71bcb4585e6d33a16c499936cd91fce789512e4e21f046d"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"apps/player/internal/server/permission_boundaries_test.go","blob":"e7d87adbd76d055861b78b71ba7577cd34bcaed6","bytes":9252,"lines":194,"sha256":"8767ce77135e7dc929028d9ae82282247bbb5898932a73462e87cc4136c251dc"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"packages/catalog/browse.go","blob":"5b7ef64bf717cec99950a5afbf30036a7563e57a","bytes":6837,"lines":203,"sha256":"5f32935c388ddc040fa4069ce352e1b50bad55d329fa5978b0ff9796ee2575af"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"packages/catalog/browse_apply.go","blob":"30d4534eecf44daaf970ddbcec937f661b29c4d5","bytes":7239,"lines":227,"sha256":"7f11bae4a56c93473e547f6ce47f1fcc5ab31a5ba08c3851efb80292363d0e32"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"packages/catalog/browse_sort.go","blob":"fcdd3f6b58a37dcfed63b9b075f5f8a84c52fa54","bytes":4349,"lines":153,"sha256":"cbc6c6343910e88f1bb8475f3c9a4796a03a3c1b458906bb5865cf0e8fb2b066"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"packages/homeassistant/http.go","blob":"245a18cc5ddd2ad0ad921dd0dd6ca03f1407633e","bytes":11877,"lines":295,"sha256":"803124e3a4b4f54b3105dc09d6bc90f524f8bb0626eee0bfc561453e03be059a"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"packages/homeassistant/http_test.go","blob":"7b60f92919f264a508127596982183e0f7368692","bytes":9216,"lines":179,"sha256":"61c9ebebc1cccb1498d06a93b07b4c1a281b194299c439e60232bbb8d80601bf"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"packages/homeassistant/integration.go","blob":"11598c3bd1360b71d19a7d662353fdffbe500f20","bytes":3849,"lines":140,"sha256":"a77a8b85a5daceda142900390bb8146c7af33a5328bc072e86d86a71a56ce2b0"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"packages/identitycore/api_session.go","blob":"9a4a5d29c8b49d1ce8ddf98eb9ba350eadf01b33","bytes":4353,"lines":102,"sha256":"7c8dd6524665382cf3e2b60e2dc1b9c15ffdf2f55236b72af6e913eabbf83546"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"packages/library/access.go","blob":"9c56c1dea055292f93a312e1e8364dd2df26319f","bytes":1914,"lines":62,"sha256":"766643c2ecabe018a38230bcd88ccde68e2f24c2e2d0d2ab391d01382c6ed9e1"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"packages/servertest/api_helpers.go","blob":"4b2a73be66934e1c5ee49c1baf4f9447346a30ea","bytes":4269,"lines":112,"sha256":"6aa0343bc5bd683d04e73d77ddca75697cc71366c10c9e19f65a974879c4415c"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"packages/servertest/home_assistant.go","blob":"143e8ddb9e401c81914469354b8665cf1a76df03","bytes":5918,"lines":113,"sha256":"9c94dcd699f940072b415b8110d69179b92f6e7c166ef25f7dd92ba57d3da4d9"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"packages/servertest/library_api_fixture.go","blob":"8135903663be81bcd6060193ce24ace1cf8486a0","bytes":514,"lines":16,"sha256":"8dc410fa9feb55215fab4d5c1cb9be64c2c1793de8576ca598245726bc982dd9"},
+    {"repository":"home-assistant/core","revision":"2026.9.0","path":"homeassistant/components/media_player/browse_media.py","blob":"fc6bf7485968332085b6c73a62a9f101223e2a44","bytes":6519,"lines":196,"sha256":"5617b07ce46b2ffa159e80e3f34adb311abf83d90533e9bff8276b12ce8c27a3"},
+    {"repository":"home-assistant/core","revision":"2026.9.0","path":"homeassistant/components/media_source/models.py","blob":"2a341f3d0c3b9f286cfa1bb1bf8c73ca1bd361f0","bytes":6341,"lines":194,"sha256":"457411c15d3eef292fcd9b14cfe5b479c4d24810a2a4e8614051e177e40f3bd6"},
+    {"repository":"home-assistant/core","revision":"2026.9.0","path":"homeassistant/components/media_source/__init__.py","blob":"bc68335fcad3a6e93e0ce131de207584cd1ecf36","bytes":2708,"lines":96,"sha256":"7da1eb20943fd1eb61bf08060a683f18df514e71b0907cf2200d878950ae16fd"},
+    {"repository":"home-assistant/core","revision":"2026.9.0","path":"homeassistant/components/media_source/error.py","blob":"66e8842e08ae7733f818068bf47cb68283950720","bytes":361,"lines":15,"sha256":"fbcbd1a39e1cc4d69b6263fb41cf2389febe94c088475d6bf9384856ccca208c"},
+    {"repository":"home-assistant/core","revision":"2026.9.0","path":"homeassistant/components/media_source/helper.py","blob":"70d0fcdc7a5533189835f581f72001b3f798c468","bytes":4582,"lines":143,"sha256":"10a9cbab32d1d20645eecce446fa095e5e5bd3a9f381253d10ed32a3dc48b9c2"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"apps/player/internal/server/settings.go","blob":"243b43f504589540a06c2d7675e4447f245fa19f","bytes":8432,"lines":271,"sha256":"714eeff8cdf51b581e0f174dba31fececf9fe9890d77f7016cedabf2a790a02d"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"apps/player/internal/server/settings_state.go","blob":"86838e42a3af8bb94dea48655303056feabde1b0","bytes":1556,"lines":30,"sha256":"848159b70e6b2c562df5d0ff64d63a90170232d18a609d291be77106c94b0354"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"apps/player/internal/server/application_init.go","blob":"2715f0708ffb75d6b694da3b2350c6e1a0955205","bytes":2198,"lines":72,"sha256":"c73d16fcdecf50b247b53bc3bce972d37a1a27e3cc1c9423e01a6482f14e373e"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"apps/player/internal/server/updates.go","blob":"1216fe6d15e40bebb075d6a255fd7811af288a7d","bytes":1248,"lines":47,"sha256":"8c532629cc7aba3b9778b69130c628cc7dcc7a0e44539b892a29c2b1e0f4d64b"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"packages/updatecontrol/checker.go","blob":"55a61e95155f1d45877f8b626a6bcc1849923939","bytes":7152,"lines":240,"sha256":"1c4da9753ac255ac3b2e5421867df45751f454996cd7816574accde0213af435"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"apps/player/internal/server/server.go","blob":"ec2f6f23a39db69b72e686139f55539901f740a0","bytes":39943,"lines":300,"sha256":"75cc2bab9008b353e1210383c873627f3febe5b362db48609cc683ff19ebf582"},
+    {"repository":"Kinosail/kinosail","revision":"e85544ebce14aab0454ea11d1fb01415dfbedd4f","path":"apps/player/.golangci.yml","blob":"d63849acf919209a9da64cdc687d6d63f073f01c","bytes":1054,"lines":71,"sha256":"389f5d87f20f6ea354dc36be94150e4057a09e1fd31a5cfb6aa14de96953eafd"}
+  ],
+  "selectedInputHistory": [
+    {
+      "count": 38,
+      "aggregateSHA256": "08cd80d01eac2569a7fbf3b45835b5d650e50f606c4f55099b310aafdde5414b"
+    },
+    {
+      "count": 41,
+      "aggregateSHA256": "f451765706050f639ccbd5f2221ccc48baf25c13c0e86d8a114d7ff194068983"
+    },
+    {
+      "count": 47,
+      "aggregateSHA256": "c553f685b3d0aafeb7c197d666148bb968dd17f8eb41b1b5d0f89c21842ba23d"
+    }
+  ],
+  "candidateHistory": [
+    {
+      "aggregateSHA256": "2ba60fed1993c8da31f0a3c4b753145c984a9329e5db226cd57c0047d45ae859",
+      "apiBlob": "7aa752626380a7ecda0b07de0d61473cd331e6c6",
+      "mediaBlob": "9d713771f4b4632b654d3da07eff40c49e5152a9"
+    },
+    {
+      "aggregateSHA256": "aaf1cdc7335161b66a616fa97aa1666eecbf0af6eaab7931049ab39b9b0733c3",
+      "fixtureBlob": "41689ef13a5a4b1662b0727d6168553503598ba9",
+      "apiBlob": "60b09a0c965958e82797b095f783e3fcfe00a5a3",
+      "mediaBlob": "82725ab6a7ed1ae9b324c2593483e336bff72a78"
+    },
+    {
+      "aggregateSHA256": "d3fa7098a23eba92dbdc5b1dd41387d2bbea8ec23a00b1c1095ae8ca5c3f53ae",
+      "fixtureBlob": "c804188d39702f0d5a5b596f1e555ae6de74adcc",
+      "apiBlob": "60b09a0c965958e82797b095f783e3fcfe00a5a3",
+      "mediaBlob": "82725ab6a7ed1ae9b324c2593483e336bff72a78"
+    }
+  ],
+  "fixtureGuardFirst": {
+    "repository": "Kinosail/kinosail",
+    "path": "apps/player/internal/server/home_assistant_pagination_fixture_test.go",
+    "bytes": 5540,
+    "lines": 131,
+    "sha256": "776450ef2747f439c5fd81d49484bc5084eabfc500b96c0d630d79fc329e3b95",
+    "blob": "be05031e7928bfa3404d5b86c48df73e3e85f56c",
+    "GETVerified": true,
+    "methods": 0,
+    "testFirstStage": "source-prepared missing updateChecks guard; unexecuted"
+  },
+  "fixtureExtractionHistory": [
+    {
+      "blob": "787eccfaf7245b5871c76ea73e76767cd808f1e1",
+      "bytes": 5736,
+      "lines": 137,
+      "sha256": "e7573d332b091c011e089a6ba0208543045a4a32ef971be57eb4b222ff29f78d",
+      "boundary": "unreferenced peer-only extraction; no execution"
+    }
+  ]
+}
