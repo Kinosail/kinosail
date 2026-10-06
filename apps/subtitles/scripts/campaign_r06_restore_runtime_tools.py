@@ -49,7 +49,7 @@ def selected_cli(roots, node, arguments):
 
 
 def registry_script(core):
-    target = str(Path(core) / "lib/server/registry/index.js")
+    target = str(Path(core) / "lib/coreBundle.js")
     return ("const registry=require(" + json.dumps(target) + ").registry;"
             "process.stdout.write(JSON.stringify({chromium:registry.findExecutable('chromium').executablePath(),"
             "headless:registry.findExecutable('chromium-headless-shell').executablePath()})+'\\n')")

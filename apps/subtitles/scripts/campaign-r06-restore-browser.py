@@ -17,7 +17,7 @@ MODULES = {
     "campaign_r06_restore_runtime_process": (5682, "de8db722f69ae408b79959a4a152ea12fdd7f5cf4220cbbdb065a17c7ce7f158", "fb260e072eaae501ac9a85eb5d98d20eab5f801d"),
     "campaign_r06_restore_runtime_controls": (6376, '5f7d11b118f4fa6037dc01c10e03a1478210dec390580ebe06a9ab178953cf7b', '6c5366c48d60182a5db8f3980696ea1ae0ae4e01'),
     "campaign_r06_restore_runtime_projection": (11753, "7bb2c80874b6d81b6ae5db3585c8bdbc2508c7ef34d96c055dae74af43b34686", "5b61d4ff7daf5f563f57579f4319d61244812965"),
-    "campaign_r06_restore_runtime_tools": (11818, '8c7f99fab030618b1dfd0deb0532177523b26510040a07745d61d914c4ec40d5', 'fed1df727de30355c99421e835a2a1b056aa6741'),
+    "campaign_r06_restore_runtime_tools": (11807, '2842aca7200c2217be2727a448a2e26b497777a52c5f5604c2a0c2cf25670536', 'cf184b158f53c24b05697842faa87223e2d5efd0'),
     "campaign_r06_restore_runtime_artifacts": (20951, "152fd639bef4c805981f57b94042eef451985a76fb0c21b5dcc1a036e6795cce", "d9a4cfcd554d72d395dc6e24218bc9a1e9ea6af7"),
 }
 

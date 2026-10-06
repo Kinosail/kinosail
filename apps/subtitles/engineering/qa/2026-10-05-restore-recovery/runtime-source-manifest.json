@@ -9,19 +9,19 @@
   "pendingStartupIsolation": {"owner":"root integration / separately reviewed Android fixture owner","status":"published raw input corrections; formatter qualification and hosted runtime isolation proof pending","paths":["fixture/restore_main_test.go","fixture/restore_filesystem_test.go"],"currentInputPins":"published2b816fa8 raw9238/7649 inputs, fixture62bf; no invented canonical outputs","fixedReceiptLiteral":"Published 2b816fa8 startup-corrected raw inputs; stock formatter qualification and hosted runtime isolation proof remain pending.","limit":"Source eliminates two identified default-startup paths; no observed egress, host-access absence or runtime isolation acceptance is inferred."},
   "sourceCap": {"maximum":300,"maximumOwnedSourceLines":286,"ownedPaths":16,"existingInputs":25,"runtimeRequiredInputPaths":41,"noExistingSourcesChanged":false},
   "sources": [
-    {"path":"apps/subtitles/scripts/campaign-r06-restore-browser.py","bytes":12937,"lines":204,"sha256":"8fd8deac2dd38eb36bf2d4501432df68a06407261ab0ca8e6e6bb9103d9ed9ca","blob":"060d3ca73f2ea8fdfa7e7fc5dc2954573d2b72dc","getVerified":false},
+    {"path":"apps/subtitles/scripts/campaign-r06-restore-browser.py","bytes":12937,"lines":204,"sha256":"fef97c7a1516a3202b0725be1af341048cc813a28b073a4fb87451a79a8a3b08","blob":"f03487ea63efb08e3f8f7a64965cf95e4d3686df","getVerified":false},
     {"path":"apps/subtitles/scripts/campaign_r06_restore_runtime_sources.py","bytes":13871,"lines":263,"sha256":"a0c7da48c0d335a455da41e9b8ee799061788722e9024dfb0e3d19b579a00127","blob":"b4a9b73435ea85e265b8296f87e11cece00d0ed9","getVerified":true},
     {"path":"apps/subtitles/scripts/campaign_r06_restore_runtime_process.py","bytes":5682,"lines":116,"sha256":"de8db722f69ae408b79959a4a152ea12fdd7f5cf4220cbbdb065a17c7ce7f158","blob":"fb260e072eaae501ac9a85eb5d98d20eab5f801d","getVerified":true},
     {"path":"apps/subtitles/scripts/campaign_r06_restore_runtime_controls.py","bytes":6376,"lines":104,"sha256":"5f7d11b118f4fa6037dc01c10e03a1478210dec390580ebe06a9ab178953cf7b","blob":"6c5366c48d60182a5db8f3980696ea1ae0ae4e01","getVerified":false},
     {"path":"apps/subtitles/scripts/campaign_r06_restore_runtime_projection.py","bytes":11753,"lines":165,"sha256":"7bb2c80874b6d81b6ae5db3585c8bdbc2508c7ef34d96c055dae74af43b34686","blob":"5b61d4ff7daf5f563f57579f4319d61244812965","getVerified":true},
-    {"path":"apps/subtitles/scripts/campaign_r06_restore_runtime_tools.py","bytes":11818,"lines":211,"sha256":"8c7f99fab030618b1dfd0deb0532177523b26510040a07745d61d914c4ec40d5","blob":"fed1df727de30355c99421e835a2a1b056aa6741","getVerified":false},
+    {"path":"apps/subtitles/scripts/campaign_r06_restore_runtime_tools.py","bytes":11807,"lines":211,"sha256":"2842aca7200c2217be2727a448a2e26b497777a52c5f5604c2a0c2cf25670536","blob":"cf184b158f53c24b05697842faa87223e2d5efd0","getVerified":false},
     {"path":"apps/subtitles/scripts/campaign_r06_restore_runtime_artifacts.py","bytes":20951,"lines":286,"sha256":"152fd639bef4c805981f57b94042eef451985a76fb0c21b5dcc1a036e6795cce","blob":"d9a4cfcd554d72d395dc6e24218bc9a1e9ea6af7","getVerified":true},
     {"path":"apps/subtitles/scripts/test_campaign_r06_restore_runtime_selection.py","bytes":18727,"lines":173,"sha256":"15585681dc350fb5d1bec8b47917ef60028370a92cbf6de63ad5f15a0319422c","blob":"745e324135d02f7ad7fc0714234400b07bda0847","getVerified":true},
     {"path":"apps/subtitles/scripts/test_campaign_r06_restore_runtime_sources.py","bytes":16434,"lines":243,"sha256":"b88984c16181c43eb9921d1cb2e470009df8d53098fc02ac627f4e7d723f764c","blob":"f8114dd22758111657221c0c43af6c37b8575da0","getVerified":true},
     {"path":"apps/subtitles/scripts/test_campaign_r06_restore_runtime_process.py","bytes":10663,"lines":197,"sha256":"99125b7f5acd2e6e1355608f6b8602cd65c09f03ba334685f5e256981334d999","blob":"bbe294fb6e30a895eaab935b588ca48876959a6b","getVerified":true},
     {"path":"apps/subtitles/scripts/test_campaign_r06_restore_runtime_controls.py","bytes":17491,"lines":280,"sha256":"cac99fa0c277a4299bed75aea79743f056fb9cae5d2c72b36dcdaec003ea9138","blob":"889a52a0918ca74b9734b4124d7a1fd0b3d4dfe7","getVerified":false},
     {"path":"apps/subtitles/scripts/test_campaign_r06_restore_runtime_projection.py","bytes":15404,"lines":217,"sha256":"44ce132ce2e0af8c35020c4a7858fad2af97d9aa122fa4c85d9b75fedfd18281","blob":"48c8da9e293a1def35b756d139b763cedf42f4d9","getVerified":true},
-    {"path":"apps/subtitles/scripts/test_campaign_r06_restore_runtime_tools.py","bytes":13026,"lines":213,"sha256":"9a5f6dc754b475546e16b67a937ae91377311a0b3c8968bc5924befbca4c1a73","blob":"872df8bfab088f4d5d6d932458086beb4220e298","getVerified":false},
+    {"path":"apps/subtitles/scripts/test_campaign_r06_restore_runtime_tools.py","bytes":13082,"lines":214,"sha256":"be1a7ed29da7e8fa380831ef0daadea168462f1f2988ae55b140f5f6663f0dc7","blob":"20637ad0aada2a2467d0bede1ae619b10688307a","getVerified":false},
     {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/runtime-failure-analysis.md","bytes":14404,"lines":195,"sha256":"c64a86b9479d5fd5778710f7419c1590affeba78bd0c54111c84600e019f62f6","blob":"a8e584c73dd160e0ee3a1853980534ba33c9dd3f","getVerified":true},
     {"path":"apps/subtitles/engineering/qa/2026-10-05-restore-recovery/runtime-test-contract.json","bytes":9039,"lines":281,"sha256":"1472e89431a2deda3b6435edeaea8fe5d2cd29be4269d57b35c761ae9f55bd59","blob":"cb1f78614796025248e2de90178eb657446ebeeb","getVerified":true}
   ],
@@ -157,5 +157,19 @@
   "regression": "written first;17 tool controls1error before function;157 Restore controlsPASS after",
   "unknownErrors": "unclassified; no raw path, error text, response or private output exported",
   "acceptance": "specific dependency reason and current-head browser acceptance pending"
+},
+ "browserRegistryLookupTransition": {
+  "priorHead": "4cd4072171cb553435fbcc7680fba753af150ecc",
+  "run": 37522901310,
+  "artifact": 11441401185,
+  "artifactSHA256": "82ee2eabb193231d974251c22fab938103e2b8f83066430e253776d50bef20a2",
+  "actualFailure": "packageResolution naturalzero andsettled; browserResolution process-boundary, killedleader/groupsettled, no compile/browser",
+  "pinnedPackage": "playwright-core1.63.0",
+  "npmTarballIntegrity": "sha512-rYCsBF/M5HjUch52bbtVONEFjv6Xu8sm8h72dNlR5bzIE1fvC/bxgspzkjSfU+MweEMmPM8KJebG6nnyxo5mCg==",
+  "verifiedDistribution": "integritymatches exactmain lock; oldlib/server/registry/index.js absent; lib/coreBundle.js present and exports same registry",
+  "repair": "only exactcaptured-root modulelocation changes; both findExecutable calls and strict actualversusexpected paths/filepins/closure/version checks unchanged",
+  "regression": "existing selected-root control updated before implementation;17tests1failure on oldlookup",
+  "hypothesisBoundary": "boundedNodeVM confirmed originalJSONnewlineframing correct; its passing diagnostic control retained privately, notpublished",
+  "browserAcceptance": false
 }
 }

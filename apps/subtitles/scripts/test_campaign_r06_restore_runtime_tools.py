@@ -102,7 +102,8 @@ class RestoreToolControls(unittest.TestCase):
         command=tools.selected_cli(roots,"/owned/node",["test","--list"])
         self.assertEqual(command,["/owned/node",str(roots["@playwright/test"])+"/cli.js","test","--list"])
         registry=tools.registry_script(roots["playwright-core"])
-        self.assertIn(str(roots["playwright-core"])+"/lib/server/registry/index.js",registry)
+        self.assertIn(str(roots["playwright-core"])+"/lib/coreBundle.js",registry)
+        self.assertNotIn("/lib/server/registry/index.js",registry)
         self.assertNotIn("createRequire",registry)
 
     def test_controls_dependencies_are_go_only_with_no_optional_stale_rows(self):
