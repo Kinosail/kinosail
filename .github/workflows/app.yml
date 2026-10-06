@@ -257,7 +257,7 @@ jobs:
           go-version-file: apps/player/go.mod
           cache-dependency-path: "**/go.sum"
       - name: Install startup fixture codecs
-        if: inputs.app == 'player' && matrix.engine == 'chromium'
+        if: inputs.app == 'player'
         run: |
           curl --fail --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/startup-ffmpeg.deb" https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.2-5/jellyfin-ffmpeg8_8.1.2-5-noble_amd64.deb
           printf '%s  %s\n' b4e72894ad26c809ed0104805f5415a97be75212b9fcf9d60b89ad25bb3d43e3 "$RUNNER_TEMP/startup-ffmpeg.deb" | sha256sum --check

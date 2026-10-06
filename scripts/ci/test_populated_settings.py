@@ -5,9 +5,15 @@ file. Load only the verifier so this isolated regression has no setup side effec
 """
 import ast
 import hashlib
+import http.server
 import json
+import os
 from pathlib import Path
+import ssl
+import subprocess
+import sys
 import tempfile
+import threading
 import unittest
 
 
@@ -48,6 +54,155 @@ class PopulatedResultsTest(unittest.TestCase):
                 verify_results(self.results(titles, status, result), titles)
         with self.assertRaises(RuntimeError):
             verify_results(self.results(titles * 2), titles)
+
+
+class PopulatedHTTPSFixture(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        subprocess.run(["git", "init", "-q", str(self.root)], check=True)
+        subprocess.run(["git", "-C", str(self.root), "config", "user.name", "Disposable fixture"], check=True)
+        subprocess.run(["git", "-C", str(self.root), "config", "user.email", "fixture@example.invalid"], check=True)
+        subprocess.run(["git", "-C", str(self.root), "commit", "-q", "--allow-empty", "-m", "Fixture"], check=True)
+        self.ca = self.root / "fixture.crt"
+        key = self.root / "fixture.key"
+        subprocess.run(["openssl", "req", "-x509", "-newkey", "ec",
+                        "-pkeyopt", "ec_paramgen_curve:P-256", "-nodes",
+                        "-keyout", str(key), "-out", str(self.ca), "-days", "1",
+                        "-subj", "/CN=Disposable settings fixture",
+                        "-addext", "basicConstraints=critical,CA:TRUE",
+                        "-addext", "subjectAltName=DNS:localhost,IP:127.0.0.1"],
+                       check=True, capture_output=True)
+        self.requests = []
+        requests = self.requests
+
+        class Handler(http.server.BaseHTTPRequestHandler):
+            def reply(self, code, body):
+                requests.append((self.command, self.path))
+                self.send_response(code)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Location", "/")
+                self.end_headers()
+                self.wfile.write(json.dumps(body).encode())
+            def do_POST(self):
+                self.rfile.read(int(self.headers.get("Content-Length", "0")))
+                self.reply(201, {"token": "disposable-token",
+                    "totp": {"secret": "JBSWY3DPEHPK3PXP"}})
+            def do_PUT(self):
+                self.rfile.read(int(self.headers.get("Content-Length", "0")))
+                self.reply(200, {"enabled": True})
+            def do_GET(self):
+                self.reply(303, {})
+            def log_message(self, *args):
+                pass
+
+        self.server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        context.minimum_version = ssl.TLSVersion.TLSv1_2
+        context.load_cert_chain(self.ca, key)
+        self.server.socket = context.wrap_socket(self.server.socket, server_side=True)
+        threading.Thread(target=self.server.serve_forever, daemon=True).start()
+        self.addCleanup(self.server.server_close)
+        self.addCleanup(self.server.shutdown)
+        tools = self.root / "bin"
+        tools.mkdir()
+        uname = tools / "uname"
+        uname.write_text('#!/bin/sh\nprintf "Linux\\n"\n')
+        uname.chmod(0o755)
+        self.env = os.environ | {"PATH": str(tools) + ":" + os.environ["PATH"],
+            "CI": "true", "GITHUB_ACTIONS": "true", "RUNNER_OS": "Linux",
+            "KINOSAIL_BROWSER_TEST": "1", "KINOSAIL_BROWSER_PROJECT": "webkit",
+            "NODE_EXTRA_CA_CERTS": str(self.ca), "PYTHONDONTWRITEBYTECODE": "1"}
+        self.url = f"https://localhost:{self.server.server_port}"
+        self.output = self.root / "results"
+        self.marker = self.root / "browser-started"
+
+    def run_helper(self, url=None, **env):
+        browser = ("import json,os;from pathlib import Path;"
+            "p=Path(os.environ['KINOSAIL_E2E_ARTIFACT_DIR']);"
+            f"Path({str(self.marker)!r}).write_text('started');"
+            "body={'suites':[{'specs':[{'title':'strict fixture journey',"
+            "'tests':[{'status':'expected','results':[{'status':'passed'}]}]}]}]};"
+            "(p/'results-webkit.json').write_text(json.dumps(body))")
+        return subprocess.run([sys.executable, str(SOURCE), "--url", url or self.url,
+            "--output", str(self.output), "--required-title", "strict fixture journey",
+            "--", sys.executable, "-c", browser], cwd=self.root,
+            env=self.env | env, text=True, capture_output=True, timeout=20)
+
+    def test_strict_node_request_gets_validated_fixture_ca_and_restores_previous_env(self):
+        tools = self.root / "bin"
+        for name, content in {
+            "docker": '#!/bin/sh\ncat "$PUBLIC_CA"\n',
+            "sudo": '#!/bin/sh\nexit 0\n',
+        }.items():
+            path = tools / name
+            path.write_text(content)
+            path.chmod(0o755)
+        helper = SOURCE.with_name("browser-fixture-tls.sh")
+        script = "require('node:https').get(process.argv[1],r=>{console.log(r.statusCode);r.resume()}).on('error',()=>process.exit(3))"
+        env = self.env | {"NODE_SCRIPT": script, "URL": self.url, "PUBLIC_CA": str(self.ca)}
+        absent = subprocess.run(["node", "-e", script, self.url], env=env | {"NODE_EXTRA_CA_CERTS": ""},
+                                capture_output=True, text=True)
+        self.assertEqual(absent.returncode, 3)
+        result = subprocess.run(["bash", "-c",
+            'set -euo pipefail; source "$1"; '
+            'trust_browser_fixture_tls docker abcdef123456 "$2" 123-456; '
+            'test "$NODE_EXTRA_CA_CERTS" = "$2/browser-fixture-ca.crt"; '
+            'node -e "$NODE_SCRIPT" "$URL"; '
+            'remove_browser_fixture_trust; test "$NODE_EXTRA_CA_CERTS" = "$PUBLIC_CA"',
+            "fixture", str(helper), str(self.root)], env=env, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), "303")
+
+    def test_strict_https_owner_preparation_and_browser_results(self):
+        result = self.run_helper()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.requests, [("POST", "/api/v1/setup"),
+            ("PUT", "/api/v1/me/mfa"), ("GET", "/onboarding/finish")])
+        self.assertTrue(self.marker.exists())
+        self.assertEqual(json.loads((self.output / "setup-and-run.json").read_text())["exitCode"], 0)
+
+    def test_unknown_remote_ambiguous_oversized_urls_have_no_effects(self):
+        for value in (self.url + "?unknown=1", self.url + "?", self.url + "#",
+                self.url + "/", " " + self.url, self.url + "\n",
+                self.url.replace("://", "://\t"), "https://outside.invalid:1234", "ftp://localhost:1234",
+                "https://user@localhost:1234", "http://localhost", "http://localhost:no",
+                "http://localhost:0", "http://localhost:65536", "x" * 2049):
+            with self.subTest(value=value[:64]):
+                result = self.run_helper(value)
+                self.assertEqual(result.returncode, 2)
+                self.assertEqual(self.requests, [])
+                self.assertFalse(self.output.exists())
+                self.assertFalse(self.marker.exists())
+
+    def test_missing_bad_private_oversized_or_foreign_ca_has_no_setup_effects(self):
+        good = self.ca.read_text()
+        for body in ("", "not a certificate", good + "PRIVATE KEY", good + "unknown\n", "x" * 262145):
+            self.ca.write_text(body)
+            result = self.run_helper()
+            self.assertEqual(result.returncode, 2)
+            self.assertEqual(self.requests, [])
+            self.assertFalse(self.output.exists())
+            self.assertFalse(self.marker.exists())
+        self.ca.write_text(good)
+        link = self.root / "link.crt"
+        link.symlink_to(self.ca)
+        for value in ("", str(self.root / "missing"), str(link), "x" * 4097):
+            result = self.run_helper(NODE_EXTRA_CA_CERTS=value)
+            self.assertEqual(result.returncode, 2)
+            self.assertEqual(self.requests, [])
+            self.assertFalse(self.output.exists())
+            self.assertFalse(self.marker.exists())
+
+    def test_https_requires_owned_webkit_linux_actions_context_before_effects(self):
+        for env in ({"KINOSAIL_BROWSER_PROJECT": "chromium"}, {"KINOSAIL_BROWSER_TEST": ""},
+                    {"CI": ""}, {"GITHUB_ACTIONS": ""}, {"RUNNER_OS": "macOS"}):
+            result = self.run_helper(**env)
+            self.assertEqual(result.returncode, 2)
+            self.assertEqual(self.requests, [])
+            self.assertFalse(self.output.exists())
+            self.assertFalse(self.marker.exists())
 
 
 if __name__ == "__main__":

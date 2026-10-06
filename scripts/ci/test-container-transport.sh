@@ -13,13 +13,13 @@ wait_container_test_health() {
 assert_container_test_headers() {
   local headers
   headers="$(curl --fail --silent --insecure --dump-header - --output /dev/null "$1/healthz")"
-  if [[ "${KINOSAIL_BROWSER_TEST:-}" != "1" ]]; then
-    grep -qi '^strict-transport-security: max-age=31536000' <<<"$headers"
+  if [[ "${KINOSAIL_BROWSER_TEST:-}" != "1" || "$1" == https://* ]]; then
+    printf '%s\n' "$headers" | grep -qi '^strict-transport-security: max-age=31536000'
   else
-    ! grep -qi '^strict-transport-security:' <<<"$headers"
+    ! printf '%s\n' "$headers" | grep -qi '^strict-transport-security:'
   fi
-  grep -qi "^content-security-policy: default-src 'self'" <<<"$headers"
-  grep -qi '^x-content-type-options: nosniff' <<<"$headers"
+  printf '%s\n' "$headers" | grep -qi "^content-security-policy: default-src 'self'"
+  printf '%s\n' "$headers" | grep -qi '^x-content-type-options: nosniff'
 }
 
 expect_status() {
