@@ -13,11 +13,13 @@ role, state, and format variants. A passing assertion covers only its subset.
 Dynamic route variants and every native control require further review.
 
 The inventory statuses describe the initial audit, not current runner totals.
-The latest local tester-army/e2e run passed 36 executions with six app-specific
-skips. It used real binaries from `0f4b97c8`, composed with main `d4bb501e`,
-and the checksummed download/caption test additions. The earlier 32-pass runs
-on A57 and `29cd65f7` remain historical, independently reviewed evidence.
-Current-head hosted and independent verification remain required.
+Historical independent tester-army/e2e replay at
+`6cd20174578d4a4bef3592875d01922430f61281` passed 38
+executions with six legitimate app-specific skips. It used checksummed source,
+real isolated app binaries, and populated media. Its immutable receipt is
+`independent-sdk-6cd20174/receipt.json` under the private evidence directory.
+Earlier 32-pass and 36-pass checkpoints remain historical evidence.
+Use current-revision receipts and the delivery report for publication evidence.
 These results do not support an all-flows-tested claim.
 
 The focused settings repair passed six Chromium UI-authenticated cases and six
@@ -85,9 +87,12 @@ that milestone; its hosted Firefox stall remains unexplained.
 `local-evidence.json` records the earlier hashes and results. Current private
 receipts, runner JSON/JUnit, source and binary manifests live under
 `/Users/mikeo/Documents/e2e-rollout-2026-10-04/kinosail-final-runtime/evidence/`.
-The latest runner report is in
-`scripts/e2e/.e2e/runner-final-0f4-with-downloads/`. Hosted artifacts retain
-exact-head commands and context. Failed attempts remain separate from passes.
+The historical independent runner report is in
+`independent-sdk-6cd20174/run-6cd20174/independent-6cd20174/report.json` under
+that evidence directory. The delivery report is
+`/Users/mikeo/Documents/e2e-rollout-2026-10-04/reports/kinosail.md`.
+Hosted artifacts retain exact-head commands and context.
+Failed attempts remain separate from passes.
 
 Remaining boundaries include current-head hosted suites, publication,
 deployed revision, real providers/receivers and physical devices. Prepared
