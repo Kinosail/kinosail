@@ -7,6 +7,7 @@ Protect full timeline, future URLs, real decoded continuation, unchanged source,
 same init, admission bounds, and unauthenticated rejection. No playlist mocks.
 """
 import hashlib
+import itertools
 import json
 import os
 from pathlib import Path
@@ -82,7 +83,10 @@ def sample_resources(server, source, stop, resources):
 
 
 def item_hls_roots(cache, item_id):
-    entries = list(cache.iterdir()) if cache.exists() else []
+    if not cache.exists():
+        return []
+    with os.scandir(cache) as stream:
+        entries = list(itertools.islice(stream, 4097))
     check(len(entries) <= 4096, "cache_inventory_bound")
     return sorted(p.name for p in entries if p.name == item_id or p.name.startswith(item_id + "-"))
 
@@ -156,12 +160,12 @@ def journey(name, original, metadata):
             root = roots[0]
             limit, stopped_samples = time.monotonic() + 10, 0
             while time.monotonic() < limit:
-                stopped = encoder_count(server) == 0 and (root / ".seekable").exists() and (root / ".startup").exists()
+                stopped = encoder_count(server, source) == 0 and (root / ".seekable").exists() and (root / ".startup").exists()
                 stopped_samples = stopped_samples + 1 if stopped else 0
                 if stopped_samples >= 3:
                     break
                 time.sleep(0.05)
-            check(stopped_samples >= 3 and encoder_count(server) == 0 and (root / ".seekable").exists()
+            check(stopped_samples >= 3 and encoder_count(server, source) == 0 and (root / ".seekable").exists()
                 and (root / ".startup").exists(), "prepared_worker_not_joined")
             physical = list(root.glob("*p/index.m3u8"))
             check(len(physical) == 1, "single_prepared_rendition")
