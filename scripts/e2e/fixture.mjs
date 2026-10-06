@@ -35,7 +35,6 @@ function cleanup() {
   if (pendingFD !== undefined) { closeSync(pendingFD); pendingFD = undefined; }
   if (owns(pendingPath, pendingIdentity)) rmSync(pendingPath);
   if (owns(statePath, receiptIdentity)) {
-    rmSync(controlPath, { force: true });
     rmSync(statePath);
   }
   rmSync(root, { recursive: true, force: true });
@@ -94,11 +93,13 @@ for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => {
 });
 // A request can select only this supervisor's current child, never a caller PID.
 controlTimer = setInterval(() => {
-  let fd;
+  let fd, controlIdentity;
   try {
     fd = openSync(controlPath, constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK);
     const control = fstatSync(fd);
-    if (!control.isFile() || control.size > 128) return;
+    if (!control.isFile()) return;
+    controlIdentity = control;
+    if (control.size > 128) return;
     const body = Buffer.alloc(129);
     const size = readSync(fd, body, 0, body.length, 0);
     if (size > 128) return;
@@ -107,7 +108,12 @@ controlTimer = setInterval(() => {
     restarting = true;
     stopChild('SIGTERM');
   } catch (error) { if (error.code !== 'ENOENT') console.error('invalid fixture restart request'); }
-  finally { if (fd !== undefined) closeSync(fd); rmSync(controlPath, { force: true }); }
+  finally {
+    try {
+      if (owns(controlPath, controlIdentity)) rmSync(controlPath);
+    } catch { console.error('fixture restart cleanup failed'); }
+    finally { if (fd !== undefined) closeSync(fd); }
+  }
 }, 100);
 controlTimer.unref();
 launch();

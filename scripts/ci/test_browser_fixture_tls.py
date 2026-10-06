@@ -98,6 +98,29 @@ class BrowserFixtureTLS(unittest.TestCase):
             self.assertEqual(self.effects.read_text().splitlines(), ["export"])
             self.effects.unlink()
 
+    def test_non_ca_subject_cannot_impersonate_basic_constraints(self):
+        subprocess.run(["openssl", "req", "-x509", "-newkey", "ec",
+                        "-pkeyopt", "ec_paramgen_curve:P-256", "-nodes",
+                        "-keyout", str(self.root / "leaf.key"), "-out", str(self.cert),
+                        "-days", "1", "-subj", "/CN=CA:TRUE",
+                        "-addext", "basicConstraints=critical,CA:FALSE"],
+                       check=True, capture_output=True)
+        result = self.call('trust_browser_fixture_tls docker abcdef123456 "$2" 123-456')
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(self.effects.read_text().splitlines(), ["export"])
+
+    def test_installer_validates_its_own_namespace_before_privileged_effects(self):
+        for arguments in ('', '"$CERT"', '"$CERT" ""', '"$CERT" ../escape',
+                          '"$CERT" unknown', '"$CERT" 123-456 extra',
+                          '"$CERT" ' + "1" * 10000 + "-2"):
+            with self.subTest(argument_length=len(arguments)):
+                try:
+                    result = self.call('install_browser_fixture_ca ' + arguments)
+                    self.assertEqual(result.returncode, 2, result.stderr)
+                    self.assertFalse(self.effects.exists())
+                finally:
+                    self.effects.unlink(missing_ok=True)
+
     def test_inherited_matching_trust_path_is_not_owned_or_deleted(self):
         result = self.call('remove_browser_fixture_trust\n'
                            'test \"$NODE_EXTRA_CA_CERTS\" = /tmp/another-run.crt',

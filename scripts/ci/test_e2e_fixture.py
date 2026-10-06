@@ -195,12 +195,14 @@ class E2EFixtureTests(unittest.TestCase):
                 (root / "race-armed").write_text("owned fixture fault")
                 control.write_text("{}")
                 deadline = time.monotonic() + 2
-                while (control.exists() or (root / "race-armed").exists()) and time.monotonic() < deadline:
+                while (root / "race-armed").exists() and time.monotonic() < deadline:
                     time.sleep(0.02)
-                self.assertFalse(control.exists(), "nonregular control blocked the supervisor")
+                self.assertFalse((root / "race-armed").exists(), "control race was not exercised")
+                self.assertTrue(control.exists(), "foreign nonregular control was removed")
                 self.assertEqual(json.loads(metadata.read_text())["generation"], 0)
                 self.assertEqual(json.loads(metadata.read_text())["childPID"], initial["childPID"])
                 self.assertEqual(Path(started["data"], "persistent").read_text(), "original")
+                control.unlink()  # Only the fixture that created this FIFO owns it.
                 for generation in (1, 2, 3):
                     current = json.loads(metadata.read_text())
                     control.write_text(json.dumps({"generation": current["generation"], "childPID": current["childPID"]}, separators=(",", ":")))

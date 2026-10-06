@@ -79,10 +79,12 @@ func (api apiServices) startupSource(writer http.ResponseWriter, request *http.R
 	}
 	value.recipe = localHLSRecipe(resolved)
 	value.key = hlsRecipeKey(item.ID, value.recipe)
-	if _, err := api.hls.readHLSMasterRenditions(filepath.Join(api.hls.cache, value.key)); err != nil && !errors.Is(err, os.ErrNotExist) {
-		slog.WarnContext(request.Context(), "HLS master rejected", "request_id", requestActivityID(request.Context()), "playback_session", requestPlaybackSession(request.Context()), "failure_class", "invalid-master")
-		apiNotFound(writer)
-		return value, false
+	if api.hls.cache != "" {
+		if _, err := api.hls.readHLSMasterRenditions(filepath.Join(api.hls.cache, value.key)); err != nil && !errors.Is(err, os.ErrNotExist) {
+			slog.WarnContext(request.Context(), "HLS master rejected", "request_id", requestActivityID(request.Context()), "playback_session", requestPlaybackSession(request.Context()), "failure_class", "invalid-master")
+			apiNotFound(writer)
+			return value, false
+		}
 	}
 	return value, true
 }

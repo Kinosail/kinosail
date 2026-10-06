@@ -39,7 +39,16 @@ results = {}
 initial_diff_hash = hashlib.sha256(subprocess.check_output(["git", "diff", "HEAD"], cwd=root)).hexdigest()
 initial_scripts = {name: hashlib.sha256((root / "scripts/testing" / name).read_bytes()).hexdigest()
                    for name in ["test-layout-stability-local.py", "layout-stability-local.mjs", "layout-stability-flows.mjs", "layout-stability-bookmarks.mjs", "layout-stability-subtitle-search.mjs", "layout-stability-subtitle-background.mjs", "navigation-diagnostics.mjs", "layout-stability-routing.mjs", "layout-stability-failure.mjs"]}
-settings = {key: value for key, value in os.environ.items() if key.startswith("KINOSAIL_LAYOUT_")}
+settings = {}
+for key, allowed, default in (
+        ("KINOSAIL_LAYOUT_APPS", {"player", "subtitles", "player,subtitles", "subtitles,player"}, "player,subtitles"),
+        ("KINOSAIL_LAYOUT_BROWSER", {"chromium", "firefox", "webkit"}, "chromium")):
+    value = os.environ.get(key, default)
+    settings[key] = value if value in allowed else "invalid"
+for name in ("QUICK", "ENFORCE", "FLOWS", "VARIANTS", "APPLE_SHIM"):
+    key = "KINOSAIL_LAYOUT_" + name
+    settings[key] = bool(os.environ.get(key))
+settings["KINOSAIL_LAYOUT_PATHS"] = "custom" if os.environ.get("KINOSAIL_LAYOUT_PATHS") else "default"
 def write_receipt():
     final_revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
     receipt = {"revision": revision, "command": "python3 scripts/testing/test-layout-stability-local.py",
@@ -48,7 +57,7 @@ def write_receipt():
         "finalRevision": final_revision,
         "sourceDrift": final_revision != revision or initial_diff_hash != hashlib.sha256(subprocess.check_output(["git", "diff", "HEAD"], cwd=root)).hexdigest(),
         "results": results, "mediaCommand": generate,
-        "browser": os.environ.get("KINOSAIL_LAYOUT_BROWSER", "chromium"),
+        "browser": settings["KINOSAIL_LAYOUT_BROWSER"],
         "environment": f"{platform.system()} {platform.machine()}; native Go servers; loopback {'HTTPS with owned Linux runner CA trust' if tls else 'HTTP'}",
         "boundaries": "Synthetic media/account; delayed real responses; no production, container, public TLS or physical devices"}
     (run / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")

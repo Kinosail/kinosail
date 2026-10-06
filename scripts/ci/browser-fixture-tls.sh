@@ -46,13 +46,17 @@ validate_browser_fixture_ca() {
     /^-----BEGIN CERTIFICATE-----$/ { if (inside || done) exit 1; inside=1; next }
     /^-----END CERTIFICATE-----$/ { if (!inside) exit 1; inside=0; done=1; next }
     { if (!inside || $0 !~ /^[A-Za-z0-9+\/=]+$/) exit 1 }
-    END { if (inside || !done) exit 1 }' "$certificate" || ! openssl x509 -in "$certificate" -noout >/dev/null 2>&1 || ! openssl x509 -in "$certificate" -noout -text | grep -q 'CA:TRUE'; then
+    END { if (inside || !done) exit 1 }' "$certificate" || ! openssl x509 -in "$certificate" -noout >/dev/null 2>&1 || ! openssl x509 -in "$certificate" -noout -ext basicConstraints | grep -Eq '^[[:space:]]*CA:TRUE(, pathlen:[0-9]+)?[[:space:]]*$'; then
     echo 'invalid browser fixture public CA export' >&2
     return 2
   fi
 }
 
 install_browser_fixture_ca() {
+  if [[ $# != 2 || "${#2}" -gt 32 || ! "${2:-}" =~ ^[0-9]+-[0-9]+$ ]]; then
+    echo 'invalid browser fixture trust arguments' >&2
+    return 2
+  fi
   local certificate="$1"
   local trust="/usr/local/share/ca-certificates/kinosail-browser-fixture-$2.crt"
   if [[ -e "$trust" ]]; then echo 'browser fixture trust path already exists' >&2; return 2; fi
