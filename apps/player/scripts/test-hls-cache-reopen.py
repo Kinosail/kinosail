@@ -3,7 +3,7 @@
 
 The cold cases protect legacy admission, init and existing fragment identity;
 they do not certify lazy continuation or sparse cold source cuts. Real FFmpeg is
-rate-limited only to make a public stop deterministic, never replaced by output mocks.
+rate-limited only to make public stream abandonment deterministic, never replaced by output mocks.
 Only this harness damages its disposable indexed cache.
 """
 import hashlib
@@ -73,13 +73,11 @@ def cold_scene(api, hls, item_id, cache, server, case):
     physical = variants[0]
     wait_until(lambda: b"segment-00000.m4s" in read(physical), "cold_prefix_missing")
     check(b"#EXT-X-ENDLIST" not in read(physical) and owned_encoder(server) == 1, "cold_not_interrupted")
-    case["stage"] = "public-stop"
-    status, _, _ = api.http("/Sessions/Playing/Stopped", "POST", {"ItemId": item_id,
-        "PlaySessionId": "cold-reopen-proof", "PositionTicks": 10000000})
-    case["stopHTTPStatus"] = status
-    check(status == 204, "cold_stop_http_" + str(status))
-    case["stage"] = "cold-join"
-    wait_until(lambda: owned_encoder(server) == 0 and (root / ".seekable").exists(), "cold_stop_not_joined")
+    # Abandon the public stream. Its documented 45-second inactivity watchdog
+    # cancels the owner without requiring an optional Jellyfin integration.
+    case["interruption"] = "Public cold HLS request abandoned; 45-second owner inactivity watchdog"
+    case["stage"] = "cold-idle-join"
+    wait_until(lambda: owned_encoder(server) == 0 and (root / ".seekable").exists(), "cold_stop_not_joined", seconds=50)
     # Let the owner finish publishing its pause receipt and remove the joined job.
     for _ in range(3):
         time.sleep(0.05)
@@ -140,11 +138,11 @@ def journey(name, original, metadata, corrupt=False):
         check(real is not None, "ffmpeg_unavailable")
         wrapper = directory / "paced-ffmpeg"
         wrapper.write_text("#!/usr/bin/env python3\nimport os,sys\na=sys.argv[1:]\n"
-            "if '-hls_time' in a:\n i=a.index('-i'); a[i:i]=['-readrate','4']\n"
+            "if '-hls_time' in a:\n i=a.index('-i'); a[i:i]=['-readrate','0.2']\n"
             + "os.execv(" + repr(real) + ", [" + repr(real) + "]+a)\n")
         wrapper.chmod(0o700)
         env["KINOSAIL_FFMPEG"] = str(wrapper)
-        case["coldPacingReadrate"] = 4
+        case["coldPacingReadrate"] = 0.2
         case["pacingWrapperSHA256"] = sha(wrapper)
     with (directory / "server.log").open("w") as log:
         server = subprocess.Popen([str(BINARY)], cwd=ROOT, env=env, stdout=log, stderr=log)
