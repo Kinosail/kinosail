@@ -7,14 +7,15 @@ import subprocess
 import threading
 import time
 from hls_timeline_http import PublicServer, source_state
-from hls_timeline_packets import safe_encoder_lifecycle
+from hls_timeline_packets import manifest_facts, safe_encoder_lifecycle
 from hls_followon_public import check, bounded_bytes, encoder_count, sample_resources, prepare_once
 
 
 def controls(root, run, binary, receipt):
     for name, extension, codec in [('audio-only', '.flac', 'flac'),
                                    ('audiobook', '.m4b', 'alac'), ('hevc-video', '.mkv', 'ac3')]:
-        case = {'name': name, 'result': 'failed', 'failures': [], 'boundary': 'Public preparation regression control'}
+        case = {'name': name, 'result': 'failed', 'failures': [],
+                'boundary': 'Public preparation and complete audio delivery; HEVC video identity/timing not certified'}
         receipt['cases'].append(case)
         directory = run / name
         media = directory / 'media'
@@ -77,8 +78,10 @@ def controls(root, run, binary, receipt):
                 check(status == 200 and b'#EXT-X-ENDLIST' in variant, 'control_complete_timeline')
                 status, init, _ = api.http(base + 'init.mp4')
                 check(status == 200 and init, 'control_initialization')
-                segments = re.findall(r'^segment[0-9]+\.m4s$', variant.decode(), re.M)
+                facts, advertised = manifest_facts(variant)
+                segments = [filename for filename, _ in advertised]
                 check(0 < len(segments) <= 16, 'control_fragment_bound')
+                case['publicVariant'] = facts
                 fragments = [init]
                 for filename in segments:
                     status, data, _ = api.http(base + filename)

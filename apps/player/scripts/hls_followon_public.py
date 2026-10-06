@@ -167,6 +167,14 @@ def measure(api, hls, directory, source, metadata, offset, prepared_init, case):
             failure.append('fragment_video_duration')
     if actual['identity'] != reference['identity']:
         failure.append('presented_source_frames')
+        if offset:
+            # Diagnose the failed window independently; never trim delivered frames
+            # or use a hash match to change the requested presentation boundary.
+            prior = max(k for k in metadata['keyframesSeconds']
+                        if k <= metadata['sourceTimeOriginSeconds'] + offset)
+            earlier, _ = decode_frames(source, prior - metadata['sourceTimeOriginSeconds'])
+            case['precedingKeyDiagnostic'] = {'sourceKeyPTS': prior, 'referenceIdentity': earlier['identity'],
+                                             'deliveredIdentityMatches': actual['identity'] == earlier['identity']}
     if not actual['presentationOrderValid'] or actual['firstPresentedPTS'] is None:
         failure.append('presentation_clock')
     elif abs(actual['firstPresentedPTS']) > 0.15 or abs(actual['lastPresentedPTS'] + 1/metadata['frameRate'] - duration) > 0.15:
