@@ -64,21 +64,27 @@ def fixture(name, gop, keys):
     return path, {"command": command, "sha256": sha(path), "durationSeconds": duration, "frameRate": 24, "keyframesSeconds": times}
 
 
-def encoder_count(server):
+def encoder_count(server, source):
     rows = subprocess.check_output(["ps", "-eo", "ppid=,args="], text=True, timeout=5).splitlines()
     return sum(1 for row in rows if row.strip() and row.strip().split(maxsplit=1)[0] == str(server.pid)
-        and "ffmpeg" in row and "-hls_time" in row)
+        and "ffmpeg" in row and "-hls_time" in row and str(source) in row)
 
 
-def sample_resources(server, stop, resources):
+def sample_resources(server, source, stop, resources):
     while not stop.is_set():
         try:
-            count = encoder_count(server)
+            count = encoder_count(server, source)
             resources["samples"] += 1
             resources["peakOwnedFFmpeg"] = max(resources["peakOwnedFFmpeg"], count)
         except (OSError, subprocess.SubprocessError):
             resources["samplingErrors"] += 1
         stop.wait(0.05)
+
+
+def item_hls_roots(cache, item_id):
+    entries = list(cache.iterdir()) if cache.exists() else []
+    check(len(entries) <= 4096, "cache_inventory_bound")
+    return sorted(p.name for p in entries if p.name == item_id or p.name.startswith(item_id + "-"))
 
 
 def manifest_facts(data):
@@ -114,7 +120,7 @@ def journey(name, original, metadata):
     with (directory / "server.log").open("w") as log:
         server = subprocess.Popen([str(binary)], cwd=ROOT, env=env, stdout=log, stderr=log)
         stop = threading.Event()
-        sampler = threading.Thread(target=sample_resources, args=(server, stop, resources), daemon=True)
+        sampler = threading.Thread(target=sample_resources, args=(server, source, stop, resources), daemon=True)
         sampler.start()
         try:
             api.authorize()
@@ -129,10 +135,14 @@ def journey(name, original, metadata):
             check(re.fullmatch(r"/hls/[a-f0-9]{16}/p/r-[a-zA-Z0-9-]+/index\.m3u8", hls) is not None, "planned_remux_route")
             cache = directory / "cache"
             prepare = "/api/v1/items/" + item_id + "/playback-prepare"
+            baseline_roots = item_hls_roots(cache, item_id)
+            check(not baseline_roots and encoder_count(server, source) == 0, "planning_started_target_hls")
             status, _, _ = api.http(prepare, "POST", {"source": hls}, authenticated=False)
             check(status == 401, "unauthenticated_preparation_denial")
-            check(not cache.exists() or not list(cache.iterdir()), "unauthenticated_cache_effect")
-            case["unauthenticatedPreparation"] = {"status": status, "cacheUnchanged": True}
+            denied_roots = item_hls_roots(cache, item_id)
+            check(denied_roots == baseline_roots and encoder_count(server, source) == 0, "unauthenticated_cache_effect")
+            case["unauthenticatedPreparation"] = {"status": status, "cacheUnchanged": True,
+                "targetHLSRootsBefore": len(baseline_roots), "targetHLSRootsAfter": len(denied_roots), "targetOwnedFFmpeg": 0}
             limit = time.monotonic() + 25
             while time.monotonic() < limit:
                 value = api.call(prepare, "POST", {"source": hls}, 202)
