@@ -244,11 +244,12 @@ try:
         journey(name, source, metadata)
         if name == "cluster15s":
             journey(name + "resume15s", source, metadata, 15)
+            journey(name + "resume60s", source, metadata, 60)
     source, metadata = fixture(RUN, "fractional15s", 3000, "0,15.0483,16.0493,18.0513,36.0693,60.0933,84.1173",
         "30000/1001", 2880, ".mp4")
     receipt["codecSeekDiagnostics"].append(seek_diagnostics(RUN, source, metadata["keyframesSeconds"][1]))
     journey("fractional15s", source, metadata)
-    if len(receipt["cases"]) == 6 and all(case["result"] == "passed" for case in receipt["cases"]):
+    if len(receipt["cases"]) == 7 and all(case["result"] == "passed" for case in receipt["cases"]):
         receipt["result"] = "passed"
 except Exception as error:
     receipt["failureClass"] = str(error) if isinstance(error, RuntimeError) else type(error).__name__

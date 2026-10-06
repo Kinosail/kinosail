@@ -22,8 +22,20 @@ def seek_diagnostics(directory, source, key):
     reference = first_frames(source, max(0, key - 0.000001))
     if reference["exitStatus"] or reference["frames"] != 3:
         raise RuntimeError("seek_reference_three_frames")
+    probe = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-read_intervals", "%+#4096",
+        "-show_packets", "-show_entries", "packet=pts_time,dts_time,flags", "-of", "json", str(source)],
+        capture_output=True, timeout=30)
+    if probe.returncode or len(probe.stdout) > 2 * 1024 * 1024:
+        raise RuntimeError("seek_source_packet_bound")
+    packets = json.loads(probe.stdout).get("packets", [])
+    selected = next(p for p in packets if "K" in p.get("flags", "") and abs(float(p["pts_time"]) - key) < 0.000002)
+    dts = float(selected["dts_time"])
+    cutoff = format(dts - 0.000001, ".6f")
     candidates = [
         ("legacy", ["-ss", format(key, ".9f")], []),
+        ("legacy-prior0", ["-ss", format(key, ".9f")], ["-copy_prior_start:v", "0"]),
+        ("output-dts", ["-copyts"], ["-ss", cutoff, "-copy_prior_start:v", "0"]),
+        ("padded-dts", ["-copyts", "-ss", format(key + 0.14, ".9f")], ["-ss", cutoff, "-copy_prior_start:v", "0"]),
         ("copyts", ["-copyts", "-ss", format(key, ".9f")], []),
         ("padded", ["-ss", format(key + 0.14, ".9f")], []),
         ("padded-copyts", ["-copyts", "-ss", format(key + 0.14, ".9f")], []),
@@ -52,4 +64,4 @@ def seek_diagnostics(directory, source, key):
                 row["firstThreeFrames"] = actual
         rows.append(row)
     return {"sourceSHA256": hashlib.sha256(source.read_bytes()).hexdigest(),
-        "sourceKeySeconds": key, "referenceOffsetSeconds": max(0, key - 0.000001), "reference": reference, "candidates": rows}
+        "sourceKeySeconds": key, "sourceKeyDTSSeconds": dts, "referenceOffsetSeconds": max(0, key - 0.000001), "reference": reference, "candidates": rows}
