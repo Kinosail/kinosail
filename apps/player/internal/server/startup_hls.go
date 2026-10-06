@@ -74,7 +74,7 @@ func (manager *hlsManager) prepareStartupWindow(ctx context.Context, item librar
 		}
 	}()
 	state := "unavailable"
-	if recipe.mode == "remux" {
+	if copiedHLSVideo(recipe) {
 		var err error
 		preparation.timeline, err = manager.indexCopiedHLS(ctx, item, recipe, preparation)
 		if err != nil {

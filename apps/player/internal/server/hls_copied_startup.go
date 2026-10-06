@@ -10,11 +10,16 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
+func copiedHLSVideo(recipe hlsRecipe) bool {
+	return recipe.mode == "remux" || recipe.mode == "audio-transcode" &&
+		!recipe.dialogueBoost && !recipe.normalizeLoudness && len(recipe.omitted) == 0
+}
+
 func (manager *hlsManager) reusableCopiedHLS(ctx context.Context, directory, source, policy string, recipe hlsRecipe) bool {
 	if ctx.Err() != nil || !cacheFresh(filepath.Join(directory, "index.m3u8"), source, policy) && !seekCacheFresh(directory, source, policy) {
 		return false
 	}
-	if recipe.mode != "remux" || !manager.copiedHLSTimelinePresent(directory) {
+	if !copiedHLSVideo(recipe) || !manager.copiedHLSTimelinePresent(directory) {
 		// Ordinary cold streams retain their pre-index cache and seek behavior.
 		return true
 	}
@@ -89,7 +94,7 @@ func (manager *hlsManager) copiedPlaylistProjection(ctx context.Context, item li
 }
 
 func (manager *hlsManager) copiedStartupProjection(item library.Item, recipe hlsRecipe, directory string) func([]byte) []byte {
-	if recipe.mode != "remux" {
+	if !copiedHLSVideo(recipe) {
 		return nil
 	}
 	options, err := manager.hlsSettings(item, recipe)
@@ -126,7 +131,7 @@ func copiedHLSInputTime(value float64) string {
 }
 
 func (manager *hlsManager) recipePlaylistProjection(ctx context.Context, item library.Item, recipe hlsRecipe, key, name string) func([]byte) []byte {
-	if recipe.mode != "remux" || filepath.Dir(name) == "." || filepath.Ext(name) != ".m3u8" {
+	if !copiedHLSVideo(recipe) || filepath.Dir(name) == "." || filepath.Ext(name) != ".m3u8" {
 		return nil
 	}
 	options, err := manager.hlsSettings(item, recipe)

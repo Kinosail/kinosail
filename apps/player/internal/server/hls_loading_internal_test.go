@@ -29,7 +29,7 @@ func TestPlannedHLSLoadingDoesNotRepeatPlaybackEnrichment(t *testing.T) {
 			if operation == "software recovery" {
 				recipe.mode = "transcode"
 			}
-			options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=14"
+			options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=15"
 			key := hlsRecipeKey(item.ID, recipe)
 			directory := filepath.Join(manager.cache, key)
 			switch operation {

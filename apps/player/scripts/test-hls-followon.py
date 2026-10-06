@@ -142,6 +142,10 @@ def journey(name, original, metadata, offset=0, cold=False, one_shot=False, audi
         except Exception as error:
             case['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
         finally:
+            join_limit = time.monotonic() + 15
+            while encoder_count(server, source) > 0 and time.monotonic() < join_limit:
+                time.sleep(0.05)
+            case['ownedFFmpegBeforeTeardown'] = encoder_count(server, source)
             stop.set()
             sampler.join(timeout=5)
             server.terminate()
@@ -156,7 +160,8 @@ def journey(name, original, metadata, offset=0, cold=False, one_shot=False, audi
             lifecycle = safe_encoder_lifecycle(private)
             case['encoderLifecycle'] = lifecycle
             case['workerBound'] = (resources['samples'] > 0 and resources['peakOwnedFFmpeg'] <= 1
-                and resources['samplingErrors'] == 0 and lifecycle['validSequence'] and lifecycle['peakActive'] == 1)
+                and resources['samplingErrors'] == 0 and lifecycle['validSequence'] and lifecycle['peakActive'] == 1
+                and case['ownedFFmpegBeforeTeardown'] == 0)
             if not case['workerBound']:
                 case['failures'].append('owned_encoder_bound')
                 case['result'] = 'failed'

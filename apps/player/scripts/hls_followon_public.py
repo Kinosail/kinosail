@@ -107,7 +107,24 @@ def measure(api, hls, directory, source, metadata, offset, prepared_init, case):
         fragments.append(data)
         path = directory / 'fragment.mp4'
         path.write_bytes(init + data)
-        packets = fragment_packets(path) | fragment_audio(path)
+        packets = fragment_packets(path)
+        packets['fragmentSHA256'] = hashlib.sha256(init + data).hexdigest()
+        try:
+            packets.update(fragment_audio(path))
+        except RuntimeError as error:
+            if str(error) != 'public_audio_packet_bound':
+                raise
+            data = subprocess.check_output(['ffprobe', '-v', 'error', '-select_streams', 'a:0',
+                '-read_intervals', '%+#4096', '-show_packets', '-show_entries', 'packet=pts_time,duration_time',
+                '-of', 'json', str(path)], timeout=30)
+            check(len(data) <= 2 * 1024 * 1024, 'missing_audio_probe_bound')
+            count = len(json.loads(data).get('packets', []))
+            packets.update(segment=filename, advertisedSeconds=advertised, audioPackets=count,
+                           failedAssertion='public_audio_packet_bound')
+            case['publicFragments'].append(packets)
+            failure.append('fragment_missing_audio' if count == 0 else 'fragment_audio_bound')
+            previous_video_end = packets['lastVideoEnd']
+            continue  # Preserve the failed assertion and fetch later advertised media.
         packets.update(segment=filename, advertisedSeconds=advertised)
         packets['videoDecodeOrderValid'] = video_decode_order(path)
         case['publicFragments'].append(packets)
@@ -136,6 +153,8 @@ def measure(api, hls, directory, source, metadata, offset, prepared_init, case):
     check(reference['presentedFrames'] == case['referenceClock']['expectedFrames'],
           'independent_reference_frame_count')
     for packets in case['publicFragments']:
+        if 'failedAssertion' in packets:
+            continue  # Already failed strictly; timing cannot qualify an empty/bounded audio stream.
         if packets['firstVideoTime'] < 0 or packets['firstAudioTime'] < 0:
             failure.append('unqualified_packet_presentation')
             continue
