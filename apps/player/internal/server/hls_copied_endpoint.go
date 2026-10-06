@@ -25,21 +25,11 @@ func (output *copiedHLSEndpointOutput) Write(data []byte) (int, error) {
 
 // Read the actual generated final fragment to EOF. Container format duration
 // alone never authorizes extra media or a new URI.
-func (manager *hlsManager) completedCopiedHLSEndpoint(ctx context.Context, directory string, manifest []byte) (float64, error) {
-	last := ""
-	for _, line := range strings.Split(string(manifest), "\n") {
-		if _, valid := hlsSegmentNumber(line); valid {
-			last = line
-		}
-	}
-	if last == "" || !playback.PlaylistHas(manifest, "#EXT-X-ENDLIST") {
+func (manager *hlsManager) completedCopiedHLSEndpoint(ctx context.Context, root *os.Root, manifest []byte) (float64, error) {
+	last := copiedHLSLastSegment(manifest)
+	if last == "" || !playback.PlaylistHas(manifest, "#EXT-X-ENDLIST") || ctx.Err() != nil {
 		return 0, errCopiedHLSIndex
 	}
-	root, err := os.OpenRoot(directory) //nolint:gosec // Directory is a validated rendition cache path.
-	if err != nil {
-		return 0, errCopiedHLSIndex
-	}
-	defer root.Close()
 	clock, err := manager.measureCopiedHLSClock(ctx, root)
 	if err != nil {
 		return 0, err
@@ -83,11 +73,20 @@ func (manager *hlsManager) completedCopiedHLSEndpoint(ctx context.Context, direc
 	return end - clock, nil
 }
 
-func (manager *hlsManager) completedCopiedHLSProjection(ctx context.Context, directory string, manifest []byte) []byte {
-	end, err := manager.completedCopiedHLSEndpoint(ctx, directory, manifest)
+func (manager *hlsManager) completedCopiedHLSProjection(ctx context.Context, directory, policy string, manifest []byte) []byte {
+	end, err := manager.copiedHLSEndpoint(ctx, directory, policy, manifest)
 	if err != nil {
 		return manifest
 	}
 	return completedCopiedHLSManifest(manifest, end)
 }
 
+func copiedHLSLastSegment(manifest []byte) string {
+	last := ""
+	for _, line := range strings.Split(string(manifest), "\n") {
+		if _, valid := hlsSegmentNumber(line); valid {
+			last = line
+		}
+	}
+	return last
+}

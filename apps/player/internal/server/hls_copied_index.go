@@ -96,7 +96,7 @@ func (manager *hlsManager) indexCopiedHLS(ctx context.Context, item library.Item
 	}
 	first := -1
 	for number := range timeline.Keys {
-		if math.Abs(timeline.point(number)-recipe.offset) <= timeline.TimeBase {
+		if math.Abs(timeline.point(number)-recipe.offset) <= 0.000001 {
 			first = number
 			break
 		}

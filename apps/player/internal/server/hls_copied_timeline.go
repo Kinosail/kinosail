@@ -18,7 +18,7 @@ func validCopiedHLSTimeline(timeline *copiedHLSTimeline) bool {
 	if timeline == nil || timeline.Strategy != "h264-idr-keys-1" || timeline.Policy == "" || len(timeline.Policy) > 16<<10 ||
 		len(timeline.Keys) == 0 || len(timeline.Keys) > maximumCopiedHLSKeys ||
 		timeline.Numerator <= 0 || timeline.Denominator <= 0 ||
-		timeline.TimeBase != float64(timeline.Numerator)/float64(timeline.Denominator) || timeline.TimeBase <= 0 || timeline.TimeBase > 1 || math.IsNaN(timeline.TimeBase) ||
+		timeline.TimeBase != float64(timeline.Numerator)/float64(timeline.Denominator) || timeline.TimeBase <= 0 || timeline.TimeBase > 0.001 || math.IsNaN(timeline.TimeBase) ||
 		timeline.End <= 0 || timeline.End > 7*24*60*60 || math.IsNaN(timeline.End) {
 		return false
 	}
@@ -59,8 +59,8 @@ func copiedHLSCacheFile(root *os.Root, name string, limit int64) ([]byte, error)
 	return data, nil
 }
 
-func readCopiedHLSTimeline(directory, policy string) (*copiedHLSTimeline, error) {
-	root, err := os.OpenRoot(directory) //nolint:gosec // Directory is a validated installation cache key.
+func (manager *hlsManager) readCopiedHLSTimeline(directory, policy string) (*copiedHLSTimeline, error) {
+	root, err := manager.openCopiedHLSRoot(directory)
 	if err != nil {
 		return nil, errCopiedHLSIndex
 	}
@@ -77,7 +77,7 @@ func readCopiedHLSTimeline(directory, policy string) (*copiedHLSTimeline, error)
 	return &timeline, nil
 }
 
-func writeCopiedHLSTimeline(directory string, timeline *copiedHLSTimeline) error {
+func (manager *hlsManager) writeCopiedHLSTimeline(directory string, timeline *copiedHLSTimeline) error {
 	if !validCopiedHLSTimeline(timeline) {
 		return errCopiedHLSIndex
 	}
@@ -85,7 +85,7 @@ func writeCopiedHLSTimeline(directory string, timeline *copiedHLSTimeline) error
 	if err != nil || len(data) > maximumCopiedHLSTimelineBytes {
 		return errCopiedHLSIndex
 	}
-	root, err := os.OpenRoot(directory) //nolint:gosec // Directory is a validated installation cache key.
+	root, err := manager.openCopiedHLSRoot(directory)
 	if err != nil {
 		return errCopiedHLSIndex
 	}

@@ -28,14 +28,24 @@ func (output *copiedHLSProbeOutput) Write(data []byte) (int, error) {
 }
 
 func (manager *hlsManager) ensureCopiedHLSClock(ctx context.Context, item library.Item, recipe hlsRecipe, directory, policy string) error {
-	manager.copyTimelineMu.Lock()
-	defer manager.copyTimelineMu.Unlock()
-	timeline, err := readCopiedHLSTimeline(directory, policy)
+	timeline, err := manager.readCopiedHLSTimeline(directory, policy)
 	if err != nil {
+		if manager.copiedHLSTimelinePresent(directory) {
+			return errCopiedHLSIndex
+		}
 		return nil // Ordinary cold streams have no indexed strategy.
 	}
 	if timeline.Clock != nil {
 		return nil
+	}
+	ctx, release, err := manager.copiedHLSMetadataAdmission(ctx)
+	if err != nil {
+		return errCopiedHLSIndex
+	}
+	defer release()
+	timeline, err = manager.readCopiedHLSTimeline(directory, policy)
+	if err != nil || timeline.Clock != nil {
+		return err
 	}
 	master, err := playback.ReadHLSPlaylist(filepath.Join(directory, "index.m3u8"))
 	if err != nil {
@@ -45,7 +55,7 @@ func (manager *hlsManager) ensureCopiedHLSClock(ctx context.Context, item librar
 		if !hlsFile(rendition) || !strings.HasSuffix(rendition, "/index.m3u8") {
 			continue
 		}
-		root, err := os.OpenRoot(filepath.Join(directory, filepath.Dir(rendition))) //nolint:gosec // Master URI passed the rendition allowlist.
+		root, err := manager.openCopiedHLSRoot(filepath.Join(directory, filepath.Dir(rendition)))
 		if err != nil {
 			return errCopiedHLSIndex
 		}
@@ -55,12 +65,15 @@ func (manager *hlsManager) ensureCopiedHLSClock(ctx context.Context, item librar
 			return errCopiedHLSIndex
 		}
 		timeline.Clock = &clock
-		return writeCopiedHLSTimeline(directory, timeline)
+		return manager.writeCopiedHLSTimeline(directory, timeline)
 	}
 	return errCopiedHLSIndex
 }
 
 func (manager *hlsManager) measureCopiedHLSClock(ctx context.Context, root *os.Root) (float64, error) {
+	if ctx.Err() != nil {
+		return 0, errCopiedHLSIndex
+	}
 	initialization, err := copiedHLSCacheFile(root, "init.mp4", 2<<20)
 	if err != nil {
 		return 0, err

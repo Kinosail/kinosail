@@ -16,7 +16,7 @@ func (manager *hlsManager) reusableCopiedHLS(ctx context.Context, directory, sou
 	if recipe.mode != "remux" {
 		return true
 	}
-	timeline, err := readCopiedHLSTimeline(directory, policy)
+	timeline, err := manager.readCopiedHLSTimeline(directory, policy)
 	return err == nil && timeline.Clock != nil && ctx.Err() == nil
 }
 
@@ -25,7 +25,7 @@ func (manager *hlsManager) bindCopiedHLSTimeline(ctx context.Context, directory 
 	if !ok || preparation.timeline == nil || startNumber != 0 {
 		return nil
 	}
-	return writeCopiedHLSTimeline(directory, preparation.timeline)
+	return manager.writeCopiedHLSTimeline(directory, preparation.timeline)
 }
 
 func copiedHLSSeekArguments(arguments []string, timeline *copiedHLSTimeline, number int) ([]string, error) {
@@ -54,7 +54,10 @@ func (manager *hlsManager) copiedPlaylistProjection(ctx context.Context, item li
 		if manager.validateHLSPolicy(ctx, item, recipe, policy) != nil {
 			return nil
 		}
-		timeline, err := readCopiedHLSTimeline(directory, policy)
+		timeline, err := manager.readCopiedHLSTimeline(directory, policy)
+		if err != nil && manager.copiedHLSTimelinePresent(directory) {
+			return nil
+		}
 		if err == nil {
 			if result, valid := copiedHLSManifest(manifest, timeline); valid {
 				return result
@@ -63,7 +66,7 @@ func (manager *hlsManager) copiedPlaylistProjection(ctx context.Context, item li
 		// Unknown future cuts remain a growing EVENT; EOF correction reads actual
 		// generated media, never the source container's format duration.
 		if playback.PlaylistHas(manifest, "#EXT-X-ENDLIST") {
-			manifest = manager.completedCopiedHLSProjection(ctx, filepath.Join(directory, rendition), manifest)
+			manifest = manager.completedCopiedHLSProjection(ctx, filepath.Join(directory, rendition), policy, manifest)
 		}
 		if manager.validateHLSPolicy(ctx, item, recipe, policy) != nil {
 			return nil
@@ -80,8 +83,11 @@ func (manager *hlsManager) copiedStartupProjection(item library.Item, recipe hls
 	if err != nil {
 		return func([]byte) []byte { return nil }
 	}
-	timeline, err := readCopiedHLSTimeline(directory, options.Cache)
+	timeline, err := manager.readCopiedHLSTimeline(directory, options.Cache)
 	return func(manifest []byte) []byte {
+		if err != nil && manager.copiedHLSTimelinePresent(directory) {
+			return nil
+		}
 		if err == nil {
 			projected, valid := copiedHLSManifest(manifest, timeline)
 			if valid {
@@ -115,4 +121,14 @@ func (manager *hlsManager) recipePlaylistProjection(ctx context.Context, item li
 		return func([]byte) []byte { return nil }
 	}
 	return manager.copiedPlaylistProjection(ctx, item, recipe, filepath.Join(manager.cache, key), filepath.Dir(name), options.Cache)
+}
+
+func (manager *hlsManager) copiedHLSTimelinePresent(directory string) bool {
+	root, err := manager.openCopiedHLSRoot(directory)
+	if err != nil {
+		return false
+	}
+	defer root.Close()
+	_, err = root.Lstat(".copy-timeline")
+	return err == nil
 }

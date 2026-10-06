@@ -31,7 +31,7 @@ type hlsJob struct {
 
 type hlsManager struct {
 	startup        *startupPreparation
-	copyTimelineMu sync.Mutex
+	copiedMetadata copiedHLSMetadata
 	ctx            context.Context
 	cache          string
 	ffmpeg         string
@@ -232,7 +232,7 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 		return err
 	}
 	playlist := filepath.Join(playlistDirectory, "index.m3u8")
-	timeline, _ := readCopiedHLSTimeline(root, options.Cache)
+	timeline, _ := manager.readCopiedHLSTimeline(root, options.Cache)
 	if timeline != nil {
 		if startNumber < 0 || startNumber >= len(timeline.Keys) {
 			return errCopiedHLSIndex
@@ -265,6 +265,9 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 	arguments, err = playback.HLSCodecArguments(playback.HLSCodecInput{AudioOnly: item.Kind == "audio" || item.Kind == "audiobook", Arguments: arguments, Video: video, Compatibility: videoCompatibilityArguments(options.Codec), ItemPath: item.Path, VideoRate: videoRate, AudioRate: audioRate, CopyInput: copyInput, Recipe: sharedHLSRecipe(recipe), Policy: hlsPolicy()})
 	if err != nil {
 		return err
+	}
+	if timeline == nil && startNumber > 0 {
+		arguments = append(arguments, "-output_ts_offset", ffmpegSeconds(recipe.outputTime))
 	}
 	arguments, err = copiedHLSSeekArguments(arguments, timeline, startNumber)
 	if err != nil {
