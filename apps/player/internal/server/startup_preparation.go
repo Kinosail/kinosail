@@ -19,8 +19,10 @@ type startupEncodingKey struct{}
 
 // Shared ownership exists before an encoder so playback can adopt cache refills.
 type startupEncoding struct {
-	adopted  atomic.Bool
-	timeline *copiedHLSTimeline
+	adopted       atomic.Bool
+	timeline      *copiedHLSTimeline
+	completeVideo bool // Set before the encoder is created.
+	stopping      bool // Serialized with adoption under hls.mu.
 }
 
 type startupRequest struct {
@@ -218,21 +220,23 @@ func (startup *startupPreparation) playback(key string) {
 		return
 	}
 	startup.mu.Lock()
+	startup.hls.mu.Lock()
 	startup.lastMedia = time.Now()
 	startup.queue = nil
-	if startup.current != nil && startup.current.key == key {
+	job := startup.hls.jobs[key]
+	if startup.current != nil && startup.current.key == key && !startup.current.encoding.stopping && !startupJobStopping(job) {
 		startup.current.encoding.adopted.Store(true)
 	}
 	if startup.current != nil && startup.current.key != key {
 		startup.cancel()
 	}
-	startup.mu.Unlock()
-	startup.hls.mu.Lock()
-	if job := startup.hls.jobs[key]; job != nil && job.preparation != nil {
+	if job != nil && job.preparation != nil && !startupJobStopping(job) {
 		job.preparation.adopted.Store(true)
+		startup.hls.clearStartupCompletion(key)
 	}
 	startup.hls.startupMarker(key, false)
 	startup.hls.mu.Unlock()
+	startup.mu.Unlock()
 }
 
 func (startup *startupPreparation) beginDirect(key string) func() {
