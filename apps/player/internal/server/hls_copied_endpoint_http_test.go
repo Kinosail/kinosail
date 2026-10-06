@@ -31,11 +31,12 @@ func copiedColdPlaylist(t *testing.T) (copiedHTTPFixture, string) {
 		t.Fatal("fixture final cut missing")
 	}
 	text = text[:index] + strings.Replace(text[index:], "#EXTINF:4,", "#EXTINF:3.9,", 1)
-	if err := os.WriteFile(path, []byte(text), 0o600); err != nil {
+	if err := writeCopiedCacheFile(f.config.CacheDir, path, []byte(text)); err != nil {
 		t.Fatal(err)
 	}
 	return f, strings.TrimSuffix(f.source, "index.m3u8") + "360p/index.m3u8"
 }
+
 func TestCopiedHLSEOFHTTPUsesMeasuredEndpointAndInvalidatesChangedAssets(t *testing.T) {
 	f, path := copiedColdPlaylist(t)
 	first := apiCall(t, f.handler, "", http.MethodGet, path, nil)
@@ -67,8 +68,9 @@ func TestCopiedHLSEOFHTTPUsesMeasuredEndpointAndInvalidatesChangedAssets(t *test
 		t.Fatal("changed generated media reused stale endpoint")
 	}
 }
+
 func TestCopiedHLSEOFHTTPRejectsUnsafeProbeAndAssetInputs(t *testing.T) {
-	tests := []struct{ name, clock, endpoint, asset string }{
+	tests := []copiedEndpointCase{
 		{"missing clock", `{}`, "", ""},
 		{"non-key first packet", `{"packets":[{"pts_time":"0","flags":"__"}]}`, "", ""},
 		{"negative clock", `{"packets":[{"pts_time":"-1","flags":"K"}]}`, "", ""},
@@ -86,51 +88,80 @@ func TestCopiedHLSEOFHTTPRejectsUnsafeProbeAndAssetInputs(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			f, path := copiedColdPlaylist(t)
-			for file, value := range map[string]string{f.clock: test.clock, f.endpoint: test.endpoint} {
-				if value != "" {
-					if err := os.WriteFile(file, []byte(value), 0o600); err != nil {
-						t.Fatal(err)
-					}
-				}
-			}
-			final := filepath.Join(f.directory, "360p", "segment-00002.m4s")
-			outside := filepath.Join(t.TempDir(), "protected")
-			if err := os.WriteFile(outside, []byte("do not modify"), 0o600); err != nil {
-				t.Fatal(err)
-			}
-			if test.asset == "empty" {
-				if err := os.WriteFile(final, nil, 0o600); err != nil {
-					t.Fatal(err)
-				}
-			}
-			if test.asset == "symlink" {
-				if err := os.Remove(final); err != nil {
-					t.Fatal(err)
-				}
-				if err := os.Symlink(outside, final); err != nil {
-					t.Fatal(err)
-				}
-			}
-			before, err := os.ReadFile(f.starts)
-			if err != nil {
-				t.Fatal(err)
-			}
-			response := apiCall(t, f.handler, "", http.MethodGet, path, nil)
-			assertAPIBody(t, response, http.StatusOK, "#EXTINF:3.9,", "#EXT-X-ENDLIST")
-			if strings.Count(response.Body.String(), "#EXTINF:") != 3 || strings.Contains(response.Body.String(), "segment-00003") {
-				t.Fatal("unsafe EOF data invented media")
-			}
-			after, err := os.ReadFile(f.starts)
-			if err != nil || string(after) != string(before) {
-				t.Fatal("invalid endpoint triggered encoding")
-			}
-			protected, err := os.ReadFile(outside)
-			if err != nil || string(protected) != "do not modify" {
-				t.Fatal("invalid cache asset modified unrelated file")
-			}
+			f, path, outside := prepareCopiedEndpointCase(t, test)
+			assertCopiedEndpointRejected(t, f, path, outside)
 		})
 	}
+}
+
+type copiedEndpointCase struct{ name, clock, endpoint, asset string }
+
+func prepareCopiedEndpointCase(t *testing.T, test copiedEndpointCase) (copiedHTTPFixture, string, string) {
+	t.Helper()
+	f, path := copiedColdPlaylist(t)
+	for file, value := range map[string]string{f.clock: test.clock, f.endpoint: test.endpoint} {
+		if value != "" {
+			if err := os.WriteFile(file, []byte(value), 0o600); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+	final := filepath.Join(f.directory, "360p", "segment-00002.m4s")
+	outside := filepath.Join(t.TempDir(), "protected")
+	if err := os.WriteFile(outside, []byte("do not modify"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if test.asset == "empty" {
+		if err := os.WriteFile(final, nil, 0o600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if test.asset == "symlink" {
+		if err := os.Remove(final); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.Symlink(outside, final); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	return f, path, outside
+}
+
+func assertCopiedEndpointRejected(t *testing.T, f copiedHTTPFixture, path, outside string) {
+	t.Helper()
+	before, err := os.ReadFile(f.starts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	response := apiCall(t, f.handler, "", http.MethodGet, path, nil)
+	assertAPIBody(t, response, http.StatusOK, "#EXTINF:3.9,", "#EXT-X-ENDLIST")
+	if strings.Count(response.Body.String(), "#EXTINF:") != 3 || strings.Contains(response.Body.String(), "segment-00003") {
+		t.Fatal("unsafe EOF data invented media")
+	}
+	after, err := os.ReadFile(f.starts)
+	if err != nil || string(after) != string(before) {
+		t.Fatal("invalid endpoint triggered encoding")
+	}
+	protected, err := os.ReadFile(outside)
+	if err != nil || string(protected) != "do not modify" {
+		t.Fatal("invalid cache asset modified unrelated file")
+	}
+}
+
+// Bound cache writes to the owned disposable root even when HTTP item identity
+// determines the selected cache subdirectory.
+func writeCopiedCacheFile(cache, path string, data []byte) error {
+	root, err := os.OpenRoot(cache)
+	if err != nil {
+		return err
+	}
+	defer root.Close()
+	name, err := filepath.Rel(cache, path)
+	if err != nil {
+		return err
+	}
+	return root.WriteFile(name, data, 0o600)
 }
 
 // A valid cached rendition can be temporarily unpublished while its producer
@@ -151,11 +182,11 @@ func TestCopiedHLSHTTPWaitsForValidMediaDuringRenditionPublication(t *testing.T)
 	published := make(chan error, 1)
 	go func() {
 		time.Sleep(30 * time.Millisecond)
-		if err := os.WriteFile(filepath.Join(rendition, "index.m3u8"), index, 0o600); err != nil {
+		if err := writeCopiedCacheFile(f.config.CacheDir, filepath.Join(rendition, "index.m3u8"), index); err != nil {
 			published <- err
 			return
 		}
-		published <- os.WriteFile(filepath.Join(rendition, "segment-00002.m4s"), []byte("published fragment"), 0o600)
+		published <- writeCopiedCacheFile(f.config.CacheDir, filepath.Join(rendition, "segment-00002.m4s"), []byte("published fragment"))
 	}()
 	ctx, cancel := context.WithTimeout(t.Context(), time.Second)
 	defer cancel()

@@ -77,7 +77,7 @@ func (manager *hlsManager) hlsSettings(item library.Item, recipe hlsRecipe) (tra
 	if recipe.subtitlePath != "" {
 		options.Cache += ":subtitle=" + sourceVersion(recipe.subtitlePath)
 	}
-	options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=15"
+	options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=16"
 	if err := playback.ValidateHLSSource(item.Path, options.Cache); err != nil {
 		return transcodeSettings{}, err
 	}

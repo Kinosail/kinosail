@@ -135,9 +135,6 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 	recipe = localHLSRecipe(resolved)
 	key, directory := hlsRecipeKey(item.ID, recipe), filepath.Join(manager.cache, hlsRecipeKey(item.ID, recipe))
 	path := filepath.Join(directory, name)
-	if _, err := os.Stat(path); err == nil {
-		return nil
-	}
 	duration := manager.probe.duration(ctx, item)
 	manifest, err := os.ReadFile(filepath.Join(filepath.Dir(path), "index.m3u8")) //nolint:gosec // The path passed the HLS file allowlist.
 	if err != nil {
@@ -158,6 +155,9 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 	}
 	if !valid || offset >= hlsPlaybackDuration(recipe, duration) {
 		return errors.New("HLS segment is outside the playable duration")
+	}
+	if _, err := os.Stat(path); err == nil {
+		return nil
 	}
 	seekRecipe := recipe
 	seekRecipe.offset += offset

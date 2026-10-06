@@ -110,7 +110,7 @@ func hlsPolicySourceVersion(policy string) (string, bool) {
 		return "", false
 	}
 	fields := parts[len(parts)-4:]
-	if fields[3] != "hls=15" && fields[3] != "hls=14" && fields[3] != "hls=13" && fields[3] != "hls=7" {
+	if fields[3] != "hls=16" && fields[3] != "hls=15" && fields[3] != "hls=14" && fields[3] != "hls=13" && fields[3] != "hls=7" {
 		return "", false
 	}
 	version, valid := canonicalHLSSourceVersion(fields[0], fields[1])

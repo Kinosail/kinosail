@@ -25,6 +25,7 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 		return
 	}
 	key := hlsRecipeKey(item.ID, recipe)
+	path := filepath.Join(manager.cache, key, localName)
 	start := 0
 	duration := 0.0
 	if filepath.Base(name) == "index.m3u8" {
@@ -33,6 +34,15 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 		if !validStart {
 			return
 		}
+	}
+	_, cachedErr := os.Stat(path)
+	if cachedErr == nil && filepath.Ext(name) == ".m4s" {
+		if err := manager.prepareSegment(request.Context(), item, recipe, name); err != nil {
+			localizedNotFound(writer, request)
+			return
+		}
+	}
+	if filepath.Base(name) == "index.m3u8" || cachedErr == nil {
 		if !manager.prepareRecipePlaylist(writer, request, item, recipe) {
 			return
 		}
@@ -41,7 +51,6 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 		writer.Header().Set("Content-Type", "application/vnd.apple.mpegurl")
 		writer.Header().Set("Cache-Control", "no-store")
 	}
-	path := filepath.Join(manager.cache, key, localName)
 	projection := manager.recipePlaylistProjection(request.Context(), item, recipe, key, localName)
 	if filepath.Ext(name) == ".m3u8" && serveHLSPlaylistWithSession(writer, request, path, start, hlsPlaybackDuration(recipe, duration), projection) {
 		return

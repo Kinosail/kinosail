@@ -30,14 +30,15 @@ func captureCopiedLogs(t *testing.T) *copiedLogBuffer {
 	t.Cleanup(func() { slog.SetDefault(previous) })
 	return output
 }
-func awaitCopiedLog(t *testing.T, output *copiedLogBuffer, message, requestID, state string) map[string]any {
+
+func awaitCopiedLog(t *testing.T, output *copiedLogBuffer, message, requestID, state string) {
 	t.Helper()
 	deadline := time.Now().Add(5 * time.Second)
 	for {
 		for _, line := range bytes.Split([]byte(output.snapshot()), []byte("\n")) {
 			var entry map[string]any
 			if json.Unmarshal(line, &entry) == nil && entry["msg"] == message && (requestID == "" || entry["request_id"] == requestID) && (state == "" || entry["state"] == state) {
-				return entry
+				return
 			}
 		}
 		if time.Now().After(deadline) {

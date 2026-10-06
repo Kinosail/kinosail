@@ -24,8 +24,10 @@ import (
 // stale cache reuse, refill clock drift, and missing full-duration manifests.
 const copiedPackets = "time_base=1/1000\npts=0|dts=0|duration=4000|flags=K_\npts=4000|dts=4000|duration=4000|flags=K_\npts=8000|dts=8000|duration=4000|flags=K_\n"
 
-var copiedIDRs = "#tb 0: 1/1000\n0, 0, 0, 4000, 128, " + strings.Repeat("a", 64) + "\n0, 4000, 4000, 4000, 128, " + strings.Repeat("b", 64) + "\n0, 8000, 8000, 4000, 128, " + strings.Repeat("c", 64) + "\n"
-var copiedConfiguration = "#format: frame checksums\n0, 0, 0, 4000, 64, " + strings.Repeat("d", 64) + "\n"
+var (
+	copiedIDRs          = "#tb 0: 1/1000\n0, 0, 0, 4000, 128, " + strings.Repeat("a", 64) + "\n0, 4000, 4000, 4000, 128, " + strings.Repeat("b", 64) + "\n0, 8000, 8000, 4000, 128, " + strings.Repeat("c", 64) + "\n"
+	copiedConfiguration = "#format: frame checksums\n0, 0, 0, 4000, 64, " + strings.Repeat("d", 64) + "\n"
+)
 
 type copiedHTTPFixture struct {
 	handler                             http.Handler
