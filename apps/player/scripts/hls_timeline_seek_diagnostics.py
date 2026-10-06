@@ -98,4 +98,4 @@ def boundary_certificate(source):
             pts.append(int(fields[2]) * base)
     return {"exitStatus": result.returncode, "sourceKeyCount": len(keys),
         "certifiedIDRCount": len(pts), "emptyPackets": empty,
-        "allSourceKeysCertified": len(keys) == len(pts) and all(abs(a-b) <= 0.001 for a, b in zip(keys, pts))}
+        "allSourceKeysCertified": result.returncode == 0 and len(keys) > 0 and len(keys) == len(pts) and all(abs(a-b) <= 0.001 for a, b in zip(keys, pts))}
