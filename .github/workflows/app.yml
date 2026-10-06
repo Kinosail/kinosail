@@ -182,21 +182,21 @@ jobs:
           build-args: |
             VERSION=ci
             REVISION=${{ github.sha }}
-      - parallel:
-          - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
-            with:
-              image-ref: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
-              cache-dir: ${{ runner.temp }}/trivy-${{ inputs.app }}-${{ matrix.runner }}
-              severity: CRITICAL,HIGH
-              ignore-unfixed: true
-              exit-code: "1"
-          - name: Test production paths
-            working-directory: apps/${{ inputs.app }}
-            env:
-              CONTAINER_ENGINE: docker
-              KINOSAIL_TEST_IMAGE: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
-              KINOSAIL_TEST_IMAGE_READY: "1"
-            run: python3 ../../scripts/ci/e2e-artifact.py --output "${{ runner.temp }}/${{ inputs.app }}-${{ matrix.runner }}-system-e2e-artifact" -- ./scripts/test-container.sh
+      # Trivy mutates checkout files; finish it before exact-revision evidence.
+      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          image-ref: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
+          cache-dir: ${{ runner.temp }}/trivy-${{ inputs.app }}-${{ matrix.runner }}
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"
+      - name: Test production paths
+        working-directory: apps/${{ inputs.app }}
+        env:
+          CONTAINER_ENGINE: docker
+          KINOSAIL_TEST_IMAGE: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
+          KINOSAIL_TEST_IMAGE_READY: "1"
+        run: python3 ../../scripts/ci/e2e-artifact.py --output "${{ runner.temp }}/${{ inputs.app }}-${{ matrix.runner }}-system-e2e-artifact" -- ./scripts/test-container.sh
       - name: Keep verifiable system E2E artifact
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a

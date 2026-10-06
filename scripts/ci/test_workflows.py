@@ -8,6 +8,17 @@ WORKFLOWS = ROOT / '.github/workflows'
 
 
 class WorkflowSecurityTests(unittest.TestCase):
+    def test_system_scan_finishes_before_exact_revision_evidence_starts(self):
+        # Trivy creates/removes files in the checkout. Overlap changes Git
+        # status during the E2E receipt and invalidates exact revision proof.
+        source = (WORKFLOWS / 'app.yml').read_text().split('  system:\n', 1)[1].split('  browser:\n', 1)[0]
+        scan = re.search(r'^      - uses: aquasecurity/trivy-action@[a-f0-9]{40}', source, re.M)
+        evidence = re.search(r'^      - name: Test production paths\n', source, re.M)
+        self.assertIsNotNone(scan, 'checkout-mutating scan must be a foreground step')
+        self.assertIsNotNone(evidence, 'exact revision evidence must be a foreground step')
+        self.assertLess(scan.start(), evidence.start())
+        self.assertNotIn('background:', source)
+
     def test_parallel_image_checks_finish_before_digest_export(self):
         # Browser E2E cannot prove that image publication still waits for both
         # runtime verification and the vulnerability scan before export.
@@ -24,7 +35,12 @@ class WorkflowSecurityTests(unittest.TestCase):
                 self.assertRegex(checks, r'uses: aquasecurity/trivy-action@[a-f0-9]{40}')
                 self.assertIn('exit-code: "1"', checks)
                 self.assertNotIn('continue-on-error:', checks)
-                self.assertLessEqual(group.end(), source.index(f'      - name: {export_name}'))
+                self.assertNotRegex(checks, re.compile(r'^\s+if:', re.M))
+                export_start = source.index(f'      - name: {export_name}')
+                self.assertLessEqual(group.end(), export_start)
+                export = source[export_start:].split('\n      - ', 1)[0]
+                self.assertNotRegex(export, re.compile(r'^\s+if:', re.M))
+                self.assertNotIn('continue-on-error:', export)
                 self.assertNotIn('digests/', checks)
 
     def test_startup_boundary_has_hosted_public_interface_evidence(self):
