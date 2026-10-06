@@ -101,12 +101,7 @@ func assertLiveCausalCancellation(t *testing.T, f *restoreRig, client *http.Clie
 		completed <- err != nil
 	}()
 	deadline := time.Now().Add(2 * time.Second)
-	for !f.causalSnapshot()[2].Held && time.Now().Before(deadline) {
-		time.Sleep(time.Millisecond)
-	}
-	if !f.causalSnapshot()[2].Held {
-		t.Fatal("held cancellation not armed")
-	}
+	waitCausalProbeControl(t, f, deadline, false)
 	cancel()
 	select {
 	case failed := <-completed:
@@ -116,12 +111,27 @@ func assertLiveCausalCancellation(t *testing.T, f *restoreRig, client *http.Clie
 	case <-time.After(time.Second):
 		t.Fatal("client cancellation unsettled")
 	}
-	for !f.causalSnapshot()[2].Settled && time.Now().Before(deadline) {
-		time.Sleep(time.Millisecond)
-	}
+	waitCausalProbeControl(t, f, deadline, true)
 	state := f.causalSnapshot()[2]
 	if !state.Cancelled || !state.Settled || state.Delivered || state.TimedOut {
 		t.Fatal("live handler did not witness cancellation")
+	}
+}
+
+func waitCausalProbeControl(t *testing.T, f *restoreRig, deadline time.Time, settled bool) {
+	t.Helper()
+	ready := func() bool {
+		state := f.causalSnapshot()[2]
+		if settled {
+			return state.Settled
+		}
+		return state.Held
+	}
+	for !ready() && time.Now().Before(deadline) {
+		time.Sleep(time.Millisecond)
+	}
+	if !ready() {
+		t.Fatal("bounded causal control not armed or settled")
 	}
 }
 
@@ -138,5 +148,67 @@ func TestRestoreCausalCancellationBoundary(t *testing.T) {
 	cancel()
 	if f.causalCancellationQualifies(time.Now().Add(time.Second)) {
 		t.Fatal("stopped lifecycle cancellation qualified")
+	}
+}
+
+func TestRestoreCompletionIdentityPublicControl(t *testing.T) {
+	target := newRestoreTarget(t)
+	f := newRestoreControl(t, target, "none")
+	if witness := f.causalCompletionWitness(f.item); witness.Matched || witness.Bodyless {
+		t.Fatal("unreached Restore cannot qualify native completion")
+	}
+	assertRestoreSetup(t, target, f)
+	response := restoreControlPOST(t, target, f, `{"language":"en"}`, "")
+	if response.status != http.StatusNoContent || len(response.body) != 0 {
+		t.Fatal("completion requires actual empty204")
+	}
+	assertRestoredState(t, target, f)
+	assertRestoreCount(t, target, f)
+	item := f.item
+	f.item = "" // Actual browser rigs store registered identity only in target, not rig.
+	witness := f.causalCompletionWitness(item)
+	if !witness.Matched || !witness.Bodyless || f.causalCompletionWitness("foreign").Matched {
+		t.Fatal("native completion must bind actual fixture identity")
+	}
+	assertRestoreCompletionHTTP(t, f, target.privateClient(3*time.Second), item, witness)
+}
+
+func assertRestoreCompletionHTTP(t *testing.T, f *restoreRig, client *http.Client, item string, expected restoreCompletionWitness) {
+	t.Helper()
+	before := f.snapshot()
+	request, err := http.NewRequestWithContext(t.Context(), http.MethodGet, f.target.origin+"/__r06_restore/completion-witness", nil)
+	if err != nil {
+		t.Fatal("completion witness request unavailable")
+	}
+	request.Header.Set("X-R06-Item", item)
+	response, err := client.Do(request)
+	if err != nil {
+		t.Fatal("completion witness unavailable")
+	}
+	raw, err := readPrivateResponse(response)
+	var actual restoreCompletionWitness
+	if err != nil || response.StatusCode != http.StatusOK || json.Unmarshal(raw, &actual) != nil || actual != expected || f.snapshot() != before {
+		t.Fatal("read-only completion identity changed")
+	}
+}
+
+// Isolated inverse gap: the actual legacy handler cannot produce a nonempty204.
+func TestRestoreCompletionIdentityBoundary(t *testing.T) {
+	ctx, cancel := context.WithCancel(t.Context())
+	defer cancel()
+	item := "0123456789abcdef"
+	f := &restoreRig{ctx: ctx, target: &restoreTarget{item: item}, restoreHeaders: make(http.Header),
+		state: restoreSnapshot{Protocol: "legacy", RestoreAttempts: 1, ResponseStatus: http.StatusNoContent}}
+	if !f.causalCompletionWitness(item).Bodyless {
+		t.Fatal("empty captured204 identity unavailable")
+	}
+	f.restoreBody = []byte("x")
+	if f.causalCompletionWitness(item).Bodyless {
+		t.Fatal("nonempty204 cannot qualify")
+	}
+	f.restoreBody = nil
+	cancel()
+	if f.causalCompletionWitness(item).Matched {
+		t.Fatal("stopped fixture cannot qualify")
 	}
 }

@@ -61,3 +61,55 @@ class CausalProjectionControls(unittest.TestCase):
         self.assertEqual(helper.read_startup_package(value),value)
         value['inputs'].pop()
         with self.assertRaises(ValueError):helper.read_startup_package(value)
+
+    def native_case(self, case='r06-restore-headers-desktop'):
+        from test_campaign_r06_restore_runtime_projection import RestoreBrowserProjectionControls
+        data=RestoreBrowserProjectionControls().case(case)['data']
+        item=self.value();item['schema']='r06-causal-v2'
+        for network in (item['restoreNetwork'], *(p['network'] for p in item['probes'][:2])):
+            network.update(terminal='request-failed',failureCode='aborted',cancelled=True)
+        item['completion']=dict(scope='r06-native-bodyless-204-v1',caseID=case,browserVersion='153.0.8010.12',
+            pinnedBrowserMatched=True,requestMatched=True,responseMatched=True,bodyless=True,fixtureMatched=True)
+        data.update(causalDiagnostic=item,restoreTerminal='request-failed',restoreFailureCode='aborted')
+        return data
+
+    def test_native204_authority_requires_all_current_matched_witnesses(self):
+        data=self.native_case();self.assertTrue(projection.native_bodyless_completion(data))
+        for field,value in (('pinnedBrowserMatched',False),('requestMatched',False),('responseMatched',False),
+                            ('bodyless',False),('fixtureMatched',False),('caseID','r06-restore-headers-phone'),
+                            ('browserVersion','152.0.0.0')):
+            bad=copy.deepcopy(data);bad['causalDiagnostic']['completion'][field]=value
+            self.assertFalse(projection.native_bodyless_completion(bad))
+        for changes in ({'protocol':'prepared'},{'responseStatus':202},{'restoreClientCancelled':True},
+            {'restoreResponseDelivered':False},{'restoreRequestObserved':False},{'restoreResponseObserved':False},
+            {'restoreAttempts':2},{'prepareAttempts':1},{'boundaryFailed':True},{'holdExpired':True},
+            {'historyOnce':False},{'actualRestored':False},{'restoreFailureCode':'unclassified'},
+            {'restoreAttempts':True},{'prepareAttempts':False},{'historyOnce':1}):
+            bad=copy.deepcopy(data);bad.update(changes);self.assertFalse(projection.native_bodyless_completion(bad))
+
+    def test_native204_rejects_actual_abort_and_failed_inverse_controls(self):
+        data=self.native_case()
+        for field,key,changed in (('restoreNative','outcome','rejected'),('restoreNative','status',200),
+            ('restoreNative','signalPresent',True),('restoreNative','signalAborted',True),('restoreNative','pagehide',True),
+            ('restoreNetwork','navigation',True),('restoreNetwork','cancelled',False),('restoreNetwork','resourceType','XHR')):
+            bad=copy.deepcopy(data);bad['causalDiagnostic'][field][key]=changed
+            self.assertFalse(projection.native_bodyless_completion(bad))
+        for mutate in (lambda v:v.update(stopped=False),lambda v:v.update(framingEqual=False),
+            lambda v:v['probes'][0]['network'].update(terminal='finished',failureCode='none',cancelled=False),
+            lambda v:v['probes'][2]['network'].update(resourceType='XHR'),lambda v:v['probes'][2]['native'].update(status=200),
+            lambda v:v['probes'][2]['server'].update(timedOut=True),lambda v:v['probes'][2]['native'].update(outcome='fulfilled')):
+            bad=copy.deepcopy(data);mutate(bad['causalDiagnostic']);self.assertFalse(projection.native_bodyless_completion(bad))
+        bad=copy.deepcopy(data);bad['causalDiagnostic']=self.value()
+        self.assertFalse(projection.native_bodyless_completion(bad))
+
+    def test_native204_preserves_raw_terminals_and_all_twelve_product_assertions(self):
+        from test_campaign_r06_restore_runtime_projection import RestoreBrowserProjectionControls
+        helper=RestoreBrowserProjectionControls()
+        for suite in ('restore-headers','restore-inspect-body'):
+            value=helper.value(suite)
+            for row in value['cases']:row['data']=self.native_case(row['caseID'])
+            projection.admit(value,'runtime',suite)
+            self.assertEqual(projection.classify(value,'a'*64),'focused-restore-browser-green')
+            self.assertTrue(all(r['data']['restoreTerminal']=='request-failed' for r in value['cases']))
+            value['cases'][0]['data']['assertions']['no-restore-replay']['passed']=False
+            self.assertEqual(projection.classify(value,'a'*64),'prerequisite-blocked')

@@ -5,6 +5,7 @@ import { observeRestore, type Terminal, type FailureCode } from "./subtitle-rest
 
 import { observeCausal } from "./subtitle-restore-causal-observer";
 import type { Diagnostic } from "./subtitle-restore-causal-schema";
+import { nativeBodylessCompletion } from "./subtitle-restore-causal-witness.mjs";
 
 export const ASSERTION_IDS = [
   "actual-restore", "history-once", "recovery-swapped", "hold-proven",
@@ -96,14 +97,15 @@ async function observedDOM(page: Page) {
     return { status: status.textContent || "", text: text.value, imported: file.files?.length === 1 && file.files.item(0)?.name === "R06 Fictional Unsaved.srt" };
   });
 }
-async function settleHeld(page: Page, fixture: Fixture, network: ReturnType<typeof observeRestore>, result: SafeCase, mode: Entry["mode"], scope: PhaseScope) {
-  const end = performance.now() + 5000;
+async function settleHeld(page: Page, fixture: Fixture, network: ReturnType<typeof observeRestore>, result: SafeCase, mode: Entry["mode"], scope: PhaseScope, causal: Awaited<ReturnType<typeof observeCausal>> | undefined, end: number) {
   const remaining = () => Math.max(0, end - performance.now());
   const held = mode === "headers" ? network.restore : network.inspect;
   const terminal = await bounded(held.ended, remaining()); scope.guard();
   let state = await snapshot(page, fixture.origin, Math.min(3000, remaining())); scope.guard();
   while (state.activeHolds !== 0 && remaining() > 0) { await pause(50); scope.guard(); state = await snapshot(page, fixture.origin, Math.min(3000, remaining())); scope.guard(); }
   Object.assign(result, state);
+  if(causal)result.causalDiagnostic=await causal.finish(end);
+  const native204=nativeBodylessCompletion(result);
   if (terminal === "finished") {
     if (!held.response || held.response.status() !== (mode === "headers" ? state.responseStatus : httpOK)) throw new Error("fixed-terminal-boundary");
     const body = await bounded(held.response.body(), remaining()); scope.guard();
@@ -112,11 +114,13 @@ async function settleHeld(page: Page, fixture: Fixture, network: ReturnType<type
       result.restoreBodyDelivered = state.restoreResponseDelivered && (state.protocol !== "legacy" || body.length === 0);
     } else result.inspectionBodyDelivered = state.inspectionResponseDelivered;
     if (!(mode === "headers" ? result.restoreBodyDelivered : result.inspectionBodyDelivered)) throw new Error("fixed-terminal-boundary");
+  } else if(mode==="headers"&&native204) {
+    result.restoreBodyDelivered=true; // Actual captured zero-byte204 plus unchanged native fulfillment; raw terminal retained.
   } else if (!(mode === "headers" ? state.restoreClientCancelled : state.inspectionClientCancelled)) {
     throw new Error("fixed-terminal-boundary");
   }
   if (state.activeHolds !== 0) throw new Error("fixed-terminal-boundary");
-  if (mode === "inspect-body" && network.restore.terminal !== "finished") throw new Error("fixed-restore-terminal-boundary");
+  if (mode === "inspect-body" && network.restore.terminal !== "finished" && !native204) throw new Error("fixed-restore-terminal-boundary");
 }
 const httpOK = 200;
 export async function runRestoreCase(page: Page, entry: Entry): Promise<SafeCase> {
@@ -137,11 +141,9 @@ export async function runRestoreCase(page: Page, entry: Entry): Promise<SafeCase
       scope.guard();
       await page.setViewportSize({ width: entry.width, height: entry.height }); scope.guard();
       item = await setupPage(page, fixture.origin, scope); scope.guard();
-      if (entry.id === "r06-restore-headers-desktop") {
-        causal = observeCausal(page, fixture.origin, item, began + 105000, began + 20000);
-        await causal.start(); scope.guard();
-        await causal.probe(); scope.guard();
-      }
+      causal = observeCausal(page, fixture.origin, item, began + 105000, began + 20000, entry.id);
+      await causal.start(); scope.guard();
+      await causal.probe(); scope.guard();
       const inspectorSHA = await servedIdentity(page, fixture.origin); scope.guard();
       result.servedScriptSHA256.inspector = inspectorSHA;
       await page.locator('input[name="file"]').setInputFiles({ name: IMPORT_NAME, mimeType: "application/x-subrip", buffer: Buffer.from(CORRECTION) }); scope.guard();
@@ -204,7 +206,8 @@ export async function runRestoreCase(page: Page, entry: Entry): Promise<SafeCase
     if (released.status() !== 204) throw new Error("fixed-release-boundary");
     result.holdDurationMs = performance.now() - witnessAt;
     result.stage = "terminal";
-    await scope.run(() => settleHeld(page, fixture!, network!, result, entry.mode, scope), caseRemaining(5000));
+    const terminalEnd=Math.min(began+105000,performance.now()+5000);
+    await scope.run(() => settleHeld(page, fixture!, network!, result, entry.mode, scope, causal, terminalEnd), terminalEnd-performance.now());
     terminalSettled = true;
     result.stage = "navigation";
     await scope.run(async () => {
@@ -232,7 +235,7 @@ export async function runRestoreCase(page: Page, entry: Entry): Promise<SafeCase
     if (fixture) result.assertions["fixture-settled"] = { attempted: true, completed: false, passed: null };
     network?.close();
     const cleanupEnd = Math.min(began + 110000, performance.now() + 5000);
-    if (causal) { try { result.causalDiagnostic = await causal.finish(cleanupEnd); } catch { result.causalDiagnostic = causal.invalid(); } }
+    if (causal && result.causalDiagnostic===null) { try { result.causalDiagnostic = await causal.finish(cleanupEnd); } catch { result.causalDiagnostic = causal.invalid(); } }
     result.fixtureStopped = await cleanupCase(scope, page, fixture, cleanupEnd);
     if (fixture) result.assertions["fixture-settled"] = {
       attempted: true, completed: true,

@@ -1,4 +1,4 @@
-"""Independent closed admission of the unchanged Restore reporter."""
+"""Independent closed admission of the fixed Restore product assertions."""
 import math
 import re
 
@@ -94,8 +94,12 @@ def valid_server(value):
 
 def valid_causal(value):
     if value is None: return True
-    if (not exact(value, ("schema", "valid", "reason", "headersEqual", "framingEqual", "stopped", "probes", "restoreNative", "restoreNetwork")) or
-            value["schema"] != "r06-causal-v1" or type(value["reason"]) is not str or
+    fields = ("schema", "valid", "reason", "headersEqual", "framingEqual", "stopped", "probes", "restoreNative", "restoreNetwork")
+    if type(value) is not dict: return False
+    if value.get("schema") == "r06-causal-v2":
+        if not exact(value, (*fields, "completion")) or not valid_completion(value["completion"]): return False
+    elif value.get("schema") != "r06-causal-v1" or not exact(value, fields): return False
+    if (type(value["reason"]) is not str or
             value["reason"] not in ("none", "timeout", "overflow", "mismatch", "control", "unreached") or
             any(type(value[key]) is not bool for key in ("valid", "headersEqual", "framingEqual", "stopped")) or
             type(value["probes"]) is not list or len(value["probes"]) != 3 or
@@ -106,8 +110,14 @@ def valid_causal(value):
     return True
 
 
+def valid_completion(value):
+    return (exact(value, ("scope", "caseID", "browserVersion", "pinnedBrowserMatched", "requestMatched", "responseMatched", "bodyless", "fixtureMatched")) and
+            value["scope"] == "r06-native-bodyless-204-v1" and type(value["caseID"]) is str and value["caseID"] in CASES and value["browserVersion"] == "153.0.8010.12" and
+            all(type(value[k]) is bool for k in ("pinnedBrowserMatched", "requestMatched", "responseMatched", "bodyless", "fixtureMatched")))
+
+
 def causal_ready(value):
-    # Separate diagnostic inference. This never relaxes classify/terminal/assertions.
+    # Diagnostic readiness alone grants no completion authority; v2 adds exact binding.
     if (value is None or not valid_causal(value) or not value["valid"] or value["reason"] != "none" or
             not all(value[key] for key in ("headersEqual", "framingEqual", "stopped"))): return False
     native, network = value["restoreNative"], value["restoreNetwork"]
@@ -187,7 +197,26 @@ def terminal(data, body):
                  data["inspectionClientCancelled" if body else "restoreClientCancelled"] and
                  not data["inspectionBodyDelivered" if body else "restoreBodyDelivered"] and
                  not data["inspectionResponseDelivered" if body else "restoreResponseDelivered"])
-    return data[key + "RequestObserved"] and (completed or cancelled)
+    native = not body and data["restoreBodyDelivered"] and native_bodyless_completion(data)
+    return data[key + "RequestObserved"] and (completed or cancelled or native)
+
+
+def native_bodyless_completion(data):
+    d = data.get("causalDiagnostic")
+    if not valid_causal(d) or d is None or d["schema"] != "r06-causal-v2" or not causal_ready(d): return False
+    c = d["completion"]
+    if (any(type(data[k]) is not int for k in ("responseStatus", "prepareAttempts", "setupSaveAttempts", "restoreAttempts")) or
+            c["caseID"] != data["caseID"] or not all(c[k] for k in ("pinnedBrowserMatched", "requestMatched", "responseMatched", "bodyless", "fixtureMatched")) or
+            data["protocol"] != "legacy" or data["responseStatus"] != 204 or data["prepareAttempts"] != 0 or data["setupSaveAttempts"] != data["restoreAttempts"] or data["restoreAttempts"] != 1 or
+            not all(data[k] is True for k in ("restoreRequestObserved", "restoreResponseObserved", "restoreResponseDelivered", "eligible", "actualRestored", "historyOnce", "recoverySwapped", "inspectionMatches", "holdEligible")) or
+            not all(data[k] is False for k in ("restoreClientCancelled", "holdExpired", "boundaryFailed")) or data["restoreTerminal"] != "request-failed" or data["restoreFailureCode"] != "aborted"): return False
+    def fulfilled(n):
+        return n == dict(outcome="fulfilled", status=204, signalPresent=False, signalAborted=False, pagehide=False)
+    signature = dict(terminal="request-failed", failureCode="aborted", resourceType="Fetch", cancelled=True, navigation=False)
+    if not fulfilled(d["restoreNative"]) or d["restoreNetwork"] != signature: return False
+    held = d["probes"][2]
+    return (held["native"] == dict(outcome="rejected", status=0, signalPresent=True, signalAborted=True, pagehide=False) and held["network"] == signature and
+            all(fulfilled(row["native"]) and row["network"] == signature and row["server"]["held"] is False for row in d["probes"][:2]))
 
 
 def classify(value, inspector_sha):
@@ -207,7 +236,7 @@ def classify(value, inspector_sha):
                      and data["releaseAttempted"] and data["servedScriptSHA256"]["inspector"] == inspector_sha
                      and data["clickToWitnessMs"] is not None and data["clickToWitnessMs"] <= 10000
                      and data["holdDurationMs"] is not None and terminal(data, body)
-                     and (not body or data["restoreTerminal"] == "finished" and data["restoreResponseObserved"]
+                     and (not body or (data["restoreTerminal"] == "finished" or native_bodyless_completion(data)) and data["restoreResponseObserved"]
                           and data["restoreResponseDelivered"] and data["inspectionResponseStatus"] == 200)
                      and all(assertions[key] == {"attempted": True, "completed": True, "passed": True} for key in mandatory))
             deadline = assertions["editor-released-by-45s"]

@@ -3,7 +3,9 @@ export type Native = { outcome: "unreached" | "pending" | "fulfilled" | "rejecte
 export type Network = { terminal: "unreached" | "pending" | "finished" | "request-failed"; failureCode: string; resourceType: "unreached" | "Fetch" | "XHR" | "Document" | "Other"; cancelled: boolean; navigation: boolean };
 export type Server = { seen: boolean; held: boolean; delivered: boolean; cancelled: boolean; timedOut: boolean; settled: boolean };
 export type Mode = "direct" | "captured" | "held";
-export type Diagnostic = { schema: "r06-causal-v1"; valid: boolean; reason: "none" | "timeout" | "overflow" | "mismatch" | "control" | "unreached"; headersEqual: boolean; framingEqual: boolean; stopped: boolean; probes: { mode: Mode; native: Native; network: Network; server: Server }[]; restoreNative: Native; restoreNetwork: Network };
+export type Completion = { scope: "r06-native-bodyless-204-v1"; caseID: string; browserVersion: "153.0.8010.12"; pinnedBrowserMatched: boolean; requestMatched: boolean; responseMatched: boolean; bodyless: boolean; fixtureMatched: boolean };
+type Common = { valid: boolean; reason: "none" | "timeout" | "overflow" | "mismatch" | "control" | "unreached"; headersEqual: boolean; framingEqual: boolean; stopped: boolean; probes: { mode: Mode; native: Native; network: Network; server: Server }[]; restoreNative: Native; restoreNetwork: Network };
+export type Diagnostic = Common & ({ schema: "r06-causal-v1" } | { schema: "r06-causal-v2"; completion: Completion });
 function exact(value: JSONValue, keys: readonly string[]): value is JSONObject {
   return value !== null && typeof value === "object" && !Array.isArray(value) && Object.keys(value).sort().join(",") === [...keys].sort().join(",");
 }
@@ -26,11 +28,20 @@ export function validServer(value: JSONValue): value is Server {
 }
 export function validCausal(value: JSONValue): value is Diagnostic | null {
   if (value === null) return true;
-  return exact(value,["schema","valid","reason","headersEqual","framingEqual","stopped","probes","restoreNative","restoreNetwork"]) &&
-    value.schema === "r06-causal-v1" && ["valid","headersEqual","framingEqual","stopped"].every(key => typeof value[key] === "boolean") &&
+  const fields = ["schema","valid","reason","headersEqual","framingEqual","stopped","probes","restoreNative","restoreNetwork"];
+  if(!exact(value,fields) && !exact(value,[...fields,"completion"]))return false;
+  const identity=value.schema === "r06-causal-v1" ? exact(value,fields) : value.schema === "r06-causal-v2" && validCompletion(value.completion);
+  return identity && ["valid","headersEqual","framingEqual","stopped"].every(key => typeof value[key] === "boolean") &&
     typeof value.reason === "string" && ["none","timeout","overflow","mismatch","control","unreached"].includes(value.reason) &&
     Array.isArray(value.probes) && value.probes.length === 3 && value.probes.every((row,index) =>
       exact(row,["mode","native","network","server"]) && row.mode === ["direct","captured","held"][index] &&
       validNative(row.native) && validNetwork(row.network) && validServer(row.server)) &&
     validNative(value.restoreNative) && validNetwork(value.restoreNetwork);
+}
+
+export function validCompletion(value: JSONValue): value is Completion {
+ return exact(value,["scope","caseID","browserVersion","pinnedBrowserMatched","requestMatched","responseMatched","bodyless","fixtureMatched"]) &&
+  value.scope==="r06-native-bodyless-204-v1" && value.browserVersion==="153.0.8010.12" && typeof value.caseID==="string" &&
+  ["r06-restore-headers-desktop","r06-restore-headers-phone","r06-restore-inspect-body-desktop","r06-restore-inspect-body-phone"].includes(value.caseID) &&
+  ["pinnedBrowserMatched","requestMatched","responseMatched","bodyless","fixtureMatched"].every(k=>typeof value[k]==="boolean");
 }
