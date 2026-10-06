@@ -30,17 +30,18 @@ type hlsJob struct {
 }
 
 type hlsManager struct {
-	startup   *startupPreparation
-	ctx       context.Context
-	cache     string
-	ffmpeg    string
-	index     *libraryIndex
-	probe     *mediaProbe
-	settings  *settingsStore
-	mu        sync.Mutex
-	jobs      map[string]*hlsJob
-	workloads *workload.Governor
-	cacheOps  playback.HLSCacheControl
+	startup        *startupPreparation
+	copyTimelineMu sync.Mutex
+	ctx            context.Context
+	cache          string
+	ffmpeg         string
+	index          *libraryIndex
+	probe          *mediaProbe
+	settings       *settingsStore
+	mu             sync.Mutex
+	jobs           map[string]*hlsJob
+	workloads      *workload.Governor
+	cacheOps       playback.HLSCacheControl
 }
 
 func newHLS(ctx context.Context, cache, ffmpeg string, index *libraryIndex, probe *mediaProbe, settings *settingsStore, workloads *workload.Governor) *hlsManager {
@@ -119,7 +120,7 @@ func (manager *hlsManager) prepareAttempt(ctx context.Context, item library.Item
 	if startupActualPlayback(ctx) {
 		manager.startup.playback(key)
 	}
-	if cacheFresh(playlist, item.Path, options.Cache) || seekCacheFresh(filepath.Dir(playlist), item.Path, options.Cache) {
+	if cacheFresh(playlist, item.Path, options.Cache) || manager.reusableCopiedHLS(ctx, filepath.Dir(playlist), item.Path, options.Cache, recipe) {
 		return refreshCachedVideoHLSMaster(playlist, facts, recipe, options.Cache)
 	}
 	job, err := manager.ensureHLSJob(ctx, item, key, options, recipe)
@@ -131,7 +132,7 @@ func (manager *hlsManager) prepareAttempt(ctx context.Context, item library.Item
 	defer ticker.Stop()
 	for {
 		if masterFresh(playlist, item.Path, options.Cache) {
-			return nil
+			return manager.ensureCopiedHLSClock(ctx, item, recipe, filepath.Dir(playlist), options.Cache)
 		}
 		select {
 		case <-ctx.Done():
@@ -148,6 +149,9 @@ func (manager *hlsManager) prepareAttempt(ctx context.Context, item library.Item
 
 func (manager *hlsManager) encodeVariants(ctx context.Context, item library.Item, directory string, options transcodeSettings, recipe hlsRecipe, startNumber int) error {
 	if err := playback.BindHLSSource(directory, item.Path, options.Cache); err != nil {
+		return err
+	}
+	if err := manager.bindCopiedHLSTimeline(ctx, directory, startNumber); err != nil {
 		return err
 	}
 	ctx, cancel := context.WithCancel(ctx)
@@ -228,6 +232,13 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 		return err
 	}
 	playlist := filepath.Join(playlistDirectory, "index.m3u8")
+	timeline, _ := readCopiedHLSTimeline(root, options.Cache)
+	if timeline != nil {
+		if startNumber < 0 || startNumber >= len(timeline.Keys) {
+			return errCopiedHLSIndex
+		}
+		start = timeline.point(startNumber)
+	}
 	input, video := videoArguments(options, width)
 	arguments := startupInputArguments(ctx, []string{"-hide_banner", "-loglevel", "error", "-y"})
 	if startNumber > 0 {
@@ -237,7 +248,11 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 		arguments = append(arguments, input...)
 	}
 	if start > 0 {
-		arguments = append(arguments, "-ss", ffmpegSeconds(start))
+		seek := ffmpegSeconds(start)
+		if timeline != nil {
+			seek = copiedHLSInputTime(start)
+		}
+		arguments = append(arguments, "-ss", seek)
 	}
 	arguments = append(arguments, "-i", item.Path)
 	copyInput := "0"
@@ -251,10 +266,11 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 	if err != nil {
 		return err
 	}
-	if startNumber > 0 {
-		arguments = append(arguments, "-output_ts_offset", ffmpegSeconds(recipe.outputTime))
+	arguments, err = copiedHLSSeekArguments(arguments, timeline, startNumber)
+	if err != nil {
+		return err
 	}
-	arguments = append(arguments, hlsSegmentArguments(recipe.mode, directory, playlist, startNumber)...)
+	arguments = append(arguments, indexedCopiedHLSSegmentArguments(hlsSegmentArguments(recipe.mode, directory, playlist, startNumber), timeline)...)
 	//nolint:gosec // G204: executable is installation config and input is found only by a Library scan.
 	command := exec.CommandContext(ctx, manager.ffmpeg, arguments...)
 	if err := runHLSCommand(ctx, command, item.Path, root); err != nil {
