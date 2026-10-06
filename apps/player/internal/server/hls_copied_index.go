@@ -38,7 +38,7 @@ func (timeline *copiedHLSTimeline) point(number int) float64 {
 
 func (manager *hlsManager) indexCopiedHLS(ctx context.Context, item library.Item, recipe hlsRecipe, preparation *startupEncoding) (*copiedHLSTimeline, error) {
 	facts := manager.probe.facts(ctx, item)
-	if recipe.mode != "remux" || facts.Video.Codec != "h264" || len(recipe.omitted) != 0 || !manager.index.Safe(item.Path) {
+	if !manager.copiedHLSVideo(ctx, item, recipe) || facts.Video.Codec != "h264" || len(recipe.omitted) != 0 || !manager.index.Safe(item.Path) {
 		return nil, errCopiedHLSIndex
 	}
 	options, err := manager.hlsSettings(item, recipe)

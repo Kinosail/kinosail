@@ -120,7 +120,7 @@ func (manager *hlsManager) prepareAttempt(ctx context.Context, item library.Item
 	if startupActualPlayback(ctx) {
 		manager.startup.playback(key)
 	}
-	if manager.reusableCopiedHLS(ctx, filepath.Dir(playlist), item.Path, options.Cache, recipe) {
+	if manager.reusableCopiedHLS(ctx, item, filepath.Dir(playlist), options.Cache, recipe) {
 		return refreshCachedVideoHLSMaster(playlist, facts, recipe, options.Cache)
 	}
 	job, err := manager.ensureHLSJob(ctx, item, key, options, recipe)
