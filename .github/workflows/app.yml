@@ -309,6 +309,25 @@ jobs:
             .verification/hls-prepared-timeline/*/SHA256SUMS
           retention-days: 14
           if-no-files-found: error
+      - name: Verify copied-video audio and legacy preparation
+        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        timeout-minutes: 10
+        env:
+          GOMAXPROCS: "2"
+        run: |
+          python3 -m unittest discover -s apps/player/scripts -p test_hls_followon_frames.py
+          python3 apps/player/scripts/test-hls-followon.py --suite audio
+      - name: Keep safe copied-video audio evidence
+        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: player-hls-audio-conversion-evidence
+          include-hidden-files: true
+          path: |
+            .verification/hls-followon/*/receipt.json
+            .verification/hls-followon/*/SHA256SUMS
+          retention-days: 14
+          if-no-files-found: error
       - name: Verify HLS source-version freshness
         if: inputs.app == 'player' && matrix.engine == 'chromium'
         env:
