@@ -63,13 +63,15 @@ def nonkey_evidence(source, public, init, directory, metadata, offset, case):
     case['nonKeyEvidence'] = result
     source_facts, source_rows = decode_frames(source)
     public_facts, public_rows = decode_frames(public)
-    reference, _ = decode_frames(source, offset)
+    reference, reference_rows = decode_frames(source, offset)
     requested = metadata['sourceTimeOriginSeconds'] + offset
     check(reference['presentedFrames'] == case['referenceClock']['expectedFrames'],
           'nonkey_independent_reference_frames')
     result.update(source=source_facts, public=public_facts, reference=reference,
         sourceStreamOrigins=metadata['streamOrigins'], publicStreamOrigins=stream_metadata(public),
         sourceDecodedFramePTS=metadata['sourceFramePTS'],
+        completeSourceFrames=[{'pts': point, 'md5': value} for point, value in source_rows],
+        completeReferenceFrames=[{'pts': point, 'md5': value} for point, value in reference_rows],
         sourcePackets=packet_rows(source), publicPackets=packet_rows(public),
         initialization=initialization_metadata(bounded_bytes(init, 1024 * 1024, 'nonkey_init_bound')),
         frameMapping=frame_mapping(source_rows, public_rows, metadata['sourceFramePTS'], requested))

@@ -95,6 +95,16 @@ class InitializationEvidenceTests(unittest.TestCase):
         extra = struct.pack('>I4sQ', 1, b'free', 20) + b'data'
         self.assertEqual(initialization_metadata(extra + ordinary), initialization_metadata(ordinary))
 
+    def test_illegal_known_metadata_is_rejected_beside_valid_required_siblings(self):
+        edit = box(b'elst', bytes(4) + struct.pack('>I', 0))
+        original = track()[8:]
+        for data in [movie(track() + box(b'moov', clock(b'mvhd', 1000) + track(2))),
+                     movie(box(b'trak', original + edit)), movie(track() + clock(b'mdhd', 48000)),
+                     movie(box(b'trak', original + clock(b'mvhd', 1000))),
+                     movie() + edit]:
+            with self.subTest(length=len(data)), self.assertRaises(RuntimeError):
+                initialization_metadata(data)
+
 
 if __name__ == '__main__':
     unittest.main()

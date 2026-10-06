@@ -1,6 +1,8 @@
 """Bounded edit-list evidence only; never applies a presentation/discard map."""
 import struct
 
+KNOWN = {b'ftyp', b'moov', b'mvhd', b'trak', b'tkhd', b'mdia', b'mdhd', b'hdlr', b'edts', b'elst'}
+
 
 def boxes(data):
     result, position = [], 0
@@ -28,6 +30,13 @@ def one(values, kind, required=True):
     if len(selected) > 1 or required and not selected:
         raise RuntimeError('initialization_metadata_identity')
     return selected[0] if selected else None
+
+
+def children(data, allowed):
+    values = boxes(data)
+    if any(kind in KNOWN and kind not in allowed for kind, _ in values):
+        raise RuntimeError('initialization_metadata_layout')
+    return values
 
 
 def version(data):
@@ -62,20 +71,20 @@ def edits(data):
 
 
 def track(data):
-    children = boxes(data)
-    header = one(children, b'tkhd')
+    values = children(data, {b'tkhd', b'mdia', b'edts'})
+    header = one(values, b'tkhd')
     current = version(header)
     offset = 12 if current == 0 else 20
     if len(header) < offset + 8:
         raise RuntimeError('initialization_track_extent')
     identifier = struct.unpack_from('>I', header, offset)[0]
-    media = boxes(one(children, b'mdia'))
+    media = children(one(values, b'mdia'), {b'mdhd', b'hdlr'})
     timescale = clock(one(media, b'mdhd'))
     handler = one(media, b'hdlr')
     if not identifier or len(handler) < 12 or bytes(handler[8:12]) not in (b'vide', b'soun'):
         raise RuntimeError('initialization_track_identity')
-    section = one(children, b'edts', required=False)
-    selected = one(boxes(section), b'elst') if section is not None else None
+    section = one(values, b'edts', required=False)
+    selected = one(children(section, {b'elst'}), b'elst') if section is not None else None
     return {'trackID': identifier, 'handler': bytes(handler[8:12]).decode('ascii'),
             'mediaTimescale': timescale, 'edits': edits(selected) if selected is not None else []}
 
@@ -83,7 +92,7 @@ def track(data):
 def initialization_metadata(data):
     if not isinstance(data, bytes) or not 0 < len(data) <= 1024 * 1024:
         raise RuntimeError('initialization_input_bound')
-    movie = boxes(one(boxes(memoryview(data)), b'moov'))
+    movie = children(one(children(memoryview(data), {b'ftyp', b'moov'}), b'moov'), {b'mvhd', b'trak'})
     timescale = clock(one(movie, b'mvhd'))
     tracks = [track(value) for key, value in movie if key == b'trak']
     if not 0 < len(tracks) <= 8 or len({value['trackID'] for value in tracks}) != len(tracks):
