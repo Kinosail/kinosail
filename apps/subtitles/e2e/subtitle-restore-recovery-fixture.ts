@@ -69,8 +69,7 @@ export async function stopFixture(fixture: Fixture, end: number): Promise<boolea
     return false; // Forced termination never proves graceful Server cleanup.
   }
 }
-export async function cleanupCase(scope: PhaseScope, page: Page, fixture: Fixture | undefined): Promise<boolean> {
-  const end = performance.now() + 5000;
+export async function cleanupCase(scope: PhaseScope, page: Page, fixture: Fixture | undefined, end = performance.now() + 5000): Promise<boolean> {
   scope.abort();
   const success = (task: Promise<void>) => task.then(() => true, () => false);
   const joined = scope.join();

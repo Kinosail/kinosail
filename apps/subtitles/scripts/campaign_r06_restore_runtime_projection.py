@@ -25,7 +25,7 @@ EXTRA_FLAGS = ("eligible", "fixtureStopped", "restoreRequestObserved", "restoreR
                "inspectResponseObserved", "restoreBodyDelivered", "inspectionBodyDelivered", "releaseAttempted")
 TIMINGS = ("clickToWitnessMs", "clickToUnlockMs", "holdDurationMs", "durationMs")
 FIELDS = ("schema", "kind", "caseID", "stage", "failureStage", "protocol", *COUNTERS, *FLAGS, *EXTRA_FLAGS,
-          "restoreTerminal", "inspectTerminal", "restoreFailureCode", "inspectFailureCode", *TIMINGS, "servedScriptSHA256", "assertions")
+          "restoreTerminal", "inspectTerminal", "restoreFailureCode", "inspectFailureCode", *TIMINGS, "servedScriptSHA256", "assertions", "causalDiagnostic")
 ROOT_FIELDS = ("schema", "kind", "collection", "cases", "malformedRecords", "duplicateTerminals", "globalErrorCount", "runnerStatus")
 CASE_FIELDS = ("caseID", "outcome", "data", "failedAssertions", "unattemptedAssertions", "incompleteAssertions",
                "retry", "totalErrorCount", "knownAssertionErrorIDs", "unknownErrorCount", "assertionErrorsExact")
@@ -59,6 +59,7 @@ def valid_data(value, case):
     if not exact(scripts, ("inspector",)): return False
     digest = scripts["inspector"]
     if digest is not None and (type(digest) is not str or not re.fullmatch("[a-f0-9]{64}", digest)): return False
+    if not valid_causal(value["causalDiagnostic"]): return False
     if not exact(value["assertions"], ASSERTIONS): return False
     for item in value["assertions"].values():
         if not exact(item, ("attempted", "completed", "passed")): return False
@@ -66,6 +67,63 @@ def valid_data(value, case):
         if item["completed"]:
             if not item["attempted"] or type(item["passed"]) is not bool: return False
         elif item["passed"] is not None: return False
+    return True
+
+
+
+def valid_native(value):
+    return (exact(value, ("outcome", "status", "signalPresent", "signalAborted", "pagehide")) and
+            type(value["outcome"]) is str and value["outcome"] in ("unreached", "pending", "fulfilled", "rejected") and
+            type(value["status"]) is int and 0 <= value["status"] <= 599 and
+            all(type(value[key]) is bool for key in ("signalPresent", "signalAborted", "pagehide")))
+
+
+def valid_network(value):
+    return (exact(value, ("terminal", "failureCode", "resourceType", "cancelled", "navigation")) and
+            type(value["terminal"]) is str and value["terminal"] in ("unreached", "pending", "finished", "request-failed") and
+            type(value["failureCode"]) is str and value["failureCode"] in ("none", "aborted", "content-length", "decoding",
+                "connection-reset", "connection-closed", "empty-response", "unclassified") and
+            (value["terminal"] == "request-failed") == (value["failureCode"] != "none") and
+            type(value["resourceType"]) is str and value["resourceType"] in ("unreached", "Fetch", "XHR", "Document", "Other") and
+            type(value["cancelled"]) is bool and type(value["navigation"]) is bool)
+
+
+def valid_server(value):
+    return exact(value, ("seen", "held", "delivered", "cancelled", "timedOut", "settled")) and all(type(v) is bool for v in value.values())
+
+
+def valid_causal(value):
+    if value is None: return True
+    if (not exact(value, ("schema", "valid", "reason", "headersEqual", "framingEqual", "stopped", "probes", "restoreNative", "restoreNetwork")) or
+            value["schema"] != "r06-causal-v1" or type(value["reason"]) is not str or
+            value["reason"] not in ("none", "timeout", "overflow", "mismatch", "control", "unreached") or
+            any(type(value[key]) is not bool for key in ("valid", "headersEqual", "framingEqual", "stopped")) or
+            type(value["probes"]) is not list or len(value["probes"]) != 3 or
+            not valid_native(value["restoreNative"]) or not valid_network(value["restoreNetwork"])): return False
+    for row, mode in zip(value["probes"], ("direct", "captured", "held"), strict=True):
+        if (not exact(row, ("mode", "native", "network", "server")) or row["mode"] != mode or
+                not valid_native(row["native"]) or not valid_network(row["network"]) or not valid_server(row["server"])): return False
+    return True
+
+
+def causal_ready(value):
+    # Separate diagnostic inference. This never relaxes classify/terminal/assertions.
+    if (value is None or not valid_causal(value) or not value["valid"] or value["reason"] != "none" or
+            not all(value[key] for key in ("headersEqual", "framingEqual", "stopped"))): return False
+    native, network = value["restoreNative"], value["restoreNetwork"]
+    if (native["outcome"] not in ("fulfilled", "rejected") or network["terminal"] not in ("finished", "request-failed") or
+            network["resourceType"] not in ("Fetch", "XHR") or native["signalAborted"] and not native["signalPresent"] or
+            native["outcome"] == "fulfilled" and not 100 <= native["status"] <= 599 or
+            native["outcome"] == "rejected" and native["status"] != 0): return False
+    for row in value["probes"]:
+        n, c, s = row["native"], row["network"], row["server"]
+        if n["pagehide"] or c["navigation"] or c["resourceType"] not in ("Fetch", "XHR") or not s["seen"] or not s["settled"] or s["timedOut"]: return False
+        if row["mode"] == "held":
+            if (n["outcome"] != "rejected" or not n["signalPresent"] or not n["signalAborted"] or
+                    c["terminal"] != "request-failed" or c["failureCode"] != "aborted" or not c["cancelled"] or
+                    not s["held"] or not s["cancelled"] or s["delivered"]): return False
+        elif (n["outcome"] != "fulfilled" or n["status"] != 204 or n["signalPresent"] or n["signalAborted"] or
+                c["terminal"] not in ("finished", "request-failed") or not s["delivered"] or s["cancelled"]): return False
     return True
 
 

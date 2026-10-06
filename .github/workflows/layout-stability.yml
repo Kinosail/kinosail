@@ -236,6 +236,16 @@ jobs:
         env:
           PYTHONPATH: apps/subtitles/scripts
         run: timeout --kill-after=2s 10s python3 -B -m unittest test_campaign_r06_restore_runtime_selection test_campaign_r06_restore_runtime_sources test_campaign_r06_restore_runtime_process test_campaign_r06_restore_runtime_controls test_campaign_r06_restore_runtime_projection test_campaign_r06_restore_runtime_tools
+      - name: Verify Restore causal diagnostic controls
+        if: env.CAMPAIGN_PROOF == 'R06' && env.CAMPAIGN_R06_SUITE == 'restore-headers'
+        timeout-minutes: 3
+        env:
+          PYTHONPATH: apps/subtitles/scripts
+        run: |
+          timeout --kill-after=2s 10s python3 -B -m unittest test_campaign_r06_restore_causal_projection
+          timeout --kill-after=2s 10s node apps/subtitles/e2e/subtitle-restore-causal-witness.test.mjs
+          timeout --kill-after=2s 10s node apps/subtitles/e2e/subtitle-restore-causal-lifecycle.test.mjs
+          timeout --kill-after=2s 125s go -C apps/subtitles test -p 1 ./engineering/qa/2026-10-05-restore-recovery/fixture -run '^TestRestoreCausal(ProbePublicControl|CancellationBoundary)$' -count=1 -timeout=10s
       - name: Run exact owned public proof
         run: bash scripts/ci/run-campaign-proof.sh "$CAMPAIGN_PROOF"
       - name: Collect bounded canonical source metadata

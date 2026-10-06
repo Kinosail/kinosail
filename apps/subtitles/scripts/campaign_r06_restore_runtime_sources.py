@@ -25,9 +25,15 @@ SUITES = {
 
 QA = "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/"
 SCRIPT = "apps/subtitles/scripts/"
+CAUSAL_INPUTS = {
+    *(QA + "fixture/" + name for name in ("restore_causal_controls_test.go", "restore_causal_probe_test.go")),
+    *("apps/subtitles/e2e/" + name for name in ("subtitle-restore-causal-observer.ts", "subtitle-restore-causal-schema.ts", "subtitle-restore-causal-witness.mjs", "subtitle-restore-causal-witness.test.mjs", "subtitle-restore-causal-lifecycle.test.mjs")),
+}
 REQUIRED_INPUTS = {
     *(QA + "fixture/" + name for name in ["restore_assertions_test.go","restore_controls_test.go","restore_exchange_test.go","restore_filesystem_test.go","restore_http_test.go","restore_main_test.go","restore_owner_enrollment_test.go","restore_owner_test.go","restore_requests_test.go","restore_routes_test.go","restore_routing_test.go","restore_target_test.go","restore_transport_test.go","restore_witness_test.go"]),
     *("apps/subtitles/e2e/" + name for name in ["subtitle-restore-proof-reporter.ts","subtitle-restore-recovery-fixture.ts","subtitle-restore-recovery-helpers.ts","subtitle-restore-recovery-network.ts","subtitle-restore-recovery.config.ts","subtitle-restore-recovery.journey.ts","subtitle-save-recovery-auth.ts","subtitle-save-attachment-reader.cjs"]),
+    *CAUSAL_INPUTS,
+    SCRIPT + "test_campaign_r06_restore_causal_projection.py",
     SCRIPT + "campaign-r06-restore-browser.py",
     *(SCRIPT + "campaign_r06_restore_runtime_" + name + ".py"
       for name in ("sources", "process", "controls", "projection", "tools", "artifacts")),
@@ -248,7 +254,12 @@ def package_manifest():
     if value.get("currentInputBaseline") != STARTUP_BASELINE: raise ValueError("startup-input-baseline")
     rows = value.get("inputs")
     expected = {path for path in REQUIRED_INPUTS if not path.startswith(SCRIPT) and not path.startswith(QA + "runtime-")}
-    if type(rows) is not list or len(rows) != 25: raise ValueError("startup-input-count")
+    transition = value.get("causalDiagnosticTransition")
+    if transition is None:
+        expected -= CAUSAL_INPUTS
+    elif transition != {"baseline": "96761b17b8ad495378b582e1d629e32090801062", "addedInputs": sorted(CAUSAL_INPUTS)}:
+        raise ValueError("causal-input-transition")
+    if type(rows) is not list or len(rows) != len(expected): raise ValueError("startup-input-count")
     indexed = {}
     for row in rows:
         if (type(row) is not dict or type(row.get("path")) is not str or row["path"] not in expected or row["path"] in indexed or

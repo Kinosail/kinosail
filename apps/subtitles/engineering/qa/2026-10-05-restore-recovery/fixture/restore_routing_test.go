@@ -7,7 +7,7 @@ import (
 )
 
 func (f *restoreRig) serve(target *restoreTarget, writer http.ResponseWriter, request *http.Request) {
-	if f.servePrivate(writer, request) {
+	if f.serveCausalProbe(writer, request) || f.servePrivate(writer, request) {
 		return
 	}
 	if strings.HasPrefix(request.URL.Path, "/media/") || strings.HasPrefix(request.URL.Path, "/watch/") ||

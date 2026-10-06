@@ -17,7 +17,7 @@ class RestoreBrowserProjectionControls(unittest.TestCase):
                     headersReleased=True, bodyReleased=True, restoreResponseDelivered=True,
                     inspectionResponseDelivered=True, restoreTerminal="finished", inspectTerminal="finished",
                     clickToWitnessMs=100, clickToUnlockMs=30000, holdDurationMs=30000, durationMs=35000,
-                    restoreFailureCode="none",inspectFailureCode="none",
+                    restoreFailureCode="none",inspectFailureCode="none",causalDiagnostic=None,
                     servedScriptSHA256={"inspector":"a"*64},
                     assertions={key:{"attempted":True,"completed":True,"passed":True} for key in projection.ASSERTIONS})
         return {"caseID":case_id,"outcome":"passed","data":data,"failedAssertions":[],

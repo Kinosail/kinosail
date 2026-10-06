@@ -25,6 +25,7 @@ type restoreTarget struct {
 	closeOK           bool
 	controlClient     *http.Client
 	controlCSRF       string
+	causalProbe       [3]restoreProbeSnapshot
 }
 
 func newOwnedRestoreTarget() (*restoreTarget, error) {

@@ -13,10 +13,10 @@ import types
 
 ROOT = Path(__file__).absolute().parents[3]
 MODULES = {
-    "campaign_r06_restore_runtime_sources": (13871, "a0c7da48c0d335a455da41e9b8ee799061788722e9024dfb0e3d19b579a00127", "b4a9b73435ea85e265b8296f87e11cece00d0ed9"),
+    "campaign_r06_restore_runtime_sources": (14640, '06faf73f4848e56d1902f597e43672f36c9109388a043c06d2179e64feabe8c9', 'f6648562608058d971a772e3970e9379000830a0'),
     "campaign_r06_restore_runtime_process": (5682, "de8db722f69ae408b79959a4a152ea12fdd7f5cf4220cbbdb065a17c7ce7f158", "fb260e072eaae501ac9a85eb5d98d20eab5f801d"),
     "campaign_r06_restore_runtime_controls": (6376, '5f7d11b118f4fa6037dc01c10e03a1478210dec390580ebe06a9ab178953cf7b', '6c5366c48d60182a5db8f3980696ea1ae0ae4e01'),
-    "campaign_r06_restore_runtime_projection": (12177, '494b7d4b1c1070d6bcafe59f8592c942b7c9e5af65d75ef7595143aa1c4c897a', 'f142571ff1468bd2708fdbb7f78948fab9b8a4ba'),
+    "campaign_r06_restore_runtime_projection": (16313, '1b19dd7ced71fef9fc9b5c827e625f3754186483bafe47412add131e148c85b8', 'c98bfc42f3dc9ad48209c56e66fca1a2457e8197'),
     "campaign_r06_restore_runtime_tools": (11816, 'f956c191675c7a17f114b5ef8f55e817d41f8db87cf7f850dd37878434fb4ce8', 'cb50230746654598c5f9433261dd6b0e3488e5f9'),
     "campaign_r06_restore_runtime_artifacts": (20951, "152fd639bef4c805981f57b94042eef451985a76fb0c21b5dcc1a036e6795cce", "d9a4cfcd554d72d395dc6e24218bc9a1e9ea6af7"),
 }

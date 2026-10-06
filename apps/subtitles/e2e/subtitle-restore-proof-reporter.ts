@@ -7,6 +7,8 @@ import { isObject, SNAPSHOT_COUNTERS, SNAPSHOT_FLAGS, type JSONObject, type JSON
 
 import { FAILURE_CODES } from "./subtitle-restore-recovery-network";
 
+import { validCausal } from "./subtitle-restore-causal-schema";
+
 const SCHEMA = "r06-restore-browser-v1";
 const FILE = "apps/subtitles/e2e/subtitle-restore-recovery.journey.ts";
 const CASES = {
@@ -23,7 +25,7 @@ const EXTRA_FLAGS = [
 const TIMINGS = ["clickToWitnessMs", "clickToUnlockMs", "holdDurationMs", "durationMs"];
 const FIELDS = [
   "schema", "kind", "caseID", "stage", "failureStage", "protocol", ...SNAPSHOT_COUNTERS, ...SNAPSHOT_FLAGS,
-  ...EXTRA_FLAGS, "restoreTerminal", "inspectTerminal", "restoreFailureCode", "inspectFailureCode", ...TIMINGS, "servedScriptSHA256", "assertions",
+  ...EXTRA_FLAGS, "restoreTerminal", "inspectTerminal", "restoreFailureCode", "inspectFailureCode", ...TIMINGS, "servedScriptSHA256", "assertions", "causalDiagnostic",
 ];
 function exactKeys(value: JSONValue, keys: readonly string[]): value is JSONObject {
   return isObject(value) && Object.keys(value).sort().join(",") === [...keys].sort().join(",");
@@ -54,6 +56,7 @@ function validRecord(value: JSONValue, id: string): value is SafeCase {
   if (!exactKeys(value.servedScriptSHA256, ["inspector"]) ||
     value.servedScriptSHA256.inspector !== null && (typeof value.servedScriptSHA256.inspector !== "string" ||
       !/^[a-f0-9]{64}$/.test(value.servedScriptSHA256.inspector)) || !exactKeys(value.assertions, ASSERTION_IDS)) return false;
+  if (!validCausal(value.causalDiagnostic)) return false;
   const assertions = value.assertions;
   return ASSERTION_IDS.every(id => {
     const a = assertions[id];

@@ -3,6 +3,9 @@ import type { Page } from "@playwright/test";
 import { bounded, pause, snapshot, startFixture, setupPage, phaseScope, cleanupCase, type PhaseScope, type Fixture, type Snapshot } from "./subtitle-restore-recovery-fixture";
 import { observeRestore, type Terminal, type FailureCode } from "./subtitle-restore-recovery-network";
 
+import { observeCausal } from "./subtitle-restore-causal-observer";
+import type { Diagnostic } from "./subtitle-restore-causal-schema";
+
 export const ASSERTION_IDS = [
   "actual-restore", "history-once", "recovery-swapped", "hold-proven",
   "editor-released-by-45s", "finite-truthful-outcome", "original-correction-kept",
@@ -21,7 +24,7 @@ export type SafeCase = Snapshot & {
   restoreFailureCode: FailureCode; inspectFailureCode: FailureCode;
   clickToWitnessMs: number | null; clickToUnlockMs: number | null; holdDurationMs: number | null;
   durationMs: number; servedScriptSHA256: { inspector: string | null };
-  assertions: Record<AssertionID, Observation>;
+  assertions: Record<AssertionID, Observation>; causalDiagnostic: Diagnostic | null;
 };
 const CORRECTION = "1\n00:00:01,000 --> 00:00:02,000\nFictional unsaved correction\n";
 const IMPORT_NAME = "R06 Fictional Unsaved.srt";
@@ -71,7 +74,7 @@ function initialResult(id: string): SafeCase {
     restoreBodyDelivered: false, inspectionBodyDelivered: false, releaseAttempted: false,
     restoreFailureCode: "none", inspectFailureCode: "none",
     clickToWitnessMs: null, clickToUnlockMs: null, holdDurationMs: null, durationMs: 0,
-    servedScriptSHA256: { inspector: null },
+    servedScriptSHA256: { inspector: null }, causalDiagnostic: null,
     assertions: Object.fromEntries(ASSERTION_IDS.map(id => [id, { attempted: false, completed: false, passed: null }])) as SafeCase["assertions"],
   };
 }
@@ -122,6 +125,7 @@ export async function runRestoreCase(page: Page, entry: Entry): Promise<SafeCase
   const record = (id: AssertionID, passed: boolean) => { scope.guard(); result.assertions[id] = { attempted: true, completed: true, passed }; };
   let fixture: Fixture | undefined, network: ReturnType<typeof observeRestore> | undefined;
   let witnessAt: number | null = null, item = "", terminalSettled = false;
+  let causal: Awaited<ReturnType<typeof observeCausal>> | undefined;
   const caseRemaining = (limit: number) => {
     const available = began + 105000 - performance.now();
     if (available <= 0) throw new Error("fixed-phase-budget");
@@ -133,6 +137,11 @@ export async function runRestoreCase(page: Page, entry: Entry): Promise<SafeCase
       scope.guard();
       await page.setViewportSize({ width: entry.width, height: entry.height }); scope.guard();
       item = await setupPage(page, fixture.origin, scope); scope.guard();
+      if (entry.id === "r06-restore-headers-desktop") {
+        causal = observeCausal(page, fixture.origin, item, began + 105000, began + 20000);
+        await causal.start(); scope.guard();
+        await causal.probe(); scope.guard();
+      }
       const inspectorSHA = await servedIdentity(page, fixture.origin); scope.guard();
       result.servedScriptSHA256.inspector = inspectorSHA;
       await page.locator('input[name="file"]').setInputFiles({ name: IMPORT_NAME, mimeType: "application/x-subrip", buffer: Buffer.from(CORRECTION) }); scope.guard();
@@ -222,7 +231,9 @@ export async function runRestoreCase(page: Page, entry: Entry): Promise<SafeCase
     result.stage = "cleanup";
     if (fixture) result.assertions["fixture-settled"] = { attempted: true, completed: false, passed: null };
     network?.close();
-    result.fixtureStopped = await cleanupCase(scope, page, fixture);
+    const cleanupEnd = Math.min(began + 110000, performance.now() + 5000);
+    if (causal) { try { result.causalDiagnostic = await causal.finish(cleanupEnd); } catch { result.causalDiagnostic = causal.invalid(); } }
+    result.fixtureStopped = await cleanupCase(scope, page, fixture, cleanupEnd);
     if (fixture) result.assertions["fixture-settled"] = {
       attempted: true, completed: true,
       passed: terminalSettled && result.activeHolds === 0 && !result.holdExpired && !result.boundaryFailed && result.fixtureStopped,
