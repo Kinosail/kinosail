@@ -159,7 +159,7 @@ def journey(name, original, metadata, corrupt=False):
             case["stage"] = "reopen"
             status, master, headers = api.http(hls)
             check(status == 200, "reopen_master_http_" + str(status))
-            request_id = headers.get("X-Request-ID", "")
+            request_id = next((value for key, value in headers.items() if key.lower() == "x-request-id"), "")
             check(re.fullmatch(r"[a-zA-Z0-9_-]{8,96}", request_id) is not None, "reopen_request_id")
             case["reopenRequestID"] = request_id
             renditions = re.findall(rb"^[1-9][0-9]{2,3}p/index\.m3u8$", master, re.M)
@@ -183,6 +183,9 @@ def journey(name, original, metadata, corrupt=False):
             if corrupt:
                 case["damagedMapRecovered"] = not (root / ".copy-timeline").exists()
                 check(case["damagedMapRecovered"], "damaged_map_not_recovered")
+                physical = root / renditions[0].decode()
+                wait_until(lambda: owned_encoder(server) == 0 and b"#EXT-X-ENDLIST" in read(physical), "recovered_worker_not_joined")
+                case["recoveredWorkerJoined"] = True
             else:
                 case["cachedPrefixPreserved"] = [snapshot(path) for path in paths] == prefix_before
                 case["publicInitSHA256"] = hashlib.sha256(fragments[0]).hexdigest()
