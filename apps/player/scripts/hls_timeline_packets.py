@@ -89,3 +89,21 @@ def safe_encoder_lifecycle(private_log):
             invalid = invalid or active < 0
     return {"starts": starts, "ends": ends, "peakActive": peak, "activeAtTeardown": active,
         "validSequence": not invalid and starts > 0 and active == 0}
+
+def fragment_audio(path):
+    result = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "a:0",
+        "-read_intervals", "%+#4096", "-show_packets", "-show_entries", "packet=pts_time,duration_time",
+        "-of", "json", str(path)], capture_output=True, timeout=30)
+    if result.returncode or len(result.stdout) > 2 * 1024 * 1024:
+        raise RuntimeError("public_audio_probe")
+    packets = json.loads(result.stdout).get("packets", [])
+    if not 0 < len(packets) < 4096:
+        raise RuntimeError("public_audio_packet_bound")
+    points, ends = [], []
+    for packet in packets:
+        point, duration = float(packet["pts_time"]), float(packet["duration_time"])
+        if not math.isfinite(point) or not math.isfinite(duration) or duration <= 0:
+            raise RuntimeError("public_audio_packet_timing")
+        points.append(point)
+        ends.append(point + duration)
+    return {"audioPackets": len(packets), "firstAudioTime": min(points), "lastAudioEnd": max(ends)}

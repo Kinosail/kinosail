@@ -18,7 +18,7 @@ import subprocess
 import threading
 import time
 from hls_timeline_http import PublicServer, sha, source_state
-from hls_timeline_packets import fragment_packets, decoded_identity, safe_seek_phases, manifest_facts, safe_encoder_lifecycle
+from hls_timeline_packets import fragment_packets, decoded_identity, safe_seek_phases, manifest_facts, safe_encoder_lifecycle, fragment_audio
 from hls_timeline_fixture import fixture
 from hls_timeline_preparation import prepare_scene
 from hls_timeline_seek_diagnostics import seek_diagnostics
@@ -147,7 +147,7 @@ def journey(name, original, metadata, offset=0, cold=False):
             case["advertisedContinuationSeconds"] = elapsed
             if elapsed < logical_duration - 0.1:
                 case["failures"].append("future_uri_missing")
-            fragments, previous_end = [], None
+            fragments, previous_end, previous_audio_end = [], None, None
             case["publicFragments"] = []
             advertised_lengths = dict(segments)
             for filename in ["init.mp4"] + selected:
@@ -163,6 +163,12 @@ def journey(name, original, metadata, offset=0, cold=False):
                     packet_facts = fragment_packets(fragment)
                     packet_facts["segment"] = filename
                     packet_facts["advertisedSeconds"] = advertised_lengths[filename]
+                    packet_facts.update(fragment_audio(fragment))
+                    if abs(packet_facts["firstAudioTime"] - packet_facts["firstVideoTime"]) > 0.15:
+                        case["failures"].append("fragment_audio_video_start")
+                    if previous_audio_end is not None and abs(packet_facts["firstAudioTime"] - previous_audio_end) > 0.05:
+                        case["failures"].append("fragment_audio_discontinuity")
+                    previous_audio_end = packet_facts["lastAudioEnd"]
                     case["publicFragments"].append(packet_facts)
                     if abs(packet_facts["videoSpanSeconds"] - advertised_lengths[filename]) > 0.15:
                         case["failures"].append("fragment_video_duration")
