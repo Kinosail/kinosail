@@ -59,6 +59,8 @@ func TestProbeCoalescesConcurrentRequestsForOneSource(t *testing.T) {
 
 func writeProbeScript(t *testing.T, path, script string) {
 	t.Helper()
+	unlock := lockProbeFixturePublication()
+	defer unlock()
 	temporary := path + ".tmp"
 	if err := os.WriteFile(temporary, []byte(script), 0o600); err != nil {
 		t.Fatal(err)

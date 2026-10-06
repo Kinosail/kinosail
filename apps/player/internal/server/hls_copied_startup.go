@@ -23,6 +23,9 @@ func (manager *hlsManager) reusableCopiedHLS(ctx context.Context, item library.I
 	if ctx.Err() != nil || !cacheFresh(filepath.Join(directory, "index.m3u8"), item.Path, policy) && !seekCacheFresh(directory, item.Path, policy) {
 		return false
 	}
+	if !manager.startupCompletionReusable(ctx, item, directory, policy) {
+		return false
+	}
 	if !manager.copiedHLSVideo(ctx, item, recipe) || !manager.copiedHLSTimelinePresent(directory) {
 		// Ordinary cold streams retain their pre-index cache and seek behavior.
 		return true
@@ -98,6 +101,14 @@ func (manager *hlsManager) copiedPlaylistProjection(ctx context.Context, item li
 }
 
 func (manager *hlsManager) copiedStartupProjection(item library.Item, recipe hlsRecipe, directory string) func([]byte) []byte {
+	if manager.completeHEVCStartup(manager.ctx, item, recipe) {
+		return func(manifest []byte) []byte {
+			if playback.PlaylistHas(manifest, "#EXT-X-ENDLIST") {
+				return manifest
+			}
+			return nil
+		}
+	}
 	if !manager.copiedHLSVideo(manager.ctx, item, recipe) {
 		return nil
 	}
