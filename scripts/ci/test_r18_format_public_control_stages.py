@@ -189,6 +189,6 @@ class StageControls(unittest.TestCase):
         code, report = main_result(prepare=failing)
         self.assertEqual((list(sys.path), sys.dont_write_bytecode), before)
         self.assertEqual((code, report["diagnostic"]["stage"], report["diagnostic"]["reason"]), (2, "wrapper-definitions", "import-error"))
-        self.assertEqual(controls.WRAPPER_PIN[2], "b7ad9f7c311c4bdc1e8f5ba3fea8bb13b2ae1d42")
-        self.assertEqual(controls.TEST_PIN[2], "ff3be3283cc8c5e35d23b697592fa5571f2acc89")
+        self.assertEqual(controls.WRAPPER_PIN[2], "e259e6fed86892e8878c46e09cf8885c81cb9e2b")
+        self.assertEqual(controls.TEST_PIN[2], "d96242877298aa4c9484146b2dafa18025937c2d")
         self.assertEqual(tuple(controls.NAMES), baseline.NAMES)

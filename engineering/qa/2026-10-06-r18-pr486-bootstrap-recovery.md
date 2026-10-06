@@ -27,3 +27,25 @@ Source controls and formatting alone cannot establish that behavior or R18
 completion. Required checks, actual public product tests and claim-route behavior
 remain separate delivery gates. No production source, scanner policy, required
 check policy, external Home Assistant repository or deployment changes occur.
+
+## Explicit canonical adoption
+
+Run `37518480314` on `89c796300bc568ac1322b9ccf578140651c12626` produced
+an independently admitted canonical pair. Its receipt and complete 7104-path
+source ledger match that exact Git tree. All recorded phases settled. The test
+file is unchanged. The helper proposal removes exactly one final LF; every
+assertion, comment and callsite line remains unchanged. The full outer execution
+object was not exported and was not reconstructed for offline admission.
+
+This successor explicitly adopts that one-byte correction and refreshes only
+coupled current source pins and fixed fixture bytes. Historical manifests,
+original source, prior candidates and hosted artifacts remain preserved. The
+separate `canonical-recovery-adoption.json` records both original and current
+identities. After adoption, all50 document source controls, all29 bootstrap
+controls and all19 fixed definition-only controls pass. The definition-only
+controls execute neither Go nor the formatter.
+
+The original two Go files were preserved until this verified formatting
+adoption. Normal CI on the prior candidate reports three public document-claim
+failures. Its native integration control passes. The absent claim routes remain
+a backend feature prerequisite; formatting success does not accept R18.

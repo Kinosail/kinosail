@@ -229,4 +229,3 @@ func (client *documentTargetClient) poll(t *testing.T, id string, claims []strin
 		t.Fatal("R18 addressed target did not receive the queued seek exactly")
 	}
 }
-

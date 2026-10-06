@@ -12,7 +12,7 @@ from campaign_r18_document_inputs import read_small
 from campaign_r18_document_sources import GO_FILES, ROOT, fingerprint
 
 SOURCE_SHA = ("18ab485d6f82196554b598152a15984f44db06cc2620e5cd04f17b2b9bccb0c5",
-              "8de16a1fbb631a76bf22378c3fca25e6cff7dfda55239437e58e8ed377316cb8")
+              "cfe4c812a3554beec7e15861d4518be4acedca15023a305bb5237482f83ad49c")
 CONFIG = "apps/player/.golangci.yml"
 CONFIG_SHA = "389f5d87f20f6ea354dc36be94150e4057a09e1fd31a5cfb6aa14de96953eafd"
 CAP = 32768

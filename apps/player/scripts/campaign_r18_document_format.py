@@ -24,7 +24,7 @@ DRIVER_SHA = "257736615cfca467874775c6b562f5059bb797c9848945e8ab6d4911415b8ca4"
 DRIVER_OID = "cd3994a3b83677d84f81e708c32d081267154570"
 IDENTITY_FIELDS = {"sourceUnchanged", "toolUnchanged", "trackedUnchanged", "historyAdmitted", "exactInvocation", "sourcesPinned"}
 RECORD_FIELDS = {"path", "original", "formatted", "formattedSourceBase64", "changed", "autoAdoption", "semanticsVerified"}
-SOURCE_BYTES = (4465, 7998)
+SOURCE_BYTES = (4465, 7997)
 ARTIFACTS = ("receipt.json", "results.json", "source-manifest.json", "artifact-manifest.json")
 
 

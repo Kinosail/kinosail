@@ -20,7 +20,7 @@ GO_FILES = ("apps/player/internal/server/home_assistant_document_targets_test.go
             "apps/player/internal/server/home_assistant_document_targets_helpers_test.go")
 PINS = {
     GO_FILES[0]: "69f15a59a3291dbedcef0df575f851e4c95c4d50",
-    GO_FILES[1]: "1750f363773b4d86b200434a0bf387bc60eecb4b",
+    GO_FILES[1]: "01f262d1b308736172f33d751e7c17a3e3efda6b",
 }
 BASELINE = {
     "packages/homeassistant/http.go": "245a18cc5ddd2ad0ad921dd0dd6ca03f1407633e",
