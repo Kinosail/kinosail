@@ -23,6 +23,34 @@ func TestCopiedHLSHTTPInvalidatesPriorRefillPolicy(t *testing.T) {
 	}
 }
 
+// A valid init request must not rebuild the cold startup window when an
+// independently refillable fragment and optional seek marker were evicted.
+// The real codec owner verifies
+// payload continuity; this process fixture makes the no-new-encoder boundary
+// deterministic even when the old startup worker has already become inactive.
+func TestCopiedHLSHTTPCachedInitializationSurvivesFragmentEviction(t *testing.T) {
+	f := newCopiedHTTPFixture(t, copiedPackets, copiedIDRs, copiedConfiguration)
+	awaitCopiedReady(t, f)
+	path := strings.TrimSuffix(f.source, "index.m3u8") + "360p/init.mp4"
+	if err := os.Remove(filepath.Join(f.directory, "360p", "segment-00000.m4s")); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Remove(filepath.Join(f.directory, ".seekable")); err != nil && !os.IsNotExist(err) {
+		t.Fatal(err)
+	}
+	before := snapshotCopiedPolicyCache(t, f, false)
+	initialization, err := os.ReadFile(filepath.Join(f.directory, "360p", "init.mp4"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	restarted := server.New(f.config)
+	response := apiCall(t, restarted, "", http.MethodGet, path, nil)
+	assertAPIBody(t, response, http.StatusOK)
+	if !bytes.Equal(initialization, response.Body.Bytes()) || !bytes.Equal(before, snapshotCopiedPolicyCache(t, f, false)) {
+		t.Fatal("valid cached initialization request rebuilt media or admitted encoding")
+	}
+}
+
 func TestCopiedHLSHTTPColdInvalidAssetsDoNotAdmitEncoding(t *testing.T) {
 	for _, name := range []string{"segment-99999.m4s", "segment--1.m4s", "unknown.m4s"} {
 		t.Run(name, func(t *testing.T) {
@@ -60,18 +88,18 @@ func TestCopiedHLSHTTPCachedInvalidAssetsRejectWithoutMutation(t *testing.T) {
 			if err := writeCopiedCacheFile(f.config.CacheDir, filepath.Join(f.directory, "360p", value.name), []byte("uncertified cached media")); err != nil {
 				t.Fatal(err)
 			}
-			before := snapshotCopiedPolicyCache(t, f)
+			before := snapshotCopiedPolicyCache(t, f, true)
 			path := strings.TrimSuffix(f.source, "index.m3u8") + "360p/" + value.name
 			response := apiCall(t, f.handler, "", http.MethodGet, path, nil)
 			assertAPIBody(t, response, http.StatusNotFound)
-			if !bytes.Equal(before, snapshotCopiedPolicyCache(t, f)) {
+			if !bytes.Equal(before, snapshotCopiedPolicyCache(t, f, true)) {
 				t.Fatal("rejected cached asset mutated media or admitted encoding")
 			}
 		})
 	}
 }
 
-func snapshotCopiedPolicyCache(t *testing.T, f copiedHTTPFixture) []byte {
+func snapshotCopiedPolicyCache(t *testing.T, f copiedHTTPFixture, preparationMarker bool) []byte {
 	t.Helper()
 	root, err := os.OpenRoot(f.directory)
 	if err != nil {
@@ -83,7 +111,8 @@ func snapshotCopiedPolicyCache(t *testing.T, f copiedHTTPFixture) []byte {
 		if err != nil {
 			return err
 		}
-		if entry.IsDir() {
+		// Successful media adoption removes .startup; rejected requests must not.
+		if entry.IsDir() || !preparationMarker && path == ".startup" {
 			return nil
 		}
 		value, err := root.ReadFile(path)
