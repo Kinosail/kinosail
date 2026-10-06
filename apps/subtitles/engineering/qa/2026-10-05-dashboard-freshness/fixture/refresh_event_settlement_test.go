@@ -91,19 +91,9 @@ func (target *r16Target) stop(ctx context.Context) bool {
 			target.fail()
 			return
 		}
-		for {
-			target.mu.Lock()
-			active := target.active
-			target.mu.Unlock()
-			if active == 0 {
-				break
-			}
-			select {
-			case <-target.changed:
-			case <-ctx.Done():
-				target.fail()
-				return
-			}
+		if !target.waitRequests(ctx) {
+			target.fail()
+			return
 		}
 		closeErr := target.listener.Close()
 		target.mu.Lock()
@@ -129,4 +119,20 @@ func (target *r16Target) settled() bool {
 	target.mu.Lock()
 	defer target.mu.Unlock()
 	return target.joined
+}
+
+func (target *r16Target) waitRequests(ctx context.Context) bool {
+	for {
+		target.mu.Lock()
+		active := target.active
+		target.mu.Unlock()
+		if active == 0 {
+			return true
+		}
+		select {
+		case <-target.changed:
+		case <-ctx.Done():
+			return false
+		}
+	}
 }

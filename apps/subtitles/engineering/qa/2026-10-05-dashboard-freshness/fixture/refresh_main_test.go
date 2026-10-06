@@ -67,8 +67,8 @@ func (f *r16Fixture) initialize(t *testing.T, lifecycle context.Context, provide
 		FFmpeg:  files.unavailableTool, FPCalc: files.unavailableTool,
 		Subtitles: subtitles,
 	}
-	f.target.start(server.New(config))
-	setup, cancel := context.WithTimeout(t.Context(), 20*time.Second)
+	f.target.start(config)
+	setup, cancel := context.WithTimeout(lifecycle, 20*time.Second)
 	defer cancel()
 	if r16EnrollOwner(t, setup, f.target) != nil {
 		f.target.fail()

@@ -41,9 +41,7 @@ func r16OwnerResponse(ctx context.Context, target *r16Target, method, route, for
 	}
 	response, err := target.client.Do(request)
 	if err != nil {
-		if response != nil {
-			err = errors.Join(err, response.Body.Close())
-		}
+		err = errors.Join(err, r16CloseFailedResponse(response))
 		return r16OwnerReceipt{}, err
 	}
 	data, readErr := io.ReadAll(io.LimitReader(response.Body, r16ResponseLimit+1))

@@ -1,11 +1,164 @@
 {
-  "schema":"kinosail.r16.recovery.source.v1",
-  "base":"23d91d2cbb0fc7bdefd9d4d925d5661ba812be6d",
-  "originalHead":"319c767a426133dd4190cbd4be957b80bf97d307",
-  "scope":"Current canonical public fixtures; historical source-inventory and test-contract bytes preserved.",
-  "canonicalFormatter":"Installed golangci-lint2.13.2 gofumpt stdin; no Go compilation.",
-  "sources":[{"path":"apps/subtitles/engineering/qa/2026-10-05-dashboard-freshness/fixture/refresh_assertions_test.go","changed":true,"original_bytes":9636,"formatted_bytes":9766,"original_git_blob":"6d7dddcddf2de554f01d54432760d163ad05e178","formatted_git_blob":"88f80ffc7606fac0eb0556c5cc1d2a2a19ae0fee","original_sha256":"12828dc4b740d23132a63f0f25a29b823f96dfba93e0d07f2617cdd5afcd8924","formatted_sha256":"a4fc419cebf4162c9f8efff57122c99cf7b1f756bd2bfc3c756ece42d4a95355","formatted_lines":288},{"path":"apps/subtitles/engineering/qa/2026-10-05-dashboard-freshness/fixture/refresh_controls_test.go","changed":true,"original_bytes":7504,"formatted_bytes":7653,"original_git_blob":"575c3d9f41f9bc10bb3123d2ad22dc3c3dad267e","formatted_git_blob":"a9e2229d75981be376324efb45e747081594d9f3","original_sha256":"31df32950a6ddee6e733d620bf5c3f8a57264dc0d775ae3a4f7ab8aadba59a0e","formatted_sha256":"7cfd8cf588a2b63cea4012e37f32329544875e55fa93c1da08d3946552564776","formatted_lines":244},{"path":"apps/subtitles/engineering/qa/2026-10-05-dashboard-freshness/fixture/refresh_enrollment_test.go","changed":true,"original_bytes":3283,"formatted_bytes":3287,"original_git_blob":"5599e381339bfde97370148c55a79c031a828d49","formatted_git_blob":"af056dcf252b67de96eefdecfed64dc152b67f32","original_sha256":"067685d369644439e30ccff9bbf4e5220f330f1be95780dca6a19c7c35a3ab15","formatted_sha256":"3507410a8503ee3403b9b881dec08e69a01cb94278af32901fd4ac2ff0b1b76d","formatted_lines":99},{"path":"apps/subtitles/engineering/qa/2026-10-05-dashboard-freshness/fixture/refresh_event_settlement_test.go","changed":false,"original_bytes":2654,"formatted_bytes":2654,"original_git_blob":"87733da1d2c52b40094b015d31c64fbb0bbcc85f","formatted_git_blob":"87733da1d2c52b40094b015d31c64fbb0bbcc85f","original_sha256":"9bcb01c9aab91ecfaa11db75196de2d978d2130f25ffe3d40a739ad433127b9c","formatted_sha256":"9bcb01c9aab91ecfaa11db75196de2d978d2130f25ffe3d40a739ad433127b9c","formatted_lines":132},{"path":"apps/subtitles/engineering/qa/2026-10-05-dashboard-freshness/fixture/refresh_events_test.go","changed":true,"original_bytes":4385,"formatted_bytes":4420,"original_git_blob":"366b4c1b98be7e237c9513c25304cb92b09fdeb7","formatted_git_blob":"103e9c31aff127528cdf4e7ab3a5ff117b2299e5","original_sha256":"276406f092b2bff0a2038964d1a7c45b95ccff5bc6dd872d928524d171eaf1dd","formatted_sha256":"c8fce6701c3ef0a15b5dffcc5d3bbde72e0921b9a40d9d5b27c34df60a580a9a","formatted_lines":193},{"path":"apps/subtitles/engineering/qa/2026-10-05-dashboard-freshness/fixture/refresh_files_test.go","changed":true,"original_bytes":4091,"formatted_bytes":4172,"original_git_blob":"ca00de7e4429637f333674e399586dcd115b0583","formatted_git_blob":"a9675bc28cf265d60fd9e6a7de23698ae2b14977","original_sha256":"8c29a4f1fa249438f9f99df0f205e86de8e29c586415c2204f82a9346b5f1cb5","formatted_sha256":"81fa13b24841677fbb4ceed898b15893732d3f30b99b5c5c5df54f23561823eb","formatted_lines":123},{"path":"apps/subtitles/engineering/qa/2026-10-05-dashboard-freshness/fixture/refresh_http_test.go","changed":true,"original_bytes":2506,"formatted_bytes":2509,"original_git_blob":"10be1bd5dea6e1298a698ce9689bd3eaca3b8ba8","formatted_git_blob":"dd80123a9366e06fdda78deb3ba4cd67fe382152","original_sha256":"b1f778f175f473c871f3b93623c6e61ee38712284c17e93bc70f72c0b2293f5b","formatted_sha256":"36d1e60d778d56f39c93fa4793c74c11616629dd354717a3717981f53b43eae8","formatted_lines":97},{"path":"apps/subtitles/engineering/qa/2026-10-05-dashboard-freshness/fixture/refresh_main_test.go","changed":true,"original_bytes":3308,"formatted_bytes":3326,"original_git_blob":"76da957f85b60ff88f765de208f603b6117d3c11","formatted_git_blob":"24ee1f4935421ef6b9ed3584e4d7589ac25171fe","original_sha256":"a765908e7b7a03224a01b74c62cad532dabb1a0221b13c6a35593aece01575f0","formatted_sha256":"7d36df8f78eee7e494cb012c6d0a8ae1da0b849c9654a084ce397d061f905a22","formatted_lines":126},{"path":"apps/subtitles/engineering/qa/2026-10-05-dashboard-freshness/fixture/refresh_owner_test.go","changed":false,"original_bytes":1822,"formatted_bytes":1822,"original_git_blob":"7eb0d9071a87049647a8991e5acff433f1ab6472","formatted_git_blob":"7eb0d9071a87049647a8991e5acff433f1ab6472","original_sha256":"1c5f2bec4f9b8e2ffaef365baa136c3c9387a70d6f1392ac632c2ba28756c894","formatted_sha256":"1c5f2bec4f9b8e2ffaef365baa136c3c9387a70d6f1392ac632c2ba28756c894","formatted_lines":78},{"path":"apps/subtitles/engineering/qa/2026-10-05-dashboard-freshness/fixture/refresh_provider_settlement_test.go","changed":false,"original_bytes":816,"formatted_bytes":816,"original_git_blob":"80982e9a95f7d57fbbe0102b5690415ed282c4c1","formatted_git_blob":"80982e9a95f7d57fbbe0102b5690415ed282c4c1","original_sha256":"ee90b45fc6ccd0202ce3fec7d3ae6c46934a7eaa4adfc39b751b1ce60ad1db2d","formatted_sha256":"ee90b45fc6ccd0202ce3fec7d3ae6c46934a7eaa4adfc39b751b1ce60ad1db2d","formatted_lines":40},{"path":"apps/subtitles/engineering/qa/2026-10-05-dashboard-freshness/fixture/refresh_provider_test.go","changed":true,"original_bytes":2336,"formatted_bytes":2391,"original_git_blob":"d48bd113cbe22a0ad1a37a90006d3f0f3bfb7914","formatted_git_blob":"121168023f933e02a9cb9ed41f8fec62ca57711d","original_sha256":"508a475d463dc4dcef7ca8dff4b08f384822478826f5ce43a891fd82db882b18","formatted_sha256":"f44fc15221582ffff3e7e3fefc3149ae25ed4b11f369c5a4d475ed1d3ce40284","formatted_lines":97},{"path":"apps/subtitles/engineering/qa/2026-10-05-dashboard-freshness/fixture/refresh_routes_test.go","changed":true,"original_bytes":2329,"formatted_bytes":2334,"original_git_blob":"9b9eb7a97295167345c274ca9b7c2cddb1541af9","formatted_git_blob":"76df779656de08de28093c4c9cf2260dce3f5e45","original_sha256":"689448f9f020d2f11531b7f08f732664149015ee80269f8c11f12afd7fe612a0","formatted_sha256":"5188675933dc266a1d6f275a8ab0a6b8b5ca4a14b40b3fa656a36b373d0719a6","formatted_lines":86},{"path":"apps/subtitles/engineering/qa/2026-10-05-dashboard-freshness/fixture/refresh_target_test.go","changed":true,"original_bytes":3760,"formatted_bytes":3807,"original_git_blob":"d8b449b366bcc3d2779c8eed3bddadf15db94f3e","formatted_git_blob":"7153b8132e84074aa469446fdbe1d73ab5cf33bb","original_sha256":"83a930057ce3fc49651011288c67e4f5bc9a02d2fbccf369fbaf26708d1acdcb","formatted_sha256":"3d0a3728153c417fc510bcd8b27fa2fd87b1e23622b1bc64a011e5e80643846d","formatted_lines":135}],
-  "runtimeAcceptance":"pending hosted exact-head tests",
-  "browserPacketAdopted":false,
-  "productionChanged":false
+  "schema": "kinosail.r16.recovery.source.v1",
+  "base": "23d91d2cbb0fc7bdefd9d4d925d5661ba812be6d",
+  "originalHead": "319c767a426133dd4190cbd4be957b80bf97d307",
+  "scope": "Recovered public fixture, canonical formatting and hosted fixture-contract/lint repairs; no production or browser changes.",
+  "canonicalFormatter": "Installed golangci-lint2.13.2 gofumpt stdin; no Go compilation.",
+  "sources": [
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-dashboard-freshness/fixture/refresh_assertions_test.go",
+      "changed": true,
+      "original_bytes": 9636,
+      "formatted_bytes": 10865,
+      "original_git_blob": "6d7dddcddf2de554f01d54432760d163ad05e178",
+      "formatted_git_blob": "dc984e3da38d7a5ec55c63c650bed8b98fddae49",
+      "original_sha256": "12828dc4b740d23132a63f0f25a29b823f96dfba93e0d07f2617cdd5afcd8924",
+      "formatted_sha256": "37b837083ef15238452ed9b962de86a787fe41509a71bf0add5cad103d0b8dd7",
+      "formatted_lines": 320
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-dashboard-freshness/fixture/refresh_controls_test.go",
+      "changed": true,
+      "original_bytes": 7504,
+      "formatted_bytes": 7653,
+      "original_git_blob": "575c3d9f41f9bc10bb3123d2ad22dc3c3dad267e",
+      "formatted_git_blob": "a9e2229d75981be376324efb45e747081594d9f3",
+      "original_sha256": "31df32950a6ddee6e733d620bf5c3f8a57264dc0d775ae3a4f7ab8aadba59a0e",
+      "formatted_sha256": "7cfd8cf588a2b63cea4012e37f32329544875e55fa93c1da08d3946552564776",
+      "formatted_lines": 244
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-dashboard-freshness/fixture/refresh_enrollment_test.go",
+      "changed": true,
+      "original_bytes": 3283,
+      "formatted_bytes": 3270,
+      "original_git_blob": "5599e381339bfde97370148c55a79c031a828d49",
+      "formatted_git_blob": "347e38b13ce9b253779f6ad8e0a726f5cd27f05f",
+      "original_sha256": "067685d369644439e30ccff9bbf4e5220f330f1be95780dca6a19c7c35a3ab15",
+      "formatted_sha256": "047d93c3f0e4824b3d2d043035c96c7b801b47d548037828867fcbc869514264",
+      "formatted_lines": 97
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-dashboard-freshness/fixture/refresh_event_settlement_test.go",
+      "changed": true,
+      "original_bytes": 2654,
+      "formatted_bytes": 2768,
+      "original_git_blob": "87733da1d2c52b40094b015d31c64fbb0bbcc85f",
+      "formatted_git_blob": "c411d281ff72a530d9f26f67179d2715162775ff",
+      "original_sha256": "9bcb01c9aab91ecfaa11db75196de2d978d2130f25ffe3d40a739ad433127b9c",
+      "formatted_sha256": "5780e3b465eba9130822076da059cb9fe548f26bb9bd8224a243d0ba7e98cc53",
+      "formatted_lines": 138
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-dashboard-freshness/fixture/refresh_events_test.go",
+      "changed": true,
+      "original_bytes": 4385,
+      "formatted_bytes": 4809,
+      "original_git_blob": "366b4c1b98be7e237c9513c25304cb92b09fdeb7",
+      "formatted_git_blob": "ec693d653efde4b8c81922d79f6216a3e97f4cbb",
+      "original_sha256": "276406f092b2bff0a2038964d1a7c45b95ccff5bc6dd872d928524d171eaf1dd",
+      "formatted_sha256": "584d84666dd702a07c169faf2d5403850bcd65a808e83fb1f97b61e305315d17",
+      "formatted_lines": 209
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-dashboard-freshness/fixture/refresh_files_test.go",
+      "changed": true,
+      "original_bytes": 4091,
+      "formatted_bytes": 4472,
+      "original_git_blob": "ca00de7e4429637f333674e399586dcd115b0583",
+      "formatted_git_blob": "bdeedec54aee4dabc2aee6c830ff201f293209bc",
+      "original_sha256": "8c29a4f1fa249438f9f99df0f205e86de8e29c586415c2204f82a9346b5f1cb5",
+      "formatted_sha256": "8083fe5d339591e6510a653486a763f3d73d3c61d68f5ae3be3483fb56eea4a4",
+      "formatted_lines": 137
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-dashboard-freshness/fixture/refresh_http_test.go",
+      "changed": true,
+      "original_bytes": 2506,
+      "formatted_bytes": 2639,
+      "original_git_blob": "10be1bd5dea6e1298a698ce9689bd3eaca3b8ba8",
+      "formatted_git_blob": "20047b39387f08166093beeb1bcc4f4fc287f627",
+      "original_sha256": "b1f778f175f473c871f3b93623c6e61ee38712284c17e93bc70f72c0b2293f5b",
+      "formatted_sha256": "6b3860e752ba727b9f4be4b563b51a325bc57048ae05342f232a1ec6fe43df09",
+      "formatted_lines": 103
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-dashboard-freshness/fixture/refresh_main_test.go",
+      "changed": true,
+      "original_bytes": 3308,
+      "formatted_bytes": 3312,
+      "original_git_blob": "76da957f85b60ff88f765de208f603b6117d3c11",
+      "formatted_git_blob": "d1b7a00178761d75171ed173b3ac35644accc478",
+      "original_sha256": "a765908e7b7a03224a01b74c62cad532dabb1a0221b13c6a35593aece01575f0",
+      "formatted_sha256": "b426886fd0143b8353ae4a7a99eebd4d93b4389fa38072d9167ed52f02316a6c",
+      "formatted_lines": 126
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-dashboard-freshness/fixture/refresh_owner_test.go",
+      "changed": false,
+      "original_bytes": 1822,
+      "formatted_bytes": 1822,
+      "original_git_blob": "7eb0d9071a87049647a8991e5acff433f1ab6472",
+      "formatted_git_blob": "7eb0d9071a87049647a8991e5acff433f1ab6472",
+      "original_sha256": "1c5f2bec4f9b8e2ffaef365baa136c3c9387a70d6f1392ac632c2ba28756c894",
+      "formatted_sha256": "1c5f2bec4f9b8e2ffaef365baa136c3c9387a70d6f1392ac632c2ba28756c894",
+      "formatted_lines": 78
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-dashboard-freshness/fixture/refresh_provider_settlement_test.go",
+      "changed": false,
+      "original_bytes": 816,
+      "formatted_bytes": 816,
+      "original_git_blob": "80982e9a95f7d57fbbe0102b5690415ed282c4c1",
+      "formatted_git_blob": "80982e9a95f7d57fbbe0102b5690415ed282c4c1",
+      "original_sha256": "ee90b45fc6ccd0202ce3fec7d3ae6c46934a7eaa4adfc39b751b1ce60ad1db2d",
+      "formatted_sha256": "ee90b45fc6ccd0202ce3fec7d3ae6c46934a7eaa4adfc39b751b1ce60ad1db2d",
+      "formatted_lines": 40
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-dashboard-freshness/fixture/refresh_provider_test.go",
+      "changed": true,
+      "original_bytes": 2336,
+      "formatted_bytes": 2420,
+      "original_git_blob": "d48bd113cbe22a0ad1a37a90006d3f0f3bfb7914",
+      "formatted_git_blob": "dfed6d52b80e4ab80c7271a103a1638ffd02bbaf",
+      "original_sha256": "508a475d463dc4dcef7ca8dff4b08f384822478826f5ce43a891fd82db882b18",
+      "formatted_sha256": "8442aead19278c48abd4bb5578748bedc89bfe4c7a83dfdc0cd74014923730b4",
+      "formatted_lines": 97
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-dashboard-freshness/fixture/refresh_routes_test.go",
+      "changed": true,
+      "original_bytes": 2329,
+      "formatted_bytes": 2837,
+      "original_git_blob": "9b9eb7a97295167345c274ca9b7c2cddb1541af9",
+      "formatted_git_blob": "a42fd3a7790ad9d2a32e2962c66a71cb295e4d53",
+      "original_sha256": "689448f9f020d2f11531b7f08f732664149015ee80269f8c11f12afd7fe612a0",
+      "formatted_sha256": "2fa29f9f15652e3886d9bee1cf0daa9bed8709f15a4288ba56b7ae1857c5f262",
+      "formatted_lines": 107
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-dashboard-freshness/fixture/refresh_target_test.go",
+      "changed": true,
+      "original_bytes": 3760,
+      "formatted_bytes": 3904,
+      "original_git_blob": "d8b449b366bcc3d2779c8eed3bddadf15db94f3e",
+      "formatted_git_blob": "d029d669e77dd2c8b40a52a7b4fda9539ed403f2",
+      "original_sha256": "83a930057ce3fc49651011288c67e4f5bc9a02d2fbccf369fbaf26708d1acdcb",
+      "formatted_sha256": "2d3357551e4c86b623e4558d38b11daa633e315cd193f45fb443493b0d12902a",
+      "formatted_lines": 137
+    }
+  ],
+  "runtimeAcceptance": "Prior5f16ca55 compiled; three controls stopped on published empty-History omission. Successor exact-head hosted acceptance pending.",
+  "browserPacketAdopted": false,
+  "productionChanged": false,
+  "recoveryChanges": {
+    "priorHead": "5f16ca55ff0e9257a675f135583d3cbc968d87ea",
+    "run": 37519723792,
+    "historyContract": "Omission accepted only for expected-empty witness; present null/malformed values rejected, nonempty witnesses require array. Regression written first.",
+    "lintRepairs": "inherit lifecycle during enrollment/listen; construct Server in existing owned transport-start seam; explicit authority cases; retain failed-response closure; lexical parent sanitization after original validation; factor unchanged route/frame/catalogue/settlement predicates",
+    "publicControlBodiesUnchanged": true,
+    "historicalSourceInventoryUnchanged": true,
+    "productionChanged": false
+  }
 }

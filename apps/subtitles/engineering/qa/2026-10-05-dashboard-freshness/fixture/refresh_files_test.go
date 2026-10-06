@@ -21,16 +21,10 @@ type r16OwnedFiles struct {
 
 func r16CreateFiles(empty bool) (*r16OwnedFiles, error) {
 	parent := os.Getenv("R16_FRESHNESS_PRIVATE_ROOT")
-	if parent != "" && (!filepath.IsAbs(parent) || filepath.Clean(parent) != parent || len(parent) > 4096) {
-		return nil, errors.New("owned R16 parent root invalid")
+	if err := r16ValidateParent(parent); err != nil {
+		return nil, err
 	}
-	if parent != "" {
-		info, err := os.Lstat(parent)
-		if err != nil || !info.IsDir() || info.Mode()&os.ModeSymlink != 0 {
-			return nil, errors.New("owned R16 parent was not an actual directory")
-		}
-	}
-	base, err := os.MkdirTemp(parent, "kinosail-r16-public-")
+	base, err := r16AllocateRoot(parent)
 	if err != nil {
 		return nil, errors.New("owned R16 retained root unavailable")
 	}
@@ -120,4 +114,24 @@ func (files *r16OwnedFiles) snapshot() (r16Files, error) {
 
 func (files *r16OwnedFiles) close() bool {
 	return errors.Join(files.media.Close(), files.state.Close()) == nil
+}
+
+func r16AllocateRoot(parent string) (string, error) {
+	if parent == "" {
+		return os.MkdirTemp("", "kinosail-r16-public-")
+	}
+	return os.MkdirTemp(filepath.Clean(parent), "kinosail-r16-public-")
+}
+
+func r16ValidateParent(parent string) error {
+	if parent != "" && (!filepath.IsAbs(parent) || filepath.Clean(parent) != parent || len(parent) > 4096) {
+		return errors.New("owned R16 parent root invalid")
+	}
+	if parent != "" {
+		info, err := os.Lstat(parent)
+		if err != nil || !info.IsDir() || info.Mode()&os.ModeSymlink != 0 {
+			return errors.New("owned R16 parent was not an actual directory")
+		}
+	}
+	return nil
 }

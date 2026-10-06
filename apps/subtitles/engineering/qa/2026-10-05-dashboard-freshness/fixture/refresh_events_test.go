@@ -77,9 +77,7 @@ func (target *r16Target) beginStream(ctx context.Context, stream *r16CapturedStr
 	response, requestErr := target.client.Do(request)
 	stopped := timer.Stop()
 	if requestErr != nil {
-		if response != nil && response.Body.Close() != nil {
-			target.fail()
-		}
+		target.failedStreamResponse(response)
 		return false
 	}
 	stream.response = response
@@ -131,23 +129,11 @@ func r16AddFrameLine(frame *r16Frame, line string) bool {
 	case "retry":
 		return value == "3000"
 	case "id":
-		if frame.ID != "" || len(value) > 20 {
-			return false
-		}
-		frame.ID = value
+		return r16FrameID(frame, value)
 	case "event":
-		if frame.Type != "" || value == "" || len(value) > 64 {
-			return false
-		}
-		frame.Type = value
+		return r16FrameType(frame, value)
 	case "data":
-		if len(frame.Data)+len(value) > 1024 {
-			return false
-		}
-		if len(frame.Data) != 0 {
-			return false
-		}
-		frame.Data = []byte(value)
+		return r16FrameData(frame, value)
 	default:
 		return false
 	}
@@ -190,4 +176,34 @@ func (stream *r16CapturedStream) Headers() http.Header {
 		return http.Header{}
 	}
 	return stream.response.Header.Clone()
+}
+
+func r16FrameID(frame *r16Frame, value string) bool {
+	if frame.ID != "" || len(value) > 20 {
+		return false
+	}
+	frame.ID = value
+	return true
+}
+
+func r16FrameType(frame *r16Frame, value string) bool {
+	if frame.Type != "" || value == "" || len(value) > 64 {
+		return false
+	}
+	frame.Type = value
+	return true
+}
+
+func r16FrameData(frame *r16Frame, value string) bool {
+	if len(frame.Data)+len(value) > 1024 || len(frame.Data) != 0 {
+		return false
+	}
+	frame.Data = []byte(value)
+	return true
+}
+
+func (target *r16Target) failedStreamResponse(response *http.Response) {
+	if r16CloseFailedResponse(response) != nil {
+		target.fail()
+	}
 }

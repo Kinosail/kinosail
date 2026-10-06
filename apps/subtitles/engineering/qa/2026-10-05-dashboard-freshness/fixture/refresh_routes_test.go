@@ -12,23 +12,10 @@ import (
 var r16ItemPattern = regexp.MustCompile("^[a-f0-9]{16}$")
 
 func (target *r16Target) routeAllowed(method, route string) bool {
-	switch method {
-	case http.MethodGet:
-		switch route {
-		case "/account", "/?view=library", "/api/v1/events",
-			"/api/v1/subtitle-library?view=summary",
-			"/api/v1/subtitle-library?view=library",
-			"/api/v1/subtitle-library?view=history":
-			return true
-		}
-	case http.MethodPost:
-		switch route {
-		case "/setup", "/account/mfa/enable", "/api/v1/subtitle-providers/test":
-			return true
-		}
-	case http.MethodDelete:
-		return route == "/api/v1/session"
-	default:
+	if r16StaticRouteAllowed(method, route) {
+		return true
+	}
+	if method != http.MethodGet && method != http.MethodPost {
 		return false
 	}
 	item := target.registeredItem()
@@ -53,14 +40,8 @@ func r16RegisterActualCatalogue(ctx context.Context, target *r16Target, empty bo
 	if !response.Complete || response.Status != http.StatusOK {
 		return errors.New("actual R16 catalogue unavailable")
 	}
-	var data struct {
-		Total *int `json:"total"`
-		Items []struct {
-			ID    string `json:"id"`
-			Ready bool   `json:"ready"`
-		} `json:"items"`
-	}
-	if json.Unmarshal(response.Body, &data) != nil || data.Total == nil || data.Items == nil {
+	var data r16Catalogue
+	if !r16ValidCatalogue(response.Body, &data) {
 		return errors.New("actual R16 catalogue invalid")
 	}
 	if empty {
@@ -72,7 +53,42 @@ func r16RegisterActualCatalogue(ctx context.Context, target *r16Target, empty bo
 	if *data.Total != 1 || len(data.Items) != 1 {
 		return errors.New("actual R16 catalogue was not singular")
 	}
-	item := data.Items[0]
+	return target.registerCatalogueItem(data.Items[0])
+}
+
+func r16StaticRouteAllowed(method, route string) bool {
+	switch method {
+	case http.MethodGet:
+		switch route {
+		case "/account", "/?view=library", "/api/v1/events",
+			"/api/v1/subtitle-library?view=summary",
+			"/api/v1/subtitle-library?view=library",
+			"/api/v1/subtitle-library?view=history":
+			return true
+		}
+	case http.MethodPost:
+		switch route {
+		case "/setup", "/account/mfa/enable", "/api/v1/subtitle-providers/test":
+			return true
+		}
+	case http.MethodDelete:
+		return route == "/api/v1/session"
+	default:
+		return false
+	}
+	return false
+}
+
+type r16Catalogue struct {
+	Total *int               `json:"total"`
+	Items []r16CatalogueItem `json:"items"`
+}
+
+func r16ValidCatalogue(body []byte, data *r16Catalogue) bool {
+	return json.Unmarshal(body, data) == nil && data.Total != nil && data.Items != nil
+}
+
+func (target *r16Target) registerCatalogueItem(item r16CatalogueItem) error {
 	if !item.Ready || !r16ItemPattern.MatchString(item.ID) {
 		return errors.New("actual R16 item was not eligible")
 	}
@@ -83,4 +99,9 @@ func r16RegisterActualCatalogue(ctx context.Context, target *r16Target, empty bo
 	}
 	target.item = item.ID
 	return nil
+}
+
+type r16CatalogueItem struct {
+	ID    string `json:"id"`
+	Ready bool   `json:"ready"`
 }

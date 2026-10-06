@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"net/url"
@@ -79,28 +80,29 @@ func r16ReadRow(t *testing.T, f r16PublicFixture) r16Row {
 	return data.Items[0]
 }
 
-func r16HistoryRows(t *testing.T, f r16PublicFixture) []r16History {
+func r16HistoryRows(t *testing.T, f r16PublicFixture, allowEmpty bool) []r16History {
 	t.Helper()
 	var data struct {
-		History []r16History `json:"history"`
+		History json.RawMessage `json:"history"`
 	}
 	r16DecodeResponse(t, r16Request(t, f, http.MethodGet, "/api/v1/subtitle-library?view=history", nil, r16Owner), &data)
-	if data.History == nil {
-		t.Fatal("actual History projection omitted its array")
+	rows, err := r16DecodeHistory(data.History, allowEmpty)
+	if err != nil {
+		t.Fatal("actual History projection invalidated its array")
 	}
-	return data.History
+	return rows
 }
 
 func r16AssertHistoryEmpty(t *testing.T, f r16PublicFixture) {
 	t.Helper()
-	if len(r16HistoryRows(t, f)) != 0 {
+	if len(r16HistoryRows(t, f, true)) != 0 {
 		t.Fatal("actual History effect count did not match admitted work")
 	}
 }
 
 func r16AssertManualHistory(t *testing.T, f r16PublicFixture, count int) {
 	t.Helper()
-	rows := r16HistoryRows(t, f)
+	rows := r16HistoryRows(t, f, false)
 	if len(rows) != count {
 		t.Fatal("actual manual History count did not match admitted Saves")
 	}
@@ -285,4 +287,34 @@ func r16SettleFixture(t *testing.T, f r16PublicFixture) {
 	if !f.StopAndJoin(ctx) {
 		t.Error("owned freshness fixture did not settle and close")
 	}
+}
+
+func TestR16HistoryProjectionEmptyOmissionContract(t *testing.T) {
+	for _, raw := range []json.RawMessage{nil, []byte(`[]`)} {
+		rows, err := r16DecodeHistory(raw, true)
+		if err != nil || len(rows) != 0 {
+			t.Fatal("published empty History representation was rejected")
+		}
+	}
+	for _, raw := range []json.RawMessage{nil, []byte(`null`), []byte(`{}`), []byte(`true`)} {
+		if _, err := r16DecodeHistory(raw, false); err == nil {
+			t.Fatal("required History array was not enforced")
+		}
+	}
+	for _, raw := range []json.RawMessage{[]byte(`null`), []byte(`{}`), []byte(`true`)} {
+		if _, err := r16DecodeHistory(raw, true); err == nil {
+			t.Fatal("present invalid History value was accepted as empty")
+		}
+	}
+}
+
+func r16DecodeHistory(raw json.RawMessage, allowEmpty bool) ([]r16History, error) {
+	if len(raw) == 0 && allowEmpty {
+		return nil, nil
+	}
+	var rows []r16History
+	if json.Unmarshal(raw, &rows) != nil || rows == nil {
+		return nil, errors.New("actual R16 History array invalid")
+	}
+	return rows, nil
 }

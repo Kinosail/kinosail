@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"context"
-	"errors"
 	"io"
 	"net/http"
 )
@@ -38,9 +37,7 @@ func (target *r16Target) request(ctx context.Context, method, route string, body
 	client := target.clientFor(authority)
 	response, err := client.Do(request)
 	if err != nil {
-		if response != nil {
-			err = errors.Join(err, response.Body.Close())
-		}
+		_ = r16CloseFailedResponse(response)
 		target.fail()
 		return r16Response{}
 	}
@@ -79,6 +76,8 @@ func (target *r16Target) headers(request *http.Request, authority r16Authority) 
 	switch authority {
 	case r16Owner:
 		request.Header.Set("X-Kinosail-CSRF", csrf)
+	case r16Anonymous, r16MissingCSRF:
+		return
 	case r16WrongCSRF:
 		if len(csrf) != 43 {
 			target.fail()
@@ -94,4 +93,11 @@ func (target *r16Target) headers(request *http.Request, authority r16Authority) 
 
 func (target *r16Target) joinLifecycle(cancel context.CancelFunc) func() bool {
 	return context.AfterFunc(target.lifecycle, cancel)
+}
+
+func r16CloseFailedResponse(response *http.Response) error {
+	if response == nil {
+		return nil
+	}
+	return response.Body.Close()
 }

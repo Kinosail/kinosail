@@ -11,6 +11,8 @@ import (
 	"net/url"
 	"strings"
 	"sync"
+
+	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
 type r16CheckedListener struct {
@@ -44,7 +46,7 @@ type r16Target struct {
 }
 
 func r16NewTarget(lifecycle context.Context) (*r16Target, error) {
-	listener, err := net.Listen("tcp4", "127.0.0.1:0")
+	listener, err := (&net.ListenConfig{}).Listen(lifecycle, "tcp4", "127.0.0.1:0")
 	if err != nil {
 		return nil, errors.New("owned R16 listener unavailable")
 	}
@@ -63,8 +65,8 @@ func r16NewTarget(lifecycle context.Context) (*r16Target, error) {
 	}, nil
 }
 
-func (target *r16Target) start(handler http.Handler) {
-	target.server.Config.Handler = handler
+func (target *r16Target) start(config server.Config) {
+	target.server.Config.Handler = server.New(config)
 	target.server.Config.BaseContext = func(net.Listener) context.Context { return target.lifecycle }
 	target.server.StartTLS()
 	transport := target.server.Client().Transport.(*http.Transport).Clone()

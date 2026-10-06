@@ -32,7 +32,7 @@ func r16NewProviderPeer(lifecycle context.Context) (*r16ProviderPeer, error) {
 	if _, err := rand.Read(data); err != nil {
 		return nil, errors.New("owned R16 provider key unavailable")
 	}
-	listener, err := net.Listen("tcp4", "127.0.0.1:0")
+	listener, err := (&net.ListenConfig{}).Listen(lifecycle, "tcp4", "127.0.0.1:0")
 	if err != nil {
 		return nil, errors.New("owned R16 provider listener unavailable")
 	}
