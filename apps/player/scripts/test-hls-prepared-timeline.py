@@ -18,7 +18,7 @@ import subprocess
 import threading
 import time
 from hls_timeline_http import PublicServer, sha, source_state
-from hls_timeline_packets import fragment_packets, decoded_identity, safe_seek_phases, manifest_facts
+from hls_timeline_packets import fragment_packets, decoded_identity, safe_seek_phases, manifest_facts, safe_encoder_lifecycle
 from hls_timeline_fixture import fixture
 from hls_timeline_preparation import prepare_scene
 from hls_timeline_seek_diagnostics import seek_diagnostics
@@ -201,8 +201,6 @@ def journey(name, original, metadata, offset=0, cold=False):
             status, init, _ = api.http(base + "init.mp4")
             check(status == 200 and init == fragments[0], "same_initialization")
             case["originalInitSHA256"] = hashlib.sha256(init).hexdigest()
-            case["workerBound"] = resources["samples"] > 0 and resources["peakOwnedFFmpeg"] == 1 and resources["samplingErrors"] == 0
-            check(case["workerBound"], "owned_encoder_bound")
             case["result"] = "passed" if not case["failures"] else "failed"
         except Exception as error:
             case["failureClass"] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
@@ -218,6 +216,13 @@ def journey(name, original, metadata, offset=0, cold=False):
             log.flush()
             private_log = bounded_bytes(directory / "server.log", 2 * 1024 * 1024, "private_log_bound").decode("utf-8")
             case.update(safe_seek_phases(private_log))
+            lifecycle = safe_encoder_lifecycle(private_log)
+            case["encoderLifecycle"] = lifecycle
+            case["workerBound"] = (resources["samples"] > 0 and resources["peakOwnedFFmpeg"] <= 1
+                and resources["samplingErrors"] == 0 and lifecycle["validSequence"] and lifecycle["peakActive"] == 1)
+            if not case["workerBound"]:
+                case["failures"].append("owned_encoder_bound")
+                case["result"] = "failed"
             after = source_state(source)
             case["sourceAfter"] = after
             case["sourceUnchanged"] = before == after

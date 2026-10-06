@@ -73,3 +73,19 @@ def manifest_facts(data):
     return {"sha256": hashlib.sha256(data).hexdigest(), "playlistType": "VOD" if "#EXT-X-PLAYLIST-TYPE:VOD" in text else "EVENT",
         "endlist": "#EXT-X-ENDLIST" in text, "durationSeconds": sum(lengths),
         "segmentCount": len(segments)}, list(zip(segments, lengths))
+
+
+def safe_encoder_lifecycle(private_log):
+    active, starts, ends, peak, invalid = 0, 0, 0, 0, False
+    for line in private_log.splitlines():
+        if "HLS transcode started" in line:
+            starts += 1
+            active += 1
+            peak = max(peak, active)
+        elif any(message in line for message in ["HLS transcode completed",
+                "HLS transcode paused after playback became inactive", "HLS transcode failed"]):
+            ends += 1
+            active -= 1
+            invalid = invalid or active < 0
+    return {"starts": starts, "ends": ends, "peakActive": peak, "activeAtTeardown": active,
+        "validSequence": not invalid and starts > 0 and active == 0}

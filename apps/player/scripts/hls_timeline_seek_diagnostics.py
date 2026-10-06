@@ -33,9 +33,9 @@ def seek_diagnostics(directory, source, key):
     cutoff = format(dts - 0.000001, ".6f")
     candidates = [
         ("legacy", ["-ss", format(key, ".9f")], []),
-        ("legacy-prior0", ["-ss", format(key, ".9f")], ["-copy_prior_start:v", "0"]),
-        ("output-dts", ["-copyts"], ["-ss", cutoff, "-copy_prior_start:v", "0"]),
-        ("padded-dts", ["-copyts", "-ss", format(key + 0.14, ".9f")], ["-ss", cutoff, "-copy_prior_start:v", "0"]),
+        ("legacy-prior0", ["-ss", format(key, ".9f")], ["-copypriorss:v", "0"]),
+        ("output-dts", ["-copyts"], ["-ss", cutoff, "-copypriorss:v", "0"]),
+        ("padded-dts", ["-copyts", "-ss", format(key + 0.14, ".9f")], ["-ss", cutoff, "-copypriorss:v", "0"]),
         ("copyts", ["-copyts", "-ss", format(key, ".9f")], []),
         ("padded", ["-ss", format(key + 0.14, ".9f")], []),
         ("padded-copyts", ["-copyts", "-ss", format(key + 0.14, ".9f")], []),
