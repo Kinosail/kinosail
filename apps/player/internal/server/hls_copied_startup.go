@@ -11,7 +11,7 @@ import (
 )
 
 func (manager *hlsManager) reusableCopiedHLS(ctx context.Context, directory, source, policy string, recipe hlsRecipe) bool {
-	if ctx.Err() != nil || !(cacheFresh(filepath.Join(directory, "index.m3u8"), source, policy) || seekCacheFresh(directory, source, policy)) {
+	if ctx.Err() != nil || !cacheFresh(filepath.Join(directory, "index.m3u8"), source, policy) && !seekCacheFresh(directory, source, policy) {
 		return false
 	}
 	if recipe.mode != "remux" || !manager.copiedHLSTimelinePresent(directory) {
