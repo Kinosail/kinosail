@@ -9,6 +9,7 @@ same init, admission bounds, and unauthenticated rejection. No playlist mocks.
 import hashlib
 import itertools
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -45,13 +46,16 @@ def bounded_bytes(path, limit, failure):
     return data
 
 
-def fixture(name, gop, keys):
-    path = RUN / (name + ".mkv")
-    command = ["ffmpeg", "-nostdin", "-v", "error", "-f", "lavfi", "-i", "testsrc2=s=640x360:r=24:d=96",
-        "-f", "lavfi", "-i", "sine=frequency=440:sample_rate=48000:duration=96",
+def fixture(name, gop, keys, rate="24", frames=2304, extension=".mkv"):
+    numerator, _, denominator = rate.partition("/")
+    frame_rate = float(numerator) / float(denominator or "1")
+    expected_duration = frames / frame_rate
+    path = RUN / (name + extension)
+    command = ["ffmpeg", "-nostdin", "-v", "error", "-f", "lavfi", "-i", f"testsrc2=s=640x360:r={rate}:d={expected_duration}",
+        "-f", "lavfi", "-i", f"sine=frequency=440:sample_rate=48000:duration={expected_duration}",
         "-c:v", "libx264", "-threads", "2", "-preset", "veryfast", "-crf", "32", "-pix_fmt", "yuv420p",
         "-g", str(gop), "-keyint_min", "1", "-sc_threshold", "0", "-force_key_frames", keys,
-        "-c:a", "aac", "-ac", "2", str(path)]
+        "-frames:v", str(frames), "-c:a", "aac", "-ac", "2", str(path)]
     subprocess.run(command, check=True, timeout=120, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     probe = subprocess.check_output(["ffprobe", "-v", "error", "-select_streams", "v:0", "-skip_frame", "nokey",
         "-show_entries", "frame=best_effort_timestamp_time:format=duration:stream=avg_frame_rate",
@@ -59,11 +63,13 @@ def fixture(name, gop, keys):
     facts = json.loads(probe)
     times = [float(f["best_effort_timestamp_time"]) for f in facts["frames"] if "best_effort_timestamp_time" in f]
     duration = float(facts["format"]["duration"])
-    check(facts["streams"][0]["avg_frame_rate"] == "24/1", "fixture_frame_rate")
+    actual_rate = facts["streams"][0]["avg_frame_rate"].split("/")
+    check(abs(float(actual_rate[0]) / float(actual_rate[1]) - frame_rate) < 0.001, "fixture_frame_rate")
     expected = [float(v) for v in keys.split(",")]
     check(len(times) == len(expected) and all(abs(a-b) < 0.05 for a, b in zip(times, expected)), "fixture_keyframes")
-    check(abs(duration - 96) < 0.1, "fixture_duration")
-    return path, {"command": command, "sha256": sha(path), "durationSeconds": duration, "frameRate": 24, "keyframesSeconds": times}
+    check(abs(duration - expected_duration) < 0.1, "fixture_duration")
+    return path, {"command": command, "sha256": sha(path), "durationSeconds": duration, "videoDurationSeconds": expected_duration, "frameRate": frame_rate,
+        "videoFrames": frames, "keyframesSeconds": times}
 
 
 def encoder_count(server, source):
@@ -96,7 +102,8 @@ def manifest_facts(data):
     text = data.decode("utf-8")
     lengths = [float(v) for v in re.findall(r"^#EXTINF:([0-9.]+),", text, re.M)]
     segments = re.findall(r"^segment-[0-9]{5}\.m4s$", text, re.M)
-    check(len(lengths) == len(segments) and bool(segments), "variant_segment_shape")
+    check(0 < len(segments) <= 100 and len(lengths) == len(segments)
+        and all(math.isfinite(v) and 0 < v <= 60 for v in lengths), "variant_segment_shape")
     return {"sha256": hashlib.sha256(data).hexdigest(), "playlistType": "VOD" if "#EXT-X-PLAYLIST-TYPE:VOD" in text else "EVENT",
         "endlist": "#EXT-X-ENDLIST" in text, "durationSeconds": sum(lengths),
         "segmentCount": len(segments)}, list(zip(segments, lengths))
@@ -107,7 +114,7 @@ def journey(name, original, metadata, offset=0):
     receipt["cases"].append(case)
     directory, media = RUN / name, RUN / name / "media"
     media.mkdir(parents=True)
-    source = media / "Fixture.mkv"
+    source = media / ("Fixture" + original.suffix)
     shutil.copy2(original, source)
     before = source_state(source)
     case["sourceBefore"] = before
@@ -135,7 +142,7 @@ def journey(name, original, metadata, offset=0):
             case["mode"] = plan["compatiblePlan"]["mode"]
             check(case["mode"] == "remux", "fixture_must_remux")
             case["logicalDurationSeconds"] = plan["duration"]
-            check(abs(plan["duration"] - 96) < 0.1, "plan_duration")
+            check(abs(plan["duration"] - metadata["durationSeconds"]) < 0.1, "plan_duration")
             hls = plan["compatible"]
             if offset:
                 hls = hls.replace("/index.m3u8", "-o" + str(offset * 1000) + "/index.m3u8")
@@ -240,7 +247,7 @@ def journey(name, original, metadata, offset=0):
             case["decodedContinuationSeconds"] = case["decodedFrames"] / metadata["frameRate"]
             if abs(case["decodedContinuationSeconds"] - elapsed) > 0.15:
                 case["failures"].append("advertised_continuation_timing")
-            expected_frames = (96 - offset) * metadata["frameRate"]
+            expected_frames = metadata["videoFrames"] - round(offset * metadata["frameRate"])
             if result.returncode or case["decodedFrames"] != expected_frames:
                 case["failures"].append("decoded_continuation")
             reference, actual = decoded_identity(source, offset), decoded_identity(decoded)
@@ -288,7 +295,10 @@ try:
         journey(name, source, metadata)
         if name == "cluster15s":
             journey(name + "resume15s", source, metadata, 15)
-    if len(receipt["cases"]) == 4 and all(case["result"] == "passed" for case in receipt["cases"]):
+    source, metadata = fixture("fractional15s", 3000, "0,15.015,16.016,18.018,36.036,60.06,84.084",
+        "30000/1001", 2880, ".mp4")
+    journey("fractional15s", source, metadata)
+    if len(receipt["cases"]) == 5 and all(case["result"] == "passed" for case in receipt["cases"]):
         receipt["result"] = "passed"
 except Exception as error:
     receipt["failureClass"] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
