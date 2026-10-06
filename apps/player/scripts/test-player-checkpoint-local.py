@@ -14,6 +14,8 @@ import urllib.request
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--phase", choices=["deployed", "current", "candidate"], required=True)
+parser.add_argument("--project", choices=["chromium", "webkit"], default="chromium")
+parser.add_argument("--grep")
 args = parser.parse_args()
 root = Path(__file__).resolve().parents[3]
 run = root / ".verification/paused-seek-checkpoint" / time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
@@ -26,19 +28,20 @@ sources = ["packages/webassets/static/player-progress.js", "packages/playerweb/p
            "packages/webassets/static/player-progress-navigation.js", "packages/webassets/webassets.go",
            "apps/player/e2e/checkpoint-navigation-cases.ts",
            "packages/playerweb/progress_notice.go", "apps/player/internal/server/static/player-streaming-recovery.js",
+           "apps/player/internal/server/static/player.js", "apps/player/internal/server/static/player-streaming-adaptive.js",
            "apps/player/e2e/test-instance-checkpoint.spec.ts", "packages/webassets/static/player-presentation.js",
            "packages/webassets/static/player-core.js", "packages/webassets/static/player-status.js",
            "apps/player/e2e/player-preparation-progress.spec.ts", "apps/player/e2e/test-instance-progress.spec.ts",
            "apps/player/scripts/test-player-checkpoint-local.py"]
 receipt = {"revision": revision, "workingDiffSHA256": hashlib.sha256(diff).hexdigest(),
            "sourceSHA256": {path: hashlib.sha256((root / path).read_bytes()).hexdigest() for path in sources},
-           "phase": args.phase, "command": "GOMAXPROCS=2 python3 apps/player/scripts/test-player-checkpoint-local.py --phase " + args.phase,
-           "environment": "Native Go Kinosail Server; loopback HTTP; one Chromium worker",
-           "data": "Disposable synthetic Owner, TOTP, and generated 30-second video. State preserved.",
+           "phase": args.phase, "command": "GOMAXPROCS=2 python3 apps/player/scripts/test-player-checkpoint-local.py --phase " + args.phase + " --project " + args.project + (" --grep " + args.grep if args.grep else ""),
+           "environment": "Native Go Kinosail Server; loopback HTTP; one " + args.project + " worker",
+           "data": "Disposable synthetic Owner, TOTP, and generated 70-second video. State preserved.",
            "boundaries": "Browser baseline replays the base progress asset against the same real Server. No production, container, device, physical TV, or TLS deployment proof.",
            "result": "failed", "runs": []}
 try:
-    subprocess.run(["ffmpeg", "-nostdin", "-v", "error", "-f", "lavfi", "-i", "testsrc2=s=320x180:r=24:d=30",
+    subprocess.run(["ffmpeg", "-nostdin", "-v", "error", "-f", "lavfi", "-i", "testsrc2=s=320x180:r=24:d=70",
                     "-c:v", "libx264", "-threads", "1", "-preset", "ultrafast", "-crf", "35", "-pix_fmt", "yuv420p",
                     "-movflags", "+faststart", str(media / "Checkpoint Example.mp4")], check=True)
     binary = run / "kinosail-player"
@@ -80,11 +83,13 @@ try:
             request("/api/v1/settings/onboarding", {"enabled": False}, token, "PUT")
             browser_env = {**env, "KINOSAIL_TEST_INSTANCE": "1", "KINOSAIL_TEST_TOTP_SECRET": secret,
                            "KINOSAIL_E2E_OWNER_PASSWORD": "synthetic-progress-password", "KINOSAIL_E2E_URL": url,
-                           "KINOSAIL_E2E_VIDEO": "off", "KINOSAIL_BROWSER_WORKERS": "1"}
+                           "KINOSAIL_E2E_VIDEO": "off", "KINOSAIL_BROWSER_WORKERS": "1", "KINOSAIL_BROWSER_PROJECT": args.project}
             for phase in [args.phase]:
                 selected = ["test-instance-checkpoint.spec.ts"] + (["test-instance-progress.spec.ts"] if phase == "candidate" else [])
                 command = ["node", "node_modules/@playwright/test/cli.js", "test", *selected,
-                           "--project=chromium", "--workers=1", "--repeat-each=2"]
+                           "--project=" + args.project, "--workers=1", "--repeat-each=2"]
+                if args.grep:
+                    command += ["--grep", args.grep]
                 browser_env["KINOSAIL_CHECKPOINT_SOURCE"] = phase
                 browser_env["KINOSAIL_E2E_ARTIFACT_DIR"] = str(run / (phase + "-report"))
                 browser_env["KINOSAIL_E2E_OUTPUT_DIR"] = str(run / (phase + "-artifacts"))
