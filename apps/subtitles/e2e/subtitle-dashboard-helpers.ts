@@ -17,7 +17,7 @@ function totp(): string {
 }
 
 export async function login(page: import("@playwright/test").Page, info?: import("@playwright/test").TestInfo) {
-  const navigation = navigationDiagnostics(page);
+  const navigation = navigationDiagnostics(page,info?.project.use.baseURL);
   try {
   await page.addInitScript(() => {
     if ("PublicKeyCredential" in window) Object.defineProperty(PublicKeyCredential, "isConditionalMediationAvailable", { value: async () => false });
@@ -33,7 +33,7 @@ export async function login(page: import("@playwright/test").Page, info?: import
   }
   await expect(page).toHaveURL("/");
   } catch (error) {
-    await info?.attach("subtitle-login-navigation-failure", {contentType:"application/json", body:JSON.stringify(await navigation.snapshot())});
+    await info?.attach("subtitle-login-navigation-failure", {contentType:"application/json", body:JSON.stringify(await navigation.snapshot(error))});
     throw error;
   } finally {navigation.stop();}
 }

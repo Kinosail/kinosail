@@ -194,13 +194,13 @@ export async function startHappyPath(page: Page, testInfo: TestInfo): Promise<Ha
 }
 
 export async function openHappyPathSetup(page: Page, testInfo: TestInfo) {
-  const navigation = navigationDiagnostics(page);
+  const navigation = navigationDiagnostics(page,testInfo.project.use.baseURL);
   try {
     await page.goto("/setup", {waitUntil: "domcontentloaded"});
     await expect(page.getByLabel("Name", {exact: true})).toBeVisible();
   } catch (error) {
     await testInfo.attach("setup-navigation-failure", {
-      body: JSON.stringify(await navigation.snapshot()), contentType: "application/json",
+      body: JSON.stringify(await navigation.snapshot(error)), contentType: "application/json",
     });
     throw error;
   } finally { navigation.stop(); }
