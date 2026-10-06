@@ -1,5 +1,26 @@
 #!/usr/bin/env bash
 
+# The container owner shares these volume names and the fixture directory.
+# shellcheck disable=SC2034,SC2154
+start_fresh_server() {
+  local fixed_port="$1"
+  if [[ -n "$container" ]]; then
+    "$engine" rm --force "$container" >/dev/null
+    container=""
+  fi
+  remove_state_volumes
+  suffix="$$-$RANDOM"
+  config_volume="kinosail-test-config-$suffix"
+  cache_volume="kinosail-test-cache-$suffix"
+  backup_volume="kinosail-test-backups-$suffix"
+  create_state_volumes
+  start_server "$fixed_port"
+  if browser_fixture_uses_tls; then
+    remove_browser_fixture_trust
+    trust_browser_fixture_tls "$engine" "$container" "$mcp_dir" "$suffix"
+  fi
+}
+
 prepare_player_checkpoint_fixture() {
   local engine="$1" image="$2" media_dir="$3"
   shift 3

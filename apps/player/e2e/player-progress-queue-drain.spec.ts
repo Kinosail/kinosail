@@ -43,10 +43,15 @@ test("new track pause is dispatched after watched continuation release", {tag: "
     await expect(audio).toHaveAttribute("data-progress", "/progress/next");
     await expect.poll(() => audio.evaluate((media: HTMLAudioElement) => new URL(media.src).pathname)).toBe("/media/next");
     await page.waitForFunction("typeof window.releaseQueuePlayback === 'function'");
-    await audio.evaluate((media: HTMLAudioElement) => {media.currentTime = 3; media.dispatchEvent(new Event("pause"));});
+    // A new source inherits no activity from the completed track, even with a
+    // positive stale decoder sample while its first Play promise is pending.
+    await audio.dispatchEvent("pause");
+    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+    expect(writes).toEqual([{path:"/progress/first",seconds:"0",watched:"true"}]);
+    await audio.evaluate((media: HTMLAudioElement) => {media.currentTime = 3; media.dispatchEvent(new Event("seeking")); media.dispatchEvent(new Event("seeked")); media.dispatchEvent(new Event("pause"));});
     await page.evaluate(() => (window as Window & {releaseQueuePlayback(): void}).releaseQueuePlayback());
     await expect.poll(() => writes.length, {timeout: 1500}).toBe(2);
-    expect(writes).toEqual([{path: "/progress/first", seconds: "0", watched: "true"}, {path: "/progress/next", seconds: "3", watched: null}]);
+    expect(writes).toEqual([{path: "/progress/first", seconds: "0", watched: "true"}, {path: "/progress/next", seconds: "3", watched: "false"}]);
     await testInfo.attach("progress-http-dispatches", {body: JSON.stringify(writes), contentType: "application/json"});
   } finally {
     await page.evaluate(() => (window as Window & {releaseQueuePlayback?: () => void}).releaseQueuePlayback?.()).catch(() => {});
@@ -101,7 +106,7 @@ test("pagehide dispatches latest position once while retired watched continuatio
     // Capture only the retired promise for deterministic continuation settlement;
     // correctness below is the observable request list and policy failure state.
     await page.evaluate("void (window.retiredProgressSender = progressFlight)");
-    await audio.evaluate((media: HTMLAudioElement) => {media.currentTime = 3; media.dispatchEvent(new Event("pause"));});
+    await audio.evaluate((media: HTMLAudioElement) => {media.currentTime = 3; media.dispatchEvent(new Event("seeking")); media.dispatchEvent(new Event("seeked")); media.dispatchEvent(new Event("pause"));});
     await audio.evaluate((media: HTMLAudioElement) => media.currentTime = 4);
     await page.evaluate(() => dispatchEvent(new PageTransitionEvent("pagehide")));
     await expect.poll(() => writes.length).toBe(2);
@@ -112,7 +117,7 @@ test("pagehide dispatches latest position once while retired watched continuatio
     await expect(page.locator("[data-progress-status]")).toHaveAttribute("data-progress-request-id", "qa-closing-policy");
     await expect(page.locator("[data-progress-notice]")).toBeVisible();
     await expect(page.locator("[data-progress-retry]")).toBeHidden();
-    expect(writes).toEqual([{path: "/progress/first", seconds: "0", watched: "true", revision: "1"}, {path: "/progress/next", seconds: "4", watched: null, revision: "3"}]);
+    expect(writes).toEqual([{path: "/progress/first", seconds: "0", watched: "true", revision: "1"}, {path: "/progress/next", seconds: "4", watched: "false", revision: "4"}]);
   } finally {
     releaseClosing();
     await page.evaluate(() => (window as Window & {releaseQueuePlayback?: () => void}).releaseQueuePlayback?.()).catch(() => {});
