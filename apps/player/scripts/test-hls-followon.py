@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Public non-key resumes, H264 audio conversion and legacy preparation controls."""
+"""Public non-key resumes, audio conversion and complete HEVC preparation."""
 import hashlib
 import argparse
 import json
@@ -22,22 +22,29 @@ from hls_followon_controls import controls
 
 ROOT = Path(__file__).resolve().parents[3]
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--suite', choices=['all', 'audio'], default='all')
+parser.add_argument('--suite', choices=['all', 'audio', 'hevc'], default='all')
 suite = parser.parse_args().suite
-RUN = ROOT / '.verification/hls-followon' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
+RUN = ROOT / '.verification' / ('hls-hevc-startup' if suite == 'hevc' else 'hls-followon') / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
 RUN.mkdir(parents=True)
 binary = RUN / 'player'
 receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
     'result': 'failed', 'cases': [], 'command': 'python3 apps/player/scripts/test-hls-followon.py --suite ' + suite,
-    'suite': suite, 'expectedCases': 12 if suite == 'all' else 6,
-    'acceptedRepairScope': 'Plain H264 copied-video audio conversion; regular remux, audio-only and audiobook controls',
-    'knownUnrepairedCases': ['nonkey-mkv', 'nonkey-mp4', 'hevc-video'],
+    'suite': suite, 'expectedCases': 12 if suite == 'all' else 4 if suite == 'hevc' else 6,
+    'expectedHEVCCaseNames': ['hevc-video', 'hevc-cold', 'hevc-interrupted-preparation', 'hevc-adopted-preparation'] if suite == 'hevc' else [],
+    'evaluatedHEVCScope': 'Plain zero-offset copied HEVC audio conversion; complete, cancelled and adopted preparation',
+    'acceptedRepairScope': ('Plain zero-offset copied HEVC audio conversion; complete, cancelled and adopted preparation'
+        if suite == 'hevc' else 'Plain H264 copied-video audio conversion; regular remux, audio-only and audiobook controls'
+        if suite == 'audio' else 'Plain H264 copied-video audio conversion and zero-offset HEVC preparation; legacy controls'),
+    'baselineKnownFailures': ['nonkey-mkv', 'nonkey-mp4', 'hevc-video', 'hevc-interrupted-preparation'],
+    'knownUnrepairedCases': ['nonkey-mkv', 'nonkey-mp4'],
     'regressionCasesRequiringQualification':
         ['hevc-interrupted-preparation', 'hevc-adopted-preparation'] if suite == 'all' else [],
-    'outsideAcceptedScopeCases': [] if suite == 'all' else
+    'outsideEvaluatedSuiteCases': [] if suite == 'all' else
+        ['remux-regular-cold', 'nonkey-mkv', 'nonkey-mp4', 'audio-regular-prepared', 'audio-sparse-cold',
+         'audio-sparse-prepared', 'audio-only', 'audiobook'] if suite == 'hevc' else
         ['nonkey-mkv', 'nonkey-mp4', 'hevc-video', 'hevc-cold', 'hevc-interrupted-preparation', 'hevc-adopted-preparation'],
     'boundary': 'Synthetic authenticated public Server delivery; native/Safari/iOS and Nox acceptance separate.',
-    'productionMediaOrCacheModified': False, 'fixtureSeconds': 32, 'fixtureFrameRate': 24}
+    'productionMediaOrCacheModified': False, 'fixtureSeconds': 10 if suite == 'hevc' else 32, 'fixtureFrameRate': 24}
 
 
 def packet_identity(path, stream):
@@ -190,21 +197,25 @@ try:
     receipt['binarySHA256'] = sha(binary)
     receipt['encoderVersions'] = {t: subprocess.check_output([t, '-version'], text=True).splitlines()[0]
                                   for t in ['ffmpeg', 'ffprobe']}
-    regular, regular_metadata = fixture(RUN, 'regular', 48, ','.join(str(v) for v in range(0, 32, 2)), frames=768)
-    regular_metadata = reprobe_source(regular, regular_metadata)
-    journey('remux-regular-cold', regular, regular_metadata, cold=True)
-    if suite == 'all':
-        mp4, mp4_metadata = convert(regular, regular_metadata, 'regular-copy')
-        journey('nonkey-mkv', regular, regular_metadata, 12.5, one_shot=True)
-        journey('nonkey-mp4', mp4, mp4_metadata, 12.5, one_shot=True)
-    ac3, ac3_metadata = convert(regular, regular_metadata, 'regular-ac3', ac3=True)
-    journey('audio-regular-prepared', ac3, ac3_metadata, audio_conversion=True)
-    sparse, sparse_metadata = fixture(RUN, 'sparse', 2400, '0,15,16,18', frames=768)
-    sparse_metadata = reprobe_source(sparse, sparse_metadata)
-    ac3, ac3_metadata = convert(sparse, sparse_metadata, 'sparse-ac3', ac3=True)
-    journey('audio-sparse-cold', ac3, ac3_metadata, cold=True, audio_conversion=True)
-    journey('audio-sparse-prepared', ac3, ac3_metadata, audio_conversion=True)
-    controls(ROOT, RUN, binary, receipt, include_hevc=suite == 'all')
+    if suite != 'hevc':
+        regular, regular_metadata = fixture(RUN, 'regular', 48, ','.join(str(v) for v in range(0, 32, 2)), frames=768)
+        regular_metadata = reprobe_source(regular, regular_metadata)
+        journey('remux-regular-cold', regular, regular_metadata, cold=True)
+        if suite == 'all':
+            mp4, mp4_metadata = convert(regular, regular_metadata, 'regular-copy')
+            journey('nonkey-mkv', regular, regular_metadata, 12.5, one_shot=True)
+            journey('nonkey-mp4', mp4, mp4_metadata, 12.5, one_shot=True)
+        ac3, ac3_metadata = convert(regular, regular_metadata, 'regular-ac3', ac3=True)
+        journey('audio-regular-prepared', ac3, ac3_metadata, audio_conversion=True)
+        sparse, sparse_metadata = fixture(RUN, 'sparse', 2400, '0,15,16,18', frames=768)
+        sparse_metadata = reprobe_source(sparse, sparse_metadata)
+        ac3, ac3_metadata = convert(sparse, sparse_metadata, 'sparse-ac3', ac3=True)
+        journey('audio-sparse-cold', ac3, ac3_metadata, cold=True, audio_conversion=True)
+        journey('audio-sparse-prepared', ac3, ac3_metadata, audio_conversion=True)
+    controls(ROOT, RUN, binary, receipt, include_hevc=suite != 'audio', include_audio=suite != 'hevc')
+    if suite == 'hevc':
+        check(sorted(c['name'] for c in receipt['cases']) == sorted(receipt['expectedHEVCCaseNames']),
+              'hevc_expected_case_names')
     if len(receipt['cases']) == receipt['expectedCases'] and all(c['result'] == 'passed' for c in receipt['cases']):
         receipt['result'] = 'passed'
 except Exception as error:

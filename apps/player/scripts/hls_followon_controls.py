@@ -15,7 +15,7 @@ from hls_followon_hevc import evidence, fragment_evidence, seek_diagnostics, val
 from hls_followon_cancel import interrupted_preparation, preparation_prefix, preparation_states
 
 
-def controls(root, run, binary, receipt, include_hevc=True):
+def controls(root, run, binary, receipt, include_hevc=True, include_audio=True):
     for name, extension, codec in [('audio-only', '.flac', 'flac'),
                                    ('audiobook', '.m4b', 'alac'), ('hevc-video', '.mkv', 'ac3'),
                                    ('hevc-cold', '.mkv', 'ac3'), ('hevc-interrupted-preparation', '.mkv', 'ac3'),
@@ -23,6 +23,8 @@ def controls(root, run, binary, receipt, include_hevc=True):
         hevc = name.startswith('hevc-')
         if hevc and not include_hevc:
             continue  # Full manual proof retains strict HEVC counter/control cases.
+        if not hevc and not include_audio:
+            continue  # The separate HEVC gate leaves audio6 in its existing gate.
         case = {'name': name, 'result': 'failed', 'failures': [],
                 'boundary': 'Public complete output for matched zero-offset synthetic media; general HEVC seeks not certified'}
         receipt['cases'].append(case)
