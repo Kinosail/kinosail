@@ -21,14 +21,19 @@ APPROVED = (
     ("6da6ce46f9ab1589f42774b7713ed28cb2d4e4ff", "r08-now-playing", "red-receipt.json", 55),
 )
 
+API_BLOB_APPROVED = tuple(
+    f"4a10b3ab0930a47dd0356a33f633ab5eed8d43ed:engineering/qa/2026-10-05-q12-ha-pagination/source-inventory.json:generic-api-key:{line}"
+    for line in (86, 92, 98)
+)
+
 
 def fingerprints():
     return {f"{commit}:engineering/qa/2026-10-04-{group}/{file}:generic-api-key:{line}"
-            for commit, group, file, line in APPROVED}
+            for commit, group, file, line in APPROVED} | set(API_BLOB_APPROVED)
 
 
 class ReceiptFingerprintPolicy(unittest.TestCase):
-    def test_eight_approved_digest_locations_are_exact(self):
+    def test_eleven_approved_metadata_locations_are_exact(self):
         actual = set((ROOT / ".gitleaksignore").read_text().splitlines())
         self.assertTrue(fingerprints().issubset(actual))
 
@@ -108,6 +113,38 @@ class RealReceiptScanner(unittest.TestCase):
         self.assertEqual(len(findings), 1)
         self.assertEqual(findings[0]["Commit"], head)
         self.assertEqual(findings[0]["File"], str(self.path))
+
+    def test_api_blob_exception_keeps_wrong_line_and_new_credentials_detectable(self):
+        (self.repo / ".gitleaksignore").write_text(self.fingerprint(self.original) + "\n")
+        self.path = Path("engineering/qa/2026-10-05-q12-ha-pagination/source-inventory.json")
+        (self.repo / self.path).parent.mkdir(parents=True)
+        source = b"disposable source metadata control 2\n"
+        blob = hashlib.sha1(b"blob " + str(len(source)).encode() + b"\0" + source).hexdigest()
+        git_blob = subprocess.check_output(["git", "hash-object", "--stdin"], input=source,
+                                           cwd=self.repo, env=self.env).decode().strip()
+        self.assertEqual(blob, git_blob)
+        self.write({"candidateHistory": [{"apiBlob": blob}]})
+        self.commit("Record Git object metadata control")
+        code, findings = self.scan()
+        self.assertEqual(code, 1)
+        self.assertEqual(len(findings), 1)
+        metadata = findings[0]
+        ignore = self.fingerprint(self.original) + "\n"
+        (self.repo / ".gitleaksignore").write_text(
+            ignore + self.fingerprint(metadata, metadata["StartLine"] + 1) + "\n")
+        self.assertEqual(self.scan(), (1, [metadata]))
+        (self.repo / ".gitleaksignore").write_text(ignore + self.fingerprint(metadata) + "\n")
+        self.assertEqual(self.scan(), (0, []))
+        self.write({"candidateHistory": [{"apiBlob": blob}],
+                    "api_key": hashlib.sha256(b"synthetic apiBlob credential control").hexdigest()})
+        head = self.commit("Add synthetic credential at the inventory path")
+        code, findings = self.scan()
+        self.assertEqual(code, 1)
+        credential_line = next(line for line, text in enumerate(
+            (self.repo / self.path).read_text().splitlines(), 1) if '"api_key"' in text)
+        self.assertTrue(any(row["Commit"] == head and row["File"] == str(self.path)
+                            and row["RuleID"] == "generic-api-key"
+                            and row["StartLine"] == credential_line for row in findings))
 
     def test_structured_digest_receipts_pass_without_masking_credentials(self):
         (self.repo / ".gitleaksignore").write_text(self.fingerprint(self.original) + "\n")
