@@ -46,6 +46,10 @@ func (manager *hlsManager) bindStartupCompletion(ctx context.Context, directory,
 		return errCopiedHLSIndex
 	}
 	defer root.Close()
+	return writeStartupCompletion(root, policy)
+}
+
+func writeStartupCompletion(root *os.Root, policy string) error {
 	binding, err := copiedHLSCacheFile(root, ".source", 16<<10)
 	if err != nil || string(binding) != policy {
 		return errCopiedHLSIndex
@@ -80,12 +84,7 @@ func (manager *hlsManager) startupCompletionReusable(ctx context.Context, item l
 	if _, err := root.Lstat(startupCompletionMarker); os.IsNotExist(err) {
 		return true
 	}
-	marker, err := copiedHLSCacheFile(root, startupCompletionMarker, 16<<10)
-	if err != nil || string(marker) != policy {
-		return false
-	}
-	binding, err := copiedHLSCacheFile(root, ".source", 16<<10)
-	if err != nil || string(binding) != policy {
+	if !startupCompletionMatches(root, policy) {
 		return false
 	}
 	manager.mu.Lock()
@@ -93,6 +92,15 @@ func (manager *hlsManager) startupCompletionReusable(ctx context.Context, item l
 	active := job != nil && job.cachePolicy == policy && job.preparation != nil && !startupJobStopping(job)
 	manager.mu.Unlock()
 	return ctx.Err() == nil && (active || cacheFresh(filepath.Join(directory, "index.m3u8"), item.Path, policy))
+}
+
+func startupCompletionMatches(root *os.Root, policy string) bool {
+	marker, err := copiedHLSCacheFile(root, startupCompletionMarker, 16<<10)
+	if err != nil || string(marker) != policy {
+		return false
+	}
+	binding, err := copiedHLSCacheFile(root, ".source", 16<<10)
+	return err == nil && string(binding) == policy
 }
 
 // Called under manager.mu when an active producer becomes real playback.
