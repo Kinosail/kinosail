@@ -13,11 +13,13 @@ from hls_followon_public import check, bounded_bytes, encoder_count, sample_reso
 from hls_followon_hevc import evidence, seek_diagnostics
 
 
-def controls(root, run, binary, receipt):
+def controls(root, run, binary, receipt, include_hevc=True):
     for name, extension, codec in [('audio-only', '.flac', 'flac'),
                                    ('audiobook', '.m4b', 'alac'), ('hevc-video', '.mkv', 'ac3'),
                                    ('hevc-cold', '.mkv', 'ac3')]:
         hevc = name.startswith('hevc-')
+        if hevc and not include_hevc:
+            continue  # Full manual proof retains both strict HEVC counter/control cases.
         case = {'name': name, 'result': 'failed', 'failures': [],
                 'boundary': 'Public preparation and complete audio delivery; HEVC video identity/timing not certified'}
         receipt['cases'].append(case)

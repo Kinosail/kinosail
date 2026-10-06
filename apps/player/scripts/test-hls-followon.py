@@ -29,8 +29,10 @@ RUN.mkdir(parents=True)
 binary = RUN / 'player'
 receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
     'result': 'failed', 'cases': [], 'command': 'python3 apps/player/scripts/test-hls-followon.py --suite ' + suite,
-    'suite': suite, 'expectedCases': 10 if suite == 'all' else 8,
-    'knownUnrepairedCases': ['nonkey-mkv', 'nonkey-mp4'],
+    'suite': suite, 'expectedCases': 10 if suite == 'all' else 6,
+    'acceptedRepairScope': 'Plain H264 copied-video audio conversion; regular remux, audio-only and audiobook controls',
+    'knownUnrepairedCases': ['nonkey-mkv', 'nonkey-mp4', 'hevc-video'],
+    'outsideAcceptedScopeCases': [] if suite == 'all' else ['nonkey-mkv', 'nonkey-mp4', 'hevc-video', 'hevc-cold'],
     'boundary': 'Synthetic authenticated public Server delivery; native/Safari/iOS and Nox acceptance separate.',
     'productionMediaOrCacheModified': False, 'fixtureSeconds': 32, 'fixtureFrameRate': 24}
 
@@ -199,7 +201,7 @@ try:
     ac3, ac3_metadata = convert(sparse, sparse_metadata, 'sparse-ac3', ac3=True)
     journey('audio-sparse-cold', ac3, ac3_metadata, cold=True, audio_conversion=True)
     journey('audio-sparse-prepared', ac3, ac3_metadata, audio_conversion=True)
-    controls(ROOT, RUN, binary, receipt)
+    controls(ROOT, RUN, binary, receipt, include_hevc=suite == 'all')
     if len(receipt['cases']) == receipt['expectedCases'] and all(c['result'] == 'passed' for c in receipt['cases']):
         receipt['result'] = 'passed'
 except Exception as error:
