@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 # WebKit rejects Secure cookies on HTTP localhost. Use real TLS on its disposable
 # Linux runner; browser contexts continue to reject untrusted certificates.
+# Only trust installed by this invocation belongs to its cleanup lifecycle.
+BROWSER_FIXTURE_CA_PATH=""
+BROWSER_FIXTURE_NODE_CA_PREVIOUS=""
+BROWSER_FIXTURE_NODE_CA_WAS_SET=""
+BROWSER_FIXTURE_NODE_CA_PATH=""
+
 browser_fixture_uses_tls() {
   [[ "${KINOSAIL_BROWSER_TEST:-}" == 1 && "${KINOSAIL_BROWSER_PROJECT:-}" == webkit ]]
 }

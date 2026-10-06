@@ -98,6 +98,17 @@ class BrowserFixtureTLS(unittest.TestCase):
             self.assertEqual(self.effects.read_text().splitlines(), ["export"])
             self.effects.unlink()
 
+    def test_inherited_matching_trust_path_is_not_owned_or_deleted(self):
+        result = self.call('remove_browser_fixture_trust\n'
+                           'test \"$NODE_EXTRA_CA_CERTS\" = /tmp/another-run.crt',
+                           BROWSER_FIXTURE_CA_PATH='/usr/local/share/ca-certificates/kinosail-browser-fixture-999-888.crt',
+                           BROWSER_FIXTURE_NODE_CA_PATH='/tmp/another-run.crt',
+                           BROWSER_FIXTURE_NODE_CA_PREVIOUS='/tmp/unrelated.crt',
+                           BROWSER_FIXTURE_NODE_CA_WAS_SET='x',
+                           NODE_EXTRA_CA_CERTS='/tmp/another-run.crt')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertFalse(self.effects.exists())
+
     def test_cleanup_refuses_unowned_paths_without_effects(self):
         for path in ("/etc/ssl/certs", "/tmp/fixture.crt", "../escape"):
             result = self.call('BROWSER_FIXTURE_CA_PATH="$INVALID"\nremove_browser_fixture_trust',
