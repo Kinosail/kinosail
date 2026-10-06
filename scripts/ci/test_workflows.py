@@ -8,6 +8,25 @@ WORKFLOWS = ROOT / '.github/workflows'
 
 
 class WorkflowSecurityTests(unittest.TestCase):
+    def test_parallel_image_checks_finish_before_digest_export(self):
+        # Browser E2E cannot prove that image publication still waits for both
+        # runtime verification and the vulnerability scan before export.
+        for workflow, test_name, export_name in (
+                ('publish.yml', 'Test the production image by digest', 'Export tested and scanned digest'),
+                ('release.yml', 'Test production image by digest', 'Export verified digest')):
+            with self.subTest(workflow=workflow):
+                source = (WORKFLOWS / workflow).read_text()
+                group = re.search(r'^      - parallel:\n((?: {8}.+\n|\n)+)', source, re.M)
+                self.assertIsNotNone(group, 'image verification must use a native parallel group')
+                checks = group.group(1)
+                self.assertIn(f'name: {test_name}', checks)
+                self.assertIn('run: ./scripts/ci/test-image.sh "$APP" "$IMAGE"', checks)
+                self.assertRegex(checks, r'uses: aquasecurity/trivy-action@[a-f0-9]{40}')
+                self.assertIn('exit-code: "1"', checks)
+                self.assertNotIn('continue-on-error:', checks)
+                self.assertLessEqual(group.end(), source.index(f'      - name: {export_name}'))
+                self.assertNotIn('digests/', checks)
+
     def test_startup_boundary_has_hosted_public_interface_evidence(self):
         app = (WORKFLOWS / 'app.yml').read_text()
         self.assertIn('name: Verify bounded startup and request boundary', app)
