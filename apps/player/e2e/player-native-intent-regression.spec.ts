@@ -13,6 +13,7 @@ const sourceHash = createHash('sha256').update(source).digest('hex');
 type Control = {
   configure(time: number, ready: number, end: number): void;
   quantizeTime(quantum: number): void;
+  replaceSource(time: number): void;
   beginNativeSeek(time: number): void;
   endNativeSeek(): void;
   snapshot(): object;
@@ -24,6 +25,7 @@ function decoderFixture(preparation: boolean) {
   let time = preparation ? 20 : 0, ready = preparation ? 0 : 4;
   let end = preparation ? 20.1 : 60, paused = true, seeking = false;
   let loaded = !preparation, playCalls = 0, quantum = 0;
+  let source = 'https://127.0.0.1:38127/media/movie';
   const events: object[] = [];
   Object.defineProperty(navigator, 'userAgent', {configurable: true,
     value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148'});
@@ -37,7 +39,7 @@ function decoderFixture(preparation: boolean) {
     duration: {configurable: true, value: 100},
     readyState: {get: () => ready}, networkState: {value: 1},
     paused: {get: () => paused}, seeking: {get: () => seeking}, error: {value: null},
-    currentSrc: {get: () => loaded ? 'https://127.0.0.1:38127/media/movie' : ''},
+    currentSrc: {get: () => loaded ? source : ''},
     seekable: {get: () => ({length: loaded ? 1 : 0, start: () => 0, end: () => 100})},
     buffered: {get: () => ({length: 1, start: () => 0, end: () => end})},
     load: {value: () => {}},
@@ -55,6 +57,14 @@ function decoderFixture(preparation: boolean) {
   Object.assign(window, {intentDecoder: {
     configure: (value: number, state: number, buffered: number) => {time = value; ready = state; end = buffered;},
     quantizeTime: (value: number) => {quantum = value;},
+    replaceSource: (value: number) => {
+      source = 'https://127.0.0.1:38127/media/replacement';
+      video.src = source; video.dataset.start = '0';
+      loaded = false; ready = 0; time = 0; seeking = false;
+      video.dispatchEvent(new Event('emptied'));
+      loaded = true; ready = 4; time = value;
+      video.dispatchEvent(new Event('loadedmetadata'));
+    },
     // Native controls mutate the decoder and publish events; they do not call
     // the application's explicit custom-control or MediaSession callbacks.
     beginNativeSeek: (value: number) => {seeking = true; time = value; video.dispatchEvent(new Event('seeking'));},
@@ -181,3 +191,31 @@ for (const {restore, quantum, expected} of [
   await page.getByRole('link', {name: 'Library'}).click();
   expect(state.writes, 'automatic fractional or rounded restoration must not save').toEqual([]);
 });
+
+for (const target of [undefined, 0, 35]) {
+  test(`replacement after cancelled pending restoration ${target === undefined ? 'stays unplayed' : `saves native seek to ${target}`}`, async ({page}, info) => {
+    const state = await install(page);
+    await page.evaluate('resumeAfterSourceChange(false, true, 20)');
+    await page.locator('video').dispatchEvent('loadedmetadata');
+    await expect(page.locator('video')).toHaveJSProperty('seeking', true);
+    expect(state.writes).toEqual([]);
+    // The decoder cancels the old source's unfinished seek without seeked. The
+    // replacement has metadata but no application restore or user play intent.
+    await page.evaluate(() => (window as TestWindow).intentDecoder.replaceSource(10));
+    await expect(page.locator('video')).toHaveJSProperty('currentTime', 10);
+    await expect(page.locator('video')).toHaveJSProperty('seeking', false);
+    if (target !== undefined) {
+      await page.evaluate(value => {
+        const decoder = (window as TestWindow).intentDecoder;
+        decoder.beginNativeSeek(value); decoder.endNativeSeek();
+      }, target);
+      await expect.poll(() => state.writes.length, {timeout: 1500}).toBe(1);
+      expect(state.stored.seconds).toBe(target);
+    }
+    await proof(page, info, state, {target: target ?? 'no explicit input', replacementReadyTime: 10,
+      oldSeekCompletionCancelled: true, publicProgress: await publicProgress(page)});
+    await page.getByRole('link', {name: 'Library'}).click();
+    if (target === undefined) expect(state.writes).toEqual([]);
+    else expect(state.stored.seconds).toBe(target);
+  });
+}

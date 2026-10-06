@@ -68,6 +68,7 @@ let preparationSeek;
 player.addEventListener("emptied", () => {
   preparationSeek = undefined;
   managedSeekTarget = player.getAttribute("src")?.includes("#t=") ? Number(player.dataset.start) || 0 : undefined;
+  managedSeek = Number.isFinite(managedSeekTarget);
 });
 let playbackRequest = 0;
 let pendingApplePlay;
