@@ -2,6 +2,14 @@ import {expect, test} from "@playwright/test";
 import {installPlayerExperienceFixture} from "./player-experience-fixture";
 
 installPlayerExperienceFixture(true, false, "iPhone", async (page, title) => {
+  if (title === "rejected fullscreen leaves playback usable") {
+    await page.evaluate(() => {
+      Object.defineProperty(document.querySelector("video"), "webkitEnterFullscreen", {configurable: true, value: undefined});
+      Object.defineProperty(document.querySelector("video"), "requestFullscreen", {configurable: true, value: () => Promise.reject(new DOMException("private-token https://private.invalid/movie", "NotAllowedError"))});
+      Object.defineProperty(document, "fullscreenEnabled", {configurable: true, value: true});
+    });
+    return;
+  }
   if (title !== "touch Play enters native fullscreen in the same gesture without pausing") return;
   await page.evaluate(() => {
     Object.defineProperty(navigator, "maxTouchPoints", {configurable: true, value: 1});
@@ -58,11 +66,6 @@ test("rejected fullscreen leaves playback usable", async ({page}) => {
   const failures: unknown[] = [];
   page.on("request", request => {
     if (request.url().endsWith("/playback-events") && request.method() === "POST" && request.postDataJSON().event === "error") failures.push(request.postDataJSON());
-  });
-  await page.evaluate(() => {
-    Object.defineProperty(document.querySelector("video"), "webkitEnterFullscreen", {configurable: true, value: undefined});
-    Object.defineProperty(document.querySelector("video"), "requestFullscreen", {configurable: true, value: () => Promise.reject(new DOMException("private-token https://private.invalid/movie", "NotAllowedError"))});
-    Object.defineProperty(document, "fullscreenEnabled", {configurable: true, value: true});
   });
   await page.getByRole("button", {name: "Enter fullscreen"}).click();
   await expect(page.getByRole("status").filter({hasText: /Fullscreen could not open/})).toBeVisible();

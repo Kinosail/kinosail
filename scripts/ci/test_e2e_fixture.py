@@ -148,7 +148,13 @@ class E2EFixtureTests(unittest.TestCase):
                 "fs.openSync=(path,flags,mode)=>{"
                 "if(String(path).endsWith('/49123.restart')&&fs.existsSync('race-armed')){"
                 "fs.unlinkSync(path);spawnSync('mkfifo',[path]);fs.unlinkSync('race-armed');}"
-                "return open(path,flags,mode);};syncBuiltinESMExports();")
+                "return open(path,flags,mode);};"
+                # A reader opening the receipt during replacement must still see
+                # the previous complete generation, never a truncated JSON file.
+                "const write=fs.writeFileSync;fs.writeFileSync=(path,data,options)=>{"
+                "if(String(path).endsWith('/49123.json')&&fs.existsSync(path)&&fs.statSync(path).size){"
+                "write(path,'',options);JSON.parse(fs.readFileSync(path,'utf8'));}"
+                "return write(path,data,options);};syncBuiltinESMExports();")
             child = subprocess.Popen(["node", "--import", interceptor.as_uri(),
                 str(ROOT / "scripts/e2e/fixture.mjs"), "player", "49123"],
                 cwd=root, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,

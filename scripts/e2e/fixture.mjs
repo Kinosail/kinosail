@@ -1,6 +1,6 @@
 // Disposable host fixture: real app binaries, synthetic media, no containers.
 import { spawn, spawnSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync, lstatSync, openSync, fstatSync, readSync, closeSync, constants } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, lstatSync, openSync, fstatSync, readSync, closeSync, constants, renameSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -37,7 +37,9 @@ try {
 } catch (error) { rmSync(root, { recursive: true, force: true }); throw error; }
 function launch() {
   child = spawn(binary, [], { stdio: 'inherit', env: childEnv });
-  writeFileSync(statePath, JSON.stringify({ app, port, supervisorPID: process.pid, childPID: child.pid, generation }));
+  const pending = statePath + '.pending';
+  writeFileSync(pending, JSON.stringify({ app, port, supervisorPID: process.pid, childPID: child.pid, generation }), { flag: 'wx', mode: 0o600 });
+  renameSync(pending, statePath);
   child.on('error', error => { cleanup(); throw error; });
   child.on('exit', code => {
     clearTimeout(timer);
