@@ -62,7 +62,9 @@ class ControlProjection:
         try:
             value = control_json(line)
             if type(value) is not dict or value.get("Package") != PACKAGE: raise ValueError("control-package")
-            if set(value) - {"Time", "Action", "Package", "Test", "Elapsed", "Output", "FailedBuild"}:
+            if set(value) - {"Time", "Action", "Package", "Test", "Elapsed", "Output", "OutputType", "FailedBuild"}:
+                raise ValueError("control-event")
+            if "OutputType" in value and (value.get("Action") != "output" or value["OutputType"] != "frame"):
                 raise ValueError("control-event")
             action, name = value.get("Action"), value.get("Test")
             if self.package_terminal is not None: raise ValueError("control-after-package-terminal")

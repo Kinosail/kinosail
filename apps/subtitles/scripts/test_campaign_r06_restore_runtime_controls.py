@@ -40,6 +40,31 @@ class RestoreControlProjectionTests(unittest.TestCase):
         self.assertEqual(PACKAGE, "github.com/MikeO7/kinosail-subtitles/engineering/qa/2026-10-05-restore-recovery/fixture")
         self.assertTrue(self.complete().result()["green"])
 
+    def test_go127_output_framing_retains_exact_public_accounting(self):
+        value = ControlProjection()
+        for name in NAMES:
+            self.event(value, "run", name)
+            value.consume(json.dumps({"Package": PACKAGE, "Action": "output", "Test": name,
+                                      "Output": "=== RUN   " + name + "\n", "OutputType": "frame"}).encode())
+            self.owner(value, name)
+            value.consume(json.dumps({"Package": PACKAGE, "Action": "output", "Test": name,
+                                      "Output": "--- PASS: " + name + " (0.00s)\n", "OutputType": "frame"}).encode())
+            self.event(value, "pass", name)
+        value.consume(json.dumps({"Package": PACKAGE, "Action": "output", "Output": "PASS\n",
+                                  "OutputType": "frame"}).encode())
+        self.event(value, "pass")
+        self.assertTrue(value.result()["green"])
+        self.assertEqual(value.result()["invalidEventCount"], 0)
+
+    def test_output_type_only_admits_output_frames_and_rejects_errors(self):
+        base = {"Package": PACKAGE, "Action": "output", "Output": "PASS\n"}
+        for kind in ("error", "error-continue", "unknown", "", None, 0, False, {}, []):
+            value = ControlProjection(); value.consume(json.dumps(base | {"OutputType": kind}).encode())
+            self.assertEqual(self.invalid_counts(value)["control-event"], 1)
+        value = ControlProjection()
+        value.consume(json.dumps({"Package": PACKAGE, "Action": "start", "OutputType": "frame"}).encode())
+        self.assertEqual(self.invalid_counts(value)["control-event"], 1)
+
     def test_missing_named_test_or_package_terminal_blocks(self):
         value = ControlProjection()
         for name in NAMES[:-1]:
