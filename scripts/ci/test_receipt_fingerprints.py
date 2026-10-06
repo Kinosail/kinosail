@@ -22,7 +22,8 @@ APPROVED = (
 )
 
 API_BLOB_APPROVED = tuple(
-    f"4a10b3ab0930a47dd0356a33f633ab5eed8d43ed:engineering/qa/2026-10-05-q12-ha-pagination/source-inventory.json:generic-api-key:{line}"
+    f"{commit}:engineering/qa/2026-10-05-q12-ha-pagination/source-inventory.json:generic-api-key:{line}"
+    for commit in ("4a10b3ab0930a47dd0356a33f633ab5eed8d43ed", "7c3674a7ee4773c50376362c0497a9c85010106f")
     for line in (86, 92, 98)
 )
 
@@ -33,7 +34,7 @@ def fingerprints():
 
 
 class ReceiptFingerprintPolicy(unittest.TestCase):
-    def test_eleven_approved_metadata_locations_are_exact(self):
+    def test_fourteen_approved_metadata_locations_are_exact(self):
         actual = set((ROOT / ".gitleaksignore").read_text().splitlines())
         self.assertTrue(fingerprints().issubset(actual))
 
