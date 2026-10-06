@@ -48,7 +48,7 @@ test("phone settings expose every section without a hidden horizontal rail", asy
     })),
     bounds: nav.getBoundingClientRect().toJSON(),
   }));
-  expect(layout.links.map((link) => link.href).join(" ")).toBe("#language #cleanup #provider #libraries #automation #appearance #trusted-https #account #thanks");
+  expect(layout.links.map((link) => link.href).join(" ")).toBe("#language #cleanup #provider #libraries #automation #appearance #security #account #thanks");
   expect(layout.scrollWidth).toBeLessThanOrEqual(layout.clientWidth + 1);
   expect(layout.links.every((link) => link.left >= layout.bounds.left - 1 && link.right <= layout.bounds.right + 1 && link.top >= layout.bounds.top - 1 && link.bottom <= layout.bounds.bottom + 1)).toBe(true);
 });

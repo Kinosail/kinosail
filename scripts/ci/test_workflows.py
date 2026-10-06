@@ -8,6 +8,20 @@ WORKFLOWS = ROOT / '.github/workflows'
 
 
 class WorkflowSecurityTests(unittest.TestCase):
+    def test_deep_coverage_failure_retains_exact_profiles_without_bypass(self):
+        app = (WORKFLOWS / 'app.yml').read_text()
+        for name in ('Summarize exact deep coverage', 'Keep exact deep coverage profiles'):
+            step = app.split(f'      - name: {name}\n', 1)[1].split('\n      - ', 1)[0].split('\n  security:', 1)[0]
+            self.assertIn('if: always() && fromJSON(inputs.plan).deep\n', step)
+            self.assertNotIn('inputs.coverage_diagnostic', step)
+            self.assertNotIn('continue-on-error', step)
+        self.assertIn('apps/${{ inputs.app }}/.verification/coverage.out', step)
+        self.assertIn('apps/${{ inputs.app }}/.verification/coverage-functions.txt', step)
+        self.assertIn('if-no-files-found: error', step)
+        script = (ROOT / 'scripts/ci/test-go.sh').read_text()
+        self.assertIn('player|subtitles) directory="apps/$1"; minimum=89', script)
+        self.assertIn('coverage + 0 < minimum', script)
+
     def test_player_browser_engines_receive_verified_fixture_codecs(self):
         # Actual HLS navigation fixtures spawn FFmpeg in every selected engine.
         # Container codecs cannot satisfy a host fixture's executable dependency.

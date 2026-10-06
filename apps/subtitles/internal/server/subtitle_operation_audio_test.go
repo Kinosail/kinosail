@@ -13,6 +13,12 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
+// Audio analysis requires at least one minute of 16 kHz PCM. The real VAD
+// processes this minimum fixture in 24.287 seconds on the hosted race runner;
+// allow its bounded processing and child-pipe settlement without changing the
+// production operation deadline or the held-admission assertions.
+const subtitleAudioFixtureSettlementLimit = time.Minute
+
 // The executable supplies fictional silence at the process boundary; it is
 // not an encoder or an internal audio-manager replacement. Native playback
 // and actual lost-write response evidence remain separate journeys.
@@ -78,7 +84,7 @@ func TestSubtitlePreparedAudioCannotBypassActiveLegacyAnalysis(t *testing.T) {
 		if status != http.StatusOK {
 			t.Fatalf("legacy analysis after release = %d", status)
 		}
-	case <-time.After(5 * time.Second):
+	case <-time.After(subtitleAudioFixtureSettlementLimit):
 		t.Fatal("legacy analysis did not settle within its bounded fixture wait")
 	}
 	assertSubtitleActionBytes(t, target, []byte(subtitleActionInitial))

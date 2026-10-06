@@ -60,11 +60,11 @@ jobs:
           KINOSAIL_GO_TEST_MODE: ${{ fromJSON(inputs.plan).deep && 'deep' || 'quick' }}
         run: ./scripts/ci/test-go.sh "$APP"
       - name: Summarize exact deep coverage
-        if: always() && github.event_name == 'workflow_dispatch' && inputs.coverage_diagnostic && fromJSON(inputs.plan).deep
+        if: always() && fromJSON(inputs.plan).deep
         working-directory: apps/${{ inputs.app }}
         run: go tool cover -func=.verification/coverage.out > .verification/coverage-functions.txt
       - name: Keep exact deep coverage profiles
-        if: always() && github.event_name == 'workflow_dispatch' && inputs.coverage_diagnostic && fromJSON(inputs.plan).deep
+        if: always() && fromJSON(inputs.plan).deep
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: ${{ inputs.app }}-go-coverage-${{ github.sha }}
