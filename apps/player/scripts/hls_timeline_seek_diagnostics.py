@@ -19,7 +19,9 @@ def first_frames(source, offset=0):
 def seek_diagnostics(directory, source, key):
     target = directory / (source.stem + "-seek-diagnostic")
     target.mkdir()
-    reference = first_frames(source, key)
+    reference = first_frames(source, max(0, key - 0.000001))
+    if reference["exitStatus"] or reference["frames"] != 3:
+        raise RuntimeError("seek_reference_three_frames")
     candidates = [
         ("legacy", ["-ss", format(key, ".9f")], []),
         ("copyts", ["-copyts", "-ss", format(key, ".9f")], []),
@@ -46,8 +48,8 @@ def seek_diagnostics(directory, source, key):
                     row["firstDTS"] = float(packets[0]["dts_time"])
                     row["firstKeyframe"] = "K" in packets[0]["flags"]
                 actual = first_frames(output)
-                row["firstThreeSourceFramesMatch"] = actual == reference
+                row["firstThreeSourceFramesMatch"] = actual["exitStatus"] == 0 and actual["frames"] == 3 and actual == reference
                 row["firstThreeFrames"] = actual
         rows.append(row)
     return {"sourceSHA256": hashlib.sha256(source.read_bytes()).hexdigest(),
-        "sourceKeySeconds": key, "reference": reference, "candidates": rows}
+        "sourceKeySeconds": key, "referenceOffsetSeconds": max(0, key - 0.000001), "reference": reference, "candidates": rows}

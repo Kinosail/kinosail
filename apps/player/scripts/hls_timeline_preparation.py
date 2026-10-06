@@ -8,18 +8,20 @@ from hls_timeline_packets import manifest_facts
 def prepare_scene(api, prepare, hls, cache, item_id, server, source, case, encoder_count, check, bounded_bytes, cold):
     if cold:
         check(api.http(hls)[0] == 200, "cold_master")
-        limit = time.monotonic() + 25
+        limit, stopped_samples = time.monotonic() + 25, 0
         while time.monotonic() < limit:
             roots = [p for p in cache.iterdir() if p.name.startswith(item_id + "-plan-")]
             physical = list(roots[0].glob("*p/index.m3u8")) if len(roots) == 1 else []
-            if len(physical) == 1 and b"#EXT-X-ENDLIST" in physical[0].read_bytes() and encoder_count(server, source) == 0:
+            finalized = len(physical) == 1 and b"#EXT-X-ENDLIST" in bounded_bytes(physical[0], 1024 * 1024, "cold_manifest_bound")
+            stopped_samples = stopped_samples + 1 if finalized and encoder_count(server, source) == 0 else 0
+            if stopped_samples >= 3:
                 break
             time.sleep(0.05)
-        check(len(physical) == 1 and b"#EXT-X-ENDLIST" in physical[0].read_bytes(), "cold_worker_incomplete")
+        check(stopped_samples >= 3 and encoder_count(server, source) == 0, "cold_worker_incomplete")
         init = bounded_bytes(physical[0].parent / "init.mp4", 2 * 1024 * 1024, "cold_initialization_bound")
         facts, _ = manifest_facts(bounded_bytes(physical[0], 1024 * 1024, "cold_manifest_bound"))
         case["preparationReady"] = False
-        case["beforeFirstHLSGET"] = {"authenticatedMediaGETs": 1, "ownedFFmpeg": 0, "physicalVariant": facts}
+        case["beforeFirstHLSGET"] = {"authenticatedMediaGETs": 1, "ownedFFmpeg": 0, "stoppedSamples": stopped_samples, "physicalVariant": facts}
         return roots[0], init
     limit = time.monotonic() + 25
     while time.monotonic() < limit:
