@@ -52,7 +52,7 @@ const playbackTrace = (event, detail = "", quality = "") => {
   if (["playing", "waiting", "stalled", "error", "hls-error", "play-rejected"].includes(event)) setTimeout(flushPlaybackTrace);
 };
 // The browser also restores a direct source's saved #t fragment without a setter.
-let managedSeek = Boolean(player.getAttribute("src")?.includes("#t="));
+let managedSeek = Boolean(player.getAttribute("src")?.includes("#t=") && (player.seeking || !player.readyState));
 const setPlayerTime = (seconds, user = false) => {
   if (user) player.dispatchEvent(new Event("kinosail:seek-intent"));
   managedSeek = true; player.currentTime = seconds;

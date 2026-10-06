@@ -104,7 +104,7 @@ const streaming = (() => {
     const seconds = player.currentTime;
     const playing = forcePlay || !player.paused;
     player.addEventListener("loadedmetadata", () => {
-      if (Number.isFinite(seconds) && seconds >= 0 && seconds < player.duration) setPlayerTime(seconds);
+      if (Number.isFinite(seconds) && seconds >= 0 && seconds < player.duration && player.currentTime !== seconds) setPlayerTime(seconds);
       if (playing) requestPlay("source-change").catch(() => {});
     }, {once: true});
   };
