@@ -28,23 +28,18 @@ func (output *copiedHLSProbeOutput) Write(data []byte) (int, error) {
 }
 
 func (manager *hlsManager) ensureCopiedHLSClock(ctx context.Context, item library.Item, recipe hlsRecipe, directory, policy string) error {
-	timeline, err := manager.readCopiedHLSTimeline(directory, policy)
-	if err != nil {
-		if manager.copiedHLSTimelinePresent(directory) {
-			return errCopiedHLSIndex
-		}
-		return nil // Ordinary cold streams have no indexed strategy.
+	timeline, err := manager.copiedHLSClockPending(directory, policy)
+	if err != nil || !timeline {
+		return err
 	}
-	if timeline.Clock != nil {
-		return nil
-	}
+
 	ctx, release, err := manager.copiedHLSMetadataAdmission(ctx)
 	if err != nil {
 		return errCopiedHLSIndex
 	}
 	defer release()
-	timeline, err = manager.readCopiedHLSTimeline(directory, policy)
-	if err != nil || timeline.Clock != nil {
+	indexed, err := manager.readCopiedHLSTimeline(directory, policy)
+	if err != nil || indexed.Clock != nil {
 		return err
 	}
 	master, err := playback.ReadHLSPlaylist(filepath.Join(directory, "index.m3u8"))
@@ -55,17 +50,7 @@ func (manager *hlsManager) ensureCopiedHLSClock(ctx context.Context, item librar
 		if !hlsFile(rendition) || !strings.HasSuffix(rendition, "/index.m3u8") {
 			continue
 		}
-		root, err := manager.openCopiedHLSRoot(filepath.Join(directory, filepath.Dir(rendition)))
-		if err != nil {
-			return errCopiedHLSIndex
-		}
-		clock, probeErr := manager.measureCopiedHLSClock(ctx, root)
-		_ = root.Close()
-		if probeErr != nil || manager.validateHLSPolicy(ctx, item, recipe, policy) != nil {
-			return errCopiedHLSIndex
-		}
-		timeline.Clock = &clock
-		return manager.writeCopiedHLSTimeline(directory, timeline)
+		return manager.bindCopiedHLSClock(ctx, item, recipe, directory, rendition, policy, indexed)
 	}
 	return errCopiedHLSIndex
 }
@@ -91,21 +76,7 @@ func (manager *hlsManager) measureCopiedHLSClock(ctx context.Context, root *os.R
 	if command.Run() != nil {
 		return 0, errCopiedHLSIndex
 	}
-	var facts struct {
-		Packets []struct {
-			PTS   string `json:"pts_time"`
-			Flags string `json:"flags"`
-		} `json:"packets"`
-	}
-	if json.Unmarshal(output.Bytes(), &facts) != nil || len(facts.Packets) == 0 ||
-		!strings.Contains(facts.Packets[0].Flags, "K") {
-		return 0, errCopiedHLSIndex
-	}
-	clock, err := strconv.ParseFloat(facts.Packets[0].PTS, 64)
-	if err != nil || math.IsNaN(clock) || clock < 0 || clock > 1 {
-		return 0, errCopiedHLSIndex
-	}
-	return clock, nil
+	return decodeCopiedHLSClock(output.Bytes())
 }
 
 func indexedCopiedHLSSegmentArguments(arguments []string, timeline *copiedHLSTimeline) []string {
@@ -117,4 +88,47 @@ func indexedCopiedHLSSegmentArguments(arguments []string, timeline *copiedHLSTim
 		}
 	}
 	return arguments
+}
+
+func (manager *hlsManager) bindCopiedHLSClock(ctx context.Context, item library.Item, recipe hlsRecipe, directory, rendition, policy string, timeline *copiedHLSTimeline) error {
+	root, err := manager.openCopiedHLSRoot(filepath.Join(directory, filepath.Dir(rendition)))
+	if err != nil {
+		return errCopiedHLSIndex
+	}
+	clock, probeErr := manager.measureCopiedHLSClock(ctx, root)
+	_ = root.Close()
+	if probeErr != nil || manager.validateHLSPolicy(ctx, item, recipe, policy) != nil {
+		return errCopiedHLSIndex
+	}
+	timeline.Clock = &clock
+	return manager.writeCopiedHLSTimeline(directory, timeline)
+}
+
+func decodeCopiedHLSClock(data []byte) (float64, error) {
+	var facts struct {
+		Packets []struct {
+			PTS   string `json:"pts_time"`
+			Flags string `json:"flags"`
+		} `json:"packets"`
+	}
+	if json.Unmarshal(data, &facts) != nil || len(facts.Packets) == 0 ||
+		!strings.Contains(facts.Packets[0].Flags, "K") {
+		return 0, errCopiedHLSIndex
+	}
+	clock, err := strconv.ParseFloat(facts.Packets[0].PTS, 64)
+	if err != nil || math.IsNaN(clock) || clock < 0 || clock > 1 {
+		return 0, errCopiedHLSIndex
+	}
+	return clock, nil
+}
+
+func (manager *hlsManager) copiedHLSClockPending(directory, policy string) (bool, error) {
+	timeline, err := manager.readCopiedHLSTimeline(directory, policy)
+	if err != nil {
+		if manager.copiedHLSTimelinePresent(directory) {
+			return false, errCopiedHLSIndex
+		}
+		return false, nil // Ordinary cold streams have no indexed strategy.
+	}
+	return timeline.Clock == nil, nil
 }

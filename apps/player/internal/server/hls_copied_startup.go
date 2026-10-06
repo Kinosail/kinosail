@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"log/slog"
 	"math"
 	"path/filepath"
 
@@ -10,14 +11,19 @@ import (
 )
 
 func (manager *hlsManager) reusableCopiedHLS(ctx context.Context, directory, source, policy string, recipe hlsRecipe) bool {
-	if !seekCacheFresh(directory, source, policy) {
+	if ctx.Err() != nil || !(cacheFresh(filepath.Join(directory, "index.m3u8"), source, policy) || seekCacheFresh(directory, source, policy)) {
 		return false
 	}
-	if recipe.mode != "remux" {
+	if recipe.mode != "remux" || !manager.copiedHLSTimelinePresent(directory) {
+		// Ordinary cold streams retain their pre-index cache and seek behavior.
 		return true
 	}
 	timeline, err := manager.readCopiedHLSTimeline(directory, policy)
-	return err == nil && timeline.Clock != nil && ctx.Err() == nil
+	if err != nil {
+		slog.WarnContext(ctx, "HLS copied cache rejected", "request_id", requestActivityID(ctx), "playback_session", requestPlaybackSession(ctx), "mode", recipe.mode, "failure_class", "invalid-timeline")
+		return false
+	}
+	return timeline.Clock != nil && ctx.Err() == nil
 }
 
 func (manager *hlsManager) bindCopiedHLSTimeline(ctx context.Context, directory string, startNumber int) error {
@@ -45,6 +51,10 @@ func copiedHLSSeekArguments(arguments []string, timeline *copiedHLSTimeline, num
 		floor := math.Floor(start*1_000_000) / 1_000_000
 		offset := start - timeline.point(0) + *timeline.Clock - (start - floor)
 		arguments = append(arguments, "-output_ts_offset", copiedHLSTime(offset))
+		// The mux clock restores copied video DTS; audio already keeps its source
+		// presentation offset. Avoid adding that clock twice at a refill boundary.
+		clock := copiedHLSTime(*timeline.Clock)
+		arguments = append(arguments, "-bsf:a", "setts=pts=PTS-"+clock+"/TB:dts=DTS-"+clock+"/TB")
 	}
 	return arguments, nil
 }
@@ -63,10 +73,13 @@ func (manager *hlsManager) copiedPlaylistProjection(ctx context.Context, item li
 				return result
 			}
 		}
-		// Unknown future cuts remain a growing EVENT; EOF correction reads actual
-		// generated media, never the source container's format duration.
 		if playback.PlaylistHas(manifest, "#EXT-X-ENDLIST") {
+			// EOF correction reads generated media, not container format duration.
 			manifest = manager.completedCopiedHLSProjection(ctx, filepath.Join(directory, rendition), policy, manifest)
+		} else if err != nil {
+			// Preserve the existing established-cadence projection for unindexed
+			// cold caches; these cuts do not acquire an indexed-source certificate.
+			manifest = completeHLSVOD(manifest, hlsPlaybackDuration(recipe, manager.probe.duration(ctx, item)))
 		}
 		if manager.validateHLSPolicy(ctx, item, recipe, policy) != nil {
 			return nil

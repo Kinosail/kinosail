@@ -51,32 +51,14 @@ func (manager *hlsManager) completedCopiedHLSEndpoint(ctx context.Context, root 
 	if command.Run() != nil {
 		return 0, errCopiedHLSIndex
 	}
-	var facts struct {
-		Packets []struct {
-			PTS      string `json:"pts_time"`
-			Duration string `json:"duration_time"`
-		} `json:"packets"`
-	}
-	if json.Unmarshal(output.Bytes(), &facts) != nil || len(facts.Packets) == 0 || len(facts.Packets) > 4096 {
-		return 0, errCopiedHLSIndex
-	}
-	end := 0.0
-	for _, packet := range facts.Packets {
-		pts, ptsErr := strconv.ParseFloat(packet.PTS, 64)
-		duration, durationErr := strconv.ParseFloat(packet.Duration, 64)
-		if ptsErr != nil || durationErr != nil || math.IsNaN(pts) || math.IsNaN(duration) ||
-			math.IsInf(pts, 0) || math.IsInf(duration, 0) || duration <= 0 {
-			return 0, errCopiedHLSIndex
-		}
-		end = max(end, pts+duration)
-	}
-	return end - clock, nil
+	end, err := decodeCopiedHLSEndpoint(output.Bytes())
+	return end - clock, err
 }
 
 func (manager *hlsManager) completedCopiedHLSProjection(ctx context.Context, directory, policy string, manifest []byte) []byte {
 	end, err := manager.copiedHLSEndpoint(ctx, directory, policy, manifest)
 	if err != nil {
-		return manifest
+		return bytes.Replace(manifest, []byte("#EXT-X-PLAYLIST-TYPE:EVENT"), []byte("#EXT-X-PLAYLIST-TYPE:VOD"), 1)
 	}
 	return completedCopiedHLSManifest(manifest, end)
 }
@@ -89,4 +71,35 @@ func copiedHLSLastSegment(manifest []byte) string {
 		}
 	}
 	return last
+}
+
+func decodeCopiedHLSEndpoint(data []byte) (float64, error) {
+	var facts struct {
+		Packets []struct {
+			PTS      string `json:"pts_time"`
+			Duration string `json:"duration_time"`
+		} `json:"packets"`
+	}
+	if json.Unmarshal(data, &facts) != nil || len(facts.Packets) == 0 || len(facts.Packets) > 4096 {
+		return 0, errCopiedHLSIndex
+	}
+	end := 0.0
+	for _, packet := range facts.Packets {
+		packetEnd, err := copiedHLSPacketEnd(packet.PTS, packet.Duration)
+		if err != nil {
+			return 0, err
+		}
+		end = max(end, packetEnd)
+	}
+	return end, nil
+}
+
+func copiedHLSPacketEnd(ptsValue, durationValue string) (float64, error) {
+	pts, ptsErr := strconv.ParseFloat(ptsValue, 64)
+	duration, durationErr := strconv.ParseFloat(durationValue, 64)
+	if ptsErr != nil || durationErr != nil || math.IsNaN(pts) || math.IsNaN(duration) ||
+		math.IsInf(pts, 0) || math.IsInf(duration, 0) || duration <= 0 {
+		return 0, errCopiedHLSIndex
+	}
+	return pts + duration, nil
 }

@@ -9,33 +9,52 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/MikeO7/kinosail/packages/httpguard"
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
 const maximumCopiedHLSTimelineBytes = 256 << 10
 
 func validCopiedHLSTimeline(timeline *copiedHLSTimeline) bool {
-	if timeline == nil || timeline.Strategy != "h264-idr-keys-1" || timeline.Policy == "" || len(timeline.Policy) > 16<<10 ||
-		len(timeline.Keys) == 0 || len(timeline.Keys) > maximumCopiedHLSKeys ||
-		timeline.Numerator <= 0 || timeline.Denominator <= 0 ||
-		timeline.TimeBase != float64(timeline.Numerator)/float64(timeline.Denominator) || timeline.TimeBase <= 0 || timeline.TimeBase > 0.001 || math.IsNaN(timeline.TimeBase) ||
-		timeline.End <= 0 || timeline.End > 7*24*60*60 || math.IsNaN(timeline.End) {
+	if !validCopiedHLSHeader(timeline) || !validCopiedHLSTimeBase(timeline) || !validCopiedHLSEnd(timeline.End) {
 		return false
 	}
 	for number := range timeline.Keys {
-		point := timeline.point(number)
-		if point < 0 || point >= timeline.End || number > 0 && point-timeline.point(number-1) < 0.25 {
-			return false
-		}
-		next := timeline.End
-		if number+1 < len(timeline.Keys) {
-			next = timeline.point(number + 1)
-		}
-		if invalidHLSSegmentDuration(next - point) {
+		if !validCopiedHLSCut(timeline, number) {
 			return false
 		}
 	}
 	return timeline.Clock == nil || !math.IsNaN(*timeline.Clock) && *timeline.Clock >= 0 && *timeline.Clock <= 1
+}
+
+func validCopiedHLSHeader(timeline *copiedHLSTimeline) bool {
+	return timeline != nil && timeline.Strategy == "h264-idr-keys-1" && timeline.Policy != "" && len(timeline.Policy) <= 16<<10 &&
+		len(timeline.Keys) > 0 && len(timeline.Keys) <= maximumCopiedHLSKeys
+}
+
+func validCopiedHLSTimeBase(timeline *copiedHLSTimeline) bool {
+	return timeline.Numerator > 0 && timeline.Denominator > 0 &&
+		timeline.TimeBase == float64(timeline.Numerator)/float64(timeline.Denominator) &&
+		timeline.TimeBase > 0 && timeline.TimeBase <= 0.001 && !math.IsNaN(timeline.TimeBase)
+}
+
+func validCopiedHLSEnd(end float64) bool {
+	return end > 0 && end <= 7*24*60*60 && !math.IsNaN(end) && !math.IsInf(end, 0)
+}
+
+func validCopiedHLSCut(timeline *copiedHLSTimeline, number int) bool {
+	point := timeline.point(number)
+	if point < 0 || point >= timeline.End || number > 0 && point-timeline.point(number-1) < 0.25 {
+		return false
+	}
+	return !invalidHLSSegmentDuration(timeline.segmentEnd(number) - point)
+}
+
+func (timeline *copiedHLSTimeline) segmentEnd(number int) float64 {
+	if number+1 < len(timeline.Keys) {
+		return timeline.point(number + 1)
+	}
+	return timeline.End
 }
 
 func copiedHLSCacheFile(root *os.Root, name string, limit int64) ([]byte, error) {
@@ -71,7 +90,7 @@ func (manager *hlsManager) readCopiedHLSTimeline(directory, policy string) (*cop
 	}
 	data, err := copiedHLSCacheFile(root, ".copy-timeline", maximumCopiedHLSTimelineBytes)
 	var timeline copiedHLSTimeline
-	if err != nil || json.Unmarshal(data, &timeline) != nil || timeline.Policy != policy || !validCopiedHLSTimeline(&timeline) {
+	if err != nil || httpguard.DecodeUniqueJSON(bytes.NewReader(data), maximumCopiedHLSTimelineBytes, &timeline) != nil || timeline.Policy != policy || !validCopiedHLSTimeline(&timeline) {
 		return nil, errCopiedHLSIndex
 	}
 	return &timeline, nil
@@ -118,54 +137,19 @@ func copiedHLSManifest(manifest []byte, timeline *copiedHLSTimeline) ([]byte, bo
 		!bytes.Contains(manifest, []byte("#EXT-X-MAP:URI=\"init.mp4\"")) {
 		return manifest, false
 	}
-	length, observed := 0.0, 0
-	for _, line := range strings.Split(string(manifest), "\n") {
-		if strings.HasPrefix(line, "#EXTINF:") {
-			value, _, _ := strings.Cut(strings.TrimPrefix(line, "#EXTINF:"), ",")
-			var err error
-			length, err = strconv.ParseFloat(value, 64)
-			if err != nil {
-				return manifest, false
-			}
-		}
-		if number, ok := hlsSegmentNumber(line); ok {
-			if number != observed || observed >= len(timeline.Keys) || length <= 0 {
-				return manifest, false
-			}
-			end := timeline.End
-			if observed+1 < len(timeline.Keys) {
-				end = timeline.point(observed + 1)
-			}
-			tolerance := 0.002
-			if observed+1 == len(timeline.Keys) {
-				tolerance = min(1, max(0.1, (end-timeline.point(observed))*0.05)) // Demux duration ticks can round down across the last GOP.
-			}
-			if math.Abs(length-(end-timeline.point(observed))) > tolerance {
-				return manifest, false
-			}
-			observed++
-			length = 0
-		}
-	}
-	if observed == 0 || playback.PlaylistHas(manifest, "#EXT-X-ENDLIST") && observed != len(timeline.Keys) {
+	if !matchesCopiedHLSManifest(manifest, timeline) {
 		return manifest, false
 	}
 	target := 1.0
 	for number := range timeline.Keys {
-		end := timeline.End
-		if number+1 < len(timeline.Keys) {
-			end = timeline.point(number + 1)
-		}
+		end := timeline.segmentEnd(number)
 		target = max(target, math.Ceil(end-timeline.point(number)))
 	}
 	var output strings.Builder
 	output.WriteString("#EXTM3U\n#EXT-X-VERSION:7\n#EXT-X-TARGETDURATION:" + strconv.FormatFloat(target, 'f', 0, 64) +
 		"\n#EXT-X-MEDIA-SEQUENCE:0\n#EXT-X-PLAYLIST-TYPE:VOD\n#EXT-X-MAP:URI=\"init.mp4\"\n")
 	for number := range timeline.Keys {
-		end := timeline.End
-		if number+1 < len(timeline.Keys) {
-			end = timeline.point(number + 1)
-		}
+		end := timeline.segmentEnd(number)
 		output.WriteString("#EXTINF:" + strconv.FormatFloat(end-timeline.point(number), 'f', 6, 64) +
 			",\nsegment-" + copiedHLSSegmentDigits(number) + ".m4s\n")
 	}
@@ -193,15 +177,12 @@ func completedCopiedHLSManifest(manifest []byte, duration float64) []byte {
 		}
 		value, _, _ := strings.Cut(strings.TrimPrefix(line, "#EXTINF:"), ",")
 		length, err := strconv.ParseFloat(value, 64)
-		if err != nil || invalidHLSSegmentDuration(length) || number+1 >= len(lines) {
-			return manifest
-		}
-		if _, valid := hlsSegmentNumber(lines[number+1]); !valid {
+		if err != nil || !validCopiedHLSManifestCut(lines, number, length) {
 			return manifest
 		}
 		sum, last, final = sum+length, length, number
 	}
-	if final < 0 || duration <= 0 || math.IsNaN(duration) || math.IsInf(duration, 0) || duration > 7*24*60*60 {
+	if final < 0 || !validCopiedHLSEnd(duration) {
 		return manifest
 	}
 	corrected := duration - (sum - last)
@@ -210,4 +191,52 @@ func completedCopiedHLSManifest(manifest []byte, duration float64) []byte {
 	}
 	lines[final] = "#EXTINF:" + copiedHLSTime(corrected) + ","
 	return bytes.Replace([]byte(strings.Join(lines, "\n")), []byte("#EXT-X-PLAYLIST-TYPE:EVENT"), []byte("#EXT-X-PLAYLIST-TYPE:VOD"), 1)
+}
+
+func matchesCopiedHLSManifest(manifest []byte, timeline *copiedHLSTimeline) bool {
+	length, observed := 0.0, 0
+	for _, line := range strings.Split(string(manifest), "\n") {
+		if strings.HasPrefix(line, "#EXTINF:") {
+			value, _, _ := strings.Cut(strings.TrimPrefix(line, "#EXTINF:"), ",")
+			var err error
+			length, err = strconv.ParseFloat(value, 64)
+			if err != nil {
+				return false
+			}
+		}
+		number, ok := hlsSegmentNumber(line)
+		if !ok {
+			continue
+		}
+		if !matchesCopiedHLSSegment(timeline, number, observed, length) {
+			return false
+		}
+		observed++
+		length = 0
+	}
+	if observed == 0 || playback.PlaylistHas(manifest, "#EXT-X-ENDLIST") && observed != len(timeline.Keys) {
+		return false
+	}
+	return true
+}
+
+func matchesCopiedHLSLength(timeline *copiedHLSTimeline, number int, length float64) bool {
+	expected := timeline.segmentEnd(number) - timeline.point(number)
+	tolerance := 0.002
+	if number+1 == len(timeline.Keys) {
+		tolerance = min(1, max(0.1, expected*0.05)) // Demux duration ticks can round down across the last GOP.
+	}
+	return math.Abs(length-expected) <= tolerance
+}
+
+func validCopiedHLSManifestCut(lines []string, number int, length float64) bool {
+	if invalidHLSSegmentDuration(length) || number+1 >= len(lines) {
+		return false
+	}
+	_, valid := hlsSegmentNumber(lines[number+1])
+	return valid
+}
+
+func matchesCopiedHLSSegment(timeline *copiedHLSTimeline, number, observed int, length float64) bool {
+	return number == observed && observed < len(timeline.Keys) && length > 0 && matchesCopiedHLSLength(timeline, observed, length)
 }

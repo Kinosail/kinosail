@@ -157,8 +157,11 @@ def journey(name, original, metadata, corrupt=False):
             else:
                 root, paths, prefix_before = cold_scene(api, hls, item_id, cache, server, case)
             case["stage"] = "reopen"
-            status, master, _ = api.http(hls)
+            status, master, headers = api.http(hls)
             check(status == 200, "reopen_master_http_" + str(status))
+            request_id = headers.get("X-Request-ID", "")
+            check(re.fullmatch(r"[a-zA-Z0-9_-]{8,96}", request_id) is not None, "reopen_request_id")
+            case["reopenRequestID"] = request_id
             renditions = re.findall(rb"^[1-9][0-9]{2,3}p/index\.m3u8$", master, re.M)
             check(len(renditions) == 1, "one_reopen_rendition")
             base = hls.removesuffix("index.m3u8") + renditions[0].decode().removesuffix("index.m3u8")
@@ -199,8 +202,26 @@ def journey(name, original, metadata, corrupt=False):
                 server.kill()
                 server.wait()
             log.flush()
-            lifecycle = safe_encoder_lifecycle(read(directory / "server.log").decode())
+            private_log = read(directory / "server.log").decode()
+            lifecycle = safe_encoder_lifecycle(private_log)
             case["encoderLifecycle"] = lifecycle
+            diagnostics = []
+            for line in private_log.splitlines():
+                try:
+                    entry = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                if entry.get("msg") != "HLS copied cache rejected":
+                    continue
+                safe = (set(entry) == {"time", "level", "msg", "request_id", "playback_session", "mode", "failure_class"}
+                    and entry.get("level") == "WARN" and entry.get("mode") == "remux"
+                    and entry.get("failure_class") == "invalid-timeline"
+                    and entry.get("request_id") == case.get("reopenRequestID") and entry.get("playback_session") == "")
+                diagnostics.append({"boundedFieldsAndCorrelationValid": safe})
+            case["cacheRejectionDiagnostics"] = diagnostics[:8]
+            if len(diagnostics) != (1 if corrupt else 0) or not all(row["boundedFieldsAndCorrelationValid"] for row in diagnostics):
+                case["result"] = "failed"
+                case.setdefault("failureClass", "cache_rejection_diagnostic")
             case["sourceUnchanged"] = source_state(source) == before
             if not case["sourceUnchanged"] or not lifecycle["validSequence"] or lifecycle["peakActive"] != 1:
                 case["result"] = "failed"

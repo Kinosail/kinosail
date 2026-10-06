@@ -35,5 +35,3 @@ def fixture(directory, name, gop, keys, rate="24", frames=2304, extension=".mkv"
         check(any(abs(v - round(v, 3)) > 0.00001 for v in times), "fixture_submillisecond_keyframe")
     return path, {"command": command, "sha256": sha(path), "durationSeconds": duration, "videoDurationSeconds": expected_duration, "frameRate": frame_rate,
         "videoFrames": frames, "keyframesSeconds": times}
-
-

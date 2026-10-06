@@ -126,6 +126,11 @@ func (manager *hlsManager) copiedHLSEndpoint(ctx context.Context, directory, pol
 	if err != nil || statErr != nil || !sameCopiedHLSAssets(assets, current) {
 		return 0, errCopiedHLSIndex
 	}
+	manager.cacheCopiedHLSEndpoint(directory, policy, manifest, assets, end)
+	return end, nil
+}
+
+func (manager *hlsManager) cacheCopiedHLSEndpoint(directory, policy string, manifest []byte, assets []os.FileInfo, end float64) {
 	metadata := &manager.copiedMetadata
 	metadata.mu.Lock()
 	if len(metadata.endpoints) >= 64 {
@@ -133,5 +138,4 @@ func (manager *hlsManager) copiedHLSEndpoint(ctx context.Context, directory, pol
 	}
 	metadata.endpoints[directory] = copiedHLSEndpoint{policy: policy, manifest: sha256.Sum256(manifest), assets: assets, end: end}
 	metadata.mu.Unlock()
-	return end, nil
 }
