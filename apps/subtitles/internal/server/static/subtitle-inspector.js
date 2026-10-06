@@ -12,7 +12,7 @@
   let draftRevision = 0, draftActionRevision = 0, draftFailures = 0, pageActive = true, pendingDraftAction;
   const lockedControls = new Map();
   const saveOperation = window.kinosailSubtitleSave({ item: root.dataset.id, base, csrf: () => document.querySelector('meta[name="kinosail-csrf"]')?.content || "" });
-  let saveActionRevision = 0, saveBusyOwner, releaseSave = () => {};
+  let saveActionRevision = 0, saveBusyOwner, lastRestore = false, releaseSave = () => {};
   const tracks = { current: video.addTextTrack("subtitles", "Current"), proposed: video.addTextTrack("subtitles", "Proposed") };
   const element = (tag, text, className) => { const node = document.createElement(tag); if (text !== undefined) node.textContent = text; if (className) node.className = className; return node; };
   const time = (seconds) => `${Math.floor(seconds / 60)}:${(seconds % 60).toFixed(3).padStart(6, "0")}`;
@@ -33,22 +33,23 @@
     document.getElementById("restore-subtitle").disabled = value;
   }
   function showError(error) { status.removeAttribute("aria-label"); status.textContent = error.message || "The subtitle could not be loaded."; if (error.stepUpRequired) { const link = element("a", " Sign in again, then retry here."); link.href = `/login?next=${encodeURIComponent(location.pathname + location.search)}`; link.target = "_blank"; link.rel = "noopener"; status.append(link); } }
-  function showSaveResult(result) {
+  function showSaveResult(result, restoring = lastRestore) {
     if (result.stepUpRequired) showError(result); else status.textContent = result.message;
-    if (result.kind === "saved") return;
-    const check = element("button", "Check Save status", "quiet"); check.type = "button";
-    check.addEventListener("click", async () => { check.disabled = true; try { await checkSave(); } finally { check.disabled = false; } });
+    if (result.kind === "saved" || result.kind === "restored") return;
+    const check = element("button", `Check ${restoring ? "Restore" : "Save"} status`, "quiet"); check.type = "button";
+    check.addEventListener("click", async () => { check.disabled = true; try { await checkSave(restoring); } finally { check.disabled = false; } });
     const history = element("a", " View History"); history.href = "/?view=history";
     status.append(check, history);
   }
-  async function checkSave() {
+  async function checkSave(restoring = lastRestore) {
+    if (!pageActive || busy) return;
     const ticket = revision, action = ++saveActionRevision;
     const current = () => pageActive && ticket === revision && action === saveActionRevision;
     try {
-      const result = await saveOperation.check(form.elements.language.value);
+      const result = await saveOperation[restoring ? "checkRestore" : "check"](form.elements.language.value);
       if (!result || !current()) return;
       if (result.review?.language === form.elements.language.value) { review = result.review; invalidate(); page = 0; render(); }
-      showSaveResult(result.kind === "saved" ? { ...result, message: "Previous Save completed. Current subtitle refreshed; your edit is kept." } : result);
+      showSaveResult(result.kind === "saved" ? { ...result, message: "Previous Save completed. Current subtitle refreshed; your edit is kept." } : result, restoring);
     } catch (error) { if (current()) showError(error); }
   }
   function renderTrack(name, document) {
@@ -170,30 +171,31 @@
     try { const values = await input(); const result = await request("/preview", values); if (ticket !== revision) return; review = result; prepared = values; page = 0; render(); status.textContent = "Preview ready. Compare the text and timing, then save when satisfied."; }
     catch (error) { if (ticket === revision) showError(error); } finally { setBusy(false); }
   });
-  apply.addEventListener("click", async () => {
-    if (busy || !prepared) return;
-    const ticket = revision, action = ++saveActionRevision, values = prepared, proposed = review.proposed;
+  async function mutateSubtitle(restoring = false) {
+    if (!pageActive || busy || !review || review.language !== form.elements.language.value || !restoring && !prepared) return;
+    const ticket = revision, action = ++saveActionRevision, values = restoring ? review.language : prepared, proposed = review.proposed;
     const current = () => pageActive && ticket === revision && action === saveActionRevision;
     let released = false;
-    const savingMessage = "Saving subtitle and recovery copy…"; saveBusyOwner = action;
+    const savingMessage = restoring ? "Restoring previous subtitle…" : "Saving subtitle and recovery copy…"; saveBusyOwner = action; lastRestore = restoring;
     setBusy(true, true); status.textContent = savingMessage;
     const release = result => {
       if (released) return; released = true;
       if (saveBusyOwner !== action) return;
       saveBusyOwner = undefined; setBusy(false); apply.disabled = true;
-      if (!current()) { if (status.textContent === savingMessage) showSaveResult({ kind: "unconfirmed", message: "Save completion is unknown. Your edit is kept; check Save status before trying again." }); return; }
+      if (!current()) { if (pageActive && action === saveActionRevision && status.textContent === savingMessage) showSaveResult({ kind: "unconfirmed", message: `${restoring ? "Restore" : "Save"} completion is unknown. Your edit is kept; check status before trying again.` }); return; }
       prepared = undefined; status.removeAttribute("aria-busy"); showSaveResult(result);
     };
     releaseSave = release;
     try {
-      const result = await saveOperation.save(values, proposed, release);
+      const result = await (restoring ? saveOperation.restore(values, release) : saveOperation.save(values, proposed, release));
       if (!current()) return;
       if (result.kind === "saved") { review = result.review; invalidate(); form.elements.file.value = ""; draftID = ""; form.elements.text.value = ""; render(); }
-      else if (result.kind === "review-required" && result.review?.language === form.elements.language.value) { review = result.review; invalidate(); page = 0; render(); }
+      else if ((result.kind === "restored" || result.kind === "review-required") && result.review?.language === form.elements.language.value) { review = result.review; invalidate(); page = 0; render(); }
       showSaveResult(result);
     } catch (error) { if (current()) showError(error); }
-    finally { release({ kind: "unconfirmed", message: "Save completion is unknown. Your edit is kept; check current subtitle and History before trying again." }); if (releaseSave === release) releaseSave = () => {}; }
-  });
+    finally { release({ kind: "unconfirmed", message: `${restoring ? "Restore" : "Save"} completion is unknown. Your edit is kept; check current subtitle and History before trying again.` }); if (releaseSave === release) releaseSave = () => {}; }
+  }
+  apply.addEventListener("click", () => mutateSubtitle());
   document.getElementById("add-anchor").addEventListener("click", () => {
     const container = document.getElementById("subtitle-anchors"); if (container.children.length >= 8) return;
     form.elements.automaticSync.checked = false; form.elements.offset.value = "0";
@@ -205,7 +207,7 @@
   document.getElementById("show-flagged").addEventListener("change", () => { page = 0; renderCues(); });
   document.getElementById("previous-cues").addEventListener("click", () => { page--; renderCues(); });
   document.getElementById("next-cues").addEventListener("click", () => { page++; renderCues(); });
-  document.getElementById("restore-subtitle").addEventListener("click", async () => { if (busy || !review || review.language !== form.elements.language.value) return; setBusy(true, true); try { await request("/restore", { language: review.language }); await load(); status.textContent = "Previous subtitle restored."; } catch (error) { showError(error); } finally { setBusy(false); } });
+  document.getElementById("restore-subtitle").addEventListener("click", () => mutateSubtitle(true));
   document.getElementById("analyze-speech").addEventListener("click", async event => {
     const button = event.currentTarget; button.disabled = true; const summary = document.getElementById("speech-summary"); summary.textContent = "Analyzing audio locally. This can take several minutes.";
     try {
@@ -286,7 +288,7 @@
     if (draft?.state !== "ready" || draft.language !== form.elements.language.value || busy) return;
     draftID = draft.id; form.elements.role.value = "translation"; form.elements.text.value = ""; form.elements.file.value = ""; form.elements.encoding.value = "auto"; form.elements.offset.value = "0"; form.elements.automaticSync.checked = false; document.getElementById("subtitle-anchors").replaceChildren(); invalidate(); form.requestSubmit();
   });
-  window.addEventListener("pagehide", () => { releaseSave({ kind: "unconfirmed", message: "Save completion is unknown. Your edit is kept." }); saveActionRevision++; saveOperation.stop(); pageActive = false; draftRevision++; draftActionRevision++; clearTimeout(draftPoll); wordObserver?.disconnect(); });
+  window.addEventListener("pagehide", () => { pageActive = false; releaseSave({ kind: "unconfirmed", message: `${lastRestore ? "Restore" : "Save"} completion is unknown. Your edit is kept.` }); saveActionRevision++; saveOperation.stop(); draftRevision++; draftActionRevision++; clearTimeout(draftPoll); wordObserver?.disconnect(); });
   window.addEventListener("pageshow", () => { if (!pageActive) { pageActive = true; checkSave(); loadDraft().catch(showError); } });
   load().catch(error => { status.style.minHeight = `${status.getBoundingClientRect().height}px`; showError(error); });
   loadDraft().catch(showError);
