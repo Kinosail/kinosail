@@ -232,6 +232,7 @@ finally:
          'hls_followon_cancel.py', 'hls_timeline_http.py',
          'hls_nonkey_diagnostics.py', 'hls_nonkey_mux.py', 'hls_nonkey_initialization.py',
          'test_hls_nonkey_initialization.py',
+         'hls_nonkey_fragment.py', 'test_hls_nonkey_fragment.py',
          'hls_timeline_packets.py', 'hls_timeline_fixture.py', 'hls_timeline_preparation.py']]
     checksums = {str(p.relative_to(ROOT)): sha(p) for p in files} | {'receipt.json': sha(target)}
     (RUN / 'SHA256SUMS').write_text(''.join(f'{v}  {k}\n' for k, v in checksums.items()))

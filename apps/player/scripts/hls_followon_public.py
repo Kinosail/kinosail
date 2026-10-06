@@ -107,6 +107,8 @@ def measure(api, hls, directory, source, metadata, offset, prepared_init, case):
             case['unavailableSegment'] = filename
             continue
         fragments.append(data)
+        if offset and len(fragments) == 2:
+            (directory / 'nonkey-first-fragment.m4s').write_bytes(data)
         path = directory / 'fragment.mp4'
         path.write_bytes(init + data)
         packets = fragment_packets(path)

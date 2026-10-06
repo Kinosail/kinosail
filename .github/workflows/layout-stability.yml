@@ -270,6 +270,8 @@ jobs:
         run: python3 -m unittest discover -s apps/player/scripts -p test_hls_followon_frames.py
       - name: Check bounded initialization evidence
         run: python3 -m unittest discover -s apps/player/scripts -p test_hls_nonkey_initialization.py
+      - name: Check bounded raw fragment evidence
+        run: python3 -m unittest discover -s apps/player/scripts -p test_hls_nonkey_fragment.py
       - name: Run all authenticated public cases
         run: python3 apps/player/scripts/test-hls-followon.py
       - name: Preserve safe follow-on receipts
