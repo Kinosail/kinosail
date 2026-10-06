@@ -17,6 +17,7 @@ Focused acceptance:
 - Chrome: 33/33 passed in 12.6s. Covers source windows, paused seeking, buffer starts, Apple launch, stale Play rejection, explicit Pause and preparation progress.
 - Installed macOS Playwright WebKit 2359: 16/16 native/source seeking cases passed in 6.8s.
 - Populated Go Server with generated 70-second H264 clip: 6/6 repeated public progress-chain cases passed in 25.3s. Real HTTP readback and decoded-frame callbacks prove accepted 22 reentry through Browser Back and Library. The web endpoint ignored an old revision with 204; the canonical API rejected it with 409. Accepted storage stayed unchanged.
+- The three retained offset regressions are selected by protected `@smoke` CI. The final selector run passed 3/3 after adding the tags and awaiting both queued checkpoints. Production fingerprints are unchanged from the 33-case and 16-case acceptance; the selector receipt records the final test fingerprint.
 - `make max-loc` and `git diff --check` passed. Independent working-source review found no remaining blocker; exact committed-head review and protected CI follow publication.
 
 Repeat with one worker:
@@ -35,6 +36,8 @@ Private artifact receipts preserve source fingerprints, exact commands and check
 - `.verification/native-source-gaps/accepted-chromium-receipt.json`: `a19397a80fc17e61f4a3ab7766e2c77ecad45476370a612de3cc632fcb35799a`.
 - `.verification/native-source-gaps/accepted-webkit-receipt.json`: `53748812e10917f5042df4d9f69ab1d6dfd2efad395233cbc575ca5cfd41c280`.
 - `.verification/paused-seek-checkpoint/20261006T145003Z/receipt.json`: `268d1b8edec359193aa207740b6058e785a84fd50398426375ffd260f956e8cd`.
+
+- `.verification/native-source-gaps/smoke-selection-receipt.json`: `f8a3688458ab6bea055e821186d6408bf6014a11b6d5bfcdb005188dae392779`.
 
 Production fingerprints:
 

@@ -240,7 +240,7 @@ async function nativeTimelineWindow(page: Page, duration: number, start: number)
   return writes;
 }
 
-test("native HLS keeps a saved source window when the full duration is unknown", async ({page}, info) => {
+test("native HLS keeps a saved source window when the full duration is unknown @smoke", async ({page}, info) => {
   const writes = await nativeTimelineWindow(page, 0, 22);
   const path = await page.locator("video").evaluate(video => new URL(video.src).pathname);
   await writeFile(info.outputPath("unknown-duration-window.json"), JSON.stringify({path, expectedOffset: 22, fullDuration: "unknown"}));
@@ -255,7 +255,7 @@ test("native HLS keeps a saved source window when the full duration is unknown",
   await expect.poll(() => writes).toEqual([22]);
 });
 
-test("native HLS replacement checkpoints the requested source position while old decoder metadata remains", async ({page}, info) => {
+test("native HLS replacement checkpoints the requested source position while old decoder metadata remains @smoke", async ({page}, info) => {
   const writes = await nativeTimelineWindow(page, 70, 0);
   await page.evaluate(() => {
     const state = (window as unknown as {nativeTimeline: {raw: number; duration: number; ready: number}}).nativeTimeline;
@@ -269,7 +269,7 @@ test("native HLS replacement checkpoints the requested source position while old
   await expect.poll(() => writes.length).toBeGreaterThan(0);
   const snapshot = await page.evaluate(() => (window as unknown as {nativeTimeline: {lastLoad: {position: number; duration: number}}}).nativeTimeline.lastLoad);
   await writeFile(info.outputPath("replacement-window-checkpoint.json"), JSON.stringify({snapshot, writes, expectedPosition: 22, fullDuration: 70}));
-  expect(writes).toEqual([22, 22]);
+  await expect.poll(() => writes).toEqual([22, 22]);
   expect(snapshot).toEqual({position: 22, duration: 70});
   await page.evaluate(() => {
     const state = (window as unknown as {nativeTimeline: {raw: number; duration: number}}).nativeTimeline;
@@ -283,7 +283,7 @@ test("native HLS replacement checkpoints the requested source position while old
   await expect.poll(() => writes).toEqual([22, 22, 23.25]);
 });
 
-test("native HLS bounds source offsets when duration is unknown", async ({page}) => {
+test("native HLS bounds source offsets when duration is unknown @smoke", async ({page}) => {
   for (const start of [-1, NaN, Infinity, 604800.1, 604801]) {
     await nativeTimelineWindow(page, 0, start);
     const path = await page.locator("video").evaluate(video => new URL(video.src).pathname);
