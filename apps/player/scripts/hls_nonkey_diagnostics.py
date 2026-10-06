@@ -5,7 +5,7 @@ import math
 import re
 import subprocess
 import time
-from hls_followon_frames import decode_frames, stream_metadata, remaining_timeout
+from hls_followon_frames import decode_frames, remaining_timeout
 from hls_followon_public import check, bounded_bytes
 from hls_nonkey_initialization import initialization_metadata
 from hls_nonkey_mux import experiments, presentation_experiment, fragment_evidence
@@ -68,16 +68,17 @@ def nonkey_evidence(source, public, init, directory, metadata, offset, case):
     check(reference['presentedFrames'] == case['referenceClock']['expectedFrames'],
           'nonkey_independent_reference_frames')
     result.update(source=source_facts, public=public_facts, reference=reference,
-        sourceStreamOrigins=metadata['streamOrigins'], publicStreamOrigins=stream_metadata(public),
+        sourceStreamOrigins=metadata['streamOrigins'], publicStreamOrigins=public_facts['containerPresentation'],
         sourceDecodedFramePTS=metadata['sourceFramePTS'],
         sourceFrameRowColumns=['pts', 'md5'],
         completeSourceFrames=[json.dumps(row, separators=(',', ':')) for row in source_rows],
         completeReferenceFrames=[json.dumps(row, separators=(',', ':')) for row in reference_rows],
-        sourcePackets=packet_rows(source), publicPackets=packet_rows(public),
-        initialization=initialization_metadata(bounded_bytes(init, 1024 * 1024, 'nonkey_init_bound')),
-        firstFragmentSamples=fragment_evidence(bounded_bytes(directory / 'nonkey-first-fragment.m4s',
-                                                          2 * 1024 * 1024, 'nonkey_first_fragment_bound')),
-        outputZeroDecoder=presentation_experiment(public, reference),
         frameMapping=frame_mapping(source_rows, public_rows, metadata['sourceFramePTS'], requested))
+    result['sourcePackets'] = packet_rows(source)
+    result['publicPackets'] = packet_rows(public)
+    result['initialization'] = initialization_metadata(bounded_bytes(init, 1024 * 1024, 'nonkey_init_bound'))
+    result['firstFragmentSamples'] = fragment_evidence(bounded_bytes(directory / 'nonkey-first-fragment.m4s',
+                                                                   2 * 1024 * 1024, 'nonkey_first_fragment_bound'))
+    result['outputZeroDecoder'] = presentation_experiment(public, reference)
     result['offlineVariants'] = experiments(source, directory, offset, metadata, source_rows,
         reference, packet_rows, frame_mapping, time.monotonic() + 120)

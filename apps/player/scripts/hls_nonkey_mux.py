@@ -36,7 +36,7 @@ def initial_box(path, target=b'moov', limit=1024 * 1024):
 def presentation_experiment(path, reference, deadline=None):
     # Explicit output-zero decode is a measured decoder window, not hash trimming.
     # It remains offline evidence until raw edits and a public renderer qualify it.
-    command = ['ffmpeg', '-nostdin', '-v', 'error', '-xerror', '-threads', '2', '-i', str(path),
+    command = ['ffmpeg', '-nostdin', '-v', 'error', '-xerror', '-threads', '2', '-copyts', '-i', str(path),
         '-ss', '0', '-an', '-frames:v', '4097', '-fps_mode', 'passthrough',
         '-enc_time_base', '1:1000000', '-f', 'framemd5', 'pipe:1']
     result = subprocess.run(command, capture_output=True, timeout=remaining_timeout(deadline, 60))
@@ -112,13 +112,15 @@ def experiments(source, directory, offset, metadata, source_rows, reference, pac
                 public.write_bytes(b''.join(parts))
             check(time.monotonic() < deadline, 'nonkey_offline_deadline')
             actual, rows = decode_frames(public, deadline=deadline)
-            attempt.update(publicSHA256=sha(public), initialization=initialization_metadata(init),
-                completePresentation=actual, packets=packets(public, deadline=deadline),
-                firstFragmentSamples=fragment_evidence(first_fragment),
-                outputZeroDecoder=presentation_experiment(public, reference, deadline),
-                matchesStrictReference=actual['identity'] == reference['identity'],
-                frameMapping=mapping(source_rows, rows, metadata['sourceFramePTS'],
-                    metadata['sourceTimeOriginSeconds'] + offset), result='measured')
+            attempt.update(publicSHA256=sha(public), completePresentation=actual,
+                           matchesStrictReference=actual['identity'] == reference['identity'])
+            attempt['frameMapping'] = mapping(source_rows, rows, metadata['sourceFramePTS'],
+                                             metadata['sourceTimeOriginSeconds'] + offset)
+            attempt['initialization'] = initialization_metadata(init)
+            attempt['packets'] = packets(public, deadline=deadline)
+            attempt['firstFragmentSamples'] = fragment_evidence(first_fragment)
+            attempt['outputZeroDecoder'] = presentation_experiment(public, reference, deadline)
+            attempt['result'] = 'measured'
         except (RuntimeError, OSError, subprocess.SubprocessError) as error:
             attempt['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
         if time.monotonic() >= deadline:
