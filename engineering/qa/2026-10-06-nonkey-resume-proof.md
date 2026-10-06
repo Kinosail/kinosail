@@ -81,3 +81,32 @@ MP4 controls. They replace redundant copied-clock/explicit-discontinuous cases
 with negative and automatic-clock HLS edits without initial `frag_discont`.
 Keep the initial run immutable. Compact numeric JSON rows retain every sample,
 source frame, reference frame and decoder output within the 4 MiB receipt bound.
+
+## Actual public renderer admission
+
+Run Chromium against the disposable authenticated Server's real watch pages.
+Do not mock media, metadata, progress, Hls.js, decoder methods or Server responses.
+Copy the generated source packets into a browser-compatible reference container;
+verify both packet identities before starting the Server. The full reference must
+present all 768 source frames. Bind its ordered browser pixel hashes and clocks
+to the independent source PTS. Compare the complete resumed browser output with
+the independently requested 468-frame window, without trimming either output.
+
+Install the callback before the media element loads. Retain every callback's
+clock, presented-frame counter and SHA256 of its complete native-resolution RGBA
+pixels. Slow playback to 0.25 only to avoid observation loss. Missing callbacks,
+duplicate clocks, skipped counters, ambiguous reference hashes, malformed rows,
+decoder errors, unexpected rendition requests, missing tail or an incomplete
+reference make presentation unqualified. Keep partial safe evidence on timeout.
+Use only synthetic credentials through private subprocess stdin, never receipts,
+command arguments, logs or artifacts. Bound each browser journey and receipt.
+
+The existing twelve-case raw proof remains strict. Add separate browser facts;
+an observed browser pass cannot erase its raw failures or waive AAC/AV clocks.
+Compact complete diagnostic frame-map rows with an explicit schema to make room
+inside the existing 4 MiB safe archive bound. Preserve earlier receipts unchanged.
+The actual public baseline must run before any production flags or clock change.
+Safari, iOS, simulator and Nox remain separate acceptance boundaries.
+The public adapter's native movie clock must match independent source PTS within
+1 ms for every mapped displayed frame. Pixel identity cannot hide a wrong clock.
+Retain buffered ranges, native/reported times and all bounded lifecycle events.

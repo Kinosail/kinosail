@@ -75,6 +75,15 @@ class CampaignProofTests(unittest.TestCase):
         self.assertIn('run: python3 apps/player/scripts/test-hls-followon.py\n', manual)
         self.assertNotIn('--suite audio', manual)
 
+    def test_nonkey_renderer_is_bounded_manual_and_preserves_raw_suite(self):
+        proof = LAYOUT.read_text().split('  hls-followon:\n')[1]
+        self.assertIn('timeout 180s pnpm --dir apps/player/e2e install --frozen-lockfile', proof)
+        self.assertIn('timeout 240s pnpm --dir apps/player/e2e exec playwright install --with-deps chromium', proof)
+        self.assertIn('test_hls_nonkey_renderer.py', proof)
+        self.assertIn('KINOSAIL_HLS_RENDERER: "1"', proof)
+        self.assertIn('run: python3 apps/player/scripts/test-hls-followon.py\n', proof)
+        self.assertNotIn('KINOSAIL_HLS_RENDERER', (ROOT / '.github/workflows/app.yml').read_text())
+
     def test_hevc_preparation_adds_a_separate_required_public_gate(self):
         # Completed, stopped and adopted ownership can pass audio6 while losing
         # HEVC tail media. Require their own strict public proof and safe receipt.

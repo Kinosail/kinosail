@@ -20,6 +20,7 @@ from hls_followon_public import check, bounded_bytes, encoder_count, sample_reso
 from hls_followon_frames import stream_metadata
 from hls_followon_controls import controls
 from hls_nonkey_diagnostics import nonkey_evidence
+from hls_nonkey_renderer import public_renderer
 
 ROOT = Path(__file__).resolve().parents[3]
 parser = argparse.ArgumentParser(description=__doc__)
@@ -108,6 +109,17 @@ def journey(name, original, metadata, offset=0, cold=False, one_shot=False, audi
     source = media / ('Fixture' + original.suffix)
     shutil.copy2(original, source)
     before = source_state(source)
+    browser_reference = None
+    if offset and os.environ.get('KINOSAIL_HLS_RENDERER') == '1':
+        reference, reference_metadata = convert(original, metadata, name + '-browser-reference')
+        check(len(reference_metadata['sourceFramePTS']) == len(metadata['sourceFramePTS']) and
+            all(abs(a - b) <= 0.001 for a, b in zip(reference_metadata['sourceFramePTS'],
+                                                  metadata['sourceFramePTS'])), 'renderer_reference_clock')
+        browser_reference = media / 'Reference.mp4'
+        shutil.copy2(reference, browser_reference)
+        case['browserReferenceSource'] = {'before': source_state(browser_reference),
+            'copiedVideoIdentity': reference_metadata['copiedVideoIdentity'],
+            'copiedAudioIdentity': reference_metadata['copiedAudioIdentity']}
     with socket.socket() as listener:
         listener.bind(('127.0.0.1', 0))
         port = listener.getsockname()[1]
@@ -161,6 +173,12 @@ def journey(name, original, metadata, offset=0, cold=False, one_shot=False, audi
             if offset:
                 nonkey_evidence(source, directory / 'public.mp4', directory / 'nonkey-init.mp4',
                                directory, metadata, offset, case)
+                if browser_reference:
+                    reference_id = next(i['id'] for i in api.call('/api/v1/library')['items'] if i['title'] == 'Reference')
+                    public_renderer(api, item_id, reference_id, metadata, offset, hls, directory, case, ROOT)
+                    reference_state = source_state(browser_reference)
+                    case['browserReferenceSource'].update(after=reference_state,
+                        sourceUnchanged=case['browserReferenceSource']['before'] == reference_state)
             case['result'] = 'passed' if not case['failures'] else 'failed'
         except Exception as error:
             case['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
@@ -233,7 +251,9 @@ finally:
          'hls_nonkey_diagnostics.py', 'hls_nonkey_mux.py', 'hls_nonkey_initialization.py',
          'test_hls_nonkey_initialization.py',
          'hls_nonkey_fragment.py', 'test_hls_nonkey_fragment.py',
+         'hls_nonkey_renderer.py', 'test_hls_nonkey_renderer.py',
          'hls_timeline_packets.py', 'hls_timeline_fixture.py', 'hls_timeline_preparation.py']]
+    files.append(ROOT / 'apps/player/e2e/hls-public-renderer.mjs')
     checksums = {str(p.relative_to(ROOT)): sha(p) for p in files} | {'receipt.json': sha(target)}
     (RUN / 'SHA256SUMS').write_text(''.join(f'{v}  {k}\n' for k, v in checksums.items()))
     print(json.dumps({'result': receipt['result'], 'receiptSHA256': sha(target), 'failureClass': receipt.get('failureClass'),

@@ -52,8 +52,9 @@ def frame_mapping(source_rows, public_rows, source_pts, requested):
         'duplicatePublicSourceIndices': [n for n, count in presented.items() if count > 1] if qualified else None,
         'ambiguousSourceHashes': sum(value > 1 for value in counts.values()),
         'unknownPublicFrames': sum(n is None for n in mapped),
-        'completePublicFrames': [{'publicPTS': point, 'md5': value, 'sourceIndex': mapped[n],
-            'sourcePTS': source_pts[mapped[n]] if mapped[n] is not None else None}
+        'completePublicFrameColumns': ['publicPTS', 'md5', 'sourceIndex', 'sourcePTS'],
+        'completePublicFrames': [json.dumps([point, value, mapped[n],
+            source_pts[mapped[n]] if mapped[n] is not None else None], separators=(',', ':'))
             for n, (point, value) in enumerate(public_rows)]}
 
 

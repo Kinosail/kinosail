@@ -259,6 +259,19 @@ jobs:
         with:
           go-version-file: go.work
           cache-dependency-path: "**/go.sum"
+      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
+        with:
+          version: 11.22.0
+          install: false
+          node-version-file: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: "26"
+          package-manager-cache: false
+      - name: Prepare bounded public renderer
+        run: |
+          timeout 180s pnpm --dir apps/player/e2e install --frozen-lockfile
+          timeout 240s pnpm --dir apps/player/e2e exec playwright install --with-deps chromium
       - name: Install pinned public-media codecs
         run: |
           curl --fail --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/hls-ffmpeg.deb" https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.2-5/jellyfin-ffmpeg8_8.1.2-5-noble_amd64.deb
@@ -272,7 +285,11 @@ jobs:
         run: python3 -m unittest discover -s apps/player/scripts -p test_hls_nonkey_initialization.py
       - name: Check bounded raw fragment evidence
         run: python3 -m unittest discover -s apps/player/scripts -p test_hls_nonkey_fragment.py
+      - name: Check complete renderer evidence
+        run: python3 -m unittest discover -s apps/player/scripts -p test_hls_nonkey_renderer.py
       - name: Run all authenticated public cases
+        env:
+          KINOSAIL_HLS_RENDERER: "1"
         run: python3 apps/player/scripts/test-hls-followon.py
       - name: Preserve safe follow-on receipts
         if: always()
