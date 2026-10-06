@@ -19,14 +19,28 @@ func TestRestoreCausalProbePublicControl(t *testing.T) {
 	f.app = http.HandlerFunc(func(http.ResponseWriter, *http.Request) { t.Error("diagnostic cannot call product handler") })
 	before := f.snapshot()
 	client := target.privateClient(3 * time.Second)
+	assertRejectedCausalProbes(t, f, client, before)
+	assertCausalWireEquality(t, f, client)
+	assertLiveCausalCancellation(t, f, client)
+	if f.snapshot() != before {
+		t.Fatal("diagnostic changed Restore state")
+	}
+	raw, err := json.Marshal(f.causalSnapshot())
+	if err != nil || len(raw) > 2048 {
+		t.Fatal("closed probe output overflow")
+	}
+}
+
+func assertRejectedCausalProbes(t *testing.T, f *restoreRig, client *http.Client, before restoreSnapshot) {
+	t.Helper()
 	for _, input := range []struct{ method, path, body string }{
-		{"POST", "/__r06_restore/probe", `{"mode":"foreign"}`},
-		{"POST", "/__r06_restore/probe", `{"mode":"direct","extra":true}`},
-		{"GET", "/__r06_restore/probe", `{"mode":"direct"}`},
-		{"POST", "/__r06_restore/probe?extra=1", `{"mode":"direct"}`},
-		{"POST", "/__r06_restore/probe", strings.Repeat("x", 257)},
+		{http.MethodPost, "/__r06_restore/probe", `{"mode":"foreign"}`},
+		{http.MethodPost, "/__r06_restore/probe", `{"mode":"direct","extra":true}`},
+		{http.MethodGet, "/__r06_restore/probe", `{"mode":"direct"}`},
+		{http.MethodPost, "/__r06_restore/probe?extra=1", `{"mode":"direct"}`},
+		{http.MethodPost, "/__r06_restore/probe", strings.Repeat("x", 257)},
 	} {
-		request, err := http.NewRequest(input.method, target.origin+input.path, strings.NewReader(input.body))
+		request, err := http.NewRequestWithContext(t.Context(), input.method, f.target.origin+input.path, strings.NewReader(input.body))
 		if err != nil {
 			t.Fatal("fixed probe control unavailable")
 		}
@@ -42,9 +56,13 @@ func TestRestoreCausalProbePublicControl(t *testing.T) {
 			t.Fatal("rejection caused effects")
 		}
 	}
+}
+
+func assertCausalWireEquality(t *testing.T, f *restoreRig, client *http.Client) {
+	t.Helper()
 	var previous http.Header
 	for _, mode := range []string{"direct", "captured"} {
-		request, err := http.NewRequest("POST", target.origin+"/__r06_restore/probe", strings.NewReader(`{"mode":"`+mode+`"}`))
+		request, err := http.NewRequestWithContext(t.Context(), http.MethodPost, f.target.origin+"/__r06_restore/probe", strings.NewReader(`{"mode":"`+mode+`"}`))
 		if err != nil {
 			t.Fatal("fixed probe unavailable")
 		}
@@ -54,7 +72,7 @@ func TestRestoreCausalProbePublicControl(t *testing.T) {
 			t.Fatal("fixed probe request unavailable")
 		}
 		data, err := readPrivateResponse(response)
-		if err != nil || response.StatusCode != 204 || len(data) != 0 {
+		if err != nil || response.StatusCode != http.StatusNoContent || len(data) != 0 {
 			t.Fatal("probe changed empty204")
 		}
 		if previous != nil && !reflect.DeepEqual(previous, response.Header) {
@@ -62,9 +80,13 @@ func TestRestoreCausalProbePublicControl(t *testing.T) {
 		}
 		previous = response.Header.Clone()
 	}
-	ctx, cancel := context.WithCancel(context.Background())
+}
+
+func assertLiveCausalCancellation(t *testing.T, f *restoreRig, client *http.Client) {
+	t.Helper()
+	ctx, cancel := context.WithCancel(t.Context())
 	defer cancel()
-	request, err := http.NewRequestWithContext(ctx, "POST", target.origin+"/__r06_restore/probe", strings.NewReader(`{"mode":"held"}`))
+	request, err := http.NewRequestWithContext(ctx, http.MethodPost, f.target.origin+"/__r06_restore/probe", strings.NewReader(`{"mode":"held"}`))
 	if err != nil {
 		t.Fatal("held probe unavailable")
 	}
@@ -101,26 +123,20 @@ func TestRestoreCausalProbePublicControl(t *testing.T) {
 	if !state.Cancelled || !state.Settled || state.Delivered || state.TimedOut {
 		t.Fatal("live handler did not witness cancellation")
 	}
-	if f.snapshot() != before {
-		t.Fatal("diagnostic changed Restore state")
-	}
-	raw, err := json.Marshal(f.causalSnapshot())
-	if err != nil || len(raw) > 2048 {
-		t.Fatal("closed probe output overflow")
-	}
 }
 
 // Isolation gap: real network timing cannot force a select race deterministically.
 func TestRestoreCausalCancellationBoundary(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	if !causalCancellationQualifies(ctx, time.Now().Add(time.Second)) {
+	ctx, cancel := context.WithCancel(t.Context())
+	f := &restoreRig{ctx: ctx}
+	if !f.causalCancellationQualifies(time.Now().Add(time.Second)) {
 		t.Fatal("live cancellation qualifier rejected")
 	}
-	if causalCancellationQualifies(ctx, time.Now().Add(-time.Second)) {
+	if f.causalCancellationQualifies(time.Now().Add(-time.Second)) {
 		t.Fatal("expired cancellation qualified")
 	}
 	cancel()
-	if causalCancellationQualifies(ctx, time.Now().Add(time.Second)) {
+	if f.causalCancellationQualifies(time.Now().Add(time.Second)) {
 		t.Fatal("stopped lifecycle cancellation qualified")
 	}
 }

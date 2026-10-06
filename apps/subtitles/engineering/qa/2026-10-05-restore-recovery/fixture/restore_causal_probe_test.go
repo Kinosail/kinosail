@@ -34,7 +34,7 @@ func (f *restoreRig) serveCausalProbe(writer http.ResponseWriter, request *http.
 	}
 	if request.URL.Path == "/__r06_restore/probe-witness" {
 		if request.Method != http.MethodGet {
-			http.Error(writer, "fixed diagnostic boundary", 405)
+			http.Error(writer, "fixed diagnostic boundary", http.StatusMethodNotAllowed)
 			return true
 		}
 		writer.Header().Set("Content-Type", "application/json")
@@ -43,64 +43,20 @@ func (f *restoreRig) serveCausalProbe(writer http.ResponseWriter, request *http.
 		return true
 	}
 	if request.Method != http.MethodPost || request.Header.Get("Content-Type") != "application/json" {
-		http.Error(writer, "fixed diagnostic boundary", 405)
+		http.Error(writer, "fixed diagnostic boundary", http.StatusMethodNotAllowed)
 		return true
 	}
-	raw, err := io.ReadAll(io.LimitReader(request.Body, 257))
-	closeErr := request.Body.Close()
-	var input struct {
-		Mode string `json:"mode"`
-	}
-	decoder := json.NewDecoder(bytes.NewReader(raw))
-	decoder.DisallowUnknownFields()
-	if err != nil || closeErr != nil || len(raw) > 256 || decoder.Decode(&input) != nil || decoder.Decode(&struct{}{}) != io.EOF {
-		http.Error(writer, "fixed diagnostic boundary", 405)
+	index := causalProbeIndex(request)
+	if index < 0 {
+		http.Error(writer, "fixed diagnostic boundary", http.StatusMethodNotAllowed)
 		return true
 	}
-	index := -1
-	switch input.Mode {
-	case "direct":
-		index = 0
-	case "captured":
-		index = 1
-	case "held":
-		index = 2
-	}
-	if index < 0 || !bytes.Equal(raw, []byte(`{"mode":"`+input.Mode+`"}`)) {
-		http.Error(writer, "fixed diagnostic boundary", 405)
-		return true
-	}
-	f.target.mu.Lock()
-	allowed := !f.target.causalProbe[index].Seen
-	if allowed {
-		f.target.causalProbe[index].Seen = true
-		f.target.causalProbe[index].Held = index == 2
-	}
-	f.target.mu.Unlock()
-	if !allowed {
+	if !f.armCausalProbe(index) {
 		http.Error(writer, "fixed diagnostic boundary", http.StatusConflict)
 		return true
 	}
 	if index == 2 {
-		deadline := time.Now().Add(5 * time.Second)
-		timer := time.NewTimer(time.Until(deadline))
-		defer timer.Stop()
-		cancelled, timedOut := false, false
-		select {
-		case <-request.Context().Done():
-			cancelled = causalCancellationQualifies(f.ctx, deadline)
-			timedOut = !cancelled
-		case <-timer.C:
-			timedOut = true
-		case <-f.ctx.Done():
-			timedOut = true
-		}
-		// The cancellation witness is taken inside this live handler, before return.
-		f.target.mu.Lock()
-		f.target.causalProbe[index].Cancelled = cancelled
-		f.target.causalProbe[index].TimedOut = timedOut
-		f.target.causalProbe[index].Settled = true
-		f.target.mu.Unlock()
+		f.serveHeldCausalProbe(request.Context())
 		return true
 	}
 	delivered := true
@@ -118,6 +74,62 @@ func (f *restoreRig) serveCausalProbe(writer http.ResponseWriter, request *http.
 	return true
 }
 
+func causalProbeIndex(request *http.Request) int {
+	raw, err := io.ReadAll(io.LimitReader(request.Body, 257))
+	closeErr := request.Body.Close()
+	var input struct {
+		Mode string `json:"mode"`
+	}
+	decoder := json.NewDecoder(bytes.NewReader(raw))
+	decoder.DisallowUnknownFields()
+	if err != nil || closeErr != nil || len(raw) > 256 || decoder.Decode(&input) != nil || decoder.Decode(&struct{}{}) != io.EOF {
+		return -1
+	}
+	index := -1
+	switch input.Mode {
+	case "direct":
+		index = 0
+	case "captured":
+		index = 1
+	case "held":
+		index = 2
+	}
+	if index < 0 || !bytes.Equal(raw, []byte(`{"mode":"`+input.Mode+`"}`)) {
+		return -1
+	}
+	return index
+}
+
+func (f *restoreRig) armCausalProbe(index int) bool {
+	f.target.mu.Lock()
+	defer f.target.mu.Unlock()
+	allowed := !f.target.causalProbe[index].Seen
+	if allowed {
+		f.target.causalProbe[index].Seen = true
+		f.target.causalProbe[index].Held = index == 2
+	}
+	return allowed
+}
+
+func (f *restoreRig) serveHeldCausalProbe(requestContext context.Context) {
+	deadline := time.Now().Add(5 * time.Second)
+	timer := time.NewTimer(time.Until(deadline))
+	defer timer.Stop()
+	cancelled := false
+	select {
+	case <-requestContext.Done():
+		cancelled = f.causalCancellationQualifies(deadline)
+	case <-timer.C:
+	case <-f.ctx.Done():
+	}
+	// The cancellation witness is taken inside this live handler, before return.
+	f.target.mu.Lock()
+	f.target.causalProbe[2].Cancelled = cancelled
+	f.target.causalProbe[2].TimedOut = !cancelled
+	f.target.causalProbe[2].Settled = true
+	f.target.mu.Unlock()
+}
+
 func causal204(writer http.ResponseWriter) {
 	// Fixed secret-free producer, identical through direct and actual capture paths.
 	writer.Header().Set("Date", "Mon, 01 Jan 1990 00:00:00 GMT")
@@ -126,6 +138,6 @@ func causal204(writer http.ResponseWriter) {
 	writer.WriteHeader(http.StatusNoContent)
 }
 
-func causalCancellationQualifies(lifecycle context.Context, deadline time.Time) bool {
-	return lifecycle.Err() == nil && time.Now().Before(deadline)
+func (f *restoreRig) causalCancellationQualifies(deadline time.Time) bool {
+	return f.ctx.Err() == nil && time.Now().Before(deadline)
 }
