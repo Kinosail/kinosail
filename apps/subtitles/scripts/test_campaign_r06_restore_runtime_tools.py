@@ -212,3 +212,27 @@ class RestoreDependencyDiagnosticControls(unittest.TestCase):
         for error in (ValueError("private path /unreviewed/value"), ValueError("source-shape", "private"),
                       OSError("private target"), RuntimeError("private text")):
             self.assertEqual(tools.dependency_reason(error), "unclassified")
+
+
+class RestoreRegistryNamespaceControls(unittest.TestCase):
+    def test_selected_registry_program_handles_packaged_namespace_export(self):
+        # Actual 1.63.0 coreBundle exports the registry module namespace; that
+        # namespace exports the instance. Prior hosted browserResolution failed
+        # before browser/control launch; literal-path checks missed this boundary.
+        import json
+        import subprocess
+        harness = """const vm=require('node:vm'),chunks=[],calls=[];
+const registry={findExecutable:name=>{calls.push(name);return {executablePath:()=>'/owned/cache/'+name}}};
+const fakeRequire=name=>{if(name!=='/owned/core/lib/coreBundle.js')throw new Error('foreign importer');return {registry:{registry}}};
+vm.runInNewContext(PROGRAM,{require:fakeRequire,process:{stdout:{write:value=>chunks.push(value)}}});
+process.stdout.write(JSON.stringify({chunks,calls}));"""
+        command=harness.replace('PROGRAM',json.dumps(tools.registry_script('/owned/core')))
+        result=subprocess.run(['node','-e',command],capture_output=True,timeout=3,check=False)
+        self.assertEqual(result.returncode,0,'packaged registry namespace lookup failed')
+        captured=json.loads(result.stdout)
+        self.assertEqual(captured['calls'],['chromium','chromium-headless-shell'])
+        self.assertEqual(len(captured['chunks']),1)
+        record=captured['chunks'][0].encode()
+        self.assertEqual(record.count(b'\n'),1)
+        collector=tools.Resolution();collector.consume(record.rstrip(b'\n'))
+        self.assertEqual(collector.values,[{'chromium':'/owned/cache/chromium','headless':'/owned/cache/chromium-headless-shell'}])
