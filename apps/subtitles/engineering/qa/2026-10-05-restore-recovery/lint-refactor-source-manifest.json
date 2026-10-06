@@ -1,0 +1,217 @@
+{
+  "schema": "r06-restore-fixture-lint-refactor-v1",
+  "baseCommit": "bd1ea2e148787ae8d4a0a46640bc2a965e10fe6a",
+  "failureFirst": {
+    "job": "111851771463",
+    "sourceManifest": "42ba2ecc500a8b7fa42a90077dbc7da2df5db8fc",
+    "classification": "actual analyzer9 findings; no product defect claim",
+    "cyclopMax": 10,
+    "cyclopFindings": 7,
+    "unparamFindings": 2
+  },
+  "currentSourceManifest": {
+    "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture-source-manifest.json",
+    "bytes": 12986,
+    "lines": 287,
+    "sha256": "e97a2c9eab90a1324bfdf7a506c5e6234709a372775e3d3c6d5fc5295a41d373",
+    "blob": "91b822165e467d7682ad5eb221b267a20fec5dec",
+    "getVerified": true
+  },
+  "changedSources": [
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_http_test.go",
+      "previousBlob": "37736e36eceed711e444f48aa487596b0029167d",
+      "previousSha256": "cbb2eb379d3c0e7ae46578f9f6bbe394e205dc2c8254824318aa336f2e3116ae",
+      "bytes": 6019,
+      "lines": 138,
+      "sha256": "3fc6d6b53a69bc6cbd2b9240db34a8c5139425e0829fb980ac44193dad7b7d2a",
+      "blob": "4b7aba7bd5b3329d22415cc0d14267347b712785",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_requests_test.go",
+      "previousBlob": "8d3d89c2f9b18ef55efe8a293939c0e19fa34d66",
+      "previousSha256": "8740185a8026035330e389c3da2c187e86179246ca51050f9439f670d0fc8dbd",
+      "bytes": 7174,
+      "lines": 139,
+      "sha256": "4e2a98772c1d468a16c94c7da6044866d0a972d50209ede130cad0a400c349be",
+      "blob": "ba48bfa05ec50dfb01bcfa223f4b1b6ca9ad93c0",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_routing_test.go",
+      "previousBlob": "de74fd8dcd6a135f3d40661c6a662a93f353ab48",
+      "previousSha256": "73e0e68c47ae199746d7d92c68cd332e95ed91aeb45b38bb1b5ea178525e014d",
+      "bytes": 6144,
+      "lines": 113,
+      "sha256": "e4bc645a6e7d1c2705b09dc4b9a62a4def57208198574b253212ccabc880d1c3",
+      "blob": "6bc8920c88227466f3c1185dfcc94e41fd48d20b",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_exchange_test.go",
+      "previousBlob": "b2bc96f3afd84a8521b3706142949263a0e9b4a3",
+      "previousSha256": "0355a8a406e099725643c61f6651c1017521b0d44e358a4f7f78e0408c685534",
+      "bytes": 4659,
+      "lines": 108,
+      "sha256": "d809df7ca579c2c612616d0448cdc056d7dba5c32cddea8d15adb276e8380414",
+      "blob": "ddf89b521e9884a06a9e479acb17ecfb7322dff0",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_assertions_test.go",
+      "previousBlob": "f3825cc3c1c8bee8c87d12cfd852730e7723251b",
+      "previousSha256": "7ae57f6c17f746f871f7904646e7bcce85bed9424f776912d2fc0950d2c80388",
+      "bytes": 6490,
+      "lines": 183,
+      "sha256": "82261355e73118d9cad07c3f6fa289ac29a0d6343efb8db669926b96087191c0",
+      "blob": "0c72a93cf599390ecfa42a1b08ebbbe7e0c8bd6b",
+      "getVerified": true
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-restore-recovery/fixture/restore_controls_test.go",
+      "previousBlob": "b2dcbeee520d5d81f28bb972aba24a0d0695241e",
+      "previousSha256": "3788361e7d2905c18bb6f594b0f6ce2f14a7db50ca31c45229bad6c20496227e",
+      "bytes": 4697,
+      "lines": 112,
+      "sha256": "d7be68372506e6813b40b7a5b2c9080a53af634a8a0ab95e8369c1b18bddacdb",
+      "blob": "ef0599a3a672d09603f5619b69cb1eee3fd2a770",
+      "getVerified": true
+    }
+  ],
+  "symbolDelta": [
+    {
+      "symbol": "assertRestoreInspection",
+      "reportedComplexity": 12,
+      "extraction": "assertRestoreInspectionCues",
+      "boundary": "same guarded view and original ordered cue loop/predicates"
+    },
+    {
+      "symbol": "assertRestoreHistory",
+      "reportedComplexity": 13,
+      "extraction": "assertRestoreHistoryEvent",
+      "boundary": "same ordered events and original restored/action/reason/identity predicates"
+    },
+    {
+      "symbol": "TestRestorePreparedReceiptPublicControl",
+      "reportedComplexity": 11,
+      "extraction": "assertRestorePreparedControl",
+      "boundary": "same real201 decode/identity/private-header assertions"
+    },
+    {
+      "symbol": "TestRestoreHeldInspectionBodyPublicControl",
+      "reportedComplexity": 11,
+      "extraction": "assertRestoreHeldInspectionEffects",
+      "boundary": "same actual-effect and independent inspection-header eligibility assertion"
+    },
+    {
+      "symbol": "restoreExchange.send",
+      "reportedComplexity": 11,
+      "extraction": "restoreExchange.publish",
+      "boundary": "same synchronous response-channel send and consumed/request-context select; local Do/sole close retained"
+    },
+    {
+      "symbol": "restoreRig.servePreparation",
+      "reportedComplexity": 14,
+      "extraction": "restoreRig.registerPreparedRestoreResponse",
+      "boundary": "same status-created guard and overflow/decode/valid/registration order"
+    },
+    {
+      "symbol": "restoreRig.serveSetup",
+      "reportedComplexity": 12,
+      "extraction": "invalidRestoreSetupInput",
+      "boundary": "same original invalid-data OR predicate and short-circuit order"
+    }
+  ],
+  "constantParameters": [
+    {
+      "symbol": "restoreControlPOST",
+      "removed": "suffix",
+      "literal": "/restore",
+      "allExistingCallsUsedLiteral": true,
+      "methodBodyContextAndHeadersUnchanged": true
+    },
+    {
+      "symbol": "assertRestoreCount",
+      "removed": "expected",
+      "literal": 1,
+      "allExistingCallsUsedLiteral": true,
+      "actualHistoryPredicateUnchanged": true
+    }
+  ],
+  "inverse": {
+    "allFourNamesExact": true,
+    "allFailureLiteralMultisetsExact": true,
+    "inverseEveryFileExact": true,
+    "changedFiles": 6,
+    "fixtureFiles": 14,
+    "stockFormatterUnchanged": true,
+    "contextsDeadlinesAuthAndBodyOwnershipUnchanged": true,
+    "callsiteConstantsVerified": true,
+    "oneBlankSeparatorRemovalExact": true
+  },
+  "retainedBoundaries": [
+    "all four exact Test names and every original Fatal/Error literal",
+    "all six browser sources,12 assertion IDs and four case IDs byte-exact",
+    "real Owner secure cookie/TOTP/accountCSRF/MFA303/currentCSRF",
+    "independent target and real catalog/receipt registration",
+    "actual SRT/recovery/ordered History/export/fingerprint checks",
+    "actual204 header and following200 inspection-body faults",
+    "request/body ownership, checked joins and checked root/socket closure",
+    "all45/55/110/120/230/235 deadlines",
+    "no test removal, suppression, threshold/config change or automatic cleanup"
+  ],
+  "status": "source-only-separator-corrected-unreviewed-unformatted-uncompiled-unrun",
+  "evidenceLimits": [
+    "Mechanical source inverses and lexical failure strings are RAM checks, not a Go compiler/linter or runtime proof.",
+    "Reported complexity values are the actual CI baseline; proposed reductions remain unrun.",
+    "Canonical formatting,<=300 lines, fresh lint/G704, public controls and browser effects/transport proof remain pending."
+  ],
+  "formattingDiagnosis": {
+    "historicalRun": "37344343769",
+    "artifact": "11360325617",
+    "sourceHead": "bc964d97",
+    "zipBytes": 505975,
+    "zipSha256": "414ca5e8d5c239edafc0825f3ada8edd0de43c65b6ccda528f35b4b013642f13",
+    "hostedControlsPassed": 22,
+    "formatterPhases": 5,
+    "admittedPhases": 4,
+    "failureStage": "formatter",
+    "failureCode": "format-token-change",
+    "rejectedOutput": {
+      "bytes": 6136,
+      "sha256": "ea2cac672a6fafb2d1e7894619478b1d5a19a2f611c7b25d6d547a8411a2ea9a",
+      "sourceExported": false
+    },
+    "preciseCauseProved": false,
+    "primarySource": {
+      "toolModuleBlob": "6235fdc62664a9620e93c3f2f627aaadbd7e5dd0",
+      "gofumptVersion": "v0.11.0",
+      "formatSourceBlob": "438a73b531eba586c805a2a0525e820143aff5ec",
+      "joinLines": "506–554",
+      "blankSeparatorBreakLines": "527–530",
+      "url": "https://github.com/mvdan/gofumpt/blob/v0.11.0/format/format.go"
+    },
+    "rawScan": {
+      "goFiles": 14,
+      "contiguousSameKindTopLevelPairs": 1,
+      "onlyPair": [
+        "restoreControlResponse",
+        "restoreCapture"
+      ],
+      "commentsBetween": false
+    },
+    "correction": {
+      "previousBlob": "7b108781419303977eccd33e28241f4023766bba",
+      "newBlob": "4b7aba7bd5b3329d22415cc0d14267347b712785",
+      "oneBlankSeparator": true,
+      "tokensChanged": false,
+      "comparatorChanged": false,
+      "testMethods": 22
+    },
+    "limits": [
+      "Rejected fifth source was not exported; grouping is a source-supported hypothesis, not retrospective output attribution.",
+      "Single separator inverse restores7b108781 byte-exact. Fresh canonical projection remains necessary."
+    ]
+  }
+}
