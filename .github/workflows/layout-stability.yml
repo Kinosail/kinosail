@@ -15,13 +15,23 @@ on:
       campaign_proof:
         description: Run one bounded campaign proof instead of layout diagnosis
         type: choice
-        options: [none, R06, Q14, Q09]
+        options: [none, R06, Q14, Q09, Q47]
         default: none
       campaign_q14_suite:
         description: Select one fixed Q14 public suite; primary keeps its two repeats
         type: choice
         options: [primary, cold, bfcache, htmx, shows, search, safety, home]
         default: primary
+      campaign_r06_suite:
+        description: Select original R06 protocol or one fixed Save browser fault suite
+        type: choice
+        options: [protocol, save-controls, save-headers, save-body, source-format]
+        default: protocol
+      campaign_q47_suite:
+        description: Select one fixed Q47 public suite, each repeated twice
+        type: choice
+        options: [source-format, primary, recovery, supersession, contracts]
+        default: source-format
       architecture_metadata:
         description: Collect bounded source metadata for canonical architecture regeneration
         type: boolean
@@ -77,7 +87,7 @@ jobs:
           KINOSAIL_BROWSER_MATRIX: full
           KINOSAIL_TEST_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
           PLAYWRIGHT_JSON_OUTPUT_NAME: ../../../.verification/layout-fixtures/results.json
-        run: pnpm --dir apps/player/e2e exec playwright test --config layout-stability.config.ts --project "${{ matrix.browser }}" --reporter=list,json layout-stability.spec.ts skeleton-layout.spec.ts
+        run: pnpm --dir apps/player/e2e exec playwright test --config layout-stability.config.ts --project "${{ matrix.browser }}" --reporter=list,json layout-stability.spec.ts skeleton-layout.spec.ts player-apple-intent.spec.ts player-apple-launch.spec.ts
       - name: Measure disposable native Servers
         env:
           KINOSAIL_LAYOUT_BROWSER: ${{ matrix.browser }}
@@ -98,6 +108,9 @@ jobs:
             .verification/layout/*/*/failure.json
             .verification/layout/*/*/*.png
             .verification/layout-fixtures/results.json
+            .verification/layout-fixtures/**/apple-intent-receipt.json
+            .verification/layout-fixtures/**/native-pause-after-interruption.png
+            .verification/layout-fixtures/**/trace.zip
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
@@ -110,6 +123,8 @@ jobs:
     env:
       CAMPAIGN_PROOF: ${{ inputs.campaign_proof }}
       CAMPAIGN_Q14_SUITE: ${{ inputs.campaign_q14_suite || 'primary' }}
+      CAMPAIGN_R06_SUITE: ${{ inputs.campaign_r06_suite || 'protocol' }}
+      CAMPAIGN_Q47_SUITE: ${{ inputs.campaign_q47_suite || 'source-format' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -123,40 +138,83 @@ jobs:
             *) exit 2 ;;
           esac
           if [ "$CAMPAIGN_PROOF" != Q14 ] && [ "$CAMPAIGN_Q14_SUITE" != primary ]; then exit 2; fi
+          case "$CAMPAIGN_R06_SUITE" in
+            protocol|save-controls|save-headers|save-body|source-format) ;;
+            *) exit 2 ;;
+          esac
+          if [ "$CAMPAIGN_PROOF" != R06 ] && [ "$CAMPAIGN_R06_SUITE" != protocol ]; then exit 2; fi
+          case "$CAMPAIGN_Q47_SUITE" in
+            source-format|primary|recovery|supersession|contracts) ;;
+            *) exit 2 ;;
+          esac
+          if [ "$CAMPAIGN_PROOF" != Q47 ] && [ "$CAMPAIGN_Q47_SUITE" != source-format ]; then exit 2; fi
+          if [ "$CAMPAIGN_PROOF" == Q47 ] && [ "${{ inputs.architecture_metadata }}" == true ]; then exit 2; fi
           case "$CAMPAIGN_PROOF" in
             R06) echo app=subtitles >> "$GITHUB_OUTPUT" ;;
-            Q14|Q09) echo app=player >> "$GITHUB_OUTPUT" ;;
+            Q14|Q09|Q47) echo app=player >> "$GITHUB_OUTPUT" ;;
             *) exit 2 ;;
           esac
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
           go-version-file: go.work
           cache-dependency-path: "**/go.sum"
+      - name: Prepare bounded existing documentation dependencies
+        if: env.CAMPAIGN_PROOF == 'Q47' && env.CAMPAIGN_Q47_SUITE != 'source-format'
+        timeout-minutes: 3
+        uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8
+        with:
+          ruby-version: '3.4'
+          bundler-cache: true
+          working-directory: engineering/documentation
       - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
-        if: steps.selection.outputs.app == 'player'
+        if: (steps.selection.outputs.app == 'player' && (env.CAMPAIGN_PROOF != 'Q47' || env.CAMPAIGN_Q47_SUITE != 'source-format')) || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
         with:
           version: 11.22.0
           install: false
           node-version-file: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
-        if: steps.selection.outputs.app == 'player'
+        if: (steps.selection.outputs.app == 'player' && (env.CAMPAIGN_PROOF != 'Q47' || env.CAMPAIGN_Q47_SUITE != 'source-format')) || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
         with:
           node-version: "26"
           package-manager-cache: false
       - run: sudo apt-get update && sudo apt-get install -y libarchive-tools
+      - name: Install existing source formatter
+        if: env.CAMPAIGN_R06_SUITE == 'source-format'
+        timeout-minutes: 2
+        uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a
+        with:
+          version: v2.13.1
+          install-only: true
+          skip-cache: true
       - name: Prepare bounded Go dependencies
+        if: env.CAMPAIGN_R06_SUITE != 'source-format' && env.CAMPAIGN_PROOF != 'Q47'
         env:
           APP: ${{ steps.selection.outputs.app }}
         run: timeout 120s bash scripts/ci/prepare-campaign-go.sh "$APP"
       - name: Prepare bounded browser prerequisites
-        if: steps.selection.outputs.app == 'player'
+        env:
+          APP: ${{ steps.selection.outputs.app }}
+        if: (steps.selection.outputs.app == 'player' && (env.CAMPAIGN_PROOF != 'Q47' || env.CAMPAIGN_Q47_SUITE != 'source-format')) || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
         run: |
-          timeout 180s pnpm --dir apps/player/e2e install --frozen-lockfile
-          timeout 240s pnpm --dir apps/player/e2e exec playwright install --with-deps chromium
+          if [ "$APP" == subtitles ]; then
+            timeout 180s pnpm --dir apps/subtitles/e2e install --frozen-lockfile
+            timeout 240s pnpm --dir apps/subtitles/e2e exec playwright install --with-deps chromium
+          else
+            timeout 180s pnpm --dir apps/player/e2e install --frozen-lockfile
+            timeout 240s pnpm --dir apps/player/e2e exec playwright install --with-deps chromium
+          fi
+      - name: Prepare bounded Compose control dependencies
+        if: env.CAMPAIGN_PROOF == 'Q47' && env.CAMPAIGN_Q47_SUITE != 'source-format'
+        timeout-minutes: 3
+        run: timeout 180s npm ci --prefix engineering/documentation --ignore-scripts
+      - name: Verify fixed Compose recovery controls
+        if: env.CAMPAIGN_PROOF == 'Q47' && env.CAMPAIGN_Q47_SUITE != 'source-format'
+        timeout-minutes: 1
+        run: timeout --kill-after=2s 10s node --test engineering/documentation/test-install-builder.cjs engineering/documentation/test-install-builder-recovery.cjs
       - name: Run exact owned public proof
         run: bash scripts/ci/run-campaign-proof.sh "$CAMPAIGN_PROOF"
       - name: Collect bounded canonical source metadata
-        if: always() && inputs.architecture_metadata
+        if: always() && inputs.architecture_metadata && inputs.campaign_proof != 'Q47'
         run: |
           timeout 120s bash scripts/ci/prepare-campaign-go.sh player
           timeout 120s bash scripts/ci/prepare-campaign-go.sh subtitles
@@ -179,6 +237,10 @@ jobs:
             .verification/campaign-proof/Q09/results.json
             .verification/campaign-proof/Q09/source-manifest.json
             .verification/campaign-proof/Q09/artifact-manifest.json
+            .verification/campaign-proof/Q47/receipt.json
+            .verification/campaign-proof/Q47/results.json
+            .verification/campaign-proof/Q47/source-manifest.json
+            .verification/campaign-proof/Q47/artifact-manifest.json
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 3

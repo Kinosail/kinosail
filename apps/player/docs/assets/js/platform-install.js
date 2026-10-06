@@ -20,9 +20,41 @@
   let file = '';
   let fileUrl = '';
   let revision = 0;
+  let clipboardNonce = 0;
+  let active = null;
+  const originalHrefs = [
+    'https://raw.githubusercontent.com/Kinosail/kinosail/main/apps/player/packaging/platform-compose.yaml',
+    'https://raw.githubusercontent.com/Kinosail/kinosail/main/apps/subtitles/packaging/platform-compose.yaml',
+    'https://raw.githubusercontent.com/Kinosail/kinosail/main/apps/player/packaging/platform-compose-both.yaml',
+  ];
+  const originals = originalHrefs.map(href =>
+    [...document.querySelectorAll('a[href]')].find(link => link.getAttribute('href') === href));
+  let fallback = null;
+  if (originals.every(Boolean)) {
+    fallback = document.createElement('p');
+    fallback.className = 'install-hint';
+    fallback.dataset.installFallback = '';
+    fallback.hidden = true;
+    fallback.textContent = 'Use an original Compose file: ';
+    originals.forEach((original, index) => {
+      const link = document.createElement('a');
+      link.href = originalHrefs[index];
+      link.textContent = original.textContent;
+      fallback.append(link, index === originals.length - 1 ? '.' : ', ');
+    });
+    error.after(fallback);
+  }
 
   function clear() {
     revision++;
+    clipboardNonce++;
+    const previous = active;
+    active = null;
+    if (previous) {
+      clearTimeout(previous.timer);
+      previous.cancel();
+    }
+    if (fallback) fallback.hidden = true;
     if (fileUrl) URL.revokeObjectURL(fileUrl);
     fileUrl = '';
     file = '';
@@ -35,10 +67,14 @@
     create.textContent = 'Make Compose file';
   }
 
-  function fail(message) {
+  function fail(message, retry = false) {
     clear();
     error.textContent = message;
     error.hidden = false;
+    if (retry) {
+      create.textContent = 'Retry';
+      if (fallback) fallback.hidden = false;
+    }
   }
 
   function once(value, marker) {
@@ -63,20 +99,39 @@
       return fail(choice === 'both' ? 'Enter two different host ports from 1024 to 65535.' : 'Enter an unused host port from 1024 to 65535.');
     }
     const source = builder.dataset[`${choice}Template`];
-    const address = new URL(source, location.href);
+    let address;
+    try { address = new URL(source, location.href); }
+    catch (_) { return fail('The install file is unavailable. Use the original Compose links below.', true); }
     if (address.origin !== location.origin || !address.pathname.endsWith(`/assets/install/${choice}.yaml`)) {
-      return fail('The install file is unavailable. Use the original Compose links below.');
+      return fail('The install file is unavailable. Use the original Compose links below.', true);
     }
 
     const current = revision;
+    const attempt = { controller: new AbortController(), timer: 0, cancel: () => {} };
+    active = attempt;
+    const deadline = performance.now() + 15000;
+    const owns = () => current === revision && active === attempt;
+    const expired = () => attempt.controller.signal.aborted || performance.now() >= deadline;
+    const stopped = new Promise((_, reject) => {
+      attempt.cancel = () => {
+        reject(new Error('Template stopped'));
+        attempt.controller.abort();
+      };
+      attempt.timer = setTimeout(attempt.cancel, 15000);
+    });
     create.disabled = true;
     create.textContent = 'Preparing file…';
     try {
-      const response = await fetch(source, { credentials: 'omit' });
-      if (current !== revision) return;
-      if (!response.ok) throw new Error('Template unavailable');
-      const template = await response.text();
-      if (current !== revision) return;
+      const loading = (async () => {
+        const response = await fetch(source, { credentials: 'omit', signal: attempt.controller.signal });
+        if (!owns()) return null;
+        if (expired()) throw new Error('Template stopped');
+        if (!response.ok) throw new Error('Template unavailable');
+        return response.text();
+      })();
+      const template = await Promise.race([loading, stopped]);
+      if (!owns()) return;
+      if (expired()) throw new Error('Template stopped');
       const mediaMarker = 'source: "${KINOSAIL_MEDIA_PATH:?Set an existing absolute media path}"';
       const portMarker = `- "${specs[choice].port}:${specs[choice].port}"`;
       const both = choice === 'both';
@@ -95,19 +150,30 @@
           template.split('create_host_path: false').length !== (both ? 3 : 2)) {
         throw new Error('Unexpected template');
       }
-      file = template.replaceAll(mediaMarker, `source: ${JSON.stringify(path)}`)
+      const nextFile = template.replaceAll(mediaMarker, `source: ${JSON.stringify(path)}`)
         .replace(portMarker, `- "${hostPort}:${specs[choice].port}"`)
         .replace(secondPortMarker, both ? `- "${secondPort}:38128"` : secondPortMarker);
-      fileUrl = URL.createObjectURL(new Blob([file], { type: 'application/yaml;charset=utf-8' }));
+      if (!owns()) return;
+      if (expired()) throw new Error('Template stopped');
+      const nextUrl = URL.createObjectURL(new Blob([nextFile], { type: 'application/yaml;charset=utf-8' }));
+      if (!owns() || expired()) {
+        URL.revokeObjectURL(nextUrl);
+        if (owns()) throw new Error('Template stopped');
+        return;
+      }
+      file = nextFile;
+      fileUrl = nextUrl;
       download.href = fileUrl;
       download.download = `kinosail-${choice}-compose.yaml`;
       preview.textContent = file;
       result.hidden = false;
       status.textContent = 'File ready. Download it or copy it into your app manager.';
     } catch (_) {
-      if (current === revision) fail('Could not prepare the file. Use the original Compose links below.');
+      if (owns()) fail('Could not prepare the file. Retry or use the original Compose links below.', true);
     } finally {
-      if (current === revision) {
+      clearTimeout(attempt.timer);
+      if (owns()) {
+        active = null;
         create.disabled = false;
         create.textContent = 'Make Compose file';
       }
@@ -127,13 +193,15 @@
   create.addEventListener('click', makeFile);
   copy.addEventListener('click', async () => {
     if (!file) return;
+    const current = revision, copiedFile = file, nonce = ++clipboardNonce;
+    const owns = () => current === revision && file === copiedFile && nonce === clipboardNonce;
     try {
-      await navigator.clipboard.writeText(file);
-      status.textContent = 'Compose file copied.';
+      await navigator.clipboard.writeText(copiedFile);
+      if (owns()) status.textContent = 'Compose file copied.';
     } catch (_) {
-      status.textContent = 'Copy failed. Download the file or open Review the file to copy its text.';
+      if (owns()) status.textContent = 'Copy failed. Download the file or open Review the file to copy its text.';
     }
   });
-  window.addEventListener('pagehide', () => { if (fileUrl) URL.revokeObjectURL(fileUrl); });
+  window.addEventListener('pagehide', clear);
   builder.hidden = false;
 })();

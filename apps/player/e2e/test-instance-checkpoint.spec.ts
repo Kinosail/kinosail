@@ -197,3 +197,81 @@ test("Library exit checkpoints actual playing time before teardown without reset
 });
 
 registerNavigationCheckpoints({phase, checkpoint, openMovie});
+
+test("progress chain distinguishes an ignored acknowledgement from an accepted stored position", {tag: "@smoke"}, async ({page}, info) => {
+  test.skip(phase !== "candidate", "historical replay is separate from public progress semantics");
+  const {watch, media, id, session, duration} = await openMovie(page);
+  const target = Math.min(22, Math.floor(duration / 2));
+  const before = await checkpoint(page, id, session);
+  const revision = before.revision + 100;
+  const submit = (kind: "api" | "form", seconds: number, revision: number) => media.evaluate(async (video, values) => {
+    const token = new URL(video.dataset.progress!, location.href).searchParams.get("playbackToken") || "";
+    const csrf = document.querySelector<HTMLMetaElement>('meta[name="kinosail-csrf"]')?.content || "";
+    const session = video.dataset.playbackSession!;
+    const response = await fetch(values.kind === "api" ? `/api/v1/items/${values.id}/progress` : video.dataset.progress!, {
+      method: values.kind === "api" ? "PUT" : "POST",
+      headers: {"Content-Type": values.kind === "api" ? "application/json" : "application/x-www-form-urlencoded", "X-Kinosail-CSRF": csrf},
+      body: values.kind === "api" ? JSON.stringify({seconds: values.seconds, revision: values.revision, session, playbackToken: token}) :
+        new URLSearchParams({seconds: String(values.seconds), revision: String(values.revision), session}),
+    });
+    return response.status;
+  }, {kind, seconds, revision, id});
+  const accepted = await submit("api", target, revision);
+  expect(accepted).toBe(200);
+  const stored = await checkpoint(page, id, session);
+  expect(stored).toEqual({seconds: target, revision, sessionMatches: true});
+  const ignoredForm = await submit("form", 0, revision - 1);
+  expect(ignoredForm).toBe(204);
+  expect(await checkpoint(page, id, session)).toEqual(stored);
+  const rejectedAPI = await submit("api", 0, revision - 1);
+  expect(rejectedAPI).toBe(409);
+  expect(await checkpoint(page, id, session)).toEqual(stored);
+  const profile = await page.locator("body").getAttribute("data-viewer-profile");
+  await page.goto("/");
+  await page.goto(watch);
+  await expect(page.locator("body")).toHaveAttribute("data-viewer-profile", profile!);
+  await expect(page.locator("video")).toHaveAttribute("data-start", String(target));
+  await expect.poll(() => page.locator("video").evaluate(video => video.currentTime)).toBeGreaterThanOrEqual(target - 0.1);
+  const reentry = await checkpoint(page, id);
+  expect(reentry.seconds).toBeGreaterThanOrEqual(target - 0.1);
+  await info.attach("public-progress-chain", {body: JSON.stringify({accepted, ignoredForm, rejectedAPI, before, stored,
+    sameItem: true, sameProfile: true, reentryStart: target, reentry, qualification: "Revision ordering is per session; ignored204 did not change the accepted stored position."}), contentType: "application/json"});
+});
+
+for (const exit of ["Browser Back", "Library"]) test(`progress chain preserves accepted seek through ${exit} and decoded reentry`, {tag: "@smoke"}, async ({page}, info) => {
+  test.skip(phase !== "candidate", "historical replay is separate from this readback chain");
+  const {watch, media, id, session, duration} = await openMovie(page);
+  const target = Math.min(22, Math.floor(duration / 2));
+  const profile = await page.locator("body").getAttribute("data-viewer-profile");
+  await media.evaluate((video, seconds) => { video.currentTime = seconds; }, target);
+  await expect.poll(() => media.evaluate(video => video.seeking)).toBe(false);
+  await expect.poll(async () => (await checkpoint(page, id, session)).seconds).toBeCloseTo(target, 1);
+  const accepted = await checkpoint(page, id, session);
+  expect(accepted.sessionMatches).toBe(true);
+  if (exit === "Browser Back") await page.goBack();
+  else {
+    await page.getByRole("link", {name: "Library", exact: true}).click();
+    await page.waitForURL(url => url.pathname === "/");
+  }
+  const afterExit = await checkpoint(page, id);
+  expect(afterExit.seconds).toBeCloseTo(target, 1);
+  await page.goto(watch);
+  await expect(page.locator("body")).toHaveAttribute("data-viewer-profile", profile!);
+  await expect.poll(async () => Number(await page.locator("video").getAttribute("data-start"))).toBeCloseTo(target, 1);
+  const reentered = page.locator("video");
+  await expect.poll(() => reentered.evaluate(video => video.readyState)).toBeGreaterThanOrEqual(2);
+  const firstFrame = await reentered.evaluate((video: HTMLVideoElement) => new Promise<number>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error("decoded reentry frame deadline")), 8000);
+    video.requestVideoFrameCallback((_, metadata) => { clearTimeout(timer); resolve(metadata.mediaTime); });
+    void video.play().catch(reject);
+  }));
+  expect(firstFrame).toBeGreaterThanOrEqual(target - 0.1);
+  expect(firstFrame).toBeLessThan(target + 2);
+  await reentered.evaluate(video => video.pause());
+  const final = await checkpoint(page, id);
+  expect(final.seconds).toBeGreaterThanOrEqual(target - 0.1);
+  await info.attach("decoded-progress-chain", {body: JSON.stringify({exit, accepted, afterExit, metadataStart: target,
+    nativeDecodedPosition: firstFrame, sameProfile: true, sameItem: true, final,
+    boundary: "Actual direct synthetic H264 decoder; native-HLS source offset is separate."}), contentType: "application/json"});
+  await page.screenshot({path: info.outputPath(`chain-${exit === "Library" ? "library" : "back"}-decoded.png`)});
+});

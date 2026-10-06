@@ -58,10 +58,27 @@ let preparationPausePending = 0;
 let preparationSeek;
 player.addEventListener("emptied", () => { preparationSeek = undefined; });
 let playbackRequest = 0;
-const requestPause = () => { playbackRequest++; playbackPreparation?.stop(); applePlaybackRequested = false; player.dispatchEvent(new CustomEvent("kinosail:playback-intent", {detail: {playing: false}})); player.pause(); };
+let pendingApplePlay;
+const withdrawPlaybackRequest = () => {
+  playbackRequest++;
+  pendingApplePlay = undefined;
+  playbackPreparation?.stop();
+  applePlaybackRequested = false;
+  player.dispatchEvent(new CustomEvent("kinosail:playback-intent", {detail: {playing: false}}));
+};
+const requestPause = () => { withdrawPlaybackRequest(); player.pause(); };
+player.addEventListener("pause", () => {
+  const attempt = pendingApplePlay;
+  if (!appleNativePlayback || !player.paused || player.ended || player.error || !attempt ||
+      attempt.request !== playbackRequest || attempt.source !== (player.currentSrc || player.src)) return;
+  // Native Pause withdraws a pending Play without dismissing Apple's presentation.
+  withdrawPlaybackRequest();
+});
 const requestPlay = (detail) => {
   const request = ++playbackRequest;
   const source = player.currentSrc || player.src;
+  const attempt = {request, source};
+  const settle = () => { if (pendingApplePlay === attempt) pendingApplePlay = undefined; };
   playbackTrace("play-request", detail);
   const rejected = (error) => {
     playbackTrace("play-rejected", `${detail}:${error?.name || "Error"}`);
@@ -75,8 +92,9 @@ const requestPlay = (detail) => {
     playbackPreparation?.stop(false);
     if (appleNativePlayback) { applePlaybackRequested = true; player.controls = true; }
     player.dispatchEvent(new CustomEvent("kinosail:playback-intent", {detail: {playing: true}}));
-    return Promise.resolve(player.play()).catch(rejected);
-  } catch (error) { return Promise.reject(error).catch(rejected); }
+    if (appleNativePlayback) pendingApplePlay = attempt;
+    return Promise.resolve(player.play()).catch(rejected).finally(settle);
+  } catch (error) { settle(); return Promise.reject(error).catch(rejected); }
 };
 const playbackURLBase = location.origin === "null" ? "https://kinosail.invalid/" : location.href;
 const withPlaybackSession = (source) => {

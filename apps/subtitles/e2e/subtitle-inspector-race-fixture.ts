@@ -1,7 +1,8 @@
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
+import { createHash } from "node:crypto";
 
-const source = ["subtitle-source-cues.js", "subtitle-inspector.js"].map(name => readFileSync(new URL(`../internal/server/static/${name}`, import.meta.url), "utf8")).join("\n");
+const source = ["subtitle-source-cues.js", "subtitle-save-operation.js", "subtitle-inspector.js"].map(name => readFileSync(new URL(`../internal/server/static/${name}`, import.meta.url), "utf8")).join("\n");
 export const flush = () => new Promise<void>(resolve => setImmediate(resolve));
 
 // Execute the complete shipped script with controlled requests and lifecycle.
@@ -15,10 +16,11 @@ export function inspectorFixture(withObservers = false) {
     disconnect() { this.disconnected = true; }
   }
   const nodes = new Map<string, any>(), requests: any[] = [], events: Record<string, any> = {}, timers = new Map<number, { run: () => void; delay: number }>();
-  let timer = 0, created = 0;
+  let timer = 0, created = 0, clock = 0;
+  const item = "0000000000000001", operation = "a".repeat(64);
   function node(id = ""): any {
     if (nodes.has(id)) return nodes.get(id);
-    const n: any = { id, dataset: { id: "synthetic" }, style: {}, value: "", files: [], checked: false, disabled: false, hidden: false, children: [], listeners: {}, textContent: "", attrs: {},
+    const n: any = { id, dataset: { id: item }, style: {}, value: "", files: [], checked: false, disabled: false, hidden: false, children: [], listeners: {}, textContent: "", attrs: {},
       addEventListener(name: string, listener: any) { this.listeners[name] = listener; },
       setAttribute(name: string, value: string) { this.attrs[name] = value; }, removeAttribute(name: string) { delete this.attrs[name]; },
       append(...children: any[]) { this.children.push(...children); }, prepend() {}, replaceChildren(...children: any[]) { this.children = children; }, focus() {},
@@ -38,16 +40,19 @@ export function inspectorFixture(withObservers = false) {
   };
   vm.runInNewContext(source, { document, IntersectionObserver, window: { ...(withObservers ? { IntersectionObserver } : {}), addEventListener: (name: string, handler: any) => { events[name] = handler; } }, location: { pathname: "/synthetic", search: "" }, URL,
     VTTCue: function(start: number, end: number, text: string) { return { start, end, text }; },
+    AbortController, performance: { now: () => clock },
     fetch(url: string, options: object) { return new Promise((resolve, reject) => requests.push({ url, options, resolve, reject })); },
     setTimeout(run: () => void, delay: number) { const id = ++timer; timers.set(id, { run, delay }); return id; }, clearTimeout(id: number) { timers.delete(id); },
   });
-  const respond = (request: any, value: any) => request.resolve({ status: 200, ok: true, json: async () => value });
-  const review = (language: string, marker: string) => ({ language, fingerprint: marker, role: "translation", source: marker, warnings: [], restorable: true, current: { cues: [], quality: {} }, proposed: null });
+  const respond = (request: any, value: any, status = 200) => request.resolve({ status, ok: status >= 200 && status < 300, json: async () => value });
+  const receipt = (state: string, outcome?: string, status?: number) => ({ id: operation, action: "apply", item, state, outcome, status });
+  const review = (language: string, marker: string) => ({ id: item, title: "Fictional review", language, fingerprint: createHash("sha256").update(marker).digest("hex"), role: "translation", source: marker, matchEvidence: "Synthetic logic fixture", warnings: [], originalAvailable: false, restorable: true, duration: 2,
+    current: { cues: [{ start: 1, end: 2, text: "Fictional reviewed line", warnings: [] }], quality: { cueCount: 1, fastCues: 0, overlaps: 0, longLines: 0, maxCPS: 23, firstCue: 1, lastCue: 2, timing: "Synthetic", completeness: "Synthetic" } } });
   const draft = (state = "idle") => ({ id: "draft", language: form.elements.language.value, state, message: state, words: [] });
-  return { node, form, requests, events, timers, exports, respond, review, draft, observers,
+  return { node, form, requests, events, timers, exports, respond, review, draft, observers, receipt, operation, item,
     async ready(state = "idle") { respond(requests[0], review("en", "EN current")); respond(requests[1], draft(state)); await flush(); },
-    async preview() { const pending = form.listeners.submit({ preventDefault() {} }); await flush(); respond(requests.at(-1), review(form.elements.language.value, "preview")); await pending; },
+    async preview() { const pending = form.listeners.submit({ preventDefault() {} }); await flush(); const result = review(form.elements.language.value, "preview"); respond(requests.at(-1), { ...result, proposed: result.current }); await pending; },
     changeLanguage(language: string) { form.elements.language.value = language; form.listeners.input(); form.elements.language.listeners.change(); },
-    poll() { const [id, next] = [...timers][0]; timers.delete(id); next.run(); },
+    poll() { const [id, next] = [...timers][0]; timers.delete(id); clock += next.delay; next.run(); },
   };
 }

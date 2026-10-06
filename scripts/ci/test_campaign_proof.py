@@ -40,7 +40,7 @@ class CampaignProofTests(unittest.TestCase):
     def test_focused_route_does_not_replace_normal_ci(self):
         source = LAYOUT.read_text()
         self.assertIn('campaign_proof:', source)
-        self.assertIn('options: [none, R06, Q14, Q09]', source)
+        self.assertIn('options: [none, R06, Q14, Q09, Q47]', source)
         self.assertIn("if: github.event_name != 'workflow_dispatch' || inputs.campaign_proof == 'none'", source)
         self.assertIn("if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof != 'none'", source)
         self.assertIn('name: Bounded campaign proof', source)
@@ -60,6 +60,24 @@ class CampaignProofTests(unittest.TestCase):
         self.assertNotIn('command.log', artifact)
         self.assertIn('retention-days: 3', artifact)
         self.assertIn('if-no-files-found: error', artifact)
+
+    def test_q47_secondary_modes_are_closed_and_foreign_modes_are_rejected(self):
+        source = LAYOUT.read_text().split('  campaign-proof:\n')[1]
+        router = ROUTER.read_text()
+        self.assertIn('options: [source-format, primary, recovery, supersession, contracts]', LAYOUT.read_text())
+        for text in (source, router):
+            self.assertIn('source-format|primary|recovery|supersession|contracts)', text)
+            self.assertIn('CAMPAIGN_Q47_SUITE', text)
+        self.assertIn('if [ "$CAMPAIGN_PROOF" != Q47 ] && [ "$CAMPAIGN_Q47_SUITE" != source-format ]; then exit 2; fi', source)
+        self.assertIn('if [[ "$1" != Q47 && "$q47_suite" != source-format ]]; then exit 2; fi', router)
+        self.assertIn('if [ "$CAMPAIGN_PROOF" == Q47 ] && [ "${{ inputs.architecture_metadata }}" == true ]; then exit 2; fi', source)
+
+    def test_q47_existing_and_fault_controls_are_bounded_before_public_proof(self):
+        source = LAYOUT.read_text().split('  campaign-proof:\n')[1]
+        self.assertIn("if: env.CAMPAIGN_PROOF == 'Q47' && env.CAMPAIGN_Q47_SUITE != 'source-format'", source)
+        self.assertIn('timeout 180s npm ci --prefix engineering/documentation --ignore-scripts', source)
+        self.assertIn('timeout --kill-after=2s 10s node --test engineering/documentation/test-install-builder.cjs engineering/documentation/test-install-builder-recovery.cjs', source)
+        self.assertLess(source.index('name: Verify fixed Compose recovery controls'), source.index('name: Run exact owned public proof'))
 
 
 if __name__ == '__main__':
