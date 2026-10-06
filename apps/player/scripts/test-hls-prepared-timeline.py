@@ -20,6 +20,8 @@ import time
 from hls_timeline_http import PublicServer, sha, source_state
 from hls_timeline_packets import fragment_packets, decoded_identity, safe_seek_phases, manifest_facts
 from hls_timeline_fixture import fixture
+from hls_timeline_preparation import prepare_scene
+from hls_timeline_seek_diagnostics import seek_diagnostics
 
 ROOT = Path(__file__).resolve().parents[3]
 RUN = ROOT / ".verification/hls-prepared-timeline" / time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
@@ -72,7 +74,7 @@ def item_hls_roots(cache, item_id):
     return sorted(p.name for p in entries if p.name == item_id or p.name.startswith(item_id + "-"))
 
 
-def journey(name, original, metadata, offset=0):
+def journey(name, original, metadata, offset=0, cold=False):
     case = {"name": name, "result": "failed", "fixture": metadata, "resumeOffsetSeconds": offset, "failures": []}
     receipt["cases"].append(case)
     directory, media = RUN / name, RUN / name / "media"
@@ -124,39 +126,8 @@ def journey(name, original, metadata, offset=0):
             check(denied_roots == baseline_roots and encoder_count(server, source) == 0, "unauthenticated_cache_effect")
             case["unauthenticatedPreparation"] = {"status": status, "cacheUnchanged": True,
                 "targetHLSRootsBefore": len(baseline_roots), "targetHLSRootsAfter": len(denied_roots), "targetOwnedFFmpeg": 0}
-            limit = time.monotonic() + 25
-            while time.monotonic() < limit:
-                value = api.call(prepare, "POST", {"source": hls}, 202)
-                if value.get("state") == "ready":
-                    break
-                time.sleep(0.05)
-            check(value.get("state") == "ready", "preparation_not_ready")
-            case["preparationReady"] = True
-            roots = [p for p in cache.iterdir() if p.name.startswith(item_id + "-plan-")]
-            check(len(roots) == 1, "one_exact_recipe_cache")
-            root = roots[0]
-            recipe_token = hls.split("/p/", 1)[1].split("/", 1)[0]
-            case["preparedRecipeMatches"] = root.name == item_id + "-plan-" + recipe_token
-            suffix = re.search(r"-o([0-9]+)$", root.name)
-            case["preparedRecipeOffsetMilliseconds"] = int(suffix[1]) if suffix else 0
-            check(case["preparedRecipeMatches"], "prepared_recipe_identity")
-            limit, stopped_samples = time.monotonic() + 10, 0
-            while time.monotonic() < limit:
-                stopped = encoder_count(server, source) == 0 and (root / ".seekable").exists() and (root / ".startup").exists()
-                stopped_samples = stopped_samples + 1 if stopped else 0
-                if stopped_samples >= 3:
-                    break
-                time.sleep(0.05)
-            check(stopped_samples >= 3 and encoder_count(server, source) == 0 and (root / ".seekable").exists()
-                and (root / ".startup").exists(), "prepared_worker_not_joined")
-            physical = list(root.glob("*p/index.m3u8"))
-            check(len(physical) == 1, "single_prepared_rendition")
-            prepared_facts, _ = manifest_facts(bounded_bytes(physical[0], 1024 * 1024, "prepared_manifest_bound"))
-            prepared_init = bounded_bytes(physical[0].parent / "init.mp4", 2 * 1024 * 1024,
-                "prepared_initialization_bound")
-            case["preparedInitSHA256"] = hashlib.sha256(prepared_init).hexdigest()
-            case["beforeFirstHLSGET"] = {"ownedFFmpeg": 0, "seekableMarker": True, "startupMarker": True,
-                "authenticatedMediaGETs": 0, "stoppedSamples": stopped_samples, "physicalVariant": prepared_facts}
+            root, prepared_init = prepare_scene(api, prepare, hls, cache, item_id, server, source, case,
+                encoder_count, check, bounded_bytes, cold)
             status, master, _ = api.http(hls)
             check(status == 200, "master_http_" + str(status))
             renditions = re.findall(r"^[1-9][0-9]{2,3}p/index\.m3u8$", master.decode(), re.M)
@@ -265,13 +236,19 @@ try:
         ("cluster15s", 2400, "0,15,16,18,36,60,84")]
     for name, gop, keys in fixtures:
         source, metadata = fixture(RUN, name, gop, keys)
+        if name == "control2s":
+            journey("coldControl2s", source, metadata, cold=True)
+            receipt["codecSeekDiagnostics"] = [seek_diagnostics(RUN, source, 8)]
+        if name == "cluster15s":
+            receipt["codecSeekDiagnostics"].append(seek_diagnostics(RUN, source, 15))
         journey(name, source, metadata)
         if name == "cluster15s":
             journey(name + "resume15s", source, metadata, 15)
     source, metadata = fixture(RUN, "fractional15s", 3000, "0,15.0483,16.0493,18.0513,36.0693,60.0933,84.1173",
         "30000/1001", 2880, ".mp4")
+    receipt["codecSeekDiagnostics"].append(seek_diagnostics(RUN, source, metadata["keyframesSeconds"][1]))
     journey("fractional15s", source, metadata)
-    if len(receipt["cases"]) == 5 and all(case["result"] == "passed" for case in receipt["cases"]):
+    if len(receipt["cases"]) == 6 and all(case["result"] == "passed" for case in receipt["cases"]):
         receipt["result"] = "passed"
 except Exception as error:
     receipt["failureClass"] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
@@ -279,7 +256,8 @@ finally:
     target = RUN / "receipt.json"
     target.write_text(json.dumps(receipt, indent=2, allow_nan=False) + "\n")
     files = [Path(__file__), Path(__file__).with_name("hls_timeline_http.py"),
-        Path(__file__).with_name("hls_timeline_packets.py"), Path(__file__).with_name("hls_timeline_fixture.py")]
+        Path(__file__).with_name("hls_timeline_packets.py"), Path(__file__).with_name("hls_timeline_fixture.py"),
+        Path(__file__).with_name("hls_timeline_preparation.py"), Path(__file__).with_name("hls_timeline_seek_diagnostics.py")]
     checksums = {str(p.relative_to(ROOT)): sha(p) for p in files}
     checksums["receipt.json"] = sha(target)
     (RUN / "SHA256SUMS").write_text("".join(f"{v}  {k}\n" for k, v in checksums.items()))

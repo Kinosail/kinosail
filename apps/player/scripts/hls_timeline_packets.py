@@ -52,12 +52,12 @@ def decoded_identity(path, offset=0):
 def safe_seek_phases(private_log):
     starts = []
     for line in private_log.splitlines():
-        if 'msg="HLS transcode started"' not in line:
+        if "HLS transcode started" not in line:
             continue
-        values = {key: re.search(r"\b" + key + r"=(-?[0-9]+)\b", line)
+        values = {key: re.search(r'"?' + key + r'"?[=:](-?[0-9]+)\b', line)
             for key in ["input_seek_ms", "segment_start"]}
-        mode = re.search(r"\bmode=(remux|audio-transcode|transcode)\b", line)
-        work = re.search(r"\bwork_class=(background|playback)\b", line)
+        mode = re.search(r'"?mode"?[=:]"?(remux|audio-transcode|transcode)\b', line)
+        work = re.search(r'"?work_class"?[=:]"?(background|playback)\b', line)
         if all(values.values()) and mode and work:
             starts.append({key: int(value[1]) for key, value in values.items()} | {"mode": mode[1], "workClass": work[1]})
     return {"encoderStarts": starts[:32], "encoderStartsBounded": len(starts) <= 32}
