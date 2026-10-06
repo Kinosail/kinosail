@@ -29,12 +29,13 @@ RUN.mkdir(parents=True)
 binary = RUN / 'player'
 receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
     'result': 'failed', 'cases': [], 'command': 'python3 apps/player/scripts/test-hls-followon.py --suite ' + suite,
-    'suite': suite, 'expectedCases': 11 if suite == 'all' else 6,
+    'suite': suite, 'expectedCases': 12 if suite == 'all' else 6,
     'acceptedRepairScope': 'Plain H264 copied-video audio conversion; regular remux, audio-only and audiobook controls',
     'knownUnrepairedCases': ['nonkey-mkv', 'nonkey-mp4', 'hevc-video'],
-    'regressionCasesRequiringQualification': ['hevc-interrupted-preparation'] if suite == 'all' else [],
+    'regressionCasesRequiringQualification':
+        ['hevc-interrupted-preparation', 'hevc-adopted-preparation'] if suite == 'all' else [],
     'outsideAcceptedScopeCases': [] if suite == 'all' else
-        ['nonkey-mkv', 'nonkey-mp4', 'hevc-video', 'hevc-cold', 'hevc-interrupted-preparation'],
+        ['nonkey-mkv', 'nonkey-mp4', 'hevc-video', 'hevc-cold', 'hevc-interrupted-preparation', 'hevc-adopted-preparation'],
     'boundary': 'Synthetic authenticated public Server delivery; native/Safari/iOS and Nox acceptance separate.',
     'productionMediaOrCacheModified': False, 'fixtureSeconds': 32, 'fixtureFrameRate': 24}
 

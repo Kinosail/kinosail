@@ -7,8 +7,7 @@ from hls_followon_public import bounded_bytes, check, encoder_count
 from hls_timeline_packets import manifest_facts
 
 
-def interrupted_preparation(api, prepare, hls, cache, item_id, server, source, log_path, case):
-    prior = log_path.stat().st_size
+def preparation_prefix(api, prepare, hls, cache, item_id, server, source, case, case_key):
     status, data, headers = api.http(prepare, 'POST', {'source': hls})
     check(status == 202 and len(data) <= 512 * 1024, 'interrupted_prepare_response')
     check(json.loads(data).get('state') == 'queued', 'interrupted_prepare_state')
@@ -33,25 +32,35 @@ def interrupted_preparation(api, prepare, hls, cache, item_id, server, source, l
         raise RuntimeError('interrupted_positive_prefix_not_observed')
     case['preparedInitializationSHA256'] = hashlib.sha256(init).hexdigest()
     case['rawPreparedManifest'] = {'sha256': hashlib.sha256(raw).hexdigest(), 'endlist': facts['endlist']}
-    case['interruptedPreparation'] = {'posts': 1, 'requestID': request_id,
+    case[case_key] = {'posts': 1, 'requestID': request_id,
         'authenticatedMediaGETsBeforeCancel': 0,
         'sourceDurationSeconds': 10, 'preCancelPrefixLimitSeconds': 8,
         'physicalVariantBeforeCancel': facts, 'positiveCommittedFragments': len(advertised),
         'ownedFFmpegBeforeCancel': 1}
+    return request_id
+
+
+def preparation_states(log_path, request_id):
+    private = bounded_bytes(log_path, 2 * 1024 * 1024, 'interrupted_private_log_bound').decode()
+    states = []
+    for line in private.splitlines():
+        check(len(line) <= 16 * 1024, 'interrupted_log_line_bound')
+        if not line.startswith('{') or not line.endswith('}'):
+            continue
+        entry = json.loads(line)
+        if entry.get('msg') == 'HLS startup preparation' and entry.get('request_id') == request_id:
+            states.append(entry.get('state'))
+    return states
+
+
+def interrupted_preparation(api, prepare, hls, cache, item_id, server, source, log_path, case):
+    request_id = preparation_prefix(api, prepare, hls, cache, item_id, server, source, case, 'interruptedPreparation')
     status, _, _ = api.http(prepare, 'DELETE')
     check(status == 204, 'interrupted_cancel_response')
     limit, joined = time.monotonic() + 8, 0
     while time.monotonic() < limit:
         joined = joined + 1 if encoder_count(server, source) == 0 else 0
-        private = bounded_bytes(log_path, 2 * 1024 * 1024, 'interrupted_private_log_bound')[prior:].decode()
-        states = []
-        for line in private.splitlines():
-            check(len(line) <= 16 * 1024, 'interrupted_log_line_bound')
-            if not line.startswith('{') or not line.endswith('}'):
-                continue
-            entry = json.loads(line)
-            if entry.get('msg') == 'HLS startup preparation' and entry.get('request_id') == request_id:
-                states.append(entry.get('state'))
+        states = preparation_states(log_path, request_id)
         if joined >= 3 and states:
             break
         time.sleep(0.05)

@@ -12,13 +12,14 @@ from hls_timeline_packets import manifest_facts, safe_encoder_lifecycle, safe_se
 from hls_timeline_preparation import prepare_scene
 from hls_followon_public import check, bounded_bytes, encoder_count, sample_resources, prepare_once
 from hls_followon_hevc import evidence, fragment_evidence, seek_diagnostics, validate_public_output
-from hls_followon_cancel import interrupted_preparation
+from hls_followon_cancel import interrupted_preparation, preparation_prefix, preparation_states
 
 
 def controls(root, run, binary, receipt, include_hevc=True):
     for name, extension, codec in [('audio-only', '.flac', 'flac'),
                                    ('audiobook', '.m4b', 'alac'), ('hevc-video', '.mkv', 'ac3'),
-                                   ('hevc-cold', '.mkv', 'ac3'), ('hevc-interrupted-preparation', '.mkv', 'ac3')]:
+                                   ('hevc-cold', '.mkv', 'ac3'), ('hevc-interrupted-preparation', '.mkv', 'ac3'),
+                                   ('hevc-adopted-preparation', '.mkv', 'ac3')]:
         hevc = name.startswith('hevc-')
         if hevc and not include_hevc:
             continue  # Full manual proof retains strict HEVC counter/control cases.
@@ -77,6 +78,8 @@ def controls(root, run, binary, receipt, include_hevc=True):
                 case['unauthenticatedPreparation'] = {'status': status, 'cacheUnchanged': True}
                 if name == 'hevc-interrupted-preparation':
                     interrupted_preparation(api, prepare, hls, cache, item['id'], server, source, log_path, case)
+                elif name == 'hevc-adopted-preparation':
+                    preparation_prefix(api, prepare, hls, cache, item['id'], server, source, case, 'adoptedPreparation')
                 elif name == 'hevc-cold':
                     prepare_scene(api, prepare, hls, cache, item['id'], server, source, case,
                                   encoder_count, check, bounded_bytes, cold=True)
@@ -85,7 +88,7 @@ def controls(root, run, binary, receipt, include_hevc=True):
                     check(case['preparationAttempt']['completionState'] == 'ready', 'control_preparation_not_ready')
                     value = api.call(prepare, 'POST', {'source': hls}, 202)
                     check(value['state'] == 'ready', 'control_public_preparation_not_ready')
-                if hevc and name != 'hevc-interrupted-preparation':
+                if hevc and name not in ['hevc-interrupted-preparation', 'hevc-adopted-preparation']:
                     cache_roots = roots()
                     check(len(cache_roots) == 1, 'hevc_prepared_cache_root')
                     initializations = list((cache / cache_roots[0]).glob('*/init.mp4'))
@@ -96,6 +99,8 @@ def controls(root, run, binary, receipt, include_hevc=True):
                                                 'hevc_prepared_manifest_bound')
                     case['rawPreparedManifest'] = {'sha256': hashlib.sha256(raw_variant).hexdigest(),
                         'endlist': b'#EXT-X-ENDLIST' in raw_variant}
+                if name == 'hevc-adopted-preparation':
+                    check(encoder_count(server, source) == 1, 'hevc_adoption_not_active')
                 status, master, _ = api.http(hls)
                 check(status == 200, 'control_master_http_' + str(status))
                 renditions = re.findall(r'^(?:[1-9][0-9]{2,3}p|audio)/index\.m3u8$', master.decode(), re.M)
@@ -148,6 +153,10 @@ def controls(root, run, binary, receipt, include_hevc=True):
                         (name == 'hevc-interrupted-preparation' or case['preparedInitializationRetained']))
                     evidence(source, joined, case)
                     validate_public_output(case)
+                    if name == 'hevc-adopted-preparation':
+                        states = preparation_states(log_path, case['adoptedPreparation']['requestID'])
+                        case['adoptedPreparation']['completionState'] = states[-1] if states else None
+                        check(states and states[-1] == 'adopted', 'hevc_adoption_not_correlated')
                 if name == 'hevc-cold':
                     try:
                         seek_diagnostics(source, joined, directory, case)
@@ -182,6 +191,9 @@ def controls(root, run, binary, receipt, include_hevc=True):
                     and resources['peakOwnedFFmpeg'] <= 1 and lifecycle['validSequence']
                     and lifecycle['peakActive'] == 1 and lifecycle['activeAtTeardown'] == 0
                     and case['ownedFFmpegBeforeTeardown'] == 0)
+                if name == 'hevc-adopted-preparation' and (lifecycle['starts'] != 1 or lifecycle['ends'] != 1):
+                    case['workerBound'] = False
+                    case['failures'].append('hevc_adoption_restarted_encoder')
                 case['sourceUnchanged'] = before == source_state(source)
                 if not case['workerBound'] or not case['sourceUnchanged']:
                     case['result'] = 'failed'
