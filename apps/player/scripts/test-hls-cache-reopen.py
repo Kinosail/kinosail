@@ -63,6 +63,7 @@ def owned_encoder(server):
 
 
 def cold_scene(api, hls, item_id, cache, server, case):
+    case["stage"] = "cold-master"
     check(api.http(hls + "?playbackSession=cold-reopen-proof")[0] == 200, "cold_master")
     roots = list(cache.glob(item_id + "-plan-*"))
     check(len(roots) == 1, "one_cold_cache")
@@ -72,9 +73,17 @@ def cold_scene(api, hls, item_id, cache, server, case):
     physical = variants[0]
     wait_until(lambda: b"segment-00000.m4s" in read(physical), "cold_prefix_missing")
     check(b"#EXT-X-ENDLIST" not in read(physical) and owned_encoder(server) == 1, "cold_not_interrupted")
-    api.call("/Sessions/Playing/Stopped", "POST", {"ItemId": item_id,
-        "PlaySessionId": "cold-reopen-proof", "PositionTicks": 10000000}, 204)
+    case["stage"] = "public-stop"
+    status, _, _ = api.http("/Sessions/Playing/Stopped", "POST", {"ItemId": item_id,
+        "PlaySessionId": "cold-reopen-proof", "PositionTicks": 10000000})
+    case["stopHTTPStatus"] = status
+    check(status == 204, "cold_stop_http_" + str(status))
+    case["stage"] = "cold-join"
     wait_until(lambda: owned_encoder(server) == 0 and (root / ".seekable").exists(), "cold_stop_not_joined")
+    # Let the owner finish publishing its pause receipt and remove the joined job.
+    for _ in range(3):
+        time.sleep(0.05)
+        check(owned_encoder(server) == 0, "cold_stop_restarted")
     check(not (root / ".copy-timeline").exists() and not (root / ".startup").exists(), "cold_was_indexed_or_prepared")
     _, segments = manifest_facts(read(physical))
     check(len(segments) < 16 and b"#EXT-X-ENDLIST" not in read(physical), "cold_stop_completed")
@@ -85,7 +94,7 @@ def cold_scene(api, hls, item_id, cache, server, case):
     return root, paths, before
 
 
-def corrupt_scene(api, hls, item_id, cache, server, case):
+def corrupt_scene(api, hls, item_id, cache, server, case, damage):
     prepare = "/api/v1/items/" + item_id + "/playback-prepare"
     def ready():
         return api.call(prepare, "POST", {"source": hls}, 202).get("state") == "ready"
@@ -97,7 +106,15 @@ def corrupt_scene(api, hls, item_id, cache, server, case):
     wait_until(lambda: owned_encoder(server) == 0 and b"#EXT-X-ENDLIST" in read(physical), "indexed_not_complete")
     check((root / ".copy-timeline").is_file(), "indexed_map_missing")
     case["completedIndexedCacheBeforeDamage"] = True
-    (root / ".copy-timeline").write_bytes(b"{damaged-map")
+    target = root / ".copy-timeline"
+    valid = read(target)
+    if damage == "unknown":
+        target.write_bytes(valid[:-1] + b',"Unknown":true}')
+    elif damage == "duplicate":
+        target.write_bytes(valid[:-1] + b',"clock":0.5}')
+    else:
+        target.write_bytes(b"{damaged-map")
+    case["mapDamage"] = damage
     return root
 
 
@@ -138,9 +155,10 @@ def journey(name, original, metadata, corrupt=False):
             check(plan["compatiblePlan"]["mode"] == "remux", "fixture_must_remux")
             hls, cache = plan["compatible"], directory / "cache"
             if corrupt:
-                root = corrupt_scene(api, hls, item_id, cache, server, case)
+                root = corrupt_scene(api, hls, item_id, cache, server, case, corrupt)
             else:
                 root, paths, prefix_before = cold_scene(api, hls, item_id, cache, server, case)
+            case["stage"] = "reopen"
             status, master, _ = api.http(hls)
             check(status == 200, "reopen_master_http_" + str(status))
             renditions = re.findall(rb"^[1-9][0-9]{2,3}p/index\.m3u8$", master, re.M)
@@ -157,7 +175,9 @@ def journey(name, original, metadata, corrupt=False):
                 fragments.append(data)
             prefix = directory / "public-prefix.mp4"
             prefix.write_bytes(b"".join(fragments))
-            case["firstThreeSourceFramesMatch"] = first_frames(prefix) == first_frames(source)
+            reference = first_frames(source)
+            check(reference["exitStatus"] == 0 and reference["frames"] == 3, "reopen_reference_three_frames")
+            case["firstThreeSourceFramesMatch"] = first_frames(prefix) == reference
             check(case["firstThreeSourceFramesMatch"], "reopen_prefix_source_mismatch")
             if corrupt:
                 case["damagedMapRecovered"] = not (root / ".copy-timeline").exists()
@@ -165,7 +185,9 @@ def journey(name, original, metadata, corrupt=False):
             else:
                 case["cachedPrefixPreserved"] = [snapshot(path) for path in paths] == prefix_before
                 case["publicInitSHA256"] = hashlib.sha256(fragments[0]).hexdigest()
-                check(case["cachedPrefixPreserved"] and case["publicInitSHA256"] == prefix_before[0]["sha256"], "cold_cache_replaced")
+                case["publicFragmentSHA256"] = hashlib.sha256(fragments[1]).hexdigest()
+                check(case["cachedPrefixPreserved"] and case["publicInitSHA256"] == prefix_before[0]["sha256"]
+                    and case["publicFragmentSHA256"] == prefix_before[1]["sha256"], "cold_cache_replaced")
                 check(owned_encoder(server) == 0, "cold_reopen_started_encoder")
                 check(facts["segmentCount"] > case["interruptedPrefixSegments"], "legacy_cadence_projection_lost")
             case["result"] = "passed"
@@ -183,7 +205,9 @@ def journey(name, original, metadata, corrupt=False):
             case["encoderLifecycle"] = lifecycle
             case["sourceUnchanged"] = source_state(source) == before
             if not case["sourceUnchanged"] or not lifecycle["validSequence"] or lifecycle["peakActive"] != 1:
-                case["result"], case["failureClass"] = "failed", "source_or_encoder_bound"
+                case["result"] = "failed"
+                case.setdefault("failureClass", "source_or_encoder_bound")
+                case["verificationFailures"] = ["source_or_encoder_bound"]
 
 
 try:
@@ -198,8 +222,10 @@ try:
     subprocess.run(command, check=True, timeout=120, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     journey("interruptedColdHEVC", hevc, metadata | {"sha256": sha(hevc), "command": command})
     source, metadata = fixture(RUN, "indexed-short", 48, "0,2,4,6", frames=192)
-    journey("damagedCompletedIndexedCache", source, metadata, corrupt=True)
-    if len(receipt["cases"]) == 3 and all(case["result"] == "passed" for case in receipt["cases"]):
+    journey("damagedCompletedIndexedCache", source, metadata, corrupt="syntax")
+    journey("unknownCompletedIndexedMap", source, metadata, corrupt="unknown")
+    journey("duplicateCompletedIndexedMap", source, metadata, corrupt="duplicate")
+    if len(receipt["cases"]) == 5 and all(case["result"] == "passed" for case in receipt["cases"]):
         receipt["result"] = "passed"
 except Exception as error:
     receipt["failureClass"] = str(error) if isinstance(error, RuntimeError) else type(error).__name__

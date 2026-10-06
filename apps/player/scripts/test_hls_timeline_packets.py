@@ -19,13 +19,17 @@ class AudioPacketOracle(unittest.TestCase):
 
     def test_interior_gap_with_unchanged_endpoints(self):
         facts = audio_packet_facts(self.packets([0, 0.02, 0.10, 0.12]))
+        control = audio_packet_facts(self.packets([0, 0.02, 0.04, 0.06, 0.08, 0.10, 0.12]))
+        self.assertEqual((facts["firstAudioTime"], facts["lastAudioEnd"]), (control["firstAudioTime"], control["lastAudioEnd"]))
         self.assertAlmostEqual(facts["maximumAudioGapSeconds"], 0.06)
 
     def test_interior_overlap_with_unchanged_endpoints(self):
-        packets = self.packets([0, 0.02, 0.10, 0.12])
-        packets[1]["duration_time"] = "0.15"
+        packets = self.packets([0, 0.02, 0.04, 0.06, 0.08, 0.10, 0.12, 0.14, 0.16])
+        control = audio_packet_facts(packets)
+        packets[1]["duration_time"] = "0.10"
         facts = audio_packet_facts(packets)
-        self.assertAlmostEqual(facts["maximumAudioOverlapSeconds"], 0.07)
+        self.assertEqual((facts["firstAudioTime"], facts["lastAudioEnd"]), (control["firstAudioTime"], control["lastAudioEnd"]))
+        self.assertAlmostEqual(facts["maximumAudioOverlapSeconds"], 0.08)
 
     def test_out_of_order_packets(self):
         self.assertFalse(audio_packet_facts(self.packets([0, 0.04, 0.02]))["audioPacketOrderValid"])

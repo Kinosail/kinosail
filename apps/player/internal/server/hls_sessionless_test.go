@@ -10,7 +10,9 @@ import (
 )
 
 func TestSessionlessHLSPlaylist(t *testing.T) {
-	servertest.SessionlessHLSPlaylist(t, 2, serveHLSPlaylistWithSession)
+	servertest.SessionlessHLSPlaylist(t, 2, func(writer http.ResponseWriter, request *http.Request, path string, start int, duration float64) bool {
+		return serveHLSPlaylistWithSession(writer, request, path, start, duration)
+	})
 }
 
 func TestSessionlessHLSMissingManifestAndInvalidSession(t *testing.T) {
