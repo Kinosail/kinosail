@@ -1,7 +1,7 @@
 // Keep explicit Library navigation alive until its latest owned checkpoint is acknowledged.
 // Browser Back and tab close still use the separate pagehide keepalive fallback.
 function progressNavigationAllowed() {
-  return !playbackPreparation && !isPictureInPicture() && player.dataset.castActive !== "true" &&
+  return progressChanged() && !playbackPreparation && !isPictureInPicture() && player.dataset.castActive !== "true" &&
     player.dataset.offline !== "true" && player.readyState >= HTMLMediaElement.HAVE_METADATA &&
     !player.ended && !pendingProgress?.watched && Boolean(progressItem()) && progressProfile().length <= 128 &&
     Number.isFinite(player.currentTime) && player.currentTime >= 0 && player.currentTime <= 31536000;
@@ -51,5 +51,28 @@ document.addEventListener("click", event => {
   if (progressNotice) progressNotice.hidden = false;
   void save(false, true);
   // An existing authentication/policy failure can return before sendProgress refreshes the notice.
+  if (progressFailure && !retryableProgress()) showProgressFailure();
+});
+// Manual watched status must follow the current page's final position write.
+document.addEventListener("submit", event => {
+  const form = event.target;
+  if (!(form instanceof HTMLFormElement) || new URL(form.action).origin !== location.origin ||
+      new URL(form.action).pathname !== `/watched/${progressItem()}` || !progressNavigationAllowed()) return;
+  event.preventDefault();
+  if (progressNavigation) return;
+  requestPause();
+  const navigation = {profile: progressProfile(), item: progressItem(), source: player.currentSrc || player.src,
+    request: playbackRequest, deadline: performance.now() + 8000, leave: undefined};
+  navigation.leave = () => {
+    if (progressNavigation !== navigation || !ownsProgressNavigation()) { cancelProgressNavigation(); return; }
+    cancelProgressNavigation();
+    if (!form.checkValidity()) return;
+    progressPlayedItem = undefined;
+    form.requestSubmit(event.submitter);
+  };
+  progressNavigation = navigation;
+  progressContinuation = navigation.leave;
+  if (progressNotice) progressNotice.hidden = false;
+  void save(false, true);
   if (progressFailure && !retryableProgress()) showProgressFailure();
 });

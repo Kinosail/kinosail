@@ -30,6 +30,72 @@ describe('media workflows', { session: 'owner' }, () => {
     await app.screenshot('decoded-playback');
   });
 
+  test('an unplayed watch page preserves saved progress and manual watched status', async ({ app, browser, screen }) => {
+    await app.open('/settings');
+    // Model a browser that requires a fresh user gesture for Play. The original
+    // decoder remains in use for explicit Play and real moving-frame assertions.
+    await browser.addInitScript(() => {
+      const play = HTMLMediaElement.prototype.play;
+      Object.assign(window,{restoreAutoplayPolicy:()=>{HTMLMediaElement.prototype.play=play;}});
+      HTMLMediaElement.prototype.play = function () {
+        return Promise.reject(new DOMException('', 'NotAllowedError'));
+      };
+    });
+    const item = await movie(browser), path = `/api/v1/items/${item.id}`;
+    expect((await api(browser, path + '/progress', 'PUT', { seconds: 3, watched: false })).status).toBe(200);
+    const saved = (await api(browser, path)).data.item.progress;
+    await app.open(`/watch/${item.id}`);
+    await expect.poll(() => browser.evaluate(() => document.querySelector('video')!.readyState)).toBeGreaterThanOrEqual(2);
+    await expect.poll(() => browser.evaluate(() => document.querySelector('video')!.currentTime)).toBe(3);
+    expect(await browser.evaluate(() => document.querySelector('video')!.paused)).toBe(true);
+    await screen.getByRole('link', 'Library', { exact: true }).click();
+    await expect(browser).toHaveURL('/');
+    await expect.poll(() => api(browser, path).then(value => value.data.item.progress)).toEqual(saved);
+    await app.open(`/watch/${item.id}`);
+    await screen.getByRole('button', 'Mark watched', { exact: true }).click();
+    await expect(screen.getByRole('button', 'Mark unwatched', { exact: true })).toBeVisible();
+    const watched = (await api(browser, path)).data.item.progress;
+    expect(watched.watched).toBe(true);
+    await expect.poll(() => browser.evaluate(() => document.querySelector('video')!.readyState)).toBeGreaterThanOrEqual(3);
+    for(const viewport of [{width:390,height:844},{width:1440,height:900},{width:1920,height:1080}]) {
+      await browser.setViewport(viewport);
+      expect(await browser.evaluate(() => (document.querySelector('[data-player-status]') as HTMLElement).hidden)).toBe(true);
+      await expect(screen.getByRole('button','Play',{exact:true}).first()).toBeVisible();
+      await app.screenshot(`ready-paused-watched-${viewport.width}`);
+    }
+    await browser.setViewport({width:1440,height:900});
+    await screen.getByRole('link', 'Library', { exact: true }).click();
+    await expect(browser).toHaveURL('/');
+    await expect.poll(() => api(browser, path).then(value => value.data.item.progress)).toEqual(watched);
+    await app.screenshot('unplayed-progress-preserved');
+    await app.open(`/watch/${item.id}`);
+    expect(await browser.evaluate(() => document.querySelector('video')!.paused)).toBe(true);
+    await browser.evaluate(() => { (window as Window & {restoreAutoplayPolicy():void}).restoreAutoplayPolicy();document.querySelector('video')!.muted = true; });
+    await screen.getByRole('button', 'Play', { exact: true }).first().click();
+    await expect.poll(() => browser.evaluate(() => document.querySelector('video')!.getVideoPlaybackQuality().totalVideoFrames)).toBeGreaterThan(2);
+    await browser.evaluate(async () => {
+      const video = document.querySelector('video')!; video.pause();
+      await new Promise<void>(resolve => { video.addEventListener('seeked', () => resolve(), {once: true}); video.currentTime = 0; });
+    });
+    await screen.getByRole('link', 'Library', { exact: true }).click();
+    await expect(browser).toHaveURL('/');
+    await expect.poll(() => api(browser, path + '/watch-progress').then(value => value.data.seconds)).toBe(0);
+    expect((await api(browser, path)).data.item.progress.watched ?? false).toBe(false);
+    await app.open(`/watch/${item.id}`);
+    await browser.evaluate(() => { (window as Window & {restoreAutoplayPolicy():void}).restoreAutoplayPolicy();document.querySelector('video')!.muted = true; });
+    await screen.getByRole('button', 'Play', { exact: true }).first().click();
+    await expect.poll(() => browser.evaluate(() => document.querySelector('video')!.getVideoPlaybackQuality().totalVideoFrames)).toBeGreaterThan(2);
+    await screen.getByRole('button', 'Mark watched', { exact: true }).click();
+    await expect(screen.getByRole('button', 'Mark unwatched', { exact: true })).toBeVisible();
+    expect(await browser.evaluate(() => document.querySelector('video')!.paused)).toBe(true);
+    const completed = (await api(browser, path)).data.item.progress;
+    expect(completed.watched).toBe(true);
+    await screen.getByRole('link', 'Library', { exact: true }).click();
+    await expect(browser).toHaveURL('/');
+    await expect.poll(() => api(browser, path).then(value => value.data.item.progress)).toEqual(completed);
+    expect((await api(browser, path + '/progress', 'PUT', { seconds: 0, watched: false })).status).toBe(200);
+  });
+
   test('playlist import, reorder and delete preserve item membership', async ({ app, browser }) => {
     await app.open('/settings');
     const item = await movie(browser);

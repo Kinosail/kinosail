@@ -34,6 +34,21 @@ for (const viewport of [{width:320,height:800},{width:390,height:844},{width:844
       }));
       await writeFile(info.outputPath(`geometry-${category}.json`),JSON.stringify({viewport,scale,...geometry}));
       expect(geometry.overflow).toBeLessThanOrEqual(1);
+      const languages=page.locator(".subtitle-language-list");
+      const rows=await languages.locator("li").evaluateAll(nodes=>nodes.map(node=>({
+        width:node.getBoundingClientRect().width,parent:node.parentElement!.getBoundingClientRect().width,
+        details:node.querySelector("span")!.getBoundingClientRect().width,
+        buttons:[...node.querySelectorAll("button")].map(button=>({width:button.getBoundingClientRect().width,height:button.getBoundingClientRect().height})),
+      })));
+      expect(rows.length).toBeGreaterThan(0);
+      for(const row of rows) {
+        expect(row.width).toBeLessThanOrEqual(row.parent+1);
+        if(viewport.width<=390) expect(row.details).toBeGreaterThanOrEqual(Math.min(row.parent,150)-1);
+        for(const button of row.buttons) {expect(button.width).toBeGreaterThanOrEqual(44);expect(button.height).toBeGreaterThanOrEqual(44);}
+      }
+      await languages.scrollIntoViewIfNeeded();
+      await page.screenshot({path:info.outputPath(`languages-${category}-${viewport.width}-${scale}.png`)});
+      expect((await new AxeBuilder({page}).include(".subtitle-language-list").analyze()).violations).toEqual([]);
       expect(geometry.controls).toHaveLength(4);
       for(const control of geometry.controls) {
         expect(control.width).toBeGreaterThan(44);

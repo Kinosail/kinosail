@@ -1,4 +1,4 @@
-let progressRevision = 0;
+let progressRevision = 0, progressPlayedItem;
 // One page-owned pending position; never replay a closed page's session over newer state.
 let pendingProgress, progressFlight, progressFailure = "", progressContinuation, progressNavigation;
 const progressNotice = document.querySelector("[data-progress-notice]");
@@ -13,6 +13,7 @@ const progressItem = () => {
   } catch (_) { return undefined; }
 };
 const progressProfile = () => document.body.dataset.viewerProfile || "";
+const progressChanged = () => Boolean(progressItem()) && progressPlayedItem === progressItem();
 const ownsProgress = (value) => value && value.profile === progressProfile() && value.item === progressItem() &&
   value.revision === progressRevision && player.dataset.castActive !== "true" && player.dataset.offline !== "true";
 const clearProgress = (continueNavigation = false) => {
@@ -56,7 +57,7 @@ const sendProgress = (closing = false) => {
         response = await fetch(player.dataset.progress, {
           method: "POST",
           headers: {"Content-Type": "application/x-www-form-urlencoded", "X-Playback-Session": playbackSession, ...(csrf ? {"X-Kinosail-CSRF": csrf} : {})},
-          body: new URLSearchParams({seconds: observed.seconds, session: playbackSession, revision: observed.revision, ...(observed.watched ? {watched: true} : {})}),
+          body: new URLSearchParams({seconds: observed.seconds, session: playbackSession, revision: observed.revision, watched: observed.watched}),
           keepalive: true, signal: controller.signal,
         });
         if (response.redirected || response.status === 401) failure = "authentication";
@@ -107,7 +108,7 @@ progressContinue?.addEventListener("click", () => {
 });
 addEventListener("online", () => retryProgress());
 const save = (watched = false, closing = false) => {
-  if (playbackPreparation) return Promise.resolve();
+  if (playbackPreparation || !watched && !progressChanged()) return Promise.resolve();
   if (player.dataset.castActive === "true" || player.dataset.offline === "true") {
     clearProgress();
     return player.dataset.offline === "true" ? window.KinosailOfflineMedia?.saveProgress(player, watched) : Promise.resolve();
@@ -124,6 +125,8 @@ const save = (watched = false, closing = false) => {
   return sendProgress(closing);
 };
 player.addEventListener("play", () => { if (pendingProgress?.watched) clearProgress(); });
+for (const event of ["playing", "kinosail:seek-intent"]) player.addEventListener(event, () => { if (!playbackPreparation) progressPlayedItem = progressItem(); });
+player.addEventListener("seeking", () => { if (!managedSeek && !playbackPreparation) progressPlayedItem = progressItem(); });
 let audioQueue = [];
 let queuedAudio;
 const warmAudio = () => {
@@ -225,8 +228,8 @@ if (player.dataset.homeAssistant === "true") {
     const command = await response.json();
     if (command.command === "play") await requestPlay("home-assistant");
     if (command.command === "pause") requestPause();
-    if (command.command === "stop") { requestPause(); setPlayerTime(0); }
-    if (command.command === "seek") setPlayerTime(command.position);
+    if (command.command === "stop") { requestPause(); setPlayerTime(0, true); }
+    if (command.command === "seek") setPlayerTime(command.position, true);
     if (command.command === "volume") player.volume = command.volume;
     if (command.command === "mute") player.muted = command.muted;
     if (command.command === "play_media") location.assign(`/watch/${encodeURIComponent(command.itemId)}`);

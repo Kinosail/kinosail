@@ -131,8 +131,8 @@
 /* Keep native selector overflow inside its label while preserving the focus ring. */
 .subtitle-settings .settings-flow h2{overflow-wrap:anywhere}
 :root:has(.subtitle-settings main :focus-visible){scroll-behavior:auto}
-.subtitle-settings :is(#language,#session-timeouts) form label{overflow:clip;overflow-clip-margin:.25rem}
-.subtitle-settings #language select{min-width:0;max-width:100%}
+.subtitle-settings :is(#language,#automation,#session-timeouts) form label{overflow:clip;overflow-clip-margin:.25rem}
+.subtitle-settings :is(#language,#automation) select{min-width:0;max-width:100%}
 @media(max-width:600px){.subtitle-settings .settings-nav{flex-wrap:wrap;overflow:visible;white-space:normal}.subtitle-settings .settings-nav>a{flex:1 1 auto;justify-content:center}}
 @media(max-width:700px){.subtitle-settings .settings-shell,.subtitle-settings .settings-flow{grid-template-columns:minmax(0,1fr)}.subtitle-settings .settings-flow>section{min-width:0;overflow-wrap:anywhere}}
 .subtitle-feedback-slot,.subtitle-feedback-reservation,.subtitle-update-slot{display:grid;min-width:0;font-variant-numeric:tabular-nums}
@@ -156,3 +156,5 @@
 @media(prefers-contrast:more),(prefers-reduced-transparency:reduce),(forced-colors:active){
   :root:not([data-theme=light]) body.subtitle-dashboard:not(.settings-page):not(.auth){background:var(--bg)}
 }
+
+@media(max-width:520px){.subtitle-settings .subtitle-language-list li{grid-template-columns:minmax(0,1fr)}.subtitle-settings .subtitle-language-list form{flex-wrap:wrap;max-width:100%}}

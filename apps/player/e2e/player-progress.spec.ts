@@ -38,7 +38,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   if (testInfo.title.includes("audio queue")) await page.locator("video").evaluate(media => media.dataset.queue = "/api/v1/test-queue");
   await page.addScriptTag({ content: `
     const player = document.querySelector('video'), csrf = 'synthetic-csrf', playbackSession = 'qa-session-03';
-    let playbackPreparation, preparationSeek, preparationPausePending = 0, playbackRequest = 0;
+    let managedSeek = false, playbackPreparation, preparationSeek, preparationPausePending = 0, playbackRequest = 0;
     const playbackTraceMethod = 'direct', setPlayerTime = seconds => player.currentTime = seconds;
     const isPictureInPicture = () => false;
     const requestPause = () => { playbackRequest++; paused = true; player.dispatchEvent(new Event("pause")); };
@@ -50,6 +50,8 @@ test.beforeEach(async ({ page }, testInfo) => {
     Object.assign(window, {setEnded: value => ended = value, setPaused: value => paused = value, prepare: value => playbackPreparation = value});
     addEventListener('pagehide', () => player.dispatchEvent(new Event('kinosail:page-exit')));
   ` + source });
+  // This ordering fixture starts after playback has reached its paused position.
+  await page.locator("video").dispatchEvent("playing");
 });
 
 async function pauseAt(page: Page, seconds: number) {
@@ -267,4 +269,20 @@ test("audio queue does not drop a failed watched save when it advances", async (
   await expect(page.locator("video")).toHaveAttribute("data-progress", "/progress/next");
   expect(requests.at(-1)!.body.get("watched")).toBe("true");
   await expect(page.locator("[data-progress-notice]")).toBeHidden();
+});
+
+test('a watched form that becomes invalid while saving keeps subsequent position saves active',async({page})=>{
+  deferred=true;
+  await page.locator('main').evaluate(main=>main.insertAdjacentHTML('beforeend','<form action="/watched/movie" method="post"><input aria-label="Required confirmation" required value="ready"><button name="watched" value="true">Mark watched</button></form>'));
+  await pauseAt(page,42);
+  await expect.poll(()=>requests.length).toBe(1);
+  await page.getByRole('button',{name:'Mark watched',exact:true}).click();
+  await page.getByLabel('Required confirmation').fill('');
+  await requests[0].route.fulfill({status:204});
+  await expect.poll(()=>requests.length).toBe(2);
+  await requests[1].route.fulfill({status:204});
+  await expect(page.locator('[data-progress-notice]')).toBeHidden();
+  await pauseAt(page,60);
+  await expect.poll(()=>requests.length).toBe(3);
+  expect(requests[2].body.get('seconds')).toBe('60');
 });

@@ -155,3 +155,31 @@ test("populated player retries the latest progress through the real Server and r
   await expect(page.locator("[data-progress-notice]")).toBeHidden();
   expect(await page.locator("[data-progress-status]").textContent()).not.toContain("Your position is saved");
 });
+
+test('Mark watched waits for an older played-position request before changing stored status', {tag:'@smoke'}, async ({page},info) => {
+  await login(page);
+  const watch=await firstPlayable(page), id=watch.split('/').at(-1)!;
+  const publicProgress=()=>page.evaluate(async id=>{const response=await fetch(`/api/v1/items/${id}`);if(response.status!==200)throw new Error(`Public progress HTTP ${response.status}`);return (await response.json()).item.progress;},id);
+  await page.goto(watch);
+  const media=page.locator('video');
+  await media.evaluate(async(video:HTMLVideoElement)=>{video.muted=true;await video.play();});
+  await expect.poll(()=>media.evaluate((video:HTMLVideoElement)=>video.getVideoPlaybackQuality().totalVideoFrames)).toBeGreaterThan(2);
+  let release!:()=>void, held=false, watchedRequests=0;
+  const barrier=new Promise<void>(resolve=>release=resolve);
+  page.on('request',request=>{if(new URL(request.url()).pathname===`/watched/${id}`)watchedRequests++;});
+  await page.route(`**/progress/${id}*`,async route=>{held=true;await barrier;await route.continue();});
+  try {
+    await media.evaluate((video:HTMLVideoElement)=>video.pause());
+    await expect.poll(()=>held).toBe(true);
+    await page.getByRole('button',{name:'Mark watched',exact:true}).click();
+    await expect(page.locator('[data-progress-status]')).toHaveText('Saving progress…');
+    expect(watchedRequests).toBe(0);
+    await page.screenshot({path:info.outputPath('watched-awaits-position.png'),fullPage:true});
+    release();
+    await expect(page.getByRole('button',{name:'Mark unwatched',exact:true})).toBeVisible();
+    await expect.poll(()=>publicProgress().then(state=>state.watched)).toBe(true);
+    await page.getByRole('link',{name:'Library',exact:true}).click();
+    await expect(page).toHaveURL('/');
+    expect((await publicProgress()).watched).toBe(true);
+  } finally {release();}
+});
