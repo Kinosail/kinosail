@@ -126,7 +126,7 @@ const save = (watched = false, closing = false) => {
   return sendProgress(closing);
 };
 player.addEventListener("play", () => { if (pendingProgress?.watched) clearProgress(); });
-for (const event of ["playing", "kinosail:seek-intent"]) player.addEventListener(event, () => { if (!playbackPreparation) progressPlayedItem = progressItem(); });
+for (const event of ["playing", "kinosail:seek-intent"]) player.addEventListener(event, () => { if (!playbackPreparation && (event !== "playing" || !player.paused)) progressPlayedItem = progressItem(); });
 player.addEventListener("seeking", () => { if (!managedSeek && !playbackPreparation) progressPlayedItem = progressItem(); });
 let audioQueue = [];
 let queuedAudio;
