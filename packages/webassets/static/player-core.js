@@ -53,14 +53,22 @@ const playbackTrace = (event, detail = "", quality = "") => {
 };
 // The browser also restores a direct source's saved #t fragment without a setter.
 let managedSeek = Boolean(player.getAttribute("src")?.includes("#t=") && (player.seeking || !player.readyState));
+let managedSeekTarget = managedSeek ? Number(player.dataset.start) || 0 : undefined;
 const setPlayerTime = (seconds, user = false) => {
   if (user) player.dispatchEvent(new Event("kinosail:seek-intent"));
-  managedSeek = true; player.currentTime = seconds;
+  managedSeek = true; managedSeekTarget = seconds; player.currentTime = seconds;
+  managedSeekTarget = player.currentTime;
 };
+player.addEventListener("seeking", () => {
+  if (managedSeek && Number.isFinite(managedSeekTarget) && player.currentTime !== managedSeekTarget && !playbackPreparation) managedSeek = false;
+});
 let playbackPreparation;
 let preparationPausePending = 0;
 let preparationSeek;
-player.addEventListener("emptied", () => { preparationSeek = undefined; });
+player.addEventListener("emptied", () => {
+  preparationSeek = undefined;
+  managedSeekTarget = player.getAttribute("src")?.includes("#t=") ? Number(player.dataset.start) || 0 : undefined;
+});
 let playbackRequest = 0;
 let pendingApplePlay;
 const withdrawPlaybackRequest = () => {

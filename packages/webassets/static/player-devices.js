@@ -134,7 +134,7 @@ player.addEventListener("seeking", () => {
     if (player.currentTime >= Number(marker.dataset.start) && player.currentTime < Number(marker.dataset.seek)) marker.dataset.skipped = "true";
   }
 });
-player.addEventListener("seeked", () => { managedSeek = false; });
+player.addEventListener("seeked", () => { managedSeek = false; managedSeekTarget = undefined; });
 player.addEventListener("timeupdate", () => {
   if (playbackPreparation) return;
   for (const marker of markers) {

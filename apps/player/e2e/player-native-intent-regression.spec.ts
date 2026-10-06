@@ -12,6 +12,7 @@ const source = process.env.KINOSAIL_REGRESSION_PLAYER_SOURCE
 const sourceHash = createHash('sha256').update(source).digest('hex');
 type Control = {
   configure(time: number, ready: number, end: number): void;
+  quantizeTime(quantum: number): void;
   beginNativeSeek(time: number): void;
   endNativeSeek(): void;
   snapshot(): object;
@@ -22,7 +23,7 @@ function decoderFixture(preparation: boolean) {
   const video = document.querySelector('video')!;
   let time = preparation ? 20 : 0, ready = preparation ? 0 : 4;
   let end = preparation ? 20.1 : 60, paused = true, seeking = false;
-  let loaded = !preparation, playCalls = 0;
+  let loaded = !preparation, playCalls = 0, quantum = 0;
   const events: object[] = [];
   Object.defineProperty(navigator, 'userAgent', {configurable: true,
     value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148'});
@@ -30,7 +31,7 @@ function decoderFixture(preparation: boolean) {
     value: preparation ? undefined : () => {}});
   Object.defineProperties(video, {
     currentTime: {configurable: true, get: () => time, set: (value: number) => {
-      time = value; seeking = true;
+      time = quantum ? Math.round(value / quantum) * quantum : value; seeking = true;
       queueMicrotask(() => video.dispatchEvent(new Event('seeking')));
     }},
     duration: {configurable: true, value: 100},
@@ -53,6 +54,7 @@ function decoderFixture(preparation: boolean) {
   }
   Object.assign(window, {intentDecoder: {
     configure: (value: number, state: number, buffered: number) => {time = value; ready = state; end = buffered;},
+    quantizeTime: (value: number) => {quantum = value;},
     // Native controls mutate the decoder and publish events; they do not call
     // the application's explicit custom-control or MediaSession callbacks.
     beginNativeSeek: (value: number) => {seeking = true; time = value; video.dispatchEvent(new Event('seeking'));},
@@ -138,15 +140,15 @@ for (const completion of ['same playing dispatch', 'queued playing after canplay
   });
 }
 
-for (const target of [0, 35]) {
-  test(`first paused native seek to ${target} supersedes pending managed restoration and saves`, async ({page}, info) => {
+for (const {target, restore} of [{target: 0, restore: 20}, {target: 35, restore: 20}, {target: 0, restore: 0.05}]) {
+  test(`first paused native seek to ${target} supersedes pending managed restoration${restore === 20 ? "" : " at 0.05"} and saves`, async ({page}, info) => {
     const state = await install(page);
     // Exercise the real automatic source-change restore, withholding only the
     // decoder's seeked completion until the user's native seek supersedes it.
-    await page.evaluate('resumeAfterSourceChange(false, true, 20)');
-    await page.evaluate(() => (window as TestWindow).intentDecoder.configure(0, 4, 60));
+    await page.evaluate(`resumeAfterSourceChange(false, true, ${restore})`);
+    await page.evaluate(value => (window as TestWindow).intentDecoder.configure(value, 4, 60), restore === 20 ? 0 : 20);
     await page.locator('video').dispatchEvent('loadedmetadata');
-    await expect(page.locator('video')).toHaveJSProperty('currentTime', 20);
+    await expect(page.locator('video')).toHaveJSProperty('currentTime', restore);
     await expect(page.locator('video')).toHaveJSProperty('seeking', true);
     expect(await page.evaluate('managedSeek')).toBe(true);
     const automatic = await proof(page, info, state, {target});
@@ -163,3 +165,19 @@ for (const target of [0, 35]) {
     expect(state.stored.seconds).toBe(target);
   });
 }
+
+for (const {restore, quantum, expected} of [
+  {restore: 0.05, quantum: 0, expected: 0.05},
+  {restore: 0.056, quantum: 0.01, expected: 0.06},
+]) test(`automatic fractional restoration ${restore} with decoder quantum ${quantum} stays unplayed`, async ({page}, info) => {
+  const state = await install(page);
+  await page.evaluate(value => (window as TestWindow).intentDecoder.quantizeTime(value), quantum);
+  await page.evaluate(() => (window as TestWindow).intentDecoder.configure(20, 4, 60));
+  await page.evaluate(`resumeAfterSourceChange(false, true, ${restore})`);
+  await page.locator('video').dispatchEvent('loadedmetadata');
+  await expect(page.locator('video')).toHaveJSProperty('currentTime', expected);
+  await page.evaluate(() => (window as TestWindow).intentDecoder.endNativeSeek());
+  await proof(page, info, state, {restore, quantum, explicitViewerPlayOrSeek: false});
+  await page.getByRole('link', {name: 'Library'}).click();
+  expect(state.writes, 'automatic fractional or rounded restoration must not save').toEqual([]);
+});
