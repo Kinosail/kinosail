@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# The container owner shares these volume names and the fixture directory.
+# shellcheck disable=SC2034,SC2154
 start_fresh_server() {
   local fixed_port="$1"
   if [[ -n "$container" ]]; then
