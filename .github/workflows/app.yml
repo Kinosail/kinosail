@@ -328,6 +328,23 @@ jobs:
             .verification/hls-followon/*/SHA256SUMS
           retention-days: 14
           if-no-files-found: error
+      - name: Verify complete HEVC preparation
+        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        timeout-minutes: 10
+        env:
+          GOMAXPROCS: "2"
+        run: python3 apps/player/scripts/test-hls-followon.py --suite hevc
+      - name: Keep safe complete HEVC preparation evidence
+        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: player-hls-hevc-preparation-evidence
+          include-hidden-files: true
+          path: |
+            .verification/hls-hevc-startup/*/receipt.json
+            .verification/hls-hevc-startup/*/SHA256SUMS
+          retention-days: 14
+          if-no-files-found: error
       - name: Verify HLS source-version freshness
         if: inputs.app == 'player' && matrix.engine == 'chromium'
         env:

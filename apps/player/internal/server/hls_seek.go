@@ -22,7 +22,7 @@ var (
 
 func (manager *hlsManager) newHLSJob(request context.Context, startNumber int) (context.Context, *hlsJob) {
 	ctx, cancel := context.WithCancelCause(manager.ctx)
-	job := &hlsJob{done: make(chan struct{}), cancel: cancel, activity: make(chan struct{}, 1), startNumber: startNumber, requestID: requestActivityID(request), playbackSession: requestPlaybackSession(request)}
+	job := &hlsJob{lifecycle: ctx, done: make(chan struct{}), cancel: cancel, activity: make(chan struct{}, 1), startNumber: startNumber, requestID: requestActivityID(request), playbackSession: requestPlaybackSession(request)}
 	job.observation = newHLSObservation(job.requestID, startNumber)
 	ctx = context.WithValue(ctx, hlsObservationKey{}, job.observation)
 	if preparation, ok := request.Value(startupEncodingKey{}).(*startupEncoding); ok {
@@ -180,7 +180,14 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 			return nil
 		}
 		job := manager.jobs[key]
-		adoptStartupJob(ctx, job)
+		if startupJobStopping(job) {
+			manager.mu.Unlock()
+			if err := waitForReplacedHLSJob(ctx, job); err != nil {
+				return err
+			}
+			continue
+		}
+		manager.adoptStartupJob(ctx, job, key)
 		if job.coversSegment(filepath.Dir(path), segment) {
 			manager.mu.Unlock()
 			return nil
@@ -223,15 +230,6 @@ func (manager *hlsManager) seekSettings(item library.Item, recipe hlsRecipe, dir
 		return transcodeSettings{}, errors.New("playback settings changed; start a new compatible stream")
 	}
 	return options, nil
-}
-
-func waitForReplacedHLSJob(ctx context.Context, job *hlsJob) error {
-	select {
-	case <-ctx.Done():
-		return ctx.Err()
-	case <-job.done:
-		return nil
-	}
 }
 
 type hlsEncodeOutcome struct {

@@ -19,6 +19,13 @@ func (manager *hlsManager) ensureHLSJob(ctx context.Context, item library.Item, 
 			return nil, err
 		}
 		job := manager.jobs[key]
+		if startupJobStopping(job) {
+			manager.mu.Unlock()
+			if err := waitForReplacedHLSJob(ctx, job); err != nil {
+				return nil, err
+			}
+			continue
+		}
 		if job != nil && job.cachePolicy != options.Cache {
 			replaceHLSIdentity(ctx, job, recipe)
 			manager.mu.Unlock()
@@ -40,7 +47,7 @@ func (manager *hlsManager) ensureHLSJob(ctx context.Context, item library.Item, 
 			//nolint:contextcheck // The Server lifecycle owns shared output after this request ends.
 			go manager.encode(jobContext, item, job, key, options, recipe, 0, false)
 		}
-		adoptStartupJob(ctx, job)
+		manager.adoptStartupJob(ctx, job, key)
 		manager.mu.Unlock()
 		return job, nil
 	}
@@ -54,6 +61,15 @@ func replaceHLSIdentity(ctx context.Context, job *hlsJob, recipe hlsRecipe) {
 	job.replacing = true
 	job.cancel(errHLSIdentityChanged)
 	slog.InfoContext(ctx, "HLS stream identity changed", "request_id", requestActivityID(ctx), "playback_session", requestPlaybackSession(ctx), "mode", recipe.mode)
+}
+
+func waitForReplacedHLSJob(ctx context.Context, job *hlsJob) error {
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	case <-job.done:
+		return nil
+	}
 }
 
 func (manager *hlsManager) prepare(ctx context.Context, item library.Item, recipe hlsRecipe) error {
