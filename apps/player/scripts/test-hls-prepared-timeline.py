@@ -241,6 +241,8 @@ try:
             receipt["codecSeekDiagnostics"] = [seek_diagnostics(RUN, source, metadata["keyframesSeconds"][4])]
         if name == "cluster15s":
             receipt["codecSeekDiagnostics"].append(seek_diagnostics(RUN, source, metadata["keyframesSeconds"][1]))
+        if name != "control2s":
+            journey(name + "cold", source, metadata, cold=True)
         journey(name, source, metadata)
         if name == "cluster15s":
             journey(name + "resume15s", source, metadata, 15)
@@ -249,7 +251,7 @@ try:
         "30000/1001", 2880, ".mp4")
     receipt["codecSeekDiagnostics"].append(seek_diagnostics(RUN, source, metadata["keyframesSeconds"][1]))
     journey("fractional15s", source, metadata)
-    if len(receipt["cases"]) == 7 and all(case["result"] == "passed" for case in receipt["cases"]):
+    if len(receipt["cases"]) == 9 and all(case["result"] == "passed" for case in receipt["cases"]):
         receipt["result"] = "passed"
 except Exception as error:
     receipt["failureClass"] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
