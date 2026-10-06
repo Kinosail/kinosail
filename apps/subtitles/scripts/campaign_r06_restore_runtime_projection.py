@@ -25,7 +25,7 @@ EXTRA_FLAGS = ("eligible", "fixtureStopped", "restoreRequestObserved", "restoreR
                "inspectResponseObserved", "restoreBodyDelivered", "inspectionBodyDelivered", "releaseAttempted")
 TIMINGS = ("clickToWitnessMs", "clickToUnlockMs", "holdDurationMs", "durationMs")
 FIELDS = ("schema", "kind", "caseID", "stage", "failureStage", "protocol", *COUNTERS, *FLAGS, *EXTRA_FLAGS,
-          "restoreTerminal", "inspectTerminal", *TIMINGS, "servedScriptSHA256", "assertions")
+          "restoreTerminal", "inspectTerminal", "restoreFailureCode", "inspectFailureCode", *TIMINGS, "servedScriptSHA256", "assertions")
 ROOT_FIELDS = ("schema", "kind", "collection", "cases", "malformedRecords", "duplicateTerminals", "globalErrorCount", "runnerStatus")
 CASE_FIELDS = ("caseID", "outcome", "data", "failedAssertions", "unattemptedAssertions", "incompleteAssertions",
                "retry", "totalErrorCount", "knownAssertionErrorIDs", "unknownErrorCount", "assertionErrorsExact")
@@ -46,6 +46,11 @@ def valid_data(value, case):
     if value["responseStatus"] > 599 or value["inspectionResponseStatus"] > 599: return False
     for key in ("restoreTerminal", "inspectTerminal"):
         if value[key] not in ("unreached", "pending", "finished", "request-failed"): return False
+    for prefix in ("restore", "inspect"):
+        code = value[prefix + "FailureCode"]
+        if (type(code) is not str or code not in ("none", "aborted", "content-length", "decoding", "connection-reset",
+                "connection-closed", "empty-response", "unclassified") or
+                (value[prefix + "Terminal"] == "request-failed") != (code != "none")): return False
     for key in TIMINGS:
         number = value[key]
         if number is None and key != "durationMs": continue

@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import type { Page } from "@playwright/test";
 import { bounded, pause, snapshot, startFixture, setupPage, phaseScope, cleanupCase, type PhaseScope, type Fixture, type Snapshot } from "./subtitle-restore-recovery-fixture";
-import { observeRestore, type Terminal } from "./subtitle-restore-recovery-network";
+import { observeRestore, type Terminal, type FailureCode } from "./subtitle-restore-recovery-network";
 
 export const ASSERTION_IDS = [
   "actual-restore", "history-once", "recovery-swapped", "hold-proven",
@@ -18,6 +18,7 @@ export type SafeCase = Snapshot & {
   restoreRequestObserved: boolean; restoreResponseObserved: boolean; restoreTerminal: Terminal;
   inspectRequestObserved: boolean; inspectResponseObserved: boolean; inspectTerminal: Terminal;
   restoreBodyDelivered: boolean; inspectionBodyDelivered: boolean; releaseAttempted: boolean;
+  restoreFailureCode: FailureCode; inspectFailureCode: FailureCode;
   clickToWitnessMs: number | null; clickToUnlockMs: number | null; holdDurationMs: number | null;
   durationMs: number; servedScriptSHA256: { inspector: string | null };
   assertions: Record<AssertionID, Observation>;
@@ -68,6 +69,7 @@ function initialResult(id: string): SafeCase {
     holdExpired: false, boundaryFailed: false, restoreRequestObserved: false, restoreResponseObserved: false,
     restoreTerminal: "unreached", inspectRequestObserved: false, inspectResponseObserved: false, inspectTerminal: "unreached",
     restoreBodyDelivered: false, inspectionBodyDelivered: false, releaseAttempted: false,
+    restoreFailureCode: "none", inspectFailureCode: "none",
     clickToWitnessMs: null, clickToUnlockMs: null, holdDurationMs: null, durationMs: 0,
     servedScriptSHA256: { inspector: null },
     assertions: Object.fromEntries(ASSERTION_IDS.map(id => [id, { attempted: false, completed: false, passed: null }])) as SafeCase["assertions"],

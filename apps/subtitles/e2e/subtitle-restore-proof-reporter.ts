@@ -5,6 +5,8 @@ import { readAttachment } from "./subtitle-save-attachment-reader.cjs";
 import { ASSERTION_IDS, type AssertionID, type SafeCase } from "./subtitle-restore-recovery-helpers";
 import { isObject, SNAPSHOT_COUNTERS, SNAPSHOT_FLAGS, type JSONObject, type JSONValue } from "./subtitle-restore-recovery-fixture";
 
+import { FAILURE_CODES } from "./subtitle-restore-recovery-network";
+
 const SCHEMA = "r06-restore-browser-v1";
 const FILE = "apps/subtitles/e2e/subtitle-restore-recovery.journey.ts";
 const CASES = {
@@ -21,7 +23,7 @@ const EXTRA_FLAGS = [
 const TIMINGS = ["clickToWitnessMs", "clickToUnlockMs", "holdDurationMs", "durationMs"];
 const FIELDS = [
   "schema", "kind", "caseID", "stage", "failureStage", "protocol", ...SNAPSHOT_COUNTERS, ...SNAPSHOT_FLAGS,
-  ...EXTRA_FLAGS, "restoreTerminal", "inspectTerminal", ...TIMINGS, "servedScriptSHA256", "assertions",
+  ...EXTRA_FLAGS, "restoreTerminal", "inspectTerminal", "restoreFailureCode", "inspectFailureCode", ...TIMINGS, "servedScriptSHA256", "assertions",
 ];
 function exactKeys(value: JSONValue, keys: readonly string[]): value is JSONObject {
   return isObject(value) && Object.keys(value).sort().join(",") === [...keys].sort().join(",");
@@ -40,6 +42,11 @@ function validRecord(value: JSONValue, id: string): value is SafeCase {
   for (const key of ["restoreTerminal", "inspectTerminal"]) {
     const terminal = value[key];
     if (typeof terminal !== "string" || !["unreached", "pending", "finished", "request-failed"].includes(terminal)) return false;
+  }
+  for (const prefix of ["restore", "inspect"]) {
+    const code = value[prefix + "FailureCode"];
+    if (typeof code !== "string" || !FAILURE_CODES.some(candidate => candidate === code) ||
+      (value[prefix + "Terminal"] === "request-failed") !== (code !== "none")) return false;
   }
   if (TIMINGS.some(key => {
     const n = value[key]; return n !== null && (typeof n !== "number" || !Number.isFinite(n) || n < 0 || n > 125000);

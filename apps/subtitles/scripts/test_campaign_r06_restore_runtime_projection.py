@@ -17,6 +17,7 @@ class RestoreBrowserProjectionControls(unittest.TestCase):
                     headersReleased=True, bodyReleased=True, restoreResponseDelivered=True,
                     inspectionResponseDelivered=True, restoreTerminal="finished", inspectTerminal="finished",
                     clickToWitnessMs=100, clickToUnlockMs=30000, holdDurationMs=30000, durationMs=35000,
+                    restoreFailureCode="none",inspectFailureCode="none",
                     servedScriptSHA256={"inspector":"a"*64},
                     assertions={key:{"attempted":True,"completed":True,"passed":True} for key in projection.ASSERTIONS})
         return {"caseID":case_id,"outcome":"passed","data":data,"failedAssertions":[],
@@ -104,7 +105,7 @@ class RestoreBrowserProjectionControls(unittest.TestCase):
         value=self.value()
         for row in value["cases"]:
             row["data"].update(restoreTerminal="request-failed",restoreBodyDelivered=False,
-                               restoreResponseDelivered=False,restoreClientCancelled=True)
+                               restoreResponseDelivered=False,restoreClientCancelled=True,restoreFailureCode="aborted")
         self.assertEqual(projection.classify(value,"a"*64),"focused-restore-browser-green")
         value["cases"][0]["data"]["restoreBodyDelivered"]=True
         self.assertEqual(projection.classify(value,"a"*64),"prerequisite-blocked")
@@ -215,3 +216,44 @@ class RestoreBrowserProjectionControls(unittest.TestCase):
         for case in values["results.json"]["browser"]["cases"]:
             case["data"]["servedScriptSHA256"]["inspector"]=None
         with self.assertRaises(ValueError):artifacts.admit_bundle(artifacts.seal(values),"a"*40,"b"*40)
+
+
+class RestoreNetworkDiagnosticControls(unittest.TestCase):
+    def test_closed_failure_codes_do_not_admit_delivery_mismatch(self):
+        value=RestoreBrowserProjectionControls().value()
+        for row in value['cases']:
+            row['data'].update(restoreFailureCode='none',inspectFailureCode='none')
+        data=value['cases'][0]['data']
+        data.update(restoreTerminal='request-failed',restoreFailureCode='aborted',restoreClientCancelled=False)
+        projection.admit(value,'runtime','restore-headers')
+        self.assertEqual(projection.classify(value,'a'*64),'prerequisite-blocked')
+        for code in ('private https://fictional.invalid/path?token=fixture',True,'x'*1000):
+            bad=copy.deepcopy(value);bad['cases'][0]['data']['restoreFailureCode']=code
+            with self.assertRaises(ValueError):projection.admit(bad,'runtime','restore-headers')
+
+    def test_actual_request_observer_exports_only_closed_failure_identity(self):
+        import json
+        import subprocess
+        from pathlib import Path
+        network=Path(__file__).resolve().parents[1]/'e2e/subtitle-restore-recovery-network.ts'
+        harness="""import {EventEmitter} from 'node:events';
+const {observeRestore}=await import(process.argv[1]);
+const values=[];
+for(const [error,expected] of [['net::ERR_ABORTED','aborted'],['net::ERR_CONTENT_LENGTH_MISMATCH','content-length'],['net::ERR_CONTENT_DECODING_FAILED','decoding'],['net::ERR_CONNECTION_RESET','connection-reset'],['net::ERR_CONNECTION_CLOSED','connection-closed'],['net::ERR_EMPTY_RESPONSE','empty-response'],['private https://fictional.invalid/?secret=fixture','unclassified']]){
+ const page=new EventEmitter(),result={};
+ const observed=observeRestore(page,'https://127.0.0.1:1234','aaaaaaaaaaaaaaaa',result);
+ const request={method:()=> 'POST',url:()=> 'https://127.0.0.1:1234/api/v1/subtitle-library/aaaaaaaaaaaaaaaa/restore',failure:()=>({errorText:error})};
+ page.emit('request',request);page.emit('requestfailed',request);
+ values.push([result.restoreFailureCode,expected,result.inspectFailureCode,result.restoreTerminal]);
+ observed.close();if(page.eventNames().length)throw new Error('observers not removed');
+}
+process.stdout.write(JSON.stringify(values));"""
+        result=subprocess.run(['node','--experimental-strip-types','--input-type=module','-e',harness,network.as_uri()],
+                              capture_output=True,timeout=5,check=False)
+        self.assertEqual(result.returncode,0,'owned observer diagnostic harness failed')
+        values=json.loads(result.stdout)
+        self.assertEqual(len(values),7)
+        for actual,expected,untouched,terminal in values:
+            self.assertEqual(actual,expected)
+            self.assertEqual(untouched,'none')
+            self.assertEqual(terminal,'request-failed')
