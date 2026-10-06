@@ -75,6 +75,26 @@ class CampaignProofTests(unittest.TestCase):
         self.assertIn('run: python3 apps/player/scripts/test-hls-followon.py\n', manual)
         self.assertNotIn('--suite audio', manual)
 
+    def test_hevc_preparation_adds_a_separate_required_public_gate(self):
+        # Completed, stopped and adopted ownership can pass audio6 while losing
+        # HEVC tail media. Require their own strict public proof and safe receipt.
+        source = (ROOT / '.github/workflows/app.yml').read_text()
+        step = source.split('      - name: Verify complete HEVC preparation\n')[1]
+        self.assertIn("if: always() && inputs.app == 'player' && matrix.engine == 'chromium'", step)
+        self.assertIn('timeout-minutes: 10', step)
+        self.assertIn('python3 apps/player/scripts/test-hls-followon.py --suite hevc', step)
+        self.assertIn('name: player-hls-hevc-preparation-evidence', step)
+        self.assertIn('.verification/hls-hevc-startup/*/receipt.json', step)
+        self.assertIn('.verification/hls-hevc-startup/*/SHA256SUMS', step)
+        driver = (ROOT / 'apps/player/scripts/test-hls-followon.py').read_text()
+        self.assertIn("choices=['all', 'audio', 'hevc']", driver)
+        self.assertIn("controls(ROOT, RUN, binary, receipt, include_hevc=suite != 'audio', include_audio=suite != 'hevc')", driver)
+        self.assertIn("'expectedCases': 12 if suite == 'all' else 4 if suite == 'hevc' else 6", driver)
+        self.assertIn("if suite != 'hevc':", driver)
+        manual = LAYOUT.read_text().split('  hls-followon:\n')[1]
+        self.assertIn('run: python3 apps/player/scripts/test-hls-followon.py\n', manual)
+        self.assertNotIn('--suite', manual)
+
     def test_artifact_paths_are_exact_safe_json_only(self):
         source = LAYOUT.read_text().split('  campaign-proof:\n')[1].split('\n  hls-followon:\n')[0]
         for value in ('R06', 'Q14', 'Q09'):

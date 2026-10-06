@@ -16,6 +16,7 @@ import (
 )
 
 type hlsJob struct {
+	lifecycle       context.Context
 	observation     *hlsObservation
 	preparation     *startupEncoding
 	done            chan struct{}
@@ -149,6 +150,9 @@ func (manager *hlsManager) prepareAttempt(ctx context.Context, item library.Item
 
 func (manager *hlsManager) encodeVariants(ctx context.Context, item library.Item, directory string, options transcodeSettings, recipe hlsRecipe, startNumber int) error {
 	if err := playback.BindHLSSource(directory, item.Path, options.Cache); err != nil {
+		return err
+	}
+	if err := manager.bindStartupCompletion(ctx, directory, options.Cache); err != nil {
 		return err
 	}
 	if err := manager.bindCopiedHLSTimeline(ctx, directory, startNumber); err != nil {
