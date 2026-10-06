@@ -108,7 +108,8 @@ progressContinue?.addEventListener("click", () => {
 });
 addEventListener("online", () => retryProgress());
 const save = (watched = false, closing = false) => {
-  if (playbackPreparation || !watched && !progressChanged()) return Promise.resolve();
+  if (playbackPreparation) return Promise.resolve();
+  if (!watched && !progressChanged()) return Promise.resolve({ok: true});
   if (player.dataset.castActive === "true" || player.dataset.offline === "true") {
     clearProgress();
     return player.dataset.offline === "true" ? window.KinosailOfflineMedia?.saveProgress(player, watched) : Promise.resolve();

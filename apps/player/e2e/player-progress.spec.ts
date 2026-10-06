@@ -286,3 +286,12 @@ test('a watched form that becomes invalid while saving keeps subsequent position
   await expect.poll(()=>requests.length).toBe(3);
   expect(requests[2].body.get('seconds')).toBe('60');
 });
+
+test('an unplayed audio-track change navigates without writing unchanged progress',async({page})=>{
+  await page.route(`${fixtureOrigin}/?compatible=1&audio=1`,route=>route.fulfill({contentType:'text/html',body:'<h1>Selected audio</h1>'}));
+  await page.locator('video').evaluate(media=>{media.dataset.progress='/progress/unplayed';media.currentTime=0;});
+  await page.getByLabel('Audio track').selectOption('1');
+  await expect(page.getByRole('heading',{name:'Selected audio'})).toBeVisible();
+  expect(new URL(page.url()).searchParams.get('audio')).toBe('1');
+  expect(requests).toEqual([]);
+});
