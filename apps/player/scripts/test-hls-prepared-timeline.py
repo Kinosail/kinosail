@@ -238,9 +238,9 @@ try:
         source, metadata = fixture(RUN, name, gop, keys)
         if name == "control2s":
             journey("coldControl2s", source, metadata, cold=True)
-            receipt["codecSeekDiagnostics"] = [seek_diagnostics(RUN, source, 8)]
+            receipt["codecSeekDiagnostics"] = [seek_diagnostics(RUN, source, metadata["keyframesSeconds"][4])]
         if name == "cluster15s":
-            receipt["codecSeekDiagnostics"].append(seek_diagnostics(RUN, source, 15))
+            receipt["codecSeekDiagnostics"].append(seek_diagnostics(RUN, source, metadata["keyframesSeconds"][1]))
         journey(name, source, metadata)
         if name == "cluster15s":
             journey(name + "resume15s", source, metadata, 15)
