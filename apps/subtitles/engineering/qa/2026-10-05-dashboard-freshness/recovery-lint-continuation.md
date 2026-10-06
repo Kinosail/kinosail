@@ -19,3 +19,12 @@ remain unchanged. The prior hosted run used the default retained parent; it
 does not separately prove the optional supplied-parent path. Successor lint,
 public execution and required checks remain pending. All original evidence,
 source pins and proposed browser boundaries remain preserved.
+
+The f4120368 hosted lint result reduced the five findings to one: G703 at
+`refresh_files_test.go:147`, the original `os.Lstat(parent)` validation sink.
+The earlier131line diagnostic referred to this same call, rather than the
+allocation call. This successor passes its canonical form to Lstat after
+the existing gate requires `filepath.Clean(parent) == parent`, an absolute
+path and bounded length. The filesystem target and leaf-symlink rejection
+are identical. No rule suppression or admission change was introduced.
+Exact successor hosted verification is pending.

@@ -144,7 +144,7 @@ func r16ValidateParent(parent string) error {
 		return errors.New("owned R16 parent root invalid")
 	}
 	if parent != "" {
-		info, err := os.Lstat(parent)
+		info, err := os.Lstat(filepath.Clean(parent))
 		if err != nil || !info.IsDir() || info.Mode()&os.ModeSymlink != 0 {
 			return errors.New("owned R16 parent was not an actual directory")
 		}
