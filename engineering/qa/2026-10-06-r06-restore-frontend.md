@@ -59,6 +59,19 @@ pending text after revision invalidation; and painting while pagehide releases
 an owned action. Written-first UI controls use the existing actual-script DOM
 fixture to reproduce these failures. No populated-server/layout proof follows.
 
-Independent design review is complete. Exact implementation review, original
-header/body GREEN, current-main required gates and protected delivery remain
-pending. No production or feature acceptance is inferred from isolated controls.
+The admitted original journeys hold responses only after a real Restore effect.
+They miss pagehide during preparation, before a receipt is retained. A further
+written-first DOM control covers Back/pageshow leaving the old pending message
+when the read-only status check has no receipt. The recovery must paint finite
+unknown status only when the active action still has its exact pending message;
+it must neither submit a mutation nor replace newer status.
+
+Independent implementation review cleared the original candidate at2cc895f7.
+Its original header/body desktop and phone journeys each pass all12 assertions,
+with editor release at approximately30s and complete admitted source/settlement
+evidence. After reconciling main's PR501, the unchanged original header journeys
+also pass at61d6594a. The original preparation/Back control then fails with the
+stale pending message; the guarded finite-unknown fallback makes all32 focused
+controls pass. That final fallback still requires independent source review,
+original header/body GREEN at its exact head, required gates and protected
+delivery. No production acceptance is inferred from isolated controls.

@@ -41,13 +41,15 @@
     const history = element("a", " View History"); history.href = "/?view=history";
     status.append(check, history);
   }
+  const pendingMessage = restoring => restoring ? "Restoring previous subtitle…" : "Saving subtitle and recovery copy…";
   async function checkSave(restoring = lastRestore) {
     if (!pageActive || busy) return;
     const ticket = revision, action = ++saveActionRevision;
     const current = () => pageActive && ticket === revision && action === saveActionRevision;
     try {
       const result = await saveOperation[restoring ? "checkRestore" : "check"](form.elements.language.value);
-      if (!result || !current()) return;
+      if (!current()) return;
+      if (!result) { if (status.textContent === pendingMessage(restoring)) showSaveResult({ kind: "unconfirmed", message: `${restoring ? "Restore" : "Save"} completion is unknown. Your edit is kept; check status and History before trying again.` }, restoring); return; }
       if (result.review?.language === form.elements.language.value) { review = result.review; invalidate(); page = 0; render(); }
       showSaveResult(result.kind === "saved" ? { ...result, message: "Previous Save completed. Current subtitle refreshed; your edit is kept." } : result, restoring);
     } catch (error) { if (current()) showError(error); }
@@ -176,7 +178,7 @@
     const ticket = revision, action = ++saveActionRevision, values = restoring ? review.language : prepared, proposed = review.proposed;
     const current = () => pageActive && ticket === revision && action === saveActionRevision;
     let released = false;
-    const savingMessage = restoring ? "Restoring previous subtitle…" : "Saving subtitle and recovery copy…"; saveBusyOwner = action; lastRestore = restoring;
+    const savingMessage = pendingMessage(restoring); saveBusyOwner = action; lastRestore = restoring;
     setBusy(true, true); status.textContent = savingMessage;
     const release = result => {
       if (released) return; released = true;

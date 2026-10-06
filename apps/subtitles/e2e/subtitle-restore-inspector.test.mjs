@@ -54,3 +54,18 @@ test("Pagehide invalidates painting before releasing an owned Restore", async ()
   assert.match(view.node("inspector-status").textContent, /previous subtitle restored/i);
   assert.equal(view.form.elements.text.disabled, false);
 });
+
+test("Back after pagehide during preparation releases the old pending message without a mutation", async () => {
+  const view = inspectorFixture(); await view.ready(); view.form.elements.text.value = "Keep this correction";
+  const pending = view.node("restore-subtitle").listeners.click(); await flush();
+  assert.equal(view.requests.at(-1).url, "/api/v1/subtitle-operations");
+  view.events.pagehide(); await pending;
+  const mutations = view.requests.filter(request => request.options.method === "POST").length;
+  view.events.pageshow(); await flush();
+  assert.equal(view.requests.filter(request => request.options.method === "POST").length, mutations);
+  assert.equal(view.requests.filter(request => request.url.endsWith("/restore")).length, 0);
+  assert.equal(view.form.elements.text.disabled, false);
+  assert.equal(view.form.elements.text.value, "Keep this correction");
+  try { assert.match(view.node("inspector-status").textContent, /restore completion is unknown/i); }
+  finally { view.events.pagehide(); }
+});
