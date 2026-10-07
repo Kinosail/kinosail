@@ -195,13 +195,28 @@ export async function startHappyPath(page: Page, testInfo: TestInfo): Promise<Ha
 
 export async function openHappyPathSetup(page: Page, testInfo: TestInfo) {
   const navigation = navigationDiagnostics(page,testInfo.project.use.baseURL);
+  const recorded = new Set<string>();
   try {
+    let setupTimer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      await Promise.race([navigation.observeDocument((record: {kind: string}) => {
+        if (recorded.has(record.kind)) return;
+        recorded.add(record.kind);
+        void testInfo.attach("setup-document-" + record.kind, {contentType: "application/json", body: JSON.stringify(record)}).catch(() => {});
+      }), new Promise(resolve => {setupTimer = setTimeout(resolve, 500);})]);
+    } catch { /* Observation setup cannot prevent the original navigation. */ }
+    finally {clearTimeout(setupTimer);}
+    navigation.markNavigation("/setup");
     await page.goto("/setup", {waitUntil: "commit"});
     await expect(page.getByLabel("Name", {exact: true})).toBeVisible();
   } catch (error) {
-    await testInfo.attach("setup-navigation-failure", {
-      body: JSON.stringify(await navigation.snapshot(error)), contentType: "application/json",
-    });
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      const body = JSON.stringify(await navigation.snapshot(error));
+      await Promise.race([testInfo.attach("setup-navigation-failure", {body, contentType: "application/json"}),
+        new Promise(resolve => {timer = setTimeout(resolve, 500);})]);
+    } catch { /* Diagnostics cannot replace the original navigation failure. */ }
+    finally {clearTimeout(timer);}
     throw error;
   } finally { navigation.stop(); }
 }

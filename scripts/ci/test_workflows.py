@@ -99,6 +99,18 @@ class WorkflowSecurityTests(unittest.TestCase):
         self.assertLess(browser.index('pnpm --dir "apps/$APP/e2e" install --frozen-lockfile'), browser.index(command))
         self.assertLess(browser.index(command), browser.index('name: Test populated browsers'))
 
+    def test_setup_failure_observer_contracts_run_after_player_dependencies(self):
+        browser = (WORKFLOWS / 'app.yml').read_text().split('  browser:')[1].split('  required:')[0]
+        command = 'node --test scripts/testing/player-setup-navigation.test.mjs'
+        self.assertTrue((ROOT / 'scripts/testing/player-setup-navigation.test.mjs').is_file())
+        self.assertFalse((ROOT / 'apps/player/e2e/player-setup-navigation.test.mjs').exists(),
+                         'Node-only contracts must not be discovered as Playwright journeys')
+        step = browser.split('      - name: Verify setup navigation failure diagnostics')[1].split('      - ')[0]
+        self.assertIn("if: inputs.app == 'player'", step)
+        self.assertIn('run: ' + command, step)
+        self.assertLess(browser.index('pnpm --dir "apps/$APP/e2e" install --frozen-lockfile'), browser.index(command))
+        self.assertLess(browser.index(command), browser.index('name: Test populated browsers'))
+
     def test_layout_failure_contracts_and_modules_are_reproducible(self):
         command = 'node --test scripts/testing/navigation-diagnostics.test.mjs scripts/testing/layout-stability-failure.test.mjs scripts/testing/layout-stability-subtitle-background.test.mjs scripts/testing/layout-stability-flows.test.mjs scripts/testing/layout-stability-diagnostic-snapshots.test.mjs'
         self.assertIn('      - run: ' + command, (WORKFLOWS / 'ci.yml').read_text())

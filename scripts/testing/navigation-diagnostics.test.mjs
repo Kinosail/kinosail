@@ -25,7 +25,7 @@ test("document witnesses are strictly bounded and cannot serialize arbitrary con
  const probe=navigationDiagnostics(page,"http://localhost:39060");
  await probe.observeDocument();
  const emit=value=>page.emit("console",{text:()=>"KINOSAIL_NAV_DOCUMENT "+value});
- const valid={kind:"start",main:true,loginPath:true,readyState:"loading",timeOrigin:1000,elapsedMs:0,loginForm:false};
+ const valid={kind:"start",main:true,loginPath:true,setupPath:false,setupForm:false,readyState:"loading",timeOrigin:1000,elapsedMs:0,loginForm:false};
  for(const value of ["private-synthetic-marker", "x".repeat(2049), JSON.stringify({...valid,secret:"private-synthetic-marker"}),
    JSON.stringify({...valid,readyState:"private"}),JSON.stringify({...valid,timeOrigin:-1}),JSON.stringify({...valid,elapsedMs:Infinity}),
    JSON.stringify({...valid,main:false}),'{"kind":"start","kind":"load","main":true,"loginPath":true,"readyState":"loading","timeOrigin":1000,"elapsedMs":0,"loginForm":false}']) emit(value);
@@ -97,8 +97,8 @@ test("navigation diagnostics omit credentials and queries", async () => {
   page.emit("request",first);
   page.emit("requestfailed",request("https://user:do-not-record@remote.invalid/private/do-not-record"));
   const value=await probe.snapshot();
-  assert.deepEqual(value.pending,[{path:"/static/main.js",type:"script"}]);
-  assert.deepEqual(value.failed,[{path:"other",type:"script"}]);
+  assert.deepEqual(value.pending.map(({path,type})=>({path,type})),[{path:"/static/main.js",type:"script"}]);
+  assert.deepEqual(value.failed.map(({path,type})=>({path,type})),[{path:"other",type:"script"}]);
   assert.equal(value.path,"/login");
   assert.ok(!JSON.stringify(value).includes("do-not-record"));
   probe.stop();
@@ -123,7 +123,7 @@ test("destroyed pages still retain bounded transport diagnostics", async () => {
   page.emit("request",request("http://localhost:39060/api/v1/private?credential=do-not-record","fetch"));
   const value=await probe.snapshot();
   assert.equal(value.readyState,"unavailable");
-  assert.deepEqual(value.pending,[{path:"other",type:"fetch"}]);
+  assert.deepEqual(value.pending.map(({path,type})=>({path,type})),[{path:"other",type:"fetch"}]);
   probe.stop();
 });
 
@@ -131,7 +131,7 @@ test("malformed, oversized and unknown URL or resource values are omitted", asyn
   const page=new Page(), probe=navigationDiagnostics(page,"http://localhost:39060");
   for (const url of ["not-a-url","file://localhost/login","http://localhost/login?"+"x".repeat(3000)]) page.emit("requestfailed",request(url,"unknown-resource"));
   const value=await probe.snapshot();
-  assert.deepEqual(value.failed,Array(3).fill({path:"other",type:"other"}));
+  assert.deepEqual(value.failed.map(({path,type})=>({path,type})),Array(3).fill({path:"other",type:"other"}));
   probe.stop();
 });
 
@@ -158,7 +158,7 @@ test("owned TLS aliases retain page identity and main-frame status without query
  const value=await probe.snapshot({name:"TimeoutError",message:"goto timed out at do-not-record"});
  assert.equal(value.identity,"owned");assert.equal(value.view,"library");assert.equal(value.libraryMarker,true);
  assert.equal(value.readyState,"complete");assert.equal(value.errorCategory,"timeout");
- assert.deepEqual(value.mainFrameResponses,[{path:"/",status:303},{path:"/",status:200}]);
+ assert.deepEqual(value.mainFrameResponses.map(({path,status})=>({path,status})),[{path:"/",status:303},{path:"/",status:200}]);
  assert.equal(value.redirectCount,1);assert.ok(value.elapsedMs>=0&&value.elapsedMs<=600000);
  assert.doesNotMatch(JSON.stringify(value),/do-not-record|fixture.invalid|token/);
  probe.stop();assert.equal(page.listenerCount("response"),0);
@@ -228,4 +228,48 @@ test("navigation lifecycle is ordered, bounded, and records only safe route clas
  for(let i=0;i<100;i++)page.emit("domcontentloaded");
  assert.equal((await probe.snapshot()).lifecycle.length,20);
  probe.stop();
+});
+
+// Additional failure modes: setup is misclassified, SW flags are coerced, or
+// response identities cannot be correlated with a completed request.
+test("setup navigation keeps only its allowed route and strict setup form marker", async () => {
+ const page = new Page();page.url=()=>"http://localhost:39060/setup?code=do-not-record";
+ page.evaluate=async()=>({readyState:"complete",setupForm:true,timeOrigin:1234});
+ const probe=navigationDiagnostics(page,"http://localhost:39060");probe.markNavigation("/setup");
+ const value=await probe.snapshot({name:"TimeoutError"});
+ assert.equal(value.path,"/setup");assert.equal(value.identity,"owned");assert.equal(value.setupForm,true);
+ assert.equal(value.lifecycle[0].route.path,"/setup");assert.doesNotMatch(JSON.stringify(value),/do-not-record|code=/);
+ page.evaluate=async()=>({readyState:"complete",setupForm:"do-not-record"});
+ assert.equal((await probe.snapshot()).setupForm,false);probe.stop();
+});
+test("main responses retain bounded correlated request identities and strict SW provenance", async () => {
+ const page=new Page();page.mainFrame=()=>"main";const probe=navigationDiagnostics(page,"http://localhost:39060");
+ const item={...request("http://localhost:39060/setup?code=do-not-record","document"),isNavigationRequest:()=>true,frame:()=>"main"};
+ page.emit("request",item);page.emit("requestfinished",item);
+ for(const flag of [true,false,"do-not-record",undefined])page.emit("response",{request:()=>item,url:()=>item.url(),status:()=>200,fromServiceWorker:()=>flag});
+ page.emit("requestfailed",item);
+ const value=await probe.snapshot();assert.equal(value.mainFrameRequests.length,1);
+ const start=value.mainFrameRequests[0];assert.equal(start.path,"/setup");assert.ok(Number.isInteger(start.requestID)&&start.requestID>0);
+ assert.deepEqual(value.mainFrameResponses.map(r=>r.fromServiceWorker),[true,false,"unavailable","unavailable"]);
+ for(const response of value.mainFrameResponses){assert.equal(response.requestID,start.requestID);assert.equal(response.firstSeenMs,start.firstSeenMs);assert.ok(response.timeMs>=start.timeMs&&response.timeMs<=600000);}
+ assert.equal(value.failed[0].requestID,start.requestID);assert.ok(value.failed[0].timeMs>=start.timeMs);
+ assert.doesNotMatch(JSON.stringify(value),/do-not-record|code=/);
+ for(let n=0;n<100;n++)page.emit("request",{...item});assert.equal((await probe.snapshot()).mainFrameRequests.length,20);
+ probe.stop();assert.equal(page.eventNames().length,0);
+});
+test("setup document records are idempotent and strictly reject ambiguous or malformed markers", async () => {
+ const page=new Page();page.addInitScript=async callback=>{page.init=callback;};
+ const probe=navigationDiagnostics(page,"http://localhost:39060");await probe.observeDocument();
+ const emit=raw=>page.emit("console",{text:()=>"KINOSAIL_NAV_DOCUMENT "+raw});
+ const valid={kind:"start",main:true,loginPath:false,setupPath:true,readyState:"loading",timeOrigin:1000,elapsedMs:0,loginForm:false,setupForm:false};
+ for(const value of [{...valid,setupPath:"do-not-record"},{...valid,setupForm:"do-not-record"},{...valid,unknown:true},{...valid,elapsedMs:-1},{...valid,loginPath:true},{...valid,setupPath:false,setupForm:true}])emit(JSON.stringify(value));
+ emit(JSON.stringify(valid).replace('"setupPath":true','"setupPath":true,"setupPath":false'));emit("x".repeat(2049));
+ assert.equal((await probe.snapshot()).documents.length,0);
+ const documentEvents=new Map(),windowEvents=new Map();const document={readyState:"loading",querySelector:()=>null,addEventListener:(name,callback)=>documentEvents.set(name,callback)};
+ const window={addEventListener:(name,callback)=>windowEvents.set(name,callback)};window.top=window;
+ const context={document,window,location:{pathname:"/setup"},performance:{timeOrigin:1234,now:()=>10},console:{debug:emitValue=>page.emit("console",{text:()=>emitValue})}};
+ runInNewContext(`(${page.init.toString()})()`,context);runInNewContext(`(${page.init.toString()})()`,context);
+ document.readyState="interactive";document.querySelector=()=>({});documentEvents.get("DOMContentLoaded")();document.readyState="complete";windowEvents.get("load")();
+ const value=await probe.snapshot();assert.deepEqual(value.documents.map(record=>record.kind),["start","dcl","load"]);
+ assert.equal(value.documents.at(-1).setupPath,true);assert.equal(value.documents.at(-1).setupForm,true);assert.equal(value.documents.at(-1).source,"unverified-console");probe.stop();
 });

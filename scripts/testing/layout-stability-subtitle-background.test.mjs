@@ -13,7 +13,7 @@ test("background navigation failure snapshots its active page before closure", a
   page.url=()=>"https://owned-layout.invalid/?view=library&token=do-not-record";
   page.evaluate=async()=>{assert.equal(closed,false);return {readyState:"complete",libraryMarker:true};};
   page.goto=async()=>{
-    page.emit("response",{status:()=>200,url:()=>page.url(),request:()=>({isNavigationRequest:()=>true,frame:()=>frame})});
+    page.emit("response",{status:()=>200,url:()=>page.url(),request:()=>({url:()=>page.url(),resourceType:()=>"document",isNavigationRequest:()=>true,frame:()=>frame}),fromServiceWorker:()=>false});
     const error=new Error("Timeout at https://private.invalid/do-not-record");error.name="TimeoutError";throw error;
   };
   const browser={newContext:async()=>({newPage:async()=>page,close:async()=>{closed=true;}})};
@@ -28,7 +28,10 @@ test("background navigation failure snapshots its active page before closure", a
     assert.equal(probe.navigation.view,"library");
     assert.equal(probe.navigation.errorCategory,"timeout");
     assert.equal(probe.navigation.libraryMarker,true);
-    assert.deepEqual(probe.navigation.mainFrameResponses,[{path:"/",status:200}]);
+    assert.deepEqual(probe.navigation.mainFrameResponses.map(({path,status})=>({path,status})),[{path:"/",status:200}]);
+    assert.equal(probe.navigation.mainFrameResponses[0].requestID,1);
+    assert.equal(probe.navigation.mainFrameResponses[0].fromServiceWorker,false);
+    assert.ok(probe.navigation.mainFrameResponses[0].timeMs>=probe.navigation.mainFrameResponses[0].firstSeenMs);
     assert.ok(probe.navigation.elapsedMs<5000);
     assert.ok(!JSON.stringify(probe).includes("do-not-record"));
     assert.equal(closed,true);

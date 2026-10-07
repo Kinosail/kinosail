@@ -17,7 +17,7 @@ test("theater navigation failure retains its own page and closes owned contexts"
       assert.equal(options.waitUntil, "domcontentloaded");
       this.current = "https://owned.fixture.invalid" + path;
       const request = {url:()=>this.current, resourceType:()=>"document", isNavigationRequest:()=>true, frame:()=>this};
-      this.emit("response", {request:()=>request, url:()=>this.current, status:()=>200});
+      this.emit("response", {request:()=>request, url:()=>this.current, status:()=>200, fromServiceWorker:()=>false});
       if (this.fail) throw failure;
     }
     locator() {return {count:async()=>0};}
@@ -37,7 +37,10 @@ test("theater navigation failure retains its own page and closes owned contexts"
   assert.equal(probe.navigation?.readyState, "interactive");
   assert.equal(probe.navigation?.path, "/watch");
   assert.deepEqual(probe.navigation.lifecycle.find(record=>record.kind==="navigation-start")?.route, {path:"/watch",view:"other"});
-  assert.deepEqual(probe.navigation?.mainFrameResponses, [{path:"/watch",status:200}]);
+  assert.deepEqual(probe.navigation?.mainFrameResponses.map(({path,status})=>({path,status})), [{path:"/watch",status:200}]);
+  assert.equal(probe.navigation.mainFrameResponses[0].requestID,1);
+  assert.equal(probe.navigation.mainFrameResponses[0].fromServiceWorker,false);
+  assert.ok(probe.navigation.mainFrameResponses[0].timeMs>=probe.navigation.mainFrameResponses[0].firstSeenMs);
   assert.doesNotMatch(JSON.stringify(probe), /private|0123456789abcdef|fixture.invalid/);
   assert.ok(contexts.every(({context})=>context.closed));
   assert.ok(contexts.every(({page})=>["request","requestfailed","response"].every(event=>page.listenerCount(event)===0)));
