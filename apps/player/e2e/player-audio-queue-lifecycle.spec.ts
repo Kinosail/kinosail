@@ -77,3 +77,26 @@ test("late initial queue response cannot warm media or publish controls after pa
   await expect(page.locator("audio")).not.toHaveAttribute("data-queue-total");
   expect(nextReads).toEqual([]);
 });
+
+for (const saved of [true, false]) test(`ended offline queue requires its own watched acknowledgement: ${saved ? "saved" : "failed"}`, async ({page}) => {
+  await openAudio(page, "");
+  await startQueue(page);
+  await page.evaluate(saved => {
+    document.querySelector("audio")!.dataset.offline = "true";
+    Object.assign(window, {r08OfflineEnded: {saved: 0, watched: false}, KinosailOfflineMedia: {
+      saveProgress: async (_audio: HTMLAudioElement, watched: boolean) => {
+        const observed = (window as Window & {r08OfflineEnded: {saved: number; watched: boolean}}).r08OfflineEnded;
+        observed.saved++; observed.watched = watched; return {ok: saved};
+      },
+      unbindProgress: () => {},
+    }});
+  }, saved);
+  await page.locator("audio").dispatchEvent("ended");
+  await expect.poll(() => page.evaluate(() => (window as Window & {r08OfflineEnded: {saved: number}}).r08OfflineEnded.saved)).toBe(1);
+  if (saved) await expect(page.locator("audio")).toHaveAttribute("data-progress", "/progress/next");
+  else {
+    await expect(page.locator("[data-audio-queue-controls]")).not.toHaveAttribute("aria-busy");
+    await expect(page.locator("audio")).toHaveAttribute("data-progress", "/progress/track");
+  }
+  expect(await page.evaluate(() => (window as Window & {r08OfflineEnded: {saved: number; watched: boolean}}).r08OfflineEnded)).toEqual({saved: 1, watched: true});
+});

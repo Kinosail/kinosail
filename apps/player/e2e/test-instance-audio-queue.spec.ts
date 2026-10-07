@@ -74,9 +74,9 @@ test("real album queue advances source and all Now Playing identity to the ficti
   await expect.poll(() => media.evaluate((audio: HTMLAudioElement) => new URL(audio.currentSrc || audio.src).pathname)).toBe(second.stream);
   await expect.poll(() => media.evaluate((audio: HTMLAudioElement) => audio.readyState)).toBeGreaterThanOrEqual(2);
   await media.evaluate((audio: HTMLAudioElement) => audio.pause());
-  await expect(page.locator("[data-now-playing-artwork]")).toBeVisible();
   const observed = await snapshot(page);
   await testInfo.attach("now-playing-after-real-advance", {body: JSON.stringify(observed, null, 2), contentType: "application/json"});
+  await expect(page.locator("[data-now-playing-artwork]")).toBeVisible();
   await page.screenshot({path: testInfo.outputPath("second-track-before-assertions.png"), fullPage: true});
   expect(observed).toEqual({heading: second.title, byline: `${second.artist} · ${second.album} · Track ${second.track}`,
     accessibleLabel: second.title, documentTitle: `${second.title} · Kinosail Player`,
