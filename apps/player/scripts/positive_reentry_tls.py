@@ -29,22 +29,26 @@ class HostedFixtureTrust:
 
     def prepare(self, binary, environment, source):
         require_hosted_macos()
+        self.receipt['fixtureTLSStage'] = 'export-public-ca'
         candidate = self.run / 'tls-private-export.pem'
         with candidate.open('w') as output:
             run_owned_command([str(binary), 'tls-certificate'], environment, timeout=30, output=output)
         validator = source / 'scripts/ci/browser-fixture-tls.sh'
+        self.receipt['fixtureTLSStage'] = 'validate-public-ca'
         with (self.run / 'tls-private.log').open('w') as output:
             run_owned_command(['bash', '-c', 'source "$1"; validate_browser_fixture_ca "$2"',
                                'fixture', str(validator), str(candidate)], environment, timeout=15, output=output)
         candidate.rename(self.certificate)
         der = subprocess.check_output(['openssl', 'x509', '-in', str(self.certificate), '-outform', 'DER'], timeout=15)
         self.fingerprint = hashlib.sha256(der).hexdigest().upper()
+        self.receipt['fixtureTLSStage'] = 'check-preexisting-ca'
         if self.present():
             raise RuntimeError('Exact fixture CA already exists; preserve preexisting trust')
         self.receipt['fixturePublicCASHA256'] = hashlib.sha256(self.certificate.read_bytes()).hexdigest()
         self.receipt['fixturePublicCADER_SHA256'] = self.fingerprint.lower()
         self.receipt['fixtureCAValidatorSHA256'] = hashlib.sha256(validator.read_bytes()).hexdigest()
         self.attempted = True
+        self.receipt['fixtureTLSStage'] = 'install-exact-ca'
         with (self.run / 'tls-private.log').open('a') as output:
             run_owned_command(['sudo', '-n', '/usr/bin/security', 'add-trusted-cert', '-d', '-r', 'trustRoot',
                                '-p', 'ssl', '-k', self.keychain, str(self.certificate)], environment, timeout=30, output=output)
@@ -53,16 +57,23 @@ class HostedFixtureTrust:
         environment['NODE_EXTRA_CA_CERTS'] = str(self.certificate)
         self.receipt['browserCertificateBypasses'] = 'disabled'
         self.receipt['fixtureCAInstalled'] = True
+        self.receipt['fixtureTLSStage'] = 'verified-client-context'
         return ssl.create_default_context(cafile=str(self.certificate))
 
     def cleanup(self, environment):
         if not self.attempted:
             return True
         require_hosted_macos()
+        failures = []
+        commands = [('remove-admin-trust', ['sudo', '-n', '/usr/bin/security', 'remove-trusted-cert', '-d', str(self.certificate)]),
+                    ('delete-exact-certificate', ['sudo', '-n', '/usr/bin/security', 'delete-certificate', '-Z', self.fingerprint, self.keychain])]
         with (self.run / 'tls-private.log').open('a') as output:
-            run_owned_command(['sudo', '-n', '/usr/bin/security', 'remove-trusted-cert', '-d', str(self.certificate)],
-                              environment, timeout=30, output=output)
-            if self.present():
-                run_owned_command(['sudo', '-n', '/usr/bin/security', 'delete-certificate', '-Z', self.fingerprint,
-                                   self.keychain], environment, timeout=30, output=output)
-        return not self.present()
+            for operation, command in commands:
+                try:
+                    if operation == 'delete-exact-certificate' and not self.present():
+                        continue
+                    run_owned_command(command, environment, timeout=30, output=output)
+                except (OSError, RuntimeError, subprocess.SubprocessError) as error:
+                    failures.append({'operation': operation, 'failureClass': type(error).__name__})
+        self.receipt['fixtureTrustCleanupFailures'] = failures
+        return not self.present() and not failures
