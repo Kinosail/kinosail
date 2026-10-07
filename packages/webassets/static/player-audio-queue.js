@@ -19,10 +19,11 @@ const queueItem = item => {
       ![item.title, item.artist, item.album, item.rating].every(queueText) || !queuePath(item.stream, `/media/${item.id}`) ||
       !queueText(item.artwork) || item.artwork && !queuePath(item.artwork, `/art/${item.id}`) ||
       item.progress !== undefined && (!item.progress || typeof item.progress !== "object" || Array.isArray(item.progress)) ||
-      ![item.track ?? 0, item.year ?? 0].every(value => Number.isSafeInteger(value) && value >= 0 && value <= 100000) ||
+      ![item.track ?? 0].every(value => Number.isSafeInteger(value) && value >= 0 && value <= 100000) ||
+      item.year !== undefined && (typeof item.year !== "string" || item.year.length > 64) ||
       !Number.isFinite(item.progress?.seconds ?? 0) || (item.progress?.seconds ?? 0) < 0 || (item.progress?.seconds ?? 0) > 31536000) throw queueError("invalid");
   return {id: item.id, title: item.title, artist: item.artist || "", album: item.album || "", track: item.track || 0,
-    year: item.year || 0, rating: item.rating || "", stream: `/media/${item.id}`, artwork: item.artwork ? `/art/${item.id}` : "",
+    year: item.year || "", rating: item.rating || "", stream: `/media/${item.id}`, artwork: item.artwork ? `/art/${item.id}` : "",
     progress: {seconds: item.progress?.seconds || 0}};
 };
 const queueJSON = async path => {
