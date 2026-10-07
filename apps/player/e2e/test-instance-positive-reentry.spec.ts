@@ -24,7 +24,9 @@ test('positive Matroska reentry decodes the saved scene through native HLS', asy
       observations}, null, 2));
   };
   await page.addInitScript(() => localStorage.setItem('kinosail.playback-policy-v2', 'direct-first'));
+  await record({phase: 'browser-admission-start'});
   await login(page);
+  await record({phase: 'browser-login-complete'});
   const csrf = async () => ({Origin: base.origin,
     'X-Kinosail-CSRF': await page.locator('meta[name="kinosail-csrf"]').getAttribute('content') || ''});
   const settings = await page.request.put('/api/v1/settings/playback', {headers: await csrf(),

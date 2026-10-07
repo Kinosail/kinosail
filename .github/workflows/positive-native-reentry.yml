@@ -65,6 +65,7 @@ jobs:
           path: |
             .verification/positive-reentry/*/receipt.json
             .verification/positive-reentry/*/source-receipt.json
+            .verification/positive-reentry/*/browser-admission.json
             .verification/positive-reentry/*/artifacts/**/positive-reentry.json
             .verification/positive-reentry/*/artifacts/**/*.png
           include-hidden-files: true

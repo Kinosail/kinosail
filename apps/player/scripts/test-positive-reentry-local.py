@@ -8,6 +8,7 @@ import hmac
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import socket
 import subprocess
@@ -108,8 +109,41 @@ generate = ['ffmpeg', '-nostdin', '-hide_banner', '-loglevel', 'error', '-f', 'l
 receipt['mediaCommand'] = generate
 server = browser = None
 
-
-
+def project_browser_failure():
+    """Project fixed error classes only; no messages, URLs, code or credentials."""
+    report = run / 'report/results-webkit.json'
+    projection = {'sourceRevision': revision, 'harnessRevision': receipt['harnessRevision'],
+                  'reportPresent': report.is_file(), 'tests': [],
+                  'boundary': 'Fixed diagnostic flags only; private reporter and process log remain private'}
+    if report.is_file():
+        projection['reportSHA256'] = checksum(report)
+        try:
+            parsed = json.loads(report.read_text())
+            suites = list(parsed.get('suites', []))
+            while suites and len(projection['tests']) < 4:
+                suite = suites.pop(0)
+                suites.extend(suite.get('suites', []))
+                for spec in suite.get('specs', []):
+                    for test_result in spec.get('tests', []):
+                        for result in test_result.get('results', [])[:1]:
+                            errors = []
+                            for error in result.get('errors', [])[:4]:
+                                message = error.get('message', '')
+                                errors.append({
+                                    'timeout': bool(re.search(r'timeout|Timeout', message)),
+                                    'strictLocator': 'strict mode violation' in message,
+                                    'notEditable': bool(re.search(r'not editable|readonly|read-only', message)),
+                                    'targetClosed': 'has been closed' in message,
+                                    'conditionalCredentialInit': 'PublicKeyCredential' in message or 'isConditionalMediationAvailable' in message,
+                                    'operations': [value for value in ['page.goto', 'locator.fill', 'locator.click', 'page.waitForURL', 'page.evaluate', 'expect.poll'] if value in message],
+                                    'knownLocators': [value for value in ['Name', 'Password', 'Authentication or recovery code', 'Sign in'] if re.search(r'[\'\"]' + re.escape(value) + r'[\'\"]', message)],
+                                    'waitingFor': [value for value in ['visible', 'enabled', 'editable', 'stable', 'navigation'] if value in message],
+                                    'testLine': error.get('location', {}).get('line') if isinstance(error.get('location', {}).get('line'), int) else None})
+                            projection['tests'].append({'status': result.get('status') if result.get('status') in ['passed', 'failed', 'timedOut', 'skipped', 'interrupted'] else 'unknown',
+                                                        'durationMS': result.get('duration') if isinstance(result.get('duration'), (int, float)) else None, 'errors': errors})
+        except (OSError, ValueError, TypeError, AttributeError) as error:
+            projection['projectionFailureClass'] = type(error).__name__
+    (run / 'browser-admission.json').write_text(json.dumps(projection, indent=2) + '\n')
 
 try:
     receipt['stage'] = 'build'
@@ -177,6 +211,7 @@ try:
             receipt['browserPID'] = browser.pid
             exit_code = browser.wait(timeout=120)
         receipt['browserExitCode'] = exit_code
+        project_browser_failure()
         receipt['result'] = 'passed' if exit_code == 0 else 'failed'
 finally:
     for key, process in [('ownedBrowserGroupExited', browser), ('ownedServerGroupExited', server)]:
