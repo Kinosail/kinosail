@@ -171,6 +171,10 @@ def journey(name, original, metadata, offset=0, pacing=None):
     with log_path.open('w') as log:
         try:
             signal.setitimer(signal.ITIMER_REAL, min(90, remaining - 20))
+            if 'sourceFramePTS' in metadata:
+                check(abs(metadata['sourceTimeOriginSeconds']) <= 0.000001, 'fixture_zero_origin')
+                keys = metadata['keyframesSeconds']
+                check(any(abs(v - offset) <= 0.000001 for v in keys) if name.startswith('exact-key') else all(abs(v - offset) > 0.05 for v in keys), 'fixture_key_eligibility')
             server = subprocess.Popen([str(BINARY)], cwd=ROOT, env=env, stdout=log, stderr=log, start_new_session=True)
             sampler = threading.Thread(target=sample_resources, args=(server, source, stop, resources), daemon=True)
             sampler.start()
@@ -202,8 +206,6 @@ def journey(name, original, metadata, offset=0, pacing=None):
                 audio_output(api, hls, directory, case, source)
                 case['physicalAfterPublicDelivery'] = physical(cache, item['id'])
             else:
-                keys = [v - metadata['sourceTimeOriginSeconds'] for v in metadata['keyframesSeconds']]
-                check(any(abs(v - offset) <= 0.000001 for v in keys) if name.startswith('exact-key') else all(abs(v - offset) > 0.05 for v in keys), 'fixture_key_eligibility')
                 full, source_rows = decode_frames(source)
                 origin = metadata['sourceTimeOriginSeconds']
                 expected = [n for n, point in enumerate(metadata['sourceFramePTS']) if point >= origin + offset - 0.000001]
@@ -255,10 +257,7 @@ try:
         journey(f'audio-{duration}-{paced}', source, {'probedDurationSeconds': float(probe['format']['duration'])}, pacing=paced)
     source, metadata = fixture(RUN, 'regular', 48, ','.join(str(v) for v in range(0, 32, 2)), frames=768)
     metadata = reprobe(source, metadata)
-    actual_key = min(metadata['keyframesSeconds'], key=lambda v: abs(v - metadata['sourceTimeOriginSeconds'] - 12))
-    control_offset = round((actual_key - metadata['sourceTimeOriginSeconds']) * 1000) / 1000
-    check(abs(control_offset - 12) < 0.05 and abs(control_offset + metadata['sourceTimeOriginSeconds'] - actual_key) <= 0.000001, 'fixture_exact_key_route_clock')
-    journey('exact-key-control12', source, metadata, offset=control_offset)
+    journey('exact-key-control12', source, metadata, offset=12)
     journey('nonkey-mkv12.5', source, metadata, offset=12.5)
     mp4 = RUN / 'copy.mp4'
     run(['ffmpeg', '-nostdin', '-v', 'error', '-i', str(source), '-map', '0:v:0', '-map', '0:a:0', '-c', 'copy', str(mp4)], 60)
