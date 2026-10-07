@@ -3,8 +3,10 @@ package server
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
 	"encoding/json"
 	"io"
+	"log/slog"
 	"math"
 	"os"
 	"os/exec"
@@ -28,7 +30,7 @@ func (output *copiedHLSProbeOutput) Write(data []byte) (int, error) {
 }
 
 func (manager *hlsManager) ensureCopiedHLSClock(ctx context.Context, item library.Item, recipe hlsRecipe, directory, policy string) error {
-	timeline, err := manager.copiedHLSClockPending(directory, policy)
+	timeline, err := manager.copiedHLSClockPending(ctx, directory, policy)
 	if err != nil || !timeline {
 		return err
 	}
@@ -38,7 +40,7 @@ func (manager *hlsManager) ensureCopiedHLSClock(ctx context.Context, item librar
 		return errCopiedHLSIndex
 	}
 	defer release()
-	indexed, err := manager.readCopiedHLSTimeline(directory, policy)
+	indexed, err := manager.readCopiedHLSTimelineContext(ctx, directory, policy)
 	if err != nil || indexed.Clock != nil {
 		return err
 	}
@@ -90,18 +92,62 @@ func indexedCopiedHLSSegmentArguments(arguments []string, timeline *copiedHLSTim
 	return arguments
 }
 
-func (manager *hlsManager) bindCopiedHLSClock(ctx context.Context, item library.Item, recipe hlsRecipe, directory, rendition, policy string, timeline *copiedHLSTimeline) error {
-	root, err := manager.openCopiedHLSRoot(filepath.Join(directory, filepath.Dir(rendition)))
+func (manager *hlsManager) bindCopiedHLSClock(ctx context.Context, item library.Item, recipe hlsRecipe, directory, rendition, policy string, timeline *copiedHLSTimeline) (result error) {
+	observation := ctx
+	defer func() {
+		if result != nil && observation.Err() == nil {
+			slog.WarnContext(observation, "HLS copied clock rejected", "request_id", requestActivityID(observation), "playback_session", requestPlaybackSession(observation), "mode", recipe.mode, "failure_class", "generation-or-assets")
+		}
+	}()
+	if ctx.Err() != nil || !hlsFile(rendition) || !strings.HasSuffix(rendition, "/index.m3u8") || !validCopiedHLSTimeline(timeline) || timeline.Clock != nil {
+		return errCopiedHLSIndex
+	}
+	if ctx.Value(copiedHLSMetadataKey{}) != manager {
+		admitted, release, err := manager.copiedHLSMetadataAdmission(ctx)
+		if err != nil {
+			return err
+		}
+		defer release()
+		ctx = admitted
+	}
+	root, err := manager.openCopiedHLSRoot(directory)
 	if err != nil {
 		return errCopiedHLSIndex
 	}
-	clock, probeErr := manager.measureCopiedHLSClock(ctx, root)
-	_ = root.Close()
-	if probeErr != nil || manager.validateHLSPolicy(ctx, item, recipe, policy) != nil {
+	defer root.Close()
+	name := filepath.Dir(rendition)
+	media, err := root.OpenRoot(name)
+	if err != nil {
 		return errCopiedHLSIndex
 	}
-	timeline.Clock = &clock
-	return manager.writeCopiedHLSTimeline(directory, timeline)
+	defer media.Close()
+	before, err := copiedHLSClockSnapshot(ctx, root, media)
+	data, marshalErr := json.Marshal(timeline)
+	if err != nil || marshalErr != nil || before.hashes[0] != sha256.Sum256([]byte(policy)) || before.hashes[1] != sha256.Sum256(data) {
+		return errCopiedHLSIndex
+	}
+	clock, probeErr := manager.measureCopiedHLSClock(ctx, media)
+	if probeErr != nil || manager.validateHLSPolicy(ctx, item, recipe, policy) != nil || !manager.sameCopiedHLSClockGeneration(ctx, directory, name, root, media, before) {
+		return errCopiedHLSIndex
+	}
+	bound := *timeline
+	bound.Clock = &clock
+	data, err = json.Marshal(&bound)
+	if err != nil || len(data) > maximumCopiedHLSTimelineBytes {
+		return errCopiedHLSIndex
+	}
+	certificate, err := json.Marshal(copiedHLSClockCertificate{Version: 1, Rendition: name, Timeline: sha256.Sum256(data), Initialization: before.hashes[2], First: before.hashes[3]})
+	if err != nil || writeCopiedHLSMetadata(root, ".copy-clock", certificate) != nil || !manager.sameCopiedHLSClockGeneration(ctx, directory, name, root, media, before) || manager.validateHLSPolicy(ctx, item, recipe, policy) != nil {
+		return errCopiedHLSIndex
+	}
+	if err := writeCopiedHLSMetadata(root, ".copy-timeline", data); err != nil {
+		return err
+	}
+	if ctx.Err() != nil || !manager.copiedHLSCanonicalGeneration(directory, name, root, media) {
+		return errCopiedHLSIndex
+	}
+	*timeline = bound
+	return nil
 }
 
 func decodeCopiedHLSClock(data []byte) (float64, error) {
@@ -122,8 +168,8 @@ func decodeCopiedHLSClock(data []byte) (float64, error) {
 	return clock, nil
 }
 
-func (manager *hlsManager) copiedHLSClockPending(directory, policy string) (bool, error) {
-	timeline, err := manager.readCopiedHLSTimeline(directory, policy)
+func (manager *hlsManager) copiedHLSClockPending(ctx context.Context, directory, policy string) (bool, error) {
+	timeline, err := manager.readCopiedHLSTimelineContext(ctx, directory, policy)
 	if err != nil {
 		if manager.copiedHLSTimelinePresent(directory) {
 			return false, errCopiedHLSIndex

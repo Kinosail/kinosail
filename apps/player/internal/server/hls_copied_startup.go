@@ -4,7 +4,9 @@ import (
 	"context"
 	"log/slog"
 	"math"
+	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/playback"
@@ -30,7 +32,7 @@ func (manager *hlsManager) reusableCopiedHLS(ctx context.Context, item library.I
 		// Ordinary cold streams retain their pre-index cache and seek behavior.
 		return true
 	}
-	timeline, err := manager.readCopiedHLSTimeline(directory, policy)
+	timeline, err := manager.readCopiedHLSTimelineContext(ctx, directory, policy)
 	if err != nil {
 		slog.WarnContext(ctx, "HLS copied cache rejected", "request_id", requestActivityID(ctx), "playback_session", requestPlaybackSession(ctx), "mode", recipe.mode, "failure_class", "invalid-timeline")
 		return false
@@ -76,14 +78,16 @@ func (manager *hlsManager) copiedPlaylistProjection(ctx context.Context, item li
 		if manager.validateHLSPolicy(ctx, item, recipe, policy) != nil {
 			return nil
 		}
-		timeline, err := manager.readCopiedHLSTimeline(directory, policy)
+		timeline, err := manager.readCopiedHLSTimelineContext(ctx, directory, policy)
 		if err != nil && manager.copiedHLSTimelinePresent(directory) {
 			return nil
 		}
 		if err == nil {
-			if result, valid := copiedHLSManifest(manifest, timeline); valid {
+			result, valid := copiedHLSManifest(manifest, timeline)
+			if valid {
 				return result
 			}
+			return nil // A present index never falls back to an uncertified EOF.
 		}
 		if playback.PlaylistHas(manifest, "#EXT-X-ENDLIST") {
 			// EOF correction reads generated media, not container format duration.
@@ -116,8 +120,8 @@ func (manager *hlsManager) copiedStartupProjection(item library.Item, recipe hls
 	if err != nil {
 		return func([]byte) []byte { return nil }
 	}
-	timeline, err := manager.readCopiedHLSTimeline(directory, options.Cache)
 	return func(manifest []byte) []byte {
+		timeline, err := manager.readCopiedHLSTimelineContext(manager.ctx, directory, options.Cache)
 		if err != nil && manager.copiedHLSTimelinePresent(directory) {
 			return nil
 		}
@@ -126,6 +130,7 @@ func (manager *hlsManager) copiedStartupProjection(item library.Item, recipe hls
 			if valid {
 				return projected
 			}
+			return nil
 		}
 		if playback.PlaylistHas(manifest, "#EXT-X-ENDLIST") {
 			return manifest
@@ -164,4 +169,24 @@ func (manager *hlsManager) copiedHLSTimelinePresent(directory string) bool {
 	defer root.Close()
 	_, err = root.Lstat(".copy-timeline")
 	return err == nil
+}
+
+func copiedHLSRendition(root *os.Root) (string, error) {
+	master, err := copiedHLSCacheFile(root, "index.m3u8", maximumCopiedHLSTimelineBytes)
+	if err != nil {
+		return "", err
+	}
+	selected := ""
+	for _, line := range strings.Split(string(master), "\n") {
+		if hlsFile(line) && strings.HasSuffix(line, "/index.m3u8") {
+			if selected != "" {
+				return "", errCopiedHLSIndex
+			}
+			selected = filepath.Dir(line)
+		}
+	}
+	if selected == "" {
+		return "", errCopiedHLSIndex
+	}
+	return selected, nil
 }

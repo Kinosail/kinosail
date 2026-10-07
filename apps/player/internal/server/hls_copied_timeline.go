@@ -2,6 +2,7 @@ package server
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"io"
 	"math"
@@ -58,27 +59,24 @@ func (timeline *copiedHLSTimeline) segmentEnd(number int) float64 {
 }
 
 func copiedHLSCacheFile(root *os.Root, name string, limit int64) ([]byte, error) {
-	info, err := root.Lstat(name)
-	if err != nil || !info.Mode().IsRegular() || info.Size() <= 0 || info.Size() > limit {
-		return nil, errCopiedHLSIndex
-	}
-	file, err := root.Open(name)
+	file, info, err := copiedHLSOpenFile(root, name, limit)
 	if err != nil {
 		return nil, errCopiedHLSIndex
 	}
 	defer file.Close()
-	opened, err := file.Stat()
-	if err != nil || !os.SameFile(info, opened) {
-		return nil, errCopiedHLSIndex
-	}
 	data, err := io.ReadAll(io.LimitReader(file, limit+1))
-	if err != nil || int64(len(data)) > limit {
+	after, statErr := root.Lstat(name)
+	if err != nil || statErr != nil || int64(len(data)) != info.Size() || !sameCopiedHLSFile(info, after) {
 		return nil, errCopiedHLSIndex
 	}
 	return data, nil
 }
 
 func (manager *hlsManager) readCopiedHLSTimeline(directory, policy string) (*copiedHLSTimeline, error) {
+	return manager.readCopiedHLSTimelineContext(manager.ctx, directory, policy)
+}
+
+func (manager *hlsManager) readCopiedHLSTimelineContext(ctx context.Context, directory, policy string) (*copiedHLSTimeline, error) {
 	root, err := manager.openCopiedHLSRoot(directory)
 	if err != nil {
 		return nil, errCopiedHLSIndex
@@ -91,6 +89,12 @@ func (manager *hlsManager) readCopiedHLSTimeline(directory, policy string) (*cop
 	data, err := copiedHLSCacheFile(root, ".copy-timeline", maximumCopiedHLSTimelineBytes)
 	var timeline copiedHLSTimeline
 	if err != nil || httpguard.DecodeUniqueJSON(bytes.NewReader(data), maximumCopiedHLSTimelineBytes, &timeline) != nil || timeline.Policy != policy || !validCopiedHLSTimeline(&timeline) {
+		return nil, errCopiedHLSIndex
+	}
+	if ctx.Err() != nil {
+		return nil, errCopiedHLSIndex
+	}
+	if timeline.Clock != nil && manager.verifyCopiedHLSCertificate(ctx, directory, root, data, &timeline) != nil {
 		return nil, errCopiedHLSIndex
 	}
 	return &timeline, nil
@@ -113,13 +117,20 @@ func (manager *hlsManager) writeCopiedHLSTimeline(directory string, timeline *co
 	if err != nil || string(binding) != timeline.Policy {
 		return errCopiedHLSIndex
 	}
-	file, err := root.OpenFile(".copy-timeline.pending", os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0o600)
+	return writeCopiedHLSMetadata(root, ".copy-timeline", data)
+}
+
+func writeCopiedHLSMetadata(root *os.Root, name string, data []byte) error {
+	if name != ".copy-timeline" && name != ".copy-clock" {
+		return errCopiedHLSIndex
+	}
+	file, err := root.OpenFile(name+".pending", os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0o600)
 	if err != nil {
 		return errCopiedHLSIndex
 	}
 	defer func() {
 		_ = file.Close()
-		_ = root.Remove(".copy-timeline.pending")
+		_ = root.Remove(name + ".pending")
 	}()
 	_, err = file.Write(data)
 	if closeErr := file.Close(); err == nil {
@@ -128,7 +139,7 @@ func (manager *hlsManager) writeCopiedHLSTimeline(directory string, timeline *co
 	if err != nil {
 		return errCopiedHLSIndex
 	}
-	return root.Rename(".copy-timeline.pending", ".copy-timeline")
+	return root.Rename(name+".pending", name)
 }
 
 func copiedHLSManifest(manifest []byte, timeline *copiedHLSTimeline) ([]byte, bool) {
@@ -164,33 +175,6 @@ func copiedHLSSegmentDigits(number int) string {
 
 func copiedHLSTime(value float64) string {
 	return strconv.FormatFloat(value, 'f', 6, 64)
-}
-
-// A genuine final segment can have a shortened mux EXTINF after demux packet
-// durations round down. Correct only that existing URI against known duration.
-func completedCopiedHLSManifest(manifest []byte, duration float64) []byte {
-	lines := strings.Split(string(manifest), "\n")
-	sum, last, final := 0.0, 0.0, -1
-	for number, line := range lines {
-		if !strings.HasPrefix(line, "#EXTINF:") {
-			continue
-		}
-		value, _, _ := strings.Cut(strings.TrimPrefix(line, "#EXTINF:"), ",")
-		length, err := strconv.ParseFloat(value, 64)
-		if err != nil || !validCopiedHLSManifestCut(lines, number, length) {
-			return manifest
-		}
-		sum, last, final = sum+length, length, number
-	}
-	if final < 0 || !validCopiedHLSEnd(duration) {
-		return manifest
-	}
-	corrected := duration - (sum - last)
-	if invalidHLSSegmentDuration(corrected) || math.Abs(corrected-last) > min(1, max(0.1, last*0.05)) {
-		return bytes.Replace(manifest, []byte("#EXT-X-PLAYLIST-TYPE:EVENT"), []byte("#EXT-X-PLAYLIST-TYPE:VOD"), 1)
-	}
-	lines[final] = "#EXTINF:" + copiedHLSTime(corrected) + ","
-	return bytes.Replace([]byte(strings.Join(lines, "\n")), []byte("#EXT-X-PLAYLIST-TYPE:EVENT"), []byte("#EXT-X-PLAYLIST-TYPE:VOD"), 1)
 }
 
 func matchesCopiedHLSManifest(manifest []byte, timeline *copiedHLSTimeline) bool {

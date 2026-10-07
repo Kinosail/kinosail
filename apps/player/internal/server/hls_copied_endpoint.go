@@ -16,6 +16,69 @@ import (
 
 type copiedHLSEndpointOutput struct{ copiedHLSProbeOutput }
 
+type copiedHLSClockGeneration struct {
+	assets [4]os.FileInfo
+	hashes [4][32]byte
+}
+
+func copiedHLSClockSnapshot(ctx context.Context, root, media *os.Root) (copiedHLSClockGeneration, error) {
+	var result copiedHLSClockGeneration
+	for number, name := range []string{".source", ".copy-timeline", "init.mp4", "segment-00000.m4s"} {
+		owner, limit := root, int64(maximumCopiedHLSTimelineBytes)
+		if number == 0 {
+			limit = 16 << 10
+		}
+		if number >= 2 {
+			owner, limit = media, 64<<20
+		}
+		if number == 2 {
+			limit = 2 << 20
+		}
+		info, err := owner.Lstat(name)
+		if err != nil {
+			return result, errCopiedHLSIndex
+		}
+		hash, err := copiedHLSAssetHash(ctx, owner, name, limit)
+		if err != nil {
+			return result, err
+		}
+		result.assets[number], result.hashes[number] = info, hash
+	}
+	return result, nil
+}
+
+func (manager *hlsManager) copiedHLSCanonicalGeneration(directory, name string, root, media *os.Root) bool {
+	canonical, err := manager.openCopiedHLSRoot(directory)
+	if err != nil {
+		return false
+	}
+	defer canonical.Close()
+	first, err := root.Stat(".")
+	second, currentErr := canonical.Stat(".")
+	if err != nil || currentErr != nil || !os.SameFile(first, second) {
+		return false
+	}
+	first, err = media.Stat(".")
+	second, currentErr = canonical.Lstat(name)
+	return err == nil && currentErr == nil && second.IsDir() && os.SameFile(first, second)
+}
+
+func (manager *hlsManager) sameCopiedHLSClockGeneration(ctx context.Context, directory, name string, root, media *os.Root, before copiedHLSClockGeneration) bool {
+	if ctx.Err() != nil || !manager.copiedHLSCanonicalGeneration(directory, name, root, media) {
+		return false
+	}
+	after, err := copiedHLSClockSnapshot(ctx, root, media)
+	if err != nil || before.hashes != after.hashes {
+		return false
+	}
+	for number := range before.assets {
+		if !sameCopiedHLSFile(before.assets[number], after.assets[number]) {
+			return false
+		}
+	}
+	return true
+}
+
 func (output *copiedHLSEndpointOutput) Write(data []byte) (int, error) {
 	if output.Len()+len(data) > 1<<20 {
 		return 0, errCopiedHLSIndex
@@ -102,4 +165,63 @@ func copiedHLSPacketEnd(ptsValue, durationValue string) (float64, error) {
 		return 0, errCopiedHLSIndex
 	}
 	return pts + duration, nil
+}
+
+// A genuine final segment can have a shortened mux EXTINF after demux packet
+// durations round down. Correct only that existing URI against known duration.
+func completedCopiedHLSManifest(manifest []byte, duration float64) []byte {
+	lines := strings.Split(string(manifest), "\n")
+	sum, last, final := 0.0, 0.0, -1
+	for number, line := range lines {
+		if !strings.HasPrefix(line, "#EXTINF:") {
+			continue
+		}
+		value, _, _ := strings.Cut(strings.TrimPrefix(line, "#EXTINF:"), ",")
+		length, err := strconv.ParseFloat(value, 64)
+		if err != nil || !validCopiedHLSManifestCut(lines, number, length) {
+			return manifest
+		}
+		sum, last, final = sum+length, length, number
+	}
+	if final < 0 || !validCopiedHLSEnd(duration) {
+		return manifest
+	}
+	corrected := duration - (sum - last)
+	if invalidHLSSegmentDuration(corrected) || math.Abs(corrected-last) > min(1, max(0.1, last*0.05)) {
+		return bytes.Replace(manifest, []byte("#EXT-X-PLAYLIST-TYPE:EVENT"), []byte("#EXT-X-PLAYLIST-TYPE:VOD"), 1)
+	}
+	target, seen := 0.0, false
+	for _, line := range lines {
+		if !strings.HasPrefix(line, "#EXT-X-TARGETDURATION:") {
+			continue
+		}
+		value, err := strconv.ParseFloat(strings.TrimPrefix(line, "#EXT-X-TARGETDURATION:"), 64)
+		if seen || err != nil || !validCopiedHLSEnd(value) || value != math.Trunc(value) {
+			return nil
+		}
+		target, seen = value, true
+	}
+	serialized, err := strconv.ParseFloat(copiedHLSTime(corrected), 64)
+	if err != nil || !seen || math.Round(serialized) > target {
+		return nil
+	}
+	lines[final] = "#EXTINF:" + copiedHLSTime(corrected) + ","
+	return bytes.Replace([]byte(strings.Join(lines, "\n")), []byte("#EXT-X-PLAYLIST-TYPE:EVENT"), []byte("#EXT-X-PLAYLIST-TYPE:VOD"), 1)
+}
+
+func copiedHLSBoundMetadata(root *os.Root, timeline, certificate []byte, policy string) bool {
+	for number, name := range []string{".source", ".copy-timeline", ".copy-clock"} {
+		expected, limit := []byte(policy), int64(16<<10)
+		if number == 1 {
+			expected, limit = timeline, maximumCopiedHLSTimelineBytes
+		}
+		if number == 2 {
+			expected, limit = certificate, 4096
+		}
+		current, err := copiedHLSCacheFile(root, name, limit)
+		if err != nil || !bytes.Equal(current, expected) {
+			return false
+		}
+	}
+	return true
 }
