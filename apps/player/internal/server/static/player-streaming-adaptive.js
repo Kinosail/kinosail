@@ -125,6 +125,20 @@ const useAdaptive = (preference = "auto", resume = false, target = resume ? pend
 const startAdaptive = async (resume = false) => {
   if (adaptiveActive || adaptiveStarting || !stream) return;
   const generation = ++adaptiveGeneration;
+  let initialTarget = pendingResume?.seconds ?? (Number(player.dataset.start) || 0);
+  let explicitSeek = false, pendingAtExplicitSeek;
+  const retainInitialSeek = () => {
+    const pending = pendingResume;
+    // User seek intent is emitted before its setter; read the new clock after it.
+    queueMicrotask(() => {
+      if (generation !== adaptiveGeneration) return;
+      initialTarget = player.currentTime;
+      explicitSeek = true; pendingAtExplicitSeek = pending;
+    });
+  };
+  const target = () => resume ? pendingResume?.seconds ?? player.currentTime :
+    pendingResume && (!explicitSeek || pendingResume !== pendingAtExplicitSeek) ? pendingResume.seconds : initialTarget;
+  if (!resume) player.addEventListener("kinosail:seek-intent", retainInitialSeek);
   adaptiveStarting = true;
   showPlaybackMode(true, true);
   let negotiation = Promise.resolve();
@@ -138,39 +152,43 @@ const startAdaptive = async (resume = false) => {
   // Load the decoder adapter alongside negotiation, only after compatible playback was selected.
   const needsHls = typeof Hls === "undefined" && window.kinosailPlaybackCapabilities.needsAdapter(player);
   const adapter = needsHls ? loadHls() : Promise.resolve(true);
-  const [, adapterLoaded] = await Promise.all([negotiation, adapter]);
-  if (generation !== adaptiveGeneration) return;
-  const preference = playerStorage.get(qualityPreference) || "auto";
-  qualityControl.hidden = false;
-  qualityState.textContent = "Auto";
-  if (player.dataset.hls && typeof Hls !== "undefined" && Hls.isSupported()) {
-    useAdaptive(preference === "original" ? "auto" : preference, resume);
-  } else {
-    if (typeof Hls !== "undefined" && Hls.isSupported()) useAdaptive(preference === "original" ? "auto" : preference, resume);
-    else if (player.canPlayType("application/vnd.apple.mpegurl")) {
-      const target = resume ? pendingResume?.seconds ?? player.currentTime : Number(player.dataset.start) || 0;
-      if (resume) resumeAfterSourceChange(false, true, target);
-      const selected = streamAt(target);
-      adaptiveActive = true;
-      adaptiveSeekSwitch = resume;
-      playbackTimelineOffset = selected.offset;
-      // Keep old decoder events from reporting its clock plus the new offset.
-      playbackTimelineSeek = selected.offset || target === 0 ? target : undefined;
-      playbackTraceMethod = "native-hls";
-      playbackTrace("source-compatible", "native-hls");
-      player.addEventListener("loadedmetadata", () => {
-        if (generation !== adaptiveGeneration) return;
-        adaptiveSeekSwitch = false; playbackTimelineSeek = undefined;
-      }, {once: true});
-      player.src = selected.source;
-      player.load();
+  try {
+    const [, adapterLoaded] = await Promise.all([negotiation, adapter]);
+    if (generation !== adaptiveGeneration) return;
+    const preference = playerStorage.get(qualityPreference) || "auto";
+    qualityControl.hidden = false;
+    qualityState.textContent = "Auto";
+    if (player.dataset.hls && typeof Hls !== "undefined" && Hls.isSupported()) {
+      useAdaptive(preference === "original" ? "auto" : preference, resume, target());
     } else {
-      const loaded = needsHls ? adapterLoaded : await loadHls();
-      if (generation !== adaptiveGeneration) return;
-      if (loaded && Hls.isSupported()) useAdaptive(preference === "original" ? "auto" : preference, resume);
-      else if (player.dataset.fallback) location.replace(player.dataset.fallback);
-      else qualityState.textContent = "Playback unavailable";
+      if (typeof Hls !== "undefined" && Hls.isSupported()) useAdaptive(preference === "original" ? "auto" : preference, resume, target());
+      else if (player.canPlayType("application/vnd.apple.mpegurl")) {
+        const position = target();
+        resumeAfterSourceChange(!resume && networkWantsPlay, true, position);
+        const selected = streamAt(position);
+        adaptiveActive = true;
+        adaptiveSeekSwitch = resume;
+        playbackTimelineOffset = selected.offset;
+        // Keep old decoder events from reporting its clock plus the new offset.
+        playbackTimelineSeek = selected.offset || position === 0 ? position : undefined;
+        playbackTraceMethod = "native-hls";
+        playbackTrace("source-compatible", "native-hls");
+        player.addEventListener("loadedmetadata", () => {
+          if (generation !== adaptiveGeneration) return;
+          adaptiveSeekSwitch = false; playbackTimelineSeek = undefined;
+        }, {once: true});
+        player.src = selected.source;
+        player.load();
+      } else {
+        const loaded = needsHls ? adapterLoaded : await loadHls();
+        if (generation !== adaptiveGeneration) return;
+        if (loaded && Hls.isSupported()) useAdaptive(preference === "original" ? "auto" : preference, resume, target());
+        else if (player.dataset.fallback) location.replace(player.dataset.fallback);
+        else qualityState.textContent = "Playback unavailable";
+      }
     }
+  } finally {
+    player.removeEventListener("kinosail:seek-intent", retainInitialSeek);
+    if (generation === adaptiveGeneration) adaptiveStarting = false;
   }
-  if (generation === adaptiveGeneration) adaptiveStarting = false;
 };
