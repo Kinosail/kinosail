@@ -1,7 +1,6 @@
 """Exact public-CA trust owned by one disposable macOS Actions proof job."""
 import hashlib
 import os
-from pathlib import Path
 import ssl
 import subprocess
 import sys
@@ -16,12 +15,13 @@ def require_hosted_macos():
 
 
 class HostedFixtureTrust:
+    keychain = '/Library/Keychains/System.keychain'
+
     def __init__(self, run, receipt):
         self.run, self.receipt = run, receipt
         self.certificate = run / 'fixture-public-ca.pem'
         self.fingerprint = None
         self.attempted = False
-        self.keychain = None
 
     def present(self):
         result = subprocess.run(['/usr/bin/security', 'find-certificate', '-a', '-Z', self.keychain],
@@ -30,13 +30,7 @@ class HostedFixtureTrust:
 
     def prepare(self, binary, environment, source):
         require_hosted_macos()
-        value = subprocess.check_output(['/usr/bin/security', 'default-keychain', '-d', 'user'], text=True, timeout=15).strip().strip('"')
-        keychain = Path(value)
-        allowed = (Path(os.environ['HOME']) / 'Library/Keychains').resolve()
-        if not keychain.is_absolute() or keychain.is_symlink() or not keychain.is_file() or not keychain.resolve().is_relative_to(allowed) or keychain.stat().st_uid != os.getuid():
-            raise RuntimeError('Fixture trust requires the disposable job user\u2019s existing default keychain')
-        self.keychain = str(keychain)
-        self.receipt['fixtureTrustScope'] = 'disposable-hosted-user-SSL'
+        self.receipt['fixtureTrustScope'] = 'disposable-hosted-admin-SSL'
         self.receipt['fixtureTLSStage'] = 'export-public-ca'
         candidate = self.run / 'tls-private-export.pem'
         with candidate.open('w') as output:
@@ -58,7 +52,7 @@ class HostedFixtureTrust:
         self.attempted = True
         self.receipt['fixtureTLSStage'] = 'install-exact-ca'
         with (self.run / 'tls-private.log').open('a') as output:
-            run_owned_command(['/usr/bin/security', 'add-trusted-cert', '-r', 'trustRoot',
+            run_owned_command(['sudo', '-n', '/usr/bin/security', 'add-trusted-cert', '-d', '-r', 'trustRoot',
                                '-p', 'ssl', '-k', self.keychain, str(self.certificate)], environment, timeout=30, output=output)
         if not self.present():
             raise RuntimeError('Exact fixture CA installation was not confirmed')
@@ -73,19 +67,18 @@ class HostedFixtureTrust:
             return True
         require_hosted_macos()
         failures = []
+        commands = [('delete-exact-certificate', ['sudo', '-n', '/usr/bin/security', 'delete-certificate', '-Z', self.fingerprint, self.keychain]),
+                    ('remove-admin-trust', ['sudo', '-n', '/usr/bin/security', 'remove-trusted-cert', '-d', str(self.certificate)])]
         self.receipt['fixtureTrustCleanupCommands'] = []
         with (self.run / 'tls-private.log').open('a') as output:
-            # -t removes the matching certificate's user trust settings too.
-            commands = [('delete-user-certificate-and-trust', ['/usr/bin/security', 'delete-certificate', '-Z', self.fingerprint, '-t', self.keychain])]
             for operation, command in commands:
                 started = time.monotonic()
                 try:
-                    run_owned_command(command, environment, timeout=30, output=output)
+                    if operation == 'delete-exact-certificate' and not self.present():
+                        continue
+                    run_owned_command(command, environment, timeout=60, output=output)
                 except (OSError, RuntimeError, subprocess.SubprocessError) as error:
                     failures.append({'operation': operation, 'failureClass': type(error).__name__})
-                    # A partial import/deletion must still attempt trust removal.
-                    if len(commands) == 1:
-                        commands.append(('remove-owned-user-trust', ['/usr/bin/security', 'remove-trusted-cert', str(self.certificate)]))
                 finally:
                     self.receipt['fixtureTrustCleanupCommands'].append({'operation': operation, 'elapsedMS': round((time.monotonic() - started) * 1000)})
         self.receipt['fixtureTrustCleanupFailures'] = failures
