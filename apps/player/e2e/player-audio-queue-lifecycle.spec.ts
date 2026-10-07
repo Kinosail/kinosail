@@ -16,6 +16,7 @@ for (const boundary of ["pagehide", "cast", "room"]) {
     await startQueue(page);
     await page.getByRole("button", {name: "Next track", exact: true}).click();
     await expect.poll(() => !!lookup).toBe(true);
+    await expect(page.locator("[data-audio-queue-controls]")).toHaveAttribute("aria-busy", "true");
     if (boundary === "pagehide") await page.evaluate(() => {
       // Avoid a real page-exit checkpoint here; this case isolates the late read.
       document.querySelector("audio")!.dataset.offline = "true";
@@ -26,6 +27,10 @@ for (const boundary of ["pagehide", "cast", "room"]) {
       else audio.dataset.room = "existing-room";
     }, boundary);
     await lookup!.fulfill({json: {item: queueItem("next"), profileId: "qa-viewer"}});
+    if (boundary !== "pagehide") await expect(page.locator("[data-audio-queue-status]")).toHaveAttribute("data-queue-failure", "ownership");
+    // Busy clears only when the held queue operation completes, so the old
+    // identity assertions cannot pass before its response is consumed.
+    await expect(page.locator("[data-audio-queue-controls]")).not.toHaveAttribute("aria-busy");
     await expect(page.locator("[data-audio-next]")).toBeDisabled();
     await expect(page.locator("audio")).toHaveAttribute("data-progress", "/progress/track");
     await expect(page.locator(".title-block h1")).toHaveText("First track");
@@ -62,8 +67,10 @@ test("late initial queue response cannot warm media or publish controls after pa
   await page.route("https://audio.test/api/v1/audio/track/queue", route => {lookup = route;});
   await page.addScriptTag({content: playerSource});
   await expect.poll(() => !!lookup).toBe(true);
+  await expect(page.locator("[data-audio-queue-controls]")).toHaveAttribute("aria-busy", "true");
   await page.evaluate(() => dispatchEvent(new PageTransitionEvent("pagehide")));
   await lookup!.fulfill({json: {items: [queueItem("track"), queueItem("next")]}});
+  await expect(page.locator("[data-audio-queue-controls]")).not.toHaveAttribute("aria-busy");
   await expect(page.locator("[data-audio-next]")).toBeDisabled();
   await expect(page.locator("audio")).not.toHaveAttribute("data-queue-total");
   expect(nextReads).toEqual([]);
