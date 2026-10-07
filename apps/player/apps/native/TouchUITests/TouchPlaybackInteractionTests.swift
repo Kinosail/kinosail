@@ -1,3 +1,4 @@
+import AVKit
 import XCTest
 
 // Run against the disposable loopback fixture in scripts/ios-playback-fixture.py.
@@ -86,6 +87,9 @@ final class TouchPlaybackInteractionTests: XCTestCase {
     }
 
     @MainActor func testPictureInPictureCanReturnToLibraryAndRestoreVideo() async throws {
+        guard AVPictureInPictureController.isPictureInPictureSupported() else {
+            throw XCTSkip("Picture in Picture is unsupported by this simulator.")
+        }
         let app = try await openVideo(mode: "loaded")
         XCTAssertTrue(app.buttons["Pause"].waitForExistence(timeout: 15), app.debugDescription)
         let start = app.buttons["Start Picture in Picture"]
