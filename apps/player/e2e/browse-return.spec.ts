@@ -17,6 +17,8 @@ if (selected("primary")) for (const width of [390, 1440]) {
     try {
       const back = page.locator("a.back");
       await expect(back).toBeVisible();
+      await expect(back).toHaveText("Back to search results");
+      await expect(page.getByRole("link", { name: "Library", exact: true })).toHaveCount(0);
       await back.focus();
       await expect(back).toBeFocused();
       await page.keyboard.press("Enter");

@@ -11,7 +11,7 @@ import {playerSource, readStaticSource} from './static-sources';
 // Real H264/transport/Hls.js isolates lifecycle; it does not exercise Go storage.
 const adapter = await readStaticSource(['../internal/server/static/hls.min.js']);
 
-export async function hlsNavigationPeer() {
+export async function hlsNavigationPeer(contextual = false) {
   const directory = await mkdtemp(join(tmpdir(), 'kinosail-hls-navigation-'));
   try {
     execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-f', 'lavfi',
@@ -27,6 +27,7 @@ export async function hlsNavigationPeer() {
   const media = new Map(await Promise.all((await readdir(directory)).map(async name =>
     [name, await readFile(join(directory, name))] as const)));
   const facts = {
+    returnPath: contextual ? '/?view=movies' : '/',
     ffmpeg: execFileSync('ffmpeg', ['-version'], {encoding: 'utf8', timeout: 5000}).split('\n')[0].slice(0, 256),
     codec: 'libx264/yuv420p/160x90/8fps/16s/no-audio/closed-GOP16/TS',
     playerSourceSHA256: createHash('sha256').update(playerSource).digest('hex'),
@@ -43,7 +44,7 @@ export async function hlsNavigationPeer() {
     if (path === '/watch/movie') {
       response.writeHead(200, {'Content-Type': 'text/html'});
       response.end(`<body data-viewer-profile="hls-navigation-profile">
-        <a href="/">Library</a><form action="/watched/movie" method="post"><button>Mark watched</button></form>
+        <a href="${facts.returnPath}"${contextual ? ' data-browse-return' : ''}>${contextual ? 'Back to Movies' : 'Library'}</a><form action="/watched/movie" method="post"><button>Mark watched</button></form>
         <div class="media-stage"><video controls muted playsinline data-hls="/hls/index.m3u8"
           data-compatibility-mode="remux" data-playback-policy="compatible" data-progress="/progress/movie"
           data-playback-session="hls-navigation-session" data-duration="16" data-start="0"></video></div>

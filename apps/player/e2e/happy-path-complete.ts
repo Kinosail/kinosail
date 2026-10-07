@@ -102,7 +102,11 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, { captur
   await video.evaluate((element: HTMLVideoElement) => element.pause());
   await progress;
   await page.getByRole("button", { name: "Add to My List" }).click();
-  await page.getByRole("link", { name: "Library", exact: true }).click();
+  const backToSearch = page.getByRole("link", { name: "Back to search results", exact: true });
+  await expect(backToSearch).toHaveAttribute("href", "/?q=Arrival");
+  await backToSearch.click();
+  await expect(page).toHaveURL("/?q=Arrival");
+  await page.getByRole("link", { name: "Home", exact: true }).first().click();
   await expect(page.getByRole("link", { name: /\bResume\b/ })).toHaveAttribute("href", watchPath);
   await expect(page.getByRole("heading", { name: "My List" })).toBeVisible();
 
