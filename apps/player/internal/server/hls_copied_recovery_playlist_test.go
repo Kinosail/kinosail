@@ -120,7 +120,7 @@ func TestCopiedRecoveryEOFCorrectionValidatesSerializedTarget(t *testing.T) {
 	if got := completedCopiedHLSManifest([]byte(manifest), 4.4999994); len(got) == 0 {
 		t.Fatal("safe serialized 2.499999 cut rejected")
 	}
-	for _, target := range []string{"NaN", "+Inf", "2.1", "2\n#EXT-X-TARGETDURATION:2"} {
+	for _, target := range []string{"NaN", "+Inf", "2.1", "2.0", "2e0", "+2", " 2", "2\n#EXT-X-TARGETDURATION:2"} {
 		bad := strings.Replace(copiedRecoveryManifest, "#EXT-X-TARGETDURATION:2", "#EXT-X-TARGETDURATION:"+target, 1)
 		if got := completedCopiedHLSManifest([]byte(bad), 4.05); len(got) != 0 {
 			t.Fatalf("unsafe target %q accepted", target)
