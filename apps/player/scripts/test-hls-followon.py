@@ -270,7 +270,7 @@ except Exception as error:
     receipt['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
 finally:
     target = RUN / 'receipt.json'
-    target.write_text(json.dumps(receipt, indent=2, allow_nan=False) + '\n')
+    target.write_text(json.dumps(receipt, separators=(',', ':'), allow_nan=False) + '\n')
     files = [Path(__file__)] + [Path(__file__).with_name(n) for n in
         ['hls_followon_public.py', 'hls_followon_frames.py', 'hls_followon_controls.py', 'hls_followon_hevc.py',
          'hls_followon_cancel.py', 'hls_timeline_http.py',

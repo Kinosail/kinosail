@@ -422,3 +422,8 @@ including skip/discard facts. Require a unique contiguous source-packet match
 through actual source EOF. No packet or frame is trimmed to obtain a match.
 Before implementation, test missing/invalid clocks, hashes, skip fields and
 oversized probes, plus ambiguous or incomplete source-tail correspondence.
+
+The previous indented receipt uses 3,825,784 bytes of the fixed 4 MiB artifact
+budget. Lossless compact JSON retains every value in 2,526,496 bytes. Write new
+receipts compactly to fit added timing and AAC rows. Preserve historical bytes
+and all receipt, response, native-copy, manifest and archive bounds.
