@@ -10,9 +10,9 @@ for (const prefix of ["", "WebKit "]) test(`${prefix}Picture-in-Picture retains 
   });
   const video = page.locator("video");
   const pip = page.locator("[data-player-pip]");
-  await page.getByRole("button", {name: "Play"}).first().click();
   await pip.click();
   await expect(pip).toHaveAttribute("aria-pressed", "true");
+  await video.evaluate((media: HTMLVideoElement) => media.play());
   const progress = page.waitForResponse(response => response.url().includes("/playback-events") && response.request().postDataJSON().event === "progress");
   await video.dispatchEvent("progress");
   await page.evaluate(() => dispatchEvent(new Event("pagehide")));
