@@ -112,6 +112,7 @@ func assertCopiedAudioDecode(t *testing.T, ctx context.Context, ffmpeg, source, 
 	t.Helper()
 	expected := copiedDecodedFrames(t, ctx, ffmpeg, source, "0:a:0")
 	actual := copiedDecodedFrames(t, ctx, ffmpeg, path, "0:a:0")
+	t.Logf("AAC decoded source frames=%d samples=%d firstPTS=%.6f firstSamples=%d; delivered frames=%d samples=%d firstPTS=%.6f firstSamples=%d", len(expected), copiedDecodedSampleTotal(expected), expected[0].time, expected[0].samples, len(actual), copiedDecodedSampleTotal(actual), actual[0].time, actual[0].samples)
 	assertCopiedFrameCount(t, "audio", expected, actual)
 	samplesExpected, samplesActual := 0, 0
 	var differing []int
@@ -129,6 +130,14 @@ func assertCopiedAudioDecode(t *testing.T, ctx context.Context, ffmpeg, source, 
 	t.Logf("AAC PCM hash differences: count=%d indices=%v (source fully skipped priming packet excluded by HLS)", len(differing), differing)
 	t.Logf("AAC decoded samples=%d duration=%.6f seconds", samplesActual, float64(samplesActual)/44100)
 	t.Logf("0:a:0: %d decoded frames; shared initial mux shift %.6f seconds", len(actual), clock)
+}
+
+func copiedDecodedSampleTotal(frames []copiedDecodedFrame) int {
+	total := 0
+	for _, frame := range frames {
+		total += frame.samples
+	}
+	return total
 }
 
 // Initial and refilled delivery must have identical decoder history and output,

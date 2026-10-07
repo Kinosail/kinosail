@@ -155,9 +155,17 @@ func TestRestoreCausalHeldLifecycleStopCannotDeliverImplicitSuccess(t *testing.T
 		t.Fatal("stopped held diagnostic did not settle")
 	}
 	waitCausalProbeControl(t, f, deadline, true)
+	assertStoppedCausalProbe(t, f)
+	if f.snapshot() != before {
+		t.Fatal("owned lifecycle stop changed Restore state")
+	}
+}
+
+func assertStoppedCausalProbe(t *testing.T, f *restoreRig) {
+	t.Helper()
 	state := f.causalSnapshot()[2]
-	if !state.Settled || state.Delivered || state.Cancelled || !state.TimedOut || f.snapshot() != before {
-		t.Fatal("owned lifecycle stop changed its strict no-delivery witness or Restore state")
+	if !state.Settled || state.Delivered || state.Cancelled || !state.TimedOut {
+		t.Fatal("owned lifecycle stop changed its strict no-delivery witness")
 	}
 }
 
