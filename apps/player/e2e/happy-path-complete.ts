@@ -114,15 +114,17 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, { captur
     await signOut(page);
     await expect(page.getByRole("heading", { name: "My List" })).toBeVisible();
   }
+  const browsePath = passkeyCreated ? "/" : "/?view=all";
+  await expect(page).toHaveURL(browsePath);
   await page.locator('a[href^="/watch/"]').first().click();
   const markUnwatched = page.getByRole("button", { name: "Mark unwatched" });
   if (await markUnwatched.isVisible()) await markUnwatched.click();
   await page.getByRole("button", { name: "Mark watched" }).click();
   await expect(page.getByRole("button", { name: "Mark unwatched" })).toBeVisible();
-  const backToLibrary = page.getByRole("link", { name: "Back to Library", exact: true });
-  await expect(backToLibrary).toHaveAttribute("href", "/?view=all");
+  const backToLibrary = page.getByRole("link", { name: passkeyCreated ? "Library" : "Back to Library", exact: true });
+  await expect(backToLibrary).toHaveAttribute("href", browsePath);
   await backToLibrary.click();
-  await expect(page).toHaveURL("/?view=all");
+  await expect(page).toHaveURL(browsePath);
   await expect(page.getByRole("heading", { name: "My List" })).toBeVisible();
   await expect(page.getByRole("link", { name: /\bResume\b/ })).toHaveCount(0);
   // Retry playback persists fixture progress; run after the original empty-Resume assertion.
