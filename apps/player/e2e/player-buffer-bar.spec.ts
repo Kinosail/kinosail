@@ -103,4 +103,25 @@ test("invalid buffer ranges do not alter playback and valid ranges stay within t
   await expect.poll(() => ranges(page)).toEqual([[0, 20], [90, 100]]);
   await expect(page.locator("video")).toHaveJSProperty("currentTime", 20);
   await expect(page.locator("video")).toHaveJSProperty("paused", true);
+  const bounded = Array.from({length: 128}, (_, index): [number, number] => [index / 2, index / 2 + 0.2]);
+  await setRanges(page, bounded);
+  await expect.poll(async () => (await ranges(page)).length).toBe(128);
+  await setRanges(page, [...bounded, [80, 81]]);
+  await expect.poll(() => ranges(page)).toEqual([]);
+  await expect(page.locator("video")).toHaveJSProperty("currentTime", 20);
+  await expect(page.locator("video")).toHaveJSProperty("paused", true);
+  await page.locator("video").evaluate((video) => {
+    let available = true;
+    Object.defineProperty(video, "buffered", {configurable: true, get() {
+      const length = available ? 1 : 0;
+      available = false;
+      return {length, start: () => 10, end: () => 30};
+    }});
+    video.dispatchEvent(new Event("volumechange"));
+  });
+  await expect.poll(() => ranges(page)).toEqual([[10, 30]]);
+  await page.locator("video").dispatchEvent("volumechange");
+  await expect.poll(() => ranges(page)).toEqual([]);
+  await expect(page.locator("video")).toHaveJSProperty("currentTime", 20);
+  await expect(page.locator("video")).toHaveJSProperty("paused", true);
 });

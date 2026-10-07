@@ -127,10 +127,11 @@ if (controls && player.tagName === "VIDEO") {
     seek.value = Math.min(scrubPosition ?? player.currentTime ?? 0, duration || 100);
     seek.style.setProperty("--player-progress", `${duration ? seek.value / duration * 100 : 0}%`);
     const buffered = [];
-    if (Number.isFinite(duration) && duration > 0 && !player.error && !["loadstart", "emptied", "error"].includes(event?.type)) {
-      for (let index = 0; index < player.buffered.length; index++) {
-        const start = player.buffered.start(index) + playbackTimelineOffset;
-        const end = player.buffered.end(index) + playbackTimelineOffset;
+    const loaded = player.buffered;
+    if (Number.isFinite(duration) && duration > 0 && loaded.length <= 128 && !player.error && !["loadstart", "emptied", "error"].includes(event?.type)) {
+      for (let index = 0; index < loaded.length; index++) {
+        const start = loaded.start(index) + playbackTimelineOffset;
+        const end = loaded.end(index) + playbackTimelineOffset;
         if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start || start >= duration || end <= 0) continue;
         const left = Math.max(0, start) / duration * 100, right = Math.min(duration, end) / duration * 100;
         buffered.push(`linear-gradient(90deg,transparent ${left}%,var(--player-buffer-color,rgba(255,255,255,.72)) ${left}%,var(--player-buffer-color,rgba(255,255,255,.72)) ${right}%,transparent ${right}%)`);
