@@ -18,7 +18,7 @@ import (
 )
 
 // Registered real HTTP must deliver cached bytes after each complete atomic
-// publication. The descriptor test owns the exact concurrent read/rename window;
+// publication. The descriptor test owns the opened-descriptor replacement window;
 // unsynchronized stress could hit the conservative pre-open rejection boundary.
 func TestHLSHotManifestHTTPAtomicPublication(t *testing.T) {
 	for _, offset := range []string{"", "-o1400"} {
