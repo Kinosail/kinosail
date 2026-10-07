@@ -231,11 +231,11 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 		return err
 	}
 	defer release()
-	directory, playlistDirectory, err := preparePresentationDirectories(root, name, startNumber)
+	directory, playlist, output, err := manager.prepareCopiedHLSOutput(ctx, root, name, options.Cache, recipe.mode, startNumber)
 	if err != nil {
 		return err
 	}
-	playlist := filepath.Join(playlistDirectory, "index.m3u8")
+	defer output.close()
 	timeline, _ := manager.readCopiedHLSTimeline(root, options.Cache)
 	if timeline != nil {
 		if startNumber < 0 || startNumber >= len(timeline.Keys) {
@@ -277,13 +277,14 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 	if err != nil {
 		return err
 	}
+	arguments = append(arguments, output.arguments()...)
 	arguments = append(arguments, indexedCopiedHLSSegmentArguments(hlsSegmentArguments(recipe.mode, directory, playlist, startNumber), timeline)...)
 	//nolint:gosec // G204: executable is installation config and input is found only by a Library scan.
-	command := exec.CommandContext(ctx, manager.ffmpeg, arguments...)
-	if err := runHLSCommand(ctx, command, item.Path, root); err != nil {
+	command := exec.CommandContext(output.ctx, manager.ffmpeg, arguments...)
+	if err := output.run(command, item.Path, root); err != nil {
 		return err
 	}
-	return finalizePlaylist(playlist)
+	return output.publish(manager, ctx, item, recipe, options.Cache)
 }
 
 func (manager *hlsManager) availableHLSQualities(facts MediaFacts, recipe hlsRecipe, options transcodeSettings) []PlaybackQuality {

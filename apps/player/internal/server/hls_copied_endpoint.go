@@ -3,6 +3,7 @@ package server
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
 	"encoding/json"
 	"io"
 	"math"
@@ -19,6 +20,15 @@ type copiedHLSEndpointOutput struct{ copiedHLSProbeOutput }
 type copiedHLSClockGeneration struct {
 	assets [4]os.FileInfo
 	hashes [4][32]byte
+}
+
+func copiedHLSClockPendingSnapshot(ctx context.Context, root, media *os.Root, policy string, timeline *copiedHLSTimeline) (copiedHLSClockGeneration, error) {
+	before, err := copiedHLSClockSnapshot(ctx, root, media)
+	data, marshalErr := json.Marshal(timeline)
+	if err != nil || marshalErr != nil || before.hashes[0] != sha256.Sum256([]byte(policy)) || before.hashes[1] != sha256.Sum256(data) {
+		return before, errCopiedHLSIndex
+	}
+	return before, nil
 }
 
 func copiedHLSClockSnapshot(ctx context.Context, root, media *os.Root) (copiedHLSClockGeneration, error) {
@@ -171,6 +181,24 @@ func copiedHLSPacketEnd(ptsValue, durationValue string) (float64, error) {
 // durations round down. Correct only that existing URI against known duration.
 func completedCopiedHLSManifest(manifest []byte, duration float64) []byte {
 	lines := strings.Split(string(manifest), "\n")
+	sum, last, final, valid := copiedHLSManifestExtents(lines)
+	if !valid || !validCopiedHLSEnd(duration) {
+		return manifest
+	}
+	corrected := duration - (sum - last)
+	if invalidHLSSegmentDuration(corrected) || math.Abs(corrected-last) > min(1, max(0.1, last*0.05)) {
+		return bytes.Replace(manifest, []byte("#EXT-X-PLAYLIST-TYPE:EVENT"), []byte("#EXT-X-PLAYLIST-TYPE:VOD"), 1)
+	}
+	target, targetErr := copiedHLSManifestTarget(lines)
+	serialized, err := strconv.ParseFloat(copiedHLSTime(corrected), 64)
+	if err != nil || targetErr != nil || math.Round(serialized) > target {
+		return nil
+	}
+	lines[final] = "#EXTINF:" + copiedHLSTime(corrected) + ","
+	return bytes.Replace([]byte(strings.Join(lines, "\n")), []byte("#EXT-X-PLAYLIST-TYPE:EVENT"), []byte("#EXT-X-PLAYLIST-TYPE:VOD"), 1)
+}
+
+func copiedHLSManifestExtents(lines []string) (float64, float64, int, bool) {
 	sum, last, final := 0.0, 0.0, -1
 	for number, line := range lines {
 		if !strings.HasPrefix(line, "#EXTINF:") {
@@ -179,17 +207,14 @@ func completedCopiedHLSManifest(manifest []byte, duration float64) []byte {
 		value, _, _ := strings.Cut(strings.TrimPrefix(line, "#EXTINF:"), ",")
 		length, err := strconv.ParseFloat(value, 64)
 		if err != nil || !validCopiedHLSManifestCut(lines, number, length) {
-			return manifest
+			return 0, 0, -1, false
 		}
 		sum, last, final = sum+length, length, number
 	}
-	if final < 0 || !validCopiedHLSEnd(duration) {
-		return manifest
-	}
-	corrected := duration - (sum - last)
-	if invalidHLSSegmentDuration(corrected) || math.Abs(corrected-last) > min(1, max(0.1, last*0.05)) {
-		return bytes.Replace(manifest, []byte("#EXT-X-PLAYLIST-TYPE:EVENT"), []byte("#EXT-X-PLAYLIST-TYPE:VOD"), 1)
-	}
+	return sum, last, final, final >= 0
+}
+
+func copiedHLSManifestTarget(lines []string) (float64, error) {
 	target, seen := 0.0, false
 	for _, line := range lines {
 		if !strings.HasPrefix(line, "#EXT-X-TARGETDURATION:") {
@@ -197,16 +222,14 @@ func completedCopiedHLSManifest(manifest []byte, duration float64) []byte {
 		}
 		value, err := copiedHLSTarget(strings.TrimPrefix(line, "#EXT-X-TARGETDURATION:"))
 		if seen || err != nil {
-			return nil
+			return 0, errCopiedHLSIndex
 		}
 		target, seen = value, true
 	}
-	serialized, err := strconv.ParseFloat(copiedHLSTime(corrected), 64)
-	if err != nil || !seen || math.Round(serialized) > target {
-		return nil
+	if !seen {
+		return 0, errCopiedHLSIndex
 	}
-	lines[final] = "#EXTINF:" + copiedHLSTime(corrected) + ","
-	return bytes.Replace([]byte(strings.Join(lines, "\n")), []byte("#EXT-X-PLAYLIST-TYPE:EVENT"), []byte("#EXT-X-PLAYLIST-TYPE:VOD"), 1)
+	return target, nil
 }
 
 func copiedHLSTarget(value string) (float64, error) {

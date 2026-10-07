@@ -78,6 +78,15 @@ func TestCopiedRecoveryCanceledProbeJoinsAndReleasesAdmission(t *testing.T) {
 	if len(data) == 0 {
 		t.Fatal("controlled probe never started")
 	}
+	copiedRecoveryAssertStopped(t, data)
+	copiedRecoveryProbe(t, manager, "")
+	if err := manager.ensureCopiedHLSClock(t.Context(), item, recipe, directory, policy); err != nil {
+		t.Fatal("cancellation retained metadata admission")
+	}
+}
+
+func copiedRecoveryAssertStopped(t *testing.T, data []byte) {
+	t.Helper()
 	pid, err := strconv.Atoi(string(data))
 	if err != nil {
 		t.Fatal(err)
@@ -88,10 +97,6 @@ func TestCopiedRecoveryCanceledProbeJoinsAndReleasesAdmission(t *testing.T) {
 	}
 	if process.Signal(syscall.Signal(0)) == nil {
 		t.Fatal("owned probe remained live after cancellation")
-	}
-	copiedRecoveryProbe(t, manager, "")
-	if err := manager.ensureCopiedHLSClock(t.Context(), item, recipe, directory, policy); err != nil {
-		t.Fatal("cancellation retained metadata admission")
 	}
 }
 
@@ -105,7 +110,7 @@ func copiedRecoveryProbe(t *testing.T, manager *hlsManager, action string) {
 	t.Helper()
 	probe := filepath.Join(t.TempDir(), "clock-probe")
 	body := "#!/bin/sh\nset -eu\ncat >/dev/null\n" + action + "\nprintf '%s' '{\"packets\":[{\"pts_time\":\"0.083333\",\"flags\":\"K\"}]}'\n"
-	if err := os.WriteFile(probe, []byte(body), 0o700); err != nil {
+	if err := os.WriteFile(probe, []byte(body), 0o700); err != nil { //nolint:gosec // Owned executable probe stand-in, not data-file permissions.
 		t.Fatal(err)
 	} //nolint:gosec // Fixed local stand-in, never real media.
 	manager.probe.executable = probe

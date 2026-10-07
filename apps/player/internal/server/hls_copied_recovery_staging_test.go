@@ -21,6 +21,10 @@ func TestCopiedRecoveryRefillRejectsUncertifiedOutput(t *testing.T) {
 				t.Error("uncertified output acquired the committed cache")
 			}
 			check()
+			stages, err := filepath.Glob(filepath.Join(manager.cache, ".copy-refill-*"))
+			if err != nil || len(stages) != 0 {
+				t.Error("rejected output left its exclusive operation stage")
+			}
 			if _, err := os.Lstat(filepath.Join(directory, "360p/segment-00000.m4s")); !os.IsNotExist(err) {
 				t.Fatal("uncertified media was published")
 			}
@@ -42,6 +46,10 @@ func TestCopiedRecoveryRefillRejectsStageResourceAndFileViolations(t *testing.T)
 				t.Error("invalid staged file set or resource limit was accepted")
 			}
 			check()
+			stages, err := filepath.Glob(filepath.Join(manager.cache, ".copy-refill-*"))
+			if err != nil || len(stages) != 0 {
+				t.Error("resource rejection left its exclusive operation stage")
+			}
 			if _, err := os.Lstat(filepath.Join(directory, "360p/segment-00000.m4s")); !os.IsNotExist(err) {
 				t.Fatal("invalid staged output reached the canonical rendition")
 			}

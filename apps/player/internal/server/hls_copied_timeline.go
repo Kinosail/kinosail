@@ -16,6 +16,10 @@ import (
 
 const maximumCopiedHLSTimelineBytes = 256 << 10
 
+func validCopiedHLSClockInput(ctx context.Context, rendition string, timeline *copiedHLSTimeline) bool {
+	return ctx.Err() == nil && hlsFile(rendition) && strings.HasSuffix(rendition, "/index.m3u8") && validCopiedHLSTimeline(timeline) && timeline.Clock == nil
+}
+
 func validCopiedHLSTimeline(timeline *copiedHLSTimeline) bool {
 	if !validCopiedHLSHeader(timeline) || !validCopiedHLSTimeBase(timeline) || !validCopiedHLSEnd(timeline.End) {
 		return false
@@ -82,22 +86,31 @@ func (manager *hlsManager) readCopiedHLSTimelineContext(ctx context.Context, dir
 		return nil, errCopiedHLSIndex
 	}
 	defer root.Close()
+	return manager.readCopiedHLSTimelineRoot(ctx, directory, policy, root)
+}
+
+func (manager *hlsManager) readCopiedHLSTimelineRoot(ctx context.Context, directory, policy string, root *os.Root) (*copiedHLSTimeline, error) {
+	timeline, data, err := decodeCopiedHLSTimeline(root, policy)
+	if err != nil || ctx.Err() != nil {
+		return nil, errCopiedHLSIndex
+	}
+	if timeline.Clock != nil && manager.verifyCopiedHLSCertificate(ctx, directory, root, data, timeline) != nil {
+		return nil, errCopiedHLSIndex
+	}
+	return timeline, nil
+}
+
+func decodeCopiedHLSTimeline(root *os.Root, policy string) (*copiedHLSTimeline, []byte, error) {
 	binding, err := copiedHLSCacheFile(root, ".source", 16<<10)
 	if err != nil || string(binding) != policy {
-		return nil, errCopiedHLSIndex
+		return nil, nil, errCopiedHLSIndex
 	}
 	data, err := copiedHLSCacheFile(root, ".copy-timeline", maximumCopiedHLSTimelineBytes)
 	var timeline copiedHLSTimeline
 	if err != nil || httpguard.DecodeUniqueJSON(bytes.NewReader(data), maximumCopiedHLSTimelineBytes, &timeline) != nil || timeline.Policy != policy || !validCopiedHLSTimeline(&timeline) {
-		return nil, errCopiedHLSIndex
+		return nil, nil, errCopiedHLSIndex
 	}
-	if ctx.Err() != nil {
-		return nil, errCopiedHLSIndex
-	}
-	if timeline.Clock != nil && manager.verifyCopiedHLSCertificate(ctx, directory, root, data, &timeline) != nil {
-		return nil, errCopiedHLSIndex
-	}
-	return &timeline, nil
+	return &timeline, data, nil
 }
 
 func (manager *hlsManager) writeCopiedHLSTimeline(directory string, timeline *copiedHLSTimeline) error {

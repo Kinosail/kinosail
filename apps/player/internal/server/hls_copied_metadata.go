@@ -94,27 +94,31 @@ func (manager *hlsManager) verifyCopiedHLSCertificate(ctx context.Context, direc
 		return errCopiedHLSIndex
 	}
 	certificateData, err := copiedHLSCacheFile(root, ".copy-clock", 4096)
-	var certificate copiedHLSClockCertificate
-	if err != nil || httpguard.DecodeUniqueJSON(bytes.NewReader(certificateData), 4096, &certificate) != nil || certificate.Version != 1 || !hlsFile(certificate.Rendition+"/index.m3u8") || certificate.Timeline != sha256.Sum256(data) {
+	certificate, decodeErr := decodeCopiedHLSCertificate(certificateData, data)
+	if err != nil || decodeErr != nil {
 		return errCopiedHLSIndex
 	}
 	selected, err := copiedHLSRendition(root)
 	if err != nil || selected != certificate.Rendition {
 		return errCopiedHLSIndex
 	}
-	if ctx.Value(copiedHLSMetadataKey{}) != manager {
-		admitted, release, admissionErr := manager.copiedHLSMetadataAdmission(ctx)
-		if admissionErr != nil {
-			return admissionErr
-		}
-		defer release()
-		ctx = admitted
+	ctx, release, err := manager.copiedHLSClockAdmission(ctx)
+	if err != nil {
+		return err
 	}
+	defer release()
 	rendition, err := root.OpenRoot(certificate.Rendition)
 	if err != nil {
 		return errCopiedHLSIndex
 	}
 	defer rendition.Close()
+	if err := verifyCopiedHLSRenditionAssets(ctx, rendition, certificate); err != nil {
+		return err
+	}
+	return manager.verifyCopiedHLSBoundManifest(ctx, directory, root, rendition, data, certificateData, certificate.Rendition, timeline)
+}
+
+func verifyCopiedHLSRenditionAssets(ctx context.Context, rendition *os.Root, certificate copiedHLSClockCertificate) error {
 	initialization, err := copiedHLSAssetHash(ctx, rendition, "init.mp4", 2<<20)
 	if err != nil || initialization != certificate.Initialization {
 		return errCopiedHLSIndex
@@ -125,13 +129,32 @@ func (manager *hlsManager) verifyCopiedHLSCertificate(ctx context.Context, direc
 			return errCopiedHLSIndex
 		}
 	} // Missing lazy media retains the certified init and cuts.
+	return nil
+}
+
+func (manager *hlsManager) verifyCopiedHLSBoundManifest(ctx context.Context, directory string, root, rendition *os.Root, data, certificateData []byte, name string, timeline *copiedHLSTimeline) error {
 	manifest, err := copiedHLSCacheFile(rendition, "index.m3u8", maximumCopiedHLSTimelineBytes)
 	_, valid := copiedHLSManifest(manifest, timeline)
-	if err != nil || !valid || !copiedHLSBoundMetadata(root, data, certificateData, timeline.Policy) || ctx.Err() != nil || !manager.copiedHLSCanonicalGeneration(directory, certificate.Rendition, root, rendition) {
+	if err != nil || !valid || !copiedHLSBoundMetadata(root, data, certificateData, timeline.Policy) || ctx.Err() != nil || !manager.copiedHLSCanonicalGeneration(directory, name, root, rendition) {
 		return errCopiedHLSIndex
 	}
 
 	return nil
+}
+
+func decodeCopiedHLSCertificate(data, timeline []byte) (copiedHLSClockCertificate, error) {
+	var certificate copiedHLSClockCertificate
+	if httpguard.DecodeUniqueJSON(bytes.NewReader(data), 4096, &certificate) != nil || certificate.Version != 1 || !hlsFile(certificate.Rendition+"/index.m3u8") || certificate.Timeline != sha256.Sum256(timeline) {
+		return certificate, errCopiedHLSIndex
+	}
+	return certificate, nil
+}
+
+func (manager *hlsManager) copiedHLSClockAdmission(ctx context.Context) (context.Context, func(), error) {
+	if ctx.Value(copiedHLSMetadataKey{}) == manager {
+		return ctx, func() {}, nil
+	}
+	return manager.copiedHLSMetadataAdmission(ctx)
 }
 
 func (manager *hlsManager) openCopiedHLSRoot(directory string) (*os.Root, error) {

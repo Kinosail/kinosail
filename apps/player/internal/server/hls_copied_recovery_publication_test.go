@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
+	"github.com/MikeO7/kinosail/packages/servertest/mp4fixture"
 )
 
 // These real filesystem/process races cannot be scheduled through public E2E.
@@ -35,7 +36,7 @@ func copiedRecoveryEncoderOutput(t *testing.T, manager *hlsManager, action, init
 	t.Helper()
 	path := filepath.Join(t.TempDir(), "owned-encoder")
 	body := "#!/bin/sh\nset -eu\nsegments=''\nplaylist=''\nwhile [ \"$#\" -gt 0 ]; do\n case \"$1\" in\n -hls_segment_filename) shift; segments=$1 ;;\n esac\n playlist=$1\n shift\ndone\ndirectory=${segments%/*}\n" + action + "\n"
-	body += "printf '%s' " + copiedRecoveryQuote(init) + " > \"$directory/init.mp4\"\nprintf '%s' " + copiedRecoveryQuote(first) + " > \"$directory/segment-00000.m4s\"\nprintf 'last fragment' > \"$directory/segment-00001.m4s.tmp\"\nmv \"$directory/segment-00001.m4s.tmp\" \"$directory/segment-00001.m4s\"\nprintf '%s' " + copiedRecoveryQuote(manifest) + " > \"$playlist\"\n"
+	body += mp4fixture.Shell([]byte(init)) + " > \"$directory/init.mp4\"\nprintf '%s' " + copiedRecoveryQuote(first) + " > \"$directory/segment-00000.m4s\"\nprintf 'last fragment' > \"$directory/segment-00001.m4s.tmp\"\nmv \"$directory/segment-00001.m4s.tmp\" \"$directory/segment-00001.m4s\"\nprintf '%s' " + copiedRecoveryQuote(manifest) + " > \"$playlist\"\n"
 	if err := os.WriteFile(path, []byte(body), 0o700); err != nil { //nolint:gosec // Owned controlled executable protects a filesystem race, never media output proof.
 		t.Fatal(err)
 	}
@@ -177,17 +178,14 @@ func TestCopiedRecoveryCanceledRefillJoinsAndPreserves(t *testing.T) {
 	case <-time.After(3 * time.Second):
 		t.Fatal("canceled refill did not join")
 	}
-	pid, err := strconv.Atoi(string(data))
-	if err != nil {
-		t.Fatal("owned worker never started")
-	}
-	process, err := os.FindProcess(pid)
-	if err != nil || process.Signal(syscall.Signal(0)) == nil {
-		t.Fatal("owned worker remained live")
-	}
+	copiedRecoveryAssertStopped(t, data)
 	check()
 	if _, err := os.Lstat(filepath.Join(directory, "360p/segment-00000.m4s")); !os.IsNotExist(err) {
 		t.Fatal("canceled refill published media")
+	}
+	stages, err := filepath.Glob(filepath.Join(manager.cache, ".copy-refill-*"))
+	if err != nil || len(stages) != 0 {
+		t.Fatal("canceled refill left its exclusive operation stage")
 	}
 	copiedRecoveryEncoder(t, manager, "")
 	if err := copiedRecoveryRunRefill(t.Context(), manager, item, recipe, directory); err != nil {

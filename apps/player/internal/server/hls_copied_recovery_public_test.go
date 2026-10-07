@@ -37,7 +37,7 @@ func TestCopiedRecoveryRealFirstFragmentRegenerationReopens(t *testing.T) {
 	}
 }
 
-func copiedRecoveryRealReopen(t *testing.T, ffmpeg, ffprobe, audio, mode string) { //nolint:gocognit,funlen // Serial public media lifecycle, with identity and joined-process receipts.
+func copiedRecoveryRealReopen(t *testing.T, ffmpeg, ffprobe, audio, mode string) { //nolint:cyclop,gocognit,funlen // Serial public media lifecycle, with identity and joined-process receipts.
 	ctx, cancel := context.WithTimeout(t.Context(), 60*time.Second)
 	defer cancel()
 	media := t.TempDir()
@@ -108,6 +108,15 @@ func copiedRecoveryRealReopen(t *testing.T, ffmpeg, ffprobe, audio, mode string)
 	if _, err := os.Stat(filepath.Join(roots[0], ".copy-timeline")); err != nil {
 		t.Fatal("public fixture did not select indexed copied preparation")
 	}
+	masterPath := filepath.Join(roots[0], "index.m3u8")
+	committedMaster, err := os.ReadFile(masterPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	masterIdentity, err := os.Stat(masterPath)
+	if err != nil {
+		t.Fatal(err)
+	}
 	firstPath := filepath.Join(roots[0], filepath.Dir(variants[0]), "segment-00000.m4s")
 	remaining := filepath.Join(filepath.Dir(firstPath), "segment-00001.m4s")
 	retained, err := os.Stat(remaining)
@@ -138,6 +147,11 @@ func copiedRecoveryRealReopen(t *testing.T, ffmpeg, ffprobe, audio, mode string)
 	if copiedRecoveryJoinedCodecs(t, ctx, owned) != afterOwned {
 		t.Fatal("cold reopen restarted an accepted indexed cache")
 	}
+	afterMaster, err := os.ReadFile(masterPath)
+	currentMaster, masterErr := os.Stat(masterPath)
+	if err != nil || masterErr != nil || !bytes.Equal(committedMaster, afterMaster) || !os.SameFile(masterIdentity, currentMaster) || !masterIdentity.ModTime().Equal(currentMaster.ModTime()) {
+		t.Fatal("refill/reopen changed the committed master bytes or identity")
+	}
 	afterRemaining, err := os.Stat(remaining)
 	if err != nil || !os.SameFile(retained, afterRemaining) {
 		t.Fatal("refill/reopen discarded an existing indexed fragment")
@@ -157,7 +171,7 @@ func copiedRecoveryRealReopen(t *testing.T, ffmpeg, ffprobe, audio, mode string)
 	t.Logf("real copied segment0 delete/regenerate/cold-reopen: playlist=%x init=%x first=%x source=%x existing-fragment-retained=true owned-codecs-joined=%d", sha256.Sum256(afterPlaylist), sha256.Sum256(afterInit), sha256.Sum256(regenerated), sha256.Sum256(afterSourceBytes), afterOwned)
 }
 
-func copiedRecoveryJoinedCodecs(t *testing.T, ctx context.Context, path string) int { //nolint:gocognit // Validate every recorded process and require three stable joined observations.
+func copiedRecoveryJoinedCodecs(t *testing.T, ctx context.Context, path string) int { //nolint:cyclop,gocognit // Validate every recorded process and require three stable joined observations.
 	t.Helper()
 	stable := 0
 	for {

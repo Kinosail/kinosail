@@ -29,7 +29,7 @@ func TestCopiedRecoveryIndexedMismatchCannotFallBackToPhysicalEOF(t *testing.T) 
 	}
 }
 
-func TestCopiedRecoveryIndexedReuseChecksManifestAndInit(t *testing.T) {
+func TestCopiedRecoveryIndexedReuseChecksManifestAndInit(t *testing.T) { //nolint:cyclop,gocognit // Serial damage scenarios retain exact no-write and certificate assertions.
 	for _, damage := range []string{"manifest", "init", "first", "same-stat-init", "same-stat-first", "map", "source"} {
 		t.Run(damage, func(t *testing.T) {
 			manager, item, recipe, directory, policy, timeline := copiedRecoveryFixture(t)
