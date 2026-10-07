@@ -109,7 +109,7 @@ func TimelineChapters(timeline Timeline, values []metadata.Chapter) []metadata.C
 }
 
 // DecideWithAutomaticSkip applies Player's server-side marker policy.
-func DecideWithAutomaticSkip(facts MediaFacts, client ClientCapabilities, policy ViewerPolicy, intent NetworkIntent, values []markers.Marker, enabled []string, product DecisionPolicy) PlaybackPlan { //nolint:cyclop // The delivery fallback sequence stays explicit and below the required project limit.
+func DecideWithAutomaticSkip(facts MediaFacts, client ClientCapabilities, policy ViewerPolicy, intent NetworkIntent, values []markers.Marker, enabled []string, product DecisionPolicy) PlaybackPlan { //nolint:cyclop,gocognit // Ordered compatibility and timeline fallbacks remain one auditable operation.
 	if intent.PreferDirect {
 		plan := Decide(facts, client, policy, intent, product)
 		if facts.Kind != "video" || !plan.AudioCompatibilityRequired || !policy.AllowTranscode || intent.ForceDirect {
