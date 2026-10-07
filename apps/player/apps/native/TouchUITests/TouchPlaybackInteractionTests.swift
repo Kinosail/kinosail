@@ -46,6 +46,12 @@ final class TouchPlaybackInteractionTests: XCTestCase {
             try await Task.sleep(for: .milliseconds(100))
         }
         XCTAssertGreaterThan(app.windows.firstMatch.frame.width, app.windows.firstMatch.frame.height)
+        for _ in 0..<50 {
+            if app.buttons["Playback options"].frame.minX > app.windows.firstMatch.frame.width * 0.7 { break }
+            try await Task.sleep(for: .milliseconds(100))
+        }
+        XCTAssertGreaterThan(app.buttons["Playback options"].frame.minX,
+                             app.windows.firstMatch.frame.width * 0.7)
         XCTAssertTrue(app.staticTexts["Opening video…"].waitForExistence(timeout: 5))
         record("landscape opening video", app)
         background(app, x: 0.01, y: 0.3).press(forDuration: 0.05,
