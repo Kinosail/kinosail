@@ -198,8 +198,9 @@ def journey(name, original, metadata, offset=0, pacing=None):
                     case['isolatedFreshRefillReplay'] = value
                     value['matchesCanonicalPCM'] = value['pcmSHA256'] == case['refillNativeEOF']['pcmSHA256']
                 except (RuntimeError, OSError, subprocess.SubprocessError, ValueError, KeyError) as error:
-                    case['replayQualificationFailure'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
-                    case['failures'].append('fresh_refill_replay_unqualified')
+                    policy = 'outputPolicyCounterfactual' in case.get('isolatedFreshRefillReplay', {})
+                    case['outputPolicyQualificationFailure' if policy else 'replayQualificationFailure'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
+                    case['failures'].append('aac_output_policy_unqualified' if policy else 'fresh_refill_replay_unqualified')
                     case['result'] = 'failed'
                     if isinstance(error, RuntimeError) and str(error) in ['bounded_diagnostic_deadline', 'bounded_run_deadline']:
                         raise

@@ -135,7 +135,57 @@ def replay_refill(run, run_deadline, directory, source, case, executable):
     pcm, facts = native_pcm(path, run_deadline, directory)
     result.update(nativeEOF=facts, pcmSHA256=hashlib.sha256(pcm).hexdigest(), stage='final-identity')
     check(asset_snapshot(stage / 'init.mp4', 2 << 20)[1] == identity and source_snapshot(source) == before, 'refill_replay_final_identity')
-    result.update(result='qualified', sourceUnchanged=True, fragmentBytesMatchActualRefill=True, stage='complete')
+    result.update(result='qualified', sourceUnchanged=True, fragmentBytesMatchActualRefill=True, stage='complete',
+        matchesCanonicalPCM=result['pcmSHA256'] == case['refillNativeEOF']['pcmSHA256'])
+    policy = {'result': 'unqualified', 'boundary': 'Isolated output-option placement counterfactual; no production acceptance.',
+        'onlyCodecOptionChange': 'avoid_negative_ts disabled moved from input to output group', 'fragmentIdentities': []}
+    result['outputPolicyCounterfactual'] = policy
+    target = directory / 'isolated-output-policy-replay'
+    target.mkdir()
+    corrected = list(args)
+    position = corrected.index('-avoid_negative_ts')
+    option = corrected[position:position + 2]
+    del corrected[position:position + 2]
+    position = corrected.index('-f')
+    corrected[position:position] = option
+    corrected[corrected.index('-hls_segment_filename') + 1] = str(target / 'segment-%05d.m4s')
+    corrected[-1] = str(target / 'index.m3u8')
+    policy['outputOptionPlacementQualified'] = corrected.index('-i') < corrected.index('-avoid_negative_ts') < corrected.index('-f')
+    check(policy['outputOptionPlacementQualified'], 'aac_output_policy_group')
+    run([str(executable), *corrected], 30)
+    candidate_init, candidate_identity = asset_snapshot(target / 'init.mp4', 2 << 20)
+    policy['initialization'] = candidate_identity
+    manifest, names = manifest_facts(bounded_bytes(target / 'index.m3u8', 65536, 'aac_output_policy_manifest_bound'))
+    policy['manifest'] = manifest
+    check(manifest['endlist'] and [n for n, _ in names] == [v['name'] for v in segments], 'aac_output_policy_eof_sequence')
+    canonical, canonical_identity = asset_snapshot(root / 'audio/init.mp4', 2 << 20)
+    check(canonical_identity['sha256'] == case['initializationSHA256'], 'aac_output_policy_canonical_init')
+    joined = canonical
+    for name in case['physicalBeforeFirstGET']['segments']:
+        joined += bounded_bytes(directory / 'retained-fragments' / name, 8 << 20, 'aac_output_policy_prefix_bound')
+        check(len(joined) <= 16 << 20, 'aac_output_policy_join_bound')
+    for name, _ in names:
+        fragment = bounded_bytes(target / name, 8 << 20, 'aac_output_policy_fragment_bound')
+        digest = hashlib.sha256(fragment).hexdigest()
+        expected_digest = next(v['sha256'] for v in segments if v['name'] == name)
+        policy['fragmentIdentities'].append({'name': name, 'sha256': digest, 'actualSHA256': expected_digest, 'matchesActual': digest == expected_digest})
+        joined += fragment
+        check(len(joined) <= 16 << 20, 'aac_output_policy_join_bound')
+    check(len(joined) <= 16 << 20, 'aac_output_policy_join_bound')
+    path = directory / 'isolated-output-policy.mp4'
+    path.write_bytes(joined)
+    policy['packets'] = packet_evidence(run, path)
+    pcm, facts = native_pcm(path, run_deadline, directory)
+    policy.update(nativeEOF=facts, pcmSHA256=hashlib.sha256(pcm).hexdigest(),
+        matchesActualPublicPCM=hashlib.sha256(pcm).hexdigest() == case['fullEOFNativeSamples']['publicSHA256'],
+        freshInitMatchesCanonical=candidate_init == canonical,
+        exactPublicPacketRowsMatch=policy['packets'] == case['joinedPublicPacketPayloads'])
+    if case['fixture'].get('markerNear8Seconds'):
+        reference = bounded_bytes(directory / (source.name + '.pcm'), 2 << 20, 'aac_output_policy_reference_bound')
+        policy['markerSourcePublicSampleClock'] = marker_clock(reference, pcm)
+    check(source_snapshot(source) == before and asset_snapshot(root / 'audio/init.mp4', 2 << 20)[1] == canonical_identity,
+        'aac_output_policy_source_init_changed')
+    policy.update(result='observed', sourceUnchanged=True, canonicalInitUnchanged=True)
     return result
 
 
