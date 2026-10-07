@@ -27,6 +27,7 @@ for (const width of [390, 1440, 1920]) {
     await expect(page.locator(`#library a.card[href="${href}"]`)).toBeFocused();
 
     const direct = await page.context().newPage();
+    await observe(direct);
     await direct.goto(`${origin}${href}`);
     const fallback = direct.getByRole("link", { name: "Library", exact: true });
     await expect(fallback).toHaveCount(1);

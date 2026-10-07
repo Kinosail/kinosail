@@ -1,11 +1,13 @@
 """Fixed public journey identities and boundary acceptance; no runtime execution."""
 SPECS = ["browse-return.spec.ts", "browse-return-cold.spec.ts", "browse-return-bfcache.spec.ts",
-         "browse-return-safety.spec.ts", "browse-return-home.spec.ts"]
+         "browse-return-safety.spec.ts", "browse-return-home.spec.ts", "watch-navigation.spec.ts"]
 PRIMARY = [(SPECS[0], f"visible Player Back preserves Movies query, offset, extent, focus and scroll at {width}px") for width in (390, 1440)]
 SAFETY_NAMES = ["external origin", "protocol-relative origin", "non-browse route", "duplicate query", "unknown query",
                 "oversized query", "excessive extent", "different profile", "different destination"]
 SUITES = {
     "primary": PRIMARY,
+    "navigation": [(SPECS[5], f"Player has one accessible return link with Movies context and a direct-entry fallback at {width}px") for width in (390, 1440, 1920)]
+        + [(SPECS[5], title) for title in ("Home keeps its exact return after Mark watched", "Plain root keeps its exact return after Mark watched")],
     "cold": [(SPECS[1], f"cold native Back restores later Movie cards at {width}px") for width in (390, 1440)],
     "bfcache": [(SPECS[2], "native BFCache preserves loaded Movie DOM without repeated continuation")],
     "htmx": [(SPECS[0], "HTMX title-letter Back fetches current browse data and restores extent without a native pageshow")],
@@ -22,7 +24,8 @@ SUITES["all"] = PRIMARY + SUITES["htmx"] + SUITES["shows"] + SUITES["cold"] + SU
 BASE = {"before-state", "player-state", "returned-state", "served-browse-asset"}
 HOME = {"home-before-state", "home-returned-state", "served-browse-asset"}
 ATTACHMENTS = BASE | HOME | {"letter-state", "original-url-state", "cold-boundary-state", "native-cache-boundary-state",
-                           "htmx-boundary-state", "home-player-state", "home-cold-boundary-state", "safe-rejection"}
+                           "htmx-boundary-state", "home-player-state", "home-cold-boundary-state", "safe-rejection",
+                           "movies-player-state", "direct-player-state", "home-watched-return-state", "root-watched-return-state"}
 ACCEPTANCE = ["Q14 acceptance: return to the same public browse URL", "Q14 acceptance: selected title action regains focus",
               "Q14 acceptance: same settled browse position", "Q14 Home acceptance: original action regains focus",
               "Q14 Home acceptance: settled horizontal position", "Q14 Home acceptance: settled vertical position"]
@@ -31,6 +34,8 @@ PREREQUISITES = ["fixture prerequisite:", "BFCache prerequisite:", "cold boundar
 
 
 def required(suite, title):
+    if suite == "navigation":
+        return {"movies-player-state", "direct-player-state"} if "accessible return link" in title else {"home-watched-return-state" if title.startswith("Home") else "root-watched-return-state"}
     if suite in ("primary", "shows"):
         return BASE
     if suite in ("cold", "bfcache"):
@@ -62,6 +67,10 @@ def boundary(suite, case):
     rows = {item["name"]: item["observation"] for item in case["attachments"]}
     if any(value is None for value in rows.values()) or set(rows) != required(suite, case["title"]):
         return False
+    if suite == "navigation":
+        states = [row["state"] for row in rows.values()]
+        return (all(state["profile"] == "local-owner" and state["path"].startswith("/watch/") and not state["values"] for state in states)
+                and len({state["path"] for state in states}) == 1)
     if suite == "safety":
         if "safe-rejection" not in rows:
             return True
