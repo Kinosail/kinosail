@@ -66,12 +66,12 @@ struct AudioPlayerScreen: View {
                         if let message = session.player.message ?? session.player.progressMessage { Text(message).foregroundStyle(.secondary).multilineTextAlignment(.center) }
                         VStack(spacing: 8) {
                             #if os(iOS)
-                            Slider(value: $seekValue, in: 0...max(1, session.player.duration), onEditingChanged: { editing in
+                            BufferedPlaybackSlider(value: $seekValue, duration: session.player.duration, buffered: session.player.bufferedRanges, onEditingChanged: { editing in
                                 seeking = editing
                                 if !editing { perform { try await session.player.seek(to: seekValue) } }
                             }).disabled(session.player.duration <= 0).accessibilityLabel("Playback position").accessibilityValue("\(seekValue.clock) of \(session.player.duration.clock)")
                             #else
-                            ProgressView(value: min(session.player.seconds, session.player.duration), total: max(1, session.player.duration))
+                            BufferedPlaybackTrack(value: session.player.seconds, duration: session.player.duration, buffered: session.player.bufferedRanges)
                                 .tint(KinoTheme.signal)
                                 .accessibilityLabel("Playback position")
                                 .accessibilityValue("\(session.player.seconds.clock) of \(session.player.duration.clock)")
