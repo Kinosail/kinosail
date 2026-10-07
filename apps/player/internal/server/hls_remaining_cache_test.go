@@ -1,6 +1,8 @@
 package server
 
 import (
+	"bytes"
+	"encoding/binary"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -8,8 +10,10 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/MikeO7/kinosail/packages/isobmff"
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/playback"
+	"github.com/MikeO7/kinosail/packages/servertest/mp4fixture"
 	"github.com/MikeO7/kinosail/packages/transcodehardware"
 	"github.com/MikeO7/kinosail/packages/workload"
 )
@@ -34,11 +38,15 @@ func TestRemainingOldAACAssetsCannotBypassPolicy(t *testing.T) {
 				writeHLSLoadingFile(t, filepath.Join(directory, "index.m3u8"), "#EXTM3U\n#KINOSAIL-TRANSCODER:"+policy+"\n#EXT-X-STREAM-INF:BANDWIDTH=192000\naudio/index.m3u8\n")
 				writeHLSLoadingFile(t, filepath.Join(directory, ".source"), policy)
 				writeHLSLoadingFile(t, filepath.Join(directory, "audio/index.m3u8"), remainingInitialAACPrefix)
-				writeHLSLoadingFile(t, filepath.Join(directory, asset), "obsolete-aac-asset")
+				payload := []byte("obsolete-aac-asset")
+				if strings.HasSuffix(asset, "init.mp4") {
+					payload = remainingAACCacheInitialization(t)
+				}
+				writeHLSLoadingFile(t, filepath.Join(directory, asset), string(payload))
 				response := httptest.NewRecorder()
 				request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/hls/"+item.ID+"/p/fixture/"+asset, nil)
 				manager.serveRecipe(response, request, item, recipe, asset)
-				if response.Code == http.StatusOK && response.Body.String() == "obsolete-aac-asset" {
+				if response.Code == http.StatusOK && bytes.Equal(response.Body.Bytes(), payload) {
 					t.Fatalf("obsolete hls%s AAC %s was delivered without correction-policy admission", version, asset)
 				}
 			})
@@ -47,16 +55,29 @@ func TestRemainingOldAACAssetsCannotBypassPolicy(t *testing.T) {
 }
 
 func TestRemainingAACCorrectionHasCacheIdentity(t *testing.T) {
-	manager, item, recipe := remainingAACCacheFixture(t)
-	options, err := manager.hlsSettings(item, recipe)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := playback.ValidateHLSSource(item.Path, options.Cache); err != nil {
-		t.Fatalf("correction identity invalidated the canonical source suffix: %v", err)
-	}
-	if !strings.Contains(options.Cache, ":aac-origin=1") {
-		t.Fatal("AAC context correction shares the pre-correction cache policy")
+	for _, extension := range []string{".flac", ".ogg", ".wav"} {
+		t.Run(extension, func(t *testing.T) {
+			manager, item, recipe := remainingAACCacheFixture(t)
+			renamed := strings.TrimSuffix(item.Path, ".flac") + extension
+			if err := os.Rename(item.Path, renamed); err != nil {
+				t.Fatal(err)
+			}
+			item.Path = renamed
+			facts := mediaFactsFor(item, manager.probe.facts(t.Context(), item))
+			if !remainingOriginSource(facts, 8) {
+				t.Fatal("renamed source did not retain the observed FLAC correction eligibility")
+			}
+			options, err := manager.hlsSettings(item, recipe)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := playback.ValidateHLSSource(item.Path, options.Cache); err != nil {
+				t.Fatalf("correction identity invalidated the canonical source suffix: %v", err)
+			}
+			if !strings.Contains(options.Cache, ":aac-origin=1") {
+				t.Fatal("eligible AAC context correction shares the pre-correction cache policy")
+			}
+		})
 	}
 }
 
@@ -77,7 +98,13 @@ func TestRemainingCurrentAACAssetsRemainReadable(t *testing.T) {
 			writeHLSLoadingFile(t, filepath.Join(directory, ".source"), options.Cache)
 			manifest := remainingInitialAACPrefix + "#EXTINF:0.021333,\nsegment-00005.m4s\n#EXT-X-ENDLIST\n"
 			writeHLSLoadingFile(t, filepath.Join(directory, "audio/index.m3u8"), manifest)
-			writeHLSLoadingFile(t, filepath.Join(directory, asset), "current-policy-asset")
+			initialization := remainingAACCacheInitialization(t)
+			writeHLSLoadingFile(t, filepath.Join(directory, "audio/init.mp4"), string(initialization))
+			payload := []byte("current-policy-asset")
+			if strings.HasSuffix(asset, "init.mp4") {
+				payload = initialization
+			}
+			writeHLSLoadingFile(t, filepath.Join(directory, asset), string(payload))
 			path := filepath.Join(directory, asset)
 			before, err := os.Stat(path)
 			if err != nil {
@@ -87,14 +114,30 @@ func TestRemainingCurrentAACAssetsRemainReadable(t *testing.T) {
 			request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/hls/"+item.ID+"/p/fixture/"+asset, nil)
 			manager.serveRecipe(response, request, item, recipe, asset)
 			after, err := os.Stat(path)
-			if response.Code != http.StatusOK || response.Body.String() != "current-policy-asset" || err != nil {
+			if response.Code != http.StatusOK || !bytes.Equal(response.Body.Bytes(), payload) || err != nil {
 				t.Fatalf("current policy asset %s rejected: status=%d error=%v", asset, response.Code, err)
 			}
-			if !os.SameFile(before, after) || before.Size() != after.Size() || !before.ModTime().Equal(after.ModTime()) || len(manager.jobs) != 0 {
+			manager.mu.Lock()
+			jobs := len(manager.jobs)
+			manager.mu.Unlock()
+			if !os.SameFile(before, after) || before.Size() != after.Size() || !before.ModTime().Equal(after.ModTime()) || jobs != 0 {
 				t.Fatal("cached delivery replaced the asset or scheduled encoding")
 			}
 		})
 	}
+}
+
+func remainingAACCacheInitialization(t *testing.T) []byte {
+	t.Helper()
+	// Retain only the AAC sample-description track from the shared mock fixture.
+	// Parse proves structural admission; this data does not claim native playback.
+	combined := mp4fixture.Initialization(640, 360, "h264", "aac", "")
+	videoSize := int(binary.BigEndian.Uint32(combined[8:12]))
+	initialization := mp4fixture.Box("moov", combined[8+videoSize:])
+	if _, err := isobmff.Parse(initialization); err != nil {
+		t.Fatalf("AAC structural initialization fixture rejected: %v", err)
+	}
+	return initialization
 }
 
 func TestRemainingAACIdentityPreservesOtherRecipes(t *testing.T) {
@@ -105,6 +148,27 @@ func TestRemainingAACIdentityPreservesOtherRecipes(t *testing.T) {
 			options, err := manager.hlsSettings(item, recipe)
 			if err != nil || strings.Contains(options.Cache, ":aac-origin=1") {
 				t.Fatalf("unaffected %s policy changed: error=%v", kind, err)
+			}
+		})
+	}
+}
+
+func TestRemainingAACIdentityExcludesUnqualifiedRecipes(t *testing.T) {
+	cases := map[string]hlsRecipe{
+		"offset":      {mode: "audio-transcode", offset: 8},
+		"output-time": {mode: "audio-transcode", outputTime: 8},
+		"track":       {mode: "audio-transcode", audio: 1},
+		"low-rate":    {mode: "audio-transcode", maxBitrate: 128000},
+		"dialogue":    {mode: "audio-transcode", dialogueBoost: true},
+		"normalize":   {mode: "audio-transcode", normalizeLoudness: true},
+		"omitted":     {mode: "audio-transcode", omitted: []PlaybackRange{{Start: 1, End: 2}}},
+	}
+	for name, recipe := range cases {
+		t.Run(name, func(t *testing.T) {
+			manager, item, _ := remainingAACCacheFixture(t)
+			options, err := manager.hlsSettings(item, recipe)
+			if err != nil || strings.Contains(options.Cache, ":aac-origin=1") {
+				t.Fatalf("unqualified %s identity changed: error=%v", name, err)
 			}
 		})
 	}

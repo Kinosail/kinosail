@@ -29,6 +29,14 @@ func TestRemainingInitialAACOrdinaryWindowRemainsReady(t *testing.T) {
 	}
 }
 
+func TestRemainingInitialAACUninferredCadenceRetainsWindow(t *testing.T) {
+	manifest := "#EXTM3U\n#EXT-X-PLAYLIST-TYPE:EVENT\n#EXTINF:3,\nsegment-00000.m4s\n#EXTINF:4,\nsegment-00001.m4s\n#EXTINF:5,\nsegment-00002.m4s\n"
+	segments, ready := startupWindowSegments([]byte(manifest), 120)
+	if !ready || len(segments) != 3 {
+		t.Fatalf("available ordinary window rejected before an EOF boundary: ready=%t segments=%d", ready, len(segments))
+	}
+}
+
 func TestRemainingInitialAACRetainsExplicitProjection(t *testing.T) {
 	projection := func([]byte) []byte {
 		return []byte(strings.ReplaceAll(remainingInitialAACPrefix, "EVENT", "VOD") + "#EXT-X-ENDLIST\n")
