@@ -39,6 +39,7 @@ struct TouchPlaybackView: View {
         if !presentation.readyForDisplay && !presentation.pictureInPicture { return "Preparing video…" }
         return nil
     }
+    private var preparing: Bool { playback.loading || playback.recoveringNetwork || playback.player == nil || !presentation.readyForDisplay }
     private var canHide: Bool {
         playback.isPlaying && pending == nil && error == nil && !presentation.pictureInPicture && !scrubbing && sheet == nil && !showsVolume && !voiceOver && !switchControl
     }
@@ -130,23 +131,26 @@ struct TouchPlaybackView: View {
             Button("Back 10 seconds", systemImage: "gobackward.10") { seek(displayedPosition - 10) }
                 .font(.title2).frame(width: 56, height: 56)
                 .keyboardShortcut(.leftArrow, modifiers: [])
-            Button {
-                reveal()
-                if playback.completed { seek(0, resume: true) }
-                else { playback.togglePlayback() }
-            } label: {
-                Image(systemName: playback.completed ? "arrow.counterclockwise" : playback.isPlaying || playback.buffering ? "pause.fill" : "play.fill")
-                    .font(.largeTitle).frame(width: 72, height: 72)
+            if preparing {
+                ProgressView().controlSize(.large).frame(width: 72, height: 72).accessibilityHidden(true)
+            } else {
+                Button {
+                    reveal()
+                    if playback.completed { seek(0, resume: true) } else { playback.togglePlayback() }
+                } label: {
+                    Image(systemName: playback.completed ? "arrow.counterclockwise" : playback.isPlaying || playback.buffering ? "pause.fill" : "play.fill")
+                        .font(.largeTitle).frame(width: 72, height: 72)
+                }
+                .accessibilityLabel(playback.completed ? "Replay" : playback.isPlaying || playback.buffering ? "Pause" : "Play")
+                .keyboardShortcut(.space, modifiers: [])
             }
-            .accessibilityLabel(playback.completed ? "Replay" : playback.isPlaying || playback.buffering ? "Pause" : "Play")
-            .keyboardShortcut(.space, modifiers: [])
             Button("Forward 10 seconds", systemImage: "goforward.10") { seek(displayedPosition + 10) }
                 .font(.title2).frame(width: 56, height: 56)
                 .keyboardShortcut(.rightArrow, modifiers: [])
         }
         .labelStyle(.iconOnly).buttonStyle(.plain)
         .background(.black.opacity(0.35), in: Capsule())
-        .disabled(playback.player == nil || presentation.pictureInPicture)
+        .disabled(preparing || presentation.pictureInPicture)
     }
 
     private var timeline: some View {
@@ -183,7 +187,7 @@ struct TouchPlaybackView: View {
                 else { seek(scrubPosition) }
             }
             .tint(KinoTheme.signal)
-            .disabled(playback.duration <= 0 || playback.player == nil)
+            .disabled(playback.duration <= 0 || preparing || presentation.pictureInPicture)
             .accessibilityLabel("Playback position")
             .accessibilityValue("\(displayedPosition.clock) of \(playback.duration > 0 ? playback.duration.clock : "unknown duration")")
             HStack {
@@ -251,7 +255,7 @@ struct TouchPlaybackView: View {
     private func reveal(toggle: Bool = false) {
         interaction += 1
         withAnimation(reduceMotion ? nil : .easeOut(duration: 0.15)) {
-            controlsVisible = toggle && !voiceOver && !switchControl ? !controlsVisible : true
+            controlsVisible = toggle && pending == nil && error == nil && !voiceOver && !switchControl ? !controlsVisible : true
         }
     }
 
