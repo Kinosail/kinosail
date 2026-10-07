@@ -75,3 +75,11 @@ test('untrusted boundary wire fields cannot expose arbitrary strings or extra fi
  await attachCheckpointBoundary(page,info,{private:'synthetic-private',seconds:'synthetic-private',bodySHA256:'synthetic-private',secondsType:'synthetic-private'},NaN,Infinity);
  assert.doesNotMatch(attached.body,/synthetic-private|\"private\"/);
 });
+
+import vm from 'node:vm';
+test('missing or malformed rendered start remains unavailable rather than numeric zero',async()=>{
+ for(const start of [undefined,'','not-a-position','1e3','-1']){
+  let attached;const page={evaluate:async fn=>vm.runInNewContext(`(${fn.toString()})()`,{document:{querySelector:()=>({dataset:{start},paused:true,ended:false,duration:30,currentTime:0})}})},info={attach:async(_,value)=>{attached=JSON.parse(value.body);}};
+  await attachCheckpointBoundary(page,info,{},0,30);assert.equal(attached.media.dataStart,'unavailable');
+ }
+});

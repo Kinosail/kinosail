@@ -69,12 +69,12 @@ export async function attachCheckpointBoundary(page: Page, info: TestInfo, wire:
   const number = (value: unknown) => typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 1000000000 ? value : 'unavailable';
   const value = wire && typeof wire === 'object' && !Array.isArray(wire) ? wire as Record<string, unknown> : {};
   const flag = (key: string) => typeof value[key] === 'boolean' ? value[key] : 'unavailable';
-  const publicWire = {secondsPresent:flag('secondsPresent'), secondsType:['missing','number','string','boolean','object','undefined','null','other'].includes(String(value.secondsType)) ? value.secondsType : 'unavailable',
+  const publicWire = {secondsPresent:flag('secondsPresent'), secondsType:typeof value.secondsType === 'string' && ['missing','number','string','boolean','object','undefined','null','other'].includes(value.secondsType) ? value.secondsType : 'unavailable',
     secondsFinite:flag('secondsFinite'), seconds:number(value.seconds), watched:flag('watched'), revision:typeof value.revision === 'number' && Number.isSafeInteger(value.revision) && value.revision >= 0 ? value.revision : 'unavailable',
     bodySHA256:typeof value.bodySHA256 === 'string' && /^[a-f0-9]{64}$/.test(value.bodySHA256) ? value.bodySHA256 : 'unavailable', sessionMatches:flag('sessionMatches')};
   try {
     await Promise.race([(async () => {
-      const media = await page.evaluate(() => {const video = document.querySelector('video');return {paused:video?.paused,ended:video?.ended,duration:video?.duration,currentTime:video?.currentTime,dataStart:video ? Number(video.dataset.start) : undefined};});
+      const media = await page.evaluate(() => {const video = document.querySelector('video'), start = video?.dataset.start;return {paused:video?.paused,ended:video?.ended,duration:video?.duration,currentTime:video?.currentTime,dataStart:typeof start === 'string' && /^(?:0|[1-9]\d*)(?:\.\d+)?$/.test(start) ? Number(start) : undefined};});
       await info.attach('checkpoint-baseline-boundary', {body:JSON.stringify({wire:publicWire,pausedAtRead:number(paused),duration:number(duration),media:{
         paused:typeof media.paused === 'boolean' ? media.paused : 'unavailable',ended:typeof media.ended === 'boolean' ? media.ended : 'unavailable',
         duration:number(media.duration),currentTime:number(media.currentTime),dataStart:number(media.dataStart)}}),contentType:'application/json'});
