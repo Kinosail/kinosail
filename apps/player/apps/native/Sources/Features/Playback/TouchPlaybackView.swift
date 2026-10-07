@@ -179,10 +179,10 @@ struct TouchPlaybackView: View {
                     await loadPreview()
                 }
             }
-            Slider(value: Binding(get: { min(max(1, playback.duration), max(0, displayedPosition)) }, set: {
+            BufferedPlaybackSlider(value: Binding(get: { min(max(1, playback.duration), max(0, displayedPosition)) }, set: {
                 if scrubbing { scrubPosition = $0 } else { seek($0) }
             }),
-                   in: 0...max(1, playback.duration)) { editing in
+                   duration: playback.duration, buffered: playback.bufferedRanges, video: true) { editing in
                 if editing { scrubPosition = displayedPosition; scrubbing = true; reveal() }
                 else { seek(scrubPosition) }
             }

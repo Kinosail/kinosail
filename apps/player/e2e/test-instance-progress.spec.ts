@@ -87,7 +87,8 @@ test("real Server rejects invalid progress without changing stored state and web
   const before = await serverProgress(page, id);
   await media.evaluate(video => video.dataset.progress = video.dataset.progress!.split("?")[0] + "?playbackToken=invalid");
   const rejected = page.waitForResponse(response => new URL(response.url()).pathname === `/progress/${id}` && response.status() === 400);
-  await media.dispatchEvent("pause");
+  // Advance the position so deduplication cannot suppress the rejected request.
+  await media.evaluate((video: HTMLVideoElement) => { video.currentTime = Math.min(video.duration, video.currentTime + 1); video.dispatchEvent(new Event("pause")); });
   await rejected;
   const after = await serverProgress(page, id);
   expect(after).toEqual(before);

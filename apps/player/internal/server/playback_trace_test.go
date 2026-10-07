@@ -2,7 +2,9 @@ package server
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"encoding/json"
+	"fmt"
 	"html"
 	"log/slog"
 	"net/http"
@@ -34,6 +36,11 @@ func TestPlaybackTraceCorrelatesBrowserAndMediaWithoutPrivateData(t *testing.T) 
 	source := regexp.MustCompile(`src=?"?(/media/[^" >]+)`).FindStringSubmatch(page.Body.String())
 	if page.Code != http.StatusOK || len(session) != 2 || len(source) != 2 || !strings.Contains(source[1], "playbackSession="+session[1]) {
 		t.Fatalf("player trace contract is missing: %d %q", page.Code, page.Body.String())
+	}
+	style := playbackTraceRequest(handler, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/app.css", nil))
+	styleURL := fmt.Sprintf("/static/app.css?v=%x", sha256.Sum256(style.Body.Bytes()))
+	if style.Code != http.StatusOK || !strings.Contains(page.Body.String(), styleURL) {
+		t.Fatalf("watch page can retain an outdated immutable stylesheet: want %s, got %s", styleURL, regexp.MustCompile(`/static/app.css\?v=[^" >]+`).FindString(page.Body.String()))
 	}
 
 	payload := map[string]any{"session": session[1], "event": "play-rejected", "sequence": 4, "elapsedMs": 812, "positionMs": 42000, "durationMs": 7200000, "bufferedAheadMs": 250, "readyState": 2, "networkState": 2, "paused": true, "method": "direct", "detail": "control:NotAllowedError"}

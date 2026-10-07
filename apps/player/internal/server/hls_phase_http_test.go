@@ -28,6 +28,7 @@ func TestHLSPhasePublicHTTP(t *testing.T) {
 	t.Run("failed launch is never called started", phaseLaunchFailure)
 	t.Run("started child waits for valid presentation", phasePendingAndReady)
 	t.Run("queued admission is distinct from running child", phaseQueuedAdmission)
+	t.Run("page departure releases admission for the next movie", phaseSessionDeparture)
 }
 
 type phaseHTTPFixture struct {
@@ -100,26 +101,6 @@ func phaseFixture(t *testing.T, count int, executable bool) phaseHTTPFixture {
 	return fixture
 }
 
-func (fixture phaseHTTPFixture) request(t *testing.T, item int, token, requestID string) <-chan int {
-	t.Helper()
-	result := make(chan int, 1)
-	request, err := http.NewRequestWithContext(t.Context(), http.MethodGet, fixture.host.URL+"/hls/"+fixture.ids[item]+"/p/"+token+"/index.m3u8", nil)
-	if err != nil {
-		t.Fatal("cannot create synthetic HLS request")
-	}
-	request.Header.Set("X-Request-ID", requestID)
-	request.Header.Set("X-Playback-Session", "private-phase-session")
-	go func() {
-		response, failure := fixture.client.Do(request)
-		if failure != nil {
-			result <- 0
-			return
-		}
-		_ = response.Body.Close()
-		result <- response.StatusCode
-	}()
-	return result
-}
 
 func (fixture phaseHTTPFixture) events(requestID string) []map[string]any {
 	var result []map[string]any

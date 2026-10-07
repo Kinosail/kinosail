@@ -12,6 +12,22 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
+type hlsJob struct {
+	lifecycle       context.Context
+	observation     *hlsObservation
+	preparation     *startupEncoding
+	done            chan struct{}
+	err             error
+	cancel          context.CancelCauseFunc
+	activity        chan struct{}
+	startNumber     int
+	requestID       string
+	playbackSession string
+	pages           map[string]bool
+	cachePolicy     string
+	replacing       bool
+}
+
 func (manager *hlsManager) ensureHLSJob(ctx context.Context, item library.Item, key string, options transcodeSettings, recipe hlsRecipe) (*hlsJob, error) {
 	for {
 		manager.mu.Lock()
@@ -49,6 +65,7 @@ func (manager *hlsManager) ensureHLSJob(ctx context.Context, item library.Item, 
 			go manager.encode(jobContext, item, job, key, options, recipe, 0, false)
 		}
 		manager.adoptStartupJob(ctx, job, key)
+		retainHLSPage(job, ctx)
 		manager.mu.Unlock()
 		return job, nil
 	}

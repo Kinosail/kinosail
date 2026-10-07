@@ -2,6 +2,10 @@ package server
 
 import (
 	"bytes"
+	"crypto/sha256"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 )
 
@@ -50,9 +54,12 @@ func TestApplicationShellRouteBoundary(t *testing.T) {
 }
 
 func TestApplicationShellRefreshesCachedStylesheetVersions(t *testing.T) {
+	response := httptest.NewRecorder()
+	serveStyle(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/app.css", nil))
+	current := fmt.Sprintf("%x", sha256.Sum256(response.Body.Bytes()))
 	for _, version := range []string{"72", "80", "81", "82", "83", "84", "85", "91", "93", "94", "impeccable-1", "electric-1", "electric-4", "electric-18"} {
 		page := []byte(`<link rel="stylesheet" href="/static/app.css?v=` + version + `">`)
-		want := []byte(`<link rel="stylesheet" href="/static/app.css?v=electric-49">`)
+		want := []byte(`<link rel="stylesheet" href="/static/app.css?v=` + current + `">`)
 		if actual := applicationShellCSSVersion(page); !bytes.Equal(actual, want) {
 			t.Fatalf("stylesheet %s was not refreshed: %s", version, actual)
 		}
