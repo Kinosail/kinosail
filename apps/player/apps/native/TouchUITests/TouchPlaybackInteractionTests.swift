@@ -85,6 +85,33 @@ final class TouchPlaybackInteractionTests: XCTestCase {
         XCTAssertTrue(app.buttons["Details"].waitForExistence(timeout: 10))
     }
 
+    @MainActor func testPictureInPictureCanReturnToLibraryAndRestoreVideo() async throws {
+        let app = try await openVideo(mode: "loaded")
+        XCTAssertTrue(app.buttons["Pause"].waitForExistence(timeout: 15), app.debugDescription)
+        let start = app.buttons["Start Picture in Picture"]
+        XCTAssertTrue(start.waitForExistence(timeout: 5), app.debugDescription)
+        for _ in 0..<50 {
+            if start.isEnabled { break }
+            try await Task.sleep(for: .milliseconds(100))
+        }
+        XCTAssertTrue(start.isEnabled, app.debugDescription)
+        start.tap()
+        XCTAssertTrue(app.staticTexts["Playing in Picture in Picture"].waitForExistence(timeout: 10),
+                      app.debugDescription)
+        record("picture in picture", app)
+        let back = app.buttons["Back to library"]
+        XCTAssertTrue(back.waitForExistence(timeout: 5), app.debugDescription)
+        back.tap()
+        XCTAssertTrue(app.buttons["Details"].waitForExistence(timeout: 10), app.debugDescription)
+        // Reopening the same title must retain the floating playback session.
+        app.buttons["Play"].firstMatch.tap()
+        XCTAssertTrue(app.buttons["Return to video"].waitForExistence(timeout: 10), app.debugDescription)
+        app.buttons["Return to video"].tap()
+        XCTAssertTrue(app.buttons["Pause"].waitForExistence(timeout: 10), app.debugDescription)
+        app.buttons["Close player"].tap()
+        XCTAssertTrue(app.buttons["Details"].waitForExistence(timeout: 10))
+    }
+
     @MainActor private func openVideo(mode: String) async throws -> XCUIApplication {
         continueAfterFailure = false
         XCUIDevice.shared.orientation = .portrait
