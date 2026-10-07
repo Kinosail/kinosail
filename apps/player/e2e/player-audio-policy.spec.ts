@@ -36,7 +36,7 @@ test("Home Assistant state uses the session CSRF token and consumes a command", 
   await expect(page.locator("audio")).toHaveJSProperty("currentTime", 35);
 });
 
-for (const invalid of ["external stream", "missing authorization", "wrong profile", "wrong item"]) {
+for (const invalid of ["external stream", "missing authorization", "wrong profile", "wrong item", "numeric year", "oversized year"]) {
   test(`queue rejects ${invalid} before progress or Now Playing side effects`, {tag: ["@smoke", "@routed-fault"]}, async ({page}) => {
     await openAudio(page, "direct-first");
     const writes: string[] = [];
@@ -44,6 +44,7 @@ for (const invalid of ["external stream", "missing authorization", "wrong profil
     await page.route("https://audio.test/api/v1/items/next", route => route.fulfill({json: {
       profileId: invalid === "wrong profile" ? "other-viewer" : "qa-viewer",
       item: {...queueItem(invalid === "wrong item" ? "different" : "next"),
+        year: invalid === "numeric year" ? 2027 : invalid === "oversized year" ? "x".repeat(65) : undefined,
         stream: invalid === "external stream" ? "https://untrusted.invalid/media/next?token=private" : invalid === "missing authorization" ? "" : "/media/next"},
     }}));
     await startQueue(page);
