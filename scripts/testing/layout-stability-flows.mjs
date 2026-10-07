@@ -109,7 +109,13 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
     if (await theater.isVisible()) {
       const beforeState = await captureTheaterState(page);
       await page.locator("video").evaluate(video=>{video.loop=true;});
-      await page.locator("video").evaluate(video=>video.play());
+      let playTimer;
+      try {
+        await Promise.race([
+          page.locator("video").evaluate(video=>video.play()),
+          new Promise((_, reject)=>{playTimer=setTimeout(()=>reject(Object.assign(new Error("Theater Play preparation timed out"),{name:"TimeoutError"})),30000);}),
+        ]);
+      } finally {clearTimeout(playTimer);}
       await theater.click();
       await page.mouse.move(0,0);const idleStarted = performance.now();await page.waitForTimeout(2700);
       const elapsedMs = Math.min(600000, Math.max(0, Math.round(performance.now() - idleStarted)));
