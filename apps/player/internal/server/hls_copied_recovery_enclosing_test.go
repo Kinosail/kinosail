@@ -95,7 +95,7 @@ func TestCopiedRecoveryEnclosingOrdinaryPublication(t *testing.T) {
 	}
 	copiedRecoveryEncoderOutput(t, manager, "", initialization, "first fragment", copiedRecoveryManifest)
 	if err := copiedRecoveryRunEnclosing(t.Context(), manager, item, recipe, directory); err != nil {
-		t.Fatal("ordinary cold publication failed")
+		t.Fatalf("ordinary cold publication failed: %v", err)
 	}
 	master, err := os.ReadFile(filepath.Join(directory, "index.m3u8"))
 	if err != nil || !bytes.Contains(master, []byte("1080p/index.m3u8")) {
