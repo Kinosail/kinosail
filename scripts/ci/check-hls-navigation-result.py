@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Admit only the fixed 13-case, one-attempt WebKit HLS navigation proof."""
 import json
-from pathlib import Path
+import os
+import stat
 import sys
 
 
@@ -15,10 +16,29 @@ def unique_object(pairs):
 
 
 def read_report(name):
-    with (Path('.verification/hls-navigation') / name).open('rb') as file:
-        raw = file.read(2097153)
-    if len(raw) > 2097152:
+    if name not in ('list-webkit.json', 'results-webkit.json'):
         raise ValueError
+    directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    parent = os.open('.verification', directory_flags)
+    try:
+        directory = os.open('hls-navigation', directory_flags, dir_fd=parent)
+        try:
+            flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK
+            with os.fdopen(os.open(name, flags, dir_fd=directory), 'rb') as file:
+                before = os.fstat(file.fileno())
+                if not stat.S_ISREG(before.st_mode) or not 1 <= before.st_size <= 2097152:
+                    raise ValueError
+                raw = file.read(2097153)
+                after = os.fstat(file.fileno())
+                current = os.stat(name, dir_fd=directory, follow_symlinks=False)
+                identity = lambda value: (value.st_dev, value.st_ino, value.st_size, value.st_mtime_ns)
+                if (len(raw) != before.st_size or identity(before) != identity(after)
+                        or not stat.S_ISREG(current.st_mode) or identity(before) != identity(current)):
+                    raise ValueError
+        finally:
+            os.close(directory)
+    finally:
+        os.close(parent)
     report = json.loads(raw, object_pairs_hook=unique_object)
     if not isinstance(report, dict) or report.get('errors') != []:
         raise ValueError
