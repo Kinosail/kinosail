@@ -82,7 +82,10 @@ test("queue source load ignores its delayed pause until new metadata belongs to 
   const nextWrites: string[] = [];
   page.on("request", request => {if (new URL(request.url()).pathname === "/progress/next") nextWrites.push(request.postData() || "");});
   await page.locator("audio").evaluate(audio => {
-    Object.defineProperty(audio, "load", {value: () => audio.dispatchEvent(new Event("pause")), configurable: true});
+    Object.defineProperty(audio, "load", {value: () => {
+      audio.dispatchEvent(new Event("seeking"));
+      audio.dispatchEvent(new Event("pause"));
+    }, configurable: true});
   });
   await startQueue(page);
   await page.getByRole("button", {name: "Next track", exact: true}).click();
