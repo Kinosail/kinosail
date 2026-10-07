@@ -13,7 +13,7 @@ import subprocess
 import threading
 import time
 from hls_remaining_process import annotate_case, finish_processes, physical, source_snapshot
-from hls_remaining_audio import audio_output
+from hls_remaining_audio import audio_output, replay_refill
 from hls_remaining_mux import counterfactuals
 from hls_timeline_fixture import fixture
 from hls_timeline_http import PublicServer, sha
@@ -103,10 +103,13 @@ def journey(name, original, metadata, offset=0, pacing=None):
             " if '-readrate' in a: a[a.index('-readrate')+1]=" + repr(str(pacing)) + '\n'
             " else: a[a.index('-i'):a.index('-i')]=['-readrate'," + repr(str(pacing)) + ']\n'
             + ' with open(' + repr(str(invocation)) + ", 'a') as f: f.write(json.dumps({'pid':os.getpid(),'parent':os.getppid(),'sourceMatched':" + repr(str(source)) + " in a,'readrate':a[a.index('-readrate')+1]})+'\\n')\n"
+            + " if '-start_number' in a and " + repr(str(source)) + " in a:\n"
+            + '  value=json.dumps(a)\n  if len(value.encode())<=8192:\n'
+            + '   with open(' + repr(str(directory / 'refill-recipe-private.json')) + ", 'w') as f: f.write(value)\n"
             + 'os.execv(' + repr(real) + ',[' + repr(real) + ']+a)\n')
         wrapper.chmod(0o700)
         env['KINOSAIL_FFMPEG'] = str(wrapper)
-        case['testOnlyRealCodecPacing'] = {'readrate': pacing, 'wrapperSHA256': sha(wrapper)}
+        case['testOnlyRealCodecPacing'] = {'readrate': pacing, 'wrapperSHA256': sha(wrapper), 'executableSHA256': sha(Path(real))}
     resources = {'samples': 0, 'peakOwnedFFmpeg': 0, 'samplingErrors': 0}
     case['resources'] = resources
     log_path = directory / 'server.log'
@@ -188,6 +191,17 @@ def journey(name, original, metadata, offset=0, pacing=None):
                 case['failures'].append('diagnostic_evidence_incomplete')
                 case['result'] = 'failed'
             remaining_alarm()
+            if case.get('retainedRefillFragments'):
+                try:
+                    value = replay_refill(run, RUN_DEADLINE, directory, source, case, Path(real))
+                    case['isolatedFreshRefillReplay'] = value
+                    value['matchesCanonicalPCM'] = value['pcmSHA256'] == case['refillNativeEOF']['pcmSHA256']
+                except (RuntimeError, OSError, subprocess.SubprocessError, ValueError, KeyError) as error:
+                    case['replayQualificationFailure'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
+                    case['failures'].append('fresh_refill_replay_unqualified')
+                    case['result'] = 'failed'
+                    if isinstance(error, RuntimeError) and str(error) in ['bounded_diagnostic_deadline', 'bounded_run_deadline']:
+                        raise
 
 
 try:

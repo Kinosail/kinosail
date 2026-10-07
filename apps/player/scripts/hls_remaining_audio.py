@@ -5,8 +5,8 @@ import math
 import re
 from array import array
 import sys
-from hls_followon_public import check
-from hls_remaining_process import native_pcm, asset_snapshot
+from hls_followon_public import check, bounded_bytes
+from hls_remaining_process import native_pcm, asset_snapshot, source_snapshot
 from hls_timeline_packets import manifest_facts
 
 
@@ -59,6 +59,85 @@ def packet_evidence(run, path):
     return rows
 
 
+def replay_refill(run, run_deadline, directory, source, case, executable):
+    """Replay the private actual argv into owned output; qualify every encoded payload."""
+    result = {'boundary': 'Isolated argv-bound replay, not capture of the ephemeral joined worker init.',
+        'result': 'unqualified', 'fragmentIdentities': []}
+    case['isolatedFreshRefillReplay'] = result
+    join = case.get('ownedProcessJoin', {})
+    check(join.get('confirmedZeroSamples') == 2 and join.get('remainingOwnedPIDs') == []
+        and not join.get('forcedOwnedGroupStop') and not join.get('qualificationFailures')
+        and case.get('ownedFFmpegBeforeTeardown') == 0 and not case.get('cleanupFailures')
+        and not case.get('cleanupFailureClass') and not case.get('diagnosticFailureClass'), 'refill_replay_owned_teardown')
+    before = source_snapshot(source)
+    check(case.get('sourceUnchanged') and all(case['fixture'].get(k) == v for k, v in before.items()), 'refill_replay_original_source')
+    raw = bounded_bytes(directory / 'refill-recipe-private.json', 8192, 'refill_recipe_bound')
+    args = json.loads(raw)
+    segments = case['retainedRefillFragments']
+    number = int(segments[0]['name'].removeprefix('segment-').removesuffix('.m4s'))
+    check(isinstance(args, list) and 0 < len(args) <= 96 and all(type(v) is str and len(v) <= 4096 for v in args), 'refill_recipe_shape')
+    check(number == 4 and [v for v in case['encoderStarts'] if v['segment_start'] > 0] ==
+        [{'input_seek_ms': 8000, 'segment_start': 4, 'mode': 'audio-transcode', 'workClass': 'playback'}], 'refill_recipe_phase')
+    generations = list((directory / 'cache').glob('*-plan-*'))
+    check(len(generations) == 1, 'refill_recipe_generation_count')
+    root = generations[0]
+    generation = root.stat()
+    check((generation.st_ino, generation.st_dev) == (case['physicalBeforeFirstGET']['generationInode'],
+        case['physicalBeforeFirstGET']['generationDevice']), 'refill_recipe_generation_identity')
+    expected = ['-hide_banner', '-loglevel', 'error', '-y', '-avoid_negative_ts', 'disabled', '-max_delay', '5000000',
+        '-ss', '8.000', '-readrate', str(case['testOnlyRealCodecPacing']['readrate']), '-i', str(source),
+        '-map', '0:a:0', '-vn', '-sn', '-dn', '-c:a', 'aac', '-ac', '2', '-b:a', '192000', '-output_ts_offset', '8.000',
+        '-f', 'hls', '-hls_time', '2', '-hls_playlist_type', 'event', '-hls_segment_type', 'fmp4',
+        '-hls_segment_options', 'movflags=+frag_discont+skip_sidx', '-hls_flags', 'temp_file',
+        '-hls_fmp4_init_filename', 'init.mp4', '-start_number', '4', '-hls_segment_filename',
+        str(root / 'audio/segment-%05d.m4s'), str(root / '.seek-4/audio/index.m3u8')]
+    check(args == expected, 'refill_recipe_closed_actual_template')
+    check(hashlib.sha256(bounded_bytes(executable, 256 << 20, 'refill_codec_bound')).hexdigest() ==
+        case['testOnlyRealCodecPacing']['executableSHA256'], 'refill_recipe_installed_codec')
+    result.update(privateActualArgvSHA256=hashlib.sha256(raw).hexdigest(), closedActualTemplateQualified=True,
+        modifications=['owned_output_paths_replaced'], actualPacingAndInputFlagsPreserved=True, stage='encode')
+    stage = directory / 'isolated-refill-replay'
+    stage.mkdir()
+    replay = list(args)
+    replay[replay.index('-hls_segment_filename') + 1] = str(stage / 'segment-%05d.m4s')
+    replay[-1] = str(stage / 'index.m3u8')
+    run([str(executable), *replay], 30)
+    fresh, identity = asset_snapshot(stage / 'init.mp4', 2 << 20)
+    manifest, names = manifest_facts(bounded_bytes(stage / 'index.m3u8', 65536, 'refill_replay_manifest_bound'))
+    result.update(initialization=identity, manifest=manifest, stage='fragment-identity')
+    check(manifest['endlist'], 'refill_replay_complete_eof')
+    check([name for name, _ in names] == [v['name'] for v in segments], 'refill_replay_segment_sequence')
+    joined = fresh
+    retained = b''
+    identities = result['fragmentIdentities']
+    for name, _ in names:
+        produced = bounded_bytes(stage / name, 8 << 20, 'refill_replay_fragment_bound')
+        actual_bytes = bounded_bytes(directory / 'retained-fragments' / name, 8 << 20, 'retained_refill_bound')
+        digest = hashlib.sha256(produced).hexdigest()
+        actual_digest = hashlib.sha256(actual_bytes).hexdigest()
+        expected_digest = next(v['sha256'] for v in segments if v['name'] == name)
+        identities.append({'name': name, 'sha256': digest, 'actualSHA256': actual_digest, 'expectedSHA256': expected_digest})
+        check(produced == actual_bytes and digest == expected_digest, 'refill_replay_fragment_identity')
+        joined += produced
+        retained += actual_bytes
+        check(len(joined) <= 16 << 20, 'refill_replay_join_bound')
+    path = directory / 'isolated-refill-replay.mp4'
+    path.write_bytes(joined)
+    actual = packet_evidence(run, path)
+    packets = case['refillNativeEOF']['packets']
+    match = [v['data_hash'] for v in actual] == [v['data_hash'] for v in packets]
+    result.update(packets=actual, payloadSequenceMatchesActualRefill=match, stage='native-decode')
+    check(match and source_snapshot(source) == before, 'refill_replay_payload_source_binding')
+    # Same actual fragment bytes and replay-produced init; packet and decoded
+    # frame multiplicities remain separate evidence.
+    path.write_bytes(fresh + retained)
+    pcm, facts = native_pcm(path, run_deadline, directory)
+    result.update(nativeEOF=facts, pcmSHA256=hashlib.sha256(pcm).hexdigest(), stage='final-identity')
+    check(asset_snapshot(stage / 'init.mp4', 2 << 20)[1] == identity and source_snapshot(source) == before, 'refill_replay_final_identity')
+    result.update(result='qualified', sourceUnchanged=True, fragmentBytesMatchActualRefill=True, stage='complete')
+    return result
+
+
 def audio_output(api, hls, directory, case, source, run, run_deadline):
     status, master, _ = api.http(hls)
     check(status == 200, 'audio_master_status')
@@ -81,6 +160,8 @@ def audio_output(api, hls, directory, case, source, run, run_deadline):
     joined = directory / 'public.mp4'
     data = init
     retained_fragments = {}
+    retained_directory = directory / 'retained-fragments'
+    retained_directory.mkdir()
     case['publicPackets'] = []
     prior, prior_point, prior_packet = None, None, None
     for name, advertised in segments:
@@ -90,6 +171,7 @@ def audio_output(api, hls, directory, case, source, run, run_deadline):
         data += fragment
         check(len(data) <= 16 << 20, 'audio_join_bound')
         retained_fragments[name] = fragment
+        (retained_directory / name).write_bytes(fragment)
         part = directory / 'fragment.mp4'
         part.write_bytes(init + fragment)
         rows = packet_evidence(run, part)
@@ -113,6 +195,7 @@ def audio_output(api, hls, directory, case, source, run, run_deadline):
             'audioPacketOrderValid': order_valid, 'completePayloadAndSkipEvidence': rows, 'boundaryPayload': seam})
         prior_packet = rows[-1]
     joined.write_bytes(data)
+    case['joinedPublicPacketPayloads'] = packet_evidence(run, joined)
     public, public_facts = native_pcm(joined, run_deadline, directory)
     reference, reference_facts = native_pcm(source, run_deadline, directory)
     case['nativePCMQualification'] = {'public': public_facts, 'source': reference_facts}
@@ -157,16 +240,6 @@ def audio_output(api, hls, directory, case, source, run, run_deadline):
         generation = generations[0].stat()
         check((generation.st_ino, generation.st_dev) == (case['physicalBeforeFirstGET']['generationInode'],
             case['physicalBeforeFirstGET']['generationDevice']), 'refill_generation_changed')
-        number = int(refill[0][0].removeprefix('segment-').removesuffix('.m4s'))
-        fresh = [generations[0] / f'.seek-{number}' / 'audio/init.mp4']
-        case['freshRefillInitializations'] = []
-        for initialization in fresh:
-            fresh_init, identity = asset_snapshot(initialization, 2 << 20)
-            path = directory / f'fresh-refill-{number}.mp4'
-            path.write_bytes(fresh_init + refill_data[len(init):])
-            decoded, fresh_facts = native_pcm(path, run_deadline, directory)
-            case['freshRefillInitializations'].append({'initialization': identity, 'nativeEOF': fresh_facts,
-                'pcmSHA256': hashlib.sha256(decoded).hexdigest(), 'matchesCanonicalPCM': decoded == pcm,
-                'packets': packet_evidence(run, path)})
-            check(asset_snapshot(initialization, 2 << 20)[1] == identity, 'fresh_audio_init_changed')
+        case['retainedRefillFragments'] = [{'name': name,
+            'sha256': hashlib.sha256(retained_fragments[name]).hexdigest()} for name, _ in refill]
     check(api.http(base + 'init.mp4')[1] == init, 'audio_init_changed')

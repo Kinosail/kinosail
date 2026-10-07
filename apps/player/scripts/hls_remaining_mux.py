@@ -24,8 +24,13 @@ def mux_case(run, source, metadata, directory, label, offset, options, output_se
         '-hls_segment_filename', str(directory / 'segment-%05d.m4s'), str(directory / 'index.m3u8')]
     row = {'label': label, 'inputSeekSeconds': offset, 'outputSeekSeconds': output_seek,
         'options': options, 'result': 'unqualified', 'sourceSHA256': metadata['sha256']}
-    stage = 'encode'
+    if '-avoid_negative_ts' in command:
+        position = command.index('-avoid_negative_ts')
+        row['muxOptionPlacementQualified'] = command.index('-i') + 1 < position < len(command) - 2
+    stage = 'command-qualification'
     try:
+        check(row.get('muxOptionPlacementQualified', True), 'mux_output_policy_misgrouped')
+        stage = 'encode'
         run(command, 30)
         stage = 'manifest'
         manifest = bounded_bytes(directory / 'index.m3u8', 65536, 'mux_manifest_bound')
@@ -69,7 +74,9 @@ def counterfactuals(run, source, metadata, directory, result):
     directory.mkdir()
     result.update(boundary='Isolated installed-codec mux diagnosis; no Server, renderer or native acceptance.',
         source=before, sourceMetadata=stream_metadata(source), sourceFrames=full)
-    disabled = {'global': ['-avoid_negative_ts', 'disabled']}
+    # AVFormat output options must follow the input; earlier placement only
+    # supplies an input-format option and cannot qualify an HLS mux policy.
+    disabled = {'output': ['-avoid_negative_ts', 'disabled']}
     candidates = [
         ('legacy', {}, 12.5, None),
         ('disabled-shift', disabled, 12.5, None),
