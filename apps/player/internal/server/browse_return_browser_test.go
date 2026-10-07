@@ -64,6 +64,7 @@ func TestBrowseReturnBrowserJourney(t *testing.T) {
 
 func browseReturnSpecs(mode string) ([]string, bool) {
 	specs, valid := map[string][]string{
+		"navigation": {"watch-navigation.spec.ts"},
 		"primary": {"browse-return.spec.ts"},
 		"cold":    {"browse-return-cold.spec.ts"},
 		"bfcache": {"browse-return-bfcache.spec.ts"},
