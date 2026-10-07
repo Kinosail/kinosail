@@ -30,7 +30,7 @@ func TestCopiedRecoveryIndexedMismatchCannotFallBackToPhysicalEOF(t *testing.T) 
 }
 
 func TestCopiedRecoveryIndexedReuseChecksManifestAndInit(t *testing.T) {
-	for _, damage := range []string{"manifest", "init", "first", "map", "source"} {
+	for _, damage := range []string{"manifest", "init", "first", "same-stat-init", "same-stat-first", "map", "source"} {
 		t.Run(damage, func(t *testing.T) {
 			manager, item, recipe, directory, policy, timeline := copiedRecoveryFixture(t)
 			copiedRecoveryProbe(t, manager, "")
@@ -41,6 +41,20 @@ func TestCopiedRecoveryIndexedReuseChecksManifestAndInit(t *testing.T) {
 				t.Fatal("valid indexed cache rejected")
 			}
 			switch damage {
+			case "same-stat-init", "same-stat-first":
+				name := "init.mp4"
+				if damage == "same-stat-first" {
+					name = "segment-00000.m4s"
+				}
+				path := filepath.Join(directory, "360p", name)
+				info, err := os.Stat(path)
+				if err != nil {
+					t.Fatal(err)
+				}
+				writeHLSLoadingFile(t, path, strings.Repeat("x", int(info.Size())))
+				if err := os.Chtimes(path, info.ModTime(), info.ModTime()); err != nil {
+					t.Fatal(err)
+				}
 			case "init":
 				writeHLSLoadingFile(t, filepath.Join(directory, "360p/init.mp4"), "replacement init")
 			case "first":
