@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import platform
 import socket
+import ssl
 import struct
 import subprocess
 import time
@@ -35,14 +36,15 @@ subprocess.run(fixture, check=True)
 with socket.socket() as listener:
     listener.bind(('127.0.0.1', 0))
     port = listener.getsockname()[1]
-url = f'http://localhost:{port}'
+url = f'https://localhost:{port}'
 env = dict(os.environ, KINOSAIL_LISTEN=f'127.0.0.1:{port}', KINOSAIL_AUTH_URL=url,
-           KINOSAIL_TLS_ENABLED='false', KINOSAIL_DATA_DIR=str(run / 'config'),
+           KINOSAIL_TLS_ENABLED='true', KINOSAIL_TLS_HOSTS='["localhost"]', KINOSAIL_DATA_DIR=str(run / 'config'),
            KINOSAIL_MEDIA_DIR=str(media), KINOSAIL_CACHE_DIR=str(run / 'cache'),
            KINOSAIL_BACKUP_DIR=str(run / 'backups'), KINOSAIL_BACKUP_KEY='synthetic-scrub-key',
            KINOSAIL_E2E_URL=url, KINOSAIL_SCRUB_PROCESS='1', KINOSAIL_BROWSER_MATRIX='full',
            KINOSAIL_E2E_OUTPUT_DIR=str(run / 'results'))
-client = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+client = urllib.request.build_opener(urllib.request.ProxyHandler({}),
+                                   urllib.request.HTTPSHandler(context=ssl._create_unverified_context()))
 
 
 def request(path, data, token='', method='POST'):

@@ -3,6 +3,9 @@ import AxeBuilder from "@axe-core/playwright";
 import { writeFile } from "node:fs/promises";
 import { login, firstPlayable } from "./test-instance-helpers";
 
+// The isolated runner generates its own local TLS certificate.
+test.use({ ignoreHTTPSErrors: true });
+
 test("generated video previews decode, reuse frames and seek with a visible timeline", async ({ page }, info) => {
   test.skip(process.env.KINOSAIL_SCRUB_PROCESS !== "1", "requires the isolated synthetic scrub runner");
   await login(page);
