@@ -181,13 +181,13 @@ func copiedPlaylistFacts(root *os.Root, path string, data []byte) []string {
 		if strings.HasPrefix(line, "#EXTINF:") || line == "#EXT-X-ENDLIST" {
 			facts = append(facts, line)
 		}
-		if _, valid := hlsSegmentNameForEvidence(line); valid {
-			info, statErr := root.Stat(strings.TrimSuffix(path, "index.m3u8") + line)
+		if segment, valid := hlsSegmentNameForEvidence(line); valid {
+			info, statErr := root.Stat(strings.TrimSuffix(path, "index.m3u8") + segment)
 			size := int64(-1)
 			if statErr == nil {
 				size = info.Size()
 			}
-			facts = append(facts, fmt.Sprintf("%s bytes=%d", line, size))
+			facts = append(facts, fmt.Sprintf("%s bytes=%d", segment, size))
 		}
 	}
 	return facts
