@@ -11,7 +11,8 @@ export function inspectorFixture(withObservers = false) {
   const observers: any[] = [];
   class IntersectionObserver {
     target: any; disconnected = false;
-    constructor(public callback: (entries: any[]) => void) { observers.push(this); }
+    callback: (entries: any[]) => void;
+    constructor(callback: (entries: any[]) => void) { this.callback = callback; observers.push(this); }
     observe(target: any) { this.target = target; }
     disconnect() { this.disconnected = true; }
   }
@@ -45,7 +46,7 @@ export function inspectorFixture(withObservers = false) {
     setTimeout(run: () => void, delay: number) { const id = ++timer; timers.set(id, { run, delay }); return id; }, clearTimeout(id: number) { timers.delete(id); },
   });
   const respond = (request: any, value: any, status = 200) => request.resolve({ status, ok: status >= 200 && status < 300, json: async () => value });
-  const receipt = (state: string, outcome?: string, status?: number) => ({ id: operation, action: "apply", item, state, outcome, status });
+  const receipt = (state: string, outcome?: string, status?: number, action = "apply") => ({ id: operation, action, item, state, outcome, status });
   const review = (language: string, marker: string) => ({ id: item, title: "Fictional review", language, fingerprint: createHash("sha256").update(marker).digest("hex"), role: "translation", source: marker, matchEvidence: "Synthetic logic fixture", warnings: [], originalAvailable: false, restorable: true, duration: 2,
     current: { cues: [{ start: 1, end: 2, text: "Fictional reviewed line", warnings: [] }], quality: { cueCount: 1, fastCues: 0, overlaps: 0, longLines: 0, maxCPS: 23, firstCue: 1, lastCue: 2, timing: "Synthetic", completeness: "Synthetic" } } });
   const draft = (state = "idle") => ({ id: "draft", language: form.elements.language.value, state, message: state, words: [] });

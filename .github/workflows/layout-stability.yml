@@ -23,9 +23,9 @@ on:
         options: [primary, cold, bfcache, htmx, shows, search, safety, home]
         default: primary
       campaign_r06_suite:
-        description: Select original R06 protocol or one fixed Save browser fault suite
+        description: Select original R06 protocol or one fixed Save or Restore suite
         type: choice
-        options: [protocol, save-controls, save-headers, save-body, source-format]
+        options: [protocol, save-controls, save-headers, save-body, source-format, restore-source-format, restore-controls, restore-headers, restore-inspect-body]
         default: protocol
       campaign_q47_suite:
         description: Select one fixed Q47 public suite, each repeated twice
@@ -127,8 +127,10 @@ jobs:
       CAMPAIGN_Q47_SUITE: ${{ inputs.campaign_q47_suite || 'source-format' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        timeout-minutes: 2
         with:
           persist-credentials: false
+          fetch-depth: ${{ inputs.campaign_r06_suite == 'restore-source-format' && '0' || '1' }}
       - name: Validate explicit proof selection
         id: selection
         run: |
@@ -139,10 +141,15 @@ jobs:
           esac
           if [ "$CAMPAIGN_PROOF" != Q14 ] && [ "$CAMPAIGN_Q14_SUITE" != primary ]; then exit 2; fi
           case "$CAMPAIGN_R06_SUITE" in
-            protocol|save-controls|save-headers|save-body|source-format) ;;
+            protocol|save-controls|save-headers|save-body|source-format|restore-source-format|restore-controls|restore-headers|restore-inspect-body) ;;
             *) exit 2 ;;
           esac
           if [ "$CAMPAIGN_PROOF" != R06 ] && [ "$CAMPAIGN_R06_SUITE" != protocol ]; then exit 2; fi
+          if [ "$CAMPAIGN_R06_SUITE" == restore-source-format ] && [ "${{ inputs.architecture_metadata }}" == true ]; then exit 2; fi
+          case "$CAMPAIGN_R06_SUITE" in
+            restore-controls|restore-headers|restore-inspect-body)
+              if [ "${{ inputs.architecture_metadata }}" == true ]; then exit 2; fi ;;
+          esac
           case "$CAMPAIGN_Q47_SUITE" in
             source-format|primary|recovery|supersession|contracts) ;;
             *) exit 2 ;;
@@ -167,19 +174,19 @@ jobs:
           bundler-cache: true
           working-directory: engineering/documentation
       - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
-        if: (steps.selection.outputs.app == 'player' && (env.CAMPAIGN_PROOF != 'Q47' || env.CAMPAIGN_Q47_SUITE != 'source-format')) || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
+        if: (steps.selection.outputs.app == 'player' && (env.CAMPAIGN_PROOF != 'Q47' || env.CAMPAIGN_Q47_SUITE != 'source-format')) || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body' || env.CAMPAIGN_R06_SUITE == 'restore-headers' || env.CAMPAIGN_R06_SUITE == 'restore-inspect-body'))
         with:
           version: 11.22.0
           install: false
           node-version-file: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
-        if: (steps.selection.outputs.app == 'player' && (env.CAMPAIGN_PROOF != 'Q47' || env.CAMPAIGN_Q47_SUITE != 'source-format')) || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
+        if: (steps.selection.outputs.app == 'player' && (env.CAMPAIGN_PROOF != 'Q47' || env.CAMPAIGN_Q47_SUITE != 'source-format')) || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body' || env.CAMPAIGN_R06_SUITE == 'restore-headers' || env.CAMPAIGN_R06_SUITE == 'restore-inspect-body'))
         with:
           node-version: "26"
           package-manager-cache: false
       - run: sudo apt-get update && sudo apt-get install -y libarchive-tools
       - name: Install existing source formatter
-        if: env.CAMPAIGN_R06_SUITE == 'source-format'
+        if: env.CAMPAIGN_R06_SUITE == 'source-format' || env.CAMPAIGN_R06_SUITE == 'restore-source-format'
         timeout-minutes: 2
         uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a
         with:
@@ -187,14 +194,14 @@ jobs:
           install-only: true
           skip-cache: true
       - name: Prepare bounded Go dependencies
-        if: env.CAMPAIGN_R06_SUITE != 'source-format' && env.CAMPAIGN_PROOF != 'Q47'
+        if: env.CAMPAIGN_R06_SUITE != 'source-format' && env.CAMPAIGN_R06_SUITE != 'restore-source-format' && env.CAMPAIGN_PROOF != 'Q47'
         env:
           APP: ${{ steps.selection.outputs.app }}
         run: timeout 120s bash scripts/ci/prepare-campaign-go.sh "$APP"
       - name: Prepare bounded browser prerequisites
         env:
           APP: ${{ steps.selection.outputs.app }}
-        if: (steps.selection.outputs.app == 'player' && (env.CAMPAIGN_PROOF != 'Q47' || env.CAMPAIGN_Q47_SUITE != 'source-format')) || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body'))
+        if: (steps.selection.outputs.app == 'player' && (env.CAMPAIGN_PROOF != 'Q47' || env.CAMPAIGN_Q47_SUITE != 'source-format')) || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body' || env.CAMPAIGN_R06_SUITE == 'restore-headers' || env.CAMPAIGN_R06_SUITE == 'restore-inspect-body'))
         run: |
           if [ "$APP" == subtitles ]; then
             timeout 180s pnpm --dir apps/subtitles/e2e install --frozen-lockfile
@@ -211,10 +218,42 @@ jobs:
         if: env.CAMPAIGN_PROOF == 'Q47' && env.CAMPAIGN_Q47_SUITE != 'source-format'
         timeout-minutes: 1
         run: timeout --kill-after=2s 10s node --test engineering/documentation/test-install-builder.cjs engineering/documentation/test-install-builder-recovery.cjs
+      - name: Verify Restore formatter controls
+        if: env.CAMPAIGN_PROOF == 'R06' && env.CAMPAIGN_R06_SUITE == 'restore-source-format'
+        timeout-minutes: 1
+        run: python3 -B -m unittest discover -s apps/subtitles/scripts -p test_campaign_r06_restore_format.py
+      - name: Verify Restore rejected-source projection controls
+        if: env.CAMPAIGN_PROOF == 'R06' && env.CAMPAIGN_R06_SUITE == 'restore-source-format'
+        timeout-minutes: 1
+        run: python3 -B -m unittest discover -s apps/subtitles/scripts -p test_campaign_r06_restore_projection.py
+      - name: Verify Restore qualified-type controls
+        if: env.CAMPAIGN_PROOF == 'R06' && env.CAMPAIGN_R06_SUITE == 'restore-source-format'
+        timeout-minutes: 1
+        run: timeout --kill-after=2s 10s python3 -B -m unittest discover -s apps/subtitles/scripts -p test_campaign_r06_restore_qualified_tokens.py
+      - name: Verify Restore runtime admission controls
+        if: env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'restore-controls' || env.CAMPAIGN_R06_SUITE == 'restore-headers' || env.CAMPAIGN_R06_SUITE == 'restore-inspect-body')
+        timeout-minutes: 1
+        env:
+          PYTHONPATH: apps/subtitles/scripts
+        run: timeout --kill-after=2s 10s python3 -B -m unittest test_campaign_r06_restore_runtime_selection test_campaign_r06_restore_runtime_sources test_campaign_r06_restore_runtime_process test_campaign_r06_restore_runtime_controls test_campaign_r06_restore_runtime_projection test_campaign_r06_restore_runtime_tools
+      - name: Verify Restore causal diagnostic controls
+        if: env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'restore-headers' || env.CAMPAIGN_R06_SUITE == 'restore-inspect-body')
+        timeout-minutes: 3
+        env:
+          PYTHONPATH: apps/subtitles/scripts
+        run: |
+          timeout --kill-after=2s 10s python3 -B -m unittest test_campaign_r06_restore_causal_projection
+          timeout --kill-after=2s 10s node apps/subtitles/e2e/subtitle-restore-causal-witness.test.mjs
+          timeout --kill-after=2s 10s node apps/subtitles/e2e/subtitle-restore-causal-lifecycle.test.mjs
+          timeout --kill-after=2s 125s go -C apps/subtitles test -p 1 ./engineering/qa/2026-10-05-restore-recovery/fixture -run '^TestRestore(Causal(ProbePublicControl|CancellationBoundary)|CompletionIdentity(PublicControl|Boundary))$' -count=1 -timeout=20s
+      - name: Verify bounded Restore frontend controls
+        if: env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'restore-headers' || env.CAMPAIGN_R06_SUITE == 'restore-inspect-body')
+        timeout-minutes: 1
+        run: timeout --kill-after=2s 10s node --test apps/subtitles/e2e/subtitle-restore-operation.test.mjs apps/subtitles/e2e/subtitle-restore-inspector.test.mjs
       - name: Run exact owned public proof
         run: bash scripts/ci/run-campaign-proof.sh "$CAMPAIGN_PROOF"
       - name: Collect bounded canonical source metadata
-        if: always() && inputs.architecture_metadata && inputs.campaign_proof != 'Q47'
+        if: always() && inputs.architecture_metadata && inputs.campaign_r06_suite != 'restore-source-format' && inputs.campaign_proof != 'Q47' && inputs.campaign_r06_suite != 'restore-controls' && inputs.campaign_r06_suite != 'restore-headers' && inputs.campaign_r06_suite != 'restore-inspect-body'
         run: |
           timeout 120s bash scripts/ci/prepare-campaign-go.sh player
           timeout 120s bash scripts/ci/prepare-campaign-go.sh subtitles

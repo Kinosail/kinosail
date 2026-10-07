@@ -15,22 +15,18 @@ for (const operation of ["apply", "restore"]) {
     const pending = view.node(operation === "apply" ? "apply-subtitle" : "restore-subtitle").listeners.click();
     await flush();
     let request = view.requests.at(-1);
-    if (operation === "apply") {
-      expect(JSON.parse(request.options.body)).toEqual({ action: "apply", item: view.item });
-      view.respond(request, view.receipt("prepared"), 201); await flush();
-      request = view.requests.at(-1);
-      expect(request.options.headers["X-Kinosail-Operation"]).toBe(view.operation);
-    }
+    expect(JSON.parse(request.options.body)).toEqual({ action: operation, item: view.item });
+    view.respond(request, view.receipt("prepared", undefined, undefined, operation), 201); await flush();
+    request = view.requests.at(-1);
+    expect(request.options.headers["X-Kinosail-Operation"]).toBe(view.operation);
     expect(JSON.parse(request.options.body).language).toBe("en");
     for (const control of view.form.querySelectorAll()) expect(control.disabled).toBe(true);
     expect(view.node("restore-subtitle").disabled).toBe(true);
     expect(view.node("apply-subtitle").disabled).toBe(true);
-    if (operation === "apply") {
-      view.respond(request, view.receipt("running"), 202); await flush();
-      expect(view.requests.at(-1).url).toBe("/api/v1/subtitle-operations/" + view.operation);
-      view.respond(view.requests.at(-1), view.receipt("completed", "success", 200)); await flush();
-      view.respond(view.requests.at(-1), view.review("en", "EN saved"));
-    } else { view.respond(request, null); await flush(); view.respond(view.requests.at(-1), view.review("en", "EN restored")); }
+    view.respond(request, view.receipt("running", undefined, undefined, operation), 202); await flush();
+    expect(view.requests.at(-1).url).toBe("/api/v1/subtitle-operations/" + view.operation);
+    view.respond(view.requests.at(-1), view.receipt("completed", "success", operation === "restore" ? 204 : 200, operation)); await flush();
+    view.respond(view.requests.at(-1), view.review("en", operation === "restore" ? "EN restored" : "EN saved"));
     await pending;
     expect(view.form.elements.language.disabled).toBe(false);
     expect(view.form.elements.text.disabled).toBe(false);
