@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/sha256"
+	"errors"
 	"net/http"
 	"os"
 	"os/exec"
@@ -162,7 +163,7 @@ func copiedRecoveryJoinedCodecs(t *testing.T, ctx context.Context, path string) 
 			if err != nil {
 				t.Fatal(err)
 			}
-			if err := process.Signal(syscall.Signal(0)); !os.IsNotExist(err) && err != syscall.ESRCH {
+			if err := process.Signal(syscall.Signal(0)); !errors.Is(err, os.ErrProcessDone) && !errors.Is(err, syscall.ESRCH) {
 				joined = false
 			}
 		}
