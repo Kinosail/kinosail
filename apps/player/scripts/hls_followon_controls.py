@@ -109,6 +109,9 @@ def controls(root, run, binary, receipt, include_hevc=True, include_audio=True):
                 check(len(renditions) == 1, 'control_rendition')
                 base = hls.removesuffix('index.m3u8') + renditions[0].removesuffix('index.m3u8')
                 status, variant, _ = api.http(base + 'index.m3u8')
+                case['controlTimelineResponse'] = {'status': status, 'endlist': b'#EXT-X-ENDLIST' in variant,
+                    'sha256': hashlib.sha256(variant).hexdigest(),
+                    'playlistPrefix': variant[:4096].decode(errors='replace')}
                 check(status == 200 and b'#EXT-X-ENDLIST' in variant, 'control_complete_timeline')
                 status, init, _ = api.http(base + 'init.mp4')
                 check(status == 200 and init, 'control_initialization')

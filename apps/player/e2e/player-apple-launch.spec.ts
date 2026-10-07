@@ -15,6 +15,33 @@ test.describe("Apple launch policy @smoke", () => {
   test.use({hasTouch: true, viewport: {width: 390, height: 844}, ignoreHTTPSErrors: false});
   installPlayerExperienceFixture(false, true);
 
+  for (const errorFirst of [true, false]) test(`failed Apple Play keeps one recovery message (${errorFirst ? "error first" : "rejection first"})`, async ({page}, info) => {
+    const video = page.locator("video");
+    await video.evaluate((media, errorFirst) => {
+      Object.defineProperty(media, "play", {configurable: true, value: () => {
+        const fail = () => {
+          Object.defineProperty(media, "error", {configurable: true, value: {code: 4}});
+          media.dispatchEvent(new Event("error"));
+        };
+        if (errorFirst) fail();
+        else setTimeout(fail, 20);
+        return Promise.reject(new DOMException("Unavailable media", "NotSupportedError"));
+      }});
+    }, errorFirst);
+    await page.getByRole("button", {name: "Play", exact: true}).tap();
+    const recovery = page.locator("[data-player-status]");
+    await expect(recovery).toHaveClass(/is-recovery/);
+    await expect(recovery.getByRole("button", {name: "Retry Direct Play"})).toBeVisible();
+    await expect(recovery.locator(".buffer-skeleton")).toBeHidden();
+    await expect(page.locator(".player-control-feedback")).toBeHidden({timeout: 500});
+    await expect(video).toHaveJSProperty("paused", true);
+    for (const viewport of [{width: 390, height: 844}, {width: 1440, height: 900}, {width: 1920, height: 1080}]) {
+      await page.setViewportSize(viewport);
+      await expect(recovery).toBeInViewport();
+      await page.screenshot({path: info.outputPath(`${viewport.width}-single-recovery.png`), fullPage: true});
+    }
+  });
+
 
   test("cold metadata never hides Play or starts muted preparation", async ({page}) => {
     const video = page.locator("video");

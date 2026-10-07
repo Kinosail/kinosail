@@ -77,7 +77,7 @@ func (manager *hlsManager) recipePlaylistStart(writer http.ResponseWriter, reque
 }
 
 func (manager *hlsManager) waitForRecipeSegment(request *http.Request, item library.Item, recipe hlsRecipe, name, key, path string) bool {
-	manager.keepHLSAlive(key)
+	manager.keepHLSAlive(key, request.Context())
 	segmentContext, cancel := context.WithTimeout(request.Context(), 30*time.Second)
 	if request.Method != http.MethodGet {
 		segmentContext = context.WithValue(segmentContext, startupMetadataKey{}, true)
@@ -153,6 +153,9 @@ func serveHLSPlaylistWithSession(writer http.ResponseWriter, request *http.Reque
 	}
 	if playID == "" {
 		manifest = projectHLSPlaylist(manifest, duration, projection...)
+		if session := requestPlaybackSession(request.Context()); validPlaybackSession(session) {
+			manifest = hlsPlaylistWithQuery(manifest, url.Values{"playbackSession": {session}})
+		}
 	} else {
 		manifest = hlsPlaylistWithSession(manifest, playID, jellyfinMediaQueryToken(request), start, duration, projection...)
 	}
@@ -251,6 +254,7 @@ func hlsURIWithQuery(uri, query string) string {
 
 func (manager *hlsManager) prepareRecipePlaylist(writer http.ResponseWriter, request *http.Request, item library.Item, recipe hlsRecipe) bool {
 	prepareContext := context.WithValue(manager.ctx, requestActivityKey{}, &requestActivity{id: requestActivityID(request.Context()), playbackSession: requestPlaybackSession(request.Context())})
+	prepareContext = context.WithValue(prepareContext, viewerContextKey{}, currentViewer(request))
 	if request.Method != http.MethodGet {
 		prepareContext = context.WithValue(prepareContext, startupMetadataKey{}, true)
 	}
