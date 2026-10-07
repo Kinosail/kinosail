@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"embed"
 	"net/http"
 	"path"
@@ -122,7 +123,7 @@ func serveServiceWorker(writer http.ResponseWriter, _ *http.Request) {
 	_, _ = writer.Write(serviceWorker)
 }
 
-var applicationStyle = joinScripts(appCSS, webassets.LastLightCSS, supporterCSS, homeCSS, settingsCSS)
+var applicationStyle = bytes.Join([][]byte{appCSS, webassets.LastLightCSS, supporterCSS, homeCSS, settingsCSS}, nil)
 
 var serveStyle = compressedAsset(applicationStyle, "text/css; charset=utf-8")
 
