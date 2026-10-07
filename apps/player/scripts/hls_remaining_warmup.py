@@ -5,7 +5,7 @@ import json
 import math
 import sys
 from hls_followon_public import bounded_bytes, check
-from hls_remaining_audio import packet_evidence
+from hls_remaining_audio import marker_clock, packet_evidence
 from hls_remaining_process import asset_snapshot, native_pcm, source_snapshot
 from hls_timeline_packets import manifest_facts
 
@@ -109,7 +109,7 @@ def warmup_counterfactual(run, deadline, directory, result, interrupted, control
                 data += part
                 row['fragmentIdentities'].append({'name': name, 'sha256': hashlib.sha256(part).hexdigest()})
                 check(len(data) <= 16 << 20, 'warmup_join_bound')
-            tail = stage / 'tail.mp4'
+            tail = stage / ('warmup-' + label + '-tail.mp4')
             tail.write_bytes(data)
             row['packets'] = packet_evidence(run, tail)
             streams = json.loads(run(['ffprobe', '-v', 'error', '-select_streams', 'a:0', '-show_entries',
@@ -137,7 +137,7 @@ def warmup_counterfactual(run, deadline, directory, result, interrupted, control
             for fragment in fragments:
                 joined += fragment
                 check(len(joined) <= 16 << 20, 'warmup_public_join_bound')
-            path = stage / 'public.mp4'
+            path = stage / 'warmup-filtered-public.mp4'
             path.write_bytes(joined)
             row['joinedPackets'] = packet_evidence(run, path)
             pcm, facts = native_pcm(path, deadline, case_root)
@@ -145,6 +145,7 @@ def warmup_counterfactual(run, deadline, directory, result, interrupted, control
             gaps = [float(b['pts_time']) - float(a['pts_time']) - float(a['duration_time'])
                 for a, b in zip(row['joinedPackets'], row['joinedPackets'][1:])]
             row.update(joinedNativeEOF=facts, joinedPCMSHA256=hashlib.sha256(pcm).hexdigest(), fixedWindows=fixed_windows(reference, pcm),
+                independentSeamLagDiagnostic=marker_clock(reference, pcm), lagDiagnosticDoesNotChooseFixedPhase=True,
                 packetClockOrderValid=all(a < b for a, b in zip(points, points[1:])),
                 maximumPacketGapSeconds=max([0] + gaps), maximumPacketOverlapSeconds=max([0] + [-v for v in gaps]),
                 candidatePacketAssertionsSatisfied=all(a < b for a, b in zip(points, points[1:]))
