@@ -193,7 +193,7 @@ def public_renderer(api, item_id, reference_id, metadata, offset, hls, directory
     target = directory / 'browser-private.json'
     command = ['node', str(root / 'apps/player/e2e/hls-public-renderer.mjs'), str(target)]
     private = json.dumps({'url': api.url, 'token': api.token, 'itemID': item_id,
-        'referenceID': reference_id, 'directResumeID': direct_resume_id, 'hls': hls})
+        'referenceID': reference_id, 'directResumeID': direct_resume_id, 'hls': hls, 'resumeSeconds': offset})
     process = owned_command(command, private.encode(), 260, target.with_name(target.name + '.owner'))
     check(len(process['stdout']) <= 65536 and len(process['stderr']) <= 65536, 'renderer_log_bound')
     log = directory / 'browser-stderr.log'
@@ -213,7 +213,7 @@ def public_renderer(api, item_id, reference_id, metadata, offset, hls, directory
     unchanged = unchanged and direct_unchanged
     if not unchanged:
         case['failures'].append('renderer_reference_mutated')
-    result['runtime'] = {key: data.get(key) for key in ['browserVersion', 'playbackRate', 'reference', 'public', 'directResume']}
+    result['runtime'] = {key: data.get(key) for key in ['browserVersion', 'playbackRate', 'reference', 'public', 'directResume', 'publicAfterComposition']}
     result.update(renderer_facts(data.get('reference', {}), data.get('public', {}),
                                 metadata['sourceFramePTS'], metadata['sourceTimeOriginSeconds'] + offset))
     result['compositorObservation'] = compositor_facts(data.get('reference', {}), data.get('public', {}), result)
@@ -225,6 +225,19 @@ def public_renderer(api, item_id, reference_id, metadata, offset, hls, directory
                                                                     'direct_reference_bound'))
     direct_facts['compositorObservation'] = compositor_facts(data.get('reference', {}), data.get('directResume', {}), direct_facts)
     result['directResumeControl'] = direct_facts
+    after = data.get('publicAfterComposition', {})
+    after_facts = renderer_facts(data.get('reference', {}), after,
+        metadata['sourceFramePTS'], metadata['sourceTimeOriginSeconds'] + offset)
+    after_facts.pop('completeReferenceRows')
+    after_facts['compositorObservation'] = compositor_facts(data.get('reference', {}), after, after_facts)
+    delivered = renderer_delivery_matches(after.get('network', {}), case['initializationSHA256'],
+        case['publicVariant']['segmentCount'], unchanged)
+    reset = data.get('afterCompositionResumeReset') is True and after.get('optionalSnapshotPolicy') == 'after-composition'
+    after_facts['resumeResetQualified'] = reset
+    after_facts['compositorObservation']['deliveryAndProcessQualified'] = result['processQualified'] and delivered and reset
+    for key in ['nativeSequenceComplete', 'completeCompositorObservation']:
+        after_facts['compositorObservation'][key] = after_facts['compositorObservation'][key] and result['processQualified'] and delivered and reset
+    result['afterCompositionControl'] = after_facts
     network = data.get('public', {}).get('network', {})
     result['actualPlannedRecipeDelivered'] = renderer_delivery_matches(network, case['initializationSHA256'],
         case['publicVariant']['segmentCount'], unchanged)

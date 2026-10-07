@@ -1,11 +1,12 @@
 """Complete non-key evidence only; never trims or qualifies delivered preroll."""
 from collections import Counter
 import json
+import hashlib
 import math
 import re
 import subprocess
 import time
-from hls_followon_frames import decode_frames, remaining_timeout
+from hls_followon_frames import decode_frames, remaining_timeout, decode_audio_pcm
 from hls_followon_public import check, bounded_bytes
 from hls_nonkey_initialization import initialization_metadata
 from hls_nonkey_mux import experiments, presentation_experiment, fragment_evidence
@@ -83,3 +84,54 @@ def nonkey_evidence(source, public, init, directory, metadata, offset, case):
     result['outputZeroDecoder'] = presentation_experiment(public, reference)
     result['offlineVariants'] = experiments(source, directory, offset, metadata, source_rows,
         reference, packet_rows, frame_mapping, time.monotonic() + 120)
+    if metadata.get('audioTimeMarked'):
+        audio_endpoint_proof(source, public, offset, case)
+
+
+def pcm_tail_correspondence(source, public, requested):
+    if len(source) % 4 or len(public) % 4 or not public or type(requested) is not int:
+        raise RuntimeError('aac_pcm_correspondence_shape')
+    count = len(public) // 4
+    matches = [n for n in range(max(0, requested - 64), min(len(source) // 4, requested + 64) + 1)
+        if source[n*4:n*4 + len(public)] == public]
+    start = matches[0] if len(matches) == 1 else None
+    return {'boundary': 'Whole public PCM diagnostic; no public sample trimmed, padded or rewritten',
+        'searchRadiusSamples': 64, 'publicSamples': count, 'sequenceMatches': len(matches),
+        'uniqueStartSample': start, 'requestedStartDeltaSamples': start - requested if start is not None else None,
+        'uniqueSourceTailComplete': start is not None and start + count == len(source) // 4,
+        'publicPCM_SHA256': hashlib.sha256(public).hexdigest()}
+
+
+def audio_endpoint_proof(source, public, offset, case):
+    control = case['markedAAC']['decoderBudgetControl']
+    evidence = case['markedAAC']['nativeEndpointControl'] = {'complete': False, 'phase': 'scope',
+        'boundary': 'Offline native-rate and resampled endpoint diagnostics; original audio/window/case failures retained; audible acceptance separate'}
+    try:
+        clocks = [control['sourceClock'], control['publicClock']]
+        if not all(c.get('sampleRate') == 48000 and c.get('codecName') == 'aac' and c.get('channels') == 2
+                and c['frameRows'] and max(p + n / 48000 for p, n in c['frameRows']) <= 32.1 for c in clocks):
+            raise RuntimeError('aac_pcm_scope')
+        evidence['phase'] = 'source_native'
+        whole_source, left = decode_audio_pcm(source, 48000)
+        evidence['sourceNative'] = whole_source
+        evidence['phase'] = 'source_seek'
+        source_seek, reference = decode_audio_pcm(source, 48000, offset)
+        evidence['sourceSeekNative'] = source_seek
+        evidence['phase'] = 'public_native'
+        whole_public, observed = decode_audio_pcm(public, 48000)
+        evidence['publicNative'] = whole_public
+        evidence['phase'] = 'resampled_eof'
+        resampled, _ = decode_audio_pcm(public, 16000)
+        evidence['publicResampledEOF'] = resampled
+        requested = round(offset * 48000)
+        evidence.update(complete=True, phase='complete',
+            sourceNativeMatchesFrameAccounting=whole_source['samples'] == clocks[0]['decodedSamplesAtSourceRate'],
+            publicNativeMatchesFrameAccounting=whole_public['samples'] == clocks[1]['decodedSamplesAtSourceRate'],
+            nativeSeekSampleDifference=whole_public['samples'] - source_seek['samples'],
+            resampledEOFEqualsBudgetControl=resampled['sha256'] == control['public']['decodedPCMSHA256'],
+            publicSourceCorrespondence=pcm_tail_correspondence(left, observed, requested),
+            sourceSeekCorrespondence=pcm_tail_correspondence(left, reference, requested))
+    except (RuntimeError, OSError, ValueError, KeyError, subprocess.TimeoutExpired) as error:
+        safe = str(error) if isinstance(error, RuntimeError) else type(error).__name__
+        evidence['failureClass'] = safe if re.fullmatch('[a-z_]{1,64}', safe) else 'aac_endpoint_error'
+        case['failures'].append('aac_endpoint_unqualified')

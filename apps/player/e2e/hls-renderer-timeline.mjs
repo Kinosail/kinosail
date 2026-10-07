@@ -1,3 +1,20 @@
+export function checkpointWithoutComposition(proof, policy) {
+  return policy === true && proof.rows.length === 0;
+}
+
+export function recordCaptureFailure(proof, media, error, stage, phase, nativeTime) {
+  proof.captureErrors++; proof.captureFailures ??= [];
+  if (proof.captureFailures.length >= 16) return;
+  const stages = ['event-construction', 'event-copy', 'callback-construction', 'callback-copy', 'final-construction', 'final-copy'];
+  const phases = ['loadedmetadata', 'loadeddata', 'playing', 'waiting', 'seeking', 'seeked', 'ended', 'error', 'before-gesture', 'callback-1', 'callback-2', 'callback-3', 'callback', 'settled'];
+  const names = ['InvalidStateError', 'SecurityError', 'NotSupportedError', 'TypeError', 'RangeError', 'OperationError', 'Error'];
+  const integer = (n, limit) => Number.isInteger(n) && n >= 0 && n <= limit ? n : null;
+  proof.captureFailures.push({stage: stages.includes(stage) ? stage : 'unknown',
+    phase: phases.includes(phase) ? phase : 'unknown', exceptionClass: names.includes(error?.name) ? error.name : 'UnknownError',
+    readyState: integer(media.readyState, 4), width: integer(media.videoWidth, 4096), height: integer(media.videoHeight, 4096),
+    callbacks: integer(proof.rows.length, 4096), nativeTime: typeof nativeTime === 'number' && Number.isFinite(nativeTime) && nativeTime >= -1 && nativeTime <= 120 ? nativeTime : null});
+}
+
 // One bounded compositor tail. Native source strings stay private in this closure.
 export function installPresentationTimeline(proof, media, nativeTime, nativeDuration, copyFrame, pending, stopPulse) {
   proof.frameTimings ??= [];
@@ -70,11 +87,11 @@ export function installPresentationTimeline(proof, media, nativeTime, nativeDura
             try {
               frame = new VideoFrame(media);
               finalRow = [frame.timestamp / 1000000, null, '', frame.timestamp, null, media.playbackRate];
-              const copying = copyFrame(frame, finalRow);
+              const copying = copyFrame(frame, finalRow, 'final-copy', 'settled');
               frame = null;
               proof.hashes.push(copying);
               await copying;
-            } catch {frame?.close(); invalidate();}
+            } catch (error) {frame?.close(); recordCaptureFailure(proof, media, error, 'final-construction', 'settled', nativeTime.call(media)); invalidate();}
             touch(); stableSamples = 0;
           } else {
             tail.beforeFinalCopy = before;

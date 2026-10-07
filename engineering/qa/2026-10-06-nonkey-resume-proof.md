@@ -456,3 +456,54 @@ failed while allowing the existing independent browser and playlist checks to
 run. Valid hosted media cannot inject malformed FFprobe facts, so these isolated
 checks protect the concrete evidence-integrity gap. Do not waive old assertions,
 case failures, process limits, source guards or production gates.
+
+## Capture phase and native AAC endpoint controls, before implementation
+
+Exact `38d96424` retains two MP4 capture errors although every callback and
+retained event-copy hash is complete. Record only fixed capture stage, fixed
+event phase, whitelisted exception class and bounded readiness/dimension/clock
+facts. Never retain exception text, URLs, source strings or credentials. Keep
+the total error counter and all existing failed predicates unchanged.
+
+Add one separate HLS browser control on the same immutable route and bytes.
+It postpones optional event snapshots until an actual composition callback;
+required callback and final-tail copies still run. Baseline snapshots remain
+unchanged. A control cannot waive the original error, decoded-count equality,
+color, source/delivery/process guard or strict case failure. The same owned
+browser and existing 240/260-second journey bounds must contain all four pages.
+
+The MKV budget control remains five 16 kHz samples short, while native AAC
+frame accounting is sixteen 48 kHz samples short of the requested source
+window. Compare complete stereo PCM at the native 48 kHz rate, the output-side
+source seek and unresampled public EOF. Separately decode complete public EOF
+at 16 kHz and compare its checksum with the existing budgeted output.
+Use a fixed 4,097-output-packet ceiling above the independently retained
+decoder frame inventory; retain the existing 40-second process bound. Bound the
+new interleaved native stereo output to 6 MiB; keep the existing mono float
+control at 3 MiB. Omit the time limit and native-rate/channel filters from the
+native EOF control. Generated sources explicitly use stereo 48 kHz AAC.
+Validate that scope first. The separate 16 kHz control retains the existing
+mono resampling policy and compares its complete EOF hash without a time limit.
+
+Record whole PCM hashes/counts and diagnostic source suffix correspondence
+within a fixed plus/minus 64 native-sample search. Preserve every public sample;
+never trim, rewrite, pad or use a match to admit playback. An ambiguous or absent
+whole match remains explicit. No audible-loss conclusion follows from a
+quantized timestamp or resampled count alone. Keep all original window failures.
+
+Valid hosted media cannot inject secret exception strings, malformed capture
+facts, unsupported rates, odd or oversized PCM, nonfinite float samples or
+ambiguous/corrupt sample correspondence. Isolate those evidence-integrity gaps
+first, then run the real hosted controls before production ownership allocation.
+
+Before the separate browser control, reset only the disposable fixture item's
+progress through its actual authorized API to exactly 12.5 seconds. Validate
+closed localhost/item/token/offset inputs before effects, disallow redirects,
+bound the response and remaining request time, and verify the saved value.
+The first watch page can save EOF; silently reusing that state would invalidate
+the control. Cover rejection before network effects before this helper.
+
+Before implementation, test a timeout at each native endpoint decode stage.
+Retain every earlier successful count and hash with a fixed phase, while the
+control stays incomplete and failed. Valid hosted media cannot inject these
+timed interruptions; isolated checks protect that partial-evidence gap.

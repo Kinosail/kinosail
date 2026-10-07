@@ -3,13 +3,14 @@ import {chromium} from '@playwright/test';
 import {createHash} from 'node:crypto';
 import {readFileSync, writeFileSync, renameSync, existsSync} from 'node:fs';
 import {packNative420} from './hls-native-planes.mjs';
-import {observeDirectDelivery} from './hls-direct-delivery.mjs';
-import {installPresentationTimeline} from './hls-renderer-timeline.mjs';
+import {observeDirectDelivery, resetProofResume} from './hls-direct-delivery.mjs';
+import {installPresentationTimeline, recordCaptureFailure, checkpointWithoutComposition} from './hls-renderer-timeline.mjs';
 
 const target = process.argv[2];
 const bytes = readFileSync(0);
 if (bytes.length > 4096 || process.argv.length !== 3) throw new Error('renderer_input_bound');
 const input = JSON.parse(bytes);
+if (input.resumeSeconds !== 12.5) throw new Error('renderer_resume_scope');
 if (!/^http:\/\/localhost:[1-9][0-9]{0,4}$/.test(input.url) ||
     !/^[a-zA-Z0-9_.-]{16,2048}$/.test(input.token) ||
     ![input.itemID, input.referenceID, input.directResumeID].every(id => /^[a-f0-9]{16}$/.test(id)) ||
@@ -45,8 +46,9 @@ while (!existsSync(`${owner}.ack`)) {
 const browser = await chromium.connect(browserServer.wsEndpoint(), {timeout: 15_000});
 result.browserVersion = browser.version();
 
-async function capture(id, compatible) {
+async function capture(id, compatible, afterComposition = false) {
   const context = await browser.newContext({viewport: {width: 1280, height: 800}, deviceScaleFactor: 1});
+  if (afterComposition) result.afterCompositionResumeReset = await resetProofResume(context, input, deadline);
   // Synthetic authorization reaches only the disposable Server, including redirects.
   await context.route('**/*', route => {
     if (new URL(route.request().url()).origin !== input.url) return route.abort();
@@ -83,12 +85,12 @@ async function capture(id, compatible) {
     } else network.unexpectedMediaRequests++;
     if (response.status() !== 200) network.failedMediaResponses++;
   });
-  const observe = () => {
+  const observe = policy => {
     const proof = window.__hlsProof = {rows: [], ended: false, errorCode: 0, captureErrors: 0,
       width: 0, height: 0, nativeTime: null, reportedTime: null, duration: null,
       buffered: [], events: [], hashes: [], videoPlaybackQuality: null,
       nativeFrames: [], unsupportedFormats: [], beforeGesture: [], gesture: null, gestureEvent: null,
-      qualityCheckpoints: [],
+      qualityCheckpoints: [], captureFailures: [], optionalSnapshotPolicy: policy ? 'after-composition' : 'baseline',
       beforeGestureColumns: ['paused', 'nativeTime', 'callbacks', 'muted', 'volume', 'playbackRate',
         'hasBeenActive', 'isActive']};
     const scheduler = proof.scheduler = {kind: 'continuous-request-animation-frame',
@@ -123,7 +125,7 @@ async function capture(id, compatible) {
       media.dataset.proofAttached = '1';
       media.defaultPlaybackRate = media.playbackRate = 1;
       let pendingCopies = 0, timeline;
-      const copyFrame = async (frame, row) => {
+      const copyFrame = async (frame, row, stage = 'callback-copy', phase = 'callback') => {
         pendingCopies++;
         try {
           if (!['I420', 'NV12'].includes(frame.format)) {
@@ -155,7 +157,7 @@ async function capture(id, compatible) {
           row[4] = index;
           const hash = await crypto.subtle.digest('SHA-256', packed);
           row[2] = [...new Uint8Array(hash)].map(byte => byte.toString(16).padStart(2, '0')).join('');
-        } catch {proof.captureErrors++;}
+        } catch (error) {recordCaptureFailure(proof, media, error, stage, phase, nativeTime.call(media));}
         finally {frame.close(); pendingCopies--; timeline?.touch();}
       };
       timeline = installPresentationTimeline(proof, media, nativeTime, nativeDuration,
@@ -171,13 +173,14 @@ async function capture(id, compatible) {
         proof.qualityCheckpoints.push(value);
         if (media.readyState < 2 || pendingCopies >= 16 ||
             proof.qualityCheckpoints.filter(v => v.snapshot).length >= 8) return;
+        if (checkpointWithoutComposition(proof, policy)) {value.snapshotSkipped = 'no_composed_frame_yet'; return;}
         let frame;
         try {
           frame = new VideoFrame(media); // Event snapshot, never an rVFC row.
           value.snapshot = [frame.timestamp / 1000000, null, '', frame.timestamp, null, media.playbackRate];
-          proof.hashes.push(copyFrame(frame, value.snapshot));
+          proof.hashes.push(copyFrame(frame, value.snapshot, 'event-copy', phase));
           frame = null;
-        } catch {frame?.close(); proof.captureErrors++;}
+        } catch (error) {frame?.close(); recordCaptureFailure(proof, media, error, 'event-construction', phase, nativeTime.call(media));}
       };
       window.__hlsQualityCheckpoint = checkpoint;
       const record = (stamp, metadata) => {
@@ -196,7 +199,7 @@ async function capture(id, compatible) {
           row[3] = frame.timestamp;
           proof.hashes.push(copyFrame(frame, row));
           frame = null;
-        } catch {frame?.close(); proof.captureErrors++;}
+        } catch (error) {frame?.close(); recordCaptureFailure(proof, media, error, 'callback-construction', 'callback', nativeTime.call(media));}
         if (proof.rows.length <= 3) checkpoint('callback-' + proof.rows.length);
         media.requestVideoFrameCallback(record);
       };
@@ -227,7 +230,7 @@ async function capture(id, compatible) {
       .observe(document, {childList: true, subtree: true});
     document.addEventListener('DOMContentLoaded', () => document.querySelectorAll('video').forEach(attach));
   };
-  await page.addInitScript({content: `const packNative420 = ${packNative420.toString()};const installPresentationTimeline = ${installPresentationTimeline.toString()};(${observe.toString()})();`});
+  await page.addInitScript({content: `const packNative420 = ${packNative420.toString()};const installPresentationTimeline = ${installPresentationTimeline.toString()};const recordCaptureFailure = ${recordCaptureFailure.toString()};const checkpointWithoutComposition = ${checkpointWithoutComposition.toString()};(${observe.toString()})(${afterComposition});`});
   let failureClass;
   try {
     const timeout = () => Math.max(1, deadline - Date.now());
@@ -285,6 +288,8 @@ try {
   result.directResume = await capture(input.directResumeID, false);
   save();
   result.public = await capture(input.itemID, true);
+  save();
+  result.publicAfterComposition = await capture(input.itemID, true, true);
   save();
 } finally {
   save();

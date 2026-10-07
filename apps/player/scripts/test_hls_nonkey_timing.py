@@ -33,9 +33,63 @@ class FloatingAudioCenters(unittest.TestCase):
         self.assertTrue(all(v['available'] for v in facts['windows']))
 
 
+class NativePCMEndpointIntegrity(unittest.TestCase):
+    def test_native_and_float_eof_controls_are_bounded_without_resampler_substitution(self):
+        from hls_followon_frames import decode_audio_pcm
+        payload = struct.pack('<hh', 7, -7) * 100
+        with mock.patch('hls_followon_frames.subprocess.run', return_value=SimpleNamespace(returncode=0,stdout=payload)) as run:
+            facts, retained = decode_audio_pcm(Path('synthetic'), 48000, 12.5)
+        command = run.call_args.args[0]
+        self.assertNotIn('-ar', command)
+        self.assertNotIn('-ac', command)
+        self.assertNotIn('-t', command)
+        self.assertEqual(command[command.index('-f')+1], 's16le')
+        self.assertEqual(command[command.index('-ss')+1], '12.5')
+        self.assertEqual(command[command.index('-frames:a')+1], '4097')
+        self.assertEqual(command[command.index('-map')+1], '0:a:0')
+        self.assertEqual(run.call_args.kwargs['timeout'], 40)
+        self.assertEqual(facts['samples'], 100)
+        self.assertEqual(facts['channels'], 2)
+        self.assertEqual(retained, payload)
+        for bad in [True, 44100, 0]:
+            with mock.patch('hls_followon_frames.subprocess.run', side_effect=AssertionError('process_effect')):
+                with self.assertRaises(RuntimeError): decode_audio_pcm(Path('synthetic'), bad)
+        for payload in [b'xx', b'x'*(6*1024*1024+4), struct.pack('<f', float('nan'))]:
+            rate = 16000 if len(payload)==4 else 48000
+            with mock.patch('hls_followon_frames.subprocess.run', return_value=SimpleNamespace(returncode=0,stdout=payload)):
+                with self.assertRaises(RuntimeError): decode_audio_pcm(Path('synthetic'), rate)
+        with mock.patch('hls_followon_frames.subprocess.run', return_value=SimpleNamespace(returncode=0,stdout=struct.pack('<f', 0.1))) as run:
+            facts, _ = decode_audio_pcm(Path('synthetic'), 16000)
+        self.assertEqual(run.call_args.args[0][run.call_args.args[0].index('-ac')+1], '1')
+        self.assertEqual(facts['channels'], 1)
+
+    def test_whole_suffix_correspondence_retains_shift_missing_tail_and_ambiguity(self):
+        from hls_nonkey_diagnostics import pcm_tail_correspondence
+        source = b''.join(struct.pack('<hh',n,-n) for n in range(200))
+        public = source[83*4:]
+        facts = pcm_tail_correspondence(source, public, 80)
+        self.assertEqual(facts['uniqueStartSample'], 83)
+        self.assertEqual(facts['requestedStartDeltaSamples'], 3)
+        self.assertTrue(facts['uniqueSourceTailComplete'])
+        self.assertFalse(pcm_tail_correspondence(source, public[:-4], 80)['uniqueSourceTailComplete'])
+        self.assertFalse(pcm_tail_correspondence(source, b'xxxx'+public[4:], 80)['uniqueSourceTailComplete'])
+        self.assertFalse(pcm_tail_correspondence(b'\0'*800, b'\0'*468, 80)['uniqueSourceTailComplete'])
+        self.assertEqual(facts['publicSamples'],117)
+
+    def test_codec_and_channel_scope_are_explicit(self):
+        from hls_followon_frames import parse_aac_clock_probe
+        probe = AACClockIntegrity().probe()
+        facts = parse_aac_clock_probe(json.dumps(probe).encode())
+        self.assertEqual(facts['codecName'],'aac')
+        self.assertEqual(facts['channels'],2)
+        for key,value in [('codec_name','foreign'),('channels',True),('channels',1),('channels',3)]:
+            probe=AACClockIntegrity().probe();probe['streams'][0][key]=value
+            with self.assertRaises(RuntimeError):parse_aac_clock_probe(json.dumps(probe).encode())
+
+
 class AACClockIntegrity(unittest.TestCase):
     def probe(self):
-        return {'streams': [{'sample_rate': '48000'}], 'format': {'start_time': '-0.5', 'duration': '20.5'},
+        return {'streams': [{'sample_rate': '48000', 'codec_name': 'aac', 'channels': 2}], 'format': {'start_time': '-0.5', 'duration': '20.5'},
             'packets_and_frames': [{'type': 'packet', 'pts_time': '0.0', 'duration_time': '0.021333',
                 'data_hash': 'SHA256:' + 'a' * 64, 'side_data_list': [{'side_data_type': 'Skip Samples',
                     'skip_samples': 10, 'discard_padding': 0}]},

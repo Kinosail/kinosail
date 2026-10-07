@@ -106,7 +106,7 @@ def audio_sequence(path, duration, offset=0, centers=None, output_budget_extra=0
         crossings = sum(a <= 0 < b for a, b in zip(values, values[1:]))
         windows.append({'sourceTimeSeconds': second + offset, 'available': True,
                         'frequencyHz': crossings * 2, 'rms': math.sqrt(sum(v*v for v in values) / len(values))})
-    return {'decodedSamples': len(samples), 'windows': windows}
+    return {'decodedSamples': len(samples), 'decodedPCMSHA256': hashlib.sha256(result.stdout).hexdigest(), 'windows': windows}
 
 
 def audio_clock(value):
@@ -141,6 +141,8 @@ def parse_aac_clock_probe(data):
         streams, rows = value['streams'], value['packets_and_frames']
         if not isinstance(streams, list) or len(streams) != 1:
             raise RuntimeError('aac_stream_shape')
+        if streams[0].get('codec_name') != 'aac' or type(streams[0].get('channels')) is not int or streams[0]['channels'] != 2:
+            raise RuntimeError('aac_codec_channel_scope')
         rate = streams[0]['sample_rate']
         if not isinstance(rate, str) or not re.fullmatch('[1-9][0-9]{3,5}', rate) or not 8000 <= int(rate) <= 192000:
             raise RuntimeError('aac_rate_shape')
@@ -161,7 +163,7 @@ def parse_aac_clock_probe(data):
                 raise RuntimeError('aac_frame_shape')
         if not 0 < len(packets) < 4096 or not 0 < len(frames) < 4096:
             raise RuntimeError('aac_complete_probe_bound')
-        return {'sampleRate': int(rate), 'formatStartSeconds': origin, 'formatDurationSeconds': duration,
+        return {'codecName': 'aac', 'channels': 2, 'sampleRate': int(rate), 'formatStartSeconds': origin, 'formatDurationSeconds': duration,
             'packetRowColumns': ['pts', 'duration', 'payloadSHA256', 'skipDiscardSamples'], 'packetRows': packets,
             'frameRowColumns': ['pts', 'nbSamples'], 'frameRows': frames,
             'decodedSamplesAtSourceRate': sum(v[1] for v in frames),
@@ -174,8 +176,29 @@ def aac_clock_evidence(path):
     command = ['ffprobe', '-v', 'error', '-threads', '2', '-select_streams', 'a:0', '-read_intervals', '%+#4096',
         '-show_packets', '-show_frames', '-show_data_hash', 'sha256', '-show_entries',
         'packet=type,pts_time,duration_time,data_hash:packet_side_data=side_data_type,skip_samples,discard_padding:'
-        'frame=type,pts_time,nb_samples:stream=sample_rate:format=start_time,duration', '-of', 'json', str(path)]
+        'frame=type,pts_time,nb_samples:stream=sample_rate,codec_name,channels:format=start_time,duration', '-of', 'json', str(path)]
     result = subprocess.run(command, capture_output=True, timeout=40)
     if result.returncode:
         raise RuntimeError('aac_complete_probe')
     return parse_aac_clock_probe(result.stdout)
+
+
+def decode_audio_pcm(path, rate, offset=0):
+    if type(rate) is not int or rate not in (16000, 48000) or type(offset) not in (int, float) or not math.isfinite(offset) or not 0 <= offset <= 32:
+        raise RuntimeError('aac_pcm_scope')
+    width, channels, format_name = (2, 2, 's16le') if rate == 48000 else (4, 1, 'f32le')
+    command = ['ffmpeg', '-nostdin', '-v', 'error', '-xerror', '-threads', '2', '-i', str(path)]
+    if offset:
+        command += ['-ss', str(offset)]
+    command += ['-map', '0:a:0', '-vn', '-frames:a', '4097']
+    if rate == 16000:
+        command += ['-ac', '1', '-ar', '16000']
+    command += ['-f', format_name, 'pipe:1']
+    result = subprocess.run(command, capture_output=True, timeout=40)
+    data = result.stdout
+    if result.returncode or not 0 < len(data) <= channels * 3 * 1024 * 1024 or len(data) % (width * channels):
+        raise RuntimeError('aac_pcm_bound')
+    if width == 4 and any(not math.isfinite(v[0]) for v in struct.iter_unpack('<f', data)):
+        raise RuntimeError('aac_pcm_nonfinite')
+    return {'sampleRate': rate, 'channels': channels, 'format': format_name, 'outputPacketLimit': 4097, 'timeBudgetApplied': False, 'rateConversionApplied': rate == 16000,
+        'samples': len(data) // (width * channels), 'sha256': hashlib.sha256(data).hexdigest()}, data
