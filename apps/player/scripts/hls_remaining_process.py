@@ -3,6 +3,7 @@ import os
 import re
 import hashlib
 import json
+import math
 import signal
 import subprocess
 import time
@@ -76,7 +77,7 @@ def native_pcm(path, run_deadline, directory):
     check(remaining > 0, 'native_pcm_deadline')
     raw = subprocess.check_output(['ffprobe', '-v', 'error', '-select_streams', 'a:0',
         '-read_intervals', '%+#513', '-count_packets', '-show_frames', '-show_streams',
-        '-show_entries', 'frame=nb_samples:stream=nb_read_packets,sample_rate,channels,codec_name',
+        '-show_entries', 'frame=nb_samples,pts_time,best_effort_timestamp_time:stream=nb_read_packets,sample_rate,channels,codec_name',
         '-of', 'json', str(path)], timeout=min(30, remaining))
     check(len(raw) <= 1 << 20, 'native_probe_output_bound')
     facts = json.loads(raw)
@@ -86,6 +87,8 @@ def native_pcm(path, run_deadline, directory):
     packet_count = streams[0].get('nb_read_packets', '')
     check(re.fullmatch(r'[0-9]{1,3}', packet_count) and 0 < int(packet_count) < 513, 'native_complete_packet_bound')
     check(0 < len(frames) < 513 and all(type(v.get('nb_samples')) is int and 0 < v['nb_samples'] <= 65536 for v in frames), 'native_complete_frame_bound')
+    clocks = [float(v['best_effort_timestamp_time']) for v in frames]
+    check(all(math.isfinite(v) for v in clocks), 'native_complete_frame_clock')
     samples = sum(v['nb_samples'] for v in frames)
     check(0 < samples * 4 <= 2 << 20, 'native_complete_sample_bound')
     target = directory / (path.name + '.pcm')
@@ -108,7 +111,8 @@ def native_pcm(path, run_deadline, directory):
     data = target.read_bytes()
     check(data and len(data) % 4 == 0, 'native_pcm_alignment')
     return data, {'stream': streams[0], 'frames': len(frames), 'packets': int(packet_count), 'samples': samples,
-        'frameLimit': 513, 'limitReached': False, 'completeEOFAccounted': True}
+        'frameLimit': 513, 'limitReached': False, 'completeEOFAccounted': True,
+        'decodedFrames': frames, 'decodedClockOrderValid': all(a < b for a, b in zip(clocks, clocks[1:]))}
 
 
 def source_snapshot(path):
