@@ -87,7 +87,7 @@ type PlaybackPlan struct {
 	MarkerMode            string            `json:"markerMode,omitempty"`
 	Timeline              Timeline          `json:"timeline,omitempty"`
 
-	// Original Direct Play audio needs a compatible representation for this client.
+	// Audio conversion is required while the original video otherwise meets the client's limits.
 	AudioCompatibilityRequired bool `json:"audioCompatibilityRequired,omitempty"`
 }
 

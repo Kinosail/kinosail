@@ -32,7 +32,6 @@ func Decide(facts MediaFacts, client ClientCapabilities, policy ViewerPolicy, in
 	limit := MinimumPositive(client.MaxBitrate, policy.MaxBitrate, intent.MaxBitrate)
 	plan.MaxBitrate = limit
 	compatible := playbackCompatibility(facts, client, audio, limit)
-	plan.AudioCompatibilityRequired = !compatible.audio
 	if !compatible.hdr {
 		plan.ColorMode = "tone-map-sdr"
 	}
@@ -129,7 +128,9 @@ func playbackCompatibility(facts MediaFacts, client ClientCapabilities, audio Au
 
 func choosePlaybackMode(plan *PlaybackPlan, intent NetworkIntent, client ClientCapabilities, compatible compatibility) { //nolint:cyclop // Ordered playback policy remains below the repository quality ceiling.
 	forceDirect := intent.ForceDirect || intent.PreferDirect && !intent.ForceTranscode
-	needsVideo := intent.ForceTranscode || !compatible.video || !compatible.size || !compatible.bitrate || !compatible.hdr || plan.SubtitleMode == "burn-in"
+	videoCompatible := compatible.video && compatible.size && compatible.bitrate && compatible.hdr && plan.SubtitleMode != "burn-in"
+	plan.AudioCompatibilityRequired = !compatible.audio && videoCompatible
+	needsVideo := intent.ForceTranscode || !videoCompatible
 	switch {
 	case forceDirect:
 		plan.Reason = "direct-requested"
