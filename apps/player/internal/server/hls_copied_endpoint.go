@@ -195,8 +195,8 @@ func completedCopiedHLSManifest(manifest []byte, duration float64) []byte {
 		if !strings.HasPrefix(line, "#EXT-X-TARGETDURATION:") {
 			continue
 		}
-		value, err := strconv.ParseFloat(strings.TrimPrefix(line, "#EXT-X-TARGETDURATION:"), 64)
-		if seen || err != nil || !validCopiedHLSEnd(value) || value != math.Trunc(value) {
+		value, err := copiedHLSTarget(strings.TrimPrefix(line, "#EXT-X-TARGETDURATION:"))
+		if seen || err != nil {
 			return nil
 		}
 		target, seen = value, true
@@ -207,6 +207,22 @@ func completedCopiedHLSManifest(manifest []byte, duration float64) []byte {
 	}
 	lines[final] = "#EXTINF:" + copiedHLSTime(corrected) + ","
 	return bytes.Replace([]byte(strings.Join(lines, "\n")), []byte("#EXT-X-PLAYLIST-TYPE:EVENT"), []byte("#EXT-X-PLAYLIST-TYPE:VOD"), 1)
+}
+
+func copiedHLSTarget(value string) (float64, error) {
+	if len(value) == 0 || len(value) > 20 {
+		return 0, errCopiedHLSIndex
+	}
+	for _, digit := range value {
+		if digit < '0' || digit > '9' {
+			return 0, errCopiedHLSIndex
+		}
+	}
+	integer, err := strconv.ParseUint(value, 10, 64)
+	if err != nil || integer == 0 || integer > 7*24*60*60 {
+		return 0, errCopiedHLSIndex
+	}
+	return float64(integer), nil
 }
 
 func copiedHLSBoundMetadata(root *os.Root, timeline, certificate []byte, policy string) bool {
