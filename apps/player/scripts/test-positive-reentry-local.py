@@ -115,6 +115,10 @@ selector_media = media / 'Positive Selector.mkv'
 selector_generate = ['ffmpeg', '-nostdin', '-hide_banner', '-loglevel', 'error', '-i', str(media / 'Positive Reentry.mkv'),
                      '-map', '0', '-c', 'copy', '-metadata', 'title=Positive Selector', str(selector_media)]
 receipt['selectorMediaCommand'] = selector_generate
+zero_media = media / 'Positive Zero.mkv'
+zero_generate = ['ffmpeg', '-nostdin', '-hide_banner', '-loglevel', 'error', '-i', str(media / 'Positive Reentry.mkv'),
+                 '-map', '0', '-c', 'copy', '-metadata', 'title=Positive Zero', str(zero_media)]
+receipt['zeroMediaCommand'] = zero_generate
 server = browser = None
 trust = HostedFixtureTrust(run, receipt)
 
@@ -164,6 +168,8 @@ try:
     receipt['mediaSHA256'] = checksum(media / 'Positive Reentry.mkv')
     run_owned_command(selector_generate, environment, timeout=30)
     receipt['selectorMediaSHA256'] = checksum(selector_media)
+    run_owned_command(zero_generate, environment, timeout=30)
+    receipt['zeroMediaSHA256'] = checksum(zero_media)
     with socket.socket() as listener:
         listener.bind(('127.0.0.1', 0))
         port = listener.getsockname()[1]
@@ -222,7 +228,7 @@ try:
         with (run / 'browser-private.log').open('w') as log:
             browser = subprocess.Popen(command, cwd=root / 'apps/player/e2e', env=environment, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
             receipt['browserPID'] = browser.pid
-            exit_code = browser.wait(timeout=210)
+            exit_code = browser.wait(timeout=300)
         receipt['browserExitCode'] = exit_code
         project_browser_failure()
         receipt['result'] = 'passed' if exit_code == 0 else 'failed'

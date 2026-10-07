@@ -8,7 +8,8 @@ import {configureTestInstance, login} from './test-instance-helpers';
 // in an ordinary inline rendered fixture. This is not native launch acceptance.
 configureTestInstance();
 test.use({...devices['iPhone 13']});
-test('positive saved selector requests and separately labeled inline decoder control', async ({page, browser}, info) => {
+for (const explicitZero of [false, true]) {
+test(`positive saved selector ${explicitZero ? 'explicit zero during actual negotiation' : 'cold saved6'} and separately labeled inline decoder control`, async ({page, browser}, info) => {
   test.skip(process.env.KINOSAIL_POSITIVE_REENTRY_E2E !== '1', 'Owned synthetic loopback runner only');
   test.setTimeout(90_000);
   const base = new URL(process.env.KINOSAIL_E2E_URL!);
@@ -18,6 +19,8 @@ test('positive saved selector requests and separately labeled inline decoder con
   const observations: object[] = [], sourceRequests: object[] = [], scriptResponses: object[] = [], servedWatch: object[] = [], progressWrites: object[] = [];
   const pendingResponses: Promise<void>[] = [];
   let phase = 'login';
+  let heldNegotiationRequest: object | undefined, negotiationStatus = 0;
+  let explicitZeroAdmitted = false;
   const record = async (value: object) => {
     observations.push({utc: new Date().toISOString(), ...value});
     await writeFile(info.outputPath('positive-selector.json'), JSON.stringify({sourceReceipt,
@@ -69,10 +72,12 @@ test('positive saved selector requests and separately labeled inline decoder con
   expect((await page.request.put('/api/v1/settings/playback', {headers: await csrf(),
     data: {mode: 'automatic', autoplay: false, subtitles: 'off', autoSkip: []}})).ok()).toBe(true);
   const library = await (await page.request.get('/api/v1/library')).json();
-  const item = library.items.find((value: {title: string}) => value.title === 'Positive Selector');
+  const selectorItem = library.items.find((value: {title: string}) => value.title === 'Positive Selector');
+  const zeroItem = library.items.find((value: {title: string}) => value.title === 'Positive Zero');
+  const item = explicitZero ? zeroItem : selectorItem;
   const nativeItem = library.items.find((value: {title: string}) => value.title === 'Positive Reentry');
-  expect(item).toBeTruthy();
-  expect(nativeItem).toBeTruthy(); expect(item.id).not.toBe(nativeItem.id);
+  expect(selectorItem).toBeTruthy(); expect(zeroItem).toBeTruthy(); expect(nativeItem).toBeTruthy();
+  expect(new Set([selectorItem.id, zeroItem.id, nativeItem.id]).size).toBe(3);
   const path = `/api/v1/items/${item.id}`, watch = `/watch/${item.id}`;
   const progressEndpoint = `/progress/${item.id}`;
   page.on('request', request => {
@@ -92,6 +97,7 @@ test('positive saved selector requests and separately labeled inline decoder con
     expect(response.ok()).toBe(true); return response.json();
   };
   page.on('response', response => {
+    if (response.request() === heldNegotiationRequest) negotiationStatus = response.status();
     const responsePhase = phase;
     const operation = (async () => {
       try {
@@ -124,16 +130,55 @@ test('positive saved selector requests and separately labeled inline decoder con
   expect((await page.request.put(path + '/progress', {headers: await csrf(), data: {seconds: 6, watched: false}})).ok()).toBe(true);
   await expect.poll(() => publicPosition().then(value => value.seconds)).toBe(6);
   await record({phase: 'seed6', public: await publicPosition()});
+  let negotiationHeld = false, negotiationBudgetReleased = false;
+  let releaseNegotiation = () => {};
+  if (explicitZero) await page.route(`${base.origin}${path}/playback?*`, async route => {
+    const request = route.request();
+    let watchDocument = false;
+    try {
+      const referer = new URL(request.headers().referer || '');
+      const endpoint = new URL(request.url());
+      watchDocument = request.method() === 'GET' && request.frame() === page.mainFrame() &&
+        new URL(request.frame().url()).pathname === watch && referer.origin === base.origin && referer.pathname === watch &&
+        Boolean(endpoint.searchParams.get('videoCodecs'));
+    } catch { /* No raw URL/referrer retained. */ }
+    if (negotiationHeld || !watchDocument) return route.continue();
+    heldNegotiationRequest = request;
+    negotiationHeld = true;
+    await new Promise<void>(resolve => {
+      const timer = setTimeout(() => { negotiationBudgetReleased = true; resolve(); }, 750);
+      releaseNegotiation = () => { clearTimeout(timer); resolve(); };
+    });
+    await route.continue();
+  });
   phase = 'initial-Watch-before-any-Play';
   await page.goto('/');
   await page.locator(`a.card[href="${watch}"]`).first().click();
+  if (explicitZero) {
+    try {
+      await expect.poll(() => negotiationHeld, {timeout: 5000, intervals: [20, 50, 100]}).toBe(true);
+      expect(await page.evaluate(() => (window as unknown as {selectorMediaEvents: {event: string}[]}).selectorMediaEvents.filter(value => value.event === 'kinosail:seek-intent').length)).toBe(0);
+      await page.keyboard.press('ArrowLeft');
+      const afterKey = await page.locator('video').evaluate(element => ({position: (element as HTMLVideoElement).currentTime,
+        intents: (window as unknown as {selectorMediaEvents: {event: string}[]}).selectorMediaEvents.filter(value => value.event === 'kinosail:seek-intent').length}));
+      explicitZeroAdmitted = negotiationHeld && !negotiationBudgetReleased && afterKey.position === 0 && afterKey.intents === 1;
+      releaseNegotiation();
+      expect(explicitZeroAdmitted).toBe(true);
+      await expect.poll(() => negotiationStatus, {timeout: 3000, intervals: [20, 50, 100]}).toBe(200);
+      await record({phase: 'explicit-zero-during-held-real-negotiation', actualRequestHeld: negotiationHeld,
+        admissionFrozenBeforeRelease: explicitZeroAdmitted, positionAfterRealKey: afterKey.position, seekIntentCount: afterKey.intents,
+        actualNegotiationStatus: negotiationStatus});
+    } finally { releaseNegotiation(); }
+  }
   await expect.poll(() => page.locator('video').evaluate(video => (video as HTMLVideoElement).readyState), {timeout: 30_000}).toBeGreaterThanOrEqual(2);
   await record({phase: 'isolated-item-initial-metadata', public: await publicPosition(),
     events: await page.evaluate(() => (window as unknown as {selectorMediaEvents: object[]}).selectorMediaEvents),
     separateProgressKey: true});
-  phase = 'reload-before-any-Play';
-  await page.reload();
-  await expect.poll(() => page.locator('video').evaluate(video => (video as HTMLVideoElement).readyState), {timeout: 30_000}).toBeGreaterThanOrEqual(2);
+  if (!explicitZero) {
+    phase = 'reload-before-any-Play';
+    await page.reload();
+    await expect.poll(() => page.locator('video').evaluate(video => (video as HTMLVideoElement).readyState), {timeout: 30_000}).toBeGreaterThanOrEqual(2);
+  }
   await Promise.all(pendingResponses);
   const selectedURL = await page.locator('video').evaluate(video => (video as HTMLVideoElement).currentSrc || (video as HTMLVideoElement).src);
   const selected = hlsProjection(selectedURL);
@@ -152,6 +197,8 @@ test('positive saved selector requests and separately labeled inline decoder con
   expect(state.paused).toBe(true);
   expect(state.directType).toBe('video/x-matroska'); expect(state.compatibilityMode).toBe('transcode');
   expect(state.policy).toBe('direct-first'); expect(state.nativeHLS).not.toBe('');
+  if (explicitZero) expect(Math.abs(state.reportedPosition)).toBeLessThan(0.1);
+  const publicBeforeControl = await publicPosition();
   const control = await browser.newContext({...devices['Desktop Safari'], storageState: await page.context().storageState(), ignoreHTTPSErrors: false});
   let controlWrites = 0;
   control.on('request', request => {
@@ -198,14 +245,20 @@ test('positive saved selector requests and separately labeled inline decoder con
       selected, frames: frames.map(({png: _png, ...value}) => value), controlWrites, public: await publicPosition()});
     expect(frames[1].mediaTime).toBeGreaterThan(frames[0].mediaTime);
     expect(state.renderedStart).toBe(6);
-    expect(controlWrites).toBe(0); expect((await publicPosition()).seconds).toBe(6);
+    expect(controlWrites).toBe(0); expect((await publicPosition()).seconds).toBe(explicitZero ? publicBeforeControl.seconds : 6);
     await record({phase: 'source-regression-verdict', selectedOffsetMatchesSaved6: selected!.offsetSeconds === 6,
       firstFrameMatchesSavedYellow: frames[0].rgb[0] > 150 && frames[0].rgb[1] > 150 && frames[0].rgb[2] < 80,
+      requestedPosition: explicitZero ? 0 : 6, explicitZeroDuringActualNegotiation: explicitZero && explicitZeroAdmitted,
       boundary: 'This diagnoses selected source bytes through an inline control; native fullscreen and changed accepted checkpoint remain separate failed or unadmitted gates.'});
     expect(sourceRequests.some(value => (value as {operation: string}).operation === 'request')).toBe(true);
     expect(servedWatch.some(value => (value as {start: number}).start === 6)).toBe(true);
-    expect(selected!.offsetSeconds).toBe(6);
-    expect(frames[0].rgb[0]).toBeGreaterThan(150); expect(frames[0].rgb[1]).toBeGreaterThan(150); expect(frames[0].rgb[2]).toBeLessThan(80);
+    expect(selected!.offsetSeconds).toBe(explicitZero ? 0 : 6);
+    if (explicitZero) {
+      expect(explicitZeroAdmitted).toBe(true); expect(negotiationStatus).toBe(200);
+      expect(frames[0].rgb[0]).toBeLessThan(80); expect(frames[0].rgb[1]).toBeLessThan(80); expect(frames[0].rgb[2]).toBeGreaterThan(150);
+    } else {
+      expect(frames[0].rgb[0]).toBeGreaterThan(150); expect(frames[0].rgb[1]).toBeGreaterThan(150); expect(frames[0].rgb[2]).toBeLessThan(80);
+    }
   } catch (error) {
     controlFailed = true;
     throw error;
@@ -230,3 +283,4 @@ test('positive saved selector requests and separately labeled inline decoder con
     }
   }
 });
+}
