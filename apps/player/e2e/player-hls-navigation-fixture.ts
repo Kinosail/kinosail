@@ -11,14 +11,16 @@ import {playerSource, readStaticSource} from './static-sources';
 // Real H264/transport/Hls.js isolates lifecycle; it does not exercise Go storage.
 const adapter = await readStaticSource(['../internal/server/static/hls.min.js']);
 
-export async function hlsNavigationPeer(contextual = false) {
+export async function hlsNavigationPeer(contextual = false, fastRedirect = false) {
   const directory = await mkdtemp(join(tmpdir(), 'kinosail-hls-navigation-'));
+  const extension = fastRedirect ? 'm4s' : 'ts';
   try {
     execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-f', 'lavfi',
       '-i', 'testsrc2=size=160x90:rate=8', '-t', '16', '-an', '-c:v', 'libx264',
       '-preset', 'ultrafast', '-pix_fmt', 'yuv420p', '-g', '16', '-keyint_min', '16',
       '-sc_threshold', '0', '-bf', '0', '-f', 'hls', '-hls_time', '2',
-      '-hls_playlist_type', 'vod', '-hls_segment_filename', join(directory, 'segment%02d.ts'),
+      '-hls_playlist_type', 'vod', ...(fastRedirect ? ['-hls_segment_type', 'fmp4'] : []),
+      '-hls_segment_filename', join(directory, `segment%02d.${extension}`),
       join(directory, 'media.m3u8')], {timeout: 20_000, stdio: 'pipe'});
   } catch (error) {
     await rm(directory, {recursive: true, force: true});
@@ -29,7 +31,8 @@ export async function hlsNavigationPeer(contextual = false) {
   const facts = {
     returnPath: contextual ? '/?view=movies' : '/',
     ffmpeg: execFileSync('ffmpeg', ['-version'], {encoding: 'utf8', timeout: 5000}).split('\n')[0].slice(0, 256),
-    codec: 'libx264/yuv420p/160x90/8fps/16s/no-audio/closed-GOP16/TS',
+    codec: `libx264/yuv420p/160x90/8fps/16s/no-audio/closed-GOP16/${fastRedirect ? 'fMP4' : 'TS'}`,
+    destination: fastRedirect ? 'fast-Watched303-or-Library200' : 'held-headers',
     playerSourceSHA256: createHash('sha256').update(playerSource).digest('hex'),
     hlsAdapterSHA256: createHash('sha256').update(adapter).digest('hex'),
     mediaSHA256: Object.fromEntries([...media].map(([name, data]) => [name, createHash('sha256').update(data).digest('hex')])),
@@ -38,14 +41,14 @@ export async function hlsNavigationPeer(contextual = false) {
   const waitingDestinations = new Set<ServerResponse>();
   const waitingProgress = new Set<ServerResponse>();
   const requests: Array<{kind: string; afterDestination: boolean}> = [];
-  let departing = false, retry = false, holdDestination = true, holdProgress = false;
+  let departing = false, retry = false, holdDestination = true, holdProgress = false, closedHeldSegments = 0;
   const web = createServer((request, response) => {
     const path = request.url?.split('?')[0];
-    if (path === '/watch/movie') {
+    if (path === '/watch/movie' || fastRedirect && path === '/watch/after-watched') {
       response.writeHead(200, {'Content-Type': 'text/html'});
       response.end(`<body data-viewer-profile="hls-navigation-profile">
         <a href="${facts.returnPath}"${contextual ? ' data-browse-return' : ''}>${contextual ? 'Back to Movies' : 'Library'}</a><form action="/watched/movie" method="post"><button>Mark watched</button></form>
-        <div class="media-stage"><video controls muted playsinline data-hls="/hls/index.m3u8"
+        <div class="media-stage"><video controls muted playsinline data-fixture-watch="${path === '/watch/movie' ? 'movie' : 'after-watched'}" data-hls="/hls/index.m3u8"
           data-compatibility-mode="remux" data-playback-policy="compatible" data-progress="/progress/movie"
           data-playback-session="hls-navigation-session" data-duration="16" data-start="0"></video></div>
         <label data-quality-control>Quality<select data-quality></select><small data-quality-state></small></label>
@@ -68,6 +71,11 @@ export async function hlsNavigationPeer(contextual = false) {
     if (path === '/' || path === '/watched/movie') {
       departing = true;
       requests.push({kind: 'destination', afterDestination: true});
+      if (fastRedirect) {
+        if (path === '/watched/movie') {response.writeHead(303, {Location: '/watch/after-watched'}); response.end();}
+        else {response.writeHead(200, {'Content-Type': 'text/html'}); response.end('<h1>Destination</h1>');}
+        return;
+      }
       if (holdDestination) waitingDestinations.add(response);
       else {response.writeHead(200, {'Content-Type': 'text/html'}); response.end('<h1>Destination</h1>');}
       return;
@@ -81,15 +89,16 @@ export async function hlsNavigationPeer(contextual = false) {
     const body = media.get(name);
     if (!body) {response.writeHead(404); response.end(); return;}
     requests.push({kind: name, afterDestination: departing});
-    if (name === 'segment02.ts') {
+    if (name === `segment02.${extension}`) {
       if (retry) {response.writeHead(503); response.end();}
       else {
         waitingSegments.add(response);
-        response.on('close', () => waitingSegments.delete(response));
+        response.on('close', () => {waitingSegments.delete(response); closedHeldSegments++;});
       }
       return;
     }
-    response.writeHead(200, {'Content-Type': name.endsWith('.m3u8') ? 'application/vnd.apple.mpegurl' : 'video/mp2t'});
+    response.writeHead(200, {'Content-Type': name.endsWith('.m3u8') ? 'application/vnd.apple.mpegurl'
+      : name.endsWith('.ts') ? 'video/mp2t' : 'video/mp4'});
     response.end(body);
   });
   await new Promise<void>(resolve => web.listen(0, '127.0.0.1', resolve));
@@ -99,7 +108,7 @@ export async function hlsNavigationPeer(contextual = false) {
     origin: `http://127.0.0.1:${address.port}`,
     facts,
     snapshot: () => ({requests: [...requests], waitingSegments: waitingSegments.size,
-      waitingProgress: waitingProgress.size, departing}),
+      waitingProgress: waitingProgress.size, departing, closedHeldSegments}),
     holdCheckpoint() {holdProgress = true;},
     releaseCheckpoint() {
       holdProgress = false;

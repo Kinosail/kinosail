@@ -57,6 +57,48 @@ for (const destination of ['Library', 'Back to Movies', 'Mark watched']) {
   });
 }
 
+for (const destination of ['Library', 'Mark watched']) {
+  test(`fast ${destination} document commit preserves a clean real fMP4 HLS departure`, {tag: '@smoke'}, async ({page}, info) => {
+    const peer = await hlsNavigationPeer(false, true);
+    const started = Date.now(), phases: Array<{event: string; elapsedMS: number}> = [];
+    const errors: Array<{kind: string; xhrSend: boolean; accessControl: boolean}> = [];
+    const observeError = (kind: string, message: string, stack = '') => {
+      if (errors.length < 16) errors.push({kind, xhrSend: /openAndSendXhr|loadInternal/.test(stack),
+        accessControl: /access[ -]control|CORS/i.test(message)});
+    };
+    page.on('pageerror', error => observeError('pageerror', error.message, error.stack));
+    page.on('console', message => {
+      if (message.type() === 'error') observeError('console', message.text());
+      if (phases.length < 16 && ['kinosail-fixture:navigation', 'kinosail-fixture:pagehide'].includes(message.text())) {
+        phases.push({event: message.text().slice('kinosail-fixture:'.length), elapsedMS: Date.now() - started});
+      }
+    });
+    try {
+      await page.addInitScript(() => {
+        window.addEventListener('kinosail:navigation', event => {
+          if (event.target instanceof HTMLVideoElement) console.debug('kinosail-fixture:navigation');
+        }, {capture: true});
+        window.addEventListener('pagehide', () => console.debug('kinosail-fixture:pagehide'), {capture: true});
+      });
+      await movingVideo(page, peer);
+      const before = peer.snapshot();
+      const click = destination === 'Mark watched' ? page.getByRole('button', {name: destination, exact: true})
+        : page.getByRole('link', {name: destination, exact: true});
+      await click.click({noWaitAfter: true});
+      await expect(page).toHaveURL(`${peer.origin}${destination === 'Mark watched' ? '/watch/after-watched' : '/'}`);
+      if (destination === 'Mark watched') {
+        await expect(page.locator('video[data-fixture-watch="after-watched"]')).toBeVisible();
+      } else await expect(page.getByRole('heading', {name: 'Destination'})).toBeVisible();
+      await expect.poll(() => peer.snapshot().closedHeldSegments).toBeGreaterThan(0);
+      const after = peer.snapshot();
+      await info.attach('fast-fMP4-HLS-departure', {body: JSON.stringify({destination, facts: peer.facts, before, after,
+        phases, errors, boundary: 'Real pinned Hls.js/HTTP/fMP4 with fast document replacement; console phases unverified, driver receipt time; no Go storage/TLS/offset recipe/native fullscreen proof'}), contentType: 'application/json'});
+      expect(phases.map(value => value.event)).toEqual(['navigation', 'pagehide']);
+      expect(errors).toEqual([]);
+    } finally {await peer.close();}
+  });
+}
+
 for (const contextual of [false, true]) test(`pending checkpoint keeps the real HLS owner until ${contextual ? 'contextual Back ' : ''}acknowledgement`, {tag: '@smoke'}, async ({page}, info) => {
   const peer = await hlsNavigationPeer(contextual);
   const errors: string[] = [];
