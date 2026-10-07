@@ -40,6 +40,8 @@ func (integration *Integration[P]) Register(mux *http.ServeMux, owner func(http.
 	mux.Handle("POST /api/v1/home-assistant/playback/{id}", integration.available(integration.control(http.HandlerFunc(integration.playbackHTTP))))
 	mux.Handle("GET /api/v1/home-assistant/players", integration.available(integration.control(http.HandlerFunc(integration.playersHTTP))))
 	mux.Handle("PUT /api/v1/home-assistant/players/{id}", integration.available(http.HandlerFunc(integration.playerStateHTTP)))
+	mux.Handle("POST /api/v1/home-assistant/players/claims", integration.available(http.HandlerFunc(integration.playerClaimHTTP)))
+	mux.Handle("POST /api/v1/home-assistant/players/{id}/release", integration.available(http.HandlerFunc(integration.playerReleaseHTTP)))
 	mux.Handle("POST /api/v1/home-assistant/players/{id}/commands", integration.available(integration.control(http.HandlerFunc(integration.commandHTTP))))
 	mux.Handle("GET /home-assistant/media/{id}", integration.available(http.HandlerFunc(integration.mediaHTTP)))
 }
@@ -223,31 +225,6 @@ func (integration *Integration[P]) mediaHTTP(writer http.ResponseWriter, request
 
 func (integration *Integration[P]) playersHTTP(writer http.ResponseWriter, _ *http.Request) {
 	writeJSON(writer, map[string]any{"players": integration.playersSnapshot()}, http.StatusOK)
-}
-
-func (integration *Integration[P]) playerStateHTTP(writer http.ResponseWriter, request *http.Request) {
-	id := request.PathValue("id")
-	var state Player
-	if !playerID.MatchString(id) || !readJSON(writer, request, &state) {
-		if !playerID.MatchString(id) {
-			apiError(writer, errors.New("Home Assistant player ID is invalid"), http.StatusBadRequest) //nolint:staticcheck // Preserve the public error.
-		}
-		return
-	}
-	command, err := integration.updatePlayer(id, state, integration.config.CurrentProfile(request).ID)
-	if err != nil {
-		status := http.StatusBadRequest
-		if errors.Is(err, errPlayerLimit) {
-			status = http.StatusTooManyRequests
-		}
-		apiError(writer, err, status)
-		return
-	}
-	if command == nil {
-		writeJSON(writer, map[string]any{"command": nil}, http.StatusOK)
-		return
-	}
-	writeJSON(writer, command, http.StatusOK)
 }
 
 func (integration *Integration[P]) commandHTTP(writer http.ResponseWriter, request *http.Request) {
