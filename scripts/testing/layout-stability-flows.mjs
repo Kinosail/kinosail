@@ -91,8 +91,9 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
   }
   const context = await browser.newContext({...options,viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce"});
   probe.stage = "theater-idle-exit";
-  await observeLayoutFlow(context, options.baseURL, probe, async page => {
+  await observeLayoutFlow(context, options.baseURL, probe, async (page, navigation) => {
     probe.operationPhase = "navigation";
+    navigation.markNavigation(watchPath);
     await page.goto(watchPath,{waitUntil:"domcontentloaded"});
     probe.operationPhase = "theater-media";
     probe.media = await page.locator("video").evaluate(video=>({readyState:video.readyState,errorCode:video.error?.code,mp4:video.canPlayType('video/mp4; codecs="avc1.42E01E"')}));

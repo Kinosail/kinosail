@@ -36,6 +36,7 @@ test("theater navigation failure retains its own page and closes owned contexts"
   assert.equal(probe.navigation?.errorCategory, "timeout");
   assert.equal(probe.navigation?.readyState, "interactive");
   assert.equal(probe.navigation?.path, "/watch");
+  assert.deepEqual(probe.navigation.lifecycle.find(record=>record.kind==="navigation-start")?.route, {path:"/watch",view:"other"});
   assert.deepEqual(probe.navigation?.mainFrameResponses, [{path:"/watch",status:200}]);
   assert.doesNotMatch(JSON.stringify(probe), /private|0123456789abcdef|fixture.invalid/);
   assert.ok(contexts.every(({context})=>context.closed));
