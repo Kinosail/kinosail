@@ -39,7 +39,7 @@ extension PlaybackEngine {
         wantsPlayback = nativeIntent.playing.withLock { $0 } ?? wantsPlayback
         removeTimeObserver()
         player?.pause()
-        isPlaying = false; buffering = false
+        isPlaying = false; buffering = false; bufferedRanges = []
         player = nil
         usingCompatibility = compatible
         let local = try await transport.open(url: url, itemID: item.id, client: client)
@@ -48,6 +48,7 @@ extension PlaybackEngine {
 
     func installPlayer(url: URL, item: MediaItem, position: Double, attempt: UUID) async throws {
         try check(attempt)
+        bufferedRanges = []
         try AVAudioSession.sharedInstance().setCategory(.playback, mode: item.isAudio ? .default : .moviePlayback)
         try AVAudioSession.sharedInstance().setActive(true)
         let retainedPosition = recoveryPosition ?? nativeRecoveryPosition ?? position
@@ -130,6 +131,7 @@ extension PlaybackEngine {
             while !Task.isCancelled {
                 do { try await Task.sleep(for: .seconds(1)) } catch { return }
                 guard let self, self.generation == attempt, let item = self.player?.currentItem else { return }
+                self.refreshBufferedRanges()
                 if item.status == .failed {
                     let failure = await self.transport.failure() ?? item.error
                     guard self.generation == attempt else { return }
@@ -155,6 +157,7 @@ extension PlaybackEngine {
 
     func tick(time: CMTime, attempt: UUID) {
         guard generation == attempt, (try? Input.position(time.seconds)) != nil else { return }
+        refreshBufferedRanges()
         seconds = timeline?.sourceTime(time.seconds) ?? max(0, time.seconds)
         if !loading, !recoveringNetwork, player?.currentItem?.status == .readyToPlay {
             wantsPlayback = player?.timeControlStatus != .paused
@@ -186,6 +189,15 @@ extension PlaybackEngine {
             Task { try? await seek(to: marker.end) }
         }
         if isPlaying, abs(seconds - lastSaved) >= 15 { saveProgress(watched: false) }
+    }
+
+    func refreshBufferedRanges() {
+        guard let item = player?.currentItem, item.status == .readyToPlay, let timeline,
+              item.loadedTimeRanges.count <= 128 else { bufferedRanges = []; return }
+        bufferedRanges = timeline.bufferedRanges(for: item.loadedTimeRanges.map {
+            let range = $0.timeRangeValue
+            return (range.start.seconds, range.start.seconds + range.duration.seconds)
+        })
     }
 
     func observeAudioSession() {

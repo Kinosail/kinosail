@@ -1,7 +1,17 @@
+import {readFile} from "node:fs/promises";
 import {expect, test} from "@playwright/test";
 import {installPlayerExperienceFixture} from "./player-experience-fixture";
 
 installPlayerExperienceFixture(true, false, "iPhone", async (page, title) => {
+  if (title.includes("compatibility buffer")) await page.locator("video").evaluate(video => {
+    video.dataset.hls = "/hls/movie/p/a-a0-s0-none-t0-b0/index.m3u8";
+    video.dataset.start = "40";
+    let source = "";
+    Object.defineProperty(video, "src", {get: () => source, set: (value: string) => { source = value; }});
+    Object.defineProperty(video, "canPlayType", {value: () => "probably"});
+    document.querySelector(".player-settings")!.insertAdjacentHTML("beforeend", '<div hidden data-native-timeline><label class="player-scrubber">Movie position<input type="range" min="0" max="100" value="40" step="0.1" data-player-seek></label><output data-player-time></output></div>');
+    document.body.insertAdjacentHTML("beforeend", '<div data-quality-control hidden><select data-quality></select><span data-quality-state></span></div>');
+  });
   if (title === "rejected fullscreen leaves playback usable") {
     await page.evaluate(() => {
       Object.defineProperty(document.querySelector("video"), "webkitEnterFullscreen", {configurable: true, value: undefined});
@@ -21,6 +31,51 @@ installPlayerExperienceFixture(true, false, "iPhone", async (page, title) => {
 });
 
 test.use({hasTouch: true});
+
+for (const theme of ["light", "dark"]) {
+  test(`native compatibility buffer is visible in the ${theme} settings timeline @smoke`, async ({page}, testInfo) => {
+    await page.addStyleTag({content: await readFile("../../../packages/webassets/static/player-stage.css", "utf8")});
+    await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
+    await page.getByRole("button", {name: "Settings", exact: true}).click();
+    const seek = page.getByRole("slider", {name: "Movie position"});
+    await expect(seek).toBeVisible();
+    expect(await seek.evaluate(input => getComputedStyle(input).appearance)).toBe("none");
+    const ranges = () => seek.evaluate(input => getComputedStyle(input).backgroundImage);
+    await page.locator("video").dispatchEvent("progress");
+    await expect.poll(ranges).toMatch(/0\.72.*40%.*100%/);
+    for (const width of [390, 1440, 1920]) {
+      await page.setViewportSize({width, height: 1080});
+      const box = await seek.boundingBox();
+      expect(Math.round(box!.height)).toBeGreaterThanOrEqual(44);
+      expect(await seek.evaluate(input => getComputedStyle(input).height)).toBe("44px");
+      expect(box!.x + box!.width).toBeLessThanOrEqual(width);
+      await page.screenshot({path: testInfo.outputPath(`native-buffer-${theme}-${width}.png`)});
+    }
+    await seek.fill("55");
+    await expect(seek).toHaveAttribute("aria-valuetext", "0:55 of 1:40");
+    await page.locator("video").dispatchEvent("loadstart");
+    await expect.poll(ranges).not.toContain("0.72");
+    await page.locator("video").dispatchEvent("progress");
+    await expect.poll(ranges).toContain("0.72");
+    await page.locator("video").dispatchEvent("error");
+    await expect.poll(ranges).not.toContain("0.72");
+  });
+}
+
+test("native settings sliders retain their platform appearance @smoke", async ({page}) => {
+  await page.addStyleTag({content: await readFile("../../../packages/webassets/static/player-stage.css", "utf8")});
+  await page.evaluate(() => document.documentElement.dataset.theme = "light");
+  await page.getByRole("button", {name: "Settings", exact: true}).click();
+  await page.locator(".player-native-options .player-settings").evaluate(panel => {
+    panel.insertAdjacentHTML("beforeend", '<label class="player-scrubber">Full video timeline<input type="range" min="0" max="100" value="20"></label>');
+  });
+  const seek = page.getByRole("slider", {name: "Full video timeline"});
+  await expect(seek).toBeVisible();
+  expect(await seek.evaluate(input => getComputedStyle(input).appearance)).not.toBe("none");
+  await seek.focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(seek).toHaveValue("21");
+});
 
 for (const viewport of [{width: 390, height: 844}, {width: 844, height: 390}, {width: 1440, height: 900}]) {
   test(`native controls retain playback when the picture is tapped at ${viewport.width}x${viewport.height}`, async ({page}, testInfo) => {

@@ -27,6 +27,7 @@ final class PlaybackCoordinator {
     var source: PlaybackSource? { engine.source }
     var seconds: Double { engine.seconds }
     var duration: Double { engine.duration }
+    var bufferedRanges: [Range<Double>] { engine.bufferedRanges }
     var loading: Bool { engine.loading }
     var isPlaying: Bool { engine.isPlaying }
     var buffering: Bool { engine.buffering }
@@ -96,6 +97,7 @@ final class PlaybackEngine {
     var source: PlaybackSource?
     var seconds: Double = 0
     var duration: Double = 0
+    var bufferedRanges: [Range<Double>] = []
     var loading = false
     var isPlaying = false
     var buffering = false
@@ -253,7 +255,7 @@ final class PlaybackEngine {
         selectedExternalSubtitleID = nil; playbackRate = 1
         devicePreferencesScope = nil; observedAudioTrackID = nil; observedSubtitleTrackID = nil
         loading = false; isPlaying = false; buffering = false; message = nil; progressMessage = nil
-        seconds = 0; duration = 0; lastSaved = -30; sleepDeadline = nil; completed = false; timeline = nil; usingCompatibility = false
+        seconds = 0; duration = 0; bufferedRanges = []; lastSaved = -30; sleepDeadline = nil; completed = false; timeline = nil; usingCompatibility = false
         if clearQueue { queue.clear() }
         let previous = transport
         transport = MediaTransport()
