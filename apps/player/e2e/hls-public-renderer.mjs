@@ -86,6 +86,27 @@ async function capture(id, compatible) {
       nativeFrames: [], unsupportedFormats: [], beforeGesture: [], gesture: null, gestureEvent: null,
       beforeGestureColumns: ['paused', 'nativeTime', 'callbacks', 'muted', 'volume', 'playbackRate',
         'hasBeenActive', 'isActive']};
+    const scheduler = proof.scheduler = {kind: 'continuous-request-animation-frame',
+      callbacks: 0, maximumGapMilliseconds: 0, stop: null};
+    const pulseDeadline = performance.now() + 240_000;
+    let pulseID, previousPulse;
+    const stopPulse = reason => {
+      cancelAnimationFrame(pulseID);
+      scheduler.stop = reason;
+    };
+    const pulse = stamp => {
+      if (stamp >= pulseDeadline || scheduler.callbacks >= 16_384) {
+        stopPulse('deadline');
+        return;
+      }
+      if (previousPulse !== undefined) scheduler.maximumGapMilliseconds =
+        Math.max(scheduler.maximumGapMilliseconds, stamp - previousPulse);
+      previousPulse = stamp;
+      scheduler.callbacks++;
+      pulseID = requestAnimationFrame(pulse);
+    };
+    pulseID = requestAnimationFrame(pulse);
+    window.addEventListener('pagehide', () => stopPulse('pagehide'), {once: true});
     document.addEventListener('keydown', event => {
       if (event.key === ' ') proof.gestureEvent = {trusted: event.isTrusted,
         hasBeenActive: navigator.userActivation.hasBeenActive, isActive: navigator.userActivation.isActive};
@@ -154,8 +175,8 @@ async function capture(id, compatible) {
       for (const name of ['loadedmetadata', 'playing', 'waiting', 'seeking', 'seeked', 'ended', 'error']) {
         media.addEventListener(name, () => {
           if (proof.events.length < 128) proof.events.push([name, nativeTime.call(media), media.currentTime]);
-          if (name === 'ended') proof.ended = true;
-          if (name === 'error') proof.errorCode = media.error?.code || 0;
+          if (name === 'ended') {proof.ended = true; stopPulse('ended');}
+          if (name === 'error') {proof.errorCode = media.error?.code || 0; stopPulse('error');}
         });
       }
       const sample = () => {

@@ -169,3 +169,29 @@ native userActivation flags in each pre-gesture sample and require false. Focus
 the shipped player region through non-gesture CDP, then send trusted Space key
 down/up through CDP Input. No ordinary Playwright evaluate or locator inspection
 may precede that gesture. Preserve this as a keyboard-start observation boundary.
+
+## Renderer scheduling diagnostic, before implementation
+
+Exact `d98e54d2` completes both actual watch journeys with verified paused,
+unactivated, unmuted startup and a trusted Space event. Every native copy binds
+to its callback clock; all public native-plane hashes exist in the reference.
+Both references retain 767 callbacks and omit source frame 2. Both public
+journeys retain 479 callbacks. Their quality counters report one dropped frame.
+All ten controls pass and both strict raw 480-versus-468 failures remain.
+Receipt `67b3b5e8` is RED for complete browser observation, not a presentation
+certificate. Do not infer the sole cause from the identical startup omission.
+
+Test a continuous requestAnimationFrame scheduling pulse in the observer.
+It must leave the DOM, media methods, clocks, source bytes and app adapter intact.
+Record its callback count, maximum interval and stop state as diagnostic facts.
+Bound it by the existing journey deadline; cancel on media end/error and page
+close. This tests the scheduling hypothesis described in Chromium's
+[rVFC issue](https://issues.chromium.org/issues/40902598); it does not establish
+that hypothesis as the cause of this run's dropped frame.
+
+Keep the complete 768-frame reference, zero-drop quality counter, every raw
+callback, native timestamp binding and exact-source-clock gates unchanged.
+Do not fill, replay, trim, seek to or filter a missing frame. A continued drop
+must remain unqualified. The existing actual public RED supplies the test-first
+failure; no isolated implementation-mirroring check is needed for this pulse.
+No production or simulator change is authorized by a scheduler-only result.
