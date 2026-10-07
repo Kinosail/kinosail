@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
+	"github.com/MikeO7/kinosail/packages/playback"
 	"github.com/MikeO7/kinosail/packages/servertest/mp4fixture"
 )
 
@@ -81,6 +82,16 @@ func TestCopiedRecoveryEnclosingOrdinaryPublication(t *testing.T) {
 		if err := os.Remove(filepath.Join(directory, name)); err != nil {
 			t.Fatal(err)
 		}
+	}
+	// Production cold-job owners clear the rendition before encodeVariants.
+	// The retained refill fixture must not advertise its old final fragment.
+	if err := os.RemoveAll(filepath.Join(directory, "1080p")); err != nil {
+		t.Fatal(err)
+	}
+	ready := playback.VariantReady(item.Path, filepath.Join(directory, "1080p"))
+	t.Logf("ordinary cold fixture pre-worker readiness=%t", ready)
+	if ready {
+		t.Fatal("ordinary cold fixture retained an advertised playable rendition")
 	}
 	copiedRecoveryEncoderOutput(t, manager, "", initialization, "first fragment", copiedRecoveryManifest)
 	if err := copiedRecoveryRunEnclosing(t.Context(), manager, item, recipe, directory); err != nil {
