@@ -197,12 +197,13 @@ const requestWakeLock = async () => {
 const releaseWakeLock = () => { wakeLock?.release(); wakeLock = undefined; };
 addEventListener("pagehide", () => {
   player.dispatchEvent(new Event("kinosail:page-exit"));
-  playbackTrace("session-end", "pagehide");
-  flushPlaybackTrace();
   if (isPictureInPicture()) {
+    flushPlaybackTrace();
     releaseWakeLock();
     return;
   }
+  playbackTrace("session-end", "pagehide");
+  flushPlaybackTrace();
   streaming.destroy();
   requestPause();
   player.removeAttribute("src");

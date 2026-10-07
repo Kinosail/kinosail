@@ -15,21 +15,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/workload"
 )
 
-type hlsJob struct {
-	lifecycle       context.Context
-	observation     *hlsObservation
-	preparation     *startupEncoding
-	done            chan struct{}
-	err             error
-	cancel          context.CancelCauseFunc
-	activity        chan struct{}
-	startNumber     int
-	requestID       string
-	playbackSession string
-	cachePolicy     string
-	replacing       bool
-}
-
 type hlsManager struct {
 	startup        *startupPreparation
 	copiedMetadata copiedHLSMetadata
@@ -120,6 +105,7 @@ func (manager *hlsManager) prepareAttempt(ctx context.Context, item library.Item
 	}
 	if startupActualPlayback(ctx) {
 		manager.startup.playback(key)
+		manager.keepHLSAlive(key, ctx)
 	}
 	if manager.reusableCopiedHLS(ctx, item, filepath.Dir(playlist), options.Cache, recipe) {
 		return refreshCachedVideoHLSMaster(playlist, facts, recipe, options.Cache)
