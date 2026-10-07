@@ -80,5 +80,6 @@ run_populated_player_journeys() {
     --required-title 'real album queue advances source and all Now Playing identity to the fictional second track' \
     --required-title 'real album queue keeps system previous and next current and exposes only fresh current-track actions' \
     --required-title 'mobile R03 progress notice stays hidden after real acknowledgement and reopens only on failure' \
+    --required-title 'album queue keeps accessible responsive controls through pending loaded empty and failed reads' \
     -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts test-instance-audio-queue.spec.ts --grep=@smoke --workers=1
 }

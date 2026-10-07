@@ -215,3 +215,71 @@ test("real album queue keeps system previous and next current and exposes only f
   expect((await afterSecond.json()).item.progress.watched).toBe(wantedWatched);
   await page.screenshot({path: testInfo.outputPath("fresh-second-track-actions.png"), fullPage: true});
 });
+
+// Actual Go markup and delivered CSS with isolated queue-read delay, 503, and
+// single-item projections. Canonical advances above remain unrouted.
+test("album queue keeps accessible responsive controls through pending loaded empty and failed reads", {tag: ["@smoke", "@routed-fault"]}, async ({page}, testInfo) => {
+  await login(page);
+  const [first] = await albumTracks(page);
+  const path = `**/api/v1/audio/${first.id}/queue`;
+  let release: (() => void) | undefined;
+  await page.route(path, async route => {
+    const response = await route.fetch();
+    expect(response.status()).toBe(200);
+    await new Promise<void>(resolve => release = resolve);
+    await route.fulfill({response});
+  });
+  await page.goto(`/watch/${first.id}`);
+  await expect.poll(() => !!release).toBe(true);
+  const controls = page.locator("[data-audio-queue-controls]");
+  const next = page.getByRole("button", {name: "Next track", exact: true});
+  const previous = page.getByRole("button", {name: "Previous track", exact: true});
+  const inspect = async (state: string) => {
+    for (const viewport of [{width: 390, height: 844}, {width: 1440, height: 900}, {width: 1920, height: 1080}]) {
+      await page.setViewportSize(viewport);
+      await expect(controls).toBeVisible();
+      for (const button of [previous, next]) {
+        const bounds = (await button.boundingBox())!;
+        expect(bounds.height).toBeGreaterThanOrEqual(44);
+        expect(bounds.width).toBeGreaterThanOrEqual(44);
+      }
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      expect((await new AxeBuilder({page}).include("[data-audio-queue-controls]").analyze()).violations).toEqual([]);
+      await testInfo.attach(`${state}-${viewport.width}-queue`, {body: JSON.stringify({viewport,
+        bounds: await controls.boundingBox(), busy: await controls.getAttribute("aria-busy"),
+        previousDisabled: await previous.isDisabled(), nextDisabled: await next.isDisabled(),
+        status: await page.locator("[data-audio-queue-status]").textContent()}), contentType: "application/json"});
+      await page.screenshot({path: testInfo.outputPath(`${state}-${viewport.width}.png`), fullPage: true});
+    }
+  };
+  await expect(controls).toHaveAttribute("aria-busy", "true");
+  await expect(next).toBeDisabled();
+  await expect(previous).toBeDisabled();
+  await inspect("pending");
+  release!();
+  await expect(next).toBeEnabled();
+  await expect(controls).not.toHaveAttribute("aria-busy");
+  await inspect("loaded");
+  await page.unroute(path);
+  await page.route(path, async route => {
+    const response = await route.fetch();
+    expect(response.status()).toBe(200);
+    const body = await response.json();
+    await route.fulfill({response, json: {...body, items: body.items.slice(0, 1)}});
+  });
+  await page.reload();
+  await expect(page.locator("[data-audio-queue-status]")).toHaveText("Track 1 of 1");
+  await expect(next).toBeDisabled();
+  await inspect("empty");
+  await page.unroute(path);
+  await page.route(path, route => route.fulfill({status: 503, headers: {"X-Request-ID": "qa-queue-read-failure"}}));
+  await page.reload();
+  await expect(page.locator("[data-audio-queue-status]")).toHaveAttribute("data-queue-failure", "server");
+  await expect(page.locator("[data-audio-queue-status]")).toHaveAttribute("data-queue-request-id", "qa-queue-read-failure");
+  await expect(next).toBeDisabled();
+  await inspect("failed");
+  await page.unroute(path);
+  await page.getByRole("button", {name: "Retry loading queue", exact: true}).click();
+  await expect(next).toBeEnabled();
+  await expect(page.locator("[data-audio-queue-status]")).not.toHaveAttribute("data-queue-failure");
+});
