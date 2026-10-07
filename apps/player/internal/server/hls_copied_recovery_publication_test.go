@@ -36,7 +36,7 @@ func copiedRecoveryEncoderOutput(t *testing.T, manager *hlsManager, action, init
 	t.Helper()
 	path := filepath.Join(t.TempDir(), "owned-encoder")
 	body := "#!/bin/sh\nset -eu\nsegments=''\nplaylist=''\nwhile [ \"$#\" -gt 0 ]; do\n case \"$1\" in\n -hls_segment_filename) shift; segments=$1 ;;\n esac\n playlist=$1\n shift\ndone\ndirectory=${segments%/*}\n" + action + "\n"
-	body += mp4fixture.Shell([]byte(init)) + " > \"$directory/init.mp4\"\nprintf '%s' " + copiedRecoveryQuote(first) + " > \"$directory/segment-00000.m4s\"\nprintf 'last fragment' > \"$directory/segment-00001.m4s.tmp\"\nmv \"$directory/segment-00001.m4s.tmp\" \"$directory/segment-00001.m4s\"\nprintf '%s' " + copiedRecoveryQuote(manifest) + " > \"$playlist\"\n"
+	body += mp4fixture.Shell([]byte(init)) + " > \"$directory/init.mp4.tmp\"\nmv \"$directory/init.mp4.tmp\" \"$directory/init.mp4\"\nprintf '%s' " + copiedRecoveryQuote(first) + " > \"$directory/segment-00000.m4s\"\nprintf 'last fragment' > \"$directory/segment-00001.m4s.tmp\"\nmv \"$directory/segment-00001.m4s.tmp\" \"$directory/segment-00001.m4s\"\nprintf '%s' " + copiedRecoveryQuote(manifest) + " > \"$playlist\"\n"
 	if err := os.WriteFile(path, []byte(body), 0o700); err != nil { //nolint:gosec // Owned controlled executable protects a filesystem race, never media output proof.
 		t.Fatal(err)
 	}
