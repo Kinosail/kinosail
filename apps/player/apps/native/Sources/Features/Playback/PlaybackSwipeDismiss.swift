@@ -13,8 +13,10 @@ final class PlaybackDismissal {
     }
 
     func dragEnded(translation: CGSize, start: CGPoint, size: CGSize, excludedBottom: CGFloat, close: () -> Void) {
-        guard translation.height >= 100, translation.height > abs(translation.width) * 1.5,
-              start.y >= 60, start.y < size.height - excludedBottom else { return }
+        guard start.y >= 60, start.y < size.height - excludedBottom else { return }
+        let down = translation.height >= 100 && translation.height > abs(translation.width) * 1.5
+        let back = (0...32).contains(start.x) && translation.width >= 100 && translation.width > abs(translation.height) * 1.5
+        guard down || back else { return }
         requestClose(close)
     }
 }

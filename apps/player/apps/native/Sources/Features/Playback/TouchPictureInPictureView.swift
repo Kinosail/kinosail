@@ -3,6 +3,7 @@ import SwiftUI
 
 struct TouchPictureInPictureView: View {
     let stop: () -> Void
+    let close: () -> Void
 
     var body: some View {
         ContentUnavailableView {
@@ -13,7 +14,10 @@ struct TouchPictureInPictureView: View {
             Button("Return to video", action: stop)
                 .buttonStyle(.borderedProminent).buttonBorderShape(.capsule)
                 .tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
+            Button("Back to library", action: close)
+                .buttonStyle(.bordered).buttonBorderShape(.capsule)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity).background(.black)
     }
 }
 #endif
