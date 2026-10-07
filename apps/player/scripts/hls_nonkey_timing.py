@@ -3,6 +3,7 @@ import hashlib
 import math
 import re
 import stat
+import subprocess
 import time
 from hls_followon_frames import audio_sequence, aac_clock_evidence
 from hls_nonkey_installation import bounded_file
@@ -242,12 +243,33 @@ def marked_audio_proof(source, public, metadata, offset, case):
         'decodedSampleDifference': observed['decodedSamples'] - reference['decodedSamples']}
     if not matched:
         case['failures'].append('copied_marked_audio_content')
-    source_clock, public_clock = aac_clock_evidence(source), aac_clock_evidence(public)
+    case['markedAAC']['decoderBudgetControl'] = {'phase': 'source_probe', 'complete': False}
+    try:
+        decoder_budget_proof(source, public, duration, centers, reference, source_valid, case)
+    except (RuntimeError, OSError, ValueError, subprocess.TimeoutExpired) as error:
+        safe = ('aac_clock_timeout' if isinstance(error, subprocess.TimeoutExpired) else
+            str(error) if isinstance(error, RuntimeError) else type(error).__name__)
+        if not re.fullmatch('[a-z_]{1,64}', safe):
+            safe = 'aac_clock_error'
+        case['markedAAC']['decoderBudgetControl'].update(failureClass=safe, complete=False)
+        case['failures'].append('aac_clock_unqualified')
+
+
+def decoder_budget_proof(source, public, duration, centers, reference, source_valid, case):
+    evidence = case['markedAAC']['decoderBudgetControl']
+    source_clock = aac_clock_evidence(source)
+    evidence.update(sourceClock=source_clock, phase='public_probe')
+    public_clock = aac_clock_evidence(public)
+    evidence.update(publicClock=public_clock, phase='decode_budget')
+    scope = source_clock['skipDiscardCountsInOriginalScope'] and public_clock['skipDiscardCountsInOriginalScope']
+    if not scope:
+        case['failures'].append('aac_clock_skip_scope')
     extra = max(0, -public_clock['formatStartSeconds'])
     control = audio_sequence(public, duration, centers=centers, output_budget_extra=extra)
-    case['markedAAC']['decoderBudgetControl'] = {
+    evidence.update({
+        'complete': True, 'phase': 'completed',
         'boundary': 'Extra output time budget from measured negative format origin only; original failed windows remain',
-        'outputBudgetAddedSeconds': extra, 'public': control, 'sourceClock': source_clock, 'publicClock': public_clock,
+        'originalSkipScopeQualified': scope, 'outputBudgetAddedSeconds': extra, 'public': control, 'sourceClock': source_clock, 'publicClock': public_clock,
         'decodedSampleDifference': control['decodedSamples'] - reference['decodedSamples'],
         'contentMatches': source_valid and audio_content_matches(reference, control),
-        'copiedSourceTail': copied_audio_tail(source_clock, public_clock)}
+        'copiedSourceTail': copied_audio_tail(source_clock, public_clock)})

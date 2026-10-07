@@ -119,7 +119,7 @@ def audio_clock(value):
     return number
 
 
-def audio_skips(values):
+def audio_skips(values, sample_rate):
     if not isinstance(values, list) or len(values) > 8:
         raise RuntimeError('aac_skip_bound')
     result = []
@@ -127,7 +127,7 @@ def audio_skips(values):
         if not isinstance(value, dict) or value.get('side_data_type') != 'Skip Samples':
             raise RuntimeError('aac_skip_shape')
         counts = [value.get(key) for key in ['skip_samples', 'discard_padding']]
-        if not all(type(n) is int and 0 <= n <= 8192 for n in counts):
+        if not all(type(n) is int and 0 <= n <= sample_rate for n in counts):
             raise RuntimeError('aac_skip_shape')
         result.append(counts)
     return result
@@ -154,7 +154,7 @@ def parse_aac_clock_probe(data):
                 length, digest = audio_clock(row['duration_time']), row['data_hash']
                 if not 0 < length <= 1 or not isinstance(digest, str) or not re.fullmatch('SHA256:[a-f0-9]{64}', digest):
                     raise RuntimeError('aac_packet_shape')
-                packets.append([point, length, digest[7:], audio_skips(row.get('side_data_list', []))])
+                packets.append([point, length, digest[7:], audio_skips(row.get('side_data_list', []), int(rate))])
             elif row['type'] == 'frame' and type(row.get('nb_samples')) is int and 0 < row['nb_samples'] <= 8192:
                 frames.append([point, row['nb_samples']])
             else:
@@ -164,7 +164,8 @@ def parse_aac_clock_probe(data):
         return {'sampleRate': int(rate), 'formatStartSeconds': origin, 'formatDurationSeconds': duration,
             'packetRowColumns': ['pts', 'duration', 'payloadSHA256', 'skipDiscardSamples'], 'packetRows': packets,
             'frameRowColumns': ['pts', 'nbSamples'], 'frameRows': frames,
-            'decodedSamplesAtSourceRate': sum(v[1] for v in frames)}
+            'decodedSamplesAtSourceRate': sum(v[1] for v in frames),
+            'skipDiscardCountsInOriginalScope': all(n <= 8192 for row in packets for counts in row[3] for n in counts)}
     except (KeyError, TypeError, ValueError, OverflowError):
         raise RuntimeError('aac_probe_shape') from None
 

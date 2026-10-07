@@ -59,6 +59,49 @@ class AACClockIntegrity(unittest.TestCase):
             with self.assertRaises(RuntimeError): parse_aac_clock_probe(json.dumps(probe).encode())
         with self.assertRaises(RuntimeError): parse_aac_clock_probe(b'x' * (2 * 1024 * 1024 + 1))
 
+    def test_multi_packet_edit_skip_is_retained_but_original_scope_stays_false(self):
+        from hls_followon_frames import parse_aac_clock_probe
+        probe = self.probe()
+        probe['packets_and_frames'][0]['side_data_list'][0]['skip_samples'] = 27600
+        facts = parse_aac_clock_probe(json.dumps(probe).encode())
+        self.assertEqual(facts['packetRows'][0][-1], [[27600, 0]])
+        self.assertFalse(facts['skipDiscardCountsInOriginalScope'])
+        self.assertTrue(parse_aac_clock_probe(json.dumps(self.probe()).encode())['skipDiscardCountsInOriginalScope'])
+        for field, value in [('skip_samples', 48001), ('discard_padding', 48001), ('skip_samples', None)]:
+            probe = self.probe(); probe['packets_and_frames'][0]['side_data_list'][0][field] = value
+            with self.assertRaises(RuntimeError): parse_aac_clock_probe(json.dumps(probe).encode())
+        probe = self.probe(); probe['packets_and_frames'][0]['side_data_list'][0]['side_data_type'] = 'foreign'
+        with self.assertRaises(RuntimeError): parse_aac_clock_probe(json.dumps(probe).encode())
+
+    def test_failed_aac_diagnostic_is_retained_without_aborting_other_evidence(self):
+        import hls_nonkey_timing as module
+        reference = {'decodedSamples': 1, 'windows': []}
+        case = {'expectedTimelineSeconds': 19.5, 'failures': ['historical_failure']}
+        with mock.patch.object(module, 'audio_sequence', return_value=reference), \
+                mock.patch.object(module, 'aac_clock_evidence', side_effect=RuntimeError('aac_skip_shape')):
+            module.marked_audio_proof(Path('synthetic-source'), Path('synthetic-public'), {'audioTimeMarked': True}, 12.5, case)
+        self.assertEqual(case['markedAAC']['decoderBudgetControl']['failureClass'], 'aac_skip_shape')
+        self.assertIn('historical_failure', case['failures'])
+        self.assertIn('aac_clock_unqualified', case['failures'])
+        self.assertFalse(case['markedAAC']['contentMatches'])
+
+    def test_partial_clock_and_timeout_are_bounded_failed_diagnostics(self):
+        import hls_nonkey_timing as module
+        import subprocess
+        reference = {'decodedSamples': 1, 'windows': []}
+        for error, safe in [(RuntimeError('foreign\nprivate'), 'aac_clock_error'),
+                            (subprocess.TimeoutExpired('private target', 40), 'aac_clock_timeout')]:
+            case = {'expectedTimelineSeconds': 19.5, 'failures': []}
+            with mock.patch.object(module, 'audio_sequence', return_value=reference), \
+                    mock.patch.object(module, 'aac_clock_evidence', side_effect=[{'sampleRate': 48000}, error]):
+                module.marked_audio_proof(Path('synthetic-source'), Path('synthetic-public'), {'audioTimeMarked': True}, 12.5, case)
+            facts = case['markedAAC']['decoderBudgetControl']
+            self.assertEqual(facts['sourceClock'], {'sampleRate': 48000})
+            self.assertEqual(facts['phase'], 'public_probe')
+            self.assertEqual(facts['failureClass'], safe)
+            self.assertFalse(facts['complete'])
+            self.assertIn('aac_clock_unqualified', case['failures'])
+
     def test_unique_complete_source_tail_is_required(self):
         from hls_nonkey_timing import copied_audio_tail
         source = {'packetRows': [[n / 10, 0.1, format(n, '064x'), []] for n in range(4)]}

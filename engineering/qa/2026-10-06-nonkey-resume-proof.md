@@ -434,3 +434,25 @@ retain finite aligned monotonic timing, without imposing that unsupported order.
 Report native sequence completeness separately from color interpretation.
 Current Direct/HLS matrix differences remain explicit interpretation blockers.
 Neither a complete sequence nor a late timing control waives legacy assertions.
+
+## AAC side-data interruption, before implementation
+
+Exact `97d11bf5` run `37567998479` stopped both non-key cases at
+`aac_skip_shape`, before browser settlement. Ten controls passed. Preserve that
+receipt and the original failed terminal AAC window. Pinned FFmpeg accumulates
+audio edit skips across packets before emitting unsigned Skip Samples metadata.
+The packet-local 8,192-sample parser limit may reject a legitimate measured edit;
+that remains a hypothesis until the complete runtime counts are retained.
+
+Test retention of a multi-packet skip first. Bound retained counts to one second
+at the independently parsed sample rate, and keep the original 8,192-sample
+qualification as an explicit separate false fact and case failure. Missing,
+boolean, negative, foreign and larger counts must still reject. This admits
+bounded diagnostic rows, not presentation or AAC acceptance. Preserve all packet
+and frame rows and the complete source-tail comparison.
+
+Also test that an AAC clock or budget diagnostic failure remains recorded and
+failed while allowing the existing independent browser and playlist checks to
+run. Valid hosted media cannot inject malformed FFprobe facts, so these isolated
+checks protect the concrete evidence-integrity gap. Do not waive old assertions,
+case failures, process limits, source guards or production gates.
