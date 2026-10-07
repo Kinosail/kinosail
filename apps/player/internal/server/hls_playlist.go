@@ -86,7 +86,7 @@ func (manager *hlsManager) readHLSRecipeManifest(directory string) ([]byte, erro
 	if _, err := root.Lstat("index.m3u8"); err != nil {
 		return nil, err
 	}
-	return copiedHLSCacheFile(root, "index.m3u8", 1<<20)
+	return readHLSManifest(root)
 }
 
 func hlsURIWithQuery(uri, query string) string {
