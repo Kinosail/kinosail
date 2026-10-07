@@ -196,7 +196,7 @@ export async function startHappyPath(page: Page, testInfo: TestInfo): Promise<Ha
 export async function openHappyPathSetup(page: Page, testInfo: TestInfo) {
   const navigation = navigationDiagnostics(page,testInfo.project.use.baseURL);
   try {
-    await page.goto("/setup", {waitUntil: "domcontentloaded"});
+    await page.goto("/setup", {waitUntil: "commit"});
     await expect(page.getByLabel("Name", {exact: true})).toBeVisible();
   } catch (error) {
     await testInfo.attach("setup-navigation-failure", {

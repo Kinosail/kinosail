@@ -13,7 +13,7 @@ function totp(): string {
 }
 
 export async function login(page: Page) {
-  await page.goto("/login", { waitUntil: "domcontentloaded" });
+  await page.goto("/login", { waitUntil: "commit" });
   await expect(page.getByLabel("Name")).toBeVisible();
   await page.getByLabel("Name").fill(process.env.KINOSAIL_E2E_OWNER_NAME ?? "Owner");
   await page.getByLabel("Password", { exact: true }).fill(process.env.KINOSAIL_E2E_OWNER_PASSWORD ?? "test-instance-password");
