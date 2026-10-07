@@ -1,3 +1,4 @@
+import {readFile} from "node:fs/promises";
 import {expect, test} from "@playwright/test";
 import {installPlayerExperienceFixture} from "./player-experience-fixture";
 
@@ -21,6 +22,21 @@ installPlayerExperienceFixture(true, false, "iPhone", async (page, title) => {
 });
 
 test.use({hasTouch: true});
+
+test("native settings sliders retain their platform appearance @smoke", async ({page}) => {
+  await page.addStyleTag({content: await readFile("../../../packages/webassets/static/player-stage.css", "utf8")});
+  await page.evaluate(() => document.documentElement.dataset.theme = "light");
+  await page.getByRole("button", {name: "Settings", exact: true}).click();
+  await page.locator(".player-native-options .player-settings").evaluate(panel => {
+    panel.insertAdjacentHTML("beforeend", '<label class="player-scrubber">Full video timeline<input type="range" min="0" max="100" value="20"></label>');
+  });
+  const seek = page.getByRole("slider", {name: "Full video timeline"});
+  await expect(seek).toBeVisible();
+  expect(await seek.evaluate(input => getComputedStyle(input).appearance)).not.toBe("none");
+  await seek.focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(seek).toHaveValue("21");
+});
 
 for (const viewport of [{width: 390, height: 844}, {width: 844, height: 390}, {width: 1440, height: 900}]) {
   test(`native controls retain playback when the picture is tapped at ${viewport.width}x${viewport.height}`, async ({page}, testInfo) => {
