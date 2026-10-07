@@ -46,7 +46,9 @@ if (controls && player.tagName === "VIDEO") {
   feedback.hidden = true;
   stage.append(feedback);
   let feedbackTimer;
+  for (const event of ["error", "playing"]) player.addEventListener(event, () => { clearTimeout(feedbackTimer); feedback.hidden = true; });
   const reportControlFailure = (message) => {
+    if (player.error) return;
     clearTimeout(feedbackTimer);
     feedback.textContent = message;
     feedback.hidden = false;

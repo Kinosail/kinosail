@@ -122,7 +122,9 @@ func serveServiceWorker(writer http.ResponseWriter, _ *http.Request) {
 	_, _ = writer.Write(serviceWorker)
 }
 
-var serveStyle = compressedAsset(joinScripts(appCSS, webassets.LastLightCSS, supporterCSS, homeCSS, settingsCSS), "text/css; charset=utf-8")
+var applicationStyle = joinScripts(appCSS, webassets.LastLightCSS, supporterCSS, homeCSS, settingsCSS)
+
+var serveStyle = compressedAsset(applicationStyle, "text/css; charset=utf-8")
 
 var serveSupporterStyle = compressedAsset(supporterCSS, "text/css; charset=utf-8")
 
