@@ -271,6 +271,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends "$RUNNER_TEMP/startup-ffmpeg.deb"
           echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
+      - name: Verify certified first-fragment regeneration and cold reopen
+        if: inputs.app == 'player' && matrix.engine == 'chromium'
+        timeout-minutes: 3
+        env:
+          GOMAXPROCS: "2"
+          KINOSAIL_COPIED_RECOVERY_MEDIA: "1"
+        run: timeout --kill-after=5s 180s go -C apps/player test -p=1 ./internal/server -run '^TestCopiedRecoveryRealFirstFragmentRegenerationReopens$' -count=1 -timeout=170s -v
       - name: Test populated browsers
         working-directory: apps/${{ inputs.app }}
         env:
