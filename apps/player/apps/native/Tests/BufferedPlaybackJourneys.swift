@@ -49,6 +49,14 @@ import UIKit
         #else
         try await render(AudioPlayerScreen(itemID: "music").environment(session), name: "loaded-audio", widths: [1920])
         try await render(TVSeekPreviewScreen().environment(session), name: "loaded-seek", widths: [1920])
+        session.player.stop()
+        try await session.player.play(fixture.item("movie"), client: fixture.client, store: store)
+        for _ in 0..<500 where session.player.bufferedRanges.isEmpty { try await Task.sleep(for: .milliseconds(10)) }
+        session.player.pause()
+        let player = try #require(session.player.player)
+        #expect(!session.player.bufferedRanges.isEmpty)
+        try await render(NativePlayerView(player: player, presentation: session.player.presentation,
+            options: {}, seekPreview: {}, close: {}, restore: {}), name: "loaded-system-video", widths: [1920])
         #endif
         print("BUFFER real-media ranges=\(session.player.bufferedRanges) paused-position=\(position)")
         session.player.stop()
