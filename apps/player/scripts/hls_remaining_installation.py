@@ -1,10 +1,58 @@
 """Closed disposable AAC installation counterfactual; never production eligibility."""
 import hashlib
 import json
+import math
 from pathlib import Path
 import re
 from hls_followon_public import bounded_bytes, check
 from hls_remaining_warmup import fixed_windows
+from hls_remaining_audio import packet_evidence
+from hls_remaining_process import asset_snapshot, native_pcm, source_snapshot
+from hls_timeline_packets import manifest_facts
+
+
+def unfiltered_installation_control(run, directory, case, deadline):
+    result = {'result': 'unqualified', 'boundary': 'Source/actual-argv-bound isolated unfiltered control after public teardown.'}
+    case['installedUnfilteredControl'] = result
+    raw = bounded_bytes(directory / 'installed-recipe-private.json', 8192, 'installation_actual_recipe_bound')
+    check(hashlib.sha256(raw).hexdigest() == case['installationCertificate']['installedArgvSHA256'], 'installation_actual_recipe_hash')
+    arguments = json.loads(raw)
+    position = arguments.index('-bsf:a')
+    check(arguments[position + 1] == 'noise=amount=0:drop=lt(pts\\,2048)', 'installation_exact_filter')
+    del arguments[position:position + 2]
+    root = Path(arguments[-1]).parents[2]
+    canonical, initialization = asset_snapshot(root / 'audio/init.mp4', 2 << 20)
+    source = directory / 'media/Fixture.flac'
+    before = source_snapshot(source)
+    stage = directory / 'isolated-installation-unfiltered'
+    stage.mkdir()
+    arguments[arguments.index('-hls_segment_filename') + 1] = str(stage / 'segment-%05d.m4s')
+    arguments[-1] = str(stage / 'index.m3u8')
+    import shutil
+    executable = Path(shutil.which('ffmpeg'))
+    check(hashlib.sha256(bounded_bytes(executable, 256 << 20, 'installation_codec_bound')).hexdigest() ==
+        case['testOnlyRealCodecPacing']['executableSHA256'], 'installation_actual_codec')
+    run([str(executable), *arguments], 30)
+    fresh, identity = asset_snapshot(stage / 'init.mp4', 2 << 20)
+    manifest, names = manifest_facts(bounded_bytes(stage / 'index.m3u8', 65536, 'installation_raw_manifest_bound'))
+    result.update(initialization=identity, manifest=manifest)
+    check(fresh == canonical and manifest['endlist'] and [n for n, _ in names] ==
+        [v['name'] for v in case['retainedRefillFragments']], 'installation_raw_init_eof')
+    data = fresh
+    for name, _ in names:
+        data += bounded_bytes(stage / name, 8 << 20, 'installation_raw_fragment_bound')
+        check(len(data) <= 16 << 20, 'installation_raw_join_bound')
+    path = stage / 'unfiltered.mp4'
+    path.write_bytes(data)
+    result['packets'] = packet_evidence(run, path)
+    pcm, facts = native_pcm(path, deadline, stage)
+    result.update(nativeEOF=facts, pcmSHA256=hashlib.sha256(pcm).hexdigest(),
+        exactFilteredSuffix=case['refillNativeEOF']['packets'] == result['packets'][3:],
+        sourceUnchanged=source_snapshot(source) == before,
+        canonicalInitUnchanged=asset_snapshot(root / 'audio/init.mp4', 2 << 20)[1] == initialization)
+    check(len(result['packets']) == 98 and facts['completeEOFAccounted'] and result['exactFilteredSuffix']
+        and result['sourceUnchanged'] and result['canonicalInitUnchanged'], 'installation_raw_suffix_or_identity')
+    result['result'] = 'qualified'
 
 
 def installed_refill(arguments, source, directory, output_directory=None):
@@ -83,6 +131,14 @@ def installation_cases(run, journey, directory, receipt, deadline):
         native = candidate['nativePCMQualification']['public']
         check(len(candidate['joinedPublicPacketPayloads']) == native['frames'] == 470 and native['samples'] == 481280
             and native['completeEOFAccounted'] and native['decodedClockOrderValid'], 'installation_full_native_eof')
+        packets = candidate['joinedPublicPacketPayloads']
+        gaps = [float(b['pts_time']) - float(a['pts_time']) - float(a['duration_time']) for a, b in zip(packets, packets[1:])]
+        result['completePacketClock'] = {'maximumGapSeconds': max([0] + gaps), 'maximumOverlapSeconds': max([0] + [-v for v in gaps])}
+        check(all(math.isfinite(float(v['pts_time'])) and v['pts_time'] == v['dts_time'] and
+            0 < float(v['duration_time']) <= 1024 / 48000 + 0.000001 and not v.get('side_data_list') for v in packets) and
+            all(float(a['pts_time']) < float(b['pts_time']) for a, b in zip(packets, packets[1:])) and
+            all(math.isfinite(v) and abs(v) <= 1 / 48000 + 0.000001 for v in gaps), 'installation_complete_packet_clock')
+        unfiltered_installation_control(run, directory / 'installation-candidate', candidate, deadline)
         reference = bounded_bytes(directory / 'installation-candidate/Fixture.flac.pcm', 2 << 20, 'installation_pcm_bound')
         channel = lambda n: b''.join(reference[v + n:v + n + 2] for v in range(0, len(reference), 4))
         result['sourceChannelSHA256'] = [hashlib.sha256(channel(n)).hexdigest() for n in [0, 2]]
