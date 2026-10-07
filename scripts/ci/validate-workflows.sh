@@ -9,10 +9,10 @@ workflows="$repo/.github/workflows"
 fail() { printf 'workflow validation failed: %s\n' "$*" >&2; exit 1; }
 require() { grep -Fq -- "$2" "$1" || fail "$(basename "$1") must contain $2"; }
 
-for name in ci app publish release layout-stability; do
+for name in ci app publish release layout-stability pr503-cold-publication-witness; do
   [[ -f "$workflows/$name.yml" ]] || fail "missing $name.yml"
 done
-[[ "$(find "$workflows" -maxdepth 1 -name '*.yml' -type f | wc -l | tr -d ' ')" == 5 ]] ||
+[[ "$(find "$workflows" -maxdepth 1 -name '*.yml' -type f | wc -l | tr -d ' ')" == 6 ]] ||
   fail 'unexpected workflow file'
 [[ -f "$repo/.github/dependabot.yml" ]] || fail 'missing Dependabot configuration'
 [[ -f "$repo/.github/pull_request_template.md" ]] || fail 'missing pull request template'
@@ -66,4 +66,19 @@ require "$release" 'gh release create "$RELEASE_TAG"'
 require "$workflows/layout-stability.yml" 'contents: read'
 require "$workflows/layout-stability.yml" 'runs-on: ubuntu-24.04'
 require "$workflows/layout-stability.yml" 'run: python3 scripts/testing/test-layout-stability-local.py'
-printf 'validated CI, app, publication, version-release, and layout-evidence workflows\n'
+witness="$workflows/pr503-cold-publication-witness.yml"
+require "$witness" '  contents: read'
+require "$witness" '    shell: bash'
+require "$witness" '    runs-on: ubuntu-24.04'
+require "$witness" '    timeout-minutes: 10'
+require "$witness" '          ref: ${{ github.event.pull_request.head.sha }}'
+require "$witness" 'go test -json -count=100 -run '\''^TestCopiedRecoveryEnclosingOrdinaryPublication$'\'''
+require "$witness" 'go test -json -count=10 -run '\''^TestCopiedRecoveryEnclosing('
+require "$witness" 'go test -json -count=10 -run '\''^TestCopiedRecoveryOrdinaryPublicationInitializationCounterfactual$'\'''
+require "$witness" 'go test -json -count=10 -run '\''^TestCopiedRecoveryEncoderInitializationRemainsCommittedUntilReplacement$'\'''
+require "$witness" '          retention-days: 14'
+require "$witness" '          if-no-files-found: error'
+if grep -Eq 'continue-on-error|\|\|[[:space:]]*true|contents:[[:space:]]*write' "$witness"; then
+  fail 'cold publication witness must preserve failures and read-only permissions'
+fi
+printf 'validated CI, app, publication, version-release, layout-evidence, and cold-publication witness workflows\n'
