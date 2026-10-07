@@ -90,13 +90,26 @@ for (const saved of [true, false]) test(`ended offline queue requires its own wa
       },
       unbindProgress: () => {},
     }});
+    const request = window.fetch;
+    Object.assign(window, {r08EndedTrackReads: 0});
+    window.fetch = (...args) => {
+      const input = args[0], target = new URL(input instanceof Request ? input.url : String(input), location.href);
+      if (target.pathname === "/api/v1/items/next") (window as Window & {r08EndedTrackReads: number}).r08EndedTrackReads++;
+      return request(...args);
+    };
   }, saved);
-  await page.locator("audio").dispatchEvent("ended");
+  // The journal resolves synchronously. Complete its microtask continuation
+  // before checking that failed acknowledgement did not begin authorization.
+  await page.evaluate(async () => {
+    document.querySelector("audio")!.dispatchEvent(new Event("ended"));
+    await new Promise<void>(resolve => setTimeout(resolve, 0));
+  });
   await expect.poll(() => page.evaluate(() => (window as Window & {r08OfflineEnded: {saved: number}}).r08OfflineEnded.saved)).toBe(1);
   if (saved) await expect(page.locator("audio")).toHaveAttribute("data-progress", "/progress/next");
   else {
     await expect(page.locator("[data-audio-queue-controls]")).not.toHaveAttribute("aria-busy");
     await expect(page.locator("audio")).toHaveAttribute("data-progress", "/progress/track");
+    expect(await page.evaluate(() => (window as Window & {r08EndedTrackReads: number}).r08EndedTrackReads)).toBe(0);
   }
   expect(await page.evaluate(() => (window as Window & {r08OfflineEnded: {saved: number; watched: boolean}}).r08OfflineEnded)).toEqual({saved: 1, watched: true});
 });
