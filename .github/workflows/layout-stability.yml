@@ -40,6 +40,10 @@ on:
         description: Run the six strict remaining-playback diagnostics in the explicit HLS campaign
         type: boolean
         default: false
+      hls_audio_timing:
+        description: Select three slower real-codec audio timing diagnostics with remaining proof enabled
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -316,7 +320,7 @@ jobs:
         run: python3 apps/player/scripts/test-hls-followon.py
       - name: Run bounded remaining playback regressions
         if: ${{ inputs.hls_remaining_proof }}
-        run: timeout --kill-after=5s 600s python3 apps/player/scripts/test-hls-remaining.py
+        run: timeout --kill-after=5s 600s python3 apps/player/scripts/test-hls-remaining.py --suite "${{ inputs.hls_audio_timing && 'audio-timing' || 'remaining' }}"
       - name: Preserve safe follow-on receipts
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a

@@ -175,7 +175,9 @@ def annotate_case(case, log_path, source, before, server, resources, offset, pac
     if pacing is not None:
         rows = [json.loads(row) for row in bounded_bytes(invocation, 4096, 'pacing_invocation_bound').splitlines()] if invocation.exists() else []
         case['pacingInvocations'] = rows
-        case['pacingApplied'] = bool(rows) and all(v['parent'] == server.pid and float(v['readrate']) == pacing for v in rows)
+        matched = [v for v in rows if v['sourceMatched']]
+        case['pacingApplied'] = bool(matched) and all(v['parent'] == server.pid and float(v['readrate']) == pacing for v in matched)
+        case['pacedSourceEncoderInvocations'] = len(matched)
         if not case['pacingApplied']:
             case['failures'].append('pacing_not_applied')
             case['result'] = 'failed'

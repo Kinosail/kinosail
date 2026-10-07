@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Strict public audio completion and non-key diagnostics; never production proof of preroll."""
+import argparse
 import hashlib
 import json
 import math
@@ -20,13 +21,17 @@ from hls_followon_frames import decode_frames, stream_metadata
 from hls_followon_public import check, bounded_bytes, encoder_count, measure, prepare_once, sample_resources
 
 ROOT = Path(__file__).resolve().parents[3]
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--suite', choices=['remaining', 'audio-timing'], default='remaining')
+SUITE = parser.parse_args().suite
 RUN = ROOT / '.verification/hls-followon' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
 RUN.mkdir(parents=True)
 BINARY = RUN / 'player'
 receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
-    'result': 'failed', 'cases': [], 'command': 'python3 apps/player/scripts/test-hls-remaining.py',
+    'result': 'failed', 'cases': [], 'suite': SUITE,
+    'command': 'python3 apps/player/scripts/test-hls-remaining.py --suite ' + SUITE,
     'boundary': 'Disposable authenticated public Server. Raw negative frames retained; browser/native/audible qualification separate.',
-    'productionMediaOrCacheModified': False, 'expectedCases': 6}
+    'productionMediaOrCacheModified': False, 'expectedCases': 3 if SUITE == 'audio-timing' else 6}
 RUN_DEADLINE = time.monotonic() + 500
 
 
@@ -158,7 +163,7 @@ def journey(name, original, metadata, offset=0, pacing=None):
             "if '-hls_time' in a:\n"
             " if '-readrate' in a: a[a.index('-readrate')+1]=" + repr(str(pacing)) + '\n'
             " else: a[a.index('-i'):a.index('-i')]=['-readrate'," + repr(str(pacing)) + ']\n'
-            + ' with open(' + repr(str(invocation)) + ", 'a') as f: f.write(json.dumps({'pid':os.getpid(),'parent':os.getppid(),'readrate':a[a.index('-readrate')+1]})+'\\n')\n"
+            + ' with open(' + repr(str(invocation)) + ", 'a') as f: f.write(json.dumps({'pid':os.getpid(),'parent':os.getppid(),'sourceMatched':" + repr(str(source)) + " in a,'readrate':a[a.index('-readrate')+1]})+'\\n')\n"
             + 'os.execv(' + repr(real) + ',[' + repr(real) + ']+a)\n')
         wrapper.chmod(0o700)
         env['KINOSAIL_FFMPEG'] = str(wrapper)
@@ -250,19 +255,21 @@ try:
     subprocess.run(['go', '-C', 'apps/player', 'build', '-p=1', '-o', str(BINARY), './cmd/kinosail'], cwd=ROOT, check=True, timeout=180)
     receipt['binarySHA256'] = sha(BINARY)
     receipt['encoderVersions'] = {t: run([t, '-version']).decode().splitlines()[0] for t in ['ffmpeg', 'ffprobe']}
-    for duration, paced in [(10, None), (10, 1.25), (8, 1.25)]:
+    cases = [(10, 0.75), (10, 0.9), (8, 0.75)] if SUITE == 'audio-timing' else [(10, None), (10, 1.25), (8, 1.25)]
+    for duration, paced in cases:
         source = RUN / f'audio-{duration}-{paced}.flac'
         run(['ffmpeg', '-nostdin', '-v', 'error', '-f', 'lavfi', '-i', f'sine=frequency=440:sample_rate=48000:duration={duration}', '-c:a', 'flac', '-ac', '2', str(source)], 60)
         probe = json.loads(run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'json', str(source)]))
         journey(f'audio-{duration}-{paced}', source, {'probedDurationSeconds': float(probe['format']['duration'])}, pacing=paced)
-    source, metadata = fixture(RUN, 'regular', 48, ','.join(str(v) for v in range(0, 32, 2)), frames=768)
-    metadata = reprobe(source, metadata)
-    journey('exact-key-control12', source, metadata, offset=12)
-    journey('nonkey-mkv12.5', source, metadata, offset=12.5)
-    mp4 = RUN / 'copy.mp4'
-    run(['ffmpeg', '-nostdin', '-v', 'error', '-i', str(source), '-map', '0:v:0', '-map', '0:a:0', '-c', 'copy', str(mp4)], 60)
-    metadata = reprobe(mp4, metadata)
-    journey('nonkey-mp4-12.5', mp4, metadata, offset=12.5)
+    if SUITE == 'remaining':
+        source, metadata = fixture(RUN, 'regular', 48, ','.join(str(v) for v in range(0, 32, 2)), frames=768)
+        metadata = reprobe(source, metadata)
+        journey('exact-key-control12', source, metadata, offset=12)
+        journey('nonkey-mkv12.5', source, metadata, offset=12.5)
+        mp4 = RUN / 'copy.mp4'
+        run(['ffmpeg', '-nostdin', '-v', 'error', '-i', str(source), '-map', '0:v:0', '-map', '0:a:0', '-c', 'copy', str(mp4)], 60)
+        metadata = reprobe(mp4, metadata)
+        journey('nonkey-mp4-12.5', mp4, metadata, offset=12.5)
     if len(receipt['cases']) == receipt['expectedCases'] and all(c['result'] == 'passed' for c in receipt['cases']):
         receipt['result'] = 'passed'
 except Exception as error:
