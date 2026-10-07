@@ -224,6 +224,7 @@ func (manager *hlsManager) publishCopiedHLSWorker(ctx context.Context, source, d
 		}
 	}
 	result := <-results
+	stop()
 	if result == nil {
 		hlsObservationFor(ctx).emit("media_ready", "")
 	}
