@@ -16,16 +16,18 @@ from hls_remaining_process import annotate_case, finish_processes, physical, sou
 from hls_remaining_audio import audio_output, replay_refill
 from hls_remaining_mux import counterfactuals
 from hls_remaining_warmup import warmup_counterfactual
+from hls_remaining_installation import installation_cases
+from hls_remaining_reopen import cold_reopen
 from hls_timeline_fixture import fixture
 from hls_timeline_http import PublicServer, sha
 from hls_followon_frames import decode_frames, stream_metadata
-from hls_followon_public import check, encoder_count, measure, prepare_once, sample_resources
+from hls_followon_public import bounded_bytes, check, encoder_count, measure, prepare_once, sample_resources
 
 ROOT = Path(__file__).resolve().parents[3]
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--suite', choices=['remaining', 'audio-timing'], default=os.environ.get('KINOSAIL_HLS_REMAINING_SUITE', 'remaining'))
+parser.add_argument('--suite', choices=['remaining', 'audio-timing', 'audio-installation'], default=os.environ.get('KINOSAIL_HLS_REMAINING_SUITE', 'remaining'))
 SUITE = parser.parse_args().suite
-if SUITE not in ['remaining', 'audio-timing']:
+if SUITE not in ['remaining', 'audio-timing', 'audio-installation']:
     parser.error('unsupported diagnostic suite')
 RUN = ROOT / '.verification/hls-followon' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
 RUN.mkdir(parents=True)
@@ -34,7 +36,7 @@ receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], tex
     'result': 'failed', 'cases': [], 'suite': SUITE,
     'command': 'python3 apps/player/scripts/test-hls-remaining.py --suite ' + SUITE,
     'boundary': 'Disposable authenticated public Server. Raw negative frames retained; browser/native/audible qualification separate.',
-    'productionMediaOrCacheModified': False, 'expectedCases': 5 if SUITE == 'audio-timing' else 6}
+    'productionMediaOrCacheModified': False, 'expectedCases': {'remaining': 6, 'audio-timing': 5, 'audio-installation': 3}[SUITE]}
 RUN_DEADLINE = time.monotonic() + 500
 
 
@@ -72,9 +74,7 @@ def reprobe(path, metadata):
         durationSeconds=float(facts['format']['duration']), streamOrigins=facts)
 
 
-
-
-def journey(name, original, metadata, offset=0, pacing=None):
+def journey(name, original, metadata, offset=0, pacing=None, installation=False):
     case = {'name': name, 'result': 'failed', 'failures': [], 'resumeOffsetSeconds': offset}
     receipt['cases'].append(case)
     remaining = RUN_DEADLINE - time.monotonic()
@@ -107,6 +107,9 @@ def journey(name, original, metadata, offset=0, pacing=None):
             + " if '-start_number' in a and " + repr(str(source)) + " in a:\n"
             + '  value=json.dumps(a)\n  if len(value.encode())<=8192:\n'
             + '   with open(' + repr(str(directory / 'refill-recipe-private.json')) + ", 'w') as f: f.write(value)\n"
+            + ("  sys.path.insert(0," + repr(str(Path(__file__).parent)) + ")\n  from hls_remaining_installation import installed_refill\n"
+                + "  a=installed_refill(a," + repr(str(source)) + ',' + repr(str(directory))
+                + ",os.environ.get('KINOSAIL_INSTALLATION_RECEIPT_DIR'))\n" if installation else '')
             + 'os.execv(' + repr(real) + ',[' + repr(real) + ']+a)\n')
         wrapper.chmod(0o700)
         env['KINOSAIL_FFMPEG'] = str(wrapper)
@@ -138,6 +141,10 @@ def journey(name, original, metadata, offset=0, pacing=None):
             case['mode'] = plan['compatiblePlan']['mode']
             check(case['mode'] == ('audio-transcode' if item['kind'] == 'audio' else 'remux'), 'expected_compatibility_mode')
             case['planDurationSeconds'] = plan['duration']
+            if installation:
+                selected = next(v for v in plan['media']['audio'] if v['Index'] == plan['compatiblePlan'].get('audioIndex', 0))
+                audio = {k: selected[v] for k, v in [('codec', 'Codec'), ('sampleRate', 'SampleRate'), ('channels', 'Channels'), ('index', 'Index')]}
+                (directory / 'installation-eligibility-private.json').write_text(json.dumps({'audio': audio, 'sourceSHA256': before['sha256']}))
             check(hls.split('/')[2] == item['id'], 'route_item_binding')
             check(abs(plan['duration'] - metadata.get('probedDurationSeconds', metadata.get('durationSeconds'))) < 0.1, 'plan_probe_duration')
             prepare = '/api/v1/items/' + item['id'] + '/playback-prepare'
@@ -192,7 +199,17 @@ def journey(name, original, metadata, offset=0, pacing=None):
                 case['failures'].append('diagnostic_evidence_incomplete')
                 case['result'] = 'failed'
             remaining_alarm()
-            if case.get('retainedRefillFragments'):
+            if installation and case.get('retainedRefillFragments'):
+                try:
+                    certificate = directory / 'installation-certificate.json'
+                    case['installationCertificate'] = json.loads(bounded_bytes(certificate, 4096, 'installation_certificate_bound'))
+                    facts = case['installationCertificate']
+                    check(sha(directory / 'refill-recipe-private.json') == facts['originalArgvSHA256'] and
+                        sha(directory / 'installed-recipe-private.json') == facts['installedArgvSHA256'], 'installation_actual_argv_certificate')
+                    cold_reopen(run, BINARY, directory, source, before, api, hls, env, RUN_DEADLINE, case)
+                except (RuntimeError, OSError, subprocess.SubprocessError, ValueError, KeyError) as error:
+                    case['installationQualificationFailure'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
+            if case.get('retainedRefillFragments') and SUITE != 'audio-installation':
                 try:
                     check(pacing is not None, 'fresh_refill_actual_argv_unavailable')
                     value = replay_refill(run, RUN_DEADLINE, directory, source, case, Path(real))
@@ -212,7 +229,7 @@ try:
     subprocess.run(['go', '-C', 'apps/player', 'build', '-p=1', '-o', str(BINARY), './cmd/kinosail'], cwd=ROOT, check=True, timeout=180)
     receipt['binarySHA256'] = sha(BINARY)
     receipt['encoderVersions'] = {t: run([t, '-version']).decode().splitlines()[0] for t in ['ffmpeg', 'ffprobe']}
-    cases = [(10, 0.75, False), (10, 0.9, False), (8, 0.75, False), (10, 0.75, True), (10, 0.9, True)] if SUITE == 'audio-timing' else [(10, None, False), (10, 1.25, False), (8, 1.25, False)]
+    cases = [] if SUITE == 'audio-installation' else ([(10, 0.75, False), (10, 0.9, False), (8, 0.75, False), (10, 0.75, True), (10, 0.9, True)] if SUITE == 'audio-timing' else [(10, None, False), (10, 1.25, False), (8, 1.25, False)])
     for duration, paced, marker in cases:
         name = f'{"marker" if marker else "audio"}-{duration}-{paced}'
         source = RUN / (name + '.flac')
@@ -221,6 +238,8 @@ try:
         probe = json.loads(run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'json', str(source)]))
         journey(name, source, {'probedDurationSeconds': float(probe['format']['duration']),
             'markerNear8Seconds': marker, 'fixtureFilter': generated}, pacing=paced)
+    if SUITE == 'audio-installation':
+        installation_cases(run, journey, RUN, receipt, RUN_DEADLINE)
     if SUITE == 'remaining':
         source, metadata = fixture(RUN, 'regular', 48, ','.join(str(v) for v in range(0, 32, 2)), frames=768)
         metadata = reprobe(source, metadata)

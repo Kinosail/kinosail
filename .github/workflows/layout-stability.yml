@@ -44,6 +44,10 @@ on:
         description: Select three slower audio diagnostics and two marked controls with remaining proof enabled
         type: boolean
         default: false
+      hls_audio_installation:
+        description: Select the closed disposable48k AAC installation experiment
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -321,8 +325,10 @@ jobs:
       - name: Run bounded remaining playback regressions
         if: ${{ inputs.hls_remaining_proof }}
         env:
-          KINOSAIL_HLS_REMAINING_SUITE: ${{ inputs.hls_audio_timing && 'audio-timing' || 'remaining' }}
-        run: timeout --kill-after=5s 600s python3 apps/player/scripts/test-hls-remaining.py
+          KINOSAIL_HLS_REMAINING_SUITE: ${{ inputs.hls_audio_installation && 'audio-installation' || inputs.hls_audio_timing && 'audio-timing' || 'remaining' }}
+        run: |
+          if [ '${{ inputs.hls_audio_installation }}' = true ] && [ '${{ inputs.hls_audio_timing }}' = true ]; then exit 2; fi
+          timeout --kill-after=5s 600s python3 apps/player/scripts/test-hls-remaining.py
       - name: Preserve safe follow-on receipts
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
