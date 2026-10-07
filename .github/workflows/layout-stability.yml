@@ -41,7 +41,7 @@ on:
         type: boolean
         default: false
       hls_audio_timing:
-        description: Select three slower real-codec audio timing diagnostics with remaining proof enabled
+        description: Select three slower audio diagnostics and two marked controls with remaining proof enabled
         type: boolean
         default: false
 

@@ -37,7 +37,7 @@ def marker_clock(reference, observed):
     check(math.isfinite(correlation), 'marker_correlation_finite')
     return {'templateSourceStartSample': start, 'windowSamples': length, 'searchLagSamples': [-extent, extent],
         'coarseStepSamples': 16, 'refinementStepSamples': 1, 'selectedChannel': 0, 'sampleRate': 48000,
-        'bestLagSamples': lag, 'bestLagSeconds': lag / 48000, 'maximumCorrelation': correlation,
+        'bestLagSamples': lag, 'bestLagSeconds': lag / 48000, 'sampledMaximumCorrelation': correlation,
         'fullPCMUntrimmed': True, 'positiveLagMeansObservedContentLater': True}
 
 
