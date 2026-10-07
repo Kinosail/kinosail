@@ -2,6 +2,7 @@ import {devices, expect, test} from '@playwright/test';
 import {createHash} from 'node:crypto';
 import {readFile, writeFile} from 'node:fs/promises';
 import {configureTestInstance, login} from './test-instance-helpers';
+import {selectorAdmissionFacts, selectorNegotiationMatch} from './positive-selector-admission';
 
 // Gap: native fullscreen admission can fail before the selected stream moves.
 // Observe the untouched phone selector, then separately decode its exact URL
@@ -131,17 +132,13 @@ test(`positive saved selector ${explicitZero ? 'explicit zero during actual nego
   await expect.poll(() => publicPosition().then(value => value.seconds)).toBe(6);
   await record({phase: 'seed6', public: await publicPosition()});
   let negotiationHeld = false, negotiationBudgetReleased = false;
+  const negotiationMatches: object[] = [];
   let releaseNegotiation = () => {};
   if (explicitZero) await page.route(`${base.origin}${path}/playback?*`, async route => {
     const request = route.request();
-    let watchDocument = false;
-    try {
-      const referer = new URL(request.headers().referer || '');
-      const endpoint = new URL(request.url());
-      watchDocument = request.method() === 'GET' && request.frame() === page.mainFrame() &&
-        new URL(request.frame().url()).pathname === watch && referer.origin === base.origin && referer.pathname === watch &&
-        Boolean(endpoint.searchParams.get('videoCodecs'));
-    } catch { /* No raw URL/referrer retained. */ }
+    const match = selectorNegotiationMatch(request, page, watch, base);
+    const watchDocument = match.get && match.mainFrame && match.activeWatch && match.sameOriginReferer && match.watchReferer && match.codecsPresent;
+    if (negotiationMatches.length < 4) negotiationMatches.push({...match, selected: watchDocument && !negotiationHeld});
     if (negotiationHeld || !watchDocument) return route.continue();
     heldNegotiationRequest = request;
     negotiationHeld = true;
@@ -168,6 +165,15 @@ test(`positive saved selector ${explicitZero ? 'explicit zero during actual nego
       await record({phase: 'explicit-zero-during-held-real-negotiation', actualRequestHeld: negotiationHeld,
         admissionFrozenBeforeRelease: explicitZeroAdmitted, positionAfterRealKey: afterKey.position, seekIntentCount: afterKey.intents,
         actualNegotiationStatus: negotiationStatus});
+    } catch (error) {
+      releaseNegotiation();
+      await Promise.race([Promise.allSettled(pendingResponses), new Promise(resolve => setTimeout(resolve, 500))]);
+      const facts = await selectorAdmissionFacts(page);
+      await record({phase: 'actual-negotiation-admission-failed', actualRequestHeld: negotiationHeld,
+        admissionFrozenBeforeRelease: explicitZeroAdmitted, budgetReleased: negotiationBudgetReleased,
+        actualNegotiationStatus: negotiationStatus, negotiationMatches, facts,
+        boundary: 'Read-only failure snapshot; ordinary canPlayType results do not establish MediaCapabilities negotiation. Empty request evidence is unadmitted, not a passing zero-seek result.'}).catch(() => {});
+      throw error;
     } finally { releaseNegotiation(); }
   }
   await expect.poll(() => page.locator('video').evaluate(video => (video as HTMLVideoElement).readyState), {timeout: 30_000}).toBeGreaterThanOrEqual(2);

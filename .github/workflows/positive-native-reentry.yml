@@ -7,6 +7,7 @@ on:
     paths:
       - apps/player/e2e/test-instance-positive-reentry.spec.ts
       - apps/player/e2e/test-instance-positive-selector.spec.ts
+      - apps/player/e2e/positive-selector-admission.ts
       - apps/player/scripts/test-positive-reentry-local.py
       - apps/player/scripts/positive_reentry_processes.py
       - apps/player/scripts/positive_reentry_tls.py
