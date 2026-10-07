@@ -36,6 +36,10 @@ on:
         description: Collect bounded source metadata for canonical architecture regeneration
         type: boolean
         default: false
+      hls_remaining_proof:
+        description: Run the six strict remaining-playback diagnostics in the explicit HLS campaign
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -308,7 +312,11 @@ jobs:
       - name: Check bounded presentation oracle
         run: python3 -m unittest discover -s apps/player/scripts -p test_hls_followon_frames.py
       - name: Run all authenticated public cases
+        if: ${{ !inputs.hls_remaining_proof }}
         run: python3 apps/player/scripts/test-hls-followon.py
+      - name: Run bounded remaining playback regressions
+        if: ${{ inputs.hls_remaining_proof }}
+        run: timeout --kill-after=5s 600s python3 apps/player/scripts/test-hls-remaining.py
       - name: Preserve safe follow-on receipts
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
