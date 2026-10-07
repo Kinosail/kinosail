@@ -11,6 +11,13 @@ let requests: string[];
 test.beforeAll(async () => {
   server = createServer((request, response) => {
     const url = new URL(request.url!, "http://localhost");
+    if (url.pathname === "/worker.js") {
+      response.setHeader("Content-Type", "text/javascript");
+      response.end(`self.addEventListener('install', event => event.waitUntil(self.skipWaiting()));
+        self.addEventListener('activate', event => event.waitUntil(self.clients.claim()));
+        self.addEventListener('fetch', event => event.respondWith(fetch(event.request)));`);
+      return;
+    }
     if (url.search) requests.push(url.searchParams.get("letter") || "other");
     response.setHeader("Content-Type", url.search ? "text/plain" : "text/html");
     response.end(url.search ? "received" : '<!doctype html><title>HTTP hold fixture</title><output></output>');
@@ -59,4 +66,70 @@ test("a nonmatching main request remains usable while the chosen request is held
     expect(result).toBe("received");
     expect(requests).toEqual(["A"]);
   } finally {await held.release();}
+});
+
+test("an aborted held XHR is never sent when the gate releases", async ({page}) => {
+  await page.goto(origin);
+  const held = await holdNextMainRequest(page, "letter", "B");
+  try {
+    await page.evaluate(() => {
+      const request = new XMLHttpRequest();
+      request.open("GET", "/?letter=B");
+      request.send();
+      request.abort();
+    });
+    await held.waitUntilStarted();
+    await held.release();
+    // A completed following exchange proves the server remains usable after
+    // cancellation and gives the retired request a chance to reach transport.
+    expect(await page.evaluate(async () => (await fetch("/?letter=A")).text())).toBe("received");
+    expect(requests).toEqual(["A"]);
+  } finally {await held.release();}
+});
+
+test("a matching POST is not delayed by the GET-only gate", async ({page}) => {
+  await page.goto(origin);
+  const held = await holdNextMainRequest(page, "letter", "B");
+  try {
+    expect(await page.evaluate(async () => (await fetch("/?letter=B", {method: "POST"})).text())).toBe("received");
+    expect(requests).toEqual(["B"]);
+  } finally {await held.release();}
+});
+
+test.describe("service-worker-controlled real HTTP transports", () => {
+  test.use({serviceWorkers: "allow"});
+  for (const transport of ["fetch", "xhr"] as const) {
+    test(`main request hold gates controlled ${transport} until release`, async ({page}, info) => {
+      await page.goto(origin);
+      await page.evaluate(async () => {
+        await navigator.serviceWorker.register("/worker.js");
+        await navigator.serviceWorker.ready;
+        if (!navigator.serviceWorker.controller) await new Promise<void>(resolve =>
+          navigator.serviceWorker.addEventListener("controllerchange", () => resolve(), {once: true}));
+      });
+      expect(await page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
+      const held = await holdNextMainRequest(page, "letter", "B");
+      try {
+        await page.evaluate(transport => {
+          const show = (text: string) => {document.querySelector("output")!.textContent = text;};
+          if (transport === "fetch") void fetch("/?letter=B").then(response => response.text()).then(show);
+          else {
+            const request = new XMLHttpRequest();
+            request.open("GET", "/?letter=B");
+            request.setRequestHeader("HX-Request", "true");
+            request.onload = () => show(request.responseText);
+            request.send();
+          }
+        }, transport);
+        await held.waitUntilStarted();
+        expect(requests).toEqual([]);
+        await expect(page.locator("output")).toHaveText("");
+        await held.release();
+        await expect(page.locator("output")).toHaveText("received");
+        expect(requests).toEqual(["B"]);
+        await info.attach("controlled-transport", {body: JSON.stringify({transport, workerControlled: true,
+          deliveredBeforeRelease: false, deliveredAfterRelease: 1}), contentType: "application/json"});
+      } finally {await held.release();}
+    });
+  }
 });

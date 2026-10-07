@@ -27,7 +27,32 @@ export async function reviewSubtitlePairing(page: Page, testInfo: TestInfo) {
   await expect(page.locator('input[name="preview-track"][value="proposed"]')).toBeChecked();
   await expect.poll(() => page.locator("video").evaluate(video => video.currentTime)).toBe(6.75);
   await expect(page.locator("video")).toBeFocused();
-  await page.locator("#show-flagged").check();
+  const flagged = page.locator("#show-flagged");
+  await flagged.evaluate(input => {
+    const events: {type: string; checked: boolean; trusted: boolean}[] = [];
+    const record = (event: Event) => {
+      events.push({type: event.type, checked: (input as HTMLInputElement).checked, trusted: event.isTrusted});
+      if (events.length > 8) events.shift();
+    };
+    for (const type of ["pointerdown", "click", "input", "change"]) input.addEventListener(type, record);
+    Object.assign(input, {pairingObservation: {events, record}});
+  });
+  try {await flagged.check();}
+  finally {
+    const observation = await flagged.evaluate(input => {
+      const target = input as HTMLInputElement & {pairingObservation: {
+        events: {type: string; checked: boolean; trusted: boolean}[]; record: EventListener;
+      }};
+      for (const type of ["pointerdown", "click", "input", "change"]) target.removeEventListener(type, target.pairingObservation.record);
+      const box = input.getBoundingClientRect();
+      const result = {checked: target.checked, events: target.pairingObservation.events,
+        box: {x: box.x, y: box.y, width: box.width, height: box.height},
+        viewport: {width: innerWidth, height: innerHeight}};
+      delete (target as Partial<typeof target>).pairingObservation;
+      return result;
+    });
+    await testInfo.attach("flagged-checkbox-observation", {body: JSON.stringify(observation), contentType: "application/json"});
+  }
   await expect(rows).toHaveCount(1);
   await expect(rows.first()).toContainText("Downloaded from www.example.com");
   await page.locator("#show-flagged").uncheck();
