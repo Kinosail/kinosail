@@ -9,6 +9,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
 // Failure modes: a closed page retains admission; malformed, unrelated-item,
@@ -16,17 +18,7 @@ import (
 // Controlled processes isolate admission and departure without claiming decode proof.
 func phaseSessionDeparture(t *testing.T) {
 	fixture := phaseFixture(t, 2, true)
-	encoder := filepath.Join(filepath.Dir(fixture.starts), "ffmpeg")
-	script, err := os.ReadFile(encoder)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(encoder, append(script, []byte("\nwhile :; do sleep .02; done\n")...), 0o700); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(fixture.release, nil, 0o600); err != nil {
-		t.Fatal(err)
-	}
+	holdDepartureEncoder(t, fixture)
 	if status := phaseStatus(t, fixture.request(t, 0, "t-a0-s0-none-t0-b0", "departure-first", "closing-session")); status != http.StatusOK {
 		t.Fatalf("first movie startup = %d", status)
 	}
@@ -37,6 +29,44 @@ func phaseSessionDeparture(t *testing.T) {
 	phaseWait(t, func() bool {
 		return strings.Contains(strings.Join(phaseSequence(fixture.events("departure-next")), ","), "admission_wait")
 	})
+	assertDepartureKeepsOtherWork(t, fixture, next)
+	if status := departureTrace(t, fixture, fixture.ids[0], `{"session":"closing-session","event":"session-end","sequence":3}`); status != http.StatusNoContent {
+		t.Fatalf("departure trace = %d", status)
+	}
+	select {
+	case status := <-next:
+		t.Fatalf("departure interrupted a shared viewing session: %d", status)
+	case <-time.After(50 * time.Millisecond):
+	}
+	// A request already dispatched by the departed page cannot reopen its attachment.
+	if status := phaseStatus(t, fixture.request(t, 0, "t-a0-s0-none-t0-b0", "departure-late", "closing-session")); status != http.StatusOK {
+		t.Fatalf("late cached request = %d", status)
+	}
+	if status := departureTrace(t, fixture, fixture.ids[0], `{"session":"shared-session","event":"session-end","sequence":1}`); status != http.StatusNoContent {
+		t.Fatalf("last shared departure trace = %d", status)
+	}
+	status := phaseStatus(t, next)
+	if status != http.StatusOK {
+		t.Fatalf("next movie could not start after departure: %d", status)
+	}
+	phaseReceipt(t, status, fixture.events("departure-next"))
+}
+
+func holdDepartureEncoder(t *testing.T, fixture phaseHTTPFixture) {
+	t.Helper()
+	encoder := filepath.Join(filepath.Dir(fixture.starts), "ffmpeg")
+	script, err := os.ReadFile(encoder)
+	if err != nil {
+		t.Fatal(err)
+	}
+	servertest.WriteExecutable(t, encoder, string(script)+"\nwhile :; do sleep .02; done\n")
+	if err := os.WriteFile(fixture.release, nil, 0o600); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func assertDepartureKeepsOtherWork(t *testing.T, fixture phaseHTTPFixture, next <-chan int) {
+	t.Helper()
 	for _, value := range []struct {
 		name, item, payload string
 		status              int
@@ -62,26 +92,6 @@ func phaseSessionDeparture(t *testing.T) {
 			}
 		})
 	}
-	if status := departureTrace(t, fixture, fixture.ids[0], `{"session":"closing-session","event":"session-end","sequence":3}`); status != http.StatusNoContent {
-		t.Fatalf("departure trace = %d", status)
-	}
-	select {
-	case status := <-next:
-		t.Fatalf("departure interrupted a shared viewing session: %d", status)
-	case <-time.After(50 * time.Millisecond):
-	}
-	// A request already dispatched by the departed page cannot reopen its attachment.
-	if status := phaseStatus(t, fixture.request(t, 0, "t-a0-s0-none-t0-b0", "departure-late", "closing-session")); status != http.StatusOK {
-		t.Fatalf("late cached request = %d", status)
-	}
-	if status := departureTrace(t, fixture, fixture.ids[0], `{"session":"shared-session","event":"session-end","sequence":1}`); status != http.StatusNoContent {
-		t.Fatalf("last shared departure trace = %d", status)
-	}
-	status := phaseStatus(t, next)
-	if status != http.StatusOK {
-		t.Fatalf("next movie could not start after departure: %d", status)
-	}
-	phaseReceipt(t, status, fixture.events("departure-next"))
 }
 
 func departureTrace(t *testing.T, fixture phaseHTTPFixture, item, payload string) int {
