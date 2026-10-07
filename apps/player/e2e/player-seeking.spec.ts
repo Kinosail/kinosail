@@ -56,14 +56,28 @@ test("compatible playback resumes and seeks from the requested HLS window", asyn
   })).toEqual({ count: 2, config: expect.objectContaining({ startPosition: 0, timelineOffset: 5123 }), source: "/hls/movie/p/a-a0-s0-none-t0-b0-o5123000/index.m3u8" });
 });
 
-for (const ranges of ["seekable", "buffered"]) test(`native HLS keeps seeks inside ${ranges} media and rebuilds outside its window`, async ({ page }) => {
+for (const ranges of ["seekable", "buffered"]) for (const autoplay of [true, false]) test(`${autoplay ? "" : "paused "}native HLS keeps seeks inside ${ranges} media and rebuilds outside its window`, async ({ page }, info) => {
+  const trace: {event: string; detail: string}[] = [];
+  await page.route("https://127.0.0.1:38127/playback-trace/movie", async route => {
+    const body = route.request().postData() || "";
+    if (body.length > 16384 || trace.length >= 32) throw new Error("fixture telemetry bound exceeded");
+    const value = JSON.parse(body);
+    if (["heartbeat", "play-request"].includes(value.event)) trace.push({event: value.event, detail: value.detail === "source-change" ? "source-change" : "other"});
+    await route.fulfill({status: 204, headers: {"Access-Control-Allow-Origin": "*"}});
+  });
   await page.setContent(`<html><head><base href="https://127.0.0.1:38127/"></head><body>
-    <video data-autoplay data-hls="/hls/movie/p/a-a0-s0-none-t0-b0/index.m3u8?playbackSession=session" data-duration="7200" data-start="271.607" data-progress="/progress/movie"></video>
+    <video ${autoplay ? "data-autoplay" : ""} data-playback-trace="/playback-trace/movie" data-hls="/hls/movie/p/a-a0-s0-none-t0-b0/index.m3u8?playbackSession=session" data-duration="7200" data-start="271.607" data-progress="/progress/movie"></video>
     <div data-quality-control hidden><select data-quality></select><span data-quality-state></span></div>
   </body></html>`);
   await page.locator("video").evaluate((video) => Object.defineProperties(video, {
     canPlayType: { value: (type: string) => type === "application/vnd.apple.mpegurl" ? "probably" : "" },
-    play: { value: () => { video.dataset.playCalls = String(Number(video.dataset.playCalls || 0) + 1); return Promise.resolve(); } },
+    play: { value: () => {
+      video.dataset.playCalls = String(Number(video.dataset.playCalls || 0) + 1);
+      const calls = JSON.parse(video.dataset.playObservations || "[]");
+      if (calls.length < 8) calls.push({phase: video.dataset.metadataPhase || "before metadata", position: video.currentTime, source: new URL(video.src).pathname});
+      video.dataset.playObservations = JSON.stringify(calls);
+      return Promise.resolve();
+    } },
   }));
   await page.addScriptTag({ content: playerSource });
 
@@ -72,12 +86,24 @@ for (const ranges of ["seekable", "buffered"]) test(`native HLS keeps seeks insi
     return { path: source.pathname, start: source.searchParams.get("start") };
   })).toEqual({ path: "/hls/movie/p/a-a0-s0-none-t0-b0-o271600/index.m3u8", start: null });
 
-  expect(await page.locator("video").evaluate((video) => {
+  expect(await page.locator("video").evaluate(video => Number(video.dataset.playCalls || 0))).toBe(0);
+  const initial = await page.locator("video").evaluate((video) => {
     Object.defineProperty(video, "duration", {configurable: true, value: 7200});
+    video.dataset.metadataPhase = "initial metadata";
     video.dispatchEvent(new Event("loadedmetadata"));
     const mediaTime = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, "currentTime")!;
     return {playCalls: Number(video.dataset.playCalls || 0), timeline: video.currentTime, source: mediaTime.get!.call(video)};
-  })).toEqual({playCalls: 0, timeline: 271.6, source: 0});
+  });
+  const calls = await page.locator("video").evaluate(video => JSON.parse(video.dataset.playObservations || "[]"));
+  await info.attach("native-hls-initial-play", {body: JSON.stringify({autoplay, ranges, initial, calls}), contentType: "application/json"});
+  expect(initial).toEqual({playCalls: autoplay ? 1 : 0, timeline: 271.6, source: 0});
+  expect(calls).toEqual(autoplay ? [{phase: "initial metadata", position: 271.607, source: "/hls/movie/p/a-a0-s0-none-t0-b0-o271600/index.m3u8"}] : []);
+  await expect.poll(() => trace.some(value => value.event === "heartbeat")).toBe(true);
+  expect(trace.filter(value => value.event === "play-request")).toEqual(autoplay ? [{event: "play-request", detail: "source-change"}] : []);
+  await info.attach("native-hls-initial-cause", {body: JSON.stringify({autoplay, ranges, trace}), contentType: "application/json"});
+  // This decoder spy records Play without changing paused state. Subsequent
+  // explicit seeks must preserve that paused state, including window rebuilds.
+  expect(await page.locator("video").evaluate(video => video.paused)).toBe(true);
 
   await page.locator("video").evaluate((video, name) => Object.defineProperty(video, name, {
     value: { length: 2, start: (index: number) => [0, 10][index], end: (index: number) => [5, 30][index] },
@@ -86,16 +112,21 @@ for (const ranges of ["seekable", "buffered"]) test(`native HLS keeps seeks insi
   for (const seconds of [272.25, 276.6, 281.6, 301.6]) {
     await page.locator("video").evaluate((video, target) => { video.currentTime = target; video.dispatchEvent(new Event("seeking")); video.dispatchEvent(new Event("seeked")); }, seconds);
     await expect(page.locator("video")).toHaveAttribute("src", originalSource!);
+    expect(await page.locator("video").evaluate(video => Number(video.dataset.playCalls || 0))).toBe(autoplay ? 1 : 0);
   }
   // A gap between loaded ranges also needs a new server window.
   await page.locator("video").evaluate((video) => { video.currentTime = 279.25; video.dispatchEvent(new Event("seeking")); });
   await expect(page.locator("video")).toHaveAttribute("src", /-o279200\/index.m3u8/);
-  await page.locator("video").dispatchEvent("loadedmetadata");
+  await page.locator("video").evaluate(video => {video.dataset.metadataPhase = "rebuild metadata"; video.dispatchEvent(new Event("loadedmetadata"));});
+  expect(await page.locator("video").evaluate(video => Number(video.dataset.playCalls || 0))).toBe(autoplay ? 1 : 0);
   await page.locator("video").evaluate((video) => { video.currentTime = 120.25; video.dispatchEvent(new Event("seeking")); });
   await expect.poll(() => page.locator("video").evaluate((video) => {
     const source = new URL(video.src);
     return { path: source.pathname, start: source.searchParams.get("start") };
   })).toEqual({ path: "/hls/movie/p/a-a0-s0-none-t0-b0-o120200/index.m3u8", start: null });
+  await page.locator("video").dispatchEvent("loadedmetadata");
+  expect(await page.locator("video").evaluate(video => ({playCalls: Number(video.dataset.playCalls || 0), timeline: video.currentTime})))
+    .toEqual({playCalls: autoplay ? 1 : 0, timeline: 120.2});
 });
 
 async function slowNativeHLS(page: Page) {
