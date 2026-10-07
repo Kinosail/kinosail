@@ -116,9 +116,14 @@ for (const saved of [true, false]) test(`ended offline queue requires its own wa
 
 test("returning queue item does not reuse the previous source's played intent", {tag: ["@smoke", "@routed-fault"]}, async ({page}) => {
   await openAudio(page, "");
-  const writes: string[] = [];
-  page.on("request", request => {
-    if (new URL(request.url()).pathname.startsWith("/progress/")) writes.push(new URL(request.url()).pathname);
+  await page.evaluate(() => {
+    const original = window.fetch, writes: string[] = [];
+    Object.assign(window, {queueProgressDispatches: writes});
+    window.fetch = (input, init) => {
+      const path = new URL(input instanceof Request ? input.url : String(input), location.href).pathname;
+      if (path.startsWith("/progress/")) writes.push(path);
+      return original.call(window, input, init);
+    };
   });
   await startQueue(page);
   await page.getByRole("button", {name: "Next track", exact: true}).click();
@@ -129,7 +134,7 @@ test("returning queue item does not reuse the previous source's played intent", 
   await expect(page.getByRole("button", {name: "Next track", exact: true})).toBeEnabled();
   await page.locator("audio").dispatchEvent("pause");
   await expect(page.locator("[data-audio-queue-controls]")).not.toHaveAttribute("aria-busy");
-  expect(writes).toEqual(["/progress/track"]);
+  expect(await page.evaluate(() => (window as Window & {queueProgressDispatches: string[]}).queueProgressDispatches)).toEqual(["/progress/track"]);
 });
 
 test("canonical catalog year strings survive queue validation and current-track identity", {tag: ["@smoke", "@routed-fault"]}, async ({page}) => {
