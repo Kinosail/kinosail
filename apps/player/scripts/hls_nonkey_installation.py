@@ -25,7 +25,7 @@ def rewrite_initial_arguments(arguments, source, cache):
     if (not output.is_absolute() or '..' in output.parts or len(relative.parts) != 3
             or output.name != 'index.m3u8' or not re.fullmatch('[1-9][0-9]{2,3}p', output.parent.name)):
         return unchanged
-    expected = ['-hide_banner', '-loglevel', 'error', '-y', '-ss', '12.5', '-i', source,
+    expected = ['-hide_banner', '-loglevel', 'error', '-y', '-ss', '12.500', '-i', source,
         '-map', '0:v:0', '-map', '0:a:0?', '-sn', '-c:v', 'copy', '-c:a', 'copy',
         '-f', 'hls', '-hls_time', '2', '-hls_playlist_type', 'event',
         '-hls_segment_type', 'fmp4', '-hls_segment_options', 'movflags=+frag_discont+skip_sidx',

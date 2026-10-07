@@ -15,7 +15,7 @@ CACHE = '/owned/cache'
 
 
 def arguments():
-    return ['-hide_banner', '-loglevel', 'error', '-y', '-ss', '12.5', '-i', SOURCE,
+    return ['-hide_banner', '-loglevel', 'error', '-y', '-ss', '12.500', '-i', SOURCE,
         '-map', '0:v:0', '-map', '0:a:0?', '-sn', '-c:v', 'copy', '-c:a', 'copy',
         '-f', 'hls', '-hls_time', '2', '-hls_playlist_type', 'event',
         '-hls_segment_type', 'fmp4', '-hls_segment_options', 'movflags=+frag_discont+skip_sidx',
@@ -75,7 +75,7 @@ class InstallationIntegrity(unittest.TestCase):
 
     def test_near_miss_duplicate_and_refill_commands_stay_unchanged(self):
         values = []
-        for option, value in [('-ss', '12.4'), ('-i', '/other/source'), ('-c:v', 'libx264'),
+        for option, value in [('-ss', '12.5'), ('-ss', '12.4'), ('-i', '/other/source'), ('-c:v', 'libx264'),
                               ('-c:a', 'aac'), ('-f', 'mp4'), ('-hls_time', '4'),
                               ('-hls_segment_options', 'movflags=+skip_sidx')]:
             actual = arguments(); actual[actual.index(option) + 1] = value; values.append(actual)
@@ -97,6 +97,15 @@ class InstallationIntegrity(unittest.TestCase):
         actual = arguments(); actual[actual.index('-hls_segment_filename') + 1] = '/other/segment-%05d.m4s'; values.append(actual)
         for actual in values:
             self.assertEqual(rewrite_initial_arguments(actual, SOURCE, CACHE), (actual, False))
+
+    def test_exact_seek_text_is_bound_to_the_server_formatter(self):
+        root = Path(__file__).resolve().parents[3]
+        formatter = (root / 'packages/playback/hls_filters.go').read_text()
+        server = (root / 'apps/player/internal/server/hls.go').read_text()
+        self.assertIn("func FFmpegSeconds(value float64) string { return strconv.FormatFloat(value, 'f', 3, 64) }", formatter)
+        self.assertIn('seek := ffmpegSeconds(start)', server)
+        self.assertEqual(arguments()[arguments().index('-ss') + 1], format(12.5, '.3f'))
+        self.assertTrue(rewrite_initial_arguments(arguments(), SOURCE, CACHE)[1])
 
     def test_snapshot_changes_with_content_and_rejects_oversized_or_symlink_files(self):
         with tempfile.TemporaryDirectory() as temporary:

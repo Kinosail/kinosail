@@ -254,3 +254,19 @@ media cannot inject. A successful helper check cannot qualify runtime pixels.
 Normal-speed runtime still needs exact-source independent review. A repeated
 drop leaves the complete browser oracle blocked; it does not authorize mux,
 cache, scanner, client, simulator or production changes.
+
+## Exact installation seek text, before repair
+
+Run `37555634930` failed the one-transformation audit for both non-key cases.
+Its raw output and quarter-speed browser rows match the unchanged baseline.
+It cannot establish the negative-edit counterfactual. The Server calls
+`playback.FFmpegSeconds`, which formats its seek with three decimal places.
+The helper mistakenly required `12.5`, rather than the exact `12.500` argv.
+
+Before repairing the matcher, change its independently authored argv fixture
+to the source-derived `12.500` form. Require `12.5` and every other near miss
+to remain unchanged. Add a contract binding the fixture to the Server's
+formatter and call site. Retain the full exact argv comparison and exactly
+one audited transformation. Preserve the failed attempt; do not classify its
+unmodified output as a mux experiment. Re-run the corrected fixed1 experiment
+separately after the normal-speed baseline and exact-source review.
