@@ -119,6 +119,7 @@ def audio_output(api, hls, directory, case, source):
     public, public_facts = native_pcm(joined, RUN_DEADLINE, directory)
     reference, reference_facts = native_pcm(source, RUN_DEADLINE, directory)
     case['nativePCMQualification'] = {'public': public_facts, 'source': reference_facts}
+    check(public_facts['stream']['codec_name'] == 'aac', 'public_aac_qualification')
     case['fullEOFNativeSamples'] = {'public': len(public) // 4, 'source': len(reference) // 4,
         'publicSHA256': hashlib.sha256(public).hexdigest(), 'sourceSHA256': hashlib.sha256(reference).hexdigest(),
         'decodedToEOF': True, 'trimmed': False, 'channels': 2, 'sampleRate': 48000,
@@ -165,14 +166,14 @@ def journey(name, original, metadata, offset=0, pacing=None):
     resources = {'samples': 0, 'peakOwnedFFmpeg': 0, 'samplingErrors': 0}
     case['resources'] = resources
     log_path = directory / 'server.log'
-    item = None
+    item, server, sampler = None, None, None
+    stop = threading.Event()
     with log_path.open('w') as log:
-        server = subprocess.Popen([str(BINARY)], cwd=ROOT, env=env, stdout=log, stderr=log, start_new_session=True)
-        stop = threading.Event()
-        sampler = threading.Thread(target=sample_resources, args=(server, source, stop, resources), daemon=True)
-        sampler.start()
         try:
             signal.setitimer(signal.ITIMER_REAL, min(90, remaining - 20))
+            server = subprocess.Popen([str(BINARY)], cwd=ROOT, env=env, stdout=log, stderr=log, start_new_session=True)
+            sampler = threading.Thread(target=sample_resources, args=(server, source, stop, resources), daemon=True)
+            sampler.start()
             api.authorize()
             item = next(i for i in api.call('/api/v1/library')['items'] if i['title'] == 'Fixture')
             check(re.fullmatch(r'[a-f0-9]{16}', item['id']), 'item_id_shape')
@@ -202,7 +203,7 @@ def journey(name, original, metadata, offset=0, pacing=None):
                 case['physicalAfterPublicDelivery'] = physical(cache, item['id'])
             else:
                 keys = [v - metadata['sourceTimeOriginSeconds'] for v in metadata['keyframesSeconds']]
-                check(any(abs(v - offset) <= 0.000001 for v in keys) if offset == 12 else all(abs(v - offset) > 0.05 for v in keys), 'fixture_key_eligibility')
+                check(any(abs(v - offset) <= 0.000001 for v in keys) if name.startswith('exact-key') else all(abs(v - offset) > 0.05 for v in keys), 'fixture_key_eligibility')
                 full, source_rows = decode_frames(source)
                 origin = metadata['sourceTimeOriginSeconds']
                 expected = [n for n, point in enumerate(metadata['sourceFramePTS']) if point >= origin + offset - 0.000001]
@@ -224,7 +225,8 @@ def journey(name, original, metadata, offset=0, pacing=None):
             signal.setitimer(signal.ITIMER_REAL, 0)
             signal.signal(signal.SIGTERM, signal.SIG_IGN)
             try:
-                case.update(finish_processes(server, source, stop, sampler))
+                if server is not None:
+                    case.update(finish_processes(server, source, stop, sampler))
             except Exception as error:
                 case['cleanupFailureClass'] = type(error).__name__
                 case['failures'].append('owned_process_join_failed')
@@ -253,7 +255,10 @@ try:
         journey(f'audio-{duration}-{paced}', source, {'probedDurationSeconds': float(probe['format']['duration'])}, pacing=paced)
     source, metadata = fixture(RUN, 'regular', 48, ','.join(str(v) for v in range(0, 32, 2)), frames=768)
     metadata = reprobe(source, metadata)
-    journey('exact-key-control12', source, metadata, offset=12)
+    actual_key = min(metadata['keyframesSeconds'], key=lambda v: abs(v - metadata['sourceTimeOriginSeconds'] - 12))
+    control_offset = round((actual_key - metadata['sourceTimeOriginSeconds']) * 1000) / 1000
+    check(abs(control_offset - 12) < 0.05 and abs(control_offset + metadata['sourceTimeOriginSeconds'] - actual_key) <= 0.000001, 'fixture_exact_key_route_clock')
+    journey('exact-key-control12', source, metadata, offset=control_offset)
     journey('nonkey-mkv12.5', source, metadata, offset=12.5)
     mp4 = RUN / 'copy.mp4'
     run(['ffmpeg', '-nostdin', '-v', 'error', '-i', str(source), '-map', '0:v:0', '-map', '0:a:0', '-c', 'copy', str(mp4)], 60)

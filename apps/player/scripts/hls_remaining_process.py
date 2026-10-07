@@ -62,10 +62,11 @@ def finish_processes(server, source, stop, sampler):
     finally:
         stop.set()
         try:
-            sampler.join(timeout=5)
+            if sampler is not None and sampler.ident is not None:
+                sampler.join(timeout=5)
         finally:
             facts['ownedProcessJoin'] = join_group(server)
-    if sampler.is_alive():
+    if sampler is not None and sampler.is_alive():
         facts['cleanupFailures'].append('sampler_join_failed')
     return facts
 
@@ -88,7 +89,7 @@ def native_pcm(path, run_deadline, directory):
     samples = sum(v['nb_samples'] for v in frames)
     check(0 < samples * 4 <= 2 << 20, 'native_complete_sample_bound')
     target = directory / (path.name + '.pcm')
-    command = ['ffmpeg', '-nostdin', '-v', 'error', '-i', str(path), '-map', '0:a:0',
+    command = ['ffmpeg', '-nostdin', '-v', 'error', '-xerror', '-i', str(path), '-map', '0:a:0',
         '-frames:a', '513', '-f', 's16le', '-']
     with target.open('wb') as output, target.with_suffix('.pcm-private.log').open('wb') as error:
         process = subprocess.Popen(command, stdout=output, stderr=error)
