@@ -10,6 +10,20 @@ import UIKit
 @Suite(.serialized, .enabled(if: FileManager.default.fileExists(atPath: "/tmp/kinosail-player-buffer-bar.mp4")))
 @MainActor struct BufferedPlaybackJourneys {
     @Test func decodedMediaBuffersReachThePlaybackScreenAndClearOnStop() async throws {
+        #if os(iOS)
+        try await journey(audio: false)
+        #else
+        try await journey(audio: true)
+        #endif
+    }
+
+    #if os(iOS)
+    @Test func decodedMediaBuffersReachTheAudioScreenAndClearOnStop() async throws {
+        try await journey(audio: true)
+    }
+    #endif
+
+    private func journey(audio: Bool) async throws {
         let media = try Data(contentsOf: URL(fileURLWithPath: "/tmp/kinosail-player-buffer-bar.mp4"))
         try #require(media.count <= 1024 * 1024)
         let fixture = try await PlaybackStartupFixture()
@@ -21,11 +35,9 @@ import UIKit
         let session = AppSession()
         defer { session.player.stop() }
         #if os(iOS)
-        try await render(TouchPlaybackView(failure: nil, retry: {}, close: {}).environment(session), name: "pending", widths: [390, 1024])
-        let item = try fixture.item("movie")
-        #else
-        let item = try MediaItem(.object(["id": .string("music"), "kind": .string("music"), "title": .string("Buffer fixture")]), server: fixture.server)
+        if !audio { try await render(TouchPlaybackView(failure: nil, retry: {}, close: {}).environment(session), name: "pending", widths: [390, 1024]) }
         #endif
+        let item = try (audio ? MediaItem(.object(["id": .string("music"), "kind": .string("music"), "title": .string("Buffer fixture")]), server: fixture.server) : fixture.item("movie"))
         try await session.player.play(item, client: fixture.client, store: store)
         for _ in 0..<500 where session.player.bufferedRanges.isEmpty { try await Task.sleep(for: .milliseconds(10)) }
         #expect(!session.player.bufferedRanges.isEmpty)
@@ -37,15 +49,12 @@ import UIKit
         #expect(!session.player.bufferedRanges.isEmpty)
         #expect(abs(session.player.seconds - position) < 0.1)
         #if os(iOS)
-        try await render(TouchPlaybackView(failure: nil, retry: {}, close: {}).environment(session), name: "loaded-video", widths: [320, 390, 844, 1024])
-        try await render(TouchPlaybackView(failure: "This media could not be played.", retry: {}, close: {}).environment(session), name: "failed", widths: [390, 1024])
-        session.player.stop()
-        let audio = try MediaItem(.object(["id": .string("music"), "kind": .string("music"), "title": .string("Buffer fixture")]), server: fixture.server)
-        try await session.player.play(audio, client: fixture.client, store: store)
-        for _ in 0..<500 where session.player.bufferedRanges.isEmpty { try await Task.sleep(for: .milliseconds(10)) }
-        #expect(!session.player.bufferedRanges.isEmpty)
-        session.player.pause()
-        try await render(AudioPlayerScreen(itemID: "music").environment(session), name: "loaded-audio", widths: [390, 1024])
+        if audio {
+            try await render(AudioPlayerScreen(itemID: "music").environment(session), name: "loaded-audio", widths: [390, 1024])
+        } else {
+            try await render(TouchPlaybackView(failure: nil, retry: {}, close: {}).environment(session), name: "loaded-video", widths: [320, 390, 844, 1024])
+            try await render(TouchPlaybackView(failure: "This media could not be played.", retry: {}, close: {}).environment(session), name: "failed", widths: [390, 1024])
+        }
         #else
         try await render(AudioPlayerScreen(itemID: "music").environment(session), name: "loaded-audio", widths: [1920])
         try await render(TVSeekPreviewScreen().environment(session), name: "loaded-seek", widths: [1920])
