@@ -4,6 +4,7 @@ import os
 import ssl
 import subprocess
 import sys
+import time
 from positive_reentry_processes import run_owned_command
 
 
@@ -65,15 +66,19 @@ class HostedFixtureTrust:
             return True
         require_hosted_macos()
         failures = []
-        commands = [('remove-admin-trust', ['sudo', '-n', '/usr/bin/security', 'remove-trusted-cert', '-d', str(self.certificate)]),
-                    ('delete-exact-certificate', ['sudo', '-n', '/usr/bin/security', 'delete-certificate', '-Z', self.fingerprint, self.keychain])]
+        commands = [('delete-exact-certificate', ['sudo', '-n', '/usr/bin/security', 'delete-certificate', '-Z', self.fingerprint, self.keychain]),
+                    ('remove-admin-trust', ['sudo', '-n', '/usr/bin/security', 'remove-trusted-cert', '-d', str(self.certificate)])]
+        self.receipt['fixtureTrustCleanupCommands'] = []
         with (self.run / 'tls-private.log').open('a') as output:
             for operation, command in commands:
+                started = time.monotonic()
                 try:
                     if operation == 'delete-exact-certificate' and not self.present():
                         continue
-                    run_owned_command(command, environment, timeout=30, output=output)
+                    run_owned_command(command, environment, timeout=60, output=output)
                 except (OSError, RuntimeError, subprocess.SubprocessError) as error:
                     failures.append({'operation': operation, 'failureClass': type(error).__name__})
+                finally:
+                    self.receipt['fixtureTrustCleanupCommands'].append({'operation': operation, 'elapsedMS': round((time.monotonic() - started) * 1000)})
         self.receipt['fixtureTrustCleanupFailures'] = failures
         return not self.present() and not failures

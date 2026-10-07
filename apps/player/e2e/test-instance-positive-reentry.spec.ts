@@ -1,4 +1,4 @@
-import {expect, test} from '@playwright/test';
+import {devices, expect, test} from '@playwright/test';
 import {createHash} from 'node:crypto';
 import {readFile, writeFile} from 'node:fs/promises';
 import {configureTestInstance, login} from './test-instance-helpers';
@@ -6,6 +6,9 @@ import {configureTestInstance, login} from './test-instance-helpers';
 // Gap: positive paused restore was reset by Mark watched before decoded Play.
 // This real-process case keeps the positive state through the first Play.
 configureTestInstance();
+// Match the live MobileSafari initial-Watch policy while decoding on macOS
+// WebKit. The public autoplay preference controls the next episode only.
+test.use({...devices['iPhone 13']});
 test('positive Matroska reentry decodes the saved scene through native HLS', async ({page}, info) => {
   test.skip(process.env.KINOSAIL_POSITIVE_REENTRY_E2E !== '1', 'Owned synthetic loopback runner only');
   test.setTimeout(90_000);
@@ -20,7 +23,7 @@ test('positive Matroska reentry decodes the saved scene through native HLS', asy
   const record = async (value: object) => {
     observations.push({utc: new Date().toISOString(), ...value});
     await writeFile(info.outputPath('positive-reentry.json'), JSON.stringify({sourceReceipt,
-      boundaries: 'Real Go/FFV1/native WebKit HLS; autoplay disabled through public settings; no mocked responses or decoder clocks; no MobileSafari or physical-device proof',
+      boundaries: 'Real Go/FFV1/native macOS WebKit HLS in iPhone context; next-episode autoplay disabled through public settings; no mocked media responses or decoder clocks; no actual MobileSafari or physical-device proof',
       observations}, null, 2));
   };
   await page.addInitScript(() => localStorage.setItem('kinosail.playback-policy-v2', 'direct-first'));
@@ -57,6 +60,9 @@ test('positive Matroska reentry decodes the saved scene through native HLS', asy
       offsetSeconds: offset ? Number(offset[1]) / 1000 : 0,
       projectedFromSource: rawTime + (offset ? Number(offset[1]) / 1000 : 0),
       readyState: video.readyState, paused: video.paused, nativeHLS: video.canPlayType('application/vnd.apple.mpegurl'),
+      phonePolicy: /iPhone/.test(navigator.userAgent), touchContext: navigator.maxTouchPoints > 0,
+      hasInitialAutoplay: video.hasAttribute('autoplay') || video.hasAttribute('data-autoplay'),
+      nativeFullscreenCapability: typeof (video as HTMLVideoElement & {webkitEnterFullscreen?: unknown}).webkitEnterFullscreen === 'function',
       sourceIsHLS: new URL(video.currentSrc || video.src, location.href).pathname.startsWith('/hls/'),
       directType: video.dataset.directType, compatibilityMode: video.dataset.compatibilityMode};
   });
@@ -64,6 +70,9 @@ test('positive Matroska reentry decodes the saved scene through native HLS', asy
   await card().click();
   await expect.poll(async () => (await snapshot()).readyState, {timeout: 30_000}).toBeGreaterThanOrEqual(2);
   await record({phase: 'unplayed-metadata', ...await snapshot()});
+  expect((await snapshot()).phonePolicy).toBe(true);
+  expect((await snapshot()).touchContext).toBe(true);
+  expect((await snapshot()).hasInitialAutoplay).toBe(false);
   expect((await snapshot()).paused).toBe(true);
   await page.getByRole('link', {name: 'Library', exact: true}).click();
   await expect(page).toHaveURL(base.origin + '/');

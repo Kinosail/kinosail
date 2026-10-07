@@ -32,7 +32,7 @@ receipt = {'sourceRevision': revision, 'sourceTree': subprocess.check_output(['g
            'testSHA256': checksum(root / 'apps/player/e2e/test-instance-positive-reentry.spec.ts'),
            'runnerSHA256': checksum(Path(__file__)), 'processHelperSHA256': checksum(Path(__file__).with_name('positive_reentry_processes.py')),
            'tlsHelperSHA256': checksum(Path(__file__).with_name('positive_reentry_tls.py')), 'result': 'not-run', 'minimumFreeBytes': 3 * 1024**3,
-           'boundaries': 'Immutable git export; verified loopback HTTPS; synthetic Owner/media; actual native WebKit HLS; public autoplay disabled; disposable hosted CA only; no production edits/Nox/UI/device proof'}
+           'boundaries': 'Immutable git export; verified loopback HTTPS; synthetic Owner/media; real macOS WebKit HLS in iPhone context; next-episode autoplay disabled; disposable hosted CA only; no production edits/Nox/UI/device proof'}
 free = shutil.disk_usage(run).free
 receipt['availableBytesBeforeRun'] = free
 if free < receipt['minimumFreeBytes']:
