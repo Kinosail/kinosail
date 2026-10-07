@@ -1,13 +1,17 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"crypto/sha256"
+	"io"
 	"os"
 	"path/filepath"
 	"sync"
+	"syscall"
 	"time"
 
+	"github.com/MikeO7/kinosail/packages/httpguard"
 	"github.com/MikeO7/kinosail/packages/workload"
 )
 
@@ -22,6 +26,135 @@ type copiedHLSEndpoint struct {
 	manifest [32]byte
 	assets   []os.FileInfo
 	end      float64
+}
+
+type copiedHLSMetadataKey struct{}
+
+type copiedHLSClockCertificate struct {
+	Version        int      `json:"version"`
+	Rendition      string   `json:"rendition"`
+	Timeline       [32]byte `json:"timeline"`
+	Initialization [32]byte `json:"initialization"`
+	First          [32]byte `json:"first"`
+}
+
+// Nonblocking open also rejects a regular-file-to-FIFO race without hanging.
+func copiedHLSOpenFile(root *os.Root, name string, limit int64) (*os.File, os.FileInfo, error) {
+	info, err := root.Lstat(name)
+	if err != nil || !info.Mode().IsRegular() || info.Size() <= 0 || info.Size() > limit {
+		return nil, nil, errCopiedHLSIndex
+	}
+	file, err := root.OpenFile(name, os.O_RDONLY|syscall.O_NONBLOCK, 0)
+	if err != nil {
+		return nil, nil, errCopiedHLSIndex
+	}
+	opened, err := file.Stat()
+	if err != nil || !sameCopiedHLSFile(info, opened) {
+		_ = file.Close()
+		return nil, nil, errCopiedHLSIndex
+	}
+	return file, info, nil
+}
+
+func sameCopiedHLSFile(first, second os.FileInfo) bool {
+	return first != nil && second != nil && second.Mode().IsRegular() && os.SameFile(first, second) && first.Size() == second.Size() && first.ModTime().Equal(second.ModTime())
+}
+
+type copiedHLSContextReader struct {
+	ctx    context.Context
+	reader io.Reader
+}
+
+func (reader copiedHLSContextReader) Read(data []byte) (int, error) {
+	if err := reader.ctx.Err(); err != nil {
+		return 0, err
+	}
+	return reader.reader.Read(data)
+}
+
+func copiedHLSAssetHash(ctx context.Context, root *os.Root, name string, limit int64) ([32]byte, error) {
+	var result [32]byte
+	file, before, err := copiedHLSOpenFile(root, name, limit)
+	if err != nil {
+		return result, err
+	}
+	defer file.Close()
+	hash := sha256.New()
+	size, err := io.Copy(hash, copiedHLSContextReader{ctx, io.LimitReader(file, limit+1)})
+	after, statErr := root.Lstat(name)
+	if err != nil || ctx.Err() != nil || statErr != nil || size != before.Size() || !sameCopiedHLSFile(before, after) {
+		return result, errCopiedHLSIndex
+	}
+	copy(result[:], hash.Sum(nil))
+	return result, nil
+}
+
+func (manager *hlsManager) verifyCopiedHLSCertificate(ctx context.Context, directory string, root *os.Root, data []byte, timeline *copiedHLSTimeline) error {
+	if ctx.Err() != nil {
+		return errCopiedHLSIndex
+	}
+	certificateData, err := copiedHLSCacheFile(root, ".copy-clock", 4096)
+	certificate, decodeErr := decodeCopiedHLSCertificate(certificateData, data)
+	if err != nil || decodeErr != nil {
+		return errCopiedHLSIndex
+	}
+	selected, err := copiedHLSRendition(root)
+	if err != nil || selected != certificate.Rendition {
+		return errCopiedHLSIndex
+	}
+	ctx, release, err := manager.copiedHLSClockAdmission(ctx)
+	if err != nil {
+		return err
+	}
+	defer release()
+	rendition, err := root.OpenRoot(certificate.Rendition)
+	if err != nil {
+		return errCopiedHLSIndex
+	}
+	defer rendition.Close()
+	if err := verifyCopiedHLSRenditionAssets(ctx, rendition, certificate); err != nil {
+		return err
+	}
+	return manager.verifyCopiedHLSBoundManifest(ctx, directory, root, rendition, data, certificateData, certificate.Rendition, timeline)
+}
+
+func verifyCopiedHLSRenditionAssets(ctx context.Context, rendition *os.Root, certificate copiedHLSClockCertificate) error {
+	initialization, err := copiedHLSAssetHash(ctx, rendition, "init.mp4", 2<<20)
+	if err != nil || initialization != certificate.Initialization {
+		return errCopiedHLSIndex
+	}
+	if _, err := rendition.Lstat("segment-00000.m4s"); !os.IsNotExist(err) {
+		first, err := copiedHLSAssetHash(ctx, rendition, "segment-00000.m4s", 64<<20)
+		if err != nil || first != certificate.First {
+			return errCopiedHLSIndex
+		}
+	} // Missing lazy media retains the certified init and cuts.
+	return nil
+}
+
+func (manager *hlsManager) verifyCopiedHLSBoundManifest(ctx context.Context, directory string, root, rendition *os.Root, data, certificateData []byte, name string, timeline *copiedHLSTimeline) error {
+	manifest, err := copiedHLSCacheFile(rendition, "index.m3u8", maximumCopiedHLSTimelineBytes)
+	_, valid := copiedHLSManifest(manifest, timeline)
+	if err != nil || !valid || !copiedHLSBoundMetadata(root, data, certificateData, timeline.Policy) || ctx.Err() != nil || !manager.copiedHLSCanonicalGeneration(directory, name, root, rendition) {
+		return errCopiedHLSIndex
+	}
+
+	return nil
+}
+
+func decodeCopiedHLSCertificate(data, timeline []byte) (copiedHLSClockCertificate, error) {
+	var certificate copiedHLSClockCertificate
+	if httpguard.DecodeUniqueJSON(bytes.NewReader(data), 4096, &certificate) != nil || certificate.Version != 1 || !hlsFile(certificate.Rendition+"/index.m3u8") || certificate.Timeline != sha256.Sum256(timeline) {
+		return certificate, errCopiedHLSIndex
+	}
+	return certificate, nil
+}
+
+func (manager *hlsManager) copiedHLSClockAdmission(ctx context.Context) (context.Context, func(), error) {
+	if ctx.Value(copiedHLSMetadataKey{}) == manager {
+		return ctx, func() {}, nil
+	}
+	return manager.copiedHLSMetadataAdmission(ctx)
 }
 
 func (manager *hlsManager) openCopiedHLSRoot(directory string) (*os.Root, error) {
@@ -51,7 +184,7 @@ func (manager *hlsManager) copiedHLSMetadataAdmission(parent context.Context) (c
 	metadata.mu.Unlock()
 	select {
 	case gate <- struct{}{}:
-		return ctx, func() { <-gate; cancel() }, nil
+		return context.WithValue(ctx, copiedHLSMetadataKey{}, manager), func() { cancel(); <-gate }, nil
 	case <-ctx.Done():
 		cancel()
 		return nil, nil, errCopiedHLSIndex
