@@ -35,6 +35,13 @@ def read_report(name):
                 if (len(raw) != before.st_size or identity(before) != identity(after)
                         or not stat.S_ISREG(current.st_mode) or identity(before) != identity(current)):
                     raise ValueError
+                for descriptor, canonical in (
+                        (parent, os.stat('.verification', follow_symlinks=False)),
+                        (directory, os.stat('hls-navigation', dir_fd=parent, follow_symlinks=False))):
+                    opened = os.fstat(descriptor)
+                    if (not stat.S_ISDIR(canonical.st_mode)
+                            or (opened.st_dev, opened.st_ino) != (canonical.st_dev, canonical.st_ino)):
+                        raise ValueError
         finally:
             os.close(directory)
     finally:
