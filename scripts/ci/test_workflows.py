@@ -113,7 +113,7 @@ class WorkflowSecurityTests(unittest.TestCase):
         self.assertLess(browser.index(command), browser.index('name: Test populated browsers'))
 
     def test_layout_failure_contracts_and_modules_are_reproducible(self):
-        command = 'node --test scripts/testing/navigation-diagnostics.test.mjs scripts/testing/layout-stability-failure.test.mjs scripts/testing/layout-stability-subtitle-background.test.mjs scripts/testing/layout-stability-flows.test.mjs scripts/testing/layout-stability-diagnostic-snapshots.test.mjs'
+        command = 'node --test scripts/testing/navigation-diagnostics.test.mjs scripts/testing/layout-stability-failure.test.mjs scripts/testing/layout-stability-subtitle-background.test.mjs scripts/testing/layout-stability-flows.test.mjs scripts/testing/layout-stability-diagnostic-snapshots.test.mjs scripts/testing/layout-stability-login.test.mjs'
         self.assertIn('      - run: ' + command, (WORKFLOWS / 'ci.yml').read_text())
         self.assertIn('\t@' + command, (ROOT / 'Makefile').read_text())
         launcher = (ROOT / 'scripts/testing/test-layout-stability-local.py').read_text()

@@ -47,10 +47,6 @@ const code = String((digest.readUInt32BE(offset) & 0x7fffffff) % 1000000).padSta
 if (await factor.isVisible()) await factor.fill(code);
 phase = "login-submit";
 await page.getByRole("button", {name: "Sign in", exact: true}).click();
-if (app === "subtitles" && new URL(page.url()).pathname === "/login" && await factor.isVisible()) {
-  await factor.fill(code);
-  await page.getByRole("button", {name: "Sign in", exact: true}).click();
-}
 phase = "login-redirect";
 await page.waitForURL(url => url.pathname !== "/login");
 if (await page.getByRole("link", {name: "Not now"}).isVisible()) await page.getByRole("link", {name: "Not now"}).click();
