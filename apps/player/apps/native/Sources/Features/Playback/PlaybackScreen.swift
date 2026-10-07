@@ -17,7 +17,7 @@ struct PlaybackScreen: View {
 
     var body: some View {
         #if os(iOS)
-        if UIDevice.current.userInterfaceIdiom == .pad && onClose == nil {
+        if onClose == nil {
             fullScreenPlayback
         } else {
             playbackContent

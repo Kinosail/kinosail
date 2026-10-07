@@ -23,6 +23,7 @@ var (
 func (manager *hlsManager) newHLSJob(request context.Context, startNumber int) (context.Context, *hlsJob) {
 	ctx, cancel := context.WithCancelCause(manager.ctx)
 	job := &hlsJob{lifecycle: ctx, done: make(chan struct{}), cancel: cancel, activity: make(chan struct{}, 1), startNumber: startNumber, requestID: requestActivityID(request), playbackSession: requestPlaybackSession(request)}
+	retainHLSPage(job, request)
 	job.observation = newHLSObservation(job.requestID, startNumber)
 	ctx = context.WithValue(ctx, hlsObservationKey{}, job.observation)
 	if preparation, ok := request.Value(startupEncodingKey{}).(*startupEncoding); ok {
@@ -56,10 +57,11 @@ func watchHLSJob(ctx context.Context, job *hlsJob, timeout time.Duration) {
 	}
 }
 
-func (manager *hlsManager) keepHLSAlive(key string) {
+func (manager *hlsManager) keepHLSAlive(key string, ctx context.Context) {
 	manager.mu.Lock()
 	defer manager.mu.Unlock()
 	if job := manager.jobs[key]; job != nil {
+		retainHLSPage(job, ctx)
 		select {
 		case job.activity <- struct{}{}:
 		default:

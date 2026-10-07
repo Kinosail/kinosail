@@ -22,6 +22,8 @@ const setTheater = (enabled) => {
     stage.tabIndex = -1;
   }
   document.body.classList.toggle("player-theater", enabled);
+  const exit = stage.querySelector("[data-player-exit]");
+  if (exit) exit.hidden = !enabled;
   if (!enabled && !document.fullscreenElement) stage.querySelector(".player-stage-toolbar")?.removeAttribute("hidden");
   theaterButton?.setAttribute("aria-pressed", String(enabled));
   theaterButton?.setAttribute("aria-label", enabled ? "Exit theater" : "Theater");
@@ -79,9 +81,21 @@ document.querySelector("[data-subtitles]")?.addEventListener("change", ({target}
 if (theaterButton && !appleNativePlayback) {
   const mediaStage = theaterButton.closest(".media-stage");
   const theaterToolbar = mediaStage.querySelector(".player-stage-toolbar");
+  const exit = document.createElement("button");
+  exit.type = "button";
+  exit.className = "player-exit";
+  exit.dataset.playerExit = "";
+  exit.hidden = true;
+  exit.setAttribute("aria-keyshortcuts", "Escape");
+  exit.title = "Return to video page (Esc)";
+  exit.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><path d="m14 6-6 6 6 6"/></svg><span>Exit theater</span>';
+  exit.addEventListener("click", () => setTheater(false));
+  mediaStage.append(exit);
   let theaterIdle;
+  let scrubbing = false;
   const hideTheater = () => {
     clearTimeout(theaterIdle);
+    if (scrubbing || mediaStage.matches(".is-busy,.has-settings")) { revealTheater(); return; }
     theaterToolbar.hidden = document.body.classList.contains("player-theater") || Boolean(document.fullscreenElement);
     controls?.classList.add("is-idle");
   };
@@ -104,6 +118,10 @@ if (theaterButton && !appleNativePlayback) {
     if (playing) revealTheater();
   };
   player.addEventListener("playing", () => setTheaterPlaying(true));
+  for (const event of ["seeking", "seeked", "canplay", "waiting"]) player.addEventListener(event, revealTheater);
+  const seek = mediaStage.querySelector("[data-player-seek]");
+  for (const event of ["pointerdown", "input"]) seek?.addEventListener(event, () => { scrubbing = true; revealTheater(); });
+  for (const event of ["change", "pointerup", "pointercancel", "blur"]) seek?.addEventListener(event, () => { scrubbing = false; revealTheater(); });
   player.addEventListener("timeupdate", () => { if (!player.paused && player.currentTime > 0 && !mediaStage.classList.contains("is-playing")) setTheaterPlaying(true); });
   for (const event of ["pause", "ended", "error"]) player.addEventListener(event, () => setTheaterPlaying(false));
   const controlTarget = (target) => target.closest("button,a,input,select,textarea,label,summary,[role=button],[contenteditable]:not([contenteditable=false]),.player-settings");
@@ -179,12 +197,13 @@ const requestWakeLock = async () => {
 const releaseWakeLock = () => { wakeLock?.release(); wakeLock = undefined; };
 addEventListener("pagehide", () => {
   player.dispatchEvent(new Event("kinosail:page-exit"));
-  playbackTrace("session-end", "pagehide");
-  flushPlaybackTrace();
   if (isPictureInPicture()) {
+    flushPlaybackTrace();
     releaseWakeLock();
     return;
   }
+  playbackTrace("session-end", "pagehide");
+  flushPlaybackTrace();
   streaming.destroy();
   requestPause();
   player.removeAttribute("src");

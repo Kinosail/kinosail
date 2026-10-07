@@ -28,7 +28,11 @@ func (fixture TranscodeFixture) InterruptedCompatibleCacheIsRegeneratedAfterServ
 	source := regexp.MustCompile(`data-hls="([^"]+)"`).FindStringSubmatch(page.Body.String())[1]
 	master := httptest.NewRecorder()
 	handler.ServeHTTP(master, httptest.NewRequestWithContext(t.Context(), http.MethodGet, source, nil))
-	variant := regexp.MustCompile(`(?m)^([0-9]+p/index\.m3u8)$`).FindStringSubmatch(master.Body.String())[1]
+	variantMatch := regexp.MustCompile(`(?m)^([0-9]+p/index\.m3u8)(?:\?[^\r\n]+)?$`).FindStringSubmatch(master.Body.String())
+	if len(variantMatch) != 2 {
+		t.Fatalf("master playlist has no variant: %d %q", master.Code, master.Body.String())
+	}
+	variant := variantMatch[1]
 	variantSource, _ := url.Parse(source)
 	variantSource.Path = strings.TrimSuffix(variantSource.Path, "index.m3u8") + variant
 	variantURL := variantSource.String()
