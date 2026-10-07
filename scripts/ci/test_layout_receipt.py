@@ -30,7 +30,7 @@ class LayoutReceiptPrivacy(unittest.TestCase):
             tools = root / "tools"
             tools.mkdir()
             for name, body in {
-                "go": "#!/bin/sh\nexit 7\n",
+                "go": '#!/bin/sh\nprintf child-build > "$LAYOUT_BUILD_PROBE"\nexit 7\n',
                 "ffmpeg": '#!/bin/sh\nfor output; do :; done\nprintf fixture > "$output"\n',
             }.items():
                 tool = tools / name
@@ -40,6 +40,7 @@ class LayoutReceiptPrivacy(unittest.TestCase):
                    if not key.startswith("GIT_") and not key.startswith("KINOSAIL_LAYOUT_")}
             env.update(GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=os.devnull,
                        PATH=str(tools) + ":" + env["PATH"],
+                       LAYOUT_BUILD_PROBE=str(root / "child-build-attempt"),
                        KINOSAIL_LAYOUT_APPS="player", KINOSAIL_LAYOUT_BROWSER="chromium",
                        KINOSAIL_LAYOUT_QUICK="1", KINOSAIL_LAYOUT_TOTP="private-factor-marker",
                        KINOSAIL_LAYOUT_UNKNOWN="private-config-marker",
@@ -51,6 +52,8 @@ class LayoutReceiptPrivacy(unittest.TestCase):
                                capture_output=True)
             result = subprocess.run(["python3", str(scripts / "test-layout-stability-local.py")],
                                     cwd=root, env=env, capture_output=True, text=True)
+            self.assertTrue((root / "child-build-attempt").is_file(),
+                            "the fake Go build must run before receipt validation")
             self.assertNotEqual(result.returncode, 0)
             receipts = list((root / ".verification/layout").glob("*/receipt.json"))
             self.assertEqual(len(receipts), 1)
