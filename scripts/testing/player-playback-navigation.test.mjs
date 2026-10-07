@@ -69,6 +69,29 @@ test('injected playback observations are bounded and idempotent per document', a
  assert.doesNotMatch(JSON.stringify(records),/private-synthetic-marker/);
 });
 
+test('Owner observer captures the actual non-bubbling player navigation event', async () => {
+ const page=new Page(),owner=journey(async()=>({}),async()=>{});
+ await owner.run({page},{project:{use:{baseURL:'https://owned.fixture',defaultBrowserType:'webkit'}},attach:async()=>{}});
+ const listeners=[],records=[];
+ class Video extends EventTarget {}
+ const video=Object.assign(new Video(),{currentSrc:'blob:private-synthetic-marker',currentTime:2,readyState:3,networkState:2,paused:false});
+ const context={window:{},document:{querySelector:()=>video,visibilityState:'visible',addEventListener:()=>{}},
+  addEventListener:(name,callback,options)=>listeners.push({name,callback,capture:options?.capture===true}),
+  HTMLVideoElement:Video,location:{href:'https://owned.fixture/watch/0123456789abcdef'},URL,
+  console:{debug:(...values)=>records.push(values.join(' '))}};
+ runInNewContext(`(${page.script.toString()})(${JSON.stringify(page.argument)})`,context);
+ // Node supplies the real Event/target dispatch; this controlled ancestor path
+ // models capture versus bubbling only. Actual DOM propagation is a browser gate.
+ const event=new Event('kinosail:navigation');
+ assert.equal(event.bubbles,false);
+ for(const listener of listeners.filter(row=>row.name===event.type&&row.capture))listener.callback(event);
+ video.dispatchEvent(event);
+ if(event.bubbles)for(const listener of listeners.filter(row=>row.name===event.type&&!row.capture))listener.callback(event);
+ assert.equal(records.length,1);
+ assert.equal(JSON.parse(records[0].slice('kinosail-playback-lifecycle '.length)).event,'navigation');
+ assert.doesNotMatch(JSON.stringify(records),/private-synthetic-marker|0123456789abcdef/);
+});
+
 // Loading the pinned runner's resolved configuration starts no tests or browsers.
 // Its transform cache is owned by this control, never the dependency tree.
 test('actual resolved Safari project activates playback observation without browserName', async () => {

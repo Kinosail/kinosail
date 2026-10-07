@@ -45,7 +45,7 @@ test("Owner can set up, create a passkey, find, play, resume, curate, install, a
         addEventListener("pagehide", () => record("pagehide-after-load"));
       }, { once: true });
       if (observePlayback) {
-        addEventListener("kinosail:navigation", () => record("navigation"));
+        addEventListener("kinosail:navigation", () => record("navigation"), { capture: true });
         document.addEventListener("DOMContentLoaded", () => {
           for (const event of ["play", "pause", "playing", "seeking", "seeked", "loadedmetadata", "emptied", "error"]) {
             document.addEventListener(event, value => {if (value.target instanceof HTMLVideoElement) record(event);}, {capture: true});
