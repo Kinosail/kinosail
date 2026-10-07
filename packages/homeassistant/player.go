@@ -72,12 +72,8 @@ func (integration *Integration[P]) updatePlayer(id string, state Player, profile
 	now := integration.now()
 	integration.mu.Lock()
 	defer integration.mu.Unlock()
-	claim := ""
-	if len(claims) == 1 {
-		claim = claims[0]
-	}
 	record := integration.players[id]
-	if len(claims) > 1 || (record.Claim != "" || claim != "") && !ownsPlayer(record, profile, claim, now) {
+	if !validPlayerUpdateClaim(record, profile, claims, now) {
 		return nil, errPlayerOwnership
 	}
 	integration.prunePlayersLocked(now)

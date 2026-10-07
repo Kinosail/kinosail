@@ -57,6 +57,18 @@ func readPlayerJSON(writer http.ResponseWriter, request *http.Request, input any
 	return true
 }
 
+func requestedPlayerID(value json.RawMessage) (string, bool) {
+	value = bytes.TrimSpace(value)
+	if len(value) == 0 {
+		return "", true
+	}
+	id := ""
+	if value[0] != '"' || json.Unmarshal(value, &id) != nil {
+		return "", false
+	}
+	return id, id == "" || playerID.MatchString(id)
+}
+
 func (integration *Integration[P]) playerClaimHTTP(writer http.ResponseWriter, request *http.Request) {
 	var input struct {
 		ID json.RawMessage `json:"id,omitempty"`
@@ -64,8 +76,8 @@ func (integration *Integration[P]) playerClaimHTTP(writer http.ResponseWriter, r
 	if !readPlayerJSON(writer, request, &input, "claim", "") {
 		return
 	}
-	id := ""
-	if value := bytes.TrimSpace(input.ID); len(value) != 0 && (value[0] != '"' || json.Unmarshal(value, &id) != nil) || id != "" && !playerID.MatchString(id) {
+	id, valid := requestedPlayerID(input.ID)
+	if !valid {
 		playerFailure(writer, request, "claim", "", errors.New("player ID is invalid"), http.StatusBadRequest)
 		return
 	}
