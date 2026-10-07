@@ -114,16 +114,18 @@ def warmup_counterfactual(run, deadline, directory, result, interrupted, control
             row['packets'] = packet_evidence(run, tail)
             streams = json.loads(run(['ffprobe', '-v', 'error', '-select_streams', 'a:0', '-show_entries',
                 'stream=time_base', '-of', 'json', str(tail)]))['streams']
-            check(len(streams) == 1 and streams[0]['time_base'] == '1/48000', 'warmup_encoder_timebase')
-            row['encoderTimeBase'] = streams[0]['time_base']
+            check(len(streams) == 1 and streams[0]['time_base'] == '1/48000', 'warmup_output_timebase')
+            row['outputStreamTimeBase'] = streams[0]['time_base']
             pcm, facts = native_pcm(tail, deadline, case_root)
             row.update(nativeEOF=facts, pcmSHA256=hashlib.sha256(pcm).hexdigest())
             if not filtered:
                 packets = row['packets']
                 check(len(packets) > 3 and all(abs((float(v['pts_time']) - offset) * 48000 - (n * 1024 - 1024)) <= 0.06
                     and math.isfinite(float(v['duration_time'])) and 0 < float(v['duration_time']) <= 1024 / 48000 + 0.000001
-                    and v['pts_time'] == v['dts_time'] for n, v in enumerate(packets)), 'warmup_observed_priming_grid')
-                row.update(observedEncoderPTS=[n * 1024 - 1024 for n in range(len(packets))], result='observed')
+                    and v['pts_time'] == v['dts_time'] for n, v in enumerate(packets)), 'warmup_output_grid_consistent_with_hypothesis')
+                row.update(expectedRelativePacketGrid=[n * 1024 - 1024 for n in range(len(packets))],
+                    relativeGridInference='Output packet PTS minus output offset, scaled to 48000 samples; encoder input PTS are not directly measured.',
+                    result='observed')
                 continue
             row['exactUnfilteredSuffix'] = row['packets'] == result['cases'][0]['packets'][3:]
             check(row['exactUnfilteredSuffix'] and abs(float(row['packets'][0]['pts_time']) - 8) <= 1 / 48000, 'warmup_exact_three_packet_suffix')
@@ -144,12 +146,14 @@ def warmup_counterfactual(run, deadline, directory, result, interrupted, control
             points = [float(v['pts_time']) for v in row['joinedPackets']]
             gaps = [float(b['pts_time']) - float(a['pts_time']) - float(a['duration_time'])
                 for a, b in zip(row['joinedPackets'], row['joinedPackets'][1:])]
-            row.update(joinedNativeEOF=facts, joinedPCMSHA256=hashlib.sha256(pcm).hexdigest(), fixedWindows=fixed_windows(reference, pcm),
-                independentSeamLagDiagnostic=marker_clock(reference, pcm), lagDiagnosticDoesNotChooseFixedPhase=True,
+            row.update(joinedNativeEOF=facts, joinedPCMSHA256=hashlib.sha256(pcm).hexdigest(),
                 packetClockOrderValid=all(a < b for a, b in zip(points, points[1:])),
                 maximumPacketGapSeconds=max([0] + gaps), maximumPacketOverlapSeconds=max([0] + [-v for v in gaps]),
                 candidatePacketAssertionsSatisfied=all(a < b for a, b in zip(points, points[1:]))
-                    and all(math.isfinite(v) and abs(v) <= 1 / 48000 + 0.000001 for v in gaps), result='observed')
+                    and all(math.isfinite(v) and abs(v) <= 1 / 48000 + 0.000001 for v in gaps))
+            row['fixedWindows'] = fixed_windows(reference, pcm)
+            row['independentSeamLagDiagnostic'] = marker_clock(reference, pcm)
+            row['lagDiagnosticDoesNotChooseFixedPhase'] = True
             row['fixedPhaseContentComparison'] = []
             for candidate, baseline in zip(row['fixedWindows'], result['uninterruptedWindows']):
                 comparison = {'label': candidate['label'], 'complete': candidate['complete'] and baseline['complete'], 'channels': []}
@@ -160,6 +164,7 @@ def warmup_counterfactual(run, deadline, directory, result, interrupted, control
                         'normalizedRMSErrorDelta': a['normalizedRMSError'] - b['normalizedRMSError'],
                         'correlationDeltaAtDeclaredPhase': a['correlationAtDeclaredPhase'] - b['correlationAtDeclaredPhase']}
                         for a, b in zip(candidate['channels'], baseline['channels'])]
+            row['result'] = 'observed'
         result['result'] = 'observed'
     finally:
         result['sourceUnchanged'] = source_snapshot(source) == before
