@@ -7,7 +7,19 @@ final class TouchPlaybackInteractionTests: XCTestCase {
         XCTAssertFalse(app.buttons["Play"].exists, app.debugDescription)
         record("opening video", app)
         background(app, x: 0.75, y: 0.3).tap()
-        XCTAssertTrue(app.buttons["Close player"].isHittable)
+        try await assertCloseHittable(app)
+        app.buttons["Close player"].tap()
+        XCTAssertTrue(app.buttons["Details"].waitForExistence(timeout: 10))
+    }
+
+    @MainActor func testWaitingForFirstFrameHasNoPlayOrPause() async throws {
+        let app = try await openVideo(mode: "preparing")
+        // Metadata is available, but the fixture withholds all video bytes.
+        XCTAssertTrue(app.staticTexts["−1:00"].waitForExistence(timeout: 10), app.debugDescription)
+        XCTAssertFalse(app.buttons["Play"].exists, app.debugDescription)
+        XCTAssertFalse(app.buttons["Pause"].exists, app.debugDescription)
+        try await assertCloseHittable(app)
+        record("waiting for first frame", app)
         app.buttons["Close player"].tap()
         XCTAssertTrue(app.buttons["Details"].waitForExistence(timeout: 10))
     }
@@ -46,7 +58,7 @@ final class TouchPlaybackInteractionTests: XCTestCase {
         XCTAssertTrue(app.buttons["Try again"].waitForExistence(timeout: 10), app.debugDescription)
         XCTAssertFalse(app.staticTexts["Opening video…"].exists)
         XCTAssertFalse(app.buttons["Play"].exists)
-        XCTAssertTrue(app.buttons["Close player"].isHittable)
+        try await assertCloseHittable(app)
         record("failed video", app)
         app.buttons["Close player"].tap()
         XCTAssertTrue(app.buttons["Details"].waitForExistence(timeout: 10))
@@ -90,6 +102,15 @@ final class TouchPlaybackInteractionTests: XCTestCase {
 
     @MainActor private func background(_ app: XCUIApplication, x: CGFloat, y: CGFloat) -> XCUICoordinate {
         app.windows.firstMatch.coordinate(withNormalizedOffset: CGVector(dx: x, dy: y))
+    }
+
+    @MainActor private func assertCloseHittable(_ app: XCUIApplication) async throws {
+        let close = app.buttons["Close player"]
+        for _ in 0..<50 {
+            if close.isHittable { break }
+            try await Task.sleep(for: .milliseconds(100))
+        }
+        XCTAssertTrue(close.isHittable, app.debugDescription)
     }
 
     @MainActor private func record(_ name: String, _ app: XCUIApplication) {

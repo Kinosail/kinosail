@@ -55,7 +55,7 @@ class Handler(BaseHTTPRequestHandler):
             if set(query) != {"mode"} or len(query["mode"]) != 1:
                 return self.send(400, dict(error="One fixture mode is required"))
             mode = query["mode"][0]
-            if mode not in ("pending", "failed", "loaded"):
+            if mode not in ("pending", "preparing", "failed", "loaded"):
                 return self.send(400, dict(error="Unknown fixture mode"))
             STATE["mode"] = mode
             return self.send(200, STATE)
@@ -92,6 +92,8 @@ class Handler(BaseHTTPRequestHandler):
         if path.endswith("/bookmarks"):
             return self.send(200, dict(bookmarks=[]))
         if path == "/media/loading-video":
+            if STATE["mode"] == "preparing":
+                time.sleep(30)
             data, headers, status = MOVIE, {"Accept-Ranges": "bytes"}, 200
             if self.headers.get("Range"):
                 start, end = self.headers["Range"].removeprefix("bytes=").split("-")

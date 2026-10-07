@@ -38,7 +38,7 @@ class FixtureValidationTests(unittest.TestCase):
                 self.assertEqual(self.fixture.STATE, {"mode": "loaded"})
 
     def test_supported_modes_are_accepted(self):
-        for mode in ["pending", "failed", "loaded"]:
+        for mode in ["pending", "preparing", "failed", "loaded"]:
             self.assertEqual(self.request("?mode=" + mode)[0], 200)
             self.assertEqual(self.fixture.STATE, {"mode": mode})
 

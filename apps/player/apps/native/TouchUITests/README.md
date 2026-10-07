@@ -1,7 +1,7 @@
 # iOS playback regression
 
 Use a disposable iOS simulator. The fixture automatically approves its test device.
-It serves one generated video and supports pending, loaded, and failed playback.
+It serves one generated video and supports pending, first-frame, loaded, and failed playback.
 It binds only to `127.0.0.1:4281`. Stop the fixture after testing.
 
 From the repository root, generate the test video:
