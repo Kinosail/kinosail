@@ -18,8 +18,10 @@ describe('populated audio and readers', { session: 'owner' }, () => {
     await app.open('/album/' + album.id);
     await expect(browser.locator('h1').filter({ hasText: 'E2E Album' })).toBeVisible();
     await screen.getByRole('link', /1 E2E Track One/).click();
+    await expect(browser.locator('audio')).toHaveCount(1);
+    await expect.poll(() => browser.evaluate(() => document.querySelector('audio')?.getAttribute('data-progress') ?? null)).toBe('/progress/' + first.id);
     await browser.evaluate(async () => { const audio = document.querySelector('audio')!; audio.muted = true; await audio.play(); });
-    await expect.poll(() => browser.evaluate(() => document.querySelector('audio')!.currentTime)).toBeGreaterThan(0.2);
+    await expect.poll(() => browser.evaluate(() => document.querySelector('audio')?.currentTime ?? 0)).toBeGreaterThan(0.2);
     await browser.evaluate(() => document.querySelector('audio')!.pause());
     const progressPath = '/api/v1/items/' + first.id + '/watch-progress';
     await expect.poll(async () => (await api(browser, progressPath)).data.seconds).toBeGreaterThan(0);
@@ -31,8 +33,8 @@ describe('populated audio and readers', { session: 'owner' }, () => {
     }
     expect((await api(browser, '/api/v1/audio/missing/queue')).status).toBe(404);
     await browser.evaluate(async () => { const audio = document.querySelector('audio')!; audio.currentTime = audio.duration - 0.3; await audio.play(); });
-    await expect.poll(() => browser.evaluate(() => document.querySelector('audio')!.getAttribute('data-progress'))).toBe('/progress/' + second.id);
-    await expect.poll(() => browser.evaluate(() => document.querySelector('audio')!.currentTime)).toBeGreaterThan(0.2);
+    await expect.poll(() => browser.evaluate(() => document.querySelector('audio')?.getAttribute('data-progress') ?? null)).toBe('/progress/' + second.id);
+    await expect.poll(() => browser.evaluate(() => document.querySelector('audio')?.currentTime ?? 0)).toBeGreaterThan(0.2);
     expect(await browser.evaluate(() => document.querySelector('audio')!.readyState)).toBeGreaterThanOrEqual(2);
     await browser.evaluate(() => document.querySelector('audio')!.pause());
     await app.screenshot('decoded-album-queue');
