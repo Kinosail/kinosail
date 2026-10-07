@@ -92,8 +92,10 @@ if (theaterButton && !appleNativePlayback) {
   exit.addEventListener("click", () => setTheater(false));
   mediaStage.append(exit);
   let theaterIdle;
+  let scrubbing = false;
   const hideTheater = () => {
     clearTimeout(theaterIdle);
+    if (scrubbing || mediaStage.matches(".is-busy,.has-settings")) { revealTheater(); return; }
     theaterToolbar.hidden = document.body.classList.contains("player-theater") || Boolean(document.fullscreenElement);
     controls?.classList.add("is-idle");
   };
@@ -116,6 +118,10 @@ if (theaterButton && !appleNativePlayback) {
     if (playing) revealTheater();
   };
   player.addEventListener("playing", () => setTheaterPlaying(true));
+  for (const event of ["seeking", "seeked", "canplay", "waiting"]) player.addEventListener(event, revealTheater);
+  const seek = mediaStage.querySelector("[data-player-seek]");
+  for (const event of ["pointerdown", "input"]) seek?.addEventListener(event, () => { scrubbing = true; revealTheater(); });
+  for (const event of ["change", "pointerup", "pointercancel", "blur"]) seek?.addEventListener(event, () => { scrubbing = false; revealTheater(); });
   player.addEventListener("timeupdate", () => { if (!player.paused && player.currentTime > 0 && !mediaStage.classList.contains("is-playing")) setTheaterPlaying(true); });
   for (const event of ["pause", "ended", "error"]) player.addEventListener(event, () => setTheaterPlaying(false));
   const controlTarget = (target) => target.closest("button,a,input,select,textarea,label,summary,[role=button],[contenteditable]:not([contenteditable=false]),.player-settings");
