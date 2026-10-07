@@ -1,21 +1,42 @@
 import {expect, test} from '@playwright/test';
 import {hlsNavigationPeer} from './player-hls-navigation-fixture';
 
+const departureObservations = new WeakMap<import('@playwright/test').Page, {capture: number, bubble: number, player: number, bubbling: number}>();
 async function captureDepartures(page: import('@playwright/test').Page) {
-  await page.evaluate(() => {
-    const facts = {capture: 0, bubble: 0, player: 0, bubbling: 0};
-    Object.assign(window, {HLSDepartureEvents: facts});
-    window.addEventListener('kinosail:navigation', event => {
-      facts.capture++;
-      if (event.target === document.querySelector('video')) facts.player++;
-      if (event.bubbles) facts.bubbling++;
-    }, {capture: true});
-    window.addEventListener('kinosail:navigation', () => {facts.bubble++;});
-  });
+  const marker = '__kinosail_hls_departure__';
+  const facts = {capture: 0, bubble: 0, player: 0, bubbling: 0};
+  // Console-sourced fixture observations are unverified; no private payload is retained.
+  const observe = (message: import('@playwright/test').ConsoleMessage) => {
+    const text = message.text();
+    if (text.length > 96 || !text.startsWith(marker)) return;
+    const values = text.slice(marker.length).match(/^\[(0|[1-9]|1[0-6]),(0|[1-9]|1[0-6]),(0|[1-9]|1[0-6]),(0|[1-9]|1[0-6])\]$/);
+    if (values) Object.assign(facts, {capture: Number(values[1]), bubble: Number(values[2]), player: Number(values[3]), bubbling: Number(values[4])});
+  };
+  const cleanup = () => {page.off('console', observe); departureObservations.delete(page);};
+  page.on('console', observe);
+  try {
+    await page.evaluate(marker => {
+      const facts = [0, 0, 0, 0];
+      window.addEventListener('kinosail:navigation', event => {
+        facts[0]++;
+        if (event.target === document.querySelector('video')) facts[2]++;
+        if (event.bubbles) facts[3]++;
+        console.debug(marker + JSON.stringify(facts));
+      }, {capture: true});
+      window.addEventListener('kinosail:navigation', () => {
+        facts[1]++; console.debug(marker + JSON.stringify(facts));
+      });
+    }, marker);
+    departureObservations.set(page, facts);
+    return cleanup;
+  } catch (error) {cleanup(); throw error;}
 }
 
-const departureFacts = (page: import('@playwright/test').Page) => page.evaluate(() =>
-  (window as unknown as {HLSDepartureEvents: {capture: number, bubble: number, player: number, bubbling: number}}).HLSDepartureEvents);
+const departureFacts = (page: import('@playwright/test').Page) => {
+  const facts = departureObservations.get(page);
+  if (!facts) throw new Error('departure observation was not installed');
+  return {...facts};
+};
 
 async function movingVideo(page: import('@playwright/test').Page, peer: Awaited<ReturnType<typeof hlsNavigationPeer>>) {
   await page.goto(`${peer.origin}/watch/movie`);
@@ -30,17 +51,19 @@ async function movingVideo(page: import('@playwright/test').Page, peer: Awaited<
 for (const destination of ['Library', 'Back to Movies', 'Mark watched']) {
   test(`real HLS retry cannot outlive acknowledged ${destination} departure`, {tag: '@smoke'}, async ({page}, info) => {
     const peer = await hlsNavigationPeer(destination === 'Back to Movies');
+  let departureCleanup: (() => void) | undefined;
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.name));
     try {
       await movingVideo(page, peer);
-      await captureDepartures(page);
+      departureCleanup = await captureDepartures(page);
       const before = peer.snapshot();
       const click = destination === 'Mark watched' ? page.getByRole('button', {name: destination, exact: true})
         : page.getByRole('link', {name: destination, exact: true});
       await click.click({noWaitAfter: true});
       await expect.poll(() => peer.snapshot().departing).toBe(true);
-      const departure = await departureFacts(page);
+      await expect.poll(() => departureFacts(page)).toEqual({capture: 1, bubble: 0, player: 1, bubbling: 0});
+      const departure = departureFacts(page);
       expect(departure).toEqual({capture: 1, bubble: 0, player: 1, bubbling: 0});
       peer.releaseRetry();
       // The real library retries a 503 after its own one-second delay. Destination
@@ -53,7 +76,7 @@ for (const destination of ['Library', 'Back to Movies', 'Mark watched']) {
         errors, departure, proofClass: 'real-H264-Hls.js-HTTP-with-held-destination-no-Go-storage'}), contentType: 'application/json'});
       expect(errors).toEqual([]);
       expect(pending.requests.filter(request => request.afterDestination && request.kind.endsWith('.ts'))).toEqual([]);
-    } finally {await peer.close();}
+    } finally {departureCleanup?.(); await peer.close();}
   });
 }
 
@@ -101,11 +124,12 @@ for (const destination of ['Library', 'Mark watched']) {
 
 for (const contextual of [false, true]) test(`pending checkpoint keeps the real HLS owner until ${contextual ? 'contextual Back ' : ''}acknowledgement`, {tag: '@smoke'}, async ({page}, info) => {
   const peer = await hlsNavigationPeer(contextual);
+  let departureCleanup: (() => void) | undefined;
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.name));
   try {
     await movingVideo(page, peer);
-    await captureDepartures(page);
+    departureCleanup = await captureDepartures(page);
     peer.holdCheckpoint();
     await page.getByRole('link', {name: contextual ? 'Back to Movies' : 'Library', exact: true}).click({noWaitAfter: true});
     await expect.poll(() => peer.snapshot().waitingProgress).toBeGreaterThan(0);
@@ -117,13 +141,13 @@ for (const contextual of [false, true]) test(`pending checkpoint keeps the real 
     expect(peer.snapshot().departing).toBe(false);
     peer.releaseCheckpoint();
     await expect.poll(() => peer.snapshot().departing).toBe(true);
-    expect(await departureFacts(page)).toEqual({capture: 1, bubble: 0, player: 1, bubbling: 0});
+    await expect.poll(() => departureFacts(page)).toEqual({capture: 1, bubble: 0, player: 1, bubbling: 0});
     peer.releaseDestination();
     await expect(page.getByRole('heading', {name: 'Destination'})).toBeVisible();
     await expect(page).toHaveURL(`${peer.origin}${peer.facts.returnPath}`);
     await info.attach('pending-HLS-owner', {body: JSON.stringify({facts: peer.facts, snapshot: peer.snapshot(), errors}), contentType: 'application/json'});
     expect(errors).toEqual([]);
-  } finally {await peer.close();}
+  } finally {departureCleanup?.(); await peer.close();}
 });
 
 for (const destination of ['ordinary query', 'fragment', 'other origin']) test(`browse checkpoint wait excludes ${destination} destinations`, {tag: '@smoke'}, async ({page}, info) => {
@@ -170,11 +194,12 @@ test('unplayed contextual Back retires HLS before destination commits', {tag: '@
 
 test('cancelled watched submission retains the real HLS owner', {tag: '@smoke'}, async ({page}, info) => {
   const peer = await hlsNavigationPeer();
+  let departureCleanup: (() => void) | undefined;
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.name));
   try {
     await movingVideo(page, peer);
-    await captureDepartures(page);
+    departureCleanup = await captureDepartures(page);
     await page.evaluate(() => {
       // This is a later listener, after shipped listeners, so cancellation must
       // be checked after the complete submit dispatch, including its replay.
@@ -193,7 +218,7 @@ test('cancelled watched submission retains the real HLS owner', {tag: '@smoke'},
     await expect.poll(() => video.evaluate((media: HTMLVideoElement) => media.currentTime)).toBeGreaterThan(time + 0.2);
     await info.attach('cancelled-HLS-owner', {body: JSON.stringify({facts: peer.facts, snapshot: peer.snapshot(), errors}), contentType: 'application/json'});
     expect(errors).toEqual([]);
-  } finally {await peer.close();}
+  } finally {departureCleanup?.(); await peer.close();}
 });
 
 test('declared PiP ownership retains HLS through an accepted departure', {tag: '@smoke'}, async ({page}, info) => {

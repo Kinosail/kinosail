@@ -218,6 +218,7 @@ func speedFailureOperationFields(entry map[string]any, requestID string) map[str
 		facts["duration_ms"] = duration
 	}
 	speedFailurePhaseFields(entry, facts)
+	speedFailureErrorFields(entry, facts)
 	return facts
 }
 

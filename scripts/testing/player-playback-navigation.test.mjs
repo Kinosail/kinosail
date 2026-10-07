@@ -116,3 +116,48 @@ test('actual resolved Safari project activates playback observation without brow
  await owner.run({page},{project,attach:async(name,options)=>attached.push({name,options})});
  assert.equal(attached.length,1);assert.equal(page.argument,true);assert.equal(page.eventNames().length,0);
 });
+
+// A provisional native navigation blocks page evaluation while its response
+// remains held. Departure observations must already be delivered to Node.
+function departureObserver() {
+ const prefix=stripTypeScriptTypes(readFileSync(new URL('../../apps/player/e2e/player-hls-navigation.spec.ts', import.meta.url),'utf8')).replace(/^import .*;\n/gm,'').split('async function movingVideo',1)[0];
+ return runInNewContext(`(()=>{${prefix};return {captureDepartures,departureFacts};})()`,{});
+}
+function departurePage(rejectSetup=false) {
+ const page=new EventEmitter(),listeners=[];
+ page.pending=false;page.evaluations=0;
+ const video={},records=[];
+ page.evaluate=async(callback,argument)=>{
+  page.evaluations++;
+  if(page.pending)throw new Error('controlled provisional navigation prevents page evaluation');
+  if(rejectSetup)throw new Error('controlled observation setup failure');
+  return runInNewContext(`(${callback.toString()})(${JSON.stringify(argument) ?? 'undefined'})`,{
+   window:{addEventListener:(name,callback,options)=>listeners.push({name,callback,capture:options?.capture===true})},
+   document:{querySelector:()=>video},console:{debug:text=>{records.push(text);page.emit('console',{text:()=>text});}}});
+ };
+ return {page,records,dispatch(){
+  const event={target:video,bubbles:false};
+  for(const row of listeners.filter(row=>row.capture))row.callback(event);
+ }};
+}
+test('held native departure is observable without evaluating the provisional document',async()=>{
+ const api=departureObserver(),control=departurePage();
+ const cleanup=await api.captureDepartures(control.page);
+ control.dispatch();control.page.pending=true;
+ assert.deepEqual(JSON.parse(JSON.stringify(await api.departureFacts(control.page))),{capture:1,bubble:0,player:1,bubbling:0});
+ assert.equal(control.page.evaluations,1);
+ cleanup();assert.equal(control.page.listenerCount('console'),0);
+});
+test('pending or cancelled departure stays zero; malformed console markers cannot change it',async()=>{
+ const api=departureObserver(),control=departurePage();
+ const cleanup=await api.captureDepartures(control.page);control.page.pending=true;
+ for(const text of ['__kinosail_hls_departure__[1,0,1,0,99]','__kinosail_hls_departure__[999,0,1,0]',
+  '__kinosail_hls_departure__[1,0,1,"private"]','__kinosail_hls_departure__'+ 'x'.repeat(1024)])control.page.emit('console',{text:()=>text});
+ assert.deepEqual(JSON.parse(JSON.stringify(await api.departureFacts(control.page))),{capture:0,bubble:0,player:0,bubbling:0});
+ assert.equal(control.page.evaluations,1);cleanup();assert.equal(control.page.listenerCount('console'),0);
+});
+test('rejected departure observation setup releases its outer console listener',async()=>{
+ const api=departureObserver(),control=departurePage(true);
+ await assert.rejects(api.captureDepartures(control.page),/controlled observation setup failure/);
+ assert.equal(control.page.evaluations,1);assert.equal(control.page.listenerCount('console'),0);
+});
