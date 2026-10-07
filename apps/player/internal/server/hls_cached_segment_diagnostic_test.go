@@ -28,16 +28,7 @@ func TestCachedHLSSegmentFailureDiagnostic(t *testing.T) {
 			fixture := newCachedSegmentEvidenceFixture(t, "")
 			fixture.invalidate(t, name)
 			request := fixture.request(t, fixture.route)
-			if name == "cancelled" {
-				ctx, cancel := context.WithCancel(request.Context())
-				cancel()
-				request = request.WithContext(ctx)
-			}
-			if name == "expired" {
-				ctx, cancel := context.WithDeadline(request.Context(), time.Unix(1, 0))
-				t.Cleanup(cancel)
-				request = request.WithContext(ctx)
-			}
+			request = cachedSegmentRequestContext(t, request, name)
 			status, events := fixture.deliverWithoutMutation(t, request)
 			if name == "valid" {
 				if status != http.StatusOK || len(events) != 0 {
@@ -55,6 +46,21 @@ func TestCachedHLSSegmentFailureDiagnostic(t *testing.T) {
 			}
 		})
 	}
+}
+
+func cachedSegmentRequestContext(t *testing.T, request *http.Request, name string) *http.Request {
+	t.Helper()
+	if name == "cancelled" {
+		ctx, cancel := context.WithCancel(request.Context())
+		cancel()
+		return request.WithContext(ctx)
+	}
+	if name == "expired" {
+		ctx, cancel := context.WithDeadline(request.Context(), time.Unix(1, 0))
+		t.Cleanup(cancel)
+		return request.WithContext(ctx)
+	}
+	return request
 }
 
 func TestCachedHLSSegmentOffsetAndRouteAdmission(t *testing.T) {
