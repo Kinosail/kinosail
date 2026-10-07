@@ -132,6 +132,18 @@ class LibraryAdmissionTests(unittest.TestCase):
             with self.subTest(kind=kind), self.assertRaises(ValueError):
                 self.admit(value)
 
+    def test_exponent_overflow_is_nonfinite_before_exact_proof_admission(self):
+        value = report(self.module.CASES)
+        value['stats']['duration'] = 0.25
+        raw = json.dumps(value).encode()
+        with patch('subprocess.run', side_effect=AssertionError('process effect')), \
+                patch('os.mkdir', side_effect=AssertionError('output effect')):
+            for exponent in (b'1e400', b'-1e400'):
+                candidate = raw.replace(b'"duration": 0.25', b'"duration": ' + exponent)
+                with self.subTest(exponent=exponent), self.assertRaises(ValueError):
+                    self.module.admit(candidate, 'library-owner', 'webkit', 'fresh', True)
+            self.assertEqual(len(self.module.admit(raw, 'library-owner', 'webkit', 'fresh', True)), 46)
+
 
 if __name__ == '__main__':
     unittest.main()

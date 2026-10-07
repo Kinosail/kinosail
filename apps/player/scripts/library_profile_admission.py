@@ -1,5 +1,6 @@
 """Closed synthetic library-owner selection and exact first-attempt proof admission."""
 import json
+import math
 
 PROJECTS = ('chromium', 'firefox', 'webkit')
 # Exact retained ba5 discovery identities, not executed-case evidence.
@@ -74,12 +75,20 @@ def invalid_number(_value):
     raise ValueError('nonfinite proof')
 
 
+def finite_number(raw):
+    value = float(raw)
+    if not math.isfinite(value):
+        raise ValueError('nonfinite proof')
+    return value
+
+
 def admit(raw, profile, project, state, completed):
     selection((profile, project, state))
     if not isinstance(raw, bytes) or not 1 <= len(raw) <= 2097152 or type(completed) is not bool:
         raise ValueError('bounded proof required')
     try:
-        value = json.loads(raw.decode('utf-8'), object_pairs_hook=unique_object, parse_constant=invalid_number)
+        value = json.loads(raw.decode('utf-8'), object_pairs_hook=unique_object,
+                           parse_constant=invalid_number, parse_float=finite_number)
         return admit_report(value, project, completed)
     except (KeyError, TypeError, AttributeError, UnicodeError, RecursionError) as error:
         raise ValueError('invalid fixed library proof') from error
