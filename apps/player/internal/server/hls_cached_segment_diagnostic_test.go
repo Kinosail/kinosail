@@ -12,6 +12,7 @@ import (
 	"regexp"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/MikeO7/kinosail-player/internal/server"
 	"github.com/MikeO7/kinosail/packages/playback"
@@ -20,8 +21,9 @@ import (
 
 // Registered HTTP routes must distinguish cancellation from cached admission
 // errors without changing delivery, cache contents, encoding or ID normalization.
+// request_context_done describes the observation time, not the error cause.
 func TestCachedHLSSegmentFailureDiagnostic(t *testing.T) {
-	for _, name := range []string{"valid", "cancelled", "missing manifest", "changed policy", "outside duration"} {
+	for _, name := range []string{"valid", "cancelled", "expired", "missing manifest", "changed policy", "outside duration"} {
 		t.Run(name, func(t *testing.T) {
 			fixture := newCachedSegmentEvidenceFixture(t, "")
 			fixture.invalidate(t, name)
@@ -29,6 +31,11 @@ func TestCachedHLSSegmentFailureDiagnostic(t *testing.T) {
 			if name == "cancelled" {
 				ctx, cancel := context.WithCancel(request.Context())
 				cancel()
+				request = request.WithContext(ctx)
+			}
+			if name == "expired" {
+				ctx, cancel := context.WithDeadline(request.Context(), time.Unix(1, 0))
+				t.Cleanup(cancel)
 				request = request.WithContext(ctx)
 			}
 			status, events := fixture.deliverWithoutMutation(t, request)
@@ -41,8 +48,8 @@ func TestCachedHLSSegmentFailureDiagnostic(t *testing.T) {
 			if status != http.StatusNotFound || len(events) != 1 {
 				t.Fatal("cached rejection lost its HTTP status or diagnostic")
 			}
-			assertCachedSegmentEvent(t, events[0], name == "cancelled")
-			want := map[string]string{"cancelled": "context canceled", "missing manifest": "no such file", "changed policy": "playback settings changed", "outside duration": "outside the playable duration"}[name]
+			assertCachedSegmentEvent(t, events[0], name == "cancelled" || name == "expired")
+			want := map[string]string{"cancelled": "context canceled", "expired": "context deadline exceeded", "missing manifest": "no such file", "changed policy": "playback settings changed", "outside duration": "outside the playable duration"}[name]
 			if !strings.Contains(fmt.Sprint(events[0]["error"]), want) {
 				t.Fatal("cached rejection did not retain its bounded reason")
 			}
@@ -217,9 +224,9 @@ func assertCachedMetadataPrivacy(t *testing.T, event map[string]any) {
 	}
 }
 
-func assertCachedSegmentEvent(t *testing.T, event map[string]any, canceled bool) {
+func assertCachedSegmentEvent(t *testing.T, event map[string]any, contextDone bool) {
 	t.Helper()
-	if event["canceled"] != canceled || event["file"] != "360p/segment-00001.m4s" || event["mode"] != "transcode" || event["diagnostic"] != "[PLAYBACK-HLS]" || len(fmt.Sprint(event["error"])) > 8<<10 {
+	if event["request_context_done"] != contextDone || event["file"] != "360p/segment-00001.m4s" || event["mode"] != "transcode" || event["diagnostic"] != "[PLAYBACK-HLS]" || len(fmt.Sprint(event["error"])) > 8<<10 {
 		t.Fatal("cached rejection diagnostic lost safe bounded fields")
 	}
 }
