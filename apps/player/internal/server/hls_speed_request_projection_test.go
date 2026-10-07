@@ -35,7 +35,9 @@ func speedFailureRequestURL(value *url.URL) bool {
 
 func speedFailureRequestPath(path string) string {
 	parts := strings.Split(path, "/")
-	if len(parts) < 3 || parts[0] != "" {
+	// The video-speed fixture uses HLSPlanURL's registered planned route;
+	// a matching fragment suffix on another route is not cache evidence.
+	if len(parts) != 7 || parts[0] != "" || parts[1] != "hls" || parts[3] != "p" {
 		return ""
 	}
 	for _, part := range parts[1:] {

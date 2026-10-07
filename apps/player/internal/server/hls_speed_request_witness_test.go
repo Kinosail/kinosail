@@ -88,3 +88,24 @@ func TestHLSSpeedRequestWitnessRejectsAmbiguousInputs(t *testing.T) {
 		t.Fatal("missing request admitted")
 	}
 }
+
+func TestHLSSpeedRequestWitnessRejectsUnrelatedRoutes(t *testing.T) {
+	for _, path := range []string{
+		"/unrelated/180p/segment-00013.m4s",
+		"/unrelated/private-item/p/private-recipe/180p/segment-00013.m4s",
+		"/media/private-item/p/private-recipe/180p/segment-00013.m4s",
+		"/hls/private-item/unknown/private-recipe/180p/segment-00013.m4s",
+		"/hls/private-item/p/180p/segment-00013.m4s",
+		"/hls/private-item/p/private-recipe/extra/180p/segment-00013.m4s",
+		"/hls/private-item/p/private-recipe/180p/segment-00013.m4s/extra",
+		"/hls//p/private-recipe/180p/segment-00013.m4s",
+		"/hls/private-item/p//180p/segment-00013.m4s",
+		"/HLS/private-item/p/private-recipe/180p/segment-00013.m4s",
+	} {
+		request := &http.Request{URL: &url.URL{Path: path, RawQuery: "playbackSession=hls-speed-fixture"}}
+		original := request.URL.String()
+		if speedFailureRequestTarget(request) != "" || request.URL.String() != original {
+			t.Fatal("unrelated route projected cache facts or mutated the request")
+		}
+	}
+}
