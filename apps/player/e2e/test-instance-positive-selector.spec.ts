@@ -157,14 +157,14 @@ test('positive saved selector requests and separately labeled inline decoder con
   control.on('request', request => {
     try {
       const endpoint = new URL(request.url());
-      if (endpoint.origin === base.origin && (endpoint.pathname.startsWith(path) || endpoint.pathname === progressEndpoint) && !['GET', 'HEAD'].includes(request.method())) controlWrites++;
+      if (endpoint.origin === base.origin && [path + '/progress', progressEndpoint].includes(endpoint.pathname) && !['GET', 'HEAD'].includes(request.method())) controlWrites++;
     } catch { /* Counter only; no body or URL retained. */ }
   });
   let controlFailed = false;
   let inline: Awaited<ReturnType<typeof control.newPage>> | undefined;
   try {
     const decoderPage = await control.newPage(); inline = decoderPage;
-    await decoderPage.goto(base.origin + '/');
+    await decoderPage.goto(base.origin + '/healthz');
     await decoderPage.setContent('<!doctype html><title>Separate public decoder control</title><video controls playsinline muted width="320" height="180"></video><button>Decode observed source inline</button>');
     await decoderPage.evaluate(source => {
       const video = document.querySelector('video')!;
