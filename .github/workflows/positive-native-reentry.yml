@@ -54,11 +54,11 @@ jobs:
           command -v ffmpeg >/dev/null || brew install ffmpeg
           pnpm --dir apps/player/e2e install --frozen-lockfile
           pnpm --dir apps/player/e2e exec playwright install webkit
-      - name: Reproduce exact PR501 source through public APIs and native decoding
+      - name: Validate exact source through public APIs and native decoding
         timeout-minutes: 10
         run: >-
           python3 apps/player/scripts/test-positive-reentry-local.py
-          --source deb7e51a1cdd3ed9f71842677abda5cd0e9e7fc8
+          --source 9f9162a797e8e60a30e592cf3f72bbd401b92280
           --dependencies "$PWD/apps/player/e2e/node_modules"
       - name: Retain only safe repeatable proof artifacts
         if: always()
