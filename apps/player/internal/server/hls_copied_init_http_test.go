@@ -62,6 +62,11 @@ func assertCopiedInitializationRecovery(t *testing.T, journey, damaged string) {
 	if data, err := os.ReadFile(unrelated); err != nil || string(data) != "retained" {
 		t.Fatal("map recovery mutated unrelated cache")
 	}
+	assertCopiedRecoverySourceUnchanged(t, f)
+}
+
+func assertCopiedRecoverySourceUnchanged(t *testing.T, f copiedHTTPFixture) {
+	t.Helper()
 	if data, err := os.ReadFile(filepath.Join(f.config.MediaDir, "Copied.mp4")); err != nil || string(data) != "owned source" {
 		t.Fatal("map recovery mutated original media")
 	}

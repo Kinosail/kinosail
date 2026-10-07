@@ -19,7 +19,7 @@ import (
 )
 
 // AAC encoding adds one delay frame and rounds the tail to a complete frame.
-// Only actual emitted AAC packets can admit the completed final ordinal beyond
+// Only actual decoded AAC samples can admit the completed final ordinal beyond
 // the source window; neither a source sample rate nor a manifest alone can.
 func (manager *hlsManager) completedAudioHLSFinalSegment(ctx context.Context, item library.Item, directory, name string, manifest []byte, offset, playable float64) bool {
 	if !slices.Contains([]string{"audio", "audiobook"}, item.Kind) || filepath.Base(name) != copiedHLSLastSegment(manifest) ||
@@ -35,8 +35,8 @@ func (manager *hlsManager) completedAudioHLSFinalSegment(ctx context.Context, it
 	if err != nil {
 		return false
 	}
-	data, err := manager.completedAudioHLSPackets(ctx, root, filepath.Base(name))
-	if err != nil || !validCompletedAACPackets(data, offset, playable) {
+	data, err := manager.completedAudioHLSFrames(ctx, root, filepath.Base(name))
+	if err != nil || !validCompletedAACFrames(data, offset, playable) {
 		slog.WarnContext(ctx, "HLS audio terminal media rejected", "request_id", requestActivityID(ctx), "playback_session", requestPlaybackSession(ctx), "failure_class", "invalid-terminal-metadata")
 		return false
 	}
@@ -44,7 +44,7 @@ func (manager *hlsManager) completedAudioHLSFinalSegment(ctx context.Context, it
 	return err == nil && sameCopiedHLSAssets(assets, current)
 }
 
-func (manager *hlsManager) completedAudioHLSPackets(ctx context.Context, root *os.Root, name string) ([]byte, error) {
+func (manager *hlsManager) completedAudioHLSFrames(ctx context.Context, root *os.Root, name string) ([]byte, error) {
 	initialization, err := copiedHLSCacheFile(root, "init.mp4", 2<<20)
 	if err != nil {
 		return nil, errCopiedHLSIndex
@@ -66,7 +66,7 @@ func (manager *hlsManager) completedAudioHLSPackets(ctx context.Context, root *o
 	output := copiedHLSEndpointOutput{}
 	//nolint:gosec // Installation-configured probe and bounded rooted generated media.
 	command := exec.CommandContext(ctx, manager.probe.executable, "-v", "error", "-threads", "1", "-select_streams", "a:0",
-		"-show_packets", "-show_entries", "stream=codec_name,profile,sample_rate:packet=pts_time,duration_time", "-of", "json", "pipe:0")
+		"-show_frames", "-show_entries", "stream=codec_name,profile,sample_rate:frame=pts_time,nb_samples", "-of", "json", "pipe:0")
 	command.Stdin = io.MultiReader(bytes.NewReader(initialization), bytes.NewReader(fragment))
 	command.Stdout = &output
 	if command.Run() != nil {
@@ -75,9 +75,9 @@ func (manager *hlsManager) completedAudioHLSPackets(ctx context.Context, root *o
 	return output.Bytes(), nil
 }
 
-func validCompletedAACPackets(data []byte, offset, playable float64) bool {
+func validCompletedAACFrames(data []byte, offset, playable float64) bool {
 	var facts completedAACFacts
-	if httpguard.DecodeUniqueJSON(bytes.NewReader(data), 1<<20, &facts) != nil || !validAACPacketCollections(facts) {
+	if httpguard.DecodeUniqueJSON(bytes.NewReader(data), 1<<20, &facts) != nil || !validAACFrameCollections(facts) {
 		return false
 	}
 	rate, valid := completedAACSampleRate(facts)
@@ -86,15 +86,22 @@ func validCompletedAACPackets(data []byte, offset, playable float64) bool {
 	}
 	tick, frame := 1/float64(rate), 1024/float64(rate)
 	end := offset
-	for _, packet := range facts.Packets {
-		pts, parseErr := strconv.ParseFloat(packet.PTS, 64)
-		next, packetErr := copiedHLSPacketEnd(packet.PTS, packet.Duration)
-		if parseErr != nil || packetErr != nil || math.Abs(pts-end) > tick || !validAACPacketSamples(next-pts, rate) {
+	for _, decoded := range facts.Frames {
+		pts, next, valid := completedAACFrameEnd(decoded.PTS, decoded.Samples, rate)
+		if !valid || math.Abs(pts-end) > tick {
 			return false
 		}
 		end = next
 	}
 	return end > offset && end <= playable+2*frame
+}
+
+func completedAACFrameEnd(value string, samples, rate int) (float64, float64, bool) {
+	pts, err := strconv.ParseFloat(value, 64)
+	if err != nil || math.IsNaN(pts) || math.IsInf(pts, 0) || samples < 1 || samples > 1024 {
+		return 0, 0, false
+	}
+	return pts, pts + float64(samples)/float64(rate), true
 }
 
 func validAACSampleRate(rate int) bool {
@@ -105,14 +112,6 @@ func validAACSampleRate(rate int) bool {
 	return false
 }
 
-// FFprobe emits duration_time at six decimal places; preserve that decimal
-// precision while requiring at least one and at most 1024 emitted LC samples.
-func validAACPacketSamples(duration float64, rate int) bool {
-	samples := duration * float64(rate)
-	rounded := math.Round(samples)
-	return rounded >= 1 && rounded <= 1024 && math.Abs(samples-rounded) <= float64(rate)/1_000_000
-}
-
 type completedAACFacts struct {
 	Streams []struct {
 		Codec   string `json:"codec_name"`
@@ -121,14 +120,14 @@ type completedAACFacts struct {
 	} `json:"streams"`
 	Programs     []struct{} `json:"programs"`
 	StreamGroups []struct{} `json:"stream_groups"`
-	Packets      []struct {
-		PTS      string `json:"pts_time"`
-		Duration string `json:"duration_time"`
-	} `json:"packets"`
+	Frames       []struct {
+		PTS     string `json:"pts_time"`
+		Samples int    `json:"nb_samples"`
+	} `json:"frames"`
 }
 
-func validAACPacketCollections(facts completedAACFacts) bool {
-	return len(facts.Streams) == 1 && len(facts.Programs) == 0 && len(facts.StreamGroups) == 0 && len(facts.Packets) > 0 && len(facts.Packets) <= 4096
+func validAACFrameCollections(facts completedAACFacts) bool {
+	return len(facts.Streams) == 1 && len(facts.Programs) == 0 && len(facts.StreamGroups) == 0 && len(facts.Frames) > 0 && len(facts.Frames) <= 4096
 }
 
 func completedAACSampleRate(facts completedAACFacts) (int, bool) {

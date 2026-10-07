@@ -111,7 +111,7 @@ func hlsPolicySourceVersion(policy string) (string, bool) {
 	}
 	fields := parts[len(parts)-4:]
 	switch fields[3] {
-	case "hls=17", "hls=16", "hls=15", "hls=14", "hls=13", "hls=7":
+	case "hls=18", "hls=17", "hls=16", "hls=15", "hls=14", "hls=13", "hls=7":
 	default:
 		return "", false
 	}

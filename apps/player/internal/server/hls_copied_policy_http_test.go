@@ -20,7 +20,7 @@ import (
 // A retained source identity is valid, but media from before the AAC refill
 // repair cannot acquire the corrected packet/clock contract through reuse.
 func TestCopiedHLSHTTPInvalidatesPriorRefillPolicy(t *testing.T) {
-	for _, prior := range []string{"hls=16", "hls=15"} {
+	for _, prior := range []string{"hls=17", "hls=16", "hls=15"} {
 		t.Run(prior, func(t *testing.T) {
 			for _, mode := range []string{"playlist journey", "direct cached segment", "direct cached init", "changed source segment", "changed source init"} {
 				t.Run(mode, func(t *testing.T) { assertPriorCopiedPolicyRejected(t, mode, prior) })

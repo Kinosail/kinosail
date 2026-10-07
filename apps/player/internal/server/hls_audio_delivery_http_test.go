@@ -90,7 +90,7 @@ func realAudioHLSFixture(t *testing.T, extension, codec string) (copiedHTTPFixtu
 			}
 		}
 	})
-	servertest.WriteExecutable(t, probe, "#!/bin/sh\ncase \" $* \" in\n*\" stream=codec_name,profile,sample_rate:packet=pts_time,duration_time \"*) printf probe\\n >> "+quote(probes)+"; if [ -f "+quote(response)+" ]; then cat >/dev/null; cat "+quote(response)+"; exit 0; fi; "+quote(ffprobe)+" \"$@\" > "+quote(actual)+"; status=$?; cat "+quote(actual)+"; exit $status;;\nesac\nexec "+quote(ffprobe)+" \"$@\"\n")
+	servertest.WriteExecutable(t, probe, "#!/bin/sh\ncase \" $* \" in\n*\" stream=codec_name,profile,sample_rate:\"*) printf probe\\n >> "+quote(probes)+"; if [ -f "+quote(response)+" ]; then cat >/dev/null; cat "+quote(response)+"; exit 0; fi; "+quote(ffprobe)+" \"$@\" > "+quote(actual)+"; status=$?; cat "+quote(actual)+"; exit $status;;\nesac\nexec "+quote(ffprobe)+" \"$@\"\n")
 	logs := captureCopiedLogs(t)
 	retainCopiedFailureFacts(t, ffmpeg, ffprobe, source, cache, logs)
 	retainCopiedPlaylistFacts(t, cache)
@@ -125,17 +125,22 @@ func TestRealAudioHLSHTTPTerminalMetadataRejectsWithoutMutation(t *testing.T) {
 		{"missing", `{}`, ""},
 		{"malformed", `not-json`, ""},
 		{"oversized", strings.Repeat("x", (1<<20)+1), ""},
-		{"unknown response field", `{"streams":[{"codec_name":"aac","profile":"LC","sample_rate":"48000"}],"packets":[{"pts_time":"10.005333","duration_time":"0.016000"}],"unexpected":"do-not-record"}`, ""},
-		{"unknown profile", `{"streams":[{"codec_name":"aac","profile":"HE-AAC","sample_rate":"48000"}],"packets":[{"pts_time":"10.005333","duration_time":"0.016000"}]}`, ""},
-		{"missing packet duration", `{"streams":[{"codec_name":"aac","profile":"LC","sample_rate":"48000"}],"packets":[{"pts_time":"10.005333"}]}`, ""},
-		{"unknown codec", `{"streams":[{"codec_name":"opus","profile":"LC","sample_rate":"48000"}],"packets":[{"pts_time":"10.005333","duration_time":"0.021333"}]}`, ""},
-		{"missing sample rate", `{"streams":[{"codec_name":"aac","profile":"LC"}],"packets":[{"pts_time":"10.005333","duration_time":"0.021333"}]}`, ""},
-		{"out of range rate", `{"streams":[{"codec_name":"aac","profile":"LC","sample_rate":"1"}],"packets":[{"pts_time":"10.005333","duration_time":"1024"}]}`, ""},
-		{"conflicting streams", `{"streams":[{"codec_name":"aac","profile":"LC","sample_rate":"48000"},{"codec_name":"aac","profile":"LC","sample_rate":"44100"}],"packets":[{"pts_time":"10.005333","duration_time":"0.021333"}]}`, ""},
-		{"duplicate rate", `{"streams":[{"codec_name":"aac","profile":"LC","sample_rate":"48000","sample_rate":"1"}],"packets":[{"pts_time":"10.005333","duration_time":"0.021333"}]}`, ""},
-		{"nonfinite clock", `{"streams":[{"codec_name":"aac","profile":"LC","sample_rate":"48000"}],"packets":[{"pts_time":"Infinity","duration_time":"0.021333"}]}`, ""},
-		{"beyond AAC padding", `{"streams":[{"codec_name":"aac","profile":"LC","sample_rate":"48000"}],"packets":[{"pts_time":"11","duration_time":"0.021333"}]}`, ""},
-		{"invalid packet samples", `{"streams":[{"codec_name":"aac","profile":"LC","sample_rate":"48000"}],"packets":[{"pts_time":"10.005333","duration_time":"0.1"}]}`, ""},
+		{"unknown response field", `{"streams":[{"codec_name":"aac","profile":"LC","sample_rate":"48000"}],"unexpected":"do-not-record","frames":[{"pts_time":"10.005333","nb_samples":768}]}`, ""},
+		{"unknown profile", `{"streams":[{"codec_name":"aac","profile":"HE-AAC","sample_rate":"48000"}],"frames":[{"pts_time":"10.005333","nb_samples":768}]}`, ""},
+		{"missing decoded samples", `{"streams":[{"codec_name":"aac","profile":"LC","sample_rate":"48000"}],"frames":[{"pts_time":"10.005333"}]}`, ""},
+		{"unknown codec", `{"streams":[{"codec_name":"opus","profile":"LC","sample_rate":"48000"}],"frames":[{"pts_time":"10.005333","nb_samples":1024}]}`, ""},
+		{"missing sample rate", `{"streams":[{"codec_name":"aac","profile":"LC"}],"frames":[{"pts_time":"10.005333","nb_samples":1024}]}`, ""},
+		{"out of range rate", `{"streams":[{"codec_name":"aac","profile":"LC","sample_rate":"1"}],"frames":[{"pts_time":"10.005333","nb_samples":49152000}]}`, ""},
+		{"conflicting streams", `{"streams":[{"codec_name":"aac","profile":"LC","sample_rate":"48000"},{"codec_name":"aac","profile":"LC","sample_rate":"44100"}],"frames":[{"pts_time":"10.005333","nb_samples":1024}]}`, ""},
+		{"duplicate rate", `{"streams":[{"codec_name":"aac","profile":"LC","sample_rate":"1"}],"frames":[{"pts_time":"10.005333","nb_samples":1024}]}`, ""},
+		{"nonfinite clock", `{"streams":[{"codec_name":"aac","profile":"LC","sample_rate":"48000"}],"frames":[{"pts_time":"Infinity","nb_samples":1024}]}`, ""},
+		{"beyond AAC padding", `{"streams":[{"codec_name":"aac","profile":"LC","sample_rate":"48000"}],"frames":[{"pts_time":"11","nb_samples":1024}]}`, ""},
+		{"invalid decoded samples", `{"streams":[{"codec_name":"aac","profile":"LC","sample_rate":"48000"}],"frames":[{"pts_time":"10.005333","nb_samples":4800}]}`, ""},
+		{"missing frame clock", `{"streams":[{"codec_name":"aac","profile":"LC","sample_rate":"48000"}],"frames":[{"nb_samples":1024}]}`, ""},
+		{"zero samples", `{"streams":[{"codec_name":"aac","profile":"LC","sample_rate":"48000"}],"frames":[{"pts_time":"10.005333","nb_samples":0}]}`, ""},
+		{"fractional samples", `{"streams":[{"codec_name":"aac","profile":"LC","sample_rate":"48000"}],"frames":[{"pts_time":"10.005333","nb_samples":1023.5}]}`, ""},
+		{"duplicate samples", `{"streams":[{"codec_name":"aac","profile":"LC","sample_rate":"48000"}],"frames":[{"pts_time":"10.005333","nb_samples":1024,"nb_samples":1}]}`, ""},
+		{"excessive frames", `{"streams":[{"codec_name":"aac","profile":"LC","sample_rate":"48000"}],"frames":[` + strings.Repeat(`{"pts_time":"10.005333","nb_samples":1024},`, 4096) + `{"pts_time":"10.005333","nb_samples":1024}]}`, ""},
 		{"truncated initialization", "", "init.mp4"},
 		{"unknown cached ordinal", "", "segment-99999.m4s"},
 		{"oversized manifest", "", "index.m3u8"},

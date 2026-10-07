@@ -255,7 +255,7 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 	if recipe.mode == "transcode" {
 		arguments = append(arguments, input...)
 	}
-	if start > 0 {
+	if start > 0 || timeline != nil {
 		seek := ffmpegSeconds(start)
 		if timeline != nil {
 			seek = copiedHLSInputTime(start)
