@@ -101,13 +101,12 @@ func speedTestGET(t *testing.T, ctx context.Context, handler http.Handler, path 
 	t.Helper()
 	var before []speedCacheFact
 	diagnostic, observed := handler.(*speedDiagnosticHandler)
-	parts := strings.Split(path, "/")
-	target := strings.Join(parts[max(0, len(parts)-2):], "/")
+	request := httptest.NewRequestWithContext(ctx, http.MethodGet, path, nil)
+	target := speedFailureRequestTarget(request)
 	if observed {
 		before = speedFailureCacheFacts(diagnostic.cache, target)
 	}
 	response := httptest.NewRecorder()
-	request := httptest.NewRequestWithContext(ctx, http.MethodGet, path, nil)
 	if observed {
 		diagnostic.requests++
 		request.Header.Set("X-Request-ID", fmt.Sprintf("hls-speed-%d", diagnostic.requests))
@@ -118,7 +117,7 @@ func speedTestGET(t *testing.T, ctx context.Context, handler http.Handler, path 
 		if observed {
 			beforeJSON, _ := json.Marshal(before)
 			afterJSON, _ := json.Marshal(speedFailureCacheFacts(diagnostic.cache, target))
-			t.Logf("HLS speed failed-request cache observations (not admission decisions): before=%s after=%s", beforeJSON, afterJSON)
+			t.Logf("HLS speed failed-request cache observations (not admission decisions): target_valid=%t before=%s after=%s", target != "", beforeJSON, afterJSON)
 			speedFailureOperations(t, diagnostic.logs, request.Header.Get("X-Request-ID"))
 			t.Fatalf("HLS delivery %s = %d (canceled=%t; body_bytes=%d; body_SHA256=%x)", target, response.Code, ctx.Err() != nil, response.Body.Len(), sha256.Sum256(response.Body.Bytes()))
 		}

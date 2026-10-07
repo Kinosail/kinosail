@@ -90,10 +90,21 @@ type speedDiagnosticHandler struct {
 
 func speedFailureOperations(t *testing.T, output *copiedLogBuffer, requestID string) {
 	t.Helper()
-	lines := strings.Split(output.snapshot(), "\n")
-	if len(lines) > 40 {
-		lines = lines[len(lines)-40:]
+	capture := output.snapshot()
+	operations := speedFailureOperationFacts(capture, requestID)
+	t.Logf("HLS speed retained log capture: bytes=%d phase_records=%d (64 KiB capture; latest 40 relevant events; missing events unknown)", len(capture), len(operations))
+	for _, facts := range operations {
+		data, _ := json.Marshal(facts)
+		t.Logf("HLS speed observed phase (worker ownership unknown; retained capture only): %s", data)
 	}
+}
+
+func speedFailureOperationFacts(output, requestID string) []map[string]any {
+	if len(output) > 64<<10 {
+		output = output[len(output)-(64<<10):]
+	}
+	lines := strings.Split(output, "\n")
+	var result []map[string]any
 	for _, line := range lines {
 		var entry map[string]any
 		if json.Unmarshal([]byte(line), &entry) != nil {
@@ -101,14 +112,16 @@ func speedFailureOperations(t *testing.T, output *copiedLogBuffer, requestID str
 		}
 		message, _ := entry["msg"].(string)
 		switch message {
-		case "HLS startup preparation", "HLS transcode completed", "HLS transcode failed", "HLS transcode paused after playback became inactive", "HLS stream identity changed", "HLS segment preparation failed", "HLS segment unavailable", "HLS copied clock rejected", "HLS master rejected":
+		case "HLS encode phase", "HLS transcode started", "HLS startup preparation", "HLS transcode completed", "HLS transcode failed", "HLS transcode paused after playback became inactive", "HLS stream identity changed", "HLS segment preparation failed", "HLS segment unavailable", "HLS copied clock rejected", "HLS master rejected":
 		default:
 			continue
 		}
-		facts := speedFailureOperationFields(entry, requestID)
-		data, _ := json.Marshal(facts)
-		t.Logf("HLS speed observed phase (worker ownership unknown): %s", data)
+		if len(result) == 40 {
+			result = result[1:]
+		}
+		result = append(result, speedFailureOperationFields(entry, requestID))
 	}
+	return result
 }
 
 func speedFailureTarget(target string) bool {
@@ -192,7 +205,7 @@ func speedFailureSameFile(before, after os.FileInfo) bool {
 }
 
 func speedFailureOperationFields(entry map[string]any, requestID string) map[string]any {
-	facts := map[string]any{"msg": entry["msg"], "request_matches": entry["request_id"] == requestID, "session_matches": entry["playback_session"] == "hls-speed-fixture"}
+	facts := map[string]any{"msg": entry["msg"], "request_present": speedFailureIdentityPresent(entry["request_id"]), "session_present": speedFailureIdentityPresent(entry["playback_session"]), "request_matches": entry["request_id"] == requestID, "session_matches": entry["playback_session"] == "hls-speed-fixture"}
 	switch entry["mode"] {
 	case "remux", "transcode", "audio-transcode":
 		facts["mode"] = entry["mode"]
@@ -204,7 +217,27 @@ func speedFailureOperationFields(entry map[string]any, requestID string) map[str
 	if duration, ok := entry["duration_ms"].(float64); ok && duration >= 0 && duration <= 3600000 {
 		facts["duration_ms"] = duration
 	}
+	speedFailurePhaseFields(entry, facts)
 	return facts
+}
+
+func speedFailureIdentityPresent(value any) bool {
+	text, ok := value.(string)
+	return ok && text != "" && len(text) <= 64
+}
+
+func speedFailurePhaseFields(entry, facts map[string]any) {
+	switch entry["phase"] {
+	case "queued", "admission_wait", "admission_rejected", "admitted", "process_started", "media_ready":
+		facts["phase"] = entry["phase"]
+	}
+	switch entry["outcome"] {
+	case "canceled", "deadline", "failed":
+		facts["outcome"] = entry["outcome"]
+	}
+	if elapsed, ok := entry["elapsed_ms"].(float64); ok && elapsed >= 0 && elapsed <= 3600000 {
+		facts["elapsed_ms"] = elapsed
+	}
 }
 
 func speedFailureClock(value map[string]json.RawMessage) string {

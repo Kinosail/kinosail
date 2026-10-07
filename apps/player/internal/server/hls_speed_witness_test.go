@@ -98,11 +98,7 @@ func TestHLSSpeedFailureWitnessBoundsCapturedLogs(t *testing.T) {
 // the failure evidence is present, private and cannot convert the failure to pass.
 func TestHLSSpeedFailureWitnessHTTP(t *testing.T) {
 	if os.Getenv("KINOSAIL_SPEED_WITNESS_CHILD") == "1" {
-		cache := t.TempDir()
-		handler := &speedDiagnosticHandler{cache: cache, logs: captureCopiedLogs(t), Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			http.Error(w, "private-response-body", http.StatusNotFound)
-		})}
-		speedTestGET(t, t.Context(), handler, "/hls/private-item/p/private-recipe/180p/segment-00003.m4s")
+		speedTestGET(t, t.Context(), speedWitnessHTTPHandler(t), "/hls/private-item/p/private-recipe/180p/segment-00003.m4s?playbackSession=hls-speed-fixture")
 		return
 	}
 	executable, err := os.Executable()
@@ -117,16 +113,36 @@ func TestHLSSpeedFailureWitnessHTTP(t *testing.T) {
 	if err == nil || ctx.Err() != nil {
 		t.Fatalf("controlled delivery failure not retained: %v", err)
 	}
-	for _, marker := range []string{"failed-request cache observations", "segment-00003.m4s", "= 404"} {
+	for _, marker := range []string{"failed-request cache observations", "target_valid=true", `"segment":{"State":"regular"`, "retained log capture: bytes=0 phase_records=0", "segment-00003.m4s", "= 404"} {
 		if !bytes.Contains(data, []byte(marker)) {
 			t.Fatalf("failure witness missing %s: %s", marker, data)
 		}
 	}
-	for _, secret := range []string{"private-response-body", "private-item", "private-recipe"} {
+	for _, secret := range []string{"private-response-body", "private-item", "private-recipe", "private-media", "private-binding", "playbackSession", "hls-speed-fixture"} {
 		if bytes.Contains(data, []byte(secret)) {
 			t.Fatal("HTTP failure leaked private fixture value")
 		}
 	}
+}
+
+func speedWitnessHTTPHandler(t *testing.T) *speedDiagnosticHandler {
+	t.Helper()
+	cache := t.TempDir()
+	recipe := filepath.Join(cache, "private-recipe")
+	if err := os.MkdirAll(filepath.Join(recipe, "180p"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	for name, value := range map[string]string{".source": "private-binding", "180p/segment-00003.m4s": "private-media"} {
+		if err := os.WriteFile(filepath.Join(recipe, name), []byte(value), 0o600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	return &speedDiagnosticHandler{cache: cache, logs: captureCopiedLogs(t), Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet || r.URL.Path != "/hls/private-item/p/private-recipe/180p/segment-00003.m4s" || r.URL.RawQuery != "playbackSession=hls-speed-fixture" {
+			t.Fatal("observation changed the original request")
+		}
+		http.Error(w, "private-response-body", http.StatusNotFound)
+	})}
 }
 
 func TestHLSSpeedFailureWitnessProjectsOnlyKnownOperationFields(t *testing.T) {
