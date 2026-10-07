@@ -180,7 +180,7 @@ func TestCopiedRecoveryClockSnapshotRejectsDuplicateAndUnknownFields(t *testing.
 			if err != nil {
 				t.Fatal(err)
 			}
-			_, _, output, err := manager.prepareCopiedHLSOutput(t.Context(), directory, "360p", string(policy), recipe.mode, 0)
+			_, _, _, output, err := manager.prepareCopiedHLSOutput(t.Context(), directory, "360p", string(policy), recipe.mode, 0)
 			if err != nil {
 				t.Fatal(err)
 			}

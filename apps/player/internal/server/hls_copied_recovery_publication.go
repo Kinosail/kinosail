@@ -38,23 +38,15 @@ func copiedHLSRemoveOwned(root *os.Root, name string, owned os.FileInfo) {
 	}
 }
 
-func copiedHLSRemoveStageRoot(root *os.Root, directory string) {
-	held, heldErr := root.Stat(".")
-	canonical, err := os.Lstat(directory)
-	if heldErr == nil && err == nil && canonical.IsDir() && os.SameFile(held, canonical) {
-		_ = os.Remove(directory) // Empty exclusive operation stage after worker/monitor join.
-	}
-}
-
-func (manager *hlsManager) prepareCopiedHLSOutput(ctx context.Context, directory, name, policy, mode string, number int) (string, string, *copiedHLSVariantOutput, error) {
+func (manager *hlsManager) prepareCopiedHLSOutput(ctx context.Context, directory, name, policy, mode string, number int) (context.Context, string, string, *copiedHLSVariantOutput, error) {
 	output, err := manager.copiedHLSVariantOutput(ctx, directory, name, policy, mode, number)
 	if err != nil {
-		return "", "", nil, err
+		return ctx, "", "", nil, err
 	}
 	if decision, ok := ctx.Value(copiedHLSOutputDecisionKey{}).(*copiedHLSOutputDecision); ok {
 		decision.set(output.stage != nil)
 	}
-	return output.directory, output.playlist, output, nil
+	return output.ctx, output.directory, output.playlist, output, nil
 }
 
 func (manager *hlsManager) copiedHLSVariantOutput(ctx context.Context, directory, name, policy, mode string, number int) (*copiedHLSVariantOutput, error) {
@@ -227,7 +219,7 @@ func (output *copiedHLSVariantOutput) publish(manager *hlsManager, ctx context.C
 	if output.stage == nil {
 		return finalizePlaylist(output.playlist)
 	}
-	initialization, err := copiedHLSAssetHash(output.ctx, output.stage, "init.mp4", 2<<20)
+	initialization, err := copiedHLSAssetHash(ctx, output.stage, "init.mp4", 2<<20)
 	if err != nil || initialization != output.certificate.Initialization || !output.validPrefix() || !output.current(manager, ctx, item, recipe, policy) {
 		return errCopiedHLSIndex
 	}

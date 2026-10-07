@@ -226,7 +226,7 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 		return err
 	}
 	defer release()
-	directory, playlist, output, err := manager.prepareCopiedHLSOutput(ctx, root, name, options.Cache, recipe.mode, startNumber)
+	ctx, directory, playlist, output, err := manager.prepareCopiedHLSOutput(ctx, root, name, options.Cache, recipe.mode, startNumber)
 	if err != nil {
 		return err
 	}
@@ -275,7 +275,7 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 	arguments = append(arguments, output.arguments()...)
 	arguments = append(arguments, indexedCopiedHLSSegmentArguments(hlsSegmentArguments(recipe.mode, directory, playlist, startNumber), timeline)...)
 	//nolint:gosec // G204: executable is installation config and input is found only by a Library scan.
-	command := exec.CommandContext(output.ctx, manager.ffmpeg, arguments...)
+	command := exec.CommandContext(ctx, manager.ffmpeg, arguments...)
 	if err := output.run(command, item.Path, root); err != nil {
 		return err
 	}

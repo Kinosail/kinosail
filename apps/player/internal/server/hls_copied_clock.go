@@ -90,6 +90,20 @@ func (output *copiedHLSVariantOutput) certifiedPending(name string, owned os.Fil
 	return err == nil && statErr == nil && hash == output.certificate.First && os.SameFile(owned, info) && output.ctx.Err() == nil
 }
 
+func copiedHLSRemoveStageRoot(root *os.Root, directory string) {
+	parent, err := os.OpenRoot(filepath.Dir(directory))
+	if err != nil {
+		return
+	}
+	defer parent.Close()
+	name := filepath.Base(directory)
+	held, heldErr := root.Stat(".")
+	canonical, err := parent.Lstat(name)
+	if heldErr == nil && err == nil && canonical.IsDir() && os.SameFile(held, canonical) {
+		_ = parent.Remove(name) // Empty exclusive operation stage after worker/monitor join.
+	}
+}
+
 func copiedHLSSettleStage(root *os.Root, directory string) {
 	file, err := root.Open(".")
 	if err != nil {
