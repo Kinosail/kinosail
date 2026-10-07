@@ -29,6 +29,32 @@ describe('additional real media formats', { session: 'owner' }, () => {
     expect((await api(browser, '/api/v1/items/' + book.id)).data.item.progress).toEqual(saved);
     await browser.reload();
     await expect.poll(() => browser.evaluate(() => document.querySelector('audio')!.currentTime)).toBeGreaterThan(3.9);
+    // The real Go audio template has no #t fragment or adaptive resume owner.
+    // This tail therefore independently exercises the shipped JS resume guard.
+    await browser.evaluate(() => document.querySelector('audio')!.pause());
+    await screen.getByRole('link', 'Library', { exact: true }).click();
+    await expect(browser).toHaveURL('/');
+    expect((await api(browser, path, 'PUT', { seconds: 16, watched: false })).status).toBe(200);
+    const tail = (await api(browser, '/api/v1/items/' + book.id)).data.item.progress;
+    expect(tail.seconds).toBe(16);
+    expect(Boolean(tail.watched)).toBe(false);
+    await app.open('/watch/' + book.id);
+    await expect(browser.locator('audio')).toHaveAttribute('data-start', '16');
+    const source = await browser.evaluate(() => {
+      const audio = document.querySelector('audio')!;
+      return { fragment: new URL(audio.getAttribute('src')!, location.href).hash,
+        hls: audio.hasAttribute('data-hls'), adaptive: audio.hasAttribute('data-adaptive') };
+    });
+    expect(source).toEqual({ fragment: '', hls: false, adaptive: false });
+    await expect.poll(() => browser.evaluate(() => document.querySelector('audio')!.readyState)).toBeGreaterThanOrEqual(1);
+    expect(await browser.evaluate(() => document.querySelector('audio')!.duration)).toBeCloseTo(24, 0);
+    await expect.poll(() => browser.evaluate(() => Math.abs(document.querySelector('audio')!.currentTime - 16))).toBeLessThan(0.1);
+    await browser.evaluate(async () => { const audio = document.querySelector('audio')!; audio.muted = true; await audio.play(); });
+    await expect.poll(() => browser.evaluate(() => document.querySelector('audio')!.readyState)).toBeGreaterThanOrEqual(2);
+    await expect.poll(() => browser.evaluate(() => document.querySelector('audio')!.currentTime)).toBeGreaterThan(16.2);
+    const paused = await browser.evaluate(() => { const audio = document.querySelector('audio')!; audio.pause(); return audio.currentTime; });
+    await expect.poll(async () => Math.abs((await api(browser, '/api/v1/items/' + book.id)).data.item.progress.seconds - paused)).toBeLessThan(0.1);
+    expect(Boolean((await api(browser, '/api/v1/items/' + book.id)).data.item.progress.watched)).toBe(false);
     await app.screenshot('decoded-audiobook-chapters');
   });
 
