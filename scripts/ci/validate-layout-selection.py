@@ -13,7 +13,7 @@ def selection(arguments):
         raise ValueError
     if any(value not in ('true', 'false') for value in (remaining, timing, installation, metadata)):
         raise ValueError
-    if q14 not in ('primary', 'cold', 'bfcache', 'htmx', 'shows', 'search', 'safety', 'home'):
+    if q14 not in ('primary', 'navigation', 'cold', 'bfcache', 'htmx', 'shows', 'search', 'safety', 'home'):
         raise ValueError
     if r06 not in ('protocol', 'save-controls', 'save-headers', 'save-body', 'source-format',
                    'restore-source-format', 'restore-controls', 'restore-headers', 'restore-inspect-body'):

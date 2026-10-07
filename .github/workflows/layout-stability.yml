@@ -22,7 +22,7 @@ on:
       campaign_q14_suite:
         description: Select one fixed Q14 public suite; primary keeps its two repeats
         type: choice
-        options: [primary, cold, bfcache, htmx, shows, search, safety, home]
+        options: [primary, navigation, cold, bfcache, htmx, shows, search, safety, home]
         default: primary
       campaign_r06_suite:
         description: Select original R06 protocol or one fixed Save or Restore suite
@@ -173,7 +173,7 @@ jobs:
         run: |
           test ! -e .gates-disabled
           case "$CAMPAIGN_Q14_SUITE" in
-            primary|cold|bfcache|htmx|shows|search|safety|home) ;;
+            primary|navigation|cold|bfcache|htmx|shows|search|safety|home) ;;
             *) exit 2 ;;
           esac
           if [ "$CAMPAIGN_PROOF" != Q14 ] && [ "$CAMPAIGN_Q14_SUITE" != primary ]; then exit 2; fi

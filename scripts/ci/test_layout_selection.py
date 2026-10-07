@@ -94,7 +94,7 @@ class LayoutSelectionTests(unittest.TestCase):
 
     def test_existing_subsuite_and_metadata_combinations_remain_supported(self):
         for campaign, field, options in (
-                ('Q14', 6, ('primary', 'cold', 'bfcache', 'htmx', 'shows', 'search', 'safety', 'home')),
+                ('Q14', 6, ('primary', 'navigation', 'cold', 'bfcache', 'htmx', 'shows', 'search', 'safety', 'home')),
                 ('R06', 7, ('protocol', 'save-controls', 'save-headers', 'save-body', 'source-format',
                             'restore-source-format', 'restore-controls', 'restore-headers', 'restore-inspect-body')),
                 ('Q47', 8, ('source-format', 'primary', 'recovery', 'supersession', 'contracts'))):
