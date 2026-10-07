@@ -1,4 +1,4 @@
-import {installLayoutFailureReporter, layoutFailureLocations} from "./layout-stability-failure.mjs";
+import {installLayoutFailureReporter, layoutFailureLocations, layoutFailureNavigation} from "./layout-stability-failure.mjs";
 import {layoutResponseHandler} from "./layout-stability-routing.mjs";
 import {navigationDiagnostics} from "./navigation-diagnostics.mjs";
 import {createRequire} from "node:module";
@@ -17,15 +17,16 @@ const loginResponses = [];
 let requestStatus, requestContentType;
 const reports = [], flows = [], flowProbe = {stage: "not-started"};
 installLayoutFailureReporter(async error => {
-  return {result: "failed", app, engine, stage: phase, operationPhase: flowProbe.operationPhase || operationPhase, activeCase: phase === "measure-flows" ? undefined : activeCase, flowElapsedMs: flowProbe.elapsedMs, flowStage: flowProbe.stage,
+  const currentNavigation = await layoutFailureNavigation(phase, flowProbe, navigation, error);
+  return {result: "failed", app, engine, stage: phase, operationPhase: phase === "measure-flows" ? flowProbe.operationPhase : operationPhase, activeCase: phase === "measure-flows" ? undefined : activeCase, flowElapsedMs: flowProbe.elapsedMs, flowStage: flowProbe.stage,
     locations: layoutFailureLocations(error),
     errorClass: ["TimeoutError", "TypeError", "ReferenceError", "SyntaxError"].includes(error.name) ? error.name : "Error",
     completedCases: reports.length, completedFlows: flows.length, media: flowProbe.media, probe: flowProbe.geometry, loginResponses,
-    requestStatus: phase === "measure-flows" ? undefined : requestStatus, requestContentType: phase === "measure-flows" ? undefined : requestContentType, navigation: flowProbe.navigation || await navigation?.snapshot(error),
+    requestStatus: phase === "measure-flows" ? undefined : requestStatus, requestContentType: phase === "measure-flows" ? undefined : requestContentType, navigation: currentNavigation,
     requestErrorCode: ["CERT_HAS_EXPIRED", "DEPTH_ZERO_SELF_SIGNED_CERT", "SELF_SIGNED_CERT_IN_CHAIN", "UNABLE_TO_VERIFY_LEAF_SIGNATURE", "UNABLE_TO_GET_ISSUER_CERT_LOCALLY"].find(code => error.code === code || String(error.message).includes(code)) ||
       (/unable to verify|self.signed certificate|unable to get local issuer/i.test(String(error.message)) ? "UNTRUSTED_CERTIFICATE" : undefined),
     authCookieCount: authContext ? await authContext.cookies().then(c=>c.length).catch(()=>undefined) : undefined,
-    pageState: flowProbe.navigation ? flowProbe.navigation.identity : activePage ? (new URL(activePage.url()).pathname === "/login" ? "login" : "other") : "not-created"};
+    pageState: currentNavigation ? currentNavigation.identity : phase === "measure-flows" ? "not-recorded" : activePage ? (new URL(activePage.url()).pathname === "/login" ? "login" : "other") : "not-created"};
 }, failure => writeFile(join(run, "failure.json"), JSON.stringify(failure, null, 2)), () => browser?.close());
 browser = await ({chromium, webkit, firefox}[engine]).launch(engine === "chromium" && process.platform === "darwin" ? {channel: "chrome"} : {});
 const context = authContext = await browser.newContext({baseURL, ignoreHTTPSErrors: false, reducedMotion: "reduce"});

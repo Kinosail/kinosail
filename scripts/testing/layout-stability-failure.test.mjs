@@ -4,6 +4,18 @@ import {spawnSync} from "node:child_process";
 import {mkdtempSync, readFileSync, rmSync} from "node:fs";
 import {tmpdir} from "node:os";
 import {join} from "node:path";
+import * as failureModule from "./layout-stability-failure.mjs";
+
+test("flow failures cannot substitute an earlier closed measurement page", async () => {
+  let staleReads = 0;
+  const stale = {snapshot:async()=>{staleReads++; return {path:"/",identity:"owned",errorCategory:"none"};}};
+  const current = {path:"/watch",identity:"owned",errorCategory:"timeout"};
+  assert.equal(await failureModule.layoutFailureNavigation("measure-flows", {navigation:current}, stale, {}), current);
+  assert.equal(await failureModule.layoutFailureNavigation("measure-flows", {}, stale, {}), undefined);
+  assert.equal(staleReads, 0);
+  assert.equal((await failureModule.layoutFailureNavigation("measure-layout", {}, stale, {})).path, "/");
+  assert.equal(staleReads, 1);
+});
 
 test("failure locations retain only owned code coordinates", async () => {
   const {layoutFailureLocations} = await import("./layout-stability-failure.mjs");

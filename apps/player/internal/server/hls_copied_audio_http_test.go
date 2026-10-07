@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func assertCopiedAudioPackets(t *testing.T, ctx context.Context, source, delivered string, clock float64) {
+func assertCopiedAudioPackets(t *testing.T, ctx context.Context, source, delivered string, clock float64) copiedAudioProbe {
 	t.Helper()
 	ffprobe, err := exec.LookPath("ffprobe")
 	if err != nil {
@@ -26,6 +26,7 @@ func assertCopiedAudioPackets(t *testing.T, ctx context.Context, source, deliver
 		assertCopiedAudioPacketClock(t, index, expected[index], actual[index], clock)
 	}
 	t.Logf("AAC: %d identical ordered audible compressed packets; fully skipped priming packet excluded", len(actual))
+	return sourceProbe
 }
 
 type copiedAudioPacket struct {

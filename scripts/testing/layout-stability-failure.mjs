@@ -1,4 +1,10 @@
 // Preserve one safe failure artifact even when more errors arrive during cleanup.
+export async function layoutFailureNavigation(phase, flowProbe, navigation, error) {
+  // Flow snapshots belong to fresh contexts. The global recorder belongs to
+  // the last layout case, which can already be closed when a flow fails.
+  return phase === "measure-flows" ? flowProbe.navigation : await navigation?.snapshot(error);
+}
+
 export function layoutFailureLocations(error) {
   if (typeof error?.stack !== "string" || error.stack.length > 8192) return [];
   const locations = [];

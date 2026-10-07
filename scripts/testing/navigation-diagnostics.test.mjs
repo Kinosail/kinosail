@@ -10,6 +10,25 @@ class Page extends EventEmitter {
   url() {return "http://localhost:39060/login?token=do-not-record";}
 }
 const request = (url, type="script") => ({url:()=>url,resourceType:()=>type});
+test("owned watch and inspector routes expose only a route class, never item identity", async () => {
+  for (const [route, expected] of [["/watch/0123456789abcdef", "/watch"], ["/subtitles/inspect/0123456789abcdef", "/subtitles/inspect"]]) {
+    const page = new Page();
+    page.url = ()=>"http://localhost:39060" + route + "?token=do-not-record";
+    const probe = navigationDiagnostics(page,"http://localhost:39060");
+    const value = await probe.snapshot();
+    assert.equal(value.path, expected);
+    assert.equal(value.identity, "owned");
+    assert.doesNotMatch(JSON.stringify(value), /0123456789abcdef|do-not-record|token/);
+    probe.stop();
+  }
+});
+test("malformed, conflicting and oversized item paths cannot claim owned identity", async () => {
+  for (const path of ["/watch/", "/watch/unknown", "/watch/0123456789abcdef/extra", "/watch/0123456789abcdef%2fextra", "/watch/"+"a".repeat(2049), "/subtitles/inspect/unknown"]) {
+    const page = new Page(); page.url = ()=>"http://localhost:39060" + path;
+    const probe = navigationDiagnostics(page,"http://localhost:39060"), value = await probe.snapshot();
+    assert.equal(value.path, "other"); assert.equal(value.identity, "other"); probe.stop();
+  }
+});
 test("navigation diagnostics omit credentials and queries", async () => {
   const page=new Page(), probe=navigationDiagnostics(page,"http://localhost:39060");
   const first=request("http://localhost:39060/static/main.js?token=do-not-record");

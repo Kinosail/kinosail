@@ -23,7 +23,7 @@ class LayoutReceiptPrivacy(unittest.TestCase):
                          "layout-stability-subtitle-search.mjs",
                          "layout-stability-subtitle-background.mjs",
                          "navigation-diagnostics.mjs", "layout-stability-routing.mjs",
-                         "layout-stability-failure.mjs"):
+                         "layout-stability-failure.mjs", "layout-stability-flow-page.mjs"):
                 shutil.copyfile(ROOT / "scripts/testing" / name, scripts / name)
             tools = root / "tools"
             tools.mkdir()

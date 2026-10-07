@@ -17,10 +17,16 @@ export function navigationDiagnostics(page, baseURL) {
       const url = new URL(value);
       if (url.origin!==origin || url.username || url.password) return;
       if (["/","/login","/account","/settings"].includes(url.pathname) ||
+        /^\/(?:watch|subtitles\/inspect)\/[a-f0-9]{16}$/.test(url.pathname) ||
         /^\/static\/[a-zA-Z0-9._-]{1,180}\.(js|css|woff2|png|jpg|svg)$/.test(url.pathname)) return url;
     } catch {}
   };
-  const path = value => owned(value)?.pathname || "other";
+  const path = value => {
+    const pathname = owned(value)?.pathname;
+    if (pathname?.startsWith("/watch/")) return "/watch";
+    if (pathname?.startsWith("/subtitles/inspect/")) return "/subtitles/inspect";
+    return pathname || "other";
+  };
   const metadata = request => ({
     path:path(request.url()),
     type:["document","stylesheet","script","image","font","media","fetch","xhr","other"].includes(request.resourceType()) ? request.resourceType() : "other",

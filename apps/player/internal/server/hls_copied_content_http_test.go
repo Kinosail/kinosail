@@ -88,8 +88,8 @@ func assertCopiedHLSContent(t *testing.T, ctx context.Context, ffmpeg, source st
 	}
 	t.Logf("0:v:0: %d decoded frames; shared initial mux shift %.6f seconds", len(actual), clock)
 	if audio {
-		assertCopiedAudioPackets(t, ctx, source, path, clock)
-		assertCopiedAudioDecode(t, ctx, ffmpeg, source, path, clock)
+		probe := assertCopiedAudioPackets(t, ctx, source, path, clock)
+		assertCopiedAudioDecode(t, ctx, ffmpeg, source, path, clock, probe)
 	}
 }
 
@@ -108,11 +108,23 @@ func assertCopiedFrameClock(t *testing.T, stream string, index int, source, deli
 	}
 }
 
-func assertCopiedAudioDecode(t *testing.T, ctx context.Context, ffmpeg, source, path string, clock float64) {
+func assertCopiedAudioDecode(t *testing.T, ctx context.Context, ffmpeg, source, path string, clock float64, probe copiedAudioProbe) {
 	t.Helper()
 	expected := copiedDecodedFrames(t, ctx, ffmpeg, source, "0:a:0")
 	actual := copiedDecodedFrames(t, ctx, ffmpeg, path, "0:a:0")
 	t.Logf("AAC decoded source frames=%d samples=%d firstPTS=%.6f firstSamples=%d; delivered frames=%d samples=%d firstPTS=%.6f firstSamples=%d", len(expected), copiedDecodedSampleTotal(expected), expected[0].time, expected[0].samples, len(actual), copiedDecodedSampleTotal(actual), actual[0].time, actual[0].samples)
+	rate, err := strconv.Atoi(probe.Streams[0].SampleRate) // Validated source probe, retained by the packet oracle.
+	if err != nil {
+		t.Fatal(err)
+	}
+	rawFrames := len(expected)
+	expected, err = audibleCopiedDecodedSource(expected, probe.Streams[0].Padding, rate)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(expected) != rawFrames {
+		t.Logf("source decoder emitted its full declared primer; excluded %d measured samples; audible frames=%d samples=%d", probe.Streams[0].Padding, len(expected), copiedDecodedSampleTotal(expected))
+	}
 	assertCopiedFrameCount(t, "audio", expected, actual)
 	samplesExpected, samplesActual := 0, 0
 	var differing []int
@@ -127,7 +139,7 @@ func assertCopiedAudioDecode(t *testing.T, ctx context.Context, ffmpeg, source, 
 	if samplesExpected != samplesActual {
 		t.Fatalf("AAC decoded samples source=%d delivered=%d", samplesExpected, samplesActual)
 	}
-	t.Logf("AAC PCM hash differences: count=%d indices=%v (source fully skipped priming packet excluded by HLS)", len(differing), differing)
+	t.Logf("source-versus-HLS AAC PCM hash differences (diagnostic, no equality claim): count=%d indices=%v", len(differing), differing)
 	t.Logf("AAC decoded samples=%d duration=%.6f seconds", samplesActual, float64(samplesActual)/44100)
 	t.Logf("0:a:0: %d decoded frames; shared initial mux shift %.6f seconds", len(actual), clock)
 }
