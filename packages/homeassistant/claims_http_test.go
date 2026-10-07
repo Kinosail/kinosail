@@ -46,31 +46,26 @@ func readClaimReply(t *testing.T, got *httptest.ResponseRecorder) claimedHTTPRep
 
 const claimedPlayerJSON = `{"name":"Fictional web tab","state":"paused","position":1,"duration":12,"volume":0.5}`
 
+func requireClaimHTTPStatus(t *testing.T, got *httptest.ResponseRecorder, want int, failure string) {
+	t.Helper()
+	if got.Code != want {
+		t.Fatalf("%s: HTTP %d, want %d", failure, got.Code, want)
+	}
+}
+
 func TestRegisteredClaimRequiresDocumentOwnershipBeforeStateAndCommandDrain(t *testing.T) {
 	state, _, call := claimedHTTPTest(t)
 	claim := readClaimReply(t, call(http.MethodPost, "/api/v1/home-assistant/players/claims", `{"id":"fixture-tab"}`))
 	path := "/api/v1/home-assistant/players/" + claim.ID
-	if got := call(http.MethodPut, path, claimedPlayerJSON, claim.Claim); got.Code != http.StatusOK {
-		t.Fatalf("owned state = %d", got.Code)
-	}
-	if got := call(http.MethodPost, path+"/commands", `{"command":"seek","position":4}`); got.Code != http.StatusAccepted {
-		t.Fatalf("queue harmless seek = %d", got.Code)
-	}
+	requireClaimHTTPStatus(t, call(http.MethodPut, path, claimedPlayerJSON, claim.Claim), http.StatusOK, "owned state")
+	requireClaimHTTPStatus(t, call(http.MethodPost, path+"/commands", `{"command":"seek","position":4}`), http.StatusAccepted, "queue harmless seek")
 	for _, headers := range [][]string{nil, {"wrong_claim_000000000000000000"}, {claim.Claim, claim.Claim}, {strings.Repeat("a", 65)}} {
-		if got := call(http.MethodPut, path, strings.Replace(claimedPlayerJSON, `"position":1`, `"position":9`, 1), headers...); got.Code != http.StatusForbidden {
-			t.Fatalf("unowned state = %d", got.Code)
-		}
+		requireClaimHTTPStatus(t, call(http.MethodPut, path, strings.Replace(claimedPlayerJSON, `"position":1`, `"position":9`, 1), headers...), http.StatusForbidden, "unowned state")
 	}
 	state.profile.ID = "other-profile"
-	if got := call(http.MethodPost, "/api/v1/home-assistant/players/claims", `{"id":"fixture-tab"}`); got.Code != http.StatusForbidden {
-		t.Fatalf("other profile claim = %d", got.Code)
-	}
-	if got := call(http.MethodPut, path, claimedPlayerJSON, claim.Claim); got.Code != http.StatusForbidden {
-		t.Fatalf("other profile state = %d", got.Code)
-	}
-	if got := call(http.MethodPost, path+"/release", `{}`, claim.Claim); got.Code != http.StatusForbidden {
-		t.Fatalf("other profile release = %d", got.Code)
-	}
+	requireClaimHTTPStatus(t, call(http.MethodPost, "/api/v1/home-assistant/players/claims", `{"id":"fixture-tab"}`), http.StatusForbidden, "other profile claim")
+	requireClaimHTTPStatus(t, call(http.MethodPut, path, claimedPlayerJSON, claim.Claim), http.StatusForbidden, "other profile state")
+	requireClaimHTTPStatus(t, call(http.MethodPost, path+"/release", `{}`, claim.Claim), http.StatusForbidden, "other profile release")
 	state.profile.ID = "owner"
 	if got := call(http.MethodGet, "/api/v1/home-assistant/players", ""); got.Code != http.StatusOK || !strings.Contains(got.Body.String(), `"position":1`) || strings.Contains(got.Body.String(), `"position":9`) {
 		t.Fatal("rejected state altered the published player")
@@ -91,9 +86,7 @@ func TestRegisteredClaimConflictCannotRefreshAndStaleReleaseCannotDeleteNewOwner
 	if got := call(http.MethodPost, "/api/v1/home-assistant/players/claims", `{"id":"fixture-tab"}`); got.Code != http.StatusConflict || got.Header().Get("Retry-After") != "10" {
 		t.Fatalf("occupied candidate must report remaining lease, status=%d retry=%q", got.Code, got.Header().Get("Retry-After"))
 	}
-	if got := call(http.MethodPut, path, claimedPlayerJSON); got.Code != http.StatusForbidden {
-		t.Fatalf("missing token = %d", got.Code)
-	}
+	requireClaimHTTPStatus(t, call(http.MethodPut, path, claimedPlayerJSON), http.StatusForbidden, "missing token")
 	state.now = state.now.Add(11 * time.Second)
 	second := readClaimReply(t, call(http.MethodPost, "/api/v1/home-assistant/players/claims", `{"id":"fixture-tab"}`))
 	if second.ID != first.ID || second.Claim == first.Claim {
@@ -108,12 +101,8 @@ func TestRegisteredClaimConflictCannotRefreshAndStaleReleaseCannotDeleteNewOwner
 			t.Fatalf("stale %s = %d", operation, got.Code)
 		}
 	}
-	if got := call(http.MethodPut, path, claimedPlayerJSON, second.Claim); got.Code != http.StatusOK {
-		t.Fatal("stale release deleted the newer owner")
-	}
-	if got := call(http.MethodPost, path+"/release", `{}`, second.Claim); got.Code != http.StatusNoContent {
-		t.Fatalf("owned pagehide release = %d", got.Code)
-	}
+	requireClaimHTTPStatus(t, call(http.MethodPut, path, claimedPlayerJSON, second.Claim), http.StatusOK, "stale release deleted the newer owner")
+	requireClaimHTTPStatus(t, call(http.MethodPost, path+"/release", `{}`, second.Claim), http.StatusNoContent, "owned pagehide release")
 	third := readClaimReply(t, call(http.MethodPost, "/api/v1/home-assistant/players/claims", `{"id":"fixture-tab"}`))
 	if third.ID != first.ID || third.Claim == second.Claim {
 		t.Fatal("released reload changed target or reused ownership")
@@ -122,9 +111,7 @@ func TestRegisteredClaimConflictCannotRefreshAndStaleReleaseCannotDeleteNewOwner
 
 func TestRegisteredClaimsShareNativeCapacityWithoutPublishingEmptyReservations(t *testing.T) {
 	state, _, call := claimedHTTPTest(t)
-	if got := call(http.MethodPut, "/api/v1/home-assistant/players/native-fixture", claimedPlayerJSON); got.Code != http.StatusOK {
-		t.Fatal("unchanged native registration failed")
-	}
+	requireClaimHTTPStatus(t, call(http.MethodPut, "/api/v1/home-assistant/players/native-fixture", claimedPlayerJSON), http.StatusOK, "unchanged native registration")
 	var first claimedHTTPReply
 	for index := 0; index < 63; index++ {
 		claim := readClaimReply(t, call(http.MethodPost, "/api/v1/home-assistant/players/claims", fmt.Sprintf(`{"id":"fixture-%d"}`, index)))
@@ -138,17 +125,11 @@ func TestRegisteredClaimsShareNativeCapacityWithoutPublishingEmptyReservations(t
 	if got := call(http.MethodGet, "/api/v1/home-assistant/players", ""); got.Code != http.StatusOK || strings.Contains(got.Body.String(), `"id":"fixture-`) || !strings.Contains(got.Body.String(), `"id":"native-fixture"`) {
 		t.Fatal("empty reservation became a player target")
 	}
-	if got := call(http.MethodPost, "/api/v1/home-assistant/players/"+first.ID+"/commands", `{"command":"pause"}`); got.Code != http.StatusNotFound {
-		t.Fatalf("unpublished target command = %d", got.Code)
-	}
-	if got := call(http.MethodPost, "/api/v1/home-assistant/players/claims", `{"id":"fixture-0"}`); got.Code != http.StatusConflict {
-		t.Fatal("unpublished command rejection discarded reservation")
-	}
+	requireClaimHTTPStatus(t, call(http.MethodPost, "/api/v1/home-assistant/players/"+first.ID+"/commands", `{"command":"pause"}`), http.StatusNotFound, "unpublished target command")
+	requireClaimHTTPStatus(t, call(http.MethodPost, "/api/v1/home-assistant/players/claims", `{"id":"fixture-0"}`), http.StatusConflict, "unpublished command rejection discarded reservation")
 	state.now = state.now.Add(31 * time.Second)
 	readClaimReply(t, call(http.MethodPost, "/api/v1/home-assistant/players/claims", `{"id":"after-expiry"}`))
-	if got := call(http.MethodPut, "/api/v1/home-assistant/players/"+first.ID, claimedPlayerJSON, first.Claim); got.Code != http.StatusForbidden {
-		t.Fatal("stale ownership recreated a tokenless native target")
-	}
+	requireClaimHTTPStatus(t, call(http.MethodPut, "/api/v1/home-assistant/players/"+first.ID, claimedPlayerJSON, first.Claim), http.StatusForbidden, "stale ownership recreated a tokenless native target")
 }
 
 func TestRegisteredClaimsKeepStrictNativeAndClaimContracts(t *testing.T) {

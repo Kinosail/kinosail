@@ -10,6 +10,20 @@ import (
 	"testing"
 )
 
+func requireClaimDiagnosticFields(t *testing.T, output *bytes.Buffer, required map[string]any) map[string]any {
+	t.Helper()
+	var entry map[string]any
+	if json.Unmarshal(bytes.TrimSpace(output.Bytes()), &entry) != nil {
+		t.Fatal("rejection diagnostic is not one JSON object")
+	}
+	for key, want := range required {
+		if entry[key] != want {
+			t.Fatalf("rejection diagnostic has an unexpected %s field", key)
+		}
+	}
+	return entry
+}
+
 // Isolated log capture protects secret exclusion and rejection correlation that
 // browser evidence cannot inspect. State/command effects use registered routes.
 func TestRegisteredClaimDiagnosticsAreBoundedAndNeverContainOwnership(t *testing.T) {
@@ -33,10 +47,7 @@ func TestRegisteredClaimDiagnosticsAreBoundedAndNeverContainOwnership(t *testing
 	if got.Code != http.StatusForbidden {
 		t.Fatalf("ownership rejection = %d", got.Code)
 	}
-	var entry map[string]any
-	if json.Unmarshal(bytes.TrimSpace(output.Bytes()), &entry) != nil || entry["level"] != "WARN" || entry["operation"] != "state" || entry["failure"] != "ownership" || entry["request_id"] != "safe-r18-request" || entry["target_id"] != "diagnostic-tab" {
-		t.Fatal("ownership failure lacks bounded operation/correlation diagnostics")
-	}
+	requireClaimDiagnosticFields(t, &output, map[string]any{"level": "WARN", "operation": "state", "failure": "ownership", "request_id": "safe-r18-request", "target_id": "diagnostic-tab"})
 	for _, secret := range []string{claim.Claim, "wrong_document_secret", "secret-cookie", "secret-query", "Fictional web tab", "position", "?private"} {
 		if strings.Contains(output.String(), secret) {
 			t.Fatal("diagnostic included private state or ownership")
@@ -46,9 +57,7 @@ func TestRegisteredClaimDiagnosticsAreBoundedAndNeverContainOwnership(t *testing
 	if got := call(http.MethodPost, "/api/v1/home-assistant/players/claims", `{"id":"diagnostic-tab"}`); got.Code != http.StatusConflict {
 		t.Fatalf("live conflict = %d", got.Code)
 	}
-	if json.Unmarshal(bytes.TrimSpace(output.Bytes()), &entry) != nil || entry["level"] != "DEBUG" || entry["failure"] != "occupied" {
-		t.Fatal("routine lease conflict should be quiet at the default log level")
-	}
+	requireClaimDiagnosticFields(t, &output, map[string]any{"level": "DEBUG", "failure": "occupied"})
 }
 
 func TestRegisteredClaimDisableDiagnosticIsBoundedAndQuiet(t *testing.T) {
@@ -67,10 +76,7 @@ func TestRegisteredClaimDisableDiagnosticIsBoundedAndQuiet(t *testing.T) {
 	if got := call(http.MethodPost, "/api/v1/home-assistant/players/claims?private=secret-query", `{"id":"disabled-diagnostic"}`); got.Code != http.StatusNotFound {
 		t.Fatalf("disabled admission rejection: HTTP %d", got.Code)
 	}
-	var entry map[string]any
-	if json.Unmarshal(bytes.TrimSpace(output.Bytes()), &entry) != nil || entry["level"] != "DEBUG" || entry["failure"] != "disabled" || entry["operation"] != "claim" || entry["status"] != float64(http.StatusNotFound) || entry["target_id"] != "disabled-diagnostic" {
-		t.Fatal("disabled admission lacks bounded quiet diagnostics")
-	}
+	entry := requireClaimDiagnosticFields(t, &output, map[string]any{"level": "DEBUG", "failure": "disabled", "operation": "claim", "status": float64(http.StatusNotFound), "target_id": "disabled-diagnostic"})
 	for key := range entry {
 		switch key {
 		case "time", "level", "msg", "operation", "failure", "status", "target_id":

@@ -9,8 +9,10 @@ import (
 	"testing"
 )
 
-const claimCSRFPath = "/api/v1/home-assistant/players/fixture-csrf"
-const claimCSRFState = `{"name":"Fictional browser","state":"paused","position":1,"duration":12,"volume":0.5}`
+const (
+	claimCSRFPath  = "/api/v1/home-assistant/players/fixture-csrf"
+	claimCSRFState = `{"name":"Fictional browser","state":"paused","position":1,"duration":12,"volume":0.5}`
+)
 
 type claimCSRFClient struct {
 	handler http.Handler

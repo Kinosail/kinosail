@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/MikeO7/kinosail/packages/httpguard"
 )
@@ -40,10 +41,10 @@ func playerFailure(writer http.ResponseWriter, request *http.Request, operation,
 	}
 	fields := []any{"operation", operation, "failure", failure, "status", status}
 	if playerID.MatchString(id) {
-		fields = append(fields, "target_id", id)
+		fields = append(fields, "target_id", strings.ReplaceAll(strings.ReplaceAll(id, "\n", ""), "\r", ""))
 	}
 	if requestID := writer.Header().Get("X-Request-ID"); playerID.MatchString(requestID) {
-		fields = append(fields, "request_id", requestID)
+		fields = append(fields, "request_id", strings.ReplaceAll(strings.ReplaceAll(requestID, "\n", ""), "\r", ""))
 	}
 	slog.Log(request.Context(), level, "Home Assistant player request rejected", fields...)
 	apiError(writer, err, status)
