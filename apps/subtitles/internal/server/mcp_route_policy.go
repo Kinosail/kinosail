@@ -39,6 +39,7 @@ var mcpManageRoutes = routeSet(
 )
 
 var mcpBlockedRoutes = routeSet(
+	"POST /api/v1/home-assistant/players/claims", "POST /api/v1/home-assistant/players/{id}/release",
 	"PUT /api/v1/configuration/{key}", "DELETE /api/v1/configuration/{key}",
 	"GET /api/v1/activity",
 	"POST /api/v1/subtitles/cleanup", "POST /api/v1/subtitles/cleanup/preview",
