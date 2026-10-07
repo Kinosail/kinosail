@@ -100,6 +100,38 @@ class ProofCaptureTests(unittest.TestCase):
             self.assertFalse(phase["reportAdmitted"])
 
 
+class DeclaredContextAdmissionTests(unittest.TestCase):
+    def collection(self):
+        contexts = {
+            'cold native Back restores later Movie cards at 390px': 'native Back without browser cache',
+            'cold native Back restores later Movie cards at 1440px': 'native Back without browser cache',
+            "live query uses current URL rather than the document's initial browse key": 'live HTMX search then cold playback Back',
+            'native BFCache preserves loaded Movie DOM without repeated continuation': 'observed native browser cache',
+        }
+        rows = [{"file": file, "title": title, "fullTitle": contexts[title] + " > " + title if title in contexts else title}
+                for file, title in suites.SUITES['all']]
+        return {"schemaVersion": 3, "project": "chromium", "suite": "all", "status": "passed", "collected": rows, "cases": [], "errors": []}
+
+    def test_exact_declared_nine_case_collection_is_admitted(self):
+        value = self.collection()
+        self.assertEqual(admission.admit(value, True), value)
+        self.assertTrue(admission.complete(value, True))
+        self.assertEqual({row['file'] for row in value['collected']}, {'browse-return.spec.ts', 'browse-return-cold.spec.ts', 'browse-return-bfcache.spec.ts'})
+
+    def test_context_and_collection_ambiguity_reject_before_completion(self):
+        mutations = [lambda v: v['collected'][-1].update(fullTitle=v['collected'][-1]['title']),
+                     lambda v: v['collected'][-1].update(fullTitle='unknown > '+v['collected'][-1]['title']),
+                     lambda v: v['collected'][-1].update(fullTitle='observed native browser cache > extra > '+v['collected'][-1]['title']),
+                     lambda v: v['collected'][-1].update(file='browse-return-cold.spec.ts'),
+                     lambda v: v['collected'].__setitem__(0,v['collected'][-1]),
+                     lambda v: v['collected'].append(v['collected'][-1]),
+                     lambda v: v['collected'].pop(), lambda v: v.update(project='unknown')]
+        for mutate in mutations:
+            value=self.collection(); mutate(value)
+            self.assertIsNone(admission.admit(value, True))
+            self.assertFalse(admission.complete(value, True))
+
+
 class BrowseReturnCallerTests(unittest.TestCase):
     def setUp(self):
         self.owner = load("run-browse-return")

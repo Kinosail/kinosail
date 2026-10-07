@@ -43,6 +43,11 @@ const number = (value: unknown) => typeof value === "number" && Number.isFinite(
 const integer = (value: unknown, low: number, high: number): value is number => typeof value === "number" && Number.isSafeInteger(value) && value >= low && value <= high;
 const basename = (value: string) => value.split(/[\\/]/).at(-1)!;
 const known = (file: string, title: string) => Boolean(titles[file]?.includes(title));
+function fullTitle(file: string, title: string) {
+  const context = file === files[1] ? titles[files[1]].slice(0, 2).includes(title) ? "native Back without browser cache" : title === titles[files[1]][2] ? "live HTMX search then cold playback Back" : null
+    : file === files[2] && title === titles[files[2]][0] ? "observed native browser cache" : null;
+  return context ? context + " > " + title : title;
+}
 type SelectedObservation = { href: string | null; browse: Record<string, string> | null; top: number | null; bottom: number | null };
 
 function query(input: unknown): Record<string, string> | null {
@@ -144,13 +149,13 @@ export default class BrowseReturnProofReporter implements Reporter {
   onBegin(_config: FullConfig, suite: Suite) {
     const tests = suite.allTests();
     const projects = [...new Set(tests.map(test => test.parent.project()?.name))];
-    if (suiteName === "invalid" || tests.length > 22 || projects.length !== 1 || !["chromium", "firefox", "webkit"].includes(projects[0] || "") || tests.some(test => !known(basename(test.location.file), test.title) || test.titlePath().slice(3).join(" > ") !== test.title)) { this.invalid(); return; }
+    if (suiteName === "invalid" || tests.length > 22 || projects.length !== 1 || !["chromium", "firefox", "webkit"].includes(projects[0] || "") || tests.some(test => !known(basename(test.location.file), test.title) || test.titlePath().slice(3).join(" > ") !== fullTitle(basename(test.location.file), test.title))) { this.invalid(); return; }
     this.project = projects[0]!;
     this.collected = tests.map(test => ({ file: basename(test.location.file), title: test.title, fullTitle: test.titlePath().slice(3).join(" > ") }));
   }
   onTestEnd(test: TestCase, result: TestResult) {
     const file = basename(test.location.file);
-    if (test.parent.project()?.name !== this.project || test.titlePath().slice(3).join(" > ") !== test.title || !known(file, test.title) || this.cases.length >= 22 || !integer(result.duration, 0, 60_000) || !integer(result.retry, 0, 3)) { this.invalid(); return; }
+    if (test.parent.project()?.name !== this.project || test.titlePath().slice(3).join(" > ") !== fullTitle(file, test.title) || !known(file, test.title) || this.cases.length >= 22 || !integer(result.duration, 0, 60_000) || !integer(result.retry, 0, 3)) { this.invalid(); return; }
     const attachments: { name: string; bytes: number; sha256: string; observation: ReturnType<typeof observation> }[] = [], names = new Set<string>();
     if (result.attachments.length > 64 || result.errors.length > 16) this.invalid();
     for (const item of result.attachments.slice(0, 64)) {
