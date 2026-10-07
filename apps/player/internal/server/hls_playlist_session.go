@@ -43,6 +43,7 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 	_, cachedErr := os.Stat(path)
 	if cachedErr == nil && filepath.Ext(name) == ".m4s" {
 		if err := manager.prepareSegment(request.Context(), item, recipe, name); err != nil {
+			slog.WarnContext(request.Context(), "HLS segment preparation failed", "diagnostic", "[PLAYBACK-HLS]", "request_id", requestActivityID(request.Context()), "playback_session", requestPlaybackSession(request.Context()), "cached", true, "canceled", request.Context().Err() != nil, "file", localName, "mode", recipe.mode, "error", hlsDiagnostic(err, item.Path, filepath.Join(manager.cache, key)))
 			localizedNotFound(writer, request)
 			return
 		}
