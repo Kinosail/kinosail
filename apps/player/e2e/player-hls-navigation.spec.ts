@@ -11,16 +11,16 @@ async function movingVideo(page: import('@playwright/test').Page, peer: Awaited<
   return video;
 }
 
-for (const destination of ['Library', 'Mark watched']) {
+for (const destination of ['Library', 'Back to Movies', 'Mark watched']) {
   test(`real HLS retry cannot outlive acknowledged ${destination} departure`, {tag: '@smoke'}, async ({page}, info) => {
-    const peer = await hlsNavigationPeer();
+    const peer = await hlsNavigationPeer(destination === 'Back to Movies');
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.name));
     try {
       await movingVideo(page, peer);
       const before = peer.snapshot();
-      const click = destination === 'Library' ? page.getByRole('link', {name: destination, exact: true})
-        : page.getByRole('button', {name: destination, exact: true});
+      const click = destination === 'Mark watched' ? page.getByRole('button', {name: destination, exact: true})
+        : page.getByRole('link', {name: destination, exact: true});
       await click.click({noWaitAfter: true});
       await expect.poll(() => peer.snapshot().departing).toBe(true);
       peer.releaseRetry();
@@ -38,14 +38,14 @@ for (const destination of ['Library', 'Mark watched']) {
   });
 }
 
-test('pending checkpoint keeps the real HLS owner until acknowledgement', {tag: '@smoke'}, async ({page}, info) => {
-  const peer = await hlsNavigationPeer();
+for (const contextual of [false, true]) test(`pending checkpoint keeps the real HLS owner until ${contextual ? 'contextual Back ' : ''}acknowledgement`, {tag: '@smoke'}, async ({page}, info) => {
+  const peer = await hlsNavigationPeer(contextual);
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.name));
   try {
     await movingVideo(page, peer);
     peer.holdCheckpoint();
-    await page.getByRole('link', {name: 'Library', exact: true}).click({noWaitAfter: true});
+    await page.getByRole('link', {name: contextual ? 'Back to Movies' : 'Library', exact: true}).click({noWaitAfter: true});
     await expect.poll(() => peer.snapshot().waitingProgress).toBeGreaterThan(0);
     expect(peer.snapshot().departing).toBe(false);
     const before = peer.snapshot().requests.filter(row => row.kind.endsWith('.ts')).length;
@@ -56,8 +56,52 @@ test('pending checkpoint keeps the real HLS owner until acknowledgement', {tag: 
     await expect.poll(() => peer.snapshot().departing).toBe(true);
     peer.releaseDestination();
     await expect(page.getByRole('heading', {name: 'Destination'})).toBeVisible();
+    await expect(page).toHaveURL(`${peer.origin}${peer.facts.returnPath}`);
     await info.attach('pending-HLS-owner', {body: JSON.stringify({facts: peer.facts, snapshot: peer.snapshot(), errors}), contentType: 'application/json'});
     expect(errors).toEqual([]);
+  } finally {await peer.close();}
+});
+
+for (const destination of ['ordinary query', 'fragment', 'other origin']) test(`browse checkpoint wait excludes ${destination} destinations`, {tag: '@smoke'}, async ({page}, info) => {
+  const contextual = destination !== 'ordinary query';
+  const peer = await hlsNavigationPeer(contextual);
+  try {
+    await movingVideo(page, peer);
+    peer.holdCheckpoint();
+    const link = page.getByRole('link', {name: contextual ? 'Back to Movies' : 'Library', exact: true});
+    await link.evaluate((anchor: HTMLAnchorElement, destination) => {
+      if (destination === 'ordinary query') anchor.search = '?view=movies';
+      else if (destination === 'fragment') anchor.hash = 'details';
+      else anchor.hostname = 'localhost';
+    }, destination);
+    await link.click({noWaitAfter: true});
+    // Held checkpoints cannot permit departure if this link is wrongly classified as Back.
+    await expect.poll(() => peer.snapshot().departing).toBe(true);
+    await info.attach('excluded-browse-checkpoint', {body: JSON.stringify({destination, facts: peer.facts,
+      snapshot: peer.snapshot(), boundary: 'real HLS and HTTP; no Go storage'}), contentType: 'application/json'});
+  } finally {await peer.close();}
+});
+
+test('contextual Back retires HLS after an already acknowledged paused position', {tag: '@smoke'}, async ({page}, info) => {
+  const peer = await hlsNavigationPeer(true);
+  try {
+    const media = await movingVideo(page, peer);
+    const saved = page.waitForResponse(response => new URL(response.url()).pathname === '/progress/movie' && response.request().method() === 'POST');
+    await media.evaluate((video: HTMLVideoElement) => video.pause());
+    await (await saved).finished();
+    const before = peer.snapshot();
+    await page.getByRole('link', {name: 'Back to Movies', exact: true}).click({noWaitAfter: true});
+    await expect.poll(() => peer.snapshot().departing).toBe(true);
+    peer.releaseRetry();
+    await page.waitForTimeout(1500);
+    const pending = peer.snapshot();
+    peer.releaseDestination();
+    await expect(page.getByRole('heading', {name: 'Destination'})).toBeVisible();
+    await expect(page).toHaveURL(`${peer.origin}${peer.facts.returnPath}`);
+    expect(pending.requests.filter(request => request.afterDestination && request.kind.endsWith('.ts'))).toEqual([]);
+    expect(pending.requests.filter(request => request.kind === 'progress').length).toBe(before.requests.filter(request => request.kind === 'progress').length);
+    await info.attach('acknowledged-contextual-HLS-exit', {body: JSON.stringify({facts: peer.facts, before, pending,
+      boundary: 'real HLS and checkpoint HTTP acknowledgement; no Go storage'}), contentType: 'application/json'});
   } finally {await peer.close();}
 });
 
