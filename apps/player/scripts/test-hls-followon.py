@@ -22,15 +22,16 @@ from hls_followon_controls import controls
 from hls_nonkey_diagnostics import nonkey_evidence
 from hls_nonkey_renderer import public_renderer
 from hls_nonkey_installation import install_counterfactual, finish_counterfactual
+from hls_nonkey_timing import finish_playlist_proof
 
 ROOT = Path(__file__).resolve().parents[3]
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--suite', choices=['all', 'audio', 'hevc'], default='all')
-parser.add_argument('--mux-diagnostic', choices=['baseline', 'negative-edit'],
+parser.add_argument('--mux-diagnostic', choices=['baseline', 'negative-edit', 'negative-edit-paced'],
                     default=os.environ.get('KINOSAIL_HLS_MUX_DIAGNOSTIC', 'baseline'))
 selected = parser.parse_args()
 suite, mux_diagnostic = selected.suite, selected.mux_diagnostic
-if (mux_diagnostic not in ['baseline', 'negative-edit'] or mux_diagnostic != 'baseline'
+if (mux_diagnostic not in ['baseline', 'negative-edit', 'negative-edit-paced'] or mux_diagnostic != 'baseline'
         and (suite != 'all' or os.environ.get('KINOSAIL_HLS_RENDERER') != '1'
              or os.environ.get('GITHUB_ACTIONS') != 'true')):
     parser.error('mux diagnostic requires the bounded hosted full renderer proof')
@@ -144,8 +145,8 @@ def journey(name, original, metadata, offset=0, cold=False, one_shot=False, audi
         KINOSAIL_MEDIA_DIR=str(media), KINOSAIL_CACHE_DIR=str(directory / 'cache'),
         KINOSAIL_BACKUP_DIR=str(directory / 'backups'), KINOSAIL_BACKUP_KEY='synthetic-followon-key')
     installation = None
-    if offset and mux_diagnostic == 'negative-edit':
-        env['KINOSAIL_FFMPEG'], installation = install_counterfactual(directory, source, metadata, offset, case)
+    if offset and mux_diagnostic != 'baseline':
+        env['KINOSAIL_FFMPEG'], installation = install_counterfactual(directory, source, metadata, offset, case, mux_diagnostic)
     api = PublicServer(url)
     resources = {'samples': 0, 'peakOwnedFFmpeg': 0, 'samplingErrors': 0}
     case['resources'] = resources
@@ -187,7 +188,7 @@ def journey(name, original, metadata, offset=0, cold=False, one_shot=False, audi
             else:
                 _, prepared_init = prepare_scene(api, prepare, hls, cache, item_id, server, source, case,
                     encoder_count, check, bounded_bytes, cold)
-            measure(api, hls, directory, source, metadata, offset, prepared_init, case)
+            measure(api, hls, directory, source, metadata, offset, prepared_init, case, server)
             if offset:
                 nonkey_evidence(source, directory / 'public.mp4', directory / 'nonkey-init.mp4',
                                directory, metadata, offset, case)
@@ -198,6 +199,7 @@ def journey(name, original, metadata, offset=0, cold=False, one_shot=False, audi
                                     browser_reference, direct_resume_id, direct_resume_source)
                     if case['publicRenderer']['result'] != 'passed':
                         case['failures'].append('public_renderer')
+                finish_playlist_proof(api, directory, server, source, case, encoder_count)
             if installation:
                 finish_counterfactual(installation, case)
             case['result'] = 'passed' if not case['failures'] else 'failed'
@@ -245,8 +247,11 @@ try:
         regular_metadata = reprobe_source(regular, regular_metadata)
         journey('remux-regular-cold', regular, regular_metadata, cold=True)
         if suite == 'all':
-            mp4, mp4_metadata = convert(regular, regular_metadata, 'regular-copy')
-            journey('nonkey-mkv', regular, regular_metadata, 12.5, one_shot=True)
+            marked, marked_metadata = fixture(RUN, 'nonkey-marked', 48,
+                ','.join(str(v) for v in range(0, 32, 2)), frames=768, audio_marked=True)
+            marked_metadata = reprobe_source(marked, marked_metadata)
+            mp4, mp4_metadata = convert(marked, marked_metadata, 'marked-copy')
+            journey('nonkey-mkv', marked, marked_metadata, 12.5, one_shot=True)
             journey('nonkey-mp4', mp4, mp4_metadata, 12.5, one_shot=True)
         ac3, ac3_metadata = convert(regular, regular_metadata, 'regular-ac3', ac3=True)
         journey('audio-regular-prepared', ac3, ac3_metadata, audio_conversion=True)
@@ -274,6 +279,7 @@ finally:
          'hls_nonkey_fragment.py', 'test_hls_nonkey_fragment.py',
          'hls_nonkey_renderer.py', 'test_hls_nonkey_renderer.py',
          'hls_nonkey_direct.py', 'test_hls_nonkey_direct.py',
+         'hls_nonkey_timing.py', 'test_hls_nonkey_timing.py',
          'hls_nonkey_process.py', 'test_hls_nonkey_process.py',
          'hls_nonkey_installation.py', 'test_hls_nonkey_installation.py',
          'hls_timeline_packets.py', 'hls_timeline_fixture.py', 'hls_timeline_preparation.py']]

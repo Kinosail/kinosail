@@ -7,6 +7,7 @@ import subprocess
 import time
 from hls_timeline_packets import manifest_facts, fragment_packets, fragment_audio
 from hls_followon_frames import decode_frames, audio_sequence
+from hls_nonkey_timing import physical_path, playlist_observation, marked_audio_proof
 
 
 def check(condition, failure):
@@ -77,14 +78,20 @@ def prepare_once(api, prepare, hls, log_path, server, source, case):
     raise RuntimeError('one_shot_preparation_not_joined')
 
 
-def measure(api, hls, directory, source, metadata, offset, prepared_init, case):
+def measure(api, hls, directory, source, metadata, offset, prepared_init, case, server=None):
     failure = case['failures']
     status, master, _ = api.http(hls)
     check(status == 200, 'master_http_' + str(status))
     renditions = re.findall(r'^[1-9][0-9]{2,3}p/index\.m3u8$', master.decode(), re.M)
     check(len(renditions) == 1, 'one_copied_video_rendition')
     base = hls.removesuffix('index.m3u8') + renditions[0].removesuffix('index.m3u8')
-    status, variant, _ = api.http(base + 'index.m3u8')
+    uri = base + 'index.m3u8'
+    if offset:
+        observed, status, variant = playlist_observation(api, uri, physical_path(directory, uri),
+                                                        lambda: encoder_count(server, source))
+        case['playlistObservations'] = {'variantURI': uri, 'initial': observed}
+    else:
+        status, variant, _ = api.http(uri)
     check(status == 200, 'variant_http_' + str(status))
     facts, segments = manifest_facts(variant)
     duration = case['expectedTimelineSeconds']
@@ -151,6 +158,8 @@ def measure(api, hls, directory, source, metadata, offset, prepared_init, case):
     case['reference'] = reference
     case['presentationQualified'] = actual['presentationQualified'] and reference['presentationQualified']
     case['timestampedFrameEvidence'] = [{'pts': point, 'md5': digest} for point, digest in raw]
+    if offset and metadata.get('audioTimeMarked'):
+        marked_audio_proof(source, public, metadata, offset, case)
     if not case['presentationQualified']:
         failure.append('unqualified_preroll_mapping')
         return  # Keep raw facts; an ambiguous window is not a product-failure certificate.

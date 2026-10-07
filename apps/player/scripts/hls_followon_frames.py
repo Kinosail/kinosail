@@ -96,7 +96,7 @@ def audio_sequence(path, duration, offset=0, centers=None):
         raise RuntimeError('audio_nonfinite')
     windows = []
     for second in centers if centers is not None else range(2, math.floor(duration), 4):
-        center = second * 16000
+        center = round(second * 16000)
         values = samples[center - 4000:center + 4000]
         if len(values) != 8000:
             windows.append({'sourceTimeSeconds': second + offset, 'available': False})

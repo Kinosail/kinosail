@@ -323,3 +323,39 @@ Before implementing this evidence verifier, test these failures in isolation:
 the public success journey cannot inject a forged response receipt. Keep all
 raw non-key failures and existing scanner, packet and quality guards unchanged.
 Run media and browser work only on the existing bounded hosted workflow.
+
+## Paired playlist and marked AAC proof, before implementation
+
+Run `37561397308` proves that ordinary Direct seeking also has unequal decoded
+and callback counts. Keep both equality failures and all callbacks unchanged.
+MKV's identical media acquired a different final advertised cut. The initial
+physical manifest and worker state were not retained; do not certify that cut.
+
+Add a closed manual `negative-edit-paced` option. It applies the existing
+exact-argv transform plus fixed input `-readrate 2` only to the matched initial
+12.500-second copied H264 invocation. All other commands remain unchanged.
+Retain real exec, PID/cancellation ownership, audit and source bounds. Pacing
+is a disposable diagnostic input, never a production option or repair.
+
+Bracket the first public variant GET with bounded physical-manifest and worker
+snapshots. Retain validated playlist bytes, cuts, ENDLIST, target duration and
+cache generation identity. Reject symlinks, special files, oversized or foreign
+URI data. Mark changed or racing snapshots unqualified. After three stable
+zero-worker/ENDLIST samples, repeat the same public GET and check every delivered
+init/fragment hash against the first measurement. Do not reconstruct missing
+state or adjust either playlist. TARGETDURATION must cover rounded EXTINF cuts
+as specified in RFC 8216 section 4.3.3.1.
+
+Generate a separate non-key fixture with AAC frequency changes every four
+seconds; preserve the regular controls and copied video/audio identities.
+Decode source and delivered audio independently. Compare dense half-second
+windows at 50 ms intervals around source 16/20/24/28, plus start and tail windows,
+using the existing 10 Hz content limit. Retain sample counts and every window.
+This is offline content/timing evidence; browser/native audible proof and
+per-track priming certification remain separate. Sample floating-point centers
+by rounded sample index; test this important previously unsupported input first.
+
+Before implementing the new integrity helper, isolate failures that successful
+public media cannot inject: invalid/foreign playlist bytes, malformed target
+duration, symlink/FIFO/oversized/racing snapshots, missing audio windows, silence
+and shifted content. Preserve old scanner, negative-frame and packet assertions.

@@ -91,12 +91,12 @@ class CampaignProofTests(unittest.TestCase):
     def test_optional_nonkey_mux_diagnostic_is_closed_manual_and_keeps_default_gates(self):
         source = LAYOUT.read_text()
         self.assertIn('hls_mux_diagnostic:', source)
-        self.assertIn('options: [baseline, negative-edit]', source)
+        self.assertIn('options: [baseline, negative-edit, negative-edit-paced]', source)
         self.assertIn('default: baseline', source)
         campaign = source.split('  campaign-proof:\n')[1].split('  hls-followon:\n')[0]
         self.assertIn('if [ "$HLS_MUX_DIAGNOSTIC" != baseline ]; then exit 2; fi', campaign)
         proof = source.split('  hls-followon:\n')[1]
-        self.assertIn('baseline|negative-edit) ;;', proof)
+        self.assertIn('baseline|negative-edit|negative-edit-paced) ;;', proof)
         self.assertLess(proof.index('Validate fixed HLS mux diagnostic'), proof.index('actions/setup-go'))
         self.assertIn('test_hls_nonkey_installation.py', proof)
         self.assertIn('KINOSAIL_HLS_MUX_DIAGNOSTIC: ${{ inputs.hls_mux_diagnostic ||', proof)

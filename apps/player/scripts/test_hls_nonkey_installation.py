@@ -25,6 +25,19 @@ def arguments():
 
 
 class InstallationIntegrity(unittest.TestCase):
+    def test_paced_diagnostic_changes_only_matched_initial_input_at_fixed_rate(self):
+        original = arguments()
+        base, _ = rewrite_initial_arguments(original, SOURCE, CACHE)
+        expected = base.copy()
+        expected[expected.index('-ss'):expected.index('-ss')] = ['-readrate', '2']
+        self.assertEqual(rewrite_initial_arguments(original, SOURCE, CACHE, 'negative-edit-paced'),
+                         (expected, True))
+        unrelated = original.copy(); unrelated[unrelated.index('-ss') + 1] = '12.5'
+        self.assertEqual(rewrite_initial_arguments(unrelated, SOURCE, CACHE, 'negative-edit-paced'),
+                         (unrelated, False))
+        with self.assertRaises(RuntimeError):
+            rewrite_initial_arguments(original, SOURCE, CACHE, 'foreign')
+
     def assert_bounded_rejection(self, path, operation):
         code = ('import sys\nfrom hls_nonkey_installation import bounded_state,append_private\n'
             'try:\n ' + operation + '\nexcept RuntimeError:\n sys.exit(0)\nsys.exit(1)\n')

@@ -11,7 +11,9 @@ import sys
 import time
 
 
-def rewrite_initial_arguments(arguments, source, cache):
+def rewrite_initial_arguments(arguments, source, cache, mode='negative-edit'):
+    if mode not in ['negative-edit', 'negative-edit-paced']:
+        raise RuntimeError('installation_mode')
     unchanged = (arguments, False)
     if (not isinstance(arguments, list) or not arguments or len(arguments) > 256
             or not all(isinstance(v, str) for v in arguments)
@@ -36,6 +38,8 @@ def rewrite_initial_arguments(arguments, source, cache):
     effective = expected.copy()
     effective[effective.index('-hls_segment_options') + 1] = 'movflags=+skip_sidx:use_editlist=1'
     effective[effective.index('-f'):effective.index('-f')] = ['-avoid_negative_ts', 'disabled']
+    if mode == 'negative-edit-paced':
+        effective[effective.index('-ss'):effective.index('-ss')] = ['-readrate', '2']
     return effective, True
 
 
@@ -97,7 +101,7 @@ def append_private(path, value):
 def wrapper(arguments, config):
     if bounded_state(config['executable'], 256 * 1024 * 1024) != config['executableState']:
         raise RuntimeError('installation_executable_changed')
-    effective, applied = rewrite_initial_arguments(arguments, config['source'], config['cache'])
+    effective, applied = rewrite_initial_arguments(arguments, config['source'], config['cache'], config.get('mode', 'negative-edit'))
     if applied and bounded_state(config['source'], 8 * 1024 * 1024) != config['sourceState']:
         raise RuntimeError('installation_source_changed')
     if len(arguments) > 256 or sum(len(v.encode()) for v in arguments) > 65536:
@@ -107,7 +111,9 @@ def wrapper(arguments, config):
     os.execv(config['executable'], [config['executable'], *effective])
 
 
-def install_counterfactual(directory, source, metadata, offset, case):
+def install_counterfactual(directory, source, metadata, offset, case, mode='negative-edit'):
+    if mode not in ['negative-edit', 'negative-edit-paced']:
+        raise RuntimeError('installation_mode')
     videos = [v for v in metadata['streamOrigins']['streams'] if v.get('codec_type') == 'video']
     if offset != 12.5 or len(videos) != 1 or videos[0].get('codec_name') != 'h264':
         raise RuntimeError('installation_fixture_scope')
@@ -117,14 +123,14 @@ def install_counterfactual(directory, source, metadata, offset, case):
     executable = str(Path(found).resolve())
     config = {'executable': executable, 'executableState': bounded_state(executable, 256 * 1024 * 1024),
         'source': str(source), 'sourceState': bounded_state(source, 8 * 1024 * 1024),
-        'cache': str(directory / 'cache'), 'audit': str(directory / 'installation-private.jsonl')}
+        'cache': str(directory / 'cache'), 'audit': str(directory / 'installation-private.jsonl'), 'mode': mode}
     path = directory / 'counterfactual-ffmpeg'
     code = ('#!' + sys.executable + '\nimport sys\nsys.path.insert(0, ' + repr(str(Path(__file__).parent))
         + ')\nfrom hls_nonkey_installation import wrapper\nwrapper(sys.argv[1:], ' + repr(config) + ')\n')
     with os.fdopen(os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o700), 'w') as file:
         file.write(code)
     case['counterfactualInstallation'] = {'boundary': 'Fresh disposable installation; mux counterfactual only; no production acceptance',
-        'mode': 'negative-edit', 'wrapperSHA256': bounded_state(path, 16384)['sha256'],
+        'mode': mode, 'wrapperSHA256': bounded_state(path, 16384)['sha256'],
         'executableSHA256': config['executableState']['sha256'], 'sourceSnapshot': config['sourceState']}
     return str(path), config
 
@@ -137,7 +143,7 @@ def finish_counterfactual(config, case):
             and type(v['applied']) is bool for v in rows)):
         raise RuntimeError('installation_audit_shape')
     changes = sum(v['applied'] for v in rows)
-    arguments_valid = all(rewrite_initial_arguments(v['original'], config['source'], config['cache'])
+    arguments_valid = all(rewrite_initial_arguments(v['original'], config['source'], config['cache'], config.get('mode', 'negative-edit'))
                           == (v['effective'], v['applied']) for v in rows)
     case['counterfactualInstallation'].update(privateInvocationSHA256=state['sha256'],
         invocations=len(rows), transformations=changes, allUnrelatedInvocationsUnchanged=arguments_valid)
