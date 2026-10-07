@@ -346,6 +346,8 @@ jobs:
         run: python3 -m unittest discover -s apps/player/scripts -p test_hls_nonkey_fragment.py
       - name: Check complete renderer evidence
         run: python3 -m unittest discover -s apps/player/scripts -p test_hls_nonkey_renderer.py
+      - name: Check Direct seek byte-range evidence
+        run: python3 -B -m unittest discover -s apps/player/scripts -p test_hls_nonkey_direct.py
       - name: Check lossless native frame packing
         run: node --test apps/player/e2e/test-hls-native-planes.mjs
       - name: Check owned renderer process boundaries

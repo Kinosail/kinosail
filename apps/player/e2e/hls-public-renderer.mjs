@@ -3,6 +3,7 @@ import {chromium} from '@playwright/test';
 import {createHash} from 'node:crypto';
 import {readFileSync, writeFileSync, renameSync, existsSync} from 'node:fs';
 import {packNative420} from './hls-native-planes.mjs';
+import {observeDirectDelivery} from './hls-direct-delivery.mjs';
 
 const target = process.argv[2];
 const bytes = readFileSync(0);
@@ -10,12 +11,13 @@ if (bytes.length > 4096 || process.argv.length !== 3) throw new Error('renderer_
 const input = JSON.parse(bytes);
 if (!/^http:\/\/localhost:[1-9][0-9]{0,4}$/.test(input.url) ||
     !/^[a-zA-Z0-9_.-]{16,2048}$/.test(input.token) ||
-    ![input.itemID, input.referenceID].every(id => /^[a-f0-9]{16}$/.test(id)) ||
+    ![input.itemID, input.referenceID, input.directResumeID].every(id => /^[a-f0-9]{16}$/.test(id)) ||
     !/^\/hls\/[a-f0-9]{16}\/p\/r-[a-zA-Z0-9-]+\/index\.m3u8$/.test(input.hls)) {
   throw new Error('renderer_input_shape');
 }
 const deadline = Date.now() + 240_000;
 const result = {playbackRate: 1, reference: {}, public: {}};
+result.directResume = {};
 const save = () => writeFileSync(target, `${JSON.stringify(result)}\n`, {mode: 0o600});
 save();
 let browserServer;
@@ -61,6 +63,7 @@ async function capture(id, compatible) {
     unexpectedMediaRequests: 0, failedMediaResponses: 0};
   const successful = new Set();
   const pending = [];
+  if (!compatible) observeDirectDelivery(page, id, network, pending);
   const base = input.hls.replace(/index\.m3u8$/, '');
   page.on('response', response => {
     const path = new URL(response.url()).pathname;
@@ -273,6 +276,8 @@ async function capture(id, compatible) {
 
 try {
   result.reference = await capture(input.referenceID, false);
+  save();
+  result.directResume = await capture(input.directResumeID, false);
   save();
   result.public = await capture(input.itemID, true);
   save();

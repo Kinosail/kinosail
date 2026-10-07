@@ -7,6 +7,7 @@ import re
 from hls_followon_public import check, bounded_bytes
 from hls_timeline_http import sha, source_state
 from hls_nonkey_process import owned_command
+from hls_nonkey_direct import direct_delivery_matches
 
 
 def native_metadata_qualified(values):
@@ -112,17 +113,21 @@ def renderer_process_accepted(process, data):
         and not data.get('failureClass'))
 
 
-def public_renderer(api, item_id, reference_id, metadata, offset, hls, directory, case, root, reference_source):
+def public_renderer(api, item_id, reference_id, metadata, offset, hls, directory, case, root, reference_source,
+                    direct_resume_id, direct_resume_source):
     result = {'boundary': 'Actual disposable public Server/browser; native/iOS/live acceptance separate'}
     case['publicRenderer'] = result
-    check(re.fullmatch('[a-f0-9]{16}', item_id) and re.fullmatch('[a-f0-9]{16}', reference_id),
+    check(all(re.fullmatch('[a-f0-9]{16}', v) for v in [item_id, reference_id, direct_resume_id]),
           'renderer_item_identity')
     state = api.call('/api/v1/items/' + item_id + '/progress', 'PUT', {'seconds': offset})
     check(abs(state['seconds'] - offset) <= 0.000001, 'renderer_saved_resume')
+    direct_state = api.call('/api/v1/items/' + direct_resume_id + '/progress', 'PUT', {'seconds': offset})
+    check(abs(direct_state['seconds'] - offset) <= 0.000001, 'renderer_direct_saved_resume')
+    result['directSavedResumeSeconds'] = direct_state['seconds']
     target = directory / 'browser-private.json'
     command = ['node', str(root / 'apps/player/e2e/hls-public-renderer.mjs'), str(target)]
     private = json.dumps({'url': api.url, 'token': api.token, 'itemID': item_id,
-        'referenceID': reference_id, 'hls': hls})
+        'referenceID': reference_id, 'directResumeID': direct_resume_id, 'hls': hls})
     process = owned_command(command, private.encode(), 260, target.with_name(target.name + '.owner'))
     check(len(process['stdout']) <= 65536 and len(process['stderr']) <= 65536, 'renderer_log_bound')
     log = directory / 'browser-stderr.log'
@@ -136,11 +141,22 @@ def public_renderer(api, item_id, reference_id, metadata, offset, hls, directory
     after = source_state(reference_source)
     unchanged = case['browserReferenceSource']['before'] == after
     case['browserReferenceSource'].update(after=after, sourceUnchanged=unchanged)
+    direct_after = source_state(direct_resume_source)
+    direct_unchanged = case['browserDirectResumeSource']['before'] == direct_after
+    case['browserDirectResumeSource'].update(after=direct_after, sourceUnchanged=direct_unchanged)
+    unchanged = unchanged and direct_unchanged
     if not unchanged:
         case['failures'].append('renderer_reference_mutated')
-    result['runtime'] = {key: data.get(key) for key in ['browserVersion', 'playbackRate', 'reference', 'public']}
+    result['runtime'] = {key: data.get(key) for key in ['browserVersion', 'playbackRate', 'reference', 'public', 'directResume']}
     result.update(renderer_facts(data.get('reference', {}), data.get('public', {}),
                                 metadata['sourceFramePTS'], metadata['sourceTimeOriginSeconds'] + offset))
+    direct_facts = renderer_facts(data.get('reference', {}), data.get('directResume', {}),
+                                 metadata['sourceFramePTS'], metadata['sourceTimeOriginSeconds'] + offset)
+    direct_facts.pop('completeReferenceRows')  # Original full reference remains intact above.
+    direct_facts['actualDirectMediaDelivered'] = direct_unchanged and direct_delivery_matches(
+        data.get('directResume', {}).get('network', {}), bounded_bytes(direct_resume_source, 8 * 1024 * 1024,
+                                                                    'direct_reference_bound'))
+    result['directResumeControl'] = direct_facts
     network = data.get('public', {}).get('network', {})
     result['actualPlannedRecipeDelivered'] = renderer_delivery_matches(network, case['initializationSHA256'],
         case['publicVariant']['segmentCount'], unchanged)

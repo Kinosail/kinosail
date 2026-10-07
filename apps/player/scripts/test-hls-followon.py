@@ -129,6 +129,9 @@ def journey(name, original, metadata, offset=0, cold=False, one_shot=False, audi
                                                   metadata['sourceFramePTS'])), 'renderer_reference_clock')
         browser_reference = media / 'Reference.mp4'
         shutil.copy2(reference, browser_reference)
+        direct_resume_source = media / 'ResumeReference.mp4'
+        shutil.copy2(reference, direct_resume_source)
+        case['browserDirectResumeSource'] = {'before': source_state(direct_resume_source)}
         case['browserReferenceSource'] = {'before': source_state(browser_reference),
             'copiedVideoIdentity': reference_metadata['copiedVideoIdentity'],
             'copiedAudioIdentity': reference_metadata['copiedAudioIdentity']}
@@ -190,8 +193,9 @@ def journey(name, original, metadata, offset=0, cold=False, one_shot=False, audi
                                directory, metadata, offset, case)
                 if browser_reference:
                     reference_id = next(i['id'] for i in api.call('/api/v1/library')['items'] if i['title'] == 'Reference')
+                    direct_resume_id = next(i['id'] for i in api.call('/api/v1/library')['items'] if i['title'] == 'ResumeReference')
                     public_renderer(api, item_id, reference_id, metadata, offset, hls, directory, case, ROOT,
-                                    browser_reference)
+                                    browser_reference, direct_resume_id, direct_resume_source)
                     if case['publicRenderer']['result'] != 'passed':
                         case['failures'].append('public_renderer')
             if installation:
@@ -269,10 +273,12 @@ finally:
          'test_hls_nonkey_initialization.py',
          'hls_nonkey_fragment.py', 'test_hls_nonkey_fragment.py',
          'hls_nonkey_renderer.py', 'test_hls_nonkey_renderer.py',
+         'hls_nonkey_direct.py', 'test_hls_nonkey_direct.py',
          'hls_nonkey_process.py', 'test_hls_nonkey_process.py',
          'hls_nonkey_installation.py', 'test_hls_nonkey_installation.py',
          'hls_timeline_packets.py', 'hls_timeline_fixture.py', 'hls_timeline_preparation.py']]
     files.append(ROOT / 'apps/player/e2e/hls-public-renderer.mjs')
+    files.append(ROOT / 'apps/player/e2e/hls-direct-delivery.mjs')
     files.extend(ROOT / ('apps/player/e2e/' + n) for n in ['hls-native-planes.mjs', 'test-hls-native-planes.mjs'])
     checksums = {str(p.relative_to(ROOT)): sha(p) for p in files} | {'receipt.json': sha(target)}
     (RUN / 'SHA256SUMS').write_text(''.join(f'{v}  {k}\n' for k, v in checksums.items()))

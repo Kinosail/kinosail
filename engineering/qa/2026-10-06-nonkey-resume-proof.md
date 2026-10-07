@@ -300,3 +300,26 @@ exactly 1 ms. Binary subtraction exceeds that limit by about 1e-15 seconds for
 seven rows. Before changing arithmetic, test exact retained decimal timestamps
 at 1 ms and above 1 ms. Compare their decimal values; retain the same limit.
 Do not loosen the threshold or the quality-count requirement.
+
+## Direct seek control, before implementation
+
+Run `37558838175` retains all requested source frames 300–767 but fails the
+unchanged quality-count guard: 469 decoded ready frames versus 468 callbacks.
+Pinned Chromium 153 source increments this counter before display. Startup
+queue reset is a hypothesis; event snapshots identify only frames 300–302.
+
+Add a separate copied MP4 reference item with verified saved progress 12.5.
+Keep the original full 768-frame Direct reference and HLS journey unchanged.
+Observe the extra shipped `direct=1` watch journey serially in the same owned
+browser, with the same trusted gesture, fixed rate, deadlines and native packer.
+Retain every callback, checkpoint and raw counter. Compare against independently
+expected source PTS and the full reference. Neither a matching nor a different
+counter total waives an existing assertion or identifies hidden queued frames.
+
+Verify actual Direct media delivery against the immutable copied source bytes.
+Bound response count, size and range metadata. Reject failed or foreign media,
+malformed ranges, wrong lengths and hashes. Source snapshots must remain equal.
+Before implementing this evidence verifier, test these failures in isolation:
+the public success journey cannot inject a forged response receipt. Keep all
+raw non-key failures and existing scanner, packet and quality guards unchanged.
+Run media and browser work only on the existing bounded hosted workflow.
