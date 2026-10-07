@@ -77,15 +77,17 @@ func copiedRecoveryInitializationBytes(t *testing.T, path, expected string) {
 
 // A held owned printf exposes the shell redirection window without media/UI work.
 func TestCopiedRecoveryEncoderInitializationRemainsCommittedUntilReplacement(t *testing.T) {
-	manager, _, _, directory, initialization := copiedRecoveryEnclosingFixture(t)
-	rendition := filepath.Join(directory, "1080p")
+	manager, _, _, _, initialization := copiedRecoveryEnclosingFixture(t)
 	marker := filepath.Join(t.TempDir(), "held")
 	action := "held=0\nprintf() {\n if [ \"$held\" -eq 0 ]; then\n held=1\n command printf held > " + copiedRecoveryQuote(marker)
 	action += "\n IFS= read -r held_input\n fi\n command printf \"$@\"\n}\n"
 	copiedRecoveryEncoderOutput(t, manager, action, initialization, "first fragment", copiedRecoveryManifest)
+	// Constant argv targets an owned relative output under the script's directory.
+	rendition := filepath.Join(filepath.Dir(manager.ffmpeg), "rendition")
+	writeHLSLoadingFile(t, filepath.Join(rendition, "init.mp4"), initialization)
 	ctx, cancel := context.WithTimeout(t.Context(), 3*time.Second)
 	defer cancel()
-	command := exec.CommandContext(ctx, "/bin/sh", "owned-encoder", "-hls_segment_filename", filepath.Join(rendition, "segment-%05d.m4s"), filepath.Join(rendition, "index.m3u8"))
+	command := exec.CommandContext(ctx, "/bin/sh", "owned-encoder", "-hls_segment_filename", "rendition/segment-%05d.m4s", "rendition/index.m3u8")
 	command.Dir = filepath.Dir(manager.ffmpeg)
 	release, err := command.StdinPipe()
 	if err != nil {
