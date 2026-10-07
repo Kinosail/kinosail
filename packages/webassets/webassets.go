@@ -48,8 +48,8 @@ var (
 	//go:embed static/player-controls.js
 	playerControlsCore []byte
 	//go:embed static/player-preview.js
-	playerPreview  []byte
-	playerControls = append(append([]byte(nil), playerPreview...), playerControlsCore...)
+	playerSeekPreview []byte
+	playerControls    = append(append([]byte(nil), playerSeekPreview...), playerControlsCore...)
 	//go:embed static/player-status.js
 	playerStatus []byte
 	//go:embed static/player-presentation.js
