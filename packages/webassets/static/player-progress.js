@@ -158,7 +158,7 @@ if (player.dataset.queue) fetch(player.dataset.queue).then((response) => respons
 const resumeFromSavedProgress = () => {
   if (player.dataset.offline === "true") return;
   const start = Number(player.dataset.start);
-  if (start > 0 && start < player.duration - 10) {
+  if (start > 0 && start < player.duration) {
     if (Math.abs(player.currentTime - start) >= 0.1) setPlayerTime(start);
     if (player.hasAttribute("data-autoplay") && playbackTraceMethod !== "native-hls") requestPlay("resume-progress").catch(() => {});
   }

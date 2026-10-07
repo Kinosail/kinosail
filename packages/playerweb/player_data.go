@@ -70,7 +70,7 @@ type PlayerData struct { //nolint:recvcheck // Templates need a value receiver f
 }
 
 func (value PlayerData) Resume() bool {
-	return value.Start > 0 && (value.Duration == 0 || value.Start < value.Duration-10)
+	return value.Start > 0 && (value.Duration == 0 || value.Start < value.Duration)
 }
 
 type PlaylistOption struct {

@@ -32,6 +32,12 @@ document.addEventListener("click", event => {
   const link = event.target.closest?.('a[href]');
   if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey ||
       !link || link.hasAttribute("download") || link.target && link.target !== "_self") return;
+  if (progressNavigation?.target && ownsProgressNavigation() &&
+      link.origin === location.origin && link.pathname === "/" && !link.hash) {
+    event.preventDefault();
+    progressNavigation.target = link.href;
+    return;
+  }
   if (link.origin !== location.origin || link.pathname !== "/" || link.search || link.hash) { cancelProgressNavigation(); return; }
   if (!progressNavigationAllowed()) return;
   event.preventDefault();
