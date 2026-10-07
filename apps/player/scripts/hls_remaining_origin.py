@@ -30,6 +30,14 @@ def origin_selected_audio(plan):
 def origin_refill_witness(directory, source, case):
     raw = bounded_bytes(directory / 'refill-recipe-private.json', 8192, 'origin_actual_argv_bound')
     arguments = json.loads(raw)
+    observed = {}
+    for flag, label in [('-ss', 'actualSourceSeekSeconds'), ('-output_ts_offset', 'outputOffsetSeconds')]:
+        if flag in arguments:
+            value = float(arguments[arguments.index(flag) + 1])
+            check(math.isfinite(value) and 0 <= value <= 10, 'origin_observed_option_bound')
+            observed[label] = value
+    observed['qualifiedDropFilterPresent'] = '-bsf:a' in arguments and arguments[arguments.index('-bsf:a') + 1] == 'noise=amount=0:drop=lt(pts\\,382976)'
+    case['originObservedEncoderOptions'] = observed
     roots = list((directory / 'cache').glob('*-plan-*'))
     check(len(roots) == 1, 'origin_single_generation')
     root = roots[0]

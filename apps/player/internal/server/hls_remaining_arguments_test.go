@@ -119,3 +119,47 @@ func TestRemainingAudioOriginRefillRetainsSamplePrecision(t *testing.T) {
 		t.Fatalf("output offset lost sample precision: %q", result.output)
 	}
 }
+
+// Four real AAC EXTINF values add to 7.999998999999999, while the existing
+// encoder command seeks 8.000. Preserve that actual codec target.
+func TestRemainingAudioOriginRefillUsesMeasuredCadenceRounding(t *testing.T) {
+	facts := MediaFacts{Kind: "audio", Container: "flac", Duration: 10,
+		Audio: []AudioFacts{{Index: 0, SourceIndex: 0, Codec: "flac", SampleRate: 48000, Channels: 2, ChannelLayout: "stereo"}}}
+	for _, sample := range []struct {
+		name     string
+		start    float64
+		eligible bool
+	}{
+		{"observedPrefix", 7.999998999999999, true},
+		{"positivePrefixRounding", 8.000001, true},
+		{"unqualifiedFractionBefore", 7.9999, false},
+		{"unqualifiedFractionAfter", 8.0001, false},
+		{"differentEncoderTarget", 8.0006, false},
+	} {
+		t.Run(sample.name, func(t *testing.T) {
+			source := hlsRecipe{mode: "audio-transcode", offset: sample.start, outputTime: sample.start}
+			window := source
+			window.offset = 0
+			result := remainingAudioOriginRefill(facts, source, window, sample.start, 4, "192000")
+			if (result != nil) != sample.eligible {
+				t.Fatalf("candidate eligibility=%t; ordinary encoder target=%s", result != nil, ffmpegSeconds(sample.start))
+			}
+			if result != nil && result.drop != "noise=amount=0:drop=lt(pts\\,382976)" {
+				t.Fatal("playlist rounding changed the actual AAC packet target")
+			}
+		})
+	}
+}
+
+// The ten-second public control cannot cover a normalized cut at source EOF.
+func TestRemainingAudioOriginRefillRejectsRoundedSourceEOF(t *testing.T) {
+	facts := MediaFacts{Kind: "audio", Container: "flac", Duration: 8,
+		Audio: []AudioFacts{{Index: 0, SourceIndex: 0, Codec: "flac", SampleRate: 48000, Channels: 2, ChannelLayout: "stereo"}}}
+	start := 7.999998999999999
+	source := hlsRecipe{mode: "audio-transcode", offset: start, outputTime: start}
+	window := source
+	window.offset = 0
+	if remainingAudioOriginRefill(facts, source, window, start, 4, "192000") != nil {
+		t.Fatal("rounded source EOF acquired a refill worker")
+	}
+}
