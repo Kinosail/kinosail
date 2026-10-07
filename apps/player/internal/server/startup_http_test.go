@@ -2,6 +2,7 @@ package server_test
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -15,6 +16,7 @@ import (
 	"time"
 
 	"github.com/MikeO7/kinosail-player/internal/server"
+	"github.com/MikeO7/kinosail/packages/playback"
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
@@ -135,7 +137,41 @@ func preparationFixture(t *testing.T, count int, caching bool) (http.Handler, []
 	for _, item := range library.Items {
 		ids = append(ids, item.ID)
 	}
+	if caching {
+		settlePreparationFacts(t, h, ids, cache)
+	}
 	return h, ids, starts
+}
+
+// Managed background subtitle preparation probes every fixture source. Settle
+// those facts via public planning before admission tests or TempDir cleanup;
+// cancellation alone does not join a cache publication already in flight.
+func settlePreparationFacts(t *testing.T, handler http.Handler, ids []string, cache string) {
+	t.Helper()
+	for _, id := range ids {
+		assertAPIBody(t, apiCall(t, handler, "", http.MethodGet, "/api/v1/items/"+id+"/playback", nil), http.StatusOK, `"duration":8`)
+	}
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
+	defer cancel()
+	if !playback.WaitHLSReady(ctx, func() error { return preparationFactsPublished(cache, len(ids)) }) {
+		t.Fatal("owned source facts were not published before preparation fixture returned")
+	}
+}
+
+func preparationFactsPublished(cache string, count int) error {
+	entries, err := os.ReadDir(filepath.Join(cache, "probes"))
+	if err != nil {
+		return err
+	}
+	if len(entries) != count {
+		return os.ErrNotExist
+	}
+	for _, entry := range entries {
+		if !entry.Type().IsRegular() || !strings.HasSuffix(entry.Name(), ".json") {
+			return os.ErrNotExist // An atomic publication may still own a temporary file.
+		}
+	}
+	return nil
 }
 
 func preparationSource(id string) string { return "/hls/" + id + "/p/t-a0-s0-none-t0-b0/index.m3u8" }
