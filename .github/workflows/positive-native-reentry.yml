@@ -6,6 +6,7 @@ on:
   pull_request:
     paths:
       - apps/player/e2e/test-instance-positive-reentry.spec.ts
+      - apps/player/e2e/test-instance-positive-selector.spec.ts
       - apps/player/scripts/test-positive-reentry-local.py
       - apps/player/scripts/positive_reentry_processes.py
       - apps/player/scripts/positive_reentry_tls.py
@@ -53,7 +54,7 @@ jobs:
           pnpm --dir apps/player/e2e install --frozen-lockfile
           pnpm --dir apps/player/e2e exec playwright install webkit
       - name: Reproduce exact PR501 source through public APIs and native decoding
-        timeout-minutes: 8
+        timeout-minutes: 10
         run: >-
           python3 apps/player/scripts/test-positive-reentry-local.py
           --source deb7e51a1cdd3ed9f71842677abda5cd0e9e7fc8
@@ -69,6 +70,7 @@ jobs:
             .verification/positive-reentry/*/browser-admission.json
             .verification/positive-reentry/*/fixture-public-ca.pem
             .verification/positive-reentry/*/artifacts/**/positive-reentry.json
+            .verification/positive-reentry/*/artifacts/**/positive-selector.json
             .verification/positive-reentry/*/artifacts/**/*.png
           include-hidden-files: true
           if-no-files-found: error

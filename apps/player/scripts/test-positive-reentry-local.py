@@ -30,6 +30,7 @@ checksum = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
 receipt = {'sourceRevision': revision, 'sourceTree': subprocess.check_output(['git', 'rev-parse', revision + '^{tree}'], cwd=root, text=True).strip(),
            'harnessRevision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip(),
            'testSHA256': checksum(root / 'apps/player/e2e/test-instance-positive-reentry.spec.ts'),
+           'selectorControlTestSHA256': checksum(root / 'apps/player/e2e/test-instance-positive-selector.spec.ts'),
            'runnerSHA256': checksum(Path(__file__)), 'processHelperSHA256': checksum(Path(__file__).with_name('positive_reentry_processes.py')),
            'tlsHelperSHA256': checksum(Path(__file__).with_name('positive_reentry_tls.py')), 'result': 'not-run', 'minimumFreeBytes': 3 * 1024**3,
            'boundaries': 'Immutable git export; verified loopback HTTPS; synthetic Owner/media; real macOS WebKit HLS in iPhone context; next-episode autoplay disabled; disposable hosted CA only; no production edits/Nox/UI/device proof'}
@@ -209,13 +210,13 @@ try:
         if borrowed_link is not None:
             borrowed_link.symlink_to(dependencies, target_is_directory=True)
             borrowed_link_created = True
-        command = ['node', 'node_modules/@playwright/test/cli.js', 'test', 'test-instance-positive-reentry.spec.ts', '--project=webkit', '--workers=1', '--retries=0', '--headed']
+        command = ['node', 'node_modules/@playwright/test/cli.js', 'test', 'test-instance-positive-reentry.spec.ts', 'test-instance-positive-selector.spec.ts', '--project=webkit', '--workers=1', '--retries=0', '--headed']
         receipt['stage'] = 'decoded-browser-check'
         receipt['browserCommand'] = command
         with (run / 'browser-private.log').open('w') as log:
             browser = subprocess.Popen(command, cwd=root / 'apps/player/e2e', env=environment, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
             receipt['browserPID'] = browser.pid
-            exit_code = browser.wait(timeout=120)
+            exit_code = browser.wait(timeout=210)
         receipt['browserExitCode'] = exit_code
         project_browser_failure()
         receipt['result'] = 'passed' if exit_code == 0 else 'failed'
