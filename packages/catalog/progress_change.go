@@ -24,12 +24,16 @@ func invalidWatchedSessionCharacter(character rune) bool {
 	return character != '-' && character != '_' && (character < '0' || character > '9') && (character < 'A' || character > 'Z') && (character < 'a' || character > 'z')
 }
 
+func closedWatchedPage(state PlaybackState) bool {
+	return state.Watched && state.Revision == 0
+}
+
 // ProgressRevision applies one ordered playback event.
 func ProgressRevision(seconds float64, watched *bool, session string, revision uint64, now time.Time) ProgressChange {
 	return func(state PlaybackState) (PlaybackState, bool, error) {
 		// An explicit watched choice has no playback-event revision and closes
 		// its page. Ordinary completion retains a revision so replay can advance.
-		if session != "" && state.Session == session && (state.Watched && state.Revision == 0 || revision > 0 && revision <= state.Revision) {
+		if session != "" && state.Session == session && (closedWatchedPage(state) || revision > 0 && revision <= state.Revision) {
 			return state, false, nil
 		}
 		state.Seconds, state.Updated = seconds, now.UTC()
