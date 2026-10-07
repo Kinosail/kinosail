@@ -146,6 +146,9 @@ func (manager *hlsManager) prepareAttempt(ctx context.Context, item library.Item
 			if job.err != nil {
 				return observedHLSReadinessError(job.err, job)
 			}
+			if masterFresh(playlist, item.Path, options.Cache) {
+				return manager.ensureCopiedHLSClock(ctx, item, recipe, filepath.Dir(playlist), options.Cache)
+			}
 			return errHLSIdentityChanged
 		case <-ticker.C:
 		}

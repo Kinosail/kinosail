@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/MikeO7/kinosail-player/internal/server"
+	"github.com/MikeO7/kinosail/packages/servertest/mp4fixture"
 )
 
 // Public index admission must not advertise an unusable EXT-X-MAP after cache
@@ -23,6 +24,30 @@ func TestCopiedHLSHTTPRecoversMissingOrInvalidInitialization(t *testing.T) {
 			})
 		}
 	}
+}
+
+// An encoder can finish a short title before the readiness poll's first tick.
+// Successful finalized output must be certified and retained, rather than reset
+// by treating ordinary process completion as a changed stream identity.
+func TestCopiedHLSHTTPCompletedEncoderRetainsReadyInitialization(t *testing.T) {
+	f := newCopiedHTTPFixture(t, copiedPackets, copiedIDRs, copiedConfiguration)
+	if err := os.WriteFile(f.release, []byte("release"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	queued := prepareSource(t, f.handler, f.id, f.source)
+	assertPreparationState(t, queued, http.StatusAccepted, "queued")
+	awaitCopiedLog(t, f.output, "HLS startup preparation", queued.Header().Get("X-Request-ID"), "ready")
+	assertPreparationState(t, prepareSource(t, f.handler, f.id, f.source), http.StatusAccepted, "ready")
+	initialization := apiCall(t, f.handler, "", http.MethodGet, strings.TrimSuffix(f.source, "index.m3u8")+"360p/init.mp4", nil)
+	assertAPIBody(t, initialization, http.StatusOK)
+	if !bytes.Equal(initialization.Body.Bytes(), mp4fixture.Initialization(640, 360, "h264", "aac", "")) {
+		t.Fatal("completed preparation lost its initialization")
+	}
+	encodes, err := os.ReadFile(f.starts)
+	if err != nil || bytes.Count(encodes, []byte("encode\n")) != 1 {
+		t.Fatal("completed preparation re-encoded valid output")
+	}
+	assertCopiedRecoverySourceUnchanged(t, f)
 }
 
 func assertCopiedInitializationRecovery(t *testing.T, journey, damaged string) {
@@ -46,7 +71,7 @@ func assertCopiedInitializationRecovery(t *testing.T, journey, damaged string) {
 		awaitCopiedReady(t, prepared)
 		recovered, err := os.ReadFile(initialization)
 		if err != nil || !bytes.Equal(valid, recovered) {
-			t.Fatal("public preparation reported ready with a damaged initialization")
+			t.Fatalf("public preparation reported ready with a damaged initialization: read_failed=%t bytes=%d expected_bytes=%d", err != nil, len(recovered), len(valid))
 		}
 	}
 	base := strings.TrimSuffix(f.source, "index.m3u8") + "360p/"
