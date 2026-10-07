@@ -111,3 +111,31 @@ func TestCopiedRecoveryEOFCorrectionCannotExceedCommittedTarget(t *testing.T) {
 		t.Fatal("late 2.45-to-2.55 correction was admitted under target2")
 	}
 }
+
+func TestCopiedRecoveryEOFCorrectionValidatesSerializedTarget(t *testing.T) {
+	manifest := strings.Replace(copiedRecoveryManifest, "#EXTINF:2.000000,\nsegment-00001.m4s", "#EXTINF:2.450000,\nsegment-00001.m4s", 1)
+	if got := completedCopiedHLSManifest([]byte(manifest), 4.4999996); len(got) != 0 {
+		t.Fatal("six-decimal 2.500000 cut exceeded committed target2")
+	}
+	if got := completedCopiedHLSManifest([]byte(manifest), 4.4999994); len(got) == 0 {
+		t.Fatal("safe serialized 2.499999 cut rejected")
+	}
+	for _, target := range []string{"NaN", "+Inf", "2.1", "2\n#EXT-X-TARGETDURATION:2"} {
+		bad := strings.Replace(copiedRecoveryManifest, "#EXT-X-TARGETDURATION:2", "#EXT-X-TARGETDURATION:"+target, 1)
+		if got := completedCopiedHLSManifest([]byte(bad), 4.05); len(got) != 0 {
+			t.Fatalf("unsafe target %q accepted", target)
+		}
+	}
+}
+
+func TestCopiedRecoveryIndexedReadRequiresBoundPhysicalManifest(t *testing.T) {
+	manager, item, recipe, directory, policy, timeline := copiedRecoveryFixture(t)
+	copiedRecoveryProbe(t, manager, "")
+	if err := manager.bindCopiedHLSClock(t.Context(), item, recipe, directory, "360p/index.m3u8", policy, timeline); err != nil {
+		t.Fatal(err)
+	}
+	writeHLSLoadingFile(t, filepath.Join(directory, "360p/index.m3u8"), strings.Replace(copiedRecoveryManifest, "2.000000", "2.400000", 1))
+	if _, err := manager.readCopiedHLSTimelineContext(t.Context(), directory, policy); err == nil {
+		t.Fatal("indexed read admitted a mismatched physical manifest before seek/reuse")
+	}
+}
