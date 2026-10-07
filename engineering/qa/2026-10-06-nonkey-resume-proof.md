@@ -195,3 +195,39 @@ Do not fill, replay, trim, seek to or filter a missing frame. A continued drop
 must remain unqualified. The existing actual public RED supplies the test-first
 failure; no isolated implementation-mirroring check is needed for this pulse.
 No production or simulator change is authorized by a scheduler-only result.
+
+## Optional installation counterfactual, before implementation
+
+Before changing production, test the normal negative-edit mux through the
+supported FFmpeg executable configuration in a fresh disposable Server.
+Enable it only through a fixed manual HLS choice. Keep the default twelve-case
+proof and required audio/HEVC gates unchanged. Reject unknown or foreign modes
+before tool setup. Label the receipt as a counterfactual installation.
+
+Match only the owned H264 fixture snapshot, one input seek at 12.5, copied
+video/audio, initial segment zero and the exact existing HLS options. Keep
+unrelated invocations unchanged. Replace only initial fragment discontinuity
+with normal edit-list muxing, and add disabled negative timestamp avoidance in
+the output group. Hash the real executable and generated wrapper. Preserve
+bounded private original/effective arguments and transformation counts; publish
+only their digest and bounded classifications. Close descriptors before exec.
+
+First test selector near misses, duplicate options, escaped output paths,
+source mutation, file bounds and symlinked private receipts. Valid public media
+cannot inject these trust-boundary faults. Preserve PID/cancellation ownership
+through real exec, with public worker/join evidence. Retain every raw negative
+frame and strict failure; neither edits nor an output-zero decode may admit it.
+Full browser correspondence remains required. Incorrect playlist timing is
+expected counterevidence, not grounds to adjust the projection in this test.
+Production still needs scoped cache identity, AAC presentation, interrupted
+reopen and lazy refill compatible with the published init.
+
+Independent review found that audit verification and parsing used two opens.
+Before repairing it, test rejection of an unchecked second path read. Read,
+hash and parse one bounded no-follow regular-file descriptor, and revalidate
+its identity after reading. Generated public media cannot race this private
+artifact boundary. Keep exact transformation-count validation unchanged.
+Also test a FIFO without a peer and a held audit lock before repairing either
+wait. Use nonblocking opens before regular-file validation. Bound lock acquisition
+to 250 ms and preserve the audit on failure. The focused child tests use only
+their own disposable paths and processes, with a one-second outer kill/join.

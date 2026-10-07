@@ -36,6 +36,11 @@ on:
         description: Collect bounded source metadata for canonical architecture regeneration
         type: boolean
         default: false
+      hls_mux_diagnostic:
+        description: Optional HLS installation counterfactual; select HLS above
+        type: choice
+        options: [baseline, negative-edit]
+        default: baseline
 
 permissions:
   contents: read
@@ -66,6 +71,11 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - run: test ! -e .gates-disabled
+      - name: Validate ordinary layout selection
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          HLS_MUX_DIAGNOSTIC: ${{ inputs.hls_mux_diagnostic || 'baseline' }}
+        run: test "$HLS_MUX_DIAGNOSTIC" == baseline
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
           go-version-file: go.work
@@ -125,6 +135,7 @@ jobs:
       CAMPAIGN_Q14_SUITE: ${{ inputs.campaign_q14_suite || 'primary' }}
       CAMPAIGN_R06_SUITE: ${{ inputs.campaign_r06_suite || 'protocol' }}
       CAMPAIGN_Q47_SUITE: ${{ inputs.campaign_q47_suite || 'source-format' }}
+      HLS_MUX_DIAGNOSTIC: ${{ inputs.hls_mux_diagnostic || 'baseline' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         timeout-minutes: 2
@@ -135,6 +146,7 @@ jobs:
         id: selection
         run: |
           test ! -e .gates-disabled
+          if [ "$HLS_MUX_DIAGNOSTIC" != baseline ]; then exit 2; fi
           case "$CAMPAIGN_Q14_SUITE" in
             primary|cold|bfcache|htmx|shows|search|safety|home) ;;
             *) exit 2 ;;
@@ -294,6 +306,14 @@ jobs:
         with:
           persist-credentials: false
       - run: test ! -e .gates-disabled
+      - name: Validate fixed HLS mux diagnostic
+        env:
+          HLS_MUX_DIAGNOSTIC: ${{ inputs.hls_mux_diagnostic || 'baseline' }}
+        run: |
+          case "$HLS_MUX_DIAGNOSTIC" in
+            baseline|negative-edit) ;;
+            *) exit 2 ;;
+          esac
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
           go-version-file: go.work
@@ -330,9 +350,12 @@ jobs:
         run: node --test apps/player/e2e/test-hls-native-planes.mjs
       - name: Check owned renderer process boundaries
         run: python3 -m unittest discover -s apps/player/scripts -p test_hls_nonkey_process.py
+      - name: Check counterfactual installation boundaries
+        run: python3 -B -m unittest discover -s apps/player/scripts -p test_hls_nonkey_installation.py
       - name: Run all authenticated public cases
         env:
           KINOSAIL_HLS_RENDERER: "1"
+          KINOSAIL_HLS_MUX_DIAGNOSTIC: ${{ inputs.hls_mux_diagnostic || 'baseline' }}
         run: python3 apps/player/scripts/test-hls-followon.py
       - name: Preserve safe follow-on receipts
         if: always()

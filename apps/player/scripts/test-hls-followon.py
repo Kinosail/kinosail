@@ -21,11 +21,19 @@ from hls_followon_frames import stream_metadata
 from hls_followon_controls import controls
 from hls_nonkey_diagnostics import nonkey_evidence
 from hls_nonkey_renderer import public_renderer
+from hls_nonkey_installation import install_counterfactual, finish_counterfactual
 
 ROOT = Path(__file__).resolve().parents[3]
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--suite', choices=['all', 'audio', 'hevc'], default='all')
-suite = parser.parse_args().suite
+parser.add_argument('--mux-diagnostic', choices=['baseline', 'negative-edit'],
+                    default=os.environ.get('KINOSAIL_HLS_MUX_DIAGNOSTIC', 'baseline'))
+selected = parser.parse_args()
+suite, mux_diagnostic = selected.suite, selected.mux_diagnostic
+if (mux_diagnostic not in ['baseline', 'negative-edit'] or mux_diagnostic != 'baseline'
+        and (suite != 'all' or os.environ.get('KINOSAIL_HLS_RENDERER') != '1'
+             or os.environ.get('GITHUB_ACTIONS') != 'true')):
+    parser.error('mux diagnostic requires the bounded hosted full renderer proof')
 RUN = ROOT / '.verification' / ('hls-hevc-startup' if suite == 'hevc' else 'hls-followon') / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
 RUN.mkdir(parents=True)
 binary = RUN / 'player'
@@ -47,6 +55,10 @@ receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd
         ['nonkey-mkv', 'nonkey-mp4', 'hevc-video', 'hevc-cold', 'hevc-interrupted-preparation', 'hevc-adopted-preparation'],
     'boundary': 'Synthetic authenticated public Server delivery; native/Safari/iOS and Nox acceptance separate.',
     'productionMediaOrCacheModified': False, 'fixtureSeconds': 10 if suite == 'hevc' else 32, 'fixtureFrameRate': 24}
+receipt['muxDiagnostic'] = mux_diagnostic
+receipt['counterfactualInstallation'] = mux_diagnostic != 'baseline'
+if mux_diagnostic != 'baseline':
+    receipt['boundary'] = 'Fresh disposable installation counterfactual; strict raw failures retained; no production acceptance.'
 
 
 def packet_identity(path, stream):
@@ -128,6 +140,9 @@ def journey(name, original, metadata, offset=0, cold=False, one_shot=False, audi
         KINOSAIL_TLS_ENABLED='false', KINOSAIL_DATA_DIR=str(directory / 'config'),
         KINOSAIL_MEDIA_DIR=str(media), KINOSAIL_CACHE_DIR=str(directory / 'cache'),
         KINOSAIL_BACKUP_DIR=str(directory / 'backups'), KINOSAIL_BACKUP_KEY='synthetic-followon-key')
+    installation = None
+    if offset and mux_diagnostic == 'negative-edit':
+        env['KINOSAIL_FFMPEG'], installation = install_counterfactual(directory, source, metadata, offset, case)
     api = PublicServer(url)
     resources = {'samples': 0, 'peakOwnedFFmpeg': 0, 'samplingErrors': 0}
     case['resources'] = resources
@@ -179,6 +194,8 @@ def journey(name, original, metadata, offset=0, cold=False, one_shot=False, audi
                                     browser_reference)
                     if case['publicRenderer']['result'] != 'passed':
                         case['failures'].append('public_renderer')
+            if installation:
+                finish_counterfactual(installation, case)
             case['result'] = 'passed' if not case['failures'] else 'failed'
         except Exception as error:
             case['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
@@ -253,6 +270,7 @@ finally:
          'hls_nonkey_fragment.py', 'test_hls_nonkey_fragment.py',
          'hls_nonkey_renderer.py', 'test_hls_nonkey_renderer.py',
          'hls_nonkey_process.py', 'test_hls_nonkey_process.py',
+         'hls_nonkey_installation.py', 'test_hls_nonkey_installation.py',
          'hls_timeline_packets.py', 'hls_timeline_fixture.py', 'hls_timeline_preparation.py']]
     files.append(ROOT / 'apps/player/e2e/hls-public-renderer.mjs')
     files.extend(ROOT / ('apps/player/e2e/' + n) for n in ['hls-native-planes.mjs', 'test-hls-native-planes.mjs'])
