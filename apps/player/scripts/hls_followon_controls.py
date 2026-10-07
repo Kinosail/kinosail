@@ -87,7 +87,8 @@ def controls(root, run, binary, receipt, include_hevc=True, include_audio=True):
                                   encoder_count, check, bounded_bytes, cold=True)
                 else:
                     prepare_once(api, prepare, hls, log_path, server, source, case)
-                    check(case['preparationAttempt']['completionState'] == 'ready', 'control_preparation_not_ready')
+                    states = ['ready'] if hevc else ['ready', 'adopted']
+                    check(case['preparationAttempt']['completionState'] in states, 'control_preparation_not_ready')
                     value = api.call(prepare, 'POST', {'source': hls}, 202)
                     check(value['state'] == 'ready', 'control_public_preparation_not_ready')
                 if hevc and name not in ['hevc-interrupted-preparation', 'hevc-adopted-preparation']:

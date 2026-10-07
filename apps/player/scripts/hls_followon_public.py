@@ -58,20 +58,34 @@ def prepare_once(api, prepare, hls, log_path, server, source, case):
     check(re.fullmatch(r'[a-zA-Z0-9_-]{1,80}', request_id), 'one_shot_request_correlation')
     case['preparationAttempt'] = {'posts': 1, 'publicState': value.get('state'), 'requestID': request_id}
     limit, joined = time.monotonic() + 20, 0
+    audio_playback = case.get('itemKind') in ['audio', 'audiobook']
+    if audio_playback:
+        # A ready speculative audio window may stop before EOF. Adopt the
+        # actual public stream before joining its successful encoder completion.
+        status, _, _ = api.http(hls, timeout=limit - time.monotonic())
+        check(status == 200, 'audio_playback_adoption_http_' + str(status))
     while time.monotonic() < limit:
         private = bounded_bytes(log_path, 2 * 1024 * 1024, 'private_log_bound')[prior:].decode()
-        states = []
+        states, completed = [], False
         for line in private.splitlines():
             check(len(line) <= 16 * 1024, 'private_log_line_bound')
             if not line.startswith('{') or not line.endswith('}'):
                 continue  # An in-flight final line may not have finished writing yet.
             entry = json.loads(line)
+            if audio_playback and entry.get('request_id') == request_id:
+                message = entry.get('msg')
+                check(message not in ['HLS transcode failed', 'HLS transcode paused after playback became inactive'],
+                      'audio_playback_not_completed')
+                completed = completed or message == 'HLS transcode completed'
             if (entry.get('msg') == 'HLS startup preparation' and entry.get('request_id') == request_id
                     and entry.get('state') in ['ready', 'unavailable', 'cancelled', 'bounded', 'adopted']):
                 states.append(entry['state'])
-        joined = joined + 1 if states and encoder_count(server, source) == 0 else 0
+        qualified = states and (not audio_playback or completed)
+        joined = joined + 1 if qualified and encoder_count(server, source) == 0 else 0
         if joined >= 3:
             case['preparationAttempt'].update(completionState=states[-1], ownedFFmpeg=0, joinedSamples=joined)
+            if audio_playback:
+                case['preparationAttempt'].update(playbackAdopted=True, encoderCompleted=True)
             return
         time.sleep(0.05)
     raise RuntimeError('one_shot_preparation_not_joined')
