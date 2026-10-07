@@ -11,7 +11,11 @@ registerTestInstanceSupporterTests();
 test("Viewer MFA enrollment gives account-neutral instructions @smoke", async ({ browser, page }, testInfo) => {
   await login(page);
   await page.goto("/settings");
-  expect((await (await page.context().request.get("/api/v1/settings")).json()).requireMfa).toBe(true);
+  const settings = await page.evaluate(async () => {
+    const response = await fetch("/api/v1/settings");
+    return {status: response.status, requireMfa: (await response.json()).requireMfa};
+  });
+  expect(settings).toEqual({status: 200, requireMfa: true});
   const name = `QA Viewer ${Date.now()}`;
   const password = "qa-viewer-password";
   const id = await createViewer(page, name, password);

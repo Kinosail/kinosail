@@ -1,4 +1,4 @@
-import { expect, type Page } from "@playwright/test";
+import { expect, type Page, type Route } from "@playwright/test";
 
 type RequestHold = {
 	release(): Promise<void>;
@@ -32,18 +32,33 @@ export async function holdNextLibraryPage(page: Page, offset: string): Promise<R
 }
 
 export async function holdNextMainRequest(page: Page, parameter: string, value: string): Promise<RequestHold> {
-	const marker = "mainRequestHeld";
-	const releaseEvent = "kinosail-release-main-request";
-	await page.evaluate(({ marker, parameter, releaseEvent, value }) => {
-		const fetch = window.fetch;
-		window.fetch = async (input, init) => {
-			const url = new URL(input instanceof Request ? input.url : String(input), location.href);
-			if (url.searchParams.get(parameter) === value && !document.documentElement.dataset[marker]) {
-				document.documentElement.dataset[marker] = "true";
-				await new Promise<void>((resolve) => window.addEventListener(releaseEvent, () => resolve(), { once: true }));
-			}
-			return fetch(input, init);
-		};
-	}, { marker, parameter, releaseEvent, value });
-	return hold(page, marker, releaseEvent);
+	const origin = new URL(page.url()).origin;
+	const matches = (url: URL) => url.origin === origin && url.pathname === "/" && url.searchParams.get(parameter) === value;
+	let started = false;
+	let release!: () => void, finish!: () => void;
+	const gate = new Promise<void>(resolve => { release = resolve; });
+	const handled = new Promise<void>(resolve => { finish = resolve; });
+	const handler = async (route: Route) => {
+		if (started || route.request().method() !== "GET") {
+			await route.fallback();
+			return;
+		}
+		started = true;
+		await gate;
+		try { await route.continue(); }
+		catch (error) {
+			if (!route.request().failure() && !page.isClosed()) throw error;
+		} finally { finish(); }
+	};
+	// HTMX uses XHR. The context boundary also observes network requests made
+	// through a service worker without replacing either browser transport.
+	await page.context().route(matches, handler);
+	return {
+		release: async () => {
+			release();
+			if (started) await handled;
+			await page.context().unroute(matches, handler);
+		},
+		waitUntilStarted: () => expect.poll(() => started).toBe(true),
+	};
 }
