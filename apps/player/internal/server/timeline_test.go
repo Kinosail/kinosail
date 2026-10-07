@@ -33,7 +33,7 @@ func TestDirectPlayerShowsSourceChaptersAndClientSkipMarkers(t *testing.T) { //n
 	script := httptest.NewRecorder()
 	handler.ServeHTTP(script, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/player.js", nil))
 
-	for _, expected := range []string{"First contact", `data-auto-skip="intro,credits"`, `data-playback-token="`, `data-chapter data-start="90" data-end="600" data-seek="90"`, `<time>1:30</time>`, `<summary><span>Chapters</span><small>3</small></summary>`, `data-marker="intro"`, `data-marker="credits"`, `controls data-native-controls playsinline`, `data-player-controls`, `data-player-fullscreen`, `/static/player.js?v=`, `/static/app.css?v=electric-48`} {
+	for _, expected := range []string{"First contact", `data-auto-skip="intro,credits"`, `data-playback-token="`, `data-chapter data-start="90" data-end="600" data-seek="90"`, `<time>1:30</time>`, `<summary><span>Chapters</span><small>3</small></summary>`, `data-marker="intro"`, `data-marker="credits"`, `controls data-native-controls playsinline`, `data-player-controls`, `data-player-fullscreen`, `/static/player.js?v=`, `/static/app.css?v=electric-49`} {
 		if !strings.Contains(player.Body.String(), expected) {
 			t.Fatalf("player lacks %q: %q", expected, player.Body.String())
 		}
