@@ -100,7 +100,7 @@ func hotManifestHTTPRound(t *testing.T, ctx context.Context, client *http.Client
 	case <-ctx.Done():
 		t.Fatal("publisher did not finish")
 	}
-	request := fixture.request(t, origin+fixture.route+"?playbackSession=cached-session").WithContext(ctx)
+	request := fixture.request(ctx, origin+fixture.route+"?playbackSession=cached-session")
 	request.RequestURI = "" // Convert the registered-route request to a real client request.
 	response, err := client.Do(request)
 	if err != nil {
@@ -146,7 +146,7 @@ func TestHLSHotManifestHTTPUnsafeFileHasNoRequestEffects(t *testing.T) {
 		t.Run(damage, func(t *testing.T) {
 			fixture := newCachedSegmentEvidenceFixture(t, "")
 			damageHotHTTPManifest(t, fixture, damage)
-			status, events := fixture.deliverWithoutMutation(t, fixture.request(t, fixture.route))
+			status, events := fixture.deliverWithoutMutation(t, fixture.request(t.Context(), fixture.route))
 			if status != http.StatusNotFound || len(events) != 1 {
 				t.Fatal("unsafe hot index was admitted")
 			}

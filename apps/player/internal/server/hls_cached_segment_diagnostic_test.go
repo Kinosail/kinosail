@@ -27,7 +27,7 @@ func TestCachedHLSSegmentFailureDiagnostic(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			fixture := newCachedSegmentEvidenceFixture(t, "")
 			fixture.invalidate(t, name)
-			request := fixture.request(t, fixture.route)
+			request := fixture.request(t.Context(), fixture.route)
 			request = cachedSegmentRequestContext(t, request, name)
 			status, events := fixture.deliverWithoutMutation(t, request)
 			assertCachedSegmentOutcome(t, name, status, events)
@@ -71,7 +71,7 @@ func cachedSegmentRequestContext(t *testing.T, request *http.Request, name strin
 func TestCachedHLSSegmentOffsetAndRouteAdmission(t *testing.T) {
 	fixture := newCachedSegmentEvidenceFixture(t, "-o1400")
 	for _, route := range []string{fixture.route, strings.Replace(fixture.route, fixture.id, "missing-title", 1), strings.Replace(fixture.route, "/p/t-", "/p/unknown-", 1), strings.Replace(fixture.route, "segment-00001.m4s", "unknown.m4s", 1)} {
-		status, events := fixture.deliverWithoutMutation(t, fixture.request(t, route))
+		status, events := fixture.deliverWithoutMutation(t, fixture.request(t.Context(), route))
 		want := http.StatusNotFound
 		if route == fixture.route {
 			want = http.StatusOK
@@ -145,7 +145,7 @@ func newCachedSegmentEvidenceFixture(t *testing.T, offset string) cachedSegmentE
 	fixture := cachedSegmentEvidenceFixture{handler: handler, id: id, cache: cache, source: source, arguments: arguments, directory: filepath.Join(cache, playback.HLSRecipeKey(id, recipe)), logs: logs}
 	fixture.route = "/hls/" + id + "/p/" + token + "/360p/segment-00001.m4s"
 	master := httptest.NewRecorder()
-	handler.ServeHTTP(master, fixture.request(t, "/hls/"+id+"/p/"+token+"/index.m3u8"))
+	handler.ServeHTTP(master, fixture.request(t.Context(), "/hls/"+id+"/p/"+token+"/index.m3u8"))
 	if master.Code != http.StatusOK {
 		t.Fatal("controlled master failed")
 	}
@@ -153,9 +153,8 @@ func newCachedSegmentEvidenceFixture(t *testing.T, offset string) cachedSegmentE
 	return fixture
 }
 
-func (fixture cachedSegmentEvidenceFixture) request(t *testing.T, route string) *http.Request {
-	t.Helper()
-	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, route, nil)
+func (fixture cachedSegmentEvidenceFixture) request(ctx context.Context, route string) *http.Request {
+	request := httptest.NewRequestWithContext(ctx, http.MethodGet, route, nil)
 	request.Header.Set("X-Request-ID", "cached-diagnostic")
 	request.Header.Set("X-Playback-Session", "cached-session")
 	return request
