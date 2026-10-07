@@ -30,21 +30,26 @@ func TestCachedHLSSegmentFailureDiagnostic(t *testing.T) {
 			request := fixture.request(t, fixture.route)
 			request = cachedSegmentRequestContext(t, request, name)
 			status, events := fixture.deliverWithoutMutation(t, request)
-			if name == "valid" {
-				if status != http.StatusOK || len(events) != 0 {
-					t.Fatal("valid cached delivery reported a failure")
-				}
-				return
-			}
-			if status != http.StatusNotFound || len(events) != 1 {
-				t.Fatal("cached rejection lost its HTTP status or diagnostic")
-			}
-			assertCachedSegmentEvent(t, events[0], name == "cancelled" || name == "expired")
-			want := map[string]string{"cancelled": "context canceled", "expired": "context deadline exceeded", "missing manifest": "no such file", "changed policy": "playback settings changed", "outside duration": "outside the playable duration"}[name]
-			if !strings.Contains(fmt.Sprint(events[0]["error"]), want) {
-				t.Fatal("cached rejection did not retain its bounded reason")
-			}
+			assertCachedSegmentOutcome(t, name, status, events)
 		})
+	}
+}
+
+func assertCachedSegmentOutcome(t *testing.T, name string, status int, events []map[string]any) {
+	t.Helper()
+	if name == "valid" {
+		if status != http.StatusOK || len(events) != 0 {
+			t.Fatal("valid cached delivery reported a failure")
+		}
+		return
+	}
+	if status != http.StatusNotFound || len(events) != 1 {
+		t.Fatal("cached rejection lost its HTTP status or diagnostic")
+	}
+	assertCachedSegmentEvent(t, events[0], name == "cancelled" || name == "expired")
+	want := map[string]string{"cancelled": "context canceled", "expired": "context deadline exceeded", "missing manifest": "no such file", "changed policy": "playback settings changed", "outside duration": "outside the playable duration"}[name]
+	if !strings.Contains(fmt.Sprint(events[0]["error"]), want) {
+		t.Fatal("cached rejection did not retain its bounded reason")
 	}
 }
 
@@ -158,25 +163,34 @@ func (fixture cachedSegmentEvidenceFixture) request(t *testing.T, route string) 
 
 func (fixture cachedSegmentEvidenceFixture) invalidate(t *testing.T, name string) {
 	t.Helper()
-	manifest := filepath.Join(fixture.directory, "360p/index.m3u8")
+	root, err := os.OpenRoot(fixture.directory)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if err := root.Close(); err != nil {
+			t.Error(err)
+		}
+	})
+	const manifest = "360p/index.m3u8"
 	switch name {
 	case "missing manifest":
-		if err := os.Remove(manifest); err != nil {
+		if err := root.Remove(manifest); err != nil {
 			t.Fatal(err)
 		}
 	case "changed policy":
-		master := filepath.Join(fixture.directory, "index.m3u8")
-		data, err := os.ReadFile(master)
+		const master = "index.m3u8"
+		data, err := root.ReadFile(master)
 		if err != nil {
 			t.Fatal(err)
 		}
 		data = []byte(strings.Replace(string(data), "#KINOSAIL-TRANSCODER:", "#KINOSAIL-TRANSCODER:changed-", 1))
-		if err := os.WriteFile(master, data, 0o600); err != nil {
+		if err := root.WriteFile(master, data, 0o600); err != nil {
 			t.Fatal(err)
 		}
 	case "outside duration":
 		data := "#EXTM3U\n#EXT-X-PLAYLIST-TYPE:VOD\n#EXTINF:60,\nsegment-00000.m4s\n#EXTINF:4,\nsegment-00001.m4s\n#EXT-X-ENDLIST\n"
-		if err := os.WriteFile(manifest, []byte(data), 0o600); err != nil {
+		if err := root.WriteFile(manifest, []byte(data), 0o600); err != nil {
 			t.Fatal(err)
 		}
 	}
