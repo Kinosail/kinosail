@@ -18,6 +18,7 @@ export const selectorAdmissionFacts = (page: Page) => page.evaluate(() => {
   const bounded = (value: number) => Number.isFinite(value) && value >= 0 && value <= 31622400 ? value : null;
   return {paused: video.paused, readyState: video.readyState, renderedStart: bounded(Number(video.dataset.start)),
     reportedPosition: bounded(video.currentTime), transcode: video.dataset.compatibilityMode === 'transcode',
+    plannedAdaptive: Boolean(video.dataset.adaptive), plannedHLS: Boolean(video.dataset.hls), playbackApiPresent: Boolean(video.dataset.playbackApi),
     nativeHLS: video.canPlayType('application/vnd.apple.mpegurl') !== '',
     ordinaryCanPlayType: ['av01.0.08M.08', 'hvc1.1.6.L123.B0', 'vp09.00.10.08', 'avc1.64002a']
       .map(codec => video.canPlayType(`video/mp4; codecs="${codec}"`) !== '')};

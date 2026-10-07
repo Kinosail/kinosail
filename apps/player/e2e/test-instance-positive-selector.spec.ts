@@ -227,13 +227,14 @@ test(`positive saved selector ${explicitZero ? 'explicit zero during actual nego
       video.src = source;
       const observe = (_now: number, metadata: VideoFrameCallbackMetadata) => {
         state.callbacks++;
-        if (!video.paused && state.frames.length < 2) {
+        const rawTime = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'currentTime')!.get!.call(video);
+        const first = state.frames[0];
+        if (!video.paused && state.frames.length < 2 && (!first || metadata.mediaTime > first.mediaTime && rawTime > first.rawTime)) {
           const canvas = document.createElement('canvas'); canvas.width = 32; canvas.height = 18;
           const context = canvas.getContext('2d')!; context.drawImage(video, 0, 0, 32, 18);
           const pixels = context.getImageData(0, 0, 32, 18).data, rgb = [0, 0, 0];
           for (let i = 0; i < pixels.length; i += 4) for (let c = 0; c < 3; c++) rgb[c] += pixels[i + c] / (32 * 18);
-          state.frames.push({mediaTime: metadata.mediaTime,
-            rawTime: Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'currentTime')!.get!.call(video), rgb, png: canvas.toDataURL('image/png')});
+          state.frames.push({mediaTime: metadata.mediaTime, rawTime, rgb, png: canvas.toDataURL('image/png')});
         }
         if (state.frames.length < 2) video.requestVideoFrameCallback(observe);
       };
@@ -247,9 +248,10 @@ test(`positive saved selector ${explicitZero ? 'explicit zero during actual nego
     await expect.poll(() => decoderPage.evaluate(() => (window as unknown as {inlineDecoderControl: {frames: object[]}}).inlineDecoderControl.frames.length), {timeout: 30_000}).toBe(2);
     const frames = await decoderPage.evaluate(() => (window as unknown as {inlineDecoderControl: {frames: {mediaTime: number, rawTime: number, rgb: number[], png: string}[]}}).inlineDecoderControl.frames);
     await writeFile(info.outputPath('inline-control-first-frame.png'), Buffer.from(frames[0].png.split(',')[1], 'base64'));
-    await record({phase: 'separate-inline-control-moving-frames', elapsedObservationMS: Date.now() - started,
+    await record({phase: 'separate-inline-control-frame-samples', elapsedObservationMS: Date.now() - started,
       selected, frames: frames.map(({png: _png, ...value}) => value), controlWrites, public: await publicPosition()});
     expect(frames[1].mediaTime).toBeGreaterThan(frames[0].mediaTime);
+    expect(frames[1].rawTime).toBeGreaterThan(frames[0].rawTime);
     expect(state.renderedStart).toBe(6);
     expect(controlWrites).toBe(0); expect((await publicPosition()).seconds).toBe(explicitZero ? publicBeforeControl.seconds : 6);
     await record({phase: 'source-regression-verdict', selectedOffsetMatchesSaved6: selected!.offsetSeconds === 6,
