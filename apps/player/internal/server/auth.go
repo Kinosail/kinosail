@@ -45,7 +45,7 @@ func newAuthentication(ctx context.Context, dataDir string, required bool, authU
 	profiles.publicSessionLifetime = settings.publicSessionLifetime
 	settings.profiles = profiles
 	profiles.requireMFA = settings.requireMFA
-	auth := &authentication{profiles: profiles, passkeys: newPasskeyAuth(authURL, profiles), mfa: newMFA(profiles), settings: settings, required: required, audit: newAuditStore(ctx, dataDir, func(event auditEvent) { notify.send(ctx, event) }, retentions...), notify: notify}
+	auth := &authentication{profiles: profiles, passkeys: newPasskeyAuth(authURL, profiles), mfa: newMFA(profiles), settings: settings, required: required, audit: newAuditStore(ctx, dataDir, notify.delivery(ctx), retentions...), notify: notify}
 	auth.passkeys.settings = settings
 	auth.passkeys.audit = auth.audit
 	return auth

@@ -22,3 +22,10 @@ func newNotification(config NotificationConfig) *notificationAdapter {
 func (adapter *notificationAdapter) send(ctx context.Context, event auditEvent) {
 	adapter.shared.Send(ctx, event)
 }
+
+func (adapter *notificationAdapter) delivery(ctx context.Context) func(auditEvent) {
+	if adapter.status != "Enabled" {
+		return nil
+	}
+	return func(event auditEvent) { adapter.send(ctx, event) }
+}
