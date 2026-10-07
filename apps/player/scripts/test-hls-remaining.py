@@ -193,6 +193,7 @@ def journey(name, original, metadata, offset=0, pacing=None):
             remaining_alarm()
             if case.get('retainedRefillFragments'):
                 try:
+                    check(pacing is not None, 'fresh_refill_actual_argv_unavailable')
                     value = replay_refill(run, RUN_DEADLINE, directory, source, case, Path(real))
                     case['isolatedFreshRefillReplay'] = value
                     value['matchesCanonicalPCM'] = value['pcmSHA256'] == case['refillNativeEOF']['pcmSHA256']

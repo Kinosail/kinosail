@@ -103,6 +103,7 @@ def replay_refill(run, run_deadline, directory, source, case, executable):
     replay[-1] = str(stage / 'index.m3u8')
     run([str(executable), *replay], 30)
     fresh, identity = asset_snapshot(stage / 'init.mp4', 2 << 20)
+    result.update(initialization=identity, stage='manifest')
     manifest, names = manifest_facts(bounded_bytes(stage / 'index.m3u8', 65536, 'refill_replay_manifest_bound'))
     result.update(initialization=identity, manifest=manifest, stage='fragment-identity')
     check(manifest['endlist'], 'refill_replay_complete_eof')
