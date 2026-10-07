@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
+	"github.com/MikeO7/kinosail/packages/servertest/mp4fixture"
 )
 
 // Real filesystem/probe processes inject races unavailable to ordinary media E2E.
@@ -29,7 +30,7 @@ func copiedRecoveryFixture(t *testing.T) (*hlsManager, library.Item, hlsRecipe, 
 	writeHLSLoadingFile(t, filepath.Join(directory, ".seekable"), options.Cache)
 	writeHLSLoadingFile(t, filepath.Join(directory, "index.m3u8"), "#EXTM3U\n#KINOSAIL-TRANSCODER:"+options.Cache+"\n#EXT-X-STREAM-INF:BANDWIDTH=1000000\n360p/index.m3u8\n")
 	writeHLSLoadingFile(t, filepath.Join(directory, "360p/index.m3u8"), copiedRecoveryManifest)
-	writeHLSLoadingFile(t, filepath.Join(directory, "360p/init.mp4"), "initialization")
+	writeHLSLoadingFile(t, filepath.Join(directory, "360p/init.mp4"), copiedRecoveryInitialization())
 	writeHLSLoadingFile(t, filepath.Join(directory, "360p/segment-00000.m4s"), "first fragment")
 	writeHLSLoadingFile(t, filepath.Join(directory, "360p/segment-00001.m4s"), "last fragment")
 	timeline := &copiedHLSTimeline{Policy: options.Cache, Strategy: "h264-idr-keys-1", Numerator: 1, Denominator: 1000, TimeBase: 0.001, Keys: []copiedHLSKey{{PTS: 0, DTS: 0}, {PTS: 2000, DTS: 2000}}, End: 4}
@@ -101,6 +102,11 @@ func copiedRecoveryAssertStopped(t *testing.T, data []byte) {
 }
 
 const copiedRecoveryManifest = "#EXTM3U\n#EXT-X-VERSION:7\n#EXT-X-TARGETDURATION:2\n#EXT-X-MEDIA-SEQUENCE:0\n#EXT-X-PLAYLIST-TYPE:EVENT\n#EXT-X-MAP:URI=\"init.mp4\"\n#EXTINF:2.000000,\nsegment-00000.m4s\n#EXTINF:2.000000,\nsegment-00001.m4s\n#EXT-X-ENDLIST\n"
+
+// A structurally valid sample description; real codec tests own decoding.
+func copiedRecoveryInitialization() string {
+	return string(mp4fixture.Initialization(640, 360, "h264", "aac", ""))
+}
 
 func copiedRecoveryQuote(value string) string {
 	return "'" + strings.ReplaceAll(value, "'", "'\"'\"'") + "'"

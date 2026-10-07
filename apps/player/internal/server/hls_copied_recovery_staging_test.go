@@ -8,12 +8,12 @@ import (
 )
 
 func TestCopiedRecoveryRefillRejectsUncertifiedOutput(t *testing.T) {
-	for _, sample := range []struct{ init, first, manifest string }{
-		{"damaged init", "first fragment", copiedRecoveryManifest},
-		{"initialization", "damaged first", copiedRecoveryManifest},
-		{"initialization", "first fragment", strings.Replace(copiedRecoveryManifest, "#EXTINF:2.000000,", "#EXTINF:1.000000,", 1)},
+	for _, sample := range []struct{ name, init, first, manifest string }{
+		{"init", "initialization", "first fragment", copiedRecoveryManifest},
+		{"first", copiedRecoveryInitialization(), "damaged first", copiedRecoveryManifest},
+		{"manifest", copiedRecoveryInitialization(), "first fragment", strings.Replace(copiedRecoveryManifest, "#EXTINF:2.000000,", "#EXTINF:1.000000,", 1)},
 	} {
-		t.Run(sample.init+"/"+sample.first+"/"+sample.manifest[0:10], func(t *testing.T) {
+		t.Run(sample.name, func(t *testing.T) {
 			manager, item, recipe, directory := copiedRecoveryRefill(t)
 			check := copiedRecoveryPreserved(t, directory)
 			copiedRecoveryEncoderOutput(t, manager, "", sample.init, sample.first, sample.manifest)
@@ -94,7 +94,7 @@ func TestCopiedRecoveryRefillSingleGOPUsesGenuineEOF(t *testing.T) {
 		t.Fatal(err)
 	}
 	check := copiedRecoveryPreserved(t, directory)
-	copiedRecoveryEncoderOutput(t, manager, "", "initialization", "first fragment", manifest)
+	copiedRecoveryEncoderOutput(t, manager, "", copiedRecoveryInitialization(), "first fragment", manifest)
 	if err := copiedRecoveryRunRefill(t.Context(), manager, item, recipe, directory); err != nil {
 		t.Fatal("single-GOP EOF refill was rejected")
 	}

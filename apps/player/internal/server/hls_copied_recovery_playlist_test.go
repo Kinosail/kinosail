@@ -56,7 +56,7 @@ func TestCopiedRecoveryIndexedReuseChecksManifestAndInit(t *testing.T) { //nolin
 					t.Fatal(err)
 				}
 			case "init":
-				writeHLSLoadingFile(t, filepath.Join(directory, "360p/init.mp4"), "replacement init")
+				writeHLSLoadingFile(t, filepath.Join(directory, "360p/init.mp4"), "initialization")
 			case "first":
 				writeHLSLoadingFile(t, filepath.Join(directory, "360p/segment-00000.m4s"), "replacement first")
 			case "source":

@@ -81,6 +81,13 @@ func assertRejectedMasterWarning(t *testing.T, logs, requestID string) {
 func TestCopiedHLSHTTPAcceptsMaximumUniqueMasterWithoutEncoding(t *testing.T) {
 	f := newCopiedHTTPFixture(t, copiedPackets, copiedIDRs, copiedConfiguration)
 	awaitCopiedReady(t, f)
+	// Legacy unindexed caches allow the full bounded rendition set. An indexed
+	// copy instead binds exactly one rendition to its measured clock certificate.
+	for _, name := range []string{".copy-timeline", ".copy-clock"} {
+		if err := os.Remove(filepath.Join(f.directory, name)); err != nil {
+			t.Fatal(err)
+		}
+	}
 	qualities := []string{"360p", "432p", "540p", "720p", "1080p"}
 	populateCopiedMasterRenditions(t, f, qualities)
 	master := copiedMasterMetadata(t, f) + masterRenditions(qualities)
@@ -98,6 +105,25 @@ func TestCopiedHLSHTTPAcceptsMaximumUniqueMasterWithoutEncoding(t *testing.T) {
 	if !bytes.Equal(before, snapshotCopiedPolicyCache(t, f, false)) {
 		t.Fatal("valid bounded master rebuilt cache or admitted encoding")
 	}
+}
+
+func TestCopiedHLSHTTPCertifiedMasterRejectsAmbiguousOwnerWithoutMutation(t *testing.T) {
+	f := newCopiedHTTPFixture(t, copiedPackets, copiedIDRs, copiedConfiguration)
+	awaitCopiedReady(t, f)
+	qualities := []string{"360p", "432p"}
+	populateCopiedMasterRenditions(t, f, qualities)
+	master := copiedMasterMetadata(t, f) + masterRenditions(qualities)
+	if err := writeCopiedCacheFile(f.config.CacheDir, filepath.Join(f.directory, "index.m3u8"), []byte(master)); err != nil {
+		t.Fatal(err)
+	}
+	before := snapshotCopiedPolicyCache(t, f, true)
+	path := strings.TrimSuffix(f.source, "index.m3u8") + "360p/segment-00000.m4s"
+	response := apiCall(t, server.New(f.config), "", http.MethodGet, path, nil)
+	assertAPIBody(t, response, http.StatusNotFound)
+	if !bytes.Equal(before, snapshotCopiedPolicyCache(t, f, true)) {
+		t.Fatal("ambiguous certified master changed cache or admitted encoding")
+	}
+	assertCopiedRecoverySourceUnchanged(t, f)
 }
 
 func populateCopiedMasterRenditions(t *testing.T, f copiedHTTPFixture, qualities []string) {

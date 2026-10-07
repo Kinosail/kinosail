@@ -29,7 +29,7 @@ func copiedRecoveryRefill(t *testing.T) (*hlsManager, library.Item, hlsRecipe, s
 }
 
 func copiedRecoveryEncoder(t *testing.T, manager *hlsManager, action string) {
-	copiedRecoveryEncoderOutput(t, manager, action, "initialization", "first fragment", copiedRecoveryManifest)
+	copiedRecoveryEncoderOutput(t, manager, action, copiedRecoveryInitialization(), "first fragment", copiedRecoveryManifest)
 }
 
 func copiedRecoveryEncoderOutput(t *testing.T, manager *hlsManager, action, init, first, manifest string) {

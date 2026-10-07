@@ -66,7 +66,7 @@ func newCopiedHTTPFixture(t *testing.T, packets, idrs, configuration string) cop
 		"for output; do case \"$output\" in */index.m3u8)\nprintf 'encode\\n' >> "+quote(starts)+"\ndirectory=${output%/*}; mediaDirectory=${segments%/*}; mkdir -p \"$directory\" \"$mediaDirectory\"\n"+
 		mp4fixture.Shell(mp4fixture.Initialization(640, 360, "h264", "aac", ""))+" > \"$directory/init.mp4\"\n"+
 		"segment=$(printf 'segment-%05d.m4s' \"$start\"); printf 'fragment-%s' \"$start\" > \"$mediaDirectory/$segment\"\n"+
-		"printf '#EXTM3U\\n#EXT-X-PLAYLIST-TYPE:EVENT\\n#EXT-X-MAP:URI=\"init.mp4\"\\n#EXTINF:4,\\n%s\\n' \"$segment\" > \"$output\"\n"+
+		"printf '#EXTM3U\\n#EXT-X-TARGETDURATION:4\\n#EXT-X-PLAYLIST-TYPE:EVENT\\n#EXT-X-MAP:URI=\"init.mp4\"\\n#EXTINF:4,\\n%s\\n' \"$segment\" > \"$output\"\n"+
 		"if [ \"$start\" = 0 ]; then printf fragment-1 > \"$directory/segment-00001.m4s\"; printf '#EXTINF:4,\\nsegment-00001.m4s\\n' >> \"$output\"; printf fragment-2 > \"$directory/segment-00002.m4s\"; printf '#EXTINF:4,\\nsegment-00002.m4s\\n' >> \"$output\"; fi\nprintf '#EXT-X-ENDLIST\\n' >> \"$output\"\nwhile [ ! -f "+quote(release)+" ]; do sleep 0.01; done\n;; esac; done\n")
 	config := server.Config{Lifecycle: t.Context(), MediaDir: media, DataDir: t.TempDir(), CacheDir: cache, FFprobe: probe, FFmpeg: encoder}
 	output := captureCopiedLogs(t)
