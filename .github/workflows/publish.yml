@@ -78,6 +78,11 @@ jobs:
           cache-to: type=gha,mode=max,scope=${{ matrix.app }}-linux/${{ matrix.arch }}
           sbom: true
           provenance: mode=max
+      - name: Pull immutable candidate image
+        env:
+          APP: ${{ matrix.app }}
+          IMAGE: ghcr.io/kinosail/kinosail-${{ matrix.app }}@${{ steps.build.outputs.digest }}
+        run: ./scripts/ci/pull-image.sh "$APP" "$IMAGE"
       - parallel:
           - name: Test the production image by digest
             env:
