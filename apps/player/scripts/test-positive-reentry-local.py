@@ -209,7 +209,7 @@ try:
         if borrowed_link is not None:
             borrowed_link.symlink_to(dependencies, target_is_directory=True)
             borrowed_link_created = True
-        command = ['node', 'node_modules/@playwright/test/cli.js', 'test', 'test-instance-positive-reentry.spec.ts', '--project=webkit', '--workers=1', '--retries=0']
+        command = ['node', 'node_modules/@playwright/test/cli.js', 'test', 'test-instance-positive-reentry.spec.ts', '--project=webkit', '--workers=1', '--retries=0', '--headed']
         receipt['stage'] = 'decoded-browser-check'
         receipt['browserCommand'] = command
         with (run / 'browser-private.log').open('w') as log:
