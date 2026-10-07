@@ -27,13 +27,13 @@ window.kinosailPlaybackCapabilities = (() => {
     } catch (_) {}
     return mediaSource ? typeof MediaSource !== "undefined" && MediaSource.isTypeSupported(contentType) : element.canPlayType(contentType) !== "";
   }
-  const audioIncompatible = (policy, mode) => policy === "direct-first" && mode === "audio-transcode";
+  const audioIncompatible = (policy, mode, required) => policy === "direct-first" && (required === true || mode === "audio-transcode");
   const appleMatroska = type => Boolean(type && navigator.vendor.includes("Apple") && /^video\/(x-)?matroska(?:;|$)/i.test(type));
   const policy = (saved, server, compatible) => {
     const fallback = {automatic: "direct-first", direct: "direct-only", compatible: "compatible"}[server] || "direct-first";
     return compatible ? ["direct-first", "direct-only", "compatible"].includes(saved) ? saved : fallback : "direct-only";
   };
-  const initialCompatible = (policy, mode, type, direct, planned) => policy === "compatible" || !direct ||
-    audioIncompatible(policy, mode) || !planned && policy === "direct-first" && appleMatroska(type);
+  const initialCompatible = (policy, mode, type, direct, planned, audioRequired) => policy === "compatible" || !direct ||
+    audioIncompatible(policy, mode, audioRequired) || !planned && policy === "direct-first" && appleMatroska(type);
   return {codecs, video, supports, needsAdapter, audioIncompatible, appleMatroska, policy, initialCompatible};
 })();
