@@ -82,13 +82,12 @@ for (const destination of ['ordinary query', 'fragment', 'other origin']) test(`
   } finally {await peer.close();}
 });
 
-test('contextual Back retires HLS after an already acknowledged paused position', {tag: '@smoke'}, async ({page}, info) => {
+test('unplayed contextual Back retires HLS before destination commits', {tag: '@smoke'}, async ({page}, info) => {
   const peer = await hlsNavigationPeer(true);
   try {
-    const media = await movingVideo(page, peer);
-    const saved = page.waitForResponse(response => new URL(response.url()).pathname === '/progress/movie' && response.request().method() === 'POST');
-    await media.evaluate((video: HTMLVideoElement) => video.pause());
-    await (await saved).finished();
+    await page.goto(`${peer.origin}/watch/movie`);
+    await expect.poll(() => page.locator('video').evaluate((media: HTMLVideoElement) => media.readyState)).toBeGreaterThanOrEqual(2);
+    await expect.poll(() => peer.snapshot().waitingSegments).toBe(1);
     const before = peer.snapshot();
     await page.getByRole('link', {name: 'Back to Movies', exact: true}).click({noWaitAfter: true});
     await expect.poll(() => peer.snapshot().departing).toBe(true);
@@ -100,8 +99,8 @@ test('contextual Back retires HLS after an already acknowledged paused position'
     await expect(page).toHaveURL(`${peer.origin}${peer.facts.returnPath}`);
     expect(pending.requests.filter(request => request.afterDestination && request.kind.endsWith('.ts'))).toEqual([]);
     expect(pending.requests.filter(request => request.kind === 'progress').length).toBe(before.requests.filter(request => request.kind === 'progress').length);
-    await info.attach('acknowledged-contextual-HLS-exit', {body: JSON.stringify({facts: peer.facts, before, pending,
-      boundary: 'real HLS and checkpoint HTTP acknowledgement; no Go storage'}), contentType: 'application/json'});
+    await info.attach('unplayed-contextual-HLS-exit', {body: JSON.stringify({facts: peer.facts, before, pending,
+      boundary: 'real HLS without playback intent; no Go storage'}), contentType: 'application/json'});
   } finally {await peer.close();}
 });
 
