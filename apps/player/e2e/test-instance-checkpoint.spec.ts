@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import { configureTestInstance, login } from "./test-instance-helpers";
 import { registerNavigationCheckpoints } from "./checkpoint-navigation-cases";
 import { registerResumeCheckpoints } from "./checkpoint-resume-cases";
+import { checkpointSeconds, prepareSavedPositionBaseline } from "./checkpoint-progress";
 
 // Read-only diagnostics for the page's existing playback state; these declarations emit no JavaScript.
 declare const playbackPreparation: unknown;
@@ -34,7 +35,7 @@ async function checkpoint(page: Page, id: string, session?: string) {
   expect(response.status()).toBe(200);
   const body = await response.json();
   expect(body.item.progress).toBeTruthy();
-  return {seconds: Number(body.item.progress.seconds), revision: Number(body.item.progress.revision),
+  return {seconds: checkpointSeconds(body.item.progress), revision: Number(body.item.progress.revision),
     ...(session ? {sessionMatches: body.item.progress.session === session} : {})};
 }
 
@@ -89,12 +90,13 @@ async function observeExit(page: Page, id: string, key: string) {
   }, {item: id, key});
 }
 
-async function openMovie(page: Page, observation?: {key: string; iteration: number; testInfo: TestInfo}) {
+async function openMovie(page: Page, observation?: {key: string; iteration: number; testInfo: TestInfo}, freshSavedPositionCase = false) {
   if (!observation || observation.iteration === 0) await login(page);
   await page.goto(browsePath);
   const card = page.locator('a.card[href^="/watch/"]').filter({hasText: "Checkpoint Example"}).first();
   await expect(card).toBeVisible();
   const watch = (await card.getAttribute("href"))!;
+  if (freshSavedPositionCase) await prepareSavedPositionBaseline(page, watch);
   await card.click();
   await page.waitForURL(url => url.pathname === watch);
   const media = page.locator("video"), id = watch.split("/").at(-1)!;
@@ -203,7 +205,7 @@ test("Library exit checkpoints actual playing time before teardown without reset
 });
 
 registerNavigationCheckpoints({phase, checkpoint, openMovie, browsePath});
-registerResumeCheckpoints({phase, openMovie, browsePath});
+registerResumeCheckpoints({phase, openMovie: page => openMovie(page, undefined, true), browsePath});
 
 test("progress chain distinguishes an ignored acknowledgement from an accepted stored position", {tag: "@smoke"}, async ({page}, info) => {
   test.skip(phase !== "candidate", "historical replay is separate from public progress semantics");
