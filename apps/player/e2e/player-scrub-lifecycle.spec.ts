@@ -5,6 +5,7 @@ import { installPlayerExperienceFixture } from "./player-experience-fixture";
 installPlayerExperienceFixture();
 
 const frame = '<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="320" height="180" fill="green"/></svg>';
+const viewports = [{ width: 390, height: 844 }, { width: 1440, height: 900 }, { width: 1920, height: 1080 }];
 
 test.beforeEach(async ({ page }) => {
   await page.addStyleTag({ content: await readFile("../../../packages/webassets/static/player-stage.css", "utf8") });
@@ -15,7 +16,7 @@ for (const completion of ["canplay", "advancing timeupdate"]) test(`@smoke the t
   await page.locator("video").evaluate(video => video.play());
   await page.locator("video").dispatchEvent("seeking");
   const seek = page.getByRole("slider", { name: "Seek", exact: true });
-  for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }, { width: 1920, height: 1080 }]) {
+  for (const viewport of viewports) {
     await page.setViewportSize(viewport);
     await expect(seek).toBeVisible();
     await expect(page.locator("[data-player-message]")).toHaveText("Seeking…");
@@ -81,7 +82,13 @@ test("previews request promptly, coalesce slow loads, reuse decoded frames and r
   };
   await show(30);
   await expect.poll(() => requests.length).toBe(1);
-  const pendingBox = await preview.boundingBox();
+  await expect(preview.locator("[data-seek-frame]")).toBeVisible();
+  const pendingHeights = new Map<number, number>();
+  for (const viewport of viewports) {
+    await page.setViewportSize(viewport);
+    pendingHeights.set(viewport.width, (await preview.boundingBox())!.height);
+    await page.locator(".media-stage").screenshot({ path: testInfo.outputPath(`preview-pending-${viewport.width}.png`) });
+  }
   await show(40);
   await show(55);
   expect(requests).toEqual(["/trickplay/movie/30"]);
@@ -90,14 +97,24 @@ test("previews request promptly, coalesce slow loads, reuse decoded frames and r
   await expect(preview.locator("img")).toHaveAttribute("src", /\/50$/);
   await expect(page.getByRole("slider", { name: "Seek", exact: true })).toBeVisible();
   expect(requests).toEqual(["/trickplay/movie/30", "/trickplay/movie/50"]);
-  expect((await preview.boundingBox())!.height).toBe(pendingBox!.height);
+  for (const viewport of viewports) {
+    await page.setViewportSize(viewport);
+    expect((await preview.boundingBox())!.height).toBe(pendingHeights.get(viewport.width));
+    await page.locator(".media-stage").screenshot({ path: testInfo.outputPath(`preview-loaded-${viewport.width}.png`) });
+  }
   await show(30);
   await expect(preview.locator("img")).toBeVisible();
   await expect(preview.locator("img")).toHaveAttribute("src", /\/30$/);
   expect(requests).toHaveLength(2);
   await show(70);
   await expect(preview.locator("img")).toBeHidden();
+  await expect(preview.locator("[data-seek-frame]")).toBeHidden();
   await expect(preview.locator("[data-seek-frame]")).toHaveAttribute("aria-busy", "false");
+  for (const viewport of viewports) {
+    await page.setViewportSize(viewport);
+    expect((await preview.boundingBox())!.height).toBeLessThan(pendingHeights.get(viewport.width)!);
+    await page.locator(".media-stage").screenshot({ path: testInfo.outputPath(`preview-failed-${viewport.width}.png`) });
+  }
   await show(30);
   await expect(preview.locator("img")).toBeVisible();
   await seek.dispatchEvent("blur");
@@ -105,21 +122,23 @@ test("previews request promptly, coalesce slow loads, reuse decoded frames and r
   await testInfo.attach("preview-requests", { body: JSON.stringify(requests), contentType: "application/json" });
 });
 
-for (const unavailable of ["missing source", "beyond the preview range"]) test(`reopening a preview with ${unavailable} never displays a stale frame`, async ({ page }) => {
+for (const preloaded of [false, true]) for (const unavailable of ["missing source", "beyond the preview range"]) test(`${preloaded ? "reopening" : "opening"} a preview with ${unavailable} never displays a stale frame`, async ({ page }, info) => {
   const requests: string[] = [];
   await page.route("**/trickplay/movie/*", route => {
     requests.push(route.request().url());
     return route.fulfill({ contentType: "image/svg+xml", body: frame });
   });
   const seek = page.locator("[data-player-seek]");
-  await seek.evaluate((input: HTMLInputElement) => {
-    input.dataset.trickplay = "https://127.0.0.1:38127/trickplay/movie/{second}";
-    input.value = "30";
-    input.dispatchEvent(new Event("input"));
-  });
   const preview = page.locator("[data-seek-preview]");
-  await expect(preview.locator("img")).toBeVisible();
-  await seek.dispatchEvent("blur");
+  if (preloaded) {
+    await seek.evaluate((input: HTMLInputElement) => {
+      input.dataset.trickplay = "https://127.0.0.1:38127/trickplay/movie/{second}";
+      input.value = "30";
+      input.dispatchEvent(new Event("input"));
+    });
+    await expect(preview.locator("img")).toBeVisible();
+    await seek.dispatchEvent("blur");
+  }
   await seek.evaluate((input: HTMLInputElement, scenario) => {
     if (scenario === "missing source") delete input.dataset.trickplay;
     else input.max = "50000";
@@ -128,8 +147,14 @@ for (const unavailable of ["missing source", "beyond the preview range"]) test(`
   }, unavailable);
   await expect(preview).toBeVisible();
   await expect(preview.locator("img")).toBeHidden();
+  await expect(preview.locator("[data-seek-frame]")).toBeHidden();
   await expect(preview.locator("[data-seek-frame]")).toHaveAttribute("aria-busy", "false");
-  expect(requests).toHaveLength(1);
+  expect(requests).toHaveLength(preloaded ? 1 : 0);
+  for (const viewport of viewports) {
+    await page.setViewportSize(viewport);
+    await expect(preview.locator("[data-seek-frame]")).toBeHidden();
+    await page.locator(".media-stage").screenshot({ path: info.outputPath(`preview-unavailable-${viewport.width}.png`) });
+  }
 });
 
 test("preview caching retains recent frames and evicts old frames after its bound", async ({ page }) => {

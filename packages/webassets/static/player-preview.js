@@ -8,8 +8,10 @@ const createSeekPreview = (seek, preview) => {
   let scheduled;
   const display = (image) => {
     frame.replaceChildren(...(image ? [image] : []));
+    frame.hidden = !image && !(wanted && loading);
     frame.setAttribute("aria-busy", String(Boolean(wanted && !image && loading)));
   };
+  if (frame) display();
   const load = () => {
     scheduled = undefined;
     if (!wanted || loading) return;
