@@ -38,3 +38,23 @@ for (const width of [390, 1440, 1920]) {
     await direct.close();
   });
 }
+
+test("Home keeps its exact contextual return after Mark watched", async ({page}, info) => {
+  const path = "/?view=all";
+  await page.goto(`${origin}${path}`);
+  const movie = page.locator('a.card[href^="/watch/"]').first();
+  const href = (await movie.getAttribute("href"))!;
+  await movie.click();
+  const unwatched = page.getByRole("button", {name: "Mark unwatched"});
+  if (await unwatched.isVisible()) await unwatched.click();
+  await page.getByRole("button", {name: "Mark watched"}).click();
+  await expect(unwatched).toBeVisible();
+  const back = page.getByRole("link", {name: "Back to Library", exact: true});
+  await expect(back).toBeVisible();
+  await expect(back).toHaveAttribute("href", path);
+  await expect(page.getByRole("link", {name: "Library", exact: true})).toHaveCount(0);
+  await record(page, info, "home-watched-return", href);
+  await back.click();
+  await expect(page).toHaveURL(`${origin}${path}`);
+  await expect(page.getByRole("link", {name: /\bResume\b/})).toHaveCount(0);
+});
