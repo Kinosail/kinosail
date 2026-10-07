@@ -4,7 +4,7 @@ import math
 import re
 import stat
 import time
-from hls_followon_frames import audio_sequence
+from hls_followon_frames import audio_sequence, aac_clock_evidence
 from hls_nonkey_installation import bounded_file
 from hls_timeline_packets import manifest_facts
 
@@ -215,6 +215,15 @@ def source_pattern_matches(source, centers, offset):
         for window, center in zip(windows, centers)))
 
 
+def copied_audio_tail(source, public):
+    left, right = [[v[2] for v in value['packetRows']] for value in [source, public]]
+    matches = [n for n in range(len(left) - len(right) + 1) if right and left[n:n + len(right)] == right]
+    start = matches[0] if len(matches) == 1 else None
+    return {'sourcePacketCount': len(left), 'publicPacketCount': len(right), 'sequenceMatches': len(matches),
+        'sourceStartIndex': start, 'sourceEndIndex': start + len(right) - 1 if start is not None else None,
+        'sourceTailComplete': start is not None and start + len(right) == len(left)}
+
+
 def marked_audio_proof(source, public, metadata, offset, case):
     if not metadata.get('audioTimeMarked'):
         raise RuntimeError('timing_marked_audio_scope')
@@ -233,3 +242,12 @@ def marked_audio_proof(source, public, metadata, offset, case):
         'decodedSampleDifference': observed['decodedSamples'] - reference['decodedSamples']}
     if not matched:
         case['failures'].append('copied_marked_audio_content')
+    source_clock, public_clock = aac_clock_evidence(source), aac_clock_evidence(public)
+    extra = max(0, -public_clock['formatStartSeconds'])
+    control = audio_sequence(public, duration, centers=centers, output_budget_extra=extra)
+    case['markedAAC']['decoderBudgetControl'] = {
+        'boundary': 'Extra output time budget from measured negative format origin only; original failed windows remain',
+        'outputBudgetAddedSeconds': extra, 'public': control, 'sourceClock': source_clock, 'publicClock': public_clock,
+        'decodedSampleDifference': control['decodedSamples'] - reference['decodedSamples'],
+        'contentMatches': source_valid and audio_content_matches(reference, control),
+        'copiedSourceTail': copied_audio_tail(source_clock, public_clock)}

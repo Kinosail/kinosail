@@ -4,6 +4,7 @@ import {createHash} from 'node:crypto';
 import {readFileSync, writeFileSync, renameSync, existsSync} from 'node:fs';
 import {packNative420} from './hls-native-planes.mjs';
 import {observeDirectDelivery} from './hls-direct-delivery.mjs';
+import {installPresentationTimeline} from './hls-renderer-timeline.mjs';
 
 const target = process.argv[2];
 const bytes = readFileSync(0);
@@ -121,7 +122,7 @@ async function capture(id, compatible) {
       if (!(media instanceof HTMLVideoElement) || media.dataset.proofAttached) return;
       media.dataset.proofAttached = '1';
       media.defaultPlaybackRate = media.playbackRate = 1;
-      let pendingCopies = 0;
+      let pendingCopies = 0, timeline;
       const copyFrame = async (frame, row) => {
         pendingCopies++;
         try {
@@ -155,8 +156,11 @@ async function capture(id, compatible) {
           const hash = await crypto.subtle.digest('SHA-256', packed);
           row[2] = [...new Uint8Array(hash)].map(byte => byte.toString(16).padStart(2, '0')).join('');
         } catch {proof.captureErrors++;}
-        finally {frame.close(); pendingCopies--;}
+        finally {frame.close(); pendingCopies--; timeline?.touch();}
       };
+      timeline = installPresentationTimeline(proof, media, nativeTime, nativeDuration,
+        copyFrame, () => pendingCopies, stopPulse);
+      window.__hlsSettlePresentation = timeline.settle;
       const checkpoint = phase => {
         if (proof.qualityCheckpoints.length >= 64) return;
         const value = {phase, nativeTime: nativeTime.call(media), callbacks: proof.rows.length,
@@ -176,10 +180,11 @@ async function capture(id, compatible) {
         } catch {frame?.close(); proof.captureErrors++;}
       };
       window.__hlsQualityCheckpoint = checkpoint;
-      const record = (_, metadata) => {
+      const record = (stamp, metadata) => {
         if (proof.rows.length >= 4096) {proof.captureErrors++; media.pause(); return;}
         const row = [metadata.mediaTime, metadata.presentedFrames, '', null, null, media.playbackRate];
         proof.rows.push(row);
+        timeline.onCallback(stamp, metadata);
         let frame;
         try {
           proof.width = media.videoWidth;
@@ -200,7 +205,7 @@ async function capture(id, compatible) {
         media.addEventListener(name, () => {
           checkpoint(name);
           if (proof.events.length < 128) proof.events.push([name, nativeTime.call(media), media.currentTime]);
-          if (name === 'ended') {proof.ended = true; stopPulse('ended');}
+          if (name === 'ended') {proof.ended = true; timeline.onEnd();}
           if (name === 'error') {proof.errorCode = media.error?.code || 0; stopPulse('error');}
         });
       }
@@ -222,7 +227,7 @@ async function capture(id, compatible) {
       .observe(document, {childList: true, subtree: true});
     document.addEventListener('DOMContentLoaded', () => document.querySelectorAll('video').forEach(attach));
   };
-  await page.addInitScript({content: `const packNative420 = ${packNative420.toString()};(${observe.toString()})();`});
+  await page.addInitScript({content: `const packNative420 = ${packNative420.toString()};const installPresentationTimeline = ${installPresentationTimeline.toString()};(${observe.toString()})();`});
   let failureClass;
   try {
     const timeout = () => Math.max(1, deadline - Date.now());
@@ -263,7 +268,7 @@ async function capture(id, compatible) {
   try {
     facts = await page.evaluate(async () => {
       const proof = window.__hlsProof;
-      await Promise.all(proof.hashes);
+      await window.__hlsSettlePresentation();
       const {hashes, ...safe} = proof;
       return safe;
     });

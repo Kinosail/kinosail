@@ -1,6 +1,7 @@
 """Integrity gaps that valid public media cannot deliberately inject."""
 import os
 import hashlib
+import json
 from pathlib import Path
 import struct
 import tempfile
@@ -12,12 +13,59 @@ from hls_timeline_http import PublicServer
 
 
 class FloatingAudioCenters(unittest.TestCase):
+    def test_negative_origin_control_extends_only_the_output_time_bound(self):
+        result = SimpleNamespace(returncode=0, stdout=struct.pack('<f', 0.1) * 16000)
+        with mock.patch('hls_followon_frames.subprocess.run', return_value=result) as run:
+            audio_sequence(Path('synthetic'), 1, centers=[0.25], output_budget_extra=0.5)
+        command = run.call_args.args[0]
+        self.assertEqual(command[command.index('-t') + 1], '1.7')
+        self.assertNotIn('-copyts', command)
+        self.assertNotIn('-ss', command)
+        for bad in [True, -0.1, 1.1, float('nan')]:
+            with mock.patch('hls_followon_frames.subprocess.run', side_effect=AssertionError('process_effect')):
+                with self.assertRaises(RuntimeError): audio_sequence(Path('synthetic'), 1, output_budget_extra=bad)
+
     def test_fractional_centers_select_actual_sample_windows(self):
         result = SimpleNamespace(returncode=0, stdout=struct.pack('<f', 0.1) * 16000)
         with mock.patch('hls_followon_frames.subprocess.run', return_value=result):
             facts = audio_sequence(Path('synthetic'), 1, centers=[0.25, 0.5, 0.75])
         self.assertEqual(len(facts['windows']), 3)
         self.assertTrue(all(v['available'] for v in facts['windows']))
+
+
+class AACClockIntegrity(unittest.TestCase):
+    def probe(self):
+        return {'streams': [{'sample_rate': '48000'}], 'format': {'start_time': '-0.5', 'duration': '20.5'},
+            'packets_and_frames': [{'type': 'packet', 'pts_time': '0.0', 'duration_time': '0.021333',
+                'data_hash': 'SHA256:' + 'a' * 64, 'side_data_list': [{'side_data_type': 'Skip Samples',
+                    'skip_samples': 10, 'discard_padding': 0}]},
+                {'type': 'frame', 'pts_time': '0.000208', 'nb_samples': 1014}]}
+
+    def test_complete_clock_samples_payload_and_skip_facts_are_retained(self):
+        from hls_followon_frames import parse_aac_clock_probe
+        facts = parse_aac_clock_probe(json.dumps(self.probe()).encode())
+        self.assertEqual(facts['packetRows'][0][-1], [[10, 0]])
+        self.assertEqual(facts['frameRows'], [[0.000208, 1014]])
+        self.assertEqual(facts['packetRows'][0][2], 'a' * 64)
+        self.assertEqual(facts['decodedSamplesAtSourceRate'], 1014)
+
+    def test_missing_foreign_nonfinite_and_oversized_facts_fail(self):
+        from hls_followon_frames import parse_aac_clock_probe
+        for field, value in [('pts_time', 'NaN'), ('data_hash', 'private'), ('duration_time', '-1')]:
+            probe = self.probe(); probe['packets_and_frames'][0][field] = value
+            with self.assertRaises(RuntimeError): parse_aac_clock_probe(json.dumps(probe).encode())
+        for value in [True, -1, 999999]:
+            probe = self.probe(); probe['packets_and_frames'][0]['side_data_list'][0]['skip_samples'] = value
+            with self.assertRaises(RuntimeError): parse_aac_clock_probe(json.dumps(probe).encode())
+        with self.assertRaises(RuntimeError): parse_aac_clock_probe(b'x' * (2 * 1024 * 1024 + 1))
+
+    def test_unique_complete_source_tail_is_required(self):
+        from hls_nonkey_timing import copied_audio_tail
+        source = {'packetRows': [[n / 10, 0.1, format(n, '064x'), []] for n in range(4)]}
+        self.assertTrue(copied_audio_tail(source, {'packetRows': source['packetRows'][2:]})['sourceTailComplete'])
+        self.assertFalse(copied_audio_tail(source, {'packetRows': source['packetRows'][2:3]})['sourceTailComplete'])
+        repeated = {'packetRows': [source['packetRows'][0]] * 4}
+        self.assertFalse(copied_audio_tail(repeated, {'packetRows': repeated['packetRows'][2:]})['sourceTailComplete'])
 
 
 class TimingIntegrity(unittest.TestCase):

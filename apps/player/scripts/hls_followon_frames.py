@@ -83,11 +83,13 @@ def decode_frames(path, offset=None, deadline=None):
     return facts, rows
 
 
-def audio_sequence(path, duration, offset=0, centers=None):
+def audio_sequence(path, duration, offset=0, centers=None, output_budget_extra=0):
+    if type(output_budget_extra) not in (int, float) or not math.isfinite(output_budget_extra) or not 0 <= output_budget_extra <= 1:
+        raise RuntimeError('audio_budget_scope')
     command = ['ffmpeg', '-nostdin', '-v', 'error', '-xerror', '-threads', '2', '-i', str(path)]
     if offset:
         command += ['-ss', str(offset)]
-    command += ['-vn', '-t', str(duration + 0.2), '-ac', '1', '-ar', '16000', '-f', 'f32le', 'pipe:1']
+    command += ['-vn', '-t', str(duration + 0.2 + output_budget_extra), '-ac', '1', '-ar', '16000', '-f', 'f32le', 'pipe:1']
     result = subprocess.run(command, capture_output=True, timeout=40)
     if result.returncode or not 0 < len(result.stdout) <= 3 * 1024 * 1024 or len(result.stdout) % 4:
         raise RuntimeError('audio_decode_bound')
@@ -105,3 +107,74 @@ def audio_sequence(path, duration, offset=0, centers=None):
         windows.append({'sourceTimeSeconds': second + offset, 'available': True,
                         'frequencyHz': crossings * 2, 'rms': math.sqrt(sum(v*v for v in values) / len(values))})
     return {'decodedSamples': len(samples), 'windows': windows}
+
+
+def audio_clock(value):
+    try:
+        number = float(value)
+    except (TypeError, ValueError, OverflowError):
+        raise RuntimeError('aac_clock_shape') from None
+    if type(value) is bool or not math.isfinite(number) or not -1 <= number <= 40:
+        raise RuntimeError('aac_clock_shape')
+    return number
+
+
+def audio_skips(values):
+    if not isinstance(values, list) or len(values) > 8:
+        raise RuntimeError('aac_skip_bound')
+    result = []
+    for value in values:
+        if not isinstance(value, dict) or value.get('side_data_type') != 'Skip Samples':
+            raise RuntimeError('aac_skip_shape')
+        counts = [value.get(key) for key in ['skip_samples', 'discard_padding']]
+        if not all(type(n) is int and 0 <= n <= 8192 for n in counts):
+            raise RuntimeError('aac_skip_shape')
+        result.append(counts)
+    return result
+
+
+def parse_aac_clock_probe(data):
+    if not isinstance(data, bytes) or not 0 < len(data) <= 2 * 1024 * 1024:
+        raise RuntimeError('aac_probe_bound')
+    try:
+        value = json.loads(data)
+        streams, rows = value['streams'], value['packets_and_frames']
+        if not isinstance(streams, list) or len(streams) != 1:
+            raise RuntimeError('aac_stream_shape')
+        rate = streams[0]['sample_rate']
+        if not isinstance(rate, str) or not re.fullmatch('[1-9][0-9]{3,5}', rate) or not 8000 <= int(rate) <= 192000:
+            raise RuntimeError('aac_rate_shape')
+        origin, duration = [audio_clock(value['format'][key]) for key in ['start_time', 'duration']]
+        if duration <= 0 or not isinstance(rows, list) or not 0 < len(rows) <= 8192:
+            raise RuntimeError('aac_probe_rows')
+        packets, frames = [], []
+        for row in rows:
+            point = audio_clock(row['pts_time'])
+            if row['type'] == 'packet':
+                length, digest = audio_clock(row['duration_time']), row['data_hash']
+                if not 0 < length <= 1 or not isinstance(digest, str) or not re.fullmatch('SHA256:[a-f0-9]{64}', digest):
+                    raise RuntimeError('aac_packet_shape')
+                packets.append([point, length, digest[7:], audio_skips(row.get('side_data_list', []))])
+            elif row['type'] == 'frame' and type(row.get('nb_samples')) is int and 0 < row['nb_samples'] <= 8192:
+                frames.append([point, row['nb_samples']])
+            else:
+                raise RuntimeError('aac_frame_shape')
+        if not 0 < len(packets) < 4096 or not 0 < len(frames) < 4096:
+            raise RuntimeError('aac_complete_probe_bound')
+        return {'sampleRate': int(rate), 'formatStartSeconds': origin, 'formatDurationSeconds': duration,
+            'packetRowColumns': ['pts', 'duration', 'payloadSHA256', 'skipDiscardSamples'], 'packetRows': packets,
+            'frameRowColumns': ['pts', 'nbSamples'], 'frameRows': frames,
+            'decodedSamplesAtSourceRate': sum(v[1] for v in frames)}
+    except (KeyError, TypeError, ValueError, OverflowError):
+        raise RuntimeError('aac_probe_shape') from None
+
+
+def aac_clock_evidence(path):
+    command = ['ffprobe', '-v', 'error', '-threads', '2', '-select_streams', 'a:0', '-read_intervals', '%+#4096',
+        '-show_packets', '-show_frames', '-show_data_hash', 'sha256', '-show_entries',
+        'packet=type,pts_time,duration_time,data_hash:packet_side_data=side_data_type,skip_samples,discard_padding:'
+        'frame=type,pts_time,nb_samples:stream=sample_rate:format=start_time,duration', '-of', 'json', str(path)]
+    result = subprocess.run(command, capture_output=True, timeout=40)
+    if result.returncode:
+        raise RuntimeError('aac_complete_probe')
+    return parse_aac_clock_probe(result.stdout)

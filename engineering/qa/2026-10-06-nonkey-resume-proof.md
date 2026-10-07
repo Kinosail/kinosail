@@ -377,3 +377,48 @@ Reject invalid timeout values before network effects. Independently check the
 marked source frequencies against its four-second analytic fixture pattern;
 two equally wrong or missing observations must not qualify the AAC proof.
 These integrity failures cannot be injected by the valid hosted fixture.
+
+## Closed compositor tail diagnostic, before implementation
+
+The existing complete callback receipts do not close the post-END tail.
+WICG defines `presentedFrames` as compositor submissions; pinned Chromium 153
+counts these separately from decoded ready frames. Add a separately named
+diagnostic. Retain every legacy equality result, raw row and case failure.
+This diagnostic cannot certify physical screen scanout or surplus decode identity.
+
+Keep rVFC registration and the existing rAF pulse through END. Settle for at
+least 500 ms and eight animation frames, with 250 ms quiet time. Restart quiet
+time on callbacks, copy completion, quality changes or lifecycle changes.
+A separate two-second timer must fail even when rAF stops. Require settled
+samples before and after one final native copy, zero pending copies and equal
+terminal count, PTS, hash and quality facts. Preserve all existing copy bounds.
+
+Retain one aligned timing row per callback, including callback, presentation
+and expected-display times. Require visibility and one attached video generation
+through observation and settle. Permit initial loading, then reject post-gesture
+source replacement, loadstart, emptied, navigation or counter reset. Compare
+source strings privately; retain only bounded identity facts.
+
+Before implementation, test late callback/copy facts, changed terminal counters
+or generation, missing timing rows and timeout. Explicitly test that a separately
+qualified diagnostic leaves legacy equality false. The full Direct reference
+must still pass unchanged and settle. Public native identity, source clock,
+trusted startup, fixed rate, delivery, process and source guards remain required.
+EOF duration/cuts, signed edit/preroll, AAC, refill and cache proof stay separate.
+
+## Negative-origin AAC decoder budget, before implementation
+
+Run `37565697792` retained all AAC packets through 19.4995/19.499833 seconds.
+Its ordinary PCM decode stopped near 19.22/19.20 seconds. Both public containers
+have format start time -0.5. The difference closely matches normalization of that
+negative origin against the output `-t` limit. This is a hypothesis, not missing
+media proof. Preserve the original failed terminal window and command.
+
+Add a separately labeled decoder-budget control. Extend only its output time
+bound by the independently measured negative format origin, limited to one
+second. Keep sample byte, process, content and source-window bounds unchanged.
+Retain decoded frame PTS/sample counts and complete AAC packet payload hashes,
+including skip/discard facts. Require a unique contiguous source-packet match
+through actual source EOF. No packet or frame is trimmed to obtain a match.
+Before implementation, test missing/invalid clocks, hashes, skip fields and
+oversized probes, plus ambiguous or incomplete source-tail correspondence.

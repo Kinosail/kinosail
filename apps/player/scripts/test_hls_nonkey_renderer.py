@@ -21,6 +21,90 @@ def capture(count, first=0):
                  for n in range(count)]}
 
 
+def settled_capture(count, first=0):
+    value = capture(count, first)
+    row = value['rows'][-1]
+    terminal = {'callbacks': count, 'presentedFrames': row[1], 'pts': row[0],
+        'sha256': row[2], 'quality': dict(value['videoPlaybackQuality']), 'pendingCopies': 0}
+    value['frameTimings'] = [[n + 1, 100 + n * 40, 99 + n * 40, 115 + n * 40] for n in range(count)]
+    value['presentationTail'] = {'settled': True, 'timedOut': False,
+        'elapsedMilliseconds': 800, 'quietMilliseconds': 260, 'animationFrames': 20,
+        'visibilityStable': True, 'generationStable': True, 'attachments': 1,
+        'beforeFinalCopy': copy.deepcopy(terminal), 'afterFinalCopy': copy.deepcopy(terminal),
+        'finalNativeFrame': [row[0], None, row[2], row[3], row[4], row[5]],
+        'nativeTime': count / 24, 'nativeDuration': count / 24, 'ended': True, 'paused': True}
+    return value
+
+
+class CompositorTailIntegrity(unittest.TestCase):
+    def facts(self, public):
+        reference = settled_capture(4)
+        for row in public['rows']:
+            row[0] += 2 / 24; row[3] = round(row[0] * 1000000)
+        tail = public['presentationTail']
+        for key in ['beforeFinalCopy', 'afterFinalCopy']:
+            tail[key]['pts'] += 2 / 24
+        tail['finalNativeFrame'][0] += 2 / 24
+        tail['finalNativeFrame'][3] = round(tail['finalNativeFrame'][0] * 1000000)
+        legacy = renderer_facts(reference, public, [n / 24 for n in range(4)], 2 / 24)
+        return hls_nonkey_renderer.compositor_facts(reference, public, legacy)
+
+    def test_separate_observation_cannot_waive_legacy_equality(self):
+        public = settled_capture(2, 2)
+        for key in ['videoPlaybackQuality']:
+            public[key]['total'] = 3
+        for key in ['beforeFinalCopy', 'afterFinalCopy']:
+            public['presentationTail'][key]['quality']['total'] = 3
+        before = copy.deepcopy(public)
+        facts = self.facts(public)
+        self.assertTrue(facts['completeCompositorObservation'])
+        self.assertFalse(facts['legacyQualityEquality'])
+        self.assertEqual(public['videoPlaybackQuality'], before['videoPlaybackQuality'])
+
+    def test_late_callbacks_copies_counters_and_source_changes_fail_closed(self):
+        for field, broken in [('callbacks', 3), ('pendingCopies', 1), ('presentedFrames', 3),
+                ('pts', 0.2), ('sha256', 'f' * 64), ('quality', {'total': 3, 'dropped': 0, 'corrupted': 0})]:
+            public = settled_capture(2, 2)
+            public['presentationTail']['afterFinalCopy'][field] = broken
+            with self.subTest(field=field):
+                self.assertFalse(self.facts(public)['completeCompositorObservation'])
+        for field, broken in [('generationStable', False), ('visibilityStable', False),
+                ('attachments', 2), ('settled', False), ('timedOut', True), ('quietMilliseconds', 249),
+                ('elapsedMilliseconds', 2001), ('animationFrames', 7), ('paused', False)]:
+            public = settled_capture(2, 2); public['presentationTail'][field] = broken
+            with self.subTest(field=field):
+                self.assertFalse(self.facts(public)['completeCompositorObservation'])
+
+    def test_timing_alignment_native_final_frame_and_full_reference_are_required(self):
+        for fault in ['missing', 'counter', 'nonfinite', 'native', 'reference']:
+            public = settled_capture(2, 2)
+            if fault == 'missing': public['frameTimings'].pop()
+            elif fault == 'counter': public['frameTimings'][1][0] += 1
+            elif fault == 'nonfinite': public['frameTimings'][1][2] = float('nan')
+            elif fault == 'native': public['presentationTail']['finalNativeFrame'][2] = 'f' * 64
+            else:
+                legacy = {'referenceQualified': False}
+                self.assertFalse(hls_nonkey_renderer.compositor_facts(settled_capture(4), public, legacy)['completeCompositorObservation'])
+                continue
+            self.assertFalse(self.facts(public)['completeCompositorObservation'])
+
+    def test_boolean_attachment_and_quality_facts_cannot_mean_numeric_counts(self):
+        for fault in ['attachments', 'quality']:
+            public = settled_capture(2, 2)
+            if fault == 'attachments': public['presentationTail']['attachments'] = True
+            else:
+                for key in ['beforeFinalCopy', 'afterFinalCopy']:
+                    public['presentationTail'][key]['quality']['dropped'] = False
+            with self.subTest(fault=fault):
+                self.assertFalse(self.facts(public)['completeCompositorObservation'])
+
+    def test_actual_observer_retains_tail_registration_and_independent_deadline(self):
+        source = (Path(__file__).resolve().parents[1] / 'e2e/hls-public-renderer.mjs').read_text()
+        self.assertIn('installPresentationTimeline', source)
+        self.assertNotIn("stopPulse('ended')", source)
+        self.assertIn('await window.__hlsSettlePresentation()', source)
+
+
 class RendererIntegrity(unittest.TestCase):
     def test_complete_public_window_is_compared_without_hash_trimming(self):
         reference, public = capture(4), capture(2, 2)

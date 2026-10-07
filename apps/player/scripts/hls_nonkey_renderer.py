@@ -40,6 +40,11 @@ def capture_rows(value):
             and (row[3] is None or type(row[3]) is int and -1000000 <= row[3] <= 120000000)
             and (row[4] is None or type(row[4]) is int and 0 <= row[4] < 32)
             and type(row[5]) in (int, float) and math.isfinite(row[5]) and 0 <= row[5] <= 16, 'renderer_row_shape')
+    qualified = native_capture_integrity(value, rows) and value.get('videoPlaybackQuality', {}).get('total') == len(rows)
+    return rows, qualified
+
+
+def native_capture_integrity(value, rows):
     descriptors = value.get('nativeFrames', [])
     gesture, quality = value.get('beforeGesture', []), value.get('videoPlaybackQuality', {})
     paused = (isinstance(gesture, list) and len(gesture) == 2 and all(
@@ -57,12 +62,12 @@ def capture_rows(value):
         and value.get('gesture') == 'player-keyboard-space'
         and value.get('gestureEvent') == {'trusted': True, 'hasBeenActive': True, 'isActive': True}
         and native_metadata_qualified(descriptors)
-        and isinstance(quality, dict) and quality.get('total') == len(rows)
+        and isinstance(quality, dict)
         and quality.get('dropped') == 0 and quality.get('corrupted') == 0
         and all(re.fullmatch('[a-f0-9]{64}', row[2]) and row[3] is not None
                 and abs(row[3] / 1000000 - row[0]) <= 0.001
                 and row[4] is not None and row[4] < len(descriptors) and row[5] == 1 for row in rows))
-    return rows, qualified
+    return qualified
 
 
 def renderer_facts(reference, public, source_pts, requested):
@@ -86,7 +91,7 @@ def renderer_facts(reference, public, source_pts, requested):
         'publicSourceClockMatches': reference_ok and public_ok and bool(mapped)
             and all(n is not None and within_clock(row[0], source_pts[n])
                     for row, n in zip(observed, mapped)),
-        'colorInterpretationMatches': colors(reference) == colors(public),
+        'colorInterpretationMatches': colors(reference) == colors(public), 'independentSourcePTS': source_pts,
         'rowColumns': ['mediaTimeSeconds', 'presentedFrames', 'nativeYUV420SHA256',
                        'nativeTimestampMicroseconds', 'nativeFrameMetadataIndex', 'playbackRate'],
         'completeReferenceRows': [json.dumps(row, separators=(',', ':')) for row in original],
@@ -96,6 +101,66 @@ def renderer_facts(reference, public, source_pts, requested):
         'missingRequestedIndices': [n for n in expected if n not in mapped] if reference_ok else None,
         'unknownPublicFrames': sum(n is None for n in mapped),
         'duplicatePublicSourceIndices': [n for n, count in Counter(mapped).items() if n is not None and count > 1]}
+
+
+def timing_rows_qualified(value, rows):
+    timings = value.get('frameTimings', [])
+    return (isinstance(timings, list) and len(timings) == len(rows) and all(
+        isinstance(t, list) and len(t) == 4 and type(t[0]) is int and t[0] == row[1]
+        and all(type(v) in (int, float) and math.isfinite(v) and 0 <= v <= 240000 for v in t[1:])
+        and t[3] >= t[2] for t, row in zip(timings, rows))
+        and all(all(a[n] < b[n] for n in [1, 2, 3]) for a, b in zip(timings, timings[1:])))
+
+
+def terminal_sample_qualified(sample, rows):
+    if not isinstance(sample, dict) or not rows:
+        return False
+    last, quality = rows[-1], sample.get('quality', {})
+    return (sample.get('callbacks') == len(rows) and sample.get('presentedFrames') == last[1]
+        and sample.get('pts') == last[0] and sample.get('sha256') == last[2]
+        and type(sample.get('pendingCopies')) is int and sample['pendingCopies'] == 0
+        and isinstance(quality, dict) and type(quality.get('total')) is int
+        and len(rows) <= quality['total'] <= 8192
+        and all(type(quality.get(key)) is int and quality[key] == 0 for key in ['dropped', 'corrupted']))
+
+
+def tail_qualified(value, rows):
+    tail = value.get('presentationTail', {})
+    if not isinstance(tail, dict) or not rows:
+        return False
+    before, after = tail.get('beforeFinalCopy'), tail.get('afterFinalCopy')
+    final = tail.get('finalNativeFrame', [])
+    flags = all(tail.get(key) is True for key in ['settled', 'visibilityStable', 'generationStable', 'ended', 'paused'])
+    elapsed, quiet, frames = [tail.get(key) for key in ['elapsedMilliseconds', 'quietMilliseconds', 'animationFrames']]
+    bounds = (type(elapsed) in (int, float) and math.isfinite(elapsed) and 500 <= elapsed <= 2000
+        and type(quiet) in (int, float) and math.isfinite(quiet) and 250 <= quiet <= elapsed
+        and type(frames) is int and 8 <= frames <= 1024)
+    native = (isinstance(final, list) and len(final) == 6 and final[1] is None
+        and final[0] == rows[-1][3] / 1000000 and final[2:] == rows[-1][2:])
+    clocks = all(type(tail.get(key)) in (int, float) and math.isfinite(tail[key])
+        and 0 < tail[key] <= 120 for key in ['nativeTime', 'nativeDuration'])
+    return (flags and tail.get('timedOut') is False and type(tail.get('attachments')) is int and tail['attachments'] == 1 and bounds
+        and terminal_sample_qualified(before, rows) and before == after and native and clocks
+        and timing_rows_qualified(value, rows))
+
+
+def compositor_facts(reference, public, legacy):
+    original, _ = capture_rows(reference)
+    observed, _ = capture_rows(public)
+    source = legacy.get('independentSourcePTS', [])
+    mapped, expected = legacy.get('publicSourceIndices', []), legacy.get('expectedSourceIndices', [])
+    reference_ok = legacy.get('referenceQualified') is True and tail_qualified(reference, original)
+    identity = bool(expected) and mapped == expected and len(observed) == len(expected)
+    within = lambda a, b: abs(Decimal(str(a)) - Decimal(str(b))) <= Decimal('0.001')
+    clock = (bool(observed) and len(mapped) == len(observed) and all(type(n) is int and 0 <= n < len(source)
+        and within(row[0], source[n]) for row, n in zip(observed, mapped)))
+    tail_ok = tail_qualified(public, observed)
+    return {'boundary': 'Separate compositor/native-frame diagnostic; legacy equality/case failures remain; no screen scanout, surplus decode or production certification',
+        'referenceWithTailQualified': reference_ok, 'publicTailQualified': tail_ok,
+        'exactRequestedIdentity': identity, 'sourceClockMatches': clock,
+        'legacyQualityEquality': public.get('videoPlaybackQuality', {}).get('total') == len(observed),
+        'completeCompositorObservation': reference_ok and native_capture_integrity(public, observed)
+            and identity and clock and tail_ok and legacy.get('colorInterpretationMatches') is True}
 
 
 def renderer_delivery_matches(network, init_sha, segment_count, reference_unchanged):
@@ -150,16 +215,22 @@ def public_renderer(api, item_id, reference_id, metadata, offset, hls, directory
     result['runtime'] = {key: data.get(key) for key in ['browserVersion', 'playbackRate', 'reference', 'public', 'directResume']}
     result.update(renderer_facts(data.get('reference', {}), data.get('public', {}),
                                 metadata['sourceFramePTS'], metadata['sourceTimeOriginSeconds'] + offset))
+    result['compositorObservation'] = compositor_facts(data.get('reference', {}), data.get('public', {}), result)
     direct_facts = renderer_facts(data.get('reference', {}), data.get('directResume', {}),
                                  metadata['sourceFramePTS'], metadata['sourceTimeOriginSeconds'] + offset)
     direct_facts.pop('completeReferenceRows')  # Original full reference remains intact above.
     direct_facts['actualDirectMediaDelivered'] = direct_unchanged and direct_delivery_matches(
         data.get('directResume', {}).get('network', {}), bounded_bytes(direct_resume_source, 8 * 1024 * 1024,
                                                                     'direct_reference_bound'))
+    direct_facts['compositorObservation'] = compositor_facts(data.get('reference', {}), data.get('directResume', {}), direct_facts)
     result['directResumeControl'] = direct_facts
     network = data.get('public', {}).get('network', {})
     result['actualPlannedRecipeDelivered'] = renderer_delivery_matches(network, case['initializationSHA256'],
         case['publicVariant']['segmentCount'], unchanged)
+    result['compositorObservation']['deliveryAndProcessQualified'] = result['processQualified'] and result['actualPlannedRecipeDelivered']
+    direct_facts['compositorObservation']['deliveryAndProcessQualified'] = result['processQualified'] and direct_facts['actualDirectMediaDelivered']
+    for observation in [result['compositorObservation'], direct_facts['compositorObservation']]:
+        observation['completeCompositorObservation'] = observation['completeCompositorObservation'] and observation['deliveryAndProcessQualified']
     # Keep complete compact rows once; do not duplicate them in runtime metadata.
     for value in result['runtime'].values():
         if isinstance(value, dict):
