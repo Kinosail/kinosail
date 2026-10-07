@@ -98,6 +98,20 @@ class CompositorTailIntegrity(unittest.TestCase):
             with self.subTest(fault=fault):
                 self.assertFalse(self.facts(public)['completeCompositorObservation'])
 
+    def test_legal_late_display_timing_retains_complete_native_sequence(self):
+        public = settled_capture(2, 2)
+        for row in public['frameTimings']:
+            row[2] = row[3] + 1
+        self.assertTrue(self.facts(public)['nativeSequenceComplete'])
+
+    def test_colour_difference_is_retained_separately_from_native_sequence(self):
+        public = settled_capture(2, 2)
+        public['nativeFrames'][0]['colorSpace']['matrix'] = 'smpte170m'
+        facts = self.facts(public)
+        self.assertTrue(facts['nativeSequenceComplete'])
+        self.assertFalse(facts['colorInterpretationMatches'])
+        self.assertFalse(facts['completeCompositorObservation'])
+
     def test_actual_observer_retains_tail_registration_and_independent_deadline(self):
         source = (Path(__file__).resolve().parents[1] / 'e2e/hls-public-renderer.mjs').read_text()
         self.assertIn('installPresentationTimeline', source)

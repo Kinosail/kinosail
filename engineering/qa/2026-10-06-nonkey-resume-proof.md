@@ -427,3 +427,10 @@ The previous indented receipt uses 3,825,784 bytes of the fixed 4 MiB artifact
 budget. Lossless compact JSON retains every value in 2,526,496 bytes. Write new
 receipts compactly to fit added timing and AAC rows. Preserve historical bytes
 and all receipt, response, native-copy, manifest and archive bounds.
+
+Independent review found that a legal late compositor update can have actual
+presentation time after its expected display time. Test that control first;
+retain finite aligned monotonic timing, without imposing that unsupported order.
+Report native sequence completeness separately from color interpretation.
+Current Direct/HLS matrix differences remain explicit interpretation blockers.
+Neither a complete sequence nor a late timing control waives legacy assertions.

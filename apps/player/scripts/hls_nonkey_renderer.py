@@ -108,7 +108,7 @@ def timing_rows_qualified(value, rows):
     return (isinstance(timings, list) and len(timings) == len(rows) and all(
         isinstance(t, list) and len(t) == 4 and type(t[0]) is int and t[0] == row[1]
         and all(type(v) in (int, float) and math.isfinite(v) and 0 <= v <= 240000 for v in t[1:])
-        and t[3] >= t[2] for t, row in zip(timings, rows))
+        for t, row in zip(timings, rows))
         and all(all(a[n] < b[n] for n in [1, 2, 3]) for a, b in zip(timings, timings[1:])))
 
 
@@ -155,12 +155,13 @@ def compositor_facts(reference, public, legacy):
     clock = (bool(observed) and len(mapped) == len(observed) and all(type(n) is int and 0 <= n < len(source)
         and within(row[0], source[n]) for row, n in zip(observed, mapped)))
     tail_ok = tail_qualified(public, observed)
+    sequence = reference_ok and native_capture_integrity(public, observed) and identity and clock and tail_ok
     return {'boundary': 'Separate compositor/native-frame diagnostic; legacy equality/case failures remain; no screen scanout, surplus decode or production certification',
         'referenceWithTailQualified': reference_ok, 'publicTailQualified': tail_ok,
         'exactRequestedIdentity': identity, 'sourceClockMatches': clock,
         'legacyQualityEquality': public.get('videoPlaybackQuality', {}).get('total') == len(observed),
-        'completeCompositorObservation': reference_ok and native_capture_integrity(public, observed)
-            and identity and clock and tail_ok and legacy.get('colorInterpretationMatches') is True}
+        'nativeSequenceComplete': sequence, 'colorInterpretationMatches': legacy.get('colorInterpretationMatches'),
+        'completeCompositorObservation': sequence and legacy.get('colorInterpretationMatches') is True}
 
 
 def renderer_delivery_matches(network, init_sha, segment_count, reference_unchanged):
@@ -230,6 +231,7 @@ def public_renderer(api, item_id, reference_id, metadata, offset, hls, directory
     result['compositorObservation']['deliveryAndProcessQualified'] = result['processQualified'] and result['actualPlannedRecipeDelivered']
     direct_facts['compositorObservation']['deliveryAndProcessQualified'] = result['processQualified'] and direct_facts['actualDirectMediaDelivered']
     for observation in [result['compositorObservation'], direct_facts['compositorObservation']]:
+        observation['nativeSequenceComplete'] = observation['nativeSequenceComplete'] and observation['deliveryAndProcessQualified']
         observation['completeCompositorObservation'] = observation['completeCompositorObservation'] and observation['deliveryAndProcessQualified']
     # Keep complete compact rows once; do not duplicate them in runtime metadata.
     for value in result['runtime'].values():
