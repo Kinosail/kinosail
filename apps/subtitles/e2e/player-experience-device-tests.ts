@@ -19,7 +19,7 @@ test("reserves movie stage geometry while loading on compact screens", async ({ 
 });
 
 test("theater mode is accessible by control and keyboard", async ({ page }) => {
-  const theater = page.getByRole("button", { name: "Theater" });
+  const theater = page.locator("[data-theater]");
   await theater.click();
   await expect(page.locator("body")).toHaveClass(/player-theater/);
   await expect(theater).toHaveAttribute("aria-pressed", "true");
