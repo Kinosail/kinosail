@@ -97,6 +97,26 @@ test('positive Matroska reentry decodes the saved scene through native HLS', asy
   expect(assetSHA256).toBe(new URL(assetURL!, base).searchParams.get('v'));
   await record({phase: 'referenced-served-asset-identity', assetSHA256,
     limit: 'Fresh public asset fetch verifies the referenced version; it does not inspect executed resource bytes.'});
+  // Observe existing public telemetry without changing requests or retaining
+  // raw bodies, URLs, sessions, headers, or arbitrary diagnostic details.
+  const launchTelemetry: object[] = [];
+  page.on('request', request => {
+    try {
+    if (launchTelemetry.length >= 24 || request.method() !== 'POST' || new URL(request.url()).pathname !== path + '/playback-events') return;
+    const body = request.postData();
+    if (!body || body.length > 4096) return;
+      const value = JSON.parse(body);
+      if (!['error', 'play-request', 'play-rejected'].includes(value.event)) return;
+      const namedFailure = /^(?:fullscreen:(?:NotAllowedError|InvalidStateError|NotSupportedError|TypeError|Error):(?:paused-for-retry|playback-retained)|apple-play:(?:NotAllowedError|InvalidStateError|NotSupportedError|AbortError|TypeError|Error))$/;
+      const bounded = (number: unknown, maximum: number) => typeof number === 'number' && Number.isFinite(number) && number >= 0 && number <= maximum ? number : null;
+      launchTelemetry.push({event: value.event,
+        detail: typeof value.detail === 'string' && namedFailure.test(value.detail) ? value.detail : 'unreported',
+        elapsedMS: bounded(value.elapsedMs, 31622400000), positionMS: bounded(value.positionMs, 31622400000),
+        readyState: bounded(value.readyState, 4), errorCode: bounded(value.errorCode, 4),
+        paused: typeof value.paused === 'boolean' ? value.paused : null,
+        method: ['direct', 'native-hls', 'transcode', 'remux'].includes(value.method) ? value.method : 'unreported'});
+    } catch { /* Optional fixed projection; never retain the rejected body. */ }
+  });
   // Read real presented frames. No setter replaces currentTime, play, or metadata.
   await page.evaluate(() => {
     const video = document.querySelector('video')!;
@@ -170,7 +190,7 @@ test('positive Matroska reentry decodes the saved scene through native HLS', asy
         webkitDecodedFrameCount: Number.isFinite(video.webkitDecodedFrameCount) ? video.webkitDecodedFrameCount : null,
         callbackCount: state?.callbacks ?? null, capturedFrames: state?.frames.length ?? null, events: state?.events ?? []};
     }) : null;
-    await record({phase: 'final-observation', pageIsWatch, ...(pageIsWatch ? await snapshot() : {}), nativeState, public: await publicPosition()});
+    await record({phase: 'final-observation', pageIsWatch, ...(pageIsWatch ? await snapshot() : {}), nativeState, launchTelemetry, public: await publicPosition()});
     } catch {
       // Optional diagnostics must preserve the original playback failure.
       await record({phase: 'final-diagnostics-unavailable'}).catch(() => {});
