@@ -14,17 +14,34 @@ import (
 type copiedLogBuffer struct {
 	sync.Mutex
 	bytes.Buffer
+	limit int
 }
 
 func (b *copiedLogBuffer) Write(p []byte) (int, error) {
 	b.Lock()
 	defer b.Unlock()
-	return b.Buffer.Write(p)
+	length := len(p)
+	if b.limit > 0 {
+		if len(p) > b.limit {
+			p = p[len(p)-b.limit:]
+		}
+		if extra := b.Len() + len(p) - b.limit; extra > 0 {
+			b.Next(extra)
+		}
+	}
+	_, err := b.Buffer.Write(p)
+	return length, err
 }
 func (b *copiedLogBuffer) snapshot() string { b.Lock(); defer b.Unlock(); return b.String() }
-func captureCopiedLogs(t *testing.T) *copiedLogBuffer {
+func captureCopiedLogs(t *testing.T, limit ...int) *copiedLogBuffer {
 	t.Helper()
 	output := &copiedLogBuffer{}
+	if len(limit) > 1 || len(limit) == 1 && (limit[0] <= 0 || limit[0] > 64<<10) {
+		t.Fatal("invalid test log capture bound")
+	}
+	if len(limit) == 1 {
+		output.limit = limit[0]
+	}
 	previous := slog.Default()
 	slog.SetDefault(slog.New(slog.NewJSONHandler(output, nil)))
 	t.Cleanup(func() { slog.SetDefault(previous) })

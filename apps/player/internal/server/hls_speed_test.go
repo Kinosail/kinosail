@@ -3,6 +3,9 @@ package server_test
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -42,7 +45,10 @@ func TestRealHLSGenerationKeepsAheadOfSupportedPlaybackSpeeds(t *testing.T) {
 			ctx, cancel := context.WithCancel(t.Context())
 			defer cancel()
 			media := speedTestMedia(t, ffmpeg, sample.video, sample.audio, sample.skip)
-			handler, id := formatTestItem(t, server.Config{Lifecycle: ctx, MediaDir: media, CacheDir: t.TempDir(), FFmpeg: ffmpeg, FFprobe: ffprobe})
+			cache := t.TempDir()
+			logs := captureCopiedLogs(t, 64<<10)
+			handler, id := formatTestItem(t, server.Config{Lifecycle: ctx, MediaDir: media, CacheDir: cache, FFmpeg: ffmpeg, FFprobe: ffprobe})
+			handler = &speedDiagnosticHandler{Handler: handler, cache: cache, logs: logs}
 			if sample.skip {
 				assertAPIBody(t, apiCall(t, handler, "", http.MethodPut, "/api/v1/settings/playback", map[string]any{"mode": "compatible", "autoplay": true, "subtitles": "on", "autoSkip": []string{"intro"}}), http.StatusOK)
 			}
@@ -93,9 +99,29 @@ func speedTestMedia(t *testing.T, ffmpeg, video, audio string, skip bool) string
 
 func speedTestGET(t *testing.T, ctx context.Context, handler http.Handler, path string) []byte {
 	t.Helper()
+	var before []speedCacheFact
+	diagnostic, observed := handler.(*speedDiagnosticHandler)
+	parts := strings.Split(path, "/")
+	target := strings.Join(parts[max(0, len(parts)-2):], "/")
+	if observed {
+		before = speedFailureCacheFacts(diagnostic.cache, target)
+	}
 	response := httptest.NewRecorder()
-	handler.ServeHTTP(response, httptest.NewRequestWithContext(ctx, http.MethodGet, path, nil))
+	request := httptest.NewRequestWithContext(ctx, http.MethodGet, path, nil)
+	if observed {
+		diagnostic.requests++
+		request.Header.Set("X-Request-ID", fmt.Sprintf("hls-speed-%d", diagnostic.requests))
+		request.Header.Set("X-Playback-Session", "hls-speed-fixture")
+	}
+	handler.ServeHTTP(response, request)
 	if response.Code != http.StatusOK || response.Body.Len() == 0 {
+		if observed {
+			beforeJSON, _ := json.Marshal(before)
+			afterJSON, _ := json.Marshal(speedFailureCacheFacts(diagnostic.cache, target))
+			t.Logf("HLS speed failed-request cache observations (not admission decisions): before=%s after=%s", beforeJSON, afterJSON)
+			speedFailureOperations(t, diagnostic.logs, request.Header.Get("X-Request-ID"))
+			t.Fatalf("HLS delivery %s = %d (canceled=%t; body_bytes=%d; body_SHA256=%x)", target, response.Code, ctx.Err() != nil, response.Body.Len(), sha256.Sum256(response.Body.Bytes()))
+		}
 		t.Fatalf("HLS delivery %s = %d (%s): %s", path, response.Code, ctx.Err(), response.Body.String())
 	}
 	return response.Body.Bytes()
