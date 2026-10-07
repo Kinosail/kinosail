@@ -205,7 +205,8 @@ def journey(name, original, metadata, offset=0, pacing=None):
             case['unauthenticatedPreparation'] = {'status': status, 'cacheUnchanged': True}
             prepare_once(api, prepare, hls, log_path, server, source, case)
             if item['kind'] == 'audio':
-                check(case['preparationAttempt']['completionState'] == 'ready', 'audio_preparation_not_ready')
+                if case['preparationAttempt']['completionState'] != 'ready':
+                    case['failures'].append('audio_preparation_not_ready')
                 case['physicalBeforeFirstGET'] = physical(cache, item['id'])
                 check(case['physicalBeforeFirstGET'] is not None, 'physical_prefix_missing')
                 audio_output(api, hls, directory, case, source)
