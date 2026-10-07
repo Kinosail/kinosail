@@ -1,5 +1,6 @@
 """Actual native frame correspondence; raw failures and every callback stay intact."""
 from collections import Counter
+from decimal import Decimal
 import json
 import math
 import re
@@ -69,8 +70,9 @@ def renderer_facts(reference, public, source_pts, requested):
     check(isinstance(source_pts, list) and 0 < len(source_pts) <= 4096
         and all(type(v) in (int, float) and math.isfinite(v) for v in source_pts)
         and all(a < b for a, b in zip(source_pts, source_pts[1:])), 'renderer_source_clock')
+    within_clock = lambda left, right: abs(Decimal(str(left)) - Decimal(str(right))) <= Decimal('0.001')
     reference_ok = (reference_ok and len(original) == len(source_pts)
-        and all(abs(row[0] - point) <= 0.001 for row, point in zip(original, source_pts)))
+        and all(within_clock(row[0], point) for row, point in zip(original, source_pts)))
     counts = Counter(row[2] for row in original)
     index = {row[2]: n for n, row in enumerate(original) if counts[row[2]] == 1}
     mapped = [index.get(row[2]) for row in observed]
@@ -81,7 +83,7 @@ def renderer_facts(reference, public, source_pts, requested):
         'referenceQualified': reference_ok, 'publicQualified': public_ok,
         'requestedIdentityMatches': reference_ok and public_ok and mapped == expected,
         'publicSourceClockMatches': reference_ok and public_ok and bool(mapped)
-            and all(n is not None and abs(row[0] - source_pts[n]) <= 0.001
+            and all(n is not None and within_clock(row[0], source_pts[n])
                     for row, n in zip(observed, mapped)),
         'colorInterpretationMatches': colors(reference) == colors(public),
         'rowColumns': ['mediaTimeSeconds', 'presentedFrames', 'nativeYUV420SHA256',

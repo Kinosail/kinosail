@@ -277,3 +277,26 @@ still failing acceptance. Publish no arguments or private path. Invalid audit
 shapes must continue to fail before counts are added. The public fixture cannot
 inject a duplicated private transformation audit; this is an isolated evidence
 integrity gap. Keep exactly-one acceptance unchanged.
+
+## Corrected mux runtime follow-up, before implementation
+
+Corrected run `37557288711` applies exactly one transform per non-key case.
+Both references retain all 768 frames. Both public callback sequences retain
+exactly source frames 300 through 767, without preceding, missing or unknown
+frames. The public quality counter reports 469 total frames for 468 callbacks.
+Keep that mismatch failed; do not infer what the additional frame contained.
+The raw negative decoder rows and incorrect playlist durations remain failed.
+
+Record bounded quality checkpoints at existing startup events, the first three
+callbacks and the two paused pre-gesture samples. Include native time and row
+count. Add at most eight explicitly labeled native-frame snapshots from these
+events, using the same lossless packer and resource bounds. Event snapshots are
+diagnostics, not rVFC callbacks; never add them to the callback sequence or use
+them to waive the counter gate. Preserve timestamp and descriptor evidence.
+This actual failed public receipt is the pre-implementation E2E test.
+
+Independent decimal audit finds the maximum MKV source-clock difference is
+exactly 1 ms. Binary subtraction exceeds that limit by about 1e-15 seconds for
+seven rows. Before changing arithmetic, test exact retained decimal timestamps
+at 1 ms and above 1 ms. Compare their decimal values; retain the same limit.
+Do not loosen the threshold or the quality-count requirement.

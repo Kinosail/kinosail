@@ -180,6 +180,17 @@ class RendererIntegrity(unittest.TestCase):
             with self.subTest(kind=type(rate).__name__):
                 self.assertFalse(renderer_facts(capture(4), public, [n / 24 for n in range(4)], 2 / 24)['publicQualified'])
 
+    def test_exact_decimal_one_millisecond_clock_boundary_does_not_widen(self):
+        points = [17.958, 18.0, 18.042]
+        reference, public = capture(3), capture(2, 1)
+        for row, point in zip(reference['rows'], points):
+            row[0], row[3] = point, round(point * 1000000)
+        for row, point in zip(public['rows'], [18.001, 18.042]):
+            row[0], row[3] = point, round(point * 1000000)
+        self.assertTrue(renderer_facts(reference, public, points, 18.0)['publicSourceClockMatches'])
+        public['rows'][0][0], public['rows'][0][3] = 18.001001, 18001001
+        self.assertFalse(renderer_facts(reference, public, points, 18.0)['publicSourceClockMatches'])
+
 
 if __name__ == '__main__':
     unittest.main()

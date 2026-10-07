@@ -84,6 +84,7 @@ async function capture(id, compatible) {
       width: 0, height: 0, nativeTime: null, reportedTime: null, duration: null,
       buffered: [], events: [], hashes: [], videoPlaybackQuality: null,
       nativeFrames: [], unsupportedFormats: [], beforeGesture: [], gesture: null, gestureEvent: null,
+      qualityCheckpoints: [],
       beforeGestureColumns: ['paused', 'nativeTime', 'callbacks', 'muted', 'volume', 'playbackRate',
         'hasBeenActive', 'isActive']};
     const scheduler = proof.scheduler = {kind: 'continuous-request-animation-frame',
@@ -153,6 +154,25 @@ async function capture(id, compatible) {
         } catch {proof.captureErrors++;}
         finally {frame.close(); pendingCopies--;}
       };
+      const checkpoint = phase => {
+        if (proof.qualityCheckpoints.length >= 64) return;
+        const value = {phase, nativeTime: nativeTime.call(media), callbacks: proof.rows.length,
+          quality: null, snapshot: null};
+        const quality = media.getVideoPlaybackQuality?.();
+        value.quality = quality ? {total: quality.totalVideoFrames,
+          dropped: quality.droppedVideoFrames, corrupted: quality.corruptedVideoFrames ?? null} : null;
+        proof.qualityCheckpoints.push(value);
+        if (media.readyState < 2 || pendingCopies >= 16 ||
+            proof.qualityCheckpoints.filter(v => v.snapshot).length >= 8) return;
+        let frame;
+        try {
+          frame = new VideoFrame(media); // Event snapshot, never an rVFC row.
+          value.snapshot = [frame.timestamp / 1000000, null, '', frame.timestamp, null, media.playbackRate];
+          proof.hashes.push(copyFrame(frame, value.snapshot));
+          frame = null;
+        } catch {frame?.close(); proof.captureErrors++;}
+      };
+      window.__hlsQualityCheckpoint = checkpoint;
       const record = (_, metadata) => {
         if (proof.rows.length >= 4096) {proof.captureErrors++; media.pause(); return;}
         const row = [metadata.mediaTime, metadata.presentedFrames, '', null, null, media.playbackRate];
@@ -169,11 +189,13 @@ async function capture(id, compatible) {
           proof.hashes.push(copyFrame(frame, row));
           frame = null;
         } catch {frame?.close(); proof.captureErrors++;}
+        if (proof.rows.length <= 3) checkpoint('callback-' + proof.rows.length);
         media.requestVideoFrameCallback(record);
       };
       media.requestVideoFrameCallback(record);
-      for (const name of ['loadedmetadata', 'playing', 'waiting', 'seeking', 'seeked', 'ended', 'error']) {
+      for (const name of ['loadedmetadata', 'loadeddata', 'playing', 'waiting', 'seeking', 'seeked', 'ended', 'error']) {
         media.addEventListener(name, () => {
+          checkpoint(name);
           if (proof.events.length < 128) proof.events.push([name, nativeTime.call(media), media.currentTime]);
           if (name === 'ended') {proof.ended = true; stopPulse('ended');}
           if (name === 'error') {proof.errorCode = media.error?.code || 0; stopPulse('error');}
@@ -216,6 +238,7 @@ async function capture(id, compatible) {
         window.__hlsProof.beforeGesture.push([media.paused, native.call(media), window.__hlsProof.rows.length,
           media.muted, media.volume, media.playbackRate,
           navigator.userActivation.hasBeenActive, navigator.userActivation.isActive]);
+        window.__hlsQualityCheckpoint('before-gesture');
         return true;
       })()`);
       if (sample === 0) await new Promise(resolve => setTimeout(resolve, 200));
