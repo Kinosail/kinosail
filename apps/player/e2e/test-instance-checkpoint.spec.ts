@@ -3,6 +3,7 @@ import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { configureTestInstance, login } from "./test-instance-helpers";
 import { registerNavigationCheckpoints } from "./checkpoint-navigation-cases";
+import { registerResumeCheckpoints } from "./checkpoint-resume-cases";
 
 // Read-only diagnostics for the page's existing playback state; these declarations emit no JavaScript.
 declare const playbackPreparation: unknown;
@@ -197,6 +198,7 @@ test("Library exit checkpoints actual playing time before teardown without reset
 });
 
 registerNavigationCheckpoints({phase, checkpoint, openMovie});
+registerResumeCheckpoints({phase, openMovie});
 
 test("progress chain distinguishes an ignored acknowledgement from an accepted stored position", {tag: "@smoke"}, async ({page}, info) => {
   test.skip(phase !== "candidate", "historical replay is separate from public progress semantics");

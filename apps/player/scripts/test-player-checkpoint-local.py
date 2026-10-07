@@ -16,7 +16,11 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--phase", choices=["deployed", "current", "candidate"], required=True)
 parser.add_argument("--project", choices=["chromium", "webkit"], default="chromium")
 parser.add_argument("--grep")
+parser.add_argument("--duration", type=int, choices=[30, 70], action="append")
 args = parser.parse_args()
+if args.duration and len(args.duration) != 1:
+    parser.error("duration must be supplied at most once")
+args.duration = args.duration[0] if args.duration else 70
 root = Path(__file__).resolve().parents[3]
 run = root / ".verification/paused-seek-checkpoint" / time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
 run.mkdir(parents=True)
@@ -26,7 +30,7 @@ revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=
 diff = subprocess.check_output(["git", "diff", "HEAD"], cwd=root)
 sources = ["packages/webassets/static/player-progress.js", "packages/playerweb/player_template.go",
            "packages/webassets/static/player-progress-navigation.js", "packages/webassets/webassets.go",
-           "apps/player/e2e/checkpoint-navigation-cases.ts",
+           "apps/player/e2e/checkpoint-navigation-cases.ts", "apps/player/e2e/checkpoint-resume-cases.ts",
            "packages/playerweb/progress_notice.go", "apps/player/internal/server/static/player-streaming-recovery.js",
            "apps/player/internal/server/static/player.js", "apps/player/internal/server/static/player-streaming-adaptive.js",
            "apps/player/e2e/test-instance-checkpoint.spec.ts", "packages/webassets/static/player-presentation.js",
@@ -38,13 +42,13 @@ sources = ["packages/webassets/static/player-progress.js", "packages/playerweb/p
            "apps/player/scripts/test-player-checkpoint-local.py"]
 receipt = {"revision": revision, "workingDiffSHA256": hashlib.sha256(diff).hexdigest(),
            "sourceSHA256": {path: hashlib.sha256((root / path).read_bytes()).hexdigest() for path in sources},
-           "phase": args.phase, "command": "GOMAXPROCS=2 python3 apps/player/scripts/test-player-checkpoint-local.py --phase " + args.phase + " --project " + args.project + (" --grep " + args.grep if args.grep else ""),
+           "phase": args.phase, "command": "GOMAXPROCS=2 python3 apps/player/scripts/test-player-checkpoint-local.py --phase " + args.phase + " --project " + args.project + " --duration " + str(args.duration) + (" --grep " + args.grep if args.grep else ""),
            "environment": "Native Go Kinosail Server; loopback HTTP; one " + args.project + " worker",
-           "data": "Disposable synthetic Owner, TOTP, and generated 70-second video. State preserved.",
+           "data": f"Disposable synthetic Owner, TOTP, and generated {args.duration}-second video. State preserved.",
            "boundaries": "Browser baseline replays the base progress asset against the same real Server. No production, container, device, physical TV, or TLS deployment proof.",
            "result": "failed", "runs": []}
 try:
-    subprocess.run(["ffmpeg", "-nostdin", "-v", "error", "-f", "lavfi", "-i", "testsrc2=s=320x180:r=24:d=70",
+    subprocess.run(["ffmpeg", "-nostdin", "-v", "error", "-f", "lavfi", "-i", f"testsrc2=s=320x180:r=24:d={args.duration}",
                     "-c:v", "libx264", "-threads", "1", "-preset", "ultrafast", "-crf", "35", "-pix_fmt", "yuv420p",
                     "-movflags", "+faststart", str(media / "Checkpoint Example.mp4")], check=True)
     binary = run / "kinosail-player"

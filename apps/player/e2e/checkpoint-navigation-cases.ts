@@ -3,7 +3,6 @@ import { expect, test, type Locator, type Page, type Request as PlaywrightReques
 type Checkpoint = {seconds: number; revision: number; sessionMatches?: boolean};
 type Observation = {key: string; iteration: number; testInfo: TestInfo};
 type Movie = {watch: string; media: Locator; id: string; session?: string};
-declare const progressNavigation: unknown;
 
 // Share the existing real-media flow without duplicating setup or changing required suite selection.
 export function registerNavigationCheckpoints(flows: {
@@ -243,21 +242,18 @@ test.describe("acknowledged Library navigation", () => {
       const link = document.createElement("a");
       link.href = "/?view=movies"; link.textContent = "Other Library view";
       document.body.prepend(link);
-      sessionStorage.removeItem("kinosail:checkpoint-navigation-intents");
-      document.addEventListener("click", event => {
-        const anchor = event.target instanceof Element ? event.target.closest("a") : null;
-        if (!anchor || !["Library", "Other Library view"].includes(anchor.textContent?.trim() || "")) return;
-        const receipts = JSON.parse(sessionStorage.getItem("kinosail:checkpoint-navigation-intents") || "[]");
-        receipts.push({destination: anchor.textContent?.trim(), libraryIntentPending: Boolean(progressNavigation)});
-        sessionStorage.setItem("kinosail:checkpoint-navigation-intents", JSON.stringify(receipts));
-      });
     });
     try {
       await page.getByRole("link", {name: "Library", exact: true}).click({noWaitAfter: true});
       await expect.poll(() => writes).toBeGreaterThan(0);
       await page.getByRole("link", {name: "Other Library view", exact: true}).click({noWaitAfter: true});
-      await expect.poll(() => destinationRequested).toBe(true);
+      await expect(page).toHaveURL(url => url.pathname.startsWith("/watch/"));
+      await expect(media).toHaveJSProperty("paused", true);
+      await expect(page.locator("[data-progress-notice]")).toHaveAttribute("aria-busy", "true");
+      expect(destinationRequested).toBe(false);
+      expect(unexpectedLibraryRequests).toBe(0);
       releaseProgress();
+      await expect.poll(() => destinationRequested).toBe(true);
       // A pending document navigation can freeze old-page DOM queries. Read the real store instead.
       await expect.poll(async () => {
         const state = await checkpoint(page, id, session);
@@ -270,11 +266,8 @@ test.describe("acknowledged Library navigation", () => {
       const saved = await checkpoint(page, id, session);
       expect(saved.sessionMatches).toBe(true);
       expect(saved.seconds).toBeGreaterThanOrEqual(start + 0.3 - 0.1);
-      const intents = await page.evaluate(() => JSON.parse(sessionStorage.getItem("kinosail:checkpoint-navigation-intents") || "[]"));
-      expect(intents).toEqual([{destination: "Library", libraryIntentPending: true},
-        {destination: "Other Library view", libraryIntentPending: false}]);
       expect(unexpectedLibraryRequests).toBe(0);
-      await testInfo.attach("newer-navigation-checkpoint", {body: JSON.stringify({phase, writes, saved, intents,
+      await testInfo.attach("newer-navigation-checkpoint", {body: JSON.stringify({phase, writes, saved, neitherDestinationBeforeAcknowledgement: true,
         unexpectedLibraryRequests, chosenDestination: "movies Library view"}), contentType: "application/json"});
     } finally {
       page.off("request", observeNavigation);

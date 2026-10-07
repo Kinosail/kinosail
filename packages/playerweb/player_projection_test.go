@@ -28,7 +28,7 @@ func TestMediaProjectionAndResume(t *testing.T) {
 	for _, test := range []struct {
 		start, duration float64
 		want            bool
-	}{{0, 90, false}, {5, 0, true}, {5, 90, true}, {80, 90, false}, {90, 90, false}} {
+	}{{0, 90, false}, {5, 0, true}, {5, 90, true}, {80, 90, true}, {89, 90, true}, {90, 90, false}} {
 		data.Start, data.Duration = test.start, test.duration
 		if data.Resume() != test.want {
 			t.Fatalf("resume(%v, %v)", test.start, test.duration)
