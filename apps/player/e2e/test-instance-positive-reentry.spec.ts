@@ -71,7 +71,7 @@ test('positive Matroska reentry decodes the saved scene through native HLS', asy
   await expect.poll(async () => (await snapshot()).readyState, {timeout: 30_000}).toBeGreaterThanOrEqual(2);
   await record({phase: 'unplayed-metadata', ...await snapshot()});
   expect((await snapshot()).phonePolicy).toBe(true);
-  expect((await snapshot()).touchContext).toBe(true);
+  expect((await snapshot()).nativeFullscreenCapability).toBe(true);
   expect((await snapshot()).hasInitialAutoplay).toBe(false);
   expect((await snapshot()).paused).toBe(true);
   await page.getByRole('link', {name: 'Library', exact: true}).click();
