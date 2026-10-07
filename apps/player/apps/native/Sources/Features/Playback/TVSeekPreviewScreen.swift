@@ -31,7 +31,7 @@ struct TVSeekPreviewScreen: View {
             Text(position.clock).font(.headline.monospacedDigit())
             Button(action: seek) {
                 VStack(spacing: 8) {
-                    ProgressView(value: position, total: duration)
+                    BufferedPlaybackTrack(value: position, duration: duration, buffered: session.player.bufferedRanges)
                     Text("Left or right to preview · Select to seek").font(.caption)
                 }
             }

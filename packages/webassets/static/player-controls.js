@@ -161,7 +161,7 @@ if (controls && player.tagName === "VIDEO") {
         const end = player.buffered.end(index) + playbackTimelineOffset;
         if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start || start >= duration || end <= 0) continue;
         const left = Math.max(0, start) / duration * 100, right = Math.min(duration, end) / duration * 100;
-        buffered.push(`linear-gradient(90deg,transparent ${left}%,rgba(255,255,255,.72) ${left}%,rgba(255,255,255,.72) ${right}%,transparent ${right}%)`);
+        buffered.push(`linear-gradient(90deg,transparent ${left}%,var(--player-buffer-color,rgba(255,255,255,.72)) ${left}%,var(--player-buffer-color,rgba(255,255,255,.72)) ${right}%,transparent ${right}%)`);
       }
     }
     seek.style.setProperty("--player-buffered", buffered.join(",") || "linear-gradient(transparent,transparent)");

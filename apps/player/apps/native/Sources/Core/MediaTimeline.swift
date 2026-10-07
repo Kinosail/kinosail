@@ -60,6 +60,28 @@ struct MediaTimeline: Sendable, Equatable {
         return max(0, position - removed)
     }
 
+    func bufferedRanges(for ranges: [(start: Double, end: Double)]) -> [Range<Double>] {
+        guard duration > 0, ranges.count <= 128 else { return [] }
+        return ranges.flatMap { range -> [Range<Double>] in
+            guard range.start.isFinite, range.end.isFinite, range.end > range.start else { return [] }
+            var cursor = max(0, range.start)
+            let end = min(duration, range.end)
+            guard cursor < end else { return [] }
+            var removed = 0.0
+            var result: [Range<Double>] = []
+            for cut in omitted {
+                let boundary = cut.lowerBound - removed
+                let segmentEnd = min(end, boundary)
+                if cursor < segmentEnd { result.append((cursor + removed)..<(segmentEnd + removed)) }
+                if end <= boundary { cursor = end; break }
+                cursor = max(cursor, boundary)
+                removed += cut.countingLength
+            }
+            if cursor < end { result.append((cursor + removed)..<(end + removed)) }
+            return result
+        }
+    }
+
     var json: JSONValue {
         .object(["sourceDuration": .number(sourceDuration), "duration": .number(duration),
                  "omitted": .array(omitted.map { .object(["start": .number($0.lowerBound), "end": .number($0.upperBound)]) })])
