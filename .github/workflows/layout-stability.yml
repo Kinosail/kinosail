@@ -306,6 +306,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
+      - id: hls_budget
+        name: Record bounded proof start
+        run: echo "started=$(date +%s)" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           fetch-depth: 0
@@ -355,8 +358,15 @@ jobs:
       - name: Run bounded remaining playback regressions
         if: ${{ inputs.hls_remaining_proof }}
         env:
+          KINOSAIL_HLS_STARTED_SECONDS: ${{ steps.hls_budget.outputs.started }}
           KINOSAIL_HLS_REMAINING_SUITE: ${{ inputs.hls_audio_origin && 'audio-origin' || inputs.hls_audio_installation && 'audio-installation' || inputs.hls_audio_timing && 'audio-timing' || 'remaining' }}
         run: |
+          [[ "$KINOSAIL_HLS_STARTED_SECONDS" =~ ^[0-9]{10}$ ]]
+          elapsed=$(( $(date +%s) - 10#$KINOSAIL_HLS_STARTED_SECONDS ))
+          if (( elapsed < 0 || elapsed > 150 )); then
+            echo 'bounded_proof_setup_budget_exhausted'
+            exit 1
+          fi
           selected=0
           for choice in '${{ inputs.hls_audio_origin }}' '${{ inputs.hls_audio_installation }}' '${{ inputs.hls_audio_timing }}'; do
             if [ "$choice" = true ]; then selected=$((selected + 1)); fi
@@ -365,6 +375,7 @@ jobs:
           timeout --kill-after=5s 600s python3 apps/player/scripts/test-hls-remaining.py
       - name: Preserve safe follow-on receipts
         if: always()
+        timeout-minutes: 2
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: player-hls-followon-${{ github.sha }}
