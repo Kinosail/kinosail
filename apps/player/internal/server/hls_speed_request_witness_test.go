@@ -73,12 +73,18 @@ func TestHLSSpeedRequestWitnessRejectsAmbiguousInputs(t *testing.T) {
 		}
 	}
 	for _, value := range []*url.URL{
-		nil, {}, {Path: "180p/segment-00013.m4s"}, {Path: path, Scheme: "https", Host: "private.invalid"},
-		{Path: path, Fragment: "private"}, {Path: path, ForceQuery: true},
+		nil,
+		{},
+		{Path: "180p/segment-00013.m4s"},
+		{Path: path, Scheme: "https", Host: "private.invalid"},
+		{Path: path, Fragment: "private"},
+		{Path: path, ForceQuery: true},
 		{Path: path, RawPath: strings.Replace(path, "180p", "%31%38%30p", 1)},
-		{Path: strings.Replace(path, "/p/", "/../", 1)}, {Path: strings.Replace(path, "/p/", "//", 1)},
+		{Path: strings.Replace(path, "/p/", "/../", 1)},
+		{Path: strings.Replace(path, "/p/", "//", 1)},
 		{Path: "/" + strings.Repeat("x", 2048) + "/180p/segment-00013.m4s"},
-		{Path: strings.Replace(path, "180p", "0180p", 1)}, {Path: strings.Replace(path, "00013", "0001X", 1)},
+		{Path: strings.Replace(path, "180p", "0180p", 1)},
+		{Path: strings.Replace(path, "00013", "0001X", 1)},
 	} {
 		if speedFailureRequestTarget(&http.Request{URL: value}) != "" {
 			t.Fatal("unsafe request path admitted")

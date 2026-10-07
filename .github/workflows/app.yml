@@ -291,11 +291,19 @@ jobs:
           KINOSAIL_TEST_IMAGE: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
           KINOSAIL_TEST_IMAGE_READY: "1"
         run: python3 ../../scripts/ci/e2e-artifact.py --output "${{ runner.temp }}/${{ inputs.app }}-${{ matrix.engine }}-e2e-artifact" -- ./scripts/test-container.sh
-      - name: Install public-flow runner
-        if: matrix.engine == 'chromium'
+      - name: Install Subtitles public-flow codecs
+        if: inputs.app == 'subtitles' && matrix.engine == 'chromium'
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends ffmpeg
+      - name: Install public-flow runner
+        if: matrix.engine == 'chromium'
+        run: |
+          ffmpeg -version
+          ffprobe -version
+          ffmpeg -hide_banner -encoders > "$RUNNER_TEMP/public-flow-encoders.txt"
+          grep -Eq '[[:space:]]libx264[[:space:]]' "$RUNNER_TEMP/public-flow-encoders.txt"
+          grep -Eq '[[:space:]]aac[[:space:]]' "$RUNNER_TEMP/public-flow-encoders.txt"
           pnpm --dir scripts/e2e install --frozen-lockfile
       - name: Verify complete Player recovery suites
         if: inputs.app == 'player' && matrix.engine == 'chromium'

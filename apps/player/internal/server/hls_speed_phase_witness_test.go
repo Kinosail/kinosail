@@ -42,6 +42,11 @@ func TestHLSSpeedPhaseWitnessBoundsRelevantEventsAndEviction(t *testing.T) {
 	if len(speedFailureOperationFacts(output.snapshot(), "fixture-request")) != 0 {
 		t.Fatal("evicted events were fabricated")
 	}
+	assertSpeedPhaseFieldsRejectUnknown(t)
+}
+
+func assertSpeedPhaseFieldsRejectUnknown(t *testing.T) {
+	t.Helper()
 	for _, entry := range []map[string]any{
 		{"msg": "HLS encode phase", "phase": "private-phase", "outcome": "private-error", "elapsed_ms": -1.0},
 		{"msg": "HLS encode phase", "phase": "private-phase", "elapsed_ms": 3600001.0},
