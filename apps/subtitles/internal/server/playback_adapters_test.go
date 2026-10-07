@@ -243,8 +243,9 @@ func TestTrustedOpeningOffsetAcrossAPIAndWeb(t *testing.T) { //nolint:cyclop,fun
 		t.Fatalf("save near-end progress = %d %q", progress.Code, progress.Body.String())
 	}
 	page = serveRequest(handler, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/watch/"+id, nil))
-	if !strings.Contains(page.Body.String(), `data-start="115"`) || strings.Contains(page.Body.String(), `data-autoplay`) || strings.Contains(page.Body.String(), `#t=115"`) {
-		t.Fatalf("near-end start = %d %q", page.Code, page.Body.String())
+	api = serveRequest(handler, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/items/"+id+"/playback", nil))
+	if !strings.Contains(page.Body.String(), `data-start="115"`) || !strings.Contains(page.Body.String(), `data-autoplay`) || !strings.Contains(page.Body.String(), `#t=115"`) || !strings.Contains(api.Body.String(), `"start":115`) {
+		t.Fatalf("near-end starts = web %d %q, API %d %q", page.Code, page.Body.String(), api.Code, api.Body.String())
 	}
 }
 
