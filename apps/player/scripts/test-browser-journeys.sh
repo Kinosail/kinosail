@@ -81,5 +81,8 @@ run_populated_player_journeys() {
     --required-title 'real album queue keeps system previous and next current and exposes only fresh current-track actions' \
     --required-title 'mobile R03 progress notice stays hidden after real acknowledgement and reopens only on failure' \
     --required-title 'album queue keeps accessible responsive controls through pending loaded empty and failed reads' \
-    -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts test-instance-audio-queue.spec.ts --grep=@smoke --workers=1
+    --required-title 'late initial queue response cannot warm media or publish controls after pagehide' \
+    --required-title 'queued short track resumes its saved position without claiming unplayed progress' \
+    --required-title 'ended offline queue requires its own watched acknowledgement: failed' \
+    -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts test-instance-audio-queue.spec.ts player-audio-policy.spec.ts player-audio-queue-lifecycle.spec.ts --grep=@smoke --workers=1
 }

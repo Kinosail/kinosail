@@ -3,7 +3,7 @@ import { playerSource } from "./static-sources";
 import {openAudio, queueItem, queueURL, startQueue} from "./player-audio-queue-fixture";
 
 for (const policy of ["compatible", "direct-first", "direct-only", "", "unknown"]) {
-  test(`audio keeps its source and queue with saved policy ${policy || "unset"}`, async ({ page }) => {
+  test(`audio keeps its source and queue with saved policy ${policy || "unset"}`, {tag: ["@smoke", "@routed-fault"]}, async ({ page }) => {
     const errors: string[] = [];
     const navigation: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
@@ -22,7 +22,7 @@ for (const policy of ["compatible", "direct-first", "direct-only", "", "unknown"
   });
 }
 
-test("Home Assistant state uses the session CSRF token and consumes a command", async ({ page }) => {
+test("Home Assistant state uses the session CSRF token and consumes a command", {tag: ["@smoke", "@routed-fault"]}, async ({ page }) => {
   await openAudio(page, "", true);
   const reports: { csrf?: string; body: { itemId: string; position: number; duration: number } }[] = [];
   await page.route("https://audio.test/api/v1/home-assistant/players/*", async (route) => {
@@ -37,7 +37,7 @@ test("Home Assistant state uses the session CSRF token and consumes a command", 
 });
 
 for (const invalid of ["external stream", "missing authorization", "wrong profile", "wrong item"]) {
-  test(`queue rejects ${invalid} before progress or Now Playing side effects`, async ({page}) => {
+  test(`queue rejects ${invalid} before progress or Now Playing side effects`, {tag: ["@smoke", "@routed-fault"]}, async ({page}) => {
     await openAudio(page, "direct-first");
     const writes: string[] = [];
     page.on("request", request => {if (new URL(request.url()).pathname.startsWith("/progress/")) writes.push(request.url());});
@@ -57,7 +57,7 @@ for (const invalid of ["external stream", "missing authorization", "wrong profil
   });
 }
 
-test("manual queue advance retains failed position and waits for Retry before another choice", async ({page}) => {
+test("manual queue advance retains failed position and waits for Retry before another choice", {tag: ["@smoke", "@routed-fault"]}, async ({page}) => {
   await openAudio(page, "direct-only");
   let progressStatus = 503;
   const revisions: string[] = [];
@@ -77,7 +77,7 @@ test("manual queue advance retains failed position and waits for Retry before an
   await expect(page.locator("audio")).toHaveAttribute("data-progress", "/progress/next");
 });
 
-test("queue source load ignores its delayed pause until new metadata belongs to that source", async ({page}) => {
+test("queue source load ignores its delayed pause until new metadata belongs to that source", {tag: ["@smoke", "@routed-fault"]}, async ({page}) => {
   await openAudio(page, "");
   const nextWrites: string[] = [];
   page.on("request", request => {if (new URL(request.url()).pathname === "/progress/next") nextWrites.push(request.postData() || "");});
@@ -98,7 +98,7 @@ test("queue source load ignores its delayed pause until new metadata belongs to 
 
 // Isolated source failure: deterministically reject after source assignment but
 // before metadata without deleting media or changing Server authorization.
-test("failed queue source cannot replace its saved position with reset zero before metadata", async ({page}, testInfo) => {
+test("failed queue source cannot replace its saved position with reset zero before metadata", {tag: ["@smoke", "@routed-fault"]}, async ({page}, testInfo) => {
   await openAudio(page, "");
   const nextWrites: string[] = [];
   page.on("request", request => {if (new URL(request.url()).pathname === "/progress/next") nextWrites.push(request.postData() || "");});
@@ -127,7 +127,7 @@ test("failed queue source cannot replace its saved position with reset zero befo
   expect(nextWrites).toEqual([]);
 });
 
-test("late item authorization cannot cross a profile change", async ({page}) => {
+test("late item authorization cannot cross a profile change", {tag: ["@smoke", "@routed-fault"]}, async ({page}) => {
   await openAudio(page, "");
   let lookup: import("@playwright/test").Route | undefined;
   const writes: string[] = [];
@@ -144,7 +144,7 @@ test("late item authorization cannot cross a profile change", async ({page}) => 
   expect(writes).toEqual([]);
 });
 
-test("overlapping queue actions authorize and advance only once", async ({page}) => {
+test("overlapping queue actions authorize and advance only once", {tag: ["@smoke", "@routed-fault"]}, async ({page}) => {
   await openAudio(page, "");
   let lookup: import("@playwright/test").Route | undefined, lookups = 0, writes = 0;
   page.on("request", request => {if (new URL(request.url()).pathname.startsWith("/progress/")) writes++;});
@@ -162,7 +162,7 @@ test("overlapping queue actions authorize and advance only once", async ({page})
   expect(writes).toBe(1);
 });
 
-for (const saved of [true, false]) test(`offline queue transition respects its own progress journal: ${saved ? "saved" : "failed"}`, async ({page}) => {
+for (const saved of [true, false]) test(`offline queue transition respects its own progress journal: ${saved ? "saved" : "failed"}`, {tag: ["@smoke", "@routed-fault"]}, async ({page}) => {
   await openAudio(page, "");
   const serverWrites: string[] = [];
   page.on("request", request => {if (new URL(request.url()).pathname.startsWith("/progress/")) serverWrites.push(request.url());});
@@ -182,7 +182,7 @@ for (const saved of [true, false]) test(`offline queue transition respects its o
   expect(serverWrites).toEqual([]);
 });
 
-test("failed new artwork clears the previous cover without reverting current metadata", async ({page}) => {
+test("failed new artwork clears the previous cover without reverting current metadata", {tag: ["@smoke", "@routed-fault"]}, async ({page}) => {
   await openAudio(page, "");
   await startQueue(page);
   await page.getByRole("button", {name: "Next track", exact: true}).click();
@@ -194,7 +194,7 @@ test("failed new artwork clears the previous cover without reverting current met
 });
 
 for (const boundary of ["missing artwork", "unsupported system metadata", "cast owner", "room owner"]) {
-  test(`queue preserves truthful local ownership with ${boundary}`, async ({page}) => {
+  test(`queue preserves truthful local ownership with ${boundary}`, {tag: ["@smoke", "@routed-fault"]}, async ({page}) => {
     await openAudio(page, "");
     if (boundary === "missing artwork") await page.route("https://audio.test/api/v1/items/next", route => route.fulfill({json: {
       item: {...queueItem("next"), artwork: ""}, profileId: "qa-viewer",

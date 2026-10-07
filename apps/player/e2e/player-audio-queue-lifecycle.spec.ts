@@ -5,7 +5,7 @@ import {playerSource} from "./static-sources";
 // These held responses exercise closed-page and ownership races that the real
 // Server cannot produce deterministically. They are isolated browser controls.
 for (const boundary of ["pagehide", "cast", "room"]) {
-  test(`late queue item authorization cannot cross ${boundary}`, async ({page}) => {
+  test(`late queue item authorization cannot cross ${boundary}`, {tag: ["@smoke", "@routed-fault"]}, async ({page}) => {
     await openAudio(page, "");
     let lookup: import("@playwright/test").Route | undefined;
     const writes: string[] = [];
@@ -40,7 +40,7 @@ for (const boundary of ["pagehide", "cast", "room"]) {
   });
 }
 
-test("queued short track resumes its saved position without claiming unplayed progress", async ({page}) => {
+test("queued short track resumes its saved position without claiming unplayed progress", {tag: ["@smoke", "@routed-fault"]}, async ({page}) => {
   await openAudio(page, "");
   await page.locator("audio").evaluate(audio => Object.defineProperty(audio, "duration", {value: 8}));
   await page.route("https://audio.test/api/v1/items/next", route => route.fulfill({json: {
@@ -58,7 +58,7 @@ test("queued short track resumes its saved position without claiming unplayed pr
   expect(nextWrites).toEqual([]);
 });
 
-test("late initial queue response cannot warm media or publish controls after pagehide", async ({page}) => {
+test("late initial queue response cannot warm media or publish controls after pagehide", {tag: ["@smoke", "@routed-fault"]}, async ({page}) => {
   await openAudio(page, "");
   let lookup: import("@playwright/test").Route | undefined;
   const nextReads: string[] = [];
@@ -78,7 +78,7 @@ test("late initial queue response cannot warm media or publish controls after pa
   expect(nextReads).toEqual([]);
 });
 
-for (const saved of [true, false]) test(`ended offline queue requires its own watched acknowledgement: ${saved ? "saved" : "failed"}`, async ({page}) => {
+for (const saved of [true, false]) test(`ended offline queue requires its own watched acknowledgement: ${saved ? "saved" : "failed"}`, {tag: ["@smoke", "@routed-fault"]}, async ({page}) => {
   await openAudio(page, "");
   await startQueue(page);
   await page.evaluate(saved => {
