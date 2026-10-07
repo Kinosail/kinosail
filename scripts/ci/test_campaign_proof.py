@@ -80,6 +80,7 @@ class CampaignProofTests(unittest.TestCase):
         self.assertIn('timeout 180s pnpm --dir apps/player/e2e install --frozen-lockfile', proof)
         self.assertIn('timeout 240s pnpm --dir apps/player/e2e exec playwright install --with-deps chromium', proof)
         self.assertIn('test_hls_nonkey_renderer.py', proof)
+        self.assertIn('node --test apps/player/e2e/test-hls-native-planes.mjs', proof)
         self.assertIn('KINOSAIL_HLS_RENDERER: "1"', proof)
         self.assertIn('run: python3 apps/player/scripts/test-hls-followon.py\n', proof)
         self.assertNotIn('KINOSAIL_HLS_RENDERER', (ROOT / '.github/workflows/app.yml').read_text())

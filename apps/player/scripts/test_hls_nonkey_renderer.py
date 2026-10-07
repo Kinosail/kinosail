@@ -7,8 +7,15 @@ import hls_nonkey_renderer
 
 def capture(count, first=0):
     return {'ended': True, 'errorCode': 0, 'captureErrors': 0, 'width': 640,
-        'height': 360, 'rows': [[n / 24, n + 1, format(n + first, '064x')]
-                              for n in range(count)]}
+        'height': 360, 'beforeGesture': [[True, 0, 0], [True, 0, 1]],
+        'videoPlaybackQuality': {'total': count, 'dropped': 0, 'corrupted': 0},
+        'nativeFrames': [{'format': 'I420', 'visibleRect': [0, 0, 640, 360],
+            'codedDimensions': [640, 368], 'displayDimensions': [640, 360],
+            'rotation': 0, 'flip': False, 'colorSpace': {'primaries': 'bt709',
+                'transfer': 'bt709', 'matrix': 'bt709', 'fullRange': False},
+            'allocationBytes': 345600, 'layout': [[0, 640], [230400, 320], [288000, 320]]}],
+        'rows': [[n / 24, n + 1, format(n + first, '064x'), round(n * 1000000 / 24), 0]
+                 for n in range(count)]}
 
 
 class RendererIntegrity(unittest.TestCase):
@@ -74,10 +81,12 @@ class RendererIntegrity(unittest.TestCase):
 
     def test_matching_pixels_cannot_hide_a_wrong_public_movie_clock(self):
         public = capture(2, 2)
-        for n, row in enumerate(public['rows']): row[0] = (n + 2) / 24
+        for n, row in enumerate(public['rows']):
+            row[0], row[3] = (n + 2) / 24, round((n + 2) * 1000000 / 24)
         facts = renderer_facts(capture(4), public, [n / 24 for n in range(4)], 2 / 24)
         self.assertTrue(facts['publicSourceClockMatches'])
         public['rows'][1][0] += 0.002
+        public['rows'][1][3] += 2000
         facts = renderer_facts(capture(4), public, [n / 24 for n in range(4)], 2 / 24)
         self.assertTrue(facts['requestedIdentityMatches'])
         self.assertFalse(facts['publicSourceClockMatches'])
@@ -102,6 +111,35 @@ class RendererIntegrity(unittest.TestCase):
             with self.subTest(key=key):
                 self.assertFalse(hls_nonkey_renderer.renderer_process_accepted(value, {}))
         self.assertFalse(hls_nonkey_renderer.renderer_process_accepted(process, {'failureClass': 'renderer_deadline'}))
+
+    def test_native_timestamp_binding_geometry_and_gesture_are_required(self):
+        for fault in ['timestamp', 'metadata', 'rotation', 'display', 'autoplay', 'advance', 'dropped']:
+            public = capture(2, 2)
+            if fault == 'timestamp': public['rows'][1][3] += 2000
+            elif fault == 'metadata': public['rows'][1][4] = 1
+            elif fault == 'rotation': public['nativeFrames'][0]['rotation'] = 90
+            elif fault == 'display': public['nativeFrames'][0]['displayDimensions'] = [1280, 720]
+            elif fault == 'autoplay': public['beforeGesture'][1][0] = False
+            elif fault == 'advance': public['beforeGesture'][1][1] += 0.002
+            else: public['videoPlaybackQuality']['dropped'] = 1
+            with self.subTest(fault=fault):
+                facts = renderer_facts(capture(4), public, [n / 24 for n in range(4)], 2 / 24)
+                self.assertFalse(facts['publicQualified'])
+
+    def test_native_copy_failure_retains_every_partial_callback(self):
+        public = capture(2, 2)
+        public['rows'][1][2], public['rows'][1][4] = '', None
+        public['captureErrors'] = 1
+        facts = renderer_facts(capture(4), public, [n / 24 for n in range(4)], 2 / 24)
+        self.assertFalse(facts['publicQualified'])
+        self.assertEqual(len(facts['completePublicRows']), 2)
+
+    def test_matching_native_planes_retains_color_interpretation_difference(self):
+        public = capture(2, 2)
+        public['nativeFrames'][0]['colorSpace']['matrix'] = 'smpte170m'
+        facts = renderer_facts(capture(4), public, [n / 24 for n in range(4)], 2 / 24)
+        self.assertFalse(facts['colorInterpretationMatches'])
+        self.assertEqual(facts['rowColumns'][-3:], ['nativeYUV420SHA256', 'nativeTimestampMicroseconds', 'nativeFrameMetadataIndex'])
 
 
 if __name__ == '__main__':

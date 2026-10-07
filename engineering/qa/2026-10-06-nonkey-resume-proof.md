@@ -117,3 +117,33 @@ exit with a retained descendant, and prove an unrelated process survives. Run
 the renderer in its own process session. Bound terminate, kill and join checks
 for that process group only. Retain timeout evidence and require zero live owned
 processes across repeated samples. Never use a global browser/process cleanup.
+
+## Native frame observation repair, before implementation
+
+Exact `61973443` preserves ten passing controls and both raw failures. Both
+browser references omit source frame 2 and report one dropped frame. All 480
+public RGBA hashes are unknown against those incomplete references. Process
+ownership and planned media delivery pass; browser content stays unqualified.
+
+Use the shipped Play button and Chromium's user-gesture autoplay policy. Keep
+the application's autoplay wiring intact. Record two paused native-clock samples
+before the real click, with at most one preloaded callback and no advancement.
+Require all 768 reference frames and zero drops; do not fill missing callbacks.
+
+Construct each native VideoFrame synchronously in its callback, without supplying
+a timestamp. Retain its timestamp, visible/coded/display geometry, orientation
+and color metadata. Bind the native timestamp to callback mediaTime within 1 ms.
+Copy only its native I420 or NV12 format and complete visible rectangle. Strip
+stride padding and deinterleave NV12 into Y/U/V bytes without color conversion.
+Native-plane identity establishes frame correspondence, not RGB display color
+equivalence. Retain color differences explicitly. Unsupported formats stay
+unqualified, with complete partial callback evidence and no Canvas fallback.
+
+Before the packer, write isolated checks for concrete gaps generated valid public
+media cannot inject: padding/offset errors, U/V reversal, truncated or overlapping
+planes, unsafe dimensions/strides and unsupported formats. Fixed hand-authored
+bytes must establish equivalence across I420/NV12 and sensitivity to every plane.
+Bound each allocation and pending copy, retain original callback ordering, and
+close every frame on success or failure. Add pre-implementation admission checks
+for wrong native timestamps, metadata and autoplay advancement. Preserve `6197`
+and every prior receipt; this remains a diagnostic test change before production.

@@ -1,4 +1,4 @@
-"""Actual public watch-page pixels; raw failures and every callback remain intact."""
+"""Actual native frame correspondence; raw failures and every callback stay intact."""
 from collections import Counter
 import json
 import math
@@ -8,18 +8,51 @@ from hls_timeline_http import sha, source_state
 from hls_nonkey_process import owned_command
 
 
+def native_metadata_qualified(values):
+    return (isinstance(values, list) and 0 < len(values) <= 32 and all(
+        isinstance(v, dict) and v.get('format') in ['I420', 'NV12']
+        and v.get('visibleRect') == [0, 0, 640, 360] and v.get('displayDimensions') == [640, 360]
+        and isinstance(v.get('codedDimensions'), list) and len(v['codedDimensions']) == 2
+        and all(type(n) is int for n in v['codedDimensions'])
+        and 640 <= v['codedDimensions'][0] <= 1024 and 360 <= v['codedDimensions'][1] <= 512
+        and v.get('rotation') == 0 and v.get('flip') is False
+        and isinstance(v.get('colorSpace'), dict)
+        and set(v['colorSpace']) == {'primaries', 'transfer', 'matrix', 'fullRange'}
+        and all(value is None or isinstance(value, str) and re.fullmatch('[a-z0-9-]{1,32}', value)
+                for key, value in v['colorSpace'].items() if key != 'fullRange')
+        and (v['colorSpace']['fullRange'] is None or type(v['colorSpace']['fullRange']) is bool)
+        and type(v.get('allocationBytes')) is int and 0 < v['allocationBytes'] <= 1024 * 1024
+        and isinstance(v.get('layout'), list) and len(v['layout']) == (3 if v['format'] == 'I420' else 2)
+        and all(isinstance(p, list) and len(p) == 2 and all(type(n) is int and 0 <= n <= 1024 * 1024 for n in p)
+                for p in v['layout']) for v in values))
+
+
 def capture_rows(value):
     rows = value.get('rows', [])
     check(isinstance(rows, list) and len(rows) <= 4096, 'renderer_row_bound')
     for row in rows:
-        check(isinstance(row, list) and len(row) == 3 and type(row[0]) in (int, float)
+        check(isinstance(row, list) and len(row) == 5 and type(row[0]) in (int, float)
             and math.isfinite(row[0]) and -1 <= row[0] <= 120
             and type(row[1]) is int and 0 < row[1] <= 8192
-            and isinstance(row[2], str) and re.fullmatch('[a-f0-9]{64}', row[2]), 'renderer_row_shape')
+            and isinstance(row[2], str) and (row[2] == '' or re.fullmatch('[a-f0-9]{64}', row[2]))
+            and (row[3] is None or type(row[3]) is int and -1000000 <= row[3] <= 120000000)
+            and (row[4] is None or type(row[4]) is int and 0 <= row[4] < 32), 'renderer_row_shape')
+    descriptors = value.get('nativeFrames', [])
+    gesture, quality = value.get('beforeGesture', []), value.get('videoPlaybackQuality', {})
+    paused = (isinstance(gesture, list) and len(gesture) == 2 and all(
+        isinstance(v, list) and len(v) == 3 and v[0] is True
+        and type(v[1]) in (int, float) and math.isfinite(v[1])
+        and type(v[2]) is int and 0 <= v[2] <= 1 for v in gesture)
+        and abs(gesture[0][1] - gesture[1][1]) <= 0.001)
     qualified = (bool(rows) and not value.get('failureClass') and value.get('ended') is True and value.get('errorCode') == 0
         and value.get('captureErrors') == 0 and value.get('width') == 640 and value.get('height') == 360
         and rows[0][1] == 1 and all(a[0] < b[0] and b[1] == a[1] + 1 for a, b in zip(rows, rows[1:]))
-        and len({row[2] for row in rows}) == len(rows))
+        and len({row[2] for row in rows}) == len(rows) and paused and native_metadata_qualified(descriptors)
+        and isinstance(quality, dict) and quality.get('total') == len(rows)
+        and quality.get('dropped') == 0 and quality.get('corrupted') == 0
+        and all(re.fullmatch('[a-f0-9]{64}', row[2]) and row[3] is not None
+                and abs(row[3] / 1000000 - row[0]) <= 0.001
+                and row[4] is not None and row[4] < len(descriptors) for row in rows))
     return rows, qualified
 
 
@@ -35,20 +68,24 @@ def renderer_facts(reference, public, source_pts, requested):
     index = {row[2]: n for n, row in enumerate(original) if counts[row[2]] == 1}
     mapped = [index.get(row[2]) for row in observed]
     expected = [n for n, point in enumerate(source_pts) if point >= requested - 0.000001]
-    return {'boundary': 'Complete native-resolution browser pixels from actual authenticated watch pages; no trimming',
+    colors = lambda v: sorted({json.dumps(d.get('colorSpace'), sort_keys=True)
+                              for d in v.get('nativeFrames', []) if isinstance(d, dict)})
+    return {'boundary': 'Complete native YUV420 frame identity from actual watch pages; no trimming or RGB color-equivalence claim',
         'referenceQualified': reference_ok, 'publicQualified': public_ok,
         'requestedIdentityMatches': reference_ok and public_ok and mapped == expected,
         'publicSourceClockMatches': reference_ok and public_ok and bool(mapped)
             and all(n is not None and abs(row[0] - source_pts[n]) <= 0.001
                     for row, n in zip(observed, mapped)),
-        'rowColumns': ['mediaTimeSeconds', 'presentedFrames', 'rgbaSHA256'],
+        'colorInterpretationMatches': colors(reference) == colors(public),
+        'rowColumns': ['mediaTimeSeconds', 'presentedFrames', 'nativeYUV420SHA256',
+                       'nativeTimestampMicroseconds', 'nativeFrameMetadataIndex'],
         'completeReferenceRows': [json.dumps(row, separators=(',', ':')) for row in original],
         'completePublicRows': [json.dumps(row, separators=(',', ':')) for row in observed],
         'publicSourceIndices': mapped, 'expectedSourceIndices': expected,
         'precedingSourceIndices': [n for n in mapped if n not in expected] if reference_ok else None,
         'missingRequestedIndices': [n for n in expected if n not in mapped] if reference_ok else None,
         'unknownPublicFrames': sum(n is None for n in mapped),
-        'duplicatePublicSourceIndices': [n for n, count in Counter(mapped).items() if count > 1]}
+        'duplicatePublicSourceIndices': [n for n, count in Counter(mapped).items() if n is not None and count > 1]}
 
 
 def renderer_delivery_matches(network, init_sha, segment_count, reference_unchanged):

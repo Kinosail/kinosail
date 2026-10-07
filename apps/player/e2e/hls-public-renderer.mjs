@@ -2,6 +2,7 @@
 import {chromium} from '@playwright/test';
 import {createHash} from 'node:crypto';
 import {readFileSync, writeFileSync, renameSync, existsSync} from 'node:fs';
+import {packNative420} from './hls-native-planes.mjs';
 
 const target = process.argv[2];
 const bytes = readFileSync(0);
@@ -27,7 +28,7 @@ const stop = async failureClass => {
 const watchdog = setTimeout(() => {void stop('renderer_deadline');}, 245_000);
 process.once('SIGTERM', () => {void stop('renderer_terminated');});
 browserServer = await chromium.launchServer({host: '127.0.0.1', port: 0, headless: true, timeout: 15_000,
-  handleSIGTERM: false, args: ['--autoplay-policy=no-user-gesture-required',
+  handleSIGTERM: false, args: ['--autoplay-policy=user-gesture-required',
   '--disable-background-timer-throttling', '--disable-renderer-backgrounding']});
 const owner = `${target}.owner`;
 writeFileSync(`${owner}.tmp`, JSON.stringify({browserPID: browserServer.process().pid}), {mode: 0o600});
@@ -70,33 +71,69 @@ async function capture(id, compatible) {
     } else network.unexpectedMediaRequests++;
     if (response.status() !== 200) network.failedMediaResponses++;
   });
-  await page.addInitScript(() => {
+  const observe = () => {
     const proof = window.__hlsProof = {rows: [], ended: false, errorCode: 0, captureErrors: 0,
       width: 0, height: 0, nativeTime: null, reportedTime: null, duration: null,
-      buffered: [], events: [], hashes: [], videoPlaybackQuality: null};
+      buffered: [], events: [], hashes: [], videoPlaybackQuality: null,
+      nativeFrames: [], unsupportedFormats: [], beforeGesture: []};
     const nativeTime = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'currentTime').get;
     const nativeDuration = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'duration').get;
     const attach = media => {
       if (!(media instanceof HTMLVideoElement) || media.dataset.proofAttached) return;
       media.dataset.proofAttached = '1';
-      media.muted = true;
       media.playbackRate = 0.25;
-      const canvas = document.createElement('canvas');
-      const pixels = canvas.getContext('2d', {willReadFrequently: true});
+      let pendingCopies = 0;
+      const copyFrame = async (frame, row) => {
+        pendingCopies++;
+        try {
+          if (!['I420', 'NV12'].includes(frame.format)) {
+            if (proof.unsupportedFormats.length < 16) proof.unsupportedFormats.push(frame.format);
+            throw new Error('renderer_native_format');
+          }
+          const rect = frame.visibleRect;
+          if (rect.x !== 0 || rect.y !== 0 || rect.width !== 640 || rect.height !== 360) {
+            throw new Error('renderer_native_geometry');
+          }
+          const options = {rect}; // Native format; no format/colorSpace conversion.
+          const size = frame.allocationSize(options);
+          if (size <= 0 || size > 1024 * 1024) throw new Error('renderer_native_allocation');
+          const bytes = new Uint8Array(size);
+          const layout = await frame.copyTo(bytes, options);
+          const packed = packNative420(bytes, frame.format, rect.width, rect.height, layout);
+          const native = {format: frame.format, visibleRect: [rect.x, rect.y, rect.width, rect.height],
+            codedDimensions: [frame.codedWidth, frame.codedHeight],
+            displayDimensions: [frame.displayWidth, frame.displayHeight],
+            rotation: frame.rotation ?? null, flip: frame.flip ?? null,
+            colorSpace: frame.colorSpace.toJSON(), allocationBytes: size,
+            layout: layout.map(p => [p.offset, p.stride])};
+          const serialized = JSON.stringify(native);
+          let index = proof.nativeFrames.findIndex(v => JSON.stringify(v) === serialized);
+          if (index < 0) {
+            if (proof.nativeFrames.length >= 32) throw new Error('renderer_native_metadata_bound');
+            index = proof.nativeFrames.push(native) - 1;
+          }
+          row[4] = index;
+          const hash = await crypto.subtle.digest('SHA-256', packed);
+          row[2] = [...new Uint8Array(hash)].map(byte => byte.toString(16).padStart(2, '0')).join('');
+        } catch {proof.captureErrors++;}
+        finally {frame.close(); pendingCopies--;}
+      };
       const record = (_, metadata) => {
         if (proof.rows.length >= 4096) {proof.captureErrors++; media.pause(); return;}
-        const row = [metadata.mediaTime, metadata.presentedFrames, ''];
+        const row = [metadata.mediaTime, metadata.presentedFrames, '', null, null];
         proof.rows.push(row);
+        let frame;
         try {
-          canvas.width = proof.width = media.videoWidth;
-          canvas.height = proof.height = media.videoHeight;
-          if (canvas.width !== 640 || canvas.height !== 360) throw new Error('renderer_dimensions');
-          pixels.drawImage(media, 0, 0);
-          const buffer = pixels.getImageData(0, 0, canvas.width, canvas.height).data;
-          proof.hashes.push(crypto.subtle.digest('SHA-256', buffer).then(hash => {
-            row[2] = [...new Uint8Array(hash)].map(byte => byte.toString(16).padStart(2, '0')).join('');
-          }).catch(() => {proof.captureErrors++;}));
-        } catch {proof.captureErrors++;}
+          proof.width = media.videoWidth;
+          proof.height = media.videoHeight;
+          if (proof.width !== 640 || proof.height !== 360 || pendingCopies >= 16) {
+            throw new Error('renderer_dimensions_or_pending_bound');
+          }
+          frame = new VideoFrame(media); // Synchronous callback frame; inherit its timestamp.
+          row[3] = frame.timestamp;
+          proof.hashes.push(copyFrame(frame, row));
+          frame = null;
+        } catch {frame?.close(); proof.captureErrors++;}
         media.requestVideoFrameCallback(record);
       };
       media.requestVideoFrameCallback(record);
@@ -124,7 +161,8 @@ async function capture(id, compatible) {
     new MutationObserver(() => document.querySelectorAll('video').forEach(attach))
       .observe(document, {childList: true, subtree: true});
     document.addEventListener('DOMContentLoaded', () => document.querySelectorAll('video').forEach(attach));
-  });
+  };
+  await page.addInitScript({content: `const packNative420 = ${packNative420.toString()};(${observe.toString()})();`});
   let failureClass;
   try {
     const timeout = () => Math.max(1, deadline - Date.now());
@@ -133,7 +171,15 @@ async function capture(id, compatible) {
     if (response.status() !== 200) throw new Error('renderer_watch_status');
     await page.waitForFunction(() => document.querySelector('video')?.readyState >= 2,
       null, {timeout: Math.min(20_000, timeout())});
-    await page.locator('video').evaluate(media => media.play());
+    for (let sample = 0; sample < 2; sample++) {
+      await page.evaluate(() => {
+        const media = document.querySelector('video');
+        const native = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'currentTime').get;
+        window.__hlsProof.beforeGesture.push([media.paused, native.call(media), window.__hlsProof.rows.length]);
+      });
+      if (sample === 0) await page.waitForTimeout(200);
+    }
+    await page.locator('[data-player-toggle]').click({timeout: Math.min(15_000, timeout())});
     await page.waitForFunction(() => window.__hlsProof.ended || window.__hlsProof.errorCode,
       null, {timeout: timeout()});
   } catch {failureClass = Date.now() >= deadline - 1000 ? 'renderer_deadline' : 'renderer_watch_failed';}

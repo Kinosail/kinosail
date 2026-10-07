@@ -255,6 +255,7 @@ finally:
          'hls_nonkey_process.py', 'test_hls_nonkey_process.py',
          'hls_timeline_packets.py', 'hls_timeline_fixture.py', 'hls_timeline_preparation.py']]
     files.append(ROOT / 'apps/player/e2e/hls-public-renderer.mjs')
+    files.extend(ROOT / ('apps/player/e2e/' + n) for n in ['hls-native-planes.mjs', 'test-hls-native-planes.mjs'])
     checksums = {str(p.relative_to(ROOT)): sha(p) for p in files} | {'receipt.json': sha(target)}
     (RUN / 'SHA256SUMS').write_text(''.join(f'{v}  {k}\n' for k, v in checksums.items()))
     print(json.dumps({'result': receipt['result'], 'receiptSHA256': sha(target), 'failureClass': receipt.get('failureClass'),
