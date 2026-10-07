@@ -47,13 +47,15 @@ func assertBrowseReturnPlayerPage(t *testing.T, page *httptest.ResponseRecorder)
 		`data-return-shows="Back to Shows"`,
 		`data-return-search="Back to search results"`,
 		`data-return-library="Back to Library"`,
-		`<a class="button quiet" href="/" data-browse-library hidden>Library</a>`,
 		`data-viewer-profile="local-owner"`,
 		`/static/main.kinosail.bundle.js?v=37-htmx4`,
 	} {
 		if !strings.Contains(page.Body.String(), required) {
 			t.Errorf("Go Player does not expose %s", required)
 		}
+	}
+	if strings.Contains(page.Body.String(), "data-browse-library") {
+		t.Error("Player must expose one return link without a duplicate Library button")
 	}
 	if strings.Contains(page.Body.String(), "untrusted.invalid") || page.Header().Get("Location") != "" {
 		t.Fatal("Referer must not become return content or a redirect")
