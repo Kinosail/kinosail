@@ -1,5 +1,5 @@
 import { createHmac } from "node:crypto";
-import { test, type Browser, type Page } from "@playwright/test";
+import { expect, test, type Browser, type Page } from "@playwright/test";
 
 export { downloadsSource } from "./static-sources";
 
@@ -26,7 +26,8 @@ export function totp(): string {
 }
 
 export async function login(page: import("@playwright/test").Page) {
-  await page.goto("/login");
+  await page.goto("/login", {waitUntil: "domcontentloaded"});
+  await expect(page.getByLabel("Name")).toBeEditable();
   await page.getByLabel("Name").fill(process.env.KINOSAIL_E2E_OWNER_NAME ?? "Owner");
   await page.getByLabel("Password", { exact: true }).fill(process.env.KINOSAIL_E2E_OWNER_PASSWORD ?? "test-instance-password");
   await page.getByLabel("Authentication or recovery code").fill(totp());

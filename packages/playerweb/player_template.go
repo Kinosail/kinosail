@@ -3,6 +3,7 @@ package playerweb
 import "strings"
 
 func PlayerTemplate(template string) string {
+	template = strings.Replace(template, `<form action="/watched/{{.ID}}" method="post">`, `<form action="/watched/{{.ID}}" method="post"><input type="hidden" name="session" value="{{.PlaybackSession}}">`, 1)
 	template = strings.Replace(template, `<div class="primary-player-actions">`, progressNoticeTemplate+`<div class="primary-player-actions">`, 1)
 	template = strings.Replace(template, `data-room-disconnected="{{t "Room disconnected · reload to reconnect"}}"`, `data-room-disconnected="{{t "Room disconnected · reconnecting…"}}"`, 1)
 	template = strings.ReplaceAll(template, `data-title="{{.Title}}"`, `data-title="{{.Title}}" data-artist="{{.Artist}}" data-album="{{.Album}}"`)

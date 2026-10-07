@@ -1,6 +1,28 @@
 package catalog
 
-import "time"
+import (
+	"strings"
+	"time"
+)
+
+// ProgressWatched records an explicit watched choice and closes its current page.
+// An omitted session preserves the legacy watched operation.
+func ProgressWatched(watched bool, session string, now time.Time) ProgressChange {
+	return func(state PlaybackState) (PlaybackState, bool, error) {
+		if session != "" && (len(session) < 8 || len(session) > 64 || strings.IndexFunc(session, invalidWatchedSessionCharacter) >= 0) {
+			return state, false, ErrInvalidProgressState
+		}
+		state.Seconds, state.Watched, state.Updated = 0, watched, now.UTC()
+		if session != "" {
+			state.Session, state.Revision = session, 0
+		}
+		return state, true, nil
+	}
+}
+
+func invalidWatchedSessionCharacter(character rune) bool {
+	return character != '-' && character != '_' && (character < '0' || character > '9') && (character < 'A' || character > 'Z') && (character < 'a' || character > 'z')
+}
 
 // ProgressRevision applies one ordered playback event.
 func ProgressRevision(seconds float64, watched *bool, session string, revision uint64, now time.Time) ProgressChange {

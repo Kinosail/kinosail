@@ -32,6 +32,9 @@ sources = ["packages/webassets/static/player-progress.js", "packages/playerweb/p
            "apps/player/e2e/test-instance-checkpoint.spec.ts", "packages/webassets/static/player-presentation.js",
            "packages/webassets/static/player-core.js", "packages/webassets/static/player-status.js",
            "apps/player/e2e/player-preparation-progress.spec.ts", "apps/player/e2e/test-instance-progress.spec.ts",
+           "apps/player/e2e/test-instance-watched-departure.spec.ts", "packages/catalog/progress_change.go",
+           "apps/player/e2e/test-instance-helpers.ts",
+           "packages/catalog/progress_http.go", "packages/catalog/progress_request_store.go",
            "apps/player/scripts/test-player-checkpoint-local.py"]
 receipt = {"revision": revision, "workingDiffSHA256": hashlib.sha256(diff).hexdigest(),
            "sourceSHA256": {path: hashlib.sha256((root / path).read_bytes()).hexdigest() for path in sources},
@@ -85,7 +88,7 @@ try:
                            "KINOSAIL_E2E_OWNER_PASSWORD": "synthetic-progress-password", "KINOSAIL_E2E_URL": url,
                            "KINOSAIL_E2E_VIDEO": "off", "KINOSAIL_BROWSER_WORKERS": "1", "KINOSAIL_BROWSER_PROJECT": args.project}
             for phase in [args.phase]:
-                selected = ["test-instance-checkpoint.spec.ts"] + (["test-instance-progress.spec.ts"] if phase == "candidate" else [])
+                selected = ["test-instance-checkpoint.spec.ts"] + (["test-instance-progress.spec.ts", "test-instance-watched-departure.spec.ts"] if phase == "candidate" else [])
                 command = ["node", "node_modules/@playwright/test/cli.js", "test", *selected,
                            "--project=" + args.project, "--workers=1", "--repeat-each=2"]
                 if args.grep:

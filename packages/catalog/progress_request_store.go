@@ -220,8 +220,18 @@ func (store *RequestProgressStore) Set(request *http.Request, id string, seconds
 
 // SetRevision stores progress with optimistic session ordering and emits accepted lifecycle events.
 func (store *RequestProgressStore) SetRevision(request *http.Request, id string, seconds float64, watched *bool, session string, revision uint64) (bool, error) {
+	return store.commitProgress(request, id, seconds, watched, ProgressRevision(seconds, watched, session, revision, time.Now()))
+}
+
+// SetWatched commits an explicit choice, including a page that has not saved progress yet.
+func (store *RequestProgressStore) SetWatched(request *http.Request, id string, watched bool, session string) error {
+	_, err := store.commitProgress(request, id, 0, &watched, ProgressWatched(watched, session, time.Now()))
+	return err
+}
+
+func (store *RequestProgressStore) commitProgress(request *http.Request, id string, seconds float64, watched *bool, change ProgressChange) (bool, error) {
 	key := store.viewer(request).ID + ":" + id
-	previous, state, accepted, err := store.Update(key, ProgressRevision(seconds, watched, session, revision, time.Now()))
+	previous, state, accepted, err := store.Update(key, change)
 	started, completed := ProgressAudit(previous, state, seconds, watched, accepted, err)
 	if started {
 		store.audit(request, "playback.started", id, seconds, false)

@@ -100,86 +100,107 @@ test("real Server rejects invalid progress without changing stored state and web
   await page.screenshot({path: testInfo.outputPath(baseline ? "baseline-real-server-rejection.png" : "real-server-rejection.png"), fullPage: true});
 });
 
-test("populated player retries the latest progress through the real Server and renders accessible states", {tag: "@smoke"}, async ({page}, testInfo) => {
-  test.skip(baseline, "the baseline rejection reproduction is separate from repaired recovery");
-  await login(page);
-  const watch = await firstPlayable(page);
-  let fail = false;
-  let hold = false;
-  let release: (() => void) | undefined;
-  const requests: Array<{seconds: number; revision: string}> = [];
-  await page.route("**/progress/**", async route => {
-    const body = new URLSearchParams(route.request().postData() || "");
-    requests.push({seconds: Number(body.get("seconds")), revision: body.get("revision")!});
-    if (fail) return route.fulfill({status: 503});
-    if (!hold) return route.continue();
-    await new Promise<void>(resolve => release = resolve);
-    await route.continue();
-  });
-  await page.goto(watch);
-  await inspectNotice(page, testInfo, "idle", false);
-  fail = true;
-  const media = page.locator("video");
-  await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThanOrEqual(2);
-  await media.evaluate((video: HTMLVideoElement) => { video.pause(); video.currentTime = Math.min(video.duration / 3, 30); video.dispatchEvent(new Event("pause")); });
-  await expect(page.locator("[data-progress-status]")).toHaveText("Your latest position is not saved. Retry while this page is open.");
-  await inspectNotice(page, testInfo, "failed", true);
-  for (const viewport of [{width: 390, height: 844}, {width: 1440, height: 900}, {width: 1920, height: 1080}]) {
-    await page.setViewportSize(viewport);
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    await expect(page.getByRole("button", {name: "Retry saving position", exact: true})).toBeVisible();
-    const failures = (await new AxeBuilder({page}).include("[data-progress-notice]").analyze()).violations;
-    expect(failures).toEqual([]);
-    await page.screenshot({path: testInfo.outputPath(`unsaved-${viewport.width}.png`), fullPage: true});
-  }
-  const pending = requests.at(-1)!;
-  fail = false;
-  hold = true;
-  await page.getByRole("button", {name: "Retry saving position", exact: true}).click();
-  await expect(page.locator("[data-progress-notice]")).toHaveAttribute("aria-busy", "true");
-  await expect(page.locator("[data-progress-status]")).toHaveText("Saving progress…");
-  await expect(page.getByRole("button", {name: "Retry saving position", exact: true})).toBeDisabled();
-  await inspectNotice(page, testInfo, "pending", true);
-  await page.screenshot({path: testInfo.outputPath("pending-save.png"), fullPage: true});
-  await expect.poll(() => Boolean(release)).toBe(true);
-  release!();
-  await expect(page.locator("[data-progress-notice]")).toBeHidden();
-  await inspectNotice(page, testInfo, "saved", false);
-  const id = watch.split("/").at(-1)!;
-  const state = await serverProgress(page, id);
-  expect(state.seconds).toBeCloseTo(pending.seconds, 2);
-  expect(String(state.revision)).toBe(pending.revision);
-  expect(requests.at(-1)).toEqual(pending);
-  await page.screenshot({path: testInfo.outputPath("saved.png"), fullPage: true});
-  await page.reload();
-  await expect(page.locator("[data-progress-notice]")).toBeHidden();
-  expect(await page.locator("[data-progress-status]").textContent()).not.toContain("Your position is saved");
-});
+test.describe("controlled progress transport", () => {
+  // Page routes must own these injected faults; service-worker journeys keep their
+  // separate real-server coverage above and in the offline test-instance suite.
+  test.use({serviceWorkers: "block"});
 
-test('Mark watched waits for an older played-position request before changing stored status', {tag:'@smoke'}, async ({page},info) => {
-  await login(page);
-  const watch=await firstPlayable(page), id=watch.split('/').at(-1)!;
-  const publicProgress=()=>page.evaluate(async id=>{const response=await fetch(`/api/v1/items/${id}`);if(response.status!==200)throw new Error(`Public progress HTTP ${response.status}`);return (await response.json()).item.progress;},id);
-  await page.goto(watch);
-  const media=page.locator('video');
-  await media.evaluate(async(video:HTMLVideoElement)=>{video.muted=true;await video.play();});
-  await expect.poll(()=>media.evaluate((video:HTMLVideoElement)=>video.getVideoPlaybackQuality().totalVideoFrames)).toBeGreaterThan(2);
-  let release!:()=>void, held=false, watchedRequests=0;
-  const barrier=new Promise<void>(resolve=>release=resolve);
-  page.on('request',request=>{if(new URL(request.url()).pathname===`/watched/${id}`)watchedRequests++;});
-  await page.route(`**/progress/${id}*`,async route=>{held=true;await barrier;await route.continue();});
-  try {
-    await media.evaluate((video:HTMLVideoElement)=>video.pause());
-    await expect.poll(()=>held).toBe(true);
-    await page.getByRole('button',{name:'Mark watched',exact:true}).click();
-    await expect(page.locator('[data-progress-status]')).toHaveText('Saving progress…');
-    expect(watchedRequests).toBe(0);
-    await page.screenshot({path:info.outputPath('watched-awaits-position.png'),fullPage:true});
-    release();
-    await expect(page.getByRole('button',{name:'Mark unwatched',exact:true})).toBeVisible();
-    await expect.poll(()=>publicProgress().then(state=>state.watched)).toBe(true);
-    await page.getByRole('link',{name:'Library',exact:true}).click();
-    await expect(page).toHaveURL('/');
-    expect((await publicProgress()).watched).toBe(true);
-  } finally {release();}
+  test("populated player retries the latest progress through the real Server and renders accessible states", {tag: "@smoke"}, async ({page}, testInfo) => {
+    test.skip(baseline, "the baseline rejection reproduction is separate from repaired recovery");
+    await login(page);
+    const watch = await firstPlayable(page);
+    let fail = false;
+    let hold = false;
+    let release: (() => void) | undefined;
+    let rejectedRequests = 0;
+    const requests: Array<{seconds: number; revision: string}> = [];
+    await page.route("**/progress/**", async route => {
+      const body = new URLSearchParams(route.request().postData() || "");
+      requests.push({seconds: Number(body.get("seconds")), revision: body.get("revision")!});
+      if (fail) {
+        rejectedRequests++;
+        return route.fulfill({status: 503});
+      }
+      if (!hold) return route.continue();
+      await new Promise<void>(resolve => release = resolve);
+      await route.continue();
+    });
+    await page.goto(watch);
+    await inspectNotice(page, testInfo, "idle", false);
+    const media = page.locator("video");
+    await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThanOrEqual(2);
+    await media.evaluate(async (video: HTMLVideoElement) => {video.muted = true; await video.play();});
+    await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.getVideoPlaybackQuality().totalVideoFrames)).toBeGreaterThan(2);
+    const id = watch.split("/").at(-1)!;
+    const savedPause = page.waitForResponse(response => new URL(response.url()).pathname === `/progress/${id}` && response.status() === 204);
+    await media.evaluate((video: HTMLVideoElement) => video.pause());
+    await savedPause;
+    const beforeFault = await serverProgress(page, id);
+    fail = true;
+    const rejected = page.waitForResponse(response => new URL(response.url()).pathname === `/progress/${id}` && response.status() === 503);
+    await media.evaluate((video: HTMLVideoElement) => { video.pause(); video.currentTime = Math.min(video.duration / 3, 30); video.dispatchEvent(new Event("pause")); });
+    await rejected;
+    expect(rejectedRequests).toBeGreaterThan(0);
+    expect(await serverProgress(page, id)).toEqual(beforeFault);
+    await expect(page.locator("[data-progress-status]")).toHaveText("Your latest position is not saved. Retry while this page is open.");
+    await inspectNotice(page, testInfo, "failed", true);
+    for (const viewport of [{width: 390, height: 844}, {width: 1440, height: 900}, {width: 1920, height: 1080}]) {
+      await page.setViewportSize(viewport);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await expect(page.getByRole("button", {name: "Retry saving position", exact: true})).toBeVisible();
+      const failures = (await new AxeBuilder({page}).include("[data-progress-notice]").analyze()).violations;
+      expect(failures).toEqual([]);
+      await page.screenshot({path: testInfo.outputPath(`unsaved-${viewport.width}.png`), fullPage: true});
+    }
+    const pending = requests.at(-1)!;
+    fail = false;
+    hold = true;
+    await page.getByRole("button", {name: "Retry saving position", exact: true}).click();
+    await expect(page.locator("[data-progress-notice]")).toHaveAttribute("aria-busy", "true");
+    await expect(page.locator("[data-progress-status]")).toHaveText("Saving progress…");
+    await expect(page.getByRole("button", {name: "Retry saving position", exact: true})).toBeDisabled();
+    await inspectNotice(page, testInfo, "pending", true);
+    await page.screenshot({path: testInfo.outputPath("pending-save.png"), fullPage: true});
+    await expect.poll(() => Boolean(release)).toBe(true);
+    release!();
+    await expect(page.locator("[data-progress-notice]")).toBeHidden();
+    await inspectNotice(page, testInfo, "saved", false);
+    const state = await serverProgress(page, id);
+    expect(state.seconds).toBeCloseTo(pending.seconds, 2);
+    expect(String(state.revision)).toBe(pending.revision);
+    expect(requests.at(-1)).toEqual(pending);
+    await page.screenshot({path: testInfo.outputPath("saved.png"), fullPage: true});
+    await page.reload();
+    await expect(page.locator("[data-progress-notice]")).toBeHidden();
+    expect(await page.locator("[data-progress-status]").textContent()).not.toContain("Your position is saved");
+  });
+
+  test('Mark watched waits for an older played-position request before changing stored status', {tag:'@smoke'}, async ({page},info) => {
+    await login(page);
+    const watch=await firstPlayable(page), id=watch.split('/').at(-1)!;
+    const publicProgress=()=>page.evaluate(async id=>{const response=await fetch(`/api/v1/items/${id}`);if(response.status!==200)throw new Error(`Public progress HTTP ${response.status}`);return (await response.json()).item.progress;},id);
+    await page.goto(watch);
+    const media=page.locator('video');
+    await media.evaluate(async(video:HTMLVideoElement)=>{video.muted=true;await video.play();});
+    await expect.poll(()=>media.evaluate((video:HTMLVideoElement)=>video.getVideoPlaybackQuality().totalVideoFrames)).toBeGreaterThan(2);
+    let release!:()=>void, held=false, watchedRequests=0;
+    const barrier=new Promise<void>(resolve=>release=resolve);
+    page.on('request',request=>{if(new URL(request.url()).pathname===`/watched/${id}`)watchedRequests++;});
+    await page.route(`**/progress/${id}*`,async route=>{held=true;await barrier;await route.continue();});
+    try {
+      await media.evaluate((video:HTMLVideoElement)=>video.pause());
+      await expect.poll(()=>held).toBe(true);
+      await page.getByRole('button',{name:'Mark watched',exact:true}).click();
+      await expect(page.locator('[data-progress-status]')).toHaveText('Saving progress…');
+      expect(watchedRequests).toBe(0);
+      await page.screenshot({path:info.outputPath('watched-awaits-position.png'),fullPage:true});
+      release();
+      await expect(page.getByRole('button',{name:'Mark unwatched',exact:true})).toBeVisible();
+      await expect.poll(()=>publicProgress().then(state=>state.watched)).toBe(true);
+      await page.getByRole('link',{name:'Library',exact:true}).click();
+      await expect(page).toHaveURL('/');
+      expect((await publicProgress()).watched).toBe(true);
+    } finally {release();}
+  });
+
 });

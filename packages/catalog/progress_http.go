@@ -1,10 +1,12 @@
 package catalog
 
 import (
+	"errors"
 	"math"
 	"net/http"
 	"strconv"
 
+	"github.com/MikeO7/kinosail/packages/httpguard"
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/playback"
 )
@@ -67,15 +69,24 @@ func (handlers ProgressHTTPHandlers) Save() http.HandlerFunc { //nolint:cyclop /
 // SaveWatched validates and stores the watched state submitted by the web UI.
 func (handlers ProgressHTTPHandlers) SaveWatched() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		item, found := handlers.Index.VisibleItem(request, request.PathValue("id"))
-		id := item.ID
-		watched, err := strconv.ParseBool(request.FormValue("watched"))
-		if !found || err != nil {
+		if httpguard.DecodeForm(writer, request, 1<<20, "watched", "session") != nil {
 			handlers.Error(writer, request, "invalid watched state", http.StatusBadRequest)
 			return
 		}
-		if err := handlers.Store.Set(request, id, 0, &watched); err != nil { //nolint:contextcheck // Validated atomic progress commits must finish after client cancellation.
-			handlers.Error(writer, request, err.Error(), http.StatusInternalServerError)
+		item, found := handlers.Index.VisibleItem(request, request.PathValue("id"))
+		id := item.ID
+		watched, err := strconv.ParseBool(request.PostForm.Get("watched"))
+		session, valid := httpguard.OptionalValue(request.PostForm, "session", 64)
+		if !found || err != nil || !valid || request.PostForm.Has("session") && session == "" {
+			handlers.Error(writer, request, "invalid watched state", http.StatusBadRequest)
+			return
+		}
+		if err := handlers.Store.SetWatched(request, id, watched, session); err != nil { //nolint:contextcheck // Validated atomic progress commits must finish after client cancellation.
+			status := http.StatusInternalServerError
+			if errors.Is(err, ErrInvalidProgressState) {
+				status = http.StatusBadRequest
+			}
+			handlers.Error(writer, request, err.Error(), status)
 			return
 		}
 		http.Redirect(writer, request, "/watch/"+id, http.StatusSeeOther)
