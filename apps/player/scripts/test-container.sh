@@ -212,10 +212,9 @@ if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
     start_fresh_server "$port"
     KINOSAIL_BROWSER_PROJECT="$project" KINOSAIL_E2E_URL="$url" KINOSAIL_E2E_OUTPUT_DIR="${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project" pnpm --dir e2e test "${browser_args[@]}"
     if [[ "${KINOSAIL_BROWSER_SMOKE:-}" == "1" ]]; then
-      KINOSAIL_BROWSER_PROJECT="$project" KINOSAIL_E2E_VIDEO=off \
-        KINOSAIL_E2E_OUTPUT_DIR="${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project-native-intent" \
-        KINOSAIL_E2E_ARTIFACT_DIR="${KINOSAIL_E2E_ARTIFACT_DIR:-$media_dir/playwright-artifact}/native-intent-$project" \
-        pnpm --dir e2e test player-native-intent-regression.spec.ts --workers=1 --retries=0
+      run_native_intent_regression "$project" \
+        "${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project-native-intent" \
+        "${KINOSAIL_E2E_ARTIFACT_DIR:-$media_dir/playwright-artifact}/native-intent-$project"
     fi
     # Prepared-Owner journeys need fresh state after the installation journey.
     start_fresh_server "$port"

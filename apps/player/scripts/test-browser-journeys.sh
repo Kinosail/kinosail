@@ -51,6 +51,13 @@ run_download_pause_journeys() {
   done
 }
 
+run_native_intent_regression() {
+  KINOSAIL_BROWSER_PROJECT="$1" KINOSAIL_E2E_VIDEO=off \
+    KINOSAIL_E2E_OUTPUT_DIR="$2" KINOSAIL_E2E_ARTIFACT_DIR="$3" \
+    PLAYWRIGHT_HTML_OUTPUT_DIR="$3/html-$1" \
+    pnpm --dir e2e test player-native-intent-regression.spec.ts --workers=1 --retries=0
+}
+
 run_populated_player_journeys() {
   local repo
   repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
