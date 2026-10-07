@@ -4,14 +4,15 @@ import {expect, test, type Locator, type Page} from "@playwright/test";
 // video decoder must agree on re-entry. No player implementation is replaced.
 export function registerResumeCheckpoints(flows: {
   phase: string;
+  browsePath: string;
   openMovie: (page: Page) => Promise<{watch: string; media: Locator; id: string; duration: number}>;
 }) {
   for (const state of ["near-end", "zero", "completed"] as const) {
     test(`saved ${state} progress re-enters the actual movie at the expected position`, {tag: "@smoke"}, async ({page}, info) => {
       test.skip(flows.phase !== "candidate", "historical replay is separate from saved-position semantics");
       const {watch, id, duration} = await flows.openMovie(page);
-      await page.getByRole("link", {name: "Library", exact: true}).click();
-      await expect(page).toHaveURL(url => url.pathname === "/");
+      await page.getByRole("link", {name: "Back to search results", exact: true}).click();
+      await expect(page).toHaveURL(flows.browsePath);
       const csrf = await page.locator('meta[name="kinosail-csrf"]').getAttribute("content");
       expect(csrf).toBeTruthy();
       const headers = {Origin: new URL(page.url()).origin, "X-Kinosail-CSRF": csrf!};
