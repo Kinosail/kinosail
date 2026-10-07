@@ -59,7 +59,8 @@ test('positive Matroska reentry decodes the saved scene through native HLS', asy
       rawTime, reportedPosition: video.currentTime, decoderDuration: Number.isFinite(decoderDuration) ? decoderDuration : null,
       offsetSeconds: offset ? Number(offset[1]) / 1000 : 0,
       projectedFromSource: rawTime + (offset ? Number(offset[1]) / 1000 : 0),
-      readyState: video.readyState, paused: video.paused, nativeHLS: video.canPlayType('application/vnd.apple.mpegurl'),
+      readyState: video.readyState, paused: video.paused, ended: video.ended, errorCode: video.error?.code || 0,
+      nativeHLS: video.canPlayType('application/vnd.apple.mpegurl'),
       phonePolicy: /iPhone/.test(navigator.userAgent), touchContext: navigator.maxTouchPoints > 0,
       hasInitialAutoplay: video.hasAttribute('autoplay') || video.hasAttribute('data-autoplay'),
       nativeFullscreenCapability: typeof (video as HTMLVideoElement & {webkitEnterFullscreen?: unknown}).webkitEnterFullscreen === 'function',
@@ -100,9 +101,18 @@ test('positive Matroska reentry decodes the saved scene through native HLS', asy
   await page.evaluate(() => {
     const video = document.querySelector('video')!;
     video.muted = true;
-    const state = {frames: [] as {mediaTime: number, rawTime: number, rgb: number[], png: string}[]};
+    const state = {frames: [] as {mediaTime: number, rawTime: number, rgb: number[], png: string}[], callbacks: 0,
+      events: [] as {event: string, elapsedMS: number, paused: boolean, rawTime: number}[]};
     Object.assign(window, {positiveReentryFrames: state});
+    const started = performance.now();
+    for (const event of ['play', 'playing', 'pause', 'waiting', 'stalled', 'ended', 'seeking', 'seeked', 'error', 'webkitbeginfullscreen', 'webkitendfullscreen']) {
+      video.addEventListener(event, () => {
+        if (state.events.length < 30) state.events.push({event, elapsedMS: Math.round(performance.now() - started), paused: video.paused,
+          rawTime: Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'currentTime')!.get!.call(video)});
+      });
+    }
     const observe = (_now: number, metadata: VideoFrameCallbackMetadata) => {
+      state.callbacks++;
       if (!video.paused && state.frames.length < 2) {
         const canvas = document.createElement('canvas'); canvas.width = 32; canvas.height = 18;
         const context = canvas.getContext('2d')!; context.drawImage(video, 0, 0, 32, 18);
@@ -118,6 +128,7 @@ test('positive Matroska reentry decodes the saved scene through native HLS', asy
   });
   const playPosted = Date.now();
   await page.getByRole('button', {name: 'Play', exact: true}).first().click();
+  await record({phase: 'Play-click-complete', ...await snapshot()});
   try {
     await expect.poll(() => page.evaluate(() => (window as unknown as {positiveReentryFrames: {frames: object[]}}).positiveReentryFrames.frames.length), {timeout: 30_000}).toBe(2);
     const frames = await page.evaluate(() => (window as unknown as {positiveReentryFrames: {frames: {mediaTime: number, rawTime: number, rgb: number[], png: string}[]}}).positiveReentryFrames.frames);
@@ -148,6 +159,16 @@ test('positive Matroska reentry decodes the saved scene through native HLS', asy
     expect(frames[0].rgb[1]).toBeGreaterThan(150);
     expect(frames[0].rgb[2]).toBeLessThan(80);
   } finally {
-    await record({phase: 'final-observation', pageIsWatch: new URL(page.url()).pathname.startsWith('/watch/')});
+    const pageIsWatch = new URL(page.url()).pathname.startsWith('/watch/');
+    const nativeState = pageIsWatch ? await page.evaluate(() => {
+      const video = document.querySelector('video') as HTMLVideoElement & {webkitDisplayingFullscreen?: boolean, webkitPresentationMode?: string, webkitDecodedFrameCount?: number};
+      const state = (window as unknown as {positiveReentryFrames?: {callbacks: number, frames: object[], events: object[]}}).positiveReentryFrames;
+      return {fullscreen: video.webkitDisplayingFullscreen === true,
+        presentation: ['inline', 'fullscreen', 'picture-in-picture'].includes(video.webkitPresentationMode || '') ? video.webkitPresentationMode : 'unreported',
+        decodedVideoFrames: video.getVideoPlaybackQuality?.().totalVideoFrames ?? null,
+        webkitDecodedFrameCount: Number.isFinite(video.webkitDecodedFrameCount) ? video.webkitDecodedFrameCount : null,
+        callbackCount: state?.callbacks ?? null, capturedFrames: state?.frames.length ?? null, events: state?.events ?? []};
+    }) : null;
+    await record({phase: 'final-observation', pageIsWatch, ...(pageIsWatch ? await snapshot() : {}), nativeState, public: await publicPosition()});
   }
 });
