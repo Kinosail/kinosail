@@ -128,7 +128,9 @@ func playbackCompatibility(facts MediaFacts, client ClientCapabilities, audio Au
 
 func choosePlaybackMode(plan *PlaybackPlan, intent NetworkIntent, client ClientCapabilities, compatible compatibility) { //nolint:cyclop // Ordered playback policy remains below the repository quality ceiling.
 	forceDirect := intent.ForceDirect || intent.PreferDirect && !intent.ForceTranscode
-	needsVideo := intent.ForceTranscode || !compatible.video || !compatible.size || !compatible.bitrate || !compatible.hdr || plan.SubtitleMode == "burn-in"
+	videoCompatible := compatible.video && compatible.size && compatible.bitrate && compatible.hdr && plan.SubtitleMode != "burn-in"
+	plan.AudioCompatibilityRequired = !compatible.audio && videoCompatible
+	needsVideo := intent.ForceTranscode || !videoCompatible
 	switch {
 	case forceDirect:
 		plan.Reason = "direct-requested"

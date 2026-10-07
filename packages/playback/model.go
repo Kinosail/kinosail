@@ -86,6 +86,9 @@ type PlaybackPlan struct {
 	Qualities             []PlaybackQuality `json:"qualities,omitempty"`
 	MarkerMode            string            `json:"markerMode,omitempty"`
 	Timeline              Timeline          `json:"timeline,omitempty"`
+
+	// Audio conversion is required while the original video otherwise meets the client's limits.
+	AudioCompatibilityRequired bool `json:"audioCompatibilityRequired,omitempty"`
 }
 
 type PlaybackQuality struct {
