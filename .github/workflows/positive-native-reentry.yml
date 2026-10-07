@@ -58,7 +58,7 @@ jobs:
         timeout-minutes: 10
         run: >-
           python3 apps/player/scripts/test-positive-reentry-local.py
-          --source 9f9162a797e8e60a30e592cf3f72bbd401b92280
+          --source 4726be8802c7e802eb846e519f08c7337c6994fe
           --dependencies "$PWD/apps/player/e2e/node_modules"
       - name: Retain only safe repeatable proof artifacts
         if: always()
