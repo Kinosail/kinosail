@@ -109,7 +109,7 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
     if (await theater.isVisible()) {
       const beforeState = await captureTheaterState(page);
       await page.locator("video").evaluate(video=>{video.loop=true;});
-      if(await page.locator("video").evaluate(video=>video.paused))await page.getByRole("button",{name:"Play",exact:true}).first().click();
+      await page.locator("video").evaluate(video=>video.play());
       await theater.click();
       await page.mouse.move(0,0);const idleStarted = performance.now();await page.waitForTimeout(2700);
       const elapsedMs = Math.min(600000, Math.max(0, Math.round(performance.now() - idleStarted)));
