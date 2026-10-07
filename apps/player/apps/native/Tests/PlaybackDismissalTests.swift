@@ -45,9 +45,10 @@ import Testing
         #expect(!dismissal.closing)
         dismissal.dragEnded(translation: CGSize(width: 140, height: 20), start: CGPoint(x: 10, y: 200),
                             size: size, excludedBottom: 144, close: close)
-        dismissal.requestClose(close)
         #expect(closes == 1)
         #expect(dismissal.closing)
+        dismissal.requestClose(close)
+        #expect(closes == 1)
     }
 
     @Test func downwardBackgroundGestureAndCloseButtonDismissOnlyOnce() {

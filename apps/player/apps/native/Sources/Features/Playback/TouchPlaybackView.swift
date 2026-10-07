@@ -61,7 +61,7 @@ struct TouchPlaybackView: View {
                     .accessibilityAddTraits(.isButton)
                     .accessibilityAction { reveal() }
                     .accessibilityHidden(controlsVisible || presentation.pictureInPicture).allowsHitTesting(!presentation.pictureInPicture)
-            }
+            }.ignoresSafeArea(.container, edges: .horizontal)
             if presentation.pictureInPicture {
                 TouchPictureInPictureView { presentation.stopPictureInPicture() }
             }
