@@ -111,7 +111,14 @@ func TimelineChapters(timeline Timeline, values []metadata.Chapter) []metadata.C
 // DecideWithAutomaticSkip applies Player's server-side marker policy.
 func DecideWithAutomaticSkip(facts MediaFacts, client ClientCapabilities, policy ViewerPolicy, intent NetworkIntent, values []markers.Marker, enabled []string, product DecisionPolicy) PlaybackPlan { //nolint:cyclop // The delivery fallback sequence stays explicit and below the required project limit.
 	if intent.PreferDirect {
-		return Decide(facts, client, policy, intent, product)
+		plan := Decide(facts, client, policy, intent, product)
+		if facts.Kind != "video" || !plan.AudioCompatibilityRequired || !policy.AllowTranscode || intent.ForceDirect {
+			return plan
+		}
+		intent.PreferDirect, intent.PreferCompatibility = false, true
+		plan = DecideWithAutomaticSkip(facts, client, policy, intent, values, enabled, product)
+		plan.AudioCompatibilityRequired = true
+		return plan
 	}
 	timeline := TimelineForAutomaticSkip(facts.Duration, values, enabled)
 	if len(timeline.Omitted) == 0 {
