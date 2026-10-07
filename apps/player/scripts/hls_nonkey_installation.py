@@ -137,11 +137,12 @@ def finish_counterfactual(config, case):
             and type(v['applied']) is bool for v in rows)):
         raise RuntimeError('installation_audit_shape')
     changes = sum(v['applied'] for v in rows)
-    if changes != 1 or any(rewrite_initial_arguments(v['original'], config['source'], config['cache'])
-                          != (v['effective'], v['applied']) for v in rows):
+    arguments_valid = all(rewrite_initial_arguments(v['original'], config['source'], config['cache'])
+                          == (v['effective'], v['applied']) for v in rows)
+    case['counterfactualInstallation'].update(privateInvocationSHA256=state['sha256'],
+        invocations=len(rows), transformations=changes, allUnrelatedInvocationsUnchanged=arguments_valid)
+    if changes != 1 or not arguments_valid:
         raise RuntimeError('installation_transform_count')
     if bounded_state(config['source'], 8 * 1024 * 1024) != config['sourceState']:
         raise RuntimeError('installation_source_changed')
-    case['counterfactualInstallation'].update(privateInvocationSHA256=state['sha256'],
-        invocations=len(rows), transformations=changes, sourceUnchanged=True,
-        allUnrelatedInvocationsUnchanged=True)
+    case['counterfactualInstallation']['sourceUnchanged'] = True

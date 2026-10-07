@@ -107,6 +107,31 @@ class InstallationIntegrity(unittest.TestCase):
         self.assertEqual(arguments()[arguments().index('-ss') + 1], format(12.5, '.3f'))
         self.assertTrue(rewrite_initial_arguments(arguments(), SOURCE, CACHE)[1])
 
+    def test_failed_transformation_counts_retain_safe_diagnostics_without_acceptance(self):
+        for count in [0, 2]:
+            with self.subTest(count=count), tempfile.TemporaryDirectory() as temporary:
+                source = Path(temporary) / 'source'; source.write_bytes(b'owned')
+                audit = Path(temporary) / 'audit'
+                original = arguments(); original[original.index('-i') + 1] = str(source)
+                if count == 0:
+                    original[original.index('-ss') + 1] = '12.5'
+                effective, applied = rewrite_initial_arguments(original, str(source), CACHE)
+                for _ in range(max(1, count)):
+                    append_private(audit, {'original': original, 'effective': effective, 'applied': applied})
+                config = {'audit': str(audit), 'source': str(source), 'cache': CACHE,
+                          'sourceState': bounded_state(source, 8 * 1024 * 1024)}
+                case = {'counterfactualInstallation': {}}
+                with self.assertRaisesRegex(RuntimeError, 'installation_transform_count'):
+                    finish_counterfactual(config, case)
+                facts = case['counterfactualInstallation']
+                self.assertEqual(facts['transformations'], count)
+                self.assertEqual(facts['invocations'], max(1, count))
+                self.assertEqual(facts['privateInvocationSHA256'], bounded_state(audit, 256 * 1024)['sha256'])
+                self.assertTrue(facts['allUnrelatedInvocationsUnchanged'])
+                self.assertNotIn('sourceUnchanged', facts)
+                self.assertEqual(set(facts), {'transformations', 'invocations', 'privateInvocationSHA256',
+                                             'allUnrelatedInvocationsUnchanged'})
+
     def test_snapshot_changes_with_content_and_rejects_oversized_or_symlink_files(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / 'source'; path.write_bytes(b'abc')

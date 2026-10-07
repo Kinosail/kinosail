@@ -270,3 +270,10 @@ formatter and call site. Retain the full exact argv comparison and exactly
 one audited transformation. Preserve the failed attempt; do not classify its
 unmodified output as a mux experiment. Re-run the corrected fixed1 experiment
 separately after the normal-speed baseline and exact-source review.
+
+Before changing failed-audit diagnostics, test that validated zero/two-transform
+audits retain their hash and bounded invocation/transformation counts while
+still failing acceptance. Publish no arguments or private path. Invalid audit
+shapes must continue to fail before counts are added. The public fixture cannot
+inject a duplicated private transformation audit; this is an isolated evidence
+integrity gap. Keep exactly-one acceptance unchanged.
