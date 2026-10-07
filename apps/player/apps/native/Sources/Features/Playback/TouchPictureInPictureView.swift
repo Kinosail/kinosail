@@ -17,6 +17,7 @@ struct TouchPictureInPictureView: View {
             Button("Back to library", action: close)
                 .buttonStyle(.bordered).buttonBorderShape(.capsule)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity).background(.black)
     }
 }
 #endif
