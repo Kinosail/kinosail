@@ -108,6 +108,7 @@ class WorkflowSecurityTests(unittest.TestCase):
         step = browser.split('      - name: Verify setup navigation failure diagnostics')[1].split('      - ')[0]
         self.assertIn("if: inputs.app == 'player'", step)
         self.assertIn('run: ' + command, step)
+        self.assertIn('scripts/testing/player-login-navigation.test.mjs', step)
         self.assertLess(browser.index('pnpm --dir "apps/$APP/e2e" install --frozen-lockfile'), browser.index(command))
         self.assertLess(browser.index(command), browser.index('name: Test populated browsers'))
 
