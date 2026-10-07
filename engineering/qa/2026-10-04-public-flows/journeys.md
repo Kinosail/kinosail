@@ -16,15 +16,19 @@ Hosted commands for the final PR head:
   `worker-message-security.spec.ts`, `player-experience.spec.ts`, and
   `player-direct-fallback.spec.ts`, with no smoke filter: 57 local assertions.
 - Each app's added real-process step runs `scripts/e2e/run.sh <app>`.
-  It now discovers 42 setup/test executions across both apps (36 passed,
-  six app-specific skips on repaired latest-main source). Player's
+  The initial historical run discovered 42 setup/test executions across both apps
+  (36 passed, six app-specific skips). Player's
   subtitle-editing skip remains a scope boundary.
 - Swift compilation/contract tests use `make -C apps/player client-check`.
   Android compilation/unit checks use the existing Android job. Neither job
   establishes physical playback, focus, casting, or background behavior.
 
-The latest local real-process run passed 36 tests with six app-specific skips,
+The historical local real-process run passed 36 tests with six app-specific skips,
 using runtime `0f4b97c8` plus the checksummed download/caption additions.
+As of October 7, admitted default SDK reports select 44 executions across both apps:
+Player has 21 passes and one scope skip; Subtitles has 17 passes and five scope skips.
+These reports bind reviewed source revisions or explicit shipping-source equality.
+The selected SDK counts do not establish complete browser, native, provider, or deployment coverage.
 The earlier `29cd65f7` 32-pass/six-skip run remains independently reviewed
 historical evidence. Hosted `9e940771` passed both complete Go race/coverage
 suites and four browser groups; Player WebKit Resume and two Subtitles Firefox
