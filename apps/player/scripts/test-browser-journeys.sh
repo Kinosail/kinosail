@@ -28,6 +28,13 @@ prepare_player_checkpoint_fixture() {
   chmod a+r "$media_dir/Checkpoint Example.mp4"
 }
 
+prepare_audio_queue_fixture() {
+  local repo
+  repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+  python3 "$repo/scripts/testing/prepare-audio-queue-fixture.py" "$1/R08 Fictional Session"
+  chmod -R a+rX "$1/R08 Fictional Session"
+}
+
 run_library_pagination_journey() {
   GOMAXPROCS=2 KINOSAIL_LIBRARY_BROWSER=1 KINOSAIL_BROWSER_PROJECT="$1" \
     KINOSAIL_E2E_OUTPUT_DIR="$2" KINOSAIL_E2E_ARTIFACT_DIR="$3" \
@@ -70,5 +77,8 @@ run_populated_player_journeys() {
     --required-title 'completed paused seek persists before Library navigation and resumes actual movie frames' \
     --required-title 'Library exit checkpoints actual playing time before teardown without reset-position overwrite' \
     --required-title 'volume icon renders balanced sound waves and keeps accessible mute controls' \
-    -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts --grep=@smoke --workers=1
+    --required-title 'real album queue advances source and all Now Playing identity to the fictional second track' \
+    --required-title 'real album queue keeps system previous and next current and exposes only fresh current-track actions' \
+    --required-title 'mobile R03 progress notice stays hidden after real acknowledgement and reopens only on failure' \
+    -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts test-instance-audio-queue.spec.ts --grep=@smoke --workers=1
 }
