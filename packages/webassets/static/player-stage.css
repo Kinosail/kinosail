@@ -39,3 +39,10 @@
 .media-stage:fullscreen .player-stage-toolbar{padding-top:max(.8rem,env(safe-area-inset-top));padding-inline:max(.8rem,env(safe-area-inset-left)) max(.8rem,env(safe-area-inset-right))}
 .media-stage:fullscreen .player-control-dock{padding-inline:max(.8rem,env(safe-area-inset-left)) max(.8rem,env(safe-area-inset-right))}
 .media-stage:fullscreen.has-settings .player-settings{top:auto;right:max(.6rem,env(safe-area-inset-right));bottom:calc(4.3rem + env(safe-area-inset-bottom));left:auto;width:min(22rem,calc(100% - 1.2rem));max-height:calc(100% - 8rem - env(safe-area-inset-bottom));overflow-y:auto}
+
+.player-exit{position:absolute;z-index:6;top:max(.8rem,env(safe-area-inset-top));left:max(.8rem,env(safe-area-inset-left));display:flex;align-items:center;gap:.4rem;min-height:44px;padding:.5rem .8rem;border:1px solid rgba(255,255,255,.3);border-radius:10px;background:#101310;color:#fff;font-size:.82rem;box-shadow:none}
+.player-exit svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2}
+.player-exit[hidden],.media-stage:fullscreen>.player-exit{display:none}
+.player-theater .player-stage-toolbar{padding-left:calc(11rem + env(safe-area-inset-left))}
+@media(max-width:700px){.player-theater .player-stage-toolbar>strong{display:none}}
+@media(forced-colors:active){.player-exit{border-color:ButtonText;background:ButtonFace;color:ButtonText}}
