@@ -1,7 +1,7 @@
 import { Page } from "@playwright/test";
 import { playerSource } from "./static-sources";
 
-export async function startDirectPlayer(page: Page, options: { preloadHls?: boolean; directType?: string; directSupported?: boolean; safari?: boolean; compatibleMode?: string; compatibleLabel?: string; compatibleReason?: string; playbackPolicy?: string; playbackOverride?: boolean; initialSource?: boolean; savedPolicy?: string; initialHls?: boolean; initialError?: number } = {}) {
+export async function startDirectPlayer(page: Page, options: { preloadHls?: boolean; directType?: string; directSupported?: boolean; safari?: boolean; compatibleMode?: string; compatibleLabel?: string; compatibleReason?: string; playbackPolicy?: string; playbackOverride?: boolean; initialSource?: boolean; savedPolicy?: string; initialHls?: boolean; initialError?: number; audioCompatibilityRequired?: string; start?: number } = {}) {
   const { preloadHls = true, directType = "video/mp4", directSupported = true, safari = false, compatibleMode = "remux", compatibleLabel = "Remux", compatibleReason = "Repackages the original video and audio without conversion.", playbackPolicy = "automatic", playbackOverride = false, initialSource = true, savedPolicy = "", initialHls = false, initialError = 0 } = options;
   if (savedPolicy) await page.addInitScript((policy) => localStorage.setItem("kinosail.playback-policy", policy), savedPolicy);
   await page.route("https://direct.test/", (route) => route.fulfill({ contentType: "text/html", body: `
@@ -52,6 +52,8 @@ export async function startDirectPlayer(page: Page, options: { preloadHls?: bool
     }
     Object.assign(window, { ...(preload ? { Hls: FakeHls } : {}), FakeHls });
   }, { preload: preloadHls, directSupported, safari, initialError });
+  if (options.audioCompatibilityRequired !== undefined) await page.locator('video').evaluate((media, value) => { media.dataset.audioCompatibilityRequired = value; }, options.audioCompatibilityRequired);
+  if (options.start !== undefined) await page.locator('video').evaluate((media, value) => { media.dataset.start = String(value); }, options.start);
   await page.addScriptTag({ content: playerSource });
 }
 

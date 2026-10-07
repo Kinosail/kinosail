@@ -38,7 +38,7 @@
       const policy = capabilities.policy(savedPolicy, result?.policy, Boolean(result?.compatible));
       const planned = result?.plan?.mode !== "direct";
       const initialMode = planned ? result?.plan?.mode : result?.compatiblePlan?.mode;
-      const compatible = capabilities.initialCompatible(policy, initialMode, result?.directType, result?.direct, planned);
+      const compatible = capabilities.initialCompatible(policy, initialMode, result?.directType, result?.direct, planned, result?.plan?.audioCompatibilityRequired);
       if (compatible && result?.compatible && !["remux", "audio-transcode"].includes(initialMode)) {
         const media = result.media;
         const facts = {width: media?.video?.Width, height: media?.video?.Height, bitrate: media?.bitrate, framerate: media?.video?.FrameRate};
