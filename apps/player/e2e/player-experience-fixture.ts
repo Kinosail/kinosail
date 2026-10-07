@@ -53,12 +53,12 @@ test.beforeEach(async ({ page }, testInfo) => {
     const textTracks = Object.assign(withInBand ? [makeTrack(), document.querySelector("track")!.track] : [textTrack, makeTrack()], {addEventListener: trackEvents.addEventListener.bind(trackEvents)});
     if (!withInBand) document.querySelector("[data-subtitles]")!.insertAdjacentHTML("beforeend", '<option value="1">French</option>');
     Object.defineProperties(video, {
-      buffered: { get: () => ({ length: 1, start: () => bufferedStart, end: () => bufferedEnd }) },
+      buffered: { configurable: true, get: () => ({ length: 1, start: () => bufferedStart, end: () => bufferedEnd }) },
       currentTime: { get: () => currentTime, set: (value: number) => {
         currentTime = value;
         if (queuedSeeking) queueMicrotask(() => { video.dispatchEvent(new Event("seeking")); video.dispatchEvent(new Event("seeked")); });
       } },
-      duration: { value: 100 },
+      duration: { configurable: true, value: 100 },
       readyState: { get: () => readyState },
       networkState: { get: () => networkState },
       load: { value() {} },
