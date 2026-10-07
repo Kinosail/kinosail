@@ -7,10 +7,10 @@ import {checkpointSeconds,prepareSavedPositionBaseline} from '../../apps/player/
 // progress; fixture preparation is accidentally applied to durability loops.
 test('public omitted-zero and finite numeric seconds keep the exact wire contract',()=>{
  assert.equal(checkpointSeconds({watched:true,revision:2}),0);
- for(const seconds of [0,0.25,29.687579807,31536000])assert.equal(checkpointSeconds({seconds}),seconds);
+ for(const seconds of [0,0.25,29.687579807,31536000,1000000000])assert.equal(checkpointSeconds({seconds}),seconds);
 });
 test('missing state, malformed/type/range/cardinality/unknown inputs reject without side effects',()=>{
- for(const state of [null,undefined,[],true,{seconds:undefined},{seconds:null},{seconds:'0'},{seconds:'private-marker'},{seconds:NaN},{seconds:Infinity},{seconds:-1},{seconds:31536001},{unknown:1},Object.fromEntries(Array.from({length:1000},(_,n)=>['field'+n,n]))])assert.throws(()=>checkpointSeconds(state));
+ for(const state of [null,undefined,[],true,{seconds:undefined},{seconds:null},{seconds:'0'},{seconds:'private-marker'},{seconds:NaN},{seconds:Infinity},{seconds:-1},{seconds:1000000001},{unknown:1},Object.fromEntries(Array.from({length:1000},(_,n)=>['field'+n,n]))])assert.throws(()=>checkpointSeconds(state));
 });
 const watch='/watch/0123456789abcdef';
 function pageFor(csrf='synthetic-csrf'){
@@ -46,4 +46,11 @@ test('accepted readback must be the submitted unwatched session and revision',as
 
 test('oversized or malformed public progress metadata rejects before preparation',async()=>{
  for(const prior of [{session:'x'.repeat(9000)},{dismissed:'false'},{revision:'1'},{readerPage:-1},{readerOffset:Infinity},{updated:[]}]){const p=reviewPageFor(prior);await assert.rejects(prepareSavedPositionBaseline(p,watch));assert.equal(p.calls.length,0);}
+});
+
+test('public reader and timestamp model limits reject before PUT',async()=>{
+ for(const prior of [{readerOffset:2,readerPage:1},{readerOffset:0.25},{readerPage:10000001},{updated:'not-a-timestamp'},{updated:'2026-02-30T12:00:00Z'},{session:'x'.repeat(129)}]){const p=reviewPageFor(prior);await assert.rejects(prepareSavedPositionBaseline(p,watch));assert.equal(p.calls.length,0);}
+});
+test('valid public reader/session/time boundaries remain accepted',async()=>{
+ for(const prior of [{},{readerOffset:1,readerPage:10000000},{session:'x'.repeat(128)},{updated:'0001-01-01T00:00:00Z'},{updated:'2026-10-07T15:42:10.123456789Z'}]){const p=reviewPageFor(prior);await prepareSavedPositionBaseline(p,watch);assert.equal(p.calls.length,1);}
 });

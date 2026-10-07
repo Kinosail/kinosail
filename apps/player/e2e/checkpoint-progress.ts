@@ -10,11 +10,21 @@ export function checkpointSeconds(state: unknown): number {
   if (Object.keys(state).length > fields.length || Object.keys(state).some(key => !fields.includes(key))) throw new TypeError('Invalid public progress fields');
   if (JSON.stringify(state).length > 8192) throw new TypeError('Oversized public progress state');
   for (const key of ['watched', 'dismissed']) if (Object.hasOwn(state, key) && typeof record[key] !== 'boolean') throw new TypeError('Invalid public progress flag');
-  for (const key of ['readerOffset', 'readerPage', 'revision']) if (Object.hasOwn(state, key) &&
-    (typeof record[key] !== 'number' || !Number.isFinite(record[key]) || record[key] < 0 || record[key] > Number.MAX_SAFE_INTEGER || key !== 'readerOffset' && !Number.isInteger(record[key]))) throw new TypeError('Invalid public progress number');
-  for (const key of ['session', 'updated']) if (Object.hasOwn(state, key) && (typeof record[key] !== 'string' || record[key].length > 64)) throw new TypeError('Invalid public progress metadata');
+  for (const key of ['readerOffset', 'readerPage', 'revision']) {
+    const value = record[key], maximum = key === 'readerOffset' ? 1 : key === 'readerPage' ? 10000000 : Number.MAX_SAFE_INTEGER;
+    if (Object.hasOwn(state, key) && (typeof value !== 'number' || !Number.isFinite(value) || value < 0 || value > maximum || key !== 'readerOffset' && !Number.isInteger(value))) throw new TypeError('Invalid public progress number');
+  }
+  if (Number(record.readerOffset || 0) > 0 && !(Number(record.readerPage) > 0)) throw new TypeError('Invalid public reader position');
+  if (Object.hasOwn(state, 'session') && (typeof record.session !== 'string' || new TextEncoder().encode(record.session).length > 128)) throw new TypeError('Invalid public progress session');
+  if (Object.hasOwn(state, 'updated')) {
+    const value = record.updated;
+    if (typeof value !== 'string' || value.length > 35 || !/^\d{4}-\d{2}-\d{2}T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,9})?(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)$/.test(value) || !Number.isFinite(Date.parse(value))) throw new TypeError('Invalid public progress timestamp');
+    const year = Number(value.slice(0,4)), month = Number(value.slice(5,7)), day = Number(value.slice(8,10));
+    const days = [31, year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0) ? 29 : 28, 31,30,31,30,31,31,30,31,30,31];
+    if (month < 1 || month > 12 || day < 1 || day > days[month - 1]) throw new TypeError('Invalid public progress date');
+  }
   const seconds = Object.hasOwn(state, 'seconds') ? (state as {seconds: unknown}).seconds : 0;
-  if (typeof seconds !== 'number' || !Number.isFinite(seconds) || seconds < 0 || seconds > 31536000) throw new TypeError('Invalid public progress seconds');
+  if (typeof seconds !== 'number' || !Number.isFinite(seconds) || seconds < 0 || seconds > 1000000000) throw new TypeError('Invalid public progress seconds');
   return seconds;
 }
 
