@@ -15,6 +15,7 @@ import time
 from hls_remaining_process import annotate_case, finish_processes, physical, source_snapshot
 from hls_remaining_audio import audio_output, replay_refill
 from hls_remaining_mux import counterfactuals
+from hls_remaining_warmup import warmup_counterfactual
 from hls_timeline_fixture import fixture
 from hls_timeline_http import PublicServer, sha
 from hls_followon_frames import decode_frames, stream_metadata
@@ -240,6 +241,16 @@ try:
                     raise
     if len(receipt['cases']) == receipt['expectedCases'] and all(c['result'] == 'passed' for c in receipt['cases']):
         receipt['result'] = 'passed'
+    if SUITE == 'audio-timing':
+        result = {'cases': [], 'qualificationFailures': []}
+        receipt['aacWarmupCounterfactual'] = result
+        try:
+            pair = [next(v for v in receipt['cases'] if v['name'] == name) for name in ['marker-10-0.75', 'marker-10-0.9']]
+            warmup_counterfactual(run, RUN_DEADLINE, RUN, result, *pair, Path(shutil.which('ffmpeg')))
+        except (RuntimeError, OSError, subprocess.SubprocessError, ValueError, KeyError) as error:
+            result['qualificationFailures'].append(str(error) if isinstance(error, RuntimeError) else type(error).__name__)
+            if isinstance(error, RuntimeError) and str(error) in ['bounded_diagnostic_deadline', 'bounded_run_deadline']:
+                raise
 except Exception as error:
     receipt['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
 finally:
