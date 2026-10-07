@@ -30,12 +30,15 @@ def installed_refill(arguments, source, directory, output_directory=None):
     check(len(raw) <= 8192 and len(altered) <= 8192, 'installation_argv_bound')
     target = Path(output_directory) if output_directory is not None else directory
     check(target == directory or target.parent == directory and target.name in ['cold-reopen-1', 'cold-reopen-2'], 'installation_private_output')
-    (target / 'installed-recipe-private.json').write_bytes(altered)
-    (target / 'installation-certificate.json').write_text(json.dumps({'result': 'closed-transformation',
+    certificate = {'result': 'closed-transformation', 'transformationCount': 1,
         'sourceSHA256': eligibility['sourceSHA256'], 'selectedAudio': eligibility['audio'],
         'originalArgvSHA256': hashlib.sha256(raw).hexdigest(), 'installedArgvSHA256': hashlib.sha256(altered).hexdigest(),
         'sourceSeekSeconds': 7.936, 'outputOffsetSeconds': 8 - 2048 / 48000,
-        'droppedPTSBelowSamples': 2048, 'startNumber': 4, 'onlyChangedOptions': ['ss', 'output_ts_offset', 'bsf:a']}))
+        'droppedPTSBelowSamples': 2048, 'startNumber': 4, 'onlyChangedOptions': ['ss', 'output_ts_offset', 'bsf:a']}
+    with (target / 'installation-certificate.json').open('x') as output:
+        output.write(json.dumps(certificate))
+    with (target / 'installed-recipe-private.json').open('xb') as output:
+        output.write(altered)
     return changed
 
 
@@ -67,6 +70,12 @@ def installation_cases(run, journey, directory, receipt, deadline):
             check(not case.get('failureClass') and not case.get('diagnosticFailureClass') and case['workerBound']
                 and case['sourceUnchanged'] and not case['cleanupFailures'] and not case['ownedProcessJoin']['forcedOwnedGroupStop'],
                 'installation_owned_source')
+            interrupted = case is not control
+            count = 2 if interrupted else 1
+            starts = [(v['segment_start'], v['input_seek_ms']) for v in case['encoderStarts']]
+            check(case['encoderLifecycle']['starts'] == case['encoderLifecycle']['ends'] == count and
+                starts == ([(0, 0), (4, 8000)] if interrupted else [(0, 0)]), 'installation_exact_worker_sequence')
+        check(candidate['installationCertificate']['transformationCount'] == 1, 'installation_single_transformation')
         check(len({v['fixture']['sha256'] for v in [baseline, candidate, control]}) == 1 and
             len({v['initializationSHA256'] for v in [baseline, candidate, control]}) == 1, 'installation_source_init_pair')
         prefix = lambda c: [(v['name'], v['sha256']) for v in c['physicalBeforeFirstGET']['assets'] if v['name'] != 'index.m3u8']

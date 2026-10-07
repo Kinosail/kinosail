@@ -319,6 +319,12 @@ jobs:
           echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
       - name: Check bounded presentation oracle
         run: python3 -m unittest discover -s apps/player/scripts -p test_hls_followon_frames.py
+      - name: Check closed audio installation selection and passthrough
+        if: ${{ inputs.hls_audio_installation }}
+        run: |
+          test '${{ inputs.hls_remaining_proof }}' = true
+          test '${{ inputs.hls_audio_timing }}' != true
+          python3 -m unittest discover -s apps/player/scripts -p test_hls_remaining_installation_wrapper.py
       - name: Run all authenticated public cases
         if: ${{ !inputs.hls_remaining_proof }}
         run: python3 apps/player/scripts/test-hls-followon.py
