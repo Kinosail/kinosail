@@ -10,16 +10,13 @@ import (
 // the important gap: unrelated seeks must never acquire replay work or a new
 // AAC phase. The failure inventory was written before these tests and code in
 // remaining-playback-production-argument-plan-20261007.json.
+type remainingAudioOriginGuard struct {
+	name string
+	edit func(*MediaFacts, *hlsRecipe, *hlsRecipe, *float64, *int, *string)
+}
+
 func TestRemainingAudioOriginRefillKeepsUnsupportedSeeksOrdinary(t *testing.T) {
-	facts := MediaFacts{Kind: "audio", Container: "flac", Duration: 10,
-		Audio: []AudioFacts{{Index: 0, SourceIndex: 0, Codec: "flac", SampleRate: 48000, Channels: 2, ChannelLayout: "stereo"}}}
-	source := hlsRecipe{mode: "audio-transcode", audio: 0, subtitle: 0, offset: 8, outputTime: 8}
-	window := source
-	window.offset = 0
-	for _, sample := range []struct {
-		name string
-		edit func(*MediaFacts, *hlsRecipe, *hlsRecipe, *float64, *int, *string)
-	}{
+	checkRemainingAudioOriginGuards(t, []remainingAudioOriginGuard{
 		{"initial", func(_ *MediaFacts, _ *hlsRecipe, _ *hlsRecipe, s *float64, n *int, _ *string) { *s, *n = 0, 0 }},
 		{"unaligned2", func(_ *MediaFacts, a, b *hlsRecipe, s *float64, n *int, _ *string) {
 			*s, *n, a.offset, a.outputTime, b.outputTime = 2, 1, 2, 2, 2
@@ -34,8 +31,14 @@ func TestRemainingAudioOriginRefillKeepsUnsupportedSeeksOrdinary(t *testing.T) {
 			f.Duration = 20
 			*s, *n, a.offset, a.outputTime, b.outputTime = 16, 8, 16, 16, 16
 		}},
-		{"nonoriginResume", func(_ *MediaFacts, _ *hlsRecipe, b *hlsRecipe, _ *float64, _ *int, _ *string) { b.outputTime = 6 }},
 		{"wrongCadence", func(_ *MediaFacts, _ *hlsRecipe, _ *hlsRecipe, _ *float64, n *int, _ *string) { *n = 3 }},
+		{"nan", func(_ *MediaFacts, _ *hlsRecipe, _ *hlsRecipe, s *float64, _ *int, _ *string) { *s = math.NaN() }},
+		{"infinity", func(_ *MediaFacts, _ *hlsRecipe, _ *hlsRecipe, s *float64, _ *int, _ *string) { *s = math.Inf(1) }},
+	})
+}
+
+func TestRemainingAudioOriginRefillKeepsUnsupportedSourcesOrdinary(t *testing.T) {
+	checkRemainingAudioOriginGuards(t, []remainingAudioOriginGuard{
 		{"wrongRate", func(f *MediaFacts, _ *hlsRecipe, _ *hlsRecipe, _ *float64, _ *int, _ *string) {
 			f.Audio[0].SampleRate = 44100
 		}},
@@ -65,6 +68,19 @@ func TestRemainingAudioOriginRefillKeepsUnsupportedSeeksOrdinary(t *testing.T) {
 		{"otherMapping", func(f *MediaFacts, _ *hlsRecipe, _ *hlsRecipe, _ *float64, _ *int, _ *string) {
 			f.Audio[0].SourceIndex = 1
 		}},
+		{"duration", func(f *MediaFacts, _ *hlsRecipe, _ *hlsRecipe, _ *float64, _ *int, _ *string) { f.Duration = 8 }},
+		{"nanDuration", func(f *MediaFacts, _ *hlsRecipe, _ *hlsRecipe, _ *float64, _ *int, _ *string) {
+			f.Duration = math.NaN()
+		}},
+		{"infiniteDuration", func(f *MediaFacts, _ *hlsRecipe, _ *hlsRecipe, _ *float64, _ *int, _ *string) {
+			f.Duration = math.Inf(1)
+		}},
+	})
+}
+
+func TestRemainingAudioOriginRefillKeepsUnsupportedRecipesOrdinary(t *testing.T) {
+	checkRemainingAudioOriginGuards(t, []remainingAudioOriginGuard{
+		{"nonoriginResume", func(_ *MediaFacts, _ *hlsRecipe, b *hlsRecipe, _ *float64, _ *int, _ *string) { b.outputTime = 6 }},
 		{"otherBitrate", func(_ *MediaFacts, _ *hlsRecipe, _ *hlsRecipe, _ *float64, _ *int, r *string) { *r = "128000" }},
 		{"boost", func(_ *MediaFacts, a, b *hlsRecipe, _ *float64, _ *int, _ *string) {
 			a.dialogueBoost, b.dialogueBoost = true, true
@@ -76,15 +92,6 @@ func TestRemainingAudioOriginRefillKeepsUnsupportedSeeksOrdinary(t *testing.T) {
 			a.omitted, b.omitted = []PlaybackRange{{Start: 1, End: 2}}, []PlaybackRange{{Start: 1, End: 2}}
 		}},
 		{"wrongMode", func(_ *MediaFacts, a, b *hlsRecipe, _ *float64, _ *int, _ *string) { a.mode, b.mode = "remux", "remux" }},
-		{"nan", func(_ *MediaFacts, _ *hlsRecipe, _ *hlsRecipe, s *float64, _ *int, _ *string) { *s = math.NaN() }},
-		{"infinity", func(_ *MediaFacts, _ *hlsRecipe, _ *hlsRecipe, s *float64, _ *int, _ *string) { *s = math.Inf(1) }},
-		{"duration", func(f *MediaFacts, _ *hlsRecipe, _ *hlsRecipe, _ *float64, _ *int, _ *string) { f.Duration = 8 }},
-		{"nanDuration", func(f *MediaFacts, _ *hlsRecipe, _ *hlsRecipe, _ *float64, _ *int, _ *string) {
-			f.Duration = math.NaN()
-		}},
-		{"infiniteDuration", func(f *MediaFacts, _ *hlsRecipe, _ *hlsRecipe, _ *float64, _ *int, _ *string) {
-			f.Duration = math.Inf(1)
-		}},
 		{"sourceOffsetMismatch", func(_ *MediaFacts, a, _ *hlsRecipe, _ *float64, _ *int, _ *string) { a.offset = 10 }},
 		{"sourceOutputMismatch", func(_ *MediaFacts, a, _ *hlsRecipe, _ *float64, _ *int, _ *string) { a.outputTime = 6 }},
 		{"windowOffsetMismatch", func(_ *MediaFacts, _, b *hlsRecipe, _ *float64, _ *int, _ *string) { b.offset = 2 }},
@@ -92,7 +99,19 @@ func TestRemainingAudioOriginRefillKeepsUnsupportedSeeksOrdinary(t *testing.T) {
 		{"windowOnlyOmission", func(_ *MediaFacts, _, b *hlsRecipe, _ *float64, _ *int, _ *string) {
 			b.omitted = []PlaybackRange{{Start: 1, End: 2}}
 		}},
-	} {
+	})
+}
+
+func checkRemainingAudioOriginGuards(t *testing.T, samples []remainingAudioOriginGuard) {
+	t.Helper()
+	facts := MediaFacts{
+		Kind: "audio", Container: "flac", Duration: 10,
+		Audio: []AudioFacts{{Index: 0, SourceIndex: 0, Codec: "flac", SampleRate: 48000, Channels: 2, ChannelLayout: "stereo"}},
+	}
+	source := hlsRecipe{mode: "audio-transcode", audio: 0, subtitle: 0, offset: 8, outputTime: 8}
+	window := source
+	window.offset = 0
+	for _, sample := range samples {
 		t.Run(sample.name, func(t *testing.T) {
 			f, a, b, s, n, r := facts, source, window, 8.0, 4, "192000"
 			f.Audio = append([]AudioFacts(nil), facts.Audio...)
@@ -105,8 +124,10 @@ func TestRemainingAudioOriginRefillKeepsUnsupportedSeeksOrdinary(t *testing.T) {
 }
 
 func TestRemainingAudioOriginRefillRetainsSamplePrecision(t *testing.T) {
-	facts := MediaFacts{Kind: "audio", Container: "flac", Duration: 10,
-		Audio: []AudioFacts{{Index: 0, SourceIndex: 0, Codec: "flac", SampleRate: 48000, Channels: 2, ChannelLayout: "stereo"}}}
+	facts := MediaFacts{
+		Kind: "audio", Container: "flac", Duration: 10,
+		Audio: []AudioFacts{{Index: 0, SourceIndex: 0, Codec: "flac", SampleRate: 48000, Channels: 2, ChannelLayout: "stereo"}},
+	}
 	source := hlsRecipe{mode: "audio-transcode", audio: 0, subtitle: 0, offset: 8, outputTime: 8}
 	window := source
 	window.offset = 0
@@ -123,8 +144,10 @@ func TestRemainingAudioOriginRefillRetainsSamplePrecision(t *testing.T) {
 // Four real AAC EXTINF values add to 7.999998999999999, while the existing
 // encoder command seeks 8.000. Preserve that actual codec target.
 func TestRemainingAudioOriginRefillUsesMeasuredCadenceRounding(t *testing.T) {
-	facts := MediaFacts{Kind: "audio", Container: "flac", Duration: 10,
-		Audio: []AudioFacts{{Index: 0, SourceIndex: 0, Codec: "flac", SampleRate: 48000, Channels: 2, ChannelLayout: "stereo"}}}
+	facts := MediaFacts{
+		Kind: "audio", Container: "flac", Duration: 10,
+		Audio: []AudioFacts{{Index: 0, SourceIndex: 0, Codec: "flac", SampleRate: 48000, Channels: 2, ChannelLayout: "stereo"}},
+	}
 	for _, sample := range []struct {
 		name     string
 		start    float64
@@ -153,8 +176,10 @@ func TestRemainingAudioOriginRefillUsesMeasuredCadenceRounding(t *testing.T) {
 
 // The ten-second public control cannot cover a normalized cut at source EOF.
 func TestRemainingAudioOriginRefillRejectsRoundedSourceEOF(t *testing.T) {
-	facts := MediaFacts{Kind: "audio", Container: "flac", Duration: 8,
-		Audio: []AudioFacts{{Index: 0, SourceIndex: 0, Codec: "flac", SampleRate: 48000, Channels: 2, ChannelLayout: "stereo"}}}
+	facts := MediaFacts{
+		Kind: "audio", Container: "flac", Duration: 8,
+		Audio: []AudioFacts{{Index: 0, SourceIndex: 0, Codec: "flac", SampleRate: 48000, Channels: 2, ChannelLayout: "stereo"}},
+	}
 	start := 7.999998999999999
 	source := hlsRecipe{mode: "audio-transcode", offset: start, outputTime: start}
 	window := source
