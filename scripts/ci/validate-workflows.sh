@@ -9,10 +9,10 @@ workflows="$repo/.github/workflows"
 fail() { printf 'workflow validation failed: %s\n' "$*" >&2; exit 1; }
 require() { grep -Fq -- "$2" "$1" || fail "$(basename "$1") must contain $2"; }
 
-for name in ci app publish release layout-stability; do
+for name in ci app publish release layout-stability positive-native-reentry; do
   [[ -f "$workflows/$name.yml" ]] || fail "missing $name.yml"
 done
-[[ "$(find "$workflows" -maxdepth 1 -name '*.yml' -type f | wc -l | tr -d ' ')" == 5 ]] ||
+[[ "$(find "$workflows" -maxdepth 1 -name '*.yml' -type f | wc -l | tr -d ' ')" == 6 ]] ||
   fail 'unexpected workflow file'
 [[ -f "$repo/.github/dependabot.yml" ]] || fail 'missing Dependabot configuration'
 [[ -f "$repo/.github/pull_request_template.md" ]] || fail 'missing pull request template'
@@ -66,4 +66,7 @@ require "$release" 'gh release create "$RELEASE_TAG"'
 require "$workflows/layout-stability.yml" 'contents: read'
 require "$workflows/layout-stability.yml" 'runs-on: ubuntu-24.04'
 require "$workflows/layout-stability.yml" 'run: python3 scripts/testing/test-layout-stability-local.py'
-printf 'validated CI, app, publication, version-release, and layout-evidence workflows\n'
+require "$workflows/positive-native-reentry.yml" 'contents: read'
+require "$workflows/positive-native-reentry.yml" 'persist-credentials: false'
+require "$workflows/positive-native-reentry.yml" 'python3 apps/player/scripts/test-positive-reentry-local.py'
+printf 'validated CI, app, publication, version-release, layout-evidence, and native-reentry workflows\n'
