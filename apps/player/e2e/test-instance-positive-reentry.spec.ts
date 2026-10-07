@@ -102,7 +102,8 @@ test('positive Matroska reentry decodes the saved scene through native HLS', asy
   const launchTelemetry: object[] = [];
   page.on('request', request => {
     try {
-    if (launchTelemetry.length >= 24 || request.method() !== 'POST' || new URL(request.url()).pathname !== path + '/playback-events') return;
+    const endpoint = new URL(request.url());
+    if (launchTelemetry.length >= 24 || request.method() !== 'POST' || endpoint.origin !== base.origin || endpoint.pathname !== path + '/playback-events') return;
     const body = request.postData();
     if (!body || body.length > 4096) return;
       const value = JSON.parse(body);
