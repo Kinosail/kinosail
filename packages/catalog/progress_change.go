@@ -12,9 +12,9 @@ func ProgressWatched(watched bool, session string, now time.Time) ProgressChange
 		if session != "" && (len(session) < 8 || len(session) > 64 || strings.IndexFunc(session, invalidWatchedSessionCharacter) >= 0) {
 			return state, false, ErrInvalidProgressState
 		}
-		state.Seconds, state.Watched, state.Updated = 0, watched, now.UTC()
+		state.Seconds, state.Watched, state.Revision, state.Updated = 0, watched, 0, now.UTC()
 		if session != "" {
-			state.Session, state.Revision = session, 0
+			state.Session = session
 		}
 		return state, true, nil
 	}
@@ -27,9 +27,9 @@ func invalidWatchedSessionCharacter(character rune) bool {
 // ProgressRevision applies one ordered playback event.
 func ProgressRevision(seconds float64, watched *bool, session string, revision uint64, now time.Time) ProgressChange {
 	return func(state PlaybackState) (PlaybackState, bool, error) {
-		// A watched transition closes its playback session. A departing page
-		// cannot reopen it; new sessions and explicit Mark unwatched still can.
-		if session != "" && state.Session == session && (state.Watched || revision > 0 && revision <= state.Revision) {
+		// An explicit watched choice has no playback-event revision and closes
+		// its page. Ordinary completion retains a revision so replay can advance.
+		if session != "" && state.Session == session && (state.Watched && state.Revision == 0 || revision > 0 && revision <= state.Revision) {
 			return state, false, nil
 		}
 		state.Seconds, state.Updated = seconds, now.UTC()
