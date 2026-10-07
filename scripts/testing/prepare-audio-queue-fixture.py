@@ -34,7 +34,7 @@ def prepare(directory):
         (directory / (name + '.nfo')).write_text(
             f'<track><title>{title}</title><artist>{artist}</artist>'
             '<albumartist>Fictional Ensemble</albumartist><album>R08 Fictional Session</album>'
-            f'<disc>1</disc><track>{number}</track></track>', encoding='utf-8')
+            f'<disc>1</disc><track>{number}</track><year>{2025 + number}</year></track>', encoding='utf-8')
         cover(directory / (name + '.png'), color)
     return {path.name: hashlib.sha256(path.read_bytes()).hexdigest()
             for path in sorted(directory.iterdir())}

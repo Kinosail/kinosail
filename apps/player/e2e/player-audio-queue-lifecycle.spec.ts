@@ -131,3 +131,18 @@ test("returning queue item does not reuse the previous source's played intent", 
   await expect(page.locator("[data-audio-queue-controls]")).not.toHaveAttribute("aria-busy");
   expect(writes).toEqual(["/progress/track"]);
 });
+
+test("canonical catalog year strings survive queue validation and current-track identity", {tag: ["@smoke", "@routed-fault"]}, async ({page}) => {
+  await openAudio(page, "");
+  await page.route("https://audio.test/api/v1/audio/track/queue", route => route.fulfill({json: {
+    items: [{...queueItem("track"), year: "2026"}, {...queueItem("next"), year: "2027"}],
+  }}));
+  await page.route("https://audio.test/api/v1/items/next", route => route.fulfill({json: {
+    profileId: "qa-viewer", item: {...queueItem("next"), year: "2027"},
+  }}));
+  await startQueue(page);
+  await page.getByRole("button", {name: "Next track", exact: true}).click();
+  await expect(page.locator("audio")).toHaveAttribute("data-progress", "/progress/next");
+  await expect(page.locator(".title-block h1")).toHaveText("Next track 2027");
+  await expect(page.locator("audio")).toHaveAttribute("data-title", "Next track");
+});

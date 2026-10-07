@@ -4,7 +4,7 @@ import {createHash} from "node:crypto";
 import {configureTestInstance, login} from "./test-instance-helpers";
 
 configureTestInstance();
-type Track = {id: string; title: string; artist: string; album: string; track: number; stream: string; artwork: string};
+type Track = {id: string; title: string; artist: string; album: string; track: number; year: string; stream: string; artwork: string};
 type ActionWindow = Window & {r08Actions: Partial<Record<MediaSessionAction, MediaSessionActionHandler | null>>};
 const fixtureAlbum = "R08 Fictional Session";
 
@@ -19,6 +19,7 @@ async function albumTracks(page: Page): Promise<Track[]> {
   expect(tracks).toHaveLength(2);
   expect(tracks.map((track: Track) => track.track)).toEqual([1, 2]);
   expect(tracks[1].title).toBe("Copper <Moon> & Harbor");
+  expect(tracks.map((track: Track) => track.year)).toEqual(["2026", "2027"]);
   return tracks;
 }
 
@@ -67,7 +68,7 @@ test("real album queue advances source and all Now Playing identity to the ficti
     cacheControl: asset.headers()["cache-control"]}), contentType: "application/json"});
   const media = page.locator("audio");
   await expect.poll(() => media.evaluate((audio: HTMLAudioElement) => audio.readyState)).toBeGreaterThanOrEqual(2);
-  await expect(page.locator(".title-block h1")).toHaveText(first.title);
+  await expect(page.locator(".title-block h1")).toHaveText(`${first.title} ${first.year}`);
   await expect.poll(() => page.evaluate(() => navigator.mediaSession.metadata?.title)).toBe(first.title);
   await page.waitForFunction("audioQueue.length === 1");
   await media.evaluate(async (audio: HTMLAudioElement) => {audio.muted = true; audio.currentTime = audio.duration - .15; await audio.play();});
@@ -78,7 +79,7 @@ test("real album queue advances source and all Now Playing identity to the ficti
   await testInfo.attach("now-playing-after-real-advance", {body: JSON.stringify(observed, null, 2), contentType: "application/json"});
   await expect(page.locator("[data-now-playing-artwork]")).toBeVisible();
   await page.screenshot({path: testInfo.outputPath("second-track-before-assertions.png"), fullPage: true});
-  expect(observed).toEqual({heading: second.title, byline: `${second.artist} · ${second.album} · Track ${second.track}`,
+  expect(observed).toEqual({heading: `${second.title} ${second.year}`, byline: `${second.artist} · ${second.album} · Track ${second.track}`,
     accessibleLabel: second.title, documentTitle: `${second.title} · Kinosail Player`,
     sourcePath: second.stream, progressPath: `/progress/${second.id}`, castPath: `/api/v1/items/${second.id}/cast`,
     tracePath: `/api/v1/items/${second.id}/playback-events`, sourceSessionMatches: true,
@@ -186,7 +187,7 @@ test("real album queue keeps system previous and next current and exposes only f
   await expect.poll(() => media.evaluate((audio: HTMLAudioElement) => audio.readyState)).toBeGreaterThanOrEqual(2);
   await expect.poll(() => media.evaluate((audio: HTMLAudioElement) => audio.currentTime)).toBeGreaterThanOrEqual(1);
   await media.evaluate((audio: HTMLAudioElement) => audio.pause());
-  await expect(page.locator(".title-block h1")).toHaveText(first.title);
+  await expect(page.locator(".title-block h1")).toHaveText(`${first.title} ${first.year}`);
   await expect(page.getByRole("button", {name: "Previous track", exact: true})).toBeDisabled();
   await page.evaluate(async () => (window as ActionWindow).r08Actions.nexttrack!({action: "nexttrack"}));
   await expect(media).toHaveAttribute("data-progress", `/progress/${second.id}`);
@@ -197,7 +198,7 @@ test("real album queue keeps system previous and next current and exposes only f
   const before = (await beforeFirst.json()).item.progress;
   await page.getByRole("link", {name: "Current track details and actions", exact: true}).click();
   await expect(page).toHaveURL(new RegExp(`/watch/${second.id}$`));
-  await expect(page.locator(".title-block h1")).toHaveText(second.title);
+  await expect(page.locator(".title-block h1")).toHaveText(`${second.title} ${second.year}`);
   const secondForm = page.locator(`form[action="/watched/${second.id}"]`);
   await expect(secondForm).toBeVisible();
   const beforeSecond = await page.request.get(`/api/v1/items/${second.id}`);
