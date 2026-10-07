@@ -50,3 +50,35 @@ func TestRegisteredClaimDiagnosticsAreBoundedAndNeverContainOwnership(t *testing
 		t.Fatal("routine lease conflict should be quiet at the default log level")
 	}
 }
+
+func TestRegisteredClaimDisableDiagnosticIsBoundedAndQuiet(t *testing.T) {
+	var output bytes.Buffer
+	previous := slog.Default()
+	slog.SetDefault(slog.New(slog.NewJSONHandler(&output, &slog.HandlerOptions{Level: slog.LevelDebug})))
+	t.Cleanup(func() { slog.SetDefault(previous) })
+	_, integration, call := claimedHTTPTest(t)
+	profile := integration.config.CurrentProfile
+	integration.config.CurrentProfile = func(request *http.Request) Profile[testProfile] {
+		if err := integration.SetEnabled(false); err != nil {
+			t.Fatal(err)
+		}
+		return profile(request)
+	}
+	if got := call(http.MethodPost, "/api/v1/home-assistant/players/claims?private=secret-query", `{"id":"disabled-diagnostic"}`); got.Code != http.StatusNotFound {
+		t.Fatalf("disabled admission rejection: HTTP %d", got.Code)
+	}
+	var entry map[string]any
+	if json.Unmarshal(bytes.TrimSpace(output.Bytes()), &entry) != nil || entry["level"] != "DEBUG" || entry["failure"] != "disabled" || entry["operation"] != "claim" || entry["status"] != float64(http.StatusNotFound) || entry["target_id"] != "disabled-diagnostic" {
+		t.Fatal("disabled admission lacks bounded quiet diagnostics")
+	}
+	for key := range entry {
+		switch key {
+		case "time", "level", "msg", "operation", "failure", "status", "target_id":
+		default:
+			t.Fatal("disabled admission included an unexpected diagnostic field")
+		}
+	}
+	if strings.Contains(output.String(), "secret-query") || strings.Contains(output.String(), "?private") {
+		t.Fatal("disabled admission diagnostic included the private query")
+	}
+}

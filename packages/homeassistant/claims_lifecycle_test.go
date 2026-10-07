@@ -2,6 +2,7 @@ package homeassistant
 
 import (
 	"net/http"
+	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
@@ -34,53 +35,65 @@ func TestRegisteredClaimCannotMintAfterAdmittedRequestIsDisabled(t *testing.T) {
 	readClaimReply(t, call(http.MethodPost, "/api/v1/home-assistant/players/claims", `{"id":"disable-boundary"}`))
 }
 
-func TestRegisteredClaimedValidationPreservesQueuedCommandAndLease(t *testing.T) {
-	for _, expiry := range []bool{false, true} {
-		name := "queued-command"
-		if expiry {
-			name = "lease-expiry"
+type claimValidationCall = func(string, string, string, ...string) *httptest.ResponseRecorder
+
+func rejectClaimedValidation(t *testing.T) (*testState, claimValidationCall, claimedHTTPReply) {
+	t.Helper()
+	state, _, call := claimedHTTPTest(t)
+	claim := readClaimReply(t, call(http.MethodPost, "/api/v1/home-assistant/players/claims", `{"id":"validation-boundary"}`))
+	path := "/api/v1/home-assistant/players/" + claim.ID
+	if got := call(http.MethodPut, path, claimedPlayerJSON, claim.Claim); got.Code != http.StatusOK {
+		t.Fatal("owned state prerequisite failed")
+	}
+	if got := call(http.MethodPost, path+"/commands", `{"command":"seek","position":4}`); got.Code != http.StatusAccepted {
+		t.Fatal("queued seek prerequisite failed")
+	}
+	state.now = state.now.Add(20 * time.Second)
+	before := validationSnapshot(t, call)
+	for _, input := range []struct{ method, suffix, body string }{
+		{http.MethodPut, "", strings.Replace(claimedPlayerJSON, `"position":1`, `"position":-1`, 1)},
+		{http.MethodPut, "", strings.TrimSuffix(claimedPlayerJSON, "}") + `,"claim":"unexpected"}`},
+		{http.MethodPost, "/release", `{"unexpected":true}`},
+	} {
+		if got := call(input.method, path+input.suffix, input.body, claim.Claim); got.Code != http.StatusBadRequest {
+			t.Fatalf("claimed validation rejection: HTTP %d", got.Code)
 		}
-		t.Run(name, func(t *testing.T) {
-			state, _, call := claimedHTTPTest(t)
-			claim := readClaimReply(t, call(http.MethodPost, "/api/v1/home-assistant/players/claims", `{"id":"validation-boundary"}`))
-			path := "/api/v1/home-assistant/players/" + claim.ID
-			if got := call(http.MethodPut, path, claimedPlayerJSON, claim.Claim); got.Code != http.StatusOK {
-				t.Fatal("owned state prerequisite failed")
-			}
-			if got := call(http.MethodPost, path+"/commands", `{"command":"seek","position":4}`); got.Code != http.StatusAccepted {
-				t.Fatal("queued seek prerequisite failed")
-			}
-			state.now = state.now.Add(20 * time.Second)
-			before := call(http.MethodGet, "/api/v1/home-assistant/players", "").Body.String()
-			for _, input := range []struct{ method, suffix, body string }{
-				{http.MethodPut, "", strings.Replace(claimedPlayerJSON, `"position":1`, `"position":-1`, 1)},
-				{http.MethodPut, "", strings.TrimSuffix(claimedPlayerJSON, "}") + `,"claim":"unexpected"}`},
-				{http.MethodPost, "/release", `{"unexpected":true}`},
-			} {
-				if got := call(input.method, path+input.suffix, input.body, claim.Claim); got.Code != http.StatusBadRequest {
-					t.Fatalf("claimed validation rejection: HTTP %d", got.Code)
-				}
-				if after := call(http.MethodGet, "/api/v1/home-assistant/players", "").Body.String(); after != before {
-					t.Fatal("invalid claimed request changed the published snapshot")
-				}
-			}
-			if expiry {
-				state.now = state.now.Add(11 * time.Second)
-				if got := call(http.MethodPut, path, claimedPlayerJSON, claim.Claim); got.Code != http.StatusForbidden {
-					t.Fatalf("invalid request refreshed the lease: HTTP %d", got.Code)
-				}
-				if got := call(http.MethodGet, "/api/v1/home-assistant/players", ""); got.Code != http.StatusOK || !strings.Contains(got.Body.String(), `"players":[]`) {
-					t.Fatal("expired claimed target remained published")
-				}
-				return
-			}
-			state.now = state.now.Add(9 * time.Second)
-			if got := call(http.MethodPut, path, claimedPlayerJSON, claim.Claim); got.Code != http.StatusOK || !strings.Contains(got.Body.String(), `"command":"seek"`) || !strings.Contains(got.Body.String(), `"position":4`) {
-				t.Fatal("invalid claimed request consumed the queued seek")
-			}
-			if got := call(http.MethodPut, path, claimedPlayerJSON, claim.Claim); got.Code != http.StatusOK || !strings.Contains(got.Body.String(), `"command":null`) {
-				t.Fatal("retained seek drained more than once")
-			}
-		})
+		if after := validationSnapshot(t, call); after != before {
+			t.Fatal("invalid claimed request changed the published snapshot")
+		}
+	}
+	return state, call, claim
+}
+
+func validationSnapshot(t *testing.T, call claimValidationCall) string {
+	t.Helper()
+	got := call(http.MethodGet, "/api/v1/home-assistant/players", "")
+	if got.Code != http.StatusOK {
+		t.Fatalf("snapshot prerequisite: HTTP %d", got.Code)
+	}
+	return got.Body.String()
+}
+
+func TestRegisteredClaimedValidationPreservesQueuedCommand(t *testing.T) {
+	state, call, claim := rejectClaimedValidation(t)
+	state.now = state.now.Add(9 * time.Second)
+	path := "/api/v1/home-assistant/players/" + claim.ID
+	if got := call(http.MethodPut, path, claimedPlayerJSON, claim.Claim); got.Code != http.StatusOK || !strings.Contains(got.Body.String(), `"command":"seek"`) || !strings.Contains(got.Body.String(), `"position":4`) {
+		t.Fatal("invalid claimed request consumed the queued seek")
+	}
+	if got := call(http.MethodPut, path, claimedPlayerJSON, claim.Claim); got.Code != http.StatusOK || !strings.Contains(got.Body.String(), `"command":null`) {
+		t.Fatal("retained seek drained more than once")
+	}
+}
+
+func TestRegisteredClaimedValidationDoesNotRefreshLease(t *testing.T) {
+	state, call, claim := rejectClaimedValidation(t)
+	state.now = state.now.Add(11 * time.Second)
+	path := "/api/v1/home-assistant/players/" + claim.ID
+	if got := call(http.MethodPut, path, claimedPlayerJSON, claim.Claim); got.Code != http.StatusForbidden {
+		t.Fatalf("invalid request refreshed the lease: HTTP %d", got.Code)
+	}
+	if !strings.Contains(validationSnapshot(t, call), `"players":[]`) {
+		t.Fatal("expired claimed target remained published")
 	}
 }
