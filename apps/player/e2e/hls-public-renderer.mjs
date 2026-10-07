@@ -15,7 +15,7 @@ if (!/^http:\/\/localhost:[1-9][0-9]{0,4}$/.test(input.url) ||
   throw new Error('renderer_input_shape');
 }
 const deadline = Date.now() + 240_000;
-const result = {playbackRate: 0.25, reference: {}, public: {}};
+const result = {playbackRate: 1, reference: {}, public: {}};
 const save = () => writeFileSync(target, `${JSON.stringify(result)}\n`, {mode: 0o600});
 save();
 let browserServer;
@@ -116,7 +116,7 @@ async function capture(id, compatible) {
     const attach = media => {
       if (!(media instanceof HTMLVideoElement) || media.dataset.proofAttached) return;
       media.dataset.proofAttached = '1';
-      media.defaultPlaybackRate = media.playbackRate = 0.25;
+      media.defaultPlaybackRate = media.playbackRate = 1;
       let pendingCopies = 0;
       const copyFrame = async (frame, row) => {
         pendingCopies++;

@@ -44,7 +44,8 @@ def capture_rows(value):
         isinstance(v, list) and len(v) == 8 and v[0] is True
         and type(v[1]) in (int, float) and math.isfinite(v[1])
         and type(v[2]) is int and 0 <= v[2] <= 1 and v[3] is False
-        and type(v[4]) in (int, float) and 0 < v[4] <= 1 and v[5] == 0.25
+        and type(v[4]) in (int, float) and 0 < v[4] <= 1
+        and type(v[5]) in (int, float) and math.isfinite(v[5]) and v[5] == 1
         and v[6] is False and v[7] is False for v in gesture)
         and abs(gesture[0][1] - gesture[1][1]) <= 0.001)
     qualified = (bool(rows) and not value.get('failureClass') and value.get('ended') is True and value.get('errorCode') == 0
@@ -58,7 +59,7 @@ def capture_rows(value):
         and quality.get('dropped') == 0 and quality.get('corrupted') == 0
         and all(re.fullmatch('[a-f0-9]{64}', row[2]) and row[3] is not None
                 and abs(row[3] / 1000000 - row[0]) <= 0.001
-                and row[4] is not None and row[4] < len(descriptors) and row[5] == 0.25 for row in rows))
+                and row[4] is not None and row[4] < len(descriptors) and row[5] == 1 for row in rows))
     return rows, qualified
 
 

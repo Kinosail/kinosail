@@ -231,3 +231,26 @@ Also test a FIFO without a peer and a held audit lock before repairing either
 wait. Use nonblocking opens before regular-file validation. Bound lock acquisition
 to 250 ms and preserve the audit on failure. The focused child tests use only
 their own disposable paths and processes, with a one-second outer kill/join.
+
+## Normal-speed renderer observation, before implementation
+
+The quarter-speed `d98` and `bd1` watch journeys each omit source frame 2 in
+the complete reference, with one quality-counter drop. The bounded animation
+pulse did not resolve this. Keep both receipts unqualified and unchanged.
+The optional negative-edit installation run is also retained independently.
+
+Observe the shipped watch pages at a real fixed playback rate of 1. Require
+the declared rate in both paused pre-gesture samples and every callback.
+The rate is a diagnostic input, not a broader admission interval. Preserve
+the full 768-frame reference, zero dropped/corrupt frames, native timestamps,
+every raw callback, trusted activation, source identity, clocks, network and
+owned-process checks. Do not seek, trim, fill, replay or omit any frame.
+Keep copied packets, all twelve public cases and strict raw failures unchanged.
+
+Before changing the observer or verifier, require fixed 1 in the retained
+integrity fixtures and add a source-contract test for that fixed rate. These
+isolated checks cover malformed observation evidence that valid generated
+media cannot inject. A successful helper check cannot qualify runtime pixels.
+Normal-speed runtime still needs exact-source independent review. A repeated
+drop leaves the complete browser oracle blocked; it does not authorize mux,
+cache, scanner, client, simulator or production changes.

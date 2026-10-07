@@ -1,5 +1,6 @@
 """Protect complete renderer evidence; public generated rows cannot inject corruption."""
 import copy
+from pathlib import Path
 import unittest
 from hls_nonkey_renderer import renderer_facts
 import hls_nonkey_renderer
@@ -9,14 +10,14 @@ def capture(count, first=0):
     return {'ended': True, 'errorCode': 0, 'captureErrors': 0, 'width': 640,
         'height': 360, 'gesture': 'player-keyboard-space',
         'gestureEvent': {'trusted': True, 'hasBeenActive': True, 'isActive': True},
-        'beforeGesture': [[True, 0, 0, False, 1, 0.25, False, False], [True, 0, 1, False, 1, 0.25, False, False]],
+        'beforeGesture': [[True, 0, 0, False, 1, 1, False, False], [True, 0, 1, False, 1, 1, False, False]],
         'videoPlaybackQuality': {'total': count, 'dropped': 0, 'corrupted': 0},
         'nativeFrames': [{'format': 'I420', 'visibleRect': [0, 0, 640, 360],
             'codedDimensions': [640, 368], 'displayDimensions': [640, 360],
             'rotation': 0, 'flip': False, 'colorSpace': {'primaries': 'bt709',
                 'transfer': 'bt709', 'matrix': 'bt709', 'fullRange': False},
             'allocationBytes': 345600, 'layout': [[0, 640], [230400, 320], [288000, 320]]}],
-        'rows': [[n / 24, n + 1, format(n + first, '064x'), round(n * 1000000 / 24), 0, 0.25]
+        'rows': [[n / 24, n + 1, format(n + first, '064x'), round(n * 1000000 / 24), 0, 1]
                  for n in range(count)]}
 
 
@@ -146,15 +147,37 @@ class RendererIntegrity(unittest.TestCase):
     def test_real_rate_and_unmuted_gesture_startup_are_required(self):
         for fault in ['rate', 'muted', 'volume', 'gesture_rate', 'gesture', 'activation', 'sticky_activation', 'trusted_event']:
             public = capture(2, 2)
-            if fault == 'rate': public['rows'][1][5] = 1
+            if fault == 'rate': public['rows'][1][5] = 0.25
             elif fault == 'muted': public['beforeGesture'][1][3] = True
             elif fault == 'volume': public['beforeGesture'][1][4] = 0
-            elif fault == 'gesture_rate': public['beforeGesture'][1][5] = 1
+            elif fault == 'gesture_rate': public['beforeGesture'][1][5] = 0.25
             elif fault == 'activation': public['beforeGesture'][1][7] = True
             elif fault == 'sticky_activation': public['beforeGesture'][1][6] = True
             elif fault == 'trusted_event': public['gestureEvent']['trusted'] = False
             else: public['gesture'] = 'evaluate-play'
             with self.subTest(fault=fault):
+                self.assertFalse(renderer_facts(capture(4), public, [n / 24 for n in range(4)], 2 / 24)['publicQualified'])
+
+    def test_normal_speed_observer_and_declared_rate_are_fixed(self):
+        root = Path(__file__).resolve().parents[1]
+        source = (root / 'e2e/hls-public-renderer.mjs').read_text()
+        self.assertIn('const result = {playbackRate: 1, reference: {}, public: {}};', source)
+        self.assertIn('media.defaultPlaybackRate = media.playbackRate = 1;', source)
+        self.assertNotIn('playbackRate = 0.25', source)
+        quarter = capture(2, 2)
+        for row in quarter['rows']:
+            row[5] = 0.25
+        for sample in quarter['beforeGesture']:
+            sample[5] = 0.25
+        facts = renderer_facts(capture(4), quarter, [n / 24 for n in range(4)], 2 / 24)
+        self.assertFalse(facts['publicQualified'])
+        self.assertFalse(facts['requestedIdentityMatches'])
+
+    def test_boolean_or_nonfinite_gesture_rate_cannot_mean_normal_speed(self):
+        for rate in [True, False, float('nan'), float('inf'), None, '1']:
+            public = capture(2, 2)
+            public['beforeGesture'][1][5] = rate
+            with self.subTest(kind=type(rate).__name__):
                 self.assertFalse(renderer_facts(capture(4), public, [n / 24 for n in range(4)], 2 / 24)['publicQualified'])
 
 
