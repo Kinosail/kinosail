@@ -22,8 +22,10 @@ from hls_followon_public import check, bounded_bytes, encoder_count, measure, pr
 
 ROOT = Path(__file__).resolve().parents[3]
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--suite', choices=['remaining', 'audio-timing'], default='remaining')
+parser.add_argument('--suite', choices=['remaining', 'audio-timing'], default=os.environ.get('KINOSAIL_HLS_REMAINING_SUITE', 'remaining'))
 SUITE = parser.parse_args().suite
+if SUITE not in ['remaining', 'audio-timing']:
+    parser.error('unsupported diagnostic suite')
 RUN = ROOT / '.verification/hls-followon' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
 RUN.mkdir(parents=True)
 BINARY = RUN / 'player'

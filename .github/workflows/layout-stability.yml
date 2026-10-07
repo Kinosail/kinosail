@@ -320,7 +320,9 @@ jobs:
         run: python3 apps/player/scripts/test-hls-followon.py
       - name: Run bounded remaining playback regressions
         if: ${{ inputs.hls_remaining_proof }}
-        run: timeout --kill-after=5s 600s python3 apps/player/scripts/test-hls-remaining.py --suite "${{ inputs.hls_audio_timing && 'audio-timing' || 'remaining' }}"
+        env:
+          KINOSAIL_HLS_REMAINING_SUITE: ${{ inputs.hls_audio_timing && 'audio-timing' || 'remaining' }}
+        run: timeout --kill-after=5s 600s python3 apps/player/scripts/test-hls-remaining.py
       - name: Preserve safe follow-on receipts
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
