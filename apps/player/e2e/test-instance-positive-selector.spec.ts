@@ -15,14 +15,14 @@ test('positive saved selector requests and separately labeled inline decoder con
   expect(base.protocol).toBe('https:'); expect(base.hostname).toBe('localhost');
   expect(info.project.name).toBe('webkit');
   const sourceReceipt = JSON.parse(await readFile(process.env.KINOSAIL_POSITIVE_SOURCE_RECEIPT!, 'utf8'));
-  const observations: object[] = [], sourceRequests: object[] = [], scriptResponses: object[] = [], servedWatch: object[] = [];
+  const observations: object[] = [], sourceRequests: object[] = [], scriptResponses: object[] = [], servedWatch: object[] = [], progressWrites: object[] = [];
   const pendingResponses: Promise<void>[] = [];
   let phase = 'login';
   const record = async (value: object) => {
     observations.push({utc: new Date().toISOString(), ...value});
     await writeFile(info.outputPath('positive-selector.json'), JSON.stringify({sourceReceipt,
       boundaries: 'Untouched product phone-policy selector and real public HLS requests; separately labeled desktop macOS WebKit inline rendered-fixture decoder control. No native fullscreen, audible, physical-device, production fix or checkpoint acceptance.',
-      observations, sourceRequests, servedWatch, scriptResponses}, null, 2));
+      observations, sourceRequests, servedWatch, scriptResponses, progressWrites}, null, 2));
   };
   const bounded = (value: string | null, max = 604800) => {
     const number = value === null ? NaN : Number(value);
@@ -44,16 +44,49 @@ test('positive saved selector requests and separately labeled inline decoder con
         sourceRequests.push({utc: new Date().toISOString(), phase, operation: 'request', method: request.method(), ...projection});
     } catch { /* Fixed optional projection; no raw requests retained. */ }
   });
-  await page.addInitScript(() => localStorage.setItem('kinosail.playback-policy-v2', 'direct-first'));
+  await page.addInitScript(() => {
+    localStorage.setItem('kinosail.playback-policy-v2', 'direct-first');
+    const events: object[] = []; Object.assign(window, {selectorMediaEvents: events});
+    const bound = new WeakSet<HTMLVideoElement>();
+    const observe = () => {
+      const video = document.querySelector('video'); if (!video || bound.has(video)) return;
+      bound.add(video);
+      for (const name of ['loadedmetadata', 'seeking', 'seeked', 'play', 'playing', 'pause', 'kinosail:seek-intent'])
+        video.addEventListener(name, event => {
+          if (events.length >= 30) return;
+          const rawTime = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'currentTime')!.get!.call(video);
+          const start = Number(video.dataset.start);
+          events.push({event: name, trusted: event.isTrusted, elapsedMS: Math.round(performance.now()), paused: video.paused,
+            rawTime: Number.isFinite(rawTime) && rawTime >= 0 && rawTime <= 31622400 ? rawTime : null,
+            renderedStart: Number.isFinite(start) && start >= 0 && start <= 31622400 ? start : null});
+        });
+    };
+    new MutationObserver(observe).observe(document, {childList: true, subtree: true}); observe();
+  });
   await login(page);
   const csrf = async () => ({Origin: base.origin,
     'X-Kinosail-CSRF': await page.locator('meta[name="kinosail-csrf"]').getAttribute('content') || ''});
   expect((await page.request.put('/api/v1/settings/playback', {headers: await csrf(),
     data: {mode: 'automatic', autoplay: false, subtitles: 'off', autoSkip: []}})).ok()).toBe(true);
   const library = await (await page.request.get('/api/v1/library')).json();
-  const item = library.items.find((value: {title: string}) => value.title === 'Positive Reentry');
+  const item = library.items.find((value: {title: string}) => value.title === 'Positive Selector');
+  const nativeItem = library.items.find((value: {title: string}) => value.title === 'Positive Reentry');
   expect(item).toBeTruthy();
+  expect(nativeItem).toBeTruthy(); expect(item.id).not.toBe(nativeItem.id);
   const path = `/api/v1/items/${item.id}`, watch = `/watch/${item.id}`;
+  const progressEndpoint = `/progress/${item.id}`;
+  page.on('request', request => {
+    try {
+      const endpoint = new URL(request.url());
+      if (progressWrites.length >= 24 || endpoint.origin !== base.origin || ![progressEndpoint, path + '/progress'].includes(endpoint.pathname) || !['POST', 'PUT'].includes(request.method())) return;
+      const body = request.postData(); if (!body || body.length > 4096) return;
+      const value = endpoint.pathname === progressEndpoint ? Object.fromEntries(new URLSearchParams(body)) : JSON.parse(body);
+      progressWrites.push({utc: new Date().toISOString(), phase, operation: 'request',
+        route: endpoint.pathname === progressEndpoint ? 'page-progress' : 'api-progress',
+        seconds: bounded(typeof value.seconds === 'number' ? String(value.seconds) : value.seconds, 31622400),
+        revision: bounded(typeof value.revision === 'number' ? String(value.revision) : value.revision, 1000000)});
+    } catch { /* Only known numeric fields; never retain body/session. */ }
+  });
   const publicPosition = async () => {
     const response = await page.request.get(path + '/watch-progress');
     expect(response.ok()).toBe(true); return response.json();
@@ -64,6 +97,8 @@ test('positive saved selector requests and separately labeled inline decoder con
       try {
         const endpoint = new URL(response.url());
         if (endpoint.origin !== base.origin) return;
+        if ([progressEndpoint, path + '/progress'].includes(endpoint.pathname) && ['POST', 'PUT'].includes(response.request().method()) && progressWrites.length < 24)
+          progressWrites.push({utc: new Date().toISOString(), phase: responsePhase, operation: 'response', status: response.status()});
         const projection = hlsProjection(response.url());
         if (projection && sourceRequests.length < 64)
           sourceRequests.push({utc: new Date().toISOString(), phase: responsePhase, operation: 'response', status: response.status(), ...projection});
@@ -72,8 +107,8 @@ test('positive saved selector requests and separately labeled inline decoder con
           if (body.length > 1048576) return;
           const tag = /<video\b[^>]{0,16000}>/.exec(body.toString('utf8'))?.[0] || '';
           servedWatch.push({phase: responsePhase, status: response.status(),
-            start: bounded(/\bdata-start="([0-9.]+)"/.exec(tag)?.[1] || null),
-            fullDuration: bounded(/\bdata-duration="([0-9.]+)"/.exec(tag)?.[1] || null, 31622400)});
+            start: bounded(/\bdata-start="([0-9.eE+-]{1,64})"/.exec(tag)?.[1] || null),
+            fullDuration: bounded(/\bdata-duration="([0-9.eE+-]{1,64})"/.exec(tag)?.[1] || null, 31622400)});
         }
         if (endpoint.pathname === '/static/player.js' && /^[a-f0-9]{64}$/.test(endpoint.searchParams.get('v') || '') && scriptResponses.length < 4) {
           const bytes = await response.body(); if (bytes.length > 1048576) return;
@@ -93,6 +128,9 @@ test('positive saved selector requests and separately labeled inline decoder con
   await page.goto('/');
   await page.locator(`a.card[href="${watch}"]`).first().click();
   await expect.poll(() => page.locator('video').evaluate(video => (video as HTMLVideoElement).readyState), {timeout: 30_000}).toBeGreaterThanOrEqual(2);
+  await record({phase: 'isolated-item-initial-metadata', public: await publicPosition(),
+    events: await page.evaluate(() => (window as unknown as {selectorMediaEvents: object[]}).selectorMediaEvents),
+    separateProgressKey: true});
   phase = 'reload-before-any-Play';
   await page.reload();
   await expect.poll(() => page.locator('video').evaluate(video => (video as HTMLVideoElement).readyState), {timeout: 30_000}).toBeGreaterThanOrEqual(2);
@@ -109,8 +147,9 @@ test('positive saved selector requests and separately labeled inline decoder con
       policy: ['direct-first', 'direct-only', 'compatible'].includes(localStorage.getItem('kinosail.playback-policy-v2') || '') ? localStorage.getItem('kinosail.playback-policy-v2') : 'unreported',
       nativeHLS: video.canPlayType('application/vnd.apple.mpegurl')};
   });
-  await record({phase: 'selected-source-before-any-Play', state, selected, public: await publicPosition()});
-  expect(state.renderedStart).toBe(6); expect(state.paused).toBe(true);
+  await record({phase: 'selected-source-before-any-Play', state, selected, public: await publicPosition(),
+    events: await page.evaluate(() => (window as unknown as {selectorMediaEvents: object[]}).selectorMediaEvents)});
+  expect(state.paused).toBe(true);
   expect(state.directType).toBe('video/x-matroska'); expect(state.compatibilityMode).toBe('transcode');
   expect(state.policy).toBe('direct-first'); expect(state.nativeHLS).not.toBe('');
   const control = await browser.newContext({...devices['Desktop Safari'], storageState: await page.context().storageState(), ignoreHTTPSErrors: false});
@@ -118,7 +157,7 @@ test('positive saved selector requests and separately labeled inline decoder con
   control.on('request', request => {
     try {
       const endpoint = new URL(request.url());
-      if (endpoint.origin === base.origin && endpoint.pathname.startsWith(path) && !['GET', 'HEAD'].includes(request.method())) controlWrites++;
+      if (endpoint.origin === base.origin && (endpoint.pathname.startsWith(path) || endpoint.pathname === progressEndpoint) && !['GET', 'HEAD'].includes(request.method())) controlWrites++;
     } catch { /* Counter only; no body or URL retained. */ }
   });
   let controlFailed = false;
@@ -158,6 +197,7 @@ test('positive saved selector requests and separately labeled inline decoder con
     await record({phase: 'separate-inline-control-moving-frames', elapsedObservationMS: Date.now() - started,
       selected, frames: frames.map(({png: _png, ...value}) => value), controlWrites, public: await publicPosition()});
     expect(frames[1].mediaTime).toBeGreaterThan(frames[0].mediaTime);
+    expect(state.renderedStart).toBe(6);
     expect(controlWrites).toBe(0); expect((await publicPosition()).seconds).toBe(6);
     await record({phase: 'source-regression-verdict', selectedOffsetMatchesSaved6: selected!.offsetSeconds === 6,
       firstFrameMatchesSavedYellow: frames[0].rgb[0] > 150 && frames[0].rgb[1] > 150 && frames[0].rgb[2] < 80,

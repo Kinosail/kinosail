@@ -111,6 +111,10 @@ generate = ['ffmpeg', '-nostdin', '-hide_banner', '-loglevel', 'error', '-f', 'l
             '-filter_complex', '[0:v][1:v]concat=n=2:v=1:a=0[v]', '-map', '[v]', '-map', '2:a',
             '-c:v', 'ffv1', '-threads', '1', '-c:a', 'pcm_s16le', str(media / 'Positive Reentry.mkv')]
 receipt['mediaCommand'] = generate
+selector_media = media / 'Positive Selector.mkv'
+selector_generate = ['ffmpeg', '-nostdin', '-hide_banner', '-loglevel', 'error', '-i', str(media / 'Positive Reentry.mkv'),
+                     '-map', '0', '-c', 'copy', '-metadata', 'title=Positive Selector', str(selector_media)]
+receipt['selectorMediaCommand'] = selector_generate
 server = browser = None
 trust = HostedFixtureTrust(run, receipt)
 
@@ -158,6 +162,8 @@ try:
     receipt['stage'] = 'synthetic-media-generation'
     run_owned_command(generate, environment, timeout=60)
     receipt['mediaSHA256'] = checksum(media / 'Positive Reentry.mkv')
+    run_owned_command(selector_generate, environment, timeout=30)
+    receipt['selectorMediaSHA256'] = checksum(selector_media)
     with socket.socket() as listener:
         listener.bind(('127.0.0.1', 0))
         port = listener.getsockname()[1]
