@@ -1,0 +1,78 @@
+name: Positive native reentry proof
+
+on:
+  push:
+    branches: [codex/task7-positive-native-reentry]
+  pull_request:
+    paths:
+      - apps/player/e2e/test-instance-positive-reentry.spec.ts
+      - apps/player/e2e/test-instance-positive-selector.spec.ts
+      - apps/player/e2e/positive-selector-admission.ts
+      - apps/player/scripts/test-positive-reentry-local.py
+      - apps/player/scripts/positive_reentry_processes.py
+      - apps/player/scripts/positive_reentry_tls.py
+      - .github/workflows/positive-native-reentry.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: positive-native-reentry-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  source-bound-webkit:
+    name: Saved6 native HLS decoded proof
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - run: test ! -e .gates-disabled
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version-file: go.work
+          cache-dependency-path: '**/go.sum'
+      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
+        with:
+          version: 11.22.0
+          install: false
+          node-version-file: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '26'
+          package-manager-cache: false
+      - name: Prepare one existing browser and synthetic-media toolchain
+        timeout-minutes: 6
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: '1'
+        run: |
+          command -v ffmpeg >/dev/null || brew install ffmpeg
+          pnpm --dir apps/player/e2e install --frozen-lockfile
+          pnpm --dir apps/player/e2e exec playwright install webkit
+      - name: Validate exact source through public APIs and native decoding
+        timeout-minutes: 10
+        run: >-
+          python3 apps/player/scripts/test-positive-reentry-local.py
+          --source 42355f627581c6698357587947c6a80caef8d3b7
+          --dependencies "$PWD/apps/player/e2e/node_modules"
+      - name: Retain only safe repeatable proof artifacts
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: positive-native-reentry-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            .verification/positive-reentry/*/receipt.json
+            .verification/positive-reentry/*/source-receipt.json
+            .verification/positive-reentry/*/browser-admission.json
+            .verification/positive-reentry/*/fixture-public-ca.pem
+            .verification/positive-reentry/*/artifacts/**/positive-reentry.json
+            .verification/positive-reentry/*/artifacts/**/positive-selector.json
+            .verification/positive-reentry/*/artifacts/**/*.png
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
