@@ -8,10 +8,11 @@ declare const progressNavigation: unknown;
 // Share the existing real-media flow without duplicating setup or changing required suite selection.
 export function registerNavigationCheckpoints(flows: {
   phase: string;
+  browsePath: string;
   checkpoint: (page: Page, id: string, session?: string) => Promise<Checkpoint>;
   openMovie: (page: Page, observation?: Observation) => Promise<Movie>;
 }) {
-  const {phase, checkpoint, openMovie} = flows;
+  const {phase, checkpoint, openMovie, browsePath} = flows;
 test.describe("acknowledged Library navigation", () => {
   test.use({serviceWorkers: "block"});
   // The populated media and progress store remain real. Only transport acknowledgement is held:
@@ -36,7 +37,7 @@ test.describe("acknowledged Library navigation", () => {
       await route.continue();
     });
     try {
-      await page.getByRole("link", {name: "Library", exact: true}).click({noWaitAfter: true});
+      await page.getByRole("link", {name: "Back to search results", exact: true}).click({noWaitAfter: true});
       await expect.poll(() => writes.length, {timeout: 1500}).toBeGreaterThan(0);
       await expect(page).toHaveURL(url => url.pathname === watch, {timeout: 500});
       await expect(media).toHaveJSProperty("paused", true);
@@ -47,7 +48,7 @@ test.describe("acknowledged Library navigation", () => {
       // The server receives every original validated request only after this bounded hold.
       release();
       await page.unrouteAll({behavior: "wait"});
-      await expect(page).toHaveURL(/\/$/);
+      await expect(page).toHaveURL(browsePath);
       const saved = await checkpoint(page, id, session);
       expect(saved.sessionMatches).toBe(true);
       expect(saved.seconds).toBeGreaterThanOrEqual(leaveAt - 0.1);
@@ -82,7 +83,7 @@ test.describe("acknowledged Library navigation", () => {
     let fail = true;
     await page.route(`**/progress/${id}*`, route => fail ? route.fulfill({status: 503}) : route.continue());
     try {
-      await page.getByRole("link", {name: "Library", exact: true}).click({noWaitAfter: true});
+      await page.getByRole("link", {name: "Back to search results", exact: true}).click({noWaitAfter: true});
       await expect(page).toHaveURL(url => url.pathname === watch);
       await expect(media).toHaveJSProperty("paused", true);
       await expect(page.locator("[data-progress-notice]")).toBeVisible();
@@ -109,11 +110,11 @@ test.describe("acknowledged Library navigation", () => {
       await media.evaluate((video: HTMLVideoElement) => video.play());
       await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(paused + 0.3);
       fail = true;
-      await page.getByRole("link", {name: "Library", exact: true}).click({noWaitAfter: true});
+      await page.getByRole("link", {name: "Back to search results", exact: true}).click({noWaitAfter: true});
       await expect(page.getByRole("button", {name: "Continue without saving", exact: true})).toBeVisible();
       const departurePosition = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
       await page.getByRole("button", {name: "Continue without saving", exact: true}).click();
-      await expect(page).toHaveURL(/\/$/);
+      await expect(page).toHaveURL(browsePath);
       const afterUnsavedDeparture = await checkpoint(page, id, session);
       const fallbackAccepted = afterUnsavedDeparture.revision > recovered.revision;
       if (fallbackAccepted) {
@@ -142,13 +143,13 @@ test.describe("acknowledged Library navigation", () => {
         await media.evaluate((video: HTMLVideoElement) => video.pause());
         const departurePosition = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
         await expect(page.locator("[data-progress-status]")).toHaveAttribute("data-progress-failure", status === 401 ? "authentication" : "policy");
-        await page.getByRole("link", {name: "Library", exact: true}).click({noWaitAfter: true});
+        await page.getByRole("link", {name: "Back to search results", exact: true}).click({noWaitAfter: true});
         await expect(page).toHaveURL(url => url.pathname === watch);
         await expect(page.getByRole("button", {name: "Retry saving position", exact: true})).toBeHidden();
         await expect(page.getByRole("button", {name: "Continue without saving", exact: true})).toBeVisible();
         expect(await checkpoint(page, id, session)).toEqual(before);
         await page.getByRole("button", {name: "Continue without saving", exact: true}).click();
-        await expect(page).toHaveURL(/\/$/);
+        await expect(page).toHaveURL(browsePath);
         const after = await checkpoint(page, id, session);
         const fallbackAccepted = after.revision > before.revision;
         if (fallbackAccepted) {
@@ -183,7 +184,7 @@ test.describe("acknowledged Library navigation", () => {
     });
     const began = await page.evaluate(() => performance.now());
     try {
-      await page.getByRole("link", {name: "Library", exact: true}).click({noWaitAfter: true});
+      await page.getByRole("link", {name: "Back to search results", exact: true}).click({noWaitAfter: true});
       await expect.poll(() => writes.length, {timeout: 1500}).toBeGreaterThan(0);
       await expect(page.locator("[data-progress-status]")).toHaveAttribute("data-progress-failure", "timeout", {timeout: 10000});
       const elapsedMs = await page.evaluate(started => performance.now() - started, began);
@@ -202,7 +203,7 @@ test.describe("acknowledged Library navigation", () => {
       await expect(page.locator("[data-progress-notice]")).toHaveAttribute("aria-busy", "true");
       release();
       await page.unrouteAll({behavior: "wait"});
-      await expect(page).toHaveURL(/\/$/);
+      await expect(page).toHaveURL(browsePath);
       const saved = await checkpoint(page, id, session);
       expect(saved.sessionMatches).toBe(true);
       expect(saved.revision).toBeGreaterThan(before.revision);
@@ -226,7 +227,7 @@ test.describe("acknowledged Library navigation", () => {
     let writes = 0, destinationRequested = false, unexpectedLibraryRequests = 0;
     const observeNavigation = (request: PlaywrightRequest) => {
       const url = new URL(request.url());
-      if (request.isNavigationRequest() && url.pathname === "/" && !url.search) unexpectedLibraryRequests++;
+      if (request.isNavigationRequest() && url.pathname + url.search === browsePath) unexpectedLibraryRequests++;
     };
     page.on("request", observeNavigation);
     await page.route(`**/progress/${id}*`, async route => {
@@ -246,14 +247,14 @@ test.describe("acknowledged Library navigation", () => {
       sessionStorage.removeItem("kinosail:checkpoint-navigation-intents");
       document.addEventListener("click", event => {
         const anchor = event.target instanceof Element ? event.target.closest("a") : null;
-        if (!anchor || !["Library", "Other Library view"].includes(anchor.textContent?.trim() || "")) return;
+        if (!anchor || !anchor.matches("[data-browse-return]") && anchor.textContent?.trim() !== "Other Library view") return;
         const receipts = JSON.parse(sessionStorage.getItem("kinosail:checkpoint-navigation-intents") || "[]");
-        receipts.push({destination: anchor.textContent?.trim(), libraryIntentPending: Boolean(progressNavigation)});
+        receipts.push({destination: anchor.matches("[data-browse-return]") ? "Library" : anchor.textContent?.trim(), libraryIntentPending: Boolean(progressNavigation)});
         sessionStorage.setItem("kinosail:checkpoint-navigation-intents", JSON.stringify(receipts));
       });
     });
     try {
-      await page.getByRole("link", {name: "Library", exact: true}).click({noWaitAfter: true});
+      await page.getByRole("link", {name: "Back to search results", exact: true}).click({noWaitAfter: true});
       await expect.poll(() => writes).toBeGreaterThan(0);
       await page.getByRole("link", {name: "Other Library view", exact: true}).click({noWaitAfter: true});
       await expect.poll(() => destinationRequested).toBe(true);
