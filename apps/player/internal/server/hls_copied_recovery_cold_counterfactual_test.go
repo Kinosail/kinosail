@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"testing"
 	"time"
@@ -43,6 +45,77 @@ func copiedRecoveryInitializationFixture(t *testing.T, empty, atomic bool) (libr
 		t.Fatal(err)
 	}
 	return item, directory, pending, string(policy)
+}
+
+func copiedRecoveryInitializationPause(t *testing.T, marker string, settled <-chan struct{}) {
+	t.Helper()
+	deadline := time.Now().Add(3 * time.Second)
+	for time.Now().Before(deadline) {
+		if _, err := os.Stat(marker); err == nil {
+			return
+		}
+		select {
+		case <-settled:
+			t.Fatal("owned initialization writer exited before its controlled pause")
+		default:
+			time.Sleep(time.Millisecond)
+		}
+	}
+	t.Fatal("owned initialization writer did not reach its controlled pause")
+}
+
+func copiedRecoveryInitializationBytes(t *testing.T, path, expected string) {
+	t.Helper()
+	data, err := os.ReadFile(path)
+	if err != nil || !bytes.Equal(data, []byte(expected)) {
+		t.Errorf("owned initialization write exposed %d bytes, want %d committed bytes", len(data), len(expected))
+	}
+	if _, err := isobmff.Parse(data); err != nil {
+		t.Error("owned initialization writer exposed incomplete configuration")
+	}
+}
+
+// A held owned printf exposes the shell redirection window without media/UI work.
+func TestCopiedRecoveryEncoderInitializationRemainsCommittedUntilReplacement(t *testing.T) {
+	manager, _, _, directory, initialization := copiedRecoveryEnclosingFixture(t)
+	rendition := filepath.Join(directory, "1080p")
+	marker := filepath.Join(t.TempDir(), "held")
+	action := "held=0\nprintf() {\n if [ \"$held\" -eq 0 ]; then\n held=1\n command printf held > " + copiedRecoveryQuote(marker)
+	action += "\n IFS= read -r held_input\n fi\n command printf \"$@\"\n}\n"
+	copiedRecoveryEncoderOutput(t, manager, action, initialization, "first fragment", copiedRecoveryManifest)
+	ctx, cancel := context.WithTimeout(t.Context(), 3*time.Second)
+	defer cancel()
+	command := exec.CommandContext(ctx, "/bin/sh", "owned-encoder", "-hls_segment_filename", filepath.Join(rendition, "segment-%05d.m4s"), filepath.Join(rendition, "index.m3u8"))
+	command.Dir = filepath.Dir(manager.ffmpeg)
+	release, err := command.StdinPipe()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = release.Close() }()
+	if err := command.Start(); err != nil {
+		t.Fatal(err)
+	}
+	settled := make(chan struct{})
+	var commandErr error
+	go func() { commandErr = command.Wait(); close(settled) }()
+	defer func() { cancel(); <-settled }()
+	copiedRecoveryInitializationPause(t, marker, settled)
+	copiedRecoveryInitializationBytes(t, filepath.Join(rendition, "init.mp4"), initialization)
+	if _, err := io.WriteString(release, "release\n"); err != nil {
+		t.Fatal(err)
+	}
+	if err := release.Close(); err != nil && !errors.Is(err, os.ErrClosed) {
+		t.Fatal(err)
+	}
+	select {
+	case <-settled:
+		if commandErr != nil {
+			t.Fatal(commandErr)
+		}
+	case <-ctx.Done():
+		t.Fatal("owned initialization writer did not settle after release")
+	}
+	copiedRecoveryInitializationBytes(t, filepath.Join(rendition, "init.mp4"), initialization)
 }
 
 func copiedRecoveryInitializationWorker(ctx context.Context, pending string) (chan struct{}, <-chan error, func()) {

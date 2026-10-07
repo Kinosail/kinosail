@@ -74,6 +74,7 @@ require "$witness" '    timeout-minutes: 10'
 require "$witness" 'go test -json -count=100 -run '\''^TestCopiedRecoveryEnclosingOrdinaryPublication$'\'''
 require "$witness" 'go test -json -count=10 -run '\''^TestCopiedRecoveryEnclosing('
 require "$witness" 'go test -json -count=10 -run '\''^TestCopiedRecoveryOrdinaryPublicationInitializationCounterfactual$'\'''
+require "$witness" 'go test -json -count=10 -run '\''^TestCopiedRecoveryEncoderInitializationRemainsCommittedUntilReplacement$'\'''
 require "$witness" '          retention-days: 14'
 require "$witness" '          if-no-files-found: error'
 if grep -Eq 'continue-on-error|\|\|[[:space:]]*true|contents:[[:space:]]*write' "$witness"; then

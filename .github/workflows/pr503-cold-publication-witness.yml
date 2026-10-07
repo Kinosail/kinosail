@@ -44,6 +44,10 @@ jobs:
         if: always() && steps.repeat.outcome != 'skipped'
         working-directory: apps/player
         run: go test -json -count=10 -run '^TestCopiedRecoveryOrdinaryPublicationInitializationCounterfactual$' ./internal/server | tee .verification/pr503-cold-publication/counterfactual.jsonl
+      - name: Protect committed initialization during the owned encoder write
+        if: always() && steps.repeat.outcome != 'skipped'
+        working-directory: apps/player
+        run: go test -json -count=10 -run '^TestCopiedRecoveryEncoderInitializationRemainsCommittedUntilReplacement$' ./internal/server | tee .verification/pr503-cold-publication/fixture-initialization.jsonl
       - name: Preserve all source-bound witness results
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
