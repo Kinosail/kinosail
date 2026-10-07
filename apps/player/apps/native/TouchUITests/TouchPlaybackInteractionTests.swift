@@ -147,7 +147,7 @@ final class TouchPlaybackInteractionTests: XCTestCase {
     }
 
     @MainActor private func record(_ name: String, _ app: XCUIApplication) {
-        let attachment = XCTAttachment(screenshot: app.screenshot())
+        let attachment = XCTAttachment(screenshot: XCUIDevice.shared.screenshot())
         attachment.name = name
         attachment.lifetime = .keepAlways
         add(attachment)

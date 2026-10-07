@@ -63,7 +63,7 @@ struct TouchPlaybackView: View {
                     .accessibilityHidden(controlsVisible || presentation.pictureInPicture).allowsHitTesting(!presentation.pictureInPicture)
             }.ignoresSafeArea(.container, edges: .horizontal)
             if presentation.pictureInPicture {
-                TouchPictureInPictureView { presentation.stopPictureInPicture() }
+                TouchPictureInPictureView(stop: { presentation.stopPictureInPicture() }, close: { dismissal.requestClose(close) })
             }
             GeometryReader { geometry in
                 let area = TouchPlaybackLayout.controlArea(size: geometry.size, division: geometry.playbackDivision)
