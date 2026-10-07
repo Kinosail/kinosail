@@ -189,7 +189,7 @@ def replay_refill(run, run_deadline, directory, source, case, executable):
     return result
 
 
-def audio_output(api, hls, directory, case, source, run, run_deadline):
+def audio_output(api, hls, directory, case, source, run, run_deadline, cache_directory=None):
     status, master, _ = api.http(hls)
     check(status == 200, 'audio_master_status')
     check(re.findall(r'^audio/index\.m3u8$', master.decode(), re.M) == ['audio/index.m3u8'], 'audio_rendition')
@@ -286,7 +286,8 @@ def audio_output(api, hls, directory, case, source, run, run_deadline):
         pcm, facts = native_pcm(path, run_deadline, directory)
         case['refillNativeEOF'] = dict(facts, pcmSHA256=hashlib.sha256(pcm).hexdigest(),
             segments=[name for name, _ in refill], packets=packet_evidence(run, path))
-        generations = list((directory / 'cache').glob(hls.split('/')[2] + '-plan-*'))
+        cache = directory / 'cache' if cache_directory is None else cache_directory
+        generations = list(cache.glob(hls.split('/')[2] + '-plan-*'))
         check(len(generations) == 1, 'refill_generation_bound')
         generation = generations[0].stat()
         check((generation.st_ino, generation.st_dev) == (case['physicalBeforeFirstGET']['generationInode'],

@@ -107,8 +107,8 @@ def journey(name, original, metadata, offset=0, pacing=None, installation=False)
             + " if '-start_number' in a and " + repr(str(source)) + " in a:\n"
             + '  value=json.dumps(a)\n  if len(value.encode())<=8192:\n'
             + '   with open(' + repr(str(directory / 'refill-recipe-private.json')) + ", 'w') as f: f.write(value)\n"
-            + ("  sys.path.insert(0," + repr(str(Path(__file__).parent)) + ")\n  from hls_remaining_installation import installed_refill\n"
-                + "  a=installed_refill(a," + repr(str(source)) + ',' + repr(str(directory))
+            + ("  if a[a.index('-start_number')+1]=='4':\n   sys.path.insert(0," + repr(str(Path(__file__).parent)) + ")\n   from hls_remaining_installation import installed_refill\n"
+                + "   a=installed_refill(a," + repr(str(source)) + ',' + repr(str(directory))
                 + ",os.environ.get('KINOSAIL_INSTALLATION_RECEIPT_DIR'))\n" if installation else '')
             + 'os.execv(' + repr(real) + ',[' + repr(real) + ']+a)\n')
         wrapper.chmod(0o700)

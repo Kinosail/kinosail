@@ -55,7 +55,7 @@ def cold_reopen(run, binary, directory, source, before, api, hls, environment, d
                     check(api.http('/api/v1/me')[0] == 200, 'installation_reopen_synthetic_auth')
                     row['physicalBeforeFirstGET'] = physical(directory / 'cache', hls.split('/')[2])
                     shutil.copyfile(directory / 'physical.mp4', stage / 'physical.mp4')
-                    audio_output(api, hls, stage, row, source, run, deadline)
+                    audio_output(api, hls, stage, row, source, run, deadline, cache_directory=directory / 'cache')
                     row['physicalAfterPublicDelivery'] = physical(directory / 'cache', hls.split('/')[2])
                 finally:
                     if server is not None:
