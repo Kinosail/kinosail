@@ -67,8 +67,8 @@ class HostedFixtureTrust:
             return True
         require_hosted_macos()
         failures = []
-        commands = [('delete-exact-certificate', ['sudo', '-n', '/usr/bin/security', 'delete-certificate', '-Z', self.fingerprint, self.keychain]),
-                    ('remove-admin-trust', ['sudo', '-n', '/usr/bin/security', 'remove-trusted-cert', '-d', str(self.certificate)])]
+        commands = [('remove-admin-trust', ['sudo', '-n', '/usr/bin/security', 'remove-trusted-cert', '-d', str(self.certificate)]),
+                    ('delete-exact-certificate', ['sudo', '-n', '/usr/bin/security', 'delete-certificate', '-Z', self.fingerprint, self.keychain])]
         self.receipt['fixtureTrustCleanupCommands'] = []
         with (self.run / 'tls-private.log').open('a') as output:
             for operation, command in commands:
