@@ -78,6 +78,10 @@ final class TouchPlaybackInteractionTests: XCTestCase {
         XCTAssertTrue(pause.isEnabled)
         XCTAssertFalse(app.staticTexts["Opening video…"].exists)
         record("loaded video", app)
+        // Controls naturally hide while screenshots or user actions take time.
+        try await Task.sleep(for: .seconds(5))
+        if !pause.isHittable { background(app, x: 0.75, y: 0.3).tap() }
+        XCTAssertTrue(pause.isHittable, app.debugDescription)
         pause.tap()
         XCTAssertTrue(app.buttons["Play"].waitForExistence(timeout: 5))
         app.buttons["Play"].tap()
