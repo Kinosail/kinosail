@@ -5,7 +5,9 @@ import "time"
 // ProgressRevision applies one ordered playback event.
 func ProgressRevision(seconds float64, watched *bool, session string, revision uint64, now time.Time) ProgressChange {
 	return func(state PlaybackState) (PlaybackState, bool, error) {
-		if session != "" && revision > 0 && state.Session == session && revision <= state.Revision {
+		// A watched transition closes its playback session. A departing page
+		// cannot reopen it; new sessions and explicit Mark unwatched still can.
+		if session != "" && state.Session == session && (state.Watched || revision > 0 && revision <= state.Revision) {
 			return state, false, nil
 		}
 		state.Seconds, state.Updated = seconds, now.UTC()
