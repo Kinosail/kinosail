@@ -7,7 +7,8 @@ export function navigationDiagnostics(page, baseURL) {
   const elapsed = () => Math.min(600000, Math.max(0, Math.round(performance.now() - started)));
   const documents = [], counts = {requests: 0, responses: 0, finished: 0, failed: 0, pageErrors: 0, workers: 0, crashes: 0};
   const increment = kind => {counts[kind] = Math.min(100000, counts[kind] + 1);};
-  let documentListener;
+  let documentListener, playbackListener;
+  const playback = [];
   let navigationAttempt = 0;
   let origin;
   try {
@@ -41,6 +42,30 @@ export function navigationDiagnostics(page, baseURL) {
     const url = owned(candidate);
     const views = url?.searchParams.getAll("view");
     return {path: path(candidate), view: views?.length === 1 && ["library", "movies"].includes(views[0]) ? views[0] : "other"};
+  };
+  const playbackPath = value => {
+    try {
+      if (typeof value !== "string" || value.length > 2048) return;
+      const url = new URL(value, baseURL);
+      if (url.origin !== origin || url.username || url.password) return;
+      if (/^\/(?:list|watched)\/[a-f0-9]{16}$/.test(url.pathname)) return url.pathname.split("/")[1] === "list" ? "/list" : "/watched";
+      const asset = /^\/hls\/[a-f0-9]{16}(?:\/p\/[a-zA-Z0-9_-]{1,180})?(?:\/[a-zA-Z0-9_-]{1,32})?\/(index\.m3u8|master\.m3u8|init(?:-[0-9]{1,8})?\.mp4|segment-?[0-9]{1,8}\.(?:m4s|ts))$/.exec(url.pathname)?.[1];
+      if (asset) return asset.endsWith("m3u8") ? "/hls/playlist" : asset.startsWith("init") ? "/hls/init" : "/hls/segment";
+      if (path(url.href) !== "other") return path(url.href);
+    } catch {}
+  };
+  const recordPlayback = value => {
+    if (playback.length === 64) playback.shift();
+    playback.push({timeMs: elapsed(), ...value});
+  };
+  const transport = (kind, request, extra = {}) => {
+    if (!playbackListener) return;
+    const target = playbackPath(request.url());
+    if (!target) return;
+    const {requestID, firstSeenMs, type} = metadata(request);
+    let method = "other";
+    try {if (["GET", "POST", "PUT", "DELETE", "HEAD"].includes(request.method())) method = request.method();} catch {}
+    recordPlayback({kind, path: target, type, method, requestID, firstSeenMs, ...extra});
   };
   const recordLifecycle = (kind, value, frameKind) => {
     if (lifecycle.length === 20) {
@@ -79,6 +104,7 @@ export function navigationDiagnostics(page, baseURL) {
   };
   const start = request => {
     increment("requests");
+    transport("request", request);
     if (pending.size === 20) pending.delete(pending.keys().next().value);
     const value = metadata(request);
     pending.set(request, value);
@@ -87,19 +113,26 @@ export function navigationDiagnostics(page, baseURL) {
       mainFrameRequests.push(value);
     }
   };
-  const finish = request => {increment("finished"); pending.delete(request);};
+  const finish = request => {increment("finished"); pending.delete(request); transport("finished", request);};
   const fail = request => {
     increment("failed"); pending.delete(request);
+    let failure = "other";
+    try {
+      const text = request.failure()?.errorText;
+      if (typeof text === "string" && text.length <= 8192 && /cancelled|canceled|ERR_ABORTED|NS_BINDING_ABORTED/i.test(text)) failure = "cancelled";
+    } catch {}
+    transport("failed", request, {failure});
     if (failed.length < 20) failed.push(metadata(request));
   };
   const response = value => {
     increment("responses");
     const request = value.request(), status = value.status();
+    let fromServiceWorker = "unavailable";
+    try {const flag = value.fromServiceWorker(); if (typeof flag === "boolean") fromServiceWorker = flag;} catch {}
+    if (Number.isInteger(status) && status >= 100 && status <= 599) transport("response", request, {status, fromServiceWorker});
     if (isMainNavigation(request) &&
         Number.isInteger(status) && status >= 100 && status <= 599 && mainFrameResponses.length < 20) {
       const {requestID, firstSeenMs} = metadata(request);
-      let fromServiceWorker = "unavailable";
-      try {const flag = value.fromServiceWorker(); if (typeof flag === "boolean") fromServiceWorker = flag;} catch {}
       mainFrameResponses.push({path: path(value.url()), status, requestID, firstSeenMs, timeMs: elapsed(), fromServiceWorker});
     }
   };
@@ -108,6 +141,37 @@ export function navigationDiagnostics(page, baseURL) {
   page.on("close",closed); page.on("crash",crashed);
   page.on("pageerror",pageError); page.on("worker",worker);
   return {
+    observePlayback() {
+      if (playbackListener) return;
+      playbackListener = message => {
+        try {
+          const text = message.text();
+          if (typeof text !== "string" || text.length > 4096) return;
+          if (message.type() === "error") {
+            recordPlayback({kind: "console-error", source: "unverified-console",
+              category: /access[- ]control|cors|cross-origin/i.test(text) ? "access-control" : "other"});
+            return;
+          }
+          if (!text.startsWith("kinosail-playback-lifecycle ")) return;
+          const raw = text.slice(27), value = JSON.parse(raw);
+          const fields = ["event", "source", "visible", "position", "ready", "network", "paused", "pip"];
+          const keys = [...raw.matchAll(/"([^"\\]+)"\s*:/g)].map(match => match[1]);
+          if (!value || typeof value !== "object" || keys.length !== fields.length || new Set(keys).size !== fields.length ||
+              Object.keys(value).length !== fields.length || keys.some(key => !fields.includes(key)) ||
+              !["pagehide-capture", "pagehide-after-load", "navigation", "play", "pause", "playing", "seeking", "seeked", "loadedmetadata", "emptied", "error"].includes(value.event) ||
+              typeof value.source !== "string" || value.source.length > 2048 ||
+              !["visible", "hidden", "prerender"].includes(value.visible) ||
+              !Number.isFinite(value.position) || value.position < 0 || value.position > 31536000 ||
+              !Number.isInteger(value.ready) || value.ready < 0 || value.ready > 4 ||
+              !Number.isInteger(value.network) || value.network < 0 || value.network > 3 ||
+              typeof value.paused !== "boolean" || typeof value.pip !== "boolean") return;
+          recordPlayback({kind: "media", source: "unverified-console", event: value.event,
+            mediaSource: value.source === "blob:" ? "blob" : playbackPath(value.source) || "other",
+            visible: value.visible, position: value.position, ready: value.ready, network: value.network, paused: value.paused, pip: value.pip});
+        } catch { /* Console markers are untrusted observations only. */ }
+      };
+      page.on("console", playbackListener);
+    },
     async observeDocument(onRecord) {
       if (documentListener) return;
       documentListener = message => {
@@ -168,14 +232,14 @@ export function navigationDiagnostics(page, baseURL) {
       return {path:path(page.url()),identity:page.url()==="about:blank"?"blank":current?"owned":"other",view:["library","movies"].includes(view)?view:"other",
         libraryMarker:Boolean(current&&state.libraryMarker),readyState:["loading","interactive","complete"].includes(readyState)?readyState:"unavailable",
         loginForm:state.loginForm===true,setupForm:state.setupForm===true,timeOrigin:Number.isFinite(state.timeOrigin)&&state.timeOrigin>=0&&state.timeOrigin<=1e14?state.timeOrigin:undefined,
-        documents:[...documents],counts:{...counts},
+        documents:[...documents],playback:[...playback],counts:{...counts},
         pending:[...pending.values()],failed:[...failed],mainFrameRequests:[...mainFrameRequests],mainFrameResponses:[...mainFrameResponses],redirectCount:mainFrameResponses.filter(value=>[301,302,303,307,308].includes(value.status)).length,
         lifecycle:[...lifecycle],
         elapsedMs:Math.min(600000,Math.max(0,Math.round(performance.now()-started))),errorCategory:diagnosticErrorCategory(error)};
     },
     stop() {page.off("request",start);page.off("requestfinished",finish);page.off("requestfailed",fail);page.off("response",response);
       page.off("framenavigated",frameNavigation);page.off("domcontentloaded",domContentLoaded);page.off("load",loaded);page.off("close",closed);page.off("crash",crashed);
-      page.off("pageerror",pageError);page.off("worker",worker);if(documentListener)page.off("console",documentListener);},
+      page.off("pageerror",pageError);page.off("worker",worker);if(documentListener)page.off("console",documentListener);if(playbackListener)page.off("console",playbackListener);},
   };
 }
 function diagnosticErrorCategory(error) {

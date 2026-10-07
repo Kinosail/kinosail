@@ -101,7 +101,7 @@ class WorkflowSecurityTests(unittest.TestCase):
 
     def test_setup_failure_observer_contracts_run_after_player_dependencies(self):
         browser = (WORKFLOWS / 'app.yml').read_text().split('  browser:')[1].split('  required:')[0]
-        command = 'node --test scripts/testing/player-setup-navigation.test.mjs'
+        command = 'node --test scripts/testing/player-setup-navigation.test.mjs scripts/testing/playback-navigation-diagnostics.test.mjs scripts/testing/player-playback-navigation.test.mjs'
         self.assertTrue((ROOT / 'scripts/testing/player-setup-navigation.test.mjs').is_file())
         self.assertFalse((ROOT / 'apps/player/e2e/player-setup-navigation.test.mjs').exists(),
                          'Node-only contracts must not be discovered as Playwright journeys')
