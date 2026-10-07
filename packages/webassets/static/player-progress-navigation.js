@@ -1,4 +1,4 @@
-// Keep explicit Library navigation alive until its latest owned checkpoint is acknowledged.
+// Keep explicit browse return navigation alive until its latest owned checkpoint is acknowledged.
 // Browser Back and tab close still use the separate pagehide keepalive fallback.
 function progressNavigationAllowed() {
   return progressChanged() && !playbackPreparation && !isPictureInPicture() && player.dataset.castActive !== "true" &&
@@ -32,7 +32,7 @@ document.addEventListener("click", event => {
   const link = event.target.closest?.('a[href]');
   if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey ||
       !link || link.hasAttribute("download") || link.target && link.target !== "_self") return;
-  if (link.origin !== location.origin || link.pathname !== "/" || link.search || link.hash) { cancelProgressNavigation(); return; }
+  if (link.origin !== location.origin || link.pathname !== "/" || (link.search && !link.hasAttribute("data-browse-return")) || link.hash) { cancelProgressNavigation(); return; }
   if (!progressNavigationAllowed()) return;
   event.preventDefault();
   if (progressNavigation && !ownsProgressNavigation()) cancelProgressNavigation();
@@ -60,7 +60,7 @@ document.addEventListener("click", event => {
   const link = event.target.closest?.('a[href]');
   if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey ||
       !link || link.hasAttribute("download") || link.target && link.target !== "_self" ||
-      link.origin !== location.origin || link.pathname !== "/" || link.search || link.hash) return;
+      link.origin !== location.origin || link.pathname !== "/" || (link.search && !link.hasAttribute("data-browse-return")) || link.hash) return;
   setTimeout(() => { if (!event.defaultPrevented) player.dispatchEvent(new Event("kinosail:navigation")); });
 });
 document.addEventListener("submit", event => {

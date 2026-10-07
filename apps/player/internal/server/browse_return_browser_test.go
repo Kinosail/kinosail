@@ -64,15 +64,16 @@ func TestBrowseReturnBrowserJourney(t *testing.T) {
 
 func browseReturnSpecs(mode string) ([]string, bool) {
 	specs, valid := map[string][]string{
-		"primary": {"browse-return.spec.ts"},
-		"cold":    {"browse-return-cold.spec.ts"},
-		"bfcache": {"browse-return-bfcache.spec.ts"},
-		"htmx":    {"browse-return.spec.ts"},
-		"shows":   {"browse-return.spec.ts"},
-		"search":  {"browse-return-cold.spec.ts"},
-		"safety":  {"browse-return-safety.spec.ts"},
-		"home":    {"browse-return-home.spec.ts"},
-		"all":     {"browse-return.spec.ts", "browse-return-cold.spec.ts", "browse-return-bfcache.spec.ts"},
+		"navigation": {"watch-navigation.spec.ts"},
+		"primary":    {"browse-return.spec.ts"},
+		"cold":       {"browse-return-cold.spec.ts"},
+		"bfcache":    {"browse-return-bfcache.spec.ts"},
+		"htmx":       {"browse-return.spec.ts"},
+		"shows":      {"browse-return.spec.ts"},
+		"search":     {"browse-return-cold.spec.ts"},
+		"safety":     {"browse-return-safety.spec.ts"},
+		"home":       {"browse-return-home.spec.ts"},
+		"all":        {"browse-return.spec.ts", "browse-return-cold.spec.ts", "browse-return-bfcache.spec.ts"},
 	}[mode]
 	return specs, valid
 }
