@@ -22,6 +22,8 @@ const setTheater = (enabled) => {
     stage.tabIndex = -1;
   }
   document.body.classList.toggle("player-theater", enabled);
+  const exit = stage.querySelector("[data-player-exit]");
+  if (exit) exit.hidden = !enabled;
   if (!enabled && !document.fullscreenElement) stage.querySelector(".player-stage-toolbar")?.removeAttribute("hidden");
   theaterButton?.setAttribute("aria-pressed", String(enabled));
   theaterButton?.setAttribute("aria-label", enabled ? "Exit theater" : "Theater");
@@ -79,6 +81,16 @@ document.querySelector("[data-subtitles]")?.addEventListener("change", ({target}
 if (theaterButton && !appleNativePlayback) {
   const mediaStage = theaterButton.closest(".media-stage");
   const theaterToolbar = mediaStage.querySelector(".player-stage-toolbar");
+  const exit = document.createElement("button");
+  exit.type = "button";
+  exit.className = "player-exit";
+  exit.dataset.playerExit = "";
+  exit.hidden = true;
+  exit.setAttribute("aria-keyshortcuts", "Escape");
+  exit.title = "Return to video page (Esc)";
+  exit.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><path d="m14 6-6 6 6 6"/></svg><span>Exit theater</span>';
+  exit.addEventListener("click", () => setTheater(false));
+  mediaStage.append(exit);
   let theaterIdle;
   let scrubbing = false;
   const hideTheater = () => {
