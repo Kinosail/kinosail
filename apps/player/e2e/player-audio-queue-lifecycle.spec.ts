@@ -1,5 +1,6 @@
 import {expect, test} from "@playwright/test";
 import {openAudio, queueItem, startQueue} from "./player-audio-queue-fixture";
+import {playerSource} from "./static-sources";
 
 // These held responses exercise closed-page and ownership races that the real
 // Server cannot produce deterministically. They are isolated browser controls.
@@ -49,4 +50,21 @@ test("queued short track resumes its saved position without claiming unplayed pr
   await expect(page.locator("audio")).toHaveJSProperty("currentTime", 3);
   await page.locator("audio").dispatchEvent("pause");
   expect(nextWrites).toEqual([]);
+});
+
+test("late initial queue response cannot warm media or publish controls after pagehide", async ({page}) => {
+  await openAudio(page, "");
+  let lookup: import("@playwright/test").Route | undefined;
+  const nextReads: string[] = [];
+  page.on("request", request => {
+    if (new URL(request.url()).pathname === "/media/next") nextReads.push(request.url());
+  });
+  await page.route("https://audio.test/api/v1/audio/track/queue", route => {lookup = route;});
+  await page.addScriptTag({content: playerSource});
+  await expect.poll(() => !!lookup).toBe(true);
+  await page.evaluate(() => dispatchEvent(new PageTransitionEvent("pagehide")));
+  await lookup!.fulfill({json: {items: [queueItem("track"), queueItem("next")]}});
+  await expect(page.locator("[data-audio-next]")).toBeDisabled();
+  await expect(page.locator("audio")).not.toHaveAttribute("data-queue-total");
+  expect(nextReads).toEqual([]);
 });

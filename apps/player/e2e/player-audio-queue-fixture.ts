@@ -52,4 +52,3 @@ export async function startQueue(page: Page) {
   // Explicit user seek intent; loading metadata alone must never claim playback.
   await page.locator("audio").dispatchEvent("kinosail:seek-intent");
 }
-
