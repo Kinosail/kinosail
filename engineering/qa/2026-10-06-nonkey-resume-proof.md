@@ -359,3 +359,21 @@ Before implementing the new integrity helper, isolate failures that successful
 public media cannot inject: invalid/foreign playlist bytes, malformed target
 duration, symlink/FIFO/oversized/racing snapshots, missing audio windows, silence
 and shifted content. Preserve old scanner, negative-frame and packet assertions.
+
+## Paired oracle repair, before implementation
+
+Independent review of `541a7a46` found four admission gaps. First add failing
+checks for conflicting or repeated scalar headers, unsupported generated EOF
+placement, absent or nonnumeric frequency facts, changed joined generations,
+invalid final targets and responses returning after the stage deadline.
+Retain initial target validity even when false. The bounded generated-playlist
+subset requires terminal ENDLIST; RFC 8216 permits other ENDLIST placement,
+which this diagnostic deliberately does not support.
+
+Bind final physical identity and generation to the exact joined snapshot.
+Require final physical and public EOF, valid target duration and matching cuts.
+Propagate remaining HTTP time and check the deadline after every response.
+Reject invalid timeout values before network effects. Independently check the
+marked source frequencies against its four-second analytic fixture pattern;
+two equally wrong or missing observations must not qualify the AAC proof.
+These integrity failures cannot be injected by the valid hosted fixture.

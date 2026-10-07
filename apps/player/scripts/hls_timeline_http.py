@@ -3,6 +3,7 @@ import base64
 import hashlib
 import hmac
 import json
+import math
 import struct
 import time
 import urllib.error
@@ -19,14 +20,16 @@ class PublicServer:
         self.url, self.token = url, ""
         self.opener = urllib.request.build_opener(NoRedirect)
 
-    def http(self, path, method="GET", body=None, authenticated=True):
+    def http(self, path, method="GET", body=None, authenticated=True, timeout=40):
+        if type(timeout) not in (int, float) or not math.isfinite(timeout) or not 0 < timeout <= 40:
+            raise RuntimeError("public_http_budget")
         headers = {"Content-Type": "application/json"}
         if authenticated and self.token:
             headers["Authorization"] = "Bearer " + self.token
         request = urllib.request.Request(self.url + path, method=method, headers=headers,
             data=json.dumps(body).encode() if body is not None else None)
         try:
-            response = self.opener.open(request, timeout=40)
+            response = self.opener.open(request, timeout=timeout)
         except urllib.error.HTTPError as error:
             response = error
         with response:

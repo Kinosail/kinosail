@@ -1,5 +1,6 @@
 """Integrity gaps that valid public media cannot deliberately inject."""
 import os
+import hashlib
 from pathlib import Path
 import struct
 import tempfile
@@ -7,6 +8,7 @@ from types import SimpleNamespace
 import unittest
 from unittest import mock
 from hls_followon_frames import audio_sequence
+from hls_timeline_http import PublicServer
 
 
 class FloatingAudioCenters(unittest.TestCase):
@@ -66,6 +68,74 @@ class TimingIntegrity(unittest.TestCase):
                        {'windows': [{'available': True, 'frequencyHz': 880, 'rms': 0}]},
                        {'windows': [{'available': True, 'frequencyHz': 990, 'rms': 0.1}]}]:
             self.assertFalse(self.module.audio_content_matches(reference, public))
+
+    def test_duplicate_headers_and_unsupported_generated_eof_layout_fail(self):
+        for value in [self.playlist.replace(b'#EXT-X-PLAYLIST-TYPE:EVENT',
+                b'#EXT-X-PLAYLIST-TYPE:EVENT\n#EXT-X-PLAYLIST-TYPE:VOD'),
+                self.playlist.replace(b'#EXT-X-MEDIA-SEQUENCE:0',
+                b'#EXT-X-MEDIA-SEQUENCE:0\n#EXT-X-MEDIA-SEQUENCE:1'),
+                b'#EXT-X-ENDLIST\n' + self.playlist.removesuffix(b'#EXT-X-ENDLIST\n')]:
+            with self.assertRaises(RuntimeError): self.module.playlist_details(value)
+
+    def test_available_windows_require_actual_finite_frequency(self):
+        for frequency in [None, True, '880', float('nan'), float('inf'), -1]:
+            value = {'windows': [{'available': True, 'rms': 0.1, 'frequencyHz': frequency}]}
+            self.assertFalse(self.module.audio_content_matches(value, value))
+        value = {'windows': [{'available': True, 'rms': 0.1}]}
+        self.assertFalse(self.module.audio_content_matches(value, value))
+        for rms in [None, True, '0.1', float('nan'), float('inf')]:
+            value = {'windows': [{'available': True, 'rms': rms, 'frequencyHz': 880}]}
+            self.assertFalse(self.module.audio_content_matches(value, value))
+
+    def test_marked_source_requires_the_independent_frequency_pattern(self):
+        centers = [0.25, 3.5, 3.75, 4]
+        source = {'windows': [{'available': True, 'rms': 0.1, 'frequencyHz': frequency,
+            'sourceTimeSeconds': center + 12.5} for center, frequency in zip(centers, [770, 825, 880, 880])]}
+        self.assertTrue(self.module.source_pattern_matches(source, centers, 12.5))
+        for field, value in [('frequencyHz', 990), ('sourceTimeSeconds', 0), ('rms', 0)]:
+            broken = {'windows': [v | {field: value} for v in source['windows']]}
+            self.assertFalse(self.module.source_pattern_matches(broken, centers, 12.5))
+
+    def final_case(self):
+        init, fragment = b'init', b'fragment'
+        case = {'playlistObservations': {'variantURI': '/hls/' + 'a' * 16 +
+            '/p/r-h264-aac-o12500/360p/index.m3u8', 'initial': {'public': self.module.playlist_details(self.playlist)}},
+            'initializationSHA256': hashlib.sha256(init).hexdigest(),
+            'publicFragments': [{'segment': 'segment-00000.m4s',
+                'fragmentSHA256': hashlib.sha256(init + fragment).hexdigest()}], 'failures': []}
+        snapshot = {'stable': True, 'generation': [1], 'identity': {'sha256': 'a'},
+                    'playlist': self.module.playlist_details(self.playlist)}
+        return case, snapshot, init, fragment
+
+    def test_final_qualification_binds_joined_generation_eof_and_targets(self):
+        for fault in ['generation', 'eof', 'target']:
+            case, snapshot, init, fragment = self.final_case()
+            changed = dict(snapshot)
+            if fault == 'generation': changed['generation'] = [2]
+            else: changed['playlist'] = snapshot['playlist'] | ({'endlist': False} if fault == 'eof' else {'targetDurationValid': False})
+            api = SimpleNamespace(http=lambda uri, **kw: (200, self.playlist if uri.endswith('m3u8')
+                else init if uri.endswith('init.mp4') else fragment, {}))
+            with mock.patch.object(self.module, 'physical_snapshot', side_effect=[snapshot] * 4 + [changed] * 2), \
+                    mock.patch.object(self.module.time, 'sleep'):
+                self.module.finish_playlist_proof(api, Path('/owned'), None, None, case, lambda *a: 0)
+            self.assertFalse(case['playlistObservations']['finalObservationQualified'])
+
+    def test_a_last_response_after_deadline_cannot_qualify(self):
+        case, snapshot, init, fragment = self.final_case(); clock = [0]
+        def response(uri, **kwargs):
+            if uri.endswith('.m4s'): clock[0] = 91
+            return 200, self.playlist if uri.endswith('m3u8') else init if uri.endswith('init.mp4') else fragment, {}
+        with mock.patch.object(self.module, 'physical_snapshot', return_value=snapshot), \
+                mock.patch.object(self.module.time, 'sleep'), \
+                mock.patch.object(self.module.time, 'monotonic', side_effect=lambda: clock[0]):
+            with self.assertRaises(RuntimeError):
+                self.module.finish_playlist_proof(SimpleNamespace(http=response), Path('/owned'), None, None, case, lambda *a: 0)
+
+    def test_invalid_http_budget_has_no_network_effects(self):
+        api = PublicServer('http://localhost:12345')
+        with mock.patch.object(api.opener, 'open', side_effect=AssertionError('network_effect')):
+            for value in [True, 0, -1, 41, float('nan'), float('inf')]:
+                with self.assertRaises(RuntimeError): api.http('/healthz', timeout=value)
 
 
 if __name__ == '__main__':

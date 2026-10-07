@@ -9,6 +9,40 @@ from hls_nonkey_installation import bounded_file
 from hls_timeline_packets import manifest_facts
 
 
+def generated_headers(lines):
+    if not lines or lines[0] != '#EXTM3U':
+        raise RuntimeError('timing_playlist_header')
+    headers, index = {}, 0
+    for index, line in enumerate(lines):
+        if line.startswith('#EXTINF:'):
+            break
+        key = line.split(':')[0]
+        if key in headers or key in ('#EXT-X-ENDLIST', '#EXT-X-DISCONTINUITY') or not line.startswith('#'):
+            raise RuntimeError('timing_playlist_header')
+        headers[key] = line
+    required = ['#EXTM3U', '#EXT-X-VERSION', '#EXT-X-TARGETDURATION',
+        '#EXT-X-MEDIA-SEQUENCE', '#EXT-X-PLAYLIST-TYPE', '#EXT-X-MAP']
+    if not all(key in headers for key in required):
+        raise RuntimeError('timing_playlist_header')
+    return index, int(headers['#EXT-X-MEDIA-SEQUENCE'].split(':')[1])
+
+
+def generated_order(lines):
+    index, sequence = generated_headers(lines)
+    while index < len(lines):
+        line = lines[index]
+        if line == '#EXT-X-ENDLIST' and index == len(lines) - 1:
+            return  # Supported generated subset; RFC also permits ENDLIST elsewhere.
+        if line == '#EXT-X-DISCONTINUITY':
+            index += 1
+            continue
+        if not line.startswith('#EXTINF:') or index + 1 >= len(lines):
+            raise RuntimeError('timing_playlist_cut_order')
+        if lines[index + 1] != f'segment-{sequence:05d}.m4s':
+            raise RuntimeError('timing_playlist_cut_order')
+        index, sequence = index + 2, sequence + 1
+
+
 def playlist_details(data):
     if not isinstance(data, bytes) or not 0 < len(data) <= 65536:
         raise RuntimeError('timing_playlist_bound')
@@ -21,6 +55,7 @@ def playlist_details(data):
         r'|#EXT-X-ALLOW-CACHE:(?:YES|NO)|#EXT-X-DISCONTINUITY(?:-SEQUENCE:[0-9]{1,8})?')
     if len(lines) > 256 or not all(re.fullmatch(allowed, v) for v in lines):
         raise RuntimeError('timing_playlist_shape')
+    generated_order(lines)
     targets = [int(v.split(':')[1]) for v in lines if v.startswith('#EXT-X-TARGETDURATION:')]
     if len(targets) != 1 or not 0 < targets[0] <= 60:
         raise RuntimeError('timing_target_shape')
@@ -66,16 +101,41 @@ def physical_path(directory, uri):
     return directory / 'cache' / (item + '-plan-' + token) / quality / 'index.m3u8'
 
 
-def playlist_observation(api, uri, path, workers):
+def budget_http(api, uri, deadline=None):
+    if deadline is None:
+        return api.http(uri)
+    remaining = min(40, deadline - time.monotonic())
+    if remaining <= 0:
+        raise RuntimeError('timing_deadline')
+    response = api.http(uri, timeout=remaining)
+    if time.monotonic() >= deadline:
+        raise RuntimeError('timing_deadline')
+    return response
+
+
+def playlist_observation(api, uri, path, workers, deadline=None):
     first_workers = workers()
     before = physical_snapshot(path)
-    status, data, _ = api.http(uri)
+    status, data, _ = budget_http(api, uri, deadline)
     after = physical_snapshot(path)
     last_workers = workers()
     public = playlist_details(data) if status == 200 else None
     return ({'public': public, 'status': status, 'before': before, 'after': after,
         'workersBefore': first_workers, 'workersAfter': last_workers,
         'physicalBracketStable': stable_bracket(before, after, first_workers, last_workers)}, status, data)
+
+
+def final_qualified(joined, snapshot, final):
+    if joined < 3:
+        return False
+    before, after = final['before'], final['after']
+    public = final.get('public') or {}
+    raw = [value.get('playlist', {}) for value in [snapshot, before, after]]
+    bound = (stable_bracket(snapshot, before, 0, final['workersBefore'])
+        and stable_bracket(snapshot, after, 0, final['workersAfter']))
+    valid = all(v.get('endlist') is True and v.get('targetDurationValid') is True for v in raw + [public])
+    cuts = all(v.get('cuts') == public.get('cuts') for v in raw)
+    return bound and valid and cuts and final['status'] == 200
 
 
 def finish_playlist_proof(api, directory, server, source, case, encoder_count):
@@ -95,12 +155,13 @@ def finish_playlist_proof(api, directory, server, source, case, encoder_count):
             break
         time.sleep(0.05)
     evidence['producerJoinedSamples'] = joined
+    evidence['producerJoinedSnapshot'] = previous
     if time.monotonic() >= deadline:
         raise RuntimeError('timing_deadline')
-    final, _, _ = playlist_observation(api, uri, path, workers)
+    final, _, _ = playlist_observation(api, uri, path, workers, deadline)
     evidence['final'] = final
     base = uri.removesuffix('index.m3u8')
-    status, init, _ = api.http(base + 'init.mp4')
+    status, init, _ = budget_http(api, base + 'init.mp4', deadline)
     init_matches = status == 200 and hashlib.sha256(init).hexdigest() == case['initializationSHA256']
     initial = evidence['initial'].get('public') or {}
     final_public = final.get('public') or {}
@@ -110,21 +171,48 @@ def finish_playlist_proof(api, directory, server, source, case, encoder_count):
         raise RuntimeError('timing_final_segment_bound')
     unchanged, expected = init_matches and old_names == new_names, {v['segment']: v['fragmentSHA256'] for v in case['publicFragments']}
     for name in new_names:
-        if time.monotonic() >= deadline:
-            raise RuntimeError('timing_deadline')
-        status, data, _ = api.http(base + name)
+        status, data, _ = budget_http(api, base + name, deadline)
         unchanged = unchanged and status == 200 and hashlib.sha256(init + data).hexdigest() == expected.get(name)
     evidence.update(initializationUnchanged=init_matches, finalMediaHashesUnchanged=unchanged,
-        finalObservationQualified=joined >= 3 and final['physicalBracketStable'] and final['workersAfter'] == 0)
+        finalObservationQualified=final_qualified(joined, previous, final))
+    if time.monotonic() >= deadline:
+        raise RuntimeError('timing_deadline')
     if not evidence['finalObservationQualified'] or not unchanged:
         case['failures'].append('unqualified_final_playlist_observation')
 
 
+def finite_number(value, lower, upper):
+    return type(value) in (int, float) and math.isfinite(value) and lower <= value <= upper
+
+
+def valid_window(window):
+    return (isinstance(window, dict) and window.get('available') is True
+        and finite_number(window.get('rms'), 0.01, 1)
+        and finite_number(window.get('frequencyHz'), 1, 8000))
+
+
 def audio_content_matches(reference, public):
     left, right = reference.get('windows', []), public.get('windows', [])
-    return (bool(left) and len(left) == len(right) and all(a.get('available') is True
-        and b.get('available') is True and a.get('rms', 0) >= 0.01 and b.get('rms', 0) >= 0.01
-        and abs(a.get('frequencyHz', 0) - b.get('frequencyHz', 0)) <= 10 for a, b in zip(left, right)))
+    return (isinstance(left, list) and isinstance(right, list) and 0 < len(left) <= 80
+        and len(left) == len(right) and all(valid_window(a) and valid_window(b)
+        and abs(a['frequencyHz'] - b['frequencyHz']) <= 10 for a, b in zip(left, right)))
+
+
+def expected_frequency(center, offset):
+    start, end = center + offset - 0.25, center + offset + 0.25
+    if not 0 <= start < end <= 32:
+        raise RuntimeError('timing_source_window_scope')
+    step = math.floor(start / 4)
+    return 440 + 110 * step + 110 * max(0, end - (step + 1) * 4) / 0.5
+
+
+def source_pattern_matches(source, centers, offset):
+    windows = source.get('windows', [])
+    return (isinstance(windows, list) and 0 < len(windows) == len(centers) <= 80
+        and all(valid_window(window) and finite_number(window.get('sourceTimeSeconds'), 0, 32)
+        and abs(window['sourceTimeSeconds'] - center - offset) <= 0.000001
+        and abs(window['frequencyHz'] - expected_frequency(center, offset)) <= 10
+        for window, center in zip(windows, centers)))
 
 
 def marked_audio_proof(source, public, metadata, offset, case):
@@ -137,10 +225,11 @@ def marked_audio_proof(source, public, metadata, offset, case):
         raise RuntimeError('timing_audio_window_bound')
     reference = audio_sequence(source, duration, offset, centers)
     observed = audio_sequence(public, duration, centers=centers)
-    matched = audio_content_matches(reference, observed)
+    source_valid = source_pattern_matches(reference, centers, offset)
+    matched = source_valid and audio_content_matches(reference, observed)
     case['markedAAC'] = {'boundary': 'Independent offline AAC content/timing; browser/native audible and priming acceptance separate',
         'relativeWindowCenters': centers, 'windowWidthSeconds': 0.5, 'frequencyLimitHz': 10,
-        'source': reference, 'public': observed, 'contentMatches': matched,
+        'source': reference, 'public': observed, 'sourcePatternQualified': source_valid, 'contentMatches': matched,
         'decodedSampleDifference': observed['decodedSamples'] - reference['decodedSamples']}
     if not matched:
         case['failures'].append('copied_marked_audio_content')
