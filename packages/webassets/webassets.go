@@ -68,7 +68,8 @@ var (
 	//go:embed static/player-progress-navigation.js
 	playerProgressNavigation []byte
 	//go:embed static/player-audio-queue.js
-	playerAudioQueue    []byte
+	playerAudioQueue []byte
+
 	playerProgressQueue = append(append([]byte(nil), playerProgress...), playerAudioQueue...)
 	PlayerProgress      = append(append([]byte(nil), playerProgressQueue...), playerProgressNavigation...)
 	//go:embed static/pwa.js
