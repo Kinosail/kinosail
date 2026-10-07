@@ -182,6 +182,7 @@ test.describe("controlled progress transport", () => {
     const publicProgress=()=>page.evaluate(async id=>{const response=await fetch(`/api/v1/items/${id}`);if(response.status!==200)throw new Error(`Public progress HTTP ${response.status}`);return (await response.json()).item.progress;},id);
     await page.goto(watch);
     const media=page.locator('video');
+    await expect.poll(()=>media.evaluate((video:HTMLVideoElement)=>video.readyState)).toBeGreaterThanOrEqual(2);
     await media.evaluate(async(video:HTMLVideoElement)=>{video.muted=true;await video.play();});
     await expect.poll(()=>media.evaluate((video:HTMLVideoElement)=>video.getVideoPlaybackQuality().totalVideoFrames)).toBeGreaterThan(2);
     let release!:()=>void, held=false, watchedRequests=0;
