@@ -16,12 +16,13 @@ import (
 	"time"
 
 	"github.com/MikeO7/kinosail-player/internal/server"
+	"github.com/MikeO7/kinosail/packages/playback"
 )
 
 // Hosted codecs and real public routes under trusted configuration protect refill.
 func TestCopiedRecoveryRealFirstFragmentRegenerationReopens(t *testing.T) {
-	if os.Getenv("GITHUB_ACTIONS") != "true" {
-		t.Skip("Real media/build proof runs on the hosted runner; focused local tests use controlled stand-ins")
+	if os.Getenv("KINOSAIL_COPIED_RECOVERY_MEDIA") != "1" {
+		t.Skip("The designated pinned-codec hosted job runs this strict media proof")
 	}
 	ffmpeg, err := exec.LookPath("ffmpeg")
 	if err != nil {
@@ -31,10 +32,16 @@ func TestCopiedRecoveryRealFirstFragmentRegenerationReopens(t *testing.T) {
 	if err != nil {
 		t.Fatal("hosted FFprobe unavailable")
 	}
+	for _, sample := range []struct{ audio, mode string }{{"aac", "remux"}, {"ac3", "audio-transcode"}} {
+		t.Run(sample.mode, func(t *testing.T) { copiedRecoveryRealReopen(t, ffmpeg, ffprobe, sample.audio, sample.mode) })
+	}
+}
+
+func copiedRecoveryRealReopen(t *testing.T, ffmpeg, ffprobe, audio, mode string) { //nolint:gocognit,funlen // Serial public media lifecycle, with identity and joined-process receipts.
 	ctx, cancel := context.WithTimeout(t.Context(), 60*time.Second)
 	defer cancel()
 	media := t.TempDir()
-	command := exec.CommandContext(ctx, ffmpeg, "-nostdin", "-v", "error", "-f", "lavfi", "-i", "testsrc2=s=320x180:r=24:d=12", "-f", "lavfi", "-i", "sine=frequency=440:sample_rate=48000:duration=12", "-c:v", "libx264", "-threads", "2", "-preset", "veryfast", "-g", "48", "-keyint_min", "48", "-sc_threshold", "0", "-c:a", "aac", "-avoid_negative_ts", "disabled", filepath.Join(media, "Episode.S01E01.mp4")) //nolint:gosec // Fixed bounded synthetic input and discovered hosted codec.
+	command := exec.CommandContext(ctx, ffmpeg, "-nostdin", "-v", "error", "-f", "lavfi", "-i", "testsrc2=s=320x180:r=24:d=12", "-f", "lavfi", "-i", "sine=frequency=440:sample_rate=48000:duration=12", "-c:v", "libx264", "-threads", "2", "-preset", "veryfast", "-g", "48", "-keyint_min", "48", "-sc_threshold", "0", "-c:a", audio, "-avoid_negative_ts", "disabled", filepath.Join(media, "Episode.S01E01.mp4")) //nolint:gosec // Fixed bounded synthetic input and discovered hosted codec.
 	if err := command.Run(); err != nil {
 		t.Fatal("bounded source fixture failed")
 	}
@@ -52,7 +59,7 @@ func TestCopiedRecoveryRealFirstFragmentRegenerationReopens(t *testing.T) {
 	adapter := filepath.Join(tools, "ffmpeg")
 	quote := func(value string) string { return "'" + strings.ReplaceAll(value, "'", "'\"'\"'") + "'" }
 	body := "#!/bin/sh\nset -eu\nprintf '%s\\n' $$ >> " + quote(owned) + "\nexec " + quote(ffmpeg) + " \"$@\"\n"
-	if err := os.WriteFile(adapter, []byte(body), 0o700); err != nil {
+	if err := os.WriteFile(adapter, []byte(body), 0o700); err != nil { //nolint:gosec // Owned executable adapter, not output data.
 		t.Fatal(err)
 	} //nolint:gosec // Owned hosted adapter records process identity and execs the real codec unchanged.
 	workers, cancelWorkers := context.WithCancel(ctx)
@@ -60,8 +67,14 @@ func TestCopiedRecoveryRealFirstFragmentRegenerationReopens(t *testing.T) {
 	cache := t.TempDir()
 	config := server.Config{Lifecycle: workers, MediaDir: media, CacheDir: cache, FFmpeg: adapter, FFprobe: ffprobe}
 	handler, id := formatTestItem(t, config)
-	var info struct{ Compatible string }
+	var info struct {
+		Compatible     string
+		CompatiblePlan playback.PlaybackPlan
+	}
 	mustJSON(t, apiCall(t, handler, "", http.MethodGet, "/api/v1/items/"+id+"/playback?videoCodecs=h264&audioCodecs=aac", nil), &info)
+	if info.CompatiblePlan.Mode != mode {
+		t.Fatal("public fixture did not select its required codec mode")
+	}
 	for {
 		var preparation struct{ State string }
 		mustJSON(t, apiCall(t, handler, "", http.MethodPost, "/api/v1/items/"+id+"/playback-prepare", map[string]any{"source": info.Compatible}), &preparation)
@@ -144,7 +157,7 @@ func TestCopiedRecoveryRealFirstFragmentRegenerationReopens(t *testing.T) {
 	t.Logf("real copied segment0 delete/regenerate/cold-reopen: playlist=%x init=%x first=%x source=%x existing-fragment-retained=true owned-codecs-joined=%d", sha256.Sum256(afterPlaylist), sha256.Sum256(afterInit), sha256.Sum256(regenerated), sha256.Sum256(afterSourceBytes), afterOwned)
 }
 
-func copiedRecoveryJoinedCodecs(t *testing.T, ctx context.Context, path string) int {
+func copiedRecoveryJoinedCodecs(t *testing.T, ctx context.Context, path string) int { //nolint:gocognit // Validate every recorded process and require three stable joined observations.
 	t.Helper()
 	stable := 0
 	for {
