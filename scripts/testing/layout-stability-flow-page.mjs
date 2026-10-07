@@ -14,7 +14,7 @@ export async function observeLayoutFlow(context, baseURL, probe, operation) {
     const page = await context.newPage();
     navigation = navigationDiagnostics(page, baseURL);
     probe.operationPhase = "flow";
-    return await operation(page);
+    return await operation(page, navigation);
   } catch (error) {
     failed = true;
     if (navigation) probe.navigation = await navigation.snapshot(error);

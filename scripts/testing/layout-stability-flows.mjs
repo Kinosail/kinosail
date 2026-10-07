@@ -8,10 +8,10 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
     probe.stage="library-journey-navigation";
     const context = await browser.newContext({...options,viewport,ignoreHTTPSErrors:false,reducedMotion:"reduce",serviceWorkers:"block"});
     if(inspectorPath&&viewport.width===320)await context.addInitScript(()=>{const apply=()=>{if(!document.documentElement)return false;document.documentElement.style.fontSize="200%";return true;};if(!apply()){const observer=new MutationObserver(()=>{if(apply())observer.disconnect();});observer.observe(document,{childList:true});}});
-    await observeLayoutFlow(context, options.baseURL, probe, async page => {
+    await observeLayoutFlow(context, options.baseURL, probe, async (page, navigation) => {
       probe.operationPhase = "navigation";
       const destination = inspectorPath ? "/?view=library" : "/?view=movies";
-      probe.navigation.markNavigation(destination);
+      navigation.markNavigation(destination);
       await page.goto(destination,{waitUntil:"domcontentloaded"});
       probe.operationPhase = "search";
       probe.stage="HTMX-search";

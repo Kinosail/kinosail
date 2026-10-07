@@ -89,11 +89,11 @@ class WorkflowSecurityTests(unittest.TestCase):
         self.assertIn('\t@' + command, tooling)
 
     def test_layout_failure_contracts_and_modules_are_reproducible(self):
-        command = 'node --test scripts/testing/navigation-diagnostics.test.mjs scripts/testing/layout-stability-failure.test.mjs scripts/testing/layout-stability-subtitle-background.test.mjs scripts/testing/layout-stability-flows.test.mjs'
+        command = 'node --test scripts/testing/navigation-diagnostics.test.mjs scripts/testing/layout-stability-failure.test.mjs scripts/testing/layout-stability-subtitle-background.test.mjs scripts/testing/layout-stability-flows.test.mjs scripts/testing/layout-stability-diagnostic-snapshots.test.mjs'
         self.assertIn('      - run: ' + command, (WORKFLOWS / 'ci.yml').read_text())
         self.assertIn('\t@' + command, (ROOT / 'Makefile').read_text())
         launcher = (ROOT / 'scripts/testing/test-layout-stability-local.py').read_text()
-        for name in ('layout-stability-routing.mjs', 'layout-stability-failure.mjs', 'layout-stability-flow-page.mjs'):
+        for name in ('layout-stability-routing.mjs', 'layout-stability-failure.mjs', 'layout-stability-flow-page.mjs', 'layout-stability-diagnostic-snapshots.mjs'):
             self.assertIn('"' + name + '"', launcher)
         self.assertIn('import "./layout-response-lifecycle-tests";',
                       (ROOT / 'apps/player/e2e/layout-stability.spec.ts').read_text())
