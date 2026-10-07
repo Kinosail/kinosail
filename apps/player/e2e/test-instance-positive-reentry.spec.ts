@@ -77,7 +77,12 @@ test('positive Matroska reentry decodes the saved scene through native HLS', asy
   expect((await snapshot()).paused).toBe(true);
   await page.getByRole('link', {name: 'Library', exact: true}).click();
   await expect(page).toHaveURL(base.origin + '/');
-  await expect.poll(() => publicPosition().then(value => value.seconds)).toBe(6);
+  try {
+    await expect.poll(() => publicPosition().then(value => value.seconds)).toBe(6);
+  } finally {
+    try { await record({phase: 'unplayed-exit-final-read', public: await publicPosition()}); }
+    catch { await record({phase: 'unplayed-exit-read-unavailable'}).catch(() => {}); }
+  }
   await record({phase: 'unplayed-exit-preserved', public: await publicPosition()});
   await card().click();
   await page.reload();
