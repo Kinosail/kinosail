@@ -1,6 +1,7 @@
 import {installLayoutFailureReporter, layoutFailureLocations, layoutFailureNavigation} from "./layout-stability-failure.mjs";
 import {layoutResponseHandler} from "./layout-stability-routing.mjs";
 import {navigationDiagnostics} from "./navigation-diagnostics.mjs";
+import {captureMainSnapshot,summarizeMainChange} from "./layout-stability-diagnostic-snapshots.mjs";
 import {createRequire} from "node:module";
 import {writeFile} from "node:fs/promises";
 import {join} from "node:path";
@@ -76,11 +77,12 @@ const inspect = () => ({rootFontSize: getComputedStyle(document.documentElement)
   nativeOptions: document.querySelectorAll(".player-native-options").length, settingsButtons: document.querySelectorAll("[data-player-settings]").length,
   overflowNodes: [...document.querySelectorAll("body *:not(option):not(optgroup)")].filter(n => {const r=n.getBoundingClientRect();return r.height>0&&r.right+(getComputedStyle(n).position==="fixed"?0:scrollX)>innerWidth+1;}).slice(0,30).map(n=>({node:n.id||n.className||n.tagName,rect:n.getBoundingClientRect().toJSON(),minWidth:getComputedStyle(n).minWidth,whiteSpace:getComputedStyle(n).whiteSpace})),
   scrollContainers: [...document.querySelectorAll("body *:not(option):not(optgroup)")].filter(n=>n.clientWidth>0&&n.scrollWidth>n.clientWidth+1).slice(0,30).map(n=>({node:n.id||n.className||n.tagName,rect:n.getBoundingClientRect().toJSON(),clientWidth:n.clientWidth,scrollWidth:n.scrollWidth,overflowX:getComputedStyle(n).overflowX}))});
-function observe() {
+function observe(captureMainSnapshot) {
   const ids = new WeakMap(); let nextID = 0;
   const identify = node => {if(!ids.has(node))ids.set(node, ++nextID);return ids.get(node);};
   const label = node => node?.id || (typeof node?.className === "string" ? node.className : "") || node?.nodeName;
-  window.layoutAudit = {shifts: [], frames: [], paints: [], support: PerformanceObserver.supportedEntryTypes};
+  window.layoutAudit = {shifts: [], frames: [], paints: [], support: PerformanceObserver.supportedEntryTypes, initialMainSnapshot:null};
+  window.layoutAudit.captureMainSnapshot=sampleTime=>captureMainSnapshot(identify,sampleTime);
   if (PerformanceObserver.supportedEntryTypes.includes("layout-shift")) new PerformanceObserver(list => {
     for (const entry of list.getEntries()) window.layoutAudit.shifts.push({time: entry.startTime, value: entry.value,
       recentInput: entry.hadRecentInput, sources: entry.sources?.map(source => ({node: label(source.node),
@@ -94,6 +96,7 @@ function observe() {
       const boxes = [...document.querySelectorAll(".app-header, .mobile-navigation, .subtitle-dashboard .app-header nav, main, h1, h2, .card, .home-feature, .media-stage, .player-stage-toolbar, .player-optional-action, .settings-nav, .settings-flow, .settings-category-description, button")].slice(0, 60)
         .filter(node => node.getBoundingClientRect().height > 0 && (!node.checkVisibility || node.checkVisibility()) && ![...document.querySelectorAll("details:not([open])")].some(d=>d.contains(node)&&!d.querySelector(":scope>summary")?.contains(node))).map(node => ({pinned: (()=>{for(let n=node;n;n=n.parentElement)if(["fixed","sticky"].includes(getComputedStyle(n).position))return true;return false;})(), id: identify(node), documentY: node.getBoundingClientRect().y + scrollY, node: label(node), aria: node.getAttribute("aria-label"), text: node.textContent.trim().slice(0, 45), ...node.getBoundingClientRect().toJSON()}));
       window.layoutAudit.frames.push({time, scrollY, boxes});
+      if(!window.layoutAudit.initialMainSnapshot&&boxes.some(box=>box.node==="main"))window.layoutAudit.initialMainSnapshot=captureMainSnapshot(identify,time);
     }
     if (time < 8000) requestAnimationFrame(sample);
   };
@@ -134,7 +137,7 @@ try {
     const traced=viewport.width===390&&(path==="/settings#access"||path.startsWith("/watch/"));
     operationPhase = "trace-start";
     if(traced)await context.tracing.start({screenshots:true,snapshots:true});
-    await context.addInitScript(observe);
+    await context.addInitScript(`(${observe.toString()})(${captureMainSnapshot.toString()});`);
     const page = activePage = await context.newPage();
 navigation = navigationDiagnostics(page,baseURL);
     // Delay real response bytes, without substituting mock markup or media.
@@ -171,6 +174,13 @@ navigation = navigationDiagnostics(page,baseURL);
     const identifiedDOMCLS=cls(entries.filter(e=>e.sources?.some(s=>s.node)));
     const unattributedCLS=cls(entries.filter(e=>!e.sources?.some(s=>s.node)));
     const moved=boxesChanged(initialBoxes,audit.frames.at(-1)?.boxes||[]);
+    const initialMainSnapshot=audit.initialMainSnapshot;
+    delete audit.initialMainSnapshot;
+    let mainChangeDetails;
+    if(moved.some(box=>box.node==="main")){
+      const finalMainSnapshot=await page.evaluate(()=>window.layoutAudit.captureMainSnapshot());
+      mainChangeDetails=summarizeMainChange(initialMainSnapshot,finalMainSnapshot,audit.frames,audit.paints);
+    }
     operationPhase = "settled-inspect";
     const finalState=await page.evaluate(inspect);
     finalState.bookmark=await page.evaluate(bookmarkSnapshot);
@@ -178,7 +188,7 @@ navigation = navigationDiagnostics(page,baseURL);
     const timeoutsPresent=!["/settings#session-timeouts","/settings#security"].includes(path)||[initialState,finalState].every(s=>s.timeouts?.anchorPresent&&s.timeouts.visible&&JSON.stringify(s.timeouts.access)==='["private","public"]');
     const bookmarkRequired=routes.filter(route=>route.startsWith("/settings#")).includes(path)||(app==="player"&&path==="/settings#%61ccess");
     const bookmarkVisible=[initialState,finalState].every(s=>bookmarkRequired?Boolean(s.bookmark?.resolved&&s.bookmark.visible):!s.bookmark?.resolved||s.bookmark.visible);
-    reports.push({viewport,path,variant,scaleApplied:!scale||finalState.rootScale===scale,status:response.status(),unexpected,aggregateUnexpected,identifiedDOMCLS,unattributedCLS,moved,categoryStable,timeoutsPresent,bookmarkRequired,bookmarkVisible,initialState,finalState,...audit});
+    reports.push({viewport,path,variant,scaleApplied:!scale||finalState.rootScale===scale,status:response.status(),unexpected,aggregateUnexpected,identifiedDOMCLS,unattributedCLS,moved,mainChangeDetails,categoryStable,timeoutsPresent,bookmarkRequired,bookmarkVisible,initialState,finalState,...audit});
     console.log(JSON.stringify({viewport: viewport.width, path, unexpected, overflow: audit.overflow,
       sources: audit.shifts.flatMap(shift => shift.sources.map(source => source.node))}));
     if (engine === "chromium") {

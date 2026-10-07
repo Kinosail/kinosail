@@ -10,7 +10,9 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
     if(inspectorPath&&viewport.width===320)await context.addInitScript(()=>{const apply=()=>{if(!document.documentElement)return false;document.documentElement.style.fontSize="200%";return true;};if(!apply()){const observer=new MutationObserver(()=>{if(apply())observer.disconnect();});observer.observe(document,{childList:true});}});
     await observeLayoutFlow(context, options.baseURL, probe, async page => {
       probe.operationPhase = "navigation";
-      await page.goto(inspectorPath ? "/?view=library" : "/?view=movies",{waitUntil:"domcontentloaded"});
+      const destination = inspectorPath ? "/?view=library" : "/?view=movies";
+      probe.navigation.markNavigation(destination);
+      await page.goto(destination,{waitUntil:"domcontentloaded"});
       probe.operationPhase = "search";
       probe.stage="HTMX-search";
       if (inspectorPath) {await measureSubtitleSearch(page,viewport,results,probe);return;}

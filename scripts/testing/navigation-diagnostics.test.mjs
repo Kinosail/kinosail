@@ -140,3 +140,30 @@ test("error classifications and redirect statuses exclude non-redirect responses
  }
  probe.stop();
 });
+
+test("navigation lifecycle is ordered, bounded, and records only safe route classes", async()=>{
+ const page=new Page();let current="about:blank";page.url=()=>current;
+ const main={url:()=>current};page.mainFrame=()=>main;
+ const probe=navigationDiagnostics(page,"http://localhost:39060");
+ probe.markNavigation("/?view=library&token=do-not-record");
+ page.emit("framenavigated",main);
+ current="http://localhost:39060/?view=library&token=do-not-record";
+ page.emit("framenavigated",main);page.emit("domcontentloaded");page.emit("load");
+ current="about:blank";page.emit("framenavigated",main);
+ const value=await probe.snapshot();
+ assert.ok(value.lifecycle.length<=20);
+ assert.equal(value.lifecycle[0].kind,"navigation-start");
+ assert.deepEqual(value.lifecycle[0].route,{path:"/",view:"library"});
+ const committed=value.lifecycle.findIndex(e=>e.kind==="frame-navigated"&&e.route.path==="/");
+ const dcl=value.lifecycle.findIndex(e=>e.kind==="domcontentloaded");
+ const blank=value.lifecycle.findIndex((e,i)=>i>dcl&&e.kind==="frame-navigated"&&e.route.path==="blank");
+ assert.ok(committed>=0&&committed<dcl&&dcl<blank);
+ assert.equal(value.identity,"blank");
+ assert.equal(value.readyState,"interactive");
+ assert.ok(value.lifecycle.some(e=>e.kind==="domcontentloaded"));
+ assert.deepEqual(value.lifecycle.map(e=>e.timeMs),[...value.lifecycle.map(e=>e.timeMs)].sort((a,b)=>a-b));
+ assert.doesNotMatch(JSON.stringify(value),/do-not-record|token/);
+ for(let i=0;i<100;i++)page.emit("domcontentloaded");
+ assert.equal((await probe.snapshot()).lifecycle.length,20);
+ probe.stop();
+});

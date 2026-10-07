@@ -1,7 +1,8 @@
 // Bounded transport metadata for disposable browser fixture failures.
 // Queries, credentials, headers, bodies and unknown paths never enter receipts.
 export function navigationDiagnostics(page, baseURL) {
-  const pending = new Map(), failed = [], mainFrameResponses = [], started = performance.now();
+  const pending = new Map(), failed = [], mainFrameResponses = [], lifecycle = [], started = performance.now();
+  let navigationAttempt = 0;
   let origin;
   try {
     if (typeof baseURL === "string" && baseURL.length <= 2048) {
@@ -27,6 +28,33 @@ export function navigationDiagnostics(page, baseURL) {
     if (pathname?.startsWith("/subtitles/inspect/")) return "/subtitles/inspect";
     return pathname || "other";
   };
+  const route = value => {
+    if (value === "about:blank") return {path: "blank", view: "other"};
+    let candidate = value;
+    try { if (typeof value === "string" && baseURL) candidate = new URL(value, baseURL).href; } catch {}
+    const url = owned(candidate);
+    const views = url?.searchParams.getAll("view");
+    return {path: path(candidate), view: views?.length === 1 && ["library", "movies"].includes(views[0]) ? views[0] : "other"};
+  };
+  const recordLifecycle = (kind, value, frameKind) => {
+    if (lifecycle.length === 20) {
+      const keepStart = lifecycle[0]?.kind === "navigation-start";
+      lifecycle.splice(keepStart ? 1 : 0, 1);
+    }
+    lifecycle.push({timeMs: Math.min(600000, Math.max(0, Math.round(performance.now() - started))),
+      attempt: navigationAttempt || undefined, kind, ...(frameKind ? {frame: frameKind} : {}), ...(value ? {route: route(value)} : {})});
+  };
+  const frameNavigation = frame => {
+    let value = "";
+    try { value = frame.url(); } catch {}
+    let frameKind = "child";
+    try { if (frame === page.mainFrame()) frameKind = "main"; } catch {}
+    recordLifecycle("frame-navigated", value, frameKind);
+  };
+  const domContentLoaded = () => recordLifecycle("domcontentloaded", page.url(), "main");
+  const loaded = () => recordLifecycle("load", page.url(), "main");
+  const closed = () => recordLifecycle("close", page.url(), "main");
+  const crashed = () => recordLifecycle("crash", page.url(), "main");
   const metadata = request => ({
     path:path(request.url()),
     type:["document","stylesheet","script","image","font","media","fetch","xhr","other"].includes(request.resourceType()) ? request.resourceType() : "other",
@@ -48,7 +76,13 @@ export function navigationDiagnostics(page, baseURL) {
     }
   };
   page.on("request",start); page.on("requestfinished",finish); page.on("requestfailed",fail);page.on("response",response);
+  page.on("framenavigated",frameNavigation); page.on("domcontentloaded",domContentLoaded); page.on("load",loaded);
+  page.on("close",closed); page.on("crash",crashed);
   return {
+    markNavigation(target) {
+      navigationAttempt = Math.min(20, navigationAttempt + 1);
+      recordLifecycle("navigation-start", target, "main");
+    },
     async snapshot(error) {
       let timer;
       const state = await Promise.race([
@@ -61,9 +95,11 @@ export function navigationDiagnostics(page, baseURL) {
       return {path:path(page.url()),identity:page.url()==="about:blank"?"blank":current?"owned":"other",view:["library","movies"].includes(view)?view:"other",
         libraryMarker:Boolean(current&&state.libraryMarker),readyState:["loading","interactive","complete"].includes(readyState)?readyState:"unavailable",
         pending:[...pending.values()],failed:[...failed],mainFrameResponses:[...mainFrameResponses],redirectCount:mainFrameResponses.filter(value=>[301,302,303,307,308].includes(value.status)).length,
+        lifecycle:[...lifecycle],
         elapsedMs:Math.min(600000,Math.max(0,Math.round(performance.now()-started))),errorCategory:diagnosticErrorCategory(error)};
     },
-    stop() {page.off("request",start);page.off("requestfinished",finish);page.off("requestfailed",fail);page.off("response",response);},
+    stop() {page.off("request",start);page.off("requestfinished",finish);page.off("requestfailed",fail);page.off("response",response);
+      page.off("framenavigated",frameNavigation);page.off("domcontentloaded",domContentLoaded);page.off("load",loaded);page.off("close",closed);page.off("crash",crashed);},
   };
 }
 function diagnosticErrorCategory(error) {
