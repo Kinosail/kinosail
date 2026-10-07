@@ -67,7 +67,7 @@ def integer(value, low, high):
 def progress(value, required):
     fields(value, ["seconds", "watched", "session", "revision"])
     seconds, revision = value["seconds"], value["revision"]
-    if type(seconds) not in (int, float) or not math.isfinite(seconds) or not 0 <= seconds <= 31536000:
+    if type(seconds) not in (int, float) or not 0 <= seconds <= 31536000 or not math.isfinite(seconds):
         raise ValueError("Invalid time")
     if type(value["watched"]) is not bool or type(revision) is not int or not int(required) <= revision <= 9007199254740991:
         raise ValueError("Invalid progress")

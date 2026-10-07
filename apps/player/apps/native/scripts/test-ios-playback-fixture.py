@@ -137,7 +137,8 @@ class FixtureValidationTests(unittest.TestCase):
         valid = dict(progress=progress, expected=baseline, playbackToken="")
         path = "/api/v1/items/loading-video/progress/sync"
         variants = [{}, [], {**valid, "unknown": True}, {**valid, "playbackToken": "x" * 8193}]
-        for key, value in [("seconds", -1), ("seconds", 31536001), ("seconds", True),
+        for key, value in [("seconds", -1), ("seconds", 31536001), ("seconds", 10 ** 400),
+                           ("seconds", -(10 ** 400)), ("seconds", True),
                            ("seconds", float("inf")), ("watched", 1), ("session", ""),
                            ("session", "x" * 129), ("revision", 0), ("revision", True),
                            ("revision", 1.5), ("revision", 9007199254740992)]:
