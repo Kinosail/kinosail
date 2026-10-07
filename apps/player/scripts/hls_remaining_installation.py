@@ -24,6 +24,8 @@ def unfiltered_installation_control(run, directory, case, deadline):
     canonical, initialization = asset_snapshot(root / 'audio/init.mp4', 2 << 20)
     source = directory / 'media/Fixture.flac'
     before = source_snapshot(source)
+    check(all(case['fixture'].get(k) == v for k, v in before.items()) and
+        initialization['sha256'] == case['initializationSHA256'], 'installation_raw_original_source_init')
     stage = directory / 'isolated-installation-unfiltered'
     stage.mkdir()
     arguments[arguments.index('-hls_segment_filename') + 1] = str(stage / 'segment-%05d.m4s')
