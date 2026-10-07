@@ -1,0 +1,268 @@
+{
+  "schemaVersion": 1,
+  "kind": "r06-restore-test-first-proposal",
+  "status": "source-only-unrun",
+  "sourceRevision": "bd1ea2e148787ae8d4a0a46640bc2a965e10fe6a",
+  "sourceTree": "6070e86cc8a3522810218d311cc2d5d6246f02d0",
+  "scope": "inspector Restore only; existing Save/protocol/native/Q47 unchanged",
+  "cases": [
+    {
+      "id": "r06-restore-headers-desktop",
+      "title": "R06 Restore held headers releases desktop editor",
+      "width": 1280,
+      "height": 900,
+      "fault": "restore-204-headers"
+    },
+    {
+      "id": "r06-restore-headers-phone",
+      "title": "R06 Restore held headers releases phone editor",
+      "width": 390,
+      "height": 844,
+      "fault": "restore-204-headers"
+    },
+    {
+      "id": "r06-restore-inspect-body-desktop",
+      "title": "R06 Restore held inspection body releases desktop editor",
+      "width": 1280,
+      "height": 900,
+      "fault": "post-restore-inspect-200-body"
+    },
+    {
+      "id": "r06-restore-inspect-body-phone",
+      "title": "R06 Restore held inspection body releases phone editor",
+      "width": 390,
+      "height": 844,
+      "fault": "post-restore-inspect-200-body"
+    }
+  ],
+  "publicControlNames": [
+    "TestRestoreLegacySwapPublicControl",
+    "TestRestorePreparedReceiptPublicControl",
+    "TestRestoreHeldHeadersPublicControl",
+    "TestRestoreHeldInspectionBodyPublicControl"
+  ],
+  "assertionIDs": [
+    "actual-restore",
+    "history-once",
+    "recovery-swapped",
+    "hold-proven",
+    "editor-released-by-45s",
+    "finite-truthful-outcome",
+    "original-correction-kept",
+    "original-import-kept",
+    "library-navigation",
+    "back-current-subtitle",
+    "no-restore-replay",
+    "fixture-settled"
+  ],
+  "prerequisites": [
+    "exact-source-and-served-inspector",
+    "owned-empty-root-and-independent-loopback-tls-target",
+    "actual-owner-cookiejar-setup-account-csrf-mfa-current-csrf",
+    "actual-single-item-catalog-registration",
+    "actual-public-no-audio-save-setup",
+    "initial-current-backup-inspection-export-history-match",
+    "real-restore-request-bound-before-click",
+    "actual-restore-current-backup-inspection-export-history-witness",
+    "actual-response-fault-eligibility",
+    "owned-process-and-request-settlement"
+  ],
+  "proposedBounds": {
+    "browserWorkers": 1,
+    "retries": 0,
+    "controlsGoSeconds": 60,
+    "controlsExternalSeconds": 65,
+    "compileSeconds": 90,
+    "compileExternalSeconds": 95,
+    "collectionSeconds": 15,
+    "collectionExternalSeconds": 20,
+    "browserCaseSeconds": 110,
+    "browserPairSeconds": 230,
+    "browserPairExternalSeconds": 235,
+    "restoreEditorReleaseMilliseconds": 45000,
+    "observationGraceMilliseconds": 10000,
+    "setupSeconds": 20,
+    "effectsWitnessSeconds": 10,
+    "transportPendingObservationMilliseconds": 200,
+    "releaseRequestSeconds": 5,
+    "terminalSettlementSeconds": 5,
+    "navigationAndBackSeconds": 10,
+    "fixtureLifetimeSeconds": 120,
+    "fixtureLifetimeScope": "one fresh fixture per case",
+    "effectsWitnessScope": "10s maximum inside the same click-to55s window",
+    "cleanupSeconds": 5,
+    "caseHeadroomSeconds": 10
+  },
+  "accounting": {
+    "assertionRecord": {
+      "attempted": "boolean",
+      "completed": "boolean; true only after the assertion's observation finishes",
+      "passed": "boolean only when completed; otherwise null"
+    },
+    "failedPrerequisite": "inconclusive; no product RED",
+    "noObservedRequestTerminal": "incomplete; no late-response PASS",
+    "baselineNewerEditUnavailable": "Follow-up only: attempted=false/passed=null when prerequisite unlock/current-review refresh is unavailable; never synthetic edit.",
+    "deliveredOrCancelled": "distinct facts; cancellation does not prove delivered-response race",
+    "productRed": "mandatory deadline/outcome failure only after real effects/hold/auth/source prerequisites and complete settlement",
+    "candidateGreen": "All twelve first-slice assertions attempted, completed and passed; no unknown errors, skips, retries or incomplete case. Follow-up state cases are separate.",
+    "existingProtocol": "separate unchanged 33 top-level plus 45 subtests; no acceptance borrowed",
+    "independentRequestTerminals": "restore204 and held inspect200 are distinct records; Restore requestfinished never settles the held inspect body",
+    "errorAdmission": "exact known expect.soft IDs plus fixed canonical owned source locations and retry0 required; unknown, excess, missing or interrupted errors make the case inconclusive; export only fixed IDs/counts"
+  },
+  "sources": [
+    {
+      "path": "apps/subtitles/internal/server/static/subtitle-inspector.js",
+      "gitBlob": "11b75727fe2627b26c0bfb2c9d98faa017a73758",
+      "bytes": 26251,
+      "sha256": "44af1998c82a9af83f088554860d47e2b3324dcbf5950a338f25bbffda486a60"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_mutations.go",
+      "gitBlob": "7b6248d7d1a7712ebd8f4b5296634e19e28cf71a",
+      "bytes": 10350,
+      "sha256": "4341420a349d04e6647335e5e238eb67288f317eff07bfae176b2bf5fa0b8f34"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_recovery.go",
+      "gitBlob": "9a6c377bea1c47ae0a26792732b70b09fd472db8",
+      "bytes": 3532,
+      "sha256": "26752dbc56befa8dbb38bb652f159c2579ec6939da14022d1303eebab38ceb4e"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_operations.go",
+      "gitBlob": "335322aae194f1637c1a1672cebdaea32e86d915",
+      "bytes": 5204,
+      "sha256": "0918fdcd86f602bde617886109244874ef654d55499578d6582723e1ebfa847b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_operation_http.go",
+      "gitBlob": "eb897b66a35f39e2c2796894d06aae9278138187",
+      "bytes": 6450,
+      "sha256": "7d8b586ef617c8ed04980141545a3cfd2ab860a53b542cd5263f5b681cf6f043"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_operation_worker.go",
+      "gitBlob": "595e7d5782750d1ce70ba98375ab629d22d67484",
+      "bytes": 5375,
+      "sha256": "35a383342a4ba5d16dd37efe55e836ca7fdfdf84f136e6255a775d98b49e2960"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_operation_store.go",
+      "gitBlob": "3896a83ef8fa0d08c3599862f471f87b37168060",
+      "bytes": 6992,
+      "sha256": "9dc846f8f908b6b3742df96cab5f9b85f5094c87cc7955df3a3826f2f3a50c9c"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_operation.go",
+      "gitBlob": "25570e6e4718917888b3d3b481bc3e33a3ab64bf",
+      "bytes": 5370,
+      "sha256": "ed9eb9dc894f38e4b989ed4b7df41c645fd13ad101d70d279c245504ed09998b"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_dashboard.go",
+      "gitBlob": "b5fc452ed42272a04d5966baa8f60ba69c90ee4d",
+      "bytes": 10552,
+      "sha256": "d96efb117599a3eea82e74ff019e686b6e9c64daf1a78d7334da108184affc12"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_history.go",
+      "gitBlob": "d0cf40d3891fdfe421c0658b8d805590128cd3d3",
+      "bytes": 4292,
+      "sha256": "de1f5eb508d42816d2fd076fcd3bc56b28de026eeb6fd0f4a4954bdf17841869"
+    },
+    {
+      "path": "apps/subtitles/internal/server/api_openapi.json",
+      "gitBlob": "4d2a81b58091d278ec0aba4bcc63ec0bd2475b36",
+      "bytes": 57775,
+      "sha256": "83e374ca1af9ed65752bd30f4b1c8e382bfc32281397e912b16f9147fb4b6851"
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-save-browser/fixture/main_test.go",
+      "gitBlob": "04163cd1688607fdebb0f8869ff1c28b972774d3",
+      "bytes": 5205,
+      "sha256": "56a0354d0586f900db43609afa72f8c2ba22bc4fa0e45f28da3eb2f27a706d35"
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-save-browser/fixture/filesystem_test.go",
+      "gitBlob": "9b4b95ddd21ab322a30a65ad3f361643238d7ef2",
+      "bytes": 1719,
+      "sha256": "fbb2c0ef7111d79027acfb05a89b8f99b30df1a07f343249ace91573e678328e"
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-save-browser/fixture/owner_enrollment_test.go",
+      "gitBlob": "d1e157ef35bdce2156903e85a12586507a660e33",
+      "bytes": 4969,
+      "sha256": "ccab21f13f036c78faaffbd9ed6e14aeb09940b472a584f033d853294f3d6ea6"
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-save-browser/fixture/owner_test.go",
+      "gitBlob": "364364b7340fb303b0500b5dac397f68ce4a543f",
+      "bytes": 2090,
+      "sha256": "30db735dda05c2a534831c15c33081cef47670d2a2dea4a2deda2da85af26a57"
+    },
+    {
+      "path": "apps/subtitles/engineering/qa/2026-10-05-save-browser/fixture/control_faults_test.go",
+      "gitBlob": "5fffc11af59ef7ea648fbd0a914f12d2f185fc5a",
+      "bytes": 3337,
+      "sha256": "d10cf3835fd785d9952ca84a08d58f94039fc3f56e972c7bfa4e54a2dd53173d"
+    },
+    {
+      "path": "apps/subtitles/internal/server/subtitle_edit.go",
+      "gitBlob": "c37dca675212b994f42f199375f1a91238a0e75a",
+      "bytes": 12329,
+      "sha256": "c1c785c68d633b6d6e29f2f8f52a19e7a9662db629019f1b1c79f2a7e261302d"
+    }
+  ],
+  "followUpCases": [
+    {
+      "id": "r06-restore-newer-preview",
+      "boundary": "After a genuine read-only current-review refresh and unlock, create an actual no-audio newer Preview, then release/settle the old Restore response in the same document; protect correction/preview/status."
+    },
+    {
+      "id": "r06-restore-language-lifecycle",
+      "boundary": "An old Restore callback cannot overwrite a newer language/action or leave its busy lease held."
+    },
+    {
+      "id": "r06-restore-failed-after-effects",
+      "boundary": "A real failed completion does not authorize replay or imply unchanged files; requires a separate public failure fixture."
+    }
+  ],
+  "fictionalFixture": {
+    "initialSRT": "1\n00:00:01,000 --> 00:00:02,000\nFictional original line\n\n2\n00:00:04,000 --> 00:00:05,000\nFictional later line\n",
+    "setupApply": {
+      "language": "en",
+      "offsetMilliseconds": 500,
+      "automaticSync": false,
+      "removeCredits": false,
+      "mergeRepeated": false
+    },
+    "beforeRestoreCues": [
+      {
+        "start": 1.5,
+        "end": 2.5,
+        "text": "Fictional original line"
+      },
+      {
+        "start": 4.5,
+        "end": 5.5,
+        "text": "Fictional later line"
+      }
+    ],
+    "afterRestoreCues": [
+      {
+        "start": 1,
+        "end": 2,
+        "text": "Fictional original line"
+      },
+      {
+        "start": 4,
+        "end": 5,
+        "text": "Fictional later line"
+      }
+    ],
+    "unsavedCorrectionSRT": "1\n00:00:01,000 --> 00:00:02,000\nFictional unsaved correction\n",
+    "laterCorrectionSRT": "1\n00:00:01,000 --> 00:00:02,000\nFictional newer correction\n",
+    "backupRule": "After actual Restore, backup equals actual captured B bytes; public expected cues independently establish B's500ms shift.",
+    "historyRule": "Exactly two actual events: newest restored/restore/en for the owned item, then original updated/manual/en; no later mutation event."
+  }
+}
