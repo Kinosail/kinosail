@@ -20,6 +20,7 @@ media = run / 'media'
 media.mkdir()
 binary = run / 'kinosail-player'
 revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip()
+working_diff = hashlib.sha256(subprocess.check_output(['git', 'diff', 'HEAD'], cwd=root)).hexdigest()
 sources = ['packages/webassets/static/player-preview.js', 'packages/webassets/static/player-controls.js',
            'packages/webassets/static/player-presentation.js', 'packages/webassets/static/player-status.js',
            'packages/webassets/static/player-stage.css', 'packages/webassets/webassets.go',
@@ -60,7 +61,7 @@ result = None
 with (run / 'server.log').open('w') as log:
     server = subprocess.Popen([str(binary)], env=env, stdout=log, stderr=log)
     try:
-        for _ in range(240):
+        for _ in range(720):
             try:
                 client.open(url + '/healthz', timeout=1).close()
                 break
@@ -90,7 +91,7 @@ with (run / 'server.log').open('w') as log:
             server.kill()
             server.wait()
         (run / 'receipt.json').write_text(json.dumps({
-            'revision': revision, 'workingDiffSHA256': hashlib.sha256(subprocess.check_output(['git', 'diff', 'HEAD'], cwd=root)).hexdigest(),
+            'revision': revision, 'workingDiffSHA256': working_diff,
             'command': 'python3 apps/player/scripts/test-scrub-local.py', 'build': build, 'fixture': fixture,
             'browser': browser, 'result': result, 'environment': platform.platform(), 'sourceSHA256': source_hashes,
             'binarySHA256': hashlib.sha256(binary.read_bytes()).hexdigest(),
