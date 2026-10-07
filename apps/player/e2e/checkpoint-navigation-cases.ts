@@ -212,7 +212,7 @@ test.describe("acknowledged Library navigation", () => {
   });
 
 
-  test("a newer same-tab destination withdraws a pending Library checkpoint navigation", {tag: "@smoke"}, async ({page}, testInfo) => {
+  test("a newer same-tab destination waits for the latest checkpoint and replaces pending Library navigation", {tag: "@smoke"}, async ({page}, testInfo) => {
     test.skip(phase !== "candidate", "historical sources are reserved for the original checkpoint reproductions");
     // Both destinations/store are populated. Held transports expose the otherwise brief intent race.
     const {media, id, session} = await openMovie(page, {key: "kinosail:checkpoint-newer-destination", iteration: 0, testInfo});
@@ -247,11 +247,11 @@ test.describe("acknowledged Library navigation", () => {
       await page.getByRole("link", {name: "Library", exact: true}).click({noWaitAfter: true});
       await expect.poll(() => writes).toBeGreaterThan(0);
       await page.getByRole("link", {name: "Other Library view", exact: true}).click({noWaitAfter: true});
+      expect(destinationRequested).toBe(false);
+      expect(unexpectedLibraryRequests).toBe(0);
       await expect(page).toHaveURL(url => url.pathname.startsWith("/watch/"));
       await expect(media).toHaveJSProperty("paused", true);
       await expect(page.locator("[data-progress-notice]")).toHaveAttribute("aria-busy", "true");
-      expect(destinationRequested).toBe(false);
-      expect(unexpectedLibraryRequests).toBe(0);
       releaseProgress();
       await expect.poll(() => destinationRequested).toBe(true);
       // A pending document navigation can freeze old-page DOM queries. Read the real store instead.

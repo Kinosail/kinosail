@@ -103,6 +103,10 @@ async function openMovie(page: Page, observation?: {key: string; iteration: numb
   const session = await media.getAttribute("data-playback-session") || undefined;
   expect(Boolean(session && /^[a-zA-Z0-9_-]{8,64}$/.test(session))).toBe(true);
   if (observation) await observeExit(page, id, observation.key);
+  // The watch page may already be autoplaying. Start a fresh, observable
+  // playback transition rather than calling play() on an already-playing video.
+  await media.evaluate((video: HTMLVideoElement) => video.pause());
+  await expect(media).toHaveJSProperty("paused", true);
   await media.evaluate((video: HTMLVideoElement) => video.play());
   await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.getVideoPlaybackQuality().totalVideoFrames)).toBeGreaterThan(2);
   await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(0.2);
