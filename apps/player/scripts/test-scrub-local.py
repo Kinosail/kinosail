@@ -61,7 +61,7 @@ result = None
 with (run / 'server.log').open('w') as log:
     server = subprocess.Popen([str(binary)], env=env, stdout=log, stderr=log)
     try:
-        for _ in range(720):
+        for _ in range(1200):
             try:
                 client.open(url + '/healthz', timeout=1).close()
                 break

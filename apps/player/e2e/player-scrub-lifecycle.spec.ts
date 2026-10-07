@@ -131,3 +131,33 @@ for (const unavailable of ["missing source", "beyond the preview range"]) test(`
   await expect(preview.locator("[data-seek-frame]")).toHaveAttribute("aria-busy", "false");
   expect(requests).toHaveLength(1);
 });
+
+test("preview caching retains recent frames and evicts old frames after its bound", async ({ page }) => {
+  const requests: string[] = [];
+  await page.route("**/trickplay/movie/*", route => {
+    requests.push(new URL(route.request().url()).pathname);
+    return route.fulfill({ contentType: "image/svg+xml", body: frame });
+  });
+  const seek = page.locator("[data-player-seek]");
+  const show = async (second: number) => {
+    await seek.evaluate((input: HTMLInputElement, position) => {
+      input.dataset.trickplay = "https://127.0.0.1:38127/trickplay/movie/{second}";
+      input.max = "1000";
+      const bounds = input.getBoundingClientRect();
+      input.dispatchEvent(new PointerEvent("pointermove", { clientX: bounds.left + bounds.width * position / 1000 }));
+    }, second + 5);
+    await expect(page.locator("[data-seek-preview] img")).toHaveAttribute("src", new RegExp(`/${second}$`));
+  };
+  await show(0);
+  const oldest = await page.locator("[data-seek-preview] img").elementHandle();
+  await show(10);
+  await show(20);
+  const recent = await page.locator("[data-seek-preview] img").elementHandle();
+  for (let second = 30; second < 140; second += 10) await show(second);
+  expect(requests).toHaveLength(14);
+  await show(20);
+  expect(requests).toHaveLength(14);
+  expect(await page.locator("[data-seek-preview] img").evaluate((image, previous) => image === previous, recent)).toBe(true);
+  await show(0);
+  expect(await page.locator("[data-seek-preview] img").evaluate((image, previous) => image === previous, oldest)).toBe(false);
+});
