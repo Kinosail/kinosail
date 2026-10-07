@@ -147,3 +147,25 @@ Bound each allocation and pending copy, retain original callback ordering, and
 close every frame on success or failure. Add pre-implementation admission checks
 for wrong native timestamps, metadata and autoplay advancement. Preserve `6197`
 and every prior receipt; this remains a diagnostic test change before production.
+
+Exact `a038ad22` still retains both raw failures and ten passing controls. Native
+frame copies and timestamp binding work. The browser result stays unqualified:
+autoplay advanced, and the custom Play overlay was hidden in native-controls mode.
+Partial callback evidence remains intact. No production change is admitted.
+
+Before the next diagnostic, select Chromium's document-user-activation policy
+and disable its media-engagement autoplay exemptions. Use the visible shipped
+Play overlay, or the shipped player-region Space handler for native controls.
+Never force-click a hidden button or call play through evaluate. Record unmuted,
+positive-volume, paused clock samples before the gesture. Set the real default
+playback rate to 0.25 so MediaSource loading does not reset observation to 1.
+Retain the real playback rate in every callback and reject rate changes from
+the declared observation speed. Test omitted/wrong rate and muted startup
+admission before extending the observer. This is still a diagnostic baseline.
+
+Pinned Playwright inspection uses Chromium Runtime calls with userGesture=true.
+Use an explicitly non-gesture CDP read before playback instead. Retain both
+native userActivation flags in each pre-gesture sample and require false. Focus
+the shipped player region through non-gesture CDP, then send trusted Space key
+down/up through CDP Input. No ordinary Playwright evaluate or locator inspection
+may precede that gesture. Preserve this as a keyboard-start observation boundary.

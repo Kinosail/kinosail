@@ -28,7 +28,8 @@ const stop = async failureClass => {
 const watchdog = setTimeout(() => {void stop('renderer_deadline');}, 245_000);
 process.once('SIGTERM', () => {void stop('renderer_terminated');});
 browserServer = await chromium.launchServer({host: '127.0.0.1', port: 0, headless: true, timeout: 15_000,
-  handleSIGTERM: false, args: ['--autoplay-policy=user-gesture-required',
+  handleSIGTERM: false, args: ['--autoplay-policy=document-user-activation-required',
+  '--disable-features=PreloadMediaEngagementData,MediaEngagementBypassAutoplayPolicies',
   '--disable-background-timer-throttling', '--disable-renderer-backgrounding']});
 const owner = `${target}.owner`;
 writeFileSync(`${owner}.tmp`, JSON.stringify({browserPID: browserServer.process().pid}), {mode: 0o600});
@@ -49,6 +50,13 @@ async function capture(id, compatible) {
     return route.continue({headers: {...route.request().headers(), Authorization: `Bearer ${input.token}`}});
   });
   const page = await context.newPage();
+  const cdp = await context.newCDPSession(page);
+  const preflight = async expression => {
+    const value = await cdp.send('Runtime.evaluate', {expression, returnByValue: true,
+      userGesture: false, timeout: 5000});
+    if (value.exceptionDetails || typeof value.result.value !== 'boolean') throw new Error('renderer_preflight');
+    return value.result.value;
+  };
   const network = {master: 0, variant: 0, initializationSHA256s: [], successfulFragments: 0,
     unexpectedMediaRequests: 0, failedMediaResponses: 0};
   const successful = new Set();
@@ -75,13 +83,19 @@ async function capture(id, compatible) {
     const proof = window.__hlsProof = {rows: [], ended: false, errorCode: 0, captureErrors: 0,
       width: 0, height: 0, nativeTime: null, reportedTime: null, duration: null,
       buffered: [], events: [], hashes: [], videoPlaybackQuality: null,
-      nativeFrames: [], unsupportedFormats: [], beforeGesture: []};
+      nativeFrames: [], unsupportedFormats: [], beforeGesture: [], gesture: null, gestureEvent: null,
+      beforeGestureColumns: ['paused', 'nativeTime', 'callbacks', 'muted', 'volume', 'playbackRate',
+        'hasBeenActive', 'isActive']};
+    document.addEventListener('keydown', event => {
+      if (event.key === ' ') proof.gestureEvent = {trusted: event.isTrusted,
+        hasBeenActive: navigator.userActivation.hasBeenActive, isActive: navigator.userActivation.isActive};
+    }, {capture: true});
     const nativeTime = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'currentTime').get;
     const nativeDuration = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'duration').get;
     const attach = media => {
       if (!(media instanceof HTMLVideoElement) || media.dataset.proofAttached) return;
       media.dataset.proofAttached = '1';
-      media.playbackRate = 0.25;
+      media.defaultPlaybackRate = media.playbackRate = 0.25;
       let pendingCopies = 0;
       const copyFrame = async (frame, row) => {
         pendingCopies++;
@@ -120,7 +134,7 @@ async function capture(id, compatible) {
       };
       const record = (_, metadata) => {
         if (proof.rows.length >= 4096) {proof.captureErrors++; media.pause(); return;}
-        const row = [metadata.mediaTime, metadata.presentedFrames, '', null, null];
+        const row = [metadata.mediaTime, metadata.presentedFrames, '', null, null, media.playbackRate];
         proof.rows.push(row);
         let frame;
         try {
@@ -169,17 +183,32 @@ async function capture(id, compatible) {
     const response = await page.goto(`${input.url}/watch/${id}?${compatible ? 'compatible' : 'direct'}=1`,
       {waitUntil: 'domcontentloaded', timeout: Math.min(15_000, timeout())});
     if (response.status() !== 200) throw new Error('renderer_watch_status');
-    await page.waitForFunction(() => document.querySelector('video')?.readyState >= 2,
-      null, {timeout: Math.min(20_000, timeout())});
+    const readinessDeadline = Math.min(deadline, Date.now() + 20_000);
+    while (!await preflight('Boolean(document.querySelector("video")?.readyState >= 2)')) {
+      if (Date.now() >= readinessDeadline) throw new Error('renderer_readiness');
+      await new Promise(resolve => setTimeout(resolve, 25));
+    }
     for (let sample = 0; sample < 2; sample++) {
-      await page.evaluate(() => {
+      await preflight(`(() => {
         const media = document.querySelector('video');
         const native = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'currentTime').get;
-        window.__hlsProof.beforeGesture.push([media.paused, native.call(media), window.__hlsProof.rows.length]);
-      });
-      if (sample === 0) await page.waitForTimeout(200);
+        window.__hlsProof.beforeGesture.push([media.paused, native.call(media), window.__hlsProof.rows.length,
+          media.muted, media.volume, media.playbackRate,
+          navigator.userActivation.hasBeenActive, navigator.userActivation.isActive]);
+        return true;
+      })()`);
+      if (sample === 0) await new Promise(resolve => setTimeout(resolve, 200));
     }
-    await page.locator('[data-player-toggle]').click({timeout: Math.min(15_000, timeout())});
+    const unactivated = await preflight(`(() => {
+      document.querySelector('.media-stage').focus();
+      window.__hlsProof.gesture = 'player-keyboard-space';
+      return !navigator.userActivation.hasBeenActive && !navigator.userActivation.isActive;
+    })()`);
+    if (!unactivated) throw new Error('renderer_activated_before_gesture');
+    await cdp.send('Input.dispatchKeyEvent', {type: 'keyDown', key: ' ', code: 'Space', text: ' ',
+      windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32});
+    await cdp.send('Input.dispatchKeyEvent', {type: 'keyUp', key: ' ', code: 'Space',
+      windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32});
     await page.waitForFunction(() => window.__hlsProof.ended || window.__hlsProof.errorCode,
       null, {timeout: timeout()});
   } catch {failureClass = Date.now() >= deadline - 1000 ? 'renderer_deadline' : 'renderer_watch_failed';}

@@ -31,28 +31,34 @@ def capture_rows(value):
     rows = value.get('rows', [])
     check(isinstance(rows, list) and len(rows) <= 4096, 'renderer_row_bound')
     for row in rows:
-        check(isinstance(row, list) and len(row) == 5 and type(row[0]) in (int, float)
+        check(isinstance(row, list) and len(row) == 6 and type(row[0]) in (int, float)
             and math.isfinite(row[0]) and -1 <= row[0] <= 120
             and type(row[1]) is int and 0 < row[1] <= 8192
             and isinstance(row[2], str) and (row[2] == '' or re.fullmatch('[a-f0-9]{64}', row[2]))
             and (row[3] is None or type(row[3]) is int and -1000000 <= row[3] <= 120000000)
-            and (row[4] is None or type(row[4]) is int and 0 <= row[4] < 32), 'renderer_row_shape')
+            and (row[4] is None or type(row[4]) is int and 0 <= row[4] < 32)
+            and type(row[5]) in (int, float) and math.isfinite(row[5]) and 0 <= row[5] <= 16, 'renderer_row_shape')
     descriptors = value.get('nativeFrames', [])
     gesture, quality = value.get('beforeGesture', []), value.get('videoPlaybackQuality', {})
     paused = (isinstance(gesture, list) and len(gesture) == 2 and all(
-        isinstance(v, list) and len(v) == 3 and v[0] is True
+        isinstance(v, list) and len(v) == 8 and v[0] is True
         and type(v[1]) in (int, float) and math.isfinite(v[1])
-        and type(v[2]) is int and 0 <= v[2] <= 1 for v in gesture)
+        and type(v[2]) is int and 0 <= v[2] <= 1 and v[3] is False
+        and type(v[4]) in (int, float) and 0 < v[4] <= 1 and v[5] == 0.25
+        and v[6] is False and v[7] is False for v in gesture)
         and abs(gesture[0][1] - gesture[1][1]) <= 0.001)
     qualified = (bool(rows) and not value.get('failureClass') and value.get('ended') is True and value.get('errorCode') == 0
         and value.get('captureErrors') == 0 and value.get('width') == 640 and value.get('height') == 360
         and rows[0][1] == 1 and all(a[0] < b[0] and b[1] == a[1] + 1 for a, b in zip(rows, rows[1:]))
-        and len({row[2] for row in rows}) == len(rows) and paused and native_metadata_qualified(descriptors)
+        and len({row[2] for row in rows}) == len(rows) and paused
+        and value.get('gesture') == 'player-keyboard-space'
+        and value.get('gestureEvent') == {'trusted': True, 'hasBeenActive': True, 'isActive': True}
+        and native_metadata_qualified(descriptors)
         and isinstance(quality, dict) and quality.get('total') == len(rows)
         and quality.get('dropped') == 0 and quality.get('corrupted') == 0
         and all(re.fullmatch('[a-f0-9]{64}', row[2]) and row[3] is not None
                 and abs(row[3] / 1000000 - row[0]) <= 0.001
-                and row[4] is not None and row[4] < len(descriptors) for row in rows))
+                and row[4] is not None and row[4] < len(descriptors) and row[5] == 0.25 for row in rows))
     return rows, qualified
 
 
@@ -78,7 +84,7 @@ def renderer_facts(reference, public, source_pts, requested):
                     for row, n in zip(observed, mapped)),
         'colorInterpretationMatches': colors(reference) == colors(public),
         'rowColumns': ['mediaTimeSeconds', 'presentedFrames', 'nativeYUV420SHA256',
-                       'nativeTimestampMicroseconds', 'nativeFrameMetadataIndex'],
+                       'nativeTimestampMicroseconds', 'nativeFrameMetadataIndex', 'playbackRate'],
         'completeReferenceRows': [json.dumps(row, separators=(',', ':')) for row in original],
         'completePublicRows': [json.dumps(row, separators=(',', ':')) for row in observed],
         'publicSourceIndices': mapped, 'expectedSourceIndices': expected,
