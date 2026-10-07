@@ -232,6 +232,9 @@ jobs:
       - env:
           APP: ${{ inputs.app }}
         run: pnpm --dir "apps/$APP/e2e" install --frozen-lockfile
+      - name: Verify login navigation failure diagnostics
+        if: inputs.app == 'subtitles'
+        run: node --test scripts/testing/subtitle-login-navigation.test.mjs
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
       - parallel:
           - env:

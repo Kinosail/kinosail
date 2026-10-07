@@ -1,7 +1,69 @@
 import {test} from "node:test";
 import assert from "node:assert/strict";
 import {EventEmitter} from "node:events";
+import {runInNewContext} from "node:vm";
 import {navigationDiagnostics} from "./navigation-diagnostics.mjs";
+
+test("failed navigation witnesses count transport and worker/error events without raw data", async () => {
+ const page=new Page();page.mainFrame=()=>"main";
+ page.evaluate=async()=>({readyState:"complete",libraryMarker:false,loginForm:true,timeOrigin:1234});
+ const probe=navigationDiagnostics(page,"http://localhost:39060");
+ const item={...request(page.url(),"document"),isNavigationRequest:()=>true,frame:()=>"main"};
+ page.emit("request",item);page.emit("response",{request:()=>item,status:()=>200,url:()=>page.url()});
+ page.emit("requestfinished",item);page.emit("requestfailed",item);
+ page.emit("worker",{url:()=>"private-synthetic-marker"});
+ page.emit("pageerror",new Error("private-synthetic-marker"));
+ const value=await probe.snapshot({name:"TimeoutError"});
+ assert.deepEqual(value.counts,{requests:1,responses:1,finished:1,failed:1,pageErrors:1,workers:1,crashes:0});
+ assert.equal(value.loginForm,true);assert.equal(value.timeOrigin,1234);
+ assert.doesNotMatch(JSON.stringify(value),/private-synthetic-marker|do-not-record/);
+ probe.stop();assert.equal(page.eventNames().length,0);
+});
+
+test("document witnesses are strictly bounded and cannot serialize arbitrary console data", async () => {
+ const page=new Page();page.addInitScript=async callback=>{page.init=callback;};
+ const probe=navigationDiagnostics(page,"http://localhost:39060");
+ await probe.observeDocument();
+ const emit=value=>page.emit("console",{text:()=>"KINOSAIL_NAV_DOCUMENT "+value});
+ const valid={kind:"start",main:true,loginPath:true,readyState:"loading",timeOrigin:1000,elapsedMs:0,loginForm:false};
+ for(const value of ["private-synthetic-marker", "x".repeat(2049), JSON.stringify({...valid,secret:"private-synthetic-marker"}),
+   JSON.stringify({...valid,readyState:"private"}),JSON.stringify({...valid,timeOrigin:-1}),JSON.stringify({...valid,elapsedMs:Infinity}),
+   JSON.stringify({...valid,main:false}),'{"kind":"start","kind":"load","main":true,"loginPath":true,"readyState":"loading","timeOrigin":1000,"elapsedMs":0,"loginForm":false}']) emit(value);
+ assert.equal((await probe.snapshot()).documents.length,0);
+ for(let n=0;n<100;n++)emit(JSON.stringify(valid));
+ const value=await probe.snapshot();assert.equal(value.documents.length,20);
+ assert.equal(value.documents[0].source,"unverified-console");
+ assert.doesNotMatch(JSON.stringify(value),/private-synthetic-marker|secret/);
+ probe.stop();assert.equal(page.eventNames().length,0);
+ emit(JSON.stringify(valid));assert.equal((await probe.snapshot()).documents.length,20);
+});
+
+test("untrusted document snapshot fields never become receipt values", async () => {
+ const page=new Page();page.evaluate=async()=>({readyState:"private-synthetic-marker",loginForm:"private-synthetic-marker",timeOrigin:Infinity});
+ const probe=navigationDiagnostics(page,"http://localhost:39060");const value=await probe.snapshot();
+ assert.equal(value.readyState,"unavailable");assert.equal(value.loginForm,false);assert.equal(value.timeOrigin,undefined);
+ assert.doesNotMatch(JSON.stringify(value),/private-synthetic-marker/);probe.stop();
+});
+
+test("the installed document recorder witnesses a rendered form without evaluating the driver frame", async () => {
+ const page=new Page();page.addInitScript=async callback=>{page.init=callback;};
+ page.evaluate=()=>new Promise(()=>{});page.url=()=>"about:blank";
+ const probe=navigationDiagnostics(page,"http://localhost:39060");await probe.observeDocument();
+ const documentEvents=new Map(),windowEvents=new Map();
+ const document={readyState:"loading",querySelector:()=>null,addEventListener:(name,callback)=>documentEvents.set(name,callback)};
+ const window={addEventListener:(name,callback)=>windowEvents.set(name,callback)};window.top=window;
+ const context={document,window,location:{pathname:"/login"},
+   performance:{timeOrigin:1234,now:()=>10},console:{debug:text=>page.emit("console",{text:()=>text})}};
+ runInNewContext(`(${page.init.toString()})()`,context);
+ runInNewContext(`(${page.init.toString()})()`,context);
+ document.readyState="interactive";document.querySelector=()=>({});documentEvents.get("DOMContentLoaded")();
+ document.readyState="complete";windowEvents.get("load")();
+ const value=await probe.snapshot({name:"TimeoutError"});
+ assert.equal(value.identity,"blank");assert.equal(value.readyState,"unavailable");
+ assert.deepEqual(value.documents.map(record=>record.kind),["start","dcl","load"]);
+ assert.equal(value.documents.at(-1).loginForm,true);assert.equal(value.documents.at(-1).timeOrigin,1234);
+ probe.stop();assert.equal(page.eventNames().length,0);
+});
 
 // Failure modes: credentials in URLs; stalled/failed requests; unbounded
 // event streams; page destruction; and listeners retained after completion.

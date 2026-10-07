@@ -1,5 +1,6 @@
 import { createHmac } from "node:crypto";
-import { expect, type Browser, type Page } from "@playwright/test";
+import { expect, test, type Browser, type Page, type TestInfo } from "@playwright/test";
+import { navigationDiagnostics } from "../../../scripts/testing/navigation-diagnostics.mjs";
 
 function totp(): string {
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
@@ -12,8 +13,31 @@ function totp(): string {
   return (((digest.readUInt32BE(offset) & 0x7fffffff) % 1_000_000).toString().padStart(6, "0"));
 }
 
-export async function login(page: Page) {
-  await page.goto("/login", { waitUntil: "commit" });
+export async function login(page: Page, info: TestInfo = test.info()) {
+  const navigation = navigationDiagnostics(page, info.project.use.baseURL);
+  const recorded = new Set<string>();
+  try {
+    let setupTimer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      await Promise.race([navigation.observeDocument((record: {kind: string}) => {
+        if (recorded.has(record.kind)) return;
+        recorded.add(record.kind);
+        void info.attach("login-document-" + record.kind, {contentType: "application/json", body: JSON.stringify(record)}).catch(() => {});
+      }), new Promise(resolve => {setupTimer = setTimeout(resolve, 500);})]);
+    } catch { /* Observation setup cannot prevent the original navigation. */ }
+    finally {clearTimeout(setupTimer);}
+    navigation.markNavigation("/login");
+    await page.goto("/login", { waitUntil: "commit" });
+  } catch (error) {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      const body = JSON.stringify(await navigation.snapshot(error));
+      await Promise.race([info.attach("login-navigation-failure", {contentType: "application/json", body}),
+        new Promise(resolve => {timer = setTimeout(resolve, 500);})]);
+    } catch { /* Diagnostics cannot replace the original navigation failure. */ }
+    finally {clearTimeout(timer);}
+    throw error;
+  } finally {navigation.stop();}
   await expect(page.getByLabel("Name")).toBeVisible();
   await page.getByLabel("Name").fill(process.env.KINOSAIL_E2E_OWNER_NAME ?? "Owner");
   await page.getByLabel("Password", { exact: true }).fill(process.env.KINOSAIL_E2E_OWNER_PASSWORD ?? "test-instance-password");
