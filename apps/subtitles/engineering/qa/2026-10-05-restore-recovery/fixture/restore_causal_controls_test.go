@@ -118,6 +118,49 @@ func assertLiveCausalCancellation(t *testing.T, f *restoreRig, client *http.Clie
 	}
 }
 
+// The held diagnostic has no response to deliver. If its owned lifecycle stops
+// while the client is still live, returning normally would let net/http invent
+// an empty success response despite the fixture's no-delivery witness.
+func TestRestoreCausalHeldLifecycleStopCannotDeliverImplicitSuccess(t *testing.T) {
+	target := newRestoreTarget(t)
+	f := newRestoreControl(t, target, "none")
+	f.app = http.HandlerFunc(func(http.ResponseWriter, *http.Request) { t.Error("diagnostic cannot call product handler") })
+	ctx, stop := context.WithCancel(t.Context())
+	defer stop()
+	f.ctx = ctx
+	before := f.snapshot()
+	request, err := http.NewRequestWithContext(t.Context(), http.MethodPost, target.origin+"/__r06_restore/probe", strings.NewReader(`{"mode":"held"}`))
+	if err != nil {
+		t.Fatal("held diagnostic request unavailable")
+	}
+	request.Header.Set("Content-Type", "application/json")
+	completed := make(chan bool, 1)
+	go func() {
+		response, err := target.privateClient(3 * time.Second).Do(request)
+		if response != nil {
+			_, _ = io.Copy(io.Discard, response.Body)
+			_ = response.Body.Close()
+		}
+		completed <- err != nil
+	}()
+	deadline := time.Now().Add(2 * time.Second)
+	waitCausalProbeControl(t, f, deadline, false)
+	stop()
+	select {
+	case rejected := <-completed:
+		if !rejected {
+			t.Fatal("held diagnostic delivered implicit HTTP success")
+		}
+	case <-time.After(time.Second):
+		t.Fatal("stopped held diagnostic did not settle")
+	}
+	waitCausalProbeControl(t, f, deadline, true)
+	state := f.causalSnapshot()[2]
+	if !state.Settled || state.Delivered || state.Cancelled || !state.TimedOut || f.snapshot() != before {
+		t.Fatal("owned lifecycle stop changed its strict no-delivery witness or Restore state")
+	}
+}
+
 func waitCausalProbeControl(t *testing.T, f *restoreRig, deadline time.Time, settled bool) {
 	t.Helper()
 	ready := func() bool {

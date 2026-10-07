@@ -108,7 +108,7 @@ func (f *restoreRig) serveCausalPOST(writer http.ResponseWriter, request *http.R
 	}
 	if index == 2 {
 		f.serveHeldCausalProbe(request.Context())
-		return
+		panic(http.ErrAbortHandler) // A held diagnostic never delivers an implicit HTTP response.
 	}
 	delivered := true
 	if index == 0 {
