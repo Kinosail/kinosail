@@ -39,6 +39,7 @@ type playerRecord struct {
 	Seen    time.Time
 	Command *Command
 	Profile string
+	Claim   string
 }
 
 func (integration *Integration[P]) playersSnapshot() []Player {
@@ -47,7 +48,9 @@ func (integration *Integration[P]) playersSnapshot() []Player {
 	integration.prunePlayersLocked(integration.now())
 	players := make([]Player, 0, len(integration.players))
 	for _, record := range integration.players {
-		players = append(players, record.Player)
+		if record.Claim == "" || record.Name != "" {
+			players = append(players, record.Player)
+		}
 	}
 	return players
 }
@@ -60,7 +63,7 @@ func (integration *Integration[P]) prunePlayersLocked(now time.Time) {
 	}
 }
 
-func (integration *Integration[P]) updatePlayer(id string, state Player, profile string) (*Command, error) {
+func (integration *Integration[P]) updatePlayer(id string, state Player, profile string, claims ...string) (*Command, error) {
 	state.Name = strings.TrimSpace(state.Name)
 	state.ID = id
 	if err := validatePlayer(state); err != nil {
@@ -69,8 +72,16 @@ func (integration *Integration[P]) updatePlayer(id string, state Player, profile
 	now := integration.now()
 	integration.mu.Lock()
 	defer integration.mu.Unlock()
-	integration.prunePlayersLocked(now)
+	claim := ""
+	if len(claims) == 1 {
+		claim = claims[0]
+	}
 	record := integration.players[id]
+	if len(claims) > 1 || (record.Claim != "" || claim != "") && !ownsPlayer(record, profile, claim, now) {
+		return nil, errPlayerOwnership
+	}
+	integration.prunePlayersLocked(now)
+	record = integration.players[id]
 	if record.ID != "" && record.Profile != profile {
 		return nil, errors.New("Home Assistant player belongs to another Viewer Profile")
 	}
@@ -101,11 +112,12 @@ func (integration *Integration[P]) queueCommand(id string, command Command) (str
 	}
 	integration.mu.Lock()
 	record, found := integration.players[id]
-	found = found && integration.now().Sub(record.Seen) <= playerTTL
+	live := found && integration.now().Sub(record.Seen) <= playerTTL
+	found = live && (record.Claim == "" || record.Name != "")
 	if found {
 		record.Command = &command
 		integration.players[id] = record
-	} else {
+	} else if !live {
 		delete(integration.players, id)
 	}
 	publish := integration.publish
