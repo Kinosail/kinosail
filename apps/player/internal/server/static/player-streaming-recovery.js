@@ -264,7 +264,7 @@ const directType = player.dataset.directType;
 const directSupport = directType ? player.canPlayType(directType) : "unknown";
 playbackTrace("capability", directSupport || "none", `${navigator.vendor || "unknown"}:${directType || "unknown"}`);
 const directTypeUnsupported = codecCapabilities.appleMatroska(directType);
-const knownAudioIncompatibility = codecCapabilities.audioIncompatible(playbackPolicy, player.dataset.compatibilityMode);
+const knownAudioIncompatibility = codecCapabilities.audioIncompatible(playbackPolicy, player.dataset.compatibilityMode, player.dataset.audioCompatibilityRequired === "true");
 if (player.dataset.hls) {
   if (knownAudioIncompatibility) {
     // A pre-planned compatible playlist is already available when the server knows the
