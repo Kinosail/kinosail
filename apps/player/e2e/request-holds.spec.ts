@@ -96,6 +96,38 @@ test("a matching POST is not delayed by the GET-only gate", async ({page}) => {
   } finally {await held.release();}
 });
 
+test("a second hold in the same document has its own started witness", async ({page}) => {
+  await page.goto(origin);
+  const first = await holdNextMainRequest(page, "letter", "B");
+  try {
+    await page.evaluate(() => {void fetch("/?letter=B").then(response => response.text()).then(text => {
+      document.querySelector("output")!.textContent = text;
+    });});
+    await first.waitUntilStarted();
+    expect(requests).toEqual([]);
+    await first.release();
+    await expect(page.locator("output")).toHaveText("received");
+  } finally {await first.release();}
+  const second = await holdNextMainRequest(page, "letter", "C");
+  let started = false;
+  const witness = second.waitUntilStarted().then(() => {started = true;});
+  try {
+    expect(await page.evaluate(async () => (await fetch("/?letter=A")).text())).toBe("received");
+    expect(started).toBe(false);
+    expect(requests).toEqual(["B", "A"]);
+    await page.locator("output").evaluate(output => {output.textContent = "";});
+    await page.evaluate(() => {void fetch("/?letter=C").then(response => response.text()).then(text => {
+      document.querySelector("output")!.textContent = text;
+    });});
+    await witness;
+    expect(requests).toEqual(["B", "A"]);
+    await expect(page.locator("output")).toHaveText("");
+    await second.release();
+    await expect(page.locator("output")).toHaveText("received");
+    expect(requests).toEqual(["B", "A", "C"]);
+  } finally {await second.release(); await witness;}
+});
+
 test.describe("service-worker-controlled real HTTP transports", () => {
   test.use({serviceWorkers: "allow"});
   for (const transport of ["fetch", "xhr"] as const) {

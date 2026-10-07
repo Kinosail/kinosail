@@ -35,6 +35,7 @@ export async function holdNextMainRequest(page: Page, parameter: string, value: 
 	const marker = "mainRequestHeld";
 	const releaseEvent = "kinosail-release-main-request";
 	await page.evaluate(({parameter, value, marker, releaseEvent}) => {
+		delete document.documentElement.dataset[marker];
 		const fetch = window.fetch;
 		const prototype = XMLHttpRequest.prototype;
 		const open = prototype.open, send = prototype.send, abort = prototype.abort;
