@@ -62,5 +62,6 @@ run_populated_player_journeys() {
     --required-title 'populated player retries the latest progress through the real Server and renders accessible states' \
     --required-title 'completed paused seek persists before Library navigation and resumes actual movie frames' \
     --required-title 'Library exit checkpoints actual playing time before teardown without reset-position overwrite' \
-    -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-checkpoint.spec.ts --grep=@smoke --workers=1
+    --required-title 'volume icon renders balanced sound waves and keeps accessible mute controls' \
+    -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts --grep=@smoke --workers=1
 }
