@@ -8,6 +8,7 @@ on:
       - apps/player/e2e/test-instance-positive-reentry.spec.ts
       - apps/player/scripts/test-positive-reentry-local.py
       - apps/player/scripts/positive_reentry_processes.py
+      - apps/player/scripts/positive_reentry_tls.py
       - .github/workflows/positive-native-reentry.yml
   workflow_dispatch:
 
@@ -66,6 +67,7 @@ jobs:
             .verification/positive-reentry/*/receipt.json
             .verification/positive-reentry/*/source-receipt.json
             .verification/positive-reentry/*/browser-admission.json
+            .verification/positive-reentry/*/fixture-public-ca.pem
             .verification/positive-reentry/*/artifacts/**/positive-reentry.json
             .verification/positive-reentry/*/artifacts/**/*.png
           include-hidden-files: true

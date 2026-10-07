@@ -10,7 +10,7 @@ test('positive Matroska reentry decodes the saved scene through native HLS', asy
   test.skip(process.env.KINOSAIL_POSITIVE_REENTRY_E2E !== '1', 'Owned synthetic loopback runner only');
   test.setTimeout(90_000);
   const base = new URL(process.env.KINOSAIL_E2E_URL!);
-  expect(base.protocol).toBe('http:');
+  expect(base.protocol).toBe('https:');
   expect(base.hostname).toBe('localhost');
   expect(info.project.name).toBe('webkit');
   const sourceReceipt = JSON.parse(await readFile(process.env.KINOSAIL_POSITIVE_SOURCE_RECEIPT!, 'utf8'));

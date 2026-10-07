@@ -16,6 +16,7 @@ import tarfile
 import time
 import urllib.request
 from positive_reentry_processes import run_owned_command, stop_owned_group, stop_observed_node_children
+from positive_reentry_tls import HostedFixtureTrust, require_hosted_macos
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--source', default='deb7e51a1cdd3ed9f71842677abda5cd0e9e7fc8')
@@ -29,8 +30,9 @@ checksum = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
 receipt = {'sourceRevision': revision, 'sourceTree': subprocess.check_output(['git', 'rev-parse', revision + '^{tree}'], cwd=root, text=True).strip(),
            'harnessRevision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip(),
            'testSHA256': checksum(root / 'apps/player/e2e/test-instance-positive-reentry.spec.ts'),
-           'runnerSHA256': checksum(Path(__file__)), 'processHelperSHA256': checksum(Path(__file__).with_name('positive_reentry_processes.py')), 'result': 'not-run', 'minimumFreeBytes': 3 * 1024**3,
-           'boundaries': 'Immutable git export; loopback HTTP; synthetic Owner/media; actual native WebKit HLS; public autoplay setting disabled; no production edits/Nox/UI/device proof'}
+           'runnerSHA256': checksum(Path(__file__)), 'processHelperSHA256': checksum(Path(__file__).with_name('positive_reentry_processes.py')),
+           'tlsHelperSHA256': checksum(Path(__file__).with_name('positive_reentry_tls.py')), 'result': 'not-run', 'minimumFreeBytes': 3 * 1024**3,
+           'boundaries': 'Immutable git export; verified loopback HTTPS; synthetic Owner/media; actual native WebKit HLS; public autoplay disabled; disposable hosted CA only; no production edits/Nox/UI/device proof'}
 free = shutil.disk_usage(run).free
 receipt['availableBytesBeforeRun'] = free
 if free < receipt['minimumFreeBytes']:
@@ -38,6 +40,7 @@ if free < receipt['minimumFreeBytes']:
     (run / 'receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
     print(json.dumps({'result': receipt['result'], 'blocker': receipt['blocker'], 'availableBytes': free, 'receipt': str(run / 'receipt.json')}))
     raise SystemExit(2)
+require_hosted_macos()
 
 dependencies = (args.dependencies or root.parent / 'kinosail/apps/player/e2e/node_modules').resolve()
 package = dependencies / '@playwright/test/package.json'
@@ -108,6 +111,7 @@ generate = ['ffmpeg', '-nostdin', '-hide_banner', '-loglevel', 'error', '-f', 'l
             '-c:v', 'ffv1', '-threads', '1', '-c:a', 'pcm_s16le', str(media / 'Positive Reentry.mkv')]
 receipt['mediaCommand'] = generate
 server = browser = None
+trust = HostedFixtureTrust(run, receipt)
 
 def project_browser_failure():
     """Project fixed error classes only; no messages, URLs, code or credentials."""
@@ -156,11 +160,13 @@ try:
     with socket.socket() as listener:
         listener.bind(('127.0.0.1', 0))
         port = listener.getsockname()[1]
-    url = f'http://localhost:{port}'
-    environment.update(KINOSAIL_LISTEN=f'127.0.0.1:{port}', KINOSAIL_AUTH_URL=url, KINOSAIL_TLS_ENABLED='false',
+    url = f'https://localhost:{port}'
+    environment.update(KINOSAIL_LISTEN=f'127.0.0.1:{port}', KINOSAIL_AUTH_URL=url, KINOSAIL_TLS_ENABLED='true',
                        KINOSAIL_DATA_DIR=str(run / 'data'), KINOSAIL_MEDIA_DIR=str(media), KINOSAIL_CACHE_DIR=str(run / 'cache'),
                        KINOSAIL_BACKUP_DIR=str(run / 'backups'), KINOSAIL_BACKUP_KEY=os.urandom(32).hex(),
                        KINOSAIL_SCAN_INTERVAL='24h', KINOSAIL_BACKUP_INTERVAL='24h')
+    receipt['stage'] = 'hosted-fixture-tls'
+    tls_context = trust.prepare(binary, environment, source)
     with (run / 'server-private.log').open('w') as log:
         receipt['stage'] = 'server-readiness'
         server = subprocess.Popen([str(binary)], cwd=source, env=environment, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
@@ -169,7 +175,7 @@ try:
             if server.poll() is not None:
                 raise RuntimeError('Owned Server exited before readiness')
             try:
-                with urllib.request.urlopen(url + '/healthz', timeout=1) as response:
+                with urllib.request.urlopen(url + '/healthz', timeout=1, context=tls_context) as response:
                     if json.load(response) == {'status': 'ok'}:
                         break
             except (OSError, ValueError):
@@ -182,7 +188,7 @@ try:
             if token:
                 headers['Authorization'] = 'Bearer ' + token
             value = urllib.request.Request(url + path, method=method, data=json.dumps(body).encode(), headers=headers)
-            with urllib.request.urlopen(value, timeout=10) as response:
+            with urllib.request.urlopen(value, timeout=10, context=tls_context) as response:
                 return json.load(response) if response.status != 204 else None
 
         password = 'synthetic-positive-' + os.urandom(8).hex()
@@ -227,9 +233,14 @@ finally:
         receipt['observedNodeChildrenFailureClass'] = type(error).__name__
     if borrowed_link_created and borrowed_link.is_symlink() and borrowed_link.resolve() == dependencies:
         borrowed_link.unlink()
-    if not receipt['ownedBrowserGroupExited'] or not receipt['ownedServerGroupExited'] or not receipt['observedNodeChildrenExited']:
+    try:
+        receipt['ownedFixtureTrustRemoved'] = trust.cleanup(environment)
+    except (OSError, RuntimeError, subprocess.SubprocessError) as error:
+        receipt['ownedFixtureTrustRemoved'] = False
+        receipt['fixtureTrustCleanupFailureClass'] = type(error).__name__
+    if not receipt['ownedBrowserGroupExited'] or not receipt['ownedServerGroupExited'] or not receipt['observedNodeChildrenExited'] or not receipt['ownedFixtureTrustRemoved']:
         receipt['result'] = 'failed'
-        receipt['blocker'] = 'An owned process group did not finish cleanup'
+        receipt['blocker'] = 'Owned process or fixture trust cleanup did not finish'
     receipt['binaryUnchanged'] = checksum(binary) == receipt.get('binarySHA256') if binary.exists() else False
     receipt['completedUTC'] = datetime.datetime.now(datetime.timezone.utc).isoformat()
     receipt['artifactChecksums'] = {str(path.relative_to(run)): checksum(path) for path in run.rglob('*')
