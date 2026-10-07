@@ -19,7 +19,7 @@ function startup({ready = 0, network = 2, error = null, native = true} = {}) {
     bufferedProgress: {setAttribute() {}}, bufferedAhead: () => ready ? 12 : 0,
     navigator: {userAgent: 'Chromium', platform: 'Linux', maxTouchPoints: 0},
     HTMLMediaElement: {HAVE_NOTHING: 0, HAVE_CURRENT_DATA: 2, HAVE_FUTURE_DATA: 3, NETWORK_EMPTY: 0, NETWORK_IDLE: 1, NETWORK_LOADING: 2},
-    playbackPreparation: undefined, setTimeout, clearTimeout});
+    appleNativePlayback: false, appleTouch: false, playbackPreparation: undefined, setTimeout, clearTimeout});
   return {player, status, attrs, skeleton, classes, emit: name => listeners.get(name)()};
 }
 

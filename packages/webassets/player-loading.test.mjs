@@ -32,7 +32,7 @@ function fixture(appleTouch = false) {
   const source = readFileSync(new URL('./static/player-status.js', import.meta.url), 'utf8');
   vm.runInNewContext(source, {
     player, playerStatus: status, playerMessage: message,
-    playbackPreparation: undefined, preparationPausePending: 0, playbackTimelineOffset: 0,
+    appleNativePlayback: false, appleTouch, playbackPreparation: undefined, preparationPausePending: 0, playbackTimelineOffset: 0,
     bufferedAhead: () => Math.max(0, player.buffered.end(0) - player.currentTime),
     setPlayerTime: time => { player.currentTime = time; },
     navigator: { userAgent: appleTouch ? 'iPhone' : '', platform: '', maxTouchPoints: 0 },
