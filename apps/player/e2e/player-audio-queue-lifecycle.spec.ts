@@ -26,6 +26,7 @@ for (const boundary of ["pagehide", "cast", "room"]) {
       if (owner === "cast") audio.dataset.castActive = "true";
       else audio.dataset.room = "existing-room";
     }, boundary);
+    if (boundary === "pagehide") await expect(page.locator("[data-audio-queue-controls]")).toHaveAttribute("aria-busy", "true");
     await lookup!.fulfill({json: {item: queueItem("next"), profileId: "qa-viewer"}});
     if (boundary !== "pagehide") await expect(page.locator("[data-audio-queue-status]")).toHaveAttribute("data-queue-failure", "ownership");
     // Busy clears only when the held queue operation completes, so the old
@@ -69,6 +70,7 @@ test("late initial queue response cannot warm media or publish controls after pa
   await expect.poll(() => !!lookup).toBe(true);
   await expect(page.locator("[data-audio-queue-controls]")).toHaveAttribute("aria-busy", "true");
   await page.evaluate(() => dispatchEvent(new PageTransitionEvent("pagehide")));
+  await expect(page.locator("[data-audio-queue-controls]")).toHaveAttribute("aria-busy", "true");
   await lookup!.fulfill({json: {items: [queueItem("track"), queueItem("next")]}});
   await expect(page.locator("[data-audio-queue-controls]")).not.toHaveAttribute("aria-busy");
   await expect(page.locator("[data-audio-next]")).toBeDisabled();
