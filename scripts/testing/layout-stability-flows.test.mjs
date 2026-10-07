@@ -94,15 +94,15 @@ for (const observation of ['target', 'missing', 'rejected', 'stalled']) test(`Li
   let timer;
   try {
     await Promise.race([
-      assert.rejects(measureFlows(browser, {baseURL: 'https://owned.fixture'}, '/watch/0123456789abcdef', undefined, [], probe), value => value === failure),
+      assert.rejects(measureFlows(browser, {baseURL: 'https://owned.fixture'}, '/watch/0123456789abcdef', '/inspect/0123456789abcdef', [], probe), value => value === failure),
       new Promise((_, reject) => {timer = setTimeout(() => reject(new Error('observer blocked original navigation')), 1600);}),
     ]);
   } finally {clearTimeout(timer);}
   assert.equal(closed, true); assert.equal(page.eventNames().length, 0);
   assert.equal(page.installs, 1);
-  assert.deepEqual(page.calls, [{target: '/?view=movies', options: {waitUntil: 'domcontentloaded'}}]);
+  assert.deepEqual(page.calls, [{target: '/?view=library', options: {waitUntil: 'domcontentloaded'}}]);
   assert.equal(probe.navigation.identity, 'blank'); assert.equal(probe.navigation.readyState, 'unavailable');
-  assert.deepEqual(probe.navigation.lifecycle[0].route, {path: '/', view: 'movies'});
+  assert.deepEqual(probe.navigation.lifecycle[0].route, {path: '/', view: 'library'});
   assert.equal(probe.navigation.lifecycle.find(value => value.kind === 'domcontentloaded').route.path, 'blank');
   assert.deepEqual(probe.navigation.documents.map(value => [value.kind, value.timeOrigin]), observation === 'target' ? [['start', 2000], ['dcl', 3000]] : []);
   assert.ok(probe.navigation.documents.every(value => value.source === 'unverified-console'));
