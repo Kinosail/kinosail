@@ -49,12 +49,12 @@ class FixtureValidationTests(unittest.TestCase):
             self.assertEqual(self.request("?mode=" + mode)[0], 200)
             self.assertEqual(self.fixture.STATE, {"mode": mode})
 
-    def send_request(self, method, path, body=b"", headers=None):
+    def send_request(self, method, path, body=b"", headers=None, authorized=True):
         handler = object.__new__(self.fixture.Handler)
         handler.path, handler.connection = path, Mock()
         handler.headers = Message()
         for key, value in (headers if headers is not None else
-                           [("Content-Length", str(len(body)))]) + [("Authorization", "Bearer " + self.fixture.TOKEN)]:
+                           [("Content-Length", str(len(body)))]) + ([("Authorization", "Bearer " + self.fixture.TOKEN)] if authorized else []):
             handler.headers[key] = value
         handler.rfile = io.BytesIO(body)
         responses = []
@@ -66,6 +66,32 @@ class FixtureValidationTests(unittest.TestCase):
                 delay.assert_not_called()
                 self.assertEqual(self.fixture.STATE, before)
         return responses[0], handler
+
+    def test_unauthorized_requests_never_read_or_change_state(self):
+        for method, path in [("GET", "/api/v1/library"),
+                             ("PUT", "/api/v1/items/loading-video/progress/sync")]:
+            for authorization in [[], [("Authorization", "Bearer wrong")],
+                                  [("Authorization", "Bearer " + self.fixture.TOKEN)] * 2]:
+                with self.subTest(method=method, authorization=authorization):
+                    (status, _), handler = self.send_request(method, path, b"{}",
+                        [("Content-Length", "2")] + authorization, authorized=False)
+                    self.assertEqual(status, 401)
+                    self.assertEqual(handler.rfile.tell(), 0)
+
+    def test_unicode_controls_are_rejected_in_all_text_inputs(self):
+        for control in ["\u007f", "\u0085", "\u200b"]:
+            value = "qa" + control
+            with self.subTest(control=repr(control)):
+                self.assertEqual(self.send_request("POST", "/api/v1/quick-connect",
+                    json.dumps({"device": value}).encode())[0][0], 400)
+                encoded = "".join("%" + format(byte, "02X") for byte in value.encode())
+                self.assertEqual(self.send_request("GET", "/api/v1/library?q=" + encoded)[0][0], 400)
+                progress = dict(seconds=1, watched=False, session="qa-session", revision=1)
+                valid = dict(progress=progress, expected=dict(seconds=0, watched=False, session="", revision=0), playbackToken="")
+                for invalid in [{**valid, "progress": {**progress, "session": value}},
+                                {**valid, "playbackToken": value}]:
+                    self.assertEqual(self.send_request("PUT", "/api/v1/items/loading-video/progress/sync",
+                        json.dumps(invalid).encode())[0][0], 400)
 
     def test_invalid_cli_never_binds(self):
         script = Path(__file__).with_name("ios-playback-fixture.py")

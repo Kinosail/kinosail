@@ -4,6 +4,7 @@ import math
 import re
 import sys
 import time
+import unicodedata
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
@@ -39,7 +40,7 @@ VIEWER = dict(server="Disposable playback fixture", serverId="ios-playback-fixtu
 
 
 def text(value, cap, empty=False):
-    if not isinstance(value, str) or len(value.encode("utf-8")) > cap or (not empty and not value.strip()) or any(ord(c) < 32 for c in value):
+    if not isinstance(value, str) or len(value.encode("utf-8")) > cap or (not empty and not value.strip()) or any(unicodedata.category(c) in ("Cc", "Cf") for c in value):
         raise ValueError("Invalid text")
     return value
 
