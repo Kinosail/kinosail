@@ -268,13 +268,6 @@ func requestedHLSStart(request *http.Request) (int, error) {
 	return start, nil
 }
 
-func hlsURIWithQuery(uri, query string) string {
-	if strings.Contains(uri, "?") {
-		return uri + "&" + query
-	}
-	return uri + "?" + query
-}
-
 func (manager *hlsManager) prepareRecipePlaylist(writer http.ResponseWriter, request *http.Request, item library.Item, recipe hlsRecipe) bool {
 	prepareContext := context.WithValue(manager.ctx, requestActivityKey{}, &requestActivity{id: requestActivityID(request.Context()), playbackSession: requestPlaybackSession(request.Context())})
 	prepareContext = context.WithValue(prepareContext, viewerContextKey{}, currentViewer(request))

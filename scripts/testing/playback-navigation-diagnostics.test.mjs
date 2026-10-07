@@ -62,3 +62,11 @@ test("native list and watched mutations expose only route classes, never item id
  const rows=(await probe.snapshot()).playback;assert.deepEqual(rows.map(r=>r.path),["/list","/watched"]);assert.ok(rows.every(r=>r.method==="POST"));
  assert.doesNotMatch(JSON.stringify(rows),/0123456789abcdef|private-synthetic-marker|token/);probe.stop();
 });
+
+test("playback marker rejects escaped duplicate and escaped unknown field names",async()=>{
+ const page=new Page(),probe=navigationDiagnostics(page,"https://owned.fixture");probe.observePlayback();
+ for(const tail of ['"\\u0065vent":"playing"','"\\u0073ecret":"private-synthetic-marker"']) {
+  emit(page,"debug","kinosail-playback-lifecycle "+JSON.stringify(marker).slice(0,-1)+","+tail+"}");
+ }
+ assert.equal((await probe.snapshot()).playback.length,0);probe.stop();
+});

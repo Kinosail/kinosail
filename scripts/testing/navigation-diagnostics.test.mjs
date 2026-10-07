@@ -273,3 +273,14 @@ test("setup document records are idempotent and strictly reject ambiguous or mal
  const value=await probe.snapshot();assert.deepEqual(value.documents.map(record=>record.kind),["start","dcl","load"]);
  assert.equal(value.documents.at(-1).setupPath,true);assert.equal(value.documents.at(-1).setupForm,true);assert.equal(value.documents.at(-1).source,"unverified-console");probe.stop();
 });
+
+test('document witnesses reject escaped duplicate and unknown fixed field names', async () => {
+ const page=new Page();page.addInitScript=async()=>{};
+ const probe=navigationDiagnostics(page,'http://localhost:39060');await probe.observeDocument();
+ const valid={kind:'start',main:true,loginPath:true,setupPath:false,setupForm:false,readyState:'loading',timeOrigin:1000,elapsedMs:0,loginForm:false};
+ for(const tail of ['"\\u006bind":"load"','"\\u0073ecret":"private-synthetic-marker"']) {
+  const raw=JSON.stringify(valid).slice(0,-1)+','+tail+'}';
+  page.emit('console',{text:()=> 'KINOSAIL_NAV_DOCUMENT '+raw});
+ }
+ assert.equal((await probe.snapshot()).documents.length,0);probe.stop();
+});

@@ -88,3 +88,10 @@ func (manager *hlsManager) readHLSRecipeManifest(directory string) ([]byte, erro
 	}
 	return copiedHLSCacheFile(root, "index.m3u8", 1<<20)
 }
+
+func hlsURIWithQuery(uri, query string) string {
+	if strings.Contains(uri, "?") {
+		return uri + "&" + query
+	}
+	return uri + "?" + query
+}

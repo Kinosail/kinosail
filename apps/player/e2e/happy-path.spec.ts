@@ -9,7 +9,7 @@ test.describe.configure({ retries: 0 });
 test("Owner can set up, create a passkey, find, play, resume, curate, install, and sign back in", { tag: "@smoke" }, async ({ page }, testInfo) => {
   // Full onboarding, playback, accessibility, and offline checks share this budget.
   test.setTimeout(90_000);
-  const diagnostics = testInfo.project.use.browserName === "webkit"
+  const diagnostics = testInfo.project.use.defaultBrowserType === "webkit"
     ? navigationDiagnostics(page, testInfo.project.use.baseURL) : undefined;
   diagnostics?.observePlayback();
   let failure: unknown;

@@ -155,7 +155,7 @@ export function navigationDiagnostics(page, baseURL) {
           if (!text.startsWith("kinosail-playback-lifecycle ")) return;
           const raw = text.slice(27), value = JSON.parse(raw);
           const fields = ["event", "source", "visible", "position", "ready", "network", "paused", "pip"];
-          const keys = [...raw.matchAll(/"([^"\\]+)"\s*:/g)].map(match => match[1]);
+          const keys = [...raw.matchAll(/"((?:[^"\\]|\\.)*)"\s*:/g)].map(match => match[1]);
           if (!value || typeof value !== "object" || keys.length !== fields.length || new Set(keys).size !== fields.length ||
               Object.keys(value).length !== fields.length || keys.some(key => !fields.includes(key)) ||
               !["pagehide-capture", "pagehide-after-load", "navigation", "play", "pause", "playing", "seeking", "seeked", "loadedmetadata", "emptied", "error"].includes(value.event) ||
@@ -180,7 +180,7 @@ export function navigationDiagnostics(page, baseURL) {
           if (typeof text !== "string" || text.length > 1024 || !text.startsWith("KINOSAIL_NAV_DOCUMENT ")) return;
           const raw = text.slice(22), value = JSON.parse(raw);
           const fields = ["kind", "main", "loginPath", "setupPath", "readyState", "timeOrigin", "elapsedMs", "loginForm", "setupForm"];
-          const keys = [...raw.matchAll(/"([^"\\]+)"\s*:/g)].map(match => match[1]);
+          const keys = [...raw.matchAll(/"((?:[^"\\]|\\.)*)"\s*:/g)].map(match => match[1]);
           if (!value || typeof value !== "object" || keys.length !== fields.length || new Set(keys).size !== fields.length ||
               keys.some(key => !fields.includes(key)) || !["start", "dcl", "load"].includes(value.kind) || value.main !== true ||
               typeof value.loginPath !== "boolean" || typeof value.loginForm !== "boolean" ||
