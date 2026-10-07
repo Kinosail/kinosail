@@ -54,3 +54,24 @@ test('public reader and timestamp model limits reject before PUT',async()=>{
 test('valid public reader/session/time boundaries remain accepted',async()=>{
  for(const prior of [{},{readerOffset:1,readerPage:10000000},{session:'x'.repeat(128)},{updated:'0001-01-01T00:00:00Z'},{updated:'2026-10-07T15:42:10.123456789Z'}]){const p=reviewPageFor(prior);await prepareSavedPositionBaseline(p,watch);assert.equal(p.calls.length,1);}
 });
+
+import {checkpointReadWitness,attachCheckpointBoundary} from '../../apps/player/e2e/checkpoint-progress.ts';
+test('baseline evidence reports wire types and omitted-zero without private data',()=>{
+ assert.deepEqual(checkpointReadWitness({watched:true,revision:2}),{secondsPresent:false,secondsType:'missing',secondsFinite:false,seconds:'unavailable',watched:true,revision:2});
+ for(const state of [{seconds:'synthetic-private-marker'},{seconds:null},{seconds:NaN},{seconds:Infinity},{seconds:{}},null,Array(10000).fill('private')])assert.doesNotMatch(JSON.stringify(checkpointReadWitness(state)),/private|marker/);
+});
+test('bounded rejected/stalled renderer or attachment cannot replace original outcome',async()=>{
+ for(const kind of ['renderer-reject','renderer-stall','attach-reject','attach-stall']){
+  let attached;
+  const page={evaluate:()=>kind==='renderer-reject'?Promise.reject(Error('synthetic-private')):kind==='renderer-stall'?new Promise(()=>{}):Promise.resolve({paused:true,ended:true,duration:30,currentTime:30,dataStart:29.687579807,private:'synthetic-private'})};
+  const info={attach:(_,value)=>{attached=value;return kind==='attach-reject'?Promise.reject(Error('synthetic-private')):kind==='attach-stall'?new Promise(()=>{}):Promise.resolve();}};
+  const began=performance.now();await attachCheckpointBoundary(page,info,checkpointReadWitness({watched:true,revision:2}),30,30);
+  assert.ok(performance.now()-began<800);assert.doesNotMatch(JSON.stringify(attached) || '',/synthetic-private/);
+ }
+});
+
+test('untrusted boundary wire fields cannot expose arbitrary strings or extra fields',async()=>{
+ let attached;const page={evaluate:async()=>({})},info={attach:async(_,v)=>{attached=v;}};
+ await attachCheckpointBoundary(page,info,{private:'synthetic-private',seconds:'synthetic-private',bodySHA256:'synthetic-private',secondsType:'synthetic-private'},NaN,Infinity);
+ assert.doesNotMatch(attached.body,/synthetic-private|\"private\"/);
+});

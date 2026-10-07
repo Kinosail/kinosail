@@ -116,7 +116,9 @@ for (const renderer of ['ready', 'rejected', 'stalled', 'invalid']) test(`nonthr
     mainFrame() {return this;}
     url() {return 'https://owned.fixture/watch/0123456789abcdef';}
     async goto(path, options) {calls.push(['goto', path, options]);}
-    async evaluate() {
+    async evaluate(callback) {
+      // The independent navigation snapshot is not the media idle snapshot.
+      if (String(callback).includes('libraryMarker')) return {readyState:'complete'};
       if (this.theaterPage) calls.push(['witness']);
       if (this.theaterPage && renderer === 'rejected') throw new Error('private renderer failure');
       if (this.theaterPage && renderer === 'stalled') await new Promise(() => {});
@@ -159,4 +161,50 @@ for (const renderer of ['ready', 'rejected', 'stalled', 'invalid']) test(`nonthr
   assert.ok(calls.findLastIndex(value => value[0] === 'witness') < calls.findIndex(value => value[0] === 'key'), 'snapshot is dispatched before Escape without blocking it');
   assert.deepEqual(calls.filter(value => ['Play', 'Theater', 'mouse', 'wait', 'key'].includes(value[0])), [['Play'], ['Theater'], ['mouse', 0, 0], ['wait', 2700], ['key', 'Escape'], ['wait', 100], ['mouse', 31, 215], ['wait', 200]]);
   assert.ok(contexts.every(value => value.closed)); assert.doesNotMatch(JSON.stringify(value), /synthetic-secret|fixture|0123456789abcdef/);
+});
+
+import vm from "node:vm";
+import {parseControlMarker,installPlaybackObservation,observedTheaterFlow} from "./layout-stability-theater-witness.mjs";
+const marker={event:"toggle-capture",label:"Play",paused:true,ready:0,network:2,position:0,visible:"visible",focusVisible:false};
+const send=value=>"kinosail-theater-control "+JSON.stringify(value);
+test("valid control observation retains only fixed public state and explicitly unverified source",()=>{
+ assert.deepEqual(parseControlMarker(send(marker)),{...marker,source:"unverified-console"});
+});
+test("missing unknown malformed oversized out-of-range and conflicting fields reject",()=>{
+ const missing={...marker};delete missing.ready;
+ for(const value of [missing,{...marker,event:"secret"},{...marker,label:"secret"},{...marker,paused:"true"},{...marker,ready:5},{...marker,network:-1},{...marker,position:-1},{...marker,position:31536001},{...marker,visible:"secret"},{...marker,focusVisible:1},{...marker,extra:"secret"}])assert.equal(parseControlMarker(send(value)),undefined);
+ for(const value of ["kinosail-theater-control {","kinosail-theater-control "+"x".repeat(1025),send(marker).slice(0,-1)+',"ready":1}',send(marker).slice(0,-1)+',"\\u0072eady":1}'])assert.equal(parseControlMarker(value),undefined);
+});
+test("observer bounds records and releases its only listener",async()=>{
+ const page=new EventEmitter();page.addInitScript=async()=>{};const records=[],navigation={observePlayback(){}};
+ const stop=await installPlaybackObservation(page,navigation,records);
+ for(let n=0;n<1000;n++)page.emit("console",{text:()=>send(marker)});
+ assert.equal(records.length,64);stop();assert.equal(page.listenerCount("console"),0);
+ page.emit("console",{text:()=>send(marker)});assert.equal(records.length,64);
+});
+test("observer setup rejection releases owned listener",async()=>{
+ const page=new EventEmitter(),error=new Error("synthetic setup failure");page.addInitScript=async()=>{throw error;};
+ await assert.rejects(installPlaybackObservation(page,{observePlayback(){}},[]),value=>value===error);assert.equal(page.listenerCount("console"),0);
+});
+test("rejected and stalled observation cannot replace the single original rejected navigation",async()=>{
+ for(const kind of ["reject","stall"]){
+  const page=new EventEmitter(),failure=new Error("original navigation failure");let calls=0,actions=0;
+  page.addInitScript=()=>kind==="reject"?Promise.reject(new Error("observer failure")):new Promise(()=>{});
+  const started=performance.now();
+  await assert.rejects(observedTheaterFlow(page,{observePlayback(){}},[],async()=>{calls++;throw failure;}),error=>error===failure);
+  assert.equal(calls,1);assert.equal(actions,0);assert.equal(page.listenerCount("console"),0);assert.ok(performance.now()-started<1000);
+ }
+});
+test("double installation adds one passive listener per native event and never calls playback methods",async()=>{
+ const page=new EventEmitter();let script;
+ page.addInitScript=async value=>{script=value;};await installPlaybackObservation(page,{observePlayback(){}},[]);
+ const registrations=[];let actions=0;const video={play(){actions++;},pause(){actions++;}};
+ const context={window:{},document:{addEventListener:(name,listener,options)=>registrations.push({name,listener,options}),querySelector:()=>video},Symbol,console};
+ vm.runInNewContext(`(${script.toString()})()`,context);vm.runInNewContext(`(${script.toString()})()`,context);
+ assert.equal(registrations.length,9);assert.equal(new Set(registrations.map(record=>record.name)).size,9);assert.ok(registrations.every(record=>record.options.capture));assert.equal(actions,0);
+});
+
+for(const [event,label] of [["toggle-capture","Theater"],["toggle-capture","Exit theater"],["theater-capture","Play"],["theater-capture","Pause"]])test(`contradictory ${event}/${label} produces no record`,async()=>{
+ const text=send({...marker,event,label});assert.equal(parseControlMarker(text),undefined);
+ const page=new EventEmitter();page.addInitScript=async()=>{};const records=[];const stop=await installPlaybackObservation(page,{observePlayback(){}},records);page.emit("console",{text:()=>text});assert.equal(records.length,0);stop();assert.equal(page.listenerCount("console"),0);
 });

@@ -1,5 +1,5 @@
 import {randomUUID} from "node:crypto";
-import type {Page} from '@playwright/test';
+import type {Page, TestInfo} from '@playwright/test';
 
 // PlaybackState omits zero seconds. Present values must stay numeric; coercion
 // would let malformed public responses satisfy the persistence oracle.
@@ -50,4 +50,35 @@ export async function prepareSavedPositionBaseline(page: Page, watch: string) {
   const accepted = (await after.json()).item.progress, afterSeconds = checkpointSeconds(accepted);
   if (afterSeconds !== 0 || accepted.watched === true || accepted.session !== session || accepted.revision !== 1) throw new Error('Fixture baseline was not accepted');
   return {beforeSeconds, afterSeconds};
+}
+
+// Diagnostic values are fixed public scalars, never session identifiers or raw
+// response bodies. Missing renderer evidence remains unavailable.
+export function checkpointReadWitness(state: unknown) {
+  const value = state && typeof state === 'object' && !Array.isArray(state) ? state as Record<string, unknown> : {};
+  const secondsPresent = Object.hasOwn(value, 'seconds'), type = value.seconds === null ? 'null' : typeof value.seconds;
+  const secondsFinite = typeof value.seconds === 'number' && Number.isFinite(value.seconds) && value.seconds >= 0 && value.seconds <= 1000000000;
+  return {secondsPresent, secondsType: !secondsPresent ? 'missing' : ['number','string','boolean','object','undefined','null'].includes(type) ? type : 'other',
+    secondsFinite, seconds: secondsFinite ? value.seconds : 'unavailable',
+    watched: typeof value.watched === 'boolean' ? value.watched : 'unavailable',
+    revision: typeof value.revision === 'number' && Number.isSafeInteger(value.revision) && value.revision >= 0 ? value.revision : 'unavailable'};
+}
+
+export async function attachCheckpointBoundary(page: Page, info: TestInfo, wire: unknown, paused: number, duration: number) {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const number = (value: unknown) => typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 1000000000 ? value : 'unavailable';
+  const value = wire && typeof wire === 'object' && !Array.isArray(wire) ? wire as Record<string, unknown> : {};
+  const flag = (key: string) => typeof value[key] === 'boolean' ? value[key] : 'unavailable';
+  const publicWire = {secondsPresent:flag('secondsPresent'), secondsType:['missing','number','string','boolean','object','undefined','null','other'].includes(String(value.secondsType)) ? value.secondsType : 'unavailable',
+    secondsFinite:flag('secondsFinite'), seconds:number(value.seconds), watched:flag('watched'), revision:typeof value.revision === 'number' && Number.isSafeInteger(value.revision) && value.revision >= 0 ? value.revision : 'unavailable',
+    bodySHA256:typeof value.bodySHA256 === 'string' && /^[a-f0-9]{64}$/.test(value.bodySHA256) ? value.bodySHA256 : 'unavailable', sessionMatches:flag('sessionMatches')};
+  try {
+    await Promise.race([(async () => {
+      const media = await page.evaluate(() => {const video = document.querySelector('video');return {paused:video?.paused,ended:video?.ended,duration:video?.duration,currentTime:video?.currentTime,dataStart:video ? Number(video.dataset.start) : undefined};});
+      await info.attach('checkpoint-baseline-boundary', {body:JSON.stringify({wire:publicWire,pausedAtRead:number(paused),duration:number(duration),media:{
+        paused:typeof media.paused === 'boolean' ? media.paused : 'unavailable',ended:typeof media.ended === 'boolean' ? media.ended : 'unavailable',
+        duration:number(media.duration),currentTime:number(media.currentTime),dataStart:number(media.dataStart)}}),contentType:'application/json'});
+    })(), new Promise<void>(resolve => {timer = setTimeout(resolve,500);})]);
+  } catch { /* Observation cannot mask the original baseline outcome. */ }
+  finally {clearTimeout(timer);}
 }

@@ -1,5 +1,5 @@
 import {observeLayoutFlow} from "./layout-stability-flow-page.mjs";
-import {captureTheaterState} from "./layout-stability-theater-witness.mjs";
+import {captureTheaterState, observedTheaterFlow} from "./layout-stability-theater-witness.mjs";
 // Real HTMX bodies; only the explicitly labelled transport failure is injected.
 import {measureSubtitleSearch} from "./layout-stability-subtitle-search.mjs";
 import {measureSubtitleBackground} from "./layout-stability-subtitle-background.mjs";
@@ -98,6 +98,8 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
   const context = await browser.newContext({...options,viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce"});
   probe.stage = "theater-idle-exit";
   await observeLayoutFlow(context, options.baseURL, probe, async (page, navigation) => {
+    const controls = [];
+    await observedTheaterFlow(page, navigation, controls, async () => {
     probe.operationPhase = "navigation";
     navigation.markNavigation(watchPath);
     await page.goto(watchPath,{waitUntil:"domcontentloaded"});
@@ -112,14 +114,15 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
       await page.mouse.move(0,0);const idleStarted = performance.now();await page.waitForTimeout(2700);
       const elapsedMs = Math.min(600000, Math.max(0, Math.round(performance.now() - idleStarted)));
       const hiddenAfterIdle=await page.locator(".player-stage-toolbar").evaluate(n=>n.hidden);
-      const afterIdleState = captureTheaterState(page);
+      const afterIdleState = captureTheaterState(page), playback = navigation.snapshot();
       await page.keyboard.press("Escape");await page.waitForTimeout(100);
       const visibleAfterExit=await page.locator(".player-stage-toolbar").isVisible();
       const before=await page.locator(".media-stage").boundingBox();
       const stage=await page.locator(".media-stage").boundingBox();await page.mouse.move(stage.x+15,stage.y+15);await page.waitForTimeout(200);
       const after=await page.locator(".media-stage").boundingBox();
-      results.push({flow:"theater-idle-exit",hiddenAfterIdle,visibleAfterExit,before,after,witness:{before:beforeState,afterIdle:await afterIdleState,elapsedMs},stable:hiddenAfterIdle&&visibleAfterExit&&JSON.stringify(before)===JSON.stringify(after)});
+      results.push({flow:"theater-idle-exit",hiddenAfterIdle,visibleAfterExit,before,after,witness:{before:beforeState,afterIdle:await afterIdleState,elapsedMs,controls:[...controls],playback:(await playback).playback},stable:hiddenAfterIdle&&visibleAfterExit&&JSON.stringify(before)===JSON.stringify(after)});
     } else results.push({flow:"theater-idle-exit",result:"native control mode has no Theater"});
+    });
   });
   if(inspectorPath){
     probe.stage = "inspector-refresh-failure-retry";

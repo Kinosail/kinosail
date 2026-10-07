@@ -1,10 +1,11 @@
 import { expect, test, type Page, type Request as PlaywrightRequest, type TestInfo } from "@playwright/test";
+import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { configureTestInstance, login } from "./test-instance-helpers";
 import { registerNavigationCheckpoints } from "./checkpoint-navigation-cases";
 import { registerResumeCheckpoints } from "./checkpoint-resume-cases";
-import { checkpointSeconds, prepareSavedPositionBaseline } from "./checkpoint-progress";
+import { checkpointSeconds, prepareSavedPositionBaseline, checkpointReadWitness, attachCheckpointBoundary } from "./checkpoint-progress";
 
 // Read-only diagnostics for the page's existing playback state; these declarations emit no JavaScript.
 declare const playbackPreparation: unknown;
@@ -30,10 +31,14 @@ test.beforeEach(async ({page}) => {
   });
 });
 
+const baselineWitness = new WeakMap<Page, ReturnType<typeof checkpointReadWitness> & {bodySHA256:string; sessionMatches?:boolean}>();
 async function checkpoint(page: Page, id: string, session?: string) {
   const response = await page.request.get(`/api/v1/items/${id}`);
   expect(response.status()).toBe(200);
-  const body = await response.json();
+  const bytes = await response.body();
+  expect(bytes.length).toBeLessThanOrEqual(65536);
+  const body = JSON.parse(bytes.toString('utf8'));
+  baselineWitness.set(page, {...checkpointReadWitness(body.item.progress), bodySHA256:createHash('sha256').update(bytes).digest('hex'), ...(session ? {sessionMatches:body.item.progress?.session === session} : {})});
   expect(body.item.progress).toBeTruthy();
   return {seconds: checkpointSeconds(body.item.progress), revision: Number(body.item.progress.revision),
     ...(session ? {sessionMatches: body.item.progress.session === session} : {})};
@@ -122,6 +127,7 @@ async function openMovie(page: Page, observation?: {key: string; iteration: numb
       return !observation || baseline.sessionMatches ? Math.abs(baseline.seconds - paused) : Infinity;
     }).toBeLessThan(0.1);
   } finally {
+    await attachCheckpointBoundary(page, test.info(), baselineWitness.get(page), paused, duration);
     if (observation) {
       const lifecycle = await page.evaluate(key => JSON.parse(sessionStorage.getItem(key) || "[]"), observation.key)
         .catch(() => [{stage: "observation-unavailable"}]);
