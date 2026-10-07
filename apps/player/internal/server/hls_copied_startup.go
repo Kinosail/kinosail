@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/playback"
@@ -189,4 +190,42 @@ func copiedHLSRendition(root *os.Root) (string, error) {
 		return "", errCopiedHLSIndex
 	}
 	return selected, nil
+}
+
+// The actual retained output selection controls the enclosing master writer.
+type copiedHLSOutputDecisionKey struct{}
+
+type copiedHLSOutputDecision struct {
+	once  sync.Once
+	ready chan bool
+}
+
+func (decision *copiedHLSOutputDecision) set(staged bool) {
+	decision.once.Do(func() { decision.ready <- staged })
+}
+
+func (manager *hlsManager) publishCopiedHLSWorker(ctx context.Context, source, directory, policy string, quality PlaybackQuality, number int, encode func(context.Context) error) error {
+	decision := &copiedHLSOutputDecision{ready: make(chan bool, 1)}
+	ctx = context.WithValue(ctx, copiedHLSOutputDecisionKey{}, decision)
+	results, stop := playback.StartHLSWorker(ctx, func(ctx context.Context) error {
+		defer decision.set(true) // Early admission/selection failure never publishes a master.
+		return encode(ctx)
+	})
+	defer stop() // Preserve the existing cancellation and worker join owner.
+	if number > 0 {
+		return <-results
+	}
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	case staged := <-decision.ready:
+		if !staged {
+			return publishVariants(ctx, source, directory, policy, []PlaybackQuality{quality}, results, 1, false)
+		}
+	}
+	result := <-results
+	if result == nil {
+		hlsObservationFor(ctx).emit("media_ready", "")
+	}
+	return result
 }

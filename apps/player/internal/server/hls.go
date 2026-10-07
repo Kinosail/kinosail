@@ -174,14 +174,9 @@ func (manager *hlsManager) encodeVariants(ctx context.Context, item library.Item
 	window.subtitleTime = start
 	if recipe.mode != "transcode" {
 		quality := sourceQuality(facts, recipe.maxBitrate)
-		results, stop := playback.StartHLSWorker(ctx, func(ctx context.Context) error {
+		return manager.publishCopiedHLSWorker(ctx, item.Path, directory, options.Cache, quality, startNumber, func(ctx context.Context) error {
 			return manager.encodeVariant(ctx, item, directory, quality.Label, strconv.Itoa(quality.Width), strconv.FormatInt((quality.Bitrate-128_000)/1000, 10)+"k", "128k", facts.Duration, options, recipe, window, start, startNumber)
 		})
-		defer stop()
-		if startNumber > 0 {
-			return <-results
-		}
-		return publishVariants(ctx, item.Path, directory, options.Cache, []PlaybackQuality{quality}, results, 1, false)
 	}
 	if err := playback.BindHLSEncoder(directory, options, startNumber > 0); err != nil {
 		return err

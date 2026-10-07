@@ -51,6 +51,9 @@ func (manager *hlsManager) prepareCopiedHLSOutput(ctx context.Context, directory
 	if err != nil {
 		return "", "", nil, err
 	}
+	if decision, ok := ctx.Value(copiedHLSOutputDecisionKey{}).(*copiedHLSOutputDecision); ok {
+		decision.set(output.stage != nil)
+	}
 	return output.directory, output.playlist, output, nil
 }
 
