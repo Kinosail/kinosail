@@ -18,7 +18,7 @@ def unfiltered_installation_control(run, directory, case, deadline):
     check(hashlib.sha256(raw).hexdigest() == case['installationCertificate']['installedArgvSHA256'], 'installation_actual_recipe_hash')
     arguments = json.loads(raw)
     position = arguments.index('-bsf:a')
-    check(arguments[position + 1] == 'noise=amount=0:drop=lt(pts\\,2048)', 'installation_exact_filter')
+    check(arguments[position + 1] == 'noise=amount=0:drop=lt(pts\\,48128)', 'installation_exact_filter')
     del arguments[position:position + 2]
     root = Path(arguments[-1]).parents[2]
     canonical, initialization = asset_snapshot(root / 'audio/init.mp4', 2 << 20)
@@ -47,12 +47,24 @@ def unfiltered_installation_control(run, directory, case, deadline):
     path = stage / 'unfiltered.mp4'
     path.write_bytes(data)
     result['packets'] = packet_evidence(run, path)
+    streams = json.loads(run(['ffprobe', '-v', 'error', '-select_streams', 'a:0', '-show_entries',
+        'stream=time_base', '-of', 'json', str(path)]))['streams']
+    check(len(streams) == 1 and streams[0]['time_base'] == '1/48000', 'installation_raw_output_timebase')
+    result.update(outputStreamTimeBase=streams[0]['time_base'],
+        relativeGridInference='Output PTS minus output offset scaled to48000 samples; encoder input timebase not directly measured.')
+    offset = case['installationCertificate']['outputOffsetSeconds']
+    check(all(math.isfinite(float(v['pts_time'])) and
+        abs((float(v['pts_time']) - offset) * 48000 - (n * 1024 - 1024)) <= 0.06 and
+        v['pts_time'] == v['dts_time'] and not v.get('side_data_list') and
+        0 < float(v['duration_time']) <= 1024 / 48000 + 0.000001
+        for n, v in enumerate(result['packets'])), 'installation_raw_grid')
     pcm, facts = native_pcm(path, deadline, stage)
     result.update(nativeEOF=facts, pcmSHA256=hashlib.sha256(pcm).hexdigest(),
-        exactFilteredSuffix=case['refillNativeEOF']['packets'] == result['packets'][3:],
+        exactFilteredSuffix=case['refillNativeEOF']['packets'] == result['packets'][48:],
         sourceUnchanged=source_snapshot(source) == before,
         canonicalInitUnchanged=asset_snapshot(root / 'audio/init.mp4', 2 << 20)[1] == initialization)
-    check(len(result['packets']) == 98 and facts['completeEOFAccounted'] and result['exactFilteredSuffix']
+    check(len(result['packets']) == facts['frames'] == 143 and facts['samples'] == 146432 and
+        facts['completeEOFAccounted'] and facts['decodedClockOrderValid'] and result['exactFilteredSuffix']
         and result['sourceUnchanged'] and result['canonicalInitUnchanged'], 'installation_raw_suffix_or_identity')
     result['result'] = 'qualified'
 
@@ -73,9 +85,9 @@ def installed_refill(arguments, source, directory, output_directory=None):
         str(root / 'audio/segment-%05d.m4s'), str(root / '.seek-4/audio/index.m3u8')]
     check(arguments == expected, 'installation_closed_actual_refill')
     changed = list(arguments)
-    changed[changed.index('-ss') + 1] = '7.936'
-    changed[changed.index('-output_ts_offset') + 1] = str(8 - 2048 / 48000)
-    changed[changed.index('-f'):changed.index('-f')] = ['-bsf:a', 'noise=amount=0:drop=lt(pts\\,2048)']
+    changed[changed.index('-ss') + 1] = '6.976'
+    changed[changed.index('-output_ts_offset') + 1] = str(8 - 48128 / 48000)
+    changed[changed.index('-f'):changed.index('-f')] = ['-bsf:a', 'noise=amount=0:drop=lt(pts\\,48128)']
     raw, altered = json.dumps(arguments).encode(), json.dumps(changed).encode()
     check(len(raw) <= 8192 and len(altered) <= 8192, 'installation_argv_bound')
     target = Path(output_directory) if output_directory is not None else directory
@@ -83,8 +95,8 @@ def installed_refill(arguments, source, directory, output_directory=None):
     certificate = {'result': 'closed-transformation', 'transformationCount': 1,
         'sourceSHA256': eligibility['sourceSHA256'], 'selectedAudio': eligibility['audio'],
         'originalArgvSHA256': hashlib.sha256(raw).hexdigest(), 'installedArgvSHA256': hashlib.sha256(altered).hexdigest(),
-        'sourceSeekSeconds': 7.936, 'outputOffsetSeconds': 8 - 2048 / 48000,
-        'droppedPTSBelowSamples': 2048, 'startNumber': 4, 'onlyChangedOptions': ['ss', 'output_ts_offset', 'bsf:a']}
+        'sourceSeekSeconds': 6.976, 'warmupSourceSamples': 49152, 'outputOffsetSeconds': 8 - 48128 / 48000,
+        'droppedPTSBelowSamples': 48128, 'startNumber': 4, 'onlyChangedOptions': ['ss', 'output_ts_offset', 'bsf:a']}
     with (target / 'installation-certificate.json').open('x') as output:
         output.write(json.dumps(certificate))
     with (target / 'installed-recipe-private.json').open('xb') as output:
