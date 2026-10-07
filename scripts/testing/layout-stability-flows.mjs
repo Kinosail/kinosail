@@ -1,4 +1,5 @@
 import {observeLayoutFlow} from "./layout-stability-flow-page.mjs";
+import {captureTheaterState} from "./layout-stability-theater-witness.mjs";
 // Real HTMX bodies; only the explicitly labelled transport failure is injected.
 import {measureSubtitleSearch} from "./layout-stability-subtitle-search.mjs";
 import {measureSubtitleBackground} from "./layout-stability-subtitle-background.mjs";
@@ -11,6 +12,11 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
     await observeLayoutFlow(context, options.baseURL, probe, async (page, navigation) => {
       probe.operationPhase = "navigation";
       const destination = inspectorPath ? "/?view=library" : "/?view=movies";
+      let observerTimer;
+      try {
+        await Promise.race([navigation.observeDocument(), new Promise(resolve => {observerTimer = setTimeout(resolve, 500);})]);
+      } catch { /* Observation setup cannot replace the original navigation. */ }
+      finally {clearTimeout(observerTimer);}
       navigation.markNavigation(destination);
       await page.goto(destination,{waitUntil:"domcontentloaded"});
       probe.operationPhase = "search";
@@ -99,17 +105,20 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
     probe.media = await page.locator("video").evaluate(video=>({readyState:video.readyState,errorCode:video.error?.code,mp4:video.canPlayType('video/mp4; codecs="avc1.42E01E"')}));
     const theater = page.locator("[data-theater]");
     if (await theater.isVisible()) {
+      const beforeState = await captureTheaterState(page);
       await page.locator("video").evaluate(video=>{video.loop=true;});
       if(await page.locator("video").evaluate(video=>video.paused))await page.getByRole("button",{name:"Play",exact:true}).first().click();
       await theater.click();
-      await page.mouse.move(0,0);await page.waitForTimeout(2700);
+      await page.mouse.move(0,0);const idleStarted = performance.now();await page.waitForTimeout(2700);
+      const elapsedMs = Math.min(600000, Math.max(0, Math.round(performance.now() - idleStarted)));
       const hiddenAfterIdle=await page.locator(".player-stage-toolbar").evaluate(n=>n.hidden);
+      const afterIdleState = captureTheaterState(page);
       await page.keyboard.press("Escape");await page.waitForTimeout(100);
       const visibleAfterExit=await page.locator(".player-stage-toolbar").isVisible();
       const before=await page.locator(".media-stage").boundingBox();
       const stage=await page.locator(".media-stage").boundingBox();await page.mouse.move(stage.x+15,stage.y+15);await page.waitForTimeout(200);
       const after=await page.locator(".media-stage").boundingBox();
-      results.push({flow:"theater-idle-exit",hiddenAfterIdle,visibleAfterExit,before,after,stable:hiddenAfterIdle&&visibleAfterExit&&JSON.stringify(before)===JSON.stringify(after)});
+      results.push({flow:"theater-idle-exit",hiddenAfterIdle,visibleAfterExit,before,after,witness:{before:beforeState,afterIdle:await afterIdleState,elapsedMs},stable:hiddenAfterIdle&&visibleAfterExit&&JSON.stringify(before)===JSON.stringify(after)});
     } else results.push({flow:"theater-idle-exit",result:"native control mode has no Theater"});
   });
   if(inspectorPath){

@@ -19,9 +19,15 @@ function totp(): string {
 export async function login(page: import("@playwright/test").Page, info?: import("@playwright/test").TestInfo) {
   const navigation = navigationDiagnostics(page,info?.project.use.baseURL);
   try {
+  let setupTimer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    await Promise.race([navigation.observeDocument(), new Promise(resolve => {setupTimer = setTimeout(resolve, 500);})]);
+  } catch { /* Observation setup cannot replace the original navigation. */ }
+  finally {clearTimeout(setupTimer);}
   await page.addInitScript(() => {
     if ("PublicKeyCredential" in window) Object.defineProperty(PublicKeyCredential, "isConditionalMediationAvailable", { value: async () => false });
   });
+  navigation.markNavigation("/login?next=/");
   await page.goto("/login?next=/", { waitUntil: "domcontentloaded" });
   await page.getByLabel("Name").fill("Owner");
   await page.getByLabel("Password", { exact: true }).fill("test-instance-password");
@@ -33,7 +39,13 @@ export async function login(page: import("@playwright/test").Page, info?: import
   }
   await expect(page).toHaveURL("/");
   } catch (error) {
-    await info?.attach("subtitle-login-navigation-failure", {contentType:"application/json", body:JSON.stringify(await navigation.snapshot(error))});
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      const body = JSON.stringify(await navigation.snapshot(error));
+      await Promise.race([info?.attach("subtitle-login-navigation-failure", {contentType:"application/json", body}),
+        new Promise(resolve => {timer = setTimeout(resolve, 500);})]);
+    } catch { /* Diagnostics cannot replace the original action failure. */ }
+    finally {clearTimeout(timer);}
     throw error;
   } finally {navigation.stop();}
 }

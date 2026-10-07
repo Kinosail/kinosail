@@ -38,7 +38,7 @@ os.link(media / "Layout Example.en.srt", media / "Layout Example.fr.srt")
 results = {}
 initial_diff_hash = hashlib.sha256(subprocess.check_output(["git", "diff", "HEAD"], cwd=root)).hexdigest()
 initial_scripts = {name: hashlib.sha256((root / "scripts/testing" / name).read_bytes()).hexdigest()
-                   for name in ["test-layout-stability-local.py", "layout-stability-local.mjs", "layout-stability-flows.mjs", "layout-stability-bookmarks.mjs", "layout-stability-subtitle-search.mjs", "layout-stability-subtitle-background.mjs", "navigation-diagnostics.mjs", "layout-stability-routing.mjs", "layout-stability-failure.mjs", "layout-stability-flow-page.mjs", "layout-stability-diagnostic-snapshots.mjs"]}
+                   for name in ["test-layout-stability-local.py", "layout-stability-local.mjs", "layout-stability-flows.mjs", "layout-stability-bookmarks.mjs", "layout-stability-subtitle-search.mjs", "layout-stability-subtitle-background.mjs", "navigation-diagnostics.mjs", "layout-stability-routing.mjs", "layout-stability-failure.mjs", "layout-stability-flow-page.mjs", "layout-stability-diagnostic-snapshots.mjs", "layout-stability-theater-witness.mjs"]}
 settings = {}
 for key, allowed, default in (
         ("KINOSAIL_LAYOUT_APPS", {"player", "subtitles", "player,subtitles", "subtitles,player"}, "player,subtitles"),

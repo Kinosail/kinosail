@@ -90,7 +90,7 @@ class WorkflowSecurityTests(unittest.TestCase):
 
     def test_login_failure_observer_contracts_run_after_browser_dependencies(self):
         browser = (WORKFLOWS / 'app.yml').read_text().split('  browser:')[1].split('  required:')[0]
-        command = 'node --test scripts/testing/subtitle-login-navigation.test.mjs'
+        command = 'node --test scripts/testing/subtitle-login-navigation.test.mjs scripts/testing/subtitle-dashboard-navigation.test.mjs'
         self.assertFalse((ROOT / 'apps/subtitles/e2e/test-instance-navigation.test.mjs').exists(),
                          'Node-only contracts must not be discovered as Playwright journeys')
         step = browser.split('      - name: Verify login navigation failure diagnostics')[1].split('      - ')[0]
@@ -116,7 +116,7 @@ class WorkflowSecurityTests(unittest.TestCase):
         self.assertIn('      - run: ' + command, (WORKFLOWS / 'ci.yml').read_text())
         self.assertIn('\t@' + command, (ROOT / 'Makefile').read_text())
         launcher = (ROOT / 'scripts/testing/test-layout-stability-local.py').read_text()
-        for name in ('layout-stability-routing.mjs', 'layout-stability-failure.mjs', 'layout-stability-flow-page.mjs', 'layout-stability-diagnostic-snapshots.mjs'):
+        for name in ('layout-stability-routing.mjs', 'layout-stability-failure.mjs', 'layout-stability-flow-page.mjs', 'layout-stability-diagnostic-snapshots.mjs', 'layout-stability-theater-witness.mjs'):
             self.assertIn('"' + name + '"', launcher)
         self.assertIn('import "./layout-response-lifecycle-tests";',
                       (ROOT / 'apps/player/e2e/layout-stability.spec.ts').read_text())
