@@ -32,6 +32,7 @@ func Decide(facts MediaFacts, client ClientCapabilities, policy ViewerPolicy, in
 	limit := MinimumPositive(client.MaxBitrate, policy.MaxBitrate, intent.MaxBitrate)
 	plan.MaxBitrate = limit
 	compatible := playbackCompatibility(facts, client, audio, limit)
+	plan.AudioCompatibilityRequired = !compatible.audio
 	if !compatible.hdr {
 		plan.ColorMode = "tone-map-sdr"
 	}

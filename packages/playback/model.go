@@ -86,6 +86,8 @@ type PlaybackPlan struct {
 	Qualities             []PlaybackQuality `json:"qualities,omitempty"`
 	MarkerMode            string            `json:"markerMode,omitempty"`
 	Timeline              Timeline          `json:"timeline,omitempty"`
+
+	AudioCompatibilityRequired bool `json:"audioCompatibilityRequired,omitempty"`
 }
 
 type PlaybackQuality struct {
