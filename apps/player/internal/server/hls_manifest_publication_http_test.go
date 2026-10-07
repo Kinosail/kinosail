@@ -17,8 +17,9 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-// This is a registered real-HTTP concurrency regression, not a deterministic
-// scheduler: the descriptor test owns the exact open/rename/read window.
+// Registered real HTTP must deliver cached bytes after each complete atomic
+// publication. The descriptor test owns the exact concurrent read/rename window;
+// unsynchronized stress could hit the conservative pre-open rejection boundary.
 func TestHLSHotManifestHTTPAtomicPublication(t *testing.T) {
 	for _, offset := range []string{"", "-o1400"} {
 		for _, name := range []string{"index.m3u8", "360p/index.m3u8"} {
@@ -91,6 +92,14 @@ func hotManifestHTTPRound(t *testing.T, ctx context.Context, client *http.Client
 	case <-ctx.Done():
 		t.Fatal("publisher did not start")
 	}
+	select {
+	case err := <-publication:
+		if err != nil {
+			t.Fatal(err)
+		}
+	case <-ctx.Done():
+		t.Fatal("publisher did not finish")
+	}
 	request := fixture.request(t, origin+fixture.route+"?playbackSession=cached-session").WithContext(ctx)
 	request.RequestURI = "" // Convert the registered-route request to a real client request.
 	response, err := client.Do(request)
@@ -100,14 +109,6 @@ func hotManifestHTTPRound(t *testing.T, ctx context.Context, client *http.Client
 	body, readErr := io.ReadAll(io.LimitReader(response.Body, 1025))
 	closeErr := response.Body.Close()
 	assertHotManifestResponse(t, response.StatusCode, body, expected, readErr, closeErr)
-	select {
-	case err := <-publication:
-		if err != nil {
-			t.Fatal(err)
-		}
-	case <-ctx.Done():
-		t.Fatal("publisher did not finish")
-	}
 }
 
 func startHotManifestPublisher(ctx context.Context, root *os.Root, name string, data []byte) (chan chan error, chan struct{}) {
