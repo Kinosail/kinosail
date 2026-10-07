@@ -159,6 +159,7 @@ test('positive Matroska reentry decodes the saved scene through native HLS', asy
     expect(frames[0].rgb[1]).toBeGreaterThan(150);
     expect(frames[0].rgb[2]).toBeLessThan(80);
   } finally {
+    try {
     const pageIsWatch = new URL(page.url()).pathname.startsWith('/watch/');
     const nativeState = pageIsWatch ? await page.evaluate(() => {
       const video = document.querySelector('video') as HTMLVideoElement & {webkitDisplayingFullscreen?: boolean, webkitPresentationMode?: string, webkitDecodedFrameCount?: number};
@@ -170,5 +171,9 @@ test('positive Matroska reentry decodes the saved scene through native HLS', asy
         callbackCount: state?.callbacks ?? null, capturedFrames: state?.frames.length ?? null, events: state?.events ?? []};
     }) : null;
     await record({phase: 'final-observation', pageIsWatch, ...(pageIsWatch ? await snapshot() : {}), nativeState, public: await publicPosition()});
+    } catch {
+      // Optional diagnostics must preserve the original playback failure.
+      await record({phase: 'final-diagnostics-unavailable'}).catch(() => {});
+    }
   }
 });
