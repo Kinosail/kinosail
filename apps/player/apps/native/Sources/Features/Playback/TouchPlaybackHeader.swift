@@ -9,10 +9,8 @@ struct TouchPlaybackHeader: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Button(action: close) {
-                Image(systemName: "chevron.down").frame(width: 44, height: 44).contentShape(Rectangle())
-            }
-                .accessibilityLabel("Close player")
+            Button("Close player", systemImage: "chevron.down", action: close)
+                .labelStyle(.iconOnly).frame(width: 44, height: 44)
                 .keyboardShortcut(.cancelAction)
             Text(title)
                 .font(.headline).lineLimit(compact ? 1 : 2).frame(maxWidth: .infinity, alignment: .leading)
