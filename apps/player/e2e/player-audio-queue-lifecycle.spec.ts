@@ -113,3 +113,21 @@ for (const saved of [true, false]) test(`ended offline queue requires its own wa
   }
   expect(await page.evaluate(() => (window as Window & {r08OfflineEnded: {saved: number; watched: boolean}}).r08OfflineEnded)).toEqual({saved: 1, watched: true});
 });
+
+test("returning queue item does not reuse the previous source's played intent", {tag: ["@smoke", "@routed-fault"]}, async ({page}) => {
+  await openAudio(page, "");
+  const writes: string[] = [];
+  page.on("request", request => {
+    if (new URL(request.url()).pathname.startsWith("/progress/")) writes.push(new URL(request.url()).pathname);
+  });
+  await startQueue(page);
+  await page.getByRole("button", {name: "Next track", exact: true}).click();
+  await expect(page.locator("audio")).toHaveAttribute("data-progress", "/progress/next");
+  await expect(page.getByRole("button", {name: "Previous track", exact: true})).toBeEnabled();
+  await page.getByRole("button", {name: "Previous track", exact: true}).click();
+  await expect(page.locator("audio")).toHaveAttribute("data-progress", "/progress/track");
+  await expect(page.getByRole("button", {name: "Next track", exact: true})).toBeEnabled();
+  await page.locator("audio").dispatchEvent("pause");
+  await expect(page.locator("[data-audio-queue-controls]")).not.toHaveAttribute("aria-busy");
+  expect(writes).toEqual(["/progress/track"]);
+});
