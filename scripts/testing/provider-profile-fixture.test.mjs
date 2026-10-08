@@ -91,3 +91,31 @@ test('owned fixture fetch never follows or forwards rejected redirects and respo
   const ordinary = owner().api;
   assert.equal(await ordinary.providerResponse({fetch: async options => {assert.equal(options, undefined); return accepted;}}), accepted);
 });
+
+test('owned native HA pairing form reaches callbacks while foreign and approval writes stay blocked', async () => {
+  for (const project of ['chromium', 'firefox', 'webkit']) {
+    const env = environment(project), {api} = owner(env), contextRoutes = [], pageRoutes = [];
+    await api.isolateProvider({route: async (...args) => contextRoutes.push(args)}, project, env.KINOSAIL_E2E_URL);
+    let nativeCallbacks = 0;
+    await api.providerRoute({route: async (...args) => pageRoutes.push(args)}, '**/settings/home-assistant/pair', async () => nativeCallbacks++);
+    const action = env.KINOSAIL_E2E_URL + '/settings/home-assistant/pair';
+    const accepted = [];
+    await contextRoutes[0][1](request(action, 'POST', accepted));
+    assert.deepEqual(accepted, ['owned']);
+    await pageRoutes[0][1](request(action, 'POST', accepted));
+    assert.equal(nativeCallbacks, 1);
+    for (const [url, method] of [[action, 'PUT'], [action, 'DELETE'], [action + '/other', 'POST'],
+      [env.KINOSAIL_E2E_URL + '/home-assistant/authorize', 'POST'],
+      [env.KINOSAIL_E2E_URL + '/settings/home-assistant/allow', 'POST'],
+      ['https://foreign.invalid/settings/home-assistant/pair', 'POST'],
+      [action.replace(':38127', ':38128'), 'POST'],
+      [action.replace('://localhost', '://Owner:secret@localhost'), 'POST'],
+      [action + '#private', 'POST'], [action + '\n', 'POST'], ['x'.repeat(8193), 'POST']]) {
+      const denied = [];
+      await contextRoutes[0][1](request(url, method, denied));
+      await pageRoutes[0][1](request(url, method, denied));
+      assert.deepEqual(denied, ['blocked', 'blocked']);
+      assert.equal(nativeCallbacks, 1);
+    }
+  }
+});

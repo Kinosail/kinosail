@@ -19,7 +19,7 @@ export function providerProfile(environment: Record<string, string | undefined>)
 }
 const fixture = providerProfile(process.env);
 const writes = new Set([
-  'POST /login', 'POST /settings/home-assistant', 'POST /onboarding/home-assistant',
+  'POST /login', 'POST /settings/home-assistant', 'POST /settings/home-assistant/pair', 'POST /onboarding/home-assistant',
   'POST /onboarding/jellyfin', 'POST /onboarding/trusted-https', 'POST /api/v1/home-assistant/pairings',
   'POST /supporter/display', 'PUT /api/v1/supporter/display', 'PUT /api/v1/settings/home-assistant',
   'PUT /api/v1/settings/jellyfin', 'PUT /api/v1/settings/trusted-https',
