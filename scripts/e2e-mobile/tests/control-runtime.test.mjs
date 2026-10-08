@@ -3,9 +3,37 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, readdirSync, copyFileSync, statSync, chmodSync, rmSync, symlinkSync, linkSync, existsSync, realpathSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
-import { spawnSync } from 'node:child_process';
+import childProcess from 'node:child_process';
 const source = resolve(process.env.KINOSAIL_CONTROL_CONTRACT_SOURCE ?? resolve(import.meta.dirname, '..'));
 const uuid = '12345678-1234-1234-1234-123456789abc';
+const childHarness = String.raw`
+import {appendFileSync, writeFileSync, readFileSync} from 'node:fs';
+const [entry,operation] = process.argv.slice(1);
+if (!['./e2e.config.ts','./tests/phone.e2e.ts'].includes(entry) ||
+    !['import','replace-control','replace-owner','replace-device-pair'].includes(operation) ||
+    (entry !== './tests/phone.e2e.ts' && operation !== 'import')) throw Error('invalid child selection');
+globalThis.fetch=()=>{appendFileSync('calls.txt','http\n');throw Error('unexpected HTTP');};
+if (entry === './e2e.config.ts') await import('./e2e.config.ts');
+else await import('./tests/phone.e2e.ts');
+if (operation !== 'import') {
+  if (operation === 'replace-device-pair') {
+    for (const name of ['control.json','owned-device.json']) {
+      const path='.e2e/'+name,value=JSON.parse(readFileSync(path));
+      if (name === 'control.json') value.identity.device='aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+      else value.device='aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+      writeFileSync(path,JSON.stringify(value));
+    }
+  } else {
+    const path=operation === 'replace-control' ? '.e2e/control.json' : '.e2e/owned-device.json';
+    const value=JSON.parse(readFileSync(path));
+    if (operation === 'replace-control') value.appPath='foreign';
+    else value.device='foreign';
+    writeFileSync(path,JSON.stringify(value));
+  }
+  await globalThis.phoneCallback({platform:'ios',app:{},
+    device:{installApp(){appendFileSync('calls.txt','install\n');}},screen:{}});
+}
+`;
 function fixture(platform = 'ios') {
   const base = realpathSync(mkdtempSync(join(tmpdir(),'kino-control-contract-'))), project = join(base,'scripts/e2e-mobile'), root = join(project,'.e2e');
   mkdirSync(root,{recursive:true,mode:0o700}); mkdirSync(join(project,'tests'));
@@ -25,7 +53,13 @@ function fixture(platform = 'ios') {
     '@e2e-dev/mobile':`import{appendFileSync}from'node:fs';const mark=(name)=>appendFileSync('calls.txt',name+'\\n');export function mobile(options){mark('builder');return{options}};export function test(name,callback){mark('registration');globalThis.phoneCallback=callback}`,
     'e2e':`export const expect = {};`, 'pngjs':`export const PNG = {};`
   })) {const dir=join(project,'node_modules',name);mkdirSync(dir,{recursive:true});writeFileSync(join(dir,'package.json'),'{"type":"module","exports":"./index.mjs"}');writeFileSync(join(dir,'index.mjs'),body);}
-  const execute = (entry, afterImport = '') => spawnSync(process.execPath,['--input-type=module','-e',`import{appendFileSync,writeFileSync,readFileSync}from'node:fs';globalThis.fetch=()=>{appendFileSync('calls.txt','http\\n');throw Error('unexpected HTTP')};await import(${JSON.stringify(entry)});${afterImport}`],{cwd:project,encoding:'utf8',timeout:10000});
+  const execute = (entry, operation = 'import') => {
+    if (!['./e2e.config.ts','./tests/phone.e2e.ts'].includes(entry) ||
+        !['import','replace-control','replace-owner','replace-device-pair'].includes(operation) ||
+        (entry !== './tests/phone.e2e.ts' && operation !== 'import')) throw Error('invalid child selection');
+    return childProcess.spawnSync(process.execPath,['--input-type=module','-e',childHarness,entry,operation],
+      {cwd:project,encoding:'utf8',timeout:10000});
+  };
   return {base,project,root,control,owned,save,execute,dispose:()=>rmSync(base,{recursive:true,force:true})};
 }
 const cases = {
@@ -89,8 +123,24 @@ for(const [name,mutate]of Object.entries({
  'simulator pending on Android':f=>{f.owned.creationPending={name:'bad'}}
 }))test(`Android rejects ${name} before builder`,()=>{const f=fixture('android');try{mutate(f);f.save();const before=bytes(f);const result=f.execute('./e2e.config.ts');assert.notEqual(result.status,0,result.stderr);assert.equal(existsSync(join(f.project,'calls.txt')),false);assert.deepEqual(bytes(f),before)}finally{f.dispose()}});
 for(const replacement of ['control','owner'])test(`journey execution rechecks replaced ${replacement} before HTTP/install`,()=>{
- const f=fixture();try{const path=join(f.root,replacement==='control'?'control.json':'owned-device.json');const field=replacement==='control'?'appPath':'device';const result=f.execute('./tests/phone.e2e.ts',`const path=${JSON.stringify(path)};const value=JSON.parse(readFileSync(path));value[${JSON.stringify(field)}]='foreign';writeFileSync(path,JSON.stringify(value));await globalThis.phoneCallback({platform:'ios',app:{},device:{installApp(){appendFileSync('calls.txt','install\\n')}},screen:{}});`);assert.notEqual(result.status,0,result.stderr);assert.equal(readFileSync(join(f.project,'calls.txt'),'utf8'),'registration\n')}finally{f.dispose()}
+ const f=fixture();try{const result=f.execute('./tests/phone.e2e.ts','replace-'+replacement);assert.notEqual(result.status,0,result.stderr);assert.equal(readFileSync(join(f.project,'calls.txt'),'utf8'),'registration\n')}finally{f.dispose()}
 });
 test('journey pins discovered device when both control and owner change',()=>{
- const f=fixture();try{const result=f.execute('./tests/phone.e2e.ts',`for(const name of ['control.json','owned-device.json']){const path='.e2e/'+name,value=JSON.parse(readFileSync(path));if(name==='control.json')value.identity.device='aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';else value.device='aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';writeFileSync(path,JSON.stringify(value))};await globalThis.phoneCallback({platform:'ios',app:{},device:{installApp(){appendFileSync('calls.txt','install\\n')}},screen:{}});`);assert.notEqual(result.status,0,result.stderr);assert.equal(readFileSync(join(f.project,'calls.txt'),'utf8'),'registration\n')}finally{f.dispose()}
+ const f=fixture();try{const result=f.execute('./tests/phone.e2e.ts','replace-device-pair');assert.notEqual(result.status,0,result.stderr);assert.equal(readFileSync(join(f.project,'calls.txt'),'utf8'),'registration\n')}finally{f.dispose()}
+});
+
+test('child module and operation reject unknown input before any subprocess or fixture writes',t=>{
+ const f=fixture();try{
+  const before=bytes(f),children=readdirSync(f.root);let spawned=0;
+  t.mock.method(childProcess,'spawnSync',()=>{spawned++;throw Error('subprocess must not start');});
+  for(const [entry,operation] of [
+   [undefined,'import'],[null,'import'],[false,'import'],['','import'],['x'.repeat(4097),'import'],
+   ['../foreign.mjs','import'],['./tests/phone.e2e.ts?extra','import'],['./tests/phone.e2e.ts',''],
+   ['./tests/phone.e2e.ts',null],['./tests/phone.e2e.ts',false],
+   ['./tests/phone.e2e.ts','x'.repeat(4097)],['./tests/phone.e2e.ts',"writeFileSync('foreign','unsafe')"],
+   ['./e2e.config.ts','replace-owner'],['./tests/phone.e2e.ts','unknown']
+  ])assert.throws(()=>f.execute(entry,operation),/invalid child selection/);
+  assert.equal(spawned,0);assert.deepEqual(bytes(f),before);assert.deepEqual(readdirSync(f.root),children);
+  assert.equal(existsSync(join(f.project,'calls.txt')),false);
+ }finally{f.dispose()}
 });
