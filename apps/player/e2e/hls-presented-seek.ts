@@ -1,8 +1,8 @@
 import {test, expect, type Request, type Response} from '@playwright/test';
-import {readFile, writeFile, chmod} from 'node:fs/promises';
+import {writeFile, chmod} from 'node:fs/promises';
 import {join, resolve} from 'node:path';
 import {installPresentedFrames, firstPresentedFrame} from './hls-presented-frame.mjs';
-import {readPresentationState} from './hls-presentation-state.mjs';
+import {readPresentationState, readPresentationMap} from './hls-presentation-state.mjs';
 import {offlineBrowserAPI} from './offline-browser-api.mjs';
 import {fixtureBrowserFetch, decodeFixtureJSON, fixtureWatchProgress} from '../../../scripts/e2e/fixture-response.mjs';
 
@@ -17,9 +17,7 @@ export function registerPresentedSeek() {
   if (origin.protocol !== 'http:' || origin.hostname !== 'localhost' || !origin.port || origin.port === '0'
    || baseURL !== origin.origin || origin.username || origin.password) throw new Error('owned startup origin required');
   const run = process.env.KINOSAIL_STARTUP_RUN!;
-  const rawMap = await readFile(join(run, 'source-frame-map.json'));
-  if (rawMap.length > 65536) throw new Error('source frame map exceeded bound');
-  const source = decodeFixtureJSON(new TextDecoder('utf-8', {fatal: true}).decode(rawMap));
+  const source = readPresentationMap(run, resolve('../../../.verification/startup'));
   const fields = ['schema', 'frameRate', 'frameCount', 'seekSeconds', 'targetFrame', 'prerollFrame', 'sourcePTS',
    'command', 'probe', 'sourceSHA256', 'probeSHA256', 'pixelFormat', 'marker'];
   if (!source || typeof source !== 'object' || Array.isArray(source) || Object.keys(source).sort().join(',') !== fields.sort().join(',')

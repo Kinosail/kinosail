@@ -1,10 +1,15 @@
 import test from 'node:test';
+import {stripTypeScriptTypes} from 'node:module';
+import {runInNewContext} from 'node:vm';
+import {readFile} from 'node:fs/promises';
+import * as presentationFiles from '../../apps/player/e2e/hls-presentation-state.mjs';
 import assert from 'node:assert/strict';
 import {mkdtempSync,mkdirSync,writeFileSync,symlinkSync,chmodSync,rmSync,readFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {readPresentationState} from '../../apps/player/e2e/hls-presentation-state.mjs';
 import {installPresentedFrames, firstPresentedFrame} from '../../apps/player/e2e/hls-presented-frame.mjs';
+import {decodeFixtureJSON} from '../e2e/fixture-response.mjs';
 
 // Isolation failure matrix: corrupt/ambiguous pixels or dimensions; old/pending
 // frames silently discarded; untrusted/change wrong value; callback overflow;
@@ -118,4 +123,40 @@ test('real seek recipe waits for a settled callback and focuses the eligible pub
  assert.match(source,/frames\.some\(\(f: any\) => f\.afterCommit && f\.visible && !f\.pending && f\.frameIndex < 720\)/);
  assert.equal((source.match(/await page\.locator\('\.media-stage'\)\.focus\(\)/g)||[]).length,3);
  assert.equal((source.match(/await page\.keyboard\.press\('Space'\)/g)||[]).length,3);
+});
+
+test('registered HLS case rejects unowned or unbounded frame maps before read/context effects',async()=>{
+ const root=mkdtempSync(join(tmpdir(),'hls-map-')),run=join(root,'20261008T220000Z');mkdirSync(run,{mode:0o700});
+ const mapPath=join(run,'source-frame-map.json'),statePath=join(run,'presentation-auth.json');
+ const valid={schema:1,frameRate:24,frameCount:768,seekSeconds:12.5,targetFrame:300,prerollFrame:288,
+  sourcePTS:Array.from({length:768},(_,i)=>i/24),command:[],probe:[],sourceSHA256:'a'.repeat(64),probeSHA256:'b'.repeat(64),
+  pixelFormat:'yuv420p',marker:'ten binary luminance bits + complement + black/white guards'};
+ const source=stripTypeScriptTypes(readFileSync(new URL('../../apps/player/e2e/hls-presented-seek.ts',import.meta.url),'utf8'))
+  .replace(/^import .*;\n/gm,'').replace(/^export /gm,'');
+ async function invoke(selectedRun){
+  let callback,reads=0,contexts=0;const stopped=new Error('control stops before actual browser');
+  const register=(_,fn)=>{callback=fn;};register.setTimeout=()=>{};
+  const sandbox={test:register,expect:()=>{},URL,Buffer,TextDecoder,join,resolve:()=>root,
+   process:{env:{KINOSAIL_HLS_PRESENTATION_PROOF:'1',KINOSAIL_STARTUP_RUN:selectedRun}},decodeFixtureJSON,
+   readFile:async(...args)=>{reads++;return readFile(...args);},...presentationFiles};
+  runInNewContext(source+'\nregisterPresentedSeek();',sandbox);
+  let failure;try{await callback({baseURL:'http://localhost:12345',browser:{async newContext(){contexts++;throw stopped;}}},{});}catch(error){failure=error;}
+  assert.ok(failure);return {reads,contexts,failure,stopped};
+ }
+ try{
+  writeFileSync(statePath,JSON.stringify({cookies:[],origins:[]}),{mode:0o600});
+  writeFileSync(mapPath,JSON.stringify(valid),{mode:0o600});
+  const admitted=await invoke(run);assert.equal(admitted.contexts,1);assert.equal(admitted.failure,admitted.stopped);
+  for(const selectedRun of [undefined,'relative',run+'x','x'.repeat(4097),join(root,'foreign','20261008T220000Z')]){
+   const rejected=await invoke(selectedRun);assert.equal(rejected.reads,0);assert.equal(rejected.contexts,0);
+  }
+  for(const raw of ['', 'x'.repeat(65537),'{',Buffer.from([255]),'[]','{"schema":1,"schema":1}',JSON.stringify({...valid,unknown:true}),JSON.stringify({...valid,targetFrame:288}),JSON.stringify({...valid,sourcePTS:[-1,...valid.sourcePTS.slice(1)]})]){
+   writeFileSync(mapPath,raw);const rejected=await invoke(run);assert.equal(rejected.reads,0);assert.equal(rejected.contexts,0);
+  }
+  rmSync(mapPath);let rejected=await invoke(run);assert.equal(rejected.reads,0);assert.equal(rejected.contexts,0);
+  const foreign=join(root,'foreign-map');writeFileSync(foreign,JSON.stringify(valid),{mode:0o600});symlinkSync(foreign,mapPath);
+  rejected=await invoke(run);assert.equal(rejected.reads,0);assert.equal(rejected.contexts,0);
+  rmSync(mapPath);writeFileSync(mapPath,JSON.stringify(valid),{mode:0o600});chmodSync(mapPath,0o644);
+  rejected=await invoke(run);assert.equal(rejected.reads,0);assert.equal(rejected.contexts,0);
+ }finally{rmSync(root,{recursive:true,force:true});}
 });
