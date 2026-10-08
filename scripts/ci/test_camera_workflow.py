@@ -94,6 +94,7 @@ class CameraWorkflowTests(unittest.TestCase):
         block = self.block(); source = WORKFLOW.read_text()
         for path in ('apps/player/e2e/camera-profile-fixture.ts',
                      'scripts/ci/library-internal-relay.mjs', 'scripts/ci/browser-fixture-tls.sh',
+                     'scripts/testing/navigation-diagnostics.mjs',
                      'apps/player/scripts/run-library-profile.sh', 'apps/player/scripts/library_profile_admission.py',
                      'apps/player/scripts/generate-test-media.sh', 'apps/player/e2e/pnpm-lock.yaml',
                      'apps/player/Containerfile', 'apps/player/Containerfile.test',

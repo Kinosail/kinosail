@@ -93,6 +93,9 @@ class LibraryWorkflowTests(unittest.TestCase):
         block = source.split('  library-owner:\n', 1)[1].split('\n  hls-navigation:', 1)[0]
         self.assertIn('node --test scripts/testing/library-relay.test.mjs', block)
         self.assertIn("'scripts/ci/library-internal-relay.mjs'", block)
+        self.assertIn("'scripts/testing/navigation-diagnostics.mjs'", block)
+        self.assertIn("'apps/player/e2e/layout-audit-helpers.ts'", block)
+        self.assertIn('scripts/testing/layout-login-navigation.test.mjs', (ROOT/'.github/workflows/app.yml').read_text())
         self.assertIn('fixture-startup.json', block)
         for path in ('scripts/ci/library-internal-relay.mjs', 'scripts/testing/library-relay.test.mjs'):
             self.assertIn('"' + path + '"', source)

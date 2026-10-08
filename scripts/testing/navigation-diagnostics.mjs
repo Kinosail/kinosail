@@ -249,6 +249,7 @@ function diagnosticErrorCategory(error) {
   const categories = [
     ["certificate", ["ERR_CERT_AUTHORITY_INVALID", "SEC_ERROR_UNKNOWN_ISSUER"]],
     ["refused", ["ERR_CONNECTION_REFUSED", "NS_ERROR_CONNECTION_REFUSED"]],
+    ["reset", ["ERR_CONNECTION_RESET", "NS_ERROR_NET_RESET"]],
     ["interrupted", ["ERR_ABORTED", "NS_BINDING_ABORTED"]],
     ["closed", ["Target page, context or browser has been closed"]],
   ];

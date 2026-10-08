@@ -1,3 +1,4 @@
+import { navigationDiagnostics } from "../../../scripts/testing/navigation-diagnostics.mjs";
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
 import { uiElementAttachment, uiElementInventory } from "../../../scripts/testing/ui-element-inventory";
 import { createHmac } from "node:crypto";
@@ -27,7 +28,28 @@ export function totp(): string {
 }
 
 export async function login(page: Page, name = "Owner", password = "test-instance-password") {
-	await page.goto("/login");
+	const info = test.info();
+	const navigation = navigationDiagnostics(page, info.project.use.baseURL);
+	navigation.markNavigation("/login");
+	try {
+		await page.goto("/login");
+	} catch (error) {
+		let timer: ReturnType<typeof setTimeout> | undefined;
+		try {
+			const value = await navigation.snapshot(error);
+			const path = (value: string) => value.startsWith("/static/") ? "/static" : value;
+			const rows = (values: {path: string}[]) => values.slice(-8).map(value => ({...value, path: path(value.path)}));
+			const body = JSON.stringify({path: path(value.path), identity: value.identity, counts: value.counts,
+				pending: rows(value.pending), failed: rows(value.failed), mainFrameRequests: rows(value.mainFrameRequests),
+				mainFrameResponses: rows(value.mainFrameResponses), elapsedMs: value.elapsedMs, errorCategory: value.errorCategory});
+			if (Buffer.byteLength(body) <= 16384) await Promise.race([
+				info.attach("login-navigation-failure", {contentType: "application/json", body}),
+				new Promise(resolve => {timer = setTimeout(resolve, 500);}),
+			]);
+		} catch { /* Observation cannot replace the original navigation failure. */ }
+		finally {clearTimeout(timer);}
+		throw error;
+	} finally {navigation.stop();}
 	await page.getByLabel("Name").fill(name);
 	await page.getByLabel("Password", { exact: true }).fill(password);
 	const code = page.getByLabel("Authentication or recovery code");
