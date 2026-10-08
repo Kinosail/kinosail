@@ -13,7 +13,7 @@ const startupCompletionMarker = ".startup-completion"
 // Called under manager.mu; the lifecycle also covers shutdown, idle expiry,
 // seek/identity replacement and encoder completion, not just startup DELETE.
 func startupJobStopping(job *hlsJob) bool {
-	return job != nil && job.preparation != nil && job.preparation.completeVideo &&
+	return job != nil && job.preparation != nil &&
 		(job.preparation.stopping || job.lifecycle == nil || job.lifecycle.Err() != nil)
 }
 

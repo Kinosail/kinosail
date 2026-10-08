@@ -114,22 +114,25 @@ test.describe("acknowledged Library navigation", () => {
       fail = true;
       await page.getByRole("link", {name: "Back to search results", exact: true}).click({noWaitAfter: true});
       await expect(page.getByRole("button", {name: "Continue without saving", exact: true})).toBeVisible();
+      await expect(media).toHaveJSProperty("paused", true);
       const departurePosition = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
+      const beforeUnsavedDeparture = await checkpoint(page, id, session);
+      expect(beforeUnsavedDeparture.sessionMatches).toBe(true);
+      expect(beforeUnsavedDeparture.revision).toBeGreaterThanOrEqual(recovered.revision);
       await page.getByRole("button", {name: "Continue without saving", exact: true}).click();
       await expect(page).toHaveURL(browsePath);
       const afterUnsavedDeparture = await checkpoint(page, id, session);
-      const fallbackAccepted = afterUnsavedDeparture.revision > recovered.revision;
+      const fallbackAccepted = afterUnsavedDeparture.revision > beforeUnsavedDeparture.revision;
       if (fallbackAccepted) {
         expect(afterUnsavedDeparture.sessionMatches).toBe(true);
         expect(Math.abs(afterUnsavedDeparture.seconds - departurePosition)).toBeLessThan(0.1);
-      } else expect(afterUnsavedDeparture).toEqual(recovered);
+      } else expect(afterUnsavedDeparture).toEqual(beforeUnsavedDeparture);
       await testInfo.attach("failed-library-recovery", {body: JSON.stringify({phase, before, paused, recovered,
-        departurePosition, afterUnsavedDeparture, fallbackAccepted,
+        departurePosition, beforeUnsavedDeparture, afterUnsavedDeparture, fallbackAccepted,
         failure: "synthetic 503 at browser transport boundary", cancelledNavigation: true}),
         contentType: "application/json"});
     } finally { await page.unrouteAll({behavior: "ignoreErrors"}); }
   });
-
 
   test("an existing authentication or policy failure still allows an explicit Library departure", {tag: "@smoke"}, async ({page}, testInfo) => {
     test.skip(phase !== "candidate", "historical sources are reserved for the original checkpoint reproductions");
@@ -214,7 +217,6 @@ test.describe("acknowledged Library navigation", () => {
         elapsedMs, before, saved, expiredWrites, writes, onlineRenewal: false}), contentType: "application/json"});
     } finally { release(); await page.unrouteAll({behavior: "ignoreErrors"}); }
   });
-
 
   test("a newer same-tab destination withdraws a pending Library checkpoint navigation", {tag: "@smoke"}, async ({page}, testInfo) => {
     test.skip(phase !== "candidate", "historical sources are reserved for the original checkpoint reproductions");
