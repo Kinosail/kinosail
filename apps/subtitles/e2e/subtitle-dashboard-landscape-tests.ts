@@ -53,4 +53,28 @@ test("Landscape keeps the current task reachable during pending and failed navig
   }
 });
 
+test("Enlarged settings keep native timeout choices inside the phone and landscape page", async ({ page }, info) => {
+  for (const viewport of [{width: 320, height: 800}, {width: 390, height: 844}, {width: 844, height: 390}]) {
+    await page.setViewportSize(viewport);
+    await page.goto("/settings#session-timeouts");
+    await page.evaluate(() => { document.documentElement.style.fontSize = "200%"; });
+    await page.evaluate(() => document.fonts.ready);
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
+    const choice = page.locator('#session-timeouts select[name="inactiveHours"]').first();
+    await expect(choice).toBeEnabled();
+    await choice.selectOption("1");
+    await expect(choice).toHaveValue("1");
+    const geometry = await page.locator("#session-timeouts select").evaluateAll(nodes => nodes.map(node => {
+      const rect = node.getBoundingClientRect(), parent = node.parentElement!.getBoundingClientRect();
+      return {left: rect.left, right: rect.right, parentLeft: parent.left, parentRight: parent.right};
+    }));
+    for (const box of geometry) {
+      expect(box.left).toBeGreaterThanOrEqual(box.parentLeft - 1);
+      expect(box.right).toBeLessThanOrEqual(box.parentRight + 1);
+    }
+    await info.attach("enlarged-native-timeout-choices", {body: JSON.stringify({viewport, geometry}), contentType: "application/json"});
+    await page.screenshot({path: info.outputPath(`timeout-choices-${viewport.width}.png`)});
+  }
+});
+
 }
