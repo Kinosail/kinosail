@@ -33,6 +33,8 @@ prepare_audio_queue_fixture() {
   repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
   python3 "$repo/scripts/testing/prepare-audio-queue-fixture.py" "$1/R08 Fictional Session"
   chmod -R a+rX "$1/R08 Fictional Session"
+  python3 "$repo/scripts/testing/prepare-queue-loading-intent-fixture.py" "$1/Queue Intent Long Session"
+  chmod -R a+rX "$1/Queue Intent Long Session"
 }
 
 run_library_pagination_journey() {
@@ -87,5 +89,9 @@ run_populated_player_journeys() {
     --required-title 'queued short track resumes its saved position without claiming unplayed progress' \
     --required-title 'ended offline queue requires its own watched acknowledgement: failed' \
     --required-title 'canonical catalog year strings survive queue validation and current-track identity' \
-    -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-watched-startup.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts test-instance-audio-queue.spec.ts player-audio-policy.spec.ts player-audio-queue-lifecycle.spec.ts --grep=@smoke --workers=1
+    --required-title 'real queued track preserves seek arriving before actual metadata' \
+    --required-title 'real queued track preserves stop arriving before actual metadata' \
+    --required-title 'real queued saved35 track preserves seek arriving before actual metadata' \
+    --required-title 'real queued saved35 track preserves stop arriving before actual metadata' \
+    -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-watched-startup.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts test-instance-audio-queue.spec.ts test-instance-queue-loading-intent.spec.ts player-audio-policy.spec.ts player-audio-queue-lifecycle.spec.ts --grep=@smoke --workers=1
 }
