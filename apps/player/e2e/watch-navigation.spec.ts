@@ -60,7 +60,7 @@ for (const path of ["/?view=all", "/"]) test(`${path === "/" ? "Plain root" : "H
   await expect(page.getByRole("link", {name: /\bResume\b/})).toHaveCount(0);
   if (path === "/?view=all") {
     await expect(page.locator("nav.mobile-navigation")).toHaveClass(/has-personal-tabs/);
-    const homeLinks = page.getByRole("link", {name: "Home", exact: true, includeHidden: true});
+    const homeLinks = page.locator("nav.mobile-navigation").getByRole("link", {name: "Home", exact: true, includeHidden: true});
     await expect(homeLinks).toHaveCount(2);
     await expect(homeLinks.first()).toBeHidden();
     const visibleHome = homeLinks.filter({visible: true});
