@@ -83,3 +83,15 @@ exports.firefox={
         result,calls=self.run_probe(CLOSE_FAIL='1')
         self.assertEqual(result.returncode,1); self.assertEqual(json.loads(result.stdout)['cleanup'],'failed')
         self.assertEqual(calls[-1][0],'close')
+
+    def test_missing_and_oversized_arguments_reject_before_url_parsing(self):
+        # Replace the global URL constructor solely to witness whether it was called.
+        bootstrap=self.root/'url-witness.cjs'
+        bootstrap.write_text("global.URL=class {constructor(){require('fs').writeFileSync(process.env.CALLS,'URL parsed');throw Error('URL parsed');}}")
+        for args in ([],['x'*2049,'/owned/firefox','/owned/policies.json'],
+                ['https://localhost:1234','x'*4097,'/owned/policies.json']):
+            with self.subTest(lengths=[len(value) for value in args]):
+                self.log.unlink(missing_ok=True)
+                result=subprocess.run(['node','--require',str(bootstrap),str(self.root/SOURCE.name),*args],
+                    env=self.env,capture_output=True,text=True,timeout=5)
+                self.assertEqual(result.returncode,1);self.assertFalse(self.log.exists())

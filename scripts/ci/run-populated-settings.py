@@ -174,6 +174,42 @@ def verify_results(path, required_titles=None):
     return {'passed': found, 'resultsSHA256': hashlib.sha256(path.read_bytes()).hexdigest()}
 
 
+def read_firefox_probe(raw):
+    if not isinstance(raw, bytes) or not 0 < len(raw) <= 1024:
+        raise ValueError('bounded Firefox diagnostic required')
+    def unique(pairs):
+        value = {}
+        for key, entry in pairs:
+            if key in value: raise ValueError('duplicate Firefox diagnostic key')
+            value[key] = entry
+        return value
+    value = json.loads(raw.decode('utf-8'), object_pairs_hook=unique,
+                       parse_constant=lambda value: (_ for _ in ()).throw(ValueError('invalid diagnostic number')))
+    required = {'activation','category','status','cleanup'}
+    if not isinstance(value, dict) or set(value) not in (required, required | {'errorCode'}):
+        raise ValueError('closed Firefox diagnostic required')
+    allowed = {'activation': ('unverified','strict_browser_https'),
+               'category': ('validation','launch','navigation','certificate','network_reset','redirect','http_status','passed'),
+               'cleanup': ('not_started','closed','failed')}
+    if any(not isinstance(value[key], str) or value[key] not in choices for key, choices in allowed.items()):
+        raise ValueError('invalid Firefox diagnostic enum')
+    status = value['status']
+    if status is not None and (type(status) is not int or not 100 <= status <= 599):
+        raise ValueError('invalid Firefox diagnostic status')
+    codes = ('SEC_ERROR_UNKNOWN_ISSUER','SEC_ERROR_UNTRUSTED_ISSUER','SEC_ERROR_EXPIRED_CERTIFICATE',
+             'SSL_ERROR_BAD_CERT_DOMAIN','NS_ERROR_NET_RESET','unclassified')
+    code = value.get('errorCode')
+    if ('errorCode' in value and (not isinstance(code,str) or code not in codes)
+            or value['category'] == 'passed' and (value['activation'] != 'strict_browser_https' or status != 200 or code is not None)
+            or value['category'] != 'passed' and (value['activation'] != 'unverified' or not isinstance(code,str) or code not in codes)
+            or status is not None and value['cleanup'] == 'not_started'
+            or value['category'] == 'http_status' and (status is None or status == 200)
+            or value['category'] == 'network_reset' and code != 'NS_ERROR_NET_RESET'
+            or value['category'] == 'certificate' and code == 'NS_ERROR_NET_RESET'):
+        raise ValueError('conflicting Firefox diagnostic facts')
+    return value
+
+
 exit_code = 1
 try:
     if library and args.profile == 'fake-provider' and args.project == 'firefox':
@@ -189,8 +225,9 @@ try:
         receipt['firefoxPolicySHA256'] = hashlib.sha256(firefox_policy.native.read_regular(policy, 4096)).hexdigest()
         probe = Path(__file__).resolve().parents[2] / 'apps/player/e2e/strict-firefox-probe.cjs'
         # The child returns a closed diagnosis even on navigation failure; no raw URL or error body.
+        receipt['firefoxTrust'] = {'activation': 'unverified', 'category': 'probe_output', 'status': None, 'cleanup': 'unverified'}
         probe_exit, raw = firefox_policy.native.run(['node', str(probe), args.url, str(executable), str(policy)], timeout=50, check=False)
-        receipt['firefoxTrust'] = json.loads(raw)
+        receipt['firefoxTrust'] = read_firefox_probe(raw)
         receipt['firefoxProbeExitCode'] = probe_exit
         if probe_exit != 0 or receipt['firefoxTrust'] != {'activation': 'strict_browser_https', 'category': 'passed', 'status': 200, 'cleanup': 'closed'}:
             raise RuntimeError('Firefox browser HTTPS trust preflight failed')
