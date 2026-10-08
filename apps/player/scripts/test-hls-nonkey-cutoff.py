@@ -13,7 +13,7 @@ from hls_followon_public import check
 
 ROOT = Path(__file__).resolve().parents[3]
 RUN = ROOT / '.verification/hls-nonkey-cutoff'
-RUN.mkdir(parents=True)
+RUN.mkdir(parents=True, exist_ok=True)
 mode = sys.argv[1] if len(sys.argv) > 1 else 'parent'
 
 
@@ -52,15 +52,16 @@ try:
         command = [sys.executable, str(Path(__file__)), kind]
         if kind == 'term':
             command = ['timeout', '--kill-after=30s', '1s', *command]
+        case = {'cutoff': kind, 'result': 'in-flight'}
+        receipt['cases'].append(case)
         before = time.monotonic()
         process = subprocess.run(command, capture_output=True, timeout=35)
         path = RUN / (kind + '.json')
         with path.open('rb') as stream:
             data = stream.read(65537)
         check(0 < len(data) <= 65536, 'cutoff_receipt_bound')
-        case = json.loads(data)
+        case.update(json.loads(data))
         case.update(exitCode=process.returncode, elapsedSeconds=time.monotonic() - before)
-        receipt['cases'].append(case)
         join = case['ownedProcessJoin']
         check(process.returncode == (124 if kind == 'term' else 1), 'cutoff_expected_exit')
         check(case['failureClass'] == 'bounded_diagnostic_deadline', 'cutoff_explicit_failure')

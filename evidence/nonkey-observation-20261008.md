@@ -104,3 +104,11 @@ The strict control deliberately waitszeroownedworkers before final2s GET.
 Its secondsequential joinedencoder is expected refill, no overlap/leak evidence.
 Actualbefore-cancellation adoption needs separate proof and remains with broad
 startup lifecycle ownership503/509; no root lifecycle mutation here.
+
+Cutoff source cfaf7641/tree7f12ba336a736ac49f1dde3723b9475a09eb6212 independently
+admitted for bounded hosted testing, productionfalse. Run37749806634 controls28
+passed but realfixtureFAILED beforeownedprocess creation: child reentry found
+parent evidence directory alreadyexists; no childreceipt, parentFileNotFoundError.
+Job113219975381 logSHA8699e5b413a6db6f18338282d933d6d82c2072b1252fe867dcb90bcff473ca87.
+Child setup now permits its own existing isolated directory; failed attempt stays.
+MKV16sample result is a start-boundary discrepancy, not provenaudibleloss or EOFdefect.
