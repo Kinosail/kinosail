@@ -189,8 +189,9 @@ class PopulatedHTTPSFixture(unittest.TestCase):
         executable.parent.mkdir(parents=True); executable.write_text('owned executable')
         certificate=self.root/'browser-fixture-ca.crt'; certificate.write_bytes(self.ca.read_bytes())
         (dependency/'package.json').write_text('{"main":"index.cjs"}')
-        (dependency/'index.cjs').write_text("exports.firefox={executablePath:()=>process.env.EXECUTABLE,"
-            "launch:async()=>({newContext:async()=>({newPage:async()=>({goto:async()=>{throw new Error('SEC_ERROR_UNKNOWN_ISSUER private-detail')}})}),"
+        (dependency/'index.cjs').write_text("if(process.argv[1]?.endsWith('strict-firefox-probe.cjs') && process.env.PROBE_RAW){const write=process.stdout.write.bind(process.stdout);process.stdout.write=()=>write(process.env.PROBE_RAW);};"
+            "exports.firefox={executablePath:()=>process.env.EXECUTABLE,"
+            "launch:async()=>({newContext:async()=>({newPage:async()=>({goto:async url=>{if(process.env.PROBE_FAIL!=='0')throw new Error('SEC_ERROR_UNKNOWN_ISSUER private-detail');return {status:()=>200,url:()=>url};}})}),"
             "close:async()=>require('fs').writeFileSync(process.env.CLOSED,'closed')})};")
         spec=importlib.util.spec_from_file_location('installed_firefox',helpers/'browser-native-ca.py')
         module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
@@ -212,6 +213,28 @@ class PopulatedHTTPSFixture(unittest.TestCase):
         self.assertEqual(receipt['firefoxTrust']['category'],'certificate')
         self.assertEqual(receipt['firefoxTrust']['cleanup'],'closed')
         self.assertNotIn('private-detail',result.stdout+result.stderr+json.dumps(receipt))
+
+        success={'activation':'strict_browser_https','category':'passed','status':200,'cleanup':'closed'}
+        sentinel='SYNTHETIC-ROGUE-PRIVATE'
+        invalid=[json.dumps(success|{'message':sentinel}),json.dumps(success|{'status':True}),
+            json.dumps(success|{'category':sentinel}),json.dumps(success|{'cleanup':{'message':sentinel}}),
+            json.dumps(success|{'errorCode':sentinel}),json.dumps(success|{'errorCode':None}),
+            json.dumps(success|{'status':0}),json.dumps({key:value for key,value in success.items() if key!='cleanup'}),json.dumps(success|{'activation':None}),
+            json.dumps(success).replace('"status": 200','"status": 200, "status": 200'),
+            json.dumps(success)+' '*1025,'{malformed '+sentinel+'}']
+        for index,raw in enumerate(invalid):
+            with self.subTest(probe=index):
+                self.requests.clear()
+                output=self.root/('invalid-probe-'+str(index));closed.unlink(missing_ok=True)
+                result=subprocess.run([sys.executable,'-c',wrapper,str(home),str(helpers/'run-populated-settings.py'),
+                    '--url',self.url,'--output',str(output),'--profile','fake-provider','--project','firefox',
+                    '--state','fresh','--discovery',str(discovery),'--ui-fixtures',str(ui)],cwd=self.root,
+                    env=env|{'PROBE_RAW':raw,'PROBE_FAIL':'0'},capture_output=True,text=True,timeout=10)
+                self.assertEqual(result.returncode,1,result.stderr);self.assertEqual(self.requests,[])
+                self.assertTrue(closed.exists())
+                text=(output/'setup-and-run.json').read_text();record=json.loads(text)
+                self.assertEqual(record['ownerSetup'],'pending');self.assertFalse(sentinel in text+result.stdout+result.stderr)
+                self.assertEqual(record['firefoxTrust'],{'activation':'unverified','category':'probe_output','status':None,'cleanup':'unverified'})
 
     def test_unknown_remote_ambiguous_oversized_urls_have_no_effects(self):
         for value in (self.url + "?unknown=1", self.url + "?", self.url + "#",

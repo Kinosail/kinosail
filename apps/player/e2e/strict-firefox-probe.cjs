@@ -3,8 +3,10 @@ const receipt = { activation: 'unverified', category: 'validation', status: null
 let browser;
 (async () => {
   const [origin, executable, policy] = process.argv.slice(2);
+  if (process.argv.length !== 5 || [origin, executable, policy].some(value => typeof value !== 'string' || !value.length) ||
+      origin.length > 2048 || executable.length > 4096 || policy.length > 4096) throw new Error('validation');
   const url = new URL(origin);
-  if (process.argv.length !== 5 || origin.length > 2048 || executable?.length > 4096 || policy?.length > 4096 || url.protocol !== 'https:' || !['localhost', '127.0.0.1'].includes(url.hostname) ||
+  if (url.protocol !== 'https:' || !['localhost', '127.0.0.1'].includes(url.hostname) ||
       !url.port || url.username || url.password || origin !== url.origin ||
       !executable?.startsWith('/') || !policy?.startsWith('/') ||
       process.env.PLAYWRIGHT_FIREFOX_POLICIES_JSON !== policy) throw new Error('validation');
