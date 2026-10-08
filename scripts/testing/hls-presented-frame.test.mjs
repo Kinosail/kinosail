@@ -1,7 +1,8 @@
 import test from 'node:test';
-import {stripTypeScriptTypes} from 'node:module';
+import {stripTypeScriptTypes,syncBuiltinESMExports} from 'node:module';
 import {runInNewContext} from 'node:vm';
 import {readFile} from 'node:fs/promises';
+import descriptorFS from 'node:fs';
 import * as presentationFiles from '../../apps/player/e2e/hls-presentation-state.mjs';
 import assert from 'node:assert/strict';
 import {mkdtempSync,mkdirSync,writeFileSync,symlinkSync,chmodSync,rmSync,readFileSync} from 'node:fs';
@@ -125,7 +126,7 @@ test('real seek recipe waits for a settled callback and focuses the eligible pub
  assert.equal((source.match(/await page\.keyboard\.press\('Space'\)/g)||[]).length,3);
 });
 
-test('registered HLS case rejects unowned or unbounded frame maps before read/context effects',async()=>{
+test('registered HLS case rejects before authority reads and before browser context effects',async()=>{
  const root=mkdtempSync(join(tmpdir(),'hls-map-')),run=join(root,'20261008T220000Z');mkdirSync(run,{mode:0o700});
  const mapPath=join(run,'source-frame-map.json'),statePath=join(run,'presentation-auth.json');
  const valid={schema:1,frameRate:24,frameCount:768,seekSeconds:12.5,targetFrame:300,prerollFrame:288,
@@ -134,24 +135,34 @@ test('registered HLS case rejects unowned or unbounded frame maps before read/co
  const source=stripTypeScriptTypes(readFileSync(new URL('../../apps/player/e2e/hls-presented-seek.ts',import.meta.url),'utf8'))
   .replace(/^import .*;\n/gm,'').replace(/^export /gm,'');
  async function invoke(selectedRun){
-  let callback,reads=0,contexts=0;const stopped=new Error('control stops before actual browser');
+  let callback,promisesReads=0,reads=0,opens=0,contexts=0;const stopped=new Error('control stops before actual browser');
   const register=(_,fn)=>{callback=fn;};register.setTimeout=()=>{};
   const sandbox={test:register,expect:()=>{},URL,Buffer,TextDecoder,join,resolve:()=>root,
    process:{env:{KINOSAIL_HLS_PRESENTATION_PROOF:'1',KINOSAIL_STARTUP_RUN:selectedRun}},decodeFixtureJSON,
-   readFile:async(...args)=>{reads++;return readFile(...args);},...presentationFiles};
-  runInNewContext(source+'\nregisterPresentedSeek();',sandbox);
-  let failure;try{await callback({baseURL:'http://localhost:12345',browser:{async newContext(){contexts++;throw stopped;}}},{});}catch(error){failure=error;}
-  assert.ok(failure);return {reads,contexts,failure,stopped};
+   readFile:async(...args)=>{promisesReads++;return readFile(...args);},...presentationFiles};
+  const original={openSync:descriptorFS.openSync,readSync:descriptorFS.readSync,closeSync:descriptorFS.closeSync},descriptors=new Set();
+  descriptorFS.openSync=(path,...args)=>{if(path===mapPath)opens++;const fd=original.openSync(path,...args);if(path===mapPath)descriptors.add(fd);return fd;};
+  descriptorFS.readSync=(fd,...args)=>{if(descriptors.has(fd))reads++;return original.readSync(fd,...args);};
+  descriptorFS.closeSync=fd=>{descriptors.delete(fd);return original.closeSync(fd);};syncBuiltinESMExports();
+  let failure;
+  try{
+   runInNewContext(source+'\nregisterPresentedSeek();',sandbox);
+   try{await callback({baseURL:'http://localhost:12345',browser:{async newContext(){contexts++;throw stopped;}}},{});}catch(error){failure=error;}
+  }finally{Object.assign(descriptorFS,original);syncBuiltinESMExports();}
+  assert.ok(failure);return {reads,opens,promisesReads,contexts,failure,stopped};
  }
  try{
   writeFileSync(statePath,JSON.stringify({cookies:[],origins:[]}),{mode:0o600});
   writeFileSync(mapPath,JSON.stringify(valid),{mode:0o600});
-  const admitted=await invoke(run);assert.equal(admitted.contexts,1);assert.equal(admitted.failure,admitted.stopped);
+  const admitted=await invoke(run);assert.ok(admitted.reads>0);assert.equal(admitted.promisesReads,0);assert.equal(admitted.contexts,1);assert.equal(admitted.failure,admitted.stopped);
   for(const selectedRun of [undefined,'relative',run+'x','x'.repeat(4097),join(root,'foreign','20261008T220000Z')]){
-   const rejected=await invoke(selectedRun);assert.equal(rejected.reads,0);assert.equal(rejected.contexts,0);
+   const rejected=await invoke(selectedRun);assert.equal(rejected.opens,0);assert.equal(rejected.reads,0);assert.equal(rejected.promisesReads,0);assert.equal(rejected.contexts,0);
   }
-  for(const raw of ['', 'x'.repeat(65537),'{',Buffer.from([255]),'[]','{"schema":1,"schema":1}',JSON.stringify({...valid,unknown:true}),JSON.stringify({...valid,targetFrame:288}),JSON.stringify({...valid,sourcePTS:[-1,...valid.sourcePTS.slice(1)]})]){
+  for(const raw of ['', 'x'.repeat(65537)]){
    writeFileSync(mapPath,raw);const rejected=await invoke(run);assert.equal(rejected.reads,0);assert.equal(rejected.contexts,0);
+  }
+  for(const raw of ['{',Buffer.from([255]),'[]','{"schema":1,"schema":1}',JSON.stringify({...valid,unknown:true}),JSON.stringify({...valid,targetFrame:288}),JSON.stringify({...valid,sourcePTS:[-1,...valid.sourcePTS.slice(1)]})]){
+   writeFileSync(mapPath,raw);const rejected=await invoke(run);assert.ok(rejected.reads>0);assert.equal(rejected.promisesReads,0);assert.equal(rejected.contexts,0);
   }
   rmSync(mapPath);let rejected=await invoke(run);assert.equal(rejected.reads,0);assert.equal(rejected.contexts,0);
   const foreign=join(root,'foreign-map');writeFileSync(foreign,JSON.stringify(valid),{mode:0o600});symlinkSync(foreign,mapPath);

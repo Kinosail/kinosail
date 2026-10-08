@@ -144,4 +144,3 @@ for (const source of ["direct", "compatible", "automatic"]) for (const savedPosi
 		catch (error) {if (!failed) throw error;}
 	}
 });
-
