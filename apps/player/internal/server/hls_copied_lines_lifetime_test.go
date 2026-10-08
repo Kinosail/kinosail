@@ -45,11 +45,11 @@ func verifyCopiedHLSProbeLifetime(t *testing.T, mode string, reject, cancelNow, 
 	}
 	var processes []copiedHLSProbeObservation
 	markers, visits := 0, 0
-	maximumBytes := int64(1024)
+	maximumBytes, maximumLines := int64(1024), 1
 	if mode == "bytes" {
-		maximumBytes = 64
+		maximumBytes, maximumLines = 64, 2
 	}
-	err = copiedHLSLines(ctx, executable, copiedHLSProbeArguments(mode), maximumBytes, 1, func(line string) error {
+	err = copiedHLSLines(ctx, executable, copiedHLSProbeArguments(mode), maximumBytes, maximumLines, func(line string) error {
 		visits++
 		fields := strings.Fields(line)
 		if len(fields) != 3 || fields[0] != "probe-started" || markers != 0 {
@@ -197,8 +197,8 @@ func TestCopiedHLSLinesInsufficientBudget(t *testing.T) {
 		lines++
 		return nil
 	})
-	if err == nil || lines != 0 {
-		t.Fatal("probe with insufficient owned-settlement budget was accepted")
+	if err == nil || lines != 0 || ctx.Err() != nil {
+		t.Fatal("insufficient probe budget was accepted or consumed before refusal")
 	}
 }
 
