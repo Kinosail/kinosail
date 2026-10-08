@@ -69,7 +69,7 @@ jobs:
                       print(json.dumps({'build': 'build-fail', 'diagnostic': 'bounded receipt retained'}))
               test = row.get('Test', '')
               output = row.get('Output', '')
-              if test.startswith('TestCopiedHLSLines') and (row.get('Action') in ['pass', 'fail'] or 'nonkey owned probe' in output):
+              if test.startswith('TestCopiedHLSLines') and (row.get('Action') in ['pass', 'fail'] or ('nonkey owned probe' in output or 'copied_probe_completion' in output)):
                   assert len(output) <= 1024, 'probe_projection_bound'
                   print(json.dumps(row, separators=(',', ':')))
           assert not any(r.get('Action') == 'skip' for r in rows), 'probe_no_skip'
