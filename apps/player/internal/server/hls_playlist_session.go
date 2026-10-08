@@ -50,6 +50,10 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 	}
 	path := filepath.Join(manager.cache, key, localName)
 	projection := manager.recipePlaylistProjection(request.Context(), item, recipe, key, localName)
+	projection, ready := manager.remainingColdAACResponse(writer, request, item, recipe, key, localName, duration, projection)
+	if !ready {
+		return
+	}
 	if filepath.Ext(name) == ".m3u8" && serveHLSPlaylistWithSession(writer, request, path, start, hlsPlaybackDuration(recipe, duration), projection) {
 		return
 	}
@@ -259,13 +263,6 @@ func requestedHLSStart(request *http.Request) (int, error) {
 		return 0, errors.New("resume position is invalid")
 	}
 	return start, nil
-}
-
-func hlsURIWithQuery(uri, query string) string {
-	if strings.Contains(uri, "?") {
-		return uri + "&" + query
-	}
-	return uri + "?" + query
 }
 
 func (manager *hlsManager) prepareRecipePlaylist(writer http.ResponseWriter, request *http.Request, item library.Item, recipe hlsRecipe) bool {
