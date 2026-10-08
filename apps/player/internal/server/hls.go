@@ -224,6 +224,10 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 		}
 		start = timeline.point(startNumber)
 	}
+	var refill *remainingAudioOrigin
+	if timeline == nil && startNumber > 0 && item.Kind == "audio" {
+		refill = remainingAudioOriginRefill(mediaFactsFor(item, manager.probe.facts(ctx, item)), sourceRecipe, recipe, start, startNumber, audioRate)
+	}
 	input, video := videoArguments(options, width)
 	arguments := startupInputArguments(ctx, []string{"-hide_banner", "-loglevel", "error", "-y"})
 	if startNumber > 0 {
@@ -232,10 +236,13 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 	if recipe.mode == "transcode" {
 		arguments = append(arguments, input...)
 	}
-	if start > 0 {
+	if start > 0 || timeline != nil {
 		seek := ffmpegSeconds(start)
 		if timeline != nil {
 			seek = copiedHLSInputTime(start)
+			arguments = append(arguments, "-seek_timestamp", "1")
+		} else if refill != nil {
+			seek = "0.000"
 		}
 		arguments = append(arguments, "-ss", seek)
 	}
@@ -252,7 +259,11 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 		return err
 	}
 	if timeline == nil && startNumber > 0 {
-		arguments = append(arguments, "-output_ts_offset", ffmpegSeconds(recipe.outputTime))
+		if refill != nil {
+			arguments = append(arguments, "-output_ts_offset", refill.output, "-bsf:a", refill.drop)
+		} else {
+			arguments = append(arguments, "-output_ts_offset", ffmpegSeconds(recipe.outputTime))
+		}
 	}
 	arguments, err = copiedHLSSeekArguments(arguments, timeline, startNumber)
 	if err != nil {
