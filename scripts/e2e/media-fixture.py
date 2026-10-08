@@ -57,7 +57,9 @@ subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-stream_l
     str(root / "E2E Audiobook.m4b")], check=True)
 metadata.unlink()
 # Original one-page PDF with complete xref offsets; rendering is a browser boundary.
-stream = b"BT /F1 18 Tf 40 120 Td (Original E2E PDF content) Tj ET"
+stream = (b"BT /F1 12 Tf 20 150 Td (Original E2E PDF content) Tj ET "
+          b"1 0 0 rg 40 40 40 40 re f 0 1 1 rg 100 40 40 40 re f "
+          b"0 0 1 rg 40 90 40 40 re f 1 1 0 rg 100 90 40 40 re f")
 objects = [b"<< /Type /Catalog /Pages 2 0 R >>",
     b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
     b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 240 180] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>",

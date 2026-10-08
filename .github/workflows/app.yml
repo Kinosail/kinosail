@@ -336,7 +336,7 @@ jobs:
         run: node --test scripts/testing/subtitle-login-navigation.test.mjs scripts/testing/subtitle-dashboard-navigation.test.mjs scripts/testing/subtitle-dashboard-registration.test.mjs
       - name: Verify setup navigation failure diagnostics
         if: inputs.app == 'player'
-        run: node --test scripts/testing/player-setup-navigation.test.mjs scripts/testing/playback-navigation-diagnostics.test.mjs scripts/testing/player-playback-navigation.test.mjs scripts/testing/checkpoint-progress.test.mjs scripts/testing/player-login-navigation.test.mjs scripts/testing/layout-login-navigation.test.mjs scripts/testing/library-mutation-witness.test.mjs scripts/testing/download-resume-guard.test.mjs scripts/testing/navigation-repeat-offer.test.mjs scripts/testing/supporter-share-availability.test.mjs scripts/testing/jellyfin-save-witness.test.mjs scripts/testing/provider-profile-fixture.test.mjs scripts/testing/browse-return-reporter.test.mjs scripts/testing/browse-return-launch.test.mjs scripts/testing/hls-fast-departure.test.mjs scripts/testing/audio-queue-fault-witness.test.mjs scripts/testing/playback-failed-save.test.mjs scripts/testing/responsive-failure-witness.test.mjs scripts/testing/offline-browser-api.test.mjs scripts/testing/offline-opfs-fixture.test.mjs scripts/testing/offline-seek-witness.test.mjs scripts/e2e/tests/fixture-boundary.test.mjs scripts/e2e/tests/recovery-control.test.mjs scripts/e2e/tests/fixture-reader.test.mjs
+        run: node --test scripts/testing/player-setup-navigation.test.mjs scripts/testing/playback-navigation-diagnostics.test.mjs scripts/testing/player-playback-navigation.test.mjs scripts/testing/checkpoint-progress.test.mjs scripts/testing/player-login-navigation.test.mjs scripts/testing/layout-login-navigation.test.mjs scripts/testing/library-mutation-witness.test.mjs scripts/testing/download-resume-guard.test.mjs scripts/testing/navigation-repeat-offer.test.mjs scripts/testing/supporter-share-availability.test.mjs scripts/testing/jellyfin-save-witness.test.mjs scripts/testing/provider-profile-fixture.test.mjs scripts/testing/browse-return-reporter.test.mjs scripts/testing/browse-return-launch.test.mjs scripts/testing/hls-fast-departure.test.mjs scripts/testing/audio-queue-fault-witness.test.mjs scripts/testing/playback-failed-save.test.mjs scripts/testing/responsive-failure-witness.test.mjs scripts/testing/offline-browser-api.test.mjs scripts/testing/offline-opfs-fixture.test.mjs scripts/testing/offline-seek-witness.test.mjs scripts/e2e/tests/fixture-boundary.test.mjs scripts/e2e/tests/recovery-control.test.mjs scripts/e2e/tests/fixture-reader.test.mjs scripts/e2e/tests/gap-launch.test.mjs scripts/e2e/tests/pdf-pixels.test.mjs scripts/e2e/tests/sdk-gap-boundary.test.mjs
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
       - parallel:
           - env:
@@ -403,6 +403,7 @@ jobs:
           ffmpeg -hide_banner -encoders > "$RUNNER_TEMP/public-flow-encoders.txt"
           grep -Eq '[[:space:]]libx264[[:space:]]' "$RUNNER_TEMP/public-flow-encoders.txt"
           grep -Eq '[[:space:]]aac[[:space:]]' "$RUNNER_TEMP/public-flow-encoders.txt"
+          command -v xvfb-run
           pnpm --dir scripts/e2e install --frozen-lockfile
       - name: Verify complete Player recovery suites
         if: inputs.app == 'player' && matrix.engine == 'chromium'
@@ -422,7 +423,13 @@ jobs:
         env:
           APP: ${{ inputs.app }}
           E2E_TELEMETRY_DISABLED: "1"
-        run: scripts/e2e/run.sh "$APP"
+          DEEP: ${{ fromJSON(inputs.plan).deep && 'true' || 'false' }}
+        run: |
+          if [[ "$APP" == player && "$DEEP" == true ]]; then
+            scripts/e2e/run.sh "$APP" --gaps
+          else
+            scripts/e2e/run.sh "$APP"
+          fi
       - name: Keep public-flow evidence
         if: always() && matrix.engine == 'chromium'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
