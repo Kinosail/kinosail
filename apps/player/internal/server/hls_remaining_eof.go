@@ -3,10 +3,11 @@ package server
 import (
 	"bytes"
 	"context"
-	"github.com/MikeO7/kinosail/packages/library"
 	"net/http"
 	"path/filepath"
 	"time"
+
+	"github.com/MikeO7/kinosail/packages/library"
 )
 
 // Completion is bounded to the demonstrated short source-origin AAC journey.
