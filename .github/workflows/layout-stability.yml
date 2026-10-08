@@ -2,10 +2,7 @@ name: Bounded non-key presentation observation
 on:
   workflow_dispatch:
     inputs:
-      phase:
-        type: choice
-        options: [public, observe, mux, boundary, aac-edit, aac-derived, aac-clock, aac-normalized, cutoff, remaining]
-        default: public
+      phase: {type: choice, options: [public, observe, mux, boundary, aac-edit, aac-derived, aac-clock, aac-normalized, aac-prefix, cutoff, remaining], default: public}
       candidate: {description: Exact reviewed source SHA for remaining phase, type: string}
 permissions: {contents: read}
 jobs:
@@ -67,7 +64,7 @@ jobs:
         working-directory: apps/player
         env: {KINOSAIL_COPIED_RECOVERY_MEDIA: '1'}
         run: |
-          gofmt -d internal/server/hls_remaining_nonkey_*test.go
+          gofmt -d internal/server/hls_remaining_nonkey_*test.go internal/server/hls_copied_*.go
           mkdir -p "$GITHUB_WORKSPACE/.verification/hls-remaining"
           git rev-parse HEAD > "$GITHUB_WORKSPACE/.verification/hls-remaining/SOURCE"
           timeout --kill-after=30s 210s go test -json ./internal/server -run '^TestRemainingNonKey' -count=1 -timeout=3m > "$GITHUB_WORKSPACE/.verification/hls-remaining/receipt.jsonl"
@@ -144,9 +141,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          fetch-depth: 0
-          persist-credentials: false
+        with: {fetch-depth: 0, persist-credentials: false}
       - run: test ! -e .gates-disabled
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         timeout-minutes: 3
@@ -194,15 +189,13 @@ jobs:
           if-no-files-found: error
           retention-days: 14
   nonkey-mux:
-    if: inputs.phase == 'mux' || inputs.phase == 'boundary' || inputs.phase == 'aac-edit' || inputs.phase == 'aac-derived' || inputs.phase == 'aac-clock' || inputs.phase == 'aac-normalized'
+    if: inputs.phase == 'mux' || inputs.phase == 'boundary' || inputs.phase == 'aac-edit' || inputs.phase == 'aac-derived' || inputs.phase == 'aac-clock' || inputs.phase == 'aac-normalized' || inputs.phase == 'aac-prefix'
     name: Fixed inner and outer mux timestamp counterfactuals
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          fetch-depth: 0
-          persist-credentials: false
+        with: {fetch-depth: 0, persist-credentials: false}
       - run: test ! -e .gates-disabled
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         timeout-minutes: 3
@@ -253,6 +246,9 @@ jobs:
       - name: Observe edits derived from measured complete CLI clocks
         if: inputs.phase == 'aac-normalized'
         run: timeout --kill-after=90s 300s python3 apps/player/scripts/test-hls-nonkey-aac-normalized.py
+      - name: Compare bounded prefix with unchanged complete CLI clocks
+        if: inputs.phase == 'aac-prefix'
+        run: timeout --kill-after=90s 300s python3 apps/player/scripts/test-hls-nonkey-aac-prefix.py
       - name: Preserve complete safe counterfactual receipt
         timeout-minutes: 2
         if: always()
@@ -272,6 +268,8 @@ jobs:
             .verification/hls-nonkey-aac-clock/*/SHA256SUMS
             .verification/hls-nonkey-aac-normalized/*/receipt.json
             .verification/hls-nonkey-aac-normalized/*/SHA256SUMS
+            .verification/hls-nonkey-aac-prefix/*/receipt.json
+            .verification/hls-nonkey-aac-prefix/*/SHA256SUMS
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14

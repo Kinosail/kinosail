@@ -1,0 +1,106 @@
+{
+  "kind": "nonkey-contract-red",
+  "recordedDate": "2026-10-08",
+  "main": "c452a2e73cebac42d280247fa9684efb630ecc93",
+  "reviewedPR503": "f784c840ced87203d0151a7148899f6bc32aabd0",
+  "source": "9ccc378a59ab71324f56f017afd9bd72efad4e89",
+  "runner": "275f099eba286c2a8437cf46a219614ebcffdad3",
+  "run": 37801135660,
+  "job": 113393366274,
+  "url": "https://github.com/Kinosail/kinosail/actions/runs/37801135660",
+  "result": "qualified-red",
+  "admission": {
+    "exactSourceBinding": true,
+    "pinnedCodecInstall": true,
+    "formatGate": true,
+    "actualPublicTest": true,
+    "noSkippedGoTests": true,
+    "noReceiptProjectionFailure": true,
+    "artifactPreserved": true,
+    "independentReview": true
+  },
+  "fixture": {
+    "sha256": "c1641a6a8af53f2f7724a18121421bb49b69d98646c536ff0a219ab9f6a1221f",
+    "videoFrames": 768,
+    "independentlyCertifiedIDRs": 16,
+    "genuineEOFSeconds": 32
+  },
+  "public": [
+    {
+      "offsetSeconds": 12,
+      "result": "pass",
+      "elapsedSeconds": 3.93,
+      "state": "ready"
+    },
+    {
+      "offsetSeconds": 12.5,
+      "result": "fail",
+      "elapsedSeconds": 1.86,
+      "phase": "copied-video-index",
+      "internalState": "unavailable",
+      "publicState": "queued",
+      "expectedState": "ready"
+    }
+  ],
+  "contracts": {
+    "typedOriginOffsetsFailed": [
+      12.5,
+      13.5,
+      18.2
+    ],
+    "pendingHeaderFailed": true,
+    "legacyWithOriginFailed": true,
+    "rootedFifthAssetOffsetsFailed": [
+      12.5,
+      13.5,
+      18.2
+    ],
+    "nakedCertificateAssertionExecuted": false,
+    "damagedRejectControlsPassed": [
+      "missing",
+      "exact",
+      "before",
+      "next",
+      "eof",
+      "decode",
+      "old-clock",
+      "signed-clock",
+      "unknown-strategy"
+    ]
+  },
+  "artifact": {
+    "id": 11560761679,
+    "sizeBytes": 2502,
+    "apiZIPDigest": "sha256:898a8b1fd0589206896e500b1d89fc3c9fdb49367a08bd442c8685c899179c03",
+    "archiveDownloaded": false,
+    "archiveRehashed": false
+  },
+  "historicalSetupFailure": {
+    "source": "15007333394884a7a1fb93a2ebfdbeb35e08fe13",
+    "run": 37799515572,
+    "job": 113387683009,
+    "classification": "gofmt-before-test",
+    "formatChangesOnly": true,
+    "goTestsExecuted": false,
+    "contractREDQualified": false,
+    "artifactPreserved": false,
+    "failedJobLogPreserved": true
+  },
+  "precedingQualifiedPublicRED": {
+    "source": "db2232f601d657fe1951fb5d578c8d39a88951fe",
+    "run": 37796956453,
+    "ledger": "https://github.com/Kinosail/kinosail/blob/31470d8595b3afe046b36e00552872a54756de93/evidence/nonkey-first-public-red-20261008.json"
+  },
+  "boundaries": {
+    "productionSourceChangedInThisRun": false,
+    "productionClockQualified": false,
+    "actualCacheCertificateQualified": false,
+    "adoptionQualified": false,
+    "nativeRendererQualified": false,
+    "all50RetestComplete": false,
+    "simulatorInteraction": false,
+    "manualDeployment": false,
+    "localWrites": false
+  },
+  "next": "Implement independently reviewed typed geometry without granting generated-cache readiness; qualify bounded source-prefix AAC measurement before private-init/certificate producer."
+}
