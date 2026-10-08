@@ -6,6 +6,17 @@ import { join, resolve } from 'node:path';
 import { readControl } from './control.mjs';
 import { validateActiveOwned, validateOwned, validateReceipt } from './receipt.mjs';
 const uuid='12345678-1234-1234-1234-123456789ABC';
+test('address failure uses the existing two action events and owned private receipt',async()=>{
+ const {createTvActions}=await import('./actions.mjs');const {enterServerAddress}=await import('./tv.mjs');const {readFileSync}=await import('node:fs');
+ const f=fixture(),original=Object.freeze(Error('PRIVATE-SENTINEL'));
+ try {
+  const actions=createTvActions(f.project),client={capture:{snapshot:async()=>{throw original;}}};
+  await assert.rejects(actions.step('server_address',()=>enterServerAddress(client,{platform:'ios',target:'tv',udid:uuid},'18769')),error=>error===original);
+  const record=JSON.parse(readFileSync(join(f.root,'tv-actions.private.json'),'utf8'));assert.equal(record.events.length,2);
+  assert.deepEqual(record.events[1].failure.address,{substage:'capture',candidateCount:null,focusedPropertyPresent:null,inheritedLabel:null});
+  assert.ok(!JSON.stringify(record).includes('PRIVATE-SENTINEL'));
+ }finally{f.dispose();}
+});
 function fixture(profile='tvos') {
  const project=mkdtempSync(join(tmpdir(),'kino-tv-admission-')); const root=join(project,'.e2e');mkdirSync(root,{mode:0o700}); const stat=lstatSync(root);
  const platform=profile==='tvos'?'ios':'android',device=platform==='ios'?uuid:'emulator-5554';

@@ -1,5 +1,10 @@
 // @ts-check
 import { resolve } from 'node:path';
+const addressFailures = new WeakMap();
+/** @param {unknown} error */
+export function tvAddressFailure(error) {
+  return error && typeof error === 'object' ? addressFailures.get(error) : undefined;
+}
 // A finite TV SDK fixture. Caller first validates V7 private run ownership.
 /** @typedef {import('agent-device').AgentDeviceClient} TVClient */
 /** @typedef {{platform:'ios',target:'tv',udid:string}|{platform:'android',target:'tv',serial:string}} TVSelection */
@@ -86,20 +91,35 @@ export async function enterServerAddress(client, input, port) {
   const selection = tvSelection(input);
   if (port !== '18769') throw Error('invalid TV server port');
   const signal = AbortSignal.timeout(15000);
+  const facts = {substage:'capture',candidateCount:/** @type {number|null} */ (null),focusedPropertyPresent:/** @type {boolean|null} */ (null),inheritedLabel:/** @type {boolean|null} */ (null)};
+  try {
   for (let moves = 0; moves < 32; moves++) {
+    Object.assign(facts,{substage:'capture',candidateCount:null,focusedPropertyPresent:null,inheritedLabel:null});
     const snapshot = await client.capture.snapshot({ ...selection, signal });
+    facts.substage='snapshot_validation';
     if (!snapshot || !Array.isArray(snapshot.nodes) || snapshot.nodes.length > 10000 || snapshot.truncated === true) throw Error('invalid TV snapshot');
+    facts.substage='candidate_match';
     const fields = snapshot.nodes.filter(n => n && (n.label === 'Server address' || n.contentDescription === 'Server address') &&
       (n.editable === true || /(?:TextField|EditText)$/.test(n.type ?? '')));
+    try {Object.assign(facts,{candidateCount:fields.length,focusedPropertyPresent:fields.some(n=>Object.getOwnPropertyDescriptor(n,'focused')!==undefined),
+      inheritedLabel:snapshot.nodes.some(n=>n && Object.getOwnPropertyDescriptor(n,'inheritsLabel')?.value===true)});} catch {}
     if (fields.length > 1) throw Error('ambiguous TV address field');
+    facts.substage='focus';
     if (fields[0]?.focused === true) {
+      facts.substage='select';
       await client.command.tvRemote({ ...selection, button: 'select', signal });
       // Fresh reinstall supplies an empty public field. Focused typing uses no coordinate tap.
+      facts.substage='type';
       await client.interactions.type({ ...selection, text: `http://${selection.platform === 'ios' ? '127.0.0.1' : '10.0.2.2'}:${port}`, signal });
+      facts.substage='menu';
       await client.command.tvRemote({ ...selection, button: selection.platform === 'ios' ? 'menu' : 'back', signal });
       return;
     }
     await client.command.tvRemote({ ...selection, button: 'up', signal });
   }
   throw Error('TV address focus not reached');
+  } catch(error) {
+    if(error && typeof error==='object')addressFailures.set(error,Object.freeze({...facts}));
+    throw error;
+  }
 }
