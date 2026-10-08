@@ -17,7 +17,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   if (native) markup = nativePlayerMarkup(markup);
   await page.route("https://127.0.0.1:38127/", (route) => route.fulfill({ contentType: "text/html; charset=utf-8", body: markup }));
   await page.route("**/api/v1/items/movie/playback-events", (route) => route.fulfill({ status: 204 }));
-  if (testInfo.title.includes("progress save") || testInfo.title.includes("rejected fullscreen")) await page.goto("https://127.0.0.1:38127/");
+  if (testInfo.title.includes("progress save") || testInfo.title.includes("saves mobile progress") || testInfo.title.includes("rejected fullscreen")) await page.goto("https://127.0.0.1:38127/");
   else await page.setContent(markup);
   if (apple) await installAppleFullscreenApi(page, appleDevice);
   await page.evaluate(({withInBand, safariStartup, queuedPause, queuedSeeking, apple}) => {

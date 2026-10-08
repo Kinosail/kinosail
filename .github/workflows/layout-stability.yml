@@ -48,6 +48,10 @@ on:
         description: Select the closed disposable48k AAC installation experiment
         type: boolean
         default: false
+      hls_audio_origin:
+        description: Verify actual production aligned AAC origin-refill against an uninterrupted control
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -99,7 +103,7 @@ jobs:
           KINOSAIL_BROWSER_MATRIX: full
           KINOSAIL_TEST_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
           PLAYWRIGHT_JSON_OUTPUT_NAME: ../../../.verification/layout-fixtures/results.json
-        run: pnpm --dir apps/player/e2e exec playwright test --config layout-stability.config.ts --project "${{ matrix.browser }}" --reporter=list,json layout-stability.spec.ts skeleton-layout.spec.ts player-apple-intent.spec.ts player-apple-launch.spec.ts
+        run: pnpm --dir apps/player/e2e exec playwright test --config layout-stability.config.ts --project "${{ matrix.browser }}" --reporter=list,json layout-stability.spec.ts skeleton-layout.spec.ts player-apple-intent.spec.ts player-apple-launch.spec.ts layout-auth-navigation.spec.ts
       - name: Measure disposable native Servers
         env:
           KINOSAIL_LAYOUT_BROWSER: ${{ matrix.browser }}
@@ -119,7 +123,13 @@ jobs:
             .verification/layout/*/*/measurements.json
             .verification/layout/*/*/failure.json
             .verification/layout/*/*/*.png
+            .verification/layout/*/*/failure-trace.zip
+            .verification/layout/*/*/login-original-navigation-trace.zip
+            .verification/layout/*/*/firefox-auth-form-navigation-recovery.json
             .verification/layout-fixtures/results.json
+            .verification/layout-fixtures/**/login-original-navigation-trace.zip
+            .verification/layout-fixtures/**/firefox-auth-form-navigation-recovery.json
+            .verification/layout-fixtures/**/layout-login-rejection.json
             .verification/layout-fixtures/**/apple-intent-receipt.json
             .verification/layout-fixtures/**/native-pause-after-interruption.png
             .verification/layout-fixtures/**/trace.zip
@@ -304,6 +314,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          fetch-depth: 0
           persist-credentials: false
       - run: test ! -e .gates-disabled
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
@@ -320,7 +331,7 @@ jobs:
       - name: Check bounded presentation oracle
         run: python3 -m unittest discover -s apps/player/scripts -p test_hls_followon_frames.py
       - name: Check closed audio installation selection and passthrough
-        if: ${{ inputs.hls_audio_installation }}
+        if: ${{ inputs.hls_audio_installation || inputs.hls_audio_origin }}
         run: |
           test '${{ inputs.hls_remaining_proof }}' = true
           test '${{ inputs.hls_audio_timing }}' != true
@@ -331,9 +342,13 @@ jobs:
       - name: Run bounded remaining playback regressions
         if: ${{ inputs.hls_remaining_proof }}
         env:
-          KINOSAIL_HLS_REMAINING_SUITE: ${{ inputs.hls_audio_installation && 'audio-installation' || inputs.hls_audio_timing && 'audio-timing' || 'remaining' }}
+          KINOSAIL_HLS_REMAINING_SUITE: ${{ inputs.hls_audio_origin && 'audio-origin' || inputs.hls_audio_installation && 'audio-installation' || inputs.hls_audio_timing && 'audio-timing' || 'remaining' }}
         run: |
-          if [ '${{ inputs.hls_audio_installation }}' = true ] && [ '${{ inputs.hls_audio_timing }}' = true ]; then exit 2; fi
+          selected=0
+          for choice in '${{ inputs.hls_audio_origin }}' '${{ inputs.hls_audio_installation }}' '${{ inputs.hls_audio_timing }}'; do
+            if [ "$choice" = true ]; then selected=$((selected + 1)); fi
+          done
+          test "$selected" -le 1
           timeout --kill-after=5s 600s python3 apps/player/scripts/test-hls-remaining.py
       - name: Preserve safe follow-on receipts
         if: always()
@@ -346,3 +361,6 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
+      - name: Verify integrated Player source after commit
+        if: ${{ always() && inputs.hls_audio_origin }}
+        run: timeout --kill-after=5s 300s make -C apps/player verify-changed BASE=origin/main

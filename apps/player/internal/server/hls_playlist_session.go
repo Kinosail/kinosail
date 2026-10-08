@@ -24,6 +24,13 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 		localizedNotFound(writer, request)
 		return
 	}
+	if filepath.Ext(localName) == ".m4s" || filepath.Base(localName) == "init.mp4" {
+		if err := manager.remainingAACCacheAsset(request.Context(), item, recipe, localName); err != nil {
+			slog.WarnContext(request.Context(), "HLS cache asset rejected", "diagnostic", "[PLAYBACK-HLS]", "request_id", requestActivityID(request.Context()), "playback_session", requestPlaybackSession(request.Context()), "mode", recipe.mode, "error", hlsDiagnostic(err, item.Path))
+			localizedNotFound(writer, request)
+			return
+		}
+	}
 	key := hlsRecipeKey(item.ID, recipe)
 	start := 0
 	duration := 0.0
@@ -43,6 +50,10 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 	}
 	path := filepath.Join(manager.cache, key, localName)
 	projection := manager.recipePlaylistProjection(request.Context(), item, recipe, key, localName)
+	projection, ready := manager.remainingColdAACResponse(writer, request, item, recipe, key, localName, duration, projection)
+	if !ready {
+		return
+	}
 	if filepath.Ext(name) == ".m3u8" && serveHLSPlaylistWithSession(writer, request, path, start, hlsPlaybackDuration(recipe, duration), projection) {
 		return
 	}
@@ -51,6 +62,11 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 			localizedNotFound(writer, request)
 			return
 		}
+	}
+	if manager.serveRemainingAACFile(writer, request, item, recipe, localName, key) {
+		return
+	}
+	if filepath.Ext(name) == ".m4s" {
 		writer.Header().Set("Content-Type", "video/mp4")
 	}
 	manager.adoptRecipeFile(request, key, path)
@@ -85,6 +101,10 @@ func (manager *hlsManager) waitForRecipeSegment(request *http.Request, item libr
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 		if err := manager.prepareSegment(segmentContext, item, recipe, name); err != nil {
 			slog.WarnContext(request.Context(), "HLS segment preparation failed", "diagnostic", "[PLAYBACK-HLS]", "request_id", requestActivityID(request.Context()), "error", hlsDiagnostic(err, item.Path))
+			if !errors.Is(err, os.ErrNotExist) {
+				cancel()
+				return false
+			}
 		}
 	}
 	ready := waitForHLSFile(segmentContext, path)
@@ -243,13 +263,6 @@ func requestedHLSStart(request *http.Request) (int, error) {
 		return 0, errors.New("resume position is invalid")
 	}
 	return start, nil
-}
-
-func hlsURIWithQuery(uri, query string) string {
-	if strings.Contains(uri, "?") {
-		return uri + "&" + query
-	}
-	return uri + "?" + query
 }
 
 func (manager *hlsManager) prepareRecipePlaylist(writer http.ResponseWriter, request *http.Request, item library.Item, recipe hlsRecipe) bool {

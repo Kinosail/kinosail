@@ -1,4 +1,5 @@
-let progressRevision = 0, progressPlayedItem;
+let progressRevision = 0, progressPlayedItem, watchedSubmission;
+let watchedDeparture = false, watchedReplay = false;
 let queueSourceChanging = false, queueProgressReady = true;
 // One page-owned pending position; never replay a closed page's session over newer state.
 let pendingProgress, progressFlight, progressFailure = "", progressContinuation, progressNavigation;
@@ -109,6 +110,7 @@ progressContinue?.addEventListener("click", () => {
 });
 addEventListener("online", () => retryProgress());
 const save = (watched = false, closing = false) => {
+  if (watchedDeparture || (watchedSubmission?.eventPhase === Event.NONE && !watchedSubmission.defaultPrevented)) return Promise.resolve({ok: true});
   if (playbackPreparation || queueSourceChanging || !queueProgressReady) return Promise.resolve();
   if (!watched && !progressChanged()) return Promise.resolve({ok: true});
   if (player.dataset.castActive === "true" || player.dataset.offline === "true") {

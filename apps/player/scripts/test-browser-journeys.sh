@@ -33,6 +33,8 @@ prepare_audio_queue_fixture() {
   repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
   python3 "$repo/scripts/testing/prepare-audio-queue-fixture.py" "$1/R08 Fictional Session"
   chmod -R a+rX "$1/R08 Fictional Session"
+  python3 "$repo/scripts/testing/prepare-queue-loading-intent-fixture.py" "$1/Queue Intent Long Session"
+  chmod -R a+rX "$1/Queue Intent Long Session"
 }
 
 prepare_home_assistant_document_fixture() {
@@ -81,6 +83,8 @@ run_populated_player_journeys() {
     --required-title 'Owner settings search finds a setting across task families' \
     --required-title 'real Server rejects invalid progress without changing stored state and web reports the rejection' \
     --required-title 'populated player retries the latest progress through the real Server and renders accessible states' \
+    --required-title 'accepted Mark watched survives late native media callbacks from the departing page' \
+    --required-title 'accepted Mark unwatched survives late native media callbacks from the departing page' \
     --required-title 'completed paused seek persists before Library navigation and resumes actual movie frames' \
     --required-title 'Library exit checkpoints actual playing time before teardown without reset-position overwrite' \
     --required-title 'volume icon renders balanced sound waves and keeps accessible mute controls' \
@@ -92,6 +96,10 @@ run_populated_player_journeys() {
     --required-title 'queued short track resumes its saved position without claiming unplayed progress' \
     --required-title 'ended offline queue requires its own watched acknowledgement: failed' \
     --required-title 'canonical catalog year strings survive queue validation and current-track identity' \
+    --required-title 'real queued track preserves seek arriving before actual metadata' \
+    --required-title 'real queued track preserves stop arriving before actual metadata' \
+    --required-title 'real queued saved35 track preserves seek arriving before actual metadata' \
+    --required-title 'real queued saved35 track preserves stop arriving before actual metadata' \
     --required-title 'real simultaneous browser documents publish distinct Home Assistant targets' \
     --required-title 'real public Home Assistant seek affects only its addressed browser document' \
     --required-title 'real Home Assistant document reload retains its target without storing claim authority' \
@@ -102,5 +110,5 @@ run_populated_player_journeys() {
     --required-title 'actual authenticated Profile switch retires old document command effects' \
     --required-title 'rendered document claim failure exposes accessible Retry and recovers with a real claim' \
     --required-title 'actual history return records document reentry separately from persisted playable BFCache admission' \
-    -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts test-instance-audio-queue.spec.ts player-audio-policy.spec.ts player-audio-queue-lifecycle.spec.ts test-instance-home-assistant-documents.spec.ts test-instance-home-assistant-assets.spec.ts test-instance-home-assistant-lifecycle.spec.ts --grep=@smoke --workers=1
+    -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-watched-startup.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts test-instance-audio-queue.spec.ts test-instance-queue-loading-intent.spec.ts player-audio-policy.spec.ts player-audio-queue-lifecycle.spec.ts test-instance-home-assistant-documents.spec.ts test-instance-home-assistant-assets.spec.ts test-instance-home-assistant-lifecycle.spec.ts --grep=@smoke --workers=1
 }

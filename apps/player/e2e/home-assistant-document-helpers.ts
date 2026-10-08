@@ -17,6 +17,26 @@ export function observeAcceptedDocumentStates(page: Page) {
   return accepted;
 }
 
+// Capture the real server body before Chromium can retire its response resource.
+// Private claims stay in memory; the browser still receives the unchanged reply.
+export async function observeActualDocumentClaims(page: Page) {
+  const claims: Array<{id: string; claim: string; expiresIn: number}> = [];
+  await page.route("**/api/v1/home-assistant/players/claims", async route => {
+    if (route.request().method() !== "POST") return route.continue();
+    const response = await route.fetch();
+    if (response.status() === 201) {
+      const body = await response.json();
+      const valid = typeof body?.id === "string" && /^[A-Za-z0-9_-]{1,64}$/.test(body.id) &&
+        typeof body?.claim === "string" && /^[A-Za-z0-9_-]{20,64}$/.test(body.claim) && body.expiresIn === 30;
+      expect(valid, "actual server claim has the admitted public shape").toBe(true);
+      expect(claims.length < 100, "private observations stay bounded").toBe(true);
+      claims.push({id: body.id, claim: body.claim, expiresIn: body.expiresIn});
+    }
+    await route.fulfill({response});
+  });
+  return claims;
+}
+
 export async function setting(page: Page, enabled: boolean) {
   expect(await page.evaluate(async enabled => {
     const csrf = document.querySelector<HTMLMetaElement>('meta[name="kinosail-csrf"]')?.content || "";

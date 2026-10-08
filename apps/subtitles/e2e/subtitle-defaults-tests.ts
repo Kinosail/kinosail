@@ -7,7 +7,30 @@ import { expectNoHorizontalOverflow, expectSkipLinkOffscreen } from "./subtitle-
 export function registerSubtitleDefaultTests() {
   test.describe("subtitle review request states", () => {
     test.use({ serviceWorkers: "block" });
-    test("review starts with sync and cleanup and keeps manual timing exclusive", { tag: "@smoke" }, async ({ page }, testInfo) => {
+    for (const theme of ["dark", "light"]) test("review starts with sync and cleanup and keeps manual timing exclusive (" + theme + ")", { tag: "@smoke" }, async ({ page }, testInfo) => {
+      await page.addInitScript(theme => {
+        localStorage.setItem("kinosail-theme", theme);
+        const receipts: {colors: string[]}[] = [];
+        Object.defineProperty(window, "subtitleEnabledTransitions", {value: receipts});
+        new MutationObserver(records => {
+          for (const record of records) {
+            const button = record.target;
+            if (record.oldValue === null || !(button instanceof HTMLButtonElement) || button.disabled ||
+                !button.matches('#subtitle-edit-form button[type="submit"]')) continue;
+            // Hold real CSS transitions at an early mixed-color frame, when the
+            // newly enabled label must already be readable. No styles are replaced.
+            getComputedStyle(button).backgroundColor;
+            const colors: string[] = [];
+            for (const animation of button.getAnimations()) {
+              if (!(animation instanceof CSSTransition) || !["color", "background-color"].includes(animation.transitionProperty)) continue;
+              colors.push(animation.transitionProperty);
+              animation.pause();
+              animation.currentTime = Number(animation.effect!.getTiming().duration) * 0.1;
+            }
+            receipts.push({colors});
+          }
+        }).observe(document, {subtree: true, attributes: true, attributeFilter: ["disabled"], attributeOldValue: true});
+      }, theme);
       const inventory = await page.evaluate(async () => (await fetch("/api/v1/subtitle-library?view=library")).json());
       const filename = process.env.KINOSAIL_E2E_MEDIA_DIR ? "Arrival.mkv" : "Example Movie.mp4";
       const item = inventory.items.find((item: { file: string }) => item.file.endsWith(filename));
@@ -23,6 +46,12 @@ export function registerSubtitleDefaultTests() {
           for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
             await page.setViewportSize(viewport);
             await expectNoHorizontalOverflow(page);
+            const transitions = await page.evaluate(() => (window as typeof window & {subtitleEnabledTransitions: {colors: string[]}[]}).subtitleEnabledTransitions);
+            if (state === "loaded") expect(transitions.length, "The native pending-to-enabled transition must be observed").toBeGreaterThan(0);
+            await testInfo.attach("subtitle-enabled-button-" + viewport.width + "-" + state, {
+              body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION, theme, state, transitions,
+                boundary: "Actual CSS transitions paused at an early frame; real Server review state and unmodified colors"}),
+              contentType: "application/json"});
             expect((await new AxeBuilder({ page }).include("#subtitle-edit-form").analyze()).violations).toEqual([]);
             await expectSkipLinkOffscreen(page);
             await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-review-${state}.png`), fullPage: true });
@@ -33,6 +62,7 @@ export function registerSubtitleDefaultTests() {
         const held = new Promise<void>(resolve => { release = resolve; });
         await page.route(`**${base}/inspect?*`, async route => { heldRequests++; await held; await route.continue(); });
         await page.goto(`/subtitles/inspect/${item.id}?language=en`);
+        await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
         await expect.poll(() => heldRequests).toBe(1);
         const sync = page.getByRole("checkbox", { name: "Synchronize against the video's main dialogue" });
         await expect(sync).toBeChecked();

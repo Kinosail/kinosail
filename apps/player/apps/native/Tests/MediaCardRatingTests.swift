@@ -22,7 +22,9 @@ final class MediaCardRatingTests: XCTestCase {
                     }
                     let actual = try render(rated)
                     let expected = try render(unrated)
-                    XCTAssertEqual(actual.pngData(), expected.pngData(), "\(kind), landscape=\(landscape), \(size)")
+                    let actualPNG = try XCTUnwrap(actual.pngData(), "Rated card encoding failed")
+                    let expectedPNG = try XCTUnwrap(expected.pngData(), "Unrated card encoding failed")
+                    XCTAssertEqual(actualPNG, expectedPNG, "\(kind), landscape=\(landscape), \(size)")
                     XCTAssertEqual(rated.rating, "PG-13")
                     XCTAssertTrue(rated.subtitle.contains("PG-13"))
                     let attachment = XCTAttachment(image: actual)

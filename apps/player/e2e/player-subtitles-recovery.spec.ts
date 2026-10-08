@@ -70,3 +70,29 @@ for (const stalledBoundary of ["headers", "body"] as const) {
   });
 }
 }
+
+
+test("real Server: metadata preceding the player bundle preserves later native Off", async ({page}, info) => {
+  test.skip(!serverOrigin, "requires decoded media from the disposable Server");
+  const peer = await captionPeer(page, "headers");
+  let metadataBeforeBundle = false;
+  try {
+    await page.route("**/static/player.js*", async route => {
+      const response = await route.fetch();
+      await page.waitForFunction(() => (document.querySelector("video") as HTMLVideoElement)?.readyState >= 1);
+      metadataBeforeBundle = true;
+      await route.fulfill({response});
+    });
+    const bundle = await openCaptionPlayer(page, peer.origin);
+    expect(metadataBeforeBundle).toBe(true);
+    await info.attach("served-player-bundle-identity", {body: JSON.stringify(bundle), contentType: "application/json"});
+    await expect.poll(async () => (await peer.stats()).calls).toBe(1);
+    await page.locator("video").evaluate((video: HTMLVideoElement) => {
+      video.textTracks[0].mode = "disabled";
+      video.dispatchEvent(new Event("loadedmetadata"));
+    });
+    await expect.poll(() => page.locator('track[srclang="en"]').evaluate((track: HTMLTrackElement) => track.track.mode)).toBe("disabled");
+    await expect(page.locator("[data-subtitle-status]")).toBeHidden();
+    expect((await peer.stats()).calls).toBe(1);
+  } finally { await peer.close(); }
+});
