@@ -108,6 +108,12 @@ class ResponsiveWorkflowTests(unittest.TestCase):
                 os.chdir(original)
                 sys.path.remove(str(ROOT / 'apps/player/scripts'))
 
+    def test_only_the_named_quick_connect_failure_png_is_retained(self):
+        block = self.block()
+        png_paths = [line.strip() for line in block.splitlines() if '.png' in line]
+        self.assertEqual(png_paths, ['${{ runner.temp }}/responsive99-${{ matrix.engine }}/browser-results/**/720-quick-connect-failure.png'])
+        self.assertNotIn('browser-results/**/*.png', block)
+
     def test_missing_source_rejects_before_any_receipt_write(self):
         read = Path.read_bytes
         def missing(path):

@@ -1,3 +1,4 @@
+import { writeFile } from "node:fs/promises";
 import { navigationDiagnostics } from "../../../scripts/testing/navigation-diagnostics.mjs";
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
 import { uiElementAttachment, uiElementInventory } from "../../../scripts/testing/ui-element-inventory";
@@ -222,4 +223,34 @@ export async function expectRecoveryContrast(page: Page, message: string) {
 		return (lighter + .05) / (darker + .05);
 	});
 	expect(ratio, `${message} Retry text contrast`).toBeGreaterThanOrEqual(4.5);
+}
+
+export async function quickConnectFailureEvidence(page: Page, info: TestInfo, assertion: () => Promise<void>) {
+	try {
+		await assertion();
+	} catch (error) {
+		let timer: ReturnType<typeof setTimeout> | undefined;
+		try {
+			const image = await Promise.race([
+				page.screenshot({ type: "png", fullPage: false, timeout: 1000 }),
+				new Promise<never>((_, reject) => { timer = setTimeout(() => reject(new Error("Screenshot deadline")), 1000); }),
+			]);
+			clearTimeout(timer);
+			if (!Buffer.isBuffer(image) || image.length < 24 || image.length > 2097152
+				|| !image.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))
+				|| image.readUInt32BE(16) !== 720 || image.readUInt32BE(20) !== 450) throw new Error("Invalid bounded Quick Connect PNG");
+			const name = "720-quick-connect-failure.png";
+			const path = info.outputPath(name);
+			await writeFile(path, image, { flag: "wx", mode: 0o600 });
+			await Promise.race([
+				info.attach(name, { path, contentType: "image/png" }),
+				new Promise<never>((_, reject) => { timer = setTimeout(() => reject(new Error("Attachment deadline")), 500); }),
+			]);
+		} catch {
+			// Evidence capture cannot replace the original geometry failure.
+		} finally {
+			clearTimeout(timer);
+		}
+		throw error;
+	}
 }

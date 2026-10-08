@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { configureLayoutAudit, login } from "./layout-audit-helpers";
+import { configureLayoutAudit, login, quickConnectFailureEvidence } from "./layout-audit-helpers";
 
 configureLayoutAudit();
 
@@ -163,11 +163,13 @@ test("compact landscape shell keeps search and primary actions reachable", async
 				const digits = [...document.querySelectorAll("main input[data-quick-connect-digit]")].map(element => element.getBoundingClientRect());
 				return { headerBottom: header.bottom, dockTop: dock.top, digits: digits.map(box => ({ top: box.top, bottom: box.bottom })) };
 			});
-			expect(initial.digits).toHaveLength(6);
-			for (const digit of initial.digits) {
-				expect(digit.top, "Quick Connect code clears the header").toBeGreaterThanOrEqual(initial.headerBottom);
-				expect(digit.bottom, "Quick Connect code clears bottom navigation").toBeLessThanOrEqual(initial.dockTop);
-			}
+			await quickConnectFailureEvidence(page, testInfo, async () => {
+				expect(initial.digits).toHaveLength(6);
+				for (const digit of initial.digits) {
+					expect(digit.top, "Quick Connect code clears the header").toBeGreaterThanOrEqual(initial.headerBottom);
+					expect(digit.bottom, "Quick Connect code clears bottom navigation").toBeLessThanOrEqual(initial.dockTop);
+				}
+			});
 		}
 		for (const selector of selectors) {
 			const target = page.locator(selector).first();
