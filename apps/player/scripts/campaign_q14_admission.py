@@ -18,6 +18,20 @@ LABELS = ACCEPTANCE + PREREQUISITES
 ATTACHMENTS = {"before-state", "player-state", "returned-state", "served-browse-asset"}
 
 
+def strict_report_json(raw):
+    """Emitter keys are fixed; reject JSON ambiguity before schema admission."""
+    def unique(pairs):
+        value = {}
+        for key, item in pairs:
+            if key in value:
+                raise ValueError("duplicate proof field")
+            value[key] = item
+        return value
+    def nonfinite(_value):
+        raise ValueError("nonfinite proof number")
+    return json.loads(raw, object_pairs_hook=unique, parse_constant=nonfinite)
+
+
 def fields(value, keys):
     return isinstance(value, dict) and set(value) == set(keys.split())
 
@@ -120,11 +134,14 @@ def attachment(value, extended=False):
             and observation(value["observation"], value["name"] == "served-browse-asset", extended, value["name"] == "safe-rejection"))
 
 
-def admit(report, collection=False, suite="primary"):
+def admit(report, collection=False, suite="primary", project="chromium"):
     """Return only schema-validated known safe fields; arbitrary JSON becomes None."""
-    extended = isinstance(report, dict) and report.get("schemaVersion") == 2
-    keys = "schemaVersion status collected cases errors" + (" suite" if extended else "")
-    if not fields(report, keys) or not integer(report["schemaVersion"], 1, 2) or not isinstance(suite, str) or suite not in SUITES or suite == "all":
+    identified = isinstance(report, dict) and report.get("schemaVersion") == 3
+    extended = isinstance(report, dict) and report.get("schemaVersion") in (2, 3)
+    keys = "schemaVersion status collected cases errors" + (" suite" if extended else "") + (" project" if identified else "")
+    if not fields(report, keys) or not integer(report["schemaVersion"], 1, 3) or not isinstance(suite, str) or suite not in SUITES or suite == "all":
+        return None
+    if identified and (project not in ("chromium", "firefox", "webkit") or report["project"] != project):
         return None
     selected = "all" if collection and suite == "primary" else suite
     if extended and report["suite"] != selected or not extended and suite != "primary":
@@ -135,7 +152,7 @@ def admit(report, collection=False, suite="primary"):
         return None
     expected = SUITES[selected] if extended else COLLECTION if collection else [(SPECS[0], title) for title in PRIMARY]
     collected = report["collected"]
-    if not isinstance(collected, list) or len(collected) != len(expected) or not all(fields(item, "file title") and (item["file"], item["title"]) in expected for item in collected):
+    if not isinstance(collected, list) or len(collected) != len(expected) or not all(fields(item, "file title" + (" fullTitle" if identified else "")) and (not identified or item["fullTitle"] == item["title"]) and (item["file"], item["title"]) in expected for item in collected):
         return None
     if len({(item["file"], item["title"]) for item in collected}) != len(expected):
         return None
@@ -143,7 +160,7 @@ def admit(report, collection=False, suite="primary"):
     if not isinstance(cases, list) or len(cases) > (0 if collection else len(expected)):
         return None
     for case in cases:
-        if not fields(case, "file title status retry durationMs expectedStatus failures attachments") or (case["file"], case["title"]) not in expected:
+        if not fields(case, "file title status retry durationMs expectedStatus failures attachments" + (" fullTitle" if identified else "")) or (identified and case["fullTitle"] != case["title"]) or (case["file"], case["title"]) not in expected:
             return None
         if case["status"] not in ("passed", "failed", "timedOut", "skipped", "interrupted") or not integer(case["retry"], 0, 0) or not integer(case["durationMs"], 0, 60_000) or case["expectedStatus"] != "passed":
             return None
@@ -157,8 +174,8 @@ def admit(report, collection=False, suite="primary"):
     return report
 
 
-def complete(report, collection=False, suite="primary"):
-    if report is None or admit(report, collection, suite) is None or report["errors"]:
+def complete(report, collection=False, suite="primary", project="chromium"):
+    if report is None or admit(report, collection, suite, project) is None or report["errors"]:
         return False
     if collection:
         return report["status"] == "passed" and not report["cases"]
@@ -170,7 +187,7 @@ def complete(report, collection=False, suite="primary"):
         if case["status"] not in ("passed", "failed", "timedOut"):
             return False
         if case["status"] == "passed":
-            observed = boundary(suite, case) if report["schemaVersion"] == 2 else {item["name"] for item in case["attachments"] if item["observation"] is not None} == ATTACHMENTS
+            observed = boundary(suite, case) if report["schemaVersion"] in (2, 3) else {item["name"] for item in case["attachments"] if item["observation"] is not None} == ATTACHMENTS
             if case["failures"] or not observed:
                 return False
         if case["status"] != "passed" and not case["failures"]:

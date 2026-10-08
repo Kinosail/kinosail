@@ -9,18 +9,24 @@ on:
       - "packages/playerweb/**"
       - "packages/webassets/**"
       - "scripts/testing/*layout-stability*"
+      - "scripts/ci/validate-layout-selection.py"
+      - "scripts/ci/test_layout_selection.py"
+      - "apps/player/scripts/run-library-profile.sh"
+      - "apps/player/scripts/library_profile_admission.py"
+      - "scripts/ci/run-populated-settings.py"
+      - "scripts/ci/test_library_workflow.py"
       - ".github/workflows/layout-stability.yml"
   workflow_dispatch:
     inputs:
       campaign_proof:
         description: Run one bounded campaign proof instead of layout diagnosis
         type: choice
-        options: [none, R06, Q14, Q09, Q47, HLS]
+        options: [none, R06, Q14, Q09, Q47, HLS, HLS-navigation, Library]
         default: none
       campaign_q14_suite:
         description: Select one fixed Q14 public suite; primary keeps its two repeats
         type: choice
-        options: [primary, cold, bfcache, htmx, shows, search, safety, home]
+        options: [primary, navigation, cold, bfcache, htmx, shows, search, safety, home]
         default: primary
       campaign_r06_suite:
         description: Select original R06 protocol or one fixed Save or Restore suite
@@ -57,7 +63,29 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  selection-admission:
+    name: Admit layout and HLS selection
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Reject ignored or conflicting selections before setup
+        env:
+          LAYOUT_EVENT: ${{ github.event_name }}
+          LAYOUT_CAMPAIGN: ${{ inputs.campaign_proof || 'none' }}
+          HLS_REMAINING: ${{ inputs.hls_remaining_proof || false }}
+          HLS_TIMING: ${{ inputs.hls_audio_timing || false }}
+          HLS_INSTALLATION: ${{ inputs.hls_audio_installation || false }}
+          LAYOUT_METADATA: ${{ inputs.architecture_metadata || false }}
+          LAYOUT_Q14: ${{ inputs.campaign_q14_suite || 'primary' }}
+          LAYOUT_R06: ${{ inputs.campaign_r06_suite || 'protocol' }}
+          LAYOUT_Q47: ${{ inputs.campaign_q47_suite || 'source-format' }}
+        run: python3 scripts/ci/validate-layout-selection.py "$LAYOUT_EVENT" "$LAYOUT_CAMPAIGN" "$HLS_REMAINING" "$HLS_TIMING" "$HLS_INSTALLATION" "$LAYOUT_METADATA" "$LAYOUT_Q14" "$LAYOUT_R06" "$LAYOUT_Q47"
   native:
+    needs: selection-admission
     name: Native layout (${{ matrix.browser }})
     if: github.event_name != 'workflow_dispatch' || inputs.campaign_proof == 'none'
     runs-on: ubuntu-24.04
@@ -128,8 +156,9 @@ jobs:
           retention-days: 14
 
   campaign-proof:
+    needs: selection-admission
     name: Bounded campaign proof
-    if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof != 'none' && inputs.campaign_proof != 'HLS'
+    if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof != 'none' && inputs.campaign_proof != 'HLS' && inputs.campaign_proof != 'HLS-navigation' && inputs.campaign_proof != 'Library'
     runs-on: ubuntu-24.04
     timeout-minutes: 12
     env:
@@ -148,7 +177,7 @@ jobs:
         run: |
           test ! -e .gates-disabled
           case "$CAMPAIGN_Q14_SUITE" in
-            primary|cold|bfcache|htmx|shows|search|safety|home) ;;
+            primary|navigation|cold|bfcache|htmx|shows|search|safety|home) ;;
             *) exit 2 ;;
           esac
           if [ "$CAMPAIGN_PROOF" != Q14 ] && [ "$CAMPAIGN_Q14_SUITE" != primary ]; then exit 2; fi
@@ -297,6 +326,7 @@ jobs:
           retention-days: 3
 
   hls-followon:
+    needs: selection-admission
     name: Bounded public HLS follow-on
     if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof == 'HLS'
     runs-on: ubuntu-24.04
@@ -343,6 +373,181 @@ jobs:
           path: |
             .verification/hls-followon/*/receipt.json
             .verification/hls-followon/*/SHA256SUMS
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
+  library-owner:
+    needs: selection-admission
+    name: Closed Library46 (${{ matrix.engine }})
+    if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof == 'Library'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - run: test ! -e .gates-disabled
+      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
+        with:
+          version: 11.22.0
+          install: false
+          node-version-file: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: "26"
+          package-manager-cache: false
+      - name: Install pinned selected browser dependencies
+        timeout-minutes: 6
+        run: |
+          pnpm --dir apps/player/e2e install --frozen-lockfile
+          pnpm --dir apps/player/e2e exec playwright install --with-deps "${{ matrix.engine }}"
+      - name: Discover and admit only the closed Library46 selection
+        env:
+          LIBRARY_PROJECT: ${{ matrix.engine }}
+          KINOSAIL_BROWSER_PROJECT: ${{ matrix.engine }}
+          KINOSAIL_TEST_INSTANCE: "1"
+        run: |
+          mkdir -p ".verification/library-${LIBRARY_PROJECT}"
+          python3 apps/player/scripts/library_profile_admission.py "$LIBRARY_PROJECT" discovery > "$RUNNER_TEMP/library-argv-${LIBRARY_PROJECT}"
+          mapfile -d '' -t arguments < "$RUNNER_TEMP/library-argv-${LIBRARY_PROJECT}"
+          timeout --kill-after=2s 60s pnpm --dir apps/player/e2e "${arguments[@]}" | head -c 2097153 > ".verification/library-${LIBRARY_PROJECT}/discovery.json"
+          test "$(wc -c < ".verification/library-${LIBRARY_PROJECT}/discovery.json")" -le 2097152
+          scheme=http
+          if [ "$LIBRARY_PROJECT" = webkit ]; then scheme=https; fi
+          python3 scripts/ci/run-populated-settings.py --url "$scheme://localhost:38127" --output "$RUNNER_TEMP/library46-${LIBRARY_PROJECT}" --profile library-owner --project "$LIBRARY_PROJECT" --state fresh --discovery "$GITHUB_WORKSPACE/.verification/library-${LIBRARY_PROJECT}/discovery.json" --admit-only
+      - name: Record immutable selection and source recipe
+        env:
+          LIBRARY_PROJECT: ${{ matrix.engine }}
+          PROOF_REVISION: ${{ github.sha }}
+        run: |
+          python3 - <<'PYTHON'
+          import hashlib, json, os, pathlib, sys
+          sys.path.insert(0, 'apps/player/scripts')
+          from library_profile_admission import CASES, playwright_arguments
+          project = os.environ['LIBRARY_PROJECT']
+          paths = sorted({f'apps/player/e2e/{file}' for file, _ in CASES} | {
+              'apps/player/e2e/pnpm-lock.yaml', 'apps/player/e2e/playwright.config.ts',
+              'apps/player/scripts/run-library-profile.sh', 'apps/player/scripts/library_profile_admission.py',
+              'apps/player/scripts/generate-test-media.sh', 'apps/player/Containerfile', 'apps/player/Containerfile.test',
+              'scripts/ci/run-populated-settings.py', 'scripts/ci/browser-fixture-tls.sh'})
+          receipt = {'revision': os.environ['PROOF_REVISION'], 'profile': 'library-owner', 'project': project,
+                     'state': 'fresh', 'identities': [{'file': file, 'fullTitle': title} for file, title in CASES],
+                     'discoveryOnly': True, 'command': playwright_arguments(project, False),
+                     'sourceSHA256': {path: hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest() for path in paths},
+                     'data': 'one disposable full-media Server, one MFA Owner, synthetic local TMDB, internal network',
+                     'boundary': 'Linux hosted browser and disposable container; no physical device/provider pairing proof'}
+          pathlib.Path(f'.verification/library-{project}/source-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+          PYTHON
+      - name: Run one disposable full-media MFA Owner and strict Library46
+        env:
+          LIBRARY_PROJECT: ${{ matrix.engine }}
+          CONTAINER_ENGINE: docker
+        run: ./apps/player/scripts/run-library-profile.sh "$LIBRARY_PROJECT" "$GITHUB_WORKSPACE/.verification/library-${LIBRARY_PROJECT}/discovery.json" "$RUNNER_TEMP/library46-${LIBRARY_PROJECT}"
+      - name: Retain bounded discovery, results and first-failure evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: library46-${{ matrix.engine }}-${{ github.sha }}
+          path: |
+            .verification/library-${{ matrix.engine }}/discovery.json
+            .verification/library-${{ matrix.engine }}/source-receipt.json
+            ${{ runner.temp }}/library46-${{ matrix.engine }}/setup-and-run.json
+            ${{ runner.temp }}/library46-${{ matrix.engine }}/results-${{ matrix.engine }}.json
+            ${{ runner.temp }}/library46-${{ matrix.engine }}/fixture-*.txt
+            ${{ runner.temp }}/library46-${{ matrix.engine }}/fixture-media.json
+            ${{ runner.temp }}/library46-${{ matrix.engine }}/browser-results/**/trace.zip
+            ${{ runner.temp }}/library46-${{ matrix.engine }}/browser-results/**/*.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+  hls-navigation:
+    name: Fixed real HLS departure (WebKit)
+    needs: selection-admission
+    if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof == 'HLS-navigation'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - run: test ! -e .gates-disabled
+      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
+        with:
+          version: 11.22.0
+          install: false
+          node-version-file: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: "26"
+          package-manager-cache: false
+      - name: Verify isolated owned-resource cleanup
+        run: node --test scripts/testing/hls-navigation-fixture.test.mjs
+      - name: Prepare fixed WebKit fixture dependencies
+        timeout-minutes: 6
+        run: |
+          sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
+          pnpm --dir apps/player/e2e install --frozen-lockfile
+          pnpm --dir apps/player/e2e exec playwright install --with-deps webkit
+      - name: Record exact source and tool recipe
+        env:
+          PROOF_REVISION: ${{ github.sha }}
+        run: |
+          mkdir -p .verification/hls-navigation
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          paths = ['apps/player/e2e/player-hls-navigation.spec.ts', 'apps/player/e2e/player-hls-navigation-fixture.ts',
+                   'apps/player/e2e/playwright.config.ts', 'apps/player/e2e/pnpm-lock.yaml',
+                   'apps/player/internal/server/static/hls.min.js', 'packages/webassets/static/player-progress-navigation.js']
+          receipt = {'revision': os.environ['PROOF_REVISION'],
+                     'command': ['pnpm', '--dir', 'apps/player/e2e', 'exec', 'playwright', 'test', 'player-hls-navigation.spec.ts', '--project=webkit', '--workers=1', '--retries=0'],
+                     'discoveryOnly': True,
+                     'discoveryCommand': ['pnpm', '--dir', 'apps/player/e2e', 'exec', 'playwright', 'test', 'player-hls-navigation.spec.ts', '--project=webkit', '--workers=1', '--retries=0', '--list', '--reporter=json'],
+                     'discoveryBounds': {'seconds': 60, 'bytes': 2097152},
+                     'data': 'synthetic real H264 TS and fMP4, fixed held-byte and fast Watched303/Library200 profiles',
+                     'environment': {'platform': 'ubuntu-24.04', 'browser': 'webkit', 'workers': 1, 'retries': 0},
+                     'sourceSHA256': {name: hashlib.sha256(pathlib.Path(name).read_bytes()).hexdigest() for name in paths},
+                     'tools': {name: subprocess.check_output(argv, text=True, timeout=10).splitlines()[0][:512] for name, argv in (
+                         ('node', ['node', '--version']), ('pnpm', ['pnpm', '--version']), ('ffmpeg', ['ffmpeg', '-version']),
+                         ('playwright', ['pnpm', '--dir', 'apps/player/e2e', 'exec', 'playwright', '--version']))},
+                     'boundary': 'HTTP fixture/pinned Hls.js/real decoder, no Go storage, production TLS or fullscreen proof'}
+          pathlib.Path('.verification/hls-navigation/source-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+          PY
+      - name: Discover exact WebKit HLS titles
+        env:
+          KINOSAIL_BROWSER_MATRIX: full
+          KINOSAIL_BROWSER_PROJECT: webkit
+        run: |
+          timeout --kill-after=2s 60s pnpm --dir apps/player/e2e exec playwright test player-hls-navigation.spec.ts --project=webkit --workers=1 --retries=0 --list --reporter=json | head -c 2097153 > .verification/hls-navigation/list-webkit.json
+          test "$(wc -c < .verification/hls-navigation/list-webkit.json)" -le 2097152
+      - name: Run exact strict HLS navigation file
+        env:
+          KINOSAIL_BROWSER_MATRIX: full
+          KINOSAIL_BROWSER_PROJECT: webkit
+          KINOSAIL_BROWSER_WORKERS: "1"
+          KINOSAIL_E2E_VIDEO: "off"
+          KINOSAIL_E2E_ARTIFACT_DIR: ../../../.verification/hls-navigation
+          KINOSAIL_E2E_OUTPUT_DIR: ../../../.verification/hls-navigation/test-results
+        run: pnpm --dir apps/player/e2e exec playwright test player-hls-navigation.spec.ts --project=webkit --workers=1 --retries=0
+      - name: Admit complete one-attempt HLS results
+        run: python3 scripts/ci/check-hls-navigation-result.py
+      - name: Retain exact source, results and failure traces
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: hls-navigation-webkit-${{ github.sha }}
+          path: |
+            .verification/hls-navigation/source-receipt.json
+            .verification/hls-navigation/list-webkit.json
+            .verification/hls-navigation/results-webkit.json
+            .verification/hls-navigation/test-results/**/trace.zip
+            .verification/hls-navigation/test-results/**/*.json
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14

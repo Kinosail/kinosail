@@ -206,6 +206,8 @@ if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
     run_library_pagination_journey "$project" \
       "${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project-library-pagination" \
       "${KINOSAIL_E2E_ARTIFACT_DIR:-$media_dir/playwright-artifact}/library-pagination-$project"
+    run_browse_return_journeys "$project" "$media_dir/Checkpoint Example.mp4" \
+      "${KINOSAIL_E2E_ARTIFACT_DIR:-$media_dir/playwright-artifact}/browse-return-$project"
     run_subtitle_recovery_journey "$project" "$media_dir/Direct Retry Control.mp4" \
       "${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project-caption-recovery" "${KINOSAIL_E2E_ARTIFACT_DIR:-$media_dir/playwright-artifact}/caption-recovery-$project"
     run_download_pause_journeys "$project" "${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project" \

@@ -2,8 +2,8 @@ import { createHash } from "node:crypto";
 import type { FullConfig, FullResult, Reporter, Suite, TestCase, TestError, TestResult } from "@playwright/test/reporter";
 
 // Opt-in fictional-Server proof only. Normal E2E reporters remain unchanged.
-const files = ["browse-return.spec.ts", "browse-return-cold.spec.ts", "browse-return-bfcache.spec.ts", "browse-return-safety.spec.ts", "browse-return-home.spec.ts"];
-const modes = ["primary", "cold", "bfcache", "htmx", "shows", "search", "safety", "home", "all"];
+const files = ["browse-return.spec.ts", "browse-return-cold.spec.ts", "browse-return-bfcache.spec.ts", "browse-return-safety.spec.ts", "browse-return-home.spec.ts", "watch-navigation.spec.ts"];
+const modes = ["navigation", "primary", "cold", "bfcache", "htmx", "shows", "search", "safety", "home", "all"];
 const requested = process.env.KINOSAIL_BROWSE_RETURN_CASES || "primary";
 const suiteName = modes.includes(requested) ? requested : "invalid";
 const safetyNames = ["external origin", "protocol-relative origin", "non-browse route", "duplicate query", "unknown query", "oversized query", "excessive extent", "different profile", "different destination"];
@@ -22,13 +22,18 @@ const titles: Record<string, string[]> = {
     ...safetyNames.map(name => "saved return rejects " + name + " before navigation or continuation"),
     "a direct Player opened in another tab does not inherit browse return state",
   ],
+  [files[5]]: [
+    ...[390, 1440, 1920].map(width => "Player has one accessible return link with Movies context and a direct-entry fallback at " + width + "px"),
+    "Home keeps its exact return after Mark watched",
+    "Plain root keeps its exact return after Mark watched",
+  ],
   [files[4]]: [
     "visible Player Back restores the Home Continue watching action without a Library grid",
     "cold native Back restores the Home Continue watching action without a Library grid",
     "cold native Back restores the scrolled Home Movies destination without a Library grid",
   ],
 };
-const attachmentNames = ["before-state", "player-state", "returned-state", "served-browse-asset", "original-url-state", "letter-state", "cold-boundary-state", "native-cache-boundary-state", "htmx-boundary-state", "home-before-state", "home-player-state", "home-cold-boundary-state", "home-returned-state", "safe-rejection"];
+const attachmentNames = ["movies-player-state", "direct-player-state", "root-watched-return-state", "home-watched-return-state", "before-state", "player-state", "returned-state", "served-browse-asset", "original-url-state", "letter-state", "cold-boundary-state", "native-cache-boundary-state", "htmx-boundary-state", "home-before-state", "home-player-state", "home-cold-boundary-state", "home-returned-state", "safe-rejection"];
 const navigationTypes = ["navigate", "reload", "back_forward", "prerender"];
 const digest = (value: Buffer) => createHash("sha256").update(value).digest("hex");
 const object = (value: unknown): value is Record<string, unknown> => Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -131,18 +136,21 @@ function failure(error: TestError) {
     label: label || null, location: file && [...files, "browse-return-helpers.ts"].includes(file) && integer(error.location?.line, 1, 1000) && integer(error.location?.column, 1, 1000) ? { file, line: error.location!.line, column: error.location!.column } : null };
 }
 export default class BrowseReturnProofReporter implements Reporter {
-  private collected: { file: string; title: string }[] = [];
+  private project: string | null = null;
+  private collected: { file: string; title: string; fullTitle: string }[] = [];
   private cases: Record<string, unknown>[] = [];
   private errors: Record<string, unknown>[] = [];
   private invalid() { if (this.errors.length < 16) this.errors.push({ phase: "unclassified", label: null, location: null }); }
   onBegin(_config: FullConfig, suite: Suite) {
     const tests = suite.allTests();
-    if (suiteName === "invalid" || tests.length > 22 || tests.some(test => !known(basename(test.location.file), test.title))) { this.invalid(); return; }
-    this.collected = tests.map(test => ({ file: basename(test.location.file), title: test.title }));
+    const projects = [...new Set(tests.map(test => test.parent.project()?.name))];
+    if (suiteName === "invalid" || tests.length > 22 || projects.length !== 1 || !["chromium", "firefox", "webkit"].includes(projects[0] || "") || tests.some(test => !known(basename(test.location.file), test.title) || test.titlePath().slice(3).join(" > ") !== test.title)) { this.invalid(); return; }
+    this.project = projects[0]!;
+    this.collected = tests.map(test => ({ file: basename(test.location.file), title: test.title, fullTitle: test.titlePath().slice(3).join(" > ") }));
   }
   onTestEnd(test: TestCase, result: TestResult) {
     const file = basename(test.location.file);
-    if (!known(file, test.title) || this.cases.length >= 22 || !integer(result.duration, 0, 60_000) || !integer(result.retry, 0, 3)) { this.invalid(); return; }
+    if (test.parent.project()?.name !== this.project || test.titlePath().slice(3).join(" > ") !== test.title || !known(file, test.title) || this.cases.length >= 22 || !integer(result.duration, 0, 60_000) || !integer(result.retry, 0, 3)) { this.invalid(); return; }
     const attachments: { name: string; bytes: number; sha256: string; observation: ReturnType<typeof observation> }[] = [], names = new Set<string>();
     if (result.attachments.length > 64 || result.errors.length > 16) this.invalid();
     for (const item of result.attachments.slice(0, 64)) {
@@ -159,12 +167,12 @@ export default class BrowseReturnProofReporter implements Reporter {
       try { decoded = observation(JSON.parse(item.body.toString("utf8")), item.name); } catch { /* Missing observations never certify a boundary. */ }
       attachments.push({ name: item.name, bytes: item.body.length, sha256: digest(item.body), observation: decoded });
     }
-    this.cases.push({ file, title: test.title, status: result.status, retry: result.retry, durationMs: result.duration,
+    this.cases.push({ file, title: test.title, fullTitle: test.titlePath().slice(3).join(" > "), status: result.status, retry: result.retry, durationMs: result.duration,
       expectedStatus: test.expectedStatus, failures: result.errors.slice(0, 16).map(failure), attachments });
   }
   onError(error: TestError) { if (this.errors.length < 16) this.errors.push(failure(error)); }
   onEnd(result: FullResult) {
-    console.log("Q14_PROOF_RESULT " + JSON.stringify({ schemaVersion: 2, suite: suiteName, status: result.status, collected: this.collected, cases: this.cases, errors: this.errors }));
+    console.log("Q14_PROOF_RESULT " + JSON.stringify({ schemaVersion: 3, project: this.project, suite: suiteName, status: result.status, collected: this.collected, cases: this.cases, errors: this.errors }));
   }
   printsToStdio() { return true; }
 }

@@ -11,7 +11,7 @@ import sys
 import threading
 import time
 
-from campaign_q14_admission import SPECS, admit, complete, go_boundary, cache_diagnostic
+from campaign_q14_admission import SPECS, admit, complete, go_boundary, cache_diagnostic, strict_report_json
 from campaign_q14_suites import SUITES
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -122,8 +122,8 @@ def run(command, cwd, environment, seconds, label, command_seconds=None, suite="
     receipt["goBoundary"] = go_boundary(raw) if label not in ("collection", "compile") else None
     reports = [line[len(b"Q14_PROOF_RESULT "):] for line in raw.splitlines() if line.startswith(b"Q14_PROOF_RESULT ")]
     try:
-        report = admit(json.loads(reports[0]), label == "collection", suite) if len(reports) == 1 and len(reports[0]) <= 2 * 1024 * 1024 and not captured["overflow"] else None
-    except (ValueError, TypeError):
+        report = admit(strict_report_json(reports[0]), label == "collection", suite, environment.get("KINOSAIL_BROWSER_PROJECT", "chromium")) if len(reports) == 1 and len(reports[0]) <= 2 * 1024 * 1024 and not captured["overflow"] else None
+    except (ValueError, TypeError, RecursionError):
         report = None
     receipt["reportAdmitted"] = report is not None
     # Raw stdout/stderr, Go panic text and Playwright errors never reach artifacts.

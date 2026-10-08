@@ -87,3 +87,11 @@ run_populated_player_journeys() {
     --required-title 'canonical catalog year strings survive queue validation and current-track identity' \
     -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts test-instance-audio-queue.spec.ts player-audio-policy.spec.ts player-audio-queue-lifecycle.spec.ts --grep=@smoke --workers=1
 }
+
+# Distinct public return profiles; mode all omits navigation/safety/home.
+run_browse_return_journeys() {
+  local mode
+  for mode in primary navigation safety home; do
+    python3 scripts/run-browse-return.py "$1" "$mode" "$2" "$3/$mode"
+  done
+}
