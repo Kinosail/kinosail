@@ -32,35 +32,49 @@ func copiedHLSProbeContext(parent context.Context) (context.Context, context.Can
 	return ctx, cancel, nil
 }
 
+type copiedHLSProbeWatch struct {
+	scanDone bool
+	stopped  bool
+	scanErr  error
+	result   error
+}
+
 func watchCopiedHLSProbe(ctx context.Context, probe copiedHLSProbe, output io.Closer, scanned <-chan error) error {
 	ticker := time.NewTicker(time.Millisecond)
 	defer ticker.Stop()
-	scanDone, stopped := false, false
-	var scanErr, result error
+	var watch copiedHLSProbeWatch
 	for {
-		exited, observeErr := probe.exited()
-		interrupted := ctx.Err() != nil || scanErr != nil || observeErr != nil
-		if interrupted || exited {
-			if !stopped {
-				if probe.terminate() != nil {
-					result = errCopiedHLSIndex
-				}
-				stopped = true
-			}
-			if interrupted {
-				_ = output.Close()
-				result = errCopiedHLSIndex
-			}
-		}
-		if scanDone && (exited || observeErr != nil) {
-			return result
+		if watch.observe(ctx, probe, output) {
+			return watch.result
 		}
 		select {
-		case scanErr = <-scanned:
-			scanDone = true
+		case watch.scanErr = <-scanned:
+			watch.scanDone = true
 			scanned = nil
 		case <-ticker.C:
 		}
+	}
+}
+
+func (watch *copiedHLSProbeWatch) observe(ctx context.Context, probe copiedHLSProbe, output io.Closer) bool {
+	exited, observeErr := probe.exited()
+	interrupted := ctx.Err() != nil || watch.scanErr != nil || observeErr != nil
+	if interrupted || exited {
+		watch.stop(probe, output, interrupted)
+	}
+	return watch.scanDone && (exited || observeErr != nil)
+}
+
+func (watch *copiedHLSProbeWatch) stop(probe copiedHLSProbe, output io.Closer, interrupted bool) {
+	if !watch.stopped {
+		if probe.terminate() != nil {
+			watch.result = errCopiedHLSIndex
+		}
+		watch.stopped = true
+	}
+	if interrupted {
+		_ = output.Close()
+		watch.result = errCopiedHLSIndex
 	}
 }
 

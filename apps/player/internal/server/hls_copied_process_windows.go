@@ -20,12 +20,10 @@ type copiedHLSWindowsProbe struct {
 // https://github.com/microsoft/win32metadata/blob/main/generation/WinSDK/RecompiledIdlHeaders/um/WinBase.h
 const copiedHLSJobListAttribute = 0x2000d
 
-func startCopiedHLSProbe(ctx context.Context, executable string, arguments []string) (copiedHLSProbe, io.ReadCloser, error) {
+func startCopiedHLSProbe(ctx context.Context, command *exec.Cmd) (copiedHLSProbe, io.ReadCloser, error) {
 	if ctx.Err() != nil {
 		return nil, nil, errCopiedHLSIndex
 	}
-	//nolint:gosec // Executable is installation config; media comes from a revalidated scanned item.
-	command := exec.Command(executable, arguments...)
 	if command.Err != nil {
 		return nil, nil, errCopiedHLSIndex
 	}
@@ -170,8 +168,8 @@ type copiedHLSJobAccounting struct {
 	periodUserTime      int64
 	periodKernelTime    int64
 	totalPageFaults     uint32
-	totalProcesses     uint32
-	activeProcesses    uint32
+	totalProcesses      uint32
+	activeProcesses     uint32
 	terminatedProcesses uint32
 }
 

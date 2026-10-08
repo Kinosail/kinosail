@@ -18,20 +18,21 @@ type copiedHLSUnixProbe struct {
 }
 
 // Keep the group leader unreaped until all group mutations and scanning finish.
-func startCopiedHLSProbe(ctx context.Context, executable string, arguments []string) (copiedHLSProbe, io.ReadCloser, error) {
+func startCopiedHLSProbe(ctx context.Context, command *exec.Cmd) (copiedHLSProbe, io.ReadCloser, error) {
+	if ctx.Err() != nil {
+		return nil, nil, errCopiedHLSIndex
+	}
 	exit, err := newCopiedHLSExitObservation()
 	if err != nil {
 		return nil, nil, errCopiedHLSIndex
 	}
-	//nolint:gosec // Executable is installation config; media comes from a revalidated scanned item.
-	command := exec.Command(executable, arguments...)
 	command.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	output, err := command.StdoutPipe()
 	if err != nil {
 		exit.close()
 		return nil, nil, errCopiedHLSIndex
 	}
-	if ctx.Err() != nil || command.Start() != nil {
+	if command.Start() != nil {
 		_ = output.Close()
 		exit.close()
 		return nil, nil, errCopiedHLSIndex

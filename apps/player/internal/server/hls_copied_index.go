@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"math"
+	"os/exec"
 	"strconv"
 	"strings"
 
@@ -105,7 +106,9 @@ func copiedHLSLines(parent context.Context, executable string, arguments []strin
 		return err
 	}
 	defer cancel()
-	probe, output, err := startCopiedHLSProbe(ctx, executable, arguments)
+	//nolint:gosec // Executable is installation config; media comes from a revalidated scanned item.
+	command := exec.Command(executable, arguments...)
+	probe, output, err := startCopiedHLSProbe(ctx, command)
 	if err != nil {
 		return errCopiedHLSIndex
 	}
