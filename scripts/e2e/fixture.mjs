@@ -8,14 +8,15 @@ const [app, port] = process.argv.slice(2);
 if (process.argv.length !== 4 || !['player', 'subtitles'].includes(app) || !/^\d{1,5}$/.test(port) || +port < 1024 || +port > 65535) throw new Error('invalid fixture app/port');
 const runtime = Object.fromEntries(['PATH', 'TMPDIR', 'TMP', 'TEMP', 'LANG', 'LC_ALL', 'LC_CTYPE', 'TZ', 'SystemRoot', 'WINDIR'].filter(key => process.env[key] !== undefined).map(key => [key, process.env[key]]));
 const root = mkdtempSync(join(tmpdir(), `kinosail-e2e-${app}-`));
+const rootIdentity = lstatSync(root);
 for (const dir of ['media/Movies', 'data', 'cache', 'backups']) mkdirSync(join(root, dir), { recursive: true });
 const media = join(root, 'media/Movies');
 const generated = spawnSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-f', 'lavfi', '-i', 'testsrc2=size=320x180:rate=24', '-f', 'lavfi', '-i', 'sine=frequency=220:sample_rate=48000', '-t', '16', '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '30', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-movflags', '+faststart', join(media, 'Example Movie.mp4')], { stdio: 'inherit', env: runtime });
-if (generated.status !== 0) { rmSync(root, { recursive: true, force: true }); throw new Error('FFmpeg fixture failed'); }
+if (generated.status !== 0) { cleanupRoot(); throw new Error('FFmpeg fixture failed'); }
 writeFileSync(join(media, 'Example Movie.en.srt'), '1\n00:00:00,000 --> 00:00:03,000\nExample dialogue.\n\n2\n00:00:03,500 --> 00:00:07,000\nA second line.\n');
 if (app === 'player') {
   const extra = spawnSync('python3', [fileURLToPath(new URL('./media-fixture.py', import.meta.url)), media], { stdio: 'inherit', env: runtime });
-  if (extra.status !== 0) { rmSync(root, { recursive: true, force: true }); throw new Error('reader/audio fixture failed'); }
+  if (extra.status !== 0) { cleanupRoot(); throw new Error('reader/audio fixture failed'); }
 }
 const binary = process.env[`KINOSAIL_E2E_${app.toUpperCase()}_BINARY`] ?? join(process.cwd(), '.e2e/bin', app);
 const stateDirectory = join(process.cwd(), '.e2e/fixtures');
@@ -30,6 +31,9 @@ function owns(path, identity) {
   try { const current = lstatSync(path); return current.dev === identity.dev && current.ino === identity.ino; }
   catch (error) { if (error.code !== 'ENOENT') throw error; return false; }
 }
+function cleanupRoot() {
+  if (owns(root, rootIdentity)) rmSync(root, { recursive: true, force: true });
+}
 function cleanup() {
   clearInterval(controlTimer);
   if (pendingFD !== undefined) { closeSync(pendingFD); pendingFD = undefined; }
@@ -37,7 +41,7 @@ function cleanup() {
   if (owns(statePath, receiptIdentity)) {
     rmSync(statePath);
   }
-  rmSync(root, { recursive: true, force: true });
+  cleanupRoot();
 }
 try {
   mkdirSync(stateDirectory, { recursive: true });
@@ -46,7 +50,7 @@ try {
   try { lstatSync(statePath); throw new Error('fixture receipt already exists'); } catch (error) { if (error.code !== 'ENOENT') throw error; }
   pendingFD = openSync(pendingPath, 'wx', 0o600);
   pendingIdentity = fstatSync(pendingFD);
-} catch (error) { rmSync(root, { recursive: true, force: true }); throw error; }
+} catch (error) { cleanupRoot(); throw error; }
 function launch() {
   if (pendingFD === undefined) {
     try {
