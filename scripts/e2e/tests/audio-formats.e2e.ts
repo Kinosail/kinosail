@@ -1,6 +1,7 @@
 import { describe, test } from '@e2e-dev/web';
 import { expect } from 'e2e';
 import { api, requireFixtureURL } from './helpers';
+import { fixtureItem } from '../fixture-response.mjs';
 
 describe('additional real media formats', { session: 'owner' }, () => {
   test('M4B chapters seek decoded audio and retain speed, timer and progress controls', async ({ app, browser, screen }) => {
@@ -8,7 +9,8 @@ describe('additional real media formats', { session: 'owner' }, () => {
     await app.open('/settings');
     test.skip((await browser.title()).includes('Subtitles'), 'Audiobooks belong to Kinosail Player');
     const catalog = await api(browser, app.baseUrl, '/api/v1/library?view=audiobooks');
-    const book = catalog.data.items.find((i: { title: string }) => i.title === 'E2E Audiobook');
+    expect(catalog.status).toBe(200);
+    const book = fixtureItem(catalog.data, 'E2E Audiobook', 'audiobook');
     expect(book).toBeDefined();
     expect(book.kind).toBe('audiobook');
     await app.open('/watch/' + book.id);
@@ -64,7 +66,8 @@ describe('additional real media formats', { session: 'owner' }, () => {
     await app.open('/settings');
     test.skip((await browser.title()).includes('Subtitles'), 'PDF readers belong to Kinosail Player');
     const catalog = await api(browser, app.baseUrl, '/api/v1/library?view=books');
-    const book = catalog.data.items.find((i: { title: string }) => i.title === 'E2E PDF');
+    expect(catalog.status).toBe(200);
+    const book = fixtureItem(catalog.data, 'E2E PDF', 'book');
     expect(book).toBeDefined();
     const reader = await api(browser, app.baseUrl, '/api/v1/books/' + book.id + '/reader');
     expect(reader.data.type).toBe('pdf');

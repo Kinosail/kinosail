@@ -1,6 +1,7 @@
 import { describe, test } from '@e2e-dev/web';
 import { expect } from 'e2e';
 import { api, requireFixtureURL } from './helpers';
+import { fixtureItem, fixtureAlbum, fixtureAlbumTracks } from '../fixture-response.mjs';
 
 describe('populated audio and readers', { session: 'owner' }, () => {
   test('album queue plays two real tracks and rejects invalid progress without mutation', async ({ app, browser, screen }) => {
@@ -8,11 +9,14 @@ describe('populated audio and readers', { session: 'owner' }, () => {
     await app.open('/settings');
     test.skip((await browser.title()).includes('Subtitles'), 'Music belongs to Kinosail Player');
     const albums = await api(browser, app.baseUrl, '/api/v1/albums');
-    const album = albums.data.albums.find((a: { title: string }) => a.title === 'E2E Album');
+    expect(albums.status).toBe(200);
+    const album = fixtureAlbum(albums.data);
     expect(album).toBeDefined();
     const detail = await api(browser, app.baseUrl, '/api/v1/albums/' + album.id);
-    expect(detail.data.tracks.map((t: { title: string }) => t.title)).toEqual(['E2E Track One', 'E2E Track Two']);
-    const [first, second] = detail.data.tracks;
+    expect(detail.status).toBe(200);
+    const tracks = fixtureAlbumTracks(detail.data, album);
+    expect(tracks.map((t: { title: string }) => t.title)).toEqual(['E2E Track One', 'E2E Track Two']);
+    const [first, second] = tracks;
     const queuePath = '/api/v1/audio/' + first.id + '/queue';
     const queue = await api(browser, app.baseUrl, queuePath);
     expect(queue.data.items.map((t: { id: string }) => t.id)).toEqual([first.id, second.id]);
@@ -46,7 +50,8 @@ describe('populated audio and readers', { session: 'owner' }, () => {
     await app.open('/settings');
     test.skip((await browser.title()).includes('Subtitles'), 'Readers belong to Kinosail Player');
     const books = await api(browser, app.baseUrl, '/api/v1/library?view=books');
-    const book = books.data.items.find((b: { title: string }) => b.title === 'E2E EPUB');
+    expect(books.status).toBe(200);
+    const book = fixtureItem(books.data, 'E2E EPUB', 'book');
     expect(book).toBeDefined();
     const reader = await api(browser, app.baseUrl, '/api/v1/books/' + book.id + '/reader');
     expect(reader.data.type).toBe('epub');
@@ -77,12 +82,16 @@ describe('populated audio and readers', { session: 'owner' }, () => {
     requireFixtureURL(app.baseUrl);
     await app.open('/settings');
     test.skip((await browser.title()).includes('Subtitles'), 'Books and Photos belong to Kinosail Player');
-    const comic = (await api(browser, app.baseUrl, '/api/v1/library?view=books')).data.items.find((b: { title: string }) => b.title === 'E2E Comic');
+    const comics = await api(browser, app.baseUrl, '/api/v1/library?view=books');
+    expect(comics.status).toBe(200);
+    const comic = fixtureItem(comics.data, 'E2E Comic', 'book');
     expect(comic).toBeDefined();
     await app.open('/read/' + comic.id);
     await expect(browser.locator('.reader-pages img')).toHaveCount(2);
     await expect.poll(() => browser.evaluate(() => [...document.querySelectorAll<HTMLImageElement>('.reader-pages img')].filter(i => i.complete && i.naturalWidth === 64 && i.naturalHeight === 48).length)).toBe(2);
-    const photo = (await api(browser, app.baseUrl, '/api/v1/library?view=photos')).data.items.find((p: { title: string }) => p.title === 'E2E Photo');
+    const photos = await api(browser, app.baseUrl, '/api/v1/library?view=photos');
+    expect(photos.status).toBe(200);
+    const photo = fixtureItem(photos.data, 'E2E Photo', 'photo');
     expect(photo).toBeDefined();
     await app.open('/watch/' + photo.id);
     await expect.poll(() => browser.evaluate(() => [...document.querySelectorAll<HTMLImageElement>('main img')].some(i => i.complete && i.naturalWidth === 64 && i.naturalHeight === 48))).toBe(true);

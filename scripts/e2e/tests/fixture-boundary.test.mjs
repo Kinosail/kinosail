@@ -66,3 +66,54 @@ for(const file of readdirSync(new URL('.',import.meta.url)).filter(name=>name.en
   }
  });
 }
+
+function albumPeer(data, detail = {}, status = 200) {
+ const callbacks=[]; const register=(name,callback)=>callbacks.push(callback); register.skip=()=>{};
+ const code=stripTypeScriptTypes(readFileSync(new URL('./audio-readers.e2e.ts',import.meta.url),'utf8')).replace(/^import .*;\n/gm,'');
+ const effects={targetRequests:0,targetOpens:0};
+ runInNewContext(code,{test:register,describe:(name,options,callback)=>callback(),...boundary,
+  expect:value=>({toBeDefined(){assert.notEqual(value,undefined);},toEqual(expected){assert.equal(JSON.stringify(value),JSON.stringify(expected));},toBe(expected){assert.equal(value,expected);}}),api:async(browser,origin,path)=>{
+   if(path==='/api/v1/albums')return {status,data};
+   effects.targetRequests++; if(path.startsWith('/api/v1/albums/'))return {status:200,data:detail};
+   throw new Error('controlled downstream queue boundary');
+  }});
+ const app={baseUrl:base,open:async(path)=>{if(path!=='/settings'){effects.targetOpens++;throw new Error('controlled downstream album navigation');}}};
+ return {effects,run:()=>callbacks[0]({app,browser:{title:async()=> 'Kinosail Player'},screen:{}})};
+}
+const album={id:'0123456789abcdef',title:'E2E Album',artist:'E2E Artist'};
+for(const [name,data,status] of [
+ ['unsafe album ID',{albums:[{...album,id:'../foreign'}]},200],
+ ['duplicate fixture title',{albums:[album,{...album,id:'1111111111111111'}]},200],
+ ['duplicate unrelated ID',{albums:[album,{...album,title:'Unrelated'}]},200],
+ ['unknown album field',{albums:[{...album,unknown:true}]},200],
+ ['unknown catalog field',{albums:[album],unknown:true},200],
+ ['non-success response',{albums:[album]},401],
+ ['oversized catalog',{albums:Array.from({length:201},(_,index)=>({...album,id:index.toString(16).padStart(16,'0')}))},200]
+]) test('registered album callback rejects '+name+' before item requests/navigation',async()=>{
+ const p=albumPeer(data,{},status);await assert.rejects(p.run());
+ assert.equal(p.effects.targetRequests,0);assert.equal(p.effects.targetOpens,0);
+});
+
+const tracks=[{id:'2222222222222222',title:'E2E Track One',kind:'audio',progress:{}},
+ {id:'3333333333333333',title:'E2E Track Two',kind:'audio',progress:{}}];
+const albumDetail={id:album.id,title:album.title,artist:album.artist,tracks};
+test('strict fixture album summary/detail retain unique ordered real-track targets',()=>{
+ const selected=boundary.fixtureAlbum({albums:[{...album,title:'Other',id:'4444444444444444'},album]});
+ assert.equal(selected,album); assert.deepEqual(boundary.fixtureAlbumTracks(albumDetail,selected),tracks);
+});
+for(const [name,data]of [['missing',{}],['wrong type',{albums:{}}],['missing target',{albums:[]}],
+ ['unsafe unrelated ID',{albums:[album,{...album,title:'Other',id:'foreign'}]}],['oversized title',{albums:[{...album,title:'x'.repeat(513)}]}]])
+ test('strict album summary rejects '+name,()=>assert.throws(()=>boundary.fixtureAlbum(data)));
+for(const [name,data]of [['missing',{}],['wrong detail ID',{...albumDetail,id:'4444444444444444'}],
+ ['wrong title',{...albumDetail,title:'Other'}],['unknown field',{...albumDetail,unknown:true}],
+ ['missing tracks',{...albumDetail,tracks:undefined}],['wrong type',{...albumDetail,tracks:{}}],
+ ['missing track',{...albumDetail,tracks:[tracks[0]]}],['extra track',{...albumDetail,tracks:[...tracks,tracks[0]]}],
+ ['out of order',{...albumDetail,tracks:[tracks[1],tracks[0]]}],['duplicate ID',{...albumDetail,tracks:[tracks[0],{...tracks[1],id:tracks[0].id}]}],
+ ['unsafe track ID',{...albumDetail,tracks:[{...tracks[0],id:'../foreign'},tracks[1]]}],
+ ['unknown kind',{...albumDetail,tracks:[{...tracks[0],kind:'unknown'},tracks[1]]}],
+ ['unknown track field',{...albumDetail,tracks:[{...tracks[0],extra:true},tracks[1]]}],
+ ['invalid progress',{...albumDetail,tracks:[{...tracks[0],progress:{seconds:1e400}},tracks[1]]}]])
+ test('registered album callback rejects detail '+name+' before queue/navigation',async()=>{
+  const p=albumPeer({albums:[album]},data);await assert.rejects(p.run());
+  assert.equal(p.effects.targetRequests,1);assert.equal(p.effects.targetOpens,0);
+ });

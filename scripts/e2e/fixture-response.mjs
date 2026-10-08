@@ -92,10 +92,19 @@ export function fixtureItem(data, title, kind) {
       || data.offset !== 0 || data.limit < data.items.length || data.limit < 1 || data.limit > 200
       || data.letters !== null && (!Array.isArray(data.letters) || data.letters.length > 128
         || data.letters.some(letter => !keys(letter, ['label', 'count', 'offset']) || !text(letter.label, 32) || !integer(letter.count) || !integer(letter.offset)))) throw new Error('invalid SDK fixture catalog');
+  validateFixtureItems(data.items);
+  const matches = data.items.filter(item => item.title === title && item.kind === kind);
+  if (matches.length !== 1) throw new Error('unique SDK fixture missing');
+  return matches[0];
+}
+
+
+function validateFixtureItems(items) {
+  if (!Array.isArray(items) || items.length > 200) throw new Error('invalid SDK fixture items');
   const strings = ['sortTitle', 'year', 'plot', 'rating', 'tagline', 'genres', 'director', 'studio', 'artist', 'album', 'show', 'stream', 'artwork', 'backdrop', 'download', 'container', 'added'];
   const numbers = ['track', 'season', 'episode', 'subtitles', 'size'];
   const ids = new Set();
-  for (const item of data.items) {
+  for (const item of items) {
     if (!keys(item, ['id', 'kind', 'title', 'showId', 'cast', 'progress', ...strings, ...numbers], ['id', 'kind', 'title', 'progress'])
         || !id(item.id) || ids.has(item.id) || !['video', 'audio', 'audiobook', 'book', 'photo'].includes(item.kind)
         || !text(item.title, 512) || !item.title || strings.some(key => Object.hasOwn(item, key) && !text(item[key], 8192))
@@ -113,7 +122,27 @@ export function fixtureItem(data, title, kind) {
         || item.cast.some(person => !keys(person, ['name', 'role', 'image'], ['name']) || !Object.values(person).every(value => text(value, 512))))) throw new Error('invalid SDK fixture cast');
     ids.add(item.id);
   }
-  const matches = data.items.filter(item => item.title === title && item.kind === kind);
-  if (matches.length !== 1) throw new Error('unique SDK fixture missing');
+}
+
+export function fixtureAlbum(data) {
+  if (!keys(data, ['albums']) || !Array.isArray(data.albums) || data.albums.length > 200) throw new Error('invalid SDK album catalog');
+  const ids = new Set();
+  for (const album of data.albums) {
+    if (!keys(album, ['id', 'title', 'artist', 'artwork'], ['id', 'title']) || !id(album.id) || ids.has(album.id)
+        || !text(album.title, 512) || !album.title || Object.hasOwn(album, 'artist') && !text(album.artist, 512)
+        || Object.hasOwn(album, 'artwork') && !text(album.artwork, 8192)) throw new Error('invalid SDK fixture album');
+    ids.add(album.id);
+  }
+  const matches = data.albums.filter(album => album.title === 'E2E Album');
+  if (matches.length !== 1) throw new Error('unique SDK fixture album missing');
   return matches[0];
+}
+
+export function fixtureAlbumTracks(data, album) {
+  if (!keys(data, ['id', 'title', 'artist', 'tracks']) || !id(data.id) || data.id !== album.id
+      || data.title !== album.title || !text(data.artist, 512) || data.artist !== (album.artist ?? '')) throw new Error('invalid SDK album detail');
+  validateFixtureItems(data.tracks);
+  if (data.tracks.length !== 2 || data.tracks.some((track, index) => track.kind !== 'audio'
+      || track.title !== ['E2E Track One', 'E2E Track Two'][index])) throw new Error('exact SDK album tracks required');
+  return data.tracks;
 }
