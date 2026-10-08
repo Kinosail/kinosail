@@ -186,6 +186,7 @@ if (player.dataset.homeAssistant === "true") {
   homeAssistantMessage.setAttribute("aria-live", "polite");
   homeAssistantLifetime.dataset.homeAssistantLifetime = "";
   homeAssistantRetry.type = "button"; homeAssistantRetry.className = "quiet-button";
+  homeAssistantRetry.style.minHeight = "44px";
   homeAssistantRetry.textContent = "Retry Home Assistant"; homeAssistantRetry.hidden = true;
   homeAssistantStatus.append(homeAssistantMessage, homeAssistantLifetime, homeAssistantRetry);
   (player.closest(".media-stage") || player).insertAdjacentElement("afterend", homeAssistantStatus);
