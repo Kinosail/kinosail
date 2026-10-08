@@ -15,15 +15,17 @@ JOBS = [('library-owner', 'LIBRARY_PROJECT', 46),
         ('provider-owner', 'PROFILE_PROJECT', 15), ('responsive-owner', 'RESPONSIVE_PROJECT', 99)]
 
 class ProfileAuthRecipeTests(unittest.TestCase):
-    def test_required_compatibility_control_runs_once_before_sdk_install(self):
+    def test_required_playback_observation_controls_run_once_before_sdk_install(self):
         source = (ROOT / '.github/workflows/app.yml').read_text()
-        path = 'scripts/testing/compatibility-document.test.mjs'
-        self.assertEqual(source.count(path), 1, 'required compatibility control missing or duplicated')
         marker = '      - name: Verify setup navigation failure diagnostics'
         controls = source.split(marker, 1)[1].split('      - ', 1)[0]
         self.assertIn("if: inputs.app == 'player'", controls)
-        self.assertEqual(controls.count(path), 1)
-        self.assertLess(source.index(path), source.index('      - name: Install public-flow runner'))
+        for name in ['compatibility-document.test.mjs', 'native-playback-state.test.mjs']:
+            with self.subTest(name=name):
+                path = 'scripts/testing/' + name
+                self.assertEqual(source.count(path), 1, 'required playback control missing or duplicated')
+                self.assertEqual(controls.count(path), 1)
+                self.assertLess(source.index(path), source.index('      - name: Install public-flow runner'))
 
     def test_actual_offline_recipe_binds_seek_witness_before_write(self):
         name = 'apps/player/e2e/offline-seek-witness.mjs'
@@ -88,6 +90,21 @@ class ProfileAuthRecipeTests(unittest.TestCase):
         read = Path.read_bytes
         def missing(path):
             if str(path) == name: raise FileNotFoundError('missing mode document helper')
+            return read(path)
+        with patch.dict(os.environ, {'PROFILE_PROJECT': 'webkit', 'PROOF_REVISION': 'fixture-revision'}), patch.object(Path, 'read_bytes', missing), patch.object(Path, 'write_text') as write:
+            with self.assertRaises(FileNotFoundError): exec(compile(self.recipe('playback-owner'), 'actual-playback-recipe', 'exec'), {})
+            write.assert_not_called()
+
+    def test_actual_playback_recipe_binds_native_state_helper_before_write(self):
+        name = 'apps/player/e2e/native-playback-state.mjs'
+        with patch.dict(os.environ, {'PROFILE_PROJECT': 'webkit', 'PROOF_REVISION': 'fixture-revision'}), patch.object(Path, 'write_text') as write:
+            exec(compile(self.recipe('playback-owner'), 'actual-playback-recipe', 'exec'), {})
+            receipt = json.loads(write.call_args.args[0])
+            self.assertIn(name, receipt['sourceSHA256'])
+            self.assertEqual(receipt['sourceSHA256'][name], hashlib.sha256((ROOT / name).read_bytes()).hexdigest())
+        read = Path.read_bytes
+        def missing(path):
+            if str(path) == name: raise FileNotFoundError('missing native state helper')
             return read(path)
         with patch.dict(os.environ, {'PROFILE_PROJECT': 'webkit', 'PROOF_REVISION': 'fixture-revision'}), patch.object(Path, 'read_bytes', missing), patch.object(Path, 'write_text') as write:
             with self.assertRaises(FileNotFoundError): exec(compile(self.recipe('playback-owner'), 'actual-playback-recipe', 'exec'), {})
