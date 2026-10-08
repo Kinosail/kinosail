@@ -9,6 +9,7 @@ test.beforeEach(async ({browser}, info) => attachDownloadEnvironment(browser, in
 test("same Viewer Profile in another tab preserves the transfer owner until explicit Pause", async ({page, context}, info) => {
   await observeDownloadOwnership(context);
   const peer = await downloadPeer();
+  let failed = false;
   try {
     const served = await openDownloadPage(page, peer.origin, "indexeddb");
     await page.locator("[data-download-device]").click();
@@ -35,10 +36,16 @@ test("same Viewer Profile in another tab preserves the transfer owner until expl
     expect((await peer.stats()).removals).toBe(0);
     await info.attach("cross-tab-safe-resume", {body: JSON.stringify({stored: ready, peer: await peer.stats()}), contentType: "application/json"});
   } catch (error) {
-    await attachDownloadOwnership(context, info);
-    await info.attach("download-ownership-peer-at-failure", {body: JSON.stringify(await peer.stats()), contentType: "application/json"});
+    failed = true;
+    await attachDownloadOwnership(context, info).catch(() => {});
+    await peer.stats().then(stats => info.attach("download-ownership-peer-at-failure", {body: JSON.stringify(stats), contentType: "application/json"})).catch(() => {});
     throw error;
-  } finally { await context.close(); await peer.close(); }
+  } finally {
+    let cleanupError: unknown;
+    try { await context.close(); } catch (error) { cleanupError = error; }
+    try { await peer.close(); } catch (error) { cleanupError ??= error; }
+    if (!failed && cleanupError) throw cleanupError;
+  }
 });
 
 test("navigation interrupts the transfer and reload offers explicit Resume with verified data", async ({page, context}, info) => {

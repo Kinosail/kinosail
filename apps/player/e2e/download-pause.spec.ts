@@ -98,8 +98,9 @@ for (const width of downloadServer ? [390, 1440, 1920] : [storage === "opfs" ? 3
       await cleanup("restore-transport", () => context.setOffline(false));
       if (traceStarted) await cleanup("retain-trace", async () => {
         const path = info.outputPath("persistent-storage-trace.zip");
-        await context.tracing.stop(failed ? {path} : {});
-        if (failed) await info.attach("persistent-storage-trace", {path, contentType: "application/zip"});
+        const retain = failed || cleanupFailures.length > 0;
+        await context.tracing.stop(retain ? {path} : {});
+        if (retain) await info.attach("persistent-storage-trace", {path, contentType: "application/zip"});
       });
       await cleanup("close-context", () => context.close());
       if (peer) await cleanup("close-peer", () => peer.close());
