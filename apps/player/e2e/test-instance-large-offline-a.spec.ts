@@ -37,6 +37,7 @@ test.describe("large offline transfers", () => {
   const quality = await button.getAttribute("data-quality");
   const profileID = await page.locator("#downloads").getAttribute("data-viewer-profile");
   expect(jobID && itemID && title && quality && profileID).toBeTruthy();
+  expect(jobID).toMatch(/^[0-9a-f]{16}$/);
   const chunk = 16;
   const size = chunk * 2 + 1;
   const synthetic = Buffer.concat([Buffer.alloc(chunk, 1), Buffer.alloc(chunk, 2), Buffer.alloc(1, 3)]);
@@ -102,9 +103,12 @@ test.describe("large offline transfers", () => {
   await expect.poll(() => manifests).toBe(1);
   await expect.poll(() => ranges).toEqual([chunk, chunk, 1]);
   await expect(page.getByText("The download could not be verified", { exact: true })).toBeVisible();
-  await expect(button).toBeEnabled();
+  const resume = page.locator(`[data-download-device][data-job-id="${jobID}"]`);
+  await expect(resume).toHaveCount(1);
+  await expect(resume).toHaveAccessibleName("Resume on this device");
+  await expect(resume).toBeEnabled();
   manifestHash = sha256;
-  await button.click();
+  await resume.click();
   await expect.poll(() => manifests).toBe(2);
   await expect.poll(() => ranges).toEqual([chunk, chunk, 1, chunk, chunk, 1]);
   await expect.poll(() => page.evaluate((id) => (window as Window & OfflineClient).KinosailOfflineMedia.source(id), itemID!), { timeout: 20_000 }).toBe(`/offline-media/${profileID}/${syntheticID}`);
