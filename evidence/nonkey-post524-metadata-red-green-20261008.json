@@ -1,0 +1,101 @@
+{
+  "scope": "Intermediate metadata regression receipts; not production, generated-asset or native acceptance",
+  "repository": "Kinosail/kinosail",
+  "reconciledMain": "4f8f5991d09a0ada12f6604889fe15c87918ae0c",
+  "sharedPR503Head": "f784c840ced87203d0151a7148899f6bc32aabd0",
+  "ordinaryComposition": "603fec9e19536bb5db946fb456c864dfc46572e5",
+  "compositionParents": [
+    "7db323b1c9f847bc5f6b9cc984cb874110211e07",
+    "4f8f5991d09a0ada12f6604889fe15c87918ae0c"
+  ],
+  "incomingPathsPreserved": 98,
+  "inheritedScannerFingerprints": {
+    "count": 14,
+    "changed": false,
+    "authorizationEstablished": false
+  },
+  "runner": "8e9b012cc3a42e06a81b8c71efb9a2725cdbc1cb",
+  "pinnedFFmpeg": "8.1.2-5",
+  "codecArchiveSHA256": "b4e72894ad26c809ed0104805f5415a97be75212b9fcf9d60b89ad25bb3d43e3",
+  "fixture": {
+    "sha256": "c1641a6a8af53f2f7724a18121421bb49b69d98646c536ff0a219ab9f6a1221f",
+    "videoFrames": 768,
+    "independentIDRs": 16,
+    "sourceEOFSeconds": 32,
+    "audio": "AAC 48000 stereo"
+  },
+  "legacySerializationGreen": {
+    "source": "603fec9e19536bb5db946fb456c864dfc46572e5",
+    "run": 37807657896,
+    "job": 113416053254,
+    "legacyEncoding": "pass",
+    "geometry": "pass",
+    "nakedCacheRejection": "pass",
+    "exact12ReadySeconds": 4.07,
+    "nonkey12_5FailureSeconds": 1.93,
+    "phase": "copied-video-index",
+    "artifact": {
+      "id": 11563931095,
+      "bytes": 2298,
+      "apiArchiveDigest": "sha256:56509caebc3c682cbb98f7c8e23745c78c279a793404c253c2929d21c3a72f53"
+    }
+  },
+  "audioMetadataRed": {
+    "source": "28ac991b5ebe6fcfa5255434c370f54b210133e1",
+    "run": 37808128750,
+    "job": 113417681102,
+    "damageCases": 20,
+    "damagedCasesAdmitted": 20,
+    "coherentSyntheticFixturesPassed": 2,
+    "nakedCacheRejectionsPassed": 2,
+    "exact12ReadySeconds": 3.91,
+    "nonkey12_5FailureSeconds": 1.92,
+    "phase": "copied-video-index",
+    "artifact": {
+      "id": 11564280496,
+      "bytes": 4221,
+      "apiArchiveDigest": "sha256:7da579a5528ca2fdf34687562c58911906014f7c3a219e9dbb91d80723f12fdd"
+    }
+  },
+  "audioMetadataGreen": {
+    "source": "4e404f14d4dbe311db4529ccc8b7c04a8dabfdb6",
+    "run": 37809449765,
+    "job": 113422194095,
+    "damageCases": 20,
+    "damagedCasesRejected": 20,
+    "coherentSyntheticFixturesPassed": 2,
+    "nakedCacheRejectionsPassed": 2,
+    "legacyEncoding": "pass",
+    "geometry": "pass",
+    "exact12ReadySeconds": 4.09,
+    "nonkey12_5FailureSeconds": 1.84,
+    "phase": "copied-video-index",
+    "artifact": {
+      "id": 11564057871,
+      "bytes": 3830,
+      "apiArchiveDigest": "sha256:8b81768202f41907d1aac258a32e061c2457fcc42e2d883c03b629d042428b7c"
+    }
+  },
+  "common": {
+    "sourceBinding": true,
+    "formatGate": true,
+    "noGoSkip": true,
+    "safeProjection": true,
+    "failedReceiptPreserved": true,
+    "archiveDownloaded": false,
+    "archiveDigestLocallyRehashed": false,
+    "originalSourceUnchanged": true,
+    "assertionsWeakened": false
+  },
+  "pending": [
+    "full-operation bounded source clock producer and rejection controls",
+    "actual first private generated AAC packet association",
+    "corrected initialization and generated-prefix certificate with source/policy/root/generation binding",
+    "actual non-key public ready/decoded-video/AAC-interior/whole-PCM/EOF proof",
+    "cache refill/reopen/adoption admissions",
+    "normal exact-head required checks and independent delivery review",
+    "native renderer and preserved-50 retest owned separately"
+  ],
+  "productionReady": false,
+  "noNativeOrDeploymentProof": true
+}
