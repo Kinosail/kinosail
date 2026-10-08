@@ -165,3 +165,22 @@ test('startup fixture overflow cannot enqueue or forward another held request',a
  await new Promise(resolve=>setImmediate(resolve));hold.release();await Promise.all(tasks);
  await assert.rejects(extra,/capacity/);assert.equal(effects,64);assert.equal(hold.snapshot().overflow,true);await hold.close();
 });
+test('negative dimensions reject snapshots while negative coordinates remain valid',async()=>{
+ for(const [section,key] of [['viewport','width'],['viewport','height'],['settings','width'],['settings','height']]){
+  const facts=await page({'.player-settings':node()}).evaluate(responsiveFailureFacts,'player-startup');
+  if(section==='viewport')facts.viewport[key]=-1;else facts.elements.settings.rect[key]=-1;
+  const {rows,info}=recorder();await attachResponsiveFailure({evaluate:async()=>facts},info,'player-startup');
+  assert.equal(JSON.parse(rows[0].body).reason,'invalid_snapshot');
+ }
+ const facts=await page({'.player-settings':node({getBoundingClientRect:()=>({x:-10,y:-20,width:0,height:0})})}).evaluate(responsiveFailureFacts,'player-startup');
+ const {rows,info}=recorder();await attachResponsiveFailure({evaluate:async()=>facts},info,'player-startup');
+ assert.equal(JSON.parse(rows[0].body).elements.settings.rect.x,-10);
+ assert.equal(JSON.parse(rows[0].body).elements.settings.rect.height,0);
+});
+test('actual callback normalizes impossible dimensions without discarding finite coordinates',async()=>{
+ const facts=await page({'.player-settings':node({getBoundingClientRect:()=>({x:-10,y:-20,width:-1,height:-2})})},
+  {innerWidth:-1,innerHeight:-2}).evaluate(responsiveFailureFacts,'player-startup');
+ assert.equal(facts.viewport.width,null);assert.equal(facts.viewport.height,null);
+ assert.equal(facts.elements.settings.rect.width,null);assert.equal(facts.elements.settings.rect.height,null);
+ assert.equal(facts.elements.settings.rect.x,-10);assert.equal(facts.elements.settings.rect.y,-20);
+});

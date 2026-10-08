@@ -6,14 +6,15 @@ const totals = new WeakMap();
 export function responsiveFailureFacts(kind) {
   if (!['player-settings', 'player-recovery', 'player-startup', 'home-resume'].includes(kind)) throw new Error('invalid responsive witness kind');
   const number = value => typeof value === 'number' && Number.isFinite(value) && Math.abs(value) <= 10000000 ? value : null;
+  const dimension = value => number(value) !== null && value >= 0 ? value : null;
   const describe = element => {
     if (!element) return {available: false, rect: null, display: 'unavailable', hidden: null};
     const box = element.getBoundingClientRect(), display = getComputedStyle(element).display;
-    return {available: true, rect: {x: number(box.x), y: number(box.y), width: number(box.width), height: number(box.height)},
+    return {available: true, rect: {x: number(box.x), y: number(box.y), width: dimension(box.width), height: dimension(box.height)},
       display: ['none', 'block', 'inline', 'inline-block', 'grid', 'flex', 'inline-flex', 'contents'].includes(display) ? display : 'other',
       hidden: Boolean(element.hidden)};
   };
-  const base = {schemaVersion: 1, kind, viewport: {width: number(innerWidth), height: number(innerHeight)}};
+  const base = {schemaVersion: 1, kind, viewport: {width: dimension(innerWidth), height: dimension(innerHeight)}};
   if (kind === 'home-resume') {
     const featured = document.querySelector('.home-feature'), shelf = document.querySelector('.continue-shelf');
     const matches = element => {
@@ -57,9 +58,10 @@ export function responsiveFailureFacts(kind) {
 const keys = (value, expected) => value && typeof value === 'object' && !Array.isArray(value)
   && Object.keys(value).sort().join(',') === expected.slice().sort().join(',');
 const number = value => value === null || typeof value === 'number' && Number.isFinite(value) && Math.abs(value) <= 10000000;
+const dimension = value => number(value) && (value === null || value >= 0);
 function valid(value, kind) {
   if (!keys(value, ['schemaVersion', 'kind', 'viewport', 'elements', 'state']) || value.schemaVersion !== 1 || value.kind !== kind
-      || !keys(value.viewport, ['width', 'height']) || !Object.values(value.viewport).every(number)) return false;
+      || !keys(value.viewport, ['width', 'height']) || !Object.values(value.viewport).every(dimension)) return false;
   const elements = kind === 'home-resume' ? ['featured', 'shelf', 'continued'] : ['settings', 'actions', 'stage', 'nativeOptions', 'status'];
   if (!keys(value.elements, elements)) return false;
   for (const element of Object.values(value.elements)) {
@@ -68,7 +70,8 @@ function valid(value, kind) {
     if (!element.available) {
       if (element.rect !== null || element.hidden !== null || element.display !== 'unavailable') return false;
     } else if (typeof element.hidden !== 'boolean' || element.display === 'unavailable'
-        || !keys(element.rect, ['x', 'y', 'width', 'height']) || !Object.values(element.rect).every(number)) return false;
+        || !keys(element.rect, ['x', 'y', 'width', 'height']) || !Object.values(element.rect).every(number)
+        || !dimension(element.rect.width) || !dimension(element.rect.height)) return false;
   }
   const states = kind === 'home-resume' ? ['featuredMatchesExample', 'continuedMatchesExample', 'featuredProgressAvailable', 'continuedProgressAvailable', 'shelfScanTruncated']
     : ['settingsInNativeOptions', 'settingsInStage', 'stageHasSettings', 'optionsHasSettings', 'statusRecovery', 'videoPaused', 'videoReadyState', 'activeControl', 'playerTheater', 'appleNativePlayback', 'videoCurrentTime', 'videoDuration', 'videoNetworkState', 'videoErrorCode', 'videoControls', 'videoAutoplay', 'videoEnded'];
