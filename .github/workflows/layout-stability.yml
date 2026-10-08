@@ -85,4 +85,4 @@ jobs:
           print(json.dumps({'revision':revision,'projectionResult':'passed','originalReceiptSHA256':side['originalReceiptSHA256'],
               'coldControlReceiptSHA256':side['coldControlReceiptSHA256'],'readinessFailures':side['failures'],
               'cases':safe,'comparisons':[comparison(cases[0],cases[1]),comparison(cases[0],cases[2])]},separators=(',',':')))
-                    PY
+          PY
