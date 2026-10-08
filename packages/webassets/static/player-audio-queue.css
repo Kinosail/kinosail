@@ -1,1 +1,2 @@
 [data-audio-queue-controls] button{min-width:44px;min-height:44px}
+[data-current-track-actions] a{display:inline-flex;align-items:center;min-width:44px;min-height:44px}
