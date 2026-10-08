@@ -1,3 +1,4 @@
+import {attachPlaybackState} from "./playback-state-witness.mjs";
 import { attachResponsiveFailure } from "./responsive-failure-witness.mjs";
 import { expect, test } from "@playwright/test";
 import { createHmac } from "node:crypto";
@@ -24,7 +25,10 @@ test("player stage stays visible across loading and bandwidth changes", async ({
 	await page.getByRole("button", { name: "Sign in", exact: true }).click();
 	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
 	await page.getByRole("link", { name: "Movies", exact: true }).click();
-	await page.getByRole("link", { name: /Example Movie/ }).click();
+	const movie = page.getByRole("link", { name: /Example Movie/ });
+	const watch = await movie.getAttribute("href");
+	await attachPlaybackState(page, testInfo, watch, "before-loading");
+	await movie.click();
 	const video = page.locator("video");
 	await video.waitFor({ state: "visible" });
 	const stage = await page.locator(".media-stage").boundingBox();
