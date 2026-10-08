@@ -91,3 +91,38 @@ test('actual settings witness selects visible utility actions instead of hidden 
  const absent=await page({'.primary-player-actions':notice}).evaluate(responsiveFailureFacts,'player-settings');
  assert.equal(absent.elements.actions.available,false);assert.equal(absent.elements.actions.rect,null);
 });
+
+test('actual callback classifies focus and native media state without retaining private control text',async()=>{
+ const close=node({tagName:'BUTTON',matches:selector=>selector==='[data-player-settings-close]'});
+ const video=node({tagName:'VIDEO',paused:true,readyState:4,currentTime:0,duration:30,networkState:1,
+  controls:false,autoplay:false,ended:false,error:{code:0},webkitEnterFullscreen(){}});
+ const body=node({classList:{contains:name=>name==='player-theater'}});
+ const facts=await page({video},{navigator:{userAgent:'iPhone',platform:'iPhone',maxTouchPoints:5},
+  document:{body,activeElement:close,querySelector:selector=>selector==='video'?video:null,querySelectorAll:()=>[]}
+ }).evaluate(responsiveFailureFacts,'player-recovery');
+ assert.equal(facts.state.activeControl,'close-settings');assert.equal(facts.state.playerTheater,true);
+ assert.equal(facts.state.appleNativePlayback,true);assert.equal(facts.state.videoControls,false);
+ assert.equal(facts.state.videoCurrentTime,0);assert.equal(facts.state.videoDuration,30);
+ assert.equal(facts.state.videoNetworkState,1);assert.equal(facts.state.videoErrorCode,0);
+ const {rows,info}=recorder();await attachResponsiveFailure({evaluate:async()=>facts},info,'player-recovery');
+ assert.equal(JSON.parse(rows[0].body).state.activeControl,'close-settings');
+});
+test('unknown focus tags and nonfinite media values are unavailable, never private facts',async()=>{
+ const video=node({tagName:'VIDEO',paused:false,readyState:2,currentTime:Infinity,duration:NaN,
+  networkState:91,error:{code:99},controls:'PRIVATE',autoplay:'PRIVATE',ended:'PRIVATE'});
+ const facts=await page({video},{navigator:{userAgent:'desktop',platform:'',maxTouchPoints:0},
+  document:{activeElement:{tagName:'PRIVATE',matches:()=>false},querySelector:selector=>selector==='video'?video:null,querySelectorAll:()=>[]}
+ }).evaluate(responsiveFailureFacts,'player-settings');
+ assert.equal(facts.state.activeControl,'other');assert.equal(facts.state.appleNativePlayback,false);
+ for(const key of ['videoCurrentTime','videoDuration','videoNetworkState','videoErrorCode','videoControls','videoAutoplay','videoEnded'])
+  assert.equal(facts.state[key],null,key);
+ assert.equal(JSON.stringify(facts).includes('PRIVATE'),false);
+});
+test('invalid focus or media states reject before private snapshots reach attachments',async()=>{
+ for(const [key,value]of [['activeControl','PRIVATE'],['activeControl','x'.repeat(4097)],['playerTheater','PRIVATE'],
+  ['appleNativePlayback',2],['videoCurrentTime',Infinity],['videoNetworkState',9],['videoErrorCode',5],['videoDuration',-1]]) {
+  const facts=await page().evaluate(responsiveFailureFacts,'player-recovery');facts.state[key]=value;
+  const {rows,info}=recorder();await attachResponsiveFailure({evaluate:async()=>facts},info,'player-recovery');
+  assert.equal(JSON.parse(rows[0].body).reason,'invalid_snapshot');assert.equal(rows[0].body.includes('PRIVATE'),false);
+ }
+});

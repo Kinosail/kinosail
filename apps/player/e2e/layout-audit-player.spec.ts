@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { configureLayoutAudit, expectRecoveryContrast, layoutProblems, login, viewports } from "./layout-audit-helpers";
+import { configureLayoutAudit, expectSettingsCloseFocused, expectTheaterEditingGuard, expectRecoveryContrast, layoutProblems, login, viewports } from "./layout-audit-helpers";
 import { firstPlayable } from "./test-instance-helpers";
 import { attachResponsiveFailure } from "./responsive-failure-witness.mjs";
 
@@ -86,7 +86,11 @@ test("player shows and switches its playback method without crowding actions", a
 		});
 		await actions.getByRole("link", { name: compatibleLabel }).click();
 		await expect(method).toHaveText(compatibleLabel);
-		await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime), { timeout: 20_000 }).toBeGreaterThan(0.25);
+		try {
+			await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime), { timeout: 20_000 }).toBeGreaterThan(0.25);
+		} catch (error) {
+			await attachResponsiveFailure(page, testInfo, "player-settings"); throw error;
+		}
 	}
 });
 
@@ -183,6 +187,7 @@ test("player explains an unconfirmed failure and offers a direct retry", async (
 		await expect(page.locator("[data-playback-recovery]")).toBeVisible();
 		expect((await page.locator(".player-settings").boundingBox())?.height).toBeGreaterThanOrEqual(200);
 		await attachResponsiveFailure(page, testInfo, "player-recovery");
+		await expectSettingsCloseFocused(page);
 		await expect(page.locator("[data-player-status]")).toBeHidden();
 		await expect(page.locator("[data-playback-recovery] [data-player-fallback]")).toHaveText("Retry playback");
 		const recoveryColors = await page.locator("[data-playback-recovery] [data-player-fallback]").evaluate((button) => {
@@ -205,6 +210,7 @@ test("player explains an unconfirmed failure and offers a direct retry", async (
 			path: testInfo.outputPath(`${viewport.width}-player-recovery-settings.png`),
 			fullPage: true,
 		});
+		await expectTheaterEditingGuard(page);
 		await page.keyboard.press("t");
 		await expect(page.locator("body")).toHaveClass(/player-theater/);
 		await expect.poll(async () => Math.round((await page.locator(".media-stage").boundingBox())?.height ?? 0), { message: "Theater recovery keeps the full viewport" }).toBe(viewport.height);

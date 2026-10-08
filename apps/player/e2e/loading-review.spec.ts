@@ -1,3 +1,4 @@
+import { attachResponsiveFailure } from "./responsive-failure-witness.mjs";
 import { expect, test } from "@playwright/test";
 import { createHmac } from "node:crypto";
 
@@ -30,7 +31,12 @@ test("player stage stays visible across loading and bandwidth changes", async ({
 	expect(await video.evaluate((element) => element.dataset.hls || element.dataset.adaptive || element.getAttribute("src"))).toMatch(/\/(media|stream|hls)\//);
 	expect(stage?.width).toBeGreaterThan(300);
 	expect(stage?.height).toBeGreaterThan(150);
-	await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime)).toBeGreaterThan(0.25);
+	try {
+		await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime)).toBeGreaterThan(0.25);
+	} catch (error) {
+		await attachResponsiveFailure(page, testInfo, "player-settings");
+		throw error;
+	}
 	await video.dispatchEvent("stalled");
 	await expect(page.locator("[data-player-status]")).toBeHidden();
 	await video.evaluate((element) => {

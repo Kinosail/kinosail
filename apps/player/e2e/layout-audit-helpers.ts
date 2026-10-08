@@ -254,3 +254,19 @@ export async function quickConnectFailureEvidence(page: Page, info: TestInfo, as
 		throw error;
 	}
 }
+
+export async function expectSettingsCloseFocused(page: Page) {
+	await expect(page.getByRole("button", { name: "Close playback settings", exact: true })).toBeFocused();
+}
+
+export async function expectTheaterEditingGuard(page: Page) {
+	const subtitles = page.locator(".player-settings [data-subtitles]");
+	await expect(subtitles).toBeVisible();
+	await subtitles.focus();
+	await expect(subtitles).toBeFocused();
+	await page.keyboard.press("t");
+	await expect(page.locator("body")).not.toHaveClass(/player-theater/);
+	const close = page.getByRole("button", { name: "Close playback settings", exact: true });
+	await close.focus();
+	await expect(close).toBeFocused();
+}
