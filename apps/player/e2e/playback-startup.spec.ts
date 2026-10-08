@@ -173,15 +173,42 @@ test("restricted browser storage does not stop playback", async ({ page }) => {
 	expect(errors).toEqual([]);
 });
 
-test("failed progress save does not stop playback flow", async ({ page }) => {
+test("failed progress save does not stop playback flow", async ({ page, baseURL }) => {
+	expect(typeof baseURL === "string" && baseURL.length <= 2048, "owned fixture URL is required").toBe(true);
+	const origin = new URL(baseURL!).origin;
 	await login(page);
 	await page.getByRole("link", { name: "Movies", exact: true }).click();
 	await page.getByRole("link", { name: /Example Movie/ }).click();
-	await page.route("**/progress/**", (route) => route.abort());
-	await page.locator("video").evaluate((video: HTMLVideoElement) => {
-		video.dataset.next = "/?view=movies&after=failed-save";
-		video.dispatchEvent(new Event("ended"));
+	const video = page.locator("video");
+	await expect.poll(() => video.evaluate((media: HTMLVideoElement) => media.readyState)).toBeGreaterThanOrEqual(2);
+	await expect.poll(() => video.evaluate((media: HTMLVideoElement) => media.currentTime)).toBeGreaterThan(0.25);
+	const watchURL = page.url();
+	expect(new URL(watchURL).origin).toBe(origin);
+	const progress = await video.getAttribute("data-progress");
+	expect(typeof progress === "string" && progress.length <= 1024 && /^\/progress\/[a-f0-9]{16}(?:\?playbackToken=[A-Za-z0-9_.-]{1,512})?$/.test(progress), "canonical fixture progress endpoint is required").toBe(true);
+	const endpoint = new URL(progress!, origin).href;
+	let watchedFailureDelivered = false;
+	await page.route(url => url.href === endpoint, async route => {
+		const body = route.request().postData() ?? "";
+		expect(route.request().method() === "POST" && typeof body === "string" && body.length <= 4096, "bounded progress POST is required").toBe(true);
+		const form = new URLSearchParams(body);
+		const seconds = form.get("seconds") ?? "", revision = form.get("revision") ?? "";
+		expect(form.toString() === body && [...form.keys()].sort().join(",") === "revision,seconds,session,watched" &&
+			/^\d+(?:\.\d+)?$/.test(seconds) && Number.isFinite(Number(seconds)) && Number(seconds) <= 1e9 &&
+			/^\d+$/.test(revision) && Number.isSafeInteger(Number(revision)) && Number(revision) > 0 &&
+			/^[A-Za-z0-9_-]{8,64}$/.test(form.get("session") ?? "") && /^(?:true|false)$/.test(form.get("watched") ?? ""), "closed progress save form is required").toBe(true);
+		await route.abort();
+		if (form.get("watched") === "true") watchedFailureDelivered = true;
 	});
+	await video.evaluate((media: HTMLVideoElement) => {
+		media.dataset.next = "/?view=movies&after=failed-save";
+		media.dispatchEvent(new Event("ended"));
+	});
+	await expect.poll(() => watchedFailureDelivered).toBe(true);
+	await expect(page.locator("[data-progress-notice]")).toBeVisible();
+	await expect(page.locator("[data-progress-status]")).toHaveText("Watched status is not saved. Retry or continue without saving.");
+	await expect(page).toHaveURL(watchURL);
+	await page.getByRole("button", { name: "Continue without saving", exact: true }).click();
 	await page.waitForURL("**/?view=movies&after=failed-save");
 });
 

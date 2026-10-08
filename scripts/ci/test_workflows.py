@@ -135,6 +135,9 @@ class WorkflowSecurityTests(unittest.TestCase):
         self.assertIn('scripts/testing/browse-return-launch.test.mjs', step)
         self.assertIn('scripts/testing/hls-fast-departure.test.mjs', step)
         self.assertIn('scripts/testing/audio-queue-fault-witness.test.mjs', step)
+        self.assertIn('scripts/testing/playback-failed-save.test.mjs', step)
+        self.assertTrue((ROOT / 'scripts/testing/playback-failed-save.test.mjs').is_file())
+        self.assertFalse((ROOT / 'apps/player/e2e/failed-save-control.test.mjs').exists())
         self.assertLess(browser.index('pnpm --dir "apps/$APP/e2e" install --frozen-lockfile'), browser.index(command))
         self.assertLess(browser.index(command), browser.index('name: Test populated browsers'))
 
