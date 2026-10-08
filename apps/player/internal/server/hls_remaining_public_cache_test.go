@@ -30,6 +30,7 @@ func TestRemainingPublicAACOldCacheRebuildAndColdReuse(t *testing.T) { //nolint:
 	}
 	ctx, cancel := context.WithTimeout(t.Context(), 90*time.Second)
 	defer cancel()
+	publication := remainingPublicObservePublication(t)
 	media, cache, tools := t.TempDir(), t.TempDir(), t.TempDir()
 	source := filepath.Join(media, "Fixture.flac")
 	fixture := "aevalsrc='0.1*sin(2*PI*(440*t+20*t*t))|0.1*sin(2*PI*(670*t+31*t*t))':s=48000:d=10"
@@ -56,7 +57,7 @@ func TestRemainingPublicAACOldCacheRebuildAndColdReuse(t *testing.T) { //nolint:
 	base := strings.TrimSuffix(info.Compatible, "index.m3u8") + "audio/"
 	remainingPublicGet(t, ctx, handler, info.Compatible, "", http.StatusOK)
 	remainingPublicWaitEOF(t, ctx, root)
-	remainingPublicWaitWorkers(t, ctx, handler, marker)
+	remainingPublicWaitWorkers(t, ctx, handler, marker, publication, 1)
 	original := remainingPublicAudio(t, ctx, handler, base)
 	pcm := remainingPublicPCM(t, ctx, ffmpeg, original)
 	if len(pcm) != 481280*2*2 {
@@ -69,8 +70,8 @@ func TestRemainingPublicAACOldCacheRebuildAndColdReuse(t *testing.T) { //nolint:
 	}
 	receipt := map[string]any{"fixtureSHA256": remainingPublicHash(originalSource), "nativeSamples": len(pcm) / 4,
 		"publicSHA256": remainingPublicHash(original), "nativePCMSHA256": remainingPublicHash(pcm), "staleCases": []string{}, "coldReopens": 0}
-	for _, version := range []string{"15", "18"} {
-		remainingPublicWaitWorkers(t, ctx, handler, marker)
+	for index, version := range []string{"15", "18"} {
+		remainingPublicWaitWorkers(t, ctx, handler, marker, publication, index+1)
 		legacy := bytes.ReplaceAll(policy, []byte(":aac-origin=1"), nil)
 		legacy = bytes.ReplaceAll(legacy, []byte(":hls=15"), []byte(":hls="+version))
 		staleMaster := bytes.ReplaceAll(master, policy, legacy)
@@ -88,7 +89,7 @@ func TestRemainingPublicAACOldCacheRebuildAndColdReuse(t *testing.T) { //nolint:
 		}
 		remainingPublicGet(t, ctx, handler, info.Compatible, "", http.StatusOK)
 		remainingPublicWaitEOF(t, ctx, root)
-		remainingPublicWaitWorkers(t, ctx, handler, marker)
+		remainingPublicWaitWorkers(t, ctx, handler, marker, publication, index+2)
 		rebuilt := remainingPublicAudio(t, ctx, handler, base)
 		if !bytes.Equal(original, rebuilt) || !bytes.Equal(pcm, remainingPublicPCM(t, ctx, ffmpeg, rebuilt)) ||
 			!bytes.Equal(policy, remainingPublicRead(t, filepath.Join(root, ".source"))) ||
@@ -97,7 +98,7 @@ func TestRemainingPublicAACOldCacheRebuildAndColdReuse(t *testing.T) { //nolint:
 		}
 		receipt["staleCases"] = append(receipt["staleCases"].([]string), "hls"+version)
 	}
-	remainingPublicWaitWorkers(t, ctx, handler, marker)
+	remainingPublicWaitWorkers(t, ctx, handler, marker, publication, 3)
 	stopOwner()
 	for round := 1; round <= 2; round++ {
 		assets := remainingPublicSnapshot(t, root)
@@ -115,7 +116,7 @@ func TestRemainingPublicAACOldCacheRebuildAndColdReuse(t *testing.T) { //nolint:
 			!bytes.Equal(calls, remainingPublicRead(t, marker)) || !remainingPublicSameSnapshot(t, root, assets) {
 			t.Fatal("cold public cache reuse changed complete media, retained files or encoder count")
 		}
-		remainingPublicWaitWorkers(t, ctx, reopened, marker)
+		remainingPublicWaitWorkers(t, ctx, reopened, marker, publication, 3)
 		stopReopen()
 		receipt["coldReopens"] = round
 	}
@@ -123,6 +124,8 @@ func TestRemainingPublicAACOldCacheRebuildAndColdReuse(t *testing.T) { //nolint:
 		t.Fatal("public cache proof changed its source fixture")
 	}
 	receipt["sourceUnchanged"] = true
+	receipt["completedPublications"] = 3
+	receipt["ownedWorkerZeroObservations"] = 2
 	receipt["result"] = "passed"
 	data, err := json.Marshal(receipt)
 	if err != nil {

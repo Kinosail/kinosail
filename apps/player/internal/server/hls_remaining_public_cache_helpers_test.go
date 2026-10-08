@@ -84,15 +84,16 @@ func remainingPublicAudio(t *testing.T, ctx context.Context, handler http.Handle
 func remainingPublicGet(t *testing.T, ctx context.Context, handler http.Handler, route, byteRange string, status int) []byte {
 	t.Helper()
 	request := httptest.NewRequestWithContext(ctx, http.MethodGet, route, nil)
+	request.Header.Set("X-Request-ID", remainingPublicRequestID)
 	if byteRange != "" {
 		request.Header.Set("Range", byteRange)
 	}
-	response := httptest.NewRecorder()
+	response := &remainingPublicResponse{header: make(http.Header), body: remainingPublicBoundedOutput{maximum: 2 << 20}}
 	handler.ServeHTTP(response, request)
-	if response.Code != status {
-		t.Fatalf("public cache asset returned%d, expected%d", response.Code, status)
+	if response.code != status {
+		t.Fatalf("public cache asset returned%d, expected%d", response.code, status)
 	}
-	return response.Body.Bytes()
+	return response.body.buffer.Bytes()
 }
 
 func remainingPublicPCM(t *testing.T, ctx context.Context, ffmpeg string, data []byte) []byte {
@@ -148,12 +149,12 @@ func remainingPublicRead(t *testing.T, path string) []byte {
 	return data
 }
 
-func remainingPublicWaitWorkers(t *testing.T, ctx context.Context, handler http.Handler, marker string) {
+func remainingPublicWaitWorkers(t *testing.T, ctx context.Context, handler http.Handler, marker string, publication *remainingPublicPublication, completed int) {
 	t.Helper()
 	deadline := time.Now().Add(5 * time.Second)
 	zeros := 0
 	for zeros < 2 {
-		allStopped := true
+		allStopped := publication.hasCompleted(completed)
 		for _, row := range strings.Split(strings.TrimSpace(string(remainingPublicRead(t, marker))), "\n") {
 			pid, err := strconv.Atoi(strings.TrimPrefix(row, "call "))
 			if err != nil || pid < 2 {
