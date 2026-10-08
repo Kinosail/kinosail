@@ -6,7 +6,7 @@ configureTestInstance();
 // This covers the rendered form/CSRF contract, independently of media timing.
 test.use({javaScriptEnabled: false, serviceWorkers: "block"});
 
-test("usable login form authenticates while an unrelated image remains pending", {tag: "@smoke"}, async ({page}) => {
+test("usable login form authenticates while an unrelated image remains pending", {tag: "@smoke"}, async ({page, javaScriptEnabled}, testInfo) => {
   test.setTimeout(15000);
   let release!: () => void;
   const pending = new Promise<void>(resolve => release = resolve);
@@ -22,14 +22,14 @@ test("usable login form authenticates while an unrelated image remains pending",
     await route.fulfill({response, body: body.replace("</body>", '<img src="/diagnostic-held-login-image" alt=""></body>')});
   });
   try {
-    await login(page);
+    await login(page, testInfo, javaScriptEnabled);
     const authenticated = await page.request.get("/api/v1/me");
     expect(authenticated.status()).toBe(200);
   } finally {release();}
 });
 
-test("Mark watched without JavaScript rejects the current page's first late progress write", {tag: "@smoke"}, async ({page}, testInfo) => {
-  await login(page);
+test("Mark watched without JavaScript rejects the current page's first late progress write", {tag: "@smoke"}, async ({page, javaScriptEnabled}, testInfo) => {
+  await login(page, testInfo, javaScriptEnabled);
   const watch = await firstPlayable(page);
   const id = watch.split("/").at(-1)!;
   const origin = new URL(page.url()).origin;

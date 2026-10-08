@@ -2,6 +2,8 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {EventEmitter} from 'node:events';
 import {registerHooks} from 'node:module';
+import {runInNewContext} from 'node:vm';
+import {gotoAuthForm} from './auth-form-navigation.ts';
 // Route direct sibling QA TypeScript only; preserve physical dependency JS.
 const qaRoot = new URL('../../apps/player/e2e/', import.meta.url).href;
 const hooks = registerHooks({resolve(specifier, context, next) {
@@ -12,6 +14,68 @@ const hooks = registerHooks({resolve(specifier, context, next) {
 }});
 const {login, finishRootSignIn} = await import('../../apps/player/e2e/test-instance-helpers.ts');
 hooks.deregister();
+
+// Execute the real helper with only Playwright assertions adapted to a controlled form.
+const controlURL = qaRoot + 'test-instance-helpers.ts?nojs-control';
+globalThis.kinosailLoginEnhancement = {expect: value => ({
+  toBe: expected => assert.equal(value, expected), toBeNull: () => assert.equal(value,null),
+  toHaveURL: async expected => assert.equal(value.url(),expected),
+  toBeEditable: async () => assert.equal(value.editable,true),
+  toBeVisible: async () => assert.equal(value.visible,true),
+  toBeEnabled: async () => assert.equal(value.enabled,true)
+}), test:{info:()=>{throw new Error('explicit test info required');}}};
+const controlHooks=registerHooks({resolve(specifier,context,next){
+  if(context.parentURL===controlURL && specifier==='@playwright/test')return {shortCircuit:true,
+    url:'data:text/javascript,'+encodeURIComponent('export const {expect,test}=globalThis.kinosailLoginEnhancement;')};
+  if(context.parentURL===controlURL && specifier==='../../../scripts/testing/auth-form-navigation')return next(specifier+'.ts',context);
+  if(context.parentURL===controlURL && specifier==='./static-sources')return next(specifier+'.ts',context);
+  return next(specifier,context);
+}});
+const {login:controlledLogin}=await import(controlURL);controlHooks.deregister();delete globalThis.kinosailLoginEnhancement;
+function formPage(enhanced){
+ const page=new EventEmitter(),calls=[];let current='https://owned.fixture/login';const frame={};
+ const locator={editable:true,enabled:true,visible:true,fill:async()=>calls.push('fill')};
+ Object.assign(page,{calls,url:()=>current,mainFrame:()=>frame,addInitScript:async()=>{},evaluate:async()=>100,
+  goto:async()=>({status:()=>200,url:()=>current,request:()=>({redirectedFrom:()=>null})}),
+  context:()=>({browser:()=>({browserType:()=>({name:()=> 'chromium'})})}),
+  getByLabel:()=>locator,
+  locator:()=>({filter:()=>({getByRole:()=>{calls.push('toggle');return {...locator,visible:enhanced};}})}),
+  getByRole:(_role,options)=>({...locator,isVisible:async()=>false,click:async()=>{calls.push(options.name);current='https://owned.fixture/';}}),
+  waitForURL:async predicate=>assert.equal(predicate(new URL(current)),true)});
+ return page;
+}
+const controlledInfo={project:{use:{baseURL:'https://owned.fixture',javaScriptEnabled:true}},attach:async()=>{}};
+test('actual JS-disabled login uses editable native form without demanding an enhancement',async()=>{
+ const p=formPage(false);await controlledLogin(p,controlledInfo,false);
+ assert.equal(p.calls.includes('toggle'),false);assert.equal(p.calls.filter(x=>x==='fill').length,3);assert.equal(p.calls.includes('Sign in'),true);
+});
+test('default JS-enabled login retains Show secret and rejects a missing enhancement before credentials',async()=>{
+ const p=formPage(true);await controlledLogin(p,controlledInfo);assert.equal(p.calls.includes('toggle'),true);
+ const missing=formPage(false);await assert.rejects(controlledLogin(missing,controlledInfo));assert.equal(missing.calls.includes('fill'),false);
+});
+test('unknown malformed enhancement option rejects before navigation evaluation observers or credentials',async()=>{
+ for(const value of [null,1,'false',{},[], 'x'.repeat(2049)]){
+  let effects=0;const p={on:()=>effects++,evaluate:async()=>effects++,goto:async()=>effects++};
+  await assert.rejects(controlledLogin(p,controlledInfo,value));assert.equal(effects,0);
+ }
+});
+test('Firefox recovery validates a real native form without a toggle only with the actual disabled option',async()=>{
+ for(const disabled of [false,true]) {
+  const page=new EventEmitter(),frame={},origin='https://owned.fixture',cause=Object.assign(new Error('original'),{name:'TimeoutError'});let calls=0,reads=0;
+  const field=()=>({readOnly:false,matches:()=>false,hasAttribute:()=>false,closest:()=>null,getBoundingClientRect:()=>({width:100,height:40})});
+  const name=field(),password=field(),submit={...field(),type:'submit',textContent:'Sign in'};
+  const form={method:'post',target:'',action:origin+'/login',querySelectorAll:()=>[submit]};name.form=password.form=form;
+  const response={status:()=>200,url:()=>origin+'/login',request:()=>({isNavigationRequest:()=>true,frame:()=>frame,method:()=> 'GET',redirectedFrom:()=>null})};
+  Object.assign(page,{mainFrame:()=>frame,context:()=>({browser:()=>({browserType:()=>({name:()=> 'firefox'}),version:()=> 'pinned-control'})}),
+   goto:async()=>{calls++;if(calls===1){page.emit('response',response);throw cause;}return response;},
+   evaluate:async(fn,args)=>++reads===1?100:runInNewContext('('+fn.toString()+')(args)',{args,URL,
+    performance:{timeOrigin:200},location:{href:origin+'/login',origin},getComputedStyle:()=>({visibility:'visible'}),
+    document:{readyState:'complete',querySelector:selector=>selector.includes('password')?password:name}})});
+  if(disabled)assert.equal(await gotoAuthForm(page,'/login',controlledInfo,false),response);
+  else await assert.rejects(gotoAuthForm(page,'/login',controlledInfo),error=>error===cause);
+  assert.equal(calls,disabled?2:1);assert.equal(page.listenerCount('response'),0);
+ }
+});
 
 // Failure modes: retrying failed navigation; submitting credentials after failure;
 // diagnostic attachment masking the original error; and retained listeners.

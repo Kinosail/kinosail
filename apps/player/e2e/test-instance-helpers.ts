@@ -28,7 +28,8 @@ export function totp(): string {
   return (((digest.readUInt32BE(offset) & 0x7fffffff) % 1_000_000).toString().padStart(6, "0"));
 }
 
-export async function login(page: Page, info: TestInfo = test.info()) {
+export async function login(page: Page, info: TestInfo = test.info(), javaScriptEnabled = true) {
+  if (typeof javaScriptEnabled !== "boolean") throw new Error("invalid login enhancement option");
   const navigation = navigationDiagnostics(page, info.project.use.baseURL);
   const recorded = new Set<string>();
   try {
@@ -42,7 +43,7 @@ export async function login(page: Page, info: TestInfo = test.info()) {
     } catch { /* Observation setup cannot prevent the original navigation. */ }
     finally {clearTimeout(setupTimer);}
     navigation.markNavigation("/login");
-    const response = await gotoAuthForm(page, "/login", info);
+    const response = await gotoAuthForm(page, "/login", info, javaScriptEnabled);
     expect(response?.status()).toBe(200);
     expect(response!.request().redirectedFrom()).toBeNull();
     const loginURL = new URL(response!.url());
@@ -51,7 +52,7 @@ export async function login(page: Page, info: TestInfo = test.info()) {
     const password = page.getByLabel("Password", {exact: true});
     await expect(page.getByLabel("Name")).toBeEditable();
     await expect(password).toBeEditable();
-    await expect(page.locator(".password-control").filter({has: password}).getByRole("button", {name: "Show secret", exact: true})).toBeVisible();
+    if (javaScriptEnabled) await expect(page.locator(".password-control").filter({has: password}).getByRole("button", {name: "Show secret", exact: true})).toBeVisible();
     await expect(page.getByRole("button", {name: "Sign in", exact: true})).toBeEnabled();
   } catch (error) {
     let timer: ReturnType<typeof setTimeout> | undefined;

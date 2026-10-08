@@ -2,7 +2,8 @@ import type {Page, Response, TestInfo} from "@playwright/test";
 
 // Firefox can commit a usable document while its automation navigation remains pending.
 // A second GET is permitted only after preserving proof that the first form works.
-export async function gotoAuthForm(page: Page, path: "/login" | "/login?next=/" | "/setup", info: TestInfo) {
+export async function gotoAuthForm(page: Page, path: "/login" | "/login?next=/" | "/setup", info: TestInfo, javaScriptEnabled = true) {
+  if (typeof javaScriptEnabled !== "boolean") throw new Error("invalid auth enhancement option");
   const previousDocument = await page.evaluate(() => performance.timeOrigin);
   const started = Date.now();
   let observed: Response | undefined, responseAfter = Infinity, documents = 0;
@@ -28,7 +29,7 @@ export async function gotoAuthForm(page: Page, path: "/login" | "/login?next=/" 
     if (page.context().browser()?.browserType().name() !== "firefox" || !(error instanceof Error) ||
         error.name !== "TimeoutError" || documents !== 1 || !observed || responseAfter > 2000 ||
         observed.status() !== 200 || observed.request().redirectedFrom()) throw error;
-    const originalDocument = await page.evaluate(expectedPath => {
+    const originalDocument = await page.evaluate(({expectedPath, javaScriptEnabled}) => {
       const name = document.querySelector<HTMLInputElement>('input[name="name"]');
       const password = document.querySelector<HTMLInputElement>('input[name="password"][type="password"]');
       const form = password?.form;
@@ -41,9 +42,9 @@ export async function gotoAuthForm(page: Page, path: "/login" | "/login?next=/" 
       const action = form && new URL(form.action);
       return {url: location.href, timeOrigin: performance.timeOrigin, state: document.readyState,
         ready: Boolean(form?.method === "post" && !form.target && action?.origin === location.origin && action.pathname === expectedPath &&
-          name?.form === form && editable(name) && editable(password) && visible(toggle) && !toggle?.matches(":disabled") &&
+          name?.form === form && editable(name) && editable(password) && (!javaScriptEnabled || visible(toggle) && !toggle?.matches(":disabled")) &&
           visible(submit) && !submit?.matches(":disabled") && !["formaction", "formmethod", "formtarget"].some(attribute => submit?.hasAttribute(attribute)))};
-    }, path.split("?")[0]);
+    }, {expectedPath: path.split("?")[0], javaScriptEnabled});
     if (!originalDocument.ready || originalDocument.state !== "complete" || originalDocument.timeOrigin === previousDocument ||
         originalDocument.url !== observed.url()) throw error;
     page.off("response", observe);
