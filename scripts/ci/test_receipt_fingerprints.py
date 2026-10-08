@@ -38,6 +38,12 @@ class ReceiptFingerprintPolicy(unittest.TestCase):
         actual = set((ROOT / ".gitleaksignore").read_text().splitlines())
         self.assertTrue(fingerprints().issubset(actual))
 
+    def test_historical_workflow_blob_metadata_exception_is_exact(self):
+        location = '869de5a5131d38bbed12584d8057be795790f1b9:.github/workflows/r18-canonical-metadata-reconcile.yml:generic-api-key:33'
+        entries = (ROOT / '.gitleaksignore').read_text().splitlines()
+        self.assertEqual(entries.count(location), 1)
+        self.assertNotIn('.github/workflows/r18-canonical-metadata-reconcile.yml', (ROOT / '.gitleaks.toml').read_text())
+
     def test_hosted_secret_gate_runs_real_controls_before_scan(self):
         workflow = (ROOT / ".github/workflows/ci.yml").read_text()
         self.assertTrue("KINOSAIL_REAL_SCANNER: gitleaks" in workflow)
@@ -169,6 +175,36 @@ class RealReceiptScanner(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertEqual(findings, [self.original])
 
+
+    def test_workflow_blob_metadata_exception_is_exact_and_new_credentials_remain_detectable(self):
+        original_ignore = self.fingerprint(self.original) + '\n'
+        (self.repo / '.gitleaksignore').write_text(original_ignore)
+        self.path = Path('.github/workflows/r18-canonical-metadata-reconcile.yml')
+        (self.repo / self.path).parent.mkdir(parents=True)
+        source = b'disposable canonical source metadata\n'
+        blob = hashlib.sha1(b'blob ' + str(len(source)).encode() + b'\x00' + source).hexdigest()
+        observed = subprocess.check_output(['git', 'hash-object', '-w', '--stdin'], input=source, cwd=self.repo, env=self.env).decode().strip()
+        self.assertEqual(blob, observed)
+        assignment = 'expected = ' + repr({'apps/player/internal/server/api.go': blob})
+        (self.repo / self.path).write_text('# disposable metadata fixture\n' * 32 + assignment + '\n')
+        self.commit('Record generated canonical Git blob metadata')
+        code, findings = self.scan()
+        self.assertEqual(code, 1)
+        self.assertTrue(findings)
+        self.assertTrue(all(row['File'] == str(self.path) and row['RuleID'] == 'generic-api-key' and row['StartLine'] == 33 for row in findings))
+        metadata = findings[0]
+        for key, value in [('Commit', '0' * 40), ('File', str(self.path) + '.other'), ('RuleID', 'different-rule'), ('StartLine', 34)]:
+            altered = {**metadata, key: value}
+            (self.repo / '.gitleaksignore').write_text(original_ignore + self.fingerprint(altered) + '\n')
+            self.assertEqual(self.scan(), (1, findings))
+        (self.repo / '.gitleaksignore').write_text(original_ignore + self.fingerprint(metadata) + '\n')
+        self.assertEqual(self.scan(), (0, []))
+        credential = hashlib.sha256(b'disposable canonical credential positive control').hexdigest()
+        (self.repo / self.path).write_text('# disposable credential fixture\n' * 32 + 'api_key = ' + repr(credential) + '\n')
+        head = self.commit('Record a new credential positive control at the same path and line')
+        code, findings = self.scan()
+        self.assertEqual(code, 1)
+        self.assertTrue(any(row['Commit'] == head and row['File'] == str(self.path) and row['RuleID'] == 'generic-api-key' and row['StartLine'] == 33 for row in findings))
 
 if __name__ == "__main__":
     unittest.main()
