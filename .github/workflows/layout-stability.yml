@@ -68,10 +68,12 @@ jobs:
               if test.startswith('TestCopiedHLSLines') and (row.get('Action') in ['pass', 'fail'] or 'nonkey owned probe' in output):
                   assert len(output) <= 1024, 'probe_projection_bound'
                   print(json.dumps(row, separators=(',', ':')))
-          PY
           assert all(outcomes.get(name) == 'pass' for name in controls), 'probe_healthy_controls_pass'
-          cases = ['held_stdout', 'early_stdout_closure', 'parent_exits_before_descendant', 'scanner_rejection', 'explicit_cancellation']
+          cases = ['held_stdout', 'early_stdout_closure', 'parent_exits_before_descendant', 'scanner_rejection', 'explicit_cancellation', 'byte_limit_rejection', 'line_limit_rejection']
           assert all(outcomes.get('TestCopiedHLSLinesOwnedLifetime/' + name) in ['pass', 'fail'] for name in cases), 'probe_all_lifetime_results'
+          new_controls = ['TestCopiedHLSLinesMissingExecutable', 'TestCopiedHLSLinesInsufficientBudget', 'TestCopiedHLSLinesImmediateExit']
+          assert all(outcomes.get(name) in ['pass', 'fail'] for name in new_controls), 'probe_added_controls_terminal'
+          PY
       - name: Preserve exact safe receipt including failed controls
         if: always()
         timeout-minutes: 2
