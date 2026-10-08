@@ -112,6 +112,7 @@ class WorkflowSecurityTests(unittest.TestCase):
         self.assertIn('scripts/testing/browse-return-reporter.test.mjs', step)
         self.assertIn('scripts/testing/browse-return-launch.test.mjs', step)
         self.assertIn('scripts/testing/hls-fast-departure.test.mjs', step)
+        self.assertIn('scripts/testing/audio-queue-fault-witness.test.mjs', step)
         self.assertLess(browser.index('pnpm --dir "apps/$APP/e2e" install --frozen-lockfile'), browser.index(command))
         self.assertLess(browser.index(command), browser.index('name: Test populated browsers'))
 
