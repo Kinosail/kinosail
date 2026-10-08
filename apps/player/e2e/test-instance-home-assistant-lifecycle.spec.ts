@@ -23,6 +23,7 @@ test("real document targets work with denied storage and unavailable UUID and lo
     const before = (await docs.live()).find(target => target.itemId === docs.ids[0])!.id;
     const accepted = observeAcceptedDocumentStates(first);
     const renewed = first.waitForResponse(response => new URL(response.url()).pathname.endsWith("/players/claims") && response.status() === 201);
+    void renewed.catch(() => {});
     await first.reload();
     const replacement = await (await renewed).json();
     expect(typeof replacement.id).toBe("string"); expect(replacement.id).not.toBe(before);
@@ -48,6 +49,7 @@ test("real cloned document candidate forks after occupied claim without stealing
       {profile, candidate: original});
     const occupied = second.waitForResponse(response => new URL(response.url()).pathname.endsWith("/home-assistant/players/claims") && response.status() === 409);
     const renewed = second.waitForResponse(response => new URL(response.url()).pathname.endsWith("/players/claims") && response.status() === 201);
+    void occupied.catch(() => {}); void renewed.catch(() => {});
     const accepted = observeAcceptedDocumentStates(second);
     await second.goto(`/watch/${docs.ids[1]}`);
     expect((await occupied).status()).toBe(409);
@@ -76,6 +78,7 @@ test("real lost-release reload waits for lease expiry and renews only its origin
     await first.route("**/home-assistant/players/*/release", route => {dropped++; return route.abort();});
     first.on("response", response => {if (new URL(response.url()).pathname.endsWith("/players/claims") && response.status() === 409) conflicts++;});
     const renewed = first.waitForResponse(response => new URL(response.url()).pathname.endsWith("/players/claims") && response.status() === 201, {timeout: 40_000});
+    void renewed.catch(() => {});
     const started = Date.now();
     await first.reload();
     const claim = await (await renewed).json();
@@ -115,7 +118,7 @@ test("actual authenticated Profile switch retires old document command effects",
     await first.route(`**/api/v1/home-assistant/players/${target}`, async route => {
       const response = await route.fetch();
       if (response.status() === 200 && (await response.json()).command === "seek") {captured(); await barrier;}
-      await route.fulfill({response});
+      try {await route.fulfill({response});} catch (error) {if (!first!.isClosed()) throw error;}
     });
     // Hold an actual accepted command response; do not fabricate a handler or payload.
     expect(await owner.evaluate(async ({id, position}) => {
@@ -165,6 +168,7 @@ test("rendered document claim failure exposes accessible Retry and recovers with
     await inspectDocumentStatus(first, info, "unavailable");
     failing = false;
     const claim = first.waitForResponse(response => new URL(response.url()).pathname.endsWith("/players/claims") && response.status() === 201);
+    void claim.catch(() => {});
     await first.getByRole("button", {name: "Retry Home Assistant", exact: true}).press("Enter");
     expect((await claim).status()).toBe(201);
     await expect.poll(async () => (await docs.live()).length).toBe(2);
