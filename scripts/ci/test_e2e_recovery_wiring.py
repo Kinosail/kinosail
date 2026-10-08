@@ -16,3 +16,4 @@ class RecoverySourceClosure(unittest.TestCase):
         source=(ROOT/".github/workflows/app.yml").read_text()
         command=next(line for line in source.splitlines() if "run: node --test scripts/testing/player-setup-navigation.test.mjs" in line)
         self.assertEqual(command.count("scripts/e2e/tests/recovery-control.test.mjs"),1)
+        self.assertEqual(command.count("scripts/e2e/tests/fixture-reader.test.mjs"),1)

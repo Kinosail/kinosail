@@ -1,7 +1,7 @@
 import { describe, test } from '@e2e-dev/web';
 import { expect } from 'e2e';
 import { api, requireFixtureURL } from './helpers';
-import { fixtureItem, fixtureAlbum, fixtureAlbumTracks } from '../fixture-response.mjs';
+import { fixtureItem, fixtureAlbum, fixtureAlbumTracks, fixtureReader } from '../fixture-response.mjs';
 
 describe('populated audio and readers', { session: 'owner' }, () => {
   test('album queue plays two real tracks and rejects invalid progress without mutation', async ({ app, browser, screen }) => {
@@ -54,6 +54,8 @@ describe('populated audio and readers', { session: 'owner' }, () => {
     const book = fixtureItem(books.data, 'E2E EPUB', 'book');
     expect(book).toBeDefined();
     const reader = await api(browser, app.baseUrl, '/api/v1/books/' + book.id + '/reader');
+    expect(reader.status).toBe(200);
+    fixtureReader(reader.data, book);
     expect(reader.data.type).toBe('epub');
     expect(reader.data.pages).toHaveLength(2);
     await app.open('/read/' + book.id);

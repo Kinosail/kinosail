@@ -146,3 +146,23 @@ export function fixtureAlbumTracks(data, album) {
       || track.title !== ['E2E Track One', 'E2E Track Two'][index])) throw new Error('exact SDK album tracks required');
   return data.tracks;
 }
+
+export function fixtureReader(data, item) {
+  validateFixtureItems([item]);
+  const type = {'E2E EPUB': 'epub', 'E2E PDF': 'pdf'}[item.title];
+  if (item.kind !== 'book' || !type || !keys(data, ['id', 'title', 'type', 'pages'])
+      || data.id !== item.id || data.title !== item.title || data.type !== type || !Array.isArray(data.pages)
+      || data.pages.length !== (type === 'pdf' ? 1 : 2)) throw new Error('invalid SDK fixture reader');
+  for (const [index, page] of data.pages.entries()) {
+    const expectedURL = '/read/' + item.id + (type === 'pdf' ? '/file' : '/asset/OEBPS/' + ['one', 'two'][index] + '.xhtml');
+    if (!keys(page, ['title', 'url', 'number']) || page.number !== index + 1 || page.url !== expectedURL
+        || page.title !== (type === 'pdf' ? 'Document' : 'Chapter ' + (index + 1))) throw new Error('invalid SDK fixture page');
+  }
+  return data;
+}
+
+export function fixtureWatchProgress(data) {
+  if (!keys(data, ['seconds', 'duration']) || !finite(data.seconds, 315360000) || !finite(data.duration, 315360000)
+      || data.duration > 0 && data.seconds > data.duration) throw new Error('invalid SDK watch progress');
+  return data;
+}
