@@ -37,21 +37,8 @@ func checkRemainingColdAACManifestState(t *testing.T, state string) {
 	close(job.done)
 	manager.jobs[key] = job
 	manifest := remainingInitialAACPrefix + "#EXTINF:0.021333,\nsegment-00005.m4s\n#EXT-X-ENDLIST\n"
-	for n := range 6 {
-		writeHLSLoadingFile(t, filepath.Join(directory, "audio", fmtRemainingColdSegment(n)), "synthetic-fragment")
-	}
-	switch state {
-	case "incomplete-event":
-		manifest = strings.TrimSuffix(manifest, "#EXT-X-ENDLIST\n")
-	case "short-false-eof":
-		manifest = strings.Split(remainingInitialAACPrefix, "#EXTINF:2.005333,\nsegment-00004")[0] + "#EXT-X-ENDLIST\n"
-	case "missing-tail":
-		if err := os.Remove(filepath.Join(directory, "audio/segment-00005.m4s")); err != nil {
-			t.Fatal(err)
-		}
-	case "copy-index":
-		writeHLSLoadingFile(t, filepath.Join(directory, ".copy-timeline"), "{}")
-	}
+	seedRemainingColdAACSegments(t, directory)
+	manifest = faultRemainingColdAACManifest(t, state, directory, manifest)
 	writeHLSLoadingFile(t, filepath.Join(directory, "audio/index.m3u8"), manifest)
 	snapshot, err := manager.remainingColdAACSnapshot(t.Context(), item, recipe, key, options.Cache, job, 10)
 	if state == "complete" {
@@ -81,9 +68,7 @@ func checkRemainingColdAACPublicationState(t *testing.T, changed string) {
 	}
 	manifest := remainingInitialAACPrefix + "#EXTINF:0.021333,\nsegment-00005.m4s\n#EXT-X-ENDLIST\n"
 	writeHLSLoadingFile(t, filepath.Join(directory, "audio/index.m3u8"), manifest)
-	for n := range 6 {
-		writeHLSLoadingFile(t, filepath.Join(directory, "audio", fmtRemainingColdSegment(n)), "synthetic-fragment")
-	}
+	seedRemainingColdAACSegments(t, directory)
 	job := &hlsJob{done: make(chan struct{}), cachePolicy: options.Cache}
 	close(job.done)
 	manager.jobs[key] = job
@@ -111,9 +96,7 @@ func TestRemainingColdAACConcurrentReadersShareJoinedPublication(t *testing.T) {
 	}
 	manifest := remainingInitialAACPrefix + "#EXTINF:0.021333,\nsegment-00005.m4s\n#EXT-X-ENDLIST\n"
 	writeHLSLoadingFile(t, filepath.Join(directory, "audio/index.m3u8"), manifest)
-	for n := range 6 {
-		writeHLSLoadingFile(t, filepath.Join(directory, "audio", fmtRemainingColdSegment(n)), "synthetic-fragment")
-	}
+	seedRemainingColdAACSegments(t, directory)
 	_ = manager.probe.facts(t.Context(), item)
 	job := &hlsJob{done: make(chan struct{}), cachePolicy: options.Cache, activity: make(chan struct{}, 2)}
 	manager.jobs[key] = job
@@ -124,33 +107,7 @@ func TestRemainingColdAACConcurrentReadersShareJoinedPublication(t *testing.T) {
 			completed <- remainingColdAACReaderProjection(t.Context(), manager, item, recipe, key, manifest)
 		})
 	}
-	waitRemainingColdAACReaders(t, 2)
-	// A pending worker must leave the metadata lock available to other requests.
-	select {
-	case <-job.done:
-		t.Fatal("worker joined before the lock oracle")
-	default:
-	}
-	unlocked := make(chan bool, 1)
-	go func() {
-		manager.mu.Lock()
-		same := manager.jobs[key] == job
-		manager.mu.Unlock()
-		unlocked <- same
-	}()
-	select {
-	case same := <-unlocked:
-		if !same {
-			t.Fatal("pending reader changed the shared worker")
-		}
-	case <-time.After(time.Second):
-		t.Fatal("completion wait retained the manager mutex")
-	}
-	select {
-	case err := <-completed:
-		t.Fatalf("reader escaped before worker join: %v", err)
-	default:
-	}
+	checkRemainingColdAACPendingReaders(t, manager, key, job, completed)
 	close(job.done)
 	readers.Wait()
 	for range 2 {
@@ -201,4 +158,59 @@ func remainingColdAACReaderProjection(ctx context.Context, manager *hlsManager, 
 		return errors.New("concurrent reader lost final cut")
 	}
 	return problem
+}
+
+func faultRemainingColdAACManifest(t *testing.T, state, directory, manifest string) string {
+	t.Helper()
+	switch state {
+	case "incomplete-event":
+		manifest = strings.TrimSuffix(manifest, "#EXT-X-ENDLIST\n")
+	case "short-false-eof":
+		manifest = strings.Split(remainingInitialAACPrefix, "#EXTINF:2.005333,\nsegment-00004")[0] + "#EXT-X-ENDLIST\n"
+	case "missing-tail":
+		if err := os.Remove(filepath.Join(directory, "audio/segment-00005.m4s")); err != nil {
+			t.Fatal(err)
+		}
+	case "copy-index":
+		writeHLSLoadingFile(t, filepath.Join(directory, ".copy-timeline"), "{}")
+	}
+	return manifest
+}
+
+func checkRemainingColdAACPendingReaders(t *testing.T, manager *hlsManager, key string, job *hlsJob, completed <-chan error) {
+	t.Helper()
+	waitRemainingColdAACReaders(t, 2)
+	// A pending worker must leave the metadata lock available to other requests.
+	select {
+	case <-job.done:
+		t.Fatal("worker joined before the lock oracle")
+	default:
+	}
+	unlocked := make(chan bool, 1)
+	go func() {
+		manager.mu.Lock()
+		same := manager.jobs[key] == job
+		manager.mu.Unlock()
+		unlocked <- same
+	}()
+	select {
+	case same := <-unlocked:
+		if !same {
+			t.Fatal("pending reader changed the shared worker")
+		}
+	case <-time.After(time.Second):
+		t.Fatal("completion wait retained the manager mutex")
+	}
+	select {
+	case err := <-completed:
+		t.Fatalf("reader escaped before worker join: %v", err)
+	default:
+	}
+}
+
+func seedRemainingColdAACSegments(t *testing.T, directory string) {
+	t.Helper()
+	for n := range 6 {
+		writeHLSLoadingFile(t, filepath.Join(directory, "audio", fmtRemainingColdSegment(n)), "synthetic-fragment")
+	}
 }
