@@ -48,7 +48,7 @@ def measure_prefix(source, result):
         '-show_packets', '-show_frames', '-show_streams', '-show_data_hash', 'sha256',
         '-show_entries', 'packet=pts,dts,duration,data_hash,side_data_list:'
         'frame=pts,nb_samples,side_data_list:'
-        'stream=codec_name,sample_rate,channels,time_base',
+        'stream=codec_name,profile,sample_rate,channels,time_base',
         '-of', 'json', str(source)], deadline, result)
     facts = json.loads(probe.stdout)
     mixed = facts.get('packets_and_frames', [])
@@ -72,13 +72,18 @@ def measure_prefix(source, result):
         '-f', 'framemd5', 'pipe:1'], deadline, result)
     normalized = filter_clock(process.stderr.decode())
     require(0 < len(normalized['completeRows']) <= 1025, 'aac_prefix_normalized_frame_bound')
+    output_rows = normalized_output_rows(process.stdout.decode())
+    filtered = normalized['completeRows']
+    require(len(output_rows) == 1024 and len(filtered) >= len(output_rows) and
+            output_rows == [(r['pts'], r['samples']) for r in filtered[:len(output_rows)]],
+            'aac_prefix_output_filter_clock_equivalence')
     elapsed = time.monotonic() - started
     require(elapsed <= 2, 'aac_prefix_shared_deadline_exhausted')
     result.update({'result': 'observed', 'sharedDeadlineSeconds': 2, 'elapsedSeconds': elapsed,
         'sequentialProcesses': 2, 'configuredThreads': 1, 'outputFrameCap': 1024,
         'maximumNativePrefixFrames': 1060, 'inputPrefixSeconds': 22,
         'sourceStream': streams[0], 'nativeFrames': frames, 'sourcePackets': packets,
-        'normalizedFilter': normalized,
+        'normalizedFilter': normalized, 'outputFilterClockEquivalent': True,
         'probeSHA256': hashlib.sha256(probe.stdout).hexdigest(),
         'filterLogSHA256': hashlib.sha256(process.stderr).hexdigest(),
         'frameMD5OutputSHA256': hashlib.sha256(process.stdout).hexdigest(),
@@ -178,3 +183,25 @@ def qualify_negative_controls(prefix, first_packet, offset, current):
             raise RuntimeError('aac_prefix_negative_control_admitted_' + name)
     require(len(controls) == 5, 'aac_prefix_negative_control_count')
     return controls
+
+def normalized_output_rows(document):
+    import re
+    require(len(document.encode()) <= 2 << 20, 'aac_prefix_normalized_output_bound')
+    headers = [line.strip() for line in document.splitlines() if line.startswith('#')]
+    require('#tb 0: 1/48000' in headers and '#media_type 0: audio' in headers and
+            '#sample_rate 0: 48000' in headers, 'aac_prefix_normalized_output_format')
+    rows = []
+    for line in document.splitlines():
+        if not line.strip() or line.startswith('#'):
+            continue
+        fields = [value.strip() for value in line.split(',')]
+        require(len(fields) == 6 and all(re.fullmatch(r'-?[0-9]{1,17}', v)
+                for v in fields[:5]) and re.fullmatch(r'[a-f0-9]{32}', fields[5]),
+                'aac_prefix_normalized_output_shape')
+        stream, dts, pts, samples, size = [int(v) for v in fields[:5]]
+        require(stream == 0 and dts == pts and 0 < samples <= 1024 and size == samples * 4,
+                'aac_prefix_normalized_output_extent')
+        rows.append((pts, samples))
+        require(len(rows) <= 1024, 'aac_prefix_normalized_output_frame_bound')
+    require(rows, 'aac_prefix_normalized_output_empty')
+    return rows

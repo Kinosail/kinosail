@@ -99,7 +99,11 @@ try:
             raise
         print(json.dumps({'container': source.suffix[1:], 'prefixElapsed': prefix['elapsedSeconds'],
             'prefixFrames': len(prefix['nativeFrames']), 'normalizedFrames': len(prefix['normalizedFilter']['completeRows']),
-            'sharedDeadlineSeconds': 2, 'productionAcceptance': False}), flush=True)
+            'sharedDeadlineSeconds': 2, 'productionAcceptance': False,
+            'outputFilterClockEquivalent': prefix['outputFilterClockEquivalent'],
+            'sourceStream': prefix['sourceStream'], 'leadingNativeFrames': prefix['nativeFrames'][:3],
+            'leadingSourcePackets': prefix['sourcePackets'][:3],
+            'leadingNormalizedFrames': prefix['normalizedFilter']['completeRows'][:3]}), flush=True)
         check(source_state(source) == before, 'aac_normalized_measurement_source_changed')
         measured['sourceUnchanged'] = True
         for offset in [12.5, 13.5, 18.2]:
