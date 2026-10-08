@@ -112,3 +112,7 @@ parent evidence directory alreadyexists; no childreceipt, parentFileNotFoundErro
 Job113219975381 logSHA8699e5b413a6db6f18338282d933d6d82c2072b1252fe867dcb90bcff473ca87.
 Child setup now permits its own existing isolated directory; failed attempt stays.
 MKV16sample result is a start-boundary discrepancy, not provenaudibleloss or EOFdefect.
+
+Cutoff-only child531eb3eb passed hosted run37750654595/job113222768733. Internal deadline and actual timeout SIGTERM preserved explicit bounded_diagnostic_deadline failures, expected exits1/124, unforced owned joins, two zero samples, no remaining PIDs/cleanup/qualification failures. Artifact11537548626/1276bytes ZIPsha256c274ac5af815ac184cce9c547cf5fd25f291fc5aa5cc3720197f373b5c21748a; UTF8connector logSHA67bffab72c4c5f758e26ac28fd25667dd546eccccbb9955d813c7c359f428ef0/27724bytes. Previous cfaf failure remains.
+
+Next boundary-only child retains all raw/default-decoded frames and complete packets/PCM. Four fixed legacy/normal-both MKV/bitcopy-MP4 cases report strict physical-fragment-to-demux edit clock correspondence, independent ignore_editlist counterfactual, explicit packet discard flags, separate unqualified nonnegative frame-clock subset, cumulative native source sample clocks, and exact copied AAC payload tails. This is a diagnosis, not a renderer/preroll certificate or production admission. No production/normalCI/security/gate/source oracle changes; original49x/503 branches untouched.

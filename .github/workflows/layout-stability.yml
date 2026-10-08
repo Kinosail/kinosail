@@ -5,7 +5,7 @@ on:
     inputs:
       phase:
         type: choice
-        options: [public, observe, mux, cutoff]
+        options: [public, observe, mux, boundary, cutoff]
         default: public
 
 permissions:
@@ -169,7 +169,7 @@ jobs:
           retention-days: 14
 
   nonkey-mux:
-    if: inputs.phase == 'mux'
+    if: inputs.phase == 'mux' || inputs.phase == 'boundary'
     name: Fixed inner and outer mux timestamp counterfactuals
     runs-on: ubuntu-24.04
     timeout-minutes: 25
@@ -213,7 +213,11 @@ jobs:
       - name: Verify all strict diagnostic controls
         run: python3 -m unittest discover -s apps/player/scripts -p 'test_hls_remaining_nonkey_*.py'
       - name: Observe fixed counterfactuals without production admission
+        if: inputs.phase == 'mux'
         run: timeout --kill-after=90s 420s python3 apps/player/scripts/test-hls-nonkey-mux-observation.py
+      - name: Observe edit, demux and native boundary clocks
+        if: inputs.phase == 'boundary'
+        run: timeout --kill-after=90s 300s python3 apps/player/scripts/test-hls-nonkey-boundary.py
       - name: Preserve complete safe counterfactual receipt
         timeout-minutes: 2
         if: always()
@@ -223,6 +227,8 @@ jobs:
           path: |
             .verification/hls-nonkey-mux/*/receipt.json
             .verification/hls-nonkey-mux/*/SHA256SUMS
+            .verification/hls-nonkey-boundary/*/receipt.json
+            .verification/hls-nonkey-boundary/*/SHA256SUMS
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
