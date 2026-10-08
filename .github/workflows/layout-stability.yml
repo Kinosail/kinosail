@@ -986,6 +986,7 @@ jobs:
             ${{ runner.temp }}/camera19-${{ matrix.engine }}/fixture-startup.json
             ${{ runner.temp }}/camera19-${{ matrix.engine }}/browser-results/**/trace.zip
             ${{ runner.temp }}/camera19-${{ matrix.engine }}/browser-results/**/*.json
+            ${{ runner.temp }}/camera19-${{ matrix.engine }}/browser-results/**/720-quick-connect-failure.png
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14

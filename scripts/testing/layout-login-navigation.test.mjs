@@ -85,12 +85,14 @@ test('owned static resources retain only the category, not an arbitrary basename
 
 const librarySource = stripTypeScriptTypes(readFileSync(new URL('../../apps/player/e2e/layout-audit-library.spec.ts', import.meta.url), 'utf8'));
 const geometryBlock = librarySource.slice(librarySource.indexOf('\t\tif (route === "/quick-connect")'), librarySource.indexOf('\t\tfor (const selector of selectors)'));
-function quickConnectPeer({passes = false, capture = 'ok', attachment = 'ok', image} = {}) {
+const cameraSource = stripTypeScriptTypes(readFileSync(new URL('../../apps/player/e2e/quick-connect-scan.spec.ts', import.meta.url), 'utf8'));
+const cameraGeometry = cameraSource.slice(cameraSource.indexOf('async function manualCodeClearsCompactShell'), cameraSource.indexOf("test('permission denial"));
+function quickConnectPeer({passes = false, capture = 'ok', attachment = 'ok', image, camera = false} = {}) {
   const cause = new Error('actual Quick Connect bottom exceeds dock');
   const effects = [], writes = [], attachments = [];
   const png = image ?? Buffer.alloc(24);
   if (!image) {Buffer.from([137,80,78,71,13,10,26,10]).copy(png); png.writeUInt32BE(720,16); png.writeUInt32BE(450,20);}
-  const page = {evaluate: async () => ({headerBottom: 60, dockTop: 385, digits: Array.from({length: 6}, () => ({top: 300, bottom: passes ? 380 : 398}))}),
+  const page = {evaluate: async () => ({headerBottom: 60, dockTop: 385, header: 60, dock: 385, digits: Array.from({length: 6}, () => ({top: 300, bottom: passes ? 380 : 398, height: 44}))}),
     screenshot: async options => {effects.push(options); if (capture === 'reject') throw new Error('capture'); if (capture === 'stall') return new Promise(() => {}); return png;}};
   const info = {outputPath: name => '/owned/' + name, attach: async (name, value) => {
     if (attachment === 'reject') throw new Error('attachment'); if (attachment === 'stall') return new Promise(() => {});
@@ -99,7 +101,7 @@ function quickConnectPeer({passes = false, capture = 'ok', attachment = 'ok', im
     toBeLessThanOrEqual: maximum => {if (value > maximum) throw cause;}});
   const context = {test: {}, expect, Buffer, setTimeout, clearTimeout, writeFile: async (path, body, options) => writes.push({path, body, options})};
   const helper = runInNewContext(`(()=>{${source};return typeof quickConnectFailureEvidence === 'function' ? quickConnectFailureEvidence : undefined;})()`, context);
-  const run = () => runInNewContext(`(async()=>{${geometryBlock}})()`, {...context, route: '/quick-connect', page, testInfo: info, quickConnectFailureEvidence: helper});
+  const run = () => runInNewContext(camera ? `(async()=>{${cameraGeometry};await manualCodeClearsCompactShell(page,testInfo);})()` : `(async()=>{${geometryBlock}})()`, {...context, route: '/quick-connect', page, testInfo: info, quickConnectFailureEvidence: helper});
   return {run, cause, effects, writes, attachments};
 }
 
@@ -131,3 +133,15 @@ test('malformed oversized or other-dimension PNG produces no file or attachment'
     assert.equal(peer.writes.length, 0); assert.equal(peer.attachments.length, 0);
   }
 });
+
+test('actual Camera denied/pending geometry keeps the error and captures its bounded current state',async()=>{
+ const p=quickConnectPeer({camera:true});await assert.rejects(p.run(),error=>error===p.cause);
+ assert.equal(p.writes.length,1);assert.equal(p.writes[0].path,'/owned/720-quick-connect-failure.png');
+ assert.equal(p.attachments.length,1);assert.equal(p.attachments[0].name,'720-quick-connect-failure.png');
+});
+for(const options of [{passes:true},{capture:'reject'},{attachment:'reject'},{image:Buffer.alloc(24)}])
+ test('actual Camera failed-only capture retains geometry and capture bounds '+JSON.stringify(options),async()=>{
+  const p=quickConnectPeer({...options,camera:true});
+  if(options.passes)await p.run();else await assert.rejects(p.run(),error=>error===p.cause);
+  assert.equal(p.attachments.length,0);
+ });

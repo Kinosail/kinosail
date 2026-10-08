@@ -1,5 +1,5 @@
-import { expect, test, type Page } from '@playwright/test';
-import { configureLayoutAudit, login } from './layout-audit-helpers';
+import { expect, test, type Page, type TestInfo } from '@playwright/test';
+import { configureLayoutAudit, login, quickConnectFailureEvidence } from './layout-audit-helpers';
 import { cameraProfile, isolateCamera } from './camera-profile-fixture';
 
 const fixture = cameraProfile(process.env);
@@ -81,7 +81,7 @@ for (const raw of ['123456', 'SAME/connect?code=123456', 'SAME/quick-connect?cod
   });
 }
 
-async function manualCodeClearsCompactShell(page: Page) {
+async function manualCodeClearsCompactShell(page: Page, info: TestInfo) {
   const geometry = await page.evaluate(() => ({
     header: document.querySelector('.app-header')!.getBoundingClientRect().bottom,
     dock: document.querySelector('.mobile-navigation')!.getBoundingClientRect().top,
@@ -89,15 +89,17 @@ async function manualCodeClearsCompactShell(page: Page) {
       const box = element.getBoundingClientRect(); return {top: box.top, bottom: box.bottom, height: box.height};
     }),
   }));
-  expect(geometry.digits).toHaveLength(6);
-  for (const digit of geometry.digits) {
-    expect(digit.top).toBeGreaterThanOrEqual(geometry.header);
-    expect(digit.bottom).toBeLessThanOrEqual(geometry.dock);
-    expect(digit.height).toBeGreaterThanOrEqual(44);
-  }
+  await quickConnectFailureEvidence(page, info, async () => {
+    expect(geometry.digits).toHaveLength(6);
+    for (const digit of geometry.digits) {
+      expect(digit.top).toBeGreaterThanOrEqual(geometry.header);
+      expect(digit.bottom).toBeLessThanOrEqual(geometry.dock);
+      expect(digit.height).toBeGreaterThanOrEqual(44);
+    }
+  });
 }
 
-test('permission denial leaves manual code entry available', async ({ page }) => {
+test('permission denial leaves manual code entry available', async ({ page }, info) => {
   await page.setViewportSize({width: 720, height: 450});
   await camera(page, '', { denied: true, pending: false });
   await page.getByRole('button', { name: 'Scan QR code', exact: true }).click();
@@ -105,10 +107,10 @@ test('permission denial leaves manual code entry available', async ({ page }) =>
   await expect(page.locator('[data-quick-connect-digit]').first()).toBeEditable();
   await expect(page.locator('[data-qr-camera]')).toBeHidden();
   await expect(page.locator('[data-qr-start]')).toBeFocused();
-  await manualCodeClearsCompactShell(page);
+  await manualCodeClearsCompactShell(page, info);
 });
 
-test('stopping while permission is pending closes a late camera stream', async ({ page }) => {
+test('stopping while permission is pending closes a late camera stream', async ({ page }, info) => {
   await page.setViewportSize({width: 720, height: 450});
   await camera(page, '', { denied: false, pending: true });
   await page.getByRole('button', { name: 'Scan QR code', exact: true }).click();
@@ -117,5 +119,5 @@ test('stopping while permission is pending closes a late camera stream', async (
   await page.evaluate(() => (window as QRWindow).qrTest.release());
   await expect.poll(() => page.evaluate(() => (window as QRWindow).qrTest.stopped)).toBe(1);
   await expect(page.locator('[data-qr-camera]')).toBeHidden();
-  await manualCodeClearsCompactShell(page);
+  await manualCodeClearsCompactShell(page, info);
 });

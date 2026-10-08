@@ -90,6 +90,11 @@ class CameraWorkflowTests(unittest.TestCase):
                 exec(compile(self.recipe(), 'camera-source-recipe', 'exec'), {})
         write.assert_not_called()
 
+    def test_only_exact_camera_geometry_failure_png_is_retained(self):
+        paths=[line.strip() for line in self.block().splitlines() if '.png' in line]
+        self.assertEqual(paths,['${{ runner.temp }}/camera19-${{ matrix.engine }}/browser-results/**/720-quick-connect-failure.png'])
+        self.assertNotIn('browser-results/**/*.png',self.block())
+
     def test_source_and_failure_artifacts_close_guard_relay_and_recipe(self):
         block = self.block(); source = WORKFLOW.read_text()
         for path in ('apps/player/e2e/camera-profile-fixture.ts',
