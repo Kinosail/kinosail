@@ -15,6 +15,25 @@ JOBS = [('library-owner', 'LIBRARY_PROJECT', 46),
         ('provider-owner', 'PROFILE_PROJECT', 15), ('responsive-owner', 'RESPONSIVE_PROJECT', 99)]
 
 class ProfileAuthRecipeTests(unittest.TestCase):
+    def test_actual_playback_recipe_binds_startup_observers_before_write(self):
+        helpers = ['apps/player/e2e/responsive-failure-witness.mjs', 'apps/player/e2e/startup-media-hold.mjs']
+        with patch.dict(os.environ, {'PROFILE_PROJECT': 'webkit', 'PROOF_REVISION': 'fixture-revision'}), patch.object(Path, 'write_text') as write:
+            exec(compile(self.recipe('playback-owner'), 'actual-playback-recipe', 'exec'), {})
+            receipt = json.loads(write.call_args.args[0])
+            for name in helpers:
+                self.assertIn(name, receipt['sourceSHA256'])
+                self.assertEqual(receipt['sourceSHA256'][name], hashlib.sha256((ROOT / name).read_bytes()).hexdigest())
+        read = Path.read_bytes
+        for name in helpers:
+            def missing(path):
+                if str(path) == name:
+                    raise FileNotFoundError('missing startup observer')
+                return read(path)
+            with patch.dict(os.environ, {'PROFILE_PROJECT': 'webkit', 'PROOF_REVISION': 'fixture-revision'}), patch.object(Path, 'read_bytes', missing), patch.object(Path, 'write_text') as write:
+                with self.assertRaises(FileNotFoundError):
+                    exec(compile(self.recipe('playback-owner'), 'actual-playback-recipe', 'exec'), {})
+                write.assert_not_called()
+
     def recipe(self, job):
         source = (ROOT / '.github/workflows/layout-stability.yml').read_text()
         block = source.split('  ' + job + ':\n', 1)[1]

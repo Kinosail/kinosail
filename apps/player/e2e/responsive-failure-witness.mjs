@@ -1,10 +1,10 @@
 // Fixed, bounded pre-assertion observations. No HTML, URLs or arbitrary classes.
-const kinds = ['player-settings', 'player-recovery', 'home-resume'];
+const kinds = ['player-settings', 'player-recovery', 'player-startup', 'home-resume'];
 const displays = ['none', 'block', 'inline', 'inline-block', 'grid', 'flex', 'inline-flex', 'contents', 'other', 'unavailable'];
 const totals = new WeakMap();
 
 export function responsiveFailureFacts(kind) {
-  if (!['player-settings', 'player-recovery', 'home-resume'].includes(kind)) throw new Error('invalid responsive witness kind');
+  if (!['player-settings', 'player-recovery', 'player-startup', 'home-resume'].includes(kind)) throw new Error('invalid responsive witness kind');
   const number = value => typeof value === 'number' && Number.isFinite(value) && Math.abs(value) <= 10000000 ? value : null;
   const describe = element => {
     if (!element) return {available: false, rect: null, display: 'unavailable', hidden: null};

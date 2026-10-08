@@ -126,3 +126,42 @@ test('invalid focus or media states reject before private snapshots reach attach
   assert.equal(JSON.parse(rows[0].body).reason,'invalid_snapshot');assert.equal(rows[0].body.includes('PRIVATE'),false);
  }
 });
+
+test('startup failure kind retains actual media/native state without private values',async()=>{
+ const video=node({tagName:'VIDEO',paused:false,readyState:4,currentTime:1,duration:16,controls:true,autoplay:false,ended:false,networkState:1});
+ const {rows,info}=recorder();
+ assert.equal(await attachResponsiveFailure(page({video}),info,'player-startup'),true);
+ const state=JSON.parse(rows[0].body).state;
+ assert.equal(state.videoPaused,false);assert.equal(state.videoCurrentTime,1);assert.equal(state.videoAutoplay,false);
+});
+
+test('startup hold actual callbacks remain pending until release and settle during owned cleanup',async()=>{
+ const {holdStartupMedia}=await import('../../apps/player/e2e/startup-media-hold.mjs');
+ const routes=new Map(),removed=[];
+ const page={route:async(pattern,fn)=>routes.set(pattern,fn),unroute:async(pattern,fn)=>{assert.equal(routes.get(pattern),fn);removed.push(pattern);}};
+ const hold=await holdStartupMedia(page,'automatic');let delivered;
+ const media=routes.get('**/media/**')({fulfill:async value=>{delivered=value;}});
+ const hls=routes.get('**/hls/**')({continue:async()=>{}});
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.deepEqual(hold.snapshot(),{mediaEntered:1,hlsEntered:1,released:false,finished:0,failed:0,overflow:false});
+ assert.equal(delivered,undefined);hold.release();await Promise.all([media,hls]);
+ assert.equal(delivered.status,206);assert.equal(delivered.body,'x');
+ assert.equal(hold.snapshot().finished,2);await hold.close();assert.equal(removed.length,2);
+});
+test('startup hold rejects unknown input before route registration and records failure before cleanup',async()=>{
+ const {holdStartupMedia}=await import('../../apps/player/e2e/startup-media-hold.mjs');let effects=0;
+ for(const source of [undefined,null,'private','x'.repeat(4097)])await assert.rejects(holdStartupMedia({route:async()=>effects++},source));
+ assert.equal(effects,0);const routes=new Map();const original=new Error('private cause');
+ const hold=await holdStartupMedia({route:async(p,f)=>routes.set(p,f),unroute:async()=>{}},'direct');
+ const task=routes.get('**/media/**')({continue:async()=>{throw original;}});task.catch(()=>{});
+ const before=hold.snapshot();assert.equal(before.released,false);hold.release();await assert.rejects(task,error=>error===original);
+ assert.equal(hold.snapshot().failed,1);await hold.close();assert.equal(before.released,false);
+});
+test('startup fixture overflow cannot enqueue or forward another held request',async()=>{
+ const {holdStartupMedia}=await import('../../apps/player/e2e/startup-media-hold.mjs');const routes=new Map();let effects=0;
+ const hold=await holdStartupMedia({route:async(p,f)=>routes.set(p,f),unroute:async()=>{}},'direct');
+ const route={continue:async()=>effects++},tasks=Array.from({length:64},()=>routes.get('**/media/**')(route));
+ const extra=Promise.resolve().then(()=>routes.get('**/media/**')(route));extra.catch(()=>{});
+ await new Promise(resolve=>setImmediate(resolve));hold.release();await Promise.all(tasks);
+ await assert.rejects(extra,/capacity/);assert.equal(effects,64);assert.equal(hold.snapshot().overflow,true);await hold.close();
+});
