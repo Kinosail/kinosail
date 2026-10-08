@@ -53,6 +53,7 @@ func verifyCopiedHLSProbeLifetime(t *testing.T, mode string, reject, cancelNow, 
 		visits++
 		fields := strings.Fields(line)
 		if len(fields) != 3 || fields[0] != "probe-started" || markers != 0 {
+			t.Logf("nonkey owned probe unexpected marker length=%d fields=%d", len(line), len(fields))
 			return errCopiedHLSIndex
 		}
 		for _, field := range fields[1:] {
@@ -103,11 +104,13 @@ func TestCopiedHLSLinesHealthy(t *testing.T) {
 			lines := 0
 			err := copiedHLSLines(ctx, executable, copiedHLSProbeArguments(mode), 1024, 1, func(line string) error {
 				if line != "probe-ready" {
+					t.Logf("nonkey owned probe healthy unexpected-line length=%d first-byte=%d pass-prefix=%t run-prefix=%t", len(line), line[0], strings.HasPrefix(line, "PASS"), strings.HasPrefix(line, "=== "))
 					return errCopiedHLSIndex
 				}
 				lines++
 				return nil
 			})
+			t.Logf("nonkey owned probe healthy mode=%s accepted-lines=%d error=%t", mode, lines, err != nil)
 			if err != nil || lines != 1 {
 				t.Fatal("healthy configured probe did not complete successfully")
 			}
