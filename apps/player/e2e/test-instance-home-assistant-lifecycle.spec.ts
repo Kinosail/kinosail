@@ -75,12 +75,25 @@ test("real lost-release reload waits for lease expiry and renews only its origin
     const docs = await openDocuments(page); ({first, second} = docs);
     await expect.poll(async () => (await docs.live()).length).toBe(2);
     const original = (await docs.live()).find(target => target.itemId === docs.ids[0])!.id;
+    const accepted = observeAcceptedDocumentStates(first);
     let dropped = 0, conflicts = 0;
+    const releaseRequests = new Set<string>(), blockedRequests = new Set<string>();
     const releasePath = `/api/v1/home-assistant/players/${original}/release`;
     // Block the real unload keepalive in Chromium's network stack. Page routing may
     // disappear with the departing document before that request is dispatched.
     const network = browserName === "chromium" ? await first.context().newCDPSession(first) : undefined;
     if (network) {
+      network.on("Network.requestWillBeSent", ({request, requestId}) => {
+        if (request.method === "POST" && new URL(request.url).pathname === releasePath) {
+          expect(releaseRequests.size < 8, "release observations stay bounded").toBe(true);
+          releaseRequests.add(requestId);
+        }
+      });
+      network.on("Network.loadingFailed", ({requestId, errorText, blockedReason}) => {
+        if (releaseRequests.has(requestId) && errorText === "net::ERR_BLOCKED_BY_CLIENT" && blockedReason === "inspector") {
+          blockedRequests.add(requestId);
+        }
+      });
       await network.send("Network.enable");
       await network.send("Network.setBlockedURLs", {urls: [`*${releasePath}`]});
       first.on("requestfailed", request => {
@@ -99,8 +112,13 @@ test("real lost-release reload waits for lease expiry and renews only its origin
     const elapsed = Date.now() - started;
     expect(claim.id).toBe(original);
     expect(claim.expiresIn).toBe(30);
+    dropped = Math.max(dropped, blockedRequests.size);
+    await recordHomeAssistantEvidence(info, "actual-lost-release-prerequisite", {releaseAttempts: releaseRequests.size,
+      observedBlockedFailures: dropped, protocolBlockedFailures: blockedRequests.size,
+      actualOccupiedReplies: conflicts, sameCandidateRenewed: claim.id === original, expiresIn: claim.expiresIn, elapsedMs: elapsed});
     expect(dropped).toBeGreaterThan(0); expect(conflicts).toBeGreaterThan(0);
     expect(elapsed).toBeLessThanOrEqual(35_000);
+    await expect.poll(() => accepted.some(state => state.id === claim.id && state.claim === claim.claim)).toBe(true);
     await expect.poll(async () => (await docs.live()).find(target => target.itemId === docs.ids[0])?.id).toBe(original);
     if (network) {
       await network.send("Network.setBlockedURLs", {urls: []});

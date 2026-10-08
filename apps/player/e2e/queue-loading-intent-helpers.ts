@@ -1,4 +1,4 @@
-import {expect, type Page, type TestInfo} from "@playwright/test";
+import {expect, type Page, type Request, type TestInfo} from "@playwright/test";
 import {login} from "./test-instance-helpers";
 
 type Track = {id: string; stream: string};
@@ -40,7 +40,7 @@ export async function runLoadingIntent(page: Page, info: TestInfo, command: "see
     const body = new URLSearchParams(response.request().postData() || "");
     if (accepted.length < 100) accepted.push({seconds: Number(body.get("seconds")), revision: Number(body.get("revision")), status: response.status()});
   });
-  let unblock!: () => void, held = 0;
+  let unblock!: () => void, held = 0, commandRoute = "";
   const barrier = new Promise<void>(resolve => unblock = resolve);
   const mediaRoute = `**${second.stream}*`;
   await page.route(mediaRoute, async route => {
@@ -63,6 +63,14 @@ export async function runLoadingIntent(page: Page, info: TestInfo, command: "see
       target = (await targets.json()).players.find((value: {itemId: string}) => value.itemId === first.id);
       return Boolean(target);
     }, {message: "the real document must publish its public target"}).toBe(true);
+    let commandRequest: Request | undefined;
+    commandRoute = `**/api/v1/home-assistant/players/${target!.id}`;
+    await page.route(commandRoute, async route => {
+      if (route.request().method() !== "PUT") return route.continue();
+      const response = await route.fetch();
+      if (response.status() === 200 && (await response.json()).command === command) commandRequest = route.request();
+      await route.fulfill({response});
+    });
     await page.getByRole("button", {name: "Next track", exact: true}).click();
     await expect(media).toHaveAttribute("data-progress", `/progress/${second.id}`);
     await expect(media).toHaveAttribute("data-start", String(savedPosition));
@@ -71,9 +79,9 @@ export async function runLoadingIntent(page: Page, info: TestInfo, command: "see
     await expect.poll(() => media.evaluate((audio: HTMLAudioElement) => audio.paused)).toBe(false);
     const queueBefore = await page.evaluate("({sourceChanging: queueSourceChanging, progressReady: queueProgressReady, progressRevision})");
     expect(queueBefore.sourceChanging).toBe(true); expect(queueBefore.progressReady).toBe(false);
-    const consumed = page.waitForResponse(async response => new URL(response.url()).pathname ===
+    const consumed = page.waitForResponse(response => new URL(response.url()).pathname ===
       `/api/v1/home-assistant/players/${target!.id}` && response.request().method() === "PUT" &&
-      response.status() === 200 && (await response.json()).command === command);
+      response.status() === 200 && response.request() === commandRequest);
     void consumed.catch(() => {});
     const position = command === "seek" ? 2 : 0;
     const queued = await write(page, `/api/v1/home-assistant/players/${target!.id}/commands`,
@@ -137,6 +145,7 @@ export async function runLoadingIntent(page: Page, info: TestInfo, command: "see
   } finally {
     unblock();
     await page.unroute(mediaRoute);
+    if (commandRoute) await page.unroute(commandRoute);
     if (new URL(page.url()).pathname.startsWith("/watch/")) await page.goto("/");
     expect(await write(page, "/api/v1/settings/home-assistant", {enabled: false})).toBe(200);
   }

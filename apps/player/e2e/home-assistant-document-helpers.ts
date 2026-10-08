@@ -1,11 +1,39 @@
 import {expect, type Page} from "@playwright/test";
 import {login} from "./test-instance-helpers";
 
-// Consume response bodies immediately, before a later navigation can retire them.
-export function nextDocumentClaim(page: Page, timeout = 40_000): Promise<{id: string; claim: string; expiresIn: number}> {
+type DocumentClaim = {id: string; claim: string; expiresIn: number};
+const actualDocumentClaims = new WeakMap<Page, DocumentClaim[]>();
+
+// Capture genuine claim bodies before the browser can retire a response resource.
+async function prepareDocumentClaims(page: Page, privateClaims: Set<string>) {
+  const captured: DocumentClaim[] = [];
+  actualDocumentClaims.set(page, captured);
+  await page.route("**/api/v1/home-assistant/players/claims", async route => {
+    if (route.request().method() !== "POST") return route.continue();
+    const response = await route.fetch();
+    if (response.status() === 201) {
+      const body = await response.json();
+      const valid = typeof body?.id === "string" && /^[A-Za-z0-9_-]{1,64}$/.test(body.id) &&
+        typeof body?.claim === "string" && /^[A-Za-z0-9_-]{20,64}$/.test(body.claim) && body.expiresIn === 30;
+      expect(valid, "actual server claim has the admitted public shape").toBe(true);
+      expect(captured.length < 100, "private claim observations stay bounded").toBe(true);
+      captured.push({id: body.id, claim: body.claim, expiresIn: body.expiresIn});
+      privateClaims.add(body.claim);
+    }
+    await route.fulfill({response});
+  });
+}
+
+export function nextDocumentClaim(page: Page, timeout = 40_000): Promise<DocumentClaim> {
+  const captured = actualDocumentClaims.get(page);
+  if (!captured) throw new Error("actual claim observation was not prepared");
+  const index = captured.length;
   const body = page.waitForResponse(response => new URL(response.url()).pathname ===
     "/api/v1/home-assistant/players/claims" && response.request().method() === "POST" && response.status() === 201,
-    {timeout}).then(response => response.json());
+    {timeout}).then(() => {
+      expect(captured.length > index, "actual server body precedes browser delivery").toBe(true);
+      return captured[index];
+    });
   void body.catch(() => {});
   return body;
 }
@@ -59,12 +87,9 @@ export async function openDocuments(page: Page, prepare?: (document: Page) => Pr
   second = await page.context().newPage();
   for (const document of [first, second]) await prepare?.(document);
   const claims = new Set<string>();
-  for (const document of [first, second]) document.on("response", async response => {
-    if (new URL(response.url()).pathname === "/api/v1/home-assistant/players/claims" && response.status() === 201) {
-      const body = await response.json().catch(() => null);
-      if (typeof body?.claim === "string") claims.add(body.claim);
-    }
-  });
+  if (options.initialClaimsRequired !== false) {
+    for (const document of [first, second]) await prepareDocumentClaims(document, claims);
+  }
   const live = async () => (await targets(page)).filter(target => ids.includes(target.itemId) && !existing.has(target.id));
   const initialClaims = options.initialClaimsRequired === false ? [] : [nextDocumentClaim(first), nextDocumentClaim(second)];
   await first.goto(`/watch/${ids[0]}`);
