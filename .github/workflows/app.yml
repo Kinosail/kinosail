@@ -9,6 +9,9 @@ on:
       plan:
         required: true
         type: string
+      native_probe:
+        type: string
+        default: none
       coverage_diagnostic:
         type: boolean
         default: false
@@ -128,7 +131,7 @@ jobs:
     name: Player Swift compilation
     if: inputs.app == 'player' && fromJSON(inputs.plan).client
     runs-on: xcode-27
-    timeout-minutes: 20
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -136,6 +139,102 @@ jobs:
       - run: make -C apps/player client-check
         env:
           DEVELOPER_DIR: /Applications/Xcode_27.1_beta.app/Contents/Developer
+      - name: Prepare decoded native media fixture
+        if: fromJSON(inputs.plan).deep
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+        run: |
+          command -v ffmpeg >/dev/null || brew install ffmpeg
+          media="$RUNNER_TEMP/native-media.mp4"
+          ffmpeg -nostdin -v error -f lavfi -i testsrc2=s=320x180:r=12:d=12 \
+            -f lavfi -i sine=frequency=440:sample_rate=48000:duration=12 \
+            -c:v libx264 -threads 1 -preset ultrafast -crf 38 -pix_fmt yuv420p \
+            -c:a aac -b:a 48k -movflags +faststart -shortest "$media"
+          test "$(stat -f %z "$media")" -le 1048576
+          shasum -a 256 "$media" > "$RUNNER_TEMP/native-media.sha256"
+          ffprobe -v error -show_format -show_streams -of json "$media" > "$RUNNER_TEMP/native-media.json"
+          for name in kinosail-appletv-task7-media.mp4 kinosail-player-buffer-bar.mp4 kinosail-landscape-task10-media.mp4; do
+            ln "$media" "/tmp/$name"
+          done
+      - name: Execute iOS and tvOS native contracts
+        if: fromJSON(inputs.plan).deep
+        env:
+          DEVELOPER_DIR: /Applications/Xcode_27.1_beta.app/Contents/Developer
+        run: |
+          native_failed=0
+          for platform in iOS tvOS; do
+            device="$(xcrun simctl list devices available --json | python3 scripts/ci/select-simulator.py "$platform")"
+            if ! xcodebuild test -project apps/player/apps/native/Kinosail.xcodeproj \
+              -scheme "Kinosail-$platform" -destination "id=$device" \
+              -derivedDataPath "apps/player/apps/native/.build/$([[ "$platform" == iOS ]] && echo ios || echo tvos)-simulator" \
+              -resultBundlePath "$RUNNER_TEMP/native-$platform.xcresult" \
+              -parallel-testing-enabled NO -collect-test-diagnostics never CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=-; then
+              native_failed=1
+            fi
+          done
+          exit "$native_failed"
+      - name: Validate focused probe
+        id: probe
+        if: always() && fromJSON(inputs.plan).deep && inputs.native_probe != 'none'
+        env:
+          NATIVE_PROBE: ${{ inputs.native_probe }}
+        run: |
+          [[ ${#NATIVE_PROBE} -le 7 ]]
+          case "$NATIVE_PROBE" in
+            AAC) selector=DownloadAACProbeTests ;;
+            storage) selector=DownloadStorageAuthorizationTests ;;
+            *) exit 2 ;;
+          esac
+          printf 'selector=%s\n' "$selector" >> "$GITHUB_OUTPUT"
+      - name: Execute one iOS probe suite
+        if: always() && fromJSON(inputs.plan).deep && inputs.native_probe != 'none' && steps.probe.outcome == 'success'
+        env:
+          SELECTOR: ${{ steps.probe.outputs.selector }}
+          NATIVE_PROBE: ${{ inputs.native_probe }}
+          DEVELOPER_DIR: /Applications/Xcode_27.1_beta.app/Contents/Developer
+        run: |
+          run="$RUNNER_TEMP/native-probe"
+          mkdir "$run"
+          device="$(xcrun simctl list devices available --json | python3 scripts/ci/select-simulator.py iOS)"
+          command=(xcodebuild test -project apps/player/apps/native/Kinosail.xcodeproj -scheme Kinosail-iOS
+            -destination "id=$device" -derivedDataPath apps/player/apps/native/.build/ios-simulator
+            -resultBundlePath "$run/native.xcresult" "-only-testing:Kinosail-iOSTests/$SELECTOR"
+            -parallel-testing-enabled NO -collect-test-diagnostics never CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=-)
+          printf '%q ' "${command[@]}" > "$run/command.txt"
+          if "${command[@]}" > "$run/native.log" 2>&1; then status=0; else status=$?; fi
+          export NATIVE_PROBE_EXIT="$status" NATIVE_PROBE_RUN="$run" NATIVE_PROBE_DEVICE="$device"
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, platform, re, subprocess, sys
+          run = pathlib.Path(os.environ['NATIVE_PROBE_RUN'])
+          suite, count, data = {'AAC': ('DownloadAACProbeTests', 2, 'Embedded 2106-byte AAC; malformed/truncated/wrong-kind/playlist/symlink/remote controls'),
+              'storage': ('DownloadStorageAuthorizationTests', 1, 'Synthetic blocked journal root; 40 scoped denials, reset and authorization')}[os.environ['NATIVE_PROBE']]
+          status = int(os.environ['NATIVE_PROBE_EXIT'])
+          matches = re.findall(r'Test run with (\d+) tests? .*passed', (run / 'native.log').read_text())
+          discovered = bool(matches and int(matches[-1]) == count)
+          receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+              'command': (run / 'command.txt').read_text(), 'probe': os.environ['NATIVE_PROBE'],
+              'environment': platform.platform(), 'xcode': subprocess.check_output(['xcodebuild', '-version'], text=True).strip(),
+              'simulator': os.environ['NATIVE_PROBE_DEVICE'], 'data': data,
+              'fixtureSourceSHA256': hashlib.sha256(pathlib.Path('apps/player/apps/native/Tests', suite + '.swift').read_bytes()).hexdigest(),
+              'expectedTests': count, 'discoveryVerified': discovered, 'exitCode': status,
+              'result': 'passed' if status == 0 and discovered else 'failed',
+              'boundaries': 'Focused iOS simulator regression; no physical device or full-suite proof'}
+          (run / 'receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+          if status == 0 and not discovered: sys.exit('Expected native tests were not discovered')
+          PY
+          exit "$status"
+      - name: Retain native test results
+        if: always() && fromJSON(inputs.plan).deep
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: player-native-contracts-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/native-*.xcresult
+            ${{ runner.temp }}/native-media.json
+            ${{ runner.temp }}/native-media.sha256
+            ${{ runner.temp }}/native-probe
+          retention-days: 14
+          if-no-files-found: error
 
   android:
     name: Player Android compilation

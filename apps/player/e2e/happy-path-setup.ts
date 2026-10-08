@@ -1,5 +1,6 @@
 import {navigationDiagnostics} from "../../../scripts/testing/navigation-diagnostics.mjs";
 import { expect, type Page, type Request, type TestInfo } from "@playwright/test";
+import {gotoAuthForm} from "../../../scripts/testing/auth-form-navigation";
 import { holdNextLibraryPage, holdNextMainRequest } from "./request-holds";
 import { expectAccessible, openSettings, signOut, totp, type HappyPathState } from "./happy-path-helpers";
 
@@ -207,7 +208,7 @@ export async function openHappyPathSetup(page: Page, testInfo: TestInfo) {
     } catch { /* Observation setup cannot prevent the original navigation. */ }
     finally {clearTimeout(setupTimer);}
     navigation.markNavigation("/setup");
-    await page.goto("/setup", {waitUntil: "commit"});
+    await gotoAuthForm(page, "/setup", testInfo);
     await expect(page.getByLabel("Name", {exact: true})).toBeVisible();
   } catch (error) {
     let timer: ReturnType<typeof setTimeout> | undefined;

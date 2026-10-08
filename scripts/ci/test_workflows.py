@@ -1,6 +1,11 @@
 """Regression checks for public CI and release trust boundaries."""
 from pathlib import Path
+import json
+import os
 import re
+import subprocess
+import tempfile
+import textwrap
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -21,6 +26,21 @@ class WorkflowSecurityTests(unittest.TestCase):
         script = (ROOT / 'scripts/ci/test-go.sh').read_text()
         self.assertIn('player|subtitles) directory="apps/$1"; minimum=89', script)
         self.assertIn('coverage + 0 < minimum', script)
+    def test_layout_recovery_retains_original_precredential_evidence(self):
+        source = (WORKFLOWS / 'layout-stability.yml').read_text()
+        artifact = source.split('      - name: Preserve safe measurements and screenshots\n', 1)[1].split('\n  campaign-proof:', 1)[0]
+        for name in ('login-original-navigation-trace.zip', 'firefox-auth-form-navigation-recovery.json'):
+            self.assertIn(f'            .verification/layout/*/*/{name}\n', artifact)
+            self.assertIn(f'            .verification/layout-fixtures/**/{name}\n', artifact)
+        self.assertIn('            .verification/layout-fixtures/**/layout-login-rejection.json\n', artifact)
+        self.assertIn('layout-auth-navigation.spec.ts\n', source)
+        self.assertIn('if: always()', artifact)
+        self.assertNotIn('.verification/layout/**', artifact)
+
+
+
+
+
 
     def test_system_scan_finishes_before_exact_revision_evidence_starts(self):
         # Trivy creates/removes files in the checkout. Overlap changes Git

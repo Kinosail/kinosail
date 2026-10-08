@@ -10,6 +10,20 @@ HELPER = ROOT / "scripts/ci/browser-fixture-tls.sh"
 
 
 class BrowserFixtureTLS(unittest.TestCase):
+    def test_layout_webkit_keeps_verified_tls_and_owned_trust_lifecycle(self):
+        # Secure cookie admission is part of the measured login, rather than
+        # an injected session. WebKit must reach it over verified HTTPS.
+        source = (ROOT / 'scripts/testing/test-layout-stability-local.py').read_text()
+        for requirement in ('browser-fixture-tls.sh', 'validate_browser_fixture_tls',
+                            'install_browser_fixture_ca', 'trap remove_browser_fixture_trust EXIT',
+                            'ssl.create_default_context(cafile=', 'context=tls_context'):
+            self.assertIn(requirement, source)
+        self.assertNotIn('_create_unverified_context', source)
+        self.assertLess(source.index('[str(binary), "tls-certificate"]'),
+                        source.index('server = subprocess.Popen'))
+        self.assertNotIn('ignoreHTTPSErrors: true',
+                         (ROOT / 'scripts/testing/layout-stability-local.mjs').read_text())
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)

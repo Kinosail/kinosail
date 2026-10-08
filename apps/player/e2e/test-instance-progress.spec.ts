@@ -10,8 +10,8 @@ const baseline = process.env.KINOSAIL_R03_BASELINE === "1";
 const currentSource = await readFile(new URL("../../../packages/webassets/static/player-progress.js", import.meta.url), "utf8");
 const queueSource = await readFile(new URL("../../../packages/webassets/static/player-audio-queue.js", import.meta.url), "utf8");
 const baselineSource = baseline ? execFileSync("git", ["show", "2e9ede47:packages/webassets/static/player-progress.js"], {encoding: "utf8"}) : "";
-// Baseline asset replay must bypass the candidate's service-worker precache.
-test.use({serviceWorkers: baseline ? "block" : "allow"});
+// Controlled HTTP responses must reach Playwright before the native fetch consumes them.
+test.use({serviceWorkers: "block"});
 async function serverProgress(page: Page, id: string) {
   const response = await page.request.get(`/api/v1/items/${id}`);
   expect(response.status()).toBe(200);

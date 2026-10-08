@@ -1,4 +1,4 @@
-import {installLayoutFailureReporter, layoutFailureLocations, layoutFailureNavigation} from "./layout-stability-failure.mjs";
+import {installLayoutFailureReporter, layoutFailureLocations, layoutFailureNavigation, captureLayoutFailure, layoutLoginDocument} from "./layout-stability-failure.mjs";
 import {layoutResponseHandler} from "./layout-stability-routing.mjs";
 import {navigationDiagnostics} from "./navigation-diagnostics.mjs";
 import {captureMainSnapshot,summarizeMainChange,captureAuthGeometry} from "./layout-stability-diagnostic-snapshots.mjs";
@@ -8,35 +8,90 @@ import {join} from "node:path";
 import {createHmac} from "node:crypto";
 import {measureFlows} from "./layout-stability-flows.mjs";
 import {bookmarkSnapshot} from "./layout-stability-bookmarks.mjs";
+import {gotoAuthForm} from "./auth-form-navigation.ts";
 const require = createRequire(new URL("../../apps/player/e2e/package.json", import.meta.url));
 const {chromium, webkit, firefox} = require("@playwright/test");
 const AxeBuilder = require("@axe-core/playwright").default;
 const baseURL = process.env.KINOSAIL_E2E_URL, app = process.env.KINOSAIL_LAYOUT_APP, run = process.env.KINOSAIL_LAYOUT_RUN;
 const engine = process.env.KINOSAIL_LAYOUT_BROWSER || "chromium";
-let phase = "browser-launch", operationPhase, activePage, browser, authContext, activeCase, navigation;
+const loginNavigation = [], loginLifecycle = [], loginErrors = [];
+let loginTracing = false, initialTimeOrigin, mainFrameDocuments = 0;
+const bounded = (events, event) => { if (events.length < 16) events.push(event); };
+const expectedLogin = new URL("/login", baseURL);
+const urlCategory = value => {try {const url=new URL(value);return value==="about:blank"?"blank":url.href===expectedLogin.href?"expected":url.origin===expectedLogin.origin?"other-path":"other-origin";}catch{return "invalid";}};
+let phase = "browser-launch", operationPhase, activePage, browser, authContext, activeCase, navigation, routeFailure;
 const loginResponses = [];
 let requestStatus, requestContentType;
 const reports = [], flows = [], flowProbe = {stage: "not-started"};
-installLayoutFailureReporter(async error => {
+const collectFailure = async error => {
   const currentNavigation = await layoutFailureNavigation(phase, flowProbe, navigation, error);
   return {result: "failed", app, engine, stage: phase, operationPhase: phase === "measure-flows" ? flowProbe.operationPhase : operationPhase, activeCase: phase === "measure-flows" ? undefined : activeCase, flowElapsedMs: flowProbe.elapsedMs, flowStage: flowProbe.stage,
-    locations: layoutFailureLocations(error),
+    locations: layoutFailureLocations(error), sourceLocation: layoutFailureLocations(error)[0],
     errorClass: ["TimeoutError", "TypeError", "ReferenceError", "SyntaxError"].includes(error.name) ? error.name : "Error",
     completedCases: reports.length, completedFlows: flows.length, media: flowProbe.media, probe: flowProbe.geometry, loginResponses,
+    loginNavigation, loginLifecycle, loginErrors, mainFrameDocuments,
+    loginDocument: phase.startsWith("login") ? await layoutLoginDocument(flowProbe.page || activePage, expectedLogin.href, initialTimeOrigin) : undefined,
+    reportedURLCategory: urlCategory((flowProbe.page || activePage)?.url() || "about:blank"),
+    loginTraceScope: loginTracing ? "precredential navigation and readiness" : undefined,
+    request: routeFailure,
     requestStatus: phase === "measure-flows" ? undefined : requestStatus, requestContentType: phase === "measure-flows" ? undefined : requestContentType, navigation: currentNavigation,
     requestErrorCode: ["CERT_HAS_EXPIRED", "DEPTH_ZERO_SELF_SIGNED_CERT", "SELF_SIGNED_CERT_IN_CHAIN", "UNABLE_TO_VERIFY_LEAF_SIGNATURE", "UNABLE_TO_GET_ISSUER_CERT_LOCALLY"].find(code => error.code === code || String(error.message).includes(code)) ||
       (/unable to verify|self.signed certificate|unable to get local issuer/i.test(String(error.message)) ? "UNTRUSTED_CERTIFICATE" : undefined),
     authCookieCount: authContext ? await authContext.cookies().then(c=>c.length).catch(()=>undefined) : undefined,
     pageState: currentNavigation ? currentNavigation.identity : phase === "measure-flows" ? "not-recorded" : activePage ? (new URL(activePage.url()).pathname === "/login" ? "login" : "other") : "not-created"};
-}, failure => writeFile(join(run, "failure.json"), JSON.stringify(failure, null, 2)), () => browser?.close());
+};
+let failureCapture;
+const retainFailure = (failure, failedPage = flowProbe.page || activePage) => failureCapture ||= (async () => {
+  await writeFile(join(run, "failure.json"), JSON.stringify(failure, null, 2));
+  await captureLayoutFailure(failedPage, run);
+})();
+const recordFailure = async (error, failedPage) => retainFailure(await collectFailure(error), failedPage);
+flowProbe.openPage = async context => {
+  await context.tracing.start({screenshots: true, snapshots: true});
+  return flowProbe.page = await context.newPage();
+};
+flowProbe.captureFailure = recordFailure;
+installLayoutFailureReporter(collectFailure, retainFailure, () => browser?.close());
 browser = await ({chromium, webkit, firefox}[engine]).launch(engine === "chromium" && process.platform === "darwin" ? {channel: "chrome"} : {});
 const context = authContext = await browser.newContext({baseURL, ignoreHTTPSErrors: false, reducedMotion: "reduce"});
+await context.tracing.start({screenshots:true,snapshots:true});
+loginTracing = true;
 const page = activePage = await context.newPage();
 navigation = navigationDiagnostics(page,baseURL);
-page.on("response", response => {if(response.request().method()==="POST"&&new URL(response.url()).pathname==="/login")loginResponses.push(response.status());});
+initialTimeOrigin = await page.evaluate(() => performance.timeOrigin);
+const loginStarted = Date.now();
+page.on("response", response => {
+  const request=response.request(), url=new URL(response.url());
+  if(request.method()==="POST"&&url.pathname==="/login")loginResponses.push(response.status());
+  if(request.isNavigationRequest()&&request.frame()===page.mainFrame()&&request.method()==="GET"){
+    mainFrameDocuments++;
+    bounded(loginNavigation,{expectedOrigin:url.origin===expectedLogin.origin,expectedPath:url.pathname+url.search+url.hash==="/login",
+      status:response.status(),redirected:Boolean(request.redirectedFrom()),elapsedMs:Date.now()-loginStarted});
+  }
+});
+for(const event of ["domcontentloaded","load"])page.on(event,()=>bounded(loginLifecycle,{event,elapsedMs:Date.now()-loginStarted}));
+page.on("framenavigated",frame=>{if(frame===page.mainFrame())bounded(loginLifecycle,{event:"commit",urlCategory:urlCategory(frame.url()),elapsedMs:Date.now()-loginStarted});});
+page.on("pageerror",error=>bounded(loginErrors,{event:"pageerror",category:["TypeError","ReferenceError","SyntaxError"].includes(error.name)?error.name:"other"}));
+page.on("console",message=>{if(["warning","error"].includes(message.type()))bounded(loginErrors,{event:"console",category:message.type()});});
+page.on("requestfailed",request=>bounded(loginErrors,{event:"requestfailed",resourceType:request.resourceType(),urlCategory:urlCategory(request.url())}));
 phase = "login-page";
-await page.goto("/login");
+const loginResponse = await gotoAuthForm(page, "/login", {attach: async (_name, attachment) => {
+  await writeFile(join(run, "firefox-auth-form-navigation-recovery.json"), attachment.body);
+  await context.tracing.stop({path: join(run, "login-original-navigation-trace.zip")});
+  await context.tracing.start({screenshots:true,snapshots:true});
+}});
+await page.waitForLoadState("load");
+if (!loginResponse || loginResponse.status() !== 200 || loginResponse.request().redirectedFrom() ||
+    loginResponse.url() !== expectedLogin.href || await page.evaluate(() => location.href) !== expectedLogin.href) {
+  throw new Error("Login navigation did not return the expected successful document");
+}
+phase = "login-name";
+await page.getByLabel("Name", {exact: true}).waitFor({state:"visible"});
+await page.getByLabel("Password", {exact: true}).waitFor({state:"visible"});
+await context.tracing.stop();
+loginTracing = false;
 await page.getByLabel("Name", {exact: true}).fill("Owner");
+phase = "login-password";
 await page.getByLabel("Password", {exact: true}).fill("synthetic-layout-password");
 const bits = [...process.env.KINOSAIL_LAYOUT_TOTP].map(c => "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567".indexOf(c).toString(2).padStart(5, "0")).join("");
 const secret = Buffer.from(bits.match(/.{8}/g).map(byte => parseInt(byte, 2)));
@@ -44,6 +99,7 @@ const counter = Buffer.alloc(8); counter.writeBigUInt64BE(BigInt(Math.floor(Date
 const digest = createHmac("sha1", secret).update(counter).digest(), offset = digest[19] & 15;
 const factor = page.getByLabel(/Authentication or recovery code|6-digit code/);
 const code = String((digest.readUInt32BE(offset) & 0x7fffffff) % 1000000).padStart(6, "0");
+phase = "login-factor";
 if (await factor.isVisible()) await factor.fill(code);
 phase = "login-submit";
 await page.getByRole("button", {name: "Sign in", exact: true}).click();
@@ -138,7 +194,11 @@ try {
     const page = activePage = await context.newPage();
 navigation = navigationDiagnostics(page,baseURL);
     // Delay real response bytes, without substituting mock markup or media.
-    await page.route("**/*", layoutResponseHandler(context, variant));
+    await page.route("**/*", layoutResponseHandler(context, variant, async (error, route) => {
+      const request = route.request(), url = new URL(request.url());
+      routeFailure = {protocol: url.protocol, resourceType: request.resourceType(), sameOrigin: url.origin === new URL(baseURL).origin};
+      await recordFailure(error, page);
+    }));
     const name = `${viewport.width}-${variant}-${path.replace(/[^a-z0-9]+/gi, "-")}`;
     operationPhase = "navigate";
     const response=await page.goto(path, {waitUntil: "commit"});
@@ -147,11 +207,16 @@ navigation = navigationDiagnostics(page,baseURL);
     if(variant==="slow-css") {await page.waitForFunction(()=>[...document.querySelectorAll('link[rel~="stylesheet"]')].every(link=>link.sheet));await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));}
     await page.waitForTimeout(200);
     operationPhase = "initial-inspect";
+    // Observe a fresh frame after native paint/resize initialization. A cached
+    // prepaint sample can otherwise disagree with already settled dock padding.
+    const baselineAfter = await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve(performance.now())))));
+    await page.waitForFunction(after => window.layoutAudit.frames.at(-1)?.time >= after, baselineAfter);
     const initialState = await page.evaluate(inspect);
     operationPhase = "initial-bookmark";
     initialState.bookmark = await page.evaluate(bookmarkSnapshot);
     operationPhase = "initial-boxes";
-    const initialBoxes=await page.evaluate(()=>window.layoutAudit.frames.at(-1)?.boxes||[]);
+    const initialFrame=await page.evaluate(()=>window.layoutAudit.frames.at(-1));
+    const initialBoxes=initialFrame.boxes;
     if (engine === "chromium") {
       // CDP captures pixels without Playwright's font-readiness hook, which can
       // itself force an optional font swap and contaminate layout measurements.
@@ -185,7 +250,7 @@ navigation = navigationDiagnostics(page,baseURL);
     const timeoutsPresent=!["/settings#session-timeouts","/settings#security"].includes(path)||[initialState,finalState].every(s=>s.timeouts?.anchorPresent&&s.timeouts.visible&&JSON.stringify(s.timeouts.access)==='["private","public"]');
     const bookmarkRequired=routes.filter(route=>route.startsWith("/settings#")).includes(path)||(app==="player"&&path==="/settings#%61ccess");
     const bookmarkVisible=[initialState,finalState].every(s=>bookmarkRequired?Boolean(s.bookmark?.resolved&&s.bookmark.visible):!s.bookmark?.resolved||s.bookmark.visible);
-    reports.push({viewport,path,variant,scaleApplied:!scale||finalState.rootScale===scale,status:response.status(),unexpected,aggregateUnexpected,identifiedDOMCLS,unattributedCLS,moved,mainChangeDetails,categoryStable,timeoutsPresent,bookmarkRequired,bookmarkVisible,initialState,finalState,...audit});
+    reports.push({viewport,path,variant,baselineAfter,initialFrameTime:initialFrame.time,scaleApplied:!scale||finalState.rootScale===scale,status:response.status(),unexpected,aggregateUnexpected,identifiedDOMCLS,unattributedCLS,moved,mainChangeDetails,categoryStable,timeoutsPresent,bookmarkRequired,bookmarkVisible,initialState,finalState,...audit});
     console.log(JSON.stringify({viewport: viewport.width, path, unexpected, overflow: audit.overflow,
       sources: audit.shifts.flatMap(shift => shift.sources.map(source => source.node))}));
     if (engine === "chromium") {
@@ -211,7 +276,7 @@ navigation = navigationDiagnostics(page,baseURL);
 } finally {
   await writeFile(join(run, "measurements.json"), JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION, app, engine,browserVersion:browser.version(),
     result: "measurement", command: "python3 scripts/testing/test-layout-stability-local.py", data: "Synthetic media and account; delayed real font/bundle/image responses", reports,flows}, null, 2));
-  await browser.close();
 }
+await browser.close();
 if (process.env.KINOSAIL_LAYOUT_ENFORCE && reports.some(report => report.identifiedDOMCLS > 0.001 || report.overflow > 1 || !report.categoryStable || !report.timeoutsPresent || !report.bookmarkVisible || !report.scaleApplied || report.moved.length>0)) process.exitCode = 1;
 if(flows.some(f=>f.pendingStable===false||f.failureRetainsContent===false||f.caretPreserved===false||f.focusRetained===false||f.scrollRetained===false||f.settled?.inert||f.settled?.skeleton||f.stable===false||f.overflow>1))process.exitCode=1;

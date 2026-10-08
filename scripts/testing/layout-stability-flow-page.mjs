@@ -11,13 +11,14 @@ export async function observeLayoutFlow(context, baseURL, probe, operation) {
   let navigation;
   let failed = false;
   try {
-    const page = await context.newPage();
+    const page = probe.openPage ? await probe.openPage(context) : await context.newPage();
     navigation = navigationDiagnostics(page, baseURL);
     probe.operationPhase = "flow";
     return await operation(page, navigation);
   } catch (error) {
     failed = true;
     if (navigation) probe.navigation = await navigation.snapshot(error);
+    await probe.captureFailure?.(error).catch(() => {});
     throw error;
   } finally {
     navigation?.stop();

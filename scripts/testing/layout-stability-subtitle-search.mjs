@@ -47,8 +47,31 @@ export async function measureSubtitleSearch(page, viewport, results, probe) {
   });
   for (const [state, query, injected] of [["pending-success", "Layout", false], ["pending-failure", "Missing", true], ["retry-real-link", "Missing", false], ["retry-empty", "no-synthetic-match", false]]) {
     fail = injected;
-    if (state !== "retry-real-link") {await search.scrollIntoViewIfNeeded(); await search.focus();}
-    else {const link=page.getByRole("link",{name:"Reload view",exact:true});await link.scrollIntoViewIfNeeded();await link.focus();}
+    const control = state === "retry-real-link" ? page.getByRole("link", {name: "Reload view", exact: true}) : search;
+    await control.scrollIntoViewIfNeeded();
+    await control.focus();
+    // Native focus scrolling must settle before measuring request-induced shifts.
+    const focusBefore = await control.evaluate(node => new Promise((resolve, reject) => {
+      let previous, stable = 0, finished = false, animation;
+      const finish = (error, result) => {
+        if (finished) return;
+        finished = true; clearTimeout(timeout); cancelAnimationFrame(animation);
+        if (error) reject(error); else resolve(result);
+      };
+      const timeout = setTimeout(() => finish(new Error("Focused search control did not settle")), 2000);
+      const frame = () => {
+        if (!node.isConnected) { finish(new Error("Focused search control was detached")); return; }
+        if (document.querySelector("#main")?.getAttribute("aria-busy") === "true") {
+          finish(new Error("Search request began before focus settled")); return;
+        }
+        const rect = node.getBoundingClientRect(), position = JSON.stringify([scrollX, scrollY, rect.x, rect.y, rect.width, rect.height]);
+        stable = position === previous && node === document.activeElement && rect.bottom > 0 && rect.top < innerHeight ? stable + 1 : 0;
+        previous = position;
+        if (stable >= 3) finish(undefined, {scrollY, rect: rect.toJSON(), focused: true});
+        else animation = requestAnimationFrame(frame);
+      };
+      animation = requestAnimationFrame(frame);
+    }));
     const before = await geometry();
     const content = await page.locator("#subtitle-content").elementHandle();
     const retry = state === "retry-real-link";
@@ -67,7 +90,7 @@ export async function measureSubtitleSearch(page, viewport, results, probe) {
     const navigationSucceeded = !errorVisible && result.view === "library" && result.query === query &&
       (state === "pending-success" ? result.items > 0 : result.items === 0 && result.empty);
     const caretPreserved = retry ? undefined : await search.evaluate((node, length) => node.selectionStart === length && node.selectionEnd === length, query.length);
-    results.push({flow: "subtitle-native-search", state, viewport, injectedFailure: injected, before, pending, after,
+    results.push({flow: "subtitle-native-search", state, viewport, injectedFailure: injected, focusBefore, before, pending, after,
       pendingStable: unchanged(before, pending), failureRetainsContent: !injected || (sameContentNode && unchanged(before, after)),
       errorVisible, sameContentNode, navigationSucceeded: injected ? undefined : navigationSucceeded, caretPreserved,
       stable: injected ? errorVisible : navigationSucceeded, focusRetained: retry ? undefined : await search.evaluate(node => node === document.activeElement),

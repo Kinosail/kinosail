@@ -1,6 +1,7 @@
 import { createHmac } from "node:crypto";
 import { expect, test, type Browser, type Page, type TestInfo } from "@playwright/test";
 import { navigationDiagnostics } from "../../../scripts/testing/navigation-diagnostics.mjs";
+import {gotoAuthForm} from "../../../scripts/testing/auth-form-navigation";
 
 function totp(): string {
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
@@ -27,7 +28,7 @@ export async function login(page: Page, info: TestInfo = test.info()) {
     } catch { /* Observation setup cannot prevent the original navigation. */ }
     finally {clearTimeout(setupTimer);}
     navigation.markNavigation("/login");
-    await page.goto("/login", { waitUntil: "commit" });
+    await openLogin(page);
   } catch (error) {
     let timer: ReturnType<typeof setTimeout> | undefined;
     try {
@@ -48,11 +49,24 @@ export async function login(page: Page, info: TestInfo = test.info()) {
 }
 
 export async function loginViewer(page: Page, name: string, password: string) {
-  await page.goto("/login", { waitUntil: "domcontentloaded" });
-  await expect(page.getByLabel("Name")).toBeVisible();
+  await openLogin(page);
   await page.getByLabel("Name").fill(name);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
+}
+
+async function openLogin(page: Page) {
+  const response = await gotoAuthForm(page, "/login", test.info());
+  expect(response?.status()).toBe(200);
+  expect(response!.request().redirectedFrom()).toBeNull();
+  const url = new URL(response!.url());
+  expect(url.pathname + url.search + url.hash).toBe("/login");
+  await expect(page).toHaveURL(response!.url());
+  const password = page.getByLabel("Password", {exact: true});
+  await expect(page.getByLabel("Name")).toBeEditable();
+  await expect(password).toBeEditable();
+  await expect(page.locator(".password-control").filter({has: password}).getByRole("button", {name: "Show secret", exact: true})).toBeVisible();
+  await expect(page.getByRole("button", {name: "Sign in", exact: true})).toBeEnabled();
 }
 
 export async function createViewer(page: Page, name: string, password: string): Promise<string> {

@@ -38,7 +38,7 @@ os.link(media / "Layout Example.en.srt", media / "Layout Example.fr.srt")
 results = {}
 initial_diff_hash = hashlib.sha256(subprocess.check_output(["git", "diff", "HEAD"], cwd=root)).hexdigest()
 initial_scripts = {name: hashlib.sha256((root / "scripts/testing" / name).read_bytes()).hexdigest()
-                   for name in ["test-layout-stability-local.py", "layout-stability-local.mjs", "layout-stability-flows.mjs", "layout-stability-bookmarks.mjs", "layout-stability-subtitle-search.mjs", "layout-stability-subtitle-background.mjs", "navigation-diagnostics.mjs", "layout-stability-routing.mjs", "layout-stability-failure.mjs", "layout-stability-flow-page.mjs", "layout-stability-diagnostic-snapshots.mjs", "layout-stability-theater-witness.mjs"]}
+                   for name in ["test-layout-stability-local.py", "layout-stability-local.mjs", "auth-form-navigation.ts", "layout-stability-flows.mjs", "layout-stability-bookmarks.mjs", "layout-stability-subtitle-search.mjs", "layout-stability-subtitle-background.mjs", "navigation-diagnostics.mjs", "layout-stability-routing.mjs", "layout-stability-failure.mjs", "layout-stability-flow-page.mjs", "layout-stability-diagnostic-snapshots.mjs", "layout-stability-theater-witness.mjs"]}
 settings = {}
 for key, allowed, default in (
         ("KINOSAIL_LAYOUT_APPS", {"player", "subtitles", "player,subtitles", "subtitles,player"}, "player,subtitles"),
@@ -80,6 +80,21 @@ for app in os.environ.get("KINOSAIL_LAYOUT_APPS", "player,subtitles").split(",")
                KINOSAIL_BACKUP_KEY="synthetic-layout-key", KINOSAIL_E2E_URL=url,
                KINOSAIL_LAYOUT_APP=app, KINOSAIL_LAYOUT_RUN=str(app_run), KINOSAIL_LAYOUT_MEDIA_ROOT=str(media), KINOSAIL_TEST_REVISION=revision)
     browser = ["node", "scripts/testing/layout-stability-local.mjs"]
+    certificate = app_run / "browser-fixture-ca.crt"
+    tls_context = None
+    if tls:
+        env.update(KINOSAIL_BROWSER_TEST="1", KINOSAIL_BROWSER_PROJECT="webkit")
+        with certificate.open("wb") as public_ca:
+            subprocess.run([str(binary), "tls-certificate"], env=env,
+                           stdout=public_ca, stderr=subprocess.DEVNULL, check=True)
+        tls_context = ssl.create_default_context(cafile=str(certificate))
+        browser = ["bash", "-c", 'set -euo pipefail\n'
+                   'source scripts/ci/browser-fixture-tls.sh\n'
+                   'trap remove_browser_fixture_trust EXIT\n'
+                   'validate_browser_fixture_tls\n'
+                   'install_browser_fixture_ca "$1" "$$-$RANDOM"\n'
+                   'node scripts/testing/layout-stability-local.mjs',
+                   "layout-fixture", str(certificate)]
     result = None
     trust_owner, server, tls_context = None, None, None
     with (app_run / "server.log").open("w") as log:

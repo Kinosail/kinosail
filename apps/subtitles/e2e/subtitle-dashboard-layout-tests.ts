@@ -1,8 +1,10 @@
+import { registerSubtitleLandscapeTests } from "./subtitle-dashboard-landscape-tests";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { compactViewports, expectNoHorizontalOverflow, expectSkipLinkOffscreen, initiallyOccludedTargets, occludedTargets, setSubtitleLanguages, supportedViewports } from "./subtitle-dashboard-helpers";
 
 export function registerSubtitleLayoutTests() {
+registerSubtitleLandscapeTests();
 test("Subtitles navigation follows the Player shell at each breakpoint", async ({ page }, testInfo) => {
   for (const [width, height] of [[1440, 900], [1200, 900], [1024, 768], [390, 844]]) {
     await page.setViewportSize({ width, height });

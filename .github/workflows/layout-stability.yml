@@ -159,7 +159,7 @@ jobs:
           KINOSAIL_BROWSER_MATRIX: full
           KINOSAIL_TEST_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
           PLAYWRIGHT_JSON_OUTPUT_NAME: ../../../.verification/layout-fixtures/results.json
-        run: pnpm --dir apps/player/e2e exec playwright test --config layout-stability.config.ts --project "${{ matrix.browser }}" --reporter=list,json layout-stability.spec.ts skeleton-layout.spec.ts player-apple-intent.spec.ts player-apple-launch.spec.ts
+        run: pnpm --dir apps/player/e2e exec playwright test --config layout-stability.config.ts --project "${{ matrix.browser }}" --reporter=list,json layout-stability.spec.ts skeleton-layout.spec.ts player-apple-intent.spec.ts player-apple-launch.spec.ts layout-auth-navigation.spec.ts
       - name: Measure disposable native Servers
         env:
           KINOSAIL_LAYOUT_BROWSER: ${{ matrix.browser }}
@@ -179,7 +179,13 @@ jobs:
             .verification/layout/*/*/measurements.json
             .verification/layout/*/*/failure.json
             .verification/layout/*/*/*.png
+            .verification/layout/*/*/failure-trace.zip
+            .verification/layout/*/*/login-original-navigation-trace.zip
+            .verification/layout/*/*/firefox-auth-form-navigation-recovery.json
             .verification/layout-fixtures/results.json
+            .verification/layout-fixtures/**/login-original-navigation-trace.zip
+            .verification/layout-fixtures/**/firefox-auth-form-navigation-recovery.json
+            .verification/layout-fixtures/**/layout-login-rejection.json
             .verification/layout-fixtures/**/apple-intent-receipt.json
             .verification/layout-fixtures/**/native-pause-after-interruption.png
             .verification/layout-fixtures/**/trace.zip
@@ -476,7 +482,7 @@ jobs:
           project = os.environ['LIBRARY_PROJECT']
           paths = sorted({f'apps/player/e2e/{file}' for file, _ in CASES} | {
               'apps/player/e2e/pnpm-lock.yaml', 'apps/player/e2e/playwright.config.ts',
-              'apps/player/e2e/test-instance-helpers.ts', 'apps/player/e2e/layout-audit-helpers.ts',
+              'apps/player/e2e/test-instance-helpers.ts', 'scripts/testing/auth-form-navigation.ts', 'apps/player/e2e/layout-audit-helpers.ts',
               'scripts/testing/navigation-diagnostics.mjs',
               'apps/player/scripts/run-library-profile.sh', 'apps/player/scripts/library_profile_admission.py',
               'apps/player/scripts/generate-test-media.sh', 'apps/player/Containerfile', 'apps/player/Containerfile.test',
@@ -572,7 +578,7 @@ jobs:
           project = os.environ['RESPONSIVE_PROJECT']
           paths = sorted({f'apps/player/e2e/{file}' for file, _ in CASES} | {
               'apps/player/e2e/pnpm-lock.yaml', 'apps/player/e2e/playwright.config.ts',
-              'apps/player/e2e/test-instance-helpers.ts', 'apps/player/e2e/layout-audit-helpers.ts',
+              'apps/player/e2e/test-instance-helpers.ts', 'scripts/testing/auth-form-navigation.ts', 'apps/player/e2e/layout-audit-helpers.ts',
               'apps/player/e2e/layout-audit-beta-helpers.ts', 'apps/player/e2e/static-sources.ts',
               'scripts/testing/navigation-diagnostics.mjs', 'scripts/testing/ui-element-inventory.ts',
               'apps/player/scripts/responsive_profile_cases.py', 'apps/player/e2e/responsive-failure-witness.mjs',
@@ -669,7 +675,7 @@ jobs:
           from library_profile_admission import profile_cases, playwright_arguments
           project = os.environ['PROFILE_PROJECT']
           CASES = profile_cases('playback-start', project)
-          paths = sorted({f'apps/player/e2e/{file}' for file, _ in CASES} | {'apps/player/internal/server/assets.go', 'apps/player/Containerfile.test', 'apps/player/e2e/pnpm-lock.yaml', 'apps/player/e2e/direct-retry-journey.ts', 'apps/player/scripts/library_profile_admission.py', 'apps/player/scripts/playback_profile_cases.py', 'scripts/ci/browser-fixture-tls.sh', 'scripts/ci/library-internal-relay.mjs', 'scripts/ci/run-populated-settings.py', 'apps/player/scripts/generate-test-media.sh', 'scripts/testing/navigation-diagnostics.mjs', 'apps/player/e2e/test-instance-helpers.ts', 'apps/player/scripts/run-library-profile.sh', 'apps/player/internal/server/server.go', 'apps/player/e2e/static-sources.ts', 'apps/player/Containerfile', 'apps/player/internal/server/static/player.js', 'apps/player/e2e/playwright.config.ts'})
+          paths = sorted({f'apps/player/e2e/{file}' for file, _ in CASES} | {'apps/player/internal/server/assets.go', 'apps/player/Containerfile.test', 'apps/player/e2e/pnpm-lock.yaml', 'apps/player/e2e/direct-retry-journey.ts', 'apps/player/scripts/library_profile_admission.py', 'apps/player/scripts/playback_profile_cases.py', 'scripts/ci/browser-fixture-tls.sh', 'scripts/ci/library-internal-relay.mjs', 'scripts/ci/run-populated-settings.py', 'apps/player/scripts/generate-test-media.sh', 'scripts/testing/navigation-diagnostics.mjs', 'apps/player/e2e/test-instance-helpers.ts', 'scripts/testing/auth-form-navigation.ts', 'apps/player/scripts/run-library-profile.sh', 'apps/player/internal/server/server.go', 'apps/player/e2e/static-sources.ts', 'apps/player/Containerfile', 'apps/player/internal/server/static/player.js', 'apps/player/e2e/playwright.config.ts'})
           receipt = {'revision': os.environ['PROOF_REVISION'], 'profile': 'playback-start', 'project': project,
                      'state': 'fresh', 'identities': [{'file': file, 'fullTitle': title} for file, title in CASES],
                      'discoveryOnly': True, 'command': playwright_arguments(project, False, 'playback-start'),
@@ -758,7 +764,7 @@ jobs:
           from library_profile_admission import profile_cases, playwright_arguments
           project = os.environ['PROFILE_PROJECT']
           CASES = profile_cases('offline-storage', project)
-          paths = sorted({f'apps/player/e2e/{file}' for file, _ in CASES} | {'apps/player/internal/server/assets.go', 'apps/player/Containerfile.test', 'apps/player/e2e/pnpm-lock.yaml', 'apps/player/scripts/library_profile_admission.py', 'apps/player/e2e/test-instance-network.ts', 'apps/player/e2e/offline-browser-api.mjs', 'scripts/ci/library-internal-relay.mjs', 'scripts/ci/browser-fixture-tls.sh', 'scripts/ci/run-populated-settings.py', 'apps/player/scripts/generate-test-media.sh', 'scripts/testing/navigation-diagnostics.mjs', 'apps/player/e2e/test-instance-helpers.ts', 'apps/player/scripts/run-library-profile.sh', 'apps/player/scripts/offline_profile_cases.py', 'apps/player/internal/server/server.go', 'apps/player/e2e/static-sources.ts', 'apps/player/Containerfile', 'apps/player/internal/server/static/player.js', 'apps/player/e2e/playwright.config.ts'})
+          paths = sorted({f'apps/player/e2e/{file}' for file, _ in CASES} | {'apps/player/internal/server/assets.go', 'apps/player/Containerfile.test', 'apps/player/e2e/pnpm-lock.yaml', 'apps/player/scripts/library_profile_admission.py', 'apps/player/e2e/test-instance-network.ts', 'apps/player/e2e/offline-browser-api.mjs', 'scripts/ci/library-internal-relay.mjs', 'scripts/ci/browser-fixture-tls.sh', 'scripts/ci/run-populated-settings.py', 'apps/player/scripts/generate-test-media.sh', 'scripts/testing/navigation-diagnostics.mjs', 'apps/player/e2e/test-instance-helpers.ts', 'scripts/testing/auth-form-navigation.ts', 'apps/player/scripts/run-library-profile.sh', 'apps/player/scripts/offline_profile_cases.py', 'apps/player/internal/server/server.go', 'apps/player/e2e/static-sources.ts', 'apps/player/Containerfile', 'apps/player/internal/server/static/player.js', 'apps/player/e2e/playwright.config.ts'})
           receipt = {'revision': os.environ['PROOF_REVISION'], 'profile': 'offline-storage', 'project': project,
                      'state': 'fresh', 'identities': [{'file': file, 'fullTitle': title} for file, title in CASES],
                      'discoveryOnly': True, 'command': playwright_arguments(project, False, 'offline-storage'),
@@ -850,7 +856,7 @@ jobs:
           from library_profile_admission import profile_cases, playwright_arguments
           project = os.environ['PROFILE_PROJECT']
           CASES = profile_cases('fake-provider', project)
-          paths = sorted({f'apps/player/e2e/{file}' for file, _ in CASES} | {'apps/player/Containerfile.test', 'apps/player/e2e/test-instance-helpers.ts', 'apps/player/internal/server/ui_state_fixtures_test.go', 'apps/player/internal/server/static/player.js', 'apps/player/e2e/playwright.config.ts', 'apps/player/scripts/provider_profile_cases.py', 'apps/player/scripts/run-library-profile.sh', 'apps/player/internal/server/server.go', 'apps/player/e2e/static-sources.ts', 'apps/player/Containerfile', 'scripts/ci/library-internal-relay.mjs', 'scripts/ci/run-populated-settings.py', 'apps/player/e2e/pnpm-lock.yaml', 'apps/player/scripts/generate-test-media.sh', 'scripts/testing/navigation-diagnostics.mjs', 'apps/player/e2e/provider-profile-fixture.ts', 'apps/player/internal/server/assets.go', 'apps/player/scripts/library_profile_admission.py', 'scripts/ci/browser-fixture-tls.sh', 'scripts/ci/browser-native-ca.py'})
+          paths = sorted({f'apps/player/e2e/{file}' for file, _ in CASES} | {'apps/player/Containerfile.test', 'apps/player/e2e/test-instance-helpers.ts', 'scripts/testing/auth-form-navigation.ts', 'apps/player/internal/server/ui_state_fixtures_test.go', 'apps/player/internal/server/static/player.js', 'apps/player/e2e/playwright.config.ts', 'apps/player/scripts/provider_profile_cases.py', 'apps/player/scripts/run-library-profile.sh', 'apps/player/internal/server/server.go', 'apps/player/e2e/static-sources.ts', 'apps/player/Containerfile', 'scripts/ci/library-internal-relay.mjs', 'scripts/ci/run-populated-settings.py', 'apps/player/e2e/pnpm-lock.yaml', 'apps/player/scripts/generate-test-media.sh', 'scripts/testing/navigation-diagnostics.mjs', 'apps/player/e2e/provider-profile-fixture.ts', 'apps/player/internal/server/assets.go', 'apps/player/scripts/library_profile_admission.py', 'scripts/ci/browser-fixture-tls.sh', 'scripts/ci/browser-native-ca.py'})
           receipt = {'revision': os.environ['PROOF_REVISION'], 'profile': 'fake-provider', 'project': project,
                      'state': 'fresh', 'identities': [{'file': file, 'fullTitle': title} for file, title in CASES],
                      'discoveryOnly': True, 'command': playwright_arguments(project, False, 'fake-provider'),

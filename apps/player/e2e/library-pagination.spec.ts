@@ -89,3 +89,33 @@ test("Navigation failure diagnostics remain bounded with a stalled renderer", as
     expect(page.listenerCount("requestfailed")).toBe(0);
   } finally {clearTimeout(timer);}
 });
+
+test("real catalog records remain reachable while an unrelated load resource is pending", async ({page}, info) => {
+	let release!: () => void;
+	const held = new Promise<void>(resolve => {release = resolve;});
+	let requested = false;
+	await page.route("**/qa-delayed-resource.png", async route => {
+		requested = true;
+		await held;
+		await route.fulfill({status: 204});
+	});
+	await page.addInitScript(() => document.addEventListener("DOMContentLoaded", () => {
+		const image = new Image();
+		image.src = "/qa-delayed-resource.png";
+		document.body.append(image);
+	}, {once: true}));
+	try {
+		await page.goto(`${origin}/?q=Pagination&limit=4`, {timeout: 3000, waitUntil: "commit"});
+		await loadAll(page);
+		await expect.poll(() => requested).toBe(true);
+		expect(await page.evaluate(() => document.readyState)).not.toBe("complete");
+		expect((await page.locator('[data-library-group="shows"] .card h2').allTextContents()).sort()).toEqual(showTitles);
+		expect((await page.locator('[data-library-group="movies"] .card h2').allTextContents()).sort()).toEqual(movieTitles);
+		await expect(page.locator("#library .card")).toHaveCount(36);
+		await info.attach("pending-load-catalog", {body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
+			browser: info.project.name, shows: 30, movies: 6, unrelatedResourceHeld: requested, result: "passed"}), contentType: "application/json"});
+	} finally {
+		release();
+		await page.unrouteAll({behavior: "wait"});
+	}
+});

@@ -83,6 +83,7 @@ for (const ranges of ["seekable", "buffered"]) for (const autoplay of [true, fal
         return Promise.resolve();
       } },
     }));
+    await page.evaluate(() => Object.defineProperties(navigator, {vendor: {configurable: true, value: "Apple Computer, Inc."}, maxTouchPoints: {configurable: true, value: 1}}));
     await page.addScriptTag({ content: playerSource });
 
     await expect.poll(() => page.locator("video").evaluate((video) => {

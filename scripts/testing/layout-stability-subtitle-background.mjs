@@ -8,7 +8,7 @@ export async function measureSubtitleBackground(browser, options, results, probe
   const root = resolve(process.env.KINOSAIL_LAYOUT_MEDIA_ROOT || "");
   if (!root.includes("/.verification/layout/") || !root.endsWith("/media")) throw new Error("Owned synthetic media root required");
   const context = await browser.newContext({...options, viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce",serviceWorkers:"block"});
-  const page = await context.newPage(), added = join(root,"Layout Background Example.mp4");
+  const page = await (probe.openPage ? probe.openPage(context) : context.newPage()), added = join(root,"Layout Background Example.mp4");
   const geometry = () => page.evaluate(() => ["#subtitle-content", "#subtitle-list-title", ".subtitle-filters", ".subtitle-file-list"].map(selector => {
     const box = document.querySelector(selector)?.getBoundingClientRect();
     return {selector,present:Boolean(box?.height),x:box?.x,documentY:box?.y+scrollY,width:box?.width,height:box?.height};
@@ -59,6 +59,7 @@ export async function measureSubtitleBackground(browser, options, results, probe
     results.push({flow:"subtitle-background-user-refresh",refreshedCount,expectedCount:countBefore+1,stable:refreshedCount===countBefore+1});
   } catch (error) {
     await retainFailure(error);
+    await probe.captureFailure?.(error, page).catch(() => {});
     throw error;
   } finally {
     try {
@@ -75,6 +76,7 @@ export async function measureSubtitleBackground(browser, options, results, probe
       }
     } catch (error) {
       if (!failed) await retainFailure(error);
+    await probe.captureFailure?.(error, page).catch(() => {});
       throw error;
     } finally {
       navigation.stop();

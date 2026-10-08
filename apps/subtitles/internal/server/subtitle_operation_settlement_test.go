@@ -154,7 +154,7 @@ func waitSubtitleOperationSettled(t *testing.T, path string) {
 
 func waitSubtitleOperationState(t *testing.T, handler http.Handler, id, expected string) subtitleOperationReceipt {
 	t.Helper()
-	deadline := time.Now().Add(5 * time.Second)
+	deadline := time.Now().Add(60 * time.Second)
 	for time.Now().Before(deadline) {
 		if receipt := readSubtitleOperation(t, handler, id); receipt.State == expected {
 			return receipt

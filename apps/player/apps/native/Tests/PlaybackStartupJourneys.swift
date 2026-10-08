@@ -16,6 +16,68 @@ struct PlaybackStartupJourneys {
         Issue.record("Fixture did not reach its expected request barrier")
         throw CancellationError()
     }
+    @Test func previousPlaybackCheckpointDoesNotCancelNextPreparation() async throws {
+        let fixture = try await PlaybackStartupFixture()
+        fixture.denied = false; fixture.holdPreferences = true
+        defer { fixture.releasePreferences(); fixture.close() }
+        let engine = PlaybackEngine()
+        defer { engine.stop() }
+        let preparation = Task { try await engine.prepare(fixture.item("next"), client: fixture.client) }
+        try await wait { fixture.heldPreferenceCount == 1 && fixture.count("/api/v1/items/next/playback") == 1 }
+        var checkpoint = WatchProgress()
+        checkpoint.seconds = 4; checkpoint.session = "previous-playback"; checkpoint.revision = 1
+        let saved = try await fixture.client.syncProgress(itemID: "previous", progress: checkpoint,
+                                                        expected: WatchProgress(), playbackToken: "")
+        #expect(saved.progress.seconds == 4)
+        fixture.releasePreferences()
+        try await preparation.value
+        #expect(engine.playbackPreparation?.itemID == "next")
+        #expect(fixture.count("/api/v1/items/next/playback") == 1)
+        #expect(fixture.count("/api/v1/items/next/playback-preferences") == 1)
+        print("STARTUP previous-checkpoint preserved-next-preparation=true sourceReads=1 preferenceReads=1")
+        await fixture.client.close(purgeCache: true)
+    }
+    @Test(arguments: [401, 403])
+    func deniedPreparationPreferencesDiscardPreviouslyCachedPrivateData(_ status: Int) async throws {
+        let fixture = try await PlaybackStartupFixture()
+        fixture.denied = false
+        defer { fixture.close() }
+        _ = try await fixture.client.playbackPreferences(itemID: "movie")
+        _ = try await fixture.client.playbackPreferences(itemID: "movie", policy: .cached)
+        fixture.denied = true; fixture.denialStatus = status
+        await #expect(throws: ClientError.http(status)) {
+            try await fixture.client.playbackPreparationPreferences(itemID: "movie")
+        }
+        await #expect(throws: CatalogCacheMiss.self) {
+            try await fixture.client.playbackPreferences(itemID: "movie", policy: .cached)
+        }
+        await fixture.client.close(purgeCache: true)
+    }
+    @Test(arguments: ["", "bad/id", "bad\nname", String(repeating: "a", count: 129)])
+    func invalidPreparationPreferenceIDsDoNotReachNetwork(_ id: String) async throws {
+        let fixture = try await PlaybackStartupFixture()
+        defer { fixture.close() }
+        await #expect(throws: ClientError.self) { try await fixture.client.playbackPreparationPreferences(itemID: id) }
+        #expect(fixture.state.withLock { $0.counts.isEmpty })
+        await fixture.client.close(purgeCache: true)
+    }
+    @Test func missingPreparationTitleRemovesOnlyItsPreviouslyCachedPreferences() async throws {
+        let fixture = try await PlaybackStartupFixture()
+        fixture.denied = false
+        defer { fixture.close() }
+        _ = try await fixture.client.playbackPreferences(itemID: "missing")
+        _ = try await fixture.client.playbackPreferences(itemID: "other")
+        fixture.denied = true; fixture.denialStatus = 404
+        await #expect(throws: ClientError.http(404)) {
+            try await fixture.client.playbackPreparationPreferences(itemID: "missing")
+        }
+        await #expect(throws: CatalogCacheMiss.self) {
+            try await fixture.client.playbackPreferences(itemID: "missing", policy: .cached)
+        }
+        _ = try await fixture.client.playbackPreferences(itemID: "other", policy: .cached)
+        #expect(fixture.count("/api/v1/items/other/playback-preferences") == 1)
+        await fixture.client.close(purgeCache: true)
+    }
     @Test func cancelledStartPreservesActivePlaybackWithoutRequests() async throws {
         let fixture = try await PlaybackStartupFixture()
         defer { fixture.close() }

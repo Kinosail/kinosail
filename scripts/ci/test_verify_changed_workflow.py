@@ -83,7 +83,7 @@ else:
     def test_manual_only_closed_selection_and_pinned_tools_precede_literal_targets(self):
         source = WORKFLOW.read_text()
         self.assertIn('workflow_dispatch:', source)
-        self.assertIn('Verify-changed]', source)
+        self.assertIn('options: [none, R06, Q14, Q09, Q47, HLS, HLS-navigation, Library, Camera, Responsive, Playback, Offline, Provider, Verify-changed, Native-platforms]', source)
         text = source.split('  literal-verify:\n', 1)[1]
         self.assertIn('needs: selection-admission', text)
         self.assertIn("inputs.campaign_proof == 'Verify-changed'", text)

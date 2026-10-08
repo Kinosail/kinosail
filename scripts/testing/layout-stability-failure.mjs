@@ -1,3 +1,4 @@
+import {join} from "node:path";
 // Preserve one safe failure artifact even when more errors arrive during cleanup.
 export async function layoutFailureNavigation(phase, flowProbe, navigation, error) {
   // Flow snapshots belong to fresh contexts. The global recorder belongs to
@@ -39,4 +40,22 @@ export function installLayoutFailureReporter(collect, persist, close) {
       }
     })().catch(() => process.exit(1));
   });
+}
+
+export async function layoutLoginDocument(page, expected, previous) {
+  let timer;
+  try {return await Promise.race([page.evaluate(({expected, previous}) => {
+    const name=document.querySelector('input[name="name"]'), password=document.querySelector('input[name="password"][type="password"]');
+    const editable=input=>Boolean(input&&!input.disabled&&!input.readOnly&&input.getBoundingClientRect().width&&input.getBoundingClientRect().height);
+    return {urlMatchesExpected:location.href===expected, state:document.readyState, freshDocument:performance.timeOrigin!==previous,
+      nameEditable:editable(name), passwordEditable:editable(password),
+      nameLabelMatches:Boolean(name&&[...name.labels||[]].some(label=>label.textContent.trim()==="Name")),
+      showSecretReady:Boolean(password?.closest(".password-control")?.querySelector('button.password-toggle[aria-label="Show secret"]'))};
+  }, {expected, previous}), new Promise(resolve=>{timer=setTimeout(()=>resolve({unavailable:true}),1000);})]);}
+  catch {return {unavailable:true};} finally {clearTimeout(timer);}
+}
+
+export async function captureLayoutFailure(page, run) {
+  await page?.screenshot({path: join(run, "failure.png")}).catch(() => {});
+  await page?.context().tracing.stop({path: join(run, "failure-trace.zip")}).catch(() => {});
 }

@@ -1,5 +1,5 @@
 // Delay real bytes for layout measurements; lifecycle failures remain observable.
-export function layoutResponseHandler(context, variant) {
+export function layoutResponseHandler(context, variant, recordFailure) {
   let closed = false;
   context.once("close", () => { closed = true; });
   return async route => {
@@ -16,6 +16,12 @@ export function layoutResponseHandler(context, variant) {
         await new Promise(resolve => setTimeout(resolve, variant === "slow-css" && request.resourceType() === "script" ? 2400 : 1200));
         await route.fulfill({response});
       } else await route.continue();
-    } catch (error) { if (!closed) throw error; }
+    } catch (error) {
+      if (!closed) {
+        await route.abort("failed").catch(() => {});
+        await recordFailure?.(error, route).catch(() => {});
+        throw error;
+      }
+    }
   };
 }
