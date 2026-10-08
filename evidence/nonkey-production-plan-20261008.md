@@ -9,7 +9,7 @@ Recorded 2026-10-08. This is a design and ownership inventory, not an implemente
 - Existing terminal handoff: `68ca42f9ac61c29a776d4d05d979befa821d458b`.
 - Public ownership request: https://github.com/Kinosail/kinosail/pull/503#issuecomment-6057737326.
 - The request needs a disjoint sole writer allocation, or a concrete overlapping writer/path/function/head.
-- No ownership response had been observed at 10:32 UTC. Silence is not an allocation.
+- No ownership response had been observed at 10:41 UTC. Silence is not an allocation.
 - No production, existing test, normal workflow, simulator, deployment or local filesystem mutation is part of this plan.
 
 The requested additional seams are byte-identical on main and inspected PR503:
@@ -76,6 +76,8 @@ Selecting a preceding key alone is insufficient. Initial seek arguments, physica
 | hls_copied_metadata.go / certificate verification | Strict schema/hash/generation checks bind new mapping and edits; old certificate behavior preserved. |
 | hls_copied_endpoint.go / endpoint projection | Genuine generated EOF remains authoritative; map it to requested presentation extent without granting format-duration-only assets. |
 | hls_seek.go / prepareSegment | Offset is source key minus requested presentation origin, while retaining rooted manifest and terminal/source guards. No lifecycle transfer. |
+| hls_job.go / hlsSettings | Bind new strategy/correction policy identity to the recipe; preserve current PR503 hls18 and unsupported-source behavior. |
+| hls_playlist_session.go / serveRecipe | Validate new strategy, policy and generated asset binding before cached init/full/range fragment fast paths; preserve rooted descriptor admission. |
 | startup_window.go / startupWindowSegments | Sum projected presentation cuts; unchanged eight-second readiness and genuine EOF rule. No transfer of other readiness functions. |
 | hls_copied_recovery_publication.go / staging, arguments, snapshot, validPrefix, publish | Preserve bounds, exact init/first/certificate/generation, no-overwrite, joined owner and canonical master rules for new mapping. |
 | hls_presentation.go / hlsSegmentArguments initial mux slice | Add only causally verified fMP4 timestamp/edit options; preserve formats, names, modes, start numbers and unaffected transcode/audio flags. |
@@ -99,13 +101,13 @@ All six adjacent edit controls differ by one sample. Every complete per-track pa
 
 The production algorithm is not yet qualified. A container-name -16 rule and local raw ffprobe interpolation are rejected. Production needs a bounded, independently associated normalized source clock and unique first copied packet identity. Reference PCM must not choose the correction.
 
-Start with a failing bounded-clock qualification test under the unchanged two-second metadata admission, one-thread/resource reservation and existing source/cancellation limits. Measure only enough source state to independently establish the candidate's clock association; reject ambiguity, timestamp discontinuity, sample-rate/format changes, unsupported delay/skip metadata and budget exhaustion. A full multi-hour decode or deadline increase is not an acceptable implementation. Eligibility that cannot be proved remains unadmitted by the new strategy.
+Start with failing bounded-clock qualification tests. Keep the existing two-second metadata commit/verification lease unchanged. Any source-clock preflight is separately bounded within the existing preparation/job lifetime and one-thread/resource limits; it must finish before final metadata admission and bind the same current source/generation. Do not add a nested encoder reservation or increase any existing deadline. Measure only enough source state to independently establish the candidate's clock association; reject ambiguity, timestamp discontinuity, sample-rate/format changes, unsupported delay/skip metadata and budget exhaustion. A full arbitrary-duration decode is not an acceptable implementation. The bounded preflight method is not yet qualified; unproved eligibility remains unadmitted by the new strategy.
 
 Apply an admitted audio edit only to a private generated init before public ready/master publication. Certify the corrected init and first fragment together; later refill/reopens retain their canonical bytes. Never modify original media or an already published init.
 
 ## Unchanged native and presentation acceptance
 
-Actual renderer qualification remains separate from complete raw decode and PCM proofs. The prior MP4 native control presented a preceding frame and produced two InvalidStateErrors; the prior MKV native result did not establish all quality assertions. These failures stay recorded.
+Actual renderer qualification remains separate from complete raw decode and PCM proofs. The prior MP4 native control presented a preceding frame and produced two InvalidStateErrors; the prior MKV native result did not establish all quality assertions. These failures stay recorded. Historical raw requested-sequence and decoded-quality-equality assertions remain failed; a separately guarded new presentation result does not make those historical assertions pass.
 
 The native/presentation owner must run the existing actual-media assertions unchanged, with added offset cases rather than weaker expectations:
 
@@ -129,5 +131,7 @@ Same-iOS retest remains assigned to the existing native owner, using the preserv
 5. Open a narrow linked draft with exact admitted scope, source/proof identities and remaining native boundary. Ordinary protected merge requires review/guard/public proof admissions and reconciliation of current main and competing publication.
 6. Verify merged ancestry and normal signed publication. No manual deployment.
 7. Complete the same-iOS all50 retest with the native owner after capacity release; no claim of completion before its actual receipts.
+
+Independent plan review read exact bd7fde23/blob04ec7d99 and admitted its fixed-fixture geometry, signed-strategy separation and preservation boundaries. This revision adds the requested policy/serve fast-path closure and separates bounded source preflight from the unchanged metadata lease. This is design review only.
 
 Current blocking facts: the source owner has not allocated the two new seams or identified overlap; bounded production AAC clock eligibility is unproved; native requested-first-frame and full50 acceptance remain unqualified. The completed fixed-fixture counterfactual is useful mechanism evidence, not closure of these blockers.
