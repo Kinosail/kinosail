@@ -5,8 +5,12 @@ import {registerHooks} from 'node:module';
 // Exercise the actual case callback. Redirect-hop requests deliberately do not
 // enter Page routes; this models the pinned driver's documented route boundary.
 const registrations = new Map();
+const fixtures = new Map();
+let currentFixtures = {};
 const origin = 'https://owned.fixture';
-const test = (title, callback) => registrations.set(title, callback);
+const test = (title, callback) => {registrations.set(title, callback); fixtures.set(title, {...currentFixtures});};
+test.use = value => {currentFixtures = {...currentFixtures, ...value};};
+test.describe = callback => {const previous = currentFixtures; currentFixtures = {...previous}; callback(); currentFixtures = previous;};
 test.skip = () => {};
 test.info = () => ({project: {use: {baseURL: origin}}});
 const expect = value => ({
@@ -36,6 +40,10 @@ class PageControl {
   current = origin + '/login';
   routes = [];
   calls = [];
+  attachments = [];
+  info = {attach: async (name, value) => {this.attachments.push({name, value});}};
+  fetchFailure = false;
+  fulfillFailure = false;
   response = {status: () => 200, url: () => origin + '/account?passkey=offer&next=%2F'};
   url() {return this.current;}
   async route(matcher, handler) {this.routes.push({matcher, handler});}
@@ -48,10 +56,11 @@ class PageControl {
       const started = Date.now();
       await row.handler({
         request: () => ({url: () => target.href, method: () => 'GET'}),
-        fetch: async () => {this.calls.push({kind: 'fetch', path: target.pathname}); return this.response;},
+        fetch: async () => {this.calls.push({kind: 'fetch', path: target.pathname}); if (this.fetchFailure) throw new Error('private-fetch-marker'); return this.response;},
         fulfill: async ({response}) => {
           assert.equal(response, this.response, 'the actual accepted response must be forwarded unchanged');
           this.calls.push({kind: 'fulfill', elapsed: Date.now()-started});
+          if (this.fulfillFailure) throw new Error('private-fulfill-marker');
         },
         abort: async () => {this.calls.push({kind: 'abort'});},
       });
@@ -80,7 +89,7 @@ class PageControl {
 
 check('actual navigation case delays an explicit accepted offer despite un-routed password redirects', async () => {
   const page = new PageControl();
-  await run({page});
+  await run({page}, page.info);
   assert.equal(page.calls.filter(row => row.kind === 'password').length, 1);
   assert.equal(page.calls.filter(row => row.kind === 'fetch').length, 1);
   assert.deepEqual(page.calls.filter(row => row.kind === 'fetch').map(row => row.path), ['/account']);
@@ -100,10 +109,46 @@ for (const [name, status, url] of [
   ['unknown query', 200, origin + '/account?passkey=offer&next=%2F&unknown=1'],
 ]) check(`actual offer fixture rejects ${name} without forwarding or repeating Movies`, async () => {
   const page = new PageControl(); page.response = {status: () => status, url: () => url};
-  await assert.rejects(run({page}));
+  await assert.rejects(run({page}, page.info));
   assert.equal(page.calls.filter(row => row.kind === 'fetch').length, 1);
   assert.equal(page.calls.filter(row => row.kind === 'abort').length, 1);
   assert.equal(page.calls.filter(row => row.kind === 'fulfill').length, 0);
   assert.equal(page.calls.filter(row => row.kind === 'movies-repeat').length, 0);
+  assert.equal(page.routes.length, 0);
+});
+
+check('only the actual routed Movies case blocks service workers', () => {
+  assert.deepEqual(fixtures.get('repeating the active Movies link does not reload the document'), {serviceWorkers: 'block'});
+  for (const [title, value] of fixtures) if (title !== 'repeating the active Movies link does not reload the document')
+    assert.deepEqual(value, {}, title);
+});
+for (const stage of ['accepted', 'fetch', 'fulfill']) check(`actual offer callback records bounded ${stage} stages before route cleanup`, async () => {
+  const page = new PageControl(); page.fetchFailure = stage === 'fetch'; page.fulfillFailure = stage === 'fulfill';
+  if (stage === 'accepted') await run({page}, page.info); else await assert.rejects(run({page}, page.info));
+  assert.equal(page.attachments.length, 1);
+  const attachment = page.attachments[0];
+  assert.equal(attachment.name, 'owned-offer-delay-stages');
+  assert.equal(attachment.value.contentType, 'application/json');
+  assert.ok(Buffer.byteLength(attachment.value.body) <= 2048);
+  assert.doesNotMatch(attachment.value.body, /private-|https?:|account|next=/);
+  const facts = JSON.parse(attachment.value.body);
+  assert.deepEqual(Object.keys(facts).sort(), ['delayFinished', 'fetchFailed', 'fetchReturned', 'fetchStarted', 'fulfillFailed', 'fulfillFinished', 'fulfillStarted', 'handlerEntered', 'ownedResponse', 'responseStatus'].sort());
+  assert.equal(facts.handlerEntered, true); assert.equal(facts.fetchStarted, true);
+  assert.equal(facts.fetchFailed, stage === 'fetch'); assert.equal(facts.fetchReturned, stage !== 'fetch');
+  assert.equal(facts.responseStatus, stage === 'fetch' ? null : 200);
+  assert.equal(facts.ownedResponse, stage !== 'fetch');
+  assert.equal(facts.delayFinished, stage !== 'fetch'); assert.equal(facts.fulfillStarted, stage !== 'fetch');
+  assert.equal(facts.fulfillFailed, stage === 'fulfill'); assert.equal(facts.fulfillFinished, stage === 'accepted');
+  assert.equal(page.routes.length, 0);
+});
+
+for (const state of ['rejects', 'stalls']) check(`diagnostic attachment ${state} cannot mask the actual fulfillment failure or retain the route`, async () => {
+  const page = new PageControl(); page.fulfillFailure = true;
+  page.info.attach = () => state === 'rejects' ? Promise.reject(new Error('diagnostic-only')) : new Promise(() => {});
+  let settled = false;
+  const result = run({page}, page.info).then(() => {throw new Error('fixture unexpectedly passed');}, error => {settled = true; return error;});
+  await new Promise(resolve => setTimeout(resolve, 800));
+  assert.equal(settled, true, 'diagnostic must have a finite cleanup budget');
+  assert.equal((await result).message, 'private-fulfill-marker');
   assert.equal(page.routes.length, 0);
 });

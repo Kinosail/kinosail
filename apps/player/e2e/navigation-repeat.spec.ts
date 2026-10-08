@@ -26,20 +26,35 @@ async function login(page: Page) {
 	await expect(page).toHaveURL("/");
 }
 
-test("repeating the active Movies link does not reload the document", async ({ page }) => {
+test.describe(() => {
+  test.use({serviceWorkers: "block"});
+test("repeating the active Movies link does not reload the document", async ({ page }, testInfo) => {
 	const origin = new URL(test.info().project.use.baseURL!).origin;
 	await login(page);
 	let offerObserved = false;
+	const facts = {handlerEntered: false, fetchStarted: false, fetchReturned: false, fetchFailed: false,
+		responseStatus: null as number | null, ownedResponse: false, delayFinished: false,
+		fulfillStarted: false, fulfillFinished: false, fulfillFailed: false};
 	const target = new URL("/account?passkey=offer&next=%2F", origin);
 	const offer = (url: URL) => url.href === target.href;
 	await page.route(offer, async route => {
-		const response = await route.fetch({ maxRedirects: 0 });
-		if (response.status() !== 200 || response.url() !== target.href) {
+		facts.handlerEntered = true;
+		facts.fetchStarted = true;
+		let response;
+		try {response = await route.fetch({ maxRedirects: 0 }); facts.fetchReturned = true;}
+		catch (error) {facts.fetchFailed = true; throw error;}
+		const status = response.status();
+		facts.responseStatus = Number.isInteger(status) && status >= 100 && status <= 599 ? status : null;
+		facts.ownedResponse = response.url() === target.href;
+		if (status !== 200 || !facts.ownedResponse) {
 			await route.abort();
 			throw new Error("the owned passkey offer response was not accepted");
 		}
 		await new Promise(resolve => setTimeout(resolve, 200));
-		await route.fulfill({ response });
+		facts.delayFinished = true;
+		facts.fulfillStarted = true;
+		try {await route.fulfill({ response }); facts.fulfillFinished = true;}
+		catch (error) {facts.fulfillFailed = true; throw error;}
 		offerObserved = true;
 	});
 	try {
@@ -47,7 +62,12 @@ test("repeating the active Movies link does not reload the document", async ({ p
 		await finishRootSignIn(page, origin);
 		expect(offerObserved, "the real authenticated offer response must exercise delayed completion").toBe(true);
 	} finally {
-		await page.unroute(offer);
+		// Snapshot before cleanup so it cannot change the original failure stage.
+		let timer: ReturnType<typeof setTimeout> | undefined;
+		try {await Promise.race([testInfo.attach("owned-offer-delay-stages", {contentType: "application/json", body: JSON.stringify({...facts})}),
+			new Promise(resolve => {timer = setTimeout(resolve, 500);})]);}
+		catch { /* Observation failure cannot replace the original assertion. */ }
+		finally {clearTimeout(timer); await page.unroute(offer);}
 	}
 	await page.goto("/?view=movies");
 	const movies = page.getByRole("navigation", { name: "Main navigation" }).getByRole("link", { name: "Movies", exact: true });
@@ -66,6 +86,7 @@ test("repeating the active Movies link does not reload the document", async ({ p
 
 	expect(documentRequests, "repeating the active link must not start document navigations").toEqual([]);
 	expect(page.url()).toContain("/?view=movies");
+});
 });
 
 test("refresh keeps compact navigation and sign out reachable", async ({ page }) => {
