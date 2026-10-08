@@ -116,6 +116,21 @@ func serveScript(content []byte) http.HandlerFunc {
 
 var mainBundle = append(append([]byte(nil), pwaJS...), shortcutsJS...)
 
+// These public bundles are immutable across Player application instances.
+var (
+	serveHTMXScript         = serveScript(htmx)
+	serveHLSScript          = serveScript(hlsJS)
+	servePlayerScript       = serveScript(playerJS)
+	serveDownloadsScript    = serveScript(downloadsJS)
+	serveMainBundleScript   = serveScript(mainBundle)
+	servePWAScript          = serveScript(pwaJS)
+	serveSupporterScript    = serveScript(supporterJS)
+	serveThemeScript        = serveScript(themeJS)
+	serveQuickConnectScript = serveScript(quickConnectJS)
+	serveConnectScript      = serveScript(connectJS)
+	servePasskeysScript     = serveScript(passkeysJS)
+)
+
 func serveServiceWorker(writer http.ResponseWriter, _ *http.Request) {
 	writer.Header().Set("Content-Type", "text/javascript; charset=utf-8")
 	writer.Header().Set("Cache-Control", "no-cache")

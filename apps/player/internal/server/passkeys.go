@@ -83,7 +83,7 @@ func newPasskeyAuth(rawURL string, profiles *profileStore) *passkeyAuth {
 }
 
 func (auth *passkeyAuth) register(mux *http.ServeMux, allowLogin func(string) bool) {
-	mux.HandleFunc("GET /static/passkeys.js", serveScript(passkeysJS))
+	mux.HandleFunc("GET /static/passkeys.js", servePasskeysScript)
 	mux.HandleFunc("GET /account", auth.account)
 	mux.HandleFunc("POST /api/v1/passkeys/register/begin", auth.beginRegistration)
 	mux.HandleFunc("POST /api/v1/passkeys/register/finish", auth.finishRegistration)
