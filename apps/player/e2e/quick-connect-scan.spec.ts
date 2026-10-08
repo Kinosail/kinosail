@@ -1,12 +1,16 @@
 import { expect, test, type Page } from '@playwright/test';
 import { configureLayoutAudit, login } from './layout-audit-helpers';
+import { cameraProfile, isolateCamera } from './camera-profile-fixture';
+
+const fixture = cameraProfile(process.env);
 
 type QRWindow = Window & { qrTest: { stopped: number; requests: number; release: () => void } };
 
 configureLayoutAudit();
 test.use({ serviceWorkers: "block" });
-test.beforeEach(async ({ page }) => {
-  test.skip(process.env.KINOSAIL_TEST_INSTANCE !== '1', 'requires the populated test instance');
+test.beforeEach(async ({ page, baseURL }, info) => {
+  test.skip(!fixture, 'requires the closed synthetic Camera Owner fixture');
+  await isolateCamera(page, fixture, info.project.name, baseURL);
   await login(page);
 });
 
