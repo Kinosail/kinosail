@@ -2,8 +2,11 @@ package server
 
 import (
 	"context"
+	"errors"
 	"io"
 	"log/slog"
+	"os/exec"
+	"syscall"
 	"time"
 )
 
@@ -62,13 +65,16 @@ func (watch *copiedHLSProbeWatch) observe(ctx context.Context, probe copiedHLSPr
 	if interrupted || exited {
 		watch.stop(probe, output, interrupted)
 	}
+	if observeErr != nil {
+		watch.result = observeErr
+	}
 	return watch.scanDone && (exited || observeErr != nil)
 }
 
 func (watch *copiedHLSProbeWatch) stop(probe copiedHLSProbe, output io.Closer, interrupted bool) {
 	if !watch.stopped {
-		if probe.terminate() != nil {
-			watch.result = errCopiedHLSIndex
+		if err := probe.terminate(); err != nil {
+			watch.result = err
 		}
 		watch.stopped = true
 	}
@@ -99,4 +105,22 @@ func settleCopiedHLSProbe(parent context.Context, probe copiedHLSProbe) error {
 		return errCopiedHLSIndex
 	}
 	return result
+}
+
+func reportCopiedHLSProbeCompletion(ctx context.Context, watchErr, waitErr, settleErr error) {
+	var errno syscall.Errno
+	if !errors.As(watchErr, &errno) {
+		errno = 0
+	}
+	exitCode := 0
+	var exit *exec.ExitError
+	if errors.As(waitErr, &exit) {
+		exitCode = exit.ExitCode()
+	}
+	slog.ErrorContext(ctx, "copied probe completion failed",
+		"request_id", requestActivityID(ctx), "playback_session", requestPlaybackSession(ctx),
+		"failure_class", "copied_probe_completion",
+		"watch_failed", watchErr != nil, "watch_errno", int(errno),
+		"wait_failed", waitErr != nil, "wait_exit_code", exitCode,
+		"settlement_failed", settleErr != nil)
 }
