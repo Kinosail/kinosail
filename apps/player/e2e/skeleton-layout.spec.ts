@@ -7,7 +7,7 @@ const styles = await Promise.all([
   "../internal/server/static/home.css",
 ].map(path => readFile(new URL(path, import.meta.url), "utf8")));
 
-for (const width of [390, 1440]) {
+for (const width of [390, 720, 900, 1440, 1920]) {
   for (const artwork of ["poster", "backdrop"]) {
     test(`Player loading keeps ${artwork} Home geometry at ${width}px`, { tag: "@smoke" }, async ({ page }, testInfo) => {
       await page.setViewportSize({ width, height: 900 });
@@ -27,8 +27,12 @@ for (const width of [390, 1440]) {
       for (const content of styles) await page.addStyleTag({ content });
       const selectors = [".home-feature", ".home-feature > img", ".resume-card", ".resume-link .poster", ".home-shelf .card:not(.resume-card):not(.stacked)", ".recent-stack"];
       const boxes = await Promise.all(selectors.map(selector => page.locator(selector).boundingBox()));
+      if (artwork === "backdrop" && width > 600 && width <= 900) {
+        expect(boxes[1]!.width, "tablet artwork leaves room for the title and action").toBeLessThan(boxes[0]!.width * .6);
+        expect(boxes[0]!.height, "tablet feature leaves browsing visible").toBeLessThan(320);
+      }
       await page.locator("#main").evaluate(main => main.classList.add("request-skeleton"));
-      if (artwork === "poster") await page.screenshot({ path: testInfo.outputPath(`${width}-pending.png`), fullPage: true });
+      await page.screenshot({ path: testInfo.outputPath(`${width}-pending.png`), fullPage: true });
       const pending = await Promise.all(selectors.map(selector => page.locator(selector).boundingBox()));
       for (let index = 0; index < boxes.length; index++) {
         expect(pending[index]?.width).toBeCloseTo(boxes[index]!.width, 0);
@@ -47,7 +51,7 @@ for (const width of [390, 1440]) {
       await page.locator("#main").evaluate(main => main.classList.remove("request-skeleton"));
       await expect(page.locator(".home-feature > img")).toHaveCSS("visibility", "visible");
       await expect(page.locator(".recent-stack")).toHaveCSS("visibility", "visible");
-      if (artwork === "poster") await page.screenshot({ path: testInfo.outputPath(`${width}-loaded.png`), fullPage: true });
+      await page.screenshot({ path: testInfo.outputPath(`${width}-loaded.png`), fullPage: true });
     });
   }
 }
