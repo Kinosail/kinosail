@@ -36,6 +36,10 @@ func remainingPublicObservePublication(t *testing.T) *remainingPublicPublication
 	return publication
 }
 
+func (remainingPublicCompletionHandler) Enabled(_ context.Context, level slog.Level) bool {
+	return level >= slog.LevelInfo
+}
+
 func (handler remainingPublicCompletionHandler) Handle(ctx context.Context, record slog.Record) error {
 	if record.Message == "HLS transcode completed" {
 		requestID := ""
