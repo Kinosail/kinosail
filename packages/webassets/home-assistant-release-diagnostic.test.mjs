@@ -3,6 +3,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';
+import {createNativeRequestBoundaryDiagnostic} from './home-assistant-request-boundary-diagnostic-fixture.mjs';
 import {installNativeReleaseDiagnostic, createDepartingConsoleCounters} from './home-assistant-release-diagnostic-fixture.mjs';
 
 const prefix = 'KINOSAIL_R18_RELEASE_DIAGNOSTIC:';
@@ -192,4 +193,68 @@ test('direct console counters saturate without retaining event arguments or cont
   assert.equal(s.endpointCalls, 8); assert.equal(s.saturated, 1);
   assert.ok(Object.values(s).every(value => Number.isInteger(value) && value >= 0 && value <= 8));
   assert.ok(!JSON.stringify(s).includes('731'));
+});
+
+function boundaryEvent(overrides = {}) {
+  return {requestId: 'private-request', frameId: 'private-frame',
+    request: {url: 'https://fixture.invalid' + path, method: 'POST',
+      headers: {'X-Kinosail-Player-Claim': 'synthetic-private-authority'}}, ...overrides};
+}
+function boundary(send = async () => {}) {
+  return createNativeRequestBoundaryDiagnostic(send, 'https://fixture.invalid' + path,
+    'private-frame', claim => claim === 'synthetic-private-authority');
+}
+test('paused request diagnostics continue the actual request without overrides and distinguish correlation', async () => {
+  const sent = [], b = boundary(async (method, params) => sent.push({method, params}));
+  await b.observe(boundaryEvent());
+  await b.observe(boundaryEvent({requestId: 'private-network-request', networkId: 'private-network'}));
+  assert.deepEqual(sent, [{method: 'Fetch.continueRequest', params: {requestId: 'private-request'}},
+    {method: 'Fetch.continueRequest', params: {requestId: 'private-network-request'}}]);
+  const s = b.snapshot();
+  assert.equal(s.endpointPosts, 2); assert.equal(s.genuineAuthority, 2);
+  assert.equal(s.networkIdPresent, 1); assert.equal(s.networkIdAbsent, 1);
+  assert.equal(s.selectedFrame, 2); assert.equal(s.continued, 2);
+  assert.equal(s.continuationFailed, 0);
+  for (const secret of ['fixture.invalid', 'private-request', 'private-frame', 'private-network',
+    'synthetic-private-authority']) assert.equal(JSON.stringify(s).includes(secret), false);
+  assert.equal('dropped' in s, false);
+});
+test('paused diagnostics forward unrelated and invalid endpoint metadata without manufacturing proof', async () => {
+  const sent = [], b = boundary(async (_, params) => sent.push(params));
+  const events = [boundaryEvent({request: {url: 'https://other.invalid' + path, method: 'POST', headers: {}}}),
+    boundaryEvent({request: {...boundaryEvent().request, method: 'GET'}}),
+    boundaryEvent({request: {...boundaryEvent().request, url: 'https://fixture.invalid' + path + '?private=1'}}),
+    boundaryEvent({responseStatusCode: 204}), boundaryEvent({request: null}),
+    boundaryEvent({request: {...boundaryEvent().request, headers: {'x-kinosail-player-claim': 'unknown-private'}}})];
+  for (const event of events) await b.observe(event);
+  assert.equal(sent.length, 6); assert.ok(sent.every(params => Object.keys(params).join() === 'requestId'));
+  assert.equal(b.snapshot().genuineAuthority, 0);
+  assert.equal(b.snapshot().continued, 6); assert.equal(b.snapshot().continuationFailed, 0);
+});
+test('paused diagnostics classify observer errors only after unchanged continuation starts', async () => {
+  const order = [], event = boundaryEvent(), b = boundary(async () => {order.push('continue');});
+  Object.defineProperty(event, 'request', {get() {order.push('inspect'); throw new Error('private-inspection-error');}});
+  await b.observe(event);
+  assert.deepEqual(order, ['continue', 'inspect']); assert.equal(b.snapshot().observerErrors, 1);
+  assert.equal(b.snapshot().continued, 1);
+  assert.equal(JSON.stringify(b.snapshot()).includes('private-inspection-error'), false);
+});
+test('paused continuation synchronous and asynchronous failures cannot become acknowledgement', async () => {
+  for (const send of [() => {throw new Error('private-sync-error');},
+    async () => {throw new Error('private-async-error');}]) {
+    const b = boundary(send);
+    await b.observe(boundaryEvent());
+    assert.equal(b.snapshot().continuationFailed, 1); assert.equal(b.snapshot().continued, 0);
+    assert.equal(JSON.stringify(b.snapshot()).includes('private-'), false);
+  }
+});
+test('paused counters stay bounded and invalid event identifiers never invent a native action', async () => {
+  let sent = 0;
+  const b = boundary(async () => {sent++;});
+  for (let index = 0; index < 12; index++) await b.observe(boundaryEvent());
+  for (const event of [null, {}, boundaryEvent({requestId: undefined}), boundaryEvent({requestId: ''})]) await b.observe(event);
+  const s = b.snapshot();
+  assert.equal(sent, 12); assert.equal(s.paused, 8); assert.equal(s.continued, 8);
+  assert.equal(s.saturated, 1); assert.equal(s.invalidEvents, 4);
+  assert.ok(Object.values(s).every(value => Number.isInteger(value) && value >= 0 && value <= 8));
 });

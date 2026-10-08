@@ -1,5 +1,6 @@
 import {expect, type Page, type CDPSession} from "@playwright/test";
 import {login} from "./test-instance-helpers";
+import {createNativeRequestBoundaryDiagnostic} from "../../../packages/webassets/home-assistant-request-boundary-diagnostic-fixture.mjs";
 import {createDepartingConsoleCounters} from "../../../packages/webassets/home-assistant-release-diagnostic-fixture.mjs";
 
 type DocumentClaim = {id: string; claim: string; expiresIn: number};
@@ -146,4 +147,18 @@ export async function observeNativeDocumentRetirement(network: CDPSession) {
   return {begin: () => {started = true;}, snapshot: () => ({mainContextObserved: departing !== 0,
     departingMainContextUnavailable: retired, contextClearEvents: cleared, replacingMainContexts: replacements,
     claimRequestsAfterReplacingMainContext: claimRequests, departingSignals: directSignals.snapshot()})};
+}
+
+/** Actual native Request-stage pause projection, with unchanged continuation. */
+export async function observeNativeReleaseBoundary(network: CDPSession, path: string, claims: Set<string>) {
+  const {frameTree} = await network.send("Page.getFrameTree");
+  const endpoint = new URL(path, new URL(frameTree.frame.url).origin).href;
+  const diagnostic = createNativeRequestBoundaryDiagnostic(
+    (method: "Fetch.continueRequest", params: {requestId: string}) => network.send(method, params),
+    endpoint, frameTree.frame.id, (claim: string) => claims.has(claim));
+  network.on("Fetch.requestPaused", diagnostic.observe);
+  await network.send("Fetch.enable", {patterns: [{urlPattern: endpoint, requestStage: "Request"}]});
+  return {snapshot: diagnostic.snapshot, close: async () => {
+    await network.send("Fetch.disable"); network.off("Fetch.requestPaused", diagnostic.observe);
+  }};
 }

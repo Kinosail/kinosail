@@ -1,7 +1,7 @@
 import {recordHomeAssistantEvidence, cleanupHomeAssistantFixture} from "./home-assistant-document-evidence";
 import {expect, test, type Page, type BrowserContext, type CDPSession, type Request, type Response} from "@playwright/test";
 import {configureTestInstance, createViewer, loginViewer, removeViewer} from "./test-instance-helpers";
-import {openDocuments, closeDocuments, setting, observeAcceptedDocumentStates, nextDocumentClaim, observeNativeDocumentRetirement} from "./home-assistant-document-helpers";
+import {openDocuments, closeDocuments, setting, observeAcceptedDocumentStates, nextDocumentClaim, observeNativeDocumentRetirement, observeNativeReleaseBoundary} from "./home-assistant-document-helpers";
 import {inspectDocumentStatus} from "./home-assistant-document-inspection";
 
 import {installNativeReleaseDiagnostic} from "../../../packages/webassets/home-assistant-release-diagnostic-fixture.mjs";
@@ -73,6 +73,7 @@ test("real cloned document candidate forks after occupied claim without stealing
 test("real lost-release reload waits for lease expiry and renews only its original target", {tag: ["@smoke", "@routed-fault"]}, async ({page, browserName}, info) => {
   test.setTimeout(75_000);
   let first: Page | undefined, second: Page | undefined, network: CDPSession | undefined, releaseRoute = "", primary: unknown;
+  let releaseBoundary: Awaited<ReturnType<typeof observeNativeReleaseBoundary>> | undefined;
   let failedRelease: ((request: Request) => void) | undefined, occupiedReply: ((response: Response) => void) | undefined;
   try {
     const docs = await openDocuments(page, document => document.addInitScript(installNativeReleaseDiagnostic)); ({first, second} = docs);
@@ -116,6 +117,7 @@ test("real lost-release reload waits for lease expiry and renews only its origin
     const renewed = nextDocumentClaim(first);
     void renewed.catch(() => {});
     const retirement = network ? await observeNativeDocumentRetirement(network) : undefined;
+    releaseBoundary = network ? await observeNativeReleaseBoundary(network, releasePath, docs.claims) : undefined;
     await first.evaluate(path => (window as any).__kinosailReleaseDiagnosticTarget(path), releasePath);
     retirement?.begin();
     const started = Date.now();
@@ -129,7 +131,8 @@ test("real lost-release reload waits for lease expiry and renews only its origin
       observedBlockedFailures: dropped, contextAborts, protocolBlockedFailures: blockedRequests.size,
       actualOccupiedReplies: conflicts, sameCandidateRenewed: claim.id === original, expiresIn: claim.expiresIn, elapsedMs: elapsed,
       nativeEndpointDiagnostic: await first.evaluate(() => (window as any).__kinosailReleaseDiagnostic()),
-      mainContextLifecycle: retirement?.snapshot() || {protocolUnavailable: true}});
+      mainContextLifecycle: retirement?.snapshot() || {protocolUnavailable: true},
+      nativeRequestBoundary: releaseBoundary?.snapshot() || {protocolUnavailable: true}});
     expect(dropped).toBeGreaterThan(0); expect(conflicts).toBeGreaterThan(0);
     expect(elapsed).toBeLessThanOrEqual(35_000);
     await expect.poll(() => accepted.some(state => state.id === claim.id && state.claim === claim.claim)).toBe(true);
@@ -143,6 +146,7 @@ test("real lost-release reload waits for lease expiry and renews only its origin
         if (first && failedRelease) first.off("requestfailed", failedRelease);
         if (first && occupiedReply) first.off("response", occupiedReply);
       }},
+      {operation: "remove-native-boundary-observer", action: async () => {await releaseBoundary?.close();}},
       {operation: "remove-release-route", action: async () => {if (releaseRoute) await page.context().unroute(releaseRoute);}},
       {operation: "remove-network-block", action: async () => {if (network) await network.send("Network.setBlockedURLs", {urls: []});}},
       {operation: "detach-network-observer", action: async () => {await network?.detach();}},
