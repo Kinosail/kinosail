@@ -17,31 +17,38 @@ export function tvSelection(value) {
     : /^emulator-[0-9]{4,5}$/).test(id)) throw Error('invalid TV selector');
   return apple ? { platform: 'ios', target: 'tv', udid: id } : { platform: 'android', target: 'tv', serial: id };
 }
-/** @param {TVClient} client @param {unknown} input @param {(selection:TVSelection)=>Promise<unknown>} use @param {string|undefined} [appPath] */
-export async function withTvSession(client, input, use, appPath) {
+/** @param {TVClient} client @param {unknown} input @param {(selection:TVSelection)=>Promise<unknown>} use @param {string|undefined} [appPath] @param {<T>(stage:string,operation:()=>Promise<T>)=>Promise<T>} [observe] */
+export async function withTvSession(client, input, use, appPath, observe = async (_, operation) => operation()) {
+  if (typeof observe !== 'function') throw Error('invalid TV observer');
   const selection = tvSelection(input), apple = selection.platform === 'ios';
   if (appPath !== undefined && (typeof appPath !== 'string' || appPath.length > 2048 || resolve(appPath) !== appPath || !/^\/(?:[^\x00-\x1f\x7f]+\/)?apps\/player\/apps\/(?:native\/\.build\/tvos-simulator\/Build\/Products\/Debug-appletvsimulator\/KinosailPlayer\.app|android\/app\/build\/outputs\/apk\/debug\/app-debug\.apk)$/.test(appPath) || (apple ? !appPath.endsWith('KinosailPlayer.app') : !appPath.endsWith('app-debug.apk')))) throw Error('invalid TV app path');
   const id = selection.platform === 'ios' ? selection.udid : selection.serial;
   const app = apple ? 'com.kinosail.player' : 'com.kinosail.player.dev';
   try {
-    const inventory = await client.devices.list({ ...selection, signal: AbortSignal.timeout(15000) });
-    if (!Array.isArray(inventory) || inventory.length > 128) throw Error('TV inventory mismatch');
-    const matches = inventory.filter(d => d && d.id === id);
-    if (matches.length !== 1 || matches[0].platform !== selection.platform || matches[0].target !== 'tv' ||
-        matches[0].kind !== (apple ? 'simulator' : 'emulator') || matches[0].booted !== true ||
-        (apple && matches[0].appleOs !== 'tvos')) throw Error('TV inventory mismatch');
-    if (appPath !== undefined) await client.apps.reinstall({ ...selection, app, appPath, signal: AbortSignal.timeout(60000) });
-    const opened = await client.apps.open({ ...selection, app, ...(apple ? {} : { activity: 'com.kinosail.player.tv.TvActivity' }), signal: AbortSignal.timeout(30000) });
-    if ((opened?.appBundleId ?? opened?.appId) !== app) throw Error('TV foreground identity mismatch');
-    if (!apple) {
-      const state = await client.command.appState({ ...selection, signal: AbortSignal.timeout(15000) });
-      if (state.platform !== 'android' || state.package !== app ||
-          !['com.kinosail.player.tv.TvActivity', '.tv.TvActivity'].includes(state.activity)) throw Error('TV foreground activity mismatch');
-    }
-    return await use(selection);
+    await observe('inventory', async () => {
+      const inventory = await client.devices.list({ ...selection, signal: AbortSignal.timeout(15000) });
+      if (!Array.isArray(inventory) || inventory.length > 128) throw Error('TV inventory mismatch');
+      const matches = inventory.filter(d => d && d.id === id);
+      if (matches.length !== 1 || matches[0].platform !== selection.platform || matches[0].target !== 'tv' ||
+          matches[0].kind !== (apple ? 'simulator' : 'emulator') || matches[0].booted !== true ||
+          (apple && matches[0].appleOs !== 'tvos')) throw Error('TV inventory mismatch');
+    });
+    if (appPath !== undefined) await observe('reinstall', () => client.apps.reinstall({ ...selection, app, appPath, signal: AbortSignal.timeout(60000) }));
+    await observe('open', async () => {
+      const opened = await client.apps.open({ ...selection, app, ...(apple ? {} : { activity: 'com.kinosail.player.tv.TvActivity' }), signal: AbortSignal.timeout(30000) });
+      if ((opened?.appBundleId ?? opened?.appId) !== app) throw Error('TV foreground identity mismatch');
+    });
+    if (!apple) await observe('foreground', async () => {
+        const state = await client.command.appState({ ...selection, signal: AbortSignal.timeout(15000) });
+        if (state.platform !== 'android' || state.package !== app ||
+            !['com.kinosail.player.tv.TvActivity', '.tv.TvActivity'].includes(state.activity)) throw Error('TV foreground activity mismatch');
+    });
+    return await observe('use', () => use(selection));
   } finally {
     // Client is bound by its caller to this run's unique private session.
-    await client.sessions.close({ signal: AbortSignal.timeout(15000) });
+    let closing = false;
+    try { await observe('close', () => { closing = true; return client.sessions.close({ signal: AbortSignal.timeout(15000) }); }); }
+    finally { if (!closing) await client.sessions.close({ signal: AbortSignal.timeout(15000) }); }
   }
 }
 /** @param {TVClient} client @param {unknown} input @param {string} label @param {string} direction @param {string} [field] */

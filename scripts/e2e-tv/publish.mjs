@@ -8,9 +8,12 @@ try {
   const root = '.e2e', stat = lstatSync(root);
   if (!stat.isDirectory() || stat.isSymbolicLink() || stat.uid !== process.getuid() || (stat.mode & 0o777) !== 0o700) throw new Error('unsafe output root');
   const owned = validateOwned(parseStrictJSON(privateFile(join(root, 'owned-device.json'), 4096, true)), stat);
-  const receipt = validateReceipt(parseStrictJSON(privateFile(join(root, 'receipt.private.json'), 65536, true)), owned, resolve(root));
+  const privateReceipt = parseStrictJSON(privateFile(join(root, 'receipt.private.json'), 65536, true));
+  try { privateReceipt.tvActions = parseStrictJSON(privateFile(join(root,'tv-actions.private.json'),65536,true)); }
+  catch(error) { if(error.code!=='ENOENT')throw error; }
+  const receipt = validateReceipt(privateReceipt, owned, resolve(root));
   if (receipt.result === 0 && parseStrictJSON(privateFile(join(root,'secrets.json'),65536,true)).stage !== 'complete') throw Error('TV privacy stage incomplete');
-  const names = ['sdk','agent-device','avd','bin','fixtures','secrets.json','control.json','journey.json','receipt.private.json','process-owned.json'];
+  const names = ['sdk','agent-device','avd','bin','fixtures','secrets.json','control.json','journey.json','tv-actions.private.json','receipt.private.json','process-owned.json'];
   const removal = [];
   let count = 0;
   function inspect(path, depth = 0) {

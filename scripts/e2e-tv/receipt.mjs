@@ -1,3 +1,4 @@
+import { validateTvActions } from './actions.mjs';
 import { join, isAbsolute } from 'node:path';
 // Accept only facts and command templates the hosted producer actually writes.
 const fields = ['revision','command','commands','platform','profile','target','device','environment','data','witness','result','cleanup','elapsedSeconds','packages','boundaries'];
@@ -37,7 +38,8 @@ export function validateActiveOwned(value, root) {
   return value;
 }
 export function validateReceipt(value, owned, root) {
-  object(value,[...fields,'journey'],fields);
+  object(value,[...fields,'journey','tvActions'],fields);
+  if(value.tvActions!==undefined) validateTvActions(value.tvActions);
   if (typeof value.revision !== 'string' || !/^[a-f0-9]{40}$/.test(value.revision) || value.platform !== owned.platform || value.profile !== owned.profile || value.target !== 'tv' || value.device !== owned.device || value.command !== `python3 hosted.py ${owned.profile}` || value.environment !== 'disposable hosted simulator/emulator') throw new Error('conflicting receipt identity');
   device(value.device,value.platform);
   if (value.data !== 'synthetic Example Movie (testsrc2/AAC); synthetic MFA Owner; actual dynamic pairing code' || typeof root !== 'string' || !isAbsolute(root)) throw new Error('invalid fixture facts');
@@ -102,7 +104,7 @@ export function validateReceipt(value, owned, root) {
     if (value.journey.remoteFocus !== true || value.journey.menuReturned !== true || value.journey.tvForeground !== true || value.journey.decodedFrames !== true || value.journey.watched !== false || value.journey.connectionRestored !== true || value.journey.progressPersisted !== true || !Number.isFinite(value.journey.partialProgressSeconds) || value.journey.partialProgressSeconds <= 0 || value.journey.partialProgressSeconds >= 16 * .8) throw new Error('invalid journey witness');
   }
   if (value.result === 0 && (value.device === null || value.journey === undefined || ['sourceManifestSHA256','serverSHA256','appSHA256','runtime','nativeTool'].some(key => !Object.hasOwn(value.witness,key)) || !value.commands.some(args => JSON.stringify(args) === JSON.stringify(['node','node_modules/e2e/dist/cli/bin.js','run'])))) throw Error('successful TV proof incomplete');
-  return Object.fromEntries([...fields,'journey'].filter(key => Object.hasOwn(value,key)).map(key => [key,value[key]]));
+  return Object.fromEntries([...fields,'journey','tvActions'].filter(key => Object.hasOwn(value,key)).map(key => [key,value[key]]));
 }
 
 // JSON.parse alone accepts duplicate object fields; private records reject that ambiguity.
