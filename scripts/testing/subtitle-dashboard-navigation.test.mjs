@@ -1,7 +1,15 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {EventEmitter} from 'node:events';
-import {login} from '../../apps/subtitles/e2e/subtitle-dashboard-helpers.ts';
+import {registerHooks} from 'node:module';
+const parent = new URL('../../apps/subtitles/e2e/subtitle-dashboard-helpers.ts', import.meta.url).href;
+const hooks = registerHooks({resolve(specifier, context, next) {
+  if (context.parentURL === parent && specifier === '../../../scripts/testing/auth-form-navigation')
+    return next(specifier + '.ts', context);
+  return next(specifier, context);
+}});
+const {login} = await import('../../apps/subtitles/e2e/subtitle-dashboard-helpers.ts');
+hooks.deregister();
 
 // Failure modes: observer/attachment errors mask navigation; startup failures
 // retain listeners; initial blank events are mistaken for the target document.
@@ -11,12 +19,13 @@ class FailedDashboardPage extends EventEmitter {
   async addInitScript(script) {this.scripts.push(script);}
   mainFrame() {return this;}
   url() {return this.current;}
-  async evaluate() {return {readyState: 'unavailable', timeOrigin: 2000};}
+  context() {return {browser: () => ({browserType: () => ({name: () => 'chromium'})})};}
+  async evaluate() {if (!this.calls.length) return 1000; return {readyState: 'unavailable', timeOrigin: 2000};}
   getByLabel() {throw new Error('no credential actions after failure');}
   async goto(target, options) {
     this.calls.push({target, options});
     this.emit('domcontentloaded'); this.emit('load');
-    const request = {url: () => 'https://owned.fixture/login?next=/', resourceType: () => 'document', isNavigationRequest: () => true, frame: () => this};
+    const request = {url: () => 'https://owned.fixture/login?next=/', resourceType: () => 'document', method: () => 'GET', isNavigationRequest: () => true, frame: () => this};
     this.emit('request', request);
     this.emit('response', {request: () => request, url: request.url, status: () => 200});
     this.emit('requestfinished', request);
@@ -36,7 +45,7 @@ const bounded = async operation => {
   try {return await Promise.race([operation(), new Promise((_, reject) => {timer = setTimeout(() => reject(new Error('diagnostic cleanup did not settle')), 1600);})]);}
   finally {clearTimeout(timer);}
 };
-for (const attachment of ['ready', 'reject', 'stall']) test(`Dashboard original DCL failure survives ${attachment} attachment`, async () => {
+for (const attachment of ['ready', 'reject', 'stall']) test(`Dashboard original auth commit failure survives ${attachment} attachment`, async () => {
   const page = new FailedDashboardPage(), records = [];
   const info = infoFor(async (_, value) => {
     records.push(JSON.parse(value.body));
@@ -44,7 +53,7 @@ for (const attachment of ['ready', 'reject', 'stall']) test(`Dashboard original 
     if (attachment === 'stall') await new Promise(() => {});
   });
   await bounded(() => assert.rejects(login(page, info), value => value === page.failure));
-  assert.deepEqual(page.calls, [{target: '/login?next=/', options: {waitUntil: 'domcontentloaded'}}]);
+  assert.deepEqual(page.calls, [{target: '/login?next=/', options: {waitUntil: 'commit', timeout: 10000}}]);
   assert.equal(page.scripts.length, 2);
   assert.equal(page.eventNames().length, 0);
   const value = records[0];
@@ -79,7 +88,7 @@ test('Dashboard awaited passkey startup rejection releases diagnostics without n
 });
 test('Dashboard unavailable renderer supplies no invented document completion', async () => {
   const page = new FailedDashboardPage(), records = [];
-  page.evaluate = () => new Promise(() => {});
+  page.evaluate = () => page.calls.length ? new Promise(() => {}) : Promise.resolve(1000);
   page.goto = async (target, options) => {page.calls.push({target, options}); page.emit('domcontentloaded'); throw page.failure;};
   await bounded(() => assert.rejects(login(page, infoFor(async (_, value) => records.push(JSON.parse(value.body)))), value => value === page.failure));
   assert.deepEqual(records[0].documents, []);

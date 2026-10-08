@@ -18,7 +18,7 @@ class LayoutReceiptPrivacy(unittest.TestCase):
             root = Path(directory)
             scripts = root / "scripts/testing"
             scripts.mkdir(parents=True)
-            for name in ("test-layout-stability-local.py", "layout-stability-local.mjs",
+            for name in ("test-layout-stability-local.py", "layout-stability-local.mjs", "auth-form-navigation.ts",
                          "layout-stability-flows.mjs", "layout-stability-bookmarks.mjs",
                          "layout-stability-subtitle-search.mjs",
                          "layout-stability-subtitle-background.mjs",

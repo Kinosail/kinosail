@@ -28,7 +28,7 @@ export async function login(page: Page, info: TestInfo = test.info()) {
     } catch { /* Observation setup cannot prevent the original navigation. */ }
     finally {clearTimeout(setupTimer);}
     navigation.markNavigation("/login");
-    await openLogin(page);
+    await openLogin(page, info);
   } catch (error) {
     let timer: ReturnType<typeof setTimeout> | undefined;
     try {
@@ -55,8 +55,8 @@ export async function loginViewer(page: Page, name: string, password: string) {
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
 }
 
-async function openLogin(page: Page) {
-  const response = await gotoAuthForm(page, "/login", test.info());
+async function openLogin(page: Page, info: TestInfo = test.info()) {
+  const response = await gotoAuthForm(page, "/login", info);
   expect(response?.status()).toBe(200);
   expect(response!.request().redirectedFrom()).toBeNull();
   const url = new URL(response!.url());

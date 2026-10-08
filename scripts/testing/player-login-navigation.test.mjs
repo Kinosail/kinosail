@@ -7,6 +7,7 @@ const qaRoot = new URL('../../apps/player/e2e/', import.meta.url).href;
 const hooks = registerHooks({resolve(specifier, context, next) {
   if (context.parentURL?.startsWith(qaRoot) && new URL('.', context.parentURL).href === qaRoot
       && specifier.startsWith('./') && !/\.[a-z]+$/i.test(specifier)) return next(specifier + '.ts', context);
+  if (context.parentURL === qaRoot + 'test-instance-helpers.ts' && specifier === '../../../scripts/testing/auth-form-navigation') return next(specifier + '.ts', context);
   return next(specifier, context);
 }});
 const {login, finishRootSignIn} = await import('../../apps/player/e2e/test-instance-helpers.ts');
@@ -22,7 +23,8 @@ class FailedLoginPage extends EventEmitter {
     this.calls.push({target, options});
     throw this.failure;
   }
-  async evaluate() {return {readyState: 'complete', libraryMarker: false, loginForm: true, timeOrigin: 1000};}
+  context() {return {browser: () => ({browserType: () => ({name: () => 'chromium'})})};}
+  async evaluate() {if (!this.calls.length) return 1000; return {readyState: 'complete', libraryMarker: false, loginForm: true, timeOrigin: 1000};}
   url() {return 'https://owned.fixture/login?secret=private-synthetic-marker';}
   getByLabel() {throw new Error('credentials or form actions must not run after failed navigation');}
 }
@@ -35,7 +37,7 @@ for (const brokenAttachment of [false, true]) {
         if (brokenAttachment) throw new Error('attachment unavailable');
       }};
     await assert.rejects(login(page, info), error => error === page.failure);
-    assert.deepEqual(page.calls, [{target: '/login', options: {waitUntil: 'domcontentloaded'}}]);
+    assert.deepEqual(page.calls, [{target: '/login', options: {waitUntil: 'commit', timeout: 10000}}]);
     assert.equal(attachments.length, 1);
     const value = JSON.parse(attachments[0].value.body);
     assert.equal(value.errorCategory, 'timeout');
@@ -49,7 +51,7 @@ for (const brokenAttachment of [false, true]) {
 
 test('a stalled document evaluation cannot keep failed login diagnostics alive', async () => {
   const page = new FailedLoginPage();
-  page.evaluate = () => new Promise(() => {});
+  page.evaluate = () => page.calls.length ? new Promise(() => {}) : Promise.resolve(1000);
   const info = {project: {use: {baseURL: 'https://owned.fixture'}}, attach: async () => {}};
   let timer;
   try {
@@ -88,7 +90,7 @@ for (const setup of ['reject', 'stall']) test(`observation setup ${setup} cannot
       new Promise((_, reject) => {timer = setTimeout(() => reject(new Error('observation prevented navigation')), 1500);}),
     ]);
   } finally {clearTimeout(timer);}
-  assert.deepEqual(page.calls, [{target: '/login', options: {waitUntil: 'domcontentloaded'}}]);
+  assert.deepEqual(page.calls, [{target: '/login', options: {waitUntil: 'commit', timeout: 10000}}]);
   assert.equal(JSON.parse(attachments.at(-1).body).errorCategory, 'timeout');
   assert.equal(page.eventNames().length, 0);
 });
@@ -98,7 +100,7 @@ for (const setup of ['reject', 'stall']) test(`observation setup ${setup} cannot
 test('initial blank lifecycle and unavailable renderer never fabricate target completion', async () => {
   const page = new FailedLoginPage(), attachments = [];
   page.url = () => 'about:blank';
-  page.evaluate = async () => {throw new Error('renderer closed');};
+  page.evaluate = async () => {if (!page.calls.length) return 1000; throw new Error('renderer closed');};
   page.goto = async (target, options) => {
     page.calls.push({target, options});
     page.emit('domcontentloaded'); page.emit('load');
@@ -111,7 +113,7 @@ test('initial blank lifecycle and unavailable renderer never fabricate target co
   assert.deepEqual(value.documents, []);
   assert.ok(value.lifecycle.some(record => record.kind === 'navigation-start' && record.route.path === '/login'));
   assert.ok(value.lifecycle.filter(record => ['domcontentloaded', 'load'].includes(record.kind)).every(record => record.route.path === 'blank'));
-  assert.deepEqual(page.calls, [{target: '/login', options: {waitUntil: 'domcontentloaded'}}]);
+  assert.deepEqual(page.calls, [{target: '/login', options: {waitUntil: 'commit', timeout: 10000}}]);
   assert.equal(page.eventNames().length, 0);
 });
 

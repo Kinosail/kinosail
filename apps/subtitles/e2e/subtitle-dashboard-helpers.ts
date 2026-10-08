@@ -29,7 +29,7 @@ export async function login(page: import("@playwright/test").Page, info?: import
     if ("PublicKeyCredential" in window) Object.defineProperty(PublicKeyCredential, "isConditionalMediationAvailable", { value: async () => false });
   });
   navigation.markNavigation("/login?next=/");
-  const response = await gotoAuthForm(page, "/login?next=/", test.info());
+  const response = await gotoAuthForm(page, "/login?next=/", info ?? test.info());
   expect(response?.status()).toBe(200);
   expect(response!.request().redirectedFrom()).toBeNull();
   const loginURL = new URL(response!.url());

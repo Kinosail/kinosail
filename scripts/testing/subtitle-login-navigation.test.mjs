@@ -1,7 +1,15 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {EventEmitter} from 'node:events';
-import {login} from '../../apps/subtitles/e2e/test-instance-helpers.ts';
+import {registerHooks} from 'node:module';
+const parent = new URL('../../apps/subtitles/e2e/test-instance-helpers.ts', import.meta.url).href;
+const hooks = registerHooks({resolve(specifier, context, next) {
+  if (context.parentURL === parent && specifier === '../../../scripts/testing/auth-form-navigation')
+    return next(specifier + '.ts', context);
+  return next(specifier, context);
+}});
+const {login} = await import('../../apps/subtitles/e2e/test-instance-helpers.ts');
+hooks.deregister();
 
 // Failure modes: retrying failed navigation; submitting credentials after failure;
 // diagnostic attachment masking the original error; and retained listeners.
@@ -13,7 +21,8 @@ class FailedLoginPage extends EventEmitter {
     this.calls.push({target, options});
     throw this.failure;
   }
-  async evaluate() {return {readyState: 'complete', libraryMarker: false, loginForm: true, timeOrigin: 1000};}
+  context() {return {browser: () => ({browserType: () => ({name: () => 'chromium'})})};}
+  async evaluate() {if (!this.calls.length) return 1000; return {readyState: 'complete', libraryMarker: false, loginForm: true, timeOrigin: 1000};}
   url() {return 'https://owned.fixture/login?secret=private-synthetic-marker';}
   getByLabel() {throw new Error('credentials or form actions must not run after failed navigation');}
 }
@@ -26,7 +35,7 @@ for (const brokenAttachment of [false, true]) {
         if (brokenAttachment) throw new Error('attachment unavailable');
       }};
     await assert.rejects(login(page, info), error => error === page.failure);
-    assert.deepEqual(page.calls, [{target: '/login', options: {waitUntil: 'commit'}}]);
+    assert.deepEqual(page.calls, [{target: '/login', options: {waitUntil: 'commit', timeout: 10000}}]);
     assert.equal(attachments.length, 1);
     const value = JSON.parse(attachments[0].value.body);
     assert.equal(value.errorCategory, 'timeout');
@@ -40,7 +49,7 @@ for (const brokenAttachment of [false, true]) {
 
 test('a stalled document evaluation cannot keep failed login diagnostics alive', async () => {
   const page = new FailedLoginPage();
-  page.evaluate = () => new Promise(() => {});
+  page.evaluate = () => page.calls.length ? new Promise(() => {}) : Promise.resolve(1000);
   const info = {project: {use: {baseURL: 'https://owned.fixture'}}, attach: async () => {}};
   let timer;
   try {
@@ -79,7 +88,7 @@ for (const setup of ['reject', 'stall']) test(`observation setup ${setup} cannot
       new Promise((_, reject) => {timer = setTimeout(() => reject(new Error('observation prevented navigation')), 1500);}),
     ]);
   } finally {clearTimeout(timer);}
-  assert.deepEqual(page.calls, [{target: '/login', options: {waitUntil: 'commit'}}]);
+  assert.deepEqual(page.calls, [{target: '/login', options: {waitUntil: 'commit', timeout: 10000}}]);
   assert.equal(JSON.parse(attachments.at(-1).body).errorCategory, 'timeout');
   assert.equal(page.eventNames().length, 0);
 });
