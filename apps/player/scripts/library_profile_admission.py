@@ -84,13 +84,18 @@ CAMERA_CASES = (
 
 def selection(arguments):
     if (not isinstance(arguments, (tuple, list)) or len(arguments) != 3
-            or arguments[0] not in ('library-owner', 'camera-fake', 'responsive-shell') or arguments[1] not in PROJECTS
+            or arguments[0] not in ('library-owner', 'camera-fake', 'responsive-shell', 'playback-start') or arguments[1] not in PROJECTS
             or arguments[2] != 'fresh'):
         raise ValueError('fixed library profile/project/fresh state required')
     return tuple(arguments)
 
 
-def profile_cases(profile):
+def profile_cases(profile, project=None):
+    if project is not None and project not in PROJECTS:
+        raise ValueError('fixed project required')
+    if profile == 'playback-start':
+        from playback_profile_cases import selected_cases
+        return selected_cases(project)
     if profile == 'responsive-shell':
         from responsive_profile_cases import CASES as responsive_cases
         return responsive_cases
@@ -104,12 +109,15 @@ def profile_cases(profile):
 def playwright_arguments(project, discovery, profile='library-owner'):
     """One exact selector for discovery and execution; no process effects."""
     selection((profile, project, 'fresh'))
-    cases = profile_cases(profile)
+    cases = profile_cases(profile, project)
     if type(discovery) is not bool:
         raise ValueError('explicit discovery mode required')
     arguments = ['exec', 'playwright', 'test', *sorted({file for file, _ in cases}),
                  f'--project={project}', '--workers=1', '--retries=0', '--repeat-each=1',
-                 '--grep', '(?:' + '|'.join(re.escape(title + (' @smoke' if file == 'test-instance-watched-departure.spec.ts' else ''))
+                 '--grep', '(?:' + '|'.join(re.escape(title.replace(' › ', ' ') + (' @smoke' if file == 'test-instance-watched-departure.spec.ts'
+                                              or file == 'playback-startup.spec.ts' and title in (
+                                                  'blocked autoplay leaves one Play control that starts compatible video from saved progress',
+                                                  'blocked autoplay leaves one Play control that starts automatic video from saved progress') else ''))
                                           for file, title in cases) + ')$']
     return arguments + (['--list', '--reporter=json'] if discovery else [])
 
@@ -175,12 +183,17 @@ def admit(raw, profile, project, state, completed):
     try:
         value = json.loads(raw.decode('utf-8'), object_pairs_hook=unique_object,
                            parse_constant=invalid_number, parse_float=finite_number)
-        return admit_report(value, project, completed, profile_cases(profile))
+        skips = {}
+        if profile == 'playback-start':
+            from playback_profile_cases import expected_skips
+            skips = expected_skips(project)
+        return admit_report(value, project, completed, profile_cases(profile, project), skips)
     except (KeyError, TypeError, AttributeError, UnicodeError, RecursionError) as error:
         raise ValueError('invalid fixed library proof') from error
 
 
-def admit_report(value, project, completed, cases):
+def admit_report(value, project, completed, cases, skips=None):
+    skips = skips or {}
     count = len(cases)
     if not isinstance(value, dict) or value['errors'] != []:
         raise ValueError('invalid proof')
@@ -193,7 +206,7 @@ def admit_report(value, project, completed, cases):
             or type(configured['repeatEach']) is not int or configured['repeatEach'] != 1):
         raise ValueError('one first attempt required')
     stats = value['stats']
-    for name, expected_count in (('expected', count if completed else 0), ('skipped', 0 if completed else count), ('unexpected', 0), ('flaky', 0)):
+    for name, expected_count in (('expected', count-len(skips) if completed else 0), ('skipped', len(skips) if completed else count), ('unexpected', 0), ('flaky', 0)):
         if type(stats[name]) is not int or stats[name] != expected_count:
             raise ValueError('exact result counts required')
     if not isinstance(value['suites'], list) or len(value['suites']) > 64:
@@ -227,15 +240,19 @@ def admit_report(value, project, completed, cases):
             if not isinstance(tests, list) or len(tests) != 1:
                 raise ValueError('one project per identity required')
             test = tests[0]
-            if test['projectName'] != project or test['expectedStatus'] != 'passed':
+            reason = skips.get(identity[:2]) if completed else None
+            if test['projectName'] != project or test['expectedStatus'] != ('skipped' if reason else 'passed'):
                 raise ValueError('wrong project or expected status')
             results = test['results']
             if completed:
-                if spec['ok'] is not True or test['status'] != 'expected' or not isinstance(results, list) or len(results) != 1:
+                if spec['ok'] is not True or test['status'] != ('skipped' if reason else 'expected') or not isinstance(results, list) or len(results) != 1:
                     raise ValueError('one passing result required')
                 result = results[0]
-                if result['status'] != 'passed' or type(result['retry']) is not int or result['retry'] != 0 or result['errors'] != []:
+                if result['status'] != ('skipped' if reason else 'passed') or type(result['retry']) is not int or result['retry'] != 0 or result['errors'] != []:
                     raise ValueError('first attempt pass required')
+                if reason:
+                    from playback_profile_cases import admit_skip
+                    admit_skip(test, result, reason)
             elif results != []:
                 raise ValueError('discovery is not execution')
             found.add(identity)

@@ -97,7 +97,8 @@ if library:
     receipt.update(profile=args.profile, project=args.project, state=args.state,
                    selection={'camera-fake': 'closed19 synthetic camera identities',
                               'library-owner': 'closed46 library Owner identities',
-                              'responsive-shell': 'closed99 responsive Owner identities'}[args.profile],
+                              'responsive-shell': 'closed99 responsive Owner identities',
+                              'playback-start': 'closed27/25 playback identities with explicit CDP dispositions'}[args.profile],
                    discoverySHA256=hashlib.sha256(discovery).hexdigest())
 
 
@@ -181,6 +182,12 @@ try:
             raw = read_proof(result_path)
             identities = admit(raw, args.profile, project, args.state, True)
             receipt['journeys'] = {'count': len(identities), 'resultsSHA256': hashlib.sha256(raw).hexdigest()}
+            if args.profile == 'playback-start':
+                from playback_profile_cases import expected_skips
+                skips = expected_skips(project)
+                receipt['journeys'].update(selected=len(identities), passed=len(identities)-len(skips), retries=0,
+                    allowedSkipped=[{'file': file, 'fullTitle': title, 'reason': reason}
+                                    for (file, title), reason in sorted(skips.items())])
         else:
             receipt['journeys'] = verify_results(result_path, args.required_title)
 except (RuntimeError, KeyError, OSError, ValueError) as error:
