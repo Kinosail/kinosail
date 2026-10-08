@@ -8,8 +8,11 @@ export function observeAcceptedDocumentStates(page: Page) {
   const accepted: Array<{id: string; claim: string}> = [];
   page.on("response", async response => {
     const match = new URL(response.url()).pathname.match(/^\/api\/v1\/home-assistant\/players\/([A-Za-z0-9_-]+)$/);
-    if (match && response.request().method() === "PUT" && response.status() === 200 && accepted.length < 100)
-      accepted.push({id: match[1], claim: (await response.request().allHeaders())["x-kinosail-player-claim"] || ""});
+    if (!match || response.request().method() !== "PUT" || response.status() !== 200) return;
+    try {
+      const claim = (await response.request().allHeaders())["x-kinosail-player-claim"] || "";
+      if (accepted.length < 100) accepted.push({id: match[1], claim});
+    } catch (_) { /* A retired page cannot produce an accepted observation. */ }
   });
   return accepted;
 }
