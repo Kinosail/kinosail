@@ -37,6 +37,10 @@ on:
       - "scripts/testing/responsive-failure-witness.test.mjs"
       - "apps/player/e2e/offline-browser-api.mjs"
       - "scripts/testing/offline-browser-api.test.mjs"
+      - "apps/player/e2e/offline-opfs-fixture.mjs"
+      - "scripts/testing/offline-opfs-fixture.test.mjs"
+      - "apps/player/e2e/offline-seek-witness.mjs"
+      - "scripts/testing/offline-seek-witness.test.mjs"
       - "scripts/ci/test_camera_profile_admission.py"
       - "apps/player/e2e/camera-profile-fixture.ts"
       - "apps/player/e2e/quick-connect-scan.spec.ts"
@@ -775,7 +779,7 @@ jobs:
           from library_profile_admission import profile_cases, playwright_arguments
           project = os.environ['PROFILE_PROJECT']
           CASES = profile_cases('offline-storage', project)
-          paths = sorted({f'apps/player/e2e/{file}' for file, _ in CASES} | {'apps/player/internal/server/assets.go', 'apps/player/Containerfile.test', 'apps/player/e2e/pnpm-lock.yaml', 'apps/player/scripts/library_profile_admission.py', 'apps/player/e2e/test-instance-network.ts', 'apps/player/e2e/offline-browser-api.mjs', 'scripts/ci/library-internal-relay.mjs', 'scripts/ci/browser-fixture-tls.sh', 'scripts/ci/run-populated-settings.py', 'apps/player/scripts/generate-test-media.sh', 'scripts/testing/navigation-diagnostics.mjs', 'apps/player/e2e/test-instance-helpers.ts', 'scripts/testing/auth-form-navigation.ts', 'apps/player/scripts/run-library-profile.sh', 'apps/player/scripts/library_transport_receipt.py', 'apps/player/scripts/offline_profile_cases.py', 'apps/player/internal/server/server.go', 'apps/player/e2e/static-sources.ts', 'apps/player/Containerfile', 'apps/player/internal/server/static/player.js', 'apps/player/e2e/playwright.config.ts'})
+          paths = sorted({f'apps/player/e2e/{file}' for file, _ in CASES} | {'apps/player/internal/server/assets.go', 'apps/player/Containerfile.test', 'apps/player/e2e/pnpm-lock.yaml', 'apps/player/scripts/library_profile_admission.py', 'apps/player/e2e/test-instance-network.ts', 'apps/player/e2e/offline-browser-api.mjs', 'apps/player/e2e/offline-opfs-fixture.mjs', 'apps/player/e2e/offline-seek-witness.mjs', 'scripts/ci/library-internal-relay.mjs', 'scripts/ci/browser-fixture-tls.sh', 'scripts/ci/run-populated-settings.py', 'apps/player/scripts/generate-test-media.sh', 'scripts/testing/navigation-diagnostics.mjs', 'apps/player/e2e/test-instance-helpers.ts', 'scripts/testing/auth-form-navigation.ts', 'apps/player/scripts/run-library-profile.sh', 'apps/player/scripts/library_transport_receipt.py', 'apps/player/scripts/offline_profile_cases.py', 'apps/player/internal/server/server.go', 'apps/player/e2e/static-sources.ts', 'apps/player/Containerfile', 'apps/player/internal/server/static/player.js', 'apps/player/e2e/playwright.config.ts'})
           receipt = {'revision': os.environ['PROOF_REVISION'], 'profile': 'offline-storage', 'project': project,
                      'state': 'fresh', 'identities': [{'file': file, 'fullTitle': title} for file, title in CASES],
                      'discoveryOnly': True, 'command': playwright_arguments(project, False, 'offline-storage'),

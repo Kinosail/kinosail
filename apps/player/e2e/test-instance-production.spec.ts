@@ -3,6 +3,7 @@ import { test } from "./test-instance-network";
 import AxeBuilder from "@axe-core/playwright";
 import { configureTestInstance, login } from "./test-instance-helpers";
 import { offlineBrowserAPI, offlineFixture } from "./offline-browser-api.mjs";
+import { offlineSeekWitness } from "./offline-seek-witness.mjs";
 
 configureTestInstance();
 
@@ -98,17 +99,23 @@ test("a real offline download plays and seeks after the network disconnects", as
     return { status: response.status, length: (await response.arrayBuffer()).byteLength };
   }, id);
   expect(offlineProbe).toEqual({ status: 206, length: 2 });
-  await connection.disconnect();
+  const witness = offlineSeekWitness(page, baseURL, id);
   try {
+    await connection.disconnect();
+    witness.disconnected();
     await page.goto(`/offline?job=${id}`);
     const media = page.locator("video");
+    await witness.arm();
     await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThanOrEqual(2);
     await media.evaluate((video: HTMLVideoElement) => video.play());
     await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(0.2);
-    await media.evaluate((video: HTMLVideoElement) => { video.currentTime = 4; });
+    await witness.seek(media);
     await expect.poll(() => media.evaluate((video: HTMLVideoElement) => !video.seeking && video.currentTime >= 4)).toBeTruthy();
     await page.screenshot({ path: testInfo.outputPath("offline-playback.png") });
-  } finally { await connection.disconnect(); }
+  } catch (error) {
+    await witness.attachFailure(testInfo);
+    throw error;
+  } finally { await witness.stop(); await connection.disconnect(); }
 });
 
 test("video and music open the receiver picker and restore focus", async ({ page, baseURL }, testInfo) => {

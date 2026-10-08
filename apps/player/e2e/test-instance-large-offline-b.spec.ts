@@ -1,13 +1,25 @@
 import { expect, test } from "@playwright/test";
 import { createHash } from "node:crypto";
+import { withOPFSPage, writeOrphanedOPFS } from "./offline-opfs-fixture.mjs";
 import { configureTestInstance, downloadsSource, firstPlayable, login } from "./test-instance-helpers";
 
 configureTestInstance();
 test.use({ serviceWorkers: "block" });
+const opfsTest = test.extend({
+  page: async ({ page, browserName, playwright, baseURL, viewport, userAgent, deviceScaleFactor, isMobile, hasTouch }, use, info) => {
+    await withOPFSPage({page, browserName, webkit: playwright.webkit, baseURL, viewport, userAgent, deviceScaleFactor, isMobile, hasTouch}, async ownedPage => {
+      await info.attach("offline-opfs-context", {contentType: "application/json", body: JSON.stringify({
+        schemaVersion: 1, engine: browserName, mode: browserName === "webkit" ? "persistent-owned" : "ordinary",
+        serviceWorkers: "block", tlsBypass: false,
+      })});
+      await use(ownedPage);
+    });
+  },
+});
 
 test.describe("large offline transfers", () => {
 
-  test("offline resume does not count an orphaned OPFS write twice against quota", async ({ page }) => {
+  opfsTest("offline resume does not count an orphaned OPFS write twice against quota", async ({ page }) => {
     await page.route((url) => url.pathname === "/static/downloads.js", (route) => route.fulfill({ contentType: "text/javascript", body: downloadsSource.replace("const chunkSize = 8 * 1024 * 1024;", "const chunkSize = 16;") }));
     await page.addInitScript(() => {
       const worker = { scriptURL: new URL("/service-worker.js?v=55", location.href).href, state: "activated" };
@@ -53,27 +65,7 @@ test.describe("large offline transfers", () => {
         headers: { "Content-Digest": `sha-256=:${createHash("sha256").update(body).digest("base64")}:`, "Content-Range": `bytes ${start}-${end}/${media.length}` },
       });
     });
-    const supportsOPFS = await page.evaluate(async (id) => {
-      // Match the production writer's worker API; Window createWritable is not portable.
-      const scope = async (jobID: string) => {
-        if (typeof FileSystemFileHandle === "undefined" || !FileSystemFileHandle.prototype.createSyncAccessHandle) return self.postMessage({ supported: false });
-        try {
-          const file = await (await navigator.storage.getDirectory()).getFileHandle(jobID, { create: true });
-          const writer = await file.createSyncAccessHandle();
-          try { writer.write(new Uint8Array(16).fill(1)); writer.flush(); }
-          finally { writer.close(); }
-          self.postMessage({ supported: true });
-        } catch (error) { self.postMessage({ error: String(error) }); }
-      };
-      const url = URL.createObjectURL(new Blob([`(${scope.toString()})(${JSON.stringify(id)})`], { type: "text/javascript" }));
-      const worker = new Worker(url);
-      try {
-        return await new Promise<boolean>((resolve, reject) => {
-          worker.onmessage = ({ data }) => data.error ? reject(new Error(data.error)) : resolve(data.supported);
-          worker.onerror = reject;
-        });
-      } finally { worker.terminate(); URL.revokeObjectURL(url); }
-    }, jobID!);
+    const supportsOPFS = await page.evaluate(writeOrphanedOPFS, jobID!);
     await test.info().attach("offline-opfs-capability", { contentType: "application/json", body: JSON.stringify({ schemaVersion: 1, writer: "opfs-sync-worker", supported: supportsOPFS }) });
     test.skip(!supportsOPFS, "This engine lacks the OPFS sync writer; IndexedDB quota resume is covered separately.");
     await page.evaluate(({ id, itemID, profileID, quality, sha256, size, title }) => new Promise<void>((resolve, reject) => {
