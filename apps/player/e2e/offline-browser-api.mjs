@@ -103,13 +103,19 @@ function players(data) {
     ids.add(player.id);return {itemId: player.itemId ?? null};
   });
 }
-export async function offlineBrowserAPI(page, operation) {
+export async function offlineBrowserAPI(page, operation, baseURL) {
   if (!operations.includes(operation)) throw new Error('invalid offline API operation');
-  const rawURL = page.url(); if (typeof rawURL !== 'string' || rawURL.length > 2048) throw new Error('invalid offline origin');
-  const url = new URL(rawURL);
-  if (!['http:', 'https:'].includes(url.protocol) || !['localhost', '127.0.0.1'].includes(url.hostname)
-      || url.username || url.password || url.port === '0' || url.hash) throw new Error('invalid offline origin');
-  const raw = await page.evaluate(offlineBrowserFetch, {operation, origin: url.origin});
+  if (typeof baseURL !== 'string' || !baseURL || baseURL.length > 2048) throw new Error('invalid offline fixture origin');
+  let fixture, current;
+  try {fixture = new URL(baseURL);} catch {throw new Error('invalid offline fixture origin');}
+  if (!['http:', 'https:'].includes(fixture.protocol) || !['localhost', '127.0.0.1'].includes(fixture.hostname)
+      || fixture.username || fixture.password || fixture.port === '0'
+      || ![fixture.origin, fixture.origin + '/'].includes(baseURL)) throw new Error('invalid offline fixture origin');
+  const rawURL = page.url();
+  if (typeof rawURL !== 'string' || rawURL.length > 2048) throw new Error('invalid offline origin');
+  try {current = new URL(rawURL);} catch {throw new Error('invalid offline origin');}
+  if (current.origin !== fixture.origin || current.username || current.password || current.hash) throw new Error('invalid offline origin');
+  const raw = await page.evaluate(offlineBrowserFetch, {operation, origin: fixture.origin});
   if (typeof raw !== 'string' || !raw || Buffer.byteLength(raw) > 524288) throw new Error('invalid offline API response');
   const data = parse(raw);
   if (operation === 'library') return catalog(data);
@@ -119,8 +125,13 @@ export async function offlineBrowserAPI(page, operation) {
 }
 export function offlineFixture(rows, kind) {
   const titles = {video: 'Example Movie', audio: 'Example Track One', audiobook: 'Example Audiobook'};
+  const ids = new Set();
   if (!Object.hasOwn(titles, kind) || !Array.isArray(rows) || rows.length > 512
-      || rows.some(row => !keys(row, ['id', 'kind', 'title']) || !id(row.id) || !text(row.title, 512))) throw new Error('invalid offline fixture selection');
+      || rows.some(row => {
+        if (!keys(row, ['id', 'kind', 'title']) || !id(row.id) || ids.has(row.id)
+            || !['video', 'audio', 'audiobook', 'book', 'photo'].includes(row.kind) || !text(row.title, 512) || !row.title) return true;
+        ids.add(row.id); return false;
+      })) throw new Error('invalid offline fixture selection');
   const matches = rows.filter(row => keys(row, ['id', 'kind', 'title']) && row.kind === kind && row.title === titles[kind]);
   if (matches.length !== 1 || !id(matches[0].id)) throw new Error('offline fixture identity unavailable');
   return matches[0];

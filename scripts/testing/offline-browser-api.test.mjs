@@ -1,9 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {runInNewContext} from 'node:vm';
-import {offlineBrowserAPI,offlineFixture,offlineBrowserFetch} from '../../apps/player/e2e/offline-browser-api.mjs';
+import {offlineBrowserAPI as requestOfflineBrowserAPI,offlineFixture,offlineBrowserFetch} from '../../apps/player/e2e/offline-browser-api.mjs';
 
 const origin='http://127.0.0.1:38127';
+const offlineBrowserAPI=(page,operation)=>requestOfflineBrowserAPI(page,operation,origin+'/');
 const movie={id:'0123456789abcdef',title:'Example Movie',kind:'video',progress:{}};
 const track={id:'1123456789abcdef',title:'Example Track One',kind:'audio',progress:{}};
 const book={id:'2123456789abcdef',title:'Example Audiobook',kind:'audiobook',progress:{}};
@@ -124,4 +125,34 @@ test('malformed JSON errors never include private response strings',async()=>{
 test('partial filtered or unknown catalog scope cannot establish unique fixture identity',async()=>{
  for(const patch of [{total:4},{offset:1},{view:'movies'},{sort:'unknown'},{query:'filtered'},{letter:'E'},{limit:201}])
   await assert.rejects(offlineBrowserAPI(peer({...library(),...patch}).page,'library'));
+});
+
+test('explicit fixture authority rejects invalid inputs and other loopback processes before evaluation',async()=>{
+ let evaluations=0,writes=0,attachments=0;
+ const page={url:()=>origin+'/',evaluate:async()=>{evaluations++;writes++;},attach:()=>attachments++};
+ for(const expected of [undefined,null,{},'', 'x'.repeat(2049),'not-a-url','ftp://localhost:38127/',
+  'https://foreign.example/','http://user:secret@localhost:38127/','http://localhost:0/',
+  origin+'/other',origin+'/?x=1',origin+'/#hash','http://127.0.0.1:38128/','http://127.0.0.1:038127/'])
+  await assert.rejects(requestOfflineBrowserAPI(page,'home-assistant-on',expected));
+ for(const current of ['http://127.0.0.1:38128/','https://127.0.0.1:38127/','http://localhost:38127/',
+  'https://foreign.example/','http://user@127.0.0.1:38127/',origin+'/#hash'])
+  await assert.rejects(requestOfflineBrowserAPI({...page,url:()=>current},'home-assistant-on',origin+'/'));
+ assert.equal(evaluations,0);assert.equal(writes,0);assert.equal(attachments,0);
+});
+test('the same fixture authority reaches callback and origin change rejects before fetch',async()=>{
+ const {page,effects}=peer();let received;
+ const evaluate=page.evaluate;page.evaluate=async(fn,input)=>{received=input.origin;return evaluate(fn,input);};
+ await requestOfflineBrowserAPI(page,'library',origin+'/');assert.equal(received,origin);assert.equal(effects.length,1);
+ let fetches=0;
+ await assert.rejects(async()=>runInNewContext(`(${offlineBrowserFetch.toString()})(input)`,{
+  input:{operation:'home-assistant-on',origin},location:{origin:'http://127.0.0.1:38128'},
+  document:{querySelector:()=>({content:'fixture-csrf'})},fetch:()=>fetches++,AbortSignal}));
+ assert.equal(fetches,0);
+});
+test('fixture selection rejects unknown sibling kinds and duplicate IDs before actions',()=>{
+ const row={id:movie.id,kind:movie.kind,title:movie.title};let actions=0;
+ for(const rows of [[row,{id:track.id,kind:'unknown',title:'Other'}],
+  [row,{id:movie.id,kind:'audio',title:'Other'}]])
+  assert.throws(()=>{offlineFixture(rows,'video');actions++;});
+ assert.equal(actions,0);
 });

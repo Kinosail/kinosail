@@ -44,9 +44,9 @@ test("populated library views stay accessible at desktop and phone sizes", async
   }
 });
 
-test("saved video Compatibility keeps real music and audiobook playback on their pages", async ({ page }) => {
+test("saved video Compatibility keeps real music and audiobook playback on their pages", async ({ page, baseURL }) => {
   await login(page);
-  const library = await offlineBrowserAPI(page, "library");
+  const library = await offlineBrowserAPI(page, "library", baseURL);
   for (const kind of ["audio", "audiobook"]) {
     const item = offlineFixture(library, kind);
     expect(item).toBeTruthy();
@@ -61,27 +61,27 @@ test("saved video Compatibility keeps real music and audiobook playback on their
   }
 });
 
-test("authenticated video reports its state to Home Assistant", async ({ page }) => {
+test("authenticated video reports its state to Home Assistant", async ({ page, baseURL }) => {
   await login(page);
   await page.goto("/settings");
   try {
-    const settings = await offlineBrowserAPI(page, "home-assistant-on");
+    const settings = await offlineBrowserAPI(page, "home-assistant-on", baseURL);
     expect(settings.status).toBe(200);
-    const library = await offlineBrowserAPI(page, "library");
+    const library = await offlineBrowserAPI(page, "library", baseURL);
     const item = offlineFixture(library, "video");
     expect(item).toBeTruthy();
     const report = page.waitForResponse((response) => response.request().method() === "PUT" && response.url().includes("/api/v1/home-assistant/players/"));
     await page.goto(`/watch/${item.id}`);
     expect((await report).status()).toBe(200);
-    await expect.poll(async () => (await offlineBrowserAPI(page, "players")).some((player: { itemId: string }) => player.itemId === item.id)).toBeTruthy();
+    await expect.poll(async () => (await offlineBrowserAPI(page, "players", baseURL)).some((player: { itemId: string }) => player.itemId === item.id)).toBeTruthy();
   } finally {
-    await offlineBrowserAPI(page, "home-assistant-off");
+    await offlineBrowserAPI(page, "home-assistant-off", baseURL);
   }
 });
 
-test("a real offline download plays and seeks after the network disconnects", async ({ page, connection }, testInfo) => {
+test("a real offline download plays and seeks after the network disconnects", async ({ page, connection, baseURL }, testInfo) => {
   await login(page);
-  const library = await offlineBrowserAPI(page, "library");
+  const library = await offlineBrowserAPI(page, "library", baseURL);
   const item = offlineFixture(library, "video");
   expect(item).toBeTruthy();
   await page.goto(`/watch/${item.id}`);
@@ -111,9 +111,9 @@ test("a real offline download plays and seeks after the network disconnects", as
   } finally { await connection.disconnect(); }
 });
 
-test("video and music open the receiver picker and restore focus", async ({ page }, testInfo) => {
+test("video and music open the receiver picker and restore focus", async ({ page, baseURL }, testInfo) => {
   await login(page);
-  const library = await offlineBrowserAPI(page, "library");
+  const library = await offlineBrowserAPI(page, "library", baseURL);
   const video = offlineFixture(library, "video");
   const audio = offlineFixture(library, "audio");
   for (const [kind, item] of [["video", video], ["audio", audio]] as const) {
