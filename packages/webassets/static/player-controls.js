@@ -117,7 +117,7 @@ if (controls && player.tagName === "VIDEO") {
   let nativeStarted = !player.paused && !playbackPreparation;
   const syncControls = (event) => {
     if (nativeControls) {
-      if (event?.type === "playing" && !playbackPreparation) nativeStarted = true;
+      if (event?.type === "playing" && !player.paused && !playbackPreparation) nativeStarted = true;
       controls.hidden = (!appleNativePlayback && nativeStarted) || !player.paused || Boolean(player.error);
       const timeline = settingsPanel?.querySelector("[data-native-timeline]");
       const compatible = ["remux", "audio-transcode", "transcode", "native-hls"].includes(playbackTraceMethod);
