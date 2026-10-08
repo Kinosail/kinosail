@@ -28,13 +28,23 @@ on:
       - "apps/player/e2e/camera-profile-fixture.ts"
       - "apps/player/e2e/quick-connect-scan.spec.ts"
       - "scripts/testing/camera-profile-fixture.test.mjs"
+      - "apps/player/scripts/playback_profile_cases.py"
+      - "apps/player/scripts/offline_profile_cases.py"
+      - "apps/player/scripts/provider_profile_cases.py"
+      - "apps/player/e2e/provider-profile-fixture.ts"
+      - "scripts/testing/provider-profile-fixture.test.mjs"
+      - "scripts/ci/test_playback_profile_admission.py"
+      - "scripts/ci/test_offline_profile_admission.py"
+      - "scripts/ci/test_provider_profile_admission.py"
+      - "scripts/ci/test_provider_fixture_owner.py"
+      - "scripts/ci/test_remaining_profile_workflows.py"
       - ".github/workflows/layout-stability.yml"
   workflow_dispatch:
     inputs:
       campaign_proof:
         description: Run one bounded campaign proof instead of layout diagnosis
         type: choice
-        options: [none, R06, Q14, Q09, Q47, HLS, HLS-navigation, Library, Camera, Responsive, Verify-changed]
+        options: [none, R06, Q14, Q09, Q47, HLS, HLS-navigation, Library, Camera, Responsive, Playback, Offline, Provider, Verify-changed]
         default: none
       campaign_q14_suite:
         description: Select one fixed Q14 public suite; primary keeps its two repeats
@@ -176,7 +186,7 @@ jobs:
   campaign-proof:
     needs: selection-admission
     name: Bounded campaign proof
-    if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof != 'none' && inputs.campaign_proof != 'HLS' && inputs.campaign_proof != 'HLS-navigation' && inputs.campaign_proof != 'Library' && inputs.campaign_proof != 'Camera' && inputs.campaign_proof != 'Responsive' && inputs.campaign_proof != 'Verify-changed'
+    if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof != 'none' && inputs.campaign_proof != 'HLS' && inputs.campaign_proof != 'HLS-navigation' && inputs.campaign_proof != 'Library' && inputs.campaign_proof != 'Camera' && inputs.campaign_proof != 'Responsive' && inputs.campaign_proof != 'Playback' && inputs.campaign_proof != 'Offline' && inputs.campaign_proof != 'Provider' && inputs.campaign_proof != 'Verify-changed'
     runs-on: ubuntu-24.04
     timeout-minutes: 12
     env:
@@ -593,6 +603,276 @@ jobs:
             ${{ runner.temp }}/responsive99-${{ matrix.engine }}/fixture-startup.json
             ${{ runner.temp }}/responsive99-${{ matrix.engine }}/browser-results/**/trace.zip
             ${{ runner.temp }}/responsive99-${{ matrix.engine }}/browser-results/**/*.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+  playback-owner:
+    needs: selection-admission
+    name: Closed Playback27/25 (${{ matrix.engine }})
+    if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof == 'Playback'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - run: test ! -e .gates-disabled
+      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
+        with:
+          version: 11.22.0
+          install: false
+          node-version-file: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: "26"
+          package-manager-cache: false
+      - name: Verify owned internal relay admission and cleanup
+        run: node --test scripts/testing/library-relay.test.mjs
+      - name: Install pinned selected browser dependencies
+        timeout-minutes: 6
+        run: |
+          pnpm --dir apps/player/e2e install --frozen-lockfile
+          pnpm --dir apps/player/e2e exec playwright install --with-deps "${{ matrix.engine }}"
+      - name: Discover and admit only the closed Playback27/25 selection
+        env:
+          PROFILE_PROJECT: ${{ matrix.engine }}
+          KINOSAIL_BROWSER_PROJECT: ${{ matrix.engine }}
+          KINOSAIL_TEST_INSTANCE: "1"
+        run: |
+          mkdir -p ".verification/playback-${PROFILE_PROJECT}"
+          python3 apps/player/scripts/library_profile_admission.py "$PROFILE_PROJECT" discovery playback-start > "$RUNNER_TEMP/playback-argv-${PROFILE_PROJECT}"
+          mapfile -d '' -t arguments < "$RUNNER_TEMP/playback-argv-${PROFILE_PROJECT}"
+          timeout --kill-after=2s 60s pnpm --dir apps/player/e2e "${arguments[@]}" | head -c 2097153 > ".verification/playback-${PROFILE_PROJECT}/discovery.json"
+          test "$(wc -c < ".verification/playback-${PROFILE_PROJECT}/discovery.json")" -le 2097152
+          scheme=http
+          if [ "$PROFILE_PROJECT" = webkit ]; then scheme=https; fi
+          python3 scripts/ci/run-populated-settings.py --url "$scheme://localhost:38127" --output "$RUNNER_TEMP/playback-${PROFILE_PROJECT}" --profile playback-start --project "$PROFILE_PROJECT" --state fresh --discovery "$GITHUB_WORKSPACE/.verification/playback-${PROFILE_PROJECT}/discovery.json" --admit-only
+      - name: Record immutable selection and source recipe
+        env:
+          PROFILE_PROJECT: ${{ matrix.engine }}
+          PROOF_REVISION: ${{ github.sha }}
+        run: |
+          python3 - <<'PYTHON'
+          import hashlib, json, os, pathlib, sys
+          sys.path.insert(0, 'apps/player/scripts')
+          from library_profile_admission import profile_cases, playwright_arguments
+          project = os.environ['PROFILE_PROJECT']
+          CASES = profile_cases('playback-start', project)
+          paths = sorted({f'apps/player/e2e/{file}' for file, _ in CASES} | {'apps/player/internal/server/assets.go', 'apps/player/Containerfile.test', 'apps/player/e2e/pnpm-lock.yaml', 'apps/player/e2e/direct-retry-journey.ts', 'apps/player/scripts/library_profile_admission.py', 'apps/player/scripts/playback_profile_cases.py', 'scripts/ci/browser-fixture-tls.sh', 'scripts/ci/library-internal-relay.mjs', 'scripts/ci/run-populated-settings.py', 'apps/player/scripts/generate-test-media.sh', 'scripts/testing/navigation-diagnostics.mjs', 'apps/player/e2e/test-instance-helpers.ts', 'apps/player/scripts/run-library-profile.sh', 'apps/player/internal/server/server.go', 'apps/player/e2e/static-sources.ts', 'apps/player/Containerfile', 'apps/player/internal/server/static/player.js', 'apps/player/e2e/playwright.config.ts'})
+          receipt = {'revision': os.environ['PROOF_REVISION'], 'profile': 'playback-start', 'project': project,
+                     'state': 'fresh', 'identities': [{'file': file, 'fullTitle': title} for file, title in CASES],
+                     'discoveryOnly': True, 'command': playwright_arguments(project, False, 'playback-start'),
+                     'sourceSHA256': {path: hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest() for path in paths},
+                     'data': 'one disposable full-media Server and MFA Owner; owned internal network and TLS relay',
+                     'boundary': 'Chromium27; Firefox/WebKit25 including five exact CDP capability skips; no physical/native proof'}
+          pathlib.Path(f'.verification/playback-{project}/source-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+          PYTHON
+      - name: Run one disposable full-media MFA Owner and strict Playback27/25
+        env:
+          PROFILE_PROJECT: ${{ matrix.engine }}
+          CONTAINER_ENGINE: docker
+        run: ./apps/player/scripts/run-library-profile.sh "$PROFILE_PROJECT" "$GITHUB_WORKSPACE/.verification/playback-${PROFILE_PROJECT}/discovery.json" "$RUNNER_TEMP/playback-${PROFILE_PROJECT}" playback-start
+      - name: Retain bounded discovery, results and first-failure evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: playback-${{ matrix.engine }}-${{ github.sha }}
+          path: |
+            .verification/playback-${{ matrix.engine }}/discovery.json
+            .verification/playback-${{ matrix.engine }}/source-receipt.json
+            ${{ runner.temp }}/playback-${{ matrix.engine }}/setup-and-run.json
+            ${{ runner.temp }}/playback-${{ matrix.engine }}/results-${{ matrix.engine }}.json
+            ${{ runner.temp }}/playback-${{ matrix.engine }}/fixture-*.txt
+            ${{ runner.temp }}/playback-${{ matrix.engine }}/fixture-media.json
+            ${{ runner.temp }}/playback-${{ matrix.engine }}/fixture-startup.json
+            ${{ runner.temp }}/playback-${{ matrix.engine }}/browser-results/**/trace.zip
+            ${{ runner.temp }}/playback-${{ matrix.engine }}/browser-results/**/*.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+  offline-owner:
+    needs: selection-admission
+    name: Closed Offline17 (${{ matrix.engine }})
+    if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof == 'Offline'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - run: test ! -e .gates-disabled
+      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
+        with:
+          version: 11.22.0
+          install: false
+          node-version-file: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: "26"
+          package-manager-cache: false
+      - name: Verify owned internal relay admission and cleanup
+        run: node --test scripts/testing/library-relay.test.mjs
+      - name: Install pinned selected browser dependencies
+        timeout-minutes: 6
+        run: |
+          pnpm --dir apps/player/e2e install --frozen-lockfile
+          pnpm --dir apps/player/e2e exec playwright install --with-deps "${{ matrix.engine }}"
+      - name: Discover and admit only the closed Offline17 selection
+        env:
+          PROFILE_PROJECT: ${{ matrix.engine }}
+          KINOSAIL_BROWSER_PROJECT: ${{ matrix.engine }}
+          KINOSAIL_TEST_INSTANCE: "1"
+        run: |
+          mkdir -p ".verification/offline-${PROFILE_PROJECT}"
+          python3 apps/player/scripts/library_profile_admission.py "$PROFILE_PROJECT" discovery offline-storage > "$RUNNER_TEMP/offline-argv-${PROFILE_PROJECT}"
+          mapfile -d '' -t arguments < "$RUNNER_TEMP/offline-argv-${PROFILE_PROJECT}"
+          timeout --kill-after=2s 60s pnpm --dir apps/player/e2e "${arguments[@]}" | head -c 2097153 > ".verification/offline-${PROFILE_PROJECT}/discovery.json"
+          test "$(wc -c < ".verification/offline-${PROFILE_PROJECT}/discovery.json")" -le 2097152
+          scheme=http
+          if [ "$PROFILE_PROJECT" = webkit ]; then scheme=https; fi
+          python3 scripts/ci/run-populated-settings.py --url "$scheme://localhost:38127" --output "$RUNNER_TEMP/offline-${PROFILE_PROJECT}" --profile offline-storage --project "$PROFILE_PROJECT" --state fresh --discovery "$GITHUB_WORKSPACE/.verification/offline-${PROFILE_PROJECT}/discovery.json" --admit-only
+      - name: Record immutable selection and source recipe
+        env:
+          PROFILE_PROJECT: ${{ matrix.engine }}
+          PROOF_REVISION: ${{ github.sha }}
+        run: |
+          python3 - <<'PYTHON'
+          import hashlib, json, os, pathlib, sys
+          sys.path.insert(0, 'apps/player/scripts')
+          from library_profile_admission import profile_cases, playwright_arguments
+          project = os.environ['PROFILE_PROJECT']
+          CASES = profile_cases('offline-storage', project)
+          paths = sorted({f'apps/player/e2e/{file}' for file, _ in CASES} | {'apps/player/internal/server/assets.go', 'apps/player/Containerfile.test', 'apps/player/e2e/pnpm-lock.yaml', 'apps/player/scripts/library_profile_admission.py', 'apps/player/e2e/test-instance-network.ts', 'scripts/ci/library-internal-relay.mjs', 'scripts/ci/browser-fixture-tls.sh', 'scripts/ci/run-populated-settings.py', 'apps/player/scripts/generate-test-media.sh', 'scripts/testing/navigation-diagnostics.mjs', 'apps/player/e2e/test-instance-helpers.ts', 'apps/player/scripts/run-library-profile.sh', 'apps/player/scripts/offline_profile_cases.py', 'apps/player/internal/server/server.go', 'apps/player/e2e/static-sources.ts', 'apps/player/Containerfile', 'apps/player/internal/server/static/player.js', 'apps/player/e2e/playwright.config.ts'})
+          receipt = {'revision': os.environ['PROOF_REVISION'], 'profile': 'offline-storage', 'project': project,
+                     'state': 'fresh', 'identities': [{'file': file, 'fullTitle': title} for file, title in CASES],
+                     'discoveryOnly': True, 'command': playwright_arguments(project, False, 'offline-storage'),
+                     'sourceSHA256': {path: hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest() for path in paths},
+                     'data': 'one disposable full-media Server and MFA Owner; owned internal network and TLS relay',
+                     'boundary': '17selected; only exact OPFS writer capability witness may admit one named skip; no fake byte success'}
+          pathlib.Path(f'.verification/offline-{project}/source-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+          PYTHON
+      - name: Run one disposable full-media MFA Owner and strict Offline17
+        env:
+          PROFILE_PROJECT: ${{ matrix.engine }}
+          CONTAINER_ENGINE: docker
+        run: ./apps/player/scripts/run-library-profile.sh "$PROFILE_PROJECT" "$GITHUB_WORKSPACE/.verification/offline-${PROFILE_PROJECT}/discovery.json" "$RUNNER_TEMP/offline-${PROFILE_PROJECT}" offline-storage
+      - name: Retain bounded discovery, results and first-failure evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: offline-${{ matrix.engine }}-${{ github.sha }}
+          path: |
+            .verification/offline-${{ matrix.engine }}/discovery.json
+            .verification/offline-${{ matrix.engine }}/source-receipt.json
+            ${{ runner.temp }}/offline-${{ matrix.engine }}/setup-and-run.json
+            ${{ runner.temp }}/offline-${{ matrix.engine }}/results-${{ matrix.engine }}.json
+            ${{ runner.temp }}/offline-${{ matrix.engine }}/fixture-*.txt
+            ${{ runner.temp }}/offline-${{ matrix.engine }}/fixture-media.json
+            ${{ runner.temp }}/offline-${{ matrix.engine }}/fixture-startup.json
+            ${{ runner.temp }}/offline-${{ matrix.engine }}/browser-results/**/trace.zip
+            ${{ runner.temp }}/offline-${{ matrix.engine }}/browser-results/**/*.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+  provider-owner:
+    needs: selection-admission
+    name: Closed synthetic Provider15 (${{ matrix.engine }})
+    if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof == 'Provider'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - run: test ! -e .gates-disabled
+      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
+        with:
+          version: 11.22.0
+          install: false
+          node-version-file: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: "26"
+          package-manager-cache: false
+      - name: Verify owned internal relay admission and cleanup
+        run: node --test scripts/testing/library-relay.test.mjs
+      - name: Install pinned selected browser dependencies
+        timeout-minutes: 6
+        run: |
+          pnpm --dir apps/player/e2e install --frozen-lockfile
+          pnpm --dir apps/player/e2e exec playwright install --with-deps "${{ matrix.engine }}"
+      - name: Discover and admit only the closed synthetic Provider15 selection
+        env:
+          PROFILE_PROJECT: ${{ matrix.engine }}
+          KINOSAIL_BROWSER_PROJECT: ${{ matrix.engine }}
+          KINOSAIL_TEST_INSTANCE: "1"
+          KINOSAIL_PROVIDER_PROFILE: "1"
+          KINOSAIL_BROWSER_TEST: "1"
+          KINOSAIL_E2E_URL: ${{ matrix.engine == 'webkit' && 'https://localhost:38127' || 'http://localhost:38127' }}
+        run: |
+          mkdir -p ".verification/provider-${PROFILE_PROJECT}"
+          python3 apps/player/scripts/library_profile_admission.py "$PROFILE_PROJECT" discovery fake-provider > "$RUNNER_TEMP/provider-argv-${PROFILE_PROJECT}"
+          mapfile -d '' -t arguments < "$RUNNER_TEMP/provider-argv-${PROFILE_PROJECT}"
+          timeout --kill-after=2s 60s pnpm --dir apps/player/e2e "${arguments[@]}" | head -c 2097153 > ".verification/provider-${PROFILE_PROJECT}/discovery.json"
+          test "$(wc -c < ".verification/provider-${PROFILE_PROJECT}/discovery.json")" -le 2097152
+          scheme=http
+          if [ "$PROFILE_PROJECT" = webkit ]; then scheme=https; fi
+          env -u KINOSAIL_PROVIDER_PROFILE python3 scripts/ci/run-populated-settings.py --url "$scheme://localhost:38127" --output "$RUNNER_TEMP/provider-${PROFILE_PROJECT}" --profile fake-provider --project "$PROFILE_PROJECT" --state fresh --discovery "$GITHUB_WORKSPACE/.verification/provider-${PROFILE_PROJECT}/discovery.json" --admit-only
+      - name: Record immutable selection and source recipe
+        env:
+          PROFILE_PROJECT: ${{ matrix.engine }}
+          PROOF_REVISION: ${{ github.sha }}
+        run: |
+          python3 - <<'PYTHON'
+          import hashlib, json, os, pathlib, sys
+          sys.path.insert(0, 'apps/player/scripts')
+          from library_profile_admission import profile_cases, playwright_arguments
+          project = os.environ['PROFILE_PROJECT']
+          CASES = profile_cases('fake-provider', project)
+          paths = sorted({f'apps/player/e2e/{file}' for file, _ in CASES} | {'apps/player/Containerfile.test', 'apps/player/e2e/test-instance-helpers.ts', 'apps/player/internal/server/ui_state_fixtures_test.go', 'apps/player/internal/server/static/player.js', 'apps/player/e2e/playwright.config.ts', 'apps/player/scripts/provider_profile_cases.py', 'apps/player/scripts/run-library-profile.sh', 'apps/player/internal/server/server.go', 'apps/player/e2e/static-sources.ts', 'apps/player/Containerfile', 'scripts/ci/library-internal-relay.mjs', 'scripts/ci/run-populated-settings.py', 'apps/player/e2e/pnpm-lock.yaml', 'apps/player/scripts/generate-test-media.sh', 'scripts/testing/navigation-diagnostics.mjs', 'apps/player/e2e/provider-profile-fixture.ts', 'apps/player/internal/server/assets.go', 'apps/player/scripts/library_profile_admission.py', 'scripts/ci/browser-fixture-tls.sh'})
+          receipt = {'revision': os.environ['PROOF_REVISION'], 'profile': 'fake-provider', 'project': project,
+                     'state': 'fresh', 'identities': [{'file': file, 'fullTitle': title} for file, title in CASES],
+                     'discoveryOnly': True, 'command': playwright_arguments(project, False, 'fake-provider'),
+                     'sourceSHA256': {path: hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest() for path in paths},
+                     'data': 'one disposable full-media Server and MFA Owner; owned internal network and TLS relay',
+                     'boundary': '15synthetic local provider cases; HTTP route guards observed only; no real provider approval, purchase or DNS/socket proof'}
+          pathlib.Path(f'.verification/provider-{project}/source-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+          PYTHON
+      - name: Run one disposable full-media MFA Owner and strict synthetic Provider15
+        env:
+          PROFILE_PROJECT: ${{ matrix.engine }}
+          CONTAINER_ENGINE: docker
+        run: ./apps/player/scripts/run-library-profile.sh "$PROFILE_PROJECT" "$GITHUB_WORKSPACE/.verification/provider-${PROFILE_PROJECT}/discovery.json" "$RUNNER_TEMP/provider-${PROFILE_PROJECT}" fake-provider
+      - name: Retain bounded discovery, results and first-failure evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: provider-${{ matrix.engine }}-${{ github.sha }}
+          path: |
+            .verification/provider-${{ matrix.engine }}/discovery.json
+            .verification/provider-${{ matrix.engine }}/source-receipt.json
+            ${{ runner.temp }}/provider-${{ matrix.engine }}/setup-and-run.json
+            ${{ runner.temp }}/provider-${{ matrix.engine }}/results-${{ matrix.engine }}.json
+            ${{ runner.temp }}/provider-${{ matrix.engine }}/fixture-*.txt
+            ${{ runner.temp }}/provider-${{ matrix.engine }}/fixture-media.json
+            ${{ runner.temp }}/provider-${{ matrix.engine }}/fixture-startup.json
+            ${{ runner.temp }}/provider-${{ matrix.engine }}/browser-results/**/trace.zip
+            ${{ runner.temp }}/provider-${{ matrix.engine }}/browser-results/**/*.json
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
