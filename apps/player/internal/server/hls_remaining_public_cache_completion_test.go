@@ -2,7 +2,6 @@ package server_test
 
 import (
 	"context"
-	"io"
 	"log"
 	"log/slog"
 	"net/http"
@@ -28,14 +27,17 @@ func remainingPublicObservePublication(t *testing.T) *remainingPublicPublication
 	previousOutput, previousFlags := log.Writer(), log.Flags()
 	publication := &remainingPublicPublication{}
 	// A standalone sink avoids reinstalling slog's default log bridge recursively.
-	handler := slog.NewJSONHandler(io.Discard, nil)
-	slog.SetDefault(slog.New(remainingPublicCompletionHandler{Handler: handler, publication: publication}))
+	slog.SetDefault(slog.New(remainingPublicCompletionHandler{Handler: slog.DiscardHandler, publication: publication}))
 	t.Cleanup(func() {
 		slog.SetDefault(previous)
 		log.SetOutput(previousOutput)
 		log.SetFlags(previousFlags)
 	})
 	return publication
+}
+
+func (remainingPublicCompletionHandler) Enabled(_ context.Context, level slog.Level) bool {
+	return level >= slog.LevelInfo
 }
 
 func (handler remainingPublicCompletionHandler) Handle(ctx context.Context, record slog.Record) error {
