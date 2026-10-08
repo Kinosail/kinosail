@@ -37,6 +37,13 @@ prepare_audio_queue_fixture() {
   chmod -R a+rX "$1/Queue Intent Long Session"
 }
 
+prepare_home_assistant_document_fixture() {
+  local repo
+  repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+  python3 "$repo/scripts/testing/prepare-home-assistant-document-fixture.py" "$1/R18 Fictional Documents"
+  chmod -R a+rX "$1/R18 Fictional Documents"
+}
+
 run_library_pagination_journey() {
   GOMAXPROCS=2 KINOSAIL_LIBRARY_BROWSER=1 KINOSAIL_BROWSER_PROJECT="$1" \
     KINOSAIL_E2E_OUTPUT_DIR="$2" KINOSAIL_E2E_ARTIFACT_DIR="$3" \
@@ -93,5 +100,15 @@ run_populated_player_journeys() {
     --required-title 'real queued track preserves stop arriving before actual metadata' \
     --required-title 'real queued saved35 track preserves seek arriving before actual metadata' \
     --required-title 'real queued saved35 track preserves stop arriving before actual metadata' \
-    -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-watched-startup.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts test-instance-audio-queue.spec.ts test-instance-queue-loading-intent.spec.ts player-audio-policy.spec.ts player-audio-queue-lifecycle.spec.ts --grep=@smoke --workers=1
+    --required-title 'real simultaneous browser documents publish distinct Home Assistant targets' \
+    --required-title 'real public Home Assistant seek affects only its addressed browser document' \
+    --required-title 'real Home Assistant document reload retains its target without storing claim authority' \
+    --required-title 'player serves the exact composed Home Assistant document asset' \
+    --required-title 'real document targets work with denied storage and unavailable UUID and locks' \
+    --required-title 'real cloned document candidate forks after occupied claim without stealing the live target' \
+    --required-title 'real lost-release reload waits for lease expiry and renews only its original target' \
+    --required-title 'actual authenticated Profile switch retires old document command effects' \
+    --required-title 'rendered document claim failure exposes accessible Retry and recovers with a real claim' \
+    --required-title 'actual history return records document reentry separately from persisted playable BFCache admission' \
+    -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-watched-startup.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts test-instance-audio-queue.spec.ts test-instance-queue-loading-intent.spec.ts player-audio-policy.spec.ts player-audio-queue-lifecycle.spec.ts test-instance-home-assistant-documents.spec.ts test-instance-home-assistant-assets.spec.ts test-instance-home-assistant-lifecycle.spec.ts --grep=@smoke --workers=1
 }
