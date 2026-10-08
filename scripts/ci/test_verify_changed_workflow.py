@@ -9,7 +9,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 CALLER = ROOT / 'scripts/ci/run-verify-changed.sh'
-WORKFLOW = ROOT / '.github/workflows/verify-changed.yml'
+WORKFLOW = ROOT / '.github/workflows/layout-stability.yml'
 
 
 class VerifyChangedWorkflowTests(unittest.TestCase):
@@ -81,11 +81,13 @@ else:
                     self.assertTrue((root / '.verification/verify-changed' / (app + '-stages.tar.gz')).is_file())
 
     def test_manual_only_closed_selection_and_pinned_tools_precede_literal_targets(self):
-        text = WORKFLOW.read_text()
-        self.assertIn('workflow_dispatch:', text)
-        self.assertNotIn('pull_request:', text)
-        self.assertNotIn('schedule:', text)
-        self.assertIn('options: [both, player, subtitles]', text)
+        source = WORKFLOW.read_text()
+        self.assertIn('workflow_dispatch:', source)
+        self.assertIn('Verify-changed]', source)
+        text = source.split('  literal-verify:\n', 1)[1]
+        self.assertIn('needs: selection-admission', text)
+        self.assertIn("inputs.campaign_proof == 'Verify-changed'", text)
+        self.assertIn('APP_SELECTION: both', text)
         self.assertIn('fetch-depth: 0', text)
         self.assertIn('ref: ${{ github.sha }}', text)
         self.assertIn('version: 11.22.0', text)
@@ -96,6 +98,21 @@ else:
                         text.index('actions/setup-go@'))
         self.assertIn('if: always()', text)
         self.assertIn('run-verify-changed.sh "$APP_SELECTION"', text)
+
+    def test_actual_layout_selection_rejects_every_unused_override(self):
+        defaults = ['false', 'false', 'false', 'false', 'primary', 'protocol', 'source-format', 'false']
+        argv = [sys.executable, str(ROOT / 'scripts/ci/validate-layout-selection.py')]
+        valid = ['workflow_dispatch', 'Verify-changed', *defaults]
+        result = subprocess.run([*argv, *valid], capture_output=True, timeout=3)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        rejected = [['pull_request', *valid[1:]], valid[:-1], [*valid, 'extra']]
+        for index, value in enumerate(('true', 'true', 'true', 'true', 'navigation', 'save-body', 'primary', 'true')):
+            values = defaults.copy(); values[index] = value
+            rejected.append(['workflow_dispatch', 'Verify-changed', *values])
+        for args in rejected:
+            result = subprocess.run([*argv, *args], capture_output=True, timeout=3)
+            self.assertEqual(result.returncode, 2)
+            self.assertEqual(result.stdout, b'')
 
     def test_target_source_preserves_order_real_base_and_failure_artifacts(self):
         text = CALLER.read_text()

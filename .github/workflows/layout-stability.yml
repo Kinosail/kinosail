@@ -13,6 +13,9 @@ on:
       - "scripts/ci/test_layout_selection.py"
       - "apps/player/scripts/run-library-profile.sh"
       - "scripts/ci/library-internal-relay.mjs"
+      - "scripts/ci/run-verify-changed.sh"
+      - "scripts/ci/test_verify_changed_workflow.py"
+      - "scripts/ci/test_verify_changed_failures.py"
       - "scripts/testing/library-relay.test.mjs"
       - "apps/player/scripts/library_profile_admission.py"
       - "scripts/ci/run-populated-settings.py"
@@ -28,7 +31,7 @@ on:
       campaign_proof:
         description: Run one bounded campaign proof instead of layout diagnosis
         type: choice
-        options: [none, R06, Q14, Q09, Q47, HLS, HLS-navigation, Library, Camera]
+        options: [none, R06, Q14, Q09, Q47, HLS, HLS-navigation, Library, Camera, Verify-changed]
         default: none
       campaign_q14_suite:
         description: Select one fixed Q14 public suite; primary keeps its two repeats
@@ -170,7 +173,7 @@ jobs:
   campaign-proof:
     needs: selection-admission
     name: Bounded campaign proof
-    if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof != 'none' && inputs.campaign_proof != 'HLS' && inputs.campaign_proof != 'HLS-navigation' && inputs.campaign_proof != 'Library' && inputs.campaign_proof != 'Camera'
+    if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof != 'none' && inputs.campaign_proof != 'HLS' && inputs.campaign_proof != 'HLS-navigation' && inputs.campaign_proof != 'Library' && inputs.campaign_proof != 'Camera' && inputs.campaign_proof != 'Verify-changed'
     runs-on: ubuntu-24.04
     timeout-minutes: 12
     env:
@@ -675,3 +678,87 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
+
+  literal-verify:
+    needs: selection-admission
+    name: Literal Player and Subtitles verification
+    if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof == 'Verify-changed'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      APP_SELECTION: both
+      CONTAINER_ENGINE: docker
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Admit closed selection before tool and app effects
+        run: bash scripts/ci/run-verify-changed.sh "$APP_SELECTION" --admit-only
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version-file: go.work
+          cache-dependency-path: "**/go.sum"
+      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
+        with:
+          version: 11.22.0
+          install: false
+          node-version-file: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 26
+          package-manager-cache: false
+      - name: Install existing pinned verification tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libarchive-tools ffmpeg
+          go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.13.1
+          go install golang.org/x/vuln/cmd/govulncheck@v1.7.0
+          tools="$RUNNER_TEMP/verify-tools"
+          mkdir "$tools"
+          curl --proto '=https' --tlsv1.2 --fail --location --max-time 120 --max-filesize 16777216 --output "$tools/shellcheck.tar.gz" https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.linux.x86_64.tar.gz
+          curl --proto '=https' --tlsv1.2 --fail --location --max-time 120 --max-filesize 16777216 --output "$tools/actionlint.tar.gz" https://github.com/kjanat/actionlint/releases/download/v1.17.0/actionlint_1.17.0_linux_amd64.tar.gz
+          printf '%s  %s\n' b7af85e41cc99489dcc21d66c6d5f3685138f06d34651e6d34b42ec6d54fe6f6 "$tools/shellcheck.tar.gz" 620abd485a12b6ab1125b844a876414e1d5bd2af8a3125b27f82b01d0d9d6e5a "$tools/actionlint.tar.gz" | sha256sum --check --strict
+          tar -xzf "$tools/shellcheck.tar.gz" -C "$tools" shellcheck-v0.11.0/shellcheck
+          tar -xzf "$tools/actionlint.tar.gz" -C "$tools" actionlint
+          printf '%s\n' "$tools/shellcheck-v0.11.0" "$tools" >> "$GITHUB_PATH"
+          for app in player subtitles; do
+            if [ "$APP_SELECTION" = both ] || [ "$APP_SELECTION" = "$app" ]; then
+              pnpm --dir "apps/$app/e2e" install --frozen-lockfile
+            fi
+          done
+      - name: Record the installed verification environment
+        run: |
+          {
+            go version
+            node --version
+            pnpm --version
+            golangci-lint --version
+            govulncheck -version
+            shellcheck --version
+            actionlint --version
+            ffmpeg -version
+            ffprobe -version
+            docker version
+          } > "$RUNNER_TEMP/verify-tool-versions.txt"
+      - name: Run selected literal targets serially
+        run: bash scripts/ci/run-verify-changed.sh "$APP_SELECTION"
+      - name: Keep revision and actual verification stage logs
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: literal-verify-changed-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/verify-tool-versions.txt
+            .verification/verify-changed/receipt.json
+            .verification/verify-changed/revisions.txt
+            .verification/verify-changed/results.txt
+            .verification/verify-changed/fetch.log
+            .verification/verify-changed/player.log
+            .verification/verify-changed/player-stages.tar.gz
+            .verification/verify-changed/subtitles.log
+            .verification/verify-changed/subtitles-stages.tar.gz
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 3

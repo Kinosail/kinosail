@@ -33,7 +33,7 @@ class LayoutSelectionTests(unittest.TestCase):
 
     def test_fixed_navigation_lane_preserves_only_exact_webkit_recipe(self):
         source = WORKFLOW.read_text()
-        block = source.split('  hls-navigation:\n', 1)[1]
+        block = re.split(r'\n  [a-z][a-z-]*:\n', source.split('  hls-navigation:\n', 1)[1], maxsplit=1)[0]
         self.assertIn("inputs.campaign_proof == 'HLS-navigation'", block)
         self.assertIn('    needs: selection-admission\n', block)
         self.assertNotRegex(block, r'setup-go|go test|go build|test-layout-stability-local|continue-on-error')
@@ -48,7 +48,7 @@ class LayoutSelectionTests(unittest.TestCase):
         self.assertIn("inputs.campaign_proof != 'HLS-navigation'", campaign)
 
     def test_fixed_discovery_is_bounded_separate_and_retained(self):
-        block = WORKFLOW.read_text().split('  hls-navigation:\n', 1)[1]
+        block = re.split(r'\n  [a-z][a-z-]*:\n', WORKFLOW.read_text().split('  hls-navigation:\n', 1)[1], maxsplit=1)[0]
         discovery = block.split('      - name: Discover exact WebKit HLS titles\n', 1)[1].split('      - name: Run exact strict HLS navigation file', 1)[0]
         self.assertIn('timeout --kill-after=2s 60s pnpm --dir apps/player/e2e exec playwright test player-hls-navigation.spec.ts --project=webkit --workers=1 --retries=0 --list --reporter=json', discovery)
         self.assertIn('head -c 2097153', discovery)
