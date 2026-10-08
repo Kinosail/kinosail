@@ -258,8 +258,22 @@ class NativeTrust(unittest.TestCase):
         code="import subprocess,time;from pathlib import Path;p=subprocess.Popen(['sleep','30']);Path("+repr(str(child_pid))+").write_text(str(p.pid));time.sleep(30)"
         with self.assertRaises(ValueError): self.real_run([__import__('sys').executable,'-c',code],timeout=.3)
         pid=int(child_pid.read_text())
-        try:
-            os.kill(pid,0)
-        except ProcessLookupError: return
-        self.addCleanup(lambda: os.kill(pid,signal.SIGKILL))
-        self.fail('owned tool descendant remains after deadline')
+        def cleanup():
+            try: os.kill(pid, signal.SIGKILL)
+            except ProcessLookupError: pass
+        self.addCleanup(cleanup)
+        # A PID can remain observable after termination, including Linux zombies.
+        # Bound delivery observation; accept only absence or an actual terminated state.
+        import time
+        deadline = time.monotonic() + 1
+        while time.monotonic() < deadline:
+            try: os.kill(pid, 0)
+            except ProcessLookupError: return
+            if __import__('sys').platform.startswith('linux'):
+                try:
+                    stat = Path(f'/proc/{pid}/stat').read_text()
+                    state = stat.rsplit(')', 1)[1].split()[0]
+                    if state in ('Z', 'X'): return
+                except FileNotFoundError: return
+            time.sleep(.02)
+        self.fail('owned tool descendant is not observed terminated after deadline')
