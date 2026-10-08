@@ -68,14 +68,18 @@ func TestRemainingPublicAACOldCacheRebuildAndColdReuse(t *testing.T) { //nolint:
 	if !bytes.Contains(policy, []byte(":aac-origin=1")) {
 		t.Fatal("public corrected AAC cache lacks its correction identity")
 	}
-	receipt := map[string]any{"fixtureSHA256": remainingPublicHash(originalSource), "nativeSamples": len(pcm) / 4,
-		"publicSHA256": remainingPublicHash(original), "nativePCMSHA256": remainingPublicHash(pcm), "staleCases": []string{}, "coldReopens": 0}
+	legacy := remainingPublicLegacyRefill(t, ctx, ffmpeg, source)
+	receipt := map[string]any{
+		"fixtureSHA256": remainingPublicHash(originalSource), "nativeSamples": len(pcm) / 4,
+		"publicSHA256": remainingPublicHash(original), "nativePCMSHA256": remainingPublicHash(pcm), "staleCases": []string{}, "coldReopens": 0,
+	}
 	for index, version := range []string{"15", "18"} {
 		remainingPublicWaitWorkers(t, ctx, handler, marker, publication, index+1)
-		legacy := bytes.ReplaceAll(policy, []byte(":aac-origin=1"), nil)
-		legacy = bytes.ReplaceAll(legacy, []byte(":hls=15"), []byte(":hls="+version))
-		staleMaster := bytes.ReplaceAll(master, policy, legacy)
-		remainingPublicWrite(t, filepath.Join(root, ".source"), legacy)
+		legacyPolicy := bytes.ReplaceAll(policy, []byte(":aac-origin=1"), nil)
+		legacyPolicy = bytes.ReplaceAll(legacyPolicy, []byte(":hls=15"), []byte(":hls="+version))
+		staleMaster := bytes.ReplaceAll(master, policy, legacyPolicy)
+		receipt["historicalCollision"] = remainingPublicInstallLegacy(t, ctx, ffmpeg, root, legacy, pcm)
+		remainingPublicWrite(t, filepath.Join(root, ".source"), legacyPolicy)
 		remainingPublicWrite(t, filepath.Join(root, "index.m3u8"), staleMaster)
 		assets := remainingPublicSnapshot(t, root)
 		calls := remainingPublicRead(t, marker)
@@ -103,10 +107,7 @@ func TestRemainingPublicAACOldCacheRebuildAndColdReuse(t *testing.T) { //nolint:
 	for round := 1; round <= 2; round++ {
 		assets := remainingPublicSnapshot(t, root)
 		calls := remainingPublicRead(t, marker)
-		reopenContext, stopReopen := context.WithCancel(ctx)
-		defer stopReopen()
-		config.Lifecycle = reopenContext
-		reopened, reopenedID := formatTestItem(t, config)
+		reopened, reopenedID, stopReopen := remainingPublicReopenedHandler(t, ctx, config)
 		if reopenedID != id {
 			t.Fatal("cold public cache reopen changed the fixture identity")
 		}
@@ -132,4 +133,13 @@ func TestRemainingPublicAACOldCacheRebuildAndColdReuse(t *testing.T) { //nolint:
 		t.Fatal(err)
 	}
 	t.Logf("remaining-public-cache-receipt %s", data)
+}
+
+func remainingPublicReopenedHandler(t *testing.T, ctx context.Context, config server.Config) (http.Handler, string, context.CancelFunc) {
+	t.Helper()
+	lifecycle, cancel := context.WithCancel(ctx)
+	t.Cleanup(cancel)
+	config.Lifecycle = lifecycle
+	handler, id := formatTestItem(t, config)
+	return handler, id, cancel
 }
