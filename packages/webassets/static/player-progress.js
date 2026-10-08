@@ -177,48 +177,65 @@ setInterval(() => { if (!player.paused) save(); }, 10000);
 setInterval(() => { if (!player.paused || player.readyState < HTMLMediaElement.HAVE_FUTURE_DATA) playbackTrace("heartbeat", "periodic"); flushPlaybackTrace(); }, 5000);
 
 if (player.dataset.homeAssistant === "true") {
-  const storageKey = `kinosail-home-assistant-player:${document.body.dataset.viewerProfile || document.querySelector("[data-nav-profile]")?.dataset.navProfile || ""}`;
-  let playerID = playerStorage.get(storageKey);
-  if (!playerID) {
-    playerID = crypto.randomUUID();
-    playerStorage.set(storageKey, playerID);
-  }
-  const sendHomeAssistantState = async () => {
-    const response = await fetch(`/api/v1/home-assistant/players/${encodeURIComponent(playerID)}`, {
-      method: "PUT",
-      headers: {"Content-Type": "application/json", ...(csrf ? {"X-Kinosail-CSRF": csrf} : {})},
-      body: JSON.stringify({
-        name: `Kinosail on ${navigator.userAgentData?.platform || navigator.platform || "web"}`,
-        state: playbackPreparation ? "buffering" : player.ended ? "idle" : player.paused ? "paused" : player.readyState < 3 ? "buffering" : "playing",
-        title: player.dataset.title || "",
-        itemId: player.dataset.progress?.split("/").at(-1)?.split("?")[0] || "",
-        position: Number.isFinite(player.currentTime) ? player.currentTime : 0,
-        duration: Number.isFinite(player.duration) ? player.duration : 0,
-        volume: player.volume,
-        muted: player.muted,
-      }),
-    });
-    if (!response.ok) return;
-    const command = await response.json();
-    if (command.command === "play") await requestPlay("home-assistant");
-    if (command.command === "pause") requestPause();
-    if (command.command === "stop") { requestPause(); setPlayerTime(0, true); }
-    if (command.command === "seek") setPlayerTime(command.position, true);
-    if (command.command === "volume") player.volume = command.volume;
-    if (command.command === "mute") player.muted = command.muted;
-    if (command.command === "play_media") location.assign(`/watch/${encodeURIComponent(command.itemId)}`);
+  let homeAssistantClosed = false;
+  const homeAssistantStatus = document.createElement("div"), homeAssistantMessage = document.createElement("span");
+  const homeAssistantLifetime = document.createElement("small"), homeAssistantRetry = document.createElement("button");
+  homeAssistantStatus.className = "player-actions";
+  homeAssistantStatus.dataset.homeAssistantStatus = "connecting";
+  homeAssistantMessage.setAttribute("role", "status");
+  homeAssistantMessage.setAttribute("aria-live", "polite");
+  homeAssistantLifetime.dataset.homeAssistantLifetime = "";
+  homeAssistantRetry.type = "button"; homeAssistantRetry.className = "quiet-button";
+  homeAssistantRetry.textContent = "Retry Home Assistant"; homeAssistantRetry.hidden = true;
+  homeAssistantStatus.append(homeAssistantMessage, homeAssistantLifetime, homeAssistantRetry);
+  (player.closest(".media-stage") || player).insertAdjacentElement("afterend", homeAssistantStatus);
+  const boundedText = (value, limit) => {
+    let result = "", size = 0;
+    for (const character of String(value || "")) {
+      const bytes = new TextEncoder().encode(character).length;
+      if (size + bytes > limit) break;
+      result += character; size += bytes;
+    }
+    return result;
   };
-  sendHomeAssistantState().catch(() => {});
-  if ("EventSource" in window) {
-    const events = new EventSource("/api/v1/events");
-    events.addEventListener("home-assistant.command", ({data}) => {
-      try {
-        if (JSON.parse(data).resource === `/api/v1/home-assistant/players/${playerID}`) sendHomeAssistantState().catch(() => {});
-      } catch (_) {}
-    });
-    addEventListener("pagehide", () => events.close(), {once: true});
-  }
-  setInterval(() => sendHomeAssistantState().catch(() => {}), 5000);
+  addEventListener("pagehide", () => {homeAssistantClosed = true;});
+  addEventListener("pageshow", event => {
+    // The media owner must actually restore a source before document re-entry.
+    if (event.persisted && player.isConnected && player.getAttribute("src")) homeAssistantClosed = false;
+  });
+  const homeAssistantClient = createHomeAssistantDocumentPlayer({
+    profile: progressProfile, csrf: () => csrf, current: () => player.isConnected && !homeAssistantClosed,
+    snapshot: () => ({source: `${progressItem() || ""}:${player.currentSrc || player.src}:${playbackSession}`, body: {
+      name: boundedText(`Kinosail on ${navigator.userAgentData?.platform || navigator.platform || "web"}`, 80),
+      state: playbackPreparation ? "buffering" : player.ended ? "idle" : player.paused ? "paused" : player.readyState < 3 ? "buffering" : "playing",
+      title: boundedText(player.dataset.title, 256), itemId: boundedText(progressItem(), 128),
+      position: Number.isFinite(player.currentTime) ? Math.max(0, Math.min(1e9, player.currentTime)) : 0,
+      duration: Number.isFinite(player.duration) ? Math.max(0, Math.min(1e9, player.duration)) : 0,
+      volume: player.volume, muted: player.muted,
+    }}),
+    diagnose: value => Object.assign(player.dataset, {homeAssistantOperation: value.operation, homeAssistantFailure: value.failure,
+      homeAssistantLevel: value.level, homeAssistantGeneration: String(value.generation), homeAssistantRequestId: value.requestID}),
+    status: value => {
+      homeAssistantStatus.dataset.homeAssistantStatus = value.state;
+      homeAssistantMessage.textContent = {connecting: "Connecting Home Assistant…", waiting: "Waiting for this Player’s previous connection…",
+        connected: "Home Assistant can control this Player.", unavailable: "Home Assistant could not connect. Retry to reconnect this Player.",
+        stopped: "Home Assistant control has stopped for this page."}[value.state];
+      homeAssistantLifetime.textContent = !value.storageAvailable ? "Browser storage is unavailable. Reloading creates a new Home Assistant target." :
+        value.forkedCandidate ? "This fresh page received its own target. Reloads keep it while browser storage is available." :
+        "Each open Player page has its own target. Reloads keep it while browser storage is available.";
+      homeAssistantRetry.hidden = !value.retry;
+    },
+    apply: async command => {
+      if (command.command === "play") await requestPlay("home-assistant");
+      if (command.command === "pause") requestPause();
+      if (command.command === "stop") {requestPause(); setPlayerTime(0, true);}
+      if (command.command === "seek") setPlayerTime(command.position, true);
+      if (command.command === "volume") player.volume = command.volume;
+      if (command.command === "mute") player.muted = command.muted;
+      if (command.command === "play_media") location.assign(`/watch/${encodeURIComponent(command.itemId)}`);
+    },
+  });
+  homeAssistantRetry.addEventListener("click", () => {void homeAssistantClient.retry();});
 }
 
 const audioChoice = document.querySelector('[data-audio-track]');

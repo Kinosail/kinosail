@@ -69,9 +69,12 @@ var (
 	playerProgressNavigation []byte
 	//go:embed static/player-audio-queue.js
 	playerAudioQueue []byte
+	//go:embed static/player-home-assistant-identity.js
+	playerHomeAssistantIdentity []byte
 
-	playerProgressQueue = append(append([]byte(nil), playerProgress...), playerAudioQueue...)
-	PlayerProgress      = append(append([]byte(nil), playerProgressQueue...), playerProgressNavigation...)
+	playerProgressIdentity = append(append([]byte(nil), playerHomeAssistantIdentity...), playerProgress...)
+	playerProgressQueue    = append(append([]byte(nil), playerProgressIdentity...), playerAudioQueue...)
+	PlayerProgress         = append(append([]byte(nil), playerProgressQueue...), playerProgressNavigation...)
 	//go:embed static/pwa.js
 	pwaCore []byte
 	//go:embed static/pwa-library.js

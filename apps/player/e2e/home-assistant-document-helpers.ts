@@ -18,7 +18,7 @@ export async function targets(page: Page): Promise<Target[]> {
   return (await response.json()).players;
 }
 
-export async function openDocuments(page: Page) {
+export async function openDocuments(page: Page, prepare?: (document: Page) => Promise<void>) {
   await login(page);
   await setting(page, true);
   const existing = new Set((await targets(page)).map(target => target.id));
@@ -34,6 +34,7 @@ export async function openDocuments(page: Page) {
   let second: Page | undefined;
   try {
   second = await page.context().newPage();
+  for (const document of [first, second]) await prepare?.(document);
   const claims = new Set<string>();
   for (const document of [first, second]) document.on("response", async response => {
     if (new URL(response.url()).pathname === "/api/v1/home-assistant/players/claims" && response.status() === 201) {

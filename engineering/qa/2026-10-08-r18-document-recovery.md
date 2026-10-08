@@ -54,3 +54,27 @@ The first test-only hosted baseline remains pinned to `b28aba970f669ce2d0d5c329e
 The existing media presentation clears its source on pagehide, and the queue closes
 its state. Actual playable persisted BFCache needs that owner's disposition;
 virtual identity re-entry cannot establish media restoration.
+
+## Qualified negative and narrow repair
+
+Hosted baseline run37711681569, headb28aba970f669ce2d0d5c329eab48ae7cb58a13b,
+preserved all53 prior cases as first-attempt passes. All three new cases observed
+one actual target instead of two. Their later command/reload assertions were
+blocked at that identity prerequisite; this is not evidence of a wrong command.
+Artifact11522773583 is retained, with verified SHA-256
+13962502114143758388bef120bf08a137d19f49a4f9f9257f9fc54a925c77ae.
+
+The repair adds document-memory claims and Profile-scoped reload candidates.
+The35-second wait latches until explicit Retry or valid lifecycle replacement,
+including a final hung request. TTL must equal the server's30 seconds. Visible
+status describes Retry and the storage/fresh-navigation lifetime limits.
+The extended controls failed before their respective fixes;40 isolated cases
+now pass locally. That does not establish current-source browser acceptance.
+
+The new hosted selection additionally requires actual storage denial with UUID
+and locks unavailable, cloned-candidate conflicts, dropped-release/real expiry,
+an accepted command reply delayed across a real authenticated Profile change,
+rendered Retry recovery and current Player/Subtitles composed assets. Routed
+faults are identified separately from ordinary real-server success. Original
+required tests and protections remain intact. History reports actual persisted
+admission without claiming playable BFCache or ordinary HTTP qualification.

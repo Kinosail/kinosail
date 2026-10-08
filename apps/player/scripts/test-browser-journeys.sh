@@ -95,5 +95,12 @@ run_populated_player_journeys() {
     --required-title 'real simultaneous browser documents publish distinct Home Assistant targets' \
     --required-title 'real public Home Assistant seek affects only its addressed browser document' \
     --required-title 'real Home Assistant document reload retains its target without storing claim authority' \
-    -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts test-instance-audio-queue.spec.ts player-audio-policy.spec.ts player-audio-queue-lifecycle.spec.ts test-instance-home-assistant-documents.spec.ts --grep=@smoke --workers=1
+    --required-title 'player serves the exact composed Home Assistant document asset' \
+    --required-title 'real document targets work with denied storage and unavailable UUID and locks' \
+    --required-title 'real cloned document candidate forks after occupied claim without stealing the live target' \
+    --required-title 'real lost-release reload waits for lease expiry and renews only its original target' \
+    --required-title 'actual authenticated Profile switch retires old document command effects' \
+    --required-title 'rendered document claim failure exposes accessible Retry and recovers with a real claim' \
+    --required-title 'actual history return records document reentry separately from persisted playable BFCache admission' \
+    -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts test-instance-audio-queue.spec.ts player-audio-policy.spec.ts player-audio-queue-lifecycle.spec.ts test-instance-home-assistant-documents.spec.ts test-instance-home-assistant-assets.spec.ts test-instance-home-assistant-lifecycle.spec.ts --grep=@smoke --workers=1
 }

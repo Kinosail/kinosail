@@ -24,16 +24,22 @@ for (const policy of ["compatible", "direct-first", "direct-only", "", "unknown"
 
 test("Home Assistant state uses the session CSRF token and consumes a command", {tag: ["@smoke", "@routed-fault"]}, async ({ page }) => {
   await openAudio(page, "", true);
-  const reports: { csrf?: string; body: { itemId: string; position: number; duration: number } }[] = [];
+  const reports: { csrf?: string; claim?: string; body: { itemId: string; position: number; duration: number } }[] = [];
+  await page.route("https://audio.test/api/v1/me", route => route.fulfill({json: {viewer: {id: "qa-viewer"}}}));
+  await page.route("https://audio.test/api/v1/home-assistant/players/claims", route => route.fulfill({status: 201,
+    json: {id: "fictional-document", claim: "fictional-document-claim-xxxx", expiresIn: 30}}));
   await page.route("https://audio.test/api/v1/home-assistant/players/*", async (route) => {
-    reports.push({ csrf: route.request().headers()["x-kinosail-csrf"], body: route.request().postDataJSON() });
+    if (new URL(route.request().url()).pathname.endsWith("/claims")) return route.fallback();
+    reports.push({ csrf: route.request().headers()["x-kinosail-csrf"], claim: route.request().headers()["x-kinosail-player-claim"], body: route.request().postDataJSON() });
     await route.fulfill({ json: { command: "seek", position: 35 } });
   });
   await page.addScriptTag({ content: playerSource });
   await expect.poll(() => reports.length).toBe(1);
   expect(reports[0].csrf).toBe("session-csrf-token");
+  expect(reports[0].claim).toBe("fictional-document-claim-xxxx");
   expect(reports[0].body).toMatchObject({ itemId: "track", position: 12, duration: 120 });
   await expect(page.locator("audio")).toHaveJSProperty("currentTime", 35);
+  expect(await page.evaluate(() => Object.values(sessionStorage).some(value => value.includes("fictional-document-claim-xxxx")))).toBe(false);
 });
 
 for (const invalid of ["external stream", "missing authorization", "wrong profile", "wrong item", "numeric year", "oversized year"]) {

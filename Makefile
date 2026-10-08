@@ -38,6 +38,7 @@ tooling-check:
 	@pnpm --dir scripts/quality install --frozen-lockfile
 	@node scripts/tooling/test-script-lint.mjs
 	@node --test scripts/quality/browser-script-bundles.test.mjs
+	@node --test packages/webassets/home-assistant-document.test.mjs packages/webassets/home-assistant-document-lifecycle.test.mjs
 	@node --test scripts/ci/prepare-codeql-js.test.mjs
 	@node --test apps/subtitles/engineering/qa/2026-10-05-save-browser/subtitle-save-operation.test.cjs
 	@node --test apps/subtitles/engineering/qa/2026-10-05-save-browser/subtitle-save-attachment-reader.test.cjs

@@ -107,6 +107,7 @@ for (const reason of ['pagehide', 'source-change', 'Profile-change', 'detached']
 
 for (const body of [{id: '../target', claim: 'x'.repeat(24), expiresIn: 30},
   {id: 'valid', claim: 'short', expiresIn: 30}, {id: 'valid', claim: 'x'.repeat(24), expiresIn: 31},
+  {id: 'valid', claim: 'x'.repeat(24), expiresIn: 29},
   {id: 'valid', claim: 'x'.repeat(24), expiresIn: 30, extra: true}]) {
   test(`invalid successful claim cannot publish state: ${body.id}/${body.claim.length}/${body.expiresIn}/${Object.keys(body).length}`, async () => {
     const f = fixture({fetch: async path => path.endsWith('/claims') ? json(body, 201) : undefined});

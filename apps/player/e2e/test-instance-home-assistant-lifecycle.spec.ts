@@ -1,0 +1,170 @@
+import {expect, test, type Page} from "@playwright/test";
+import {configureTestInstance, createViewer, loginViewer, removeViewer} from "./test-instance-helpers";
+import {openDocuments, closeDocuments, setting} from "./home-assistant-document-helpers";
+import {inspectDocumentStatus} from "./home-assistant-document-inspection";
+
+configureTestInstance();
+
+test("real document targets work with denied storage and unavailable UUID and locks", {tag: "@smoke"}, async ({page}, info) => {
+  let first: Page | undefined, second: Page | undefined;
+  try {
+    const docs = await openDocuments(page, async document => document.addInitScript(() => {
+      Object.defineProperty(window, "sessionStorage", {get() {throw new DOMException("Unavailable", "SecurityError");}});
+      Object.defineProperty(Crypto.prototype, "randomUUID", {value: undefined});
+      Object.defineProperty(navigator, "locks", {value: undefined});
+    }));
+    ({first, second} = docs);
+    expect(await first.evaluate(() => ({secure: isSecureContext, uuid: typeof crypto.randomUUID, locks: typeof navigator.locks})))
+      .toEqual({secure: true, uuid: "undefined", locks: "undefined"});
+    await expect.poll(async () => (await docs.live()).length).toBe(2);
+    await expect(first.locator("[data-home-assistant-lifetime]")).toHaveText(
+      "Browser storage is unavailable. Reloading creates a new Home Assistant target.");
+    await inspectDocumentStatus(first, info, "connected");
+    const before = (await docs.live()).find(target => target.itemId === docs.ids[0])!.id;
+    await first.reload();
+    await expect.poll(async () => (await docs.live()).find(target => target.itemId === docs.ids[0])?.id).not.toBe(before);
+    expect(await first.evaluate(claims => !Object.keys(localStorage).some(key => claims.some(claim => (localStorage.getItem(key) || "").includes(claim))), [...docs.claims])).toBe(true);
+    await info.attach("actual-storage-degradation", {body: JSON.stringify({secureContext: true, distinctTargets: 2,
+      deniedStorage: true, uuidAndLocksUnavailable: true, reloadChangesTarget: true, claimPersisted: false}), contentType: "application/json"});
+  } finally {await closeDocuments(page, [first, second]);}
+});
+
+test("real cloned document candidate forks after occupied claim without stealing the live target", {tag: "@smoke"}, async ({page}, info) => {
+  let first: Page | undefined, second: Page | undefined;
+  try {
+    const docs = await openDocuments(page); ({first, second} = docs);
+    await expect.poll(async () => (await docs.live()).length).toBe(2);
+    const original = (await docs.live()).find(target => target.itemId === docs.ids[0])!.id;
+    await second.goto("/?view=movies");
+    // Seed only the reload candidate; the cloned page must acquire fresh authority.
+    const profile = await first.evaluate(() => document.body.dataset.viewerProfile || "");
+    await second.addInitScript(({profile, candidate}) => sessionStorage.setItem(`kinosail-home-assistant-document:${profile}`, candidate),
+      {profile, candidate: original});
+    const occupied = second.waitForResponse(response => new URL(response.url()).pathname.endsWith("/home-assistant/players/claims") && response.status() === 409);
+    await second.goto(`/watch/${docs.ids[1]}`);
+    expect((await occupied).status()).toBe(409);
+    await expect.poll(async () => (await docs.live()).length).toBe(2);
+    const live = await docs.live();
+    expect(live.find(target => target.itemId === docs.ids[0])!.id).toBe(original);
+    expect(live.find(target => target.itemId === docs.ids[1])!.id).not.toBe(original);
+    await expect(second.locator("[data-home-assistant-lifetime]")).toHaveText(/fresh page received its own target/);
+    await info.attach("actual-cloned-candidate", {body: JSON.stringify({occupiedStatus: 409, forked: true,
+      originalTargetPreserved: true, distinctTargets: 2}), contentType: "application/json"});
+  } finally {await closeDocuments(page, [first, second]);}
+});
+
+test("real lost-release reload waits for lease expiry and renews only its original target", {tag: ["@smoke", "@routed-fault"]}, async ({page}, info) => {
+  test.setTimeout(75_000);
+  let first: Page | undefined, second: Page | undefined;
+  try {
+    const docs = await openDocuments(page); ({first, second} = docs);
+    await expect.poll(async () => (await docs.live()).length).toBe(2);
+    const original = (await docs.live()).find(target => target.itemId === docs.ids[0])!.id;
+    let dropped = 0, conflicts = 0;
+    await first.route("**/home-assistant/players/*/release", route => {dropped++; return route.abort();});
+    first.on("response", response => {if (new URL(response.url()).pathname.endsWith("/players/claims") && response.status() === 409) conflicts++;});
+    const renewed = first.waitForResponse(response => new URL(response.url()).pathname.endsWith("/players/claims") && response.status() === 201, {timeout: 40_000});
+    const started = Date.now();
+    await first.reload();
+    const claim = await (await renewed).json();
+    const elapsed = Date.now() - started;
+    expect(claim.id).toBe(original);
+    expect(claim.expiresIn).toBe(30);
+    expect(dropped).toBeGreaterThan(0); expect(conflicts).toBeGreaterThan(0);
+    expect(elapsed).toBeLessThanOrEqual(35_000);
+    await expect.poll(async () => (await docs.live()).find(target => target.itemId === docs.ids[0])?.id).toBe(original);
+    await first.unroute("**/home-assistant/players/*/release");
+    await info.attach("actual-lost-release-expiry", {body: JSON.stringify({releaseDropped: true, realOccupiedReplies: conflicts,
+      sameCandidateRenewed: true, expiresIn: 30, elapsedMs: elapsed}), contentType: "application/json"});
+  } finally {await closeDocuments(page, [first, second]);}
+});
+
+test("actual authenticated Profile switch retires old document command effects", {tag: "@smoke"}, async ({page, browser}, info) => {
+  test.setTimeout(75_000);
+  let first: Page | undefined, second: Page | undefined, owner: Page | undefined, profile = "";
+  let releaseCommand = () => {};
+  const name = `R18 isolated Viewer ${info.workerIndex}`, password = "r18-fictional-viewer-password";
+  try {
+    const docs = await openDocuments(page); ({first, second} = docs);
+    await expect.poll(async () => (await docs.live()).length).toBe(2);
+    const context = await browser.newContext({baseURL: new URL(page.url()).origin, storageState: await page.context().storageState()});
+    owner = await context.newPage();
+    profile = await createViewer(owner, name, password);
+    const target = (await docs.live()).find(target => target.itemId === docs.ids[0])!.id;
+    const before = await first.locator("video").evaluate((media: HTMLVideoElement) => media.currentTime);
+    let release!: () => void, captured!: () => void;
+    const barrier = new Promise<void>(resolve => release = resolve), held = new Promise<void>(resolve => captured = resolve);
+    releaseCommand = release;
+    await first.route(`**/api/v1/home-assistant/players/${target}`, async route => {
+      const response = await route.fetch();
+      if (response.status() === 200 && (await response.json()).command === "seek") {captured(); await barrier;}
+      await route.fulfill({response});
+    });
+    // Hold an actual accepted command response; do not fabricate a handler or payload.
+    expect(await owner.evaluate(async id => {
+      const csrf = document.querySelector<HTMLMetaElement>('meta[name="kinosail-csrf"]')?.content || "";
+      return (await fetch(`/api/v1/home-assistant/players/${id}/commands`, {method: "POST",
+        headers: {"Content-Type": "application/json", "X-Kinosail-CSRF": csrf}, body: JSON.stringify({command: "seek", position: 1})})).status;
+    }, target)).toBe(202);
+    await held;
+    const changed = first.waitForResponse(async response => new URL(response.url()).pathname === "/api/v1/me" &&
+      response.status() === 200 && (await response.json()).viewer.id === profile);
+    try {await loginViewer(page, name, password);} finally {release();}
+    await changed;
+    await expect(first.locator("[data-home-assistant-status]")).toHaveAttribute("data-home-assistant-status", "stopped");
+    let lateStates = 0;
+    first.on("request", request => {if (request.method() === "PUT" && new URL(request.url()).pathname === `/api/v1/home-assistant/players/${target}`) lateStates++;});
+    await first.waitForTimeout(11_000);
+    expect(lateStates).toBe(0);
+    expect(await first.locator("video").evaluate((media: HTMLVideoElement) => media.currentTime)).toBeCloseTo(before, 2);
+    await info.attach("actual-authenticated-profile-retirement", {body: JSON.stringify({publicViewerChanged: true,
+      commandAcceptedBeforeSwitch: 202, actualCommandReplyHeld: true, lateStateWrites: 0, mediaUnchanged: true}), contentType: "application/json"});
+  } finally {
+    releaseCommand();
+    for (const document of [first, second]) if (document && !document.isClosed()) await document.close();
+    if (owner) {await setting(owner, false); if (profile) await removeViewer(owner, profile); await owner.context().close();}
+  }
+});
+
+test("rendered document claim failure exposes accessible Retry and recovers with a real claim", {tag: ["@smoke", "@routed-fault"]}, async ({page}, info) => {
+  let first: Page | undefined, second: Page | undefined, failing = true;
+  try {
+    const docs = await openDocuments(page, document => document.route("**/home-assistant/players/claims", route => failing
+      ? route.fulfill({status: 503}) : route.continue()));
+    ({first, second} = docs);
+    await expect(first.locator("[data-home-assistant-status]")).toHaveAttribute("data-home-assistant-status", "unavailable");
+    await inspectDocumentStatus(first, info, "unavailable");
+    failing = false;
+    const claim = first.waitForResponse(response => new URL(response.url()).pathname.endsWith("/players/claims") && response.status() === 201);
+    await first.getByRole("button", {name: "Retry Home Assistant", exact: true}).press("Enter");
+    expect((await claim).status()).toBe(201);
+    await expect.poll(async () => (await docs.live()).length).toBe(2);
+    await inspectDocumentStatus(first, info, "connected");
+  } finally {await closeDocuments(page, [first, second]);}
+});
+
+test("actual history return records document reentry separately from persisted playable BFCache admission", {tag: "@smoke"}, async ({page}, info) => {
+  let first: Page | undefined, second: Page | undefined;
+  try {
+    const docs = await openDocuments(page, document => document.addInitScript(() => {
+      (window as any).r18PageShowPersisted = false;
+      addEventListener("pageshow", event => {(window as any).r18PageShowPersisted = event.persisted;});
+    }));
+    ({first, second} = docs);
+    await expect.poll(async () => (await docs.live()).length).toBe(2);
+    const original = (await docs.live()).find(target => target.itemId === docs.ids[0])!.id;
+    await first.goto("/?view=movies");
+    await first.goBack();
+    const persisted = await first.evaluate(() => (window as any).r18PageShowPersisted === true);
+    if (!persisted) {
+      await expect.poll(async () => (await docs.live()).find(target => target.itemId === docs.ids[0])?.id, {timeout: 40_000}).toBe(original);
+      await expect.poll(() => first!.locator("video").evaluate((media: HTMLVideoElement) => media.readyState)).toBeGreaterThanOrEqual(2);
+    }
+    const sourceRestored = await first.locator("video").evaluate((media: HTMLVideoElement) => !!media.getAttribute("src") && media.readyState >= 2);
+    info.annotations.push({type: "admission", description: persisted && sourceRestored
+      ? "persisted return observed; full playable lifecycle qualification remains separate"
+      : "persisted playable BFCache unadmitted; media restoration belongs to presentation/queue owner"});
+    await info.attach("actual-history-admission", {body: JSON.stringify({persisted, sourceRestored,
+      ordinaryHistoryTargetRetained: !persisted, playableBFCacheQualified: false, ordinaryHTTPQualified: false}), contentType: "application/json"});
+  } finally {await closeDocuments(page, [first, second]);}
+});

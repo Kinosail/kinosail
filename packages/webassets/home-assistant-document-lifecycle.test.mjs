@@ -25,7 +25,16 @@ test('occupied reload candidate settles at the 35-second reconnect bound without
   assert.equal(states(f).length, 0);
   assert.ok(f.calls.filter(call => call.path.endsWith('/claims')).length <= 2);
   assert.equal(f.storage.get('kinosail-home-assistant-document:viewer-a'), 'live');
+  const exhausted = f.calls.filter(call => call.path.endsWith('/claims')).length;
+  await f.tick(40_000);
+  await f.client.sync();
+  assert.equal(f.calls.filter(call => call.path.endsWith('/claims')).length, exhausted);
+  assert.equal(states(f).length, 0);
+  const retrial = f.client.retry();
+  await flush();
+  assert.equal(JSON.parse(f.calls.filter(call => call.path.endsWith('/claims')).at(-1).init.body).id, 'live');
   f.client.close();
+  await retrial;
 });
 
 test('hung claim request aborts and settles without publishing state', async () => {
@@ -38,6 +47,26 @@ test('hung claim request aborts and settles without publishing state', async () 
   assert.equal(settled, true);
   await pending;
   assert.equal(states(f).length, 0);
+  f.client.close();
+});
+
+test('a final occupied reconnect request timing out at35s stays exhausted past75s', async () => {
+  let claims = 0;
+  const f = fixture({navigationType: 'reload', storage: [['kinosail-home-assistant-document:viewer-a', 'live']],
+    fetch: async path => path.endsWith('/claims') ? ++claims === 1
+      ? json({}, 409, {'Retry-After': '30'}) : new Promise(() => {}) : undefined});
+  let settled = false;
+  const pending = f.client.sync().then(() => settled = true);
+  await flush();
+  await f.tick(35_000);
+  assert.equal(settled, true);
+  await pending;
+  assert.equal(claims, 2);
+  await f.tick(40_000);
+  await f.client.sync();
+  assert.equal(claims, 2);
+  assert.equal(states(f).length, 0);
+  assert.equal(f.storage.get('kinosail-home-assistant-document:viewer-a'), 'live');
   f.client.close();
 });
 
