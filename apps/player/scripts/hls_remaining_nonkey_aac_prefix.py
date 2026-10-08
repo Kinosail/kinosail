@@ -71,8 +71,11 @@ def measure_prefix(source, result):
         '-af', 'ashowinfo', '-c:a', 'pcm_s16le', '-threads:a', '1',
         '-f', 'framemd5', 'pipe:1'], deadline, result)
     normalized = filter_clock(process.stderr.decode())
+    result.update(normalizedFilter=normalized, normalizedOutputRows=[],
+        outputFilterClockEquivalent=False)
     require(0 < len(normalized['completeRows']) <= 1025, 'aac_prefix_normalized_frame_bound')
     output_rows = normalized_output_rows(process.stdout.decode())
+    result['normalizedOutputRows'] = output_rows
     filtered = normalized['completeRows']
     require(len(output_rows) == 1024 and len(filtered) >= len(output_rows) and
             output_rows == [(r['pts'], r['samples']) for r in filtered[:len(output_rows)]],
@@ -188,8 +191,10 @@ def normalized_output_rows(document):
     import re
     require(len(document.encode()) <= 2 << 20, 'aac_prefix_normalized_output_bound')
     headers = [line.strip() for line in document.splitlines() if line.startswith('#')]
-    require('#tb 0: 1/48000' in headers and '#media_type 0: audio' in headers and
-            '#sample_rate 0: 48000' in headers, 'aac_prefix_normalized_output_format')
+    require([h for h in headers if h.startswith('#tb ')] == ['#tb 0: 1/48000'] and
+            [h for h in headers if h.startswith('#media_type ')] == ['#media_type 0: audio'] and
+            [h for h in headers if h.startswith('#sample_rate ')] == ['#sample_rate 0: 48000'],
+            'aac_prefix_normalized_output_format')
     rows = []
     for line in document.splitlines():
         if not line.strip() or line.startswith('#'):

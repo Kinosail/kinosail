@@ -235,6 +235,14 @@ finally:
         target.write_text(raw)
         (RUN / 'SHA256SUMS').write_text(''.join(sha(p) + '  ' + str(p.relative_to(ROOT)) + '\n'
             for p in sorted(files)) + sha(target) + '  receipt.json\n')
+        print(json.dumps({'boundedPrefixComparisons': [{
+            'container': m['container'], 'sourceStream': m.get('boundedPrefix', {}).get('sourceStream'),
+            'outputFilterClockEquivalent': m.get('boundedPrefix', {}).get('outputFilterClockEquivalent'),
+            'leadingNativeFrames': m.get('boundedPrefix', {}).get('nativeFrames', [])[:3],
+            'leadingSourcePackets': m.get('boundedPrefix', {}).get('sourcePackets', [])[:3],
+            'leadingNormalizedFrames': m.get('boundedPrefix', {}).get('normalizedFilter', {}).get('completeRows', [])[:3],
+            'leadingOutputRows': m.get('boundedPrefix', {}).get('normalizedOutputRows', [])[:3]}
+            for m in receipt['sourceMeasurements']], 'productionAcceptance': False}))
         print(json.dumps({'result': receipt['result'], 'revision': receipt['revision'],
             'receiptSHA256': sha(target), 'cases': len(receipt['cases']),
             'failureClass': receipt.get('failureClass'),
