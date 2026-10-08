@@ -1,19 +1,16 @@
 name: Bounded non-key presentation observation
-
 on:
   workflow_dispatch:
     inputs:
       phase:
         type: choice
-        options: [public, observe, mux, boundary, aac-edit, aac-derived, aac-clock, aac-normalized, cutoff]
+        options: [public, observe, mux, boundary, aac-edit, aac-derived, aac-clock, aac-normalized, cutoff, remaining]
         default: public
-
-permissions:
-  contents: read
-
+      candidate: {description: Exact reviewed source SHA for remaining phase, type: string}
+permissions: {contents: read}
 jobs:
   nonkey-public:
-    if: inputs.phase == 'public' || inputs.phase == 'observe'
+    if: inputs.phase == 'public' || inputs.phase == 'observe' || inputs.phase == 'remaining'
     name: Strict source-bound non-key public regression
     runs-on: ubuntu-24.04
     timeout-minutes: 30
@@ -22,12 +19,17 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+          ref: ${{ inputs.phase == 'remaining' && inputs.candidate || github.sha }}
+      - name: Bind remaining source
+        if: inputs.phase == 'remaining'
+        env: {TARGET_SHA: "${{ inputs.candidate }}"}
+        run: |
+          [[ "$TARGET_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
       - run: test ! -e .gates-disabled
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         timeout-minutes: 3
-        with:
-          go-version-file: go.work
-          cache-dependency-path: "**/go.sum"
+        with: {go-version-file: go.work, cache-dependency-path: "**/go.sum"}
       - name: Install pinned public-media codecs
         run: |
           curl --fail --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/hls-ffmpeg.deb" https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.2-5/jellyfin-ffmpeg8_8.1.2-5-noble_amd64.deb
@@ -55,11 +57,35 @@ jobs:
           timeout --kill-after=5s 180s sudo apt-get "${apt_options[@]}" install -y --no-install-recommends "$RUNNER_TEMP/hls-ffmpeg.deb"
           echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
       - name: Verify strict initialization and fragment parsers
+        if: inputs.phase != 'remaining'
         run: python3 -m unittest discover -s apps/player/scripts -p 'test_hls_remaining_nonkey_*.py'
       - name: Capture full public frames, packets, edits and native PCM
+        if: inputs.phase != 'remaining'
         run: timeout --kill-after=90s 750s python3 apps/player/scripts/test-hls-nonkey-observation.py
+      - name: Run source-bound public preparation regression once
+        if: inputs.phase == 'remaining'
+        working-directory: apps/player
+        env: {KINOSAIL_COPIED_RECOVERY_MEDIA: '1'}
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/.verification/hls-remaining"
+          git rev-parse HEAD > "$GITHUB_WORKSPACE/.verification/hls-remaining/SOURCE"
+          timeout --kill-after=30s 210s go test -json ./internal/server -run '^TestRemainingNonKeyPreparationReachesReady$' -count=1 -timeout=3m > "$GITHUB_WORKSPACE/.verification/hls-remaining/receipt.jsonl"
+      - name: Project remaining preparation facts
+        if: always() && inputs.phase == 'remaining'
+        run: |
+          python3 - <<'PY'
+          import json, pathlib
+          path = pathlib.Path('.verification/hls-remaining/receipt.jsonl')
+          with path.open('rb') as stream: raw = stream.read((1 << 20) + 1)
+          assert 0 < len(raw) <= (1 << 20), 'remaining_receipt_bound'
+          rows = [json.loads(line) for line in raw.splitlines()]
+          assert not any(r.get('Action') == 'skip' for r in rows), 'remaining_no_skip'
+          assert any(r.get('Action') == 'run' and r.get('Test') == 'TestRemainingNonKeyPreparationReachesReady' for r in rows), 'remaining_actual_test'
+          for row in rows:
+              if row.get('Action') in ['pass', 'fail'] or 'nonkey ' in row.get('Output', ''): print(json.dumps(row, separators=(',', ':')))
+          PY
       - name: Project bounded public diagnostic facts
-        if: always()
+        if: always() && inputs.phase != 'remaining'
         run: |
           python3 - <<'PY'
           import json
@@ -105,10 +131,11 @@ jobs:
           path: |
             .verification/hls-nonkey/*/receipt.json
             .verification/hls-nonkey/*/SHA256SUMS
+            .verification/hls-remaining/SOURCE
+            .verification/hls-remaining/receipt.jsonl
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
-
   accepted-aac-control:
     if: inputs.phase == 'public'
     name: Unchanged accepted AAC packet and native PCM control
@@ -122,9 +149,7 @@ jobs:
       - run: test ! -e .gates-disabled
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         timeout-minutes: 3
-        with:
-          go-version-file: go.work
-          cache-dependency-path: "**/go.sum"
+        with: {go-version-file: go.work, cache-dependency-path: "**/go.sum"}
       - name: Install pinned public-media codecs
         run: |
           curl --fail --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/hls-ffmpeg.deb" https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.2-5/jellyfin-ffmpeg8_8.1.2-5-noble_amd64.deb
@@ -167,7 +192,6 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
-
   nonkey-mux:
     if: inputs.phase == 'mux' || inputs.phase == 'boundary' || inputs.phase == 'aac-edit' || inputs.phase == 'aac-derived' || inputs.phase == 'aac-clock' || inputs.phase == 'aac-normalized'
     name: Fixed inner and outer mux timestamp counterfactuals
@@ -181,9 +205,7 @@ jobs:
       - run: test ! -e .gates-disabled
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         timeout-minutes: 3
-        with:
-          go-version-file: go.work
-          cache-dependency-path: "**/go.sum"
+        with: {go-version-file: go.work, cache-dependency-path: "**/go.sum"}
       - name: Install pinned public-media codecs
         run: |
           curl --fail --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/hls-ffmpeg.deb" https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.2-5/jellyfin-ffmpeg8_8.1.2-5-noble_amd64.deb
@@ -252,7 +274,6 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
-
   cutoff-contracts:
     if: inputs.phase == 'cutoff'
     name: Handled real SIGTERM and internal deadline owned joins
@@ -260,9 +281,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          fetch-depth: 0
-          persist-credentials: false
+        with: {fetch-depth: 0, persist-credentials: false}
       - run: test ! -e .gates-disabled
       - name: Verify all strict parser, evidence and deadline controls
         run: python3 -m unittest discover -s apps/player/scripts -p 'test_hls_remaining_nonkey_*.py'
