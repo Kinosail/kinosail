@@ -2,6 +2,7 @@ import { expect } from "@playwright/test";
 import { test } from "./test-instance-network";
 import AxeBuilder from "@axe-core/playwright";
 import { configureTestInstance, login } from "./test-instance-helpers";
+import { offlineBrowserAPI, offlineFixture } from "./offline-browser-api.mjs";
 
 configureTestInstance();
 
@@ -45,9 +46,9 @@ test("populated library views stay accessible at desktop and phone sizes", async
 
 test("saved video Compatibility keeps real music and audiobook playback on their pages", async ({ page }) => {
   await login(page);
-  const library = await (await page.context().request.get("/api/v1/library")).json();
+  const library = await offlineBrowserAPI(page, "library");
   for (const kind of ["audio", "audiobook"]) {
-    const item = library.items.find((candidate: { kind: string; title: string }) => candidate.kind === kind && candidate.title.startsWith("Example"));
+    const item = offlineFixture(library, kind);
     expect(item).toBeTruthy();
     await page.evaluate(() => localStorage.setItem("kinosail.playback-policy-v2", "compatible"));
     await page.goto(`/watch/${item.id}`);
@@ -63,26 +64,25 @@ test("saved video Compatibility keeps real music and audiobook playback on their
 test("authenticated video reports its state to Home Assistant", async ({ page }) => {
   await login(page);
   await page.goto("/settings");
-  const csrf = await page.locator('meta[name="kinosail-csrf"]').getAttribute("content");
-  const settings = await page.context().request.put("/api/v1/settings/home-assistant", { headers: { "X-Kinosail-CSRF": csrf!, Origin: new URL(page.url()).origin }, data: { enabled: true } });
-  expect(settings.status(), await settings.text()).toBe(200);
   try {
-    const library = await (await page.context().request.get("/api/v1/library")).json();
-    const item = library.items.find((candidate: { title: string }) => candidate.title === "Example Movie");
+    const settings = await offlineBrowserAPI(page, "home-assistant-on");
+    expect(settings.status).toBe(200);
+    const library = await offlineBrowserAPI(page, "library");
+    const item = offlineFixture(library, "video");
     expect(item).toBeTruthy();
     const report = page.waitForResponse((response) => response.request().method() === "PUT" && response.url().includes("/api/v1/home-assistant/players/"));
     await page.goto(`/watch/${item.id}`);
     expect((await report).status()).toBe(200);
-    await expect.poll(async () => (await (await page.context().request.get("/api/v1/home-assistant/players")).json()).players.some((player: { itemId: string }) => player.itemId === item.id)).toBeTruthy();
+    await expect.poll(async () => (await offlineBrowserAPI(page, "players")).some((player: { itemId: string }) => player.itemId === item.id)).toBeTruthy();
   } finally {
-    await page.context().request.put("/api/v1/settings/home-assistant", { headers: { "X-Kinosail-CSRF": csrf!, Origin: new URL(page.url()).origin }, data: { enabled: false } });
+    await offlineBrowserAPI(page, "home-assistant-off");
   }
 });
 
 test("a real offline download plays and seeks after the network disconnects", async ({ page, connection }, testInfo) => {
   await login(page);
-  const library = await (await page.context().request.get("/api/v1/library")).json();
-  const item = library.items.find((candidate: { title: string }) => candidate.title === "Example Movie");
+  const library = await offlineBrowserAPI(page, "library");
+  const item = offlineFixture(library, "video");
   expect(item).toBeTruthy();
   await page.goto(`/watch/${item.id}`);
   await page.getByText("Playback & downloads", { exact: true }).click();
@@ -113,9 +113,9 @@ test("a real offline download plays and seeks after the network disconnects", as
 
 test("video and music open the receiver picker and restore focus", async ({ page }, testInfo) => {
   await login(page);
-  const library = await (await page.context().request.get("/api/v1/library")).json();
-  const video = library.items.find((candidate: { title: string }) => candidate.title === "Example Movie");
-  const audio = library.items.find((candidate: { kind: string; title: string }) => candidate.kind === "audio" && candidate.title.startsWith("Example"));
+  const library = await offlineBrowserAPI(page, "library");
+  const video = offlineFixture(library, "video");
+  const audio = offlineFixture(library, "audio");
   for (const [kind, item] of [["video", video], ["audio", audio]] as const) {
     expect(item).toBeTruthy();
     for (const width of [1440, 390]) {

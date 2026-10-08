@@ -112,6 +112,8 @@ class RemainingProfileWorkflowTests(unittest.TestCase):
                             for path,digest in value['sourceSHA256'].items():
                                 self.assertEqual(digest,hashlib.sha256(read(ROOT/path)).hexdigest())
                             self.assertIn('scripts/ci/library-internal-relay.mjs',value['sourceSHA256'])
+                            if profile == 'offline-storage':
+                                self.assertIn('apps/player/e2e/offline-browser-api.mjs',value['sourceSHA256'])
                             self.assertEqual({p.relative_to(fresh).as_posix() for p in fresh.rglob('*') if p.is_file()},
                                              {'.verification/'+prefix+'-'+project+'/discovery.json',
                                               '.verification/'+prefix+'-'+project+'/source-receipt.json'})
