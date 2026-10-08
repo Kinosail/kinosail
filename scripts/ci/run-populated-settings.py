@@ -7,9 +7,11 @@ import hmac
 import json
 import os
 from pathlib import Path
+import re
 import struct
 import ssl
 import subprocess
+import sys
 import time
 import urllib.error
 import urllib.parse
@@ -20,8 +22,34 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--url', required=True)
 parser.add_argument('--output', type=Path, required=True)
 parser.add_argument('--required-title', action='append', help='Require this exact populated journey title; repeat for each selected journey')
+parser.add_argument('--profile')
+parser.add_argument('--project')
+parser.add_argument('--state')
+parser.add_argument('--discovery', type=Path)
+parser.add_argument('--admit-only', action='store_true')
 parser.add_argument('command', nargs=argparse.REMAINDER)
 args = parser.parse_args()
+library = any(value is not None for value in (args.profile, args.project, args.state, args.discovery)) or args.admit_only
+discovery = None
+if library:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'apps/player/scripts'))
+    from library_profile_admission import CASES, admit, read_proof, selection
+    try:
+        selection((args.profile, args.project, args.state))
+        if (args.command or args.required_title or not args.discovery
+                or any(sum(value.split('=', 1)[0] == flag for value in sys.argv[1:]) != 1
+                       for flag in ('--url', '--output', '--profile', '--project', '--state', '--discovery'))
+                or sys.argv.count('--admit-only') > 1 or os.environ.get('PLAYWRIGHT_CHANNEL')
+                or os.environ.get('KINOSAIL_BROWSER_PROJECT', args.project) != args.project):
+            raise ValueError('fixed library selection required')
+        discovery = read_proof(args.discovery)
+        admit(discovery, args.profile, args.project, args.state, False)
+        if (not args.output.is_absolute() or len(str(args.output)) > 4096
+                or '..' in args.output.parts or args.output.exists() or args.output.is_symlink()
+                or args.output.parent.resolve(strict=True) != args.output.parent):
+            raise ValueError('fresh absolute output required')
+    except (OSError, ValueError, TypeError):
+        parser.error('invalid fresh library selection or discovery')
 if len(args.url) > 2048 or any(ord(character) <= 32 or ord(character) == 127 for character in args.url):
     parser.error('invalid loopback test Server URL')
 try:
@@ -34,17 +62,27 @@ if (url.scheme not in ('http', 'https') or
         url.path or '?' in args.url or '#' in args.url or port is None or not 1 <= port <= 65535):
     parser.error('requires the fresh supported loopback test Server')
 args.url = f'{url.scheme}://{url.hostname}:{port}'
+if library and (url.scheme == 'https') != (args.project == 'webkit'):
+    parser.error('library profile requires the existing per-engine fixture transport')
+if library and args.admit_only:
+    raise SystemExit(0)
 tls_context = None
 if url.scheme == 'https':
     certificate = os.environ.get('NODE_EXTRA_CA_CERTS', '')
     helper = Path(__file__).with_name('browser-fixture-tls.sh')
     valid = subprocess.run(['bash', '-c',
         'source "$1"; browser_fixture_uses_tls && validate_browser_fixture_tls && validate_browser_fixture_ca "$2"',
-        'fixture', str(helper), certificate], capture_output=True)
+        'fixture', str(helper), certificate], capture_output=True,
+        **({'env': dict(os.environ, KINOSAIL_BROWSER_TEST='1', KINOSAIL_BROWSER_PROJECT=args.project)} if library else {}))
     if valid.returncode != 0:
         parser.error('HTTPS requires the validated disposable WebKit public CA')
     tls_context = ssl.create_default_context(cafile=certificate)
 command = args.command[1:] if args.command[:1] == ['--'] else args.command
+if library:
+    command = ['pnpm', '--dir', str(Path(__file__).resolve().parents[2] / 'apps/player/e2e'),
+               'exec', 'playwright', 'test', *sorted({file for file, _ in CASES}),
+               f'--project={args.project}', '--workers=1', '--retries=0', '--repeat-each=1',
+               '--grep', '(?:' + '|'.join(re.escape(title) for _, title in CASES) + ')$']
 if not command:
     parser.error('requires a browser command')
 if args.required_title and any(not title.strip() or len(title) > 240 or '\n' in title or '\r' in title for title in args.required_title):
@@ -57,6 +95,10 @@ receipt = {'command': command, 'urlScheme': url.scheme, 'ownerSetup': 'pending',
 if args.required_title:
     receipt['selection'] = 'explicit required populated journeys'
     receipt['requiredTitles'] = args.required_title
+if library:
+    receipt.update(profile=args.profile, project=args.project, state=args.state,
+                   selection='closed46 library Owner identities',
+                   discoverySHA256=hashlib.sha256(discovery).hexdigest())
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -122,15 +164,23 @@ try:
         raise RuntimeError('Owner MFA confirmation was not enabled')
     call('/onboarding/finish', 'GET', token=owner['token'], expected=303)
     receipt['ownerSetup'] = 'API MFA confirmed; onboarding complete'
-    project = os.environ.get('KINOSAIL_BROWSER_PROJECT', 'chromium')
+    project = args.project if library else os.environ.get('KINOSAIL_BROWSER_PROJECT', 'chromium')
     env = dict(os.environ, KINOSAIL_TEST_INSTANCE='1', KINOSAIL_TEST_TOTP_SECRET=secret,
                KINOSAIL_E2E_URL=args.url, KINOSAIL_E2E_ARTIFACT_DIR=str(args.output),
                KINOSAIL_E2E_OUTPUT_DIR=str(args.output / 'browser-results'), KINOSAIL_BROWSER_WORKERS='1',
                PLAYWRIGHT_HTML_OUTPUT_DIR=str(args.output / f'html-{project}'),
                PLAYWRIGHT_JSON_OUTPUT_FILE=str(args.output / f'results-{project}.json'))
+    if library:
+        env['KINOSAIL_BROWSER_PROJECT'] = project
     exit_code = subprocess.run(command, env=env, check=False).returncode
     if exit_code == 0:
-        receipt['journeys'] = verify_results(args.output / f'results-{project}.json', args.required_title)
+        result_path = args.output / f'results-{project}.json'
+        if library:
+            raw = read_proof(result_path)
+            identities = admit(raw, args.profile, project, args.state, True)
+            receipt['journeys'] = {'count': len(identities), 'resultsSHA256': hashlib.sha256(raw).hexdigest()}
+        else:
+            receipt['journeys'] = verify_results(result_path, args.required_title)
 except (RuntimeError, KeyError, OSError, ValueError) as error:
     # Setup response bodies and credentials are deliberately absent from diagnostics.
     receipt['errorClass'] = type(error).__name__

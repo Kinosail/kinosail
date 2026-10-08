@@ -1,6 +1,9 @@
 """Closed synthetic library-owner selection and exact first-attempt proof admission."""
 import json
 import math
+import os
+from pathlib import Path
+import stat
 
 PROJECTS = ('chromium', 'firefox', 'webkit')
 # Exact retained ba5 discovery identities, not executed-case evidence.
@@ -60,6 +63,40 @@ def selection(arguments):
             or arguments[2] != 'fresh'):
         raise ValueError('fixed library profile/project/fresh state required')
     return tuple(arguments)
+
+
+def read_proof(path):
+    """Read a stable bounded regular leaf through no-follow directory descriptors."""
+    path = Path(path)
+    if not path.is_absolute() or len(str(path)) > 4096 or '..' in path.parts:
+        raise ValueError('absolute bounded proof path required')
+    flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    directories = [(os.open('/', flags), None)]
+    try:
+        for part in path.parts[1:-1]:
+            directories.append((os.open(part, flags, dir_fd=directories[-1][0]), part))
+        parent = directories[-1][0]
+        with os.fdopen(os.open(path.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK,
+                              dir_fd=parent), 'rb') as file:
+            before = os.fstat(file.fileno())
+            if not stat.S_ISREG(before.st_mode) or not 1 <= before.st_size <= 2097152:
+                raise ValueError('bounded regular proof required')
+            raw = file.read(2097153)
+            identity = lambda value: (value.st_dev, value.st_ino, value.st_size, value.st_mtime_ns)
+            current = os.stat(path.name, dir_fd=parent, follow_symlinks=False)
+            if (len(raw) != before.st_size or identity(before) != identity(os.fstat(file.fileno()))
+                    or not stat.S_ISREG(current.st_mode) or identity(before) != identity(current)):
+                raise ValueError('stable proof required')
+            for index, (descriptor, name) in enumerate(directories[1:], 1):
+                canonical = os.stat(name, dir_fd=directories[index - 1][0], follow_symlinks=False)
+                opened = os.fstat(descriptor)
+                if (not stat.S_ISDIR(canonical.st_mode)
+                        or (opened.st_dev, opened.st_ino) != (canonical.st_dev, canonical.st_ino)):
+                    raise ValueError('canonical proof directories required')
+            return raw
+    finally:
+        for descriptor, _ in reversed(directories):
+            os.close(descriptor)
 
 
 def unique_object(pairs):
