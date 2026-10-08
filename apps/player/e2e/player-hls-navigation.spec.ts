@@ -38,6 +38,41 @@ const departureFacts = (page: import('@playwright/test').Page) => {
   return {...facts};
 };
 
+// Console delivery during destruction is diagnostic only. This witness is
+// written synchronously by the old document, then consumed after the new DOM.
+async function recordFastDeparture(page: import('@playwright/test').Page) {
+  return page.evaluate(() => {
+    if (location.pathname !== '/watch/movie') throw new Error('invalid fast departure document');
+    const nonce = crypto.randomUUID(), events: string[] = [];
+    const write = () => sessionStorage.setItem('kinosail-fixture:departure', JSON.stringify({nonce, path: location.pathname, events}));
+    write(); // Storage admission must succeed before installing event listeners.
+    window.addEventListener('kinosail:navigation', event => {
+      if (event.target !== document.querySelector('video') || event.bubbles) return;
+      if (events.length < 3) events.push('navigation'); write();
+    }, {capture: true});
+    window.addEventListener('pagehide', () => {if (events.length < 3) events.push('pagehide'); write();}, {capture: true});
+    return nonce;
+  });
+}
+
+async function readFastDeparture(page: import('@playwright/test').Page, nonce: string) {
+  if (typeof nonce !== 'string' || nonce.length !== 36 || !/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(nonce)) {
+    throw new Error('invalid fast departure witness');
+  }
+  const raw = await page.evaluate(() => {
+    if (!['/', '/watch/after-watched'].includes(location.pathname)) throw new Error('invalid fast departure document');
+    try {return sessionStorage.getItem('kinosail-fixture:departure');}
+    finally {sessionStorage.removeItem('kinosail-fixture:departure');}
+  });
+  if (typeof raw !== 'string' || raw.length > 512) throw new Error('invalid fast departure witness');
+  let value;
+  try {value = JSON.parse(raw);} catch {throw new Error('invalid fast departure witness');}
+  if (!value || JSON.stringify(value) !== raw || Object.keys(value).join(',') !== 'nonce,path,events'
+      || value.nonce !== nonce || value.path !== '/watch/movie'
+      || JSON.stringify(value.events) !== '["navigation","pagehide"]') throw new Error('invalid fast departure witness');
+  return value as {nonce: string; path: string; events: string[]};
+}
+
 async function movingVideo(page: import('@playwright/test').Page, peer: Awaited<ReturnType<typeof hlsNavigationPeer>>) {
   await page.goto(`${peer.origin}/watch/movie`);
   const video = page.locator('video');
@@ -105,6 +140,7 @@ for (const destination of ['Library', 'Mark watched']) {
       });
       await movingVideo(page, peer);
       const before = peer.snapshot();
+      const nonce = await recordFastDeparture(page);
       const click = destination === 'Mark watched' ? page.getByRole('button', {name: destination, exact: true})
         : page.getByRole('link', {name: destination, exact: true});
       await click.click({noWaitAfter: true});
@@ -114,9 +150,10 @@ for (const destination of ['Library', 'Mark watched']) {
       } else await expect(page.getByRole('heading', {name: 'Destination'})).toBeVisible();
       await expect.poll(() => peer.snapshot().closedHeldSegments).toBeGreaterThan(0);
       const after = peer.snapshot();
+      const witness = await readFastDeparture(page, nonce);
       await info.attach('fast-fMP4-HLS-departure', {body: JSON.stringify({destination, facts: peer.facts, before, after,
-        phases, errors, boundary: 'Real pinned Hls.js/HTTP/fMP4 with fast document replacement; console phases unverified, driver receipt time; no Go storage/TLS/offset recipe/native fullscreen proof'}), contentType: 'application/json'});
-      expect(phases.map(value => value.event)).toEqual(['navigation', 'pagehide']);
+        phases, witness, errors, boundary: 'Real pinned Hls.js/HTTP/fMP4 with fast document replacement; console phases unverified, driver receipt time; no Go storage/TLS/offset recipe/native fullscreen proof'}), contentType: 'application/json'});
+      expect(witness.events).toEqual(['navigation', 'pagehide']);
       expect(errors).toEqual([]);
     } finally {await peer.close();}
   });

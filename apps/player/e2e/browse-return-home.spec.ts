@@ -4,7 +4,7 @@ import { assetReceipt, observe, origin, record, settle, snapshot, type Snapshot 
 // Source-prepared supplemental coverage: the original nine-case selector does
 // not register this file. Root must explicitly admit it with the real Go fixture.
 test.skip(!origin, "requires disposable Go Server browse-return fixture");
-test.use({ serviceWorkers: "block", video: "off", launchOptions: { args: ["--disable-back-forward-cache"] } });
+test.use({ serviceWorkers: "block", video: "off" });
 test.setTimeout(25_000);
 test.beforeEach(async ({ page }) => observe(page));
 
