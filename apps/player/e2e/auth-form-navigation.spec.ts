@@ -8,7 +8,7 @@ const theme = await readFile(new URL("../../../packages/webassets/static/theme.j
 test.use({serviceWorkers: "block"});
 const scenarios = ["ready", "missing-script", "missing-name", "missing-password", "disabled-submit", "disabled-fieldset", "override-action", "override-method", "override-target", "form-target", "wrong-action", "pending-script", "normal-delayed-script", "http-error", "redirect", "slow-response", "other-error", "repeated-timeout"] as const;
 
-for (const path of ["/login?next=/", "/setup"] as const) for (const scenario of scenarios) {
+for (const path of ["/login", "/login?next=/", "/setup"] as const) for (const scenario of scenarios) {
   if (scenario === "normal-delayed-script" && path !== "/setup") continue;
   test(`${path} navigation recovery preserves the first document's ${scenario} evidence`, {tag: "@smoke"}, async ({browser}, info) => {
     const formPath = new URL(path, "http://fixture").pathname;

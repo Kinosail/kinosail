@@ -30,7 +30,7 @@ receipt = {"revision": revision, "command": ["python3", str(Path(__file__).relat
     "data": "Two installed Arrival cues; 390px at 200 percent text; delayed audit callback after dock initialization",
     "boundaries": "Login and unrelated bundle are fixture placeholders; no live authentication, media or provider proof",
     "sources": {name: hashlib.sha256((root / name).read_bytes()).hexdigest() for name in [
-        "scripts/testing/layout-stability-local.mjs", "scripts/testing/test-layout-initial-sample.py",
+        "scripts/testing/layout-stability-local.mjs", "scripts/testing/auth-form-navigation.ts", "scripts/testing/test-layout-initial-sample.py",
         "apps/subtitles/internal/server/static/subtitle-dock-initial.js"]},
     "assets": {name: hashlib.sha256(content).hexdigest() for name, content in assets.items()}, "results": []}
 

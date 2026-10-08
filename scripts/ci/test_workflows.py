@@ -13,6 +13,17 @@ WORKFLOWS = ROOT / '.github/workflows'
 
 
 class WorkflowSecurityTests(unittest.TestCase):
+    def test_layout_recovery_retains_original_precredential_evidence(self):
+        source = (WORKFLOWS / 'layout-stability.yml').read_text()
+        artifact = source.split('      - name: Preserve safe measurements and screenshots\n', 1)[1].split('\n  campaign-proof:', 1)[0]
+        for name in ('login-original-navigation-trace.zip', 'firefox-auth-form-navigation-recovery.json'):
+            self.assertIn(f'            .verification/layout/*/*/{name}\n', artifact)
+            self.assertIn(f'            .verification/layout-fixtures/**/{name}\n', artifact)
+        self.assertIn('            .verification/layout-fixtures/**/layout-login-rejection.json\n', artifact)
+        self.assertIn('layout-auth-navigation.spec.ts\n', source)
+        self.assertIn('if: always()', artifact)
+        self.assertNotIn('.verification/layout/**', artifact)
+
     def test_focused_native_probe_rejects_unknown_modes_before_outputs(self):
         source = (WORKFLOWS / 'app.yml').read_text()
         step = source.split('      - name: Validate focused probe\n', 1)[1].split('      - name:', 1)[0]

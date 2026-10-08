@@ -4,6 +4,7 @@ import {join} from "node:path";
 import {createHmac} from "node:crypto";
 import {measureFlows} from "./layout-stability-flows.mjs";
 import {bookmarkSnapshot} from "./layout-stability-bookmarks.mjs";
+import {gotoAuthForm} from "./auth-form-navigation.ts";
 const require = createRequire(new URL("../../apps/player/e2e/package.json", import.meta.url));
 const {chromium, webkit, firefox} = require("@playwright/test");
 const AxeBuilder = require("@axe-core/playwright").default;
@@ -82,7 +83,16 @@ page.on("pageerror",error=>bounded(loginErrors,{event:"pageerror",category:["Typ
 page.on("console",message=>{if(["warning","error"].includes(message.type()))bounded(loginErrors,{event:"console",category:message.type()});});
 page.on("requestfailed",request=>bounded(loginErrors,{event:"requestfailed",resourceType:request.resourceType(),urlCategory:urlCategory(request.url())}));
 phase = "login-page";
-await page.goto("/login");
+const loginResponse = await gotoAuthForm(page, "/login", {attach: async (_name, attachment) => {
+  await writeFile(join(run, "firefox-auth-form-navigation-recovery.json"), attachment.body);
+  await context.tracing.stop({path: join(run, "login-original-navigation-trace.zip")});
+  await context.tracing.start({screenshots:true,snapshots:true});
+}});
+await page.waitForLoadState("load");
+if (!loginResponse || loginResponse.status() !== 200 || loginResponse.request().redirectedFrom() ||
+    loginResponse.url() !== expectedLogin.href || await page.evaluate(() => location.href) !== expectedLogin.href) {
+  throw new Error("Login navigation did not return the expected successful document");
+}
 phase = "login-name";
 await page.getByLabel("Name", {exact: true}).waitFor({state:"visible"});
 await page.getByLabel("Password", {exact: true}).waitFor({state:"visible"});
