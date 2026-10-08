@@ -80,6 +80,11 @@ try:
         result.setdefault('independentRefillArgv', {})[case['name']] = readiness_refill_arguments(path.parent / case['name'], pace)
     cold = readiness_cold_control(ROOT, path.parent / 'player',
         path.parent / 'origin-refill/media/Fixture.flac', path.parent / 'uninterrupted-cold-control')
+    cold_record = json.dumps({'revision': result['revision'], 'tree': result['tree'], 'case': cold},
+        separators=(',', ':')) + '\n'
+    check(len(cold_record.encode()) <= 2 << 20, 'readiness_cold_receipt_bound')
+    path.with_name('uninterrupted-cold-control.json').write_text(cold_record)
+    result['coldControlReceiptSHA256'] = hashlib.sha256(cold_record.encode()).hexdigest()
     result['coldControl'] = {k: cold.get(k) for k in ['result', 'failures', 'preparationPosts', 'emptyCacheBeforeFirstGET',
         'sourceUnchanged', 'workerBound', 'encoderLifecycle', 'ownedProcessJoin', 'failureClass', 'cleanupFailures']}
     check(cold['result'] == 'passed' and not cold['failures'] and not cold.get('failureClass'),
@@ -123,5 +128,8 @@ target = path.with_name('startup-readiness.json')
 target.write_text(json.dumps(result, separators=(',', ':')) + '\n')
 with path.with_name('SHA256SUMS').open('a') as output:
     output.write(hashlib.sha256(target.read_bytes()).hexdigest() + '  startup-readiness.json\n')
+    cold_path = path.with_name('uninterrupted-cold-control.json')
+    if cold_path.is_file():
+        output.write(hashlib.sha256(cold_path.read_bytes()).hexdigest() + '  uninterrupted-cold-control.json\n')
 print(json.dumps(result, separators=(',', ':')))
 raise SystemExit(0 if result['result'] == 'passed' else 1)
