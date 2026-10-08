@@ -94,3 +94,52 @@ test("DOM capture selects a late direct child and reports its offscreen growth",
     for(const [key,value] of Object.entries(original)){if(value===undefined)delete globalThis[key];else globalThis[key]=value;}
   }
 });
+
+
+test("auth geometry records body origin, document extent and computed containment without content", async () => {
+  const {captureAuthGeometry} = await import("./layout-stability-diagnostic-snapshots.mjs");
+  const original = {document:globalThis.document,getComputedStyle:globalThis.getComputedStyle};
+  const body = {classList:{contains:value=>value==="auth"},getBoundingClientRect:()=>({x:0,y:72,width:1440,height:900}),scrollHeight:972};
+  const main = {};
+  globalThis.document = {body,documentElement:{scrollHeight:972,clientHeight:900},querySelector:()=>main};
+  globalThis.getComputedStyle = node => ({marginTop:node===main?"72px":"0px",display:"block",contain:"none",overflowY:"visible"});
+  try {
+    const capture = Function(`return (${captureAuthGeometry.toString()})`)();
+    assert.deepEqual(capture(), {body:{x:0,y:72,width:1440,height:900},documentHeight:972,mainMarginTop:72,
+      bodyDisplay:"block",mainDisplay:"block",bodyContain:"none",mainContain:"none",bodyOverflowY:"visible"});
+    body.getBoundingClientRect = () => ({x:NaN,y:Infinity,width:1e40,height:-Infinity});
+    document.documentElement.scrollHeight = Infinity;
+    body.scrollHeight = NaN;
+    globalThis.getComputedStyle = () => ({marginTop:"private-token",display:"private-token",contain:"private-token",overflowY:"private-token"});
+    assert.deepEqual(capture(), {body:{x:null,y:null,width:null,height:null},documentHeight:900,mainMarginTop:null,
+      bodyDisplay:"other",mainDisplay:"other",bodyContain:"other",mainContain:"other",bodyOverflowY:"other"});
+    body.classList.contains = () => false;
+    assert.equal(capture(), null);
+    document.body = null;
+    assert.equal(capture(), null);
+  } finally {for(const [key,value] of Object.entries(original)){if(value===undefined)delete globalThis[key];else globalThis[key]=value;}}
+});
+
+test("actual early frame and initial/settled inspector retain the same auth geometry", async () => {
+  const {readFileSync} = await import("node:fs");
+  const {captureAuthGeometry} = await import("./layout-stability-diagnostic-snapshots.mjs");
+  const source=readFileSync(new URL("./layout-stability-local.mjs",import.meta.url),"utf8");
+  const observe=Function(`return (${source.slice(source.indexOf("function observe("),source.indexOf("\nconst viewports"))})`)();
+  const inspect=Function(`return (${source.slice(source.indexOf("const inspect = ")+16,source.indexOf(";\nfunction observe("))})`)();
+  const keys=["document","getComputedStyle","window","PerformanceObserver","requestAnimationFrame","scrollX","scrollY","location"];
+  const old=Object.fromEntries(keys.map(key=>[key,globalThis[key]]));
+  const body={classList:{contains:()=>true},getBoundingClientRect:()=>({x:0,y:72,width:1440,height:900}),scrollHeight:972};
+  let callback;
+  globalThis.document={body,documentElement:{scrollHeight:972,clientHeight:900,style:{},dataset:{}},querySelector:()=>null,querySelectorAll:()=>[]};
+  globalThis.getComputedStyle=()=>({display:"block",contain:"none",overflowY:"visible",fontSize:"16px"});
+  globalThis.window={};globalThis.PerformanceObserver={supportedEntryTypes:[]};globalThis.requestAnimationFrame=value=>{callback=value;};
+  globalThis.scrollX=0;globalThis.scrollY=0;globalThis.location={hash:""};
+  try {
+    observe(()=>null,captureAuthGeometry);callback(132);
+    assert.equal(window.layoutAudit.frames[0].authGeometry.body.y,72);
+    assert.equal(inspect().authGeometry.body.y,72);
+    body.getBoundingClientRect=()=>({x:0,y:0,width:1440,height:900});
+    assert.equal(inspect().authGeometry.body.y,0);
+    assert.equal(window.layoutAudit.frames[0].authGeometry.body.y,72);
+  } finally {for(const [key,value] of Object.entries(old)){if(value===undefined)delete globalThis[key];else globalThis[key]=value;}}
+});

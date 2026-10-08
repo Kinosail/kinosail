@@ -1,7 +1,7 @@
 import {installLayoutFailureReporter, layoutFailureLocations, layoutFailureNavigation} from "./layout-stability-failure.mjs";
 import {layoutResponseHandler} from "./layout-stability-routing.mjs";
 import {navigationDiagnostics} from "./navigation-diagnostics.mjs";
-import {captureMainSnapshot,summarizeMainChange} from "./layout-stability-diagnostic-snapshots.mjs";
+import {captureMainSnapshot,summarizeMainChange,captureAuthGeometry} from "./layout-stability-diagnostic-snapshots.mjs";
 import {createRequire} from "node:module";
 import {writeFile} from "node:fs/promises";
 import {join} from "node:path";
@@ -67,17 +67,18 @@ function cls(shifts) {
   return maximum;
 }
 const boxesChanged=(a,b)=>a.filter(first=>{const last=b.find(v=>v.id===first.id);return last&&["x",first.pinned&&last.pinned?"y":"documentY","width","height"].some(key=>Math.abs(first[key]-last[key])>1);});
-const inspect = () => ({rootFontSize: getComputedStyle(document.documentElement).fontSize, rootScale:document.documentElement.style.fontSize, ready: document.querySelector(".settings-shell")?.hasAttribute("data-settings-ready"), category: document.documentElement.dataset.settingsCategory, scrollX, scrollY,
+const inspect = () => ({authGeometry:window.layoutAudit.captureAuthGeometry(),rootFontSize: getComputedStyle(document.documentElement).fontSize, rootScale:document.documentElement.style.fontSize, ready: document.querySelector(".settings-shell")?.hasAttribute("data-settings-ready"), category: document.documentElement.dataset.settingsCategory, scrollX, scrollY,
   timeouts: ["#session-timeouts","#security"].includes(location.hash)?(()=>{const anchor=document.getElementById(location.hash.slice(1)),target=document.getElementById("session-timeouts");return {anchorPresent:Boolean(anchor),visible:Boolean(target&&target.getBoundingClientRect().height&&(!target.checkVisibility||target.checkVisibility())),access:[...target?.querySelectorAll("form[data-timeout-access]")||[]].map(n=>n.dataset.timeoutAccess).sort()};})():undefined,
   sections: [...document.querySelectorAll(".settings-flow>section")].filter(n=>n.getBoundingClientRect().height).map(n=>({id:n.id,category:n.dataset.settingsCategory,heading:n.querySelector("h2")?.textContent})),
   nativeOptions: document.querySelectorAll(".player-native-options").length, settingsButtons: document.querySelectorAll("[data-player-settings]").length,
   overflowNodes: [...document.querySelectorAll("body *:not(option):not(optgroup)")].filter(n => {const r=n.getBoundingClientRect();return r.height>0&&r.right+(getComputedStyle(n).position==="fixed"?0:scrollX)>innerWidth+1;}).slice(0,30).map(n=>({node:n.id||n.className||n.tagName,rect:n.getBoundingClientRect().toJSON(),minWidth:getComputedStyle(n).minWidth,whiteSpace:getComputedStyle(n).whiteSpace})),
   scrollContainers: [...document.querySelectorAll("body *:not(option):not(optgroup)")].filter(n=>n.clientWidth>0&&n.scrollWidth>n.clientWidth+1).slice(0,30).map(n=>({node:n.id||n.className||n.tagName,rect:n.getBoundingClientRect().toJSON(),clientWidth:n.clientWidth,scrollWidth:n.scrollWidth,overflowX:getComputedStyle(n).overflowX}))});
-function observe(captureMainSnapshot) {
+function observe(captureMainSnapshot,captureAuthGeometry) {
   const ids = new WeakMap(); let nextID = 0;
   const identify = node => {if(!ids.has(node))ids.set(node, ++nextID);return ids.get(node);};
   const label = node => node?.id || (typeof node?.className === "string" ? node.className : "") || node?.nodeName;
   window.layoutAudit = {shifts: [], frames: [], paints: [], support: PerformanceObserver.supportedEntryTypes, initialMainSnapshot:null};
+  window.layoutAudit.captureAuthGeometry=captureAuthGeometry;
   window.layoutAudit.captureMainSnapshot=sampleTime=>captureMainSnapshot(identify,sampleTime);
   if (PerformanceObserver.supportedEntryTypes.includes("layout-shift")) new PerformanceObserver(list => {
     for (const entry of list.getEntries()) window.layoutAudit.shifts.push({time: entry.startTime, value: entry.value,
@@ -91,7 +92,7 @@ function observe(captureMainSnapshot) {
       last = time;
       const boxes = [...document.querySelectorAll(".app-header, .mobile-navigation, .subtitle-dashboard .app-header nav, main, h1, h2, .card, .home-feature, .media-stage, .player-stage-toolbar, .player-optional-action, .settings-nav, .settings-flow, .settings-category-description, button")].slice(0, 60)
         .filter(node => node.getBoundingClientRect().height > 0 && (!node.checkVisibility || node.checkVisibility()) && ![...document.querySelectorAll("details:not([open])")].some(d=>d.contains(node)&&!d.querySelector(":scope>summary")?.contains(node))).map(node => ({pinned: (()=>{for(let n=node;n;n=n.parentElement)if(["fixed","sticky"].includes(getComputedStyle(n).position))return true;return false;})(), id: identify(node), documentY: node.getBoundingClientRect().y + scrollY, node: label(node), aria: node.getAttribute("aria-label"), text: node.textContent.trim().slice(0, 45), ...node.getBoundingClientRect().toJSON()}));
-      window.layoutAudit.frames.push({time, scrollY, boxes});
+      window.layoutAudit.frames.push({time, scrollY, boxes, authGeometry:captureAuthGeometry()});
       if(!window.layoutAudit.initialMainSnapshot&&boxes.some(box=>box.node==="main"))window.layoutAudit.initialMainSnapshot=captureMainSnapshot(identify,time);
     }
     if (time < 8000) requestAnimationFrame(sample);
@@ -133,7 +134,7 @@ try {
     const traced=viewport.width===390&&(path==="/settings#access"||path.startsWith("/watch/"));
     operationPhase = "trace-start";
     if(traced)await context.tracing.start({screenshots:true,snapshots:true});
-    await context.addInitScript(`(${observe.toString()})(${captureMainSnapshot.toString()});`);
+    await context.addInitScript(`(${observe.toString()})(${captureMainSnapshot.toString()},${captureAuthGeometry.toString()});`);
     const page = activePage = await context.newPage();
 navigation = navigationDiagnostics(page,baseURL);
     // Delay real response bytes, without substituting mock markup or media.

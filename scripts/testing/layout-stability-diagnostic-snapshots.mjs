@@ -108,3 +108,22 @@ export function summarizeMainChange(initialInput, finalInput, frames = [], paint
   }
   return result;
 }
+
+
+// Text-free auth-page evidence; absence is unknown, never synthetic geometry.
+export function captureAuthGeometry() {
+  const body=document.body;
+  if(!body?.classList.contains("auth"))return null;
+  const finite=value=>Number.isFinite(value)&&Math.abs(value)<=10000000?value:null;
+  const size=value=>finite(value)!==null&&value>=0?value:null;
+  const main=document.querySelector("main"),bodyStyle=getComputedStyle(body),mainStyle=main?getComputedStyle(main):null;
+  const box=body.getBoundingClientRect();
+  const display=value=>["none","block","inline","inline-block","flow-root","flex","inline-flex","grid","inline-grid","contents"].includes(value)?value:"other";
+  const contain=value=>typeof value==="string"&&value.length<=64&&value.split(/\s+/).every(part=>["none","strict","content","size","inline-size","layout","style","paint"].includes(part))?value:"other";
+  const margin=mainStyle&&/^-?(?:\d+\.?\d*|\.\d+)px$/.test(mainStyle.marginTop)?finite(Number.parseFloat(mainStyle.marginTop)):null;
+  const heights=[document.documentElement?.scrollHeight,document.documentElement?.clientHeight,body.scrollHeight].map(size).filter(value=>value!==null);
+  return {body:{x:finite(box.x),y:finite(box.y),width:size(box.width),height:size(box.height)},documentHeight:heights.length?Math.max(...heights):null,
+    mainMarginTop:margin,bodyDisplay:display(bodyStyle.display),mainDisplay:mainStyle?display(mainStyle.display):null,
+    bodyContain:contain(bodyStyle.contain),mainContain:mainStyle?contain(mainStyle.contain):null,
+    bodyOverflowY:["visible","hidden","clip","scroll","auto"].includes(bodyStyle.overflowY)?bodyStyle.overflowY:"other"};
+}
