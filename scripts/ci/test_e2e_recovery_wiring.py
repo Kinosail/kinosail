@@ -12,6 +12,13 @@ class RecoverySourceClosure(unittest.TestCase):
         rows=dict(row.split("  ",1)[::-1] for row in result.stdout.splitlines())
         self.assertIn("recovery-control.mjs",rows)
         self.assertEqual(rows["recovery-control.mjs"],hashlib.sha256((ROOT/"scripts/e2e/recovery-control.mjs").read_bytes()).hexdigest())
+    def test_descriptor_helper_is_bound_and_called_with_owned_fd(self):
+        source=(ROOT/"scripts/e2e/fixture.mjs").read_text()
+        collector=(ROOT/"scripts/e2e/run.sh").read_text()
+        self.assertIn("recovery-data-digest.py",collector)
+        self.assertIn("stdio: ['ignore', 'pipe', 'ignore', rootFD]",source)
+        self.assertEqual(source.count("dataDigest(rootFD)"),3)
+        self.assertNotIn("opendirSync",source)
     def test_required_player_controls_execute_the_actual_mailbox_suite_once(self):
         source=(ROOT/".github/workflows/app.yml").read_text()
         command=next(line for line in source.splitlines() if "run: node --test scripts/testing/player-setup-navigation.test.mjs" in line)

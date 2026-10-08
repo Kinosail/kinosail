@@ -2,7 +2,7 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { decodeRecoveryRequest } from './recovery-control.mjs';
 import { spawn, spawnSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync, lstatSync, openSync, fstatSync, readSync, closeSync, constants, renameSync, linkSync, realpathSync, opendirSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, lstatSync, openSync, fstatSync, readSync, closeSync, constants, renameSync, linkSync, realpathSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, isAbsolute, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -68,41 +68,13 @@ function recoveryOwned() {
     && !lstatSync(root).isSymbolicLink() && !lstatSync(binary).isSymbolicLink()
     && lstatSync(binary).isFile() && owns(binary, binaryIdentity);
 }
-function dataDigest() {
-  const hash = createHash('sha256'); let count = 0, bytes = 0;
-  function walk(path, prefix) {
-    const before = lstatSync(path);
-    if (!before.isDirectory() || before.isSymbolicLink()) throw new Error('invalid owned recovery data');
-    const directory = opendirSync(path); const entries = [];
-    try {
-      for (let entry; (entry = directory.readSync());) {
-        if (++count > 256) throw new Error('owned recovery data oversized');
-        entries.push(entry.name);
-      }
-    } finally { directory.closeSync(); }
-    for (const name of entries.sort()) {
-      const current = join(path, name), stat = lstatSync(current);
-      if (stat.isSymbolicLink()) throw new Error('invalid owned recovery data');
-      if (stat.isDirectory()) walk(current, prefix + name + '/');
-      else if (stat.isFile()) {
-        if ((bytes += stat.size) > 33554432) throw new Error('owned recovery data oversized');
-        const fd = openSync(current, constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK);
-        try {
-          const opened = fstatSync(fd);
-          if (!opened.isFile() || opened.dev !== stat.dev || opened.ino !== stat.ino || opened.size !== stat.size) throw new Error('owned recovery data changed');
-          hash.update(prefix + name + '\0'); const buffer = Buffer.alloc(65536); let offset = 0, size;
-          while ((size = readSync(fd, buffer, 0, buffer.length, offset))) {
-            offset += size; if (offset > stat.size) throw new Error('owned recovery data changed');
-            hash.update(buffer.subarray(0, size));
-          }
-          if (offset !== stat.size || !owns(current, stat)) throw new Error('owned recovery data changed');
-          hash.update('\0');
-        } finally { closeSync(fd); }
-      } else throw new Error('invalid owned recovery data');
-    }
-    if (!owns(path, before)) throw new Error('owned recovery directory changed');
-  }
-  walk('data', ''); return hash.digest('hex');
+function dataDigest(rootFD) {
+  const before = fstatSync(rootFD);
+  const result = spawnSync('python3', ['-I', fileURLToPath(new URL('./recovery-data-digest.py', import.meta.url))],
+    { env: runtime, stdio: ['ignore', 'pipe', 'ignore', rootFD], timeout: 30000, killSignal: 'SIGKILL', maxBuffer: 65 });
+  if (!recoveryOwned() || !owns('.', before) || !owns(root, before) || result.error || result.signal || result.status !== 0 || !Buffer.isBuffer(result.stdout)
+      || result.stdout.length !== 65 || !/^[a-f0-9]{64}\n$/.test(result.stdout.toString('utf8'))) throw new Error('owned recovery data digest failed');
+  return result.stdout.toString('utf8').slice(0, 64);
 }
 function runRecovery() {
   if (app !== 'player' || !recoveryChild || child !== recoveryChild
@@ -150,8 +122,8 @@ function runRecovery() {
     const result = { operation: recoveryOperation, verified: true,
       archiveSHA256: createHash('sha256').update(bytes).digest('hex'), archiveBytes: bytes.length };
     if (recoveryOperation === 'restore') {
-      const before = dataDigest();
-      if (command(['restore'], Buffer.from('deliberately corrupt owned recovery archive')).status === 0 || dataDigest() !== before) throw new Error('corrupt recovery did not preserve owned data');
+      const before = dataDigest(rootFD);
+      if (command(['restore'], Buffer.from('deliberately corrupt owned recovery archive')).status === 0 || dataDigest(rootFD) !== before) throw new Error('corrupt recovery did not preserve owned data');
       if (command(['restore'], bytes).status !== 0) throw new Error('owned recovery restore failed');
       Object.assign(result, { corruptRejected: true, corruptDataUnchanged: true, restored: true });
     }
