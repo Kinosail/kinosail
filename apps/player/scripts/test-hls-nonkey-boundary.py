@@ -120,16 +120,21 @@ try:
                         value['physicalFragments'], streams, value['publicPacketRows'])
                     detail['completedStages'].append(detail['currentStage'])
                     detail['currentStage'] = 'raw-ignore-edit-demux'
-                    raw_packets = json.loads(run(['ffprobe', '-v', 'error', '-ignore_editlist', '1',
-                        '-read_intervals', '%+#4097', '-show_packets', '-show_data_hash', 'sha256',
-                        '-show_entries', 'packet=stream_index,pts,dts,duration,flags,data_hash,side_data_list',
-                        '-of', 'json', str(directory / 'joined.mp4')]))['packets']
+                    raw_probe = json.loads(run(['ffprobe', '-v', 'error', '-ignore_editlist', '1',
+                        '-read_intervals', '%+#4097', '-show_packets', '-show_streams', '-show_data_hash', 'sha256',
+                        '-show_entries', 'packet=stream_index,pts,dts,duration,flags,data_hash,side_data_list:'
+                        'stream=index,id,codec_type,time_base', '-of', 'json', str(directory / 'joined.mp4')]))
+                    raw_packets, raw_streams = raw_probe['packets'], raw_probe['streams']
                     detail['completeIgnoreEditPacketRows'] = raw_packets
+                    detail['ignoreEditStreamRows'] = raw_streams
+                    stream_identity(raw_streams)
+                    check(sorted(raw_streams, key=lambda t: t['index']) ==
+                          sorted(streams, key=lambda t: t['index']), 'boundary_demux_stream_identity_changed')
                     check(0 < len(raw_packets) <= 4096, 'boundary_complete_ignore_edit_packet_bound')
                     raw_init = dict(value['initialization'], tracks=[
                         dict(t, edits=[]) for t in value['initialization']['tracks']])
                     detail['ignoreEditBinding'] = edit_binding(raw_init,
-                        value['physicalFragments'], streams, raw_packets)
+                        value['physicalFragments'], raw_streams, raw_packets)
                     detail['completedStages'].append(detail['currentStage'])
                     detail['currentStage'] = 'decoded-frame-clocks'
                     detail['frameClocks'] = frame_clock_diagnosis(value['mapping'])
