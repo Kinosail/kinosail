@@ -212,3 +212,21 @@ test('socket pair cap rejects the next connection and explicit cleanup joins eve
  await relay.close();assert.equal(o.listener.listening,false);
  assert.ok([...clients,...o.sockets].every(socket=>socket.destroyed));
 });
+test('actual relay endpoint failures retain closed transport facts without raw errors or extra connections',async()=>{
+ for(const side of ['client','upstream']) {
+ const o=owner(),relay=await o.api.startRelay({ip:'172.28.0.2'}),client=new PassThrough();
+ o.listener.connection(client);const peer=o.sockets[0];peer.emit('connect');
+ const failure=Object.assign(Error('PRIVATE'),{code:'ECONNRESET',private:'PRIVATE'});
+ (side==='client'?client:peer).emit('error',failure);
+ const facts=relay.snapshot();assert.equal(facts.connections,1);assert.equal(facts.connected,1);
+ assert.equal(facts.errors[side].ECONNRESET,1);assert.equal(JSON.stringify(facts).includes('PRIVATE'),false);
+ assert.equal(o.calls.filter(row=>row[0]==='connect').length,1);await relay.close();
+ }
+});
+test('unknown and throwing transport codes remain closed and cannot prevent existing cleanup',async()=>{
+ for(const failure of [{code:'PRIVATE'},{get code(){throw Error('PRIVATE');}}]) {
+ const o=owner(),relay=await o.api.startRelay({ip:'172.28.0.2'}),client=new PassThrough();o.listener.connection(client);
+ o.sockets[0].emit('error',failure);assert.equal(client.destroyed,true);assert.equal(o.sockets[0].destroyed,true);
+ assert.equal(relay.snapshot().errors.upstream.unknown,1);await relay.close();
+ }
+});

@@ -124,16 +124,36 @@ export function startRelay(target, deadline = Date.now() + 2000) {
   if (!Number.isFinite(deadline) || deadline <= Date.now() || deadline > Date.now() + 14000) invalid();
   return new Promise((resolve, reject) => {
     const sockets = new Set();
+    const codes = ['ECONNRESET', 'ECONNREFUSED', 'ETIMEDOUT', 'EPIPE', 'ENETUNREACH', 'EHOSTUNREACH', 'unknown'];
+    const transport = {schemaVersion: 1, connections: 0, connected: 0, capacityRejected: 0, connectDeadline: 0,
+      clientClosed: 0, upstreamClosed: 0, clientBytes: 0, upstreamBytes: 0, overflow: false,
+      errors: {client: Object.fromEntries(codes.map(code => [code, 0])), upstream: Object.fromEntries(codes.map(code => [code, 0]))}};
+    const count = (object, key, amount = 1) => {
+      const next = object[key] + amount;
+      if (next > 2147483647) transport.overflow = true;
+      object[key] = Math.min(next, 2147483647);
+    };
+    const error = (side, failure) => {
+      let code;
+      try { code = failure?.code; } catch {}
+      count(transport.errors[side], codes.includes(code) ? code : 'unknown');
+    };
+    const snapshot = () => JSON.parse(JSON.stringify(transport));
     let settled = false, timer;
     const server = createServer({allowHalfOpen: true}, client => {
-      if (sockets.size >= 128) { client.destroy(); return; }
+      if (sockets.size >= 128) { count(transport, 'capacityRejected'); client.destroy(); return; }
+      count(transport, 'connections');
       const peer = createConnection({host: target.ip, port: 38127, allowHalfOpen: true});
       sockets.add(client); sockets.add(peer);
       const stop = () => { client.destroy(); peer.destroy(); sockets.delete(client); sockets.delete(peer); };
-      client.on('error', stop); peer.on('error', stop);
-      client.on('close', () => sockets.delete(client)); peer.on('close', () => sockets.delete(peer));
-      peer.setTimeout(5000, stop);
-      peer.once('connect', () => peer.setTimeout(0));
+      client.on('error', failure => { error('client', failure); stop(); });
+      peer.on('error', failure => { error('upstream', failure); stop(); });
+      client.on('close', () => { count(transport, 'clientClosed'); sockets.delete(client); });
+      peer.on('close', () => { count(transport, 'upstreamClosed'); sockets.delete(peer); });
+      client.on('data', chunk => { if (Buffer.isBuffer(chunk)) count(transport, 'clientBytes', chunk.length); });
+      peer.on('data', chunk => { if (Buffer.isBuffer(chunk)) count(transport, 'upstreamBytes', chunk.length); });
+      peer.setTimeout(5000, () => { count(transport, 'connectDeadline'); stop(); });
+      peer.once('connect', () => { count(transport, 'connected'); peer.setTimeout(0); });
       client.pipe(peer); peer.pipe(client);
     });
     const close = () => {
@@ -155,7 +175,7 @@ export function startRelay(target, deadline = Date.now() + 2000) {
       settled = true; clearTimeout(timer);
       server.removeListener('error', failed);
       server.on('error', () => { void close(); });
-      resolve({port: server.address().port, close});
+      resolve({port: server.address().port, close, snapshot});
     });
   });
 }
@@ -176,7 +196,7 @@ if (process.argv[1]?.endsWith('/library-internal-relay.mjs')) {
     const target = inspectTarget(...process.argv.slice(2), facts, deadline);
     const relay = await startRelay(target, deadline);
     let closing = false;
-    const close = () => { if (!closing) { closing = true; void relay.close().then(() => process.exit(0)); } };
+    const close = () => { if (!closing) { closing = true; void relay.close().then(() => { process.stderr.write(JSON.stringify({...facts, transport: relay.snapshot()}) + '\n', () => process.exit(0)); }); } };
     process.once('SIGTERM', close); process.once('SIGINT', close);
     process.stderr.write(JSON.stringify(facts) + '\n');
     process.stdout.write(JSON.stringify({schemaVersion: 1, port: relay.port}) + '\n');

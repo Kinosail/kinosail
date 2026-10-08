@@ -60,7 +60,9 @@ if name=='node':
   print(identity);sys.exit(0)
  record('relay',args)
  def stop(*_):
-  record('relay-close',[]);sys.exit(0)
+  record('relay-close',[])
+  if os.environ.get('CONTROL_RELAY_TRANSPORT'):print(os.environ['CONTROL_RELAY_TRANSPORT'],file=sys.stderr,flush=True)
+  sys.exit(0)
  signal.signal(signal.SIGTERM,stop)
  time.sleep(float(os.environ.get('CONTROL_RELAY_DELAY','0')))
  print(os.environ.get('CONTROL_RELAY','{"schemaVersion":1,"port":49152}'),flush=True)

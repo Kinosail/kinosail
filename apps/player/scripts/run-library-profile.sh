@@ -70,6 +70,9 @@ PYTHON
   if [[ -n "$relay_pid" ]]; then
     kill "$relay_pid" 2>/dev/null
     wait "$relay_pid"; relay_pid=""
+    if [[ -d "$output" && ! -L "$output" ]]; then
+      python3 "$app/scripts/library_transport_receipt.py" "$workspace/relay-failure.json" "$output/relay-transport.json" || failed=1
+    fi
   fi
   if [[ "$container_attempted" == 1 && -z "$container_id" ]]; then
     container_id="$(proof container "$container" -)" || failed=1
