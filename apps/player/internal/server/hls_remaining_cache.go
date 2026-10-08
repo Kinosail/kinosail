@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/MikeO7/kinosail/packages/isobmff"
@@ -60,6 +61,9 @@ func (manager *hlsManager) openRemainingAACAsset(ctx context.Context, item libra
 	if err := remainingAACReadyRoot(root, options.Cache); err != nil {
 		return nil, err
 	}
+	if err := remainingAACManifestAsset(root, name, manager.probe.duration(ctx, item)); err != nil {
+		return nil, err
+	}
 	file, info, err := copiedHLSOpenFile(root, name, 64<<20)
 	if err != nil {
 		return nil, errCopiedHLSIndex
@@ -101,8 +105,6 @@ func (asset *remainingAACAsset) retainInitialization() error {
 	return nil
 }
 
-// Version the plain source-origin AAC recipe without probing under manager.mu.
-// Source facts select the argument correction, independently of file extension.
 func remainingAACOriginRecipe(item library.Item, recipe hlsRecipe) bool {
 	return item.Kind == "audio" && remainingPlainAudio(recipe) && recipe.offset == 0 && recipe.outputTime == 0 &&
 		(recipe.maxBitrate == 0 || recipe.maxBitrate >= 192000)
@@ -123,6 +125,9 @@ func (manager *hlsManager) remainingAACCacheAsset(ctx context.Context, item libr
 	}
 	defer root.Close()
 	if err := remainingAACReadyRoot(root, options.Cache); err != nil {
+		return err
+	}
+	if err := remainingAACManifestAsset(root, name, manager.probe.duration(ctx, item)); err != nil {
 		return err
 	}
 	if err := remainingAACExistingAsset(root, name); err != nil {
@@ -147,7 +152,7 @@ func remainingAACCacheIdentity(root *os.Root, policy string) error {
 		return errHLSIdentityChanged
 	}
 	master, err := copiedHLSCacheFile(root, "index.m3u8", 1<<20)
-	if err != nil || !playback.PlaylistHas(master, "#KINOSAIL-TRANSCODER:"+policy) || !strings.Contains(string(master), "#EXT-X-STREAM-INF:") {
+	if err != nil || !remainingAACMasterPolicy(master, policy) {
 		return errHLSIdentityChanged
 	}
 	renditions := 0
@@ -165,6 +170,10 @@ func remainingAACCacheIdentity(root *os.Root, policy string) error {
 		return errCopiedHLSIndex
 	}
 	return nil
+}
+
+func remainingAACMasterPolicy(master []byte, policy string) bool {
+	return playback.PlaylistHas(master, "#KINOSAIL-TRANSCODER:"+policy) && strings.Contains(string(master), "#EXT-X-STREAM-INF:")
 }
 
 func remainingAACValidateInitialization(root *os.Root) error {
@@ -196,4 +205,96 @@ func remainingAACExistingAsset(root *os.Root, name string) error {
 		return errCopiedHLSIndex
 	}
 	return nil
+}
+
+func remainingAACManifestAsset(root *os.Root, name string, duration float64) error {
+	manifest, err := remainingAACManifestRead(root)
+	if err != nil || !remainingAACManifestValid(manifest) {
+		return errCopiedHLSIndex
+	}
+	if filepath.Base(name) == "init.mp4" {
+		return nil
+	}
+	_, valid := hlsSegmentOffset(manifest, filepath.Base(name), duration)
+	if !valid {
+		return errCopiedHLSIndex
+	}
+	return nil
+}
+
+func remainingAACManifestRead(root *os.Root) ([]byte, error) {
+	file, before, err := copiedHLSOpenFile(root, "audio/index.m3u8", 1<<20)
+	if err != nil {
+		return nil, errCopiedHLSIndex
+	}
+	defer file.Close()
+	manifest, err := io.ReadAll(io.LimitReader(file, (1<<20)+1))
+	after, statErr := file.Stat()
+	current, pathErr := root.Lstat("audio/index.m3u8")
+	if err != nil || statErr != nil || pathErr != nil || int64(len(manifest)) != before.Size() ||
+		!sameCopiedHLSFile(before, after) || !current.Mode().IsRegular() || current.Size() <= 0 || current.Size() > 1<<20 {
+		return nil, errCopiedHLSIndex
+	}
+	return manifest, nil
+}
+
+type remainingAACManifestState struct {
+	next, maps int
+	pending    float64
+	ended      bool
+}
+
+func remainingAACManifestValid(manifest []byte) bool {
+	if !playback.PlaylistHas(manifest, "#EXTM3U") || !playback.PlaylistHas(manifest, "#EXT-X-MEDIA-SEQUENCE:0") {
+		return false
+	}
+	state := remainingAACManifestState{}
+	for _, line := range strings.Split(string(manifest), "\n") {
+		if !state.line(strings.TrimSpace(line)) {
+			return false
+		}
+	}
+	return state.next > 0 && state.pending == 0 && state.maps == 1
+}
+
+func (state *remainingAACManifestState) line(line string) bool {
+	switch {
+	case strings.HasPrefix(line, "#EXTINF:"):
+		return state.duration(line)
+	case strings.HasPrefix(line, "#EXT-X-MAP:"):
+		state.maps++
+		return line == `#EXT-X-MAP:URI="init.mp4"`
+	case strings.HasPrefix(line, "#EXT-X-MEDIA-SEQUENCE:"):
+		return line == "#EXT-X-MEDIA-SEQUENCE:0"
+	case line == "#EXT-X-ENDLIST":
+		state.ended = true
+		return state.pending == 0
+	case line == "" || strings.HasPrefix(line, "#"):
+		return true
+	default:
+		return state.segment(line)
+	}
+}
+
+func (state *remainingAACManifestState) duration(line string) bool {
+	if state.pending != 0 || state.ended {
+		return false
+	}
+	value, _, _ := strings.Cut(strings.TrimPrefix(line, "#EXTINF:"), ",")
+	length, err := strconv.ParseFloat(value, 64)
+	if err != nil || invalidHLSSegmentDuration(length) {
+		return false
+	}
+	state.pending = length
+	return true
+}
+
+func (state *remainingAACManifestState) segment(line string) bool {
+	number, valid := hlsSegmentNumber(line)
+	if !valid || number != state.next || state.pending == 0 || state.ended {
+		return false
+	}
+	state.next++
+	state.pending = 0
+	return true
 }
