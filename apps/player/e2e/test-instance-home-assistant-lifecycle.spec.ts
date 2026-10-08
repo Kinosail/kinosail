@@ -115,8 +115,8 @@ test("real lost-release reload waits for lease expiry and renews only its origin
     first.on("requestfailed", failedRelease); first.on("response", occupiedReply);
     const renewed = nextDocumentClaim(first);
     void renewed.catch(() => {});
-    await first.evaluate(path => (window as any).__kinosailReleaseDiagnosticTarget(path), releasePath);
     const retirement = network ? await observeNativeDocumentRetirement(network) : undefined;
+    await first.evaluate(path => (window as any).__kinosailReleaseDiagnosticTarget(path), releasePath);
     retirement?.begin();
     const started = Date.now();
     await first.reload();

@@ -1,5 +1,6 @@
 import {expect, type Page, type CDPSession} from "@playwright/test";
 import {login} from "./test-instance-helpers";
+import {createDepartingConsoleCounters} from "../../../packages/webassets/home-assistant-release-diagnostic-fixture.mjs";
 
 type DocumentClaim = {id: string; claim: string; expiresIn: number};
 const actualDocumentClaims = new WeakMap<Page, DocumentClaim[]>();
@@ -123,6 +124,8 @@ export async function observeNativeDocumentRetirement(network: CDPSession) {
   const mainFrame = frameTree.frame.id;
   let departing = 0, replacing = 0, started = false, cleared = 0, retired = 0, replacements = 0, claimRequests = 0;
   const count = (value: number) => Math.min(8, value + 1);
+  const directSignals = createDepartingConsoleCounters(() => departing);
+  network.on("Runtime.consoleAPICalled", directSignals.observe);
   network.on("Runtime.executionContextCreated", ({context}) => {
     if (context.auxData?.isDefault !== true || context.auxData?.frameId !== mainFrame) return;
     if (!started) departing = context.id;
@@ -142,5 +145,5 @@ export async function observeNativeDocumentRetirement(network: CDPSession) {
   await network.send("Runtime.enable");
   return {begin: () => {started = true;}, snapshot: () => ({mainContextObserved: departing !== 0,
     departingMainContextUnavailable: retired, contextClearEvents: cleared, replacingMainContexts: replacements,
-    claimRequestsAfterReplacingMainContext: claimRequests})};
+    claimRequestsAfterReplacingMainContext: claimRequests, departingSignals: directSignals.snapshot()})};
 }

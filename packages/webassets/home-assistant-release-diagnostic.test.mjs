@@ -3,21 +3,22 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';
-import {installNativeReleaseDiagnostic} from './home-assistant-release-diagnostic-fixture.mjs';
+import {installNativeReleaseDiagnostic, createDepartingConsoleCounters} from './home-assistant-release-diagnostic-fixture.mjs';
 
 const prefix = 'KINOSAIL_R18_RELEASE_DIAGNOSTIC:';
 const path = '/api/v1/home-assistant/players/fixture-target/release';
 const flush = async () => {for (let index = 0; index < 5; index++) await Promise.resolve();};
-function diagnostic(fetch, shared = {name: ''}, denied = false) {
-  const events = new Map(), window = {fetch};
+function diagnostic(fetch, shared = {name: ''}, denied = false, consoleThrows = false) {
+  const events = new Map(), signals = [], window = {fetch};
   Object.defineProperty(window, 'name', {get() {if (denied) throw new Error('synthetic-private-error'); return shared.name;},
     set(value) {if (denied) throw new Error('synthetic-private-error'); shared.name = value;}});
   const context = vm.createContext({window, location: new URL('https://fixture.invalid/watch/fictional'),
-    URL, Response, Promise, JSON, Object, Array, Number, Reflect,
+    URL, Response, Promise, JSON, Object, Array, Number, Reflect, document: {readyState: 'complete'},
+    console: {debug(...args) {if (consoleThrows) throw new Error('synthetic-private-console'); signals.push(args);}},
     addEventListener: (name, callback) => events.set(name, callback)});
   vm.runInContext('(' + installNativeReleaseDiagnostic.toString() + ')()', context);
   window.__kinosailReleaseDiagnosticTarget(path);
-  return {window, shared, snapshot: () => JSON.parse(JSON.stringify(window.__kinosailReleaseDiagnostic())),
+  return {window, shared, signals, snapshot: () => JSON.parse(JSON.stringify(window.__kinosailReleaseDiagnostic())),
     event: name => events.get(name)?.()};
 }
 
@@ -117,6 +118,8 @@ test('diagnostic counters saturate and mark overflow without retaining a request
   const s = f.snapshot();
   assert.ok(Object.values(s.counters).every(value => Number.isInteger(value) && value >= 0 && value <= 8));
   assert.equal(s.counters.calls, 8); assert.equal(s.counters.saturated, 1); assert.ok(f.shared.name.length <= 512);
+  const perCode = new Map(); for (const [, code] of f.signals) perCode.set(code, (perCode.get(code) || 0) + 1);
+  assert.ok([...perCode.values()].every(count => count <= 8)); assert.ok(f.signals.length <= 120);
 });
 
 test('telemetry never reads request init getters while preserving the native result', async () => {
@@ -134,4 +137,59 @@ test('non-string request inputs are passed through without getter or proxy inspe
   const promise = Promise.resolve(new Response(null, {status: 200})), f = diagnostic(() => promise);
   assert.equal(f.window.fetch(input, {method: 'POST'}), promise); await flush();
   assert.equal(reads, 0); assert.equal(f.snapshot().counters.calls, 0);
+});
+
+test('native console signals contain only fixed codes and preserve actual endpoint outcomes', async () => {
+  const promise = Promise.resolve(new Response(null, {status: 204})), f = diagnostic(() => promise);
+  f.event('pagehide');
+  assert.equal(f.window.fetch(path, {method: 'POST', headers: {'X-Private': 'synthetic-private-claim'},
+    body: 'synthetic-private-body'}), promise); await flush();
+  const allowed = new Set(['DOCUMENT_READY', 'PAGE_HIDE', 'PAGE_SHOW', 'ENDPOINT_CALLED', 'AFTER_HIDE',
+    'RETURNED', 'RESPONSE_204', 'RESPONSE_OTHER', 'REJECTED', 'SYNC_THROW', 'OBSERVER_ERROR',
+    'COUNTER_SATURATED', 'STATE_DISCARDED', 'TARGET_SELECTED', 'READY_COMPLETE', 'READY_INTERACTIVE', 'READY_LOADING', 'READY_UNKNOWN']);
+  assert.ok(f.signals.every(args => args.length === 2 && args[0] === 'KINOSAIL_R18_NATIVE_EVENT' && allowed.has(args[1])));
+  for (const code of ['TARGET_SELECTED', 'READY_COMPLETE', 'PAGE_HIDE', 'ENDPOINT_CALLED', 'RETURNED', 'RESPONSE_204'])
+    assert.ok(f.signals.some(args => args[1] === code));
+  assert.ok(!JSON.stringify(f.signals).includes('synthetic-private'));
+  assert.ok(!JSON.stringify(f.signals).includes('fixture-target'));
+});
+
+test('console diagnostic failure cannot alter native promise or synchronous exception identity', async () => {
+  const promise = Promise.resolve(new Response(null, {status: 204})), f = diagnostic(() => promise, {name: ''}, false, true);
+  assert.equal(f.window.fetch(path, {method: 'POST'}), promise); await flush();
+  assert.equal(f.snapshot().counters.response204, 1);
+  const error = new Error('synthetic-private-error'), throwing = diagnostic(() => {throw error;}, {name: ''}, false, true);
+  assert.throws(() => throwing.window.fetch(path, {method: 'POST'}), value => value === error);
+});
+
+test('direct console counters accept only the exact selected execution context', () => {
+  const c = createDepartingConsoleCounters(() => 7);
+  const event = (context, code) => ({executionContextId: context, args: [
+    {type: 'string', value: 'KINOSAIL_R18_NATIVE_EVENT'}, {type: 'string', value: code}]});
+  c.observe(event(9, 'PAGE_HIDE')); c.observe(event(9, 'ENDPOINT_CALLED'));
+  c.observe(event(7, 'TARGET_SELECTED')); c.observe(event(7, 'READY_COMPLETE')); c.observe(event(7, 'PAGE_HIDE'));
+  assert.equal(c.snapshot().targetSelected, 1); assert.equal(c.snapshot().readyComplete, 1);
+  assert.equal(c.snapshot().pageHide, 1); assert.equal(c.snapshot().endpointCalls, 0);
+});
+
+test('direct console counters ignore malformed and prototype-name codes without retaining data', () => {
+  const c = createDepartingConsoleCounters(() => 7);
+  for (const args of [[], [{type: 'string', value: 'synthetic-private-prefix'}],
+    [{type: 'string', value: 'KINOSAIL_R18_NATIVE_EVENT'}, {type: 'object', value: 'synthetic-private-claim'}],
+    ...['__proto__', 'constructor', 'synthetic-private-body'].map(value => [
+      {type: 'string', value: 'KINOSAIL_R18_NATIVE_EVENT'}, {type: 'string', value}])])
+    c.observe({executionContextId: 7, args});
+  const s = c.snapshot();
+  assert.ok(Object.values(s).every(value => value === 0)); assert.ok(!Object.hasOwn(s, 'constructor'));
+  assert.ok(!JSON.stringify(s).includes('synthetic-private'));
+});
+
+test('direct console counters saturate without retaining event arguments or context identifiers', () => {
+  const c = createDepartingConsoleCounters(() => 731);
+  for (let index = 0; index < 100; index++) c.observe({executionContextId: 731, args: [
+    {type: 'string', value: 'KINOSAIL_R18_NATIVE_EVENT'}, {type: 'string', value: 'ENDPOINT_CALLED'}]});
+  const s = c.snapshot();
+  assert.equal(s.endpointCalls, 8); assert.equal(s.saturated, 1);
+  assert.ok(Object.values(s).every(value => Number.isInteger(value) && value >= 0 && value <= 8));
+  assert.ok(!JSON.stringify(s).includes('731'));
 });
