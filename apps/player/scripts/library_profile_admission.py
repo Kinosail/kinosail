@@ -74,7 +74,8 @@ def playwright_arguments(project, discovery):
         raise ValueError('explicit discovery mode required')
     arguments = ['exec', 'playwright', 'test', *sorted({file for file, _ in CASES}),
                  f'--project={project}', '--workers=1', '--retries=0', '--repeat-each=1',
-                 '--grep', '(?:' + '|'.join(re.escape(title) for _, title in CASES) + ')$']
+                 '--grep', '(?:' + '|'.join(re.escape(title + (' @smoke' if file == 'test-instance-watched-departure.spec.ts' else ''))
+                                          for file, title in CASES) + ')$']
     return arguments + (['--list', '--reporter=json'] if discovery else [])
 
 
@@ -156,7 +157,7 @@ def admit_report(value, project, completed):
             or type(configured['repeatEach']) is not int or configured['repeatEach'] != 1):
         raise ValueError('one first attempt required')
     stats = value['stats']
-    for name, count in (('expected', 46 if completed else 0), ('skipped', 0), ('unexpected', 0), ('flaky', 0)):
+    for name, count in (('expected', 46 if completed else 0), ('skipped', 0 if completed else 46), ('unexpected', 0), ('flaky', 0)):
         if type(stats[name]) is not int or stats[name] != count:
             raise ValueError('exact result counts required')
     if not isinstance(value['suites'], list) or len(value['suites']) > 64:

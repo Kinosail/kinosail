@@ -72,7 +72,7 @@ install_browser_fixture_ca() {
 }
 
 remove_browser_fixture_trust() {
-  if [[ -z "${BROWSER_FIXTURE_CA_PATH:-}" ]]; then return; fi
+  if [[ -z "${BROWSER_FIXTURE_CA_PATH:-}" ]]; then return 0; fi
   if [[ ! "$BROWSER_FIXTURE_CA_PATH" =~ ^/usr/local/share/ca-certificates/kinosail-browser-fixture-[0-9]+-[0-9]+\.crt$ ]]; then
     echo 'invalid browser fixture cleanup path' >&2
     return 2

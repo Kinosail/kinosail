@@ -54,6 +54,16 @@ class BrowserFixtureTLS(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
         self.assertFalse(self.effects.exists())
 
+    def test_no_trust_exit_cleanup_is_success_and_keeps_original_failure(self):
+        # A bare return inside a trap can inherit the original failure on newer Bash.
+        result = self.call('trap \'status=$?; remove_browser_fixture_trust; '
+                           'cleanup_status=$?; printf "%s\\n" "$cleanup_status"; '
+                           'exit "$status"\' EXIT\nexit 7',
+                           KINOSAIL_BROWSER_PROJECT='chromium')
+        self.assertEqual(result.returncode, 7, result.stderr)
+        self.assertEqual(result.stdout.strip(), '0')
+        self.assertFalse(self.effects.exists())
+
     def test_webkit_requires_disposable_linux_runner_before_effects(self):
         for env in ({"CI": ""}, {"GITHUB_ACTIONS": ""}, {"RUNNER_OS": "macOS"},
                     {"FAKE_OS": "Darwin"}, {"CI": "unknown"}):
