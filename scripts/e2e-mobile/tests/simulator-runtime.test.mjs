@@ -74,8 +74,8 @@ for(const scenario of ['complete-with-pending','missing-preinventory-witness','m
  const owner={run:'12345-1',rootDev:dev,rootIno:ino,platform:'ios',device:null,emulatorPID:null,emulatorStart:null,complete:scenario==='complete-with-pending',creationPending:{name,runtime,type,inventoryZero:true,inventorySHA256:'a'.repeat(64)}};
  if(scenario==='missing-preinventory-witness')delete owner.creationPending.inventorySHA256;
  writeFileSync(join(root,'owned-device.json'),JSON.stringify(owner),{mode:0o600});
- if(scenario==='owner-duplicate-field')writeFileSync(join(root,'owned-device.json'),JSON.stringify(owner).replace('{','{\"complete\":true,'));
- if(scenario==='inventory-duplicate-field')writeFileSync(f.state,readFileSync(f.state,'utf8').replace('{','{\"devices\":{},'));
+ if(scenario==='owner-duplicate-field')writeFileSync(join(root,'owned-device.json'),'{"complete":true,' + JSON.stringify(owner).slice(1));
+ if(scenario==='inventory-duplicate-field')writeFileSync(f.state,'{"devices":{},' + readFileSync(f.state,'utf8').slice(1));
  if(scenario==='malformed-inventory')writeFileSync(f.state,'MALFORMED-PRIVATE-INVENTORY');const before=readFileSync(f.state),ownerBefore=readFileSync(join(root,'owned-device.json'));
  assert.notEqual(invoke(f,'cleanup.py').status,0);assert.deepEqual(readFileSync(f.state),before);assert.deepEqual(readFileSync(join(root,'owned-device.json')),ownerBefore);assert.equal(existsSync(f.calls)&&readFileSync(f.calls,'utf8').includes('"delete"'),false);
 });

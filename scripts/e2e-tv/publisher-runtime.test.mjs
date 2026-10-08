@@ -48,8 +48,8 @@ for(const scenario of ['owned-symlink','owned-hardlink','receipt-symlink','recei
   if(scenario==='owned-malformed-run')writeFileSync(ownedPath,JSON.stringify({...owned,run:['12345-1']}));
   if(scenario==='receipt-malformed-revision')writeFileSync(receiptPath,JSON.stringify({...receipt,revision:[receipt.revision]}));
   if(scenario==='receipt-invalid-utf8')writeFileSync(receiptPath,Buffer.from(JSON.stringify(receipt).replace(secret,'\xFF'),'latin1'));
-  if(scenario==='owned-duplicate-field')writeFileSync(ownedPath,JSON.stringify(owned).replace('{','{"complete":false,'));
-  if(scenario==='receipt-duplicate-field')writeFileSync(receiptPath,JSON.stringify(receipt).replace('{','{"result":0,'));
+  if(scenario==='owned-duplicate-field')writeFileSync(ownedPath,'{"complete":false,' + JSON.stringify(owned).slice(1));
+  if(scenario==='receipt-duplicate-field')writeFileSync(receiptPath,'{"result":0,' + JSON.stringify(receipt).slice(1));
   if(scenario==='receipt-missing-field'){const value={...receipt};delete value.commands;writeFileSync(receiptPath,JSON.stringify(value));}
   if(scenario==='receipt-malformed')writeFileSync(receiptPath,'{ malformed private '+secret);
   if(scenario==='receipt-missing')rmSync(receiptPath);

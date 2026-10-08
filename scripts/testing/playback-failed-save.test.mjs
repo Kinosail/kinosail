@@ -19,7 +19,7 @@ async function callback() {
 const valid='seconds=0&session=fixture-session&revision=1&watched=true';
 for(const [name,method,body] of [
  ['wrong method','GET',valid],['missing body','POST',''],['duplicate watched','POST',valid+'&watched=false'],['unknown field','POST',valid+'&extra=x'],
- ['oversized','POST','x'.repeat(4097)],['malformed encoding','POST',valid.replace('fixture-session','%FF')],['unknown watched','POST',valid.replace('true','yes')],
+ ['oversized','POST','x'.repeat(4097)],['malformed encoding','POST','seconds=0&session=%FF&revision=1&watched=true'],['unknown watched','POST',valid.replace('true','yes')],
  ['nonfinite seconds','POST',valid.replace('seconds=0','seconds=Infinity')],['negative seconds','POST',valid.replace('seconds=0','seconds=-1')],
  ['oversized seconds','POST',valid.replace('seconds=0','seconds=1000000001')],['unsafe revision','POST',valid.replace('revision=1','revision=9007199254740993')],
  ['missing session','POST',valid.replace('session=fixture-session','session=')]
