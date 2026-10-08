@@ -50,7 +50,7 @@ func remainingNonKeyPreparation(t *testing.T, ffmpeg, ffprobe string, offset flo
 	if err != nil || len(before) == 0 || len(before) > 64<<20 {
 		t.Fatal("nonkey fixture byte bound")
 	}
-	handler, id := remainingNonKeyHandler(t, ctx, cancel, media, source, ffmpeg, ffprobe, before)
+	handler, id := remainingNonKeyHandler(t, server.Config{Lifecycle: ctx, MediaDir: media, FFprobe: ffprobe}, cancel, source, ffmpeg, before)
 	selected := remainingNonKeySelectedSource(t, handler, id, offset)
 	t.Logf("nonkey fixture qualified offset=%.1f sha=%x frames=768 idr-keys=16 eof=32", offset, sha256.Sum256(before))
 	state := remainingNonKeyPoll(t, handler, id, selected, offset, observed, sha256.Sum256(before))
@@ -61,7 +61,7 @@ func remainingNonKeyPreparation(t *testing.T, ffmpeg, ffprobe string, offset flo
 	t.Logf("nonkey regression offset=%.1f phase=public-preparation state=%s fixture=%x frames=768 idr-keys=16", offset, state, sha256.Sum256(before))
 }
 
-func remainingNonKeyHandler(t *testing.T, ctx context.Context, cancel context.CancelFunc, media, source, ffmpeg, ffprobe string, before []byte) (http.Handler, string) {
+func remainingNonKeyHandler(t *testing.T, config server.Config, cancel context.CancelFunc, source, ffmpeg string, before []byte) (http.Handler, string) {
 	t.Helper()
 	tools, cache := t.TempDir(), t.TempDir()
 	owned, adapter := filepath.Join(tools, "owned-pids"), filepath.Join(tools, "ffmpeg")
@@ -71,10 +71,8 @@ func remainingNonKeyHandler(t *testing.T, ctx context.Context, cancel context.Ca
 	if os.WriteFile(adapter, []byte(body), 0o700) != nil {
 		t.Fatal("nonkey owned codec adapter")
 	}
-	handler, id := formatTestItem(t, server.Config{
-		Lifecycle: ctx, MediaDir: media,
-		DataDir: t.TempDir(), CacheDir: cache, FFmpeg: adapter, FFprobe: ffprobe,
-	})
+	config.DataDir, config.CacheDir, config.FFmpeg = t.TempDir(), cache, adapter
+	handler, id := formatTestItem(t, config)
 	t.Cleanup(func() {
 		cancel()
 		settled, release := context.WithTimeout(context.Background(), 3*time.Second)

@@ -38,13 +38,7 @@ func remainingNonKeyTypedOriginAndCuts(t *testing.T, origin float64) {
 	if math.Abs(first-(decode+2-origin)) > 0.000001 || math.Abs(total-(32-origin)) > 0.000001 {
 		t.Fatalf("nonkey cuts first=%f total=%f", first, total)
 	}
-	projection := func(input []byte) []byte {
-		value, accepted := copiedHLSManifest(input, timeline)
-		if !accepted {
-			return nil
-		}
-		return value
-	}
+	projection := remainingNonKeyContractProjection(timeline)
 	// The physical prefix has four GOPs; presentation requires a fifth.
 	prefix := remainingNonKeyPhysicalManifest(timeline, 4)
 	segments, ready := startupWindowSegments(prefix, 32-origin, projection)
@@ -118,9 +112,11 @@ func remainingNonKeyContractObject(origin float64, bound bool) map[string]any {
 	mapping := map[string]any{"RequestedMicros": int64(math.Round(origin * 1000000)), "Decode": keys[0]}
 	if bound {
 		mapping["Proof"] = map[string]any{
-			"VideoPTS": float64(decode)/1000 - origin,
-			"VideoScale": 1000, "VideoMediaTime": int64(math.Round((origin-float64(decode)/1000)*1000)) + 83,
-			"VideoDecodeTime": 0, "VideoComposition": 83,
+			"VideoPTS":         float64(decode)/1000 - origin,
+			"VideoScale":       1000,
+			"VideoMediaTime":   int64(math.Round((origin-float64(decode)/1000)*1000)) + 83,
+			"VideoDecodeTime":  0,
+			"VideoComposition": 83,
 		}
 	}
 	return map[string]any{
@@ -181,5 +177,15 @@ func remainingNonKeyDamageOrigin(value, mapping, proof map[string]any, damage st
 		value["Strategy"] = "h264-idr-keys-1"
 	case "unknown-strategy":
 		value["Strategy"] = "h264-idr-preroll-unknown"
+	}
+}
+
+func remainingNonKeyContractProjection(timeline *copiedHLSTimeline) func([]byte) []byte {
+	return func(input []byte) []byte {
+		value, accepted := copiedHLSManifest(input, timeline)
+		if !accepted {
+			return nil
+		}
+		return value
 	}
 }
