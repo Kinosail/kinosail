@@ -8,7 +8,7 @@ if (!/^[0-9a-f]{40}$/.test(sourceRevision)) throw new Error("invalid source revi
 // Claims, cookies, response bodies, personal targets and fixture passwords stay private.
 export async function recordHomeAssistantEvidence(info: TestInfo, label: string, evidence: Record<string, unknown>) {
   const body = JSON.stringify(evidence);
-  await info.attach(label, {body, contentType: "application/json"});
   process.stdout.write("R18_RUNTIME_RECEIPT " + JSON.stringify({revision: sourceRevision,
     test: info.title, project: info.project.name, retry: info.retry, label, evidence}) + "\n");
+  await info.attach(label, {body, contentType: "application/json"});
 }
