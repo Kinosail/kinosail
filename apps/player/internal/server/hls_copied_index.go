@@ -107,7 +107,8 @@ func copiedHLSLines(parent context.Context, executable string, arguments []strin
 	}
 	defer cancel()
 	//nolint:gosec // Executable is installation config; media comes from a revalidated scanned item.
-	command := exec.Command(executable, arguments...)
+	command := exec.CommandContext(ctx, executable, arguments...)
+	command.Cancel = nil // The joined owner below settles the entire process group.
 	probe, output, err := startCopiedHLSProbe(ctx, command)
 	if err != nil {
 		return errCopiedHLSIndex
