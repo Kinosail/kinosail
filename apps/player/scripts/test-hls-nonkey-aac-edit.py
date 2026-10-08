@@ -67,8 +67,8 @@ def projection(row):
         'sourceUnchanged': row.get('sourceUnchanged'),
         'nativeFirstCopiedPacketClock': row.get('nativeFirstCopiedPacketClock'),
         'wholePublicCorrespondence': value.get('nativePCM', {}).get('wholePublicCorrespondence'),
-        'rawFrames': len(value.get('mapping', {}).get('actualSourceIndices', [])),
-        'rawRequestedSequenceExact': value.get('mapping', {}).get('exactRequestedSequence')}
+        'rawFrames': len(row.get('completeVideoRows') or value.get('mapping', {}).get('actualSourceIndices', [])),
+        'rawRequestedSequenceExact': row.get('rawRequestedSequenceExact', value.get('mapping', {}).get('exactRequestedSequence'))}
 
 
 try:
@@ -143,6 +143,7 @@ try:
                 row['globalPacketOrderUnchanged'] = row['packetPayloadComparison']['globalInterleavedOrderEqual']
                 row['videoDecode'], row['completeVideoRows'] = decode_frames(target)
                 row['videoRowsUnchanged'] = row['completeVideoRows'] == value['publicFrameRows']
+                row['rawRequestedSequenceExact'] = value['mapping']['exactRequestedSequence']
                 row['originalAssetsUnchanged'] = hashes == {p.name: sha(p) for p in [directory / 'init.mp4', *fragments]}
                 row['sourceUnchanged'] = source_state(source) == before
                 row.update(referenceSamples=reference['samples'], referenceSHA256=reference['sha256'])
