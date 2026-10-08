@@ -127,7 +127,7 @@ def write_state(path, value, create=False, expected=None):
 
 def firefox_executable():
     root = Path(__file__).resolve().parents[2] / 'apps/player/e2e'
-    result = run(['node', '-e', "process.stdout.write(require('playwright').firefox.executablePath())"], cwd=root)
+    result = run(['node', '-e', "process.stdout.write(require('@playwright/test').firefox.executablePath())"], cwd=root)
     # Require the default pinned Playwright cache, not an arbitrary browser/profile.
     executable = Path(result.decode('utf-8'))
     expected = Path.home() / '.cache/ms-playwright'

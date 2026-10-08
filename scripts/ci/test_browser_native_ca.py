@@ -156,6 +156,30 @@ class NativeTrust(unittest.TestCase):
             self.assertEqual(module.firefox_executable(),self.firefox)
         self.assertEqual(observed,[ROOT/'apps/player/e2e'])
 
+    def test_firefox_command_resolves_only_the_declared_direct_dependency_before_trust(self):
+        # Execute Node resolution in a strict direct-dependency fixture; never launch a browser.
+        import json
+        import shutil
+        package = json.loads((ROOT / 'apps/player/e2e/package.json').read_text())
+        self.assertIn('@playwright/test', package['devDependencies'])
+        self.assertNotIn('playwright', package['devDependencies'])
+        copy = self.root / 'project/scripts/ci/browser-native-ca.py'
+        copy.parent.mkdir(parents=True)
+        shutil.copyfile(HELPER, copy)
+        app = self.root / 'project/apps/player/e2e'
+        dependency = app / 'node_modules/@playwright/test'
+        dependency.mkdir(parents=True)
+        (dependency / 'package.json').write_text('{"main":"index.cjs"}')
+        (dependency / 'index.cjs').write_text('exports.firefox={executablePath:()=>'
+                                            + json.dumps(str(self.firefox)) + '};')
+        spec = importlib.util.spec_from_file_location('dependency_scoped_ca', copy)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        with patch.object(module.Path, 'home', return_value=self.home):
+            self.assertEqual(module.firefox_executable(), self.firefox)
+        self.assertEqual(self.effects, [])
+        self.assertFalse(any(self.workspace.glob('browser-native-trust-*')))
+
     def test_replaced_install_receipt_is_never_truncated(self):
         original=self.module.run
         receipt=self.workspace/'browser-native-trust-123-456.json'
