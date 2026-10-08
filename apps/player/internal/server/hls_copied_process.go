@@ -62,7 +62,7 @@ func watchCopiedHLSProbe(ctx context.Context, probe copiedHLSProbe, output io.Cl
 	}
 }
 
-func (watch copiedHLSProbeWatch) completionError(ctx context.Context, scanErr, waitErr, settleErr error) error {
+func (watch *copiedHLSProbeWatch) completionError(ctx context.Context, scanErr, waitErr, settleErr error) error {
 	stopErr := watch.terminateErr
 	// Darwin can report EPERM for an exited, zombie-only group. Acceptance
 	// still requires clean scanning, a successful Wait and proven settlement.
@@ -72,7 +72,7 @@ func (watch copiedHLSProbeWatch) completionError(ctx context.Context, scanErr, w
 	return errors.Join(watch.result, stopErr, watch.observeErr)
 }
 
-func (watch copiedHLSProbeWatch) cleanCompletion(ctx context.Context, scanErr, waitErr, settleErr error) bool {
+func (watch *copiedHLSProbeWatch) cleanCompletion(ctx context.Context, scanErr, waitErr, settleErr error) bool {
 	return ctx.Err() == nil && scanErr == nil && watch.result == nil && watch.observeErr == nil && waitErr == nil && settleErr == nil
 }
 
