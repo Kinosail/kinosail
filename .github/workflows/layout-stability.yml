@@ -524,6 +524,7 @@ jobs:
             .verification/library-${{ matrix.engine }}/discovery.json
             .verification/library-${{ matrix.engine }}/source-receipt.json
             ${{ runner.temp }}/library46-${{ matrix.engine }}/setup-and-run.json
+            ${{ runner.temp }}/library46-${{ matrix.engine }}/relay-transport.json
             ${{ runner.temp }}/library46-${{ matrix.engine }}/results-${{ matrix.engine }}.json
             ${{ runner.temp }}/library46-${{ matrix.engine }}/fixture-*.txt
             ${{ runner.temp }}/library46-${{ matrix.engine }}/fixture-media.json
@@ -623,6 +624,7 @@ jobs:
             .verification/responsive-${{ matrix.engine }}/discovery.json
             .verification/responsive-${{ matrix.engine }}/source-receipt.json
             ${{ runner.temp }}/responsive99-${{ matrix.engine }}/setup-and-run.json
+            ${{ runner.temp }}/responsive99-${{ matrix.engine }}/relay-transport.json
             ${{ runner.temp }}/responsive99-${{ matrix.engine }}/results-${{ matrix.engine }}.json
             ${{ runner.temp }}/responsive99-${{ matrix.engine }}/fixture-*.txt
             ${{ runner.temp }}/responsive99-${{ matrix.engine }}/fixture-media.json
@@ -713,6 +715,7 @@ jobs:
             .verification/playback-${{ matrix.engine }}/discovery.json
             .verification/playback-${{ matrix.engine }}/source-receipt.json
             ${{ runner.temp }}/playback-${{ matrix.engine }}/setup-and-run.json
+            ${{ runner.temp }}/playback-${{ matrix.engine }}/relay-transport.json
             ${{ runner.temp }}/playback-${{ matrix.engine }}/results-${{ matrix.engine }}.json
             ${{ runner.temp }}/playback-${{ matrix.engine }}/fixture-*.txt
             ${{ runner.temp }}/playback-${{ matrix.engine }}/fixture-media.json
@@ -802,6 +805,7 @@ jobs:
             .verification/offline-${{ matrix.engine }}/discovery.json
             .verification/offline-${{ matrix.engine }}/source-receipt.json
             ${{ runner.temp }}/offline-${{ matrix.engine }}/setup-and-run.json
+            ${{ runner.temp }}/offline-${{ matrix.engine }}/relay-transport.json
             ${{ runner.temp }}/offline-${{ matrix.engine }}/results-${{ matrix.engine }}.json
             ${{ runner.temp }}/offline-${{ matrix.engine }}/fixture-*.txt
             ${{ runner.temp }}/offline-${{ matrix.engine }}/fixture-media.json
@@ -898,6 +902,7 @@ jobs:
             .verification/provider-${{ matrix.engine }}/discovery.json
             .verification/provider-${{ matrix.engine }}/source-receipt.json
             ${{ runner.temp }}/provider-${{ matrix.engine }}/setup-and-run.json
+            ${{ runner.temp }}/provider-${{ matrix.engine }}/relay-transport.json
             ${{ runner.temp }}/provider-${{ matrix.engine }}/results-${{ matrix.engine }}.json
             ${{ runner.temp }}/provider-${{ matrix.engine }}/fixture-*.txt
             ${{ runner.temp }}/provider-${{ matrix.engine }}/fixture-media.json
@@ -1001,6 +1006,7 @@ jobs:
             .verification/camera-${{ matrix.engine }}/discovery.json
             .verification/camera-${{ matrix.engine }}/source-receipt.json
             ${{ runner.temp }}/camera19-${{ matrix.engine }}/setup-and-run.json
+            ${{ runner.temp }}/camera19-${{ matrix.engine }}/relay-transport.json
             ${{ runner.temp }}/camera19-${{ matrix.engine }}/results-${{ matrix.engine }}.json
             ${{ runner.temp }}/camera19-${{ matrix.engine }}/fixture-*.txt
             ${{ runner.temp }}/camera19-${{ matrix.engine }}/fixture-media.json
