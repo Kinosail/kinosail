@@ -80,6 +80,8 @@ jobs:
           assert all(outcomes.get(name) == 'pass' for name in controls), 'probe_healthy_controls_pass'
           cases = ['held_stdout', 'early_stdout_closure', 'parent_exits_before_descendant', 'scanner_rejection', 'explicit_cancellation', 'byte_limit_rejection', 'line_limit_rejection']
           assert all(outcomes.get('TestCopiedHLSLinesOwnedLifetime/' + name) in ['pass', 'fail'] for name in cases), 'probe_all_lifetime_results'
+          if directory.joinpath('SOURCE').read_text().strip() != '3ea03df5efad01d7ca337e9730b26f0829f1195e':
+              assert outcomes.get('TestCopiedHLSLinesCompletionCertificate') == 'pass', 'probe_completion_certificate_pass'
           new_controls = ['TestCopiedHLSLinesMissingExecutable', 'TestCopiedHLSLinesInsufficientBudget', 'TestCopiedHLSLinesImmediateExit']
           assert all(outcomes.get(name) in ['pass', 'fail'] for name in new_controls), 'probe_added_controls_terminal'
           PY
@@ -152,6 +154,8 @@ jobs:
           write(bundle.joinpath('scan.go'), 'package server\n\nimport (\n\t"bufio"\n\t"io"\n)\n\n' + scanner)
           for name in ['hls_copied_lines_lifetime_test.go', 'hls_copied_lines_fixture_test.go', 'hls_copied_lines_observation_windows_test.go']:
               write(bundle.joinpath(name), read(name))
+          if root.joinpath('hls_copied_lines_completion_test.go').exists():
+              write(bundle.joinpath('hls_copied_lines_completion_test.go'), read('hls_copied_lines_completion_test.go'))
           fixture = 'testdata/copied-probe-fixture/main.go'
           bundle.joinpath(fixture).parent.mkdir(parents=True)
           write(bundle.joinpath(fixture), read(fixture))
