@@ -67,9 +67,10 @@ jobs:
         working-directory: apps/player
         env: {KINOSAIL_COPIED_RECOVERY_MEDIA: '1'}
         run: |
+          gofmt -d internal/server/hls_remaining_nonkey_*test.go
           mkdir -p "$GITHUB_WORKSPACE/.verification/hls-remaining"
           git rev-parse HEAD > "$GITHUB_WORKSPACE/.verification/hls-remaining/SOURCE"
-          timeout --kill-after=30s 210s go test -json ./internal/server -run '^TestRemainingNonKeyPreparationReachesReady$' -count=1 -timeout=3m > "$GITHUB_WORKSPACE/.verification/hls-remaining/receipt.jsonl"
+          timeout --kill-after=30s 210s go test -json ./internal/server -run '^TestRemainingNonKey' -count=1 -timeout=3m > "$GITHUB_WORKSPACE/.verification/hls-remaining/receipt.jsonl"
       - name: Project remaining preparation facts
         if: always() && inputs.phase == 'remaining'
         run: |
