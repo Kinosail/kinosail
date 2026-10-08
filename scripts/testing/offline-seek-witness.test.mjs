@@ -3,6 +3,29 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
 import {offlineSeekWitness,offlineSeekMedia,offlineSeekStorage,offlineSeekAction} from '../../apps/player/e2e/offline-seek-witness.mjs';
+test('closed observation reasons distinguish absent, malformed, failed and foreign pages',async()=>{
+ for(const [kind,reason] of [['absent','state_absent'],['invalid','schema_fail'],['failed','evaluation_failed'],['unowned','unowned'],['closed','page_gone']]) {
+  const peer=networkPeer(),witness=offlineSeekWitness(peer.page,origin,jobID);let calls=0;
+  peer.page.evaluate=async()=>{calls++;if(kind==='failed')throw new Error('private-secret');return kind==='absent'?null:{unknown:'private-secret'};};
+  if(kind==='unowned')peer.page.url=()=> 'https://foreign.example/';
+  if(kind==='closed')peer.page.isClosed=()=>true;
+  await witness.arm();await witness.attachFailure(peer.info);const value=peer.attachments[0];
+  assert.deepEqual(value.observations,{setup:reason,media:reason,storage:reason});
+  assert.ok(!JSON.stringify(value).includes('private-secret'));if(['unowned','closed'].includes(kind))assert.equal(calls,0);
+  await witness.stop();
+ }
+ const peer=networkPeer(),witness=offlineSeekWitness(peer.page,origin,jobID);await witness.arm();await witness.attachFailure(peer.info);
+ assert.deepEqual(peer.attachments[0].observations,{setup:'available',media:'available',storage:'storage_unavailable'});await witness.stop();
+});
+test('owned evaluation deadline remains distinct from arbitrary error text',async()=>{
+ const peer=networkPeer(),witness=offlineSeekWitness(peer.page,origin,jobID);
+ peer.page.evaluate=()=>new Promise(()=>{});
+ await witness.arm();await witness.attachFailure(peer.info);
+ assert.deepEqual(peer.attachments[0].observations,{setup:'deadline',media:'deadline',storage:'deadline'});
+ peer.page.evaluate=async()=>{throw new Error('offline observation deadline private-secret');};
+ await witness.attachFailure(peer.info);assert.equal(peer.attachments[1].observations.media,'evaluation_failed');
+ await witness.stop();assert.equal(peer.listeners.size,0);
+});
 const origin='http://127.0.0.1:38127',jobID='0123456789abcdef';
 test('offline observer surrounds the same real seek and cleans up',()=>{
  const source=readFileSync(new URL('../../apps/player/e2e/test-instance-production.spec.ts',import.meta.url),'utf8');

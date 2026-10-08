@@ -186,17 +186,26 @@ export function offlineSeekWitness(page, baseURL, jobID) {
     }catch{} record('failure',request,{family});
   };
   page.on('request',requested);page.on('response',responded);page.on('requestfailed',failed);
-  const bounded = async callback => {let timer;try{return await Promise.race([callback(),new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('offline observation deadline')),1000);})]);}finally{clearTimeout(timer);}};
+  const deadline=Symbol('offline observation deadline');let setupReason='not_armed';
+  const bounded = async callback => {let timer;try{return await Promise.race([callback(),new Promise((_,reject)=>{timer=setTimeout(()=>reject(deadline),1000);})]);}finally{clearTimeout(timer);}};
   const evaluate = operation => {if(!owned(page.url()))throw new Error('offline observation origin changed');return page.evaluate(offlineSeekMedia,{operation,origin});};
+  const observe = async (callback,valid) => {
+    const unavailable=()=>page.isClosed?.()===true?'page_gone':!owned(page.url())?'unowned':null;
+    const before=unavailable();if(before)return {value:null,reason:before};
+    try{const value=await bounded(callback),after=unavailable();if(after)return {value:null,reason:after};
+      return value===null?{value:null,reason:'state_absent'}:valid(value)?{value,reason:'available'}:{value:null,reason:'schema_fail'};
+    }catch(error){return {value:null,reason:unavailable()||(error===deadline?'deadline':'evaluation_failed')};}
+  };
   return {
     disconnected:()=>{disconnected=true;},
-    arm:async()=>{try{setup=await bounded(()=>evaluate('arm'))===true?'armed':'unavailable';}catch{setup='unavailable';}},
+    arm:async()=>{const result=await observe(()=>evaluate('arm'),value=>value===true);setup=result.value===true?'armed':'unavailable';setupReason=result.reason;},
     seek:async media=>{if(!owned(page.url()))throw new Error('offline seek origin changed');await media.evaluate(offlineSeekAction,origin);},
     attachFailure:async info=>{
-      let media=null,storage=null;
-      try{const value=await bounded(()=>evaluate('snapshot'));if(validMedia(value))media=value;}catch{}
-      try{if(owned(page.url())){const value=await bounded(()=>page.evaluate(offlineSeekStorage,{jobID,origin}));if(validStorage(value))storage=value;}}catch{}
-      const body=JSON.stringify({schemaVersion:1,kind:'offline-seek',disconnected,setup,media,storage,requests:rows.slice(),requestOverflow:overflow});
+      const mediaResult=await observe(()=>evaluate('snapshot'),validMedia);
+      const storageResult=await observe(()=>page.evaluate(offlineSeekStorage,{jobID,origin}),validStorage);
+      const media=mediaResult.value,storage=storageResult.value;
+      const observations={setup:setupReason,media:mediaResult.reason,storage:storage?.available===false?'storage_unavailable':storageResult.reason};
+      const body=JSON.stringify({schemaVersion:1,kind:'offline-seek',disconnected,setup,observations,media,storage,requests:rows.slice(),requestOverflow:overflow});
       if(Buffer.byteLength(body)>16384)return false;
       try{await bounded(()=>info.attach('offline-seek-failure',{contentType:'application/json',body}));return true;}catch{return false;}
     },
