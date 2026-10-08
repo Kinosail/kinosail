@@ -37,10 +37,11 @@ func copiedHLSProbeExecutable(t *testing.T) string {
 		name += ".exe"
 	}
 	executable := filepath.Join(t.TempDir(), name)
-	ctx, cancel := context.WithTimeout(t.Context(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 29*time.Second)
 	defer cancel()
 	var diagnostic copiedHLSBuildDiagnostic
 	command := exec.CommandContext(ctx, "go", "build", "-trimpath", "-o", executable, "./testdata/copied-probe-fixture")
+	command.WaitDelay = time.Second // Setup drain bound; never a settlement oracle.
 	command.Stdout, command.Stderr = &diagnostic, &diagnostic
 	if command.Run() != nil {
 		classes := []string{}
