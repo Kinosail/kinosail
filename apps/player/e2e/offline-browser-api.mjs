@@ -5,8 +5,9 @@ const object = value => value !== null && typeof value === 'object' && !Array.is
 const keys = (value, allowed, required = allowed) => object(value)
   && Object.keys(value).every(key => allowed.includes(key)) && required.every(key => Object.hasOwn(value, key));
 const text = (value, maximum = 8192) => typeof value === 'string' && value.length <= maximum;
+const byteText = (value, maximum) => typeof value === 'string' && Buffer.byteLength(value, 'utf8') <= maximum;
 const integer = value => Number.isSafeInteger(value) && value >= 0;
-const finite = value => typeof value === 'number' && Number.isFinite(value) && value >= 0;
+const finite = (value, maximum = Infinity) => typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= maximum;
 function decode(raw) {
   const stack = []; let tokens = 0;
   for (const token of raw.matchAll(/"(?:\\.|[^"\\])*"|[{}\[\]]/g)) {
@@ -81,10 +82,12 @@ function catalog(data) {
         || Object.hasOwn(item, 'showId') && !id(item.showId)) throw new Error('invalid offline catalog item');
     const progress = item.progress;
     if (!keys(progress, ['seconds', 'readerOffset', 'readerPage', 'watched', 'dismissed', 'updated', 'session', 'revision'], [])
-        || ['seconds', 'readerOffset'].some(key => Object.hasOwn(progress, key) && !finite(progress[key]))
+        || ['seconds', 'readerOffset'].some(key => Object.hasOwn(progress, key) && !finite(progress[key], key === 'seconds' ? 1e9 : 1))
         || ['readerPage', 'revision'].some(key => Object.hasOwn(progress, key) && !integer(progress[key]))
+        || Object.hasOwn(progress, 'readerPage') && progress.readerPage > 10000000
+        || progress.readerOffset > 0 && !(progress.readerPage > 0)
         || ['watched', 'dismissed'].some(key => Object.hasOwn(progress, key) && typeof progress[key] !== 'boolean')
-        || ['updated', 'session'].some(key => Object.hasOwn(progress, key) && !text(progress[key], 512))) throw new Error('invalid offline progress');
+        || ['updated', 'session'].some(key => Object.hasOwn(progress, key) && !(key === 'session' ? byteText(progress[key], 128) : text(progress[key], 512)))) throw new Error('invalid offline progress');
     if (Object.hasOwn(item, 'cast') && (!Array.isArray(item.cast) || item.cast.length > 128
         || item.cast.some(person => !keys(person, ['name', 'role', 'image'], ['name']) || !Object.values(person).every(value => text(value, 512))))) throw new Error('invalid offline cast');
     ids.add(item.id); return {id: item.id, kind: item.kind, title: item.title};
@@ -95,11 +98,11 @@ function players(data) {
   const ids = new Set();
   return data.players.map(player => {
     if (!keys(player, ['id', 'name', 'state', 'title', 'itemId', 'position', 'duration', 'volume', 'muted'], ['id', 'name', 'state', 'position', 'duration', 'volume', 'muted'])
-        || typeof player.id !== 'string' || !/^[A-Za-z0-9_-]{1,64}$/.test(player.id) || ids.has(player.id) || !text(player.name, 256)
+        || typeof player.id !== 'string' || !/^[A-Za-z0-9_-]{1,64}$/.test(player.id) || ids.has(player.id) || !byteText(player.name, 80) || !player.name.trim()
         || !['playing', 'paused', 'idle', 'buffering'].includes(player.state)
-        || !['position', 'duration', 'volume'].every(key => finite(player[key])) || player.volume > 1
-        || typeof player.muted !== 'boolean' || Object.hasOwn(player, 'title') && !text(player.title, 512)
-        || Object.hasOwn(player, 'itemId') && !id(player.itemId)) throw new Error('invalid offline player state');
+        || !['position', 'duration'].every(key => finite(player[key], 1e9)) || !finite(player.volume, 1)
+        || typeof player.muted !== 'boolean' || Object.hasOwn(player, 'title') && !byteText(player.title, 256)
+        || Object.hasOwn(player, 'itemId') && !byteText(player.itemId, 128)) throw new Error('invalid offline player state');
     ids.add(player.id);return {itemId: player.itemId ?? null};
   });
 }

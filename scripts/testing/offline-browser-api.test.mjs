@@ -156,3 +156,31 @@ test('fixture selection rejects unknown sibling kinds and duplicate IDs before a
   assert.throws(()=>{offlineFixture(rows,'video');actions++;});
  assert.equal(actions,0);
 });
+
+test('progress wire bounds reject impossible state before downstream fixture actions',async()=>{
+ const patches=[{seconds:1e9+1},{readerOffset:1.0001,readerPage:1},{readerPage:10000001},
+  {session:'x'.repeat(129)},{session:'é'.repeat(65)},{readerOffset:0.1},
+  {readerOffset:0.1,readerPage:0},{revision:9007199254740992}];
+ for(const progress of patches) {
+  const {page,effects}=peer({...library(),items:[{...movie,progress}],total:1});let actions=0;
+  await assert.rejects(async()=>{const rows=await offlineBrowserAPI(page,'library');offlineFixture(rows,'video');actions++;});
+  assert.equal(actions,0);assert.equal(effects.filter(effect=>effect.init.method==='PUT').length,0);
+ }
+ const progress={seconds:1e9,readerOffset:1,readerPage:10000000,session:'é'.repeat(64),revision:9007199254740991};
+ assert.equal((await offlineBrowserAPI(peer({...library(),items:[{...movie,progress}],total:1}).page,'library'))[0].id,movie.id);
+});
+test('HA wire bounds reject overflow and blank names before downstream playback actions',async()=>{
+ const player={id:'browser-1',name:'Browser',state:'playing',itemId:movie.id,title:movie.title,position:1,duration:12,volume:1,muted:false};
+ for(const patch of [{position:1e9+1},{duration:1e9+1},{name:''},{name:'   '},{name:'x'.repeat(81)},
+  {name:'é'.repeat(41)},{title:'x'.repeat(257)},{title:'é'.repeat(129)},{itemId:'x'.repeat(129)},{itemId:'é'.repeat(65)}]) {
+  const {page,effects}=peer({players:[{...player,...patch}]});let actions=0;
+  await assert.rejects(async()=>{await offlineBrowserAPI(page,'players');actions++;});
+  assert.equal(actions,0);assert.equal(effects.filter(effect=>effect.init.method==='PUT').length,0);
+ }
+});
+test('valid unrelated bounded HA item identities do not reject the owned player',async()=>{
+ const player={id:'browser-1',name:'Browser',state:'playing',itemId:movie.id,title:movie.title,position:1,duration:12,volume:1,muted:false};
+ const valid={...player,name:'é'.repeat(40),title:'é'.repeat(128),position:1e9,duration:1e9,itemId:'unrelated-local-player-item'};
+ const rows=await offlineBrowserAPI(peer({players:[valid, {...player,id:'browser-2'}]}).page,'players');
+ assert.equal(rows[0].itemId,valid.itemId);assert.equal(rows.some(row=>row.itemId===movie.id),true);
+});
