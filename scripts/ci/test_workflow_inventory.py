@@ -65,5 +65,17 @@ class WorkflowInventoryTests(unittest.TestCase):
         self.assertIn("missing native-tv-e2e.yml", result.stderr)
 
 
+    def test_required_symlink_cannot_replace_a_workflow_with_or_without_unknown_extra(self):
+        for extra in (False, True):
+            with self.subTest(extra=extra):
+                def replace(folder):
+                    (folder / "native-phone-e2e.yml").unlink()
+                    (folder / "native-phone-e2e.yml").symlink_to("native-tv-e2e.yml")
+                    if extra:
+                        (folder / "unknown.yml").write_text("name: unknown\n")
+                result = self.run_inventory(replace)
+                self.assertNotEqual(result.returncode, 0)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -10,7 +10,7 @@ fail() { printf 'workflow validation failed: %s\n' "$*" >&2; exit 1; }
 require() { grep -Fq -- "$2" "$1" || fail "$(basename "$1") must contain $2"; }
 
 for name in ci app publish release layout-stability positive-native-reentry pr503-cold-publication-witness native-phone-e2e native-tv-e2e; do
-  [[ -f "$workflows/$name.yml" ]] || fail "missing $name.yml"
+  [[ -f "$workflows/$name.yml" && ! -L "$workflows/$name.yml" ]] || fail "missing $name.yml"
 done
 [[ "$(find "$workflows" -maxdepth 1 -name '*.yml' -type f | wc -l | tr -d ' ')" == 9 ]] ||
   fail 'unexpected workflow file'
