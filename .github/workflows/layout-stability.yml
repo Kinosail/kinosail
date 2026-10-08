@@ -853,6 +853,10 @@ jobs:
                      'boundary': '15synthetic local provider cases; HTTP route guards observed only; no real provider approval, purchase or DNS/socket proof'}
           pathlib.Path(f'.verification/provider-{project}/source-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
           PYTHON
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version-file: apps/player/go.mod
+          cache: false
       - name: Run one disposable full-media MFA Owner and strict synthetic Provider15
         env:
           PROFILE_PROJECT: ${{ matrix.engine }}

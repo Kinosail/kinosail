@@ -73,6 +73,21 @@ class RemainingProfileWorkflowTests(unittest.TestCase):
         self.assertIn('env -u KINOSAIL_PROVIDER_PROFILE python3 scripts/ci/run-populated-settings.py',self.block('provider-owner'))
         self.assertIn('KINOSAIL_BROWSER_TEST: "1"',self.block('provider-owner'))
 
+    def test_only_provider_installs_pinned_host_go_before_the_owned_ui_renderer(self):
+        action = 'actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e'
+        provider = self.block('provider-owner')
+        self.assertEqual(provider.count(action), 1)
+        step = provider.split('      - uses: '+action+'\n', 1)[1].split('\n      - ', 1)[0]
+        self.assertIn('go-version-file: apps/player/go.mod', step)
+        self.assertIn('cache: false', step)
+        self.assertNotIn('if:', step)
+        self.assertLess(provider.index(action), provider.index('run: ./apps/player/scripts/run-library-profile.sh'))
+        for job in ('playback-owner', 'offline-owner'):
+            self.assertNotIn('actions/setup-go@', self.block(job))
+        caller = (ROOT/'apps/player/scripts/run-library-profile.sh').read_text()
+        self.assertIn("go test ./internal/server -run '^TestWriteUIStateFixtures$' -count=1", caller)
+        self.assertTrue((ROOT/'apps/player/go.mod').is_file())
+
     def test_actual_recipes_write_only_at_fresh_discovery_paths_with_exact_current_inputs(self):
         sys.path.insert(0,str(ROOT/'apps/player/scripts'))
         try:
