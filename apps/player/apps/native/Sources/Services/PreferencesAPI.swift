@@ -16,6 +16,17 @@ extension ServerClient {
         try await catalog("/api/v1/items/\(Input.id(itemID))/playback-preferences", policy: policy, decode: ItemPlaybackPreferences.init)
     }
 
+    func playbackPreparationPreferences(itemID: String) async throws -> ItemPlaybackPreferences {
+        // A previous playback's checkpoint may invalidate browse caches during startup.
+        let path = "/api/v1/items/\(try Input.id(itemID))/playback-preferences"
+        do { return try ItemPlaybackPreferences(await request(path).body) }
+        catch {
+            if error as? ClientError == .http(401) || error as? ClientError == .http(403) { await discardMediaCache() }
+            else if error as? ClientError == .http(404), let store = try? cacheStore() { await store.remove(path, kind: .catalog) }
+            throw error
+        }
+    }
+
     func savePlaybackPreferences(itemID: String, preferences: PlaybackPreferences) async throws -> ItemPlaybackPreferences {
         let validated = try PlaybackPreferences(preferences.json)
         let path = "/api/v1/items/\(try Input.id(itemID))/playback-preferences"

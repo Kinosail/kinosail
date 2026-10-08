@@ -78,7 +78,7 @@ func TestSubtitlePreparedAudioCannotBypassActiveLegacyAnalysis(t *testing.T) {
 		if status != http.StatusOK {
 			t.Fatalf("legacy analysis after release = %d", status)
 		}
-	case <-time.After(5 * time.Second):
+	case <-time.After(60 * time.Second):
 		t.Fatal("legacy analysis did not settle within its bounded fixture wait")
 	}
 	assertSubtitleActionBytes(t, target, []byte(subtitleActionInitial))

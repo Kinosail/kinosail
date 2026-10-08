@@ -1,17 +1,51 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
-import { configureTestInstance, firstPlayable, login } from "./test-instance-helpers";
+import { configureTestInstance, firstPlayable, login, saveSubtitleChoices } from "./test-instance-helpers";
 
 configureTestInstance();
 test.use({ serviceWorkers: "block" });
+
+test("subtitle choices wait for their real save before settings navigation", {tag: "@smoke"}, async ({page}, info) => {
+  await login(page);
+  await page.goto("/settings#playback");
+  const choice = page.getByLabel("Playback subtitle choices");
+  const previous = await choice.inputValue(), next = previous === "on" ? "off" : "on";
+  let held = false, settled = false, release!: () => void;
+  const barrier = new Promise<void>(resolve => release = resolve);
+  await page.route("**/settings/subtitles/picker", async route => {
+    if (route.request().method() !== "POST") { await route.continue(); return; }
+    held = true;
+    await barrier;
+    await route.continue();
+  });
+  const attempt = saveSubtitleChoices(page, next).finally(() => {settled = true;});
+  const observed = attempt.then(() => ({ok: true}), error => ({ok: false, error: String(error)}));
+  try {
+    await expect.poll(() => held).toBe(true);
+    expect(settled).toBe(false);
+    expect((await (await page.request.get("/api/v1/settings")).json()).subtitlePickerLimited).toBe(previous === "on");
+    release();
+    expect(await observed).toEqual({ok: true});
+    await expect(choice).toHaveValue(next);
+    expect((await (await page.request.get("/api/v1/settings")).json()).subtitlePickerLimited).toBe(next === "on");
+    await info.attach("subtitle-choice-save-barrier", {body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
+      browser: info.project.name, previous, next, held, settled, data: "Real populated Server form and persisted settings; delayed HTTP POST", result: "passed"}), contentType: "application/json"});
+  } finally {
+    release();
+    await observed;
+    await page.unrouteAll({behavior: "ignoreErrors"});
+    await page.goto("/settings#playback");
+    await saveSubtitleChoices(page, previous as "on" | "off");
+  }
+});
 
 test("volume icon renders balanced sound waves and keeps accessible mute controls", { tag: "@smoke" }, async ({ page }, info) => {
   await login(page);
   await page.goto("/settings#playback");
   const choices = page.locator('form[action="/settings/subtitles/picker"]');
   const previous = await choices.getByLabel("Playback subtitle choices").inputValue();
-  await choices.getByLabel("Playback subtitle choices").selectOption("on");
-  await choices.getByRole("button", { name: "Save subtitle choices" }).click();
+  expect(["on", "off"]).toContain(previous);
+  await saveSubtitleChoices(page, "on");
   try {
     const watch = await firstPlayable(page);
     for (const viewport of [{ width: 844, height: 390 }, { width: 1440, height: 900 }, { width: 1920, height: 1080 }]) {
@@ -67,7 +101,6 @@ test("volume icon renders balanced sound waves and keeps accessible mute control
     await page.locator(".media-stage").screenshot({ path: info.outputPath("390-compact-controls.png") });
   } finally {
     await page.goto("/settings#playback");
-    await choices.getByLabel("Playback subtitle choices").selectOption(previous);
-    await choices.getByRole("button", { name: "Save subtitle choices" }).click();
+    await saveSubtitleChoices(page, previous as "on" | "off");
   }
 });

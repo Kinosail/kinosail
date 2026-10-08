@@ -42,7 +42,7 @@ func TestDownloadPauseBrowserJourney(t *testing.T) {
 	if project == "" {
 		project = "chromium"
 	}
-	specs := []string{"download-pause.spec.ts", "download-pause-ownership.spec.ts"}
+	specs := []string{"download-pause.spec.ts", "download-pause-ownership.spec.ts", "download-pause-navigation.spec.ts"}
 	if os.Getenv("KINOSAIL_DOWNLOAD_PAUSE_HIT_TARGETS") == "1" {
 		specs = []string{"download-pause-hit-target.spec.ts"}
 	}

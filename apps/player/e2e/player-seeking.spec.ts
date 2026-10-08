@@ -56,7 +56,7 @@ test("compatible playback resumes and seeks from the requested HLS window", asyn
   })).toEqual({ count: 2, config: expect.objectContaining({ startPosition: 0, timelineOffset: 5123 }), source: "/hls/movie/p/a-a0-s0-none-t0-b0-o5123000/index.m3u8" });
 });
 
-for (const ranges of ["seekable", "buffered"]) test(`native HLS keeps seeks inside ${ranges} media and rebuilds outside its window`, async ({ page }) => {
+for (const ranges of ["seekable", "buffered"]) test(`native HLS on touch devices keeps seeks inside ${ranges} media and rebuilds outside its window`, async ({ page }) => {
   await page.setContent(`<html><head><base href="https://127.0.0.1:38127/"></head><body>
     <video data-autoplay data-hls="/hls/movie/p/a-a0-s0-none-t0-b0/index.m3u8?playbackSession=session" data-duration="7200" data-start="271.607" data-progress="/progress/movie"></video>
     <div data-quality-control hidden><select data-quality></select><span data-quality-state></span></div>
@@ -65,6 +65,7 @@ for (const ranges of ["seekable", "buffered"]) test(`native HLS keeps seeks insi
     canPlayType: { value: (type: string) => type === "application/vnd.apple.mpegurl" ? "probably" : "" },
     play: { value: () => { video.dataset.playCalls = String(Number(video.dataset.playCalls || 0) + 1); return Promise.resolve(); } },
   }));
+  await page.evaluate(() => Object.defineProperties(navigator, {vendor: {configurable: true, value: "Apple Computer, Inc."}, maxTouchPoints: {configurable: true, value: 1}}));
   await page.addScriptTag({ content: playerSource });
 
   await expect.poll(() => page.locator("video").evaluate((video) => {

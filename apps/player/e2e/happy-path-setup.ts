@@ -1,4 +1,5 @@
 import { expect, type Page, type Request, type TestInfo } from "@playwright/test";
+import {gotoAuthForm} from "../../../scripts/testing/auth-form-navigation";
 import { holdNextLibraryPage, holdNextMainRequest } from "./request-holds";
 import { expectAccessible, openSettings, signOut, totp, type HappyPathState } from "./happy-path-helpers";
 
@@ -32,7 +33,7 @@ export async function startHappyPath(page: Page, testInfo: TestInfo): Promise<Ha
 		captureErrors = enabled;
 	};
 
-  await page.goto("/setup");
+  await gotoAuthForm(page, "/setup", testInfo);
   if (await page.getByRole("heading", { name: "Set up your Server." }).isVisible()) {
     await expectAccessible(page, capture);
     await expect(page.getByLabel("Setup code")).toHaveCount(0);

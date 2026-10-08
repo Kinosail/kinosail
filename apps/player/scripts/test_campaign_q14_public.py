@@ -199,6 +199,7 @@ class SourceTests(unittest.TestCase):
             'apps/player/e2e/browse-return-proof-reporter.ts',
             'apps/player/scripts/campaign_q14_admission.py',
             'apps/player/scripts/test_campaign_q14_public.py',
+            'apps/player/scripts/test_campaign_q14_cache_diagnostic.py',
             'apps/player/scripts/campaign_q14_suites.py', 'apps/player/scripts/test_campaign_q14_suites.py',
             'apps/player/internal/server/browse_return_browser_test.go',
             'apps/player/go.mod', 'apps/player/go.sum', 'packages/go.mod', 'packages/go.sum',

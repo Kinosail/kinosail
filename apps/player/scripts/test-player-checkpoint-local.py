@@ -27,6 +27,7 @@ diff = subprocess.check_output(["git", "diff", "HEAD"], cwd=root)
 sources = ["packages/webassets/static/player-progress.js", "packages/playerweb/player_template.go",
            "packages/webassets/static/player-progress-navigation.js", "packages/webassets/webassets.go",
            "apps/player/e2e/checkpoint-navigation-cases.ts",
+           "apps/player/e2e/checkpoint-newer-destination-cases.ts",
            "packages/playerweb/progress_notice.go", "apps/player/internal/server/static/player-streaming-recovery.js",
            "apps/player/internal/server/static/player.js", "apps/player/internal/server/static/player-streaming-adaptive.js",
            "apps/player/e2e/test-instance-checkpoint.spec.ts", "packages/webassets/static/player-presentation.js",
