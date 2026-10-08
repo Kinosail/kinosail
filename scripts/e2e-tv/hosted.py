@@ -10,6 +10,8 @@ import subprocess
 import sys
 import time
 import tempfile
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "e2e"))
+from native_tool import probe_native_tool
 from simulator import prepare_creation, cleanup_creation, strict_json
 from preflight import apple_runtime, android_image, TV_TYPE, TV_IMAGE
 
@@ -111,20 +113,7 @@ def main():
         return raw.decode("utf-8", errors="strict").strip()
 
     def native_tool(args):
-        output = subprocess.run(args, cwd=project, env=env, capture_output=True, text=True, check=True, timeout=30)
-        text = (output.stdout + output.stderr).strip()
-        if len(text.encode()) > 8192:
-            raise RuntimeError("Oversized native tool witness")
-        if platform == "ios":
-            match = re.fullmatch(r"Xcode (27(?:\.\d{1,2}){0,2})\nBuild version (\d{2}[A-Z]\d{1,7}[a-z]?)", text)
-            if not match:
-                raise RuntimeError("Unrecognized Xcode version witness")
-            return {"name": "Xcode", "version": match[1], "build": match[2]}
-        version = re.search(r'^(?:openjdk|java) version "(17(?:\.\d{1,3}){1,3}(?:-ea)?)"(?: |$)', text, re.MULTILINE)
-        build = re.search(r"^.*Runtime Environment.*\(build (17(?:\.\d{1,3}){1,3}(?:-ea)?\+\d{1,5}(?:-LTS)?)\)$", text, re.MULTILINE)
-        if not version or not build or build[1].split("+")[0] != version[1]:
-            raise RuntimeError("Unrecognized Java version witness")
-        return {"name": "Java", "version": version[1], "build": build[1]}
+        return probe_native_tool(platform, args, project, env, witness)
 
     try:
         # All TV metadata is admitted before Go/native builds or device creation.

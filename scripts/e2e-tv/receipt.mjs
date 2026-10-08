@@ -62,12 +62,19 @@ export function validateReceipt(value, owned, root) {
   for (const command of value.commands) {
     if (!Array.isArray(command) || !templates.some(template => command.length === template.length && command.every((arg,i) => typeof arg === 'string' && arg === template[i]))) throw new Error('invalid receipt command');
   }
-  object(value.witness,['sourceManifestSHA256','serverSHA256','appSHA256','runtime','nativeTool','imageMetadataSHA256'],[]);
+  object(value.witness,['sourceManifestSHA256','serverSHA256','appSHA256','runtime','nativeTool','imageMetadataSHA256','nativeToolProbe'],[]);
   for (const [key,entry] of Object.entries(value.witness)) {
     if (key.endsWith('SHA256')) {
       if (typeof entry !== 'string' || !/^[a-f0-9]{64}$/.test(entry)) throw new Error('invalid build hash');
     } else if (key === 'runtime') {
       if (typeof entry !== 'string' || !(owned.platform === 'ios' ? /^com\.apple\.CoreSimulator\.SimRuntime\.tvOS-27-\d{1,2}(?:-\d{1,2})?$/.test(entry) : entry === 'system-images;android-36;android-tv;x86_64')) throw new Error('invalid runtime witness');
+    } else if (key === 'nativeToolProbe') {
+      object(entry,['tool','outcome','exitCode','stdoutBytes','stderrBytes','stdoutTokensRecognized','combinedTokensRecognized','outputTruncated']);
+      if (entry.tool !== (owned.platform === 'ios' ? 'Xcode' : 'Java') || !['started','unavailable','timeout','overflow','nonzero','rejected','valid'].includes(entry.outcome)) throw new Error('invalid native probe stage');
+      if (entry.exitCode !== null) integer(entry.exitCode,-128,255);
+      integer(entry.stdoutBytes,0,8193); integer(entry.stderrBytes,0,8193);
+      if (['stdoutTokensRecognized','combinedTokensRecognized','outputTruncated'].some(field => typeof entry[field] !== 'boolean')) throw new Error('invalid native probe facts');
+      if ((!entry.outputTruncated && entry.stdoutBytes + entry.stderrBytes > 8192) || entry.outputTruncated !== (entry.outcome === 'overflow') || (entry.outcome === 'valid' && (entry.exitCode !== 0 || !entry.combinedTokensRecognized)) || (entry.outcome === 'nonzero' && (entry.exitCode === null || entry.exitCode === 0))) throw new Error('conflicting native probe facts');
     } else {
       object(entry,['name','version','build']);
       if (owned.platform === 'ios') {

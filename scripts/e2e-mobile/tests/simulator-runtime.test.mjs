@@ -10,6 +10,7 @@ function fixture(t,mode) {
  const cwd=realpathSync(mkdtempSync(join(tmpdir(),'kino-simulator-contract-')));t.after(()=>rmSync(cwd,{recursive:true,force:true}));
  const project=join(cwd,'scripts/e2e-mobile'),bin=join(cwd,'stub-bin');mkdirSync(project,{recursive:true});mkdirSync(bin);
  for(const file of ['hosted.py','cleanup.py','simulator.py'])if(existsSync(resolve(file)))copyFileSync(file==='simulator.py'&&process.env.KINOSAIL_SIMULATOR_CONTRACT_SOURCE?process.env.KINOSAIL_SIMULATOR_CONTRACT_SOURCE:resolve(file),join(project,file));
+ const shared=join(cwd,'scripts/e2e');mkdirSync(shared);copyFileSync(resolve('../e2e/native_tool.py'),join(shared,'native_tool.py'));
  const state=join(cwd,'state.json'),calls=join(cwd,'calls.jsonl');
  const foreign={name:'PERSONAL-PRESERVE',udid:foreignUUID,deviceTypeIdentifier:type};
  writeFileSync(state,JSON.stringify({devices:{[runtime]:[foreign]}}));

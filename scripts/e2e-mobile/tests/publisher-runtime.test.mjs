@@ -148,3 +148,17 @@ test('publisher rejects unresolved creation even if a malformed owner claims cle
  writeFileSync(join(root,'owned-device.json'),JSON.stringify(owned),{mode:0o600});const before=readFileSync(join(root,'sdk/report.json'));
  assert.notEqual(run(cwd).status,0);assert.equal(existsSync(join(root,'published')),false);assert.equal(existsSync(join(root,'sanitizing')),false);assert.deepEqual(readFileSync(join(root,'sdk/report.json')),before);assert.ok(existsSync(join(root,'receipt.private.json')));
 });
+
+test('publisher retains only closed native version failure diagnostics after cleanup',t=>{
+ const {cwd,root,owned,receipt}=fixture(t);
+ receipt.witness.nativeToolProbe={tool:'Xcode',outcome:'rejected',exitCode:0,stdoutBytes:31,stderrBytes:42,stdoutTokensRecognized:true,combinedTokensRecognized:false,outputTruncated:false};
+ writeFileSync(join(root,'receipt.private.json'),JSON.stringify(receipt),{mode:0o600});
+ assert.equal(run(cwd).status,0);assert.deepEqual(JSON.parse(readFileSync(join(root,'published/receipt.json'))).witness.nativeToolProbe,receipt.witness.nativeToolProbe);
+});
+test('publisher rejects unknown native version diagnostics before deleting private evidence',t=>{
+ const {cwd,root,receipt}=fixture(t);
+ receipt.witness.nativeToolProbe={tool:'Xcode',outcome:'PRIVATE-SENTINEL'};
+ writeFileSync(join(root,'receipt.private.json'),JSON.stringify(receipt),{mode:0o600});
+ const before=readFileSync(join(root,'receipt.private.json'));assert.notEqual(run(cwd).status,0);
+ assert.deepEqual(readFileSync(join(root,'receipt.private.json')),before);assert.ok(existsSync(join(root,'sdk')));assert.equal(existsSync(join(root,'published')),false);
+});

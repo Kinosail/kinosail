@@ -9,6 +9,8 @@ import signal
 import subprocess
 import sys
 import time
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "e2e"))
+from native_tool import probe_native_tool
 from simulator import prepare_creation, cleanup_creation
 
 
@@ -100,20 +102,7 @@ def main():
         return subprocess.check_output(args, cwd=project, env=env, text=True, timeout=30).strip()
 
     def native_tool(args):
-        output = subprocess.run(args, cwd=project, env=env, capture_output=True, text=True, check=True, timeout=30)
-        text = (output.stdout + output.stderr).strip()
-        if len(text.encode()) > 8192:
-            raise RuntimeError("Oversized native tool witness")
-        if platform == "ios":
-            match = re.fullmatch(r"Xcode (27(?:\.\d{1,2}){0,2})\nBuild version (\d{2}[A-Z]\d{1,7}[a-z]?)", text)
-            if not match:
-                raise RuntimeError("Unrecognized Xcode version witness")
-            return {"name": "Xcode", "version": match[1], "build": match[2]}
-        version = re.search(r'^(?:openjdk|java) version "(17(?:\.\d{1,3}){1,3}(?:-ea)?)"(?: |$)', text, re.MULTILINE)
-        build = re.search(r"^.*Runtime Environment.*\(build (17(?:\.\d{1,3}){1,3}(?:-ea)?\+\d{1,5}(?:-LTS)?)\)$", text, re.MULTILINE)
-        if not version or not build or build[1].split("+")[0] != version[1]:
-            raise RuntimeError("Unrecognized Java version witness")
-        return {"name": "Java", "version": version[1], "build": build[1]}
+        return probe_native_tool(platform, args, project, env, witness)
 
     try:
         source_paths = subprocess.check_output(["git", "ls-files", "-z", "--", "apps/player", "packages", "scripts/e2e", "scripts/e2e-mobile"], cwd=repo).split(b"\0")

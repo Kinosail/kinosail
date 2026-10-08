@@ -152,3 +152,17 @@ test('publisher rejects unresolved creation even if a malformed owner claims cle
 test('successful receipt cannot omit actual journey proof',t=>{const {cwd,root,owned,receipt}=fixture(t);producerReceipt(root,owned,receipt,'ios');receipt.result=0;delete receipt.journey;writeFileSync(join(root,'owned-device.json'),JSON.stringify(owned),{mode:0o600});writeFileSync(join(root,'receipt.private.json'),JSON.stringify(receipt),{mode:0o600});assert.notEqual(run(cwd).status,0);assert.equal(existsSync(join(root,'published')),false);assert.ok(existsSync(join(root,'sdk')));});
 test('successful journey without terminal privacy stage cannot publish',t=>{const {cwd,root,owned,receipt}=fixture(t);producerReceipt(root,owned,receipt,'ios');receipt.result=0;writeFileSync(join(root,'owned-device.json'),JSON.stringify(owned),{mode:0o600});writeFileSync(join(root,'receipt.private.json'),JSON.stringify(receipt),{mode:0o600});assert.notEqual(run(cwd).status,0);assert.equal(existsSync(join(root,'published')),false);assert.ok(existsSync(join(root,'sdk')));});
 test('complete real-journey facts publish only masked text after owned cleanup',t=>{const {cwd,root,owned,receipt}=fixture(t);producerReceipt(root,owned,receipt,'android');receipt.result=0;for(const [name,value] of [['owned-device.json',owned],['receipt.private.json',receipt],['secrets.json',{secrets:[secret,'839271'],stage:'complete'}]])writeFileSync(join(root,name),JSON.stringify(value),{mode:0o600});writeFileSync(join(root,'sdk/frame-first.png'),'839271',{mode:0o600});assert.equal(run(cwd).status,0);assert.deepEqual(readdirSync(join(root,'published')).filter(n=>n.endsWith('.png')),[]);assert.equal(existsSync(join(root,'sdk')),false);assert.equal(JSON.parse(readFileSync(join(root,'published/receipt.json'))).privacy.stage,'complete');});
+
+test('publisher retains only closed native version failure diagnostics after cleanup',t=>{
+ const {cwd,root,owned,receipt}=fixture(t);
+ receipt.witness.nativeToolProbe={tool:'Xcode',outcome:'rejected',exitCode:0,stdoutBytes:31,stderrBytes:42,stdoutTokensRecognized:true,combinedTokensRecognized:false,outputTruncated:false};
+ writeFileSync(join(root,'receipt.private.json'),JSON.stringify(receipt),{mode:0o600});
+ assert.equal(run(cwd).status,0);assert.deepEqual(JSON.parse(readFileSync(join(root,'published/receipt.json'))).witness.nativeToolProbe,receipt.witness.nativeToolProbe);
+});
+test('publisher rejects unknown native version diagnostics before deleting private evidence',t=>{
+ const {cwd,root,receipt}=fixture(t);
+ receipt.witness.nativeToolProbe={tool:'Xcode',outcome:'PRIVATE-SENTINEL'};
+ writeFileSync(join(root,'receipt.private.json'),JSON.stringify(receipt),{mode:0o600});
+ const before=readFileSync(join(root,'receipt.private.json'));assert.notEqual(run(cwd).status,0);
+ assert.deepEqual(readFileSync(join(root,'receipt.private.json')),before);assert.ok(existsSync(join(root,'sdk')));assert.equal(existsSync(join(root,'published')),false);
+});
