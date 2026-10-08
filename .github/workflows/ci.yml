@@ -13,6 +13,11 @@ on:
         description: Keep metadata-only full-history scan evidence
         type: boolean
         default: false
+      native_probe:
+        description: Add one isolated native regression suite after the complete deep run
+        type: choice
+        options: [none, AAC, storage]
+        default: none
       coverage_diagnostic:
         description: Keep exact deep Go coverage profiles
         type: boolean
@@ -182,6 +187,7 @@ jobs:
       pull-requests: read
     with:
       app: player
+      native_probe: ${{ github.event_name == 'workflow_dispatch' && inputs.native_probe || 'none' }}
       plan: ${{ needs.plan.outputs.plan }}
       coverage_diagnostic: ${{ github.event_name == 'workflow_dispatch' && inputs.coverage_diagnostic }}
 

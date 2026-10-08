@@ -1,4 +1,4 @@
-import { expect, test, type Page, type Request as PlaywrightRequest, type TestInfo } from "@playwright/test";
+import { expect, test, type Locator, type Page, type Request as PlaywrightRequest, type TestInfo } from "@playwright/test";
 import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { configureTestInstance, login } from "./test-instance-helpers";
@@ -93,6 +93,14 @@ async function observeExit(page: Page, id: string, key: string) {
   }, {item: id, key});
 }
 
+async function startPlaying(media: Locator) {
+  await media.evaluate((video: HTMLVideoElement) => {
+    void video.play().catch(() => {video.dataset.checkpointPlayRejected = "true";});
+  });
+  await expect.poll(() => media.evaluate((video: HTMLVideoElement) => !video.paused && !video.ended)).toBe(true);
+  await expect(media).not.toHaveAttribute("data-checkpoint-play-rejected", "true");
+}
+
 async function openMovie(page: Page, observation?: {key: string; iteration: number; testInfo: TestInfo; resumeAt?: number}) {
   if (!observation || observation.iteration === 0) await login(page);
   await page.goto(browsePath);
@@ -115,7 +123,7 @@ async function openMovie(page: Page, observation?: {key: string; iteration: numb
   await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThanOrEqual(2);
   if (observation) await observeExit(page, id, observation.key);
   const frames = await media.evaluate((video: HTMLVideoElement) => video.getVideoPlaybackQuality().totalVideoFrames);
-  await media.evaluate((video: HTMLVideoElement) => video.play());
+  await startPlaying(media);
   await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.getVideoPlaybackQuality().totalVideoFrames)).toBeGreaterThan(frames + 2);
   await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(0.2);
   await media.evaluate((video: HTMLVideoElement) => video.pause());
@@ -161,7 +169,7 @@ test("completed paused seek persists before Library navigation and resumes actua
   await expect.poll(async () => Math.abs(Number(await page.locator("video").getAttribute("data-start")) - target)).toBeLessThan(0.1);
   await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThanOrEqual(2);
   await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThanOrEqual(target - 0.1);
-  await page.locator("video").evaluate((video: HTMLVideoElement) => video.play());
+  await startPlaying(page.locator("video"));
   await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(target + 0.2);
   await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.getVideoPlaybackQuality().totalVideoFrames)).toBeGreaterThan(2);
   await page.screenshot({path: testInfo.outputPath("reentered-moving-movie.png"), fullPage: true});
@@ -172,7 +180,7 @@ test("Library exit checkpoints actual playing time before teardown without reset
   for (let iteration = 0; iteration < (phase === "candidate" ? 3 : 1); iteration++) {
     const observationKey = `kinosail:checkpoint-exit-observation:${iteration}`;
     const {watch, media, id, session} = await openMovie(page, {key: observationKey, iteration, testInfo});
-    await media.evaluate((video: HTMLVideoElement) => video.play());
+    await startPlaying(media);
     const first = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
     await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(first + 0.5);
     const leaveAt = await media.evaluate((video: HTMLVideoElement) => video.currentTime);

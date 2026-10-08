@@ -9,6 +9,21 @@ export function registerCheckpointSetup(flows: {
   openMovie: (page: Page, observation?: Observation) => Promise<Movie>;
   checkpoint: (page: Page, id: string, session?: string) => Promise<State>;
 }) {
+  test("moving checkpoint does not wait for a delayed play acknowledgement", {tag: "@smoke"}, async ({page}) => {
+    await page.addInitScript(() => {
+      const play = HTMLMediaElement.prototype.play;
+      HTMLMediaElement.prototype.play = function() {
+        return play.call(this).then(() => new Promise<void>(resolve => {
+          this.addEventListener("ended", () => resolve(), {once: true});
+        }));
+      };
+    });
+    const {media, paused, duration} = await flows.openMovie(page);
+    expect(paused).toBeGreaterThan(0.2);
+    expect(paused).toBeLessThan(duration - 10);
+    await expect(media).toHaveJSProperty("ended", false);
+  });
+
   test("checkpoint setup preserves stored resume before establishing fresh moving media", {tag: "@smoke"}, async ({page}, info) => {
     test.skip(flows.phase !== "candidate", "historical sources are reserved for original checkpoint reproductions");
     const seed = await flows.openMovie(page);

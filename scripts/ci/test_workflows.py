@@ -13,6 +13,31 @@ WORKFLOWS = ROOT / '.github/workflows'
 
 
 class WorkflowSecurityTests(unittest.TestCase):
+    def test_focused_native_probe_rejects_unknown_modes_before_outputs(self):
+        source = (WORKFLOWS / 'app.yml').read_text()
+        step = source.split('      - name: Validate focused probe\n', 1)[1].split('      - name:', 1)[0]
+        script = textwrap.dedent(step.split('        run: |\n', 1)[1])
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / 'output'
+            for mode, selector in [('AAC', 'DownloadAACProbeTests'), ('storage', 'DownloadStorageAuthorizationTests'), ('', None), ('unknown', None), ('AAC\n', None), ('../AAC', None), ('x' * 8193, None)]:
+                with self.subTest(mode=mode[:24]):
+                    output.unlink(missing_ok=True)
+                    result = subprocess.run(['bash', '-ec', script], capture_output=True, text=True, timeout=5,
+                        env={**os.environ, 'NATIVE_PROBE': mode, 'GITHUB_OUTPUT': str(output)})
+                    self.assertEqual(result.returncode == 0, selector is not None, result.stderr)
+                    if selector:
+                        self.assertEqual(output.read_text(), f'selector={selector}\n')
+                    else:
+                        self.assertFalse(output.exists())
+        self.assertIn('-only-testing:Kinosail-iOSTests/$SELECTOR', source)
+        self.assertIn('if: always()', source)
+        self.assertIn('exit "$status"', source)
+        self.assertNotIn('continue-on-error', source)
+        root = (WORKFLOWS / 'ci.yml').read_text()
+        self.assertIn('options: [none, AAC, storage]', root)
+        self.assertIn("native_probe: ${{ github.event_name == 'workflow_dispatch' && inputs.native_probe || 'none' }}", root)
+        self.assertIn("steps.probe.outcome == 'success'", source)
+
     def test_native_failure_still_executes_the_other_platform_and_fails_the_gate(self):
         # Failure modes: iOS hides tvOS evidence; either failed platform reports
         # success; both successful platforms incorrectly report failure.

@@ -1,5 +1,6 @@
 import { createHmac } from "node:crypto";
-import { type Browser, type Page } from "@playwright/test";
+import { expect, test, type Browser, type Page } from "@playwright/test";
+import {gotoAuthForm} from "../../../scripts/testing/auth-form-navigation";
 
 function totp(): string {
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
@@ -13,7 +14,7 @@ function totp(): string {
 }
 
 export async function login(page: Page) {
-  await page.goto("/login");
+  await openLogin(page);
   await page.getByLabel("Name").fill(process.env.KINOSAIL_E2E_OWNER_NAME ?? "Owner");
   await page.getByLabel("Password", { exact: true }).fill(process.env.KINOSAIL_E2E_OWNER_PASSWORD ?? "test-instance-password");
   await page.getByLabel("6-digit code").fill(totp());
@@ -23,10 +24,24 @@ export async function login(page: Page) {
 }
 
 export async function loginViewer(page: Page, name: string, password: string) {
-  await page.goto("/login");
+  await openLogin(page);
   await page.getByLabel("Name").fill(name);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
+}
+
+async function openLogin(page: Page) {
+  const response = await gotoAuthForm(page, "/login", test.info());
+  expect(response?.status()).toBe(200);
+  expect(response!.request().redirectedFrom()).toBeNull();
+  const url = new URL(response!.url());
+  expect(url.pathname + url.search + url.hash).toBe("/login");
+  await expect(page).toHaveURL(response!.url());
+  const password = page.getByLabel("Password", {exact: true});
+  await expect(page.getByLabel("Name")).toBeEditable();
+  await expect(password).toBeEditable();
+  await expect(page.locator(".password-control").filter({has: password}).getByRole("button", {name: "Show secret", exact: true})).toBeVisible();
+  await expect(page.getByRole("button", {name: "Sign in", exact: true})).toBeEnabled();
 }
 
 export async function createViewer(page: Page, name: string, password: string): Promise<string> {
