@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import subprocess
 import threading
+import zipfile
 from urllib.parse import urlsplit
 
 parser = argparse.ArgumentParser(description=__doc__)
@@ -35,6 +36,7 @@ receipt = {"revision": revision, "command": ["python3", str(Path(__file__).relat
 
 class Peer(BaseHTTPRequestHandler):
     late = False
+    missing_login_name = False
 
     def log_message(self, *_args):
         pass
@@ -55,9 +57,10 @@ class Peer(BaseHTTPRequestHandler):
     def do_GET(self):
         path = urlsplit(self.path).path
         if path == "/login":
-            self.respond(b'<form method="post"><label>Name<input name="name"></label>'
-                         b'<label>Password<input name="password" type="password"></label>'
-                         b'<button>Sign in</button></form>')
+            label = "Missing name control" if self.missing_login_name else "Name"
+            self.respond((f'<form method="post"><label>{label}<input name="name"></label>'
+                          '<label>Password<input name="password" type="password"></label>'
+                          '<button>Sign in</button></form>').encode())
         elif path in ["/api/v1/library", "/api/v1/subtitle-library"]:
             self.respond(b'{"items":[{"id":"fixture","title":"Layout Example"}]}', "application/json")
         elif path.endswith("/inspect"):
@@ -98,8 +101,9 @@ if (matchMedia('(max-width:900px)').matches) document.documentElement.style.font
             self.respond(assets["subtitle-inspector.html"])
 
 try:
-    for mode, expected in [("stale-sample", 0), ("late-movement", 1)]:
+    for mode, expected in [("missing-login-name", 1), ("stale-sample", 0), ("late-movement", 1)]:
         Peer.late = mode == "late-movement"
+        Peer.missing_login_name = mode == "missing-login-name"
         server = ThreadingHTTPServer(("127.0.0.1", 0), Peer)
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
@@ -116,6 +120,20 @@ try:
             with (run / "browser.log").open("w") as log:
                 code = subprocess.run(["node", "scripts/testing/layout-stability-local.mjs"],
                     cwd=root, env=env, stdout=log, stderr=subprocess.STDOUT, timeout=90).returncode
+            if mode == "missing-login-name":
+                failure = json.loads((run / "failure.json").read_text())
+                trace = run / "failure-trace.zip"
+                receipt["results"].append({"mode": mode, "exitCode": code, "expectedExitCode": expected,
+                    "stage": failure["stage"], "traceBytes": trace.stat().st_size if trace.exists() else 0})
+                assert code == expected and failure["stage"] == "login-name", "Missing login control must fail"
+                assert failure["completedCases"] == 0 and failure["loginResponses"] == [], "No authentication or measurement may occur"
+                assert len(failure["loginNavigation"]) == 1 and failure["loginNavigation"][0]["status"] == 200
+                assert failure["loginDocument"]["urlMatchesExpected"] and failure["loginDocument"]["state"] == "complete"
+                assert failure["loginDocument"]["nameEditable"] and failure["loginDocument"]["passwordEditable"]
+                assert failure["loginDocument"]["nameLabelMatches"] is False, "The real incorrect label must remain observable"
+                with zipfile.ZipFile(trace) as archive:
+                    assert archive.testzip() is None and any(name.endswith(".trace") for name in archive.namelist())
+                continue
             reports = json.loads((run / "measurements.json").read_text())["reports"]
             moved = sum(len(report["moved"]) for report in reports)
             receipt["results"].append({"mode": mode, "exitCode": code, "expectedExitCode": expected,

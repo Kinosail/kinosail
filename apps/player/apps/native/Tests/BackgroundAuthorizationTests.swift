@@ -220,10 +220,33 @@ private func backgroundManifestRequest(_ probe: BackgroundAuthorizationProbe, ac
     FixtureURLProtocol.entries.withLock {
         $0[probe.fixture.host]?.routes[path + "/manifest"] = .init(data: Data(), status: 200, headers: [:], hold: true)
     }
+    let began = ContinuousClock.now
     try await probe.engine.enqueuePreparation(scope: access.scope, key: String(repeating: "b", count: 64),
         uri: "https://" + probe.fixture.host + path + "/file", kind: "audio", wifiOnly: false, quota: 0)
-    for _ in 0..<200 where probe.fixture.requests.isEmpty { try await Task.sleep(for: .milliseconds(5)) }
-    let request = try #require(probe.fixture.requests.first)
+    let enqueued = ContinuousClock.now
+    var lastPoll = enqueued, longestGap = Duration.zero
+    var polls = 0
+    for _ in 0..<200 where probe.fixture.requests.isEmpty {
+        try await Task.sleep(for: .milliseconds(5))
+        let now = ContinuousClock.now
+        longestGap = max(longestGap, lastPoll.duration(to: now))
+        lastPoll = now
+        polls += 1
+    }
+    // Freeze the original readiness decision before emitting the timing receipt.
+    let observed = probe.fixture.requests
+    let readinessFinished = ContinuousClock.now
+    let milliseconds: (Duration) -> Double = { duration in
+        let parts = duration.components
+        return Double(parts.seconds) * 1000 + Double(parts.attoseconds) / 1e15
+    }
+    let diagnostic: [String: Any] = ["enqueueFinishedMs": milliseconds(began.duration(to: enqueued)),
+        "readinessFinishedMs": milliseconds(began.duration(to: readinessFinished)),
+        "polls": polls, "iterationBound": 200, "longestPollGapMs": milliseconds(longestGap),
+        "callerTaskPriority": Task.currentPriority.rawValue, "initialRequestCount": observed.count]
+    if let data = try? JSONSerialization.data(withJSONObject: diagnostic, options: [.sortedKeys]),
+       let text = String(data: data, encoding: .utf8) { print("BACKGROUND_MANIFEST_TIMING \(text)") }
+    let request = try #require(observed.first)
     #expect(probe.fixture.requests.count == 1)
     #expect(request.url?.path == path + "/manifest")
     return request

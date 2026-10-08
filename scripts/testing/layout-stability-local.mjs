@@ -10,7 +10,23 @@ const AxeBuilder = require("@axe-core/playwright").default;
 const baseURL = process.env.KINOSAIL_E2E_URL, app = process.env.KINOSAIL_LAYOUT_APP, run = process.env.KINOSAIL_LAYOUT_RUN;
 const engine = process.env.KINOSAIL_LAYOUT_BROWSER || "chromium";
 let phase = "browser-launch", activePage, browser, authContext, routeFailure;
-const loginResponses = [];
+const loginResponses = [], loginNavigation = [], loginLifecycle = [], loginErrors = [];
+let loginTracing = false, initialTimeOrigin, mainFrameDocuments = 0;
+const bounded = (events, event) => { if (events.length < 16) events.push(event); };
+const expectedLogin = new URL("/login", baseURL);
+const urlCategory = value => {try {const url=new URL(value);return value==="about:blank"?"blank":url.href===expectedLogin.href?"expected":url.origin===expectedLogin.origin?"other-path":"other-origin";}catch{return "invalid";}};
+async function loginDocument(page) {
+  let timer;
+  try {return await Promise.race([page.evaluate(({expected, previous}) => {
+    const name=document.querySelector('input[name="name"]'), password=document.querySelector('input[name="password"][type="password"]');
+    const editable=input=>Boolean(input&&!input.disabled&&!input.readOnly&&input.getBoundingClientRect().width&&input.getBoundingClientRect().height);
+    return {urlMatchesExpected:location.href===expected, state:document.readyState, freshDocument:performance.timeOrigin!==previous,
+      nameEditable:editable(name), passwordEditable:editable(password),
+      nameLabelMatches:Boolean(name&&[...name.labels||[]].some(label=>label.textContent.trim()==="Name")),
+      showSecretReady:Boolean(password?.closest(".password-control")?.querySelector('button.password-toggle[aria-label="Show secret"]'))};
+  }, {expected:expectedLogin.href, previous:initialTimeOrigin}), new Promise(resolve=>{timer=setTimeout(()=>resolve({unavailable:true}),1000);})]);}
+  catch {return {unavailable:true};} finally {clearTimeout(timer);}
+}
 const reports = [], flows = [], flowProbe = {stage: "not-started"};
 let failureCapture;
 function recordFailure(error, failedPage = flowProbe.page || activePage) {
@@ -22,6 +38,10 @@ function recordFailure(error, failedPage = flowProbe.page || activePage) {
       sourceLocation: source ? {file: source[1], line: Number(source[2]), column: Number(source[3])} : undefined,
       request: routeFailure,
       completedCases: reports.length, completedFlows: flows.length, media: flowProbe.media, probe: flowProbe.geometry, loginResponses,
+      loginNavigation, loginLifecycle, loginErrors, mainFrameDocuments,
+      loginDocument: phase.startsWith("login") && failedPage ? await loginDocument(failedPage) : undefined,
+      reportedURLCategory: failedPage ? urlCategory(failedPage.url()) : "not-created",
+      loginTraceScope: loginTracing ? "precredential navigation and readiness" : undefined,
       authCookieCount: phase.startsWith("login") && authContext ? await authContext.cookies().then(c=>c.length).catch(()=>undefined) : undefined,
       pageState: failedPage ? (new URL(failedPage.url()).pathname === "/login" ? "login" : "other") : "not-created"};
     await writeFile(join(run, "failure.json"), JSON.stringify(failure, null, 2));
@@ -42,11 +62,34 @@ process.once("uncaughtException", async error => {
 });
 browser = await ({chromium, webkit, firefox}[engine]).launch(engine === "chromium" && process.platform === "darwin" ? {channel: "chrome"} : {});
 const context = authContext = await browser.newContext({baseURL, ignoreHTTPSErrors: false, reducedMotion: "reduce"});
+await context.tracing.start({screenshots:true,snapshots:true});
+loginTracing = true;
 const page = activePage = await context.newPage();
-page.on("response", response => {if(response.request().method()==="POST"&&new URL(response.url()).pathname==="/login")loginResponses.push(response.status());});
+initialTimeOrigin = await page.evaluate(() => performance.timeOrigin);
+const loginStarted = Date.now();
+page.on("response", response => {
+  const request=response.request(), url=new URL(response.url());
+  if(request.method()==="POST"&&url.pathname==="/login")loginResponses.push(response.status());
+  if(request.isNavigationRequest()&&request.frame()===page.mainFrame()&&request.method()==="GET"){
+    mainFrameDocuments++;
+    bounded(loginNavigation,{expectedOrigin:url.origin===expectedLogin.origin,expectedPath:url.pathname+url.search+url.hash==="/login",
+      status:response.status(),redirected:Boolean(request.redirectedFrom()),elapsedMs:Date.now()-loginStarted});
+  }
+});
+for(const event of ["domcontentloaded","load"])page.on(event,()=>bounded(loginLifecycle,{event,elapsedMs:Date.now()-loginStarted}));
+page.on("framenavigated",frame=>{if(frame===page.mainFrame())bounded(loginLifecycle,{event:"commit",urlCategory:urlCategory(frame.url()),elapsedMs:Date.now()-loginStarted});});
+page.on("pageerror",error=>bounded(loginErrors,{event:"pageerror",category:["TypeError","ReferenceError","SyntaxError"].includes(error.name)?error.name:"other"}));
+page.on("console",message=>{if(["warning","error"].includes(message.type()))bounded(loginErrors,{event:"console",category:message.type()});});
+page.on("requestfailed",request=>bounded(loginErrors,{event:"requestfailed",resourceType:request.resourceType(),urlCategory:urlCategory(request.url())}));
 phase = "login-page";
 await page.goto("/login");
+phase = "login-name";
+await page.getByLabel("Name", {exact: true}).waitFor({state:"visible"});
+await page.getByLabel("Password", {exact: true}).waitFor({state:"visible"});
+await context.tracing.stop();
+loginTracing = false;
 await page.getByLabel("Name", {exact: true}).fill("Owner");
+phase = "login-password";
 await page.getByLabel("Password", {exact: true}).fill("synthetic-layout-password");
 const bits = [...process.env.KINOSAIL_LAYOUT_TOTP].map(c => "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567".indexOf(c).toString(2).padStart(5, "0")).join("");
 const secret = Buffer.from(bits.match(/.{8}/g).map(byte => parseInt(byte, 2)));
@@ -54,6 +97,7 @@ const counter = Buffer.alloc(8); counter.writeBigUInt64BE(BigInt(Math.floor(Date
 const digest = createHmac("sha1", secret).update(counter).digest(), offset = digest[19] & 15;
 const factor = page.getByLabel(/Authentication or recovery code|6-digit code/);
 const code = String((digest.readUInt32BE(offset) & 0x7fffffff) % 1000000).padStart(6, "0");
+phase = "login-factor";
 if (await factor.isVisible()) await factor.fill(code);
 phase = "login-submit";
 await page.getByRole("button", {name: "Sign in", exact: true}).click();
