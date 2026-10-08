@@ -17,6 +17,18 @@ DEFAULTS = ['false', 'false', 'false', 'false', 'primary', 'protocol', 'source-f
 
 
 class LibraryWorkflowTests(unittest.TestCase):
+    def test_mutation_witness_is_bound_and_runs_once_in_required_player_controls(self):
+        helper = 'scripts/testing/library-mutation-witness.mjs'
+        control = 'scripts/testing/library-mutation-witness.test.mjs'
+        block = WORKFLOW.read_text().split('  library-owner:\n', 1)[1].split('\n  hls-navigation:', 1)[0]
+        self.assertTrue("'" + helper + "'" in block, 'Library source receipt omits mutation helper')
+        commands = [line for line in (ROOT / '.github/workflows/app.yml').read_text().splitlines()
+                    if 'node --test ' in line and control in line]
+        self.assertEqual(len(commands), 1)
+        self.assertEqual(commands[0].split().count(control), 1)
+        self.assertTrue('../../../' + helper in (ROOT / 'apps/player/e2e/ui-happy-paths.spec.ts').read_text(),
+                        'Library case does not import bound helper')
+
     def cli(self, script, arguments):
         return subprocess.run([sys.executable, str(script), *arguments], cwd=ROOT,
                               env=os.environ | {'PYTHONDONTWRITEBYTECODE': '1'},

@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { libraryMutation } from "../../../scripts/testing/library-mutation-witness.mjs";
 import { totp } from "./test-instance-helpers";
 test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated public test instance");
 
@@ -86,7 +87,7 @@ test("Dark is the default and every theme choice persists", async ({ page }, tes
 	await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
 });
 
-test("Owner can create, fill, empty, and delete a playlist and Collection", async ({ page }, testInfo) => {
+test("Owner can create, fill, empty, and delete a playlist and Collection", async ({ page, baseURL }, testInfo) => {
 	await login(page);
 	const suffix = `${testInfo.project.name}-${Date.now()}`;
 	const playlistName = `E2E playlist ${suffix}`;
@@ -137,9 +138,9 @@ test("Owner can create, fill, empty, and delete a playlist and Collection", asyn
 	await destinationSearch.fill("No matching destination");
 	await expect(page.getByText("No playlists or collections found.", { exact: true })).toBeVisible();
 	await destinationSearch.fill(playlistName);
-	await page.getByRole("button", { name: `Add to playlist · ${playlistName}` }).click();
+	await libraryMutation(page, baseURL, { kind: "playlist-add", name: playlistName }, page.getByRole("button", { name: `Add to playlist · ${playlistName}` }), testInfo);
 	await page.getByText("Add to playlist or collection", { exact: true }).click();
-	await page.getByRole("button", { name: `Add to Collection · ${collectionName}` }).click();
+	await libraryMutation(page, baseURL, { kind: "collection-add", name: collectionName }, page.getByRole("button", { name: `Add to Collection · ${collectionName}` }), testInfo);
 
 	await page.goto(`/playlist/${encodeURIComponent(playlistName)}`);
 	const playlistItems = page.locator(".collection-items");
@@ -162,7 +163,7 @@ test("Owner can create, fill, empty, and delete a playlist and Collection", asyn
 	await expect(page.getByRole("heading", { name: collectionName, exact: true })).toHaveCount(0);
 });
 
-test("Owner can create and revoke an API key and manage a Viewer Profile", async ({ page }, testInfo) => {
+test("Owner can create and revoke an API key and manage a Viewer Profile", async ({ page, baseURL }, testInfo) => {
 	await login(page);
 	const suffix = `${testInfo.project.name}-${Date.now()}`;
 	const keyName = `E2E key ${suffix}`;
@@ -194,13 +195,13 @@ test("Owner can create and revoke an API key and manage a Viewer Profile", async
 	await addProfile.getByLabel("New profile password").fill("viewer-password");
 	await addProfile.getByLabel("Libraries").fill("all");
 	await addProfile.getByLabel("Allow downloads").check();
-	await addProfile.getByRole("button", { name: "Add Profile" }).click();
+	await libraryMutation(page, baseURL, { kind: "profile-add" }, addProfile.getByRole("button", { name: "Add Profile" }), testInfo);
 	await page.goto("/settings#profiles");
 	let row = page.locator(".profile-row").filter({ hasText: profileName });
 	await expect(row).toBeVisible();
 	await row.getByRole("group", { name: "Content" }).locator('input[value="teen"]').check();
 	await row.getByLabel("Managed remote access").check();
-	await row.getByRole("button", { name: "Save" }).click();
+	await libraryMutation(page, baseURL, { kind: "profile-save" }, row.getByRole("button", { name: "Save" }), testInfo);
 	await page.goto("/settings#profiles");
 	row = page.locator(".profile-row").filter({ hasText: profileName });
 	await expect(row.getByRole("group", { name: "Content" }).locator('input[value="teen"]')).toBeChecked();
@@ -209,7 +210,7 @@ test("Owner can create and revoke an API key and manage a Viewer Profile", async
 	const reset = page.locator('form[action="/settings/profiles/password"]');
 	await reset.getByLabel("Profile to reset").selectOption({ label: profileName });
 	await reset.getByLabel("New profile password").fill("replacement-password");
-	await reset.getByRole("button", { name: "Reset password" }).click();
+	await libraryMutation(page, baseURL, { kind: "profile-password" }, reset.getByRole("button", { name: "Reset password" }), testInfo);
 	await page.goto("/settings#profiles");
 	row = page.locator(".profile-row").filter({ hasText: profileName });
 	await row.getByText(`Remove ${profileName}?`, { exact: true }).click();
