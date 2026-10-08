@@ -59,3 +59,48 @@ frag_discont differences in pinned installedFFmpeg. They retain everynegative
 frame/packet and parsed unsignedTFDT/signedCTS/ELST. No production acceptance.
 Official upstream code: https://github.com/FFmpeg/FFmpeg/blob/n8.1.2/libavformat/hlsenc.c#L800
 and https://github.com/FFmpeg/FFmpeg/blob/n8.1.2/libavformat/movenc.c#L6611.
+
+## Corrected full observation and fixed matrix
+
+b35fcd00a7da0a313ddeaaa2ebc6a638c81f74d1 treee7aa1f22ecd3b196f209c3e3ddfdd535fd97d954.
+Corrected public run37748268249 terminal FAILURE, job113214908311.
+Receipt69b280d401878709be2812d416f79a587dac70b7839eca4a6f3c335b5796e22d.
+Allsix cases complete every stage; source/public native EOF sums exact.
+MKV firsttwo source packetDTS missing remain explicit failed clock qualification.
+Both12.5 delivery sequences remain480/288..767 vs468/300..767; noframesremoved.
+Allsix owned groups unforced joined, twozero observations, peak1, sourceunchanged.
+Artifact11537330485 digestfe3dfe15a18d8a294bc22897ad735b512cae7349c8079fb5242e9b6b286f6ba8.
+
+Matrix run37748272351/job113214922827 terminal SUCCESS as diagnosis only.
+Receipt e6716cd55659b5072f9276c7d1e486ae597f2ff5406bbc69ebcfe24c185d25cf.
+All20 fixed cases observed with complete stages; productionAcceptancefalse.
+Artifact11535999228 digest7ec304f50760067a8bd98320c4ed8ffd2e4fb4abcd9fc6e56a721550c6f26580.
+Outerdisabled produces12negativeframes; innerdisabled alone doesnotfixcut.
+Normalinitialmux + outer/innerdisabled gives videoELSTmediaTime9328/16000,
+but stillretains480rawframes including12negative. MP4wholePCM nowexact936008;
+MKV935984 vs936000, wholepublicsource-tail starts600016, a16sample defect.
+Explicit editlists duplicate normalauto; signedCTS retains10negativeframes,
+still480raw. No testedflag combination qualifies requestedrawsequence.
+Offline MKV nominalkey12 gives528frames240..767; publicpreparedkey12 gives480,
+so offlinekey is not an installed Server argv/source-origin certificate.
+
+The allowed initialmux slice is not admitted by these results. A source-bound
+signed/edit/preroll presentation certificate and MKVnative sample precision
+remain required before proposing any production acceptance. Existing strategy1
+Clock>=0/exact-IDRresume assertions remain untouched.
+
+Independent review found cutoff paths in the diagnostic harness. Child correction
+adds one internal shared probe deadline, handledSIGTERM,25sownedcleanup grace,
+pre-registersmuxcases, covers Popen/sampler inownedtry, optionalprojectionfields,
+and extends only disposable workflow budgets to fit boundedsetup/proof/upload.
+28parser/evidence/deadline controls pass in memory; hostedrealcutoff proof
+will validate internal expiry and externalSIGTERM with persistedfailedreceipts
+and twozero/unforcedowned-groupjoin observations.
+
+Separate workerreuse source diagnosis atmainc452:
+startup_preparation.go/startRequest defers cancel after prepareStartupWindow
+returnsready; startup_hls.go/watchStartupCancellation cancels only unadoptedjob.
+The strict control deliberately waitszeroownedworkers before final2s GET.
+Its secondsequential joinedencoder is expected refill, no overlap/leak evidence.
+Actualbefore-cancellation adoption needs separate proof and remains with broad
+startup lifecycle ownership503/509; no root lifecycle mutation here.

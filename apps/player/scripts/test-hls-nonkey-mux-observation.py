@@ -14,6 +14,7 @@ from hls_followon_frames import stream_metadata, decode_frames
 from hls_followon_public import bounded_bytes, check
 from hls_remaining_mux import mux_case
 from hls_remaining_nonkey_evidence import observed_media
+from hls_remaining_nonkey_deadline import DiagnosticDeadline
 
 ROOT = Path(__file__).resolve().parents[3]
 RUN = ROOT / '.verification/hls-nonkey-mux' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
@@ -27,6 +28,9 @@ receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], tex
     'boundary': 'Fixed installed-FFmpeg counterfactuals; all negative frames retained; no discard map applied.',
     'sourceCitations': ['https://github.com/FFmpeg/FFmpeg/blob/n8.1.2/libavformat/hlsenc.c#L800',
         'https://github.com/FFmpeg/FFmpeg/blob/n8.1.2/libavformat/movenc.c#L6611']}
+
+guard = DiagnosticDeadline(360)
+guard.__enter__()
 
 
 def run(command, timeout=30):
@@ -96,9 +100,10 @@ try:
             sourceTimeOriginSeconds=origin, sourceFramePTS=points)
         for label, options, offset in candidates:
             directory = RUN / (source.suffix[1:] + '-' + label)
-            row = mux_case(run, source, source_metadata, directory, label, offset, options)
-            row['container'] = source.suffix[1:]
+            row = {'container': source.suffix[1:], 'label': label, 'options': options,
+                   'inputSeekSeconds': offset, 'result': 'in-flight'}
             receipt['cases'].append(row)
+            row.update(mux_case(run, source, source_metadata, directory, label, offset, options))
             if row['result'] == 'observed':
                 try:
                     manifest = bounded_bytes(directory / 'index.m3u8', 65536, 'mux_manifest_bound')
@@ -116,16 +121,19 @@ try:
 except Exception as error:
     receipt['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
 finally:
-    target = RUN / 'receipt.json'
-    files = {Path(__file__)} | {Path(m.__file__).resolve() for m in list(sys.modules.values())
-        if getattr(m, '__file__', None) and Path(m.__file__).resolve().parent == Path(__file__).resolve().parent}
-    receipt['executedScriptSHA256'] = {str(p.relative_to(ROOT)): sha(p) for p in sorted(files)}
-    raw = json.dumps(receipt, separators=(',', ':'), allow_nan=False) + '\n'
-    check(0 < len(raw.encode()) <= 32 << 20, 'mux_lossless_receipt_bound')
-    target.write_text(raw)
-    (RUN / 'SHA256SUMS').write_text(''.join(sha(p) + '  ' + str(p.relative_to(ROOT)) + '\n'
-        for p in sorted(files)) + sha(target) + '  receipt.json\n')
-    print(json.dumps({'result': receipt['result'], 'revision': receipt['revision'],
-        'receiptSHA256': sha(target), 'cases': len(receipt['cases']),
-        'failureClass': receipt.get('failureClass'), 'productionAcceptance': False}))
+    with guard.cleanup():
+        receipt['handledTerminationSignals'] = guard.signals
+        target = RUN / 'receipt.json'
+        files = {Path(__file__)} | {Path(m.__file__).resolve() for m in list(sys.modules.values())
+            if getattr(m, '__file__', None) and Path(m.__file__).resolve().parent == Path(__file__).resolve().parent}
+        receipt['executedScriptSHA256'] = {str(p.relative_to(ROOT)): sha(p) for p in sorted(files)}
+        raw = json.dumps(receipt, separators=(',', ':'), allow_nan=False) + '\n'
+        check(0 < len(raw.encode()) <= 32 << 20, 'mux_lossless_receipt_bound')
+        target.write_text(raw)
+        (RUN / 'SHA256SUMS').write_text(''.join(sha(p) + '  ' + str(p.relative_to(ROOT)) + '\n'
+            for p in sorted(files)) + sha(target) + '  receipt.json\n')
+        print(json.dumps({'result': receipt['result'], 'revision': receipt['revision'],
+            'receiptSHA256': sha(target), 'cases': len(receipt['cases']),
+            'failureClass': receipt.get('failureClass'), 'productionAcceptance': False}))
+    guard.__exit__()
 raise SystemExit(0 if receipt['result'] == 'observed' else 1)

@@ -5,7 +5,7 @@ on:
     inputs:
       phase:
         type: choice
-        options: [public, observe, mux]
+        options: [public, observe, mux, cutoff]
         default: public
 
 permissions:
@@ -13,10 +13,10 @@ permissions:
 
 jobs:
   nonkey-public:
-    if: inputs.phase != 'mux'
+    if: inputs.phase == 'public' || inputs.phase == 'observe'
     name: Strict source-bound non-key public regression
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -57,7 +57,7 @@ jobs:
       - name: Verify strict initialization and fragment parsers
         run: python3 -m unittest discover -s apps/player/scripts -p 'test_hls_remaining_nonkey_*.py'
       - name: Capture full public frames, packets, edits and native PCM
-        run: timeout --kill-after=5s 750s python3 apps/player/scripts/test-hls-nonkey-observation.py
+        run: timeout --kill-after=90s 750s python3 apps/player/scripts/test-hls-nonkey-observation.py
       - name: Project bounded public diagnostic facts
         if: always()
         run: |
@@ -75,7 +75,7 @@ jobs:
               mapping=value.get('mapping',{})
               pcm=value.get('nativePCM',{})
               facts={'case':case['name'],'result':case['result'],'failures':case['failures'],
-                  'failureClass':case.get('failureClass'),'requestedSourcePTS':case['referenceClock']['requestedSourcePTS'],
+                  'failureClass':case.get('failureClass'),'requestedSourcePTS':case.get('referenceClock',{}).get('requestedSourcePTS'),
                   'expectedFrames':len(mapping.get('expectedSourceIndices',[])),
                   'actualFrames':len(mapping.get('actualSourceIndices',[])),
                   'actualFirstIndices':mapping.get('actualSourceIndices',[])[:16],
@@ -86,7 +86,7 @@ jobs:
                   'init':value.get('initialization'),'fragmentCount':len(value.get('physicalFragments',[])),
                   'firstRawFragment':[{'trackID':t['trackID'],'samples':len(t['samples']),
                       'firstSamples':t['samples'][:4],'lastSamples':t['samples'][-2:]}
-                      for t in value.get('physicalFragments',[{}])[0].get('tracks',[])],
+                      for t in next(iter(value.get('physicalFragments',[])),{}).get('tracks',[])],
                   'nativePCM':{k:{field:v.get(field) for field in ['samples','sha256','decodedFrameSampleSum','completeEOFAccounted']}
                       for k,v in pcm.items() if k in ['source','public','referenceSeek']},
                   'wholePublicCorrespondence':pcm.get('wholePublicCorrespondence'),
@@ -113,7 +113,7 @@ jobs:
     if: inputs.phase == 'public'
     name: Unchanged accepted AAC packet and native PCM control
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -152,7 +152,7 @@ jobs:
           timeout --kill-after=5s 180s sudo apt-get "${apt_options[@]}" install -y --no-install-recommends "$RUNNER_TEMP/hls-ffmpeg.deb"
           echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
       - name: Preserve the accepted control and original strict worker failures
-        run: timeout --kill-after=5s 750s python3 apps/player/scripts/test-hls-startup-readiness.py
+        run: timeout --kill-after=90s 750s python3 apps/player/scripts/test-hls-startup-readiness.py
       - name: Preserve unchanged control receipts
         timeout-minutes: 2
         if: always()
@@ -172,7 +172,7 @@ jobs:
     if: inputs.phase == 'mux'
     name: Fixed inner and outer mux timestamp counterfactuals
     runs-on: ubuntu-24.04
-    timeout-minutes: 12
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -213,7 +213,7 @@ jobs:
       - name: Verify all strict diagnostic controls
         run: python3 -m unittest discover -s apps/player/scripts -p 'test_hls_remaining_nonkey_*.py'
       - name: Observe fixed counterfactuals without production admission
-        run: timeout --kill-after=5s 420s python3 apps/player/scripts/test-hls-nonkey-mux-observation.py
+        run: timeout --kill-after=90s 420s python3 apps/player/scripts/test-hls-nonkey-mux-observation.py
       - name: Preserve complete safe counterfactual receipt
         timeout-minutes: 2
         if: always()
@@ -223,6 +223,32 @@ jobs:
           path: |
             .verification/hls-nonkey-mux/*/receipt.json
             .verification/hls-nonkey-mux/*/SHA256SUMS
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
+  cutoff-contracts:
+    if: inputs.phase == 'cutoff'
+    name: Handled real SIGTERM and internal deadline owned joins
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - run: test ! -e .gates-disabled
+      - name: Verify all strict parser, evidence and deadline controls
+        run: python3 -m unittest discover -s apps/player/scripts -p 'test_hls_remaining_nonkey_*.py'
+      - name: Prove real cutoff joins and receipt flush
+        run: timeout --kill-after=30s 90s python3 apps/player/scripts/test-hls-nonkey-cutoff.py
+      - name: Preserve safe cutoff receipts
+        if: always()
+        timeout-minutes: 2
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: nonkey-cutoff-contracts-${{ github.sha }}
+          path: .verification/hls-nonkey-cutoff/*.json
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14

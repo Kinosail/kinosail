@@ -20,6 +20,7 @@ from hls_followon_public import check, bounded_bytes, encoder_count, sample_reso
 from hls_followon_frames import stream_metadata
 from hls_remaining_nonkey_evidence import observed_media
 from hls_remaining_process import finish_processes
+from hls_remaining_nonkey_deadline import DiagnosticDeadline
 
 ROOT = Path(__file__).resolve().parents[3]
 RUN = ROOT / '.verification/hls-nonkey' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
@@ -33,6 +34,9 @@ receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], tex
     'boundary': 'Synthetic authenticated public diagnostic; all raw data retained, no discard map applied.',
     'originalFailuresPreserved': True, 'nativeSafariNoxAcceptance': False}
 
+guard = DiagnosticDeadline(650)
+guard.__enter__()
+
 
 class CaptureServer(PublicServer):
     def __init__(self, url, directory):
@@ -40,6 +44,7 @@ class CaptureServer(PublicServer):
         self.directory, self.initialization = directory, None
 
     def http(self, path, *args, **kwargs):
+        guard.check(40)
         status, data, headers = super().http(path, *args, **kwargs)
         name = path.rsplit('/', 1)[-1]
         if status == 200 and name == 'init.mp4':
@@ -88,6 +93,7 @@ def reprobe_source(path, metadata):
 def journey(name, original, metadata, offset=0, cold=False, one_shot=False, audio_conversion=False):
     case = {'name': name, 'result': 'failed', 'fixture': metadata, 'resumeOffsetSeconds': offset, 'failures': []}
     receipt['cases'].append(case)
+    guard.check(40)
     directory, media = RUN / name, RUN / name / 'media'
     media.mkdir(parents=True)
     source = media / ('Fixture' + original.suffix)
@@ -106,10 +112,13 @@ def journey(name, original, metadata, offset=0, cold=False, one_shot=False, audi
     case['resources'] = resources
     log_path = directory / 'server.log'
     with log_path.open('w') as log:
-        server = subprocess.Popen([str(binary)], cwd=ROOT, env=env, stdout=log, stderr=log, start_new_session=True)
+        server, sampler = None, None
         stop = threading.Event()
-        sampler = threading.Thread(target=sample_resources, args=(server, source, stop, resources), daemon=True)
         try:
+            server = subprocess.Popen([str(binary)], cwd=ROOT, env=env,
+                stdout=log, stderr=log, start_new_session=True)
+            sampler = threading.Thread(target=sample_resources,
+                args=(server, source, stop, resources), daemon=True)
             sampler.start()
             api.authorize()
             item_id = next(i['id'] for i in api.call('/api/v1/library')['items'] if i['title'] == 'Fixture')
@@ -168,7 +177,9 @@ def journey(name, original, metadata, offset=0, cold=False, one_shot=False, audi
             case['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
         finally:
             try:
-                case.update(finish_processes(server, source, stop, sampler))
+                if server is not None:
+                    with guard.cleanup():
+                        case.update(finish_processes(server, source, stop, sampler))
             except (OSError, subprocess.SubprocessError) as error:
                 case['cleanupFailureClass'] = type(error).__name__
                 case['failures'].append('owned_process_cleanup_failed')
@@ -182,10 +193,10 @@ def journey(name, original, metadata, offset=0, cold=False, one_shot=False, audi
             case['workerBound'] = (joined.get('confirmedZeroSamples') == 2
                 and joined.get('remainingOwnedPIDs') == [] and not joined.get('forcedOwnedGroupStop')
                 and not joined.get('qualificationFailures') and not case.get('cleanupFailures')
-                and not case.get('cleanupFailureClass') and not sampler.is_alive()
+                and not case.get('cleanupFailureClass') and (sampler is None or not sampler.is_alive())
                 and resources['samples'] > 0 and resources['peakOwnedFFmpeg'] <= 1
                 and resources['samplingErrors'] == 0 and lifecycle['validSequence'] and lifecycle['peakActive'] == 1
-                and case['ownedFFmpegBeforeTeardown'] == 0)
+                and case.get('ownedFFmpegBeforeTeardown') == 0)
             if not case['workerBound']:
                 case['failures'].append('owned_encoder_bound')
                 case['result'] = 'failed'
@@ -214,19 +225,22 @@ try:
 except Exception as error:
     receipt['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
 finally:
-    target = RUN / 'receipt.json'
-    files = {Path(__file__)} | {Path(m.__file__).resolve() for m in list(sys.modules.values())
-        if getattr(m, '__file__', None) and Path(m.__file__).resolve().parent == Path(__file__).resolve().parent}
-    receipt['executedScriptSHA256'] = {str(p.relative_to(ROOT)): sha(p) for p in sorted(files)}
-    raw = json.dumps(receipt, separators=(',', ':'), allow_nan=False) + '\n'
-    check(0 < len(raw.encode()) <= 16 << 20, 'nonkey_lossless_receipt_bound')
-    target.write_text(raw)
-    modules = sorted(files)
-    (RUN / 'SHA256SUMS').write_text(''.join(sha(p) + '  ' + str(p.relative_to(ROOT)) + '\n'
-        for p in modules) + sha(target) + '  receipt.json\n')
-    print(json.dumps({'result': receipt['result'], 'revision': receipt['revision'],
-        'receiptSHA256': sha(target), 'failureClass': receipt.get('failureClass'),
-        'cases': [{k: c.get(k) for k in ['name', 'result', 'failureClass', 'failures',
-            'workerBound', 'sourceUnchanged', 'presentation', 'encoderLifecycle']}
-            for c in receipt['cases']]}))
+    with guard.cleanup():
+        receipt['handledTerminationSignals'] = guard.signals
+        target = RUN / 'receipt.json'
+        files = {Path(__file__)} | {Path(m.__file__).resolve() for m in list(sys.modules.values())
+            if getattr(m, '__file__', None) and Path(m.__file__).resolve().parent == Path(__file__).resolve().parent}
+        receipt['executedScriptSHA256'] = {str(p.relative_to(ROOT)): sha(p) for p in sorted(files)}
+        raw = json.dumps(receipt, separators=(',', ':'), allow_nan=False) + '\n'
+        check(0 < len(raw.encode()) <= 16 << 20, 'nonkey_lossless_receipt_bound')
+        target.write_text(raw)
+        modules = sorted(files)
+        (RUN / 'SHA256SUMS').write_text(''.join(sha(p) + '  ' + str(p.relative_to(ROOT)) + '\n'
+            for p in modules) + sha(target) + '  receipt.json\n')
+        print(json.dumps({'result': receipt['result'], 'revision': receipt['revision'],
+            'receiptSHA256': sha(target), 'failureClass': receipt.get('failureClass'),
+            'cases': [{k: c.get(k) for k in ['name', 'result', 'failureClass', 'failures',
+                'workerBound', 'sourceUnchanged', 'presentation', 'encoderLifecycle']}
+                for c in receipt['cases']]}))
+    guard.__exit__()
 raise SystemExit(0 if receipt['result'] == 'passed' else 1)
