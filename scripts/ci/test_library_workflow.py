@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / '.github/workflows/layout-stability.yml'
 VALIDATOR = ROOT / 'scripts/ci/validate-layout-selection.py'
 MODULE = ROOT / 'apps/player/scripts/library_profile_admission.py'
-DEFAULTS = ['false', 'false', 'false', 'false', 'primary', 'protocol', 'source-format']
+DEFAULTS = ['false', 'false', 'false', 'false', 'primary', 'protocol', 'source-format', 'false']
 
 
 class LibraryWorkflowTests(unittest.TestCase):
@@ -29,7 +29,7 @@ class LibraryWorkflowTests(unittest.TestCase):
         rejected = [['pull_request', 'Library', *DEFAULTS],
                     ['workflow_dispatch', 'library', *DEFAULTS]]
         for index, value in enumerate(('true', 'true', 'true', 'true', 'navigation',
-                                       'save-body', 'primary')):
+                                       'save-body', 'primary', 'true')):
             values = DEFAULTS.copy()
             values[index] = value
             rejected.append(['workflow_dispatch', 'Library', *values])

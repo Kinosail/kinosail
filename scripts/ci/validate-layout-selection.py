@@ -4,14 +4,14 @@ import sys
 
 
 def selection(arguments):
-    if len(arguments) != 9 or any(len(value) > 32 for value in arguments):
+    if len(arguments) != 10 or any(len(value) > 32 for value in arguments):
         raise ValueError
-    event, campaign, remaining, timing, installation, metadata, q14, r06, q47 = arguments
+    event, campaign, remaining, timing, installation, metadata, q14, r06, q47, origin = arguments
     if event not in ('pull_request', 'workflow_dispatch'):
         raise ValueError
     if campaign not in ('none', 'R06', 'Q14', 'Q09', 'Q47', 'HLS', 'HLS-navigation', 'Library'):
         raise ValueError
-    if any(value not in ('true', 'false') for value in (remaining, timing, installation, metadata)):
+    if any(value not in ('true', 'false') for value in (remaining, timing, installation, metadata, origin)):
         raise ValueError
     if q14 not in ('primary', 'navigation', 'cold', 'bfcache', 'htmx', 'shows', 'search', 'safety', 'home'):
         raise ValueError
@@ -26,15 +26,17 @@ def selection(arguments):
     if metadata == 'true' and (campaign not in ('R06', 'Q14', 'Q09') or r06 in (
             'restore-source-format', 'restore-controls', 'restore-headers', 'restore-inspect-body')):
         raise ValueError
-    requested = 'true' in (remaining, timing, installation)
+    requested = 'true' in (remaining, timing, installation, origin)
     if event == 'pull_request' and (campaign != 'none' or requested or metadata == 'true'):
         raise ValueError
     if requested and campaign != 'HLS':
         raise ValueError
-    if (timing == 'true' or installation == 'true') and remaining != 'true':
+    if 'true' in (timing, installation, origin) and remaining != 'true':
         raise ValueError
-    if timing == installation == 'true':
+    if (timing, installation, origin).count('true') > 1:
         raise ValueError
+    if origin == 'true':
+        return 'audio-origin'
     if installation == 'true':
         return 'audio-installation'
     if timing == 'true':

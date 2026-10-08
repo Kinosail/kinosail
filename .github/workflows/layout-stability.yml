@@ -54,6 +54,10 @@ on:
         description: Select the closed disposable48k AAC installation experiment
         type: boolean
         default: false
+      hls_audio_origin:
+        description: Verify actual production aligned AAC origin-refill against an uninterrupted control
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -79,11 +83,12 @@ jobs:
           HLS_REMAINING: ${{ inputs.hls_remaining_proof || false }}
           HLS_TIMING: ${{ inputs.hls_audio_timing || false }}
           HLS_INSTALLATION: ${{ inputs.hls_audio_installation || false }}
+          HLS_ORIGIN: ${{ inputs.hls_audio_origin || false }}
           LAYOUT_METADATA: ${{ inputs.architecture_metadata || false }}
           LAYOUT_Q14: ${{ inputs.campaign_q14_suite || 'primary' }}
           LAYOUT_R06: ${{ inputs.campaign_r06_suite || 'protocol' }}
           LAYOUT_Q47: ${{ inputs.campaign_q47_suite || 'source-format' }}
-        run: python3 scripts/ci/validate-layout-selection.py "$LAYOUT_EVENT" "$LAYOUT_CAMPAIGN" "$HLS_REMAINING" "$HLS_TIMING" "$HLS_INSTALLATION" "$LAYOUT_METADATA" "$LAYOUT_Q14" "$LAYOUT_R06" "$LAYOUT_Q47"
+        run: python3 scripts/ci/validate-layout-selection.py "$LAYOUT_EVENT" "$LAYOUT_CAMPAIGN" "$HLS_REMAINING" "$HLS_TIMING" "$HLS_INSTALLATION" "$LAYOUT_METADATA" "$LAYOUT_Q14" "$LAYOUT_R06" "$LAYOUT_Q47" "$HLS_ORIGIN"
   native:
     needs: selection-admission
     name: Native layout (${{ matrix.browser }})
@@ -334,6 +339,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          fetch-depth: 0
           persist-credentials: false
       - run: test ! -e .gates-disabled
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
@@ -350,7 +356,7 @@ jobs:
       - name: Check bounded presentation oracle
         run: python3 -m unittest discover -s apps/player/scripts -p test_hls_followon_frames.py
       - name: Check closed audio installation selection and passthrough
-        if: ${{ inputs.hls_audio_installation }}
+        if: ${{ inputs.hls_audio_installation || inputs.hls_audio_origin }}
         run: |
           test '${{ inputs.hls_remaining_proof }}' = true
           test '${{ inputs.hls_audio_timing }}' != true
@@ -361,9 +367,13 @@ jobs:
       - name: Run bounded remaining playback regressions
         if: ${{ inputs.hls_remaining_proof }}
         env:
-          KINOSAIL_HLS_REMAINING_SUITE: ${{ inputs.hls_audio_installation && 'audio-installation' || inputs.hls_audio_timing && 'audio-timing' || 'remaining' }}
+          KINOSAIL_HLS_REMAINING_SUITE: ${{ inputs.hls_audio_origin && 'audio-origin' || inputs.hls_audio_installation && 'audio-installation' || inputs.hls_audio_timing && 'audio-timing' || 'remaining' }}
         run: |
-          if [ '${{ inputs.hls_audio_installation }}' = true ] && [ '${{ inputs.hls_audio_timing }}' = true ]; then exit 2; fi
+          selected=0
+          for choice in '${{ inputs.hls_audio_origin }}' '${{ inputs.hls_audio_installation }}' '${{ inputs.hls_audio_timing }}'; do
+            if [ "$choice" = true ]; then selected=$((selected + 1)); fi
+          done
+          test "$selected" -le 1
           timeout --kill-after=5s 600s python3 apps/player/scripts/test-hls-remaining.py
       - name: Preserve safe follow-on receipts
         if: always()
@@ -376,6 +386,10 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
+      - name: Verify integrated Player source after commit
+        if: ${{ always() && inputs.hls_audio_origin }}
+        run: timeout --kill-after=5s 300s make -C apps/player verify-changed BASE=origin/main
+
 
   library-owner:
     needs: selection-admission

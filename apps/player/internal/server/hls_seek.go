@@ -137,6 +137,9 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 	recipe = localHLSRecipe(resolved)
 	key, directory := hlsRecipeKey(item.ID, recipe), filepath.Join(manager.cache, hlsRecipeKey(item.ID, recipe))
 	path := filepath.Join(directory, name)
+	if _, err := os.Stat(path); err == nil && remainingAACOriginRecipe(item, recipe) {
+		return manager.remainingAACCacheAsset(ctx, item, recipe, name)
+	}
 	duration := manager.probe.duration(ctx, item)
 	manifest, err := manager.readHLSRecipeManifest(filepath.Dir(path))
 	if err != nil {

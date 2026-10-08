@@ -16,6 +16,21 @@ WORKFLOW = ROOT / '.github/workflows/layout-stability.yml'
 
 
 class LayoutSelectionTests(unittest.TestCase):
+    def test_audio_origin_cli_admits_only_its_closed_owner_and_no_effects(self):
+        valid = ["workflow_dispatch", "HLS", "true", "false", "false", "false", "primary", "protocol", "source-format", "true"]
+        result = self.selection(valid)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout, "validated layout selection: audio-origin\n")
+        for index, value in ((0, "pull_request"), (1, "Library"), (1, "HLS-navigation"),
+                             (1, "Q14"), (2, "false"), (3, "true"), (4, "true"),
+                             (9, ""), (9, "TRUE"), (9, "1"), (9, "true\n"), (9, "x" * 33)):
+            with self.subTest(index=index, value=value):
+                arguments = valid.copy()
+                arguments[index] = value
+                self.assertEqual(self.selection(arguments).returncode, 2)
+        for arguments in (valid[:-1], valid + ["false"]):
+            self.assertEqual(self.selection(arguments).returncode, 2)
+
     def test_fixed_navigation_lane_preserves_only_exact_webkit_recipe(self):
         source = WORKFLOW.read_text()
         block = source.split('  hls-navigation:\n', 1)[1]
@@ -81,7 +96,7 @@ class LayoutSelectionTests(unittest.TestCase):
                 self.assertNotIn('private controlled error', actual.stdout + actual.stderr)
 
     def test_navigation_rejects_every_ignored_override_before_effects(self):
-        valid = ['workflow_dispatch', 'HLS-navigation', 'false', 'false', 'false', 'false', 'primary', 'protocol', 'source-format']
+        valid = ['workflow_dispatch', 'HLS-navigation', 'false', 'false', 'false', 'false', 'primary', 'protocol', 'source-format', 'false']
         for index, value in ((2, 'true'), (3, 'true'), (4, 'true'), (5, 'true'),
                              (6, 'home'), (7, 'save-controls'), (8, 'primary')):
             with self.subTest(field=index):
@@ -99,18 +114,18 @@ class LayoutSelectionTests(unittest.TestCase):
                             'restore-source-format', 'restore-controls', 'restore-headers', 'restore-inspect-body')),
                 ('Q47', 8, ('source-format', 'primary', 'recovery', 'supersession', 'contracts'))):
             for option in options:
-                valid = ['workflow_dispatch', campaign, 'false', 'false', 'false', 'false', 'primary', 'protocol', 'source-format']
+                valid = ['workflow_dispatch', campaign, 'false', 'false', 'false', 'false', 'primary', 'protocol', 'source-format', 'false']
                 valid[field] = option
                 with self.subTest(campaign=campaign, option=option):
                     self.assertEqual(self.selection(valid).returncode, 0)
         for campaign in ('R06', 'Q14', 'Q09'):
-            valid = ['workflow_dispatch', campaign, 'false', 'false', 'false', 'true', 'primary', 'protocol', 'source-format']
+            valid = ['workflow_dispatch', campaign, 'false', 'false', 'false', 'true', 'primary', 'protocol', 'source-format', 'false']
             self.assertEqual(self.selection(valid).returncode, 0)
 
     def test_conflicting_subsuite_and_unused_metadata_reject_before_effects(self):
         for campaign, field, value in (('none', 5, 'true'), ('HLS', 5, 'true'), ('Q47', 5, 'true'),
                                        ('HLS', 6, 'home'), ('Q14', 7, 'save-controls'), ('R06', 8, 'primary')):
-            valid = ['workflow_dispatch', campaign, 'false', 'false', 'false', 'false', 'primary', 'protocol', 'source-format']
+            valid = ['workflow_dispatch', campaign, 'false', 'false', 'false', 'false', 'primary', 'protocol', 'source-format', 'false']
             valid[field] = value
             self.assertEqual(self.selection(valid).returncode, 2)
         for suite in ('restore-source-format', 'restore-controls', 'restore-headers', 'restore-inspect-body'):
@@ -128,7 +143,7 @@ class LayoutSelectionTests(unittest.TestCase):
                 block = re.split(r'\n  [a-z][a-z-]*:\n', source.split('  ' + job + ':\n', 1)[1], maxsplit=1)[0]
                 self.assertIn('    needs: selection-admission\n', block)
                 self.assertNotIn('always()', block.split('    steps:', 1)[0])
-        for flag in ('campaign_proof', 'hls_remaining_proof', 'hls_audio_timing', 'hls_audio_installation', 'architecture_metadata', 'campaign_q14_suite', 'campaign_r06_suite', 'campaign_q47_suite'):
+        for flag in ('campaign_proof', 'hls_remaining_proof', 'hls_audio_timing', 'hls_audio_installation', 'architecture_metadata', 'campaign_q14_suite', 'campaign_r06_suite', 'campaign_q47_suite', 'hls_audio_origin'):
             self.assertIn('inputs.' + flag, admission)
 
     def test_admission_inputs_trigger_pull_request_workflow(self):
@@ -156,10 +171,10 @@ class LayoutSelectionTests(unittest.TestCase):
             return result
 
     def test_supported_defaults_and_fixed_hls_modes(self):
-        selections = [(['pull_request', 'none', 'false', 'false', 'false', 'false', 'primary', 'protocol', 'source-format'], 'none')]
-        selections += [(['workflow_dispatch', campaign, 'false', 'false', 'false', 'false', 'primary', 'protocol', 'source-format'], campaign)
+        selections = [(['pull_request', 'none', 'false', 'false', 'false', 'false', 'primary', 'protocol', 'source-format', 'false'], 'none')]
+        selections += [(['workflow_dispatch', campaign, 'false', 'false', 'false', 'false', 'primary', 'protocol', 'source-format', 'false'], campaign)
                        for campaign in ('none', 'R06', 'Q14', 'Q09', 'Q47', 'HLS', 'HLS-navigation')]
-        selections += [(['workflow_dispatch', 'HLS', 'true', timing, installation, 'false', 'primary', 'protocol', 'source-format'], mode)
+        selections += [(['workflow_dispatch', 'HLS', 'true', timing, installation, 'false', 'primary', 'protocol', 'source-format', 'false'], mode)
                        for timing, installation, mode in (
                            ('false', 'false', 'remaining'), ('true', 'false', 'audio-timing'),
                            ('false', 'true', 'audio-installation'))]
@@ -171,14 +186,14 @@ class LayoutSelectionTests(unittest.TestCase):
                 self.assertEqual(result.stderr, '')
 
     def test_ignored_and_conflicting_flags_reject_without_effects(self):
-        selections = [['workflow_dispatch', campaign, *flags, 'false', 'primary', 'protocol', 'source-format']
+        selections = [['workflow_dispatch', campaign, *flags, 'false', 'primary', 'protocol', 'source-format', 'false']
                       for campaign in ('none', 'R06', 'Q14', 'Q09', 'Q47')
                       for flags in product(('false', 'true'), repeat=3) if 'true' in flags]
-        selections += [['workflow_dispatch', 'HLS', *flags, 'false', 'primary', 'protocol', 'source-format'] for flags in (
+        selections += [['workflow_dispatch', 'HLS', *flags, 'false', 'primary', 'protocol', 'source-format', 'false'] for flags in (
             ('false', 'true', 'false'), ('false', 'false', 'true'),
             ('false', 'true', 'true'), ('true', 'true', 'true'))]
-        selections += [['pull_request', 'HLS', 'false', 'false', 'false', 'false', 'primary', 'protocol', 'source-format'],
-                       ['pull_request', 'none', 'true', 'false', 'false', 'false', 'primary', 'protocol', 'source-format']]
+        selections += [['pull_request', 'HLS', 'false', 'false', 'false', 'false', 'primary', 'protocol', 'source-format', 'false'],
+                       ['pull_request', 'none', 'true', 'false', 'false', 'false', 'primary', 'protocol', 'source-format', 'false']]
         for arguments in selections:
             with self.subTest(arguments=arguments):
                 result = self.selection(arguments)
@@ -187,12 +202,12 @@ class LayoutSelectionTests(unittest.TestCase):
                 self.assertEqual(result.stderr, 'unsupported layout selection\n')
 
     def test_missing_extra_unknown_malformed_oversized_values_reject(self):
-        valid = ['workflow_dispatch', 'HLS', 'true', 'false', 'false', 'false', 'primary', 'protocol', 'source-format']
+        valid = ['workflow_dispatch', 'HLS', 'true', 'false', 'false', 'false', 'primary', 'protocol', 'source-format', 'false']
         selections = [[], valid[:-1], [*valid, 'false']]
         for index, values in enumerate((['', 'schedule', 'workflow_dispatch\n'],
                                         ['', 'hls', 'OTHER', 'x' * 4097],
                                         ['', 'TRUE', '1', 'false\n'],
-                                        ['', 'no', 'true\n'], ['', 'FALSE', 'null'], ['', 'TRUE', 'true\n'], ['', 'unknown', 'home\n'], ['', 'unknown', 'protocol\n'], ['', 'unknown', 'primary\n'])):
+                                        ['', 'no', 'true\n'], ['', 'FALSE', 'null'], ['', 'TRUE', 'true\n'], ['', 'unknown', 'home\n'], ['', 'unknown', 'protocol\n'], ['', 'unknown', 'primary\n'], ['', 'TRUE', '1', 'false\n'])):
             for value in values:
                 selections.append([*valid[:index], value, *valid[index + 1:]])
         for arguments in selections:

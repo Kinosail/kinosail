@@ -11,20 +11,21 @@ from hls_remaining_process import asset_snapshot, native_pcm, source_snapshot
 from hls_timeline_packets import manifest_facts
 
 
-def unfiltered_installation_control(run, directory, case, deadline):
+def unfiltered_installation_control(run, directory, case, control, deadline):
     result = {'result': 'unqualified', 'boundary': 'Source/actual-argv-bound isolated unfiltered control after public teardown.'}
     case['installedUnfilteredControl'] = result
     raw = bounded_bytes(directory / 'installed-recipe-private.json', 8192, 'installation_actual_recipe_bound')
     check(hashlib.sha256(raw).hexdigest() == case['installationCertificate']['installedArgvSHA256'], 'installation_actual_recipe_hash')
     arguments = json.loads(raw)
     position = arguments.index('-bsf:a')
-    check(arguments[position + 1] == 'noise=amount=0:drop=lt(pts\\,2048)', 'installation_exact_filter')
+    check(arguments[position + 1] == 'noise=amount=0:drop=lt(pts\\,382976)', 'installation_exact_filter')
     del arguments[position:position + 2]
     root = Path(arguments[-1]).parents[2]
     canonical, initialization = asset_snapshot(root / 'audio/init.mp4', 2 << 20)
     source = directory / 'media/Fixture.flac'
     before = source_snapshot(source)
     check(all(case['fixture'].get(k) == v for k, v in before.items()) and
+        control['fixture']['sha256'] == case['fixture']['sha256'] and
         initialization['sha256'] == case['initializationSHA256'], 'installation_raw_original_source_init')
     stage = directory / 'isolated-installation-unfiltered'
     stage.mkdir()
@@ -39,7 +40,8 @@ def unfiltered_installation_control(run, directory, case, deadline):
     manifest, names = manifest_facts(bounded_bytes(stage / 'index.m3u8', 65536, 'installation_raw_manifest_bound'))
     result.update(initialization=identity, manifest=manifest)
     check(fresh == canonical and manifest['endlist'] and [n for n, _ in names] ==
-        [v['name'] for v in case['retainedRefillFragments']], 'installation_raw_init_eof')
+        [f'segment-{n:05d}.m4s' for n in range(4, 10)] and
+        abs(manifest['durationSeconds'] - 10.026665) <= 1 / 48000 + 0.000001, 'installation_raw_init_eof')
     data = fresh
     for name, _ in names:
         data += bounded_bytes(stage / name, 8 << 20, 'installation_raw_fragment_bound')
@@ -47,12 +49,27 @@ def unfiltered_installation_control(run, directory, case, deadline):
     path = stage / 'unfiltered.mp4'
     path.write_bytes(data)
     result['packets'] = packet_evidence(run, path)
+    streams = json.loads(run(['ffprobe', '-v', 'error', '-select_streams', 'a:0', '-show_entries',
+        'stream=time_base', '-of', 'json', str(path)]))['streams']
+    check(len(streams) == 1 and streams[0]['time_base'] == '1/48000', 'installation_raw_output_timebase')
+    result.update(outputStreamTimeBase=streams[0]['time_base'],
+        relativeGridInference='Output PTS minus output offset scaled to48000 samples; encoder input timebase not directly measured.')
+    offset = case['installationCertificate']['outputOffsetSeconds']
+    check(all(math.isfinite(float(v['pts_time'])) and
+        abs((float(v['pts_time']) - offset) * 48000 - (n * 1024 - 1024)) <= 0.06 and
+        v['pts_time'] == v['dts_time'] and not v.get('side_data_list') and
+        0 < float(v['duration_time']) <= 1024 / 48000 + 0.000001
+        for n, v in enumerate(result['packets'])), 'installation_raw_grid')
     pcm, facts = native_pcm(path, deadline, stage)
     result.update(nativeEOF=facts, pcmSHA256=hashlib.sha256(pcm).hexdigest(),
-        exactFilteredSuffix=case['refillNativeEOF']['packets'] == result['packets'][3:],
+        exactFilteredSuffix=case['refillNativeEOF']['packets'] == result['packets'][375:],
+        exactUninterruptedPacketRowsMatch=result['packets'] == control['joinedPublicPacketPayloads'],
+        exactUninterruptedPCMSHA256Match=hashlib.sha256(pcm).hexdigest() == control['fullEOFNativeSamples']['publicSHA256'],
         sourceUnchanged=source_snapshot(source) == before,
         canonicalInitUnchanged=asset_snapshot(root / 'audio/init.mp4', 2 << 20)[1] == initialization)
-    check(len(result['packets']) == 98 and facts['completeEOFAccounted'] and result['exactFilteredSuffix']
+    check(len(result['packets']) == facts['frames'] == 470 and facts['samples'] == 481280 and
+        facts['completeEOFAccounted'] and facts['decodedClockOrderValid'] and result['exactFilteredSuffix']
+        and result['exactUninterruptedPacketRowsMatch'] and result['exactUninterruptedPCMSHA256Match']
         and result['sourceUnchanged'] and result['canonicalInitUnchanged'], 'installation_raw_suffix_or_identity')
     result['result'] = 'qualified'
 
@@ -73,9 +90,9 @@ def installed_refill(arguments, source, directory, output_directory=None):
         str(root / 'audio/segment-%05d.m4s'), str(root / '.seek-4/audio/index.m3u8')]
     check(arguments == expected, 'installation_closed_actual_refill')
     changed = list(arguments)
-    changed[changed.index('-ss') + 1] = '7.936'
-    changed[changed.index('-output_ts_offset') + 1] = str(8 - 2048 / 48000)
-    changed[changed.index('-f'):changed.index('-f')] = ['-bsf:a', 'noise=amount=0:drop=lt(pts\\,2048)']
+    changed[changed.index('-ss') + 1] = '0.000'
+    changed[changed.index('-output_ts_offset') + 1] = str(8 - 382976 / 48000)
+    changed[changed.index('-f'):changed.index('-f')] = ['-bsf:a', 'noise=amount=0:drop=lt(pts\\,382976)']
     raw, altered = json.dumps(arguments).encode(), json.dumps(changed).encode()
     check(len(raw) <= 8192 and len(altered) <= 8192, 'installation_argv_bound')
     target = Path(output_directory) if output_directory is not None else directory
@@ -83,8 +100,8 @@ def installed_refill(arguments, source, directory, output_directory=None):
     certificate = {'result': 'closed-transformation', 'transformationCount': 1,
         'sourceSHA256': eligibility['sourceSHA256'], 'selectedAudio': eligibility['audio'],
         'originalArgvSHA256': hashlib.sha256(raw).hexdigest(), 'installedArgvSHA256': hashlib.sha256(altered).hexdigest(),
-        'sourceSeekSeconds': 7.936, 'outputOffsetSeconds': 8 - 2048 / 48000,
-        'droppedPTSBelowSamples': 2048, 'startNumber': 4, 'onlyChangedOptions': ['ss', 'output_ts_offset', 'bsf:a']}
+        'sourceSeekSeconds': 0.0, 'warmupSourceSamples': 384000, 'outputOffsetSeconds': 8 - 382976 / 48000,
+        'droppedPTSBelowSamples': 382976, 'startNumber': 4, 'onlyChangedOptions': ['ss', 'output_ts_offset', 'bsf:a']}
     with (target / 'installation-certificate.json').open('x') as output:
         output.write(json.dumps(certificate))
     with (target / 'installed-recipe-private.json').open('xb') as output:
@@ -140,7 +157,7 @@ def installation_cases(run, journey, directory, receipt, deadline):
             0 < float(v['duration_time']) <= 1024 / 48000 + 0.000001 and not v.get('side_data_list') for v in packets) and
             all(float(a['pts_time']) < float(b['pts_time']) for a, b in zip(packets, packets[1:])) and
             all(math.isfinite(v) and abs(v) <= 1 / 48000 + 0.000001 for v in gaps), 'installation_complete_packet_clock')
-        unfiltered_installation_control(run, directory / 'installation-candidate', candidate, deadline)
+        unfiltered_installation_control(run, directory / 'installation-candidate', candidate, control, deadline)
         reference = bounded_bytes(directory / 'installation-candidate/Fixture.flac.pcm', 2 << 20, 'installation_pcm_bound')
         channel = lambda n: b''.join(reference[v + n:v + n + 2] for v in range(0, len(reference), 4))
         result['sourceChannelSHA256'] = [hashlib.sha256(channel(n)).hexdigest() for n in [0, 2]]
