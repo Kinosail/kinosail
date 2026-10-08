@@ -10,6 +10,7 @@ import { readControl } from '../control.mjs';
 import { decodedMotion } from '../frames.mjs';
 import { registerSecrets } from '../privacy.mjs';
 import { owner } from '../owner.mjs';
+import { installPhone } from '../install.mjs';
 const root = join(process.cwd(), '.e2e');
 const run = readControl();
 function frame(relative: string) {
@@ -46,7 +47,7 @@ test('phone approval, decoded movie, partial progress and saved connection survi
   expect(Number.isFinite(playback.duration) && playback.duration >= 15 && playback.duration <= 17).toBe(true);
   expect(movie.progress?.seconds ?? 0).toBe(0);
   expect(movie.progress?.watched ?? false).toBe(false);
-  await device.installApp(undefined, { reinstall: true });
+  await installPhone(device);
   await app.open();
   const address = platform === 'android' ? '10.0.2.2' : '127.0.0.1';
   await screen.getByLabel('Server address', { exact: true }).fill(`http://${address}:${run.identity.port}`);
