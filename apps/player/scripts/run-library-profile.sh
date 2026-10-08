@@ -2,8 +2,9 @@
 # Fixed full-media owner; only its resources belong to this invocation.
 set -euo pipefail
 umask 077
-if [[ $# != 3 ]]; then echo 'requires project, discovery and fresh output' >&2; exit 2; fi
-project="$1" discovery="$2" output="$3"
+if [[ $# != 3 && $# != 4 ]]; then echo 'requires project, discovery and fresh output' >&2; exit 2; fi
+project="$1" discovery="$2" output="$3" profile="${4-library-owner}"
+case "$profile" in library-owner|camera-fake) ;; *) exit 2 ;; esac
 case "$project" in chromium|firefox) scheme=http ;; webkit) scheme=https ;; *) exit 2 ;; esac
 engine="${CONTAINER_ENGINE:-docker}"
 if [[ "$engine" != docker && "$engine" != podman || "${KINOSAIL_TEST_IMAGE_READY:-}" != '' && "${KINOSAIL_TEST_IMAGE_READY:-}" != 1 ]]; then exit 2; fi
@@ -17,7 +18,7 @@ done < <(compgen -e)
 app="$(cd "$(dirname "$0")/.." && pwd)"
 repo="$(cd "$app/../.." && pwd)"
 helper="$repo/scripts/ci/run-populated-settings.py"
-selection=(--output "$output" --profile library-owner --project "$project" --state fresh --discovery "$discovery")
+selection=(--output "$output" --profile "$profile" --project "$project" --state fresh --discovery "$discovery")
 python3 "$helper" --url "$scheme://localhost:38127" "${selection[@]}" --admit-only
 source "$repo/scripts/ci/browser-fixture-tls.sh"
 export KINOSAIL_BROWSER_TEST=1 KINOSAIL_BROWSER_PROJECT="$project"

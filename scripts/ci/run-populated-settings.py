@@ -39,6 +39,7 @@ if library:
                 or any(sum(value.split('=', 1)[0] == flag for value in sys.argv[1:]) != 1
                        for flag in ('--url', '--output', '--profile', '--project', '--state', '--discovery'))
                 or sys.argv.count('--admit-only') > 1 or os.environ.get('PLAYWRIGHT_CHANNEL')
+                or 'KINOSAIL_CAMERA_PROFILE' in os.environ
                 or os.environ.get('KINOSAIL_BROWSER_PROJECT', args.project) != args.project):
             raise ValueError('fixed library selection required')
         discovery = read_proof(args.discovery)
@@ -79,7 +80,7 @@ if url.scheme == 'https':
 command = args.command[1:] if args.command[:1] == ['--'] else args.command
 if library:
     command = ['pnpm', '--dir', str(Path(__file__).resolve().parents[2] / 'apps/player/e2e'),
-               *playwright_arguments(args.project, False)]
+               *playwright_arguments(args.project, False, args.profile)]
 if not command:
     parser.error('requires a browser command')
 if args.required_title and any(not title.strip() or len(title) > 240 or '\n' in title or '\r' in title for title in args.required_title):
@@ -94,7 +95,7 @@ if args.required_title:
     receipt['requiredTitles'] = args.required_title
 if library:
     receipt.update(profile=args.profile, project=args.project, state=args.state,
-                   selection='closed46 library Owner identities',
+                   selection='closed19 synthetic camera identities' if args.profile == 'camera-fake' else 'closed46 library Owner identities',
                    discoverySHA256=hashlib.sha256(discovery).hexdigest())
 
 
@@ -169,6 +170,8 @@ try:
                PLAYWRIGHT_JSON_OUTPUT_FILE=str(args.output / f'results-{project}.json'))
     if library:
         env['KINOSAIL_BROWSER_PROJECT'] = project
+        if args.profile == 'camera-fake':
+            env['KINOSAIL_CAMERA_PROFILE'] = '1'
     exit_code = subprocess.run(command, env=env, check=False).returncode
     if exit_code == 0:
         result_path = args.output / f'results-{project}.json'

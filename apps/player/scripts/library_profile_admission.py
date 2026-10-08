@@ -59,23 +59,47 @@ CASES = (
 )
 
 
+# Exact synthetic scanner identities; no real camera or pairing evidence.
+CAMERA_CASES = (
+    ('quick-connect-scan.spec.ts', 'rejects QR content without approval: '),
+    ('quick-connect-scan.spec.ts', 'rejects QR content without approval: 12345'),
+    ('quick-connect-scan.spec.ts', 'rejects QR content without approval: 1234567'),
+    ('quick-connect-scan.spec.ts', 'rejects QR content without approval: 12a456'),
+    ('quick-connect-scan.spec.ts', 'rejects QR content without approval: １２３４５６'),
+    ('quick-connect-scan.spec.ts', 'rejects QR content without approval: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'),
+    ('quick-connect-scan.spec.ts', 'rejects QR content without approval: https://other.invalid/connect?code=123456'),
+    ('quick-connect-scan.spec.ts', 'rejects QR content without approval: javascript:123456'),
+    ('quick-connect-scan.spec.ts', 'rejects QR content without approval: /connect?code=123456'),
+    ('quick-connect-scan.spec.ts', 'rejects QR content without approval: SAME/connect?code=123456&code=234567'),
+    ('quick-connect-scan.spec.ts', 'rejects QR content without approval: SAME/connect?code=123456&other=x'),
+    ('quick-connect-scan.spec.ts', 'rejects QR content without approval: SAME/connect?code=123456#other'),
+    ('quick-connect-scan.spec.ts', 'rejects QR content without approval: SAME/other?code=123456'),
+    ('quick-connect-scan.spec.ts', 'rejects QR content without approval: SAME/connect?code=%31%32%33%34%35%36'),
+    ('quick-connect-scan.spec.ts', 'scan opens confirmation without approving: 123456'),
+    ('quick-connect-scan.spec.ts', 'scan opens confirmation without approving: SAME/connect?code=123456'),
+    ('quick-connect-scan.spec.ts', 'scan opens confirmation without approving: SAME/quick-connect?code=123456'),
+    ('quick-connect-scan.spec.ts', 'permission denial leaves manual code entry available'),
+    ('quick-connect-scan.spec.ts', 'stopping while permission is pending closes a late camera stream'),
+)
+
 def selection(arguments):
     if (not isinstance(arguments, (tuple, list)) or len(arguments) != 3
-            or arguments[0] != 'library-owner' or arguments[1] not in PROJECTS
+            or arguments[0] not in ('library-owner', 'camera-fake') or arguments[1] not in PROJECTS
             or arguments[2] != 'fresh'):
         raise ValueError('fixed library profile/project/fresh state required')
     return tuple(arguments)
 
 
-def playwright_arguments(project, discovery):
+def playwright_arguments(project, discovery, profile='library-owner'):
     """One exact selector for discovery and execution; no process effects."""
-    selection(('library-owner', project, 'fresh'))
+    selection((profile, project, 'fresh'))
+    cases = CAMERA_CASES if profile == 'camera-fake' else CASES
     if type(discovery) is not bool:
         raise ValueError('explicit discovery mode required')
-    arguments = ['exec', 'playwright', 'test', *sorted({file for file, _ in CASES}),
+    arguments = ['exec', 'playwright', 'test', *sorted({file for file, _ in cases}),
                  f'--project={project}', '--workers=1', '--retries=0', '--repeat-each=1',
                  '--grep', '(?:' + '|'.join(re.escape(title + (' @smoke' if file == 'test-instance-watched-departure.spec.ts' else ''))
-                                          for file, title in CASES) + ')$']
+                                          for file, title in cases) + ')$']
     return arguments + (['--list', '--reporter=json'] if discovery else [])
 
 
@@ -140,12 +164,13 @@ def admit(raw, profile, project, state, completed):
     try:
         value = json.loads(raw.decode('utf-8'), object_pairs_hook=unique_object,
                            parse_constant=invalid_number, parse_float=finite_number)
-        return admit_report(value, project, completed)
+        return admit_report(value, project, completed, CAMERA_CASES if profile == 'camera-fake' else CASES)
     except (KeyError, TypeError, AttributeError, UnicodeError, RecursionError) as error:
         raise ValueError('invalid fixed library proof') from error
 
 
-def admit_report(value, project, completed):
+def admit_report(value, project, completed, cases):
+    count = len(cases)
     if not isinstance(value, dict) or value['errors'] != []:
         raise ValueError('invalid proof')
     config = value['config']
@@ -157,8 +182,8 @@ def admit_report(value, project, completed):
             or type(configured['repeatEach']) is not int or configured['repeatEach'] != 1):
         raise ValueError('one first attempt required')
     stats = value['stats']
-    for name, count in (('expected', 46 if completed else 0), ('skipped', 0 if completed else 46), ('unexpected', 0), ('flaky', 0)):
-        if type(stats[name]) is not int or stats[name] != count:
+    for name, expected_count in (('expected', count if completed else 0), ('skipped', 0 if completed else count), ('unexpected', 0), ('flaky', 0)):
+        if type(stats[name]) is not int or stats[name] != expected_count:
             raise ValueError('exact result counts required')
     if not isinstance(value['suites'], list) or len(value['suites']) > 64:
         raise ValueError('bounded suite tree required')
@@ -173,19 +198,19 @@ def admit_report(value, project, completed):
         if not isinstance(title, str) or not 1 <= len(title) <= 240:
             raise ValueError('bounded title required')
         if depth == 0:
-            if title not in {file for file, _ in CASES}:
+            if title not in {file for file, _ in cases}:
                 raise ValueError('registered file suite required')
             root_file = title
         context = ancestors if depth == 0 else (*ancestors, title)
         children, specs = suite.get('suites', []), suite.get('specs', [])
-        if not isinstance(children, list) or not isinstance(specs, list) or len(children) > 64 or len(specs) > 46:
+        if not isinstance(children, list) or not isinstance(specs, list) or len(children) > 64 or len(specs) > count:
             raise ValueError('bounded cases required')
         pending.extend((child, context, depth + 1, root_file) for child in children)
         for spec in specs:
             identity = (spec['file'], ' › '.join((*context, spec['title'])), project)
             identifier = spec['id']
-            if (spec['file'] != root_file or identity[:2] not in CASES or identity in found or not isinstance(identifier, str)
-                    or not 1 <= len(identifier) <= 512 or identifier in identifiers or len(found) >= 46):
+            if (spec['file'] != root_file or identity[:2] not in cases or identity in found or not isinstance(identifier, str)
+                    or not 1 <= len(identifier) <= 512 or identifier in identifiers or len(found) >= count):
                 raise ValueError('exact unique identities required')
             tests = spec['tests']
             if not isinstance(tests, list) or len(tests) != 1:
@@ -204,16 +229,17 @@ def admit_report(value, project, completed):
                 raise ValueError('discovery is not execution')
             found.add(identity)
             identifiers.add(identifier)
-    if found != {(file, title, project) for file, title in CASES}:
-        raise ValueError('all46 fixed identities required')
+    if found != {(file, title, project) for file, title in cases}:
+        raise ValueError('all fixed identities required')
     return found
 
 
 if __name__ == '__main__':
     try:
-        if len(sys.argv) != 3 or sys.argv[2] not in ('discovery', 'execution'):
+        if len(sys.argv) not in (3, 4) or sys.argv[2] not in ('discovery', 'execution'):
             raise ValueError
-        arguments = playwright_arguments(sys.argv[1], sys.argv[2] == 'discovery')
+        arguments = playwright_arguments(sys.argv[1], sys.argv[2] == 'discovery',
+                                         sys.argv[3] if len(sys.argv) == 4 else 'library-owner')
     except (ValueError, TypeError):
         print('invalid fixed library selector', file=sys.stderr)
         raise SystemExit(2)

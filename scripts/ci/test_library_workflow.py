@@ -61,7 +61,7 @@ class LibraryWorkflowTests(unittest.TestCase):
             for option in ('--workers=1', '--retries=0', '--repeat-each=1'):
                 self.assertIn(option, execution)
         source = (ROOT / 'scripts/ci/run-populated-settings.py').read_text()
-        self.assertIn('playwright_arguments(args.project, False)', source)
+        self.assertIn('playwright_arguments(args.project, False, args.profile)', source)
         self.assertNotIn("re.escape(title) for _, title in CASES", source)
 
     def test_selector_keeps_declared_tag_suffix_without_admitting_changed_titles(self):

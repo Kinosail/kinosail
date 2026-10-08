@@ -67,7 +67,7 @@ class LibraryOwnerCallerTests(unittest.TestCase):
                 return subprocess.CompletedProcess(command, 0)
             self.assertEqual(command[:6], ['pnpm', '--dir', str(SOURCE.parents[2] / 'apps/player/e2e'),
                                           'exec', 'playwright', 'test'])
-            self.assertEqual(set(command[6:21]), {file for file, _ in load().CASES})
+            self.assertEqual(set(command[6:command.index('--project=' + self.project)]), {file for file, _ in load().CASES})
             self.assertIn('--project=' + self.project, command)
             self.assertIn('--workers=1', command)
             self.assertIn('--retries=0', command)
