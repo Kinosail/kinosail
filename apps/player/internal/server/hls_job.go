@@ -110,6 +110,9 @@ func (manager *hlsManager) hlsSettings(item library.Item, recipe hlsRecipe) (tra
 	if recipe.subtitlePath != "" {
 		options.Cache += ":subtitle=" + sourceVersion(recipe.subtitlePath)
 	}
+	if remainingAACOriginRecipe(item, recipe) {
+		options.Cache += ":aac-origin=1"
+	}
 	options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=15"
 	if err := playback.ValidateHLSSource(item.Path, options.Cache); err != nil {
 		return transcodeSettings{}, err

@@ -1,0 +1,49 @@
+name: R18 canonical metadata reconciliation
+on:
+  push:
+    branches: [codex/r18-canonical-metadata-hosted-20261008]
+permissions:
+  contents: read
+concurrency:
+  group: r18-canonical-metadata-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  metadata:
+    name: Generate pinned canonical source metadata
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - run: test ! -e .gates-disabled
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version-file: go.work
+          cache: false
+      - name: Regenerate and retain only canonical public source
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          GOOS: linux
+          GOARCH: amd64
+          CGO_ENABLED: "0"
+        run: |
+          python3 - <<'PY'
+          import base64, hashlib, json, pathlib, subprocess, sys
+          expected = {".github/workflows/layout-stability.yml":"f8826512b48c6c94f1743182c1aa97067812c021","apps/player/internal/server/hls.go":"6f6f0aaa18e7ddb26fb765c74a96f9b74f2f5be2","apps/player/internal/server/hls_job.go":"f5e5dff9721e7f6d17e6940651bf82d2d8ced83c","apps/player/internal/server/hls_playlist_session.go":"f0e0a5a7067d9f6265ee38c93574af1edf325170","apps/player/internal/server/hls_remaining_admission_test.go":"d1edfed27e818eda96a56627c34c5eefbd0a2890","apps/player/internal/server/hls_remaining_arguments.go":"2454ef8023b2f6bcf28f85cbd0966bb53c7d3871","apps/player/internal/server/hls_remaining_arguments_test.go":"e642595ac6050277912b83f9fc0ac5c4083785a7","apps/player/internal/server/hls_remaining_cache.go":"3e4b53541e3f20b7ca5f077cf562816d5fd36b12","apps/player/internal/server/hls_remaining_cache_test.go":"597c87ab7302a577272ca28170d3b144ef360b9b","apps/player/internal/server/hls_remaining_completion_test.go":"4ff8bb617b9f92e59895647397d373b9d8d904df","apps/player/internal/server/hls_remaining_delivery_test.go":"1c09c78f714d84d1fba04d7f14dc5573711cd2bb","apps/player/internal/server/hls_remaining_manifest_test.go":"5e6322c79338bdb99f713df6df3acfb4d5af2db0","apps/player/internal/server/hls_remaining_public_cache_completion_test.go":"612851903d3010bdf855a60a8885a461473e4caf","apps/player/internal/server/hls_remaining_public_cache_helpers_test.go":"55f7f3701d7c2a1f2083679566788512ad056f52","apps/player/internal/server/hls_remaining_public_cache_legacy_test.go":"3d2d9d4f454d0d324a9702e54261e97036c7800d","apps/player/internal/server/hls_remaining_public_cache_test.go":"e03861cbbb166a930ec20780b23568a9b6ef8c5c","apps/player/internal/server/hls_seek.go":"09e8a41e886e09a39d61262b706c73e39426d37d","apps/player/internal/server/startup_window.go":"dd1223014e0e53e5c6439a105bcb40af5ce21f27","apps/player/scripts/hls_remaining_installation.py":"e32e498376e914941897dd138669b12f02f0203e","apps/player/scripts/hls_remaining_origin.py":"ed8dde2601512e64a52d4de333229694f9e126cd","apps/player/scripts/test-hls-remaining.py":"03147bb33dfeda7c493d82d9d2935fc27fe0d4cf","packages/webassets/static/player-home-assistant-identity.js":"7a58488831d7954f57ad837c66472d224340dce2","packages/webassets/static/player-progress.js":"ad070f1c952311e26c0a0daf70c0eb4c8e755cf2","packages/webassets/webassets.go":"0d838b1ecec9884a23d9fc6bc9afb44f841bb533"}
+          for path, wanted in expected.items():
+              observed = subprocess.check_output(['git', 'rev-parse', 'HEAD:' + path], text=True).strip()
+              if observed != wanted: raise SystemExit('source ownership pin differs: ' + path)
+          source = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          for app in ('player', 'subtitles'):
+              subprocess.run([sys.executable, 'scripts/tooling/generate-architecture-explorer.py', app], check=True)
+              subprocess.run([sys.executable, 'scripts/tooling/generate-architecture-explorer.py', app, '--check'], check=True)
+              body = pathlib.Path('apps/' + app + '/docs/architecture-explorer/index.html').read_bytes()
+              if len(body) > 2 * 1024 * 1024: raise SystemExit('canonical source exceeds bound')
+              encoded = base64.b64encode(body).decode('ascii')
+              chunks = [encoded[i:i + 4096] for i in range(0, len(encoded), 4096)]
+              metadata = {'app': app, 'sourceCommit': source, 'bytes': len(body), 'sha256': hashlib.sha256(body).hexdigest(), 'blob': hashlib.sha1(('blob ' + str(len(body)) + '\0').encode() + body).hexdigest(), 'chunks': len(chunks)}
+              print('R18_CANONICAL_HEADER ' + json.dumps(metadata, separators=(',', ':')), flush=True)
+              for index, chunk in enumerate(chunks): print('R18_CANONICAL_CHUNK ' + app + ' ' + str(index) + ' ' + chunk, flush=True)
+              print('R18_CANONICAL_END ' + app, flush=True)
+          PY

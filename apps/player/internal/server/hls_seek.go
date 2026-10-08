@@ -138,7 +138,7 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 	key, directory := hlsRecipeKey(item.ID, recipe), filepath.Join(manager.cache, hlsRecipeKey(item.ID, recipe))
 	path := filepath.Join(directory, name)
 	if _, err := os.Stat(path); err == nil {
-		return nil
+		return manager.remainingAACCacheAsset(ctx, item, recipe, name)
 	}
 	duration := manager.probe.duration(ctx, item)
 	manifest, err := os.ReadFile(filepath.Join(filepath.Dir(path), "index.m3u8")) //nolint:gosec // The path passed the HLS file allowlist.
