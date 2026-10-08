@@ -11,7 +11,7 @@ export function firstPresentedFrame(value) {
   if(!keys(event,['kind','afterCommit','currentTime'])||!['seeking','seeked','waiting','playing','pause','emptied','loadedmetadata','error'].includes(event.kind)
    ||typeof event.afterCommit!=='boolean'||!finite(event.currentTime,60))throw new Error('invalid presented media event');
  }
- let first;
+ let first,settled;
  for(const frame of value.frames){
   if(!keys(frame,['afterCommit','frameIndex','mediaTime','currentTime','presentedFrames','paused','seeking','pending','visible'])
    ||!Number.isInteger(frame.frameIndex)||frame.frameIndex<0||frame.frameIndex>767
@@ -21,8 +21,10 @@ export function firstPresentedFrame(value) {
   if(!frame.afterCommit||!frame.visible)continue;
   if(frame.frameIndex>=720){if(!frame.pending)throw new Error('old window remained visible after seek');continue;}
   first ||= frame;
+  if(!frame.pending)settled ||= frame;
  }
  if(!first||first.frameIndex!==300)throw new Error('first visible new seek frame was not source frame 300');
+ if(!settled||settled.frameIndex!==300)throw new Error('first settled new seek frame was not source frame 300');
  return first;
 }
 export function installPresentedFrames() {

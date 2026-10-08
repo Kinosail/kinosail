@@ -78,8 +78,12 @@ export function registerPresentedSeek() {
    await expect.poll(() => video.evaluate(v => v.readyState), {timeout: 30_000}).toBeGreaterThanOrEqual(2);
    await expect.poll(() => rows.some(row => row.kind === 'playlist' && row.offset === 30 && row.status === 200)).toBe(true);
    await page.evaluate(() => (window as any).hlsPresented.prepare());
+   await page.locator('.media-stage').focus();
+   await expect(page.locator('.media-stage')).toBeFocused();
    if (await video.evaluate(v => v.paused)) await page.keyboard.press('Space');
    await expect.poll(() => page.evaluate(() => (window as any).hlsPresented.snapshot().frames.length)).toBeGreaterThan(0);
+   await page.locator('.media-stage').focus();
+   await expect(page.locator('.media-stage')).toBeFocused();
    await page.keyboard.press('Space');
    await expect.poll(() => video.evaluate(v => v.paused)).toBe(true);
    initial = await page.evaluate(() => (window as any).hlsPresented.snapshot());
@@ -104,8 +108,8 @@ export function registerPresentedSeek() {
    await page.mouse.up();
    await expect.poll(() => page.evaluate(() => (window as any).hlsPresented.snapshot().committed)).toBe(true);
    await expect.poll(() => rows.some(row => row.kind === 'playlist' && row.offset === 12.5 && row.status === 200), {timeout: 30_000}).toBe(true);
-   phase = 'first-presented-frame';
-   await expect.poll(() => page.evaluate(() => (window as any).hlsPresented.snapshot().frames.some((f: any) => f.afterCommit && f.visible && f.frameIndex < 720)), {timeout: 20_000}).toBe(true);
+   phase = 'first-settled-presented-frame';
+   await expect.poll(() => page.evaluate(() => (window as any).hlsPresented.snapshot().frames.some((f: any) => f.afterCommit && f.visible && !f.pending && f.frameIndex < 720)), {timeout: 20_000}).toBe(true);
    observation = await page.evaluate(() => (window as any).hlsPresented.snapshot());
    await page.evaluate(() => (window as any).hlsPresented.stop());
    const first = firstPresentedFrame(observation);
@@ -117,6 +121,8 @@ export function registerPresentedSeek() {
     return (persisted as {seconds: number}).seconds;
    }).toBeCloseTo(12.5, 1);
    await page.getByRole('button', {name: 'Close playback settings'}).click();
+   await page.locator('.media-stage').focus();
+   await expect(page.locator('.media-stage')).toBeFocused();
    if (await video.evaluate(v => v.paused)) await page.keyboard.press('Space');
    await expect.poll(() => video.evaluate(v => v.currentTime), {timeout: 20_000}).toBeGreaterThan(12.75);
    expect(await video.evaluate(v => v.error?.code || 0)).toBe(0);

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync,mkdirSync,writeFileSync,symlinkSync,chmodSync,rmSync} from 'node:fs';
+import {mkdtempSync,mkdirSync,writeFileSync,symlinkSync,chmodSync,rmSync,readFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {readPresentationState} from '../../apps/player/e2e/hls-presentation-state.mjs';
@@ -10,12 +10,12 @@ import {installPresentedFrames, firstPresentedFrame} from '../../apps/player/e2e
 // frames silently discarded; untrusted/change wrong value; callback overflow;
 // listeners/callback survive cleanup. These are fake DOM controls, not decoding.
 function peer(index=300, dimensions=[640,360]) {
- const listeners=new Map(),mediaListeners=new Map();let next,stopped=0,draws=0;
+ const listeners=new Map(),mediaListeners=new Map();let next,stopped=0,draws=0,pending=true;
  const bits=Array.from({length:10},(_,i)=>(index>>i)&1);
  const sample=(x,y)=>{const bit=x===200?0:x===232?1:bits[Math.floor((x-24)/16)];const shade=(y===56?1-bit:bit)*255;return {data:Uint8ClampedArray.from([shade,shade,shade,255])};};
  const video={videoWidth:dimensions[0],videoHeight:dimensions[1],readyState:4,currentTime:30,paused:true,seeking:false,
   requestVideoFrameCallback(fn){next=fn;return 1;},cancelVideoFrameCallback(){stopped++;},
-  getBoundingClientRect(){return {width:640,height:360};},closest(){return {classList:{contains(){return true;}}};},
+  getBoundingClientRect(){return {width:640,height:360};},closest(){return {classList:{contains(){return pending;}}};},
   addEventListener(n,f){mediaListeners.set(n,f);},removeEventListener(n){mediaListeners.delete(n);}};
  const range={value:'12.5',matches:s=>s==='[data-player-seek]'};
  globalThis.window={};globalThis.document={readyState:'complete',querySelector:s=>s==='video'?video:null,
@@ -24,7 +24,7 @@ function peer(index=300, dimensions=[640,360]) {
  globalThis.getComputedStyle=()=>({display:'block',visibility:'visible',opacity:'1'});
  const observer=installPresentedFrames();
  return {observer,video,range,listeners,mediaListeners,frame(time=12.5){video.currentTime=time;next(100,{mediaTime:time,presentedFrames:1});},
-  change(trusted=true){listeners.get('change')({isTrusted:trusted,target:range});},stats:()=>({stopped,draws})};
+  setPending(value){pending=value;},change(trusted=true){listeners.get('change')({isTrusted:trusted,target:range});},stats:()=>({stopped,draws})};
 }
 test('actual RVFC callback maps distinct target and preroll pixels, retaining pending frames',()=>{
  for(const index of [0,288,300,767]){
@@ -64,6 +64,7 @@ test('stop joins callback ownership and removes all listeners',()=>{
 test('first visible new-source frame cannot be replaced by a later correct marker',()=>{
  const p=peer();p.observer.prepare();p.frame(30);p.change();p.frame();
  const s=p.observer.snapshot();s.frames[0].frameIndex=720;
+ s.frames.push({...s.frames[1],pending:false});
  assert.equal(firstPresentedFrame(s).frameIndex,300);
  const preroll=structuredClone(s);preroll.frames.splice(1,0,{...s.frames[1],frameIndex:288});
  assert.throws(()=>firstPresentedFrame(preroll),/first visible/);
@@ -97,4 +98,24 @@ test('private Owner state requires owned private parent/file before context load
   rmSync(path);symlinkSync(join(root,'foreign'),path);assert.throws(()=>readPresentationState(run,root,'http://localhost:12345'));
   rmSync(path);writeFileSync(path,valid,{mode:0o600});chmodSync(run,0o755);assert.throws(()=>readPresentationState(run,root,'http://localhost:12345'));
  }finally{rmSync(root,{recursive:true,force:true});}
+});
+
+test('presentation requires the first settled new frame without losing pending frames',()=>{
+ const p=peer();p.observer.prepare();p.change();p.frame();
+ const pending=p.observer.snapshot();assert.throws(()=>firstPresentedFrame(pending),/settled/);
+ p.setPending(false);p.frame();const settled=p.observer.snapshot();
+ assert.deepEqual(settled.frames.map(f=>f.pending),[true,false]);
+ assert.equal(firstPresentedFrame(settled).frameIndex,300);
+ const wrong=structuredClone(settled);wrong.frames[1].frameIndex=288;
+ wrong.frames.push({...wrong.frames[1],frameIndex:300});
+ assert.throws(()=>firstPresentedFrame(wrong),/settled/);
+ const earlier=structuredClone(settled);earlier.frames[0].frameIndex=288;
+ assert.throws(()=>firstPresentedFrame(earlier),/first visible/);
+ p.observer.stop();assert.equal(p.stats().stopped,1);
+});
+test('real seek recipe waits for a settled callback and focuses the eligible public stage before Space',()=>{
+ const source=readFileSync(new URL('../../apps/player/e2e/hls-presented-seek.ts',import.meta.url),'utf8');
+ assert.match(source,/frames\.some\(\(f: any\) => f\.afterCommit && f\.visible && !f\.pending && f\.frameIndex < 720\)/);
+ assert.equal((source.match(/await page\.locator\('\.media-stage'\)\.focus\(\)/g)||[]).length,3);
+ assert.equal((source.match(/await page\.keyboard\.press\('Space'\)/g)||[]).length,3);
 });

@@ -49,8 +49,18 @@ class SDKGapWiring(unittest.TestCase):
     def test_gap_regression_controls_run_in_required_ci(self):
         source=(ROOT/'.github/workflows/app.yml').read_text()
         command=next(line for line in source.splitlines() if 'run: node --test scripts/testing/player-setup-navigation.test.mjs' in line)
+        marker='      - name: Verify Player SDK gap controls'
+        self.assertTrue(marker in source,"required SDK dependency-backed controls step missing")
+        controls=source.split(marker,1)[1].split('      - ',1)[0]
+        self.assertIn("if: inputs.app == 'player' && matrix.engine == 'chromium'",controls)
         for name in ['gap-launch.test.mjs','pdf-pixels.test.mjs','sdk-gap-boundary.test.mjs']:
-            self.assertEqual(command.count('scripts/e2e/tests/'+name),1)
+            path='scripts/e2e/tests/'+name
+            self.assertEqual(source.count(path),1)
+            self.assertEqual(controls.count(path),1)
+            self.assertNotIn(path,command)
+        self.assertEqual(source.count('pnpm --dir scripts/e2e install --frozen-lockfile'),1)
+        self.assertLess(source.index('pnpm --dir scripts/e2e install --frozen-lockfile'),source.index(marker))
+        self.assertLess(source.index(marker),source.index('      - name: Verify public flows with tester-army e2e'))
         self.assertTrue('command -v xvfb-run' in source,'closed gap execution contract required')
         self.assertTrue("DEEP: ${{ fromJSON(inputs.plan).deep && 'true' || 'false' }}" in source,'closed gap execution contract required')
         self.assertTrue('if [[ "$APP" == player && "$DEEP" == true ]]; then' in source,'closed gap execution contract required')
