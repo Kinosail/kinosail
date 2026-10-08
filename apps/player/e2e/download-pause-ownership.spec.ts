@@ -9,11 +9,11 @@ test.beforeEach(async ({browser}, info) => attachDownloadEnvironment(browser, in
 test("a paused peer offers Resume when the native job lock releases without another status", async ({page, context}, info) => {
   const peer = await downloadPeer();
   try {
-    const served = await openDownloadPage(page, peer.origin, "indexeddb");
+    const served = await openDownloadPage(page, peer.origin, "indexeddb", info);
     await page.locator("[data-download-device]").click();
     await expect.poll(async () => (await inspectDownload(page, served.jobID)).job?.bytes).toBe(downloadChunk);
     const second = await context.newPage();
-    await openDownloadPage(second, peer.origin, "indexeddb");
+    await openDownloadPage(second, peer.origin, "indexeddb", info);
     const barrier = await context.newPage();
     await barrier.goto(`${peer.origin}/api/v1/downloads/${served.jobID}`);
     await barrier.evaluate(id => {
@@ -45,11 +45,11 @@ for (const boundary of ["new-owner", "replaced-button", "profile", "pagehide", "
 if (!downloadServer) test(`a pending Resume wait preserves the ${boundary} boundary`, async ({page, context}, info) => {
   const peer = await downloadPeer();
   try {
-    const served = await openDownloadPage(page, peer.origin, "indexeddb");
+    const served = await openDownloadPage(page, peer.origin, "indexeddb", info);
     await page.locator("[data-download-device]").click();
     await expect.poll(async () => (await inspectDownload(page, served.jobID)).job?.bytes).toBe(downloadChunk);
     const second = await context.newPage();
-    await openDownloadPage(second, peer.origin, "indexeddb");
+    await openDownloadPage(second, peer.origin, "indexeddb", info);
     const barrier = await context.newPage();
     await barrier.goto(`${peer.origin}/api/v1/downloads/${served.jobID}`);
     await barrier.evaluate(id => {
@@ -104,12 +104,12 @@ test("same Viewer Profile in another tab preserves the transfer owner until expl
   const peer = await downloadPeer();
   let failed = false;
   try {
-    const served = await openDownloadPage(page, peer.origin, "indexeddb");
+    const served = await openDownloadPage(page, peer.origin, "indexeddb", info);
     await page.locator("[data-download-device]").click();
     await expect.poll(async () => (await inspectDownload(page, served.jobID)).job?.bytes).toBe(downloadChunk);
     const retained = await inspectDownload(page, served.jobID);
     const second = await context.newPage();
-    await openDownloadPage(second, peer.origin, "indexeddb");
+    await openDownloadPage(second, peer.origin, "indexeddb", info);
     await info.attach("same-profile-tab-peer", {body: JSON.stringify(await peer.stats()), contentType: "application/json"});
     await expect(page.locator("[data-download-device-status]")).toContainText("Keep this page open", {timeout: 2_000});
     expect((await peer.stats()).closed).toBe(0);
@@ -144,7 +144,7 @@ test("same Viewer Profile in another tab preserves the transfer owner until expl
 test("navigation interrupts the transfer and reload offers explicit Resume with verified data", async ({page, context}, info) => {
   const peer = await downloadPeer();
   try {
-    const served = await openDownloadPage(page, peer.origin, "indexeddb");
+    const served = await openDownloadPage(page, peer.origin, "indexeddb", info);
     await page.locator("[data-download-device]").click();
     await expect.poll(async () => (await inspectDownload(page, served.jobID)).job?.bytes).toBe(downloadChunk);
     const retained = await inspectDownload(page, served.jobID);
@@ -166,7 +166,7 @@ test("navigation interrupts the transfer and reload offers explicit Resume with 
 if (!downloadServer) test("isolated native profile boundary: changing Viewer Profile still cancels the old owner", async ({page, context}, info) => {
   const peer = await downloadPeer();
   try {
-    const served = await openDownloadPage(page, peer.origin, "indexeddb");
+    const served = await openDownloadPage(page, peer.origin, "indexeddb", info);
     await page.locator("[data-download-device]").click();
     await expect.poll(async () => (await inspectDownload(page, served.jobID)).job?.bytes).toBe(downloadChunk);
     const retained = await inspectDownload(page, served.jobID);

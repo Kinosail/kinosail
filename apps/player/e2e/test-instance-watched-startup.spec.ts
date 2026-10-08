@@ -38,7 +38,10 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
   }
   const media = page.locator("video");
   await expect.poll(() => page.evaluate(() => (window as unknown as {watchedStartup: {registered: number}}).watchedStartup.registered)).toBeGreaterThan(0);
-  await media.evaluate((video: HTMLVideoElement) => {video.muted = true; video.pause();});
+  // Settle native startup before pausing; the one-shot canplay autoplay can otherwise resume this fixture.
+  await media.evaluate((video: HTMLVideoElement) => {video.muted = true;});
+  await startPlaying(media);
+  await media.evaluate((video: HTMLVideoElement) => video.pause());
   await expect(media).toHaveJSProperty("paused", true);
   await startPlaying(media);
   await expect.poll(() => page.evaluate(() => (window as unknown as {watchedStartup: {pending: unknown[]}}).watchedStartup.pending.length)).toBeGreaterThan(0);

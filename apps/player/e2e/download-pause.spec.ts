@@ -24,7 +24,7 @@ test("bound download controls and their native service worker do not wait for an
     const image = document.createElement("img"); image.src = imageURL; image.alt = ""; document.body.append(image);
   }, {once: true}), imageURL);
   try {
-    const served = await openDownloadPage(page, peer.origin, "indexeddb");
+    const served = await openDownloadPage(page, peer.origin, "indexeddb", info, 3000);
     await expect(page.locator("[data-download-device]")).toBeEnabled();
     await expect.poll(() => images).toBeGreaterThanOrEqual(2);
     expect(await page.evaluate(() => document.readyState)).not.toBe("complete");
@@ -54,7 +54,7 @@ for (const width of downloadServer ? [390, 1440, 1920] : [storage === "opfs" ? 3
       await page.setViewportSize({width, height: width === 1920 ? 1080 : 844});
       const transport = await downloadPeer();
       peer = transport;
-      const served = await openDownloadPage(page, transport.origin, storage);
+      const served = await openDownloadPage(page, transport.origin, storage, info);
       await info.attach("served-download-bundle", {body: JSON.stringify(served), contentType: "application/json"});
       const button = page.locator("[data-download-device]"), status = page.locator("[data-download-device-status]");
       await expect(status).toHaveText("Not stored on this device");
