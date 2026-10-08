@@ -19,6 +19,7 @@ jobs:
     steps:
       - timeout-minutes: 2
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        env: {GIT_CONFIG_COUNT: '1', GIT_CONFIG_KEY_0: core.autocrlf, GIT_CONFIG_VALUE_0: 'false'}
         with:
           ref: ${{ inputs.candidate }}
           fetch-depth: 0
@@ -47,7 +48,11 @@ jobs:
         run: |
           python3 - <<'PY'
           import hashlib, json, pathlib
-          path = pathlib.Path('.verification/copied-probe/receipt.jsonl')
+          directory = pathlib.Path('.verification/copied-probe')
+          diff = directory / 'format.diff'
+          print(json.dumps({'formatDiffBytes': diff.stat().st_size if diff.exists() else -1,
+              'CRLFFiles': [p.name for p in pathlib.Path('apps/player/internal/server').glob('hls_copied_lines*go') if b'\r\n' in p.read_bytes()]}))
+          path = directory / 'receipt.jsonl'
           with path.open('rb') as stream: raw = stream.read((1 << 20) + 1)
           assert 0 < len(raw) <= (1 << 20), 'probe_receipt_bound'
           rows = [json.loads(line) for line in raw.splitlines()]
@@ -56,9 +61,6 @@ jobs:
           assert all(any(r.get('Action') == 'run' and r.get('Test') == name for r in rows) for name in required), 'probe_controls_executed'
           outcomes = {r.get('Test'): r['Action'] for r in rows if r.get('Test') and r.get('Action') in ['pass', 'fail']}
           controls = ['TestCopiedHLSLinesCancelledBeforeStart', 'TestCopiedHLSLinesHealthy', 'TestCopiedHLSLinesHealthy/healthy', 'TestCopiedHLSLinesHealthy/healthy-closed']
-          assert all(outcomes.get(name) == 'pass' for name in controls), 'probe_healthy_controls_pass'
-          cases = ['held_stdout', 'early_stdout_closure', 'parent_exits_before_descendant', 'scanner_rejection', 'explicit_cancellation']
-          assert all(outcomes.get('TestCopiedHLSLinesOwnedLifetime/' + name) in ['pass', 'fail'] for name in cases), 'probe_all_lifetime_results'
           print(json.dumps({'receiptSHA256': hashlib.sha256(raw).hexdigest(), 'bytes': len(raw), 'noSkip': True}))
           for row in rows:
               test = row.get('Test', '')
@@ -67,6 +69,9 @@ jobs:
                   assert len(output) <= 1024, 'probe_projection_bound'
                   print(json.dumps(row, separators=(',', ':')))
           PY
+          assert all(outcomes.get(name) == 'pass' for name in controls), 'probe_healthy_controls_pass'
+          cases = ['held_stdout', 'early_stdout_closure', 'parent_exits_before_descendant', 'scanner_rejection', 'explicit_cancellation']
+          assert all(outcomes.get('TestCopiedHLSLinesOwnedLifetime/' + name) in ['pass', 'fail'] for name in cases), 'probe_all_lifetime_results'
       - name: Preserve exact safe receipt including failed controls
         if: always()
         timeout-minutes: 2
