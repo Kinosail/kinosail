@@ -1,67 +1,80 @@
 package server
 
 import (
+	"context"
+	"crypto/sha256"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
 )
 
-func copiedHLSProbeArguments(mode string) []string {
-	return []string{"-test.run=^TestCopiedHLSProbeFixture$", "--", "kinosail-probe-fixture:" + mode}
+type copiedHLSBuildDiagnostic struct {
+	data []byte
+	size int
 }
 
-func TestCopiedHLSProbeFixture(t *testing.T) {
-	mode := ""
-	for _, argument := range os.Args {
-		if value, found := strings.CutPrefix(argument, "kinosail-probe-fixture:"); found {
-			mode = value
+func (output *copiedHLSBuildDiagnostic) Write(data []byte) (int, error) {
+	output.size += len(data)
+	output.data = append(output.data, data[:min(len(data), 4096-len(output.data))]...)
+	return len(data), nil
+}
+
+// Build the isolated real probe before starting the unchanged operation budget.
+func copiedHLSProbeExecutable(t *testing.T) string {
+	t.Helper()
+	source := copiedHLSProbeFileHash(t, "testdata/copied-probe-fixture/main.go", 128<<10)
+	if source != "7db25a5574a719da5f67e80ad7fb8b433017f70abe0319e72d3e051d318af971" {
+		t.Fatal("standalone probe fixture source changed")
+	}
+	name := "copied-probe-fixture"
+	if runtime.GOOS == "windows" {
+		name += ".exe"
+	}
+	executable := filepath.Join(t.TempDir(), name)
+	ctx, cancel := context.WithTimeout(t.Context(), 30*time.Second)
+	defer cancel()
+	var diagnostic copiedHLSBuildDiagnostic
+	command := exec.CommandContext(ctx, "go", "build", "-trimpath", "-o", executable, "./testdata/copied-probe-fixture")
+	command.Stdout, command.Stderr = &diagnostic, &diagnostic
+	if command.Run() != nil {
+		classes := []string{}
+		for _, class := range []string{"undefined:", "cannot use", "syntax error", "build constraints", "permission denied"} {
+			if strings.Contains(string(diagnostic.data), class) {
+				classes = append(classes, class)
+			}
 		}
+		t.Logf("nonkey owned probe fixture build bytes=%d retained=%d diagnostic-sha256=%x classes=%v", diagnostic.size, len(diagnostic.data), sha256.Sum256(diagnostic.data), classes)
+		t.Fatal("standalone configured probe fixture did not compile")
 	}
-	if mode == "" {
-		return
-	}
-	if mode == "linger" {
-		time.Sleep(3 * time.Second)
-		os.Exit(0)
-	}
-	if mode == "healthy" || mode == "healthy-closed" {
-		_, _ = fmt.Fprintln(os.Stdout, "probe-ready")
-		if mode == "healthy-closed" {
-			_ = os.Stdout.Close()
-			time.Sleep(30 * time.Millisecond)
-		}
-		os.Exit(0)
-	}
-	executable, err := os.Executable()
+	binary := copiedHLSProbeFileHash(t, executable, 8<<20)
+	t.Logf("nonkey owned probe fixture source-sha256=%s executable-sha256=%s", source, binary)
+	return executable
+}
+
+func copiedHLSProbeFileHash(t *testing.T, path string, maximum int64) string {
+	t.Helper()
+	file, err := os.Open(path)
 	if err != nil {
-		os.Exit(2)
+		t.Fatal("configured probe fixture is unavailable")
 	}
-	child := exec.Command(executable, copiedHLSProbeArguments("linger")...)
-	if mode != "closed" {
-		child.Stdout = os.Stdout
+	defer file.Close()
+	info, err := file.Stat()
+	if err != nil || !info.Mode().IsRegular() || info.Size() <= 0 || info.Size() > maximum {
+		t.Fatal("configured probe fixture exceeds its regular-file bound")
 	}
-	if child.Start() != nil {
-		os.Exit(3)
+	hash := sha256.New()
+	if count, err := io.Copy(hash, io.LimitReader(file, maximum+1)); err != nil || count != info.Size() {
+		t.Fatal("configured probe fixture changed while being bound")
 	}
-	_, _ = fmt.Fprintf(os.Stdout, "probe-started %d %d\n", os.Getpid(), child.Process.Pid)
-	if mode == "closed" {
-		_ = os.Stdout.Close()
-	}
-	if mode == "bytes" {
-		_, _ = fmt.Fprintln(os.Stdout, strings.Repeat("x", 64))
-	}
-	if mode == "lines" {
-		_, _ = fmt.Fprintln(os.Stdout, "probe-extra")
-	}
-	if mode == "orphan" {
-		time.Sleep(300 * time.Millisecond)
-		os.Exit(0)
-	}
-	if child.Wait() != nil {
-		os.Exit(4)
-	}
-	os.Exit(0)
+	return fmt.Sprintf("%x", hash.Sum(nil))
+}
+
+func copiedHLSProbeArguments(mode string) []string {
+	return []string{mode}
 }

@@ -12,6 +12,7 @@ import (
 // Populated media does not exercise probe descendants retaining or closing
 // stdout. These real configured-process controls protect that coverage gap.
 func TestCopiedHLSLinesOwnedLifetime(t *testing.T) {
+	executable := copiedHLSProbeExecutable(t)
 	cases := []struct {
 		name      string
 		mode      string
@@ -29,27 +30,23 @@ func TestCopiedHLSLinesOwnedLifetime(t *testing.T) {
 	}
 	for _, test := range cases {
 		t.Run(test.name, func(t *testing.T) {
-			verifyCopiedHLSProbeLifetime(t, test.mode, test.reject, test.cancel, test.wantError)
+			verifyCopiedHLSProbeLifetime(t, executable, test.mode, test.reject, test.cancel, test.wantError)
 		})
 	}
 }
 
-func verifyCopiedHLSProbeLifetime(t *testing.T, mode string, reject, cancelNow, wantError bool) {
+func verifyCopiedHLSProbeLifetime(t *testing.T, executable, mode string, reject, cancelNow, wantError bool) {
 	t.Helper()
 	started := time.Now()
 	ctx, cancel := context.WithTimeout(t.Context(), time.Second)
 	defer cancel()
-	executable, err := os.Executable()
-	if err != nil {
-		t.Fatal(err)
-	}
 	var processes []copiedHLSProbeObservation
 	markers, visits := 0, 0
 	maximumBytes, maximumLines := int64(1024), 1
 	if mode == "bytes" {
 		maximumBytes, maximumLines = 64, 2
 	}
-	err = copiedHLSLines(ctx, executable, copiedHLSProbeArguments(mode), maximumBytes, maximumLines, func(line string) error {
+	err := copiedHLSLines(ctx, executable, copiedHLSProbeArguments(mode), maximumBytes, maximumLines, func(line string) error {
 		visits++
 		fields := strings.Fields(line)
 		if len(fields) != 3 || fields[0] != "probe-started" || markers != 0 {
@@ -93,10 +90,7 @@ func verifyCopiedHLSProbeLifetime(t *testing.T, mode string, reject, cancelNow, 
 }
 
 func TestCopiedHLSLinesHealthy(t *testing.T) {
-	executable, err := os.Executable()
-	if err != nil {
-		t.Fatal(err)
-	}
+	executable := copiedHLSProbeExecutable(t)
 	for _, mode := range []string{"healthy", "healthy-closed"} {
 		t.Run(mode, func(t *testing.T) {
 			ctx, cancel := context.WithTimeout(t.Context(), 2*time.Second)
@@ -119,14 +113,11 @@ func TestCopiedHLSLinesHealthy(t *testing.T) {
 }
 
 func TestCopiedHLSLinesCancelledBeforeStart(t *testing.T) {
-	executable, err := os.Executable()
-	if err != nil {
-		t.Fatal(err)
-	}
+	executable := copiedHLSProbeExecutable(t)
 	ctx, cancel := context.WithCancel(t.Context())
 	cancel()
 	lines := 0
-	err = copiedHLSLines(ctx, executable, copiedHLSProbeArguments("healthy"), 1024, 1, func(string) error {
+	err := copiedHLSLines(ctx, executable, copiedHLSProbeArguments("healthy"), 1024, 1, func(string) error {
 		lines++
 		return nil
 	})
@@ -186,14 +177,11 @@ func TestCopiedHLSLinesMissingExecutable(t *testing.T) {
 }
 
 func TestCopiedHLSLinesInsufficientBudget(t *testing.T) {
-	executable, err := os.Executable()
-	if err != nil {
-		t.Fatal(err)
-	}
+	executable := copiedHLSProbeExecutable(t)
 	ctx, cancel := context.WithTimeout(t.Context(), 50*time.Millisecond)
 	defer cancel()
 	lines := 0
-	err = copiedHLSLines(ctx, executable, copiedHLSProbeArguments("healthy"), 1024, 1, func(string) error {
+	err := copiedHLSLines(ctx, executable, copiedHLSProbeArguments("healthy"), 1024, 1, func(string) error {
 		lines++
 		return nil
 	})
@@ -203,14 +191,11 @@ func TestCopiedHLSLinesInsufficientBudget(t *testing.T) {
 }
 
 func TestCopiedHLSLinesImmediateExit(t *testing.T) {
-	executable, err := os.Executable()
-	if err != nil {
-		t.Fatal(err)
-	}
+	executable := copiedHLSProbeExecutable(t)
 	for range 16 {
 		ctx, cancel := context.WithTimeout(t.Context(), 2*time.Second)
 		lines := 0
-		err = copiedHLSLines(ctx, executable, copiedHLSProbeArguments("healthy"), 1024, 1, func(line string) error {
+		err := copiedHLSLines(ctx, executable, copiedHLSProbeArguments("healthy"), 1024, 1, func(line string) error {
 			if line != "probe-ready" {
 				return errCopiedHLSIndex
 			}
