@@ -11,7 +11,7 @@ import (
 // This exception recognizes the observed four-cut AAC clock, not source EOF.
 // Inspect the physical manifest before ordinary VOD projection adds absent cuts.
 func remainingRoundedAACStartup(manifest []byte, playableDuration float64) ([]string, bool, bool) {
-	if invalidHLSSegmentDuration(playableDuration) || playableDuration <= 8.000002 {
+	if math.IsNaN(playableDuration) || playableDuration <= 8.000002 || playableDuration > 7*24*60*60 {
 		return nil, false, false
 	}
 	if !playback.PlaylistHas(manifest, "#EXT-X-PLAYLIST-TYPE:EVENT") {
