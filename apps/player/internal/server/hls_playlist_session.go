@@ -50,6 +50,10 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 	}
 	path := filepath.Join(manager.cache, key, localName)
 	projection := manager.recipePlaylistProjection(request.Context(), item, recipe, key, localName)
+	projection, ready := manager.remainingColdAACResponse(writer, request, item, recipe, key, localName, duration, projection)
+	if !ready {
+		return
+	}
 	if filepath.Ext(name) == ".m3u8" && serveHLSPlaylistWithSession(writer, request, path, start, hlsPlaybackDuration(recipe, duration), projection) {
 		return
 	}
