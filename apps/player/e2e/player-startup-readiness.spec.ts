@@ -198,7 +198,7 @@ for (const pauseDelivery of ["immediate", "queued pause"]) test(`Safari startup 
   await video.evaluate((element: HTMLVideoElement) => element.pause());
   await expect.poll(() => saves.length).toBe(1);
   expect(new URLSearchParams(saves[0]).get("seconds")).toBe("25");
-  expect(new URLSearchParams(saves[0]).has("watched")).toBe(false);
+  expect(new URLSearchParams(saves[0]).get("watched")).toBe("false");
 });
 
 for (const networkState of [1, 2]) test(`Safari startup shows Play when even muted preparation is rejected at networkState ${networkState}`, async ({ page }) => {

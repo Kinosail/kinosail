@@ -4,6 +4,8 @@ import {createHash} from "node:crypto";
 import {configureTestInstance, login} from "./test-instance-helpers";
 
 configureTestInstance();
+// These HTTP fault controls require native page requests to remain interceptable.
+test.use({serviceWorkers: "block"});
 type Track = {id: string; title: string; artist: string; album: string; track: number; year: string; stream: string; artwork: string};
 type ActionWindow = Window & {r08Actions: Partial<Record<MediaSessionAction, MediaSessionActionHandler | null>>};
 const fixtureAlbum = "R08 Fictional Session";

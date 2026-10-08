@@ -2,6 +2,7 @@ import { expect, type Browser, type Page, type TestInfo } from "@playwright/test
 import { createServer, type ServerResponse } from "node:http";
 import { createHash } from "node:crypto";
 import { downloadsSource, serviceWorkerSource, readStaticSource } from "./static-sources";
+import {gotoDownloadPage} from "./download-pause-navigation";
 
 export const downloadChunk = 8 * 1024 * 1024;
 export const downloadBytes = Buffer.concat([Buffer.alloc(downloadChunk, 1), Buffer.alloc(downloadChunk, 2), Buffer.alloc(31, 3)]);
@@ -21,8 +22,8 @@ export async function attachDownloadEnvironment(browser: Browser, info: TestInfo
   }), contentType: "application/json"});
 }
 
-export async function downloadPeer() {
-  if (downloadServer) {
+export async function downloadPeer(forceIsolated = false, documentResponse?: () => {status: number; location?: string; delayMs?: number} | undefined) {
+  if (downloadServer && !forceIsolated) {
     expect((await fetch(`${downloadServer}/__download-pause?reset=1`, {method: "POST"})).ok).toBe(true);
     return {
       origin: downloadServer,
@@ -34,7 +35,7 @@ export async function downloadPeer() {
   const ranges: number[] = [];
   let closed = 0, removals = 0, held = false;
   const shell = `<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="/static/app.css"><script defer src="/static/downloads.js?v=baseline"></script></head><body class="detail-page" data-viewer-profile="profile"><main class="detail-shell downloads-shell" id="downloads"><h1>Offline downloads</h1><p>Prepared files are private to this Viewer Profile.</p><article class="download-job" data-download-job="${id}"><h2>Fictional Range Fixture</h2><p>original · Ready to download</p><div class="download-device-actions"><button class="mode" type="button" data-download-device data-download-focus="device" data-job-id="${id}" data-item-id="${item}" data-title="Fictional Range Fixture" data-quality="original">Download to this device</button><a class="mode" data-download-play hidden href="/offline?job=${id}">Play offline</a><span role="status" aria-live="polite" data-download-device-status>Not stored on this device</span></div><details><summary>Remove download</summary><form method="post" action="/offline-downloads/${id}/remove"><button class="danger">Remove download</button></form></details></article></main></body></html>`;
-  const web = createServer((request, response) => {
+  const web = createServer(async (request, response) => {
     const path = new URL(request.url!, "http://localhost").pathname;
     if (request.method === "DELETE" || path.endsWith("/remove")) { removals++; response.writeHead(405); response.end(); return; }
     if (path === `/api/v1/downloads/${id}/file`) {
@@ -71,6 +72,12 @@ export async function downloadPeer() {
       response.end(); return;
     }
     const otherProfile = new URL(request.url!, "http://localhost").searchParams.get("profile") === "other";
+    const override = path === "/offline-downloads" ? documentResponse?.() : undefined;
+    if (override) {
+      if (override.delayMs) await new Promise(resolve => setTimeout(resolve, override.delayMs));
+      response.statusCode = override.status;
+      if (override.location) response.setHeader("Location", override.location);
+    }
     response.setHeader("Content-Type", "text/html"); response.end(otherProfile ? shell.replace('data-viewer-profile="profile"', 'data-viewer-profile="other"') : shell);
   });
   await new Promise<void>((resolve) => web.listen(0, "127.0.0.1", resolve));
@@ -89,11 +96,11 @@ export async function downloadPeer() {
   };
 }
 
-export async function openDownloadPage(page: Page, origin: string, storage: "opfs" | "indexeddb") {
+export async function openDownloadPage(page: Page, origin: string, storage: "opfs" | "indexeddb", info: TestInfo, timeout = 10_000) {
   if (storage === "indexeddb") await page.addInitScript(() => Object.defineProperty(navigator.storage, "getDirectory", {configurable: true, value: undefined}));
-  await page.goto(`${origin}/offline-downloads`);
+  await gotoDownloadPage(page, origin, info, timeout);
   await expect.poll(() => page.evaluate(() => navigator.serviceWorker.controller?.scriptURL)).toBe(`${origin}/service-worker.js?v=55`);
-  await page.reload();
+  await page.reload({waitUntil: "commit"});
   const button = page.locator("[data-download-device]");
   await expect(button).toHaveAttribute("data-bound", "true");
   const jobID = await button.getAttribute("data-job-id");
@@ -125,7 +132,17 @@ export async function inspectDownload(page: Page, jobID: string) {
     let file: File | undefined;
     if (records.job?.storage === "opfs") file = await (await (await navigator.storage.getDirectory()).getFileHandle(id)).getFile();
     const chunks = await Promise.all(records.chunks.sort((a, b) => a.offset - b.offset).map(async (chunk) => ({offset: chunk.offset, length: chunk.length, sha256: chunk.sha256, actual: await hash(file ? await file.slice(chunk.offset, chunk.offset + chunk.length).arrayBuffer() : chunk.data!)})));
-    const bytes = file ? await file.arrayBuffer() : await new Blob(records.chunks.sort((a, b) => a.offset - b.offset).map((chunk) => chunk.data!)).arrayBuffer();
+    const assembled = new Uint8Array(records.chunks.reduce((size, chunk) => size + chunk.length, 0));
+    let offset = 0;
+    if (!file) for (const chunk of records.chunks) {
+      expectLength(chunk.data, chunk.length);
+      assembled.set(new Uint8Array(chunk.data!), offset);
+      offset += chunk.length;
+    }
+    function expectLength(data: ArrayBuffer | undefined, length: number) {
+      if (!data || data.byteLength !== length) throw new Error("Stored fixture block has an invalid length");
+    }
+    const bytes = file ? await file.arrayBuffer() : assembled.buffer;
     const locks = await navigator.locks.query();
     return {job: records.job, chunks, fileSize: bytes.byteLength, fileHash: await hash(bytes), locks: locks.held.map((lock) => lock.name)};
   }, jobID);

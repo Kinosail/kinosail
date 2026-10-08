@@ -161,6 +161,8 @@ final class FixtureURLProtocol: URLProtocol, @unchecked Sendable {
         let status: Int
         let headers: [String: String]
         var requests: [URLRequest] = []
+        var requestAdmissions: [ContinuousClock.Instant] = []
+        var requestArrivals: [ContinuousClock.Instant] = []
         var routes: [String: Entry] = [:]
         var sequence: [Entry] = []
         var hold = false
@@ -168,12 +170,18 @@ final class FixtureURLProtocol: URLProtocol, @unchecked Sendable {
         var failure: URLError.Code?
     }
     static let entries = Mutex<[String: Entry]>([:])
-    override class func canInit(with request: URLRequest) -> Bool { true }
+    override class func canInit(with request: URLRequest) -> Bool {
+        if let host = request.url?.host {
+            entries.withLock { $0[host]?.requestAdmissions.append(ContinuousClock.now) }
+        }
+        return true
+    }
     override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
     override func startLoading() {
         guard let url = request.url, let host = url.host else { return }
         let entry = Self.entries.withLock { values -> Entry? in
             values[host]?.requests.append(request)
+            values[host]?.requestArrivals.append(ContinuousClock.now)
             if values[host]?.sequence.isEmpty == false { return values[host]?.sequence.removeFirst() }
             return values[host]?.routes[url.path] ?? values[host]
         }

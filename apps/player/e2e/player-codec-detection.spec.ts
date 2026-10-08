@@ -7,7 +7,7 @@ test("native HLS negotiates codecs supported for file playback", async ({ page }
     requestedCodecs = new URL(route.request().url()).searchParams.get("videoCodecs") || "";
     return route.fulfill({ json: {} });
   });
-  await startDirectPlayer(page, { preloadHls: false, compatibleMode: "transcode" });
+  await startDirectPlayer(page, { preloadHls: false, compatibleMode: "transcode", safari: true });
   await page.evaluate(() => {
     const video = document.querySelector("video")!;
     video.dataset.playbackApi = "/api/v1/items/movie/playback";

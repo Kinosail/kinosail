@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"strings"
 
 	"github.com/MikeO7/kinosail/packages/playback"
 )
@@ -21,6 +22,14 @@ func cacheFresh(playlist, source, transcoder string) bool {
 func seekCacheFresh(directory, source, transcoder string) bool {
 	return playback.SeekCacheFresh(directory, source, transcoder)
 }
+
+func hlsURIWithQuery(uri, query string) string {
+	if strings.Contains(uri, "?") {
+		return uri + "&" + query
+	}
+	return uri + "?" + query
+}
+
 func sourceVersion(path string) string          { return playback.SourceVersion(path) }
 func finalizePlaylist(playlist string) error    { return playback.FinalizePlaylist(playlist) }
 func hlsFile(name string) bool                  { return playback.HLSFile(name) }

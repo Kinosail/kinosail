@@ -38,7 +38,25 @@ struct PhotoAuthorizationJourneys {
             window.rootViewController = UIHostingController(rootView: NavigationStack { PhotoScreen(itemID: "photo") }.environment(session))
             window.isHidden = false
             defer { window.isHidden = true; window.rootViewController = nil }
-            try await until("The saved photo must render while its refresh is pending") { showsPhoto(window) && fixture.photoReads == 2 }
+            let pendingBegan = ContinuousClock.now
+            var pendingChecks = 0, lastPhotoReads = 0
+            var lastPhotoShown = false
+            do {
+                try await until("The saved photo must render while its refresh is pending") {
+                    pendingChecks += 1
+                    lastPhotoShown = showsPhoto(window)
+                    lastPhotoReads = fixture.photoReads
+                    return lastPhotoShown && lastPhotoReads == 2
+                }
+            } catch {
+                let elapsed = pendingBegan.duration(to: ContinuousClock.now).components
+                let receipt: [String: Any] = ["status": status, "checks": pendingChecks,
+                    "photoReads": lastPhotoReads, "photoShown": lastPhotoShown, "boundMs": 5000,
+                    "elapsedMs": Double(elapsed.seconds) * 1000 + Double(elapsed.attoseconds) / 1e15]
+                if let data = try? JSONSerialization.data(withJSONObject: receipt, options: [.sortedKeys]),
+                   let text = String(data: data, encoding: .utf8) { print("PHOTO_AUTHORIZATION_PENDING \(text)") }
+                throw error
+            }
             try snapshot(window, name: "photo-\(status)-saved")
             fixture.respondPhoto(status: status)
             if status == 503 {

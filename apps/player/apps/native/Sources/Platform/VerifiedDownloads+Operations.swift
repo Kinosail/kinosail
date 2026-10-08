@@ -9,8 +9,7 @@
     }
 
     func snapshot(_ scope: String) async throws -> [VerifiedDownloadSnapshot] {
-      try await ready {
-        try self.requireScope(scope)
+      try await ready(scope: scope) {
         let preparing = self.plans.values.filter { $0.scope == scope }.map {
           VerifiedDownloadSnapshot(key: $0.key, bytes: 0, total: 0, status: $0.status, message: $0.error, manifest: nil)
         }
@@ -22,8 +21,7 @@
     }
 
     func pause(_ scope: String, key: String) async throws {
-      try await ready {
-        try self.requireScope(scope)
+      try await ready(scope: scope) {
         guard OfflineManifest.digest(scope), OfflineManifest.digest(key) else { throw self.failure() }
         if var plan = self.plans[scope + "/" + key] {
           self.cancelPlan(plan.id); plan.status = "paused"; plan.error = ""; try self.savePlan(plan)
@@ -39,8 +37,7 @@
     }
 
     func remove(_ scope: String, key: String) async throws {
-      try await ready {
-        try self.requireScope(scope)
+      try await ready(scope: scope) {
         guard OfflineManifest.digest(scope), OfflineManifest.digest(key) else { throw self.failure() }
         let id = scope + "/" + key
         self.cancelPlan(id); self.cancel(id)
@@ -68,8 +65,7 @@
     }
 
     func resume(_ scope: String, key: String, wifiOnly: Bool, quota: Int64) async throws {
-      try await ready {
-        try self.requireScope(scope)
+      try await ready(scope: scope) {
         _ = try Input.hex(key, count: 64)
         let id = scope + "/" + key
         guard quota == 0 || (1_073_741_824...9_007_199_254_740_991).contains(quota) else { throw ClientError.invalidInput("The download storage limit is invalid.") }
@@ -91,8 +87,7 @@
     }
 
     func file(_ scope: String, key: String) async throws -> URL {
-      try await ready {
-        try self.requireScope(scope)
+      try await ready(scope: scope) {
         _ = try Input.hex(key, count: 64)
         guard let job = self.jobs[scope + "/" + key], job.status == "complete" else { throw ClientError.invalidInput("This download has not passed verification.") }
         let url = self.store.media(job)
@@ -105,8 +100,7 @@
     }
 
     func check(_ scope: String, key: String) async throws {
-      try await ready {
-        try self.requireScope(scope)
+      try await ready(scope: scope) {
         guard OfflineManifest.digest(scope), OfflineManifest.digest(key) else { throw self.failure() }
         if let job = self.jobs[scope + "/" + key], job.status == "complete" {
           if self.verifiedFiles[job.id] != (try? DownloadFileStamp(self.store.media(job))) { self.finish(job) }
@@ -137,8 +131,7 @@
     }
 
     func updatePolicy(scope: String, wifiOnly: Bool, quota: Int64) async throws {
-      try await ready {
-        try self.requireScope(scope)
+      try await ready(scope: scope) {
         try self.applyPolicy(scope: scope, wifiOnly: wifiOnly, quota: quota)
         self.pump()
       }
@@ -168,8 +161,7 @@
     }
 
     func enqueuePreparation(scope: String, key: String, uri: String, kind: String, wifiOnly: Bool, quota: Int64) async throws {
-      try await ready {
-        try self.requireScope(scope)
+      try await ready(scope: scope) {
         var plan = DownloadPreparation(scope: scope, key: key, uri: uri, kind: kind, wifiOnly: wifiOnly, quota: quota, status: "preparing", error: "")
         plan.startedAt = Date()
         try plan.validate()
