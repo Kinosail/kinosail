@@ -29,7 +29,7 @@ network="kinosail-library-$suffix" container="kinosail-library-$suffix"
 network_created=0 container_started=0
 volumes=()
 cleanup() {
-  local status=$? failed=0 volume
+  local status="${1:-$?}" failed=0 volume
   trap - EXIT
   set +e
   if [[ "$container_started" == 1 ]]; then "$engine" rm --force "$container" >/dev/null || failed=1; fi
@@ -91,7 +91,8 @@ done
 [[ "$healthy" == 1 ]]
 identifier="$("$engine" inspect --format '{{.Id}}' "$container")"
 trust_browser_fixture_tls "$engine" "$identifier" "$workspace" "$suffix"
-export KINOSAIL_TEST_REVISION="$(git -C "$repo" rev-parse HEAD)"
+KINOSAIL_TEST_REVISION="$(git -C "$repo" rev-parse HEAD)"
+export KINOSAIL_TEST_REVISION
 set +e
 python3 "$helper" --url "$base" "${selection[@]}"
 status=$?
@@ -115,4 +116,4 @@ for path in files:
 pathlib.Path(sys.argv[2]).write_text(json.dumps(records, indent=2) + '\n')
 PY
 fi
-exit "$status"
+cleanup "$status"

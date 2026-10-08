@@ -29,7 +29,7 @@ def report(cases, project='webkit', completed=True):
             'config': {'workers': 1, 'shard': None, 'projects': [
                 {'name': project, 'retries': 0, 'repeatEach': 1}]},
             'stats': {'expected': len(cases) if completed else 0,
-                      'skipped': 0, 'unexpected': 0, 'flaky': 0}}
+                      'skipped': 0 if completed else len(cases), 'unexpected': 0, 'flaky': 0}}
 
 
 class LibraryAdmissionTests(unittest.TestCase):
@@ -47,6 +47,27 @@ class LibraryAdmissionTests(unittest.TestCase):
                 with self.subTest(project=project, completed=completed):
                     self.assertEqual(self.admit(report(self.module.CASES, project, completed), project, completed),
                                      {(file, title, project) for file, title in self.module.CASES})
+
+    def test_discovery_skips_are_collection_only_and_require_all46(self):
+        full = report(self.module.CASES, completed=False)
+        with patch('subprocess.run', side_effect=AssertionError('process effect')), \
+                patch('os.mkdir', side_effect=AssertionError('output effect')):
+            self.assertEqual(len(self.admit(full, completed=False)), 46)
+            missing = report(self.module.CASES[:-2], completed=False)
+            with self.assertRaises(ValueError):
+                self.admit(missing, completed=False)
+            for count in (0, 45, 47, True):
+                malformed = copy.deepcopy(full)
+                malformed['stats']['skipped'] = count
+                with self.subTest(count=count), self.assertRaises(ValueError):
+                    self.admit(malformed, completed=False)
+            full['suites'][0]['specs'][0]['tests'][0]['results'] = [{'status': 'passed', 'retry': 0, 'errors': []}]
+            with self.assertRaises(ValueError):
+                self.admit(full, completed=False)
+        execution = report(self.module.CASES)
+        execution['stats']['skipped'] = 46
+        with self.assertRaises(ValueError):
+            self.admit(execution)
 
     def test_missing_unknown_wrong_type_oversized_selection_has_no_effects(self):
         good = ['library-owner', 'webkit', 'fresh']

@@ -55,13 +55,29 @@ class LibraryWorkflowTests(unittest.TestCase):
             self.assertEqual(set(files), {file for file, _ in module.CASES})
             self.assertEqual(len(files), 15)
             grep = execution[execution.index('--grep') + 1]
-            self.assertTrue(all(re.search(grep, title) for _, title in module.CASES))
+            self.assertTrue(all(re.search(grep, title + (' @smoke' if file == 'test-instance-watched-departure.spec.ts' else ''))
+                                for file, title in module.CASES))
             self.assertFalse(re.search(grep, 'unknown extra title'))
             for option in ('--workers=1', '--retries=0', '--repeat-each=1'):
                 self.assertIn(option, execution)
         source = (ROOT / 'scripts/ci/run-populated-settings.py').read_text()
         self.assertIn('playwright_arguments(args.project, False)', source)
         self.assertNotIn("re.escape(title) for _, title in CASES", source)
+
+    def test_selector_keeps_declared_tag_suffix_without_admitting_changed_titles(self):
+        module = load()
+        argv = self.cli(MODULE, ['firefox', 'discovery']).stdout.decode().split('\0')[:-1]
+        grep = argv[argv.index('--grep') + 1]
+        tagged = [title for file, title in module.CASES if file == 'test-instance-watched-departure.spec.ts']
+        self.assertEqual(len(tagged), 2)
+        for title in tagged:
+            self.assertTrue(re.search(grep, 'firefox test-instance-watched-departure.spec.ts ' + title + ' @smoke'))
+            self.assertFalse(re.search(grep, title + ' @unknown'))
+            self.assertFalse(re.search(grep, title + ' changed @smoke'))
+        for file, title in module.CASES:
+            if file != 'test-instance-watched-departure.spec.ts':
+                self.assertTrue(re.search(grep, 'firefox ' + file + ' ' + title))
+                self.assertFalse(re.search(grep, title + ' @smoke'))
 
     def test_invalid_selector_cli_rejects_without_arguments_for_fixture_effects(self):
         for arguments in ([], ['webkit'], ['webkit', 'execution', 'extra'],

@@ -177,7 +177,12 @@ class ArchitectureAdmissionTests(unittest.TestCase):
         self.assertIn('default: false', section)
         self.assertIn('type: boolean', section)
         self.assertIn('timeout 120s python3 scripts/ci/campaign-architecture.py "$CAMPAIGN_PROOF"', source)
-        artifact = source.split('name: Keep safe campaign proof')[1]
+        artifact = source.split('name: Keep safe campaign proof', 1)[1].split('\n  hls-followon:', 1)[0]
+        paths = artifact.split('          path: |\n', 1)[1].split('          include-hidden-files:', 1)[0]
+        self.assertEqual({line.strip() for line in paths.splitlines()},
+                         {f'.verification/campaign-proof/{campaign}/{file}.json'
+                          for campaign in ('R06', 'Q14', 'Q09', 'Q47')
+                          for file in ('receipt', 'results', 'source-manifest', 'artifact-manifest')})
         self.assertNotIn('*.json', artifact)
         self.assertNotIn('index.html', artifact)
         self.assertNotIn('command.log', artifact)
