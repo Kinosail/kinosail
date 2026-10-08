@@ -5,7 +5,7 @@ on:
     inputs:
       phase:
         type: choice
-        options: [public, observe, mux, boundary, cutoff]
+        options: [public, observe, mux, boundary, aac-edit, cutoff]
         default: public
 
 permissions:
@@ -169,7 +169,7 @@ jobs:
           retention-days: 14
 
   nonkey-mux:
-    if: inputs.phase == 'mux' || inputs.phase == 'boundary'
+    if: inputs.phase == 'mux' || inputs.phase == 'boundary' || inputs.phase == 'aac-edit'
     name: Fixed inner and outer mux timestamp counterfactuals
     runs-on: ubuntu-24.04
     timeout-minutes: 25
@@ -218,6 +218,9 @@ jobs:
       - name: Observe edit, demux and native boundary clocks
         if: inputs.phase == 'boundary'
         run: timeout --kill-after=90s 300s python3 apps/player/scripts/test-hls-nonkey-boundary.py
+      - name: Observe generated-copy audio edit field causality
+        if: inputs.phase == 'aac-edit'
+        run: timeout --kill-after=90s 300s python3 apps/player/scripts/test-hls-nonkey-aac-edit.py
       - name: Preserve complete safe counterfactual receipt
         timeout-minutes: 2
         if: always()
@@ -229,6 +232,8 @@ jobs:
             .verification/hls-nonkey-mux/*/SHA256SUMS
             .verification/hls-nonkey-boundary/*/receipt.json
             .verification/hls-nonkey-boundary/*/SHA256SUMS
+            .verification/hls-nonkey-aac-edit/*/receipt.json
+            .verification/hls-nonkey-aac-edit/*/SHA256SUMS
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
