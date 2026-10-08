@@ -1,5 +1,5 @@
 // Queue metadata stays page-owned. Fresh canonical item reads authorize each move.
-let audioQueue = [], queueItems = [], queueCursor = 0, queueFlight, queuedAudio, queueReadRequestID = "", queuePageClosed = false;
+let audioQueue = [], queueItems = [], queueCursor = 0, queueFlight, queuedAudio, queueReadRequestID = "", queuePageClosed = false, queueLoadingIntent;
 const queueControls = document.querySelector("[data-audio-queue-controls]");
 const queueStatus = document.querySelector("[data-audio-queue-status]");
 const queuePrevious = document.querySelector("[data-audio-previous]");
@@ -59,6 +59,19 @@ const queueOwned = () => !queuePageClosed && progressProfile() === queueInitialP
 const queueContext = () => ({profile: progressProfile(), item: progressItem(), cursor: queueCursor, source: player.src});
 const queueCurrent = context => queueOwned() && context.profile === progressProfile() && context.item === progressItem() &&
   context.cursor === queueCursor && context.source === player.src;
+player.addEventListener("kinosail:seek-intent", () => {
+  if (!queueSourceChanging || !queueOwned() || !player.isConnected) return;
+  const intent = {item: progressItem(), source: player.src};
+  queueLoadingIntent = intent;
+  // The normal setter emits intent before assigning its target. Read it after
+  // that synchronous setter, before any real media event can resume progress.
+  queueMicrotask(() => {
+    if (queueLoadingIntent !== intent || !queueOwned() || !player.isConnected || !queueSourceChanging ||
+        intent.item !== progressItem() || intent.source !== player.src) return;
+    const seconds = player.currentTime;
+    if (Number.isFinite(seconds) && seconds >= 0 && seconds <= 31536000) intent.seconds = seconds;
+  });
+});
 const queuePositionText = () => `${queueStatus?.dataset.trackLabel || "Track"} ${queueCursor + 1} ${queueStatus?.dataset.ofLabel || "of"} ${queueItems.length}`;
 const queueHandlers = () => {
   for (const [action, handler] of [["previoustrack", queueCursor > 0 && queueOwned() ? () => moveAudioQueue(-1) : null],
@@ -107,7 +120,7 @@ const scopeCurrentTrackActions = item => {
 const commitAudioQueueItem = (item, cursor) => {
   // Dispatch old buffered events before the endpoint changes. No asynchronous
   // work separates the validated source, all identities, and displayed metadata.
-  flushPlaybackTrace(); queueSourceChanging = true; queueProgressReady = false; progressPlayedItem = undefined;
+  flushPlaybackTrace(); queueSourceChanging = true; queueProgressReady = false; progressPlayedItem = undefined; queueLoadingIntent = undefined;
   window.KinosailOfflineMedia?.unbindProgress(player); delete player.dataset.offline;
   Object.assign(player.dataset, {progress: `/progress/${item.id}`, title: item.title, artist: item.artist, album: item.album,
     track: String(item.track), artwork: item.artwork, start: String(item.progress.seconds),
@@ -121,8 +134,11 @@ const commitAudioQueueItem = (item, cursor) => {
   player.addEventListener("loadedmetadata", () => {
     if (!queueOwned() || progressItem() !== item.id || player.src !== new URL(withPlaybackSession(item.stream), location.href).href) return;
     queueSourceChanging = false; queueProgressReady = true;
-    const start = item.progress.seconds;
-    if (start > 0 && start < player.duration) setPlayerTime(start);
+    const intent = queueLoadingIntent; queueLoadingIntent = undefined;
+    const explicit = intent?.item === item.id && intent.source === player.src && Number.isFinite(intent.seconds);
+    const start = explicit ? Number.isFinite(player.duration) ? Math.min(intent.seconds, player.duration) : intent.seconds : item.progress.seconds;
+    if (explicit) {setPlayerTime(start); progressPlayedItem = item.id; void save(false);}
+    else if (start > 0 && start < player.duration) setPlayerTime(start);
     refreshQueueControls();
   }, {once: true});
   player.load(); warmAudio();
@@ -180,7 +196,7 @@ queueNext?.addEventListener("click", () => moveAudioQueue(1));
 queueRetry?.addEventListener("click", loadAudioQueue);
 player.addEventListener("error", () => { if (!queuePageClosed && queueSourceChanging) { queueSourceChanging = false; reportQueueFailure(queueError("media")); refreshQueueControls(); } });
 const closeAudioQueue = () => {
-  queuePageClosed = true;
+  queuePageClosed = true; queueLoadingIntent = undefined;
   if (queuedAudio) { queuedAudio.pause(); queuedAudio.removeAttribute("src"); queuedAudio.load(); }
   refreshQueueControls();
 };
