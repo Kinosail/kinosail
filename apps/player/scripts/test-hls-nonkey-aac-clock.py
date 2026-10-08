@@ -36,20 +36,20 @@ def command(arguments, timeout=45):
     return process.stdout, process.stderr
 
 
-def observe(source, offset, pcm):
+def observe(source, offset, pcm, row):
     args = ['ffmpeg', '-nostdin', '-v', 'info', '-xerror', '-threads', '2', '-i', str(source)]
     if offset is not None:
         args += ['-ss', str(offset)]
     args += ['-map', '0:a:0', '-vn', '-sn', '-dn', '-frames:a', '4097',
              '-af', 'ashowinfo', '-c:a', 'pcm_s16le', '-f', 'framemd5', 'pipe:1']
     stdout, stderr = command(args)
-    output = frame_md5(stdout.decode(), pcm)
-    filtered = filter_clock(stderr.decode())
-    return {'outputPCMClock': output, 'preTrimUserFilterClock': filtered,
-        'frameMD5OutputSHA256': hashlib.sha256(stdout).hexdigest(),
-        'generatedMediaLogSHA256': hashlib.sha256(stderr).hexdigest(),
-        'commandOptions': ['native 48k stereo PCM', 'ashowinfo before automatic output trim',
-            'no requested rate/channel conversion', 'no copyts', 'no timestamp edit']}
+    row.update(frameMD5OutputSHA256=hashlib.sha256(stdout).hexdigest(),
+        generatedMediaLogSHA256=hashlib.sha256(stderr).hexdigest(),
+        frameMD5OutputBytes=len(stdout), generatedMediaLogBytes=len(stderr),
+        commandOptions=['native 48k stereo PCM', 'ashowinfo before automatic output trim',
+            'no requested rate/channel conversion', 'no copyts', 'no timestamp edit'])
+    row['outputPCMClock'] = frame_md5(stdout.decode(), pcm)
+    row['preTrimUserFilterClock'] = filter_clock(stderr.decode())
 
 
 def projection(row):
@@ -107,9 +107,9 @@ try:
             try:
                 facts, pcm = (original, whole_pcm) if offset is None else native_pcm(source, offset)
                 row['nativePCM'] = facts
-                row.update(observe(source, offset, pcm))
+                observe(source, offset, pcm, row)
                 filtered = row['preTrimUserFilterClock']['completeRows']
-                row['sameFullPreTrimSequence'] = baseline is None or filtered == baseline
+                row['sameFullPreTrimSequence'] = offset is None or (baseline is not None and filtered == baseline)
                 if offset is None:
                     baseline = filtered
                 row['normalizedFilterNativeFrameAssociation'] = (
