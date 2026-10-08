@@ -161,6 +161,7 @@ final class FixtureURLProtocol: URLProtocol, @unchecked Sendable {
         let status: Int
         let headers: [String: String]
         var requests: [URLRequest] = []
+        var requestArrivals: [ContinuousClock.Instant] = []
         var routes: [String: Entry] = [:]
         var sequence: [Entry] = []
         var hold = false
@@ -174,6 +175,7 @@ final class FixtureURLProtocol: URLProtocol, @unchecked Sendable {
         guard let url = request.url, let host = url.host else { return }
         let entry = Self.entries.withLock { values -> Entry? in
             values[host]?.requests.append(request)
+            values[host]?.requestArrivals.append(ContinuousClock.now)
             if values[host]?.sequence.isEmpty == false { return values[host]?.sequence.removeFirst() }
             return values[host]?.routes[url.path] ?? values[host]
         }
