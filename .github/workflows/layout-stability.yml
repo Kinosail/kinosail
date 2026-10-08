@@ -555,7 +555,10 @@ jobs:
           project = os.environ['CAMERA_PROJECT']
           paths = sorted({f'apps/player/e2e/{file}' for file, _ in CAMERA_CASES} | {
               'apps/player/e2e/camera-profile-fixture.ts',
-              'apps/player/internal/server/server.go', 'packages/playerweb/player.js',
+              'apps/player/internal/server/server.go', 'apps/player/internal/server/static/player.js',
+              'apps/player/internal/server/assets.go', 'apps/player/internal/server/quick_connect.go',
+              'apps/player/internal/server/static/quick-connect-scan.js',
+              'apps/player/internal/server/static/third_party/jsqr/jsQR.js',
               'apps/player/e2e/layout-audit-helpers.ts', 'scripts/testing/ui-element-inventory.ts',
               'apps/player/e2e/pnpm-lock.yaml', 'apps/player/e2e/playwright.config.ts',
               'apps/player/scripts/run-library-profile.sh', 'apps/player/scripts/library_profile_admission.py',

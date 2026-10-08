@@ -5,6 +5,8 @@ import re
 import subprocess
 import sys
 import unittest
+import textwrap
+from unittest.mock import patch
 from test_library_profile_admission import load
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -61,6 +63,33 @@ class CameraWorkflowTests(unittest.TestCase):
             for option in ('--workers=1', '--retries=0', '--repeat-each=1'): self.assertIn(option, command)
             self.assertEqual(command[3:command.index('--project=' + project)], ['quick-connect-scan.spec.ts'])
 
+    def recipe(self):
+        return textwrap.dedent(self.block().split("python3 - <<'PYTHON'\n", 1)[1].split('          PYTHON', 1)[0])
+
+    def test_actual_recipe_hashes_existing_sources_before_writing(self):
+        with patch.dict(os.environ, {'CAMERA_PROJECT': 'webkit', 'PROOF_REVISION': 'fixture-revision'}), \
+                patch.object(Path, 'write_text') as write:
+            exec(compile(self.recipe(), 'camera-source-recipe', 'exec'), {})
+        receipt = __import__('json').loads(write.call_args.args[0])
+        self.assertEqual(receipt['project'], 'webkit')
+        self.assertEqual(len(receipt['identities']), 19)
+        self.assertIn('apps/player/internal/server/static/player.js', receipt['sourceSHA256'])
+        self.assertNotIn('packages/playerweb/player.js', receipt['sourceSHA256'])
+        for path, digest in receipt['sourceSHA256'].items():
+            self.assertEqual(digest, __import__('hashlib').sha256((ROOT / path).read_bytes()).hexdigest())
+
+    def test_missing_recipe_source_prevents_receipt_admission(self):
+        read = Path.read_bytes
+        def missing(path):
+            if str(path) == 'apps/player/internal/server/server.go':
+                raise FileNotFoundError('fixed missing source')
+            return read(path)
+        with patch.dict(os.environ, {'CAMERA_PROJECT': 'webkit', 'PROOF_REVISION': 'fixture-revision'}), \
+                patch.object(Path, 'read_bytes', missing), patch.object(Path, 'write_text') as write:
+            with self.assertRaises(FileNotFoundError):
+                exec(compile(self.recipe(), 'camera-source-recipe', 'exec'), {})
+        write.assert_not_called()
+
     def test_source_and_failure_artifacts_close_guard_relay_and_recipe(self):
         block = self.block(); source = WORKFLOW.read_text()
         for path in ('apps/player/e2e/camera-profile-fixture.ts',
@@ -68,7 +97,10 @@ class CameraWorkflowTests(unittest.TestCase):
                      'apps/player/scripts/run-library-profile.sh', 'apps/player/scripts/library_profile_admission.py',
                      'apps/player/scripts/generate-test-media.sh', 'apps/player/e2e/pnpm-lock.yaml',
                      'apps/player/Containerfile', 'apps/player/Containerfile.test',
-                     'scripts/ci/run-populated-settings.py', 'packages/playerweb/player.js',
+                     'scripts/ci/run-populated-settings.py', 'apps/player/internal/server/static/player.js',
+                     'apps/player/internal/server/assets.go', 'apps/player/internal/server/quick_connect.go',
+                     'apps/player/internal/server/static/quick-connect-scan.js',
+                     'apps/player/internal/server/static/third_party/jsqr/jsQR.js',
                      'apps/player/internal/server/server.go'):
             self.assertIn("'" + path + "'", block)
         self.assertIn('from library_profile_admission import CAMERA_CASES, playwright_arguments', block)
