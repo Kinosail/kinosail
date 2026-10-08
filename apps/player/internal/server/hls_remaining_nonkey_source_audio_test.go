@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -28,12 +29,9 @@ func TestRemainingNonKeyCompleteSourceAudioClock(t *testing.T) {
 			if err != nil || proof == nil {
 				t.Fatal("nonkey complete source-clock producer missing")
 			}
-			if proof.FirstPTS != value.firstPTS || proof.FirstNativeSample != value.firstNative ||
-				proof.TargetPTS != value.targetPTS || proof.TargetNativeSample != value.target ||
-				proof.MediaTime != value.edit || proof.LeadingSamples != value.leading ||
-				proof.FirstPacket != fixture.first || proof.SourceClock == [32]byte{} {
-				t.Fatal("nonkey complete source-clock integer correspondence")
-			}
+			remainingNonKeySourceAudioCorrespondence(t, proof, fixture.first, []int64{
+				value.firstPTS, value.firstNative, value.targetPTS, value.target, value.edit, value.leading,
+			})
 			mapping := &copiedHLSPresentation{RequestedMicros: 12_500_000,
 				Proof: &copiedHLSPresentationProof{Audio: proof}}
 			if !validCopiedHLSAudioProof(mapping) {
@@ -141,5 +139,14 @@ func TestRemainingNonKeySourceAudioAmbiguityAndCancellation(t *testing.T) {
 		if _, err := deriveCopiedHLSSourceAudio(expired, data, []byte(fixture.normalized), fixture.first, 12_500_000, fixture.edit); err == nil {
 			t.Fatal("nonkey canceled source-clock association admitted")
 		}
+	}
+}
+
+func remainingNonKeySourceAudioCorrespondence(t *testing.T, proof *copiedHLSAudioProof, packet [32]byte, expected []int64) {
+	t.Helper()
+	actual := []int64{proof.FirstPTS, proof.FirstNativeSample, proof.TargetPTS,
+		proof.TargetNativeSample, proof.MediaTime, proof.LeadingSamples}
+	if !slices.Equal(actual, expected) || proof.FirstPacket != packet || proof.SourceClock == [32]byte{} {
+		t.Fatal("nonkey complete source-clock integer correspondence")
 	}
 }

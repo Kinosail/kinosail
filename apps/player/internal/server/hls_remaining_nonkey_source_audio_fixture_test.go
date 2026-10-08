@@ -25,13 +25,8 @@ func remainingNonKeySourceAudio(t *testing.T, denominator, leading int64) remain
 	if leading == 16 {
 		phase, skip, prime = -8, 1008, -1008
 	}
-	packet := func(pts, duration, number int64) map[string]any {
-		hash := sha256.Sum256([]byte(fmt.Sprintf("aac-payload-%d", number)))
-		return map[string]any{"type": "packet", "pts": pts, "dts": pts,
-			"duration": duration, "data_hash": "SHA256:" + hex.EncodeToString(hash[:])}
-	}
 	round := func(sample int64) int64 { return (sample*denominator + 24000) / 48000 }
-	priming := packet(-round(-prime), round(1024), -1)
+	priming := remainingNonKeySourceAudioPacket(-round(-prime), round(1024), -1)
 	priming["side_data_list"] = []map[string]any{{"side_data_type": "Skip Samples",
 		"skip_samples": skip, "discard_padding": 0, "skip_reason": 0, "discard_reason": 0}}
 	rows = append(rows, priming)
@@ -47,11 +42,8 @@ func remainingNonKeySourceAudio(t *testing.T, denominator, leading int64) remain
 		}
 		pts := round(clock)
 		if leading == 1024 || number > 0 {
-			duration := round(1024)
-			if leading == 16 && number == 1 {
-				duration = 1016
-			}
-			row := packet(pts, duration, number)
+			duration := remainingNonKeySourceAudioDuration(leading, number, round(1024))
+			row := remainingNonKeySourceAudioPacket(pts, duration, number)
 			rows = append(rows, row)
 			if number == 559 {
 				first = sha256.Sum256([]byte(fmt.Sprintf("aac-payload-%d", number)))
@@ -89,4 +81,17 @@ func remainingNonKeySourceRows(fixture remainingNonKeySourceAudioFixture, kind s
 		}
 	}
 	return rows
+}
+
+func remainingNonKeySourceAudioPacket(pts, duration, number int64) map[string]any {
+	hash := sha256.Sum256([]byte(fmt.Sprintf("aac-payload-%d", number)))
+	return map[string]any{"type": "packet", "pts": pts, "dts": pts,
+		"duration": duration, "data_hash": "SHA256:" + hex.EncodeToString(hash[:])}
+}
+
+func remainingNonKeySourceAudioDuration(leading, number, duration int64) int64 {
+	if leading == 16 && number == 1 {
+		return 1016
+	}
+	return duration
 }
