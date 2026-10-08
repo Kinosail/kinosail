@@ -79,7 +79,7 @@ test("real lost-release reload waits for lease expiry and renews only its origin
   } finally {await closeDocuments(page, [first, second]);}
 });
 
-test("actual authenticated Profile switch retires old document command effects", {tag: "@smoke"}, async ({page, browser}, info) => {
+test("actual authenticated Profile switch retires old document command effects", {tag: ["@smoke", "@routed-fault"]}, async ({page, browser}, info) => {
   test.setTimeout(75_000);
   let first: Page | undefined, second: Page | undefined, owner: Page | undefined, profile = "";
   let releaseCommand = () => {};
@@ -92,6 +92,10 @@ test("actual authenticated Profile switch retires old document command effects",
     profile = await createViewer(owner, name, password);
     const target = (await docs.live()).find(target => target.itemId === docs.ids[0])!.id;
     const before = await first.locator("video").evaluate((media: HTMLVideoElement) => media.currentTime);
+    const duration = await first.locator("video").evaluate((media: HTMLVideoElement) => media.duration);
+    expect(Number.isFinite(duration) && duration > 2).toBe(true);
+    const position = before < duration / 2 ? duration * .75 : duration * .25;
+    expect(Math.abs(position - before)).toBeGreaterThan(.5);
     let release!: () => void, captured!: () => void;
     const barrier = new Promise<void>(resolve => release = resolve), held = new Promise<void>(resolve => captured = resolve);
     releaseCommand = release;
@@ -101,15 +105,19 @@ test("actual authenticated Profile switch retires old document command effects",
       await route.fulfill({response});
     });
     // Hold an actual accepted command response; do not fabricate a handler or payload.
-    expect(await owner.evaluate(async id => {
+    expect(await owner.evaluate(async ({id, position}) => {
       const csrf = document.querySelector<HTMLMetaElement>('meta[name="kinosail-csrf"]')?.content || "";
       return (await fetch(`/api/v1/home-assistant/players/${id}/commands`, {method: "POST",
-        headers: {"Content-Type": "application/json", "X-Kinosail-CSRF": csrf}, body: JSON.stringify({command: "seek", position: 1})})).status;
-    }, target)).toBe(202);
+        headers: {"Content-Type": "application/json", "X-Kinosail-CSRF": csrf}, body: JSON.stringify({command: "seek", position})})).status;
+    }, {id: target, position})).toBe(202);
     await held;
     const changed = first.waitForResponse(async response => new URL(response.url()).pathname === "/api/v1/me" &&
       response.status() === 200 && (await response.json()).viewer.id === profile);
+    const delivered = first.waitForResponse(async response => new URL(response.url()).pathname === `/api/v1/home-assistant/players/${target}` &&
+      response.status() === 200 && (await response.json()).command === "seek");
+    void delivered.catch(() => {});
     try {await loginViewer(page, name, password);} finally {release();}
+    expect((await delivered).status()).toBe(200);
     await changed;
     await expect(first.locator("[data-home-assistant-status]")).toHaveAttribute("data-home-assistant-status", "stopped");
     let lateStates = 0;
@@ -118,7 +126,8 @@ test("actual authenticated Profile switch retires old document command effects",
     expect(lateStates).toBe(0);
     expect(await first.locator("video").evaluate((media: HTMLVideoElement) => media.currentTime)).toBeCloseTo(before, 2);
     await info.attach("actual-authenticated-profile-retirement", {body: JSON.stringify({publicViewerChanged: true,
-      commandAcceptedBeforeSwitch: 202, actualCommandReplyHeld: true, lateStateWrites: 0, mediaUnchanged: true}), contentType: "application/json"});
+      commandAcceptedBeforeSwitch: 202, commandDeliveredAfterSwitch: 200, actualCommandReplyHeld: true,
+      seekSeparatedByMoreThanHalfSecond: true, lateStateWrites: 0, mediaUnchanged: true}), contentType: "application/json"});
   } finally {
     releaseCommand();
     for (const document of [first, second]) if (document && !document.isClosed()) await document.close();
