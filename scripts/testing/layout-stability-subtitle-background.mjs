@@ -55,6 +55,9 @@ export async function measureSubtitleBackground(browser, options, results, probe
         if(!stable)throw new Error("Synthetic catalogue restoration failed");
         probe.stage=priorStage;
       }
+    } catch (error) {
+      await probe.captureFailure(error, page);
+      throw error;
     } finally {await context.close();}
   }
 }
