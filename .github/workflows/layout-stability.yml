@@ -1,310 +1,22 @@
-name: Layout stability evidence
+name: Bounded AAC startup readiness evidence
 
 on:
-  pull_request:
-    paths:
-      - "apps/player/internal/server/**"
-      - "apps/subtitles/internal/server/**"
-      - "apps/player/e2e/layout-stability*"
-      - "packages/playerweb/**"
-      - "packages/webassets/**"
-      - "scripts/testing/*layout-stability*"
-      - ".github/workflows/layout-stability.yml"
   workflow_dispatch:
     inputs:
-      campaign_proof:
-        description: Run one bounded campaign proof instead of layout diagnosis
+      phase:
+        description: Expected written-first or corrected readiness result
         type: choice
-        options: [none, R06, Q14, Q09, Q47, HLS]
-        default: none
-      campaign_q14_suite:
-        description: Select one fixed Q14 public suite; primary keeps its two repeats
-        type: choice
-        options: [primary, cold, bfcache, htmx, shows, search, safety, home]
-        default: primary
-      campaign_r06_suite:
-        description: Select original R06 protocol or one fixed Save or Restore suite
-        type: choice
-        options: [protocol, save-controls, save-headers, save-body, source-format, restore-source-format, restore-controls, restore-headers, restore-inspect-body]
-        default: protocol
-      campaign_q47_suite:
-        description: Select one fixed Q47 public suite, each repeated twice
-        type: choice
-        options: [source-format, primary, recovery, supersession, contracts]
-        default: source-format
-      architecture_metadata:
-        description: Collect bounded source metadata for canonical architecture regeneration
-        type: boolean
-        default: false
-      hls_remaining_proof:
-        description: Run the six strict remaining-playback diagnostics in the explicit HLS campaign
-        type: boolean
-        default: false
-      hls_audio_timing:
-        description: Select three slower audio diagnostics and two marked controls with remaining proof enabled
-        type: boolean
-        default: false
-      hls_audio_installation:
-        description: Select the closed disposable48k AAC installation experiment
-        type: boolean
-        default: false
-      hls_audio_origin:
-        description: Verify actual production aligned AAC origin-refill against an uninterrupted control
-        type: boolean
-        default: false
+        options: [red, red-long, green]
+        default: red
 
 permissions:
   contents: read
 
-concurrency:
-  group: layout-evidence-${{ github.ref }}-${{ inputs.campaign_proof || 'none' }}
-  cancel-in-progress: true
-
 jobs:
-  native:
-    name: Native layout (${{ matrix.browser }})
-    if: github.event_name != 'workflow_dispatch' || inputs.campaign_proof == 'none'
+  readiness-contracts:
+    name: Asset-backed AAC readiness contracts
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - browser: chromium
-            quick: false
-          - browser: webkit
-            quick: true
-          - browser: firefox
-            quick: true
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          persist-credentials: false
-      - run: test ! -e .gates-disabled
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: go.work
-          cache-dependency-path: "**/go.sum"
-      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
-        with:
-          version: 11.22.0
-          install: false
-          node-version-file: false
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
-        with:
-          node-version: "26"
-          package-manager-cache: false
-      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
-      - run: pnpm --dir apps/player/e2e install --frozen-lockfile
-      - run: pnpm --dir apps/player/e2e exec playwright install --with-deps "${{ matrix.browser }}"
-      - name: Check pending geometry and keyboard fixtures
-        env:
-          KINOSAIL_BROWSER_MATRIX: full
-          KINOSAIL_TEST_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
-          PLAYWRIGHT_JSON_OUTPUT_NAME: ../../../.verification/layout-fixtures/results.json
-        run: pnpm --dir apps/player/e2e exec playwright test --config layout-stability.config.ts --project "${{ matrix.browser }}" --reporter=list,json layout-stability.spec.ts skeleton-layout.spec.ts player-apple-intent.spec.ts player-apple-launch.spec.ts
-      - name: Measure disposable native Servers
-        env:
-          KINOSAIL_LAYOUT_BROWSER: ${{ matrix.browser }}
-          KINOSAIL_LAYOUT_QUICK: ${{ matrix.quick && '1' || '' }}
-          KINOSAIL_LAYOUT_ENFORCE: "1"
-          KINOSAIL_LAYOUT_VARIANTS: "1"
-          KINOSAIL_LAYOUT_APPLE_SHIM: "1"
-          KINOSAIL_LAYOUT_FLOWS: "1"
-        run: python3 scripts/testing/test-layout-stability-local.py
-      - name: Preserve safe measurements and screenshots
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
-        with:
-          name: layout-evidence-${{ matrix.browser }}-${{ github.event.pull_request.head.sha || github.sha }}
-          path: |
-            .verification/layout/*/receipt.json
-            .verification/layout/*/*/measurements.json
-            .verification/layout/*/*/failure.json
-            .verification/layout/*/*/*.png
-            .verification/layout-fixtures/results.json
-            .verification/layout-fixtures/**/apple-intent-receipt.json
-            .verification/layout-fixtures/**/native-pause-after-interruption.png
-            .verification/layout-fixtures/**/trace.zip
-          include-hidden-files: true
-          if-no-files-found: error
-          retention-days: 14
-
-  campaign-proof:
-    name: Bounded campaign proof
-    if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof != 'none' && inputs.campaign_proof != 'HLS'
-    runs-on: ubuntu-24.04
-    timeout-minutes: 12
-    env:
-      CAMPAIGN_PROOF: ${{ inputs.campaign_proof }}
-      CAMPAIGN_Q14_SUITE: ${{ inputs.campaign_q14_suite || 'primary' }}
-      CAMPAIGN_R06_SUITE: ${{ inputs.campaign_r06_suite || 'protocol' }}
-      CAMPAIGN_Q47_SUITE: ${{ inputs.campaign_q47_suite || 'source-format' }}
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        timeout-minutes: 2
-        with:
-          persist-credentials: false
-          fetch-depth: ${{ inputs.campaign_r06_suite == 'restore-source-format' && '0' || '1' }}
-      - name: Validate explicit proof selection
-        id: selection
-        run: |
-          test ! -e .gates-disabled
-          case "$CAMPAIGN_Q14_SUITE" in
-            primary|cold|bfcache|htmx|shows|search|safety|home) ;;
-            *) exit 2 ;;
-          esac
-          if [ "$CAMPAIGN_PROOF" != Q14 ] && [ "$CAMPAIGN_Q14_SUITE" != primary ]; then exit 2; fi
-          case "$CAMPAIGN_R06_SUITE" in
-            protocol|save-controls|save-headers|save-body|source-format|restore-source-format|restore-controls|restore-headers|restore-inspect-body) ;;
-            *) exit 2 ;;
-          esac
-          if [ "$CAMPAIGN_PROOF" != R06 ] && [ "$CAMPAIGN_R06_SUITE" != protocol ]; then exit 2; fi
-          if [ "$CAMPAIGN_R06_SUITE" == restore-source-format ] && [ "${{ inputs.architecture_metadata }}" == true ]; then exit 2; fi
-          case "$CAMPAIGN_R06_SUITE" in
-            restore-controls|restore-headers|restore-inspect-body)
-              if [ "${{ inputs.architecture_metadata }}" == true ]; then exit 2; fi ;;
-          esac
-          case "$CAMPAIGN_Q47_SUITE" in
-            source-format|primary|recovery|supersession|contracts) ;;
-            *) exit 2 ;;
-          esac
-          if [ "$CAMPAIGN_PROOF" != Q47 ] && [ "$CAMPAIGN_Q47_SUITE" != source-format ]; then exit 2; fi
-          if [ "$CAMPAIGN_PROOF" == Q47 ] && [ "${{ inputs.architecture_metadata }}" == true ]; then exit 2; fi
-          case "$CAMPAIGN_PROOF" in
-            R06) echo app=subtitles >> "$GITHUB_OUTPUT" ;;
-            Q14|Q09|Q47) echo app=player >> "$GITHUB_OUTPUT" ;;
-            *) exit 2 ;;
-          esac
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version-file: go.work
-          cache-dependency-path: "**/go.sum"
-      - name: Prepare bounded existing documentation dependencies
-        if: env.CAMPAIGN_PROOF == 'Q47' && env.CAMPAIGN_Q47_SUITE != 'source-format'
-        timeout-minutes: 3
-        uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8
-        with:
-          ruby-version: '3.4'
-          bundler-cache: true
-          working-directory: engineering/documentation
-      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
-        if: (steps.selection.outputs.app == 'player' && (env.CAMPAIGN_PROOF != 'Q47' || env.CAMPAIGN_Q47_SUITE != 'source-format')) || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body' || env.CAMPAIGN_R06_SUITE == 'restore-headers' || env.CAMPAIGN_R06_SUITE == 'restore-inspect-body'))
-        with:
-          version: 11.22.0
-          install: false
-          node-version-file: false
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
-        if: (steps.selection.outputs.app == 'player' && (env.CAMPAIGN_PROOF != 'Q47' || env.CAMPAIGN_Q47_SUITE != 'source-format')) || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body' || env.CAMPAIGN_R06_SUITE == 'restore-headers' || env.CAMPAIGN_R06_SUITE == 'restore-inspect-body'))
-        with:
-          node-version: "26"
-          package-manager-cache: false
-      - run: sudo apt-get update && sudo apt-get install -y libarchive-tools
-      - name: Install existing source formatter
-        if: env.CAMPAIGN_R06_SUITE == 'source-format' || env.CAMPAIGN_R06_SUITE == 'restore-source-format'
-        timeout-minutes: 2
-        uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a
-        with:
-          version: v2.13.1
-          install-only: true
-          skip-cache: true
-      - name: Prepare bounded Go dependencies
-        if: env.CAMPAIGN_R06_SUITE != 'source-format' && env.CAMPAIGN_R06_SUITE != 'restore-source-format' && env.CAMPAIGN_PROOF != 'Q47'
-        env:
-          APP: ${{ steps.selection.outputs.app }}
-        run: timeout 120s bash scripts/ci/prepare-campaign-go.sh "$APP"
-      - name: Prepare bounded browser prerequisites
-        env:
-          APP: ${{ steps.selection.outputs.app }}
-        if: (steps.selection.outputs.app == 'player' && (env.CAMPAIGN_PROOF != 'Q47' || env.CAMPAIGN_Q47_SUITE != 'source-format')) || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body' || env.CAMPAIGN_R06_SUITE == 'restore-headers' || env.CAMPAIGN_R06_SUITE == 'restore-inspect-body'))
-        run: |
-          if [ "$APP" == subtitles ]; then
-            timeout 180s pnpm --dir apps/subtitles/e2e install --frozen-lockfile
-            timeout 240s pnpm --dir apps/subtitles/e2e exec playwright install --with-deps chromium
-          else
-            timeout 180s pnpm --dir apps/player/e2e install --frozen-lockfile
-            timeout 240s pnpm --dir apps/player/e2e exec playwright install --with-deps chromium
-          fi
-      - name: Prepare bounded Compose control dependencies
-        if: env.CAMPAIGN_PROOF == 'Q47' && env.CAMPAIGN_Q47_SUITE != 'source-format'
-        timeout-minutes: 3
-        run: timeout 180s npm ci --prefix engineering/documentation --ignore-scripts
-      - name: Verify fixed Compose recovery controls
-        if: env.CAMPAIGN_PROOF == 'Q47' && env.CAMPAIGN_Q47_SUITE != 'source-format'
-        timeout-minutes: 1
-        run: timeout --kill-after=2s 10s node --test engineering/documentation/test-install-builder.cjs engineering/documentation/test-install-builder-recovery.cjs
-      - name: Verify Restore formatter controls
-        if: env.CAMPAIGN_PROOF == 'R06' && env.CAMPAIGN_R06_SUITE == 'restore-source-format'
-        timeout-minutes: 1
-        run: python3 -B -m unittest discover -s apps/subtitles/scripts -p test_campaign_r06_restore_format.py
-      - name: Verify Restore rejected-source projection controls
-        if: env.CAMPAIGN_PROOF == 'R06' && env.CAMPAIGN_R06_SUITE == 'restore-source-format'
-        timeout-minutes: 1
-        run: python3 -B -m unittest discover -s apps/subtitles/scripts -p test_campaign_r06_restore_projection.py
-      - name: Verify Restore qualified-type controls
-        if: env.CAMPAIGN_PROOF == 'R06' && env.CAMPAIGN_R06_SUITE == 'restore-source-format'
-        timeout-minutes: 1
-        run: timeout --kill-after=2s 10s python3 -B -m unittest discover -s apps/subtitles/scripts -p test_campaign_r06_restore_qualified_tokens.py
-      - name: Verify Restore runtime admission controls
-        if: env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'restore-controls' || env.CAMPAIGN_R06_SUITE == 'restore-headers' || env.CAMPAIGN_R06_SUITE == 'restore-inspect-body')
-        timeout-minutes: 1
-        env:
-          PYTHONPATH: apps/subtitles/scripts
-        run: timeout --kill-after=2s 10s python3 -B -m unittest test_campaign_r06_restore_runtime_selection test_campaign_r06_restore_runtime_sources test_campaign_r06_restore_runtime_process test_campaign_r06_restore_runtime_controls test_campaign_r06_restore_runtime_projection test_campaign_r06_restore_runtime_tools
-      - name: Verify Restore causal diagnostic controls
-        if: env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'restore-headers' || env.CAMPAIGN_R06_SUITE == 'restore-inspect-body')
-        timeout-minutes: 3
-        env:
-          PYTHONPATH: apps/subtitles/scripts
-        run: |
-          timeout --kill-after=2s 10s python3 -B -m unittest test_campaign_r06_restore_causal_projection
-          timeout --kill-after=2s 10s node apps/subtitles/e2e/subtitle-restore-causal-witness.test.mjs
-          timeout --kill-after=2s 10s node apps/subtitles/e2e/subtitle-restore-causal-lifecycle.test.mjs
-          timeout --kill-after=2s 125s go -C apps/subtitles test -p 1 ./engineering/qa/2026-10-05-restore-recovery/fixture -run '^TestRestore(Causal(ProbePublicControl|CancellationBoundary)|CompletionIdentity(PublicControl|Boundary))$' -count=1 -timeout=20s
-      - name: Verify bounded Restore frontend controls
-        if: env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'restore-headers' || env.CAMPAIGN_R06_SUITE == 'restore-inspect-body')
-        timeout-minutes: 1
-        run: timeout --kill-after=2s 10s node --test apps/subtitles/e2e/subtitle-restore-operation.test.mjs apps/subtitles/e2e/subtitle-restore-inspector.test.mjs
-      - name: Run exact owned public proof
-        run: bash scripts/ci/run-campaign-proof.sh "$CAMPAIGN_PROOF"
-      - name: Collect bounded canonical source metadata
-        if: always() && inputs.architecture_metadata && inputs.campaign_r06_suite != 'restore-source-format' && inputs.campaign_proof != 'Q47' && inputs.campaign_r06_suite != 'restore-controls' && inputs.campaign_r06_suite != 'restore-headers' && inputs.campaign_r06_suite != 'restore-inspect-body'
-        run: |
-          timeout 120s bash scripts/ci/prepare-campaign-go.sh player
-          timeout 120s bash scripts/ci/prepare-campaign-go.sh subtitles
-          timeout 120s python3 scripts/ci/campaign-architecture.py "$CAMPAIGN_PROOF"
-      - name: Keep safe campaign proof
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
-        with:
-          name: campaign-proof-${{ inputs.campaign_proof }}-${{ github.sha }}
-          path: |
-            .verification/campaign-proof/R06/receipt.json
-            .verification/campaign-proof/R06/results.json
-            .verification/campaign-proof/R06/source-manifest.json
-            .verification/campaign-proof/R06/artifact-manifest.json
-            .verification/campaign-proof/Q14/receipt.json
-            .verification/campaign-proof/Q14/results.json
-            .verification/campaign-proof/Q14/source-manifest.json
-            .verification/campaign-proof/Q14/artifact-manifest.json
-            .verification/campaign-proof/Q09/receipt.json
-            .verification/campaign-proof/Q09/results.json
-            .verification/campaign-proof/Q09/source-manifest.json
-            .verification/campaign-proof/Q09/artifact-manifest.json
-            .verification/campaign-proof/Q47/receipt.json
-            .verification/campaign-proof/Q47/results.json
-            .verification/campaign-proof/Q47/source-manifest.json
-            .verification/campaign-proof/Q47/artifact-manifest.json
-          include-hidden-files: true
-          if-no-files-found: error
-          retention-days: 3
-
-  hls-followon:
-    name: Bounded public HLS follow-on
-    if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof == 'HLS'
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -312,6 +24,72 @@ jobs:
           persist-credentials: false
       - run: test ! -e .gates-disabled
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        timeout-minutes: 3
+        with:
+          go-version-file: go.work
+          cache-dependency-path: "**/go.sum"
+      - name: Run unchanged and captured readiness controls
+        env:
+          READINESS_PHASE: ${{ inputs.phase }}
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,os,subprocess
+          from pathlib import Path
+          command=['go','-C','apps/player','test','-count=1','-json','-run','TestRemainingInitialAAC|TestRemainingRoundedAAC|TestRemainingColdAAC','./internal/server']
+          process=subprocess.run(command,capture_output=True,text=True,timeout=300)
+          assert len(process.stdout.encode()) <= 8 << 20
+          events=[json.loads(line) for line in process.stdout.splitlines()]
+          failures=sorted(e['Test'] for e in events if e.get('Test') and e.get('Action')=='fail')
+          expected=sorted(['TestRemainingRoundedAACWindowUsesAvailableAssets','TestRemainingRoundedAACWindowUsesAvailableAssets/captured-eight-second-window','TestRemainingRoundedAACWindowUsesAvailableAssets/missing-cut-number'])
+          phase=os.environ['READINESS_PHASE']
+          if phase=='red-long':
+              expected=sorted(['TestRemainingRoundedAACWindowUsesAvailableAssets','TestRemainingRoundedAACWindowUsesAvailableAssets/captured-window-for-long-source'])
+          accepted=(phase in ['red','red-long'] and process.returncode==1 and failures==expected) or (phase=='green' and process.returncode==0 and not failures)
+          paths=['apps/player/internal/server/'+n for n in ['startup_window.go','hls_remaining_startup.go','hls_remaining_completion_test.go']]
+          result={'revision':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
+              'tree':subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip(),
+              'phase':phase,'result':'expected-red' if accepted and phase in ['red','red-long'] else 'passed' if accepted else 'failed',
+              'command':command,'testExitCode':process.returncode,'failures':failures,
+              'passedTests':sorted(e['Test'] for e in events if e.get('Test') and e.get('Action')=='pass'),
+              'sourceSHA256':{p:hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in paths if Path(p).is_file()},
+              'boundary':'Asset-backed captured prefix regression; populated public proof is separate.'}
+          target=Path('.verification/startup-readiness')
+          target.mkdir(parents=True)
+          raw=json.dumps(result,separators=(',',':'))+'\n'
+          (target/'contracts.json').write_text(raw)
+          (target/'SHA256SUMS').write_text(hashlib.sha256(raw.encode()).hexdigest()+'  contracts.json\n')
+          print(json.dumps(result,separators=(',',':')))
+          if not accepted:
+              for e in events:
+                  if e.get('Test') in failures and e.get('Output'):
+                      print(e['Output'][:600])
+              print(process.stderr[:1000])
+          raise SystemExit(0 if accepted else 1)
+          PY
+      - name: Preserve bounded safe regression receipt
+        timeout-minutes: 2
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: startup-readiness-contracts-${{ github.sha }}
+          path: .verification/startup-readiness/*
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
+  public-readiness:
+    name: Bounded authenticated AAC readiness
+    if: inputs.phase == 'green'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - run: test ! -e .gates-disabled
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        timeout-minutes: 3
         with:
           go-version-file: go.work
           cache-dependency-path: "**/go.sum"
@@ -319,42 +97,94 @@ jobs:
         run: |
           curl --fail --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/hls-ffmpeg.deb" https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.2-5/jellyfin-ffmpeg8_8.1.2-5-noble_amd64.deb
           printf '%s  %s\n' b4e72894ad26c809ed0104805f5415a97be75212b9fcf9d60b89ad25bb3d43e3 "$RUNNER_TEMP/hls-ffmpeg.deb" | sha256sum --check
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends "$RUNNER_TEMP/hls-ffmpeg.deb"
+          apt_options=(-o Acquire::http::Timeout=15 -o Acquire::https::Timeout=15 -o Acquire::Retries=0)
+          if ! timeout --kill-after=5s 90s sudo apt-get "${apt_options[@]}" update --error-on=any; then
+            python3 - "$RUNNER_TEMP/hls-ubuntu.sources" <<'PY'
+          import pathlib, sys
+          source = pathlib.Path('/etc/apt/sources.list.d/ubuntu.sources')
+          with source.open('rb') as stream:
+              data = stream.read(65537)
+          assert len(data) <= 65536, 'runner_ubuntu_sources_bound'
+          lines = data.decode().splitlines(keepends=True)
+          changed = False
+          for index, line in enumerate(lines):
+              if line.rstrip('\r\n') in ['URIs: http://azure.archive.ubuntu.com/ubuntu/', 'URIs: http://azure.archive.ubuntu.com/ubuntu']:
+                  lines[index] = 'URIs: https://archive.ubuntu.com/ubuntu/\n'
+                  changed = True
+          assert changed, 'runner_ubuntu_mirror_not_supported'
+          pathlib.Path(sys.argv[1]).write_text(''.join(lines))
+          PY
+            sudo install -m 0644 "$RUNNER_TEMP/hls-ubuntu.sources" /etc/apt/sources.list.d/ubuntu.sources
+            timeout --kill-after=5s 90s sudo apt-get "${apt_options[@]}" update --error-on=any
+          fi
+          timeout --kill-after=5s 180s sudo apt-get "${apt_options[@]}" install -y --no-install-recommends "$RUNNER_TEMP/hls-ffmpeg.deb"
           echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
-      - name: Check bounded presentation oracle
-        run: python3 -m unittest discover -s apps/player/scripts -p test_hls_followon_frames.py
-      - name: Check closed audio installation selection and passthrough
-        if: ${{ inputs.hls_audio_installation || inputs.hls_audio_origin }}
-        run: |
-          test '${{ inputs.hls_remaining_proof }}' = true
-          test '${{ inputs.hls_audio_timing }}' != true
-          python3 -m unittest discover -s apps/player/scripts -p test_hls_remaining_installation_wrapper.py
-      - name: Run all authenticated public cases
-        if: ${{ !inputs.hls_remaining_proof }}
-        run: python3 apps/player/scripts/test-hls-followon.py
-      - name: Run bounded remaining playback regressions
-        if: ${{ inputs.hls_remaining_proof }}
-        env:
-          KINOSAIL_HLS_REMAINING_SUITE: ${{ inputs.hls_audio_origin && 'audio-origin' || inputs.hls_audio_installation && 'audio-installation' || inputs.hls_audio_timing && 'audio-timing' || 'remaining' }}
-        run: |
-          selected=0
-          for choice in '${{ inputs.hls_audio_origin }}' '${{ inputs.hls_audio_installation }}' '${{ inputs.hls_audio_timing }}'; do
-            if [ "$choice" = true ]; then selected=$((selected + 1)); fi
-          done
-          test "$selected" -le 1
-          timeout --kill-after=5s 600s python3 apps/player/scripts/test-hls-remaining.py
-      - name: Preserve safe follow-on receipts
+      - name: Verify preparation without changing historical assertions
+        run: timeout --kill-after=5s 750s python3 apps/player/scripts/test-hls-startup-readiness.py
+      - name: Preserve original failures and separate readiness receipt
+        timeout-minutes: 2
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: player-hls-followon-${{ github.sha }}
+          name: startup-readiness-public-${{ github.sha }}
           path: |
             .verification/hls-followon/*/receipt.json
+            .verification/hls-followon/*/startup-readiness.json
+            .verification/hls-followon/*/uninterrupted-cold-control.json
             .verification/hls-followon/*/SHA256SUMS
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
-      - name: Verify integrated Player source after commit
-        if: ${{ always() && inputs.hls_audio_origin }}
-        run: timeout --kill-after=5s 300s make -C apps/player verify-changed BASE=origin/main
+  source-verifier:
+    name: Verify integrated Player source after commit
+    if: inputs.phase == 'green'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - run: test ! -e .gates-disabled
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        timeout-minutes: 3
+        with:
+          go-version-file: go.work
+          cache-dependency-path: "**/go.sum"
+      - run: timeout --kill-after=5s 300s make -C apps/player verify-changed BASE=origin/main
+
+  canonical-atlas:
+    name: Generate canonical Player atlas Git blob
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - run: test ! -e .gates-disabled
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        timeout-minutes: 3
+        with:
+          go-version-file: go.work
+          cache-dependency-path: "**/go.sum"
+      - name: Generate exact-source canonical output
+        run: python3 scripts/tooling/generate-architecture-explorer.py player
+      - name: Publish only an unreferenced generated Git blob
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,subprocess
+          from pathlib import Path
+          path='apps/player/docs/architecture-explorer/index.html'
+          raw=Path(path).read_bytes()
+          assert 0 < len(raw) < 4 << 20
+          result=subprocess.run(['gh','api','repos/Kinosail/kinosail/git/blobs','--method','POST','--input','-'],
+              input=json.dumps({'content':raw.decode(),'encoding':'utf-8'}),text=True,capture_output=True,check=True,timeout=30)
+          blob=json.loads(result.stdout)
+          print(json.dumps({'revision':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
+              'path':path,'blob':blob['sha'],'sha256':hashlib.sha256(raw).hexdigest(),'bytes':len(raw)}))
+          PY
