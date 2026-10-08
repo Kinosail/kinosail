@@ -5,7 +5,7 @@ on:
     inputs:
       phase:
         type: choice
-        options: [public, observe, mux, boundary, aac-edit, aac-derived, cutoff]
+        options: [public, observe, mux, boundary, aac-edit, aac-derived, aac-clock, cutoff]
         default: public
 
 permissions:
@@ -169,7 +169,7 @@ jobs:
           retention-days: 14
 
   nonkey-mux:
-    if: inputs.phase == 'mux' || inputs.phase == 'boundary' || inputs.phase == 'aac-edit' || inputs.phase == 'aac-derived'
+    if: inputs.phase == 'mux' || inputs.phase == 'boundary' || inputs.phase == 'aac-edit' || inputs.phase == 'aac-derived' || inputs.phase == 'aac-clock'
     name: Fixed inner and outer mux timestamp counterfactuals
     runs-on: ubuntu-24.04
     timeout-minutes: 25
@@ -224,6 +224,9 @@ jobs:
       - name: Observe source-derived generated audio edits
         if: inputs.phase == 'aac-derived'
         run: timeout --kill-after=90s 300s python3 apps/player/scripts/test-hls-nonkey-aac-derived.py
+      - name: Observe complete normalized CLI audio clocks
+        if: inputs.phase == 'aac-clock'
+        run: timeout --kill-after=90s 300s python3 apps/player/scripts/test-hls-nonkey-aac-clock.py
       - name: Preserve complete safe counterfactual receipt
         timeout-minutes: 2
         if: always()
@@ -239,6 +242,8 @@ jobs:
             .verification/hls-nonkey-aac-edit/*/SHA256SUMS
             .verification/hls-nonkey-aac-derived/*/receipt.json
             .verification/hls-nonkey-aac-derived/*/SHA256SUMS
+            .verification/hls-nonkey-aac-clock/*/receipt.json
+            .verification/hls-nonkey-aac-clock/*/SHA256SUMS
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
