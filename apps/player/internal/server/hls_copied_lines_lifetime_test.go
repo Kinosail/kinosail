@@ -40,39 +40,13 @@ func verifyCopiedHLSProbeLifetime(t *testing.T, executable, mode string, reject,
 	started := time.Now()
 	ctx, cancel := context.WithTimeout(t.Context(), time.Second)
 	defer cancel()
-	var processes []copiedHLSProbeObservation
-	markers, visits := 0, 0
+	marker := copiedHLSProbeMarkers{t: t, cancel: cancel, reject: reject, cancelNow: cancelNow}
 	maximumBytes, maximumLines := int64(1024), 1
 	if mode == "bytes" {
 		maximumBytes, maximumLines = 64, 2
 	}
-	err := copiedHLSLines(ctx, executable, copiedHLSProbeArguments(mode), maximumBytes, maximumLines, func(line string) error {
-		visits++
-		fields := strings.Fields(line)
-		if len(fields) != 3 || fields[0] != "probe-started" || markers != 0 {
-			t.Logf("nonkey owned probe unexpected marker length=%d fields=%d", len(line), len(fields))
-			return errCopiedHLSIndex
-		}
-		for _, field := range fields[1:] {
-			pid, parseErr := strconv.Atoi(field)
-			if parseErr != nil || pid <= 1 || pid >= 1<<30 {
-				return errCopiedHLSIndex
-			}
-			process, observeErr := observeCopiedHLSProbe(pid)
-			if observeErr != nil {
-				return errCopiedHLSIndex
-			}
-			processes = append(processes, process)
-		}
-		markers++
-		if cancelNow {
-			cancel()
-		}
-		if reject {
-			return errCopiedHLSIndex
-		}
-		return nil
-	})
+	err := copiedHLSLines(ctx, executable, copiedHLSProbeArguments(mode), maximumBytes, maximumLines, marker.visit)
+	processes, markers, visits := marker.processes, marker.markers, marker.visits
 	t.Cleanup(func() { settleCopiedHLSProbeFixture(t, started, processes) })
 	settled := copiedHLSProbeSettled(processes)
 	for !settled && time.Since(started) < 2*time.Second {
@@ -87,6 +61,51 @@ func verifyCopiedHLSProbeLifetime(t *testing.T, executable, mode string, reject,
 	if elapsed > 2*time.Second || !settled {
 		t.Fatal("configured probe exceeded its shared budget or left an owned process")
 	}
+}
+
+type copiedHLSProbeMarkers struct {
+	t         *testing.T
+	processes []copiedHLSProbeObservation
+	markers   int
+	visits    int
+	reject    bool
+	cancelNow bool
+	cancel    context.CancelFunc
+}
+
+func (marker *copiedHLSProbeMarkers) visit(line string) error {
+	marker.visits++
+	fields := strings.Fields(line)
+	if len(fields) != 3 || fields[0] != "probe-started" || marker.markers != 0 {
+		marker.t.Logf("nonkey owned probe unexpected marker length=%d fields=%d", len(line), len(fields))
+		return errCopiedHLSIndex
+	}
+	for _, field := range fields[1:] {
+		if marker.observe(field) != nil {
+			return errCopiedHLSIndex
+		}
+	}
+	marker.markers++
+	if marker.cancelNow {
+		marker.cancel()
+	}
+	if marker.reject {
+		return errCopiedHLSIndex
+	}
+	return nil
+}
+
+func (marker *copiedHLSProbeMarkers) observe(field string) error {
+	pid, parseErr := strconv.Atoi(field)
+	if parseErr != nil || pid <= 1 || pid >= 1<<30 {
+		return errCopiedHLSIndex
+	}
+	process, err := observeCopiedHLSProbe(pid)
+	if err != nil {
+		return errCopiedHLSIndex
+	}
+	marker.processes = append(marker.processes, process)
+	return nil
 }
 
 func TestCopiedHLSLinesHealthy(t *testing.T) {

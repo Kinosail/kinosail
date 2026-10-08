@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 	"crypto/sha256"
-	"fmt"
+	"encoding/hex"
 	"io"
 	"os"
 	"os/exec"
@@ -73,7 +73,7 @@ func copiedHLSProbeFileHash(t *testing.T, path string, maximum int64) string {
 	if count, err := io.Copy(hash, io.LimitReader(file, maximum+1)); err != nil || count != info.Size() {
 		t.Fatal("configured probe fixture changed while being bound")
 	}
-	return fmt.Sprintf("%x", hash.Sum(nil))
+	return hex.EncodeToString(hash.Sum(nil))
 }
 
 func copiedHLSProbeArguments(mode string) []string {
