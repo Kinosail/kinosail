@@ -74,6 +74,7 @@ test.describe("large offline transfers", () => {
         });
       } finally { worker.terminate(); URL.revokeObjectURL(url); }
     }, jobID!);
+    await test.info().attach("offline-opfs-capability", { contentType: "application/json", body: JSON.stringify({ schemaVersion: 1, writer: "opfs-sync-worker", supported: supportsOPFS }) });
     test.skip(!supportsOPFS, "This engine lacks the OPFS sync writer; IndexedDB quota resume is covered separately.");
     await page.evaluate(({ id, itemID, profileID, quality, sha256, size, title }) => new Promise<void>((resolve, reject) => {
       const request = indexedDB.open("kinosail-offline-v1", 4);

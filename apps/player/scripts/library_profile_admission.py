@@ -84,7 +84,7 @@ CAMERA_CASES = (
 
 def selection(arguments):
     if (not isinstance(arguments, (tuple, list)) or len(arguments) != 3
-            or arguments[0] not in ('library-owner', 'camera-fake', 'responsive-shell', 'playback-start') or arguments[1] not in PROJECTS
+            or arguments[0] not in ('library-owner', 'camera-fake', 'responsive-shell', 'playback-start', 'offline-storage') or arguments[1] not in PROJECTS
             or arguments[2] != 'fresh'):
         raise ValueError('fixed library profile/project/fresh state required')
     return tuple(arguments)
@@ -95,6 +95,9 @@ def profile_cases(profile, project=None):
         raise ValueError('fixed project required')
     if profile == 'playback-start':
         from playback_profile_cases import selected_cases
+        return selected_cases(project)
+    if profile == 'offline-storage':
+        from offline_profile_cases import selected_cases
         return selected_cases(project)
     if profile == 'responsive-shell':
         from responsive_profile_cases import CASES as responsive_cases
@@ -187,6 +190,10 @@ def admit(raw, profile, project, state, completed):
         if profile == 'playback-start':
             from playback_profile_cases import expected_skips
             skips = expected_skips(project)
+        elif profile == 'offline-storage' and completed:
+            from offline_profile_cases import capability, OPFS_CASE, OPFS_REASON
+            if not capability(value)[0]:
+                skips = {OPFS_CASE: OPFS_REASON}
         return admit_report(value, project, completed, profile_cases(profile, project), skips)
     except (KeyError, TypeError, AttributeError, UnicodeError, RecursionError) as error:
         raise ValueError('invalid fixed library proof') from error

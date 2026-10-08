@@ -98,7 +98,8 @@ if library:
                    selection={'camera-fake': 'closed19 synthetic camera identities',
                               'library-owner': 'closed46 library Owner identities',
                               'responsive-shell': 'closed99 responsive Owner identities',
-                              'playback-start': 'closed27/25 playback identities with explicit CDP dispositions'}[args.profile],
+                              'playback-start': 'closed27/25 playback identities with explicit CDP dispositions',
+                              'offline-storage': 'closed17 offline identities with actual OPFS capability'}[args.profile],
                    discoverySHA256=hashlib.sha256(discovery).hexdigest())
 
 
@@ -188,6 +189,12 @@ try:
                 receipt['journeys'].update(selected=len(identities), passed=len(identities)-len(skips), retries=0,
                     allowedSkipped=[{'file': file, 'fullTitle': title, 'reason': reason}
                                     for (file, title), reason in sorted(skips.items())])
+            elif args.profile == 'offline-storage':
+                from offline_profile_cases import capability, OPFS_CASE, OPFS_REASON
+                supported, body_hash = capability(json.loads(raw))
+                receipt['journeys'].update(selected=17, passed=17 if supported else 16, retries=0,
+                    opfs={'supported': supported, 'bodySHA256': body_hash},
+                    allowedSkipped=[] if supported else [{'file': OPFS_CASE[0], 'fullTitle': OPFS_CASE[1], 'reason': OPFS_REASON}])
         else:
             receipt['journeys'] = verify_results(result_path, args.required_title)
 except (RuntimeError, KeyError, OSError, ValueError) as error:
