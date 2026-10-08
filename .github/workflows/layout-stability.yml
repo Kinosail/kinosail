@@ -47,7 +47,7 @@ jobs:
         timeout-minutes: 1
         run: |
           python3 - <<'PY'
-          import hashlib, json, pathlib
+          import hashlib, json, pathlib, re
           directory = pathlib.Path('.verification/copied-probe')
           diff = directory / 'format.diff'
           print(json.dumps({'formatDiffBytes': diff.stat().st_size if diff.exists() else -1,
@@ -56,18 +56,26 @@ jobs:
           with path.open('rb') as stream: raw = stream.read((1 << 20) + 1)
           assert 0 < len(raw) <= (1 << 20), 'probe_receipt_bound'
           rows = [json.loads(line) for line in raw.splitlines()]
-          assert not any(r.get('Action') == 'skip' for r in rows), 'probe_no_skip'
-          required = ['TestCopiedHLSLinesOwnedLifetime', 'TestCopiedHLSLinesHealthy', 'TestCopiedHLSLinesCancelledBeforeStart']
-          assert all(any(r.get('Action') == 'run' and r.get('Test') == name for r in rows) for name in required), 'probe_controls_executed'
-          outcomes = {r.get('Test'): r['Action'] for r in rows if r.get('Test') and r.get('Action') in ['pass', 'fail']}
-          controls = ['TestCopiedHLSLinesCancelledBeforeStart', 'TestCopiedHLSLinesHealthy', 'TestCopiedHLSLinesHealthy/healthy', 'TestCopiedHLSLinesHealthy/healthy-closed']
-          print(json.dumps({'receiptSHA256': hashlib.sha256(raw).hexdigest(), 'bytes': len(raw), 'noSkip': True}))
+          print(json.dumps({'receiptSHA256': hashlib.sha256(raw).hexdigest(), 'bytes': len(raw)}))
           for row in rows:
+              if row.get('Action') in ['build-output', 'build-fail']:
+                  output = row.get('Output', '')
+                  assert len(output) <= 8192, 'probe_build_projection_bound'
+                  diagnostic = re.search(r'([A-Za-z0-9_]+\.go):(\d+):(\d+): (undefined|cannot use|unknown field|syntax error)', output)
+                  if diagnostic:
+                      print(json.dumps({'build': row['Action'], 'source': diagnostic[1], 'line': int(diagnostic[2]), 'column': int(diagnostic[3]), 'class': diagnostic[4]}))
+                  elif row['Action'] == 'build-fail':
+                      print(json.dumps({'build': 'build-fail', 'diagnostic': 'bounded receipt retained'}))
               test = row.get('Test', '')
               output = row.get('Output', '')
               if test.startswith('TestCopiedHLSLines') and (row.get('Action') in ['pass', 'fail'] or 'nonkey owned probe' in output):
                   assert len(output) <= 1024, 'probe_projection_bound'
                   print(json.dumps(row, separators=(',', ':')))
+          assert not any(r.get('Action') == 'skip' for r in rows), 'probe_no_skip'
+          required = ['TestCopiedHLSLinesOwnedLifetime', 'TestCopiedHLSLinesHealthy', 'TestCopiedHLSLinesCancelledBeforeStart']
+          assert all(any(r.get('Action') == 'run' and r.get('Test') == name for r in rows) for name in required), 'probe_controls_executed'
+          outcomes = {r.get('Test'): r['Action'] for r in rows if r.get('Test') and r.get('Action') in ['pass', 'fail']}
+          controls = ['TestCopiedHLSLinesCancelledBeforeStart', 'TestCopiedHLSLinesHealthy', 'TestCopiedHLSLinesHealthy/healthy', 'TestCopiedHLSLinesHealthy/healthy-closed']
           assert all(outcomes.get(name) == 'pass' for name in controls), 'probe_healthy_controls_pass'
           cases = ['held_stdout', 'early_stdout_closure', 'parent_exits_before_descendant', 'scanner_rejection', 'explicit_cancellation', 'byte_limit_rejection', 'line_limit_rejection']
           assert all(outcomes.get('TestCopiedHLSLinesOwnedLifetime/' + name) in ['pass', 'fail'] for name in cases), 'probe_all_lifetime_results'
