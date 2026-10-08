@@ -24,6 +24,8 @@ func TestCopiedHLSLinesOwnedLifetime(t *testing.T) {
 		{name: "parent exits before descendant", mode: "orphan"},
 		{name: "scanner rejection", mode: "held", reject: true, wantError: true},
 		{name: "explicit cancellation", mode: "held", cancel: true, wantError: true},
+		{name: "byte limit rejection", mode: "bytes", wantError: true},
+		{name: "line limit rejection", mode: "lines", wantError: true},
 	}
 	for _, test := range cases {
 		t.Run(test.name, func(t *testing.T) {
@@ -42,8 +44,13 @@ func verifyCopiedHLSProbeLifetime(t *testing.T, mode string, reject, cancelNow, 
 		t.Fatal(err)
 	}
 	var processes []copiedHLSProbeObservation
-	markers := 0
-	err = copiedHLSLines(ctx, executable, copiedHLSProbeArguments(mode), 1024, 1, func(line string) error {
+	markers, visits := 0, 0
+	maximumBytes := int64(1024)
+	if mode == "bytes" {
+		maximumBytes = 64
+	}
+	err = copiedHLSLines(ctx, executable, copiedHLSProbeArguments(mode), maximumBytes, 1, func(line string) error {
+		visits++
 		fields := strings.Fields(line)
 		if len(fields) != 3 || fields[0] != "probe-started" || markers != 0 {
 			return errCopiedHLSIndex
@@ -76,7 +83,7 @@ func verifyCopiedHLSProbeLifetime(t *testing.T, mode string, reject, cancelNow, 
 	}
 	elapsed := time.Since(started)
 	t.Logf("nonkey owned probe mode=%s elapsed=%s budget=2s markers=%d parent-and-child-settled=%t error=%t", mode, elapsed, markers, settled, err != nil)
-	if markers != 1 || len(processes) != 2 || (err != nil) != wantError {
+	if markers != 1 || visits != 1 || len(processes) != 2 || (err != nil) != wantError {
 		t.Fatal("configured probe did not execute its expected failure or healthy outcome")
 	}
 	if elapsed > 2*time.Second || !settled {
@@ -121,7 +128,7 @@ func TestCopiedHLSLinesCancelledBeforeStart(t *testing.T) {
 		return nil
 	})
 	if err == nil || lines != 0 {
-		t.Fatal("cancelled configured probe started or was accepted")
+		t.Fatal("cancelled configured probe produced accepted output or succeeded")
 	}
 }
 
@@ -151,5 +158,65 @@ func settleCopiedHLSProbeFixture(t *testing.T, started time.Time, processes []co
 	t.Logf("nonkey owned probe fixture parent-and-child-settled=%t", settled)
 	if len(processes) > 0 && !settled {
 		t.Error("fixed three-second probe fixture did not settle within cleanup")
+	}
+}
+
+func TestCopiedHLSLinesMissingExecutable(t *testing.T) {
+	executable, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	missing := executable + "-missing-copied-probe"
+	if _, statErr := os.Stat(missing); !os.IsNotExist(statErr) {
+		t.Fatal("missing executable fixture is not absent")
+	}
+	ctx, cancel := context.WithTimeout(t.Context(), 2*time.Second)
+	defer cancel()
+	lines := 0
+	err = copiedHLSLines(ctx, missing, nil, 1024, 1, func(string) error {
+		lines++
+		return nil
+	})
+	if err == nil || lines != 0 {
+		t.Fatal("missing configured executable was accepted")
+	}
+}
+
+func TestCopiedHLSLinesInsufficientBudget(t *testing.T) {
+	executable, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	ctx, cancel := context.WithTimeout(t.Context(), 50*time.Millisecond)
+	defer cancel()
+	lines := 0
+	err = copiedHLSLines(ctx, executable, copiedHLSProbeArguments("healthy"), 1024, 1, func(string) error {
+		lines++
+		return nil
+	})
+	if err == nil || lines != 0 {
+		t.Fatal("probe with insufficient owned-settlement budget was accepted")
+	}
+}
+
+func TestCopiedHLSLinesImmediateExit(t *testing.T) {
+	executable, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for range 16 {
+		ctx, cancel := context.WithTimeout(t.Context(), 2*time.Second)
+		lines := 0
+		err = copiedHLSLines(ctx, executable, copiedHLSProbeArguments("healthy"), 1024, 1, func(line string) error {
+			if line != "probe-ready" {
+				return errCopiedHLSIndex
+			}
+			lines++
+			return nil
+		})
+		cancel()
+		if err != nil || lines != 1 {
+			t.Fatal("immediately exiting configured probe was lost during registration")
+		}
 	}
 }

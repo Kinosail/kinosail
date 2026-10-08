@@ -50,6 +50,12 @@ func TestCopiedHLSProbeFixture(t *testing.T) {
 	if mode == "closed" {
 		_ = os.Stdout.Close()
 	}
+	if mode == "bytes" {
+		_, _ = fmt.Fprintln(os.Stdout, strings.Repeat("x", 64))
+	}
+	if mode == "lines" {
+		_, _ = fmt.Fprintln(os.Stdout, "probe-extra")
+	}
 	if mode == "orphan" {
 		time.Sleep(300 * time.Millisecond)
 		os.Exit(0)
