@@ -66,6 +66,8 @@ class WorkflowSecurityTests(unittest.TestCase):
         command = shlex.split(step.split('run: ', 1)[1].strip())
         self.assertEqual(command[:2], ['node', '--test'])
         self.assertEqual(command.count('scripts/testing/navigation-repeat-offer.test.mjs'), 1)
+        self.assertEqual(command.count('scripts/testing/supporter-share-availability.test.mjs'), 1)
+        self.assertTrue((ROOT / 'scripts/testing/supporter-share-availability.test.mjs').is_file())
         self.assertTrue((ROOT / 'scripts/testing/navigation-repeat-offer.test.mjs').is_file())
         self.assertEqual(command.count('scripts/testing/provider-profile-fixture.test.mjs'), 1)
         self.assertTrue((ROOT / 'scripts/testing/provider-profile-fixture.test.mjs').is_file())

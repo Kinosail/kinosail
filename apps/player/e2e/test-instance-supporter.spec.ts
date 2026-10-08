@@ -158,7 +158,49 @@ test("Supporter badge rendering and share conversion remain responsive", async (
 	const page = await context.newPage();
   await login(page);
   await providerRoute(page, "**/api/v1/supporter/certificates/living-standard.svg", async (route) => route.fulfill({ status: 200, contentType: "image/svg+xml", body: certificate }));
-  await page.goto("/supporter");
+  const origin = new URL(testInfo.project.use.baseURL!).origin;
+  const facts = {responseObserved: false, ownedResponse: false, responseStatus: null as number | null,
+    requestFailed: false, pageErrorCount: 0, scriptPresent: null as boolean | null,
+    functionType: "unavailable", readyState: "unavailable"};
+  const scriptURL = (raw: string) => {
+    if (typeof raw !== "string" || raw.length > 4096) return null;
+    try {const url = new URL(raw); return url.pathname === "/static/supporter.js" ? url : null;}
+    catch {return null;}
+  };
+  const response = (value: {url(): string; status(): number}) => {
+    const url = scriptURL(value.url());
+    if (!url) return;
+    facts.responseObserved = true;
+    facts.ownedResponse = url.origin === origin;
+    const status = value.status();
+    facts.responseStatus = Number.isInteger(status) && status >= 100 && status <= 599 ? status : null;
+  };
+  const failed = (value: {url(): string}) => {if (scriptURL(value.url())) facts.requestFailed = true;};
+  const pageError = () => {facts.pageErrorCount = Math.min(64, facts.pageErrorCount + 1);};
+  page.on("response", response); page.on("requestfailed", failed); page.on("pageerror", pageError);
+  let available = false;
+  try {
+    await page.goto("/supporter");
+    await expect.poll(() => page.evaluate(() => typeof (window as Window & {supporterShareFile?: unknown}).supporterShareFile),
+      {timeout: 10_000}).toBe("function");
+    available = true;
+  } finally {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      const state = await Promise.race([page.evaluate(() => ({
+        scriptPresent: Boolean(document.querySelector('script[src^="/static/supporter.js"]')),
+        functionType: typeof (window as Window & {supporterShareFile?: unknown}).supporterShareFile,
+        readyState: document.readyState})), new Promise<null>(resolve => {timer = setTimeout(() => resolve(null), 500);})]);
+      if (state) {facts.scriptPresent = state.scriptPresent; facts.functionType = state.functionType === "function" || state.functionType === "undefined" ? state.functionType : "unavailable";
+        facts.readyState = ["loading", "interactive", "complete"].includes(state.readyState) ? state.readyState : "unavailable";}
+    } catch { /* Diagnostic failure cannot replace the actual script readiness failure. */ }
+    finally {clearTimeout(timer);}
+    try {await Promise.race([testInfo.attach("supporter-share-script-availability", {contentType: "application/json", body: JSON.stringify(facts)}),
+      new Promise(resolve => {timer = setTimeout(resolve, 500);})]);}
+    catch { /* Retain the original assertion even if attachment storage fails. */ }
+    finally {clearTimeout(timer); page.off("response", response); page.off("requestfailed", failed); page.off("pageerror", pageError);}
+    if (!available) {try {await context.close();} catch { /* Browser owns final context cleanup. */ }}
+  }
   const galleryMilliseconds = await page.evaluate(async () => {
     const start = performance.now();
     document.querySelectorAll(".supporter-badge").forEach((badge) => badge.getBoundingClientRect());
