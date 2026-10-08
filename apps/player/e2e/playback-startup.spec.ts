@@ -1,3 +1,4 @@
+import {selectCompatibilityDocument} from "./compatibility-document.mjs";
 import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
 import { createHash } from "node:crypto";
@@ -111,7 +112,7 @@ test("selecting compatibility playback starts without a second play click", asyn
 
 	const started = Date.now();
 	await page.getByText("Playback & downloads", { exact: true }).click();
-	await page.locator(".more-player-actions a.mode").filter({ hasText: "Playback" }).click();
+	await selectCompatibilityDocument(page, page.locator(".more-player-actions a.mode").filter({ hasText: "Playback" }), started);
 	const video = page.locator("video");
 	await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime), { timeout: 20_000 }).toBeGreaterThan(0.25);
 	const state = await video.evaluate((element: HTMLVideoElement) => ({ paused: element.paused, seconds: element.currentTime }));

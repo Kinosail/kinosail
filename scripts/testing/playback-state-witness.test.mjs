@@ -25,3 +25,44 @@ test('observation and attachment failures do not replace recipe errors',async()=
  await attachPlaybackState(f.page,f.info,'/watch/item','before-method');assert.equal(JSON.stringify(f.rows).includes('PRIVATE'),false);
  f.info.attach=async()=>{throw Error('PRIVATE');};await attachPlaybackState(f.page,f.info,'/watch/item','before-method');
 });
+
+test('loading returns validated facts and confirmed Watched sends exactly one trusted public gesture',async()=>{
+ const {startWatchedPlayback}=await import('../../apps/player/e2e/playback-state-witness.mjs');
+ for(const watched of [true,false]){
+  const f=make(JSON.stringify({item:{progress:{seconds:0,watched}}})),calls=[];
+  f.page.locator=selector=>({focus:async()=>calls.push(['focus',selector])});
+  f.page.keyboard={press:async key=>calls.push(['press',key])};
+  const facts=await attachPlaybackState(f.page,f.info,'/watch/item','before-loading');
+  assert.deepEqual(facts,f.rows[0]);
+  await startWatchedPlayback(f.page,facts);
+  assert.deepEqual(calls,watched?[['focus','.media-stage'],['press','Space']]:[]);
+ }
+});
+test('unavailable malformed or failed observations cannot cause a playback gesture',async()=>{
+ const {startWatchedPlayback}=await import('../../apps/player/e2e/playback-state-witness.mjs');
+ const page={locator:()=>{throw Error('unexpected gesture');}};
+ for(const facts of [undefined,null,{}, {schemaVersion:1,stage:'before-loading',status:200,unavailable:true},
+ {schemaVersion:1,stage:'before-method',status:200,progress:{seconds:0,watched:true}},
+ {schemaVersion:1,stage:'before-loading',status:200,progress:{seconds:-1,watched:true}},
+ {schemaVersion:1,stage:'before-loading',status:200,progress:{seconds:0,watched:'true'}},
+ {schemaVersion:1,stage:'before-loading',status:200,progress:{seconds:0,watched:true},secret:'PRIVATE'}])await startWatchedPlayback(page,facts);
+ for(const failure of ['request','attach']){
+  const f=make(JSON.stringify({item:{progress:{seconds:0,watched:true}}}));
+  if(failure==='request')f.page.request.get=async()=>{throw Error('PRIVATE');};
+  else f.info.attach=async()=>{throw Error('PRIVATE');};
+  const facts=await attachPlaybackState(f.page,f.info,'/watch/item','before-loading');
+  const original=Error('original clock assertion');
+  await assert.rejects(async()=>{await startWatchedPlayback(page,facts);throw original;},error=>error===original);
+ }
+});
+
+test('attachment deadline cannot authorize intent and public gesture failures retain identity',async()=>{
+ const {startWatchedPlayback}=await import('../../apps/player/e2e/playback-state-witness.mjs');
+ const f=make(JSON.stringify({item:{progress:{seconds:0,watched:true}}}));f.info.attach=()=>new Promise(()=>{});
+ const facts=await attachPlaybackState(f.page,f.info,'/watch/item','before-loading');
+ assert.equal(facts.unavailable,true);
+ await startWatchedPlayback({locator:()=>{throw Error('unexpected gesture');}},facts);
+ const original=Error('public focus failed');
+ await assert.rejects(startWatchedPlayback({locator:()=>({focus:async()=>{throw original;}})},
+ {schemaVersion:1,stage:'before-loading',status:200,progress:{seconds:0,watched:true}}),error=>error===original);
+});

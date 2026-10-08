@@ -37,8 +37,21 @@ export async function attachPlaybackState(page, info, watch, stage) {
       return {schemaVersion: 1, stage, status, progress: {seconds, watched}};
     })().catch(() => value), new Promise(resolve => {timer = setTimeout(() => resolve(value), 1200);})]);
     clearTimeout(timer);
-    await Promise.race([info.attach('playback-state', {body: JSON.stringify(facts), contentType: 'application/json'}),
-      new Promise(resolve => {timer = setTimeout(resolve, 500);})]);
+    const attached = await Promise.race([info.attach('playback-state', {body: JSON.stringify(facts), contentType: 'application/json'}).then(() => true),
+      new Promise(resolve => {timer = setTimeout(() => resolve(false), 500);})]);
+    return attached ? facts : value;
   } catch { /* A failed observation must preserve the recipe's original assertion. */ }
   finally {clearTimeout(timer);}
+  return value;
+}
+
+// Watched titles intentionally require public playback intent; unavailable facts retain the automatic oracle.
+export async function startWatchedPlayback(page, facts) {
+  if (!facts || Object.keys(facts).sort().join(',') !== 'progress,schemaVersion,stage,status'
+      || facts.schemaVersion !== 1 || facts.stage !== 'before-loading' || facts.status !== 200
+      || !facts.progress || Object.keys(facts.progress).sort().join(',') !== 'seconds,watched'
+      || typeof facts.progress.seconds !== 'number' || !Number.isFinite(facts.progress.seconds)
+      || facts.progress.seconds < 0 || facts.progress.seconds > 31622400 || facts.progress.watched !== true) return;
+  await page.locator('.media-stage').focus();
+  await page.keyboard.press('Space');
 }
