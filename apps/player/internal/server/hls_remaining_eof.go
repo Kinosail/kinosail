@@ -3,6 +3,7 @@ package server
 import (
 	"bytes"
 	"context"
+	"io/fs"
 	"net/http"
 	"path/filepath"
 	"time"
@@ -158,4 +159,17 @@ func (manager *hlsManager) remainingColdAACComplete(ctx context.Context, item li
 		return nil, err
 	}
 	return manager.remainingColdAACSnapshot(ctx, item, recipe, key, policy, job, duration, generation)
+}
+
+func (manager *hlsManager) remainingColdAACResponse(writer http.ResponseWriter, request *http.Request, item library.Item, recipe hlsRecipe, key, name string, duration float64, projection func([]byte) []byte) (func([]byte) []byte, bool) {
+	if projection != nil {
+		return projection, true
+	}
+	completion, err := manager.remainingColdAACProjection(request.Context(), item, recipe, key, name, request.Method, duration)
+	if err != nil {
+		remainingColdAACRejected(request.Context(), recipe, item, err)
+		localizedError(writer, request, "compatible audio is still being prepared", http.StatusServiceUnavailable)
+		return nil, false
+	}
+	return completion, true
 }
