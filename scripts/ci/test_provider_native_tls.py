@@ -42,3 +42,22 @@ class ProviderNativeTLS(unittest.TestCase):
         rows=self.effects.read_text().splitlines();self.assertEqual(rows.count('retained'),2)
         self.assertEqual(rows.count('rm'),1)
 
+
+    def test_firefox_owned_policy_environment_reaches_child_and_is_removed(self):
+        result=self.call('python3() { case "$1" in *browser-firefox-policy.py) printf "/owned/policies.json\\n";; esac; }\n'
+                         'trust_browser_fixture_tls docker abcdef123456 "$2" 123-456 fake-provider\n'
+                         'bash -c \'test "$PLAYWRIGHT_FIREFOX_POLICIES_JSON" = /owned/policies.json && test "$KINOSAIL_FIREFOX_TRUST_NONCE" = 123-456\'\n'
+                         'remove_browser_fixture_trust\n'
+                         'test "${PLAYWRIGHT_FIREFOX_POLICIES_JSON+x}" != x\n'
+                         'test "${KINOSAIL_FIREFOX_TRUST_NONCE+x}" != x',KINOSAIL_BROWSER_PROJECT='firefox')
+        self.assertEqual(result.returncode,0,result.stderr)
+
+    def test_firefox_cleanup_preserves_a_changed_foreign_launch_environment(self):
+        result=self.call('python3() { case "$1" in *browser-firefox-policy.py) printf "/owned/policies.json\\n";; esac; }\n'
+                         'trust_browser_fixture_tls docker abcdef123456 "$2" 123-456 fake-provider\n'
+                         'export PLAYWRIGHT_FIREFOX_POLICIES_JSON=/foreign/policy\n'
+                         'export KINOSAIL_FIREFOX_TRUST_NONCE=foreign\n'
+                         'remove_browser_fixture_trust\n'
+                         'test "$PLAYWRIGHT_FIREFOX_POLICIES_JSON" = /foreign/policy\n'
+                         'test "$KINOSAIL_FIREFOX_TRUST_NONCE" = foreign',KINOSAIL_BROWSER_PROJECT='firefox')
+        self.assertEqual(result.returncode,0,result.stderr)

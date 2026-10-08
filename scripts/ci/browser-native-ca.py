@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import re
 import selectors
+import signal
 import time
 import tempfile
 import stat
@@ -14,14 +15,14 @@ import subprocess
 import sys
 
 
-def run(argv, data=None, cwd=None):
+def run(argv, data=None, cwd=None, timeout=10, check=True):
     source = tempfile.TemporaryFile()
     if data is not None: source.write(data)
     source.seek(0)
-    try: process = subprocess.Popen(argv, stdin=source, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=cwd)
+    try: process = subprocess.Popen(argv, stdin=source, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=cwd, start_new_session=True)
     except BaseException: source.close(); raise
     streams = selectors.DefaultSelector(); captured = [bytearray(), bytearray()]
-    deadline = time.monotonic() + 10
+    deadline = time.monotonic() + timeout
     try:
         streams.register(process.stdout, selectors.EVENT_READ, 0)
         streams.register(process.stderr, selectors.EVENT_READ, 1)
@@ -34,15 +35,16 @@ def run(argv, data=None, cwd=None):
                 captured[key.data].extend(block)
                 if len(captured[key.data]) > (65536 if key.data == 0 else 8192):
                     raise ValueError('native trust tool output overflow')
-        if process.wait(timeout=max(.01, deadline-time.monotonic())):
+        code = process.wait(timeout=max(.01, deadline-time.monotonic()))
+        if code and check:
             raise ValueError('native trust tool failed')
-        return bytes(captured[0])
+        return bytes(captured[0]) if check else (code, bytes(captured[0]))
     finally:
-        if process.poll() is None: process.kill()
+        try: os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError: pass
         process.wait(); streams.close(); source.close()
         for file in (process.stdin, process.stdout, process.stderr):
             if file is not None: file.close()
-
 
 def canonical(path, directory=False):
     path = Path(path)
@@ -54,7 +56,6 @@ def canonical(path, directory=False):
     if info.st_uid != os.getuid() or not (stat.S_ISDIR(info.st_mode) if directory else stat.S_ISREG(info.st_mode)):
         raise ValueError('invalid native trust owner or type')
     return info
-
 
 def read_regular(path, maximum):
     before = canonical(path)
@@ -74,7 +75,6 @@ def read_regular(path, maximum):
             raise ValueError('native trust file changed or exceeded bounds')
         return bytes(result)
     finally: os.close(fd)
-
 
 def identity(path, directory=False):
     info = canonical(path, directory)
@@ -171,6 +171,8 @@ def contains_name(text, name):
 
 def install(project, certificate, workspace, nonce):
     certificate, workspace, receipt = arguments(project, certificate, workspace, nonce)
+    if project == 'firefox' and any(key in os.environ for key in ('PLAYWRIGHT_FIREFOX_POLICIES_JSON', 'KINOSAIL_FIREFOX_TRUST_NONCE')):
+        raise ValueError('foreign explicit Firefox policy')
     digest = fingerprint(certificate)
     if os.path.lexists(receipt): raise ValueError('native trust receipt already exists')
     state = {'project': project, 'nonce': nonce, 'certificate': digest, 'workspace': identity(workspace, True)}
@@ -279,12 +281,10 @@ def remove(project, certificate, workspace, nonce):
         os.unlink(receipt.name, dir_fd=parent)
     finally: os.close(parent)
 
-
 def main():
     if len(sys.argv) != 6 or sys.argv[1] not in ('install', 'remove'): raise ValueError('invalid native trust invocation')
     operation = install if sys.argv[1] == 'install' else remove
     operation(sys.argv[2], Path(sys.argv[3]), Path(sys.argv[4]), sys.argv[5])
-
 
 def cli():
     try: main()

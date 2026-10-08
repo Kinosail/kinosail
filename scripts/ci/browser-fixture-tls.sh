@@ -9,6 +9,7 @@ BROWSER_FIXTURE_NODE_CA_PATH=""
 BROWSER_FIXTURE_NATIVE_PROJECT=""
 BROWSER_FIXTURE_NATIVE_WORKSPACE=""
 BROWSER_FIXTURE_NATIVE_NONCE=""
+BROWSER_FIXTURE_FIREFOX_POLICY=""
 
 browser_fixture_uses_tls() {
   if [[ $# -gt 1 || "${1:-}" != '' && "${1:-}" != fake-provider ]]; then return 2; fi
@@ -84,7 +85,12 @@ install_browser_fixture_ca() {
 }
 
 install_browser_native_ca() {
-  python3 "${BASH_SOURCE[0]%/*}/browser-native-ca.py" install "$@"
+  python3 "${BASH_SOURCE[0]%/*}/browser-native-ca.py" install "$@" || return
+  if [[ "$1" == firefox ]]; then
+    BROWSER_FIXTURE_FIREFOX_POLICY="$(python3 "${BASH_SOURCE[0]%/*}/browser-firefox-policy.py" "$2" "$3" "$4")" || return
+    export PLAYWRIGHT_FIREFOX_POLICIES_JSON="$BROWSER_FIXTURE_FIREFOX_POLICY"
+    export KINOSAIL_FIREFOX_TRUST_NONCE="$4"
+  fi
 }
 
 remove_browser_native_ca() {
@@ -96,6 +102,11 @@ remove_browser_fixture_trust() {
   local failed=0
   if [[ -n "$BROWSER_FIXTURE_NATIVE_PROJECT" ]]; then
     if remove_browser_native_ca; then
+      if [[ -n "$BROWSER_FIXTURE_FIREFOX_POLICY" && "${PLAYWRIGHT_FIREFOX_POLICIES_JSON-}" == "$BROWSER_FIXTURE_FIREFOX_POLICY" ]]; then
+        unset PLAYWRIGHT_FIREFOX_POLICIES_JSON
+        if [[ "${KINOSAIL_FIREFOX_TRUST_NONCE-}" == "$BROWSER_FIXTURE_NATIVE_NONCE" ]]; then unset KINOSAIL_FIREFOX_TRUST_NONCE; fi
+      fi
+      BROWSER_FIXTURE_FIREFOX_POLICY=""
       BROWSER_FIXTURE_NATIVE_PROJECT=""
       BROWSER_FIXTURE_NATIVE_WORKSPACE=""
       BROWSER_FIXTURE_NATIVE_NONCE=""

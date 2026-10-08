@@ -226,3 +226,40 @@ class NativeTrust(unittest.TestCase):
         receipt.write_text(json.dumps(state)); before=self.certs.copy(); self.effects.clear()
         with self.assertRaises(ValueError): self.remove()
         self.assertEqual(self.certs,before);self.assertEqual(self.effects,[])
+
+    def test_foreign_explicit_firefox_policy_rejects_before_install(self):
+        for key in ('PLAYWRIGHT_FIREFOX_POLICIES_JSON', 'KINOSAIL_FIREFOX_TRUST_NONCE'):
+            with patch.dict(os.environ, {key: '/foreign/policy'}):
+                with self.assertRaises(ValueError): self.install('firefox')
+        self.assertFalse((self.firefox.parent/'distribution').exists())
+        self.assertFalse(any(self.workspace.glob('browser-native-trust-*')))
+
+    def test_firefox_launch_binding_rejects_mutation_before_browser(self):
+        helper = HELPER.with_name('browser-firefox-policy.py')
+        spec = importlib.util.spec_from_file_location('firefox_policy', helper)
+        module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+        self.install('firefox')
+        policy = self.firefox.parent/'distribution/policies.json'
+        with patch.object(module.native, 'firefox_executable', return_value=self.firefox):
+            self.assertEqual(module.policy(self.cert,self.workspace,'123-456'), (policy,self.firefox))
+            for value in ('', 'unknown', '1'*33):
+                with self.assertRaises(ValueError): module.policy(self.cert,self.workspace,value)
+            before=policy.read_bytes(); policy.write_text('{}')
+            with self.assertRaises(ValueError): module.policy(self.cert,self.workspace,'123-456')
+            policy.write_bytes(before)
+            directory=policy.parent; directory.rename(directory.with_name('retained'))
+            directory.mkdir(); (directory/'policies.json').write_bytes(before)
+            with self.assertRaises(ValueError): module.policy(self.cert,self.workspace,'123-456')
+        self.assertEqual(self.effects, [])
+
+    def test_native_tool_deadline_terminates_owned_child_group(self):
+        import signal
+        child_pid=self.root/'child.pid'
+        code="import subprocess,time;from pathlib import Path;p=subprocess.Popen(['sleep','30']);Path("+repr(str(child_pid))+").write_text(str(p.pid));time.sleep(30)"
+        with self.assertRaises(ValueError): self.real_run([__import__('sys').executable,'-c',code],timeout=.3)
+        pid=int(child_pid.read_text())
+        try:
+            os.kill(pid,0)
+        except ProcessLookupError: return
+        self.addCleanup(lambda: os.kill(pid,signal.SIGKILL))
+        self.fail('owned tool descendant remains after deadline')
