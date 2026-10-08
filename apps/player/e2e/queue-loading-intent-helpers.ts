@@ -109,14 +109,17 @@ export async function runLoadingIntent(page: Page, info: TestInfo, command: "see
     expect(afterMetadata.readyState).toBeGreaterThanOrEqual(1);
     expect(afterMetadata.duration).toBeGreaterThan(savedPosition);
     expect(afterMetadata.position).toBeCloseTo(position, 1);
+    if (command === "stop") expect(afterMetadata.paused).toBe(true);
     await expect.poll(() => accepted.some(value => value.status === 204 && value.seconds === position && value.revision > 0)).toBe(true);
+    let publicReadback: number | undefined;
     await expect.poll(async () => {
       const response = await page.request.get(`/api/v1/items/${second.id}`);
       expect(response.status()).toBe(200);
-      return (await response.json()).item.progress.seconds;
+      publicReadback = (await response.json()).item.progress.seconds;
+      return publicReadback;
     }).toBeCloseTo(position, 1);
     await info.attach("accepted-current-public-progress", {body: JSON.stringify({command, position, savedPosition,
-      accepted, publicProgressStatus: 200, publicPosition: position}), contentType: "application/json"});
+      accepted, publicProgressStatus: 200, publicPosition: publicReadback}), contentType: "application/json"});
   } finally {
     unblock();
     await page.unroute(mediaRoute);
