@@ -1,5 +1,7 @@
 import { expect, test, type Locator, type Page, type Request as PlaywrightRequest, type TestInfo } from "@playwright/test";
 
+import {startPlaying} from "./checkpoint-setup-cases";
+
 type Checkpoint = {seconds: number; revision: number; sessionMatches?: boolean};
 type Observation = {key: string; iteration: number; testInfo: TestInfo};
 type Movie = {watch: string; media: Locator; id: string; session?: string};
@@ -23,7 +25,7 @@ test.describe("acknowledged Library navigation", () => {
     let release!: () => void;
     const acknowledgement = new Promise<void>(resolve => release = resolve);
     const writes: Array<{seconds: number; revision: number; sessionMatches: boolean}> = [];
-    await media.evaluate((video: HTMLVideoElement) => video.play());
+    await startPlaying(media);
     const start = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
     await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(start + 0.5);
     const leaveAt = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
@@ -61,7 +63,7 @@ test.describe("acknowledged Library navigation", () => {
       await expect.poll(async () => Number(await page.locator("video").getAttribute("data-start"))).toBeGreaterThanOrEqual(leaveAt - 0.1);
       await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThanOrEqual(2);
       await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThanOrEqual(leaveAt - 0.1);
-      await page.locator("video").evaluate((video: HTMLVideoElement) => video.play());
+      await startPlaying(page.locator("video"));
       await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(leaveAt + 0.2);
       await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.getVideoPlaybackQuality().totalVideoFrames)).toBeGreaterThan(2);
       await page.screenshot({path: testInfo.outputPath("acknowledged-library-reentry.png"), fullPage: true});
@@ -76,7 +78,7 @@ test.describe("acknowledged Library navigation", () => {
     // The populated Server/media are real; a synthetic 503 isolates the unique failed-navigation
     // continuation boundary that successful populated journeys cannot reliably produce.
     const {watch, media, id, session} = await openMovie(page, {key: "kinosail:checkpoint-failed-navigation", iteration: 0, testInfo});
-    await media.evaluate((video: HTMLVideoElement) => video.play());
+    await startPlaying(media);
     const start = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
     await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(start + 0.5);
     const before = await checkpoint(page, id, session);
@@ -93,7 +95,7 @@ test.describe("acknowledged Library navigation", () => {
       await page.screenshot({path: testInfo.outputPath("failed-library-save.png"), fullPage: true});
       // Continuing playback withdraws the Library intent; the next successful save must stay here.
       fail = false;
-      await media.evaluate((video: HTMLVideoElement) => video.play());
+      await startPlaying(media);
       const resumed = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
       await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(resumed + 0.3);
       await media.evaluate((video: HTMLVideoElement) => video.pause());
@@ -107,7 +109,7 @@ test.describe("acknowledged Library navigation", () => {
       await expect(page.locator("[data-progress-notice]")).toBeHidden();
       await expect(page).toHaveURL(url => url.pathname === watch);
       // A fresh failed exit still permits an explicit departure without discarding valid progress.
-      await media.evaluate((video: HTMLVideoElement) => video.play());
+      await startPlaying(media);
       await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(paused + 0.3);
       fail = true;
       await page.getByRole("link", {name: "Back to search results", exact: true}).click({noWaitAfter: true});
@@ -134,7 +136,7 @@ test.describe("acknowledged Library navigation", () => {
     // Synthetic HTTP failures protect the pending-navigation recovery seam; media/store remain real.
     for (const [iteration, status] of [401, 403].entries()) {
       const {watch, media, id, session} = await openMovie(page, {key: `kinosail:checkpoint-terminal-navigation:${iteration}`, iteration, testInfo});
-      await media.evaluate((video: HTMLVideoElement) => video.play());
+      await startPlaying(media);
       const start = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
       await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(start + 0.3);
       const before = await checkpoint(page, id, session);
@@ -167,7 +169,7 @@ test.describe("acknowledged Library navigation", () => {
     test.skip(phase !== "candidate", "historical sources are reserved for the original checkpoint reproductions");
     // A held public transport is the sole isolation: replay cannot rely on a naturally stalled Server.
     const {watch, media, id, session} = await openMovie(page, {key: "kinosail:checkpoint-navigation-deadline", iteration: 0, testInfo});
-    await media.evaluate((video: HTMLVideoElement) => video.play());
+    await startPlaying(media);
     const start = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
     await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(start + 0.3);
     const before = await checkpoint(page, id, session);
@@ -218,7 +220,7 @@ test.describe("acknowledged Library navigation", () => {
     test.skip(phase !== "candidate", "historical sources are reserved for the original checkpoint reproductions");
     // Both destinations/store are populated. Held transports expose the otherwise brief intent race.
     const {media, id, session} = await openMovie(page, {key: "kinosail:checkpoint-newer-destination", iteration: 0, testInfo});
-    await media.evaluate((video: HTMLVideoElement) => video.play());
+    await startPlaying(media);
     const start = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
     await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(start + 0.3);
     let releaseProgress!: () => void, releaseDestination!: () => void;

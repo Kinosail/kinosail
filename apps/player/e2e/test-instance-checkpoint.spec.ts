@@ -1,9 +1,9 @@
-import { expect, test, type Locator, type Page, type Request as PlaywrightRequest, type TestInfo } from "@playwright/test";
+import { expect, test, type Page, type Request as PlaywrightRequest, type TestInfo } from "@playwright/test";
 import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { configureTestInstance, login } from "./test-instance-helpers";
 import { registerNavigationCheckpoints } from "./checkpoint-navigation-cases";
-import { registerCheckpointSetup } from "./checkpoint-setup-cases";
+import { registerCheckpointSetup, startPlaying } from "./checkpoint-setup-cases";
 
 // Read-only diagnostics for the page's existing playback state; these declarations emit no JavaScript.
 declare const playbackPreparation: unknown;
@@ -91,14 +91,6 @@ async function observeExit(page: Page, id: string, key: string) {
     document.querySelector('[data-browse-return]')?.addEventListener("click", () => record("library-click"), {capture: true});
     record("observation-start");
   }, {item: id, key});
-}
-
-async function startPlaying(media: Locator) {
-  await media.evaluate((video: HTMLVideoElement) => {
-    void video.play().catch(() => {video.dataset.checkpointPlayRejected = "true";});
-  });
-  await expect.poll(() => media.evaluate((video: HTMLVideoElement) => !video.paused && !video.ended)).toBe(true);
-  await expect(media).not.toHaveAttribute("data-checkpoint-play-rejected", "true");
 }
 
 async function openMovie(page: Page, observation?: {key: string; iteration: number; testInfo: TestInfo; resumeAt?: number}) {

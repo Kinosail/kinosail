@@ -1,5 +1,28 @@
 import {expect, test, type Locator, type Page, type TestInfo} from "@playwright/test";
 
+type PlaybackAttempt = {finished: boolean; rejected: boolean};
+type PlaybackVideo = HTMLVideoElement & {checkpointPlayAttempt?: PlaybackAttempt};
+
+export async function startPlaying(media: Locator) {
+  const before = await media.evaluate((video: PlaybackVideo) => {
+    const attempt = {finished: false, rejected: false};
+    video.checkpointPlayAttempt = attempt;
+    const before = {frames: video.getVideoPlaybackQuality().totalVideoFrames, seconds: video.currentTime};
+    void video.play().catch(() => {if (!attempt.finished) attempt.rejected = true;});
+    return before;
+  });
+  await expect.poll(() => media.evaluate((video: PlaybackVideo, before) => {
+    if (video.checkpointPlayAttempt?.rejected) return "rejected";
+    return !video.paused && !video.ended && video.getVideoPlaybackQuality().totalVideoFrames > before.frames + 2
+      && video.currentTime > before.seconds + 0.2 ? "moving" : "pending";
+  }, before)).toBe("moving");
+  await media.evaluate((video: PlaybackVideo) => {
+    const attempt = video.checkpointPlayAttempt;
+    if (!attempt || attempt.rejected) throw new Error("Native play failed before moving media");
+    attempt.finished = true;
+  });
+}
+
 type Movie = {media: Locator; id: string; session?: string; paused: number; duration: number};
 type State = {seconds: number; revision: number; sessionMatches?: boolean};
 type Observation = {key: string; iteration: number; testInfo: TestInfo; resumeAt?: number};
@@ -22,6 +45,41 @@ export function registerCheckpointSetup(flows: {
     expect(paused).toBeGreaterThan(0.2);
     expect(paused).toBeLessThan(duration - 10);
     await expect(media).toHaveJSProperty("ended", false);
+  });
+
+  test("a completed moving start can resume after late native abort on pause", {tag: "@smoke"}, async ({page}) => {
+    await page.addInitScript(() => {
+      const play = HTMLMediaElement.prototype.play;
+      HTMLMediaElement.prototype.play = function() {
+        return play.call(this).then(() => new Promise<void>((_, reject) => {
+          this.addEventListener("pause", () => reject(new DOMException("Intentional fixture pause", "AbortError")), {once: true});
+        }));
+      };
+    });
+    const movie = await flows.openMovie(page);
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const before = await movie.media.evaluate((video: HTMLVideoElement) => ({frames: video.getVideoPlaybackQuality().totalVideoFrames, seconds: video.currentTime}));
+      await startPlaying(movie.media);
+      await expect.poll(() => movie.media.evaluate((video: HTMLVideoElement) => video.getVideoPlaybackQuality().totalVideoFrames)).toBeGreaterThan(before.frames + 2);
+      await expect.poll(() => movie.media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(before.seconds + 0.2);
+      await movie.media.evaluate((video: HTMLVideoElement) => video.pause());
+      const paused = await movie.media.evaluate((video: HTMLVideoElement) => video.currentTime);
+      await expect.poll(async () => Math.abs((await flows.checkpoint(page, movie.id, movie.session)).seconds - paused)).toBeLessThan(0.1);
+      await expect(movie.media).toHaveJSProperty("ended", false);
+    }
+  });
+
+  test("a rejected native start cannot establish a moving checkpoint", {tag: "@smoke"}, async ({page}) => {
+    await page.addInitScript(() => {
+      HTMLMediaElement.prototype.play = function() {
+        return Promise.reject(new DOMException("Synthetic native play denial", "NotAllowedError"));
+      };
+    });
+    await expect(flows.openMovie(page)).rejects.toThrow();
+    await expect(page.locator("video")).toHaveJSProperty("paused", true);
+    await expect(page.locator("video")).toHaveJSProperty("currentTime", 0);
+    const id = new URL(page.url()).pathname.split("/").at(-1)!;
+    expect((await flows.checkpoint(page, id)).seconds).toBe(0);
   });
 
   test("checkpoint setup preserves stored resume before establishing fresh moving media", {tag: "@smoke"}, async ({page}, info) => {
