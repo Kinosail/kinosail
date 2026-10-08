@@ -23,7 +23,7 @@ function peer(options = {}) {
     evaluate: async () => {log.push('evaluate'); return 100;},
     waitForFunction: async (callback, args) => {
       log.push('ready'); assert.equal(args.origin, base); assert.equal(args.path, destination);
-      assert.equal(args.previous, 100); assert.equal(current, base + destination);
+      assert.equal(args.previous, 100); assert.equal(current, base + destination + (options.fragment ?? ''));
       const old = Object.getOwnPropertyDescriptors(globalThis);
       try {
         Object.defineProperties(globalThis, {
@@ -40,7 +40,8 @@ function peer(options = {}) {
       }
     }});
   const button = {evaluate: async () => {log.push('form'); return {
-    action: options.formAction ?? base + (options.action ?? '/settings/profiles'), method: options.formMethod ?? 'post'};},
+    action: options.formAction ?? base + (options.action ?? '/settings/profiles'), method: options.formMethod ?? 'post',
+    section: Object.hasOwn(options,'section') ? options.section : (options.action ?? '/settings/profiles').startsWith('/settings/') ? 'profiles' : null};},
     click: async (clickOptions = {}) => {
       if (options.heldClick) {
         let timer;
@@ -59,7 +60,7 @@ function peer(options = {}) {
       log.push('redirect'); page.emit('request', get);
       page.emit('response', response(get, options.getStatus ?? 200));
       await new Promise(resolve => setTimeout(resolve, 15));
-      current = base + destination; log.push('commit'); page.emit('framenavigated', frame);
+      current = options.commitURL ?? base + destination + (options.fragment ?? ''); log.push('commit'); page.emit('framenavigated', frame);
     }};
   const info = {attach: async (name, data) => {
     log.push('attach'); if (options.attachError) throw options.attachError;
@@ -92,7 +93,7 @@ test('all five owned forms use their exact POST and public destination', async (
     const curation = kind.endsWith('-add'), name = kind === 'playlist-add' ? 'E2E playlist chromium-1760000000000' : 'E2E Collection chromium-1760000000000';
     const action = curation ? '/' + kind.split('-')[0] + '/' + encodeURIComponent(name) + '/' + id :
       '/settings/profiles/' + (kind === 'profile-save' ? 'permissions' : 'password');
-    const p = peer({action, current:curation ? '/watch/' + id : '/settings#profiles', destination:curation ? '/watch/' + id : '/settings'});
+    const p = peer({action, current:curation ? '/watch/' + id : '/settings#profiles', destination:curation ? '/watch/' + id : '/settings', fragment:curation ? '' : '#profiles'});
     await libraryMutation(p.page, base, curation ? {kind,name} : {kind}, p.button, p.info);
     assert.equal(p.attachments[0].outcome, 'complete'); clean(p);
   }
@@ -169,4 +170,23 @@ test('a held public click obeys the shared deadline and removes listeners before
     assert.equal(p.attachments[0].outcome, 'failed');
   } finally {release();}
   await assert.rejects(result, /deadline/);
+});
+
+test('accepted profile redirect commits the owning Settings bookmark', async () => {
+  const p = peer({fragment:'#profiles'}); await libraryMutation(p.page, base, descriptor, p.button, p.info);
+  assert.equal(p.attachments[0].postStatus,303); assert.equal(p.attachments[0].redirectedStatus,200);
+  assert.equal(p.attachments[0].documentCommitted,true); assert.equal(p.attachments[0].documentReady,true); clean(p);
+});
+test('unapproved final bookmark query or origin never qualifies a committed mutation', async () => {
+  for (const commitURL of [base+'/settings#updates',base+'/settings#%70rofiles',base+'/settings#profiles?x=1',
+    base+'/settings?x=1#profiles','http://127.0.0.1:38128/settings#profiles',base+'/settings#'+'x'.repeat(2049)]) {
+    const p=peer({commitURL});await assert.rejects(libraryMutation(p.page,base,descriptor,p.button,p.info));
+    assert.equal(p.attachments[0].documentReady,false);clean(p);
+  }
+});
+test('missing conflicting malformed or oversized owning section rejects before observers and click',async()=>{
+  for(const section of [null,undefined,'updates','',true,[],{},'x'.repeat(2049)]) {
+    const p=peer({section});await assert.rejects(libraryMutation(p.page,base,descriptor,p.button,p.info));
+    assert.equal(p.log.includes('click'),false);assert.equal(p.attachments.length,0);clean(p);
+  }
 });

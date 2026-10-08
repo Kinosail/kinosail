@@ -29,9 +29,12 @@ export async function libraryMutation(page, baseURL, descriptor, button, testInf
   if (!current || current.search || (curation ? !/^\/watch\/[a-f0-9]{16}$/.test(current.pathname) || current.hash :
     current.pathname !== '/settings' || !['', '#profiles'].includes(current.hash))) reject();
   const destination = curation ? current.pathname : '/settings';
+  const fragment = curation ? '' : '#profiles';
   const action = curation ? `/${kinds[descriptor.kind]}/${encodeURIComponent(descriptor.name)}/${current.pathname.split('/')[2]}` : kinds[descriptor.kind];
-  const form = await button.evaluate(element => ({action: element.form?.action, method: element.form?.method}));
-  if (!form || Object.keys(form).sort().join(',') !== 'action,method' || form.method !== 'post' || form.action !== base.origin + action) reject();
+  const form = await button.evaluate((element, settings) => ({action: element.form?.action, method: element.form?.method,
+    section: settings ? element.form?.closest('section[id]')?.id : null}), !curation);
+  if (!form || Object.keys(form).sort().join(',') !== 'action,method,section' || form.method !== 'post' ||
+    form.action !== base.origin + action || form.section !== (curation ? null : 'profiles')) reject();
   const previous = await page.evaluate(() => performance.timeOrigin);
   if (!Number.isFinite(previous) || previous <= 0) reject();
   const state = {version: 1, kind: descriptor.kind, postRequests: 0, postStatus: null,
@@ -88,7 +91,11 @@ export async function libraryMutation(page, baseURL, descriptor, button, testInf
     }
   };
   const committed = frame => {
-    if (frame === page.mainFrame() && redirected && page.url() === base.origin + destination) {
+    if (frame === page.mainFrame() && redirected) {
+      const url = ownedURL(page.url());
+      if (!url || url.pathname !== destination || url.search || !['', fragment].includes(url.hash)) {
+        failed(new Error('unapproved Library mutation destination')); return;
+      }
       state.documentCommitted = true; qualify();
     }
   };
@@ -101,10 +108,10 @@ export async function libraryMutation(page, baseURL, descriptor, button, testInf
   try {
     await button.click({timeout: remaining()});
     await complete;
-    await page.waitForFunction(({origin, path, previous}) => location.origin === origin && location.pathname === path &&
-      !location.search && !location.hash && Number.isFinite(performance.timeOrigin) && performance.timeOrigin > 0 && performance.timeOrigin !== previous &&
+    await page.waitForFunction(({origin, path, fragment, previous}) => location.origin === origin && location.pathname === path &&
+      !location.search && ['', fragment].includes(location.hash) && Number.isFinite(performance.timeOrigin) && performance.timeOrigin > 0 && performance.timeOrigin !== previous &&
       performance.getEntriesByType('navigation')[0]?.type !== 'back_forward' && document.readyState !== 'loading',
-      {origin: base.origin, path: destination, previous}, {timeout: remaining()});
+      {origin: base.origin, path: destination, fragment, previous}, {timeout: remaining()});
     if (failure) throw failure;
     state.documentReady = true; state.outcome = 'complete';
   } catch (error) {original = error;}
