@@ -1,9 +1,16 @@
 import { expect, test } from "@playwright/test";
-import { login } from "./layout-audit-helpers";
+import { configureLayoutAudit, login } from "./layout-audit-helpers";
+
+configureLayoutAudit();
 
 test("settings search crosses levels and preserves unsaved preferences", { tag: "@smoke" }, async ({ page }) => {
  test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated test instance");
+ let passkeyLoginBegins = 0;
+ page.on("request", request => {
+  if (new URL(request.url()).pathname === "/api/v1/passkeys/login/begin") passkeyLoginBegins = 1;
+ });
  await login(page);
+ expect(passkeyLoginBegins, "password login does not start a native passkey chooser").toBe(0);
  await page.goto("/settings");
  const search = page.getByRole("searchbox", { name: "Search settings", exact: true });
  await expect(page.locator('[data-settings-levels] [aria-current="page"]')).toHaveText("Basic");
@@ -36,4 +43,5 @@ test("settings search crosses levels and preserves unsaved preferences", { tag: 
  await expect(search).toHaveValue("");
  await page.goto("/settings#unknown-%broken");
  await expect(page.locator("#playback")).toBeVisible();
+ expect(passkeyLoginBegins, "settings password journey makes no passkey login requests").toBe(0);
 });
