@@ -1,4 +1,4 @@
-import {selectCompatibilityDocument} from "./compatibility-document.mjs";
+import {selectCompatibilityDocument, attachCompatibilityDocumentState} from "./compatibility-document.mjs";
 import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
 import { createHash } from "node:crypto";
@@ -101,7 +101,7 @@ test("failed progress save does not stop playback flow", async ({ page, baseURL 
 	await page.waitForURL("**/?view=movies&after=failed-save");
 });
 
-test("selecting compatibility playback starts without a second play click", async ({ page }) => {
+test("selecting compatibility playback starts without a second play click", async ({ page }, testInfo) => {
 	await page.addInitScript(() => {
 		Object.defineProperty(Object.getPrototypeOf(navigator), "mediaCapabilities", { configurable: true, get: () => ({ decodingInfo: async () => ({ supported: true, smooth: true, powerEfficient: true }) }) });
 	});
@@ -114,13 +114,19 @@ test("selecting compatibility playback starts without a second play click", asyn
 	await page.getByText("Playback & downloads", { exact: true }).click();
 	await selectCompatibilityDocument(page, page.locator(".more-player-actions a.mode").filter({ hasText: "Playback" }), started);
 	const video = page.locator("video");
-	await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime), { timeout: 20_000 }).toBeGreaterThan(0.25);
-	const state = await video.evaluate((element: HTMLVideoElement) => ({ paused: element.paused, seconds: element.currentTime }));
-	const playing = await page.evaluate((click) => (window as Window & { mediaEvents: Array<{ name: string; at: number }> }).mediaEvents.find(({ name }) => name === "playing")!.at - click, started);
-	console.log(JSON.stringify({ compatibilityClickToPlayingMs: Math.round(playing), ...state }));
-	expect(state.paused).toBe(false);
-	await expect(page.locator("[data-playback-mode-status]")).toHaveText(await video.getAttribute("data-compatibility-label") || "Compatibility");
-	expect(playing).toBeLessThan(10_000);
+	const documentState = await attachCompatibilityDocumentState(page, testInfo, "before-clock");
+	try {
+		await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime), { timeout: 20_000 }).toBeGreaterThan(0.25);
+		const state = await video.evaluate((element: HTMLVideoElement) => ({ paused: element.paused, seconds: element.currentTime }));
+		const playing = await page.evaluate((click) => (window as Window & { mediaEvents: Array<{ name: string; at: number }> }).mediaEvents.find(({ name }) => name === "playing")!.at - click, started);
+		console.log(JSON.stringify({ compatibilityClickToPlayingMs: Math.round(playing), ...state }));
+		expect(state.paused).toBe(false);
+		await expect(page.locator("[data-playback-mode-status]")).toHaveText(await video.getAttribute("data-compatibility-label") || "Compatibility");
+		expect(playing).toBeLessThan(10_000);
+	} catch (error) {
+		await attachCompatibilityDocumentState(page, testInfo, "failure", documentState?.timeOrigin ?? null);
+		throw error;
+	}
 });
 
 test("trusted source opening sets the first media time", async ({ page, browserName }) => {

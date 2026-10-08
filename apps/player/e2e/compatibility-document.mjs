@@ -17,3 +17,27 @@ export async function selectCompatibilityDocument(page, link, started) {
     && performance.timeOrigin !== previous && document.readyState === 'complete'
     && Array.isArray(window.mediaEvents), {destination, previous}, {timeout: remaining()});
 }
+
+// Document facts only; missing instrumentation never fabricates a playing event.
+export async function attachCompatibilityDocumentState(page, info, phase, expected = null) {
+  if (!['before-clock', 'failure'].includes(phase) ||
+      expected !== null && (typeof expected !== 'number' || !Number.isFinite(expected) || expected <= 0 || expected > 1e14))
+    throw Error('invalid compatibility observation');
+  let timer, state = null;
+  try {
+    const value = await Promise.race([page.evaluate(() => ({timeOrigin: performance.timeOrigin,
+      observerPresent: Array.isArray(window.mediaEvents), documentReady: document.readyState === 'complete'})).catch(() => null),
+      new Promise(resolve => {timer = setTimeout(() => resolve(null), 500);})]);
+    clearTimeout(timer);
+    if (value && Object.keys(value).sort().join(',') === 'documentReady,observerPresent,timeOrigin' &&
+        typeof value.timeOrigin === 'number' && Number.isFinite(value.timeOrigin) && value.timeOrigin > 0 && value.timeOrigin <= 1e14 &&
+        typeof value.observerPresent === 'boolean' && typeof value.documentReady === 'boolean') state = value;
+    const body = JSON.stringify(state ? {schemaVersion: 1, phase, timeOrigin: state.timeOrigin,
+      observerPresent: state.observerPresent, documentReady: state.documentReady,
+      sameDocument: expected === null ? null : state.timeOrigin === expected} : {schemaVersion: 1, phase, unavailable: true});
+    if (Buffer.byteLength(body) <= 1024) await Promise.race([info.attach('compatibility-document-state', {body, contentType:'application/json'}),
+      new Promise(resolve => {timer = setTimeout(resolve, 500);})]);
+  } catch { /* Observation cannot replace the original media assertion. */ }
+  finally {clearTimeout(timer);}
+  return state;
+}
