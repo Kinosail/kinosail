@@ -6,7 +6,7 @@ on:
       phase:
         description: Expected written-first or corrected readiness result
         type: choice
-        options: [red, red-long, green]
+        options: [red, red-long, green, projection]
         default: red
 
 permissions:
@@ -15,6 +15,7 @@ permissions:
 jobs:
   readiness-contracts:
     name: Asset-backed AAC readiness contracts
+    if: inputs.phase != 'projection'
     runs-on: ubuntu-24.04
     timeout-minutes: 8
     steps:
@@ -154,6 +155,7 @@ jobs:
 
   canonical-atlas:
     name: Generate canonical Player atlas Git blob
+    if: inputs.phase != 'projection'
     runs-on: ubuntu-24.04
     timeout-minutes: 8
     permissions:
@@ -186,4 +188,54 @@ jobs:
           blob=json.loads(result.stdout)
           print(json.dumps({'revision':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
               'path':path,'blob':blob['sha'],'sha256':hashlib.sha256(raw).hexdigest(),'bytes':len(raw)}))
+          PY
+
+  preserved-public-projection:
+    name: Read preserved public readiness boundary
+    if: inputs.phase == 'projection'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        timeout-minutes: 2
+        with:
+          artifact-ids: 11527910191
+          run-id: 37725058538
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/readiness-projection
+      - name: Emit only the bounded safe receipt projection
+        env:
+          PROJECTION_ROOT: ${{ runner.temp }}/readiness-projection
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          paths=list(Path(os.environ['PROJECTION_ROOT']).rglob('receipt.json'))
+          assert len(paths)==1
+          raw=paths[0].read_bytes()
+          assert 0 < len(raw) <= 4 << 20
+          assert hashlib.sha256(raw).hexdigest()=='c3304a05781890fcf41bfd6dda9f168c5c51838a555d9dec3a29783a26452d3a'
+          data=json.loads(raw)
+          assert data['revision']=='3e87585d01aecc8e446994b6d554f49275d85e74' and len(data['cases'])==2
+          cases=[]
+          for case in data['cases']:
+              before=case.get('physicalBeforeFirstGET') or {}
+              cases.append({'name':case['name'],'result':case['result'],'failures':case['failures'],
+                  'preparation':{k:case['preparationAttempt'].get(k) for k in ['posts','publicState','completionState','ownedFFmpeg','joinedSamples']},
+                  'prefix':{k:before.get(k) for k in ['segments','packetCount','firstPacket','lastPacket']},
+                  'prefixEndlist':before.get('manifest',{}).get('endlist'),
+                  'workerBound':case.get('workerBound'),'sourceUnchanged':case.get('sourceUnchanged'),
+                  'encoderLifecycle':case.get('encoderLifecycle'),'ownedProcessJoin':case.get('ownedProcessJoin'),
+                  'originWitnessFailure':case.get('originWitnessFailure'),'failureClass':case.get('failureClass'),
+                  'diagnosticFailureClass':case.get('diagnosticFailureClass'),
+                  'nativePCM':{k:case.get('nativePCMQualification',{}).get('public',{}).get(k) for k in ['frames','samples','completeEOFAccounted','decodedClockOrderValid']},
+                  'publicPCMSHA256':case.get('fullEOFNativeSamples',{}).get('publicSHA256'),
+                  'coldReopenResult':case.get('installationColdReopen',{}).get('result')})
+          print(json.dumps({'revision':data['revision'],'originalResult':data['result'],
+              'originalReceiptSHA256':hashlib.sha256(raw).hexdigest(),'cases':cases,
+              'sameCompletePacketRows':data['cases'][0].get('joinedPublicPacketPayloads')==data['cases'][1].get('joinedPublicPacketPayloads'),
+              'originalQualification':data.get('originProductionQualification')},separators=(',',':')))
           PY
