@@ -55,6 +55,7 @@ func remainingNonKeyPreparation(t *testing.T, ffmpeg, ffprobe string, offset flo
 		t.Fatal("nonkey fixture generation failed")
 	}
 	remainingNonKeyQualify(t, ctx, ffmpeg, ffprobe, source)
+	observed := remainingNonKeyObserve(t)
 	before, err := os.ReadFile(source)
 	if err != nil || len(before) == 0 || len(before) > 64<<20 {
 		t.Fatal("nonkey fixture byte bound")
@@ -73,8 +74,13 @@ func remainingNonKeyPreparation(t *testing.T, ffmpeg, ffprobe string, offset flo
 		cancel()
 		settled, release := context.WithTimeout(context.Background(), 3*time.Second)
 		defer release()
-		if data, readErr := os.ReadFile(owned); readErr == nil && len(data) > 0 {
-			copiedRecoveryJoinedCodecs(t, settled, owned)
+		if data, readErr := os.ReadFile(owned); readErr != nil || len(data) == 0 || len(data) > 16<<10 {
+			t.Fatal("nonkey owned codec receipt missing or outside bound")
+		}
+		copiedRecoveryJoinedCodecs(t, settled, owned)
+		after, readErr := os.ReadFile(source)
+		if readErr != nil || sha256.Sum256(after) != sha256.Sum256(before) {
+			t.Fatal("nonkey preparation mutated its source during failure or shutdown")
 		}
 	})
 	var plan struct {
@@ -90,7 +96,7 @@ func remainingNonKeyPreparation(t *testing.T, ffmpeg, ffprobe string, offset flo
 	selected := strings.TrimSuffix(plan.Compatible, "/index.m3u8") +
 		fmt.Sprintf("-o%d/index.m3u8", int(offset*1000))
 	deadline := time.Now().Add(15 * time.Second)
-	state := ""
+	state, requestID := "", ""
 	for {
 		var preparation struct{ State string }
 		response := apiCall(t, handler, "", http.MethodPost,
@@ -98,10 +104,19 @@ func remainingNonKeyPreparation(t *testing.T, ffmpeg, ffprobe string, offset flo
 		if response.Code != http.StatusAccepted {
 			t.Fatalf("nonkey preparation status=%d", response.Code)
 		}
+		if requestID == "" {
+			requestID = response.Header().Get("X-Request-ID")
+			if !remainingNonKeyValidRequestID(requestID) {
+				t.Fatal("nonkey public request identity")
+			}
+		}
 		mustJSON(t, response, &preparation)
 		state = preparation.State
 		if state == "ready" {
 			break
+		}
+		if phase, failure := observed.rejection(requestID); failure {
+			t.Fatalf("nonkey regression offset=%.1f phase=%s internal-state=unavailable public-state=%s expected=ready fixture=%x", offset, phase, state, sha256.Sum256(before))
 		}
 		if state != "queued" {
 			t.Fatalf("nonkey regression offset=%.1f phase=public-preparation state=%s expected=ready fixture=%x", offset, state, sha256.Sum256(before))
