@@ -55,7 +55,7 @@ func (integration *Integration[P]) pair(code, name string) (string, error) {
 	delete(integration.pairs, code)
 	profile, found := integration.config.FindProfile(offer.Profile.ID)
 	if !found || !profile.Owner {
-		return "", errors.New("Home Assistant pairing requires a current Owner")
+		return "", errors.New("cannot pair Home Assistant without a current Owner")
 	}
 	return integration.config.CreateKey(profile.Source, name)
 }
