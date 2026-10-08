@@ -68,6 +68,21 @@ class ProfileAuthRecipeTests(unittest.TestCase):
                     exec(compile(self.recipe('playback-owner'), 'actual-playback-recipe', 'exec'), {})
                 write.assert_not_called()
 
+    def test_actual_playback_recipe_binds_mode_document_helper_before_write(self):
+        name = 'apps/player/e2e/compatibility-document.mjs'
+        with patch.dict(os.environ, {'PROFILE_PROJECT': 'webkit', 'PROOF_REVISION': 'fixture-revision'}), patch.object(Path, 'write_text') as write:
+            exec(compile(self.recipe('playback-owner'), 'actual-playback-recipe', 'exec'), {})
+            receipt = json.loads(write.call_args.args[0])
+            self.assertIn(name, receipt['sourceSHA256'])
+            self.assertEqual(receipt['sourceSHA256'][name], hashlib.sha256((ROOT / name).read_bytes()).hexdigest())
+        read = Path.read_bytes
+        def missing(path):
+            if str(path) == name: raise FileNotFoundError('missing mode document helper')
+            return read(path)
+        with patch.dict(os.environ, {'PROFILE_PROJECT': 'webkit', 'PROOF_REVISION': 'fixture-revision'}), patch.object(Path, 'read_bytes', missing), patch.object(Path, 'write_text') as write:
+            with self.assertRaises(FileNotFoundError): exec(compile(self.recipe('playback-owner'), 'actual-playback-recipe', 'exec'), {})
+            write.assert_not_called()
+
     def recipe(self, job):
         source = (ROOT / '.github/workflows/layout-stability.yml').read_text()
         block = source.split('  ' + job + ':\n', 1)[1]
