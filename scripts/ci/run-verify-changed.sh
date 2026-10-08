@@ -31,6 +31,7 @@ if path.exists():
         files = []
         for name in (app + '.log', app + '-stages.tar.gz'):
             path = root / name
+            if name.endswith('-stages.tar.gz') and int(evidence) != 0: continue
             if not path.exists(): continue
             info = path.lstat()
             if not stat.S_ISREG(info.st_mode): raise SystemExit(2)
@@ -44,7 +45,7 @@ if path.exists():
             with path.open('rb') as file:
                 while chunk := file.read(65536): digest.update(chunk)
             files.append({'file': name, 'bytes': info.st_size, 'sha256': digest.hexdigest(), 'artifactAdmitted': True})
-        results.append({'app': app, 'argv': ['make', '-C', 'apps/' + app, 'verify-changed', 'BASE=origin/main'],
+        results.append({'app': app, 'argv': ['make', '-C', 'apps/' + app, 'verify-changed', 'BASE=' + sys.argv[5]],
                         'exit': int(status), 'stageEvidenceExit': int(evidence), 'files': files})
 final_status = 2 if oversized and int(sys.argv[3]) == 0 else int(sys.argv[3])
 (root / 'receipt.json').write_text(json.dumps({'schemaVersion': 1, 'head': sys.argv[4] or None,
@@ -66,8 +67,11 @@ common="$(git rev-parse --path-format=absolute --git-common-dir)"
 [[ "$head" =~ ^[a-f0-9]{40}$ && "$base" =~ ^[a-f0-9]{40}$ ]]
 phase=cache-admission
 # This checkout has no restored verification-stage cache; Go dependency caches are separate.
-test ! -e "$common/kinosail-verify-cache"
-git diff --check origin/main...HEAD
+[[ ! -e "$common/kinosail-verify-cache" && ! -L "$common/kinosail-verify-cache" ]] || exit 2
+for directory in "$common/kinosail-verify-logs" "${apps[@]/#/$common/kinosail-verify-logs/apps-}"; do
+  [[ ! -L "$directory" && ( ! -e "$directory" || -d "$directory" ) ]] || exit 2
+done
+git diff --check "$base...HEAD"
 printf '%s\n' "$head" "$base" >"$output/revisions.txt"
 status=0
 for app in "${apps[@]}"; do
@@ -75,10 +79,12 @@ for app in "${apps[@]}"; do
   [[ "$(git rev-parse origin/main)" == "$base" ]] || exit 2
   phase=target
   set +e
-  make -C "apps/$app" verify-changed BASE=origin/main >"$output/$app.log" 2>&1
+  make -C "apps/$app" verify-changed BASE="$base" >"$output/$app.log" 2>&1
   result=$?
   python3 - "$common/kinosail-verify-logs/apps-$app" "$output/$app-stages.tar.gz" <<'STAGES'
 import os, pathlib, stat, sys, tarfile
+output = pathlib.Path(sys.argv[2])
+temporary = output.with_name(output.name + '.tmp')
 try:
     directory = pathlib.Path(sys.argv[1])
     if directory.is_symlink() or not directory.is_dir(): raise ValueError()
@@ -90,7 +96,7 @@ try:
     if not files: raise ValueError()
     files.sort()
     total = 0
-    with tarfile.open(sys.argv[2], 'w:gz') as archive:
+    with tarfile.open(temporary, 'x:gz') as archive:
         for path in files:
             info = path.lstat()
             if not stat.S_ISREG(info.st_mode) or path.suffix != '.log' or info.st_size > 4194304:
@@ -98,8 +104,11 @@ try:
             total += info.st_size
             if total > 16777216: raise ValueError()
             archive.add(path, arcname=path.name, recursive=False)
+    os.replace(temporary, output)
 except (OSError, ValueError):
     raise SystemExit(2)
+finally:
+    temporary.unlink(missing_ok=True)
 STAGES
   evidence=$?
   set -e

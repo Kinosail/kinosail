@@ -29,13 +29,15 @@ if name=='git':
   if '--git-common-dir' in args:print(root/'.git')
   elif 'origin/main' in args:
    marker=root/'base-reads';count=int(marker.read_text())+1 if marker.exists() else 1;marker.write_text(str(count))
-   print(('c' if count>1 and os.environ.get('CONTROL_MOVE_BASE') else 'b')*40)
+   print(('c' if (count>1 and os.environ.get('CONTROL_MOVE_BASE')) or (root/'ref-moved').exists() else 'b')*40)
   else:print('a'*40)
 else:
  app=args[args.index('-C')+1].split('/')[-1]
  if not os.environ.get('CONTROL_MISSING_STAGES'):
   logs=root/'.git/kinosail-verify-logs'/('apps-'+app);logs.mkdir(parents=True)
   (logs/'max-loc-required.log').write_text('command peer only')
+ if os.environ.get('CONTROL_INVALID_SECOND'): (logs/'z-invalid.json').write_text('not stage evidence')
+ if os.environ.get('CONTROL_MOVE_DURING_MAKE'): (root/'ref-moved').touch()
  if os.environ.get('CONTROL_LARGE_LOG'):print('x'*(4194304+1))
  sys.exit(7 if os.environ.get('CONTROL_FAIL')==app else 0)
 '''
@@ -110,6 +112,59 @@ else:
         result = self.run_peer(['both', '--admit-only'], KINOSAIL_VERIFY_PLAN='1')
         self.assertEqual(result.returncode, 2)
         self.assertFalse((self.root / 'events').exists())
+
+    def test_partial_archive_is_never_admitted_when_later_member_rejects(self):
+        result = self.run_peer(CONTROL_INVALID_SECOND='1')
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(len(self.makes()), 2)
+        rows = self.receipt()['results']
+        self.assertEqual([row['stageEvidenceExit'] for row in rows], [2, 2])
+        for row in rows:
+            self.assertFalse(any(file['file'].endswith('.tar.gz') for file in row['files']))
+        output = self.root / '.verification/verify-changed'
+        self.assertEqual(list(output.glob('*.tar.gz')), [])
+        self.assertEqual(list(output.glob('*.tmp')), [])
+
+    def test_make_uses_recorded_sha_even_if_ref_moves_during_target(self):
+        result = self.run_peer(CONTROL_MOVE_DURING_MAKE='1')
+        self.assertEqual(result.returncode, 2)
+        self.assertEqual(self.makes(), [['-C', 'apps/player', 'verify-changed', 'BASE=' + 'b' * 40]])
+        receipt = self.receipt()
+        self.assertEqual(receipt['base'], 'b' * 40)
+        self.assertEqual(receipt['baseRef'], 'origin/main')
+        self.assertEqual(receipt['results'][0]['argv'], ['make', *self.makes()[0]])
+        self.assertEqual(receipt['phase'], 'base-stability')
+        self.assertEqual(receipt['exit'], 2)
+
+    def dangling_path_rejects_before_target(self, name):
+        path = self.root / '.git' / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.symlink_to(self.root / 'missing', target_is_directory=True)
+        result = self.run_peer()
+        self.assertEqual(result.returncode, 2)
+        self.assertEqual(self.makes(), [])
+        self.assertTrue(path.is_symlink())
+        self.assertFalse((self.root / 'missing').exists())
+
+    def test_dangling_cache_rejects_before_target(self):
+        self.dangling_path_rejects_before_target('kinosail-verify-cache')
+
+    def test_dangling_log_parent_rejects_before_target(self):
+        self.dangling_path_rejects_before_target('kinosail-verify-logs')
+
+    def test_dangling_app_log_directory_rejects_before_target(self):
+        self.dangling_path_rejects_before_target('kinosail-verify-logs/apps-player')
+
+    def test_dangling_output_rejects_before_git_or_targets(self):
+        parent = self.root / '.verification'
+        parent.mkdir()
+        target = parent / 'verify-changed'
+        target.symlink_to(self.root / 'missing', target_is_directory=True)
+        result = self.run_peer()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse((self.root / 'events').exists())
+        self.assertTrue(target.is_symlink())
+        self.assertFalse((self.root / 'missing').exists())
 
     def test_oversized_app_log_fails_bounded_receipt_and_excludes_raw_artifact(self):
         result = self.run_peer(CONTROL_LARGE_LOG='1')

@@ -69,7 +69,7 @@ else:
                 self.assertEqual(result.returncode, int('player' in expected), result.stderr)
                 rows = [json.loads(line) for line in events.read_text().splitlines()]
                 calls = [args for kind, args in rows if kind == 'make']
-                self.assertEqual(calls, [['-C', 'apps/' + app, 'verify-changed', 'BASE=origin/main']
+                self.assertEqual(calls, [['-C', 'apps/' + app, 'verify-changed', 'BASE=' + 'b' * 40]
                                         for app in expected])
                 self.assertTrue(any(kind == 'git' and args == ['fetch', '--no-tags', 'origin', 'main']
                                     for kind, args in rows))
@@ -117,7 +117,7 @@ else:
     def test_target_source_preserves_order_real_base_and_failure_artifacts(self):
         text = CALLER.read_text()
         self.assertIn('git fetch --no-tags origin main', text)
-        self.assertIn('make -C "apps/$app" verify-changed BASE=origin/main', text)
+        self.assertIn('make -C "apps/$app" verify-changed BASE="$base"', text)
         self.assertIn('both) apps=(player subtitles)', text)
         self.assertIn('status=1', text)
         self.assertIn('kinosail-verify-logs', text)
