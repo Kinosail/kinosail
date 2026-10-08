@@ -23,11 +23,11 @@ function peer({raw=JSON.stringify(catalog([item])), origin=base, status=200, res
 }
 
 for(const value of [undefined,null,7,'','not-url','x'.repeat(2049),'https://remote.invalid:39061','http://localhost:39061','http://127.0.0.1:0','http://127.0.0.1:80','http://127.0.0.1:65536','http://user:secret@127.0.0.1:39061','http://127.0.0.1:39061?next=/','http://127.0.0.1:39061#x','http://127.0.0.1:39061/path'])
- test('unowned runtime base URL rejects without evaluation: '+String(value).slice(0,40),async()=>{
+ test('invalid runtime base URL shape rejects without evaluation: '+String(value).slice(0,40),async()=>{
   const p=peer();await assert.rejects(p.api(value));assert.equal(p.effects.evaluate,0);assert.equal(p.effects.fetch,0);
  });
 
-test('browser origin conflict rejects before HTTP effects',async()=>{const p=peer({origin:'http://127.0.0.1:39062'});await assert.rejects(p.run());assert.equal(p.effects.fetch,0);});
+test('different high browser port rejects before HTTP effects',async()=>{const p=peer({origin:'http://127.0.0.1:39062'});await assert.rejects(p.run());assert.equal(p.effects.fetch,0);});
 test('real callback returns the unique canonical fixture before any downstream action',async()=>{const p=peer();const found=await p.run();assert.equal(found.id,item.id);assert.equal(found.title,item.title);assert.equal(p.effects.fetch,1);assert.equal(p.effects.downstream,0);});
 
 for(const [name,options] of [
@@ -52,7 +52,7 @@ test('empty 204 response remains an observable successful API status',async()=>{
 for(const [name,raw] of [['nonfinite positive','{"value":1e400}'],['nonfinite negative','{"value":-1e400}'],['unsafe integer','{"value":9007199254740993}'],['depth','['.repeat(18)+'0'+']'.repeat(18)],['cardinality',JSON.stringify(Array(1001).fill(0))]]) test('strict API decoding rejects '+name,async()=>{const p=peer({raw});await assert.rejects(p.api());});
 
 for(const file of readdirSync(new URL('.',import.meta.url)).filter(name=>name.endsWith('.e2e.ts'))) {
- test('registered SDK journeys reject an unowned app before setup/navigation: '+file,async()=>{
+ test('registered SDK journeys reject an invalid base URL shape before setup/navigation: '+file,async()=>{
   const callbacks=[];const register=(...args)=>callbacks.push(args.at(-1));register.setup=register;
   const code=stripTypeScriptTypes(readFileSync(new URL(file,import.meta.url),'utf8')).replace(/^import .*;\n/gm,'');
   let effects=0;

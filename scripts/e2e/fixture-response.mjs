@@ -7,13 +7,14 @@ const integer = value => Number.isSafeInteger(value) && value >= 0;
 const finite = (value, maximum) => typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= maximum;
 const id = value => typeof value === 'string' && /^[a-f0-9]{16}$/.test(value);
 
+// The pinned launcher supplies the allocated app.baseUrl; this checks its URL shape.
 export function requireFixtureURL(value) {
-  if (!text(value, 2048)) throw new Error('owned SDK fixture URL required');
+  if (!text(value, 2048)) throw new Error('canonical SDK fixture URL required');
   let url;
-  try {url = new URL(value);} catch {throw new Error('owned SDK fixture URL required');}
+  try {url = new URL(value);} catch {throw new Error('canonical SDK fixture URL required');}
   if (url.protocol !== 'http:' || url.hostname !== '127.0.0.1' || !/^\d{4,5}$/.test(url.port)
       || Number(url.port) < 1024 || Number(url.port) > 65535 || url.username || url.password
-      || ![url.origin, url.origin + '/'].includes(value)) throw new Error('owned SDK fixture URL required');
+      || ![url.origin, url.origin + '/'].includes(value)) throw new Error('canonical SDK fixture URL required');
   return url.origin;
 }
 
