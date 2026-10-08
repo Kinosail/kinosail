@@ -1,0 +1,167 @@
+{
+  "recordedUTC": "2026-10-08T10:05:08Z",
+  "repository": "Kinosail/kinosail",
+  "main": "c452a2e73cebac42d280247fa9684efb630ecc93",
+  "diagnosticBranch": "codex/hls-nonkey-observation-proof-20261008",
+  "executableDiagnosticHead": "919bf6051f8b58a431239779d50235e4702964f1",
+  "executableDiagnosticTree": "f764c74ba3e3b42ed5f81106a157d07546d87ac5",
+  "sourceRepairQualified": false,
+  "delivered": {
+    "pr": 527,
+    "reviewedHead": "d95173ad44dcb9f00b50c2d6e126c84ac13e6295",
+    "merge": "c452a2e73cebac42d280247fa9684efb630ecc93",
+    "requiredChecksRun": 37738177371,
+    "exactMainRun": 37740698722,
+    "exactMainConclusion": "success",
+    "playerDigest": "sha256:5746a7a9b5fe1ac84827ba1a469c40e2800e33624b2b3cbf2a8902e0e7c6e025",
+    "manualDeployment": false
+  },
+  "historicalE30Publication": {
+    "source": "e30de246899d583802d08038cf8623f34bc2eaa4",
+    "run": 37506502844,
+    "attempt": 1,
+    "conclusion": "success",
+    "publisherJob": 112430377793,
+    "promotionJob": 112430788660,
+    "playerDigest": "sha256:87bd9436f150ca7a454e2aac965ee8a20da094fa165a82d4d16ccb35ec2d63da",
+    "hostedSigningAndAttestationVerification": "success",
+    "publicSLSAPayloadSHA256": "9b3cc6f3ccc482b9657aae294b7873d629cdb66737643e76e504b3c35a70a19f",
+    "publicSourceDigestInvocationMatch": true,
+    "ancestorOfCurrentMain": true,
+    "manualDeployment": false
+  },
+  "preservation": {
+    "original490Branch": "codex/hls-prepared-timeline-20261006",
+    "remoteHead": "ab81e2dec1274f8ed073d126f2fba852ea032072",
+    "verifiedRemote": true,
+    "rootWritesToOriginal": false,
+    "oldProofBranch": "codex/hls-nonkey-presentation-20261006",
+    "oldProofHead": "cc7e62e4551158cbc8b618aa58380220d75f3df0",
+    "historicalFailuresRetained": true
+  },
+  "acceptedAACControl": {
+    "run": 37746833943,
+    "job": 113210222307,
+    "completePacketRows": 470,
+    "nativeSamples": 481280,
+    "pcmSHA256": "678541f4dbde6b344ecf2f2d7d754fd46c73341931f68a1d3ddca811864c92b2",
+    "coldReopens": 2,
+    "source": "Production-equivalent current main c452; no control assertion changed"
+  },
+  "rejectedModel": {
+    "head": "18459ee80a7e2764b43b11607583df4f434dc05f",
+    "run": 37757058525,
+    "receiptSHA256": "2198105ea6e66b1680d38a1ccf5ef1ec7238407d847b2fed185a41c09d32f002",
+    "hypothesisMismatches": 3,
+    "reason": "Local coarse ffprobe target PTS interpolation does not reproduce stateful CLI audio clock",
+    "retained": true
+  },
+  "clockMeasurement": {
+    "head": "689db251c76475f109fb77082fb49f50f8c849b7",
+    "run": 37759308249,
+    "job": 113251556551,
+    "cases": 8,
+    "allGuards": true,
+    "tests": 63,
+    "receiptSHA256": "8b86ed2a26dce17f861bdae3cdf1ba47d3bc3b80b9b0338d7904105455f518cf",
+    "artifact": 11541118592,
+    "artifactZipSHA256": "3ce9f69f45a0b289fbe7f11e5cffdd383d25a12eedcbe0c1500eb5ba13e9995f",
+    "mkvFilterResidualSamples": [
+      0
+    ],
+    "mp4FilterResidualSamples": [
+      -8,
+      0
+    ],
+    "fullSourceEOF": true
+  },
+  "normalizedCounterfactual": {
+    "head": "919bf6051f8b58a431239779d50235e4702964f1",
+    "run": 37760596546,
+    "job": 113255796298,
+    "conclusion": "success",
+    "cases": 18,
+    "uniqueCases": 18,
+    "tests": 68,
+    "allDeclaredHypothesesMatch": true,
+    "allDerivedReferencesExact": true,
+    "allAdjacentControlsUnequal": true,
+    "allGeneratedPayloadVideoSourceAssetsEOFGuards": true,
+    "receiptSHA256": "b07ec9828dc0cd2b22359374d74d1af3f4ec4ece0fffad5ff5b140cd59c83ead",
+    "artifact": 11542446150,
+    "artifactBytes": 5136569,
+    "artifactZipSHA256": "3a716204b23d8275f7b31d16fe311cbce7dee4e9049eb8376bd016939a72fdca",
+    "connectorLog": {
+      "sha256": "bbda1a347b890a6cf1c6daeb2c5032599fc5e71684516d13b9ebd2df1aa352b6",
+      "utf8Bytes": 96886
+    },
+    "casesSummary": [
+      {"container":"mkv","seekSeconds":12.5,"label":"generated-audio-edit--16","derivedDeltaSamples":-16,"nativeSamples":936000,"referenceSamples":936000,"wholeReferenceEquals":true,"hypothesisMatched":true,"rawVideoFrames":480,"rawRequestedSequenceExact":false},
+      {"container":"mkv","seekSeconds":12.5,"label":"generated-audio-edit--15","derivedDeltaSamples":-16,"nativeSamples":935999,"referenceSamples":936000,"wholeReferenceEquals":false,"hypothesisMatched":true,"rawVideoFrames":480,"rawRequestedSequenceExact":false},
+      {"container":"mkv","seekSeconds":12.5,"label":"original-normal-both","derivedDeltaSamples":-16,"nativeSamples":935984,"referenceSamples":936000,"wholeReferenceEquals":false,"hypothesisMatched":true,"rawVideoFrames":480,"rawRequestedSequenceExact":false},
+      {"container":"mkv","seekSeconds":13.5,"label":"generated-audio-edit--16","derivedDeltaSamples":-16,"nativeSamples":888000,"referenceSamples":888000,"wholeReferenceEquals":true,"hypothesisMatched":true,"rawVideoFrames":480,"rawRequestedSequenceExact":false},
+      {"container":"mkv","seekSeconds":13.5,"label":"generated-audio-edit--15","derivedDeltaSamples":-16,"nativeSamples":887999,"referenceSamples":888000,"wholeReferenceEquals":false,"hypothesisMatched":true,"rawVideoFrames":480,"rawRequestedSequenceExact":false},
+      {"container":"mkv","seekSeconds":13.5,"label":"original-normal-both","derivedDeltaSamples":-16,"nativeSamples":887984,"referenceSamples":888000,"wholeReferenceEquals":false,"hypothesisMatched":true,"rawVideoFrames":480,"rawRequestedSequenceExact":false},
+      {"container":"mkv","seekSeconds":18.2,"label":"generated-audio-edit-0","derivedDeltaSamples":0,"nativeSamples":662400,"referenceSamples":662400,"wholeReferenceEquals":true,"hypothesisMatched":true,"rawVideoFrames":336,"rawRequestedSequenceExact":false},
+      {"container":"mkv","seekSeconds":18.2,"label":"generated-audio-edit-1","derivedDeltaSamples":0,"nativeSamples":662399,"referenceSamples":662400,"wholeReferenceEquals":false,"hypothesisMatched":true,"rawVideoFrames":336,"rawRequestedSequenceExact":false},
+      {"container":"mkv","seekSeconds":18.2,"label":"original-normal-both","derivedDeltaSamples":0,"nativeSamples":662400,"referenceSamples":662400,"wholeReferenceEquals":true,"hypothesisMatched":true,"rawVideoFrames":336,"rawRequestedSequenceExact":false},
+      {"container":"mp4","seekSeconds":12.5,"label":"generated-audio-edit-0","derivedDeltaSamples":0,"nativeSamples":936008,"referenceSamples":936008,"wholeReferenceEquals":true,"hypothesisMatched":true,"rawVideoFrames":480,"rawRequestedSequenceExact":false},
+      {"container":"mp4","seekSeconds":12.5,"label":"generated-audio-edit-1","derivedDeltaSamples":0,"nativeSamples":936007,"referenceSamples":936008,"wholeReferenceEquals":false,"hypothesisMatched":true,"rawVideoFrames":480,"rawRequestedSequenceExact":false},
+      {"container":"mp4","seekSeconds":12.5,"label":"original-normal-both","derivedDeltaSamples":0,"nativeSamples":936008,"referenceSamples":936008,"wholeReferenceEquals":true,"hypothesisMatched":true,"rawVideoFrames":480,"rawRequestedSequenceExact":false},
+      {"container":"mp4","seekSeconds":13.5,"label":"generated-audio-edit-0","derivedDeltaSamples":0,"nativeSamples":888008,"referenceSamples":888008,"wholeReferenceEquals":true,"hypothesisMatched":true,"rawVideoFrames":480,"rawRequestedSequenceExact":false},
+      {"container":"mp4","seekSeconds":13.5,"label":"generated-audio-edit-1","derivedDeltaSamples":0,"nativeSamples":888007,"referenceSamples":888008,"wholeReferenceEquals":false,"hypothesisMatched":true,"rawVideoFrames":480,"rawRequestedSequenceExact":false},
+      {"container":"mp4","seekSeconds":13.5,"label":"original-normal-both","derivedDeltaSamples":0,"nativeSamples":888008,"referenceSamples":888008,"wholeReferenceEquals":true,"hypothesisMatched":true,"rawVideoFrames":480,"rawRequestedSequenceExact":false},
+      {"container":"mp4","seekSeconds":18.2,"label":"generated-audio-edit-0","derivedDeltaSamples":0,"nativeSamples":662408,"referenceSamples":662408,"wholeReferenceEquals":true,"hypothesisMatched":true,"rawVideoFrames":336,"rawRequestedSequenceExact":false},
+      {"container":"mp4","seekSeconds":18.2,"label":"generated-audio-edit-1","derivedDeltaSamples":0,"nativeSamples":662407,"referenceSamples":662408,"wholeReferenceEquals":false,"hypothesisMatched":true,"rawVideoFrames":336,"rawRequestedSequenceExact":false},
+      {"container":"mp4","seekSeconds":18.2,"label":"original-normal-both","derivedDeltaSamples":0,"nativeSamples":662408,"referenceSamples":662408,"wholeReferenceEquals":true,"hypothesisMatched":true,"rawVideoFrames":336,"rawRequestedSequenceExact":false}
+    ],
+    "boundary": "Fixed generated regular H264/AAC fixture and measured full CLI clock, direct mux counterfactual. No arbitrary media, public cold/prepared cache, renderer, audibility or production acceptance."
+  },
+  "remainingFailure": {
+    "nonkeyVideo": "All raw480/336 frames remain; requested source sequence remains false. Existing exact-key certificate excludes non-key12.5/13.5/18.2.",
+    "full50LiveRetestComplete": false
+  },
+  "additionalSourceAllocationNeeded": [
+    {"path":"apps/player/internal/server/hls_copied_index.go","function":"type copiedHLSTimeline","changePurpose":"Separate requested presentation origin and independently certified preceding decode/key origin; preserve old exact-key strategy and Clock>=0."},
+    {"path":"apps/player/internal/server/hls_copied_scan.go","function":"hlsManager.selectCopiedHLSTimeline","changePurpose":"New explicitly certified non-key selection separate from old exact-resume-key match; preserve policy/adoption/idle guards."}
+  ],
+  "competingOwner": {
+    "pr": 503,
+    "head": "685fdf2bb5432e4d91c19984f64508062449d58b",
+    "base": "c452a2e73cebac42d280247fa9684efb630ecc93",
+    "state": "open",
+    "lastTwoReconciliations": "11 new browser/workflow/test commits since c89; no backend server-source delta",
+    "rootMutations": false
+  },
+  "workerBoundary": {
+    "strictStoppedWorkerFailure": "audio_required_new_encoder retained on both journeys",
+    "starts": 2,
+    "ends": 2,
+    "peakOwnedEncoders": 1,
+    "overlapProved": false,
+    "leakProved": false,
+    "actualAdoptionBeforeCancelQualified": false,
+    "ownedBy": "Existing broader PR503 and native lifecycle owner",
+    "functions": [
+      "startupPreparation.startRequest/playback in startup_preparation.go",
+      "watchStartupCancellation/waitStartupWindow in startup_hls.go"
+    ]
+  },
+  "nextDelivery": "Coordinate exact type/selection extension with broader source owner and native presentation owner. Then implement written-first public cold/prepared/reopen/refill regressions, bounded source/sampleclock certification and atomic generated-init publication; independent exact-source review and all four protected checks before ordinary merge. Native all50/same-iOS retest waits capacity release and native owner.",
+  "proofLimits": {
+    "archiveDownloaded": false,
+    "fullArchiveManifestIndependentlyRecomputed": false,
+    "noLocalWritesBuildsDownloadsCleanup": true,
+    "noCredentialsOriginalMediaLibraryOrSimulatorWrites": true,
+    "normalWorkflowAndGateChanges": false,
+    "manualDeployment": false
+  },
+  "independentReview": {
+    "source": "919bf6051f8b58a431239779d50235e4702964f1",
+    "admission": "Fixed-fixture measured-model causality only",
+    "runtimeAll18HypothesesAndAll12GeneratedPreservationGuards": true,
+    "audit": "Exact source, API metadata and safe projections",
+    "archiveDownload": false,
+    "genericCorrectionRendererProductionLifecycleAcceptance": false
+  }
+}
