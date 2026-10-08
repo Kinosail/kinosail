@@ -1,3 +1,4 @@
+import AxeBuilder from "@axe-core/playwright";
 import {expect, test, type Page} from "@playwright/test";
 import {mobileProgressFault, queueReadFault} from "./test-instance-audio-queue-faults";
 import {createHash} from "node:crypto";
