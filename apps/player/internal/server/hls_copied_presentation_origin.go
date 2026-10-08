@@ -14,6 +14,7 @@ type copiedHLSPresentation struct {
 // These fields describe generated track geometry. Structural validity alone
 // never grants cache admission; generated assets require a separate certificate.
 type copiedHLSPresentationProof struct {
+	Audio            *copiedHLSAudioProof
 	VideoPTS         float64
 	VideoScale       int64
 	VideoMediaTime   int64
@@ -58,7 +59,7 @@ func validCopiedHLSPresentationProof(timeline *copiedHLSTimeline, origin float64
 	physical := timeline.point(0) - origin
 	generated := float64(proof.VideoComposition-proof.VideoMediaTime) / float64(proof.VideoScale)
 	return math.Abs(proof.VideoPTS-physical) <= 0.000001 &&
-		math.Abs(generated-physical) <= 0.000001
+		math.Abs(generated-physical) <= 0.000001 && validCopiedHLSAudioProof(timeline.Presentation)
 }
 
 func copiedHLSPresentationBound(timeline *copiedHLSTimeline) bool {
