@@ -286,8 +286,15 @@ def main():
     operation(sys.argv[2], Path(sys.argv[3]), Path(sys.argv[4]), sys.argv[5])
 
 
-if __name__ == '__main__':
+def cli():
     try: main()
-    except (OSError, ValueError, TypeError, subprocess.SubprocessError):
+    except (OSError, ValueError, TypeError, subprocess.SubprocessError) as cause:
         print('native fixture trust failed; retain any unverified owned additions', file=sys.stderr)
+        categories = {'unsupported pinned Firefox cache path':'firefox_cache', 'foreign Firefox policy already exists':'foreign_policy',
+                      'invalid native trust path':'path', 'invalid native trust owner or type':'path_owner',
+                      'native trust tool failed':'tool_exit', 'native trust tool deadline':'tool_deadline', 'native trust tool output overflow':'tool_output'}
+        family = 'io' if isinstance(cause,OSError) else 'validation' if isinstance(cause,ValueError) else 'type' if isinstance(cause,TypeError) else 'process'
+        print(json.dumps({'event':'native_trust_failure','category':categories.get(str(cause),'unclassified'),'family':family}), file=sys.stderr)
         raise SystemExit(2)
+
+if __name__ == '__main__': cli()
