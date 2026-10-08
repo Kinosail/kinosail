@@ -141,6 +141,6 @@ export async function observeNativeDocumentRetirement(network: CDPSession) {
   });
   await network.send("Runtime.enable");
   return {begin: () => {started = true;}, snapshot: () => ({mainContextObserved: departing !== 0,
-    departingMainContextRetired: retired, contextClearEvents: cleared, replacingMainContexts: replacements,
-    replacementClaimRequests: claimRequests})};
+    departingMainContextUnavailable: retired, contextClearEvents: cleared, replacingMainContexts: replacements,
+    claimRequestsAfterReplacingMainContext: claimRequests})};
 }

@@ -129,7 +129,7 @@ test("real lost-release reload waits for lease expiry and renews only its origin
       observedBlockedFailures: dropped, contextAborts, protocolBlockedFailures: blockedRequests.size,
       actualOccupiedReplies: conflicts, sameCandidateRenewed: claim.id === original, expiresIn: claim.expiresIn, elapsedMs: elapsed,
       nativeEndpointDiagnostic: await first.evaluate(() => (window as any).__kinosailReleaseDiagnostic()),
-      mainDocumentRetirement: retirement?.snapshot() || {protocolUnavailable: true}});
+      mainContextLifecycle: retirement?.snapshot() || {protocolUnavailable: true}});
     expect(dropped).toBeGreaterThan(0); expect(conflicts).toBeGreaterThan(0);
     expect(elapsed).toBeLessThanOrEqual(35_000);
     await expect.poll(() => accepted.some(state => state.id === claim.id && state.claim === claim.claim)).toBe(true);
