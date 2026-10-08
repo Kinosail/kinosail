@@ -10,18 +10,20 @@ const environment = project => ({ KINOSAIL_PROVIDER_PROFILE: '1', KINOSAIL_TEST_
 function owner(env = {}) {
   const source = stripTypeScriptTypes(readFileSync(new URL('../../apps/player/e2e/provider-profile-fixture.ts', import.meta.url), 'utf8'))
     .replace(/^import .*;\n/gm, '').replace(/^export /gm, '');
-  const hooks = [];
-  const api = runInNewContext(`(()=>{${source};return {providerProfile, isolateProvider, configureProviderProfile, providerRoute};})()`,
-    {URL, process: {env}, test: {beforeEach: fn => hooks.push(fn)}});
-  return {api, hooks};
+  const hooks = [], uses = [], registrations = [];
+  const api = runInNewContext(`(()=>{${source};return {providerProfile, isolateProvider, configureProviderProfile, providerRoute, providerResponse};})()`,
+    {URL, process: {env}, test: {use: options => {uses.push(options); registrations.push("use");}, beforeEach: fn => {hooks.push(fn); registrations.push("hook");}}});
+  return {api, hooks, uses, registrations};
 }
 const request = (url, method, effects) => ({request: () => ({url: () => url, method: () => method}),
   abort: async () => effects.push('blocked'), fallback: async () => effects.push('owned')});
 
 test('all engines install context guard before login with fixed owned origin', async () => {
   for (const project of ['chromium', 'firefox', 'webkit']) {
-    const env = environment(project), {api, hooks} = owner(env), routes = [];
+    const env = environment(project), {api, hooks, uses, registrations} = owner(env), routes = [];
     api.configureProviderProfile(); assert.equal(hooks.length, 1);
+    assert.equal(uses.length, 1); assert.equal(uses[0].serviceWorkers, "block");
+    assert.deepEqual(registrations, ["use", "hook"]);
     await hooks[0]({context: {route: async (...args) => routes.push(args)}, baseURL: env.KINOSAIL_E2E_URL}, {project: {name: project}});
     assert.equal(routes.length, 1); const effects = [];
     for (const [url, method] of [[env.KINOSAIL_E2E_URL + '/login', 'GET'], [env.KINOSAIL_E2E_URL + '/login', 'POST'],
@@ -62,8 +64,30 @@ test('missing and malformed profile fields reject before route effects', async (
 });
 
 test('absence preserves ordinary cases and synthetic routing without a profile', async () => {
-  const {api, hooks} = owner(); assert.equal(api.providerProfile({}), undefined); api.configureProviderProfile();
-  assert.equal(hooks.length, 0); const callback = () => {}, routes = [];
+  const {api, hooks, uses} = owner(); assert.equal(api.providerProfile({}), undefined); api.configureProviderProfile();
+  assert.equal(hooks.length, 0); assert.equal(uses.length, 0); const callback = () => {}, routes = [];
   await api.providerRoute({route: async (...args) => routes.push(args)}, '**/supporter', callback);
   assert.equal(routes[0][1], callback);
+});
+
+
+test('owned fixture fetch never follows or forwards rejected redirects and response identities', async () => {
+  const env = environment('chromium'), {api} = owner(env), effects = [];
+  const raw = env.KINOSAIL_E2E_URL + '/supporter';
+  const response = (status, url) => ({status: () => status, url: () => url});
+  for (const peer of [response(303, raw), response(200, 'https://foreign.invalid/supporter'), response(200, raw + '?other')]) {
+    await assert.rejects(api.providerResponse({request: () => ({url: () => raw, method: () => 'GET'}), fetch: async options => {
+      assert.equal(options.maxRedirects, 0); effects.push('fetch'); return peer;
+    }}));
+  }
+  let forbidden = 0;
+  await assert.rejects(api.providerResponse({request: () => ({url: () => 'https://foreign.invalid/supporter', method: () => 'GET'}), fetch: async () => {forbidden++; return response(200, raw);}}));
+  assert.equal(forbidden, 0);
+  const accepted = response(200, raw);
+  assert.equal(await api.providerResponse({request: () => ({url: () => raw, method: () => 'GET'}), fetch: async options => {
+    assert.equal(options.maxRedirects, 0); return accepted;
+  }}), accepted);
+  assert.deepEqual(effects, ['fetch', 'fetch', 'fetch']);
+  const ordinary = owner().api;
+  assert.equal(await ordinary.providerResponse({fetch: async options => {assert.equal(options, undefined); return accepted;}}), accepted);
 });

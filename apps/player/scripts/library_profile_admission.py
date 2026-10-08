@@ -84,7 +84,7 @@ CAMERA_CASES = (
 
 def selection(arguments):
     if (not isinstance(arguments, (tuple, list)) or len(arguments) != 3
-            or arguments[0] not in ('library-owner', 'camera-fake', 'responsive-shell', 'playback-start', 'offline-storage') or arguments[1] not in PROJECTS
+            or arguments[0] not in ('library-owner', 'camera-fake', 'responsive-shell', 'playback-start', 'offline-storage', 'fake-provider') or arguments[1] not in PROJECTS
             or arguments[2] != 'fresh'):
         raise ValueError('fixed library profile/project/fresh state required')
     return tuple(arguments)
@@ -95,6 +95,9 @@ def profile_cases(profile, project=None):
         raise ValueError('fixed project required')
     if profile == 'playback-start':
         from playback_profile_cases import selected_cases
+        return selected_cases(project)
+    if profile == 'fake-provider':
+        from provider_profile_cases import selected_cases
         return selected_cases(project)
     if profile == 'offline-storage':
         from offline_profile_cases import selected_cases

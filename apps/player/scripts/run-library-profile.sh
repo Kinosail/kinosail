@@ -4,7 +4,7 @@ set -euo pipefail
 umask 077
 if [[ $# != 3 && $# != 4 ]]; then echo 'requires project, discovery and fresh output' >&2; exit 2; fi
 project="$1" discovery="$2" output="$3" profile="${4-library-owner}"
-case "$profile" in library-owner|camera-fake|responsive-shell|playback-start|offline-storage) ;; *) exit 2 ;; esac
+case "$profile" in library-owner|camera-fake|responsive-shell|playback-start|offline-storage|fake-provider) ;; *) exit 2 ;; esac
 case "$project" in chromium|firefox) scheme=http ;; webkit) scheme=https ;; *) exit 2 ;; esac
 engine="${CONTAINER_ENGINE:-docker}"
 if [[ "$engine" != docker && "$engine" != podman || "${KINOSAIL_TEST_IMAGE_READY:-}" != '' && "${KINOSAIL_TEST_IMAGE_READY:-}" != 1 ]]; then exit 2; fi
@@ -110,6 +110,19 @@ mkdir "$workspace/media"
 (cd "$app"; KINOSAIL_TEST_IMAGE=localhost/kinosail:dev CONTAINER_ENGINE="$engine" ./scripts/generate-test-media.sh "$workspace/media")
 "$engine" run --rm --network none --entrypoint ffmpeg localhost/kinosail:dev -version >"$workspace/ffmpeg.txt"
 "$engine" run --rm --network none --entrypoint ffprobe localhost/kinosail:dev -version >"$workspace/ffprobe.txt"
+if [[ "$profile" == fake-provider ]]; then
+  phase=render
+  mkdir "$workspace/ui"
+  fixture_dir="$(cd "$workspace/ui" && pwd -P)"
+  (cd "$app"; KINOSAIL_UI_FIXTURE_DIR="$fixture_dir" go test ./internal/server -run '^TestWriteUIStateFixtures$' -count=1)
+  python3 - "$app/scripts" "$fixture_dir" <<'PYTHON'
+import pathlib, sys
+sys.path.insert(0, sys.argv[1])
+from provider_profile_cases import ui_fixtures
+ui_fixtures(pathlib.Path(sys.argv[2]))
+PYTHON
+  selection+=(--ui-fixtures "$fixture_dir")
+fi
 phase=network
 network_attempted=1
 "$engine" network create --internal --label "org.kinosail.fixture-owner=$owner" "$network" >/dev/null

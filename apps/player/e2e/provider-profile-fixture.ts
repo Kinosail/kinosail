@@ -43,10 +43,19 @@ export async function isolateProvider(context: BrowserContext, project: string, 
 
 export function configureProviderProfile() {
   if (!fixture) return;
+  test.use({serviceWorkers: 'block'});
   test.beforeEach(async ({context, baseURL}, info) => isolateProvider(context, info.project.name, baseURL));
 }
 
 export async function providerRoute(page: Page, matcher: Parameters<Page['route']>[0], handler: Parameters<Page['route']>[1]) {
   // Page routes precede context routes; admit before any synthetic callback can fetch or continue.
   await page.route(matcher, fixture ? (route, request) => admitted(route) ? handler(route, request) : route.abort('blockedbyclient') : handler);
+}
+
+export async function providerResponse(route: Route) {
+  if (!fixture) return route.fetch();
+  if (!admitted(route)) throw invalid();
+  const response = await route.fetch({maxRedirects: 0});
+  if (response.status() !== 200 || response.url() !== route.request().url()) throw invalid();
+  return response;
 }

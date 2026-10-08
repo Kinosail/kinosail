@@ -25,11 +25,15 @@ parser.add_argument('--profile')
 parser.add_argument('--project')
 parser.add_argument('--state')
 parser.add_argument('--discovery', type=Path)
+parser.add_argument('--ui-fixtures', type=Path)
 parser.add_argument('--admit-only', action='store_true')
 parser.add_argument('command', nargs=argparse.REMAINDER)
 args = parser.parse_args()
 library = any(value is not None for value in (args.profile, args.project, args.state, args.discovery)) or args.admit_only
 discovery = None
+ui_hashes = None
+if args.ui_fixtures is not None and args.profile != 'fake-provider':
+    parser.error('UI fixtures require the fixed synthetic Provider profile')
 if library:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'apps/player/scripts'))
     from library_profile_admission import admit, playwright_arguments, read_proof, selection
@@ -40,8 +44,19 @@ if library:
                        for flag in ('--url', '--output', '--profile', '--project', '--state', '--discovery'))
                 or sys.argv.count('--admit-only') > 1 or os.environ.get('PLAYWRIGHT_CHANNEL')
                 or 'KINOSAIL_CAMERA_PROFILE' in os.environ
+                or 'KINOSAIL_PROVIDER_PROFILE' in os.environ or 'KINOSAIL_UI_FIXTURE_DIR' in os.environ
+                or sum(value.split('=', 1)[0] == '--ui-fixtures' for value in sys.argv[1:]) > 1
+                or any(value.startswith('--ui-fixtures=') for value in sys.argv[1:])
                 or os.environ.get('KINOSAIL_BROWSER_PROJECT', args.project) != args.project):
             raise ValueError('fixed library selection required')
+        if args.profile == 'fake-provider':
+            if os.environ.get('KINOSAIL_BROWSER_TEST') not in (None, '1'):
+                raise ValueError('fixed browser fixture environment required')
+            from provider_profile_cases import ui_fixtures
+            if args.ui_fixtures is not None:
+                ui_hashes = ui_fixtures(args.ui_fixtures)
+            elif not args.admit_only:
+                raise ValueError('fixed rendered UI fixtures required')
         discovery = read_proof(args.discovery)
         admit(discovery, args.profile, args.project, args.state, False)
         if (not args.output.is_absolute() or len(str(args.output)) > 4096
@@ -99,8 +114,11 @@ if library:
                               'library-owner': 'closed46 library Owner identities',
                               'responsive-shell': 'closed99 responsive Owner identities',
                               'playback-start': 'closed27/25 playback identities with explicit CDP dispositions',
-                              'offline-storage': 'closed17 offline identities with actual OPFS capability'}[args.profile],
+                              'offline-storage': 'closed17 offline identities with actual OPFS capability',
+                              'fake-provider': 'closed15 synthetic provider identities with owned UI renderer'}[args.profile],
                    discoverySHA256=hashlib.sha256(discovery).hexdigest())
+    if ui_hashes is not None:
+        receipt['uiFixtureSHA256'] = ui_hashes
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -176,6 +194,10 @@ try:
         env['KINOSAIL_BROWSER_PROJECT'] = project
         if args.profile == 'camera-fake':
             env['KINOSAIL_CAMERA_PROFILE'] = '1'
+        elif args.profile == 'fake-provider':
+            env['KINOSAIL_PROVIDER_PROFILE'] = '1'
+            env['KINOSAIL_BROWSER_TEST'] = '1'
+            env['KINOSAIL_UI_FIXTURE_DIR'] = str(args.ui_fixtures)
     exit_code = subprocess.run(command, env=env, check=False).returncode
     if exit_code == 0:
         result_path = args.output / f'results-{project}.json'

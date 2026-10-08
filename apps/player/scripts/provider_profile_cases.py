@@ -24,3 +24,41 @@ def selected_cases(project):
     if not isinstance(project, str) or project not in PROJECTS:
         raise ValueError('fixed provider project required')
     return CASES
+
+UI_FILES = ('supporter-populated-both.html', 'supporter-empty.html', 'supporter-living.html', 'supporter-patron.html', 'supporter-archived.html', 'supporter-long-name.html', 'supporter-living-certificate.html', 'supporter-patron-certificate.html', 'supporter-certificate.html')
+UI_OUTPUTS = ('api-key-created.html', 'mcp-approval.html', 'media-share-items.html', 'mfa-required.html', 'mfa-setup.html', 'oidc-mfa.html', 'passkey-account.html', 'passkey-prompt.html', 'state-contracts.html', 'supporter-archived.html', 'supporter-certificate.html', 'supporter-empty.html', 'supporter-living-certificate.html', 'supporter-living.html', 'supporter-long-name.html', 'supporter-patron-certificate.html', 'supporter-patron.html', 'supporter-populated-both.html', 'viewing-import-preview.html', 'viewing-import-result.html')
+
+
+def ui_fixtures(directory):
+    """Admit fixed production-rendered local files before Owner/browser effects."""
+    import hashlib
+    import os
+    from pathlib import Path
+    import stat
+    from library_profile_admission import read_proof
+    if not isinstance(directory, (str, Path)):
+        raise ValueError('owned UI fixture directory required')
+    directory = Path(directory)
+    if not directory.is_absolute() or len(str(directory)) > 4096 or '..' in directory.parts:
+        raise ValueError('absolute UI fixture directory required')
+    before = directory.stat(follow_symlinks=False)
+    if not stat.S_ISDIR(before.st_mode):
+        raise ValueError('regular UI fixture directory required')
+    names = os.listdir(directory)
+    if len(names) > 32 or not set(UI_FILES) <= set(names) or not set(names) <= set(UI_OUTPUTS):
+        raise ValueError('closed UI renderer outputs required')
+    total, hashes = 0, {}
+    for name in names:
+        raw = read_proof(directory / name)
+        total += len(raw)
+        if total > 4194304:
+            raise ValueError('bounded rendered UI fixtures required')
+        text = raw.decode('utf-8')
+        if '<html' not in text and '<svg' not in text:
+            raise ValueError('rendered HTML or SVG required')
+        if name in UI_FILES:
+            hashes[name] = hashlib.sha256(raw).hexdigest()
+    after = directory.stat(follow_symlinks=False)
+    if not stat.S_ISDIR(after.st_mode) or (before.st_dev, before.st_ino) != (after.st_dev, after.st_ino):
+        raise ValueError('canonical UI fixture directory required')
+    return hashes

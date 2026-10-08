@@ -1,4 +1,4 @@
-import { configureProviderProfile, providerRoute } from "./provider-profile-fixture";
+import { configureProviderProfile, providerRoute, providerResponse } from "./provider-profile-fixture";
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { readFile } from "node:fs/promises";
@@ -104,7 +104,7 @@ test("Display settings persist through the web form and API", async ({ page }) =
   await login(page);
   const body = await readFile(join(directory!, "supporter-populated-both.html"), "utf8");
   await providerRoute(page, supporterPageURL, async (route) => {
-    const response = await route.fetch();
+    const response = await providerResponse(route);
     const original = await response.text();
     const csrf = original.match(/<meta name="kinosail-csrf" content="([^"]+)"/);
     const { display } = await (await page.request.get("/api/v1/supporter/display")).json();
