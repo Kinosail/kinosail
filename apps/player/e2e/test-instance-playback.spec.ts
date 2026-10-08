@@ -1,3 +1,4 @@
+import {attachNativePlaybackState} from "./native-playback-state.mjs";
 import { expect, test } from "@playwright/test";
 import { configureTestInstance, firstPlayable, login } from "./test-instance-helpers";
 
@@ -16,8 +17,15 @@ test("@smoke native playback seeks and retains controls on a populated title", a
   await expect.poll(() => video.evaluate((media: HTMLVideoElement) => media.readyState)).toBeGreaterThanOrEqual(2);
   await video.evaluate((media: HTMLVideoElement) => media.play());
   await expect.poll(() => video.evaluate((media: HTMLVideoElement) => media.currentTime)).toBeGreaterThan(seekTo);
-  await video.dispatchEvent("click");
-  await expect(video).toHaveJSProperty("paused", false);
+  await attachNativePlaybackState(video, testInfo, "before-click");
+  try {
+    await video.dispatchEvent("click");
+    await attachNativePlaybackState(video, testInfo, "after-click");
+    await expect(video).toHaveJSProperty("paused", false);
+  } catch (error) {
+    await attachNativePlaybackState(video, testInfo, "failure");
+    throw error;
+  }
   for (const viewport of [{ width: 390, height: 844 }, { width: 844, height: 390 }, { width: 1440, height: 900 }]) {
     await page.setViewportSize(viewport);
     await expect(page.locator("[data-player-controls]")).toBeHidden();
