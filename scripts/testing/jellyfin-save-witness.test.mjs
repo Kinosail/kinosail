@@ -7,7 +7,7 @@ import {createHmac} from "node:crypto";
 import test from "node:test";
 
 const source = stripTypeScriptTypes(readFileSync(new URL("../../apps/player/e2e/jellyfin-setup.spec.ts", import.meta.url), "utf8")).replace(/^import .*;\n/gm, "");
-const origin = "https://localhost:38127", original = new Error("original exact destination assertion");
+const origin = "https://localhost:38127", original = new Error("original exact destination assertion"), continuationFailure = new Error("original route continuation failure");
 function fixture({mode = "put", attachment = "ok"} = {}) {
   const registrations = [], values = [], effects = [];
   const pw = (_, callback) => registrations.push(callback);
@@ -41,6 +41,7 @@ function fixture({mode = "put", attachment = "ok"} = {}) {
       if (saves === 1) await saveRoute({request: () => ({method: () => "PUT"}), fulfill: async () => {}});
       else {
         await saveRoute({request: () => ({method: () => "PUT"}), continue: async () => {
+          if (mode === "continue-error") throw continuationFailure;
           page.current = origin + "/onboarding/connection#trusted-https-configuration";
           if (mode === "foreign") {
             for (const raw of ["https://foreign.invalid/api/v1/settings/trusted-https", origin + "/api/v1/settings/trusted-https?private=value", "x".repeat(5000)]) {
@@ -90,6 +91,7 @@ function facts(control) {
 for (const mode of ["put", "post", "failed", "foreign"]) test("actual Save callback distinguishes " + mode + " without changing its failed exact destination", async () => {
   const control = fixture({mode}); await assert.rejects(control.run(), error => error === original);
   const value = facts(control);
+  assert.equal(value.saveCallbacks, 2); assert.equal(value.saveContinued, 1);
   assert.equal(value.putRequests, mode === "put" || mode === "failed" ? 1 : 0);
   assert.equal(value.putResponses, mode === "put" ? 1 : 0); assert.equal(value.putFailures, mode === "failed" ? 1 : 0);
   assert.equal(value.putStatus, mode === "put" ? 200 : null);
@@ -103,4 +105,15 @@ for (const mode of ["put", "post", "failed", "foreign"]) test("actual Save callb
 for (const attachment of ["reject", "stall"]) test("diagnostic " + attachment + " preserves exact assertion cause and listener cleanup", async () => {
   const control = fixture({attachment}); await assert.rejects(control.run(), error => error === original);
   assert.deepEqual(control.effects, ["save-1", "save-2"]); assert.equal(control.values.length, 0); assert.equal(control.page.eventNames().length, 0);
+});
+
+test("failed real continuation preserves its cause and never claims completion", async () => {
+  const control = fixture({mode: "continue-error"});
+  await assert.rejects(control.run(), error => error === continuationFailure);
+  const value = facts(control);
+  assert.equal(value.saveCallbacks, 2); assert.equal(value.saveContinued, 0);
+  assert.equal(value.putRequests, 0); assert.equal(value.putResponses, 0);
+  assert.equal(value.documentStarted, false); assert.equal(value.documentCommitted, false);
+  assert.deepEqual(control.effects, ["save-1", "save-2"]);
+  assert.equal(control.page.eventNames().length, 0);
 });

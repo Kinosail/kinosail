@@ -8,21 +8,24 @@ BROWSER_FIXTURE_NODE_CA_WAS_SET=""
 BROWSER_FIXTURE_NODE_CA_PATH=""
 
 browser_fixture_uses_tls() {
-  [[ "${KINOSAIL_BROWSER_TEST:-}" == 1 && "${KINOSAIL_BROWSER_PROJECT:-}" == webkit ]]
+  if [[ $# -gt 1 || "${1:-}" != '' && "${1:-}" != fake-provider ]]; then return 2; fi
+  [[ "${KINOSAIL_BROWSER_TEST:-}" == 1 && ( "${KINOSAIL_BROWSER_PROJECT:-}" == webkit || "${1:-}" == fake-provider && ( "${KINOSAIL_BROWSER_PROJECT:-}" == chromium || "${KINOSAIL_BROWSER_PROJECT:-}" == firefox ) ) ]]
 }
 
 validate_browser_fixture_tls() {
-  if ! browser_fixture_uses_tls; then return; fi
+  if [[ $# -gt 1 || "${1:-}" != '' && "${1:-}" != fake-provider ]]; then return 2; fi
+  if [[ "${1:-}" == fake-provider && ( "${KINOSAIL_BROWSER_TEST:-}" != 1 || "${KINOSAIL_BROWSER_PROJECT:-}" != chromium && "${KINOSAIL_BROWSER_PROJECT:-}" != firefox && "${KINOSAIL_BROWSER_PROJECT:-}" != webkit ) ]]; then return 2; fi
+  if ! browser_fixture_uses_tls "${1:-}"; then return; fi
   if [[ "${CI:-}" != true || "${GITHUB_ACTIONS:-}" != true || "${RUNNER_OS:-}" != Linux || "$(uname -s)" != Linux ]]; then
-    echo 'WebKit container fixtures require the disposable Linux Actions runner for CA trust' >&2
+    echo 'HTTPS container fixtures require the disposable Linux Actions runner for CA trust' >&2
     return 2
   fi
 }
 
 trust_browser_fixture_tls() {
-  validate_browser_fixture_tls || return
-  if ! browser_fixture_uses_tls; then return; fi
-  if [[ $# != 4 ]]; then echo 'invalid browser fixture trust arguments' >&2; return 2; fi
+  validate_browser_fixture_tls "${5:-}" || return
+  if ! browser_fixture_uses_tls "${5:-}"; then return; fi
+  if [[ $# != 4 && $# != 5 ]]; then echo 'invalid browser fixture trust arguments' >&2; return 2; fi
   if [[ "${#1}" -gt 4096 || "${#3}" -gt 4096 || "${#4}" -gt 32 || "$(basename "${1:-}")" != docker && "$(basename "${1:-}")" != podman || ! "${2:-}" =~ ^[a-f0-9]{12,64}$ || ! -d "${3:-}" || -L "${3:-}" || ! "${4:-}" =~ ^[0-9]+-[0-9]+$ ]]; then
     echo 'invalid browser fixture trust arguments' >&2
     return 2

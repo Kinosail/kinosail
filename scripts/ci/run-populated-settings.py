@@ -77,7 +77,7 @@ if (url.scheme not in ('http', 'https') or
         url.path or '?' in args.url or '#' in args.url or port is None or not 1 <= port <= 65535):
     parser.error('requires the fresh supported loopback test Server')
 args.url = f'{url.scheme}://{url.hostname}:{port}'
-if library and (url.scheme == 'https') != (args.project == 'webkit'):
+if library and (url.scheme == 'https') != (args.project == 'webkit' or args.profile == 'fake-provider'):
     parser.error('library profile requires the existing per-engine fixture transport')
 if library and args.admit_only:
     raise SystemExit(0)
@@ -86,11 +86,11 @@ if url.scheme == 'https':
     certificate = os.environ.get('NODE_EXTRA_CA_CERTS', '')
     helper = Path(__file__).with_name('browser-fixture-tls.sh')
     valid = subprocess.run(['bash', '-c',
-        'source "$1"; browser_fixture_uses_tls && validate_browser_fixture_tls && validate_browser_fixture_ca "$2"',
-        'fixture', str(helper), certificate], capture_output=True,
+        'source "$1"; browser_fixture_uses_tls "$3" && validate_browser_fixture_tls "$3" && validate_browser_fixture_ca "$2"',
+        'fixture', str(helper), certificate, 'fake-provider' if library and args.profile == 'fake-provider' else ''], capture_output=True,
         **({'env': dict(os.environ, KINOSAIL_BROWSER_TEST='1', KINOSAIL_BROWSER_PROJECT=args.project)} if library else {}))
     if valid.returncode != 0:
-        parser.error('HTTPS requires the validated disposable WebKit public CA')
+        parser.error('HTTPS requires the validated disposable browser public CA')
     tls_context = ssl.create_default_context(cafile=certificate)
 command = args.command[1:] if args.command[:1] == ['--'] else args.command
 if library:

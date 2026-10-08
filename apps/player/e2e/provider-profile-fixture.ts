@@ -5,7 +5,7 @@ const invalid = () => new Error('invalid owned Provider profile');
 function ownedOrigin(value: unknown, project: string) {
   if (typeof value !== 'string' || value.length > 2048) throw invalid();
   const matched = value.match(/^(http|https):\/\/(localhost|127\.0\.0\.1):([1-9][0-9]{0,4})$/);
-  if (!matched || Number(matched[3]) > 65535 || (matched[1] === 'https') !== (project === 'webkit')) throw invalid();
+  if (!matched || Number(matched[3]) > 65535 || matched[1] !== 'https' || !['chromium', 'firefox', 'webkit'].includes(project)) throw invalid();
   return new URL(value).origin;
 }
 

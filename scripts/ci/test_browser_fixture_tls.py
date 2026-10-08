@@ -54,6 +54,25 @@ class BrowserFixtureTLS(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
         self.assertFalse(self.effects.exists())
 
+    def test_fake_provider_explicit_mode_requires_real_tls_for_each_engine(self):
+        for project in ('chromium', 'firefox', 'webkit'):
+            result = self.call('browser_fixture_uses_tls fake-provider\n'
+                               'validate_browser_fixture_tls fake-provider\n'
+                               'trust_browser_fixture_tls docker abcdef123456 "$2" 123-456 fake-provider\n'
+                               'remove_browser_fixture_trust', KINOSAIL_BROWSER_PROJECT=project)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(self.effects.read_text().splitlines(), ['export', 'install', 'update-ca-certificates', 'rm', 'update-ca-certificates'])
+            self.effects.unlink()
+            (self.root / 'browser-fixture-ca.crt').unlink()
+        for mode in ('unknown', 'library-owner', 'fake-provider extra', 'x' * 1025):
+            result = self.call('validate_browser_fixture_tls ' + mode, KINOSAIL_BROWSER_PROJECT='chromium')
+            self.assertEqual(result.returncode, 2, result.stderr)
+            self.assertFalse(self.effects.exists())
+        for env in ({'CI':''}, {'GITHUB_ACTIONS':''}, {'RUNNER_OS':'macOS'}, {'FAKE_OS':'Darwin'}, {'KINOSAIL_BROWSER_TEST':'0'}, {'KINOSAIL_BROWSER_PROJECT':'unknown'}):
+            result = self.call('validate_browser_fixture_tls fake-provider', **env)
+            self.assertEqual(result.returncode, 2, result.stderr)
+            self.assertFalse(self.effects.exists())
+
     def test_no_trust_exit_cleanup_is_success_and_keeps_original_failure(self):
         # A bare return inside a trap can inherit the original failure on newer Bash.
         result = self.call('trap \'status=$?; remove_browser_fixture_trust; '

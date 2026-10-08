@@ -827,16 +827,14 @@ jobs:
           KINOSAIL_TEST_INSTANCE: "1"
           KINOSAIL_PROVIDER_PROFILE: "1"
           KINOSAIL_BROWSER_TEST: "1"
-          KINOSAIL_E2E_URL: ${{ matrix.engine == 'webkit' && 'https://localhost:38127' || 'http://localhost:38127' }}
+          KINOSAIL_E2E_URL: https://localhost:38127
         run: |
           mkdir -p ".verification/provider-${PROFILE_PROJECT}"
           python3 apps/player/scripts/library_profile_admission.py "$PROFILE_PROJECT" discovery fake-provider > "$RUNNER_TEMP/provider-argv-${PROFILE_PROJECT}"
           mapfile -d '' -t arguments < "$RUNNER_TEMP/provider-argv-${PROFILE_PROJECT}"
           timeout --kill-after=2s 60s pnpm --dir apps/player/e2e "${arguments[@]}" | head -c 2097153 > ".verification/provider-${PROFILE_PROJECT}/discovery.json"
           test "$(wc -c < ".verification/provider-${PROFILE_PROJECT}/discovery.json")" -le 2097152
-          scheme=http
-          if [ "$PROFILE_PROJECT" = webkit ]; then scheme=https; fi
-          env -u KINOSAIL_PROVIDER_PROFILE python3 scripts/ci/run-populated-settings.py --url "$scheme://localhost:38127" --output "$RUNNER_TEMP/provider-${PROFILE_PROJECT}" --profile fake-provider --project "$PROFILE_PROJECT" --state fresh --discovery "$GITHUB_WORKSPACE/.verification/provider-${PROFILE_PROJECT}/discovery.json" --admit-only
+          env -u KINOSAIL_PROVIDER_PROFILE python3 scripts/ci/run-populated-settings.py --url "https://localhost:38127" --output "$RUNNER_TEMP/provider-${PROFILE_PROJECT}" --profile fake-provider --project "$PROFILE_PROJECT" --state fresh --discovery "$GITHUB_WORKSPACE/.verification/provider-${PROFILE_PROJECT}/discovery.json" --admit-only
       - name: Record immutable selection and source recipe
         env:
           PROFILE_PROJECT: ${{ matrix.engine }}

@@ -74,6 +74,28 @@ class ProviderFixtureTests(unittest.TestCase):
             self.assertEqual(set(receipt['uiFixtureSHA256']), set(self.provider.UI_FILES))
         finally: peer.doCleanups()
 
+    def test_provider_https_all_engines_admits_then_initializes_one_owner(self):
+        for project in ('chromium', 'firefox', 'webkit'):
+            peer = caller_peers.LibraryOwnerCallerTests(); peer.setUp()
+            try:
+                cases = self.provider.selected_cases(project); peer.project = project
+                peer.discovery.write_text(json.dumps(playback_report(cases, project, False)))
+                peer.result = playback_report(cases, project, True)
+                args = peer.arguments.copy(); args[args.index('--profile') + 1] = 'fake-provider'
+                args[args.index('--project') + 1] = project
+                args += ['--ui-fixtures', str(self.ui)]
+                with patch.object(caller_peers, 'load', return_value=SimpleNamespace(CASES=cases)):
+                    self.assertEqual(peer.execute([*args, '--admit-only']), 0)
+                    self.assertEqual(peer.effects, [])
+                    wrong = args.copy(); wrong[wrong.index('--url') + 1] = 'http://localhost:38127'
+                    self.assertEqual(peer.execute([*wrong, '--admit-only']), 2)
+                    self.assertEqual(peer.effects, [])
+                    self.assertEqual(peer.execute(args), 0)
+                self.assertEqual(sum(row[:3] == ('http','POST','/api/v1/setup') for row in peer.effects), 1)
+                tls = next(row for row in peer.effects if row[0]=='process' and row[1][0]=='bash')
+                self.assertEqual(tls[1][-1], 'fake-provider')
+            finally: peer.doCleanups()
+
     def test_invalid_or_missing_render_inputs_and_inherited_overrides_do_not_initialize_owner(self):
         peer = caller_peers.LibraryOwnerCallerTests(); peer.setUp()
         try:
@@ -102,9 +124,25 @@ with pathlib.Path(os.environ['CONTROL_EVENTS']).open('a') as file:file.write(jso
 for name in """ + repr(self.provider.UI_FILES) + """:(path/name).write_text('<svg></svg>' if 'certificate' in name else '<!doctype html><html></html>')
 """
             (peer.tools / 'go').write_text(script); (peer.tools / 'go').chmod(0o755)
+            import subprocess, os
+            cert = peer.root / 'public-ca.crt'
+            subprocess.run(['openssl','req','-x509','-newkey','ec','-pkeyopt','ec_paramgen_curve:P-256','-nodes',
+                            '-keyout',str(peer.root / 'private-key'),'-out',str(cert),'-days','1','-subj','/CN=Owned CA',
+                            '-addext','basicConstraints=critical,CA:TRUE'],check=True,capture_output=True)
+            for name, body in {'uname':'#!/bin/sh\nprintf Linux\n', 'sudo':'#!/bin/sh\nexit 0\n'}.items():
+                (peer.tools / name).write_text(body); (peer.tools / name).chmod(0o755)
+            peer.env.update(CI='true',GITHUB_ACTIONS='true',RUNNER_OS='Linux',CONTROL_CA=str(cert))
+            docker = peer.tools / 'docker'; content = docker.read_text()
+            content = content.replace("record('engine',args)", "if args and args[0]=='exec':print(pathlib.Path(os.environ['CONTROL_CA']).read_text(),end='');sys.exit(0)\nif args[:2]==['inspect','--format']:print('abcdef123456');sys.exit(0)\nrecord('engine',args)")
+            docker.write_text(content)
             result = peer.run_caller(['chromium',str(peer.discovery),str(peer.output),'fake-provider'])
             self.assertEqual(result.returncode, 0, result.stderr)
             rows = peer.rows(); self.assertEqual(rows[0][0], 'admit')
+            self.assertIn('https://localhost:38127', rows[0][1])
+            run = next(argv for kind,argv in rows if kind=='engine' and argv[0]=='run' and '--detach' in argv)
+            self.assertIn('KINOSAIL_TLS_ENABLED=true', run)
+            self.assertFalse(any(arg.startswith('KINOSAIL_AUTH_URL') for arg in run))
+            self.assertIn('https://localhost:49152', next(argv for kind,argv in rows if kind=='owner'))
             self.assertEqual(sum(kind == 'render' for kind, _ in rows), 1)
             owner = next(argv for kind, argv in rows if kind == 'owner')
             self.assertIn('--ui-fixtures', owner)

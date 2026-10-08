@@ -131,12 +131,15 @@ test("Jellyfin setup stays blocked until trusted HTTPS is saved", async ({ page,
 	await expect(testStatus).toHaveText("Details changed. Test again.");
 	await trusted.getByLabel("Trusted hostname").fill("kinosail-e2e");
 	let saveFails = true;
+	const saveCallbacks = {entered: 0, continued: 0};
 	await providerRoute(page, "**/api/v1/settings/trusted-https", async (route) => {
+		saveCallbacks.entered = Math.min(8, saveCallbacks.entered + 1);
 		if (saveFails && route.request().method() === "PUT") {
 			await route.fulfill({ status: 409, contentType: "application/json", body: JSON.stringify({ error: "trusted HTTPS conflicts with the current deployment\nthe configured sign-in address does not match this trusted HTTPS address" }) });
 			return;
 		}
 		await route.continue();
+		saveCallbacks.continued = Math.min(8, saveCallbacks.continued + 1);
 	});
 	await trusted.getByRole("button", { name: "Save trusted HTTPS" }).click();
 	await expect(page).toHaveURL(/\/onboarding\/connection/);
@@ -185,7 +188,7 @@ test("Jellyfin setup stays blocked until trusted HTTPS is saved", async ({ page,
 		await expect(page).toHaveURL("/onboarding/connection");
 	} finally {
 		const current = ownedURL(page.url());
-		const snapshot = {putRequests: put.requests, putResponses: put.responses, putFailures: put.failures, putStatus: put.status,
+		const snapshot = {saveCallbacks: saveCallbacks.entered, saveContinued: saveCallbacks.continued, putRequests: put.requests, putResponses: put.responses, putFailures: put.failures, putStatus: put.status,
 			nativePostRequests: nativePost.requests, nativePostResponses: nativePost.responses, nativePostFailures: nativePost.failures, nativePostStatus: nativePost.status,
 			...facts, currentOriginOwned: Boolean(current), currentPath: current ? (current.pathname === "/onboarding/connection" ? "connection" : "other") : "unavailable",
 			currentFragment: current ? (current.hash === "" ? "none" : current.hash === "#trusted-https-configuration" ? "trusted-https" : current.hash === "#jellyfin" ? "jellyfin" : "other") : "unavailable"};

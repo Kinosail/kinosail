@@ -6,7 +6,7 @@ import test from 'node:test';
 
 const environment = project => ({ KINOSAIL_PROVIDER_PROFILE: '1', KINOSAIL_TEST_INSTANCE: '1',
   KINOSAIL_BROWSER_TEST: '1', KINOSAIL_BROWSER_PROJECT: project,
-  KINOSAIL_E2E_URL: `${project === 'webkit' ? 'https' : 'http'}://localhost:38127` });
+  KINOSAIL_E2E_URL: `https://localhost:38127` });
 function owner(env = {}) {
   const source = stripTypeScriptTypes(readFileSync(new URL('../../apps/player/e2e/provider-profile-fixture.ts', import.meta.url), 'utf8'))
     .replace(/^import .*;\n/gm, '').replace(/^export /gm, '');
@@ -52,8 +52,8 @@ test('missing and malformed profile fields reject before route effects', async (
   for (const [key, values] of Object.entries({
     KINOSAIL_PROVIDER_PROFILE: ['', '0', 'true', 'x'.repeat(1025), false],
     KINOSAIL_TEST_INSTANCE: [undefined, '0'], KINOSAIL_BROWSER_TEST: [undefined, '0'],
-    KINOSAIL_BROWSER_PROJECT: [undefined, 'unknown', 'webkit'],
-    KINOSAIL_E2E_URL: [undefined, '', 'http://foreign.invalid:38127', 'https://localhost:38127', 'http://localhost:0',
+    KINOSAIL_BROWSER_PROJECT: [undefined, 'unknown'],
+    KINOSAIL_E2E_URL: [undefined, '', 'http://foreign.invalid:38127', 'http://localhost:38127', 'http://localhost:0',
       'http://localhost:65536', 'http://localhost:038127', 'http://localhost:38127/', 'http://localhost:38127?x',
       'http://localhost:38127#x', 'http://Owner:private@localhost:38127', 'x'.repeat(2049)],
   })) for (const value of values) assert.throws(() => owner({...base, [key]: value}).api.providerProfile({...base, [key]: value}));

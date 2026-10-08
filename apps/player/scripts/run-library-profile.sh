@@ -6,6 +6,8 @@ if [[ $# != 3 && $# != 4 ]]; then echo 'requires project, discovery and fresh ou
 project="$1" discovery="$2" output="$3" profile="${4-library-owner}"
 case "$profile" in library-owner|camera-fake|responsive-shell|playback-start|offline-storage|fake-provider) ;; *) exit 2 ;; esac
 case "$project" in chromium|firefox) scheme=http ;; webkit) scheme=https ;; *) exit 2 ;; esac
+tls_profile="" auth_environment=(--env KINOSAIL_AUTH_URL=https://localhost:38127)
+if [[ "$profile" == fake-provider ]]; then scheme=https; tls_profile=fake-provider; auth_environment=(); fi
 engine="${CONTAINER_ENGINE:-docker}"
 if [[ "$engine" != docker && "$engine" != podman || "${KINOSAIL_TEST_IMAGE_READY:-}" != '' && "${KINOSAIL_TEST_IMAGE_READY:-}" != 1 ]]; then exit 2; fi
 while IFS= read -r variable; do
@@ -22,7 +24,7 @@ selection=(--output "$output" --profile "$profile" --project "$project" --state 
 python3 "$helper" --url "$scheme://localhost:38127" "${selection[@]}" --admit-only
 source "$repo/scripts/ci/browser-fixture-tls.sh"
 export KINOSAIL_BROWSER_TEST=1 KINOSAIL_BROWSER_PROJECT="$project"
-validate_browser_fixture_tls
+validate_browser_fixture_tls "$tls_profile"
 relay="$repo/scripts/ci/library-internal-relay.mjs"
 node "$relay" topology "$engine" >/dev/null
 owner="$(python3 -c 'import secrets; print(secrets.token_hex(16))')"
@@ -143,7 +145,7 @@ set +e
   --volume "${volumes[0]}:/config" --volume "${volumes[1]}:/cache" --volume "${volumes[2]}:/backups" \
   --volume "$workspace/media:/media:ro" \
   --env "KINOSAIL_TLS_ENABLED=$([[ "$scheme" == https ]] && echo true || echo false)" \
-  --env KINOSAIL_AUTH_URL=https://localhost:38127 \
+  ${auth_environment[@]+"${auth_environment[@]}"} \
   --env 'KINOSAIL_LIBRARIES=["Movies","Shows","Music","Audiobooks","Books","Photos"]' \
   --env KINOSAIL_TMDB_URL=http://127.0.0.1:8090/TMDB/api \
   --env KINOSAIL_TMDB_IMAGE_URL=http://127.0.0.1:8090/TMDB/images \
@@ -196,7 +198,7 @@ done
 [[ "$healthy" == 1 ]]
 phase=trust
 identifier="$("$engine" inspect --format '{{.Id}}' "$container")"
-trust_browser_fixture_tls "$engine" "$identifier" "$workspace" "$suffix"
+trust_browser_fixture_tls "$engine" "$identifier" "$workspace" "$suffix" "$tls_profile"
 KINOSAIL_TEST_REVISION="$(git -C "$repo" rev-parse HEAD)"
 export KINOSAIL_TEST_REVISION
 phase=owner

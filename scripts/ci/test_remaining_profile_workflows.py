@@ -73,6 +73,15 @@ class RemainingProfileWorkflowTests(unittest.TestCase):
         self.assertIn('env -u KINOSAIL_PROVIDER_PROFILE python3 scripts/ci/run-populated-settings.py',self.block('provider-owner'))
         self.assertIn('KINOSAIL_BROWSER_TEST: "1"',self.block('provider-owner'))
 
+    def test_provider_discovery_uses_the_same_required_https_transport_before_effects(self):
+        block = self.block('provider-owner')
+        discovery = block.split('- name: Discover and admit only the closed synthetic Provider15 selection',1)[1].split('      - name:',1)[0]
+        self.assertIn('KINOSAIL_E2E_URL: https://localhost:38127', discovery)
+        self.assertIn('--url "https://localhost:38127"', discovery)
+        self.assertNotIn('scheme=', discovery)
+        for job in ('playback-owner','offline-owner','camera-owner','library-owner','responsive-owner'):
+            self.assertIn("scheme=http",self.block(job))
+
     def test_only_provider_installs_pinned_host_go_before_the_owned_ui_renderer(self):
         action = 'actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e'
         provider = self.block('provider-owner')
