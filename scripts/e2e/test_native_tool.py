@@ -6,6 +6,8 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import time
+import signal
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -69,6 +71,26 @@ class NativeTool(unittest.TestCase):
     self.assertEqual(witness['nativeToolProbe']['outcome'],'unavailable')
     self.assertEqual(witness['nativeToolProbe']['stdoutBytes'],0);self.assertEqual(witness['nativeToolProbe']['exitCode'],None)
     self.assertNotIn('PRIVATE-SENTINEL',json.dumps(witness))
+ def test_timeout_terminates_child_holding_pipes_after_tool_exit(self):
+  for lane in ['e2e-mobile','e2e-tv']:
+   with tempfile.TemporaryDirectory() as directory:
+    project=Path(directory);marker=project/'child-survived';identity=project/'child-pid'
+    tool=project/'xcodebuild'
+    tool.write_text('#!'+sys.executable+'\nimport os,time\nfrom pathlib import Path\npid=os.fork()\nif pid==0:\n time.sleep(.7)\n Path('+repr(str(marker))+').write_text("UNJOINED")\n os._exit(0)\nPath('+repr(str(identity))+').write_text(str(pid))\nos._exit(0)\n');tool.chmod(0o700)
+    witness={};func,module=callback(lane,'ios',project,witness)
+    # Only the fake tool is launched; its descendant must be ended by the probe.
+    env_path=os.environ['PATH'];os.environ['PATH']=directory+os.pathsep+env_path
+    try:
+     func,module=callback(lane,'ios',project,witness)
+     with patch.object(module,'DEADLINE_SECONDS',.2):
+      with self.assertRaisesRegex(RuntimeError,'Native tool timed out'):func(['xcodebuild','-version'])
+     time.sleep(.8);self.assertFalse(marker.exists(),'tool child survived the deadline')
+     self.assertEqual(witness['nativeToolProbe']['outcome'],'timeout')
+    finally:
+     os.environ['PATH']=env_path
+     if identity.exists():
+      try:os.kill(int(identity.read_text()),signal.SIGKILL)
+      except ProcessLookupError:pass
  def test_invalid_tool_rejects_before_process_or_witness(self):
   for lane in ['e2e-mobile','e2e-tv']:
    for platform,args in [('ios',['xcodebuild']),('ios',['java','-version']),('unknown',['xcodebuild','-version']),('ios',['xcodebuild','-version','PRIVATE-SENTINEL'])]:

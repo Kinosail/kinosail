@@ -76,8 +76,12 @@ def probe_native_tool(platform, args, project, env, witness):
         raise RuntimeError("Native tool version rejected")
     finally:
         if process is not None:
-            if process.poll() is None:
-                os.killpg(process.pid, signal.SIGKILL)
+            if process.poll() is None or stage["outcome"] in ("timeout", "overflow"):
+                # A completed tool can leave descendants holding its captured pipes.
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
             process.wait(timeout=5)
             stage["exitCode"] = process.returncode
             process.stdout.close()
