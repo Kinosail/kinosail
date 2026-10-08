@@ -53,6 +53,10 @@ if name=='node':
   identity=hashlib.sha256((kind+':'+resource).encode()).hexdigest()
   record('resource-proof',[kind,resource,expected,identity])
   if kind=='volume' and os.environ.get('CONTROL_VOLUME_COLLISION')=='1' or kind=='container' and os.environ.get('CONTROL_CONTAINER_COLLISION')=='1':sys.exit(2)
+  failure=os.environ.get('CONTROL_PROOF_FAIL_KIND')
+  if failure==kind:
+   prior=sum(1 for line in events.read_text().splitlines() if json.loads(line)[0]=='resource-proof' and json.loads(line)[1][0]==kind)
+   if os.environ.get('CONTROL_PROOF_ALWAYS')=='1' or prior==1:sys.exit(2)
   print(identity);sys.exit(0)
  record('relay',args)
  def stop(*_):
@@ -266,12 +270,16 @@ elif args and args[0]=='run' and ('ffmpeg' in args or 'ffprobe' in args):
 
     def test_foreign_container_collision_is_never_removed(self):
         result = self.run_caller(CONTROL_CONTAINER_COLLISION='1')
+        workspace = Path(next(args[0] for kind, args in self.rows() if kind == 'workspace'))
+        self.addCleanup(lambda: shutil.rmtree(workspace) if workspace.exists() else None)
         self.assertEqual(result.returncode, 7, result.stderr)
         self.assertFalse(any(kind == 'foreign-removed' for kind, _ in self.rows()))
         self.assertFalse(any(kind == 'owner' for kind, _ in self.rows()))
 
     def test_foreign_existing_volume_is_not_adopted_or_removed(self):
         result = self.run_caller(CONTROL_VOLUME_COLLISION='1')
+        workspace = Path(next(args[0] for kind, args in self.rows() if kind == 'workspace'))
+        self.addCleanup(lambda: shutil.rmtree(workspace) if workspace.exists() else None)
         self.assertFalse(any(kind == 'foreign-removed' for kind, _ in self.rows()))
         self.assertNotEqual(result.returncode, 0)
         self.assertFalse(any(kind == 'owner' for kind, _ in self.rows()))

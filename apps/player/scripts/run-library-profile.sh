@@ -31,7 +31,7 @@ workspace="$(mktemp -d /tmp/kinosail-library.XXXXXX)"
 workspace="$(cd "$workspace" && pwd)"
 suffix="$$-$RANDOM"
 network="kinosail-library-$suffix" container="kinosail-library-$suffix"
-network_created=0 container_started=0 relay_pid="" network_id="" container_id=""
+network_attempted=0 container_attempted=0 relay_pid="" network_id="" container_id=""
 proof() { node "$relay" owned "$engine" "$1" "$2" "$owner" "$3"; }
 phase=image
 volumes=() volume_ids=()
@@ -69,19 +69,28 @@ PYTHON
     kill "$relay_pid" 2>/dev/null
     wait "$relay_pid"; relay_pid=""
   fi
+  if [[ "$container_attempted" == 1 && -z "$container_id" ]]; then
+    container_id="$(proof container "$container" -)" || failed=1
+  fi
   if [[ -n "$container_id" ]]; then
     if proof container "$container" "$container_id" >/dev/null; then "$engine" rm --force "$container_id" >/dev/null || failed=1; else failed=1; fi
-  elif [[ "$container_started" == 1 ]]; then failed=1; fi
+  elif [[ "$container_attempted" == 1 ]]; then failed=1; fi
   remove_browser_fixture_trust || failed=1
   if [[ "${#volumes[@]}" -gt 0 ]]; then
     for ((index=0; index<${#volumes[@]}; index++)); do
       volume="${volumes[$index]}"
+      if [[ "${volume_ids[$index]}" == - ]]; then
+        volume_ids[index]="$(proof volume "$volume" -)" || { failed=1; continue; }
+      fi
       if proof volume "$volume" "${volume_ids[$index]}" >/dev/null; then "$engine" volume rm "$volume" >/dev/null || failed=1; else failed=1; fi
     done
   fi
+  if [[ "$network_attempted" == 1 && -z "$network_id" ]]; then
+    network_id="$(proof network "$network" -)" || failed=1
+  fi
   if [[ -n "$network_id" ]]; then
     if proof network "$network" "$network_id" >/dev/null; then "$engine" network rm "$network_id" >/dev/null || failed=1; else failed=1; fi
-  elif [[ "$network_created" == 1 ]]; then failed=1; fi
+  elif [[ "$network_attempted" == 1 ]]; then failed=1; fi
   if [[ "$failed" == 0 ]]; then rm -rf -- "$workspace"; else echo 'Owned library fixture cleanup failed; retain its workspace' >&2; fi
   if [[ "$status" == 0 && "$failed" != 0 ]]; then status=1; fi
   exit "$status"
@@ -102,17 +111,18 @@ mkdir "$workspace/media"
 "$engine" run --rm --network none --entrypoint ffmpeg localhost/kinosail:dev -version >"$workspace/ffmpeg.txt"
 "$engine" run --rm --network none --entrypoint ffprobe localhost/kinosail:dev -version >"$workspace/ffprobe.txt"
 phase=network
+network_attempted=1
 "$engine" network create --internal --label "org.kinosail.fixture-owner=$owner" "$network" >/dev/null
-network_created=1
 network_id="$(proof network "$network" -)"
 for role in config cache backups; do
   volume="kinosail-library-$role-$suffix"
-  "$engine" volume create --label "org.kinosail.fixture-owner=$owner" "$volume" >/dev/null
-  volume_id="$(proof volume "$volume" -)"
   volumes+=("$volume")
-  volume_ids+=("$volume_id")
+  volume_ids+=("-")
+  "$engine" volume create --label "org.kinosail.fixture-owner=$owner" "$volume" >/dev/null
+  volume_ids[${#volume_ids[@]}-1]="$(proof volume "$volume" -)"
 done
 phase=container
+container_attempted=1
 set +e
 "$engine" run --detach --init --name "$container" --label "org.kinosail.fixture-owner=$owner" --network "$network" \
   --read-only --cap-drop ALL --security-opt no-new-privileges --pids-limit 256 \
@@ -130,7 +140,6 @@ set +e
 status=$?
 set -e
 container_id="$(proof container "$container" - || true)"
-if [[ -n "$container_id" ]]; then container_started=1; fi
 if [[ "$status" != 0 ]]; then exit "$status"; fi
 [[ -n "$container_id" ]] || exit 2
 phase=relay
