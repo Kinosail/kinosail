@@ -79,3 +79,15 @@ test('stalled attachment returns boundedly and late rejection stays handled',asy
  assert.equal(await attachResponsiveFailure(page(),{attach:()=>new Promise((_,r)=>{reject=r;})},'home-resume'),false);
  assert.ok(Date.now()-start<2000);reject(new Error('PRIVATE'));await new Promise(resolve=>setImmediate(resolve));
 });
+
+
+test('actual settings witness selects visible utility actions instead of hidden progress notice',async()=>{
+ const notice=node({hidden:true,display:'none',getBoundingClientRect:()=>({x:0,y:0,width:0,height:0})});
+ const utility=node({display:'flex',getBoundingClientRect:()=>({x:36,y:850,width:1368,height:44})});
+ const facts=await page({'.primary-player-actions':notice,
+  '.primary-player-actions:not([data-progress-notice])':utility}).evaluate(responsiveFailureFacts,'player-settings');
+ assert.equal(facts.elements.actions.hidden,false);assert.equal(facts.elements.actions.display,'flex');
+ assert.equal(facts.elements.actions.rect.y,850);assert.equal(facts.elements.actions.rect.height,44);
+ const absent=await page({'.primary-player-actions':notice}).evaluate(responsiveFailureFacts,'player-settings');
+ assert.equal(absent.elements.actions.available,false);assert.equal(absent.elements.actions.rect,null);
+});

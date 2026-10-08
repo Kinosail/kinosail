@@ -30,7 +30,7 @@ export function responsiveFailureFacts(kind) {
   const settings = document.querySelector('.player-settings'), stage = document.querySelector('.media-stage');
   const options = document.querySelector('.player-native-options'), status = document.querySelector('[data-player-status]');
   const video = document.querySelector('video');
-  return {...base, elements: {settings: describe(settings), actions: describe(document.querySelector('.primary-player-actions')),
+  return {...base, elements: {settings: describe(settings), actions: describe(document.querySelector('.primary-player-actions:not([data-progress-notice])')),
     stage: describe(stage), nativeOptions: describe(options), status: describe(status)},
     state: {settingsInNativeOptions: Boolean(settings?.closest('.player-native-options')),
       settingsInStage: Boolean(settings?.closest('.media-stage')), stageHasSettings: Boolean(stage?.classList.contains('has-settings')),

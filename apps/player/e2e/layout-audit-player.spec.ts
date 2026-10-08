@@ -15,7 +15,7 @@ test("player shows and switches its playback method without crowding actions", a
 		await page.setViewportSize(viewport);
 		await page.evaluate(() => localStorage.removeItem("kinosail.playback-policy-v2"));
 		await page.goto(watch);
-		const actions = page.locator(".primary-player-actions");
+		const actions = page.locator(".primary-player-actions:not([data-progress-notice])");
 		const method = page.locator("[data-playback-mode-status]");
 		await expect(method).toHaveText("Direct Play");
 		const methodGeometry = await method.evaluate((element) => {
@@ -35,7 +35,7 @@ test("player shows and switches its playback method without crowding actions", a
 		await page.waitForTimeout(250);
 		const settingsGeometry = await page.locator(".player-settings").evaluate((panel) => {
 			const box = panel.getBoundingClientRect();
-			const actions = document.querySelector(".primary-player-actions")!.getBoundingClientRect();
+			const actions = document.querySelector(".primary-player-actions:not([data-progress-notice])")!.getBoundingClientRect();
 			return {
 				clear: box.bottom + 8 <= actions.top,
 				height: box.height,

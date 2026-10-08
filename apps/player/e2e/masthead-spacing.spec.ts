@@ -39,19 +39,20 @@ test("Home keeps continued titles and navigation reachable", async ({ page }, te
 	]) {
 		await page.setViewportSize(viewport);
 		await page.goto("/");
-		const feature = page.locator(".continue-shelf article").filter({ has: page.getByRole("heading", { name: "Example Movie", exact: true }) });
+		const feature = page.locator("section.home-feature").filter({ has: page.getByRole("heading", { name: "Example Movie", exact: true }) });
 		await attachResponsiveFailure(page, testInfo, "home-resume");
 		await expect(feature.getByRole("heading", { name: "Example Movie" })).toBeVisible();
 		await expect(feature.getByRole("progressbar", { name: "Watch progress" })).toBeVisible();
-		const resume = feature.getByRole("link", { name: /Example Movie/ });
-		await expect(resume).toHaveAttribute("href", /^\/watch\//);
+		const resume = feature.locator("a[data-feature-action]");
+		await expect(resume).toHaveAccessibleName("Resume");
+		await expect(resume).toHaveAttribute("href", /^\/watch\/[a-f0-9]{16}$/);
 		await expect(feature.getByRole("link", { name: "View details" })).toHaveCount(0);
 		const removal = feature.getByRole("button", { name: /Remove Example Movie/ });
 		expect((await removal.boundingBox())!.height).toBeGreaterThanOrEqual(44);
 		const geometry = await page.evaluate(() => {
 			const nav = document.querySelector(".app-header nav")!.getBoundingClientRect();
 			const search = document.querySelector(".app-header .search")!.getBoundingClientRect();
-			const featured = document.querySelector(".continue-shelf")!.getBoundingClientRect();
+			const featured = document.querySelector("section.home-feature")!.getBoundingClientRect();
 			const overlaps = nav.left < search.right && nav.right > search.left && nav.top < search.bottom && nav.bottom > search.top;
 			const clipped = [...document.querySelectorAll<HTMLElement>(".app-header nav > a, .app-header nav > details")]
 				.filter((element) => getComputedStyle(element).display !== "none")
