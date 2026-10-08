@@ -79,7 +79,7 @@
   .subtitle-dashboard .subtitle-header-settings{flex:0 1 auto;min-width:0;max-width:100%;flex-wrap:wrap}
   .subtitle-dashboard .subtitle-header-settings .header-link{width:auto;min-width:0;padding:.6rem .5rem;white-space:normal;overflow-wrap:anywhere}
   .subtitle-dashboard>.subtitle-main{padding-top:1.5rem}
-  .subtitle-dashboard>main{padding-bottom:max(7rem,calc(var(--subtitle-dock-height,0px) + 1rem))}
+  .subtitle-dashboard>main,.subtitle-dashboard>.subtitle-main{padding-bottom:max(7rem,calc(var(--subtitle-dock-height,0px) + 1rem))}
   .subtitle-settings .settings-flow>section{scroll-margin-top:-.25rem}
   .subtitle-filters{top:72px}.subtitle-overview{gap:1.5rem;padding:1.5rem 0;grid-template-columns:minmax(0,1fr) 13rem}
   .subtitle-coverage-stat{padding-left:1.5rem}

@@ -6,6 +6,99 @@ test.skip(!downloadServer && !downloadIsolated, "requires an explicit disposable
 test.use({serviceWorkers: "allow"});
 test.beforeEach(async ({browser}, info) => attachDownloadEnvironment(browser, info));
 
+test("a paused peer offers Resume when the native job lock releases without another status", async ({page, context}, info) => {
+  const peer = await downloadPeer();
+  try {
+    const served = await openDownloadPage(page, peer.origin, "indexeddb");
+    await page.locator("[data-download-device]").click();
+    await expect.poll(async () => (await inspectDownload(page, served.jobID)).job?.bytes).toBe(downloadChunk);
+    const second = await context.newPage();
+    await openDownloadPage(second, peer.origin, "indexeddb");
+    const barrier = await context.newPage();
+    await barrier.goto(`${peer.origin}/api/v1/downloads/${served.jobID}`);
+    await barrier.evaluate(id => {
+      const gate = {held: false, release: () => {}};
+      (window as any).downloadLockGate = gate;
+      void navigator.locks.request(`kinosail-offline:${id}`, {mode: "exclusive"}, () => new Promise<void>(resolve => {
+        gate.held = true; gate.release = resolve;
+      }));
+    }, served.jobID);
+    await expect.poll(() => barrier.evaluate(async id => (await navigator.locks.query()).pending.some(lock => lock.name === `kinosail-offline:${id}`), served.jobID)).toBe(true);
+    await page.getByRole("button", {name: "Pause download", exact: true}).click();
+    await expect.poll(() => barrier.evaluate(() => (window as any).downloadLockGate.held)).toBe(true);
+    await expect(second.locator("[data-download-device-status]")).toHaveText("Download paused. Resume to continue where it stopped.");
+    await expect(second.getByRole("button", {name: "Resume on this device", exact: true})).toHaveCount(0);
+    await barrier.evaluate(() => (window as any).downloadLockGate.release());
+    await expect(second.getByRole("button", {name: "Resume on this device", exact: true})).toBeEnabled();
+    expect((await peer.stats()).ranges).toEqual([0, downloadChunk]);
+    await second.getByRole("button", {name: "Resume on this device", exact: true}).click();
+    await expect(second.locator("[data-download-device-status]")).toHaveText("Saved and verified. Play to check compatibility.");
+    const stored = await inspectDownload(second, served.jobID);
+    expect(stored.fileHash).toBe(downloadHash);
+    expect((await peer.stats()).ranges).toEqual([0, downloadChunk, downloadChunk, downloadChunk * 2]);
+    expect((await peer.stats()).removals).toBe(0);
+    await info.attach("native-lock-release-resume", {body: JSON.stringify({stored, peer: await peer.stats()}), contentType: "application/json"});
+  } finally { await context.close(); await peer.close(); }
+});
+
+for (const boundary of ["new-owner", "replaced-button", "profile", "pagehide", "same-profile"] as const) {
+if (!downloadServer) test(`a pending Resume wait preserves the ${boundary} boundary`, async ({page, context}, info) => {
+  const peer = await downloadPeer();
+  try {
+    const served = await openDownloadPage(page, peer.origin, "indexeddb");
+    await page.locator("[data-download-device]").click();
+    await expect.poll(async () => (await inspectDownload(page, served.jobID)).job?.bytes).toBe(downloadChunk);
+    const second = await context.newPage();
+    await openDownloadPage(second, peer.origin, "indexeddb");
+    const barrier = await context.newPage();
+    await barrier.goto(`${peer.origin}/api/v1/downloads/${served.jobID}`);
+    await barrier.evaluate(id => {
+      const gate = {held: false, release: () => {}};
+      (window as any).downloadLockGate = gate;
+      void navigator.locks.request(`kinosail-offline:${id}`, {mode: "exclusive"}, () => new Promise<void>(resolve => {
+        gate.held = true; gate.release = resolve;
+      }));
+    }, served.jobID);
+    await expect.poll(() => barrier.evaluate(async id => (await navigator.locks.query()).pending.some(lock => lock.name === `kinosail-offline:${id}`), served.jobID)).toBe(true);
+    await page.getByRole("button", {name: "Pause download", exact: true}).click();
+    await expect.poll(() => barrier.evaluate(() => (window as any).downloadLockGate.held)).toBe(true);
+    await expect(second.locator("[data-download-device-status]")).toHaveText("Download paused. Resume to continue where it stopped.");
+    await expect.poll(() => barrier.evaluate(async id => (await navigator.locks.query()).pending.some(lock => lock.name === `kinosail-offline:${id}` && lock.mode === "shared"), served.jobID)).toBe(true);
+    const previous = await second.locator("[data-download-device]").elementHandle();
+    if (boundary === "new-owner") await second.locator("[data-download-device]").click();
+    else if (boundary === "replaced-button") await previous!.evaluate(node => node.replaceWith(node.cloneNode(true)));
+    else if (boundary === "pagehide") await second.evaluate(() => dispatchEvent(new PageTransitionEvent("pagehide")));
+    else {
+      await second.evaluate(() => {
+        (window as any).profileRevisions = 0;
+        addEventListener("kinosail:offline-profile", () => { (window as any).profileRevisions++; });
+      });
+      const other = await context.newPage();
+      await other.goto(`${peer.origin}/offline-downloads?profile=${boundary === "profile" ? "other" : "profile"}`);
+      await expect.poll(() => second.evaluate(() => (window as any).profileRevisions)).toBeGreaterThan(0);
+      if (boundary === "same-profile") {
+        // Replay the public identity notification after tab bootstrap settles.
+        // It changes the identity revision while preserving the Viewer Profile.
+        await second.evaluate(() => dispatchEvent(new Event("kinosail:offline-profile")));
+      }
+    }
+    await barrier.evaluate(() => (window as any).downloadLockGate.release());
+    await expect.poll(() => barrier.evaluate(async id => (await navigator.locks.query()).pending.some(lock => lock.name === `kinosail-offline:${id}`), served.jobID)).toBe(false);
+    if (boundary === "same-profile") await expect(second.getByRole("button", {name: "Resume on this device", exact: true})).toBeEnabled();
+    else await expect(second.getByRole("button", {name: "Resume on this device", exact: true})).toHaveCount(0);
+    if (boundary === "new-owner") {
+      await expect(second.locator("[data-download-device-status]")).toHaveText("Saved and verified. Play to check compatibility.");
+      expect((await inspectDownload(second, served.jobID)).fileHash).toBe(downloadHash);
+    } else {
+      expect(await previous!.textContent()).toBe(boundary === "same-profile" ? "Resume on this device" : "Download to this device");
+      expect((await peer.stats()).ranges).toEqual([0, downloadChunk]);
+    }
+    expect((await peer.stats()).removals).toBe(0);
+    await info.attach("pending-resume-boundary", {body: JSON.stringify({boundary, peer: await peer.stats()}), contentType: "application/json"});
+  } finally { await context.close(); await peer.close(); }
+});
+}
+
 test("same Viewer Profile in another tab preserves the transfer owner until explicit Pause", async ({page, context}, info) => {
   await observeDownloadOwnership(context);
   const peer = await downloadPeer();

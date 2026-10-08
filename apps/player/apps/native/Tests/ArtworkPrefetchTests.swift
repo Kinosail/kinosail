@@ -45,8 +45,12 @@ struct ArtworkPrefetchTests {
         }
         let loader = ArtworkLoader()
         try await loader.prefetch(paths: ["/art/slow", "/art/queued"], client: fixture.client, dimension: 800)
-        for _ in 0..<200 where fixture.requests.isEmpty { try await Task.sleep(for: .milliseconds(5)) }
+        let deadline = ContinuousClock.now.advanced(by: .seconds(10))
+        while fixture.requests.isEmpty && ContinuousClock.now < deadline {
+            try await Task.sleep(for: .milliseconds(5))
+        }
         #expect(fixture.requests.count == 1)
+        #expect(fixture.requests.first?.url?.path == "/art/slow")
         let catalog = try await fixture.client.library(view: .movies)
         #expect(catalog.items.isEmpty)
         let visible = try await loader.image(path: "/art/visible", client: fixture.client, dimension: 800)

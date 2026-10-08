@@ -15,13 +15,9 @@ for (const width of downloadServer ? [390, 1440, 1920] : [storage === "opfs" ? 3
     }) : fixtureContext;
     const page = storage === "opfs" ? context.pages()[0] : fixturePage;
     let peer: Awaited<ReturnType<typeof downloadPeer>> | undefined;
-    let traceStarted = false;
     let failed = false;
     try {
-      if (storage === "opfs" && info.project.use.trace !== "off") {
-        await context.tracing.start({screenshots: true, snapshots: true, sources: true});
-        traceStarted = true;
-      }
+      // Playwright Test records every context, including this persistent one.
       await page.setViewportSize({width, height: width === 1920 ? 1080 : 844});
       const transport = await downloadPeer();
       peer = transport;
@@ -96,12 +92,6 @@ for (const width of downloadServer ? [390, 1440, 1920] : [storage === "opfs" ? 3
         catch (error) { if (!cleanupFailures.length) firstCleanupError = error; cleanupFailures.push(stage); }
       };
       await cleanup("restore-transport", () => context.setOffline(false));
-      if (traceStarted) await cleanup("retain-trace", async () => {
-        const path = info.outputPath("persistent-storage-trace.zip");
-        const retain = failed || cleanupFailures.length > 0;
-        await context.tracing.stop(retain ? {path} : {});
-        if (retain) await info.attach("persistent-storage-trace", {path, contentType: "application/zip"});
-      });
       await cleanup("close-context", () => context.close());
       if (peer) await cleanup("close-peer", () => peer.close());
       if (cleanupFailures.length) {
