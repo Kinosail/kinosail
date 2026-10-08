@@ -33,8 +33,25 @@ class PublicFlowCodecSetup(unittest.TestCase):
         self.assertLess(source.index('name: Install startup fixture codecs'), source.index('name: Install public-flow runner'))
         self.assertLess(source.index('name: Install Subtitles public-flow codecs'), source.index('name: Install public-flow runner'))
         self.assertIn('timeout-minutes: 30', source.split('  browser:\n', 1)[1].split('  required:\n', 1)[0])
-        self.assertIn('run: scripts/e2e/run.sh "$APP"', source)
+        flows = browser_step('Verify public flows with tester-army e2e')
+        self.assertEqual(step_command(flows).count('  scripts/e2e/run.sh "$APP" --gaps\n'), 1)
+        self.assertEqual(step_command(flows).count('  scripts/e2e/run.sh "$APP"\n'), 1)
+        self.assertLess(source.index('name: Install public-flow runner'), source.index('name: Verify public flows with tester-army e2e'))
         self.assertEqual(step_command(subtitles), 'sudo apt-get update\nsudo apt-get install -y --no-install-recommends ffmpeg')
+
+    def test_public_flow_runner_is_a_hosted_app_browser_gate(self):
+        app = (ROOT / '.github/workflows/app.yml').read_text()
+        step = app.split('      - name: Verify public flows with tester-army e2e\n')[1].split('      - name:', 1)[0]
+        self.assertIn("if: matrix.engine == 'chromium'", step)
+        self.assertIn('APP: ${{ inputs.app }}', step)
+        self.assertIn('E2E_TELEMETRY_DISABLED: "1"', step)
+        self.assertIn('DEEP: ${{ fromJSON(inputs.plan).deep && \'true\' || \'false\' }}', step)
+        self.assertIn('if [[ "$APP" == player && "$DEEP" == true ]]; then', step)
+        self.assertEqual(step.count('            scripts/e2e/run.sh "$APP" --gaps\n'), 1)
+        self.assertEqual(step.count('            scripts/e2e/run.sh "$APP"\n'), 1)
+        self.assertIn('          else\n', step)
+        self.assertIn('scripts/e2e/.e2e/runs/', app)
+        self.assertNotIn('continue-on-error:', step)
 
     def run_runner(self, *, missing=None, encoders=('libx264', 'aac')):
         with tempfile.TemporaryDirectory(prefix='codec-contract-') as directory:
@@ -43,6 +60,8 @@ class PublicFlowCodecSetup(unittest.TestCase):
             tools.mkdir()
             events = root / 'events'
             scripts = {
+                'xvfb-run': '#!/bin/sh\nexit 99\n',
+                'grep': '#!/bin/sh\nexec /usr/bin/grep "$@"\n',
                 'sudo': '#!/bin/sh\nprintf "forbidden sudo\\n" >> "$CODEC_EVENTS"\nexit 99\n',
                 'pnpm': '#!/bin/sh\nprintf "pnpm %s\\n" "$*" >> "$CODEC_EVENTS"\n',
                 'ffprobe': '#!/bin/sh\nprintf "ffprobe %s\\n" "$*" >> "$CODEC_EVENTS"\n',
@@ -52,11 +71,13 @@ class PublicFlowCodecSetup(unittest.TestCase):
                           + 'fi\n',
             }
             for name, script in scripts.items():
+                if name == missing == 'xvfb-run':
+                    continue
                 # A fail-closed stand-in avoids falling through to host codecs.
                 path = tools / name
                 path.write_text('#!/bin/sh\nexit 127\n' if name == missing else script)
                 path.chmod(0o700)
-            env = {'PATH': str(tools) + ':/usr/bin:/bin', 'RUNNER_TEMP': str(root), 'CODEC_EVENTS': str(events)}
+            env = {'PATH': str(tools), 'RUNNER_TEMP': str(root), 'CODEC_EVENTS': str(events)}
             result = subprocess.run(['/bin/bash', '-e', '-o', 'pipefail', '-c', step_command(browser_step('Install public-flow runner'))],
                                     cwd=root, env=env, capture_output=True, text=True, timeout=3)
             return result.returncode, events.read_text().splitlines() if events.exists() else []
@@ -68,7 +89,7 @@ class PublicFlowCodecSetup(unittest.TestCase):
                                   'pnpm --dir scripts/e2e install --frozen-lockfile'])
 
     def test_missing_codec_or_fixture_encoder_stops_before_dependency_side_effects(self):
-        for missing in ('ffmpeg', 'ffprobe'):
+        for missing in ('ffmpeg', 'ffprobe', 'xvfb-run'):
             with self.subTest(missing=missing):
                 status, events = self.run_runner(missing=missing)
                 self.assertNotEqual(status, 0)

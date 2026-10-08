@@ -1,10 +1,11 @@
 import {expect, test} from '@playwright/test';
-import {readFile, writeFile, readdir, stat, utimes} from 'node:fs/promises';
+import {readFile, writeFile, readdir, stat, utimes, chmod} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {join} from 'node:path';
 import {totp} from './happy-path-helpers';
 import {observeStartupPlaybackExits} from './startup-playback-exit';
+import {registerPresentedSeek} from './hls-presented-seek';
 
 test('bounded startup preparation preserves the exact stream and playback priority', async ({page}, info) => {
   test.skip(process.env.KINOSAIL_STARTUP_E2E !== '1', 'Requires disposable synthetic local runner');
@@ -280,4 +281,12 @@ test('bounded startup preparation preserves the exact stream and playback priori
   const cacheBytes = await bytes(join(run, 'cache'));
   expect(cacheBytes).toBeLessThan(512 * 1024 * 1024);
   await writeFile(info.outputPath('startup-measurements.json'), JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION, receipts, cacheBytes, result: 'passed'}, null, 2));
+
+  if (process.env.KINOSAIL_HLS_PRESENTATION_PROOF === '1') {
+    const state = join(run, 'presentation-auth.json');
+    await page.context().storageState({path: state});
+    await chmod(state, 0o600);
+  }
 });
+
+registerPresentedSeek();

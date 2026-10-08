@@ -336,7 +336,7 @@ jobs:
         run: node --test scripts/testing/subtitle-login-navigation.test.mjs scripts/testing/subtitle-dashboard-navigation.test.mjs scripts/testing/subtitle-dashboard-registration.test.mjs
       - name: Verify setup navigation failure diagnostics
         if: inputs.app == 'player'
-        run: node --test scripts/testing/player-setup-navigation.test.mjs scripts/testing/playback-navigation-diagnostics.test.mjs scripts/testing/player-playback-navigation.test.mjs scripts/testing/checkpoint-progress.test.mjs scripts/testing/player-login-navigation.test.mjs scripts/testing/layout-login-navigation.test.mjs scripts/testing/library-mutation-witness.test.mjs scripts/testing/download-resume-guard.test.mjs scripts/testing/navigation-repeat-offer.test.mjs scripts/testing/supporter-share-availability.test.mjs scripts/testing/jellyfin-save-witness.test.mjs scripts/testing/provider-profile-fixture.test.mjs scripts/testing/browse-return-reporter.test.mjs scripts/testing/browse-return-launch.test.mjs scripts/testing/hls-fast-departure.test.mjs scripts/testing/audio-queue-fault-witness.test.mjs scripts/testing/playback-failed-save.test.mjs scripts/testing/responsive-failure-witness.test.mjs scripts/testing/playback-state-witness.test.mjs scripts/testing/recovery-controls-owner.test.mjs scripts/testing/offline-browser-api.test.mjs scripts/testing/offline-opfs-fixture.test.mjs scripts/testing/offline-seek-witness.test.mjs scripts/e2e/tests/fixture-boundary.test.mjs scripts/e2e/tests/recovery-control.test.mjs scripts/e2e/tests/fixture-reader.test.mjs scripts/e2e/tests/gap-launch.test.mjs scripts/e2e/tests/pdf-pixels.test.mjs scripts/e2e/tests/sdk-gap-boundary.test.mjs
+        run: node --test scripts/testing/player-setup-navigation.test.mjs scripts/testing/playback-navigation-diagnostics.test.mjs scripts/testing/player-playback-navigation.test.mjs scripts/testing/checkpoint-progress.test.mjs scripts/testing/player-login-navigation.test.mjs scripts/testing/layout-login-navigation.test.mjs scripts/testing/library-mutation-witness.test.mjs scripts/testing/download-resume-guard.test.mjs scripts/testing/navigation-repeat-offer.test.mjs scripts/testing/supporter-share-availability.test.mjs scripts/testing/jellyfin-save-witness.test.mjs scripts/testing/provider-profile-fixture.test.mjs scripts/testing/browse-return-reporter.test.mjs scripts/testing/browse-return-launch.test.mjs scripts/testing/hls-fast-departure.test.mjs scripts/testing/audio-queue-fault-witness.test.mjs scripts/testing/playback-failed-save.test.mjs scripts/testing/responsive-failure-witness.test.mjs scripts/testing/playback-state-witness.test.mjs scripts/testing/recovery-controls-owner.test.mjs scripts/testing/offline-browser-api.test.mjs scripts/testing/offline-opfs-fixture.test.mjs scripts/testing/offline-seek-witness.test.mjs scripts/testing/hls-presented-frame.test.mjs scripts/e2e/tests/fixture-boundary.test.mjs scripts/e2e/tests/recovery-control.test.mjs scripts/e2e/tests/fixture-reader.test.mjs scripts/e2e/tests/gap-launch.test.mjs scripts/e2e/tests/pdf-pixels.test.mjs scripts/e2e/tests/sdk-gap-boundary.test.mjs
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
       - parallel:
           - env:
@@ -525,11 +525,15 @@ jobs:
             .verification/hls-source-version/*/SHA256SUMS
           retention-days: 14
           if-no-files-found: error
+      - name: Verify coded HLS presentation fixture controls
+        if: inputs.app == 'player' && matrix.engine == 'chromium'
+        run: python3 -m unittest discover -s apps/player/scripts -p test_hls_presented_fixture.py
       - name: Verify bounded startup and request boundary
         if: inputs.app == 'player' && matrix.engine == 'chromium'
         env:
           GOMAXPROCS: "4"
           KINOSAIL_STARTUP_BROWSER_CHANNEL: chromium
+          KINOSAIL_HLS_PRESENTATION_PROOF: ${{ fromJSON(inputs.plan).deep && '1' || '0' }}
         run: python3 apps/player/scripts/test-startup-local.py
       - name: Verify bounded HLS phase evidence
         if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
@@ -547,6 +551,8 @@ jobs:
             .verification/startup/*/resources.json
             .verification/startup/*/SHA256SUMS
             .verification/startup/*/results/**/startup-measurements.json
+            .verification/startup/*/source-frame-map.json
+            .verification/startup/*/results/**/hls-presented-frame.json
           retention-days: 7
           if-no-files-found: error
       - name: Keep verifiable E2E artifact
