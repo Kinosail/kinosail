@@ -4,7 +4,7 @@ set -euo pipefail
 umask 077
 if [[ $# != 3 && $# != 4 ]]; then echo 'requires project, discovery and fresh output' >&2; exit 2; fi
 project="$1" discovery="$2" output="$3" profile="${4-library-owner}"
-case "$profile" in library-owner|camera-fake) ;; *) exit 2 ;; esac
+case "$profile" in library-owner|camera-fake|responsive-shell) ;; *) exit 2 ;; esac
 case "$project" in chromium|firefox) scheme=http ;; webkit) scheme=https ;; *) exit 2 ;; esac
 engine="${CONTAINER_ENGINE:-docker}"
 if [[ "$engine" != docker && "$engine" != podman || "${KINOSAIL_TEST_IMAGE_READY:-}" != '' && "${KINOSAIL_TEST_IMAGE_READY:-}" != 1 ]]; then exit 2; fi

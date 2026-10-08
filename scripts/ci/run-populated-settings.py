@@ -95,7 +95,9 @@ if args.required_title:
     receipt['requiredTitles'] = args.required_title
 if library:
     receipt.update(profile=args.profile, project=args.project, state=args.state,
-                   selection='closed19 synthetic camera identities' if args.profile == 'camera-fake' else 'closed46 library Owner identities',
+                   selection={'camera-fake': 'closed19 synthetic camera identities',
+                              'library-owner': 'closed46 library Owner identities',
+                              'responsive-shell': 'closed99 responsive Owner identities'}[args.profile],
                    discoverySHA256=hashlib.sha256(discovery).hexdigest())
 
 

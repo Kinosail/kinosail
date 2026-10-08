@@ -84,16 +84,27 @@ CAMERA_CASES = (
 
 def selection(arguments):
     if (not isinstance(arguments, (tuple, list)) or len(arguments) != 3
-            or arguments[0] not in ('library-owner', 'camera-fake') or arguments[1] not in PROJECTS
+            or arguments[0] not in ('library-owner', 'camera-fake', 'responsive-shell') or arguments[1] not in PROJECTS
             or arguments[2] != 'fresh'):
         raise ValueError('fixed library profile/project/fresh state required')
     return tuple(arguments)
 
 
+def profile_cases(profile):
+    if profile == 'responsive-shell':
+        from responsive_profile_cases import CASES as responsive_cases
+        return responsive_cases
+    if profile == 'camera-fake':
+        return CAMERA_CASES
+    if profile == 'library-owner':
+        return CASES
+    raise ValueError('fixed profile required')
+
+
 def playwright_arguments(project, discovery, profile='library-owner'):
     """One exact selector for discovery and execution; no process effects."""
     selection((profile, project, 'fresh'))
-    cases = CAMERA_CASES if profile == 'camera-fake' else CASES
+    cases = profile_cases(profile)
     if type(discovery) is not bool:
         raise ValueError('explicit discovery mode required')
     arguments = ['exec', 'playwright', 'test', *sorted({file for file, _ in cases}),
@@ -164,7 +175,7 @@ def admit(raw, profile, project, state, completed):
     try:
         value = json.loads(raw.decode('utf-8'), object_pairs_hook=unique_object,
                            parse_constant=invalid_number, parse_float=finite_number)
-        return admit_report(value, project, completed, CAMERA_CASES if profile == 'camera-fake' else CASES)
+        return admit_report(value, project, completed, profile_cases(profile))
     except (KeyError, TypeError, AttributeError, UnicodeError, RecursionError) as error:
         raise ValueError('invalid fixed library proof') from error
 
