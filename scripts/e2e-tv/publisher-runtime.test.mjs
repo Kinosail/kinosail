@@ -166,3 +166,18 @@ test('publisher rejects unknown native version diagnostics before deleting priva
  const before=readFileSync(join(root,'receipt.private.json'));assert.notEqual(run(cwd).status,0);
  assert.deepEqual(readFileSync(join(root,'receipt.private.json')),before);assert.ok(existsSync(join(root,'sdk')));assert.equal(existsSync(join(root,'published')),false);
 });
+
+test('closed TV action file joins private validation and raw cleanup before publication',t=>{
+ const {cwd,root}=fixture(t);const actions={version:1,events:[{stage:'inventory',status:'started'},{stage:'inventory',status:'failed',failure:{category:'unqualified',ownKeyCount:3,recognizedKeyMask:11}}]};
+ writeFileSync(join(root,'tv-actions.private.json'),JSON.stringify(actions),{mode:0o600});
+ const result=run(cwd);assert.equal(result.status,0,result.stderr);
+ assert.deepEqual(JSON.parse(readFileSync(join(root,'published/receipt.json'),'utf8')).tvActions,actions);
+ assert.equal(existsSync(join(root,'tv-actions.private.json')),false);
+});
+for(const scenario of ['unknown','oversized','symlink','loose-mode'])test(`TV action ${scenario} rejects before sanitize or deletion`,t=>{
+ const {cwd,root}=fixture(t),path=join(root,'tv-actions.private.json'),foreign=join(cwd,'foreign-actions.json');
+ writeFileSync(foreign,'FOREIGN',{mode:0o600});
+ if(scenario==='symlink')symlinkSync(foreign,path);
+ else writeFileSync(path,scenario==='unknown'?JSON.stringify({version:1,events:[{stage:'SECRET',status:'started'}]}):scenario==='oversized'?' '.repeat(65537):JSON.stringify({version:1,events:[]}),{mode:scenario==='loose-mode'?0o644:0o600});
+ const result=run(cwd);assert.notEqual(result.status,0);assert.equal(existsSync(join(root,'published')),false);assert.equal(existsSync(join(root,'sdk/report.json')),true);assert.equal(readFileSync(foreign,'utf8'),'FOREIGN');
+});

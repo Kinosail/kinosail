@@ -131,3 +131,28 @@ test('inventory list rejection and malformed reports close owned session without
   assert.equal(body,false);assert.deepEqual(calls.map(call=>call[0]),['list','close']);
  }
 });
+
+test('TV lifecycle observer identifies failed actual stage without extra SDK calls or replacing error',async()=>{
+ for(const selection of [ios,android]) for(const failed of ['inventory','reinstall','open','foreground','use','close']) {
+  if(failed==='foreground' && selection.platform==='ios')continue;
+  const {client,calls}=fixture(selection),cause=Object.freeze(Error('private SDK detail')),events=[];
+  client.apps.reinstall=async()=>{calls.push(['install']);};
+  const methods={inventory:[client.devices,'list'],reinstall:[client.apps,'reinstall'],open:[client.apps,'open'],foreground:[client.command,'appState'],close:[client.sessions,'close']};
+  if(failed!=='use'){const [namespace,name]=methods[failed];namespace[name]=async()=>{calls.push([failed]);throw cause;};}
+  const observe=async(stage,operation)=>{events.push([stage,'started']);try{const value=await operation();events.push([stage,'passed']);return value;}catch(error){events.push([stage,'failed']);throw error;}};
+  await assert.rejects(()=>withTvSession(client,selection,async()=>{if(failed==='use')throw cause;},selection.platform==='ios'?'/tmp/repo/apps/player/apps/native/.build/tvos-simulator/Build/Products/Debug-appletvsimulator/KinosailPlayer.app':'/tmp/repo/apps/player/apps/android/app/build/outputs/apk/debug/app-debug.apk',observe),error=>error===cause);
+  assert.deepEqual(events.find(row=>row[0]===failed && row[1]==='failed'),[failed,'failed']);
+  assert.equal(events.at(-1)[0],'close');
+  assert.equal(calls.some(row=>row[0]==='snapshot'||row[0]==='remote'),false);
+ }
+});
+
+test('diagnostic persistence failure cannot skip existing owned session cleanup',async()=>{
+ const {client,calls}=fixture(),cause=Error('closed diagnostic failed');
+ await assert.rejects(()=>withTvSession(client,ios,async()=>{},undefined,async(stage,operation)=>{if(stage==='close')throw cause;return operation();}),error=>error===cause);
+ assert.equal(calls.at(-1)[0],'close');assert.equal(calls.filter(row=>row[0]==='close').length,1);
+});
+
+test('missing default observer remains supported and malformed observer has no SDK effects',async()=>{
+ for(const observer of [null,[],{},'unknown',1]){const {client,calls}=fixture();await assert.rejects(()=>withTvSession(client,ios,async()=>{},undefined,observer),/invalid TV observer/);assert.deepEqual(calls,[]);}
+});

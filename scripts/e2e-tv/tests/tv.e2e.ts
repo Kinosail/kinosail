@@ -38,64 +38,89 @@ async function image(client: AgentDeviceClient, root: string, name: 'first' | 's
   return PNG.sync.read(bytes);
 }
 test('TV public approval, focused remote movie, decoded motion, pause, Menu and durable relaunch', async ({ tv }) => {
-  const { client, selection, run } = tv, root = join(process.cwd(), '.e2e');
+  const { client, selection, run, actions } = tv, root = join(process.cwd(), '.e2e');
   if (JSON.stringify(readControl()) !== JSON.stringify(run)) throw Error('TV control changed');
-  const admin = await owner(`http://127.0.0.1:${run.identity.port}`, root);
+  const admin = await actions.step('owner', () => owner(`http://127.0.0.1:${run.identity.port}`, root));
   let movie: any;
-  await expect.poll(async () => {
-    const library = await admin.read('/api/v1/library?view=movies');
-    movie = fixtureItem(library, 'Example Movie', 'video'); return !!movie;
-  }).toBe(true);
-  const playback = await admin.read(`/api/v1/items/${movie.id}/playback`);
-  expect(Number.isFinite(playback.duration) && playback.duration >= 15 && playback.duration <= 17).toBe(true);
-  expect(movie.progress?.seconds ?? 0).toBe(0); expect(movie.progress?.watched ?? false).toBe(false);
-  await enterServerAddress(client, selection, run.identity.port);
-  await focusAndSelect(client, selection, 'Connect', 'down');
-  const approvalNodes = await visible(client, selection, n => selection.platform === 'ios' ? /^Approval code [0-9 ]+$/.test(n.label ?? '') : /^\d{6}$/.test(n.label ?? ''));
-  const approval = parseCode(approvalNodes.map(n => n.label));
-  registerSecrets(root, [approval], 'started'); await admin.approve(approval);
-  await visible(client, selection, n => n.label === 'Movies' && button(n));
-  await focusAndSelect(client, selection, 'Movies', 'down');
-  const cards = await visible(client, selection, n => button(n) && /^Example Movie(?:,|$)/.test(n.label ?? ''));
-  if (cards.length !== 1 || !cards[0].label) throw Error('ambiguous fixture card');
-  await focusAndSelect(client, selection, cards[0].label, 'down');
-  if (selection.platform === 'ios') {
-    await visible(client, selection, n => n.identifier === `detail.play.${movie.id}`);
-    await focusAndSelect(client, selection, `detail.play.${movie.id}`, 'up', 'identifier');
-  } else {
+  const playback = await actions.step('library', async () => {
+    await expect.poll(async () => {
+      const library = await admin.read('/api/v1/library?view=movies');
+      movie = fixtureItem(library, 'Example Movie', 'video'); return !!movie;
+    }).toBe(true);
+    const playback = await admin.read(`/api/v1/items/${movie.id}/playback`);
+    expect(Number.isFinite(playback.duration) && playback.duration >= 15 && playback.duration <= 17).toBe(true);
+    expect(movie.progress?.seconds ?? 0).toBe(0); expect(movie.progress?.watched ?? false).toBe(false);
+    return playback;
+  });
+  await actions.step('server_address', () => enterServerAddress(client, selection, run.identity.port));
+  await actions.step('connect', () => focusAndSelect(client, selection, 'Connect', 'down'));
+  await actions.step('approval', async () => {
+    const approvalNodes = await visible(client, selection, n => selection.platform === 'ios' ? /^Approval code [0-9 ]+$/.test(n.label ?? '') : /^\d{6}$/.test(n.label ?? ''));
+    const approval = parseCode(approvalNodes.map(n => n.label));
+    registerSecrets(root, [approval], 'started'); await admin.approve(approval);
+  });
+  await actions.step('movies', async () => {
+    await visible(client, selection, n => n.label === 'Movies' && button(n));
+    await focusAndSelect(client, selection, 'Movies', 'down');
+  });
+  await actions.step('movie_focus', async () => {
+    const cards = await visible(client, selection, n => button(n) && /^Example Movie(?:,|$)/.test(n.label ?? ''));
+    if (cards.length !== 1 || !cards[0].label) throw Error('ambiguous fixture card');
+    await focusAndSelect(client, selection, cards[0].label, 'down');
+  });
+  await actions.step('play', async () => {
+    if (selection.platform === 'ios') {
+      await visible(client, selection, n => n.identifier === `detail.play.${movie.id}`);
+      await focusAndSelect(client, selection, `detail.play.${movie.id}`, 'up', 'identifier');
+    } else {
+      await visible(client, selection, n => n.label === 'Play' && button(n));
+      await focusAndSelect(client, selection, 'Play', 'up');
+    }
+    await visible(client, selection, n => (n.label === 'Pause' && button(n)) || n.label === 'Playback options');
+  });
+  await actions.step('decoded_frames', async () => {
+    registerSecrets(root, [], 'playback');
+    const first = await image(client, root, 'first'); await delay(700);
+    const second = await image(client, root, 'second'); expect(decodedMotion(first, second)).toBe(true);
+  });
+  await actions.step('pause', async () => {
+    await client.command.tvRemote({ ...selection, button: 'up', signal: AbortSignal.timeout(15000) });
+    await visible(client, selection, n => n.label === 'Pause' && button(n));
+    await focusAndSelect(client, selection, 'Pause', 'left');
     await visible(client, selection, n => n.label === 'Play' && button(n));
-    await focusAndSelect(client, selection, 'Play', 'up');
-  }
-  await visible(client, selection, n => (n.label === 'Pause' && button(n)) || n.label === 'Playback options');
-  registerSecrets(root, [], 'playback');
-  const first = await image(client, root, 'first'); await delay(700);
-  const second = await image(client, root, 'second'); expect(decodedMotion(first, second)).toBe(true);
-  await client.command.tvRemote({ ...selection, button: 'up', signal: AbortSignal.timeout(15000) });
-  await visible(client, selection, n => n.label === 'Pause' && button(n));
-  await focusAndSelect(client, selection, 'Pause', 'left');
-  await visible(client, selection, n => n.label === 'Play' && button(n));
-  await client.command.tvRemote({ ...selection, button: selection.platform === 'ios' ? 'menu' : 'back', signal: AbortSignal.timeout(15000) });
-  // Return to the real detail and observe its restored Play/Resume focus before leaving.
-  await expect.poll(async () => (await nodes(client, selection)).some(n => n.focused === true && (selection.platform === 'ios'
-    ? n.identifier === `detail.play.${movie.id}` : button(n) && ['Play','Resume'].includes(n.label ?? ''))), { timeout: 15000 }).toBe(true);
+  });
+  await actions.step('menu', async () => {
+    await client.command.tvRemote({ ...selection, button: selection.platform === 'ios' ? 'menu' : 'back', signal: AbortSignal.timeout(15000) });
+    // Return to the real detail and observe its restored Play/Resume focus before leaving.
+    await expect.poll(async () => (await nodes(client, selection)).some(n => n.focused === true && (selection.platform === 'ios'
+      ? n.identifier === `detail.play.${movie.id}` : button(n) && ['Play','Resume'].includes(n.label ?? ''))), { timeout: 15000 }).toBe(true);
+  });
   let progress: any;
-  await expect.poll(async () => { progress = (await admin.read(`/api/v1/items/${movie.id}`)).item.progress;
-    return Number.isFinite(progress?.seconds) && progress.seconds > 0 && progress.seconds < playback.duration * .8 && progress.watched === false;
-  }, { timeout: 15000 }).toBe(true);
+  await actions.step('progress', async () => {
+    await expect.poll(async () => { progress = (await admin.read(`/api/v1/items/${movie.id}`)).item.progress;
+      return Number.isFinite(progress?.seconds) && progress.seconds > 0 && progress.seconds < playback.duration * .8 && progress.watched === false;
+    }, { timeout: 15000 }).toBe(true);
+  });
   const saved = progress.seconds;
   const app = selection.platform === 'ios' ? 'com.kinosail.player' : 'com.kinosail.player.dev';
-  await client.apps.close({ app, signal: AbortSignal.timeout(15000) });
-  await client.apps.open({ ...selection, app, ...(selection.platform === 'android' ? { activity: 'com.kinosail.player.tv.TvActivity' } : {}), signal: AbortSignal.timeout(30000) });
-  const foreground = await client.command.appState({ ...selection, signal: AbortSignal.timeout(15000) });
-  if (selection.platform === 'android' && (foreground.platform !== 'android' || foreground.package !== app || !['com.kinosail.player.tv.TvActivity','.tv.TvActivity'].includes(foreground.activity))) throw Error('relaunch lost TV foreground');
-  if (selection.platform === 'ios' && (foreground.platform !== 'ios' || foreground.appBundleId !== app)) throw Error('relaunch lost TV foreground');
-  await visible(client, selection, n => n.label === 'Movies' && button(n));
-  expect((await nodes(client, selection)).some(n => n.label === 'Server address' && n.editable)).toBe(false);
-  await focusAndSelect(client, selection, 'Movies', 'down');
-  await visible(client, selection, n => button(n) && /^Example Movie(?:,|$)/.test(n.label ?? ''));
-  progress = (await admin.read(`/api/v1/items/${movie.id}`)).item.progress;
-  expect(progress.seconds).toBe(saved); expect(progress.watched).toBe(false);
-  registerSecrets(root, [], 'complete');
-  writeFileSync(join(root, 'journey.json'), JSON.stringify({ approval:'public Owner API and actual dynamic UI code', decodedFrames:true,
-    partialProgressSeconds:saved, watched:false, connectionRestored:true, progressPersisted:true, remoteFocus:true, menuReturned:true, tvForeground:true }), { mode:0o600, flag:'wx' });
+  await actions.step('relaunch', async () => {
+    await client.apps.close({ app, signal: AbortSignal.timeout(15000) });
+    await client.apps.open({ ...selection, app, ...(selection.platform === 'android' ? { activity: 'com.kinosail.player.tv.TvActivity' } : {}), signal: AbortSignal.timeout(30000) });
+    const foreground = await client.command.appState({ ...selection, signal: AbortSignal.timeout(15000) });
+    if (selection.platform === 'android' && (foreground.platform !== 'android' || foreground.package !== app || !['com.kinosail.player.tv.TvActivity','.tv.TvActivity'].includes(foreground.activity))) throw Error('relaunch lost TV foreground');
+    if (selection.platform === 'ios' && (foreground.platform !== 'ios' || foreground.appBundleId !== app)) throw Error('relaunch lost TV foreground');
+  });
+  await actions.step('restored_connection', async () => {
+    await visible(client, selection, n => n.label === 'Movies' && button(n));
+    expect((await nodes(client, selection)).some(n => n.label === 'Server address' && n.editable)).toBe(false);
+    await focusAndSelect(client, selection, 'Movies', 'down');
+    await visible(client, selection, n => button(n) && /^Example Movie(?:,|$)/.test(n.label ?? ''));
+  });
+  await actions.step('persisted_progress', async () => {
+    progress = (await admin.read(`/api/v1/items/${movie.id}`)).item.progress;
+    expect(progress.seconds).toBe(saved); expect(progress.watched).toBe(false);
+    registerSecrets(root, [], 'complete');
+    writeFileSync(join(root, 'journey.json'), JSON.stringify({ approval:'public Owner API and actual dynamic UI code', decodedFrames:true,
+      partialProgressSeconds:saved, watched:false, connectionRestored:true, progressPersisted:true, remoteFocus:true, menuReturned:true, tvForeground:true }), { mode:0o600, flag:'wx' });
+  });
 });
