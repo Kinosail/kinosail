@@ -107,7 +107,8 @@ func TestRemainingPublicAACOldCacheRebuildAndColdReuse(t *testing.T) { //nolint:
 	for round := 1; round <= 2; round++ {
 		assets := remainingPublicSnapshot(t, root)
 		calls := remainingPublicRead(t, marker)
-		reopened, reopenedID, stopReopen := remainingPublicReopenedHandler(t, ctx, config)
+		reopenedConfig, stopReopen := remainingPublicReopenedLifecycle(t, ctx, config)
+		reopened, reopenedID := formatTestItem(t, reopenedConfig)
 		if reopenedID != id {
 			t.Fatal("cold public cache reopen changed the fixture identity")
 		}
@@ -135,11 +136,10 @@ func TestRemainingPublicAACOldCacheRebuildAndColdReuse(t *testing.T) { //nolint:
 	t.Logf("remaining-public-cache-receipt %s", data)
 }
 
-func remainingPublicReopenedHandler(t *testing.T, ctx context.Context, config server.Config) (http.Handler, string, context.CancelFunc) {
+func remainingPublicReopenedLifecycle(t *testing.T, ctx context.Context, config server.Config) (server.Config, context.CancelFunc) {
 	t.Helper()
 	lifecycle, cancel := context.WithCancel(ctx)
 	t.Cleanup(cancel)
 	config.Lifecycle = lifecycle
-	handler, id := formatTestItem(t, config)
-	return handler, id, cancel
+	return config, cancel
 }
