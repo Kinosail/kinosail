@@ -85,5 +85,7 @@ run_populated_player_journeys() {
     --required-title 'queued short track resumes its saved position without claiming unplayed progress' \
     --required-title 'ended offline queue requires its own watched acknowledgement: failed' \
     --required-title 'canonical catalog year strings survive queue validation and current-track identity' \
-    -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts test-instance-audio-queue.spec.ts player-audio-policy.spec.ts player-audio-queue-lifecycle.spec.ts --grep=@smoke --workers=1
+    --required-title 'real queued track preserves seek arriving before actual metadata' \
+    --required-title 'real queued track preserves stop arriving before actual metadata' \
+    -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts test-instance-audio-queue.spec.ts test-instance-queue-loading-intent.spec.ts player-audio-policy.spec.ts player-audio-queue-lifecycle.spec.ts --grep=@smoke --workers=1
 }
