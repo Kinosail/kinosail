@@ -224,7 +224,7 @@ test.describe("acknowledged Library navigation", () => {
     let releaseProgress!: () => void, releaseDestination!: () => void;
     const progressGate = new Promise<void>(resolve => releaseProgress = resolve);
     const destinationGate = new Promise<void>(resolve => releaseDestination = resolve);
-    let writes = 0, destinationRequested = false, unexpectedLibraryRequests = 0;
+    let writes = 0, acknowledgementHeld = false, destinationRequested = false, unexpectedLibraryRequests = 0;
     const observeNavigation = (request: PlaywrightRequest) => {
       const url = new URL(request.url());
       if (request.isNavigationRequest() && url.pathname + url.search === browsePath) unexpectedLibraryRequests++;
@@ -232,8 +232,11 @@ test.describe("acknowledged Library navigation", () => {
     page.on("request", observeNavigation);
     await page.route(`**/progress/${id}*`, async route => {
       writes++;
+      const response = await route.fetch();
+      expect(response.status()).toBe(204);
+      acknowledgementHeld = true;
       await progressGate;
-      await route.continue();
+      await route.fulfill({response});
     });
     await page.route("**/?view=movies", async route => {
       destinationRequested = true;
@@ -256,6 +259,7 @@ test.describe("acknowledged Library navigation", () => {
     try {
       await page.getByRole("link", {name: "Back to search results", exact: true}).click({noWaitAfter: true});
       await expect.poll(() => writes).toBeGreaterThan(0);
+      await expect.poll(() => acknowledgementHeld).toBe(true);
       await page.getByRole("link", {name: "Other Library view", exact: true}).click({noWaitAfter: true});
       await expect.poll(() => destinationRequested).toBe(true);
       releaseProgress();

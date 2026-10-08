@@ -19,7 +19,17 @@ export async function login(page: import("@playwright/test").Page) {
   await page.addInitScript(() => {
     if ("PublicKeyCredential" in window) Object.defineProperty(PublicKeyCredential, "isConditionalMediationAvailable", { value: async () => false });
   });
-  await page.goto("/login?next=/", { waitUntil: "domcontentloaded" });
+  const response = await page.goto("/login?next=/", {waitUntil: "commit"});
+  expect(response?.status()).toBe(200);
+  expect(response!.request().redirectedFrom()).toBeNull();
+  const loginURL = new URL(response!.url());
+  expect(loginURL.pathname + loginURL.search + loginURL.hash).toBe("/login?next=/");
+  await expect(page).toHaveURL(response!.url());
+  const password = page.getByLabel("Password", {exact: true});
+  await expect(page.getByLabel("Name")).toBeEditable();
+  await expect(password).toBeEditable();
+  await expect(page.locator(".password-control").filter({has: password}).getByRole("button", {name: "Show secret", exact: true})).toBeVisible();
+  await expect(page.getByRole("button", {name: "Sign in", exact: true})).toBeEnabled();
   await page.getByLabel("Name").fill("Owner");
   await page.getByLabel("Password", { exact: true }).fill("test-instance-password");
   await page.getByLabel("6-digit code").fill(totp());
