@@ -47,6 +47,9 @@ export function responsiveFailureFacts(kind) {
       appleNativePlayback: video ? video.tagName === 'VIDEO'
         && (/iPhone|iPad|iPod/.test(agent?.userAgent ?? '') || agent?.platform === 'MacIntel' && agent.maxTouchPoints > 1)
         && typeof video.webkitEnterFullscreen === 'function' : null,
+      videoAutoplayIntent: video ? Boolean(video.hasAttribute?.('autoplay') || video.hasAttribute?.('data-autoplay')) : null,
+      videoStart: video?.getAttribute?.('data-start')?.match(/^(?:0|[1-9][0-9]{0,7})(?:\.[0-9]{1,6})?$/) ? mediaNumber(Number(video.getAttribute('data-start'))) : null,
+      theaterAvailable: Boolean(document.querySelector('[data-theater]')),
       videoCurrentTime: mediaNumber(video?.currentTime), videoDuration: mediaNumber(video?.duration),
       videoNetworkState: Number.isInteger(video?.networkState) && video.networkState >= 0 && video.networkState <= 3 ? video.networkState : null,
       videoErrorCode: video && !video.error ? 0 : Number.isInteger(video?.error?.code) && video.error.code >= 0 && video.error.code <= 4 ? video.error.code : null,
@@ -74,14 +77,14 @@ function valid(value, kind) {
         || !dimension(element.rect.width) || !dimension(element.rect.height)) return false;
   }
   const states = kind === 'home-resume' ? ['featuredMatchesExample', 'continuedMatchesExample', 'featuredProgressAvailable', 'continuedProgressAvailable', 'shelfScanTruncated']
-    : ['settingsInNativeOptions', 'settingsInStage', 'stageHasSettings', 'optionsHasSettings', 'statusRecovery', 'videoPaused', 'videoReadyState', 'activeControl', 'playerTheater', 'appleNativePlayback', 'videoCurrentTime', 'videoDuration', 'videoNetworkState', 'videoErrorCode', 'videoControls', 'videoAutoplay', 'videoEnded'];
+    : ['settingsInNativeOptions', 'settingsInStage', 'stageHasSettings', 'optionsHasSettings', 'statusRecovery', 'videoPaused', 'videoReadyState', 'activeControl', 'playerTheater', 'appleNativePlayback', 'videoCurrentTime', 'videoDuration', 'videoNetworkState', 'videoErrorCode', 'videoControls', 'videoAutoplay', 'videoEnded', 'videoAutoplayIntent', 'videoStart', 'theaterAvailable'];
   if (!keys(value.state, states)) return false;
   return Object.entries(value.state).every(([key, item]) => {
     if (key === 'activeControl') return ['unavailable', 'body', 'close-settings', 'subtitles', 'input', 'select', 'textarea', 'button', 'other'].includes(item);
     if (['videoReadyState', 'videoErrorCode', 'videoNetworkState'].includes(key))
       return item === null || Number.isInteger(item) && item >= 0 && item <= (key === 'videoNetworkState' ? 3 : 4);
-    if (['videoCurrentTime', 'videoDuration'].includes(key)) return number(item) && (item === null || item >= 0);
-    if (['videoPaused', 'videoControls', 'videoAutoplay', 'videoEnded', 'appleNativePlayback'].includes(key)) return item === null || typeof item === 'boolean';
+    if (['videoCurrentTime', 'videoDuration', 'videoStart'].includes(key)) return number(item) && (item === null || item >= 0);
+    if (['videoPaused', 'videoControls', 'videoAutoplay', 'videoEnded', 'appleNativePlayback', 'videoAutoplayIntent'].includes(key)) return item === null || typeof item === 'boolean';
     return typeof item === 'boolean';
   });
 }

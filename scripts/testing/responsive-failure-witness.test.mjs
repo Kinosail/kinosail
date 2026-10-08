@@ -184,3 +184,9 @@ test('actual callback normalizes impossible dimensions without discarding finite
  assert.equal(facts.elements.settings.rect.width,null);assert.equal(facts.elements.settings.rect.height,null);
  assert.equal(facts.elements.settings.rect.x,-10);assert.equal(facts.elements.settings.rect.y,-20);
 });
+test('playback intent witness retains actual template autoplay and finite start without private dataset',async()=>{
+ const video=node({tagName:'VIDEO',dataset:{start:'1',private:'PRIVATE'},hasAttribute:key=>key==='data-autoplay',getAttribute:key=>key==='data-start'?'1':null});
+ const facts=await page({'video':video},{navigator:{userAgent:'desktop',maxTouchPoints:0}}).evaluate(responsiveFailureFacts,'player-settings');
+ assert.equal(facts.state.videoAutoplayIntent,true);assert.equal(facts.state.videoStart,1);assert.equal(facts.state.theaterAvailable,false);
+ assert.equal(JSON.stringify(facts).includes('PRIVATE'),false);
+});

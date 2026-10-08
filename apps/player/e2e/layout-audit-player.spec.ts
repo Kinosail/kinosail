@@ -2,10 +2,9 @@ import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { configureLayoutAudit, expectSettingsCloseFocused, expectTheaterEditingGuard, expectRecoveryContrast, layoutProblems, login, viewports } from "./layout-audit-helpers";
 import { firstPlayable } from "./test-instance-helpers";
+import {attachPlaybackState} from "./playback-state-witness.mjs";
 import { attachResponsiveFailure } from "./responsive-failure-witness.mjs";
-
 configureLayoutAudit();
-
 test("player shows and switches its playback method without crowding actions", async ({ page }, testInfo) => {
 	test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated public test instance");
 	await login(page);
@@ -14,6 +13,7 @@ test("player shows and switches its playback method without crowding actions", a
 	for (const viewport of viewports) {
 		await page.setViewportSize(viewport);
 		await page.evaluate(() => localStorage.removeItem("kinosail.playback-policy-v2"));
+		await attachPlaybackState(page, testInfo, watch, "before-method");
 		await page.goto(watch);
 		const actions = page.locator(".primary-player-actions:not([data-progress-notice])");
 		const method = page.locator("[data-playback-mode-status]");
