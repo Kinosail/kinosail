@@ -1,4 +1,3 @@
-import './home-assistant-release-diagnostic.test.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {fixture, json, flush, states} from './home-assistant-document-fixture.mjs';

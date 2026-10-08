@@ -1,7 +1,5 @@
-import {expect, type Page, type CDPSession} from "@playwright/test";
+import {expect, type Page} from "@playwright/test";
 import {login} from "./test-instance-helpers";
-import {createNativeRequestBoundaryDiagnostic} from "../../../packages/webassets/home-assistant-request-boundary-diagnostic-fixture.mjs";
-import {createDepartingConsoleCounters} from "../../../packages/webassets/home-assistant-release-diagnostic-fixture.mjs";
 
 type DocumentClaim = {id: string; claim: string; expiresIn: number};
 const actualDocumentClaims = new WeakMap<Page, DocumentClaim[]>();
@@ -71,7 +69,7 @@ export async function targets(page: Page): Promise<Target[]> {
   return (await response.json()).players;
 }
 
-export async function openDocuments(page: Page, prepare?: (document: Page) => Promise<void>, options: {initialClaimsRequired?: boolean} = {}) {
+export async function openDocuments(page: Page, prepare?: (document: Page) => Promise<void>, options: {initialClaimsRequired?: boolean; deferSecondNavigation?: boolean} = {}) {
   await login(page);
   await setting(page, true);
   const existing = new Set((await targets(page)).map(target => target.id));
@@ -93,19 +91,21 @@ export async function openDocuments(page: Page, prepare?: (document: Page) => Pr
     for (const document of [first, second]) await prepareDocumentClaims(document, claims);
   }
   const live = async () => (await targets(page)).filter(target => ids.includes(target.itemId) && !existing.has(target.id));
-  const initialClaims = options.initialClaimsRequired === false ? [] : [nextDocumentClaim(first), nextDocumentClaim(second)];
+  const initialDocuments = options.deferSecondNavigation ? [first] : [first, second];
+  const initialClaims = options.initialClaimsRequired === false ? [] : initialDocuments.map(document => nextDocumentClaim(document));
   await first.goto(`/watch/${ids[0]}`);
-  await second.goto(`/watch/${ids[1]}`);
+  if (!options.deferSecondNavigation) await second.goto(`/watch/${ids[1]}`);
   for (const claim of await Promise.all(initialClaims)) {
     expect(typeof claim.claim === "string" && claim.claim.length >= 20).toBe(true);
     expect(claim.expiresIn).toBe(30);
     claims.add(claim.claim);
   }
-  for (const document of [first, second]) {
+  for (const document of initialDocuments) {
     await expect(document.locator("video")).toHaveAttribute("data-home-assistant", "true");
     await expect.poll(() => document.locator("video").evaluate((media: HTMLVideoElement) => media.readyState)).toBeGreaterThanOrEqual(2);
     await document.locator("video").evaluate((media: HTMLVideoElement) => media.pause());
   }
+  if (options.deferSecondNavigation) await expect.poll(async () => (await live()).some(target => target.itemId === ids[0])).toBe(true);
   return {first, second, ids, live, claims};
   } catch (error) {
     await first.close();
@@ -119,46 +119,51 @@ export async function closeDocuments(page: Page, documents: Array<Page | undefin
   await setting(page, false);
 }
 
-/** Test-private main-frame context correlation; IDs never enter receipts. */
-export async function observeNativeDocumentRetirement(network: CDPSession) {
+type PausedNativeRelease = {requestId: string; request: {url: string; method: string; headers: Record<string, string>};
+  frameId: string; networkId?: string; responseStatusCode?: number; responseErrorReason?: string};
+
+/** Prepare before navigation; abort only an actual, privately admitted release. */
+export async function prepareNativeReleaseFault(page: Page, origin: string) {
+  const network = await page.context().newCDPSession(page);
   const {frameTree} = await network.send("Page.getFrameTree");
   const mainFrame = frameTree.frame.id;
-  let departing = 0, replacing = 0, started = false, cleared = 0, retired = 0, replacements = 0, claimRequests = 0;
-  const count = (value: number) => Math.min(8, value + 1);
-  const directSignals = createDepartingConsoleCounters(() => departing);
-  network.on("Runtime.consoleAPICalled", directSignals.observe);
-  network.on("Runtime.executionContextCreated", ({context}) => {
-    if (context.auxData?.isDefault !== true || context.auxData?.frameId !== mainFrame) return;
-    if (!started) departing = context.id;
-    else if (context.id !== departing && context.id !== replacing) {replacing = context.id; replacements = count(replacements);}
-  });
-  network.on("Runtime.executionContextDestroyed", ({executionContextId}) => {
-    if (started && departing && executionContextId === departing) retired = 1;
-  });
-  network.on("Runtime.executionContextsCleared", () => {
-    if (started) {cleared = count(cleared); if (departing) retired = 1;}
-  });
-  network.on("Network.requestWillBeSent", ({request}) => {
-    if (!started || !replacing || request.method !== "POST") return;
-    try {if (new URL(request.url).pathname === "/api/v1/home-assistant/players/claims") claimRequests = count(claimRequests);}
-    catch (_) {}
-  });
-  await network.send("Runtime.enable");
-  return {begin: () => {started = true;}, snapshot: () => ({mainContextObserved: departing !== 0,
-    departingMainContextUnavailable: retired, contextClearEvents: cleared, replacingMainContexts: replacements,
-    claimRequestsAfterReplacingMainContext: claimRequests, departingSignals: directSignals.snapshot()})};
-}
-
-/** Actual native Request-stage pause projection, with unchanged continuation. */
-export async function observeNativeReleaseBoundary(network: CDPSession, path: string, claims: Set<string>) {
-  const {frameTree} = await network.send("Page.getFrameTree");
-  const endpoint = new URL(path, new URL(frameTree.frame.url).origin).href;
-  const diagnostic = createNativeRequestBoundaryDiagnostic(
-    (method: "Fetch.continueRequest", params: {requestId: string}) => network.send(method, params),
-    endpoint, frameTree.frame.id, (claim: string) => claims.has(claim));
-  network.on("Fetch.requestPaused", diagnostic.observe);
-  await network.send("Fetch.enable", {patterns: [{urlPattern: endpoint, requestStage: "Request"}]});
-  return {snapshot: diagnostic.snapshot, close: async () => {
-    await network.send("Fetch.disable"); network.off("Fetch.requestPaused", diagnostic.observe);
+  let endpoint = "", authority = "";
+  const counts = {nativePosts: 0, authorizedNativePosts: 0, nativeAborts: 0, networkIdPresent: 0,
+    networkIdAbsent: 0, selectedFrame: 0, continued: 0, abortErrors: 0, continuationErrors: 0, observerErrors: 0, saturated: 0};
+  const bump = (field: keyof typeof counts) => {if (counts[field] < 8) counts[field]++; else counts.saturated = 1;};
+  const continueRequest = async (requestId: string) => {
+    try {await network.send("Fetch.continueRequest", {requestId}); bump("continued");}
+    catch (_) {bump("continuationErrors");}
+  };
+  const paused = async (event: PausedNativeRelease) => {
+    const requestId = event.requestId;
+    if (typeof requestId !== "string" || !requestId) {bump("observerErrors"); return;}
+    let admitted = false;
+    try {
+      if (endpoint && !Object.hasOwn(event, "responseStatusCode") && !Object.hasOwn(event, "responseErrorReason") &&
+          event.request.url === endpoint && event.request.method === "POST") {
+        const overLimit = counts.nativePosts === 8;
+        bump("nativePosts");
+        const headers = Object.entries(event.request.headers).filter(([name]) => name.toLowerCase() === "x-kinosail-player-claim");
+        admitted = headers.length === 1 && headers[0][1] === authority && !overLimit;
+        if (admitted) {
+          bump("authorizedNativePosts"); bump(event.networkId ? "networkIdPresent" : "networkIdAbsent");
+          if (event.frameId === mainFrame) bump("selectedFrame");
+        }
+      }
+    } catch (_) {bump("observerErrors");}
+    if (!admitted) return continueRequest(requestId);
+    try {await network.send("Fetch.failRequest", {requestId, errorReason: "BlockedByClient"}); bump("nativeAborts");}
+    catch (_) {bump("abortErrors");}
+  };
+  network.on("Fetch.requestPaused", paused);
+  try {await network.send("Fetch.enable", {patterns: [{urlPattern: origin + "/api/v1/home-assistant/players/*/release", requestStage: "Request"}]});}
+  catch (error) {await network.detach().catch(() => {}); throw error;}
+  return {network, select: (id: string) => {
+    const actual = actualDocumentClaims.get(page)?.find(claim => claim.id === id);
+    if (!actual) throw new Error("actual document authority was not captured");
+    endpoint = origin + `/api/v1/home-assistant/players/${actual.id}/release`; authority = actual.claim;
+  }, snapshot: () => ({...counts}), close: async () => {
+    await network.send("Fetch.disable"); network.off("Fetch.requestPaused", paused);
   }};
 }
