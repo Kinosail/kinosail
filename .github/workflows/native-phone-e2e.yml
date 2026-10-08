@@ -35,8 +35,12 @@ jobs:
         run: npm test
       - name: Require fixture tools
         run: |
-          command -v ffmpeg
-          command -v ffprobe
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            brew install ffmpeg
+          fi
+          for tool in ffmpeg ffprobe; do
+            command -v "$tool" >/dev/null || { echo "required fixture tool unavailable: $tool"; exit 1; }
+          done
           xcodebuild -version
       - name: Compile and run on a new iOS simulator
         id: native
