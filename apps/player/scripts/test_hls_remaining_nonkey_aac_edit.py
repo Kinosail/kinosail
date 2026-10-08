@@ -2,7 +2,7 @@
 import struct
 import unittest
 from hls_remaining_nonkey_init import initialization_metadata
-from hls_remaining_nonkey_aac_edit import change_generated_audio_edit
+from hls_remaining_nonkey_aac_edit import change_generated_audio_edit, payload_orders
 
 
 def box(kind, payload):
@@ -79,6 +79,32 @@ class EditControls(unittest.TestCase):
         data = movie() + box(b'free', b'ignore elst bytes here')
         result, _ = change_generated_audio_edit(data, 1)
         self.assertEqual(result[-29:], data[-29:])
+
+
+    def packet_rows(self):
+        return [{'stream_index': 0, 'data_hash': 'video-a'},
+                {'stream_index': 1, 'data_hash': 'audio-a'},
+                {'stream_index': 0, 'data_hash': 'video-b'},
+                {'stream_index': 1, 'data_hash': 'audio-b'}]
+
+    def test_cross_track_order_is_reported_without_false_payload_failure(self):
+        original = self.packet_rows()
+        value = payload_orders(original, [original[1], original[0], original[3], original[2]])
+        self.assertTrue(value['allPerStreamOrderCountHashes'])
+        self.assertFalse(value['globalInterleavedOrderEqual'])
+        self.assertEqual(len(value['perStream']['0']['original']), 2)
+        self.assertEqual(len(value['perStream']['1']['modified']), 2)
+
+    def test_same_stream_reorder_or_omission_fails(self):
+        original = self.packet_rows()
+        for modified in [[original[2], original[1], original[0], original[3]], original[:-1]]:
+            self.assertFalse(payload_orders(original, modified)['allPerStreamOrderCountHashes'])
+
+    def test_unknown_or_missing_stream_fails_closed(self):
+        original = self.packet_rows()
+        for modified in [[original[0]], [dict(p, stream_index=2) for p in original]]:
+            with self.assertRaises(RuntimeError):
+                payload_orders(original, modified)
 
 
 if __name__ == '__main__':

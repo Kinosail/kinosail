@@ -15,7 +15,7 @@ from hls_followon_public import bounded_bytes, check
 from hls_remaining_mux import mux_case
 from hls_remaining_nonkey_evidence import observed_media, native_pcm, packet_rows
 from hls_remaining_nonkey_boundary import native_clock_rows, packet_tail
-from hls_remaining_nonkey_aac_edit import change_generated_audio_edit
+from hls_remaining_nonkey_aac_edit import change_generated_audio_edit, payload_orders
 from hls_remaining_nonkey_deadline import DiagnosticDeadline
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -62,6 +62,7 @@ def projection(row):
         'hypothesisExpectedEquality': row.get('hypothesisExpectedEquality'),
         'hypothesisMatched': row.get('hypothesisMatched'),
         'allPacketPayloadsUnchanged': row.get('allPacketPayloadsUnchanged'),
+        'globalPacketOrderUnchanged': row.get('globalPacketOrderUnchanged'),
         'videoRowsUnchanged': row.get('videoRowsUnchanged'), 'originalAssetsUnchanged': row.get('originalAssetsUnchanged'),
         'sourceUnchanged': row.get('sourceUnchanged'),
         'nativeFirstCopiedPacketClock': row.get('nativeFirstCopiedPacketClock'),
@@ -137,8 +138,9 @@ try:
                 target.write_bytes(changed + remaining)
                 row['nativePCM'], _ = native_pcm(target)
                 row['completePacketRows'], row['packetMissingFields'] = packet_rows(target)
-                row['allPacketPayloadsUnchanged'] = [(p['stream_index'], p['data_hash']) for p in row['completePacketRows']] == [
-                    (p['stream_index'], p['data_hash']) for p in value['publicPacketRows']]
+                row['packetPayloadComparison'] = payload_orders(value['publicPacketRows'], row['completePacketRows'])
+                row['allPacketPayloadsUnchanged'] = row['packetPayloadComparison']['allPerStreamOrderCountHashes']
+                row['globalPacketOrderUnchanged'] = row['packetPayloadComparison']['globalInterleavedOrderEqual']
                 row['videoDecode'], row['completeVideoRows'] = decode_frames(target)
                 row['videoRowsUnchanged'] = row['completeVideoRows'] == value['publicFrameRows']
                 row['originalAssetsUnchanged'] = hashes == {p.name: sha(p) for p in [directory / 'init.mp4', *fragments]}

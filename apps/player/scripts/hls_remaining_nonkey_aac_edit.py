@@ -69,3 +69,18 @@ def change_generated_audio_edit(data, delta):
         'originalSHA256': hashlib.sha256(data).hexdigest(),
         'modifiedSHA256': hashlib.sha256(modified).hexdigest(),
         'productionAcceptance': False}
+
+
+def payload_orders(original, modified):
+    def order(rows, stream=None):
+        return [(p['stream_index'], p['data_hash']) for p in rows
+                if stream is None or p['stream_index'] == stream]
+    for rows in [original, modified]:
+        if not 0 < len(rows) <= 4096 or {p['stream_index'] for p in rows} != {0, 1}:
+            raise RuntimeError('aac_edit_packet_stream_identity')
+    tracks = {str(n): {'original': order(original, n), 'modified': order(modified, n),
+        'exactOrderCountHashes': order(original, n) == order(modified, n)} for n in [0, 1]}
+    return {'perStream': tracks, 'allPerStreamOrderCountHashes': all(
+        t['exactOrderCountHashes'] for t in tracks.values()),
+        'globalInterleavedOrderEqual': order(original) == order(modified),
+        'boundary': 'Every packet retained; inter-track DTS reordering is separately reported'}
