@@ -104,13 +104,11 @@ func (state *remainingColdAACState) retainSegments(ctx context.Context, root *os
 			return err
 		}
 		line = strings.TrimSpace(line)
-		if strings.HasPrefix(line, "#EXTINF:") {
-			length, err := remainingColdAACFragmentDuration(line)
-			if err != nil {
-				return err
-			}
-			total += length
+		length, err := remainingColdAACLineDuration(line)
+		if err != nil {
+			return err
 		}
+		total += length
 		if _, valid := hlsSegmentNumber(line); !valid {
 			continue
 		}
@@ -163,4 +161,11 @@ func remainingColdAACSpan(count int, total, duration float64) error {
 		return errCopiedHLSIndex
 	}
 	return nil
+}
+
+func remainingColdAACLineDuration(line string) (float64, error) {
+	if !strings.HasPrefix(line, "#EXTINF:") {
+		return 0, nil
+	}
+	return remainingColdAACFragmentDuration(line)
 }
