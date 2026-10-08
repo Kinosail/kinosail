@@ -1,4 +1,4 @@
-import {attachPlaybackState} from "./playback-state-witness.mjs";
+import {attachPlaybackState, startWatchedPlayback} from "./playback-state-witness.mjs";
 import { attachResponsiveFailure } from "./responsive-failure-witness.mjs";
 import { expect, test } from "@playwright/test";
 import { createHmac } from "node:crypto";
@@ -27,7 +27,7 @@ test("player stage stays visible across loading and bandwidth changes", async ({
 	await page.getByRole("link", { name: "Movies", exact: true }).click();
 	const movie = page.getByRole("link", { name: /Example Movie/ });
 	const watch = await movie.getAttribute("href");
-	await attachPlaybackState(page, testInfo, watch, "before-loading");
+	const playbackState = await attachPlaybackState(page, testInfo, watch, "before-loading");
 	await movie.click();
 	const video = page.locator("video");
 	await video.waitFor({ state: "visible" });
@@ -36,6 +36,7 @@ test("player stage stays visible across loading and bandwidth changes", async ({
 	expect(stage?.width).toBeGreaterThan(300);
 	expect(stage?.height).toBeGreaterThan(150);
 	try {
+		await startWatchedPlayback(page, playbackState);
 		await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime)).toBeGreaterThan(0.25);
 	} catch (error) {
 		await attachResponsiveFailure(page, testInfo, "player-settings");
