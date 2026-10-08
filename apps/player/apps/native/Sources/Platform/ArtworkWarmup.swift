@@ -33,7 +33,7 @@ actor ArtworkWarmup {
         }
         guard task == nil, !queue.isEmpty else { return }
         let attempt = generation
-        task = Task(priority: .utility) {
+        task = Task(priority: .medium) {
             defer { if generation == attempt { task = nil } }
             while generation == attempt && !Task.isCancelled && !queue.isEmpty {
                 let next = queue.removeFirst()
