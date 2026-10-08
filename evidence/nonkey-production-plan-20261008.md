@@ -120,7 +120,7 @@ The native/presentation owner must run the existing actual-media assertions unch
 
 Hosted Go/public-media proof can establish backend/certificate/cache behavior after the source allocation and independent exact-source review. Hosted browser checks do not replace the same-iOS all50 retest or renderer ownership.
 
-Same-iOS retest remains assigned to the existing native owner, using the preserved baseline video IDs and receipts on Noxf532 when the coordinator releases capacity. No simulator interaction, Nox update, deployment, local build/download/cleanup or Library write is authorized by this plan.
+Same-iOS retest remains assigned to the existing native owner, using the preserved baseline video IDs and receipts when the coordinator releases capacity. The coordinator-verified current live Nox baseline is PR514 revision 389090769f31fc639e7c3b95655e131b5d79cef4, image sha256:e9687afb5f5e7e7c267d0ebf88b0b61296907d270c2bafeb6106470f6fee2e2c, deployed 2026-10-07 at 22:29 UTC. PR517/527 are published but have not been deployed to Nox. Historical f532 receipts remain preserved as earlier evidence; f532 is not the current live baseline. No simulator interaction, Nox update, deployment, local build/download/cleanup or Library write is authorized by this plan.
 
 ## Delivery admissions and next action
 
