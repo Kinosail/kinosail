@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"math"
-	"os/exec"
 	"strconv"
 	"strings"
 
@@ -101,23 +100,27 @@ func copiedHLSFields(line string) map[string]string {
 }
 
 func copiedHLSLines(parent context.Context, executable string, arguments []string, maximumBytes int64, maximumLines int, visit func(string) error) error {
-	ctx, cancel := context.WithCancel(parent)
+	ctx, cancel, err := copiedHLSProbeContext(parent)
+	if err != nil {
+		return err
+	}
 	defer cancel()
-	//nolint:gosec // Executable is installation config; media comes from a revalidated scanned item.
-	command := exec.CommandContext(ctx, executable, arguments...)
-	output, err := command.StdoutPipe()
+	probe, output, err := startCopiedHLSProbe(ctx, executable, arguments)
 	if err != nil {
 		return errCopiedHLSIndex
 	}
-	if command.Start() != nil {
-		return errCopiedHLSIndex
-	}
+	defer probe.close()
+	defer output.Close()
+	scanned := make(chan error, 1)
+	watched := make(chan error, 1)
+	go func() { watched <- watchCopiedHLSProbe(ctx, probe, output, scanned) }()
 	err = scanCopiedHLSLines(output, maximumBytes, maximumLines, visit)
-	if err != nil {
-		cancel()
-	}
-	if waitErr := command.Wait(); waitErr != nil || ctx.Err() != nil {
-		err = errCopiedHLSIndex
+	scanned <- err
+	watchErr := <-watched
+	waitErr := probe.wait()
+	settleErr := settleCopiedHLSProbe(parent, probe)
+	if watchErr != nil || waitErr != nil || settleErr != nil || ctx.Err() != nil {
+		return errCopiedHLSIndex
 	}
 	return err
 }
