@@ -6,7 +6,7 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
   for (const viewport of [{width:390,height:844},{width:1440,height:900},...(inspectorPath?[{width:320,height:800}]:[])]) {
     probe.stage="library-journey-navigation";
     const context = await browser.newContext({...options,viewport,ignoreHTTPSErrors:false,reducedMotion:"reduce",serviceWorkers:"block"});
-    const page = await context.newPage();
+    const page = await probe.openPage(context);
     if(inspectorPath&&viewport.width===320)await context.addInitScript(()=>{const apply=()=>{if(!document.documentElement)return false;document.documentElement.style.fontSize="200%";return true;};if(!apply()){const observer=new MutationObserver(()=>{if(apply())observer.disconnect();});observer.observe(document,{childList:true});}});
     await page.goto(inspectorPath ? "/?view=library" : "/?view=movies",{waitUntil:"domcontentloaded"});
     probe.stage="HTMX-search";
@@ -67,7 +67,7 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
     probe.stage="enlarged-dock-end-focus";
     const context=await browser.newContext({...options,viewport,ignoreHTTPSErrors:false,reducedMotion:"reduce"});
     await context.addInitScript(()=>{const apply=()=>{if(!document.documentElement)return false;document.documentElement.style.fontSize="200%";return true;};if(!apply()){const observer=new MutationObserver(()=>{if(apply())observer.disconnect();});observer.observe(document,{childList:true});}});
-    const page=await context.newPage();await page.goto("/settings#thanks");
+    const page=await probe.openPage(context);await page.goto("/settings#thanks");
     const last=page.locator("main").locator('button:enabled, input:enabled:not([type=hidden]), select:enabled, textarea:enabled, a[href]').last();
     await last.focus();
     await page.keyboard.press("Shift+Tab");await page.keyboard.press("Tab");
@@ -83,7 +83,7 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
   }
   const context = await browser.newContext({...options,viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce"});
   probe.stage = "theater-idle-exit";
-  const page = await context.newPage();
+  const page = await probe.openPage(context);
   await page.goto(watchPath,{waitUntil:"domcontentloaded"});
   probe.media = await page.locator("video").evaluate(video=>({readyState:video.readyState,errorCode:video.error?.code,mp4:video.canPlayType('video/mp4; codecs="avc1.42E01E"')}));
   const theater = page.locator("[data-theater]");
@@ -104,7 +104,7 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
   if(inspectorPath){
     probe.stage = "inspector-refresh-failure-retry";
     const context=await browser.newContext({...options,viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce"});
-    const page=await context.newPage();
+    const page=await probe.openPage(context);
     await page.route("**/inspect?*",async route=>{if(route.request().resourceType()==="fetch"){await new Promise(r=>setTimeout(r,900));await route.abort("failed");}else await route.continue();});
     await page.goto(inspectorPath,{waitUntil:"commit"});await page.locator(".subtitle-inspector-workspace").waitFor({state:"visible"});
     const before=await page.locator(".subtitle-inspector-workspace").boundingBox();const pendingDisabled=await page.locator('#subtitle-edit-form button[type="submit"]').isDisabled();await page.waitForTimeout(2000);
@@ -114,7 +114,7 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
     await context.close();
     const editing=await browser.newContext({...options,viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce"});
     probe.stage = "inspector-edit-during-refresh";
-    const editor=await editing.newPage();
+    const editor=await probe.openPage(editing);
     await editor.route("**/inspect?*",async route=>{if(route.request().resourceType()==="fetch"){const response=await route.fetch();await new Promise(r=>setTimeout(r,900));await route.fulfill({response});}else await route.continue();});
     await editor.goto(inspectorPath,{waitUntil:"commit"});
     await editor.waitForFunction(()=>document.querySelector("#inspector-status")?.getAttribute("aria-busy")==="true");
