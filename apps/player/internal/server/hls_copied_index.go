@@ -116,13 +116,14 @@ func copiedHLSLines(parent context.Context, executable string, arguments []strin
 	defer probe.close()
 	defer output.Close()
 	scanned := make(chan error, 1)
-	watched := make(chan error, 1)
+	watched := make(chan copiedHLSProbeWatch, 1)
 	go func() { watched <- watchCopiedHLSProbe(ctx, probe, output, scanned) }()
 	err = scanCopiedHLSLines(output, maximumBytes, maximumLines, visit)
 	scanned <- err
-	watchErr := <-watched
+	watch := <-watched
 	waitErr := probe.wait()
 	settleErr := settleCopiedHLSProbe(parent, probe)
+	watchErr := watch.completionError(ctx, err, waitErr, settleErr)
 	if watchErr != nil || waitErr != nil || settleErr != nil || ctx.Err() != nil {
 		if ctx.Err() == nil {
 			reportCopiedHLSProbeCompletion(parent, err, watchErr, waitErr, settleErr)

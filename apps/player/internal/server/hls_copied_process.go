@@ -6,6 +6,7 @@ import (
 	"io"
 	"log/slog"
 	"os/exec"
+	"runtime"
 	"syscall"
 	"time"
 )
@@ -44,13 +45,13 @@ type copiedHLSProbeWatch struct {
 	observeErr   error
 }
 
-func watchCopiedHLSProbe(ctx context.Context, probe copiedHLSProbe, output io.Closer, scanned <-chan error) error {
+func watchCopiedHLSProbe(ctx context.Context, probe copiedHLSProbe, output io.Closer, scanned <-chan error) copiedHLSProbeWatch {
 	ticker := time.NewTicker(time.Millisecond)
 	defer ticker.Stop()
 	var watch copiedHLSProbeWatch
 	for {
 		if watch.observe(ctx, probe, output) {
-			return errors.Join(watch.result, watch.terminateErr, watch.observeErr)
+			return watch
 		}
 		select {
 		case watch.scanErr = <-scanned:
@@ -59,6 +60,20 @@ func watchCopiedHLSProbe(ctx context.Context, probe copiedHLSProbe, output io.Cl
 		case <-ticker.C:
 		}
 	}
+}
+
+func (watch copiedHLSProbeWatch) completionError(ctx context.Context, scanErr, waitErr, settleErr error) error {
+	stopErr := watch.terminateErr
+	// Darwin can report EPERM for an exited, zombie-only group. Acceptance
+	// still requires clean scanning, a successful Wait and proven settlement.
+	if runtime.GOOS == "darwin" && errors.Is(stopErr, syscall.EPERM) && watch.cleanCompletion(ctx, scanErr, waitErr, settleErr) {
+		stopErr = nil
+	}
+	return errors.Join(watch.result, stopErr, watch.observeErr)
+}
+
+func (watch copiedHLSProbeWatch) cleanCompletion(ctx context.Context, scanErr, waitErr, settleErr error) bool {
+	return ctx.Err() == nil && scanErr == nil && watch.result == nil && watch.observeErr == nil && waitErr == nil && settleErr == nil
 }
 
 func (watch *copiedHLSProbeWatch) observe(ctx context.Context, probe copiedHLSProbe, output io.Closer) bool {
