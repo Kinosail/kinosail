@@ -1,7 +1,9 @@
+import { configureProviderProfile, providerRoute } from "./provider-profile-fixture";
 import { createHmac } from "node:crypto";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 
+configureProviderProfile();
 test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated public test instance");
 test.use({ serviceWorkers: "block" });
 
@@ -93,7 +95,7 @@ test("Jellyfin setup stays blocked until trusted HTTPS is saved", async ({ page,
 	await page.screenshot({ path: testInfo.outputPath("390-jellyfin-explained.png"), fullPage: true });
 	let validationFails = true;
 	let validationRequest: Record<string, string | boolean> | undefined;
-	await page.route("**/api/v1/settings/trusted-https/validate", async (route) => {
+	await providerRoute(page, "**/api/v1/settings/trusted-https/validate", async (route) => {
 		validationRequest = route.request().postDataJSON();
 		if (validationFails) {
 			await route.fulfill({ status: 409, contentType: "application/json", body: JSON.stringify({ error: "trusted HTTPS conflicts with the current deployment\nthe configured sign-in address does not match this trusted HTTPS address" }) });
@@ -115,7 +117,7 @@ test("Jellyfin setup stays blocked until trusted HTTPS is saved", async ({ page,
 	await trusted.getByLabel("Trusted hostname").fill("kinosail-e2e");
 	await expect(testStatus).toHaveText("Details match this deployment for kinosail-e2e.duckdns.org. DNS has not been tested.");
 	let testRequest: Record<string, string | boolean> | undefined;
-	await page.route("**/api/v1/settings/trusted-https/test", async (route) => {
+	await providerRoute(page, "**/api/v1/settings/trusted-https/test", async (route) => {
 		testRequest = route.request().postDataJSON();
 		await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ status: "passed", trustedHttps: { hostname: "kinosail-e2e.duckdns.org" } }) });
 	});
@@ -127,7 +129,7 @@ test("Jellyfin setup stays blocked until trusted HTTPS is saved", async ({ page,
 	await expect(testStatus).toHaveText("Details changed. Test again.");
 	await trusted.getByLabel("Trusted hostname").fill("kinosail-e2e");
 	let saveFails = true;
-	await page.route("**/api/v1/settings/trusted-https", async (route) => {
+	await providerRoute(page, "**/api/v1/settings/trusted-https", async (route) => {
 		if (saveFails && route.request().method() === "PUT") {
 			await route.fulfill({ status: 409, contentType: "application/json", body: JSON.stringify({ error: "trusted HTTPS conflicts with the current deployment\nthe configured sign-in address does not match this trusted HTTPS address" }) });
 			return;

@@ -1,9 +1,11 @@
+import { configureProviderProfile, providerRoute } from "./provider-profile-fixture";
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { configureTestInstance, login } from "./test-instance-helpers";
 
+configureProviderProfile();
 configureTestInstance();
 test.use({ serviceWorkers: "block" });
 const directory = process.env.KINOSAIL_UI_FIXTURE_DIR;
@@ -15,14 +17,14 @@ test("Sailcraft honors remain readable in every supporter state", async ({ page 
   await login(page);
   for (const [family, file] of [["living-standard", "living"], ["patron-order", "patron"]]) {
     const certificate = await readFile(join(directory!, `supporter-${file}-certificate.html`), "utf8");
-    await page.route(`**/api/v1/supporter/certificates/${family}.svg`, (route) => route.fulfill({ status: 200, contentType: "image/svg+xml", body: certificate }));
+    await providerRoute(page, `**/api/v1/supporter/certificates/${family}.svg`, (route) => route.fulfill({ status: 200, contentType: "image/svg+xml", body: certificate }));
   }
   for (const state of ["populated-both", "living", "patron", "archived", "long-name", "empty"]) {
     const body = await readFile(join(directory!, `supporter-${state}.html`), "utf8");
     const livingStandard = ["empty", "patron"].includes(state) ? undefined : { family: "living-standard", rank: 8, name: "Admiral", active: state !== "archived", expired: state === "archived" };
     const patronOrder = ["empty", "living", "archived"].includes(state) ? undefined : { family: "patron-order", rank: 6, name: "Lighthouse", active: true };
-    await page.route("**/api/v1/supporter", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ livingStandard, patronOrder }) }));
-    await page.route(supporterPageURL, (route) => route.fulfill({ status: 200, contentType: "text/html", body }));
+    await providerRoute(page, "**/api/v1/supporter", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ livingStandard, patronOrder }) }));
+    await providerRoute(page, supporterPageURL, (route) => route.fulfill({ status: 200, contentType: "text/html", body }));
     for (const width of [1440, 1024, 390, 320]) {
       await page.setViewportSize({ width, height: 900 });
       await page.goto("/supporter", { waitUntil: "domcontentloaded" });
@@ -74,7 +76,7 @@ test("Contribution frequency shows all ten agreed amounts", async ({ page }) => 
 
 test("Collected badges and hidden recognition work on desktop and mobile", async ({ page }) => {
   let hidden = false;
-  await page.route("**/api/v1/supporter/collection", route => route.fulfill({ json: { display: hidden ? "hidden" : "automatic", badges: [
+  await providerRoute(page, "**/api/v1/supporter/collection", route => route.fulfill({ json: { display: hidden ? "hidden" : "automatic", badges: [
     { family: "patron-order", edition: "one-time", rank: 6, name: "Lighthouse" },
     { family: "living-standard", edition: "monthly", rank: 8, name: "Admiral" },
     { family: "living-standard", rank: 8, name: "Legacy Admiral", archived: true },
@@ -101,7 +103,7 @@ test("Display settings persist through the web form and API", async ({ page }) =
   test.skip(!directory, "requires the production supporter fixture");
   await login(page);
   const body = await readFile(join(directory!, "supporter-populated-both.html"), "utf8");
-  await page.route(supporterPageURL, async (route) => {
+  await providerRoute(page, supporterPageURL, async (route) => {
     const response = await route.fetch();
     const original = await response.text();
     const csrf = original.match(/<meta name="kinosail-csrf" content="([^"]+)"/);
@@ -140,7 +142,7 @@ test("Display settings persist through the web form and API", async ({ page }) =
 test("Honors support keyboard, light theme, reduced motion, and forced colors", async ({ page, browserName }, testInfo) => {
   test.skip(!directory, "requires the production supporter fixture");
   const body = await readFile(join(directory!, "supporter-populated-both.html"), "utf8");
-  await page.route(supporterPageURL, (route) => route.fulfill({ status: 200, contentType: "text/html", body }));
+  await providerRoute(page, supporterPageURL, (route) => route.fulfill({ status: 200, contentType: "text/html", body }));
   await login(page);
   await page.setViewportSize({ width: 320, height: 900 });
   await page.emulateMedia({ reducedMotion: "reduce" });

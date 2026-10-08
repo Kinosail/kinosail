@@ -1,7 +1,9 @@
+import { configureProviderProfile, providerRoute } from "./provider-profile-fixture";
 import { createHash, createHmac } from "node:crypto";
 import { expect, test, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
+configureProviderProfile();
 test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated public test instance");
 
 function totp(): string {

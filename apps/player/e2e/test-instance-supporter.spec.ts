@@ -1,9 +1,11 @@
+import { configureProviderProfile, providerRoute, isolateProvider } from "./provider-profile-fixture";
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { configureTestInstance, login } from "./test-instance-helpers";
 
+configureProviderProfile();
 configureTestInstance();
 test.use({ serviceWorkers: "block" });
 
@@ -11,7 +13,7 @@ test("Pending supporter recognition keeps navigation usable and then shows the c
   await login(page);
   let gate = Promise.resolve();
   let release = () => {};
-  await page.route("**/api/v1/supporter/collection", async (route) => {
+  await providerRoute(page, "**/api/v1/supporter/collection", async (route) => {
     await gate;
     await route.fulfill({ json: { display: "automatic", badges: [{ family: "patron-order", edition: "one-time", name: "Lighthouse", rank: 6 }] } });
   });
@@ -125,10 +127,11 @@ test("Legacy supporter honors and masterwork remain visible beside current editi
   const supporterPage = await readFile(join(fixtureDirectory!, "supporter-populated-both.html"), "utf8");
   const certificate = await readFile(join(fixtureDirectory!, "supporter-living-certificate.html"), "utf8");
   const context = await browser.newContext({ baseURL: process.env.KINOSAIL_E2E_URL, ignoreHTTPSErrors: false, serviceWorkers: "block" });
+  if (process.env.KINOSAIL_PROVIDER_PROFILE) await isolateProvider(context, testInfo.project.name, testInfo.project.use.baseURL);
   const page = await context.newPage();
   await login(page);
-  await page.route((url) => url.pathname === "/supporter", (route) => route.fulfill({ status: 200, contentType: "text/html", body: supporterPage }));
-  await page.route("**/api/v1/supporter/certificates/living-standard.svg", (route) => route.fulfill({ status: 200, contentType: "image/svg+xml", body: certificate }));
+  await providerRoute(page, (url) => url.pathname === "/supporter", (route) => route.fulfill({ status: 200, contentType: "text/html", body: supporterPage }));
+  await providerRoute(page, "**/api/v1/supporter/certificates/living-standard.svg", (route) => route.fulfill({ status: 200, contentType: "image/svg+xml", body: certificate }));
   for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }, { width: 390, height: 844 }, { width: 320, height: 800 }]) {
     await page.setViewportSize(viewport);
     await page.goto("/supporter");
@@ -151,9 +154,10 @@ test("Supporter badge rendering and share conversion remain responsive", async (
   test.skip(!fixtureDirectory, "requires the production certificate fixture");
   const certificate = await readFile(join(fixtureDirectory!, "supporter-certificate.html"), "utf8");
 	const context = await browser.newContext({ baseURL: process.env.KINOSAIL_E2E_URL, ignoreHTTPSErrors: false, serviceWorkers: "block" });
+	if (process.env.KINOSAIL_PROVIDER_PROFILE) await isolateProvider(context, testInfo.project.name, testInfo.project.use.baseURL);
 	const page = await context.newPage();
   await login(page);
-  await page.route("**/api/v1/supporter/certificates/living-standard.svg", async (route) => route.fulfill({ status: 200, contentType: "image/svg+xml", body: certificate }));
+  await providerRoute(page, "**/api/v1/supporter/certificates/living-standard.svg", async (route) => route.fulfill({ status: 200, contentType: "image/svg+xml", body: certificate }));
   await page.goto("/supporter");
   const galleryMilliseconds = await page.evaluate(async () => {
     const start = performance.now();
@@ -205,7 +209,7 @@ test("Supporter badge rendering and share conversion remain responsive", async (
 
 test("Home keeps support reachable and respects hidden supporter recognition", async ({ page }) => {
   await login(page);
-  await page.route("**/api/v1/supporter/collection", route => route.fulfill({ json: { badges: [], display: "automatic" } }));
+  await providerRoute(page, "**/api/v1/supporter/collection", route => route.fulfill({ json: { badges: [], display: "automatic" } }));
   for (const width of [1440, 1024, 768, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
@@ -216,10 +220,10 @@ test("Home keeps support reachable and respects hidden supporter recognition", a
     expect(await notice.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
     expect(await notice.evaluate(el => el.getBoundingClientRect().height)).toBeLessThanOrEqual(56);
   }
-  await page.route("**/api/v1/supporter/collection", route => route.fulfill({ json: { badges: [], display: "hidden" } }));
+  await providerRoute(page, "**/api/v1/supporter/collection", route => route.fulfill({ json: { badges: [], display: "hidden" } }));
   await page.reload();
   await expect(page.locator(".header-supporter:visible")).toHaveCount(0);
-  await page.route("**/api/v1/supporter/collection", route => route.fulfill({ status: 503 }));
+  await providerRoute(page, "**/api/v1/supporter/collection", route => route.fulfill({ status: 503 }));
   await page.reload();
   await expect(page.locator(".header-supporter:visible")).toHaveText("Support Kinosail");
 });

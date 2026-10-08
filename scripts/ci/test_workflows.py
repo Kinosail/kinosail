@@ -67,6 +67,8 @@ class WorkflowSecurityTests(unittest.TestCase):
         self.assertEqual(command[:2], ['node', '--test'])
         self.assertEqual(command.count('scripts/testing/navigation-repeat-offer.test.mjs'), 1)
         self.assertTrue((ROOT / 'scripts/testing/navigation-repeat-offer.test.mjs').is_file())
+        self.assertEqual(command.count('scripts/testing/provider-profile-fixture.test.mjs'), 1)
+        self.assertTrue((ROOT / 'scripts/testing/provider-profile-fixture.test.mjs').is_file())
 
     def test_player_browser_engines_receive_verified_fixture_codecs(self):
         # Actual HLS navigation fixtures spawn FFmpeg in every selected engine.

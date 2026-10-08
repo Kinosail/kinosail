@@ -1,7 +1,9 @@
+import { configureProviderProfile, providerRoute } from "./provider-profile-fixture";
 import { createHmac } from "node:crypto";
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
+configureProviderProfile();
 test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated public test instance");
 
 test("Owner can switch Player checkout cadence without losing levels or accessibility", async ({ page }) => {
