@@ -33,7 +33,7 @@ document.addEventListener("click", event => {
   if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey ||
       !link || link.hasAttribute("download") || link.target && link.target !== "_self") return;
   if (progressNavigation?.target && ownsProgressNavigation() &&
-      link.origin === location.origin && link.pathname === "/" && !link.hash) {
+      link.origin === location.origin && link.pathname === "/" && (!link.search || link.hasAttribute("data-browse-return")) && !link.hash) {
     event.preventDefault();
     progressNavigation.target = link.href;
     return;
