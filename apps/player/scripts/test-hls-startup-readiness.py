@@ -31,10 +31,12 @@ result = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=
     'boundary': 'Fixed FLAC48k stereo public preparation readiness and unchanged output; strict one-encoder contract remains failed.',
     'productionMediaOrCacheModified': False,
     'sourceSHA256': {name: hashlib.sha256(bounded_bytes(ROOT / name, 65536, 'readiness_source_bound')).hexdigest()
-        for name in paths if (ROOT / name).is_file()}}
+        for name in paths}}
 try:
     check(original['revision'] == result['revision'] and original['suite'] == 'audio-origin'
         and original['expectedCases'] == len(original['cases']) == 2
+        and original['productionSourceWitness']['tree'] == result['tree']
+        and original['productionSourceWitness']['trackedAndUntrackedWorktreeClean']
         and original['productionSourceWitness']['unchangedAfterPublicProof'], 'readiness_original_source_binding')
     candidate, control = original['cases']
     result['historicalFailureTagsRetained'] = candidate['failures']
