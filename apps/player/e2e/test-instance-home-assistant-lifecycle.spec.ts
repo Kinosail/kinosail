@@ -1,5 +1,5 @@
 import {expect, test, type Page, type BrowserContext} from "@playwright/test";
-import {configureTestInstance, createViewer, loginViewer, newViewerPage, removeViewer} from "./test-instance-helpers";
+import {configureTestInstance, createViewer, loginViewer, removeViewer} from "./test-instance-helpers";
 import {openDocuments, closeDocuments, setting, observeAcceptedDocumentStates, observeActualDocumentClaims} from "./home-assistant-document-helpers";
 import {inspectDocumentStatus} from "./home-assistant-document-inspection";
 
@@ -112,7 +112,7 @@ test("real lost-release reload waits for lease expiry and renews only its origin
 test("actual authenticated Profile switch retires old document command effects", {tag: ["@smoke", "@routed-fault"]}, async ({page, browser}, info) => {
   test.setTimeout(75_000);
   let first: Page | undefined, second: Page | undefined, owner: Page | undefined, viewer: Page | undefined, profile = "";
-  let ownerContext: BrowserContext | undefined, primary: unknown;
+  let ownerContext: BrowserContext | undefined, viewerContext: BrowserContext | undefined, primary: unknown, viewerSwitched = false;
   let releaseCommand = () => {};
   const name = `R18 isolated Viewer ${info.workerIndex}`, password = "r18-fictional-viewer-password";
   try {
@@ -123,7 +123,9 @@ test("actual authenticated Profile switch retires old document command effects",
     owner = await ownerContext.newPage();
     profile = await createViewer(owner, name, password);
     // Authenticate through the real UI before starting the bounded held reply.
-    viewer = await newViewerPage(browser, baseURL);
+    viewerContext = await browser.newContext({baseURL, ignoreHTTPSErrors: false});
+    await viewerContext.addInitScript(() => Object.defineProperty(PublicKeyCredential, "isConditionalMediationAvailable", {value: async () => false}));
+    viewer = await viewerContext.newPage();
     await loginViewer(viewer, name, password);
     const authenticated = await viewer.request.get("/api/v1/me");
     expect(authenticated.status()).toBe(200);
@@ -136,13 +138,14 @@ test("actual authenticated Profile switch retires old document command effects",
     expect(Number.isFinite(duration) && duration > 2).toBe(true);
     const position = before < duration / 2 ? duration * .75 : duration * .25;
     expect(Math.abs(position - before)).toBeGreaterThan(.5);
-    let release!: () => void, capturedAt = 0;
+    let release!: () => void, capturedAt = 0, requestStarted = 0;
     const barrier = new Promise<void>(resolve => release = resolve);
     releaseCommand = release;
     await first.route(`**/api/v1/home-assistant/players/${target}`, async route => {
       if (route.request().method() !== "PUT") return route.continue();
+      const started = Date.now();
       const response = await route.fetch();
-      if (response.status() === 200 && (await response.json()).command === "seek") {capturedAt = Date.now(); await barrier;}
+      if (response.status() === 200 && (await response.json()).command === "seek") {requestStarted = started; capturedAt = Date.now(); await barrier;}
       try {await route.fulfill({response});} catch (error) {if (!first!.isClosed()) throw error;}
     });
     expect(await owner.evaluate(async ({id, position}) => {
@@ -159,14 +162,15 @@ test("actual authenticated Profile switch retires old document command effects",
     let lateStates = 0;
     first.on("request", request => {if (request.method() === "PUT" && new URL(request.url()).pathname === `/api/v1/home-assistant/players/${target}`) lateStates++;});
     // Overwrite only genuine server authority; never introduce an unauthenticated gap.
-    await page.context().addCookies(sessions);
+    await page.context().addCookies(sessions); viewerSwitched = true;
     const switched = await first.request.get("/api/v1/me", {timeout: 2_000});
     expect(switched.status()).toBe(200);
     expect((await switched.json()).viewer.id === profile, "shared session identifies the authenticated Viewer").toBe(true);
-    const heldMs = Date.now() - capturedAt;
-    expect(heldMs, "deliver inside the unchanged five-second request deadline").toBeLessThan(4_000);
+    expect(Date.now() - requestStarted, "session verification leaves deadline margin").toBeLessThan(4_000);
     release();
     expect((await delivered).status()).toBe(200);
+    const heldMs = Date.now() - requestStarted;
+    expect(heldMs, "actual request including server fetch and browser delivery stays inside five seconds").toBeLessThan(4_000);
     expect((await (await changed).json()).viewer.id === profile, "the actual command adapter observed the new Viewer").toBe(true);
     await expect(first.locator("[data-home-assistant-status]")).toHaveAttribute("data-home-assistant-status", "stopped");
     await first.waitForTimeout(11_000);
@@ -181,11 +185,12 @@ test("actual authenticated Profile switch retires old document command effects",
     let cleanup: unknown;
     const attempt = async (action: () => Promise<unknown>) => {try {await action();} catch (error) {cleanup ||= error;}};
     for (const document of [first, second]) if (document && !document.isClosed()) await attempt(() => document.close());
-    if (owner) {
-      await attempt(() => setting(owner!, false));
-      if (profile) await attempt(() => removeViewer(owner!, profile));
+    const management = owner || (!viewerSwitched ? page : undefined);
+    if (management) {
+      await attempt(() => setting(management, false));
+      if (profile) await attempt(() => removeViewer(management, profile));
     }
-    if (viewer) await attempt(() => viewer!.context().close());
+    if (viewerContext) await attempt(() => viewerContext!.close());
     if (ownerContext) await attempt(() => ownerContext!.close());
     if (!primary && cleanup) throw cleanup;
   }
