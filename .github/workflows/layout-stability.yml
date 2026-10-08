@@ -1,190 +1,88 @@
-name: Bounded AAC startup readiness evidence
-
+name: Preserved AAC cold receipt projection
 on:
   workflow_dispatch:
-    inputs:
-      phase:
-        description: Expected written-first or corrected readiness result
-        type: choice
-        options: [red, red-long, green]
-        default: red
-
 permissions:
   contents: read
-
 jobs:
-  readiness-contracts:
-    name: Asset-backed AAC readiness contracts
+  preserved-public-projection:
+    name: Compare retained complete AAC packet receipts
     runs-on: ubuntu-24.04
-    timeout-minutes: 8
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - run: test ! -e .gates-disabled
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        timeout-minutes: 3
-        with:
-          go-version-file: go.work
-          cache-dependency-path: "**/go.sum"
-      - name: Run unchanged and captured readiness controls
-        env:
-          READINESS_PHASE: ${{ inputs.phase }}
-        run: |
-          python3 - <<'PY'
-          import hashlib,json,os,subprocess
-          from pathlib import Path
-          command=['go','-C','apps/player','test','-count=1','-json','-run','TestRemainingInitialAAC|TestRemainingRoundedAAC','./internal/server']
-          process=subprocess.run(command,capture_output=True,text=True,timeout=300)
-          assert len(process.stdout.encode()) <= 8 << 20
-          events=[json.loads(line) for line in process.stdout.splitlines()]
-          failures=sorted(e['Test'] for e in events if e.get('Test') and e.get('Action')=='fail')
-          expected=sorted(['TestRemainingRoundedAACWindowUsesAvailableAssets','TestRemainingRoundedAACWindowUsesAvailableAssets/captured-eight-second-window','TestRemainingRoundedAACWindowUsesAvailableAssets/missing-cut-number'])
-          phase=os.environ['READINESS_PHASE']
-          if phase=='red-long':
-              expected=sorted(['TestRemainingRoundedAACWindowUsesAvailableAssets','TestRemainingRoundedAACWindowUsesAvailableAssets/captured-window-for-long-source'])
-          accepted=(phase in ['red','red-long'] and process.returncode==1 and failures==expected) or (phase=='green' and process.returncode==0 and not failures)
-          paths=['apps/player/internal/server/'+n for n in ['startup_window.go','hls_remaining_startup.go','hls_remaining_completion_test.go']]
-          result={'revision':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
-              'tree':subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip(),
-              'phase':phase,'result':'expected-red' if accepted and phase in ['red','red-long'] else 'passed' if accepted else 'failed',
-              'command':command,'testExitCode':process.returncode,'failures':failures,
-              'passedTests':sorted(e['Test'] for e in events if e.get('Test') and e.get('Action')=='pass'),
-              'sourceSHA256':{p:hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in paths if Path(p).is_file()},
-              'boundary':'Asset-backed captured prefix regression; populated public proof is separate.'}
-          target=Path('.verification/startup-readiness')
-          target.mkdir(parents=True)
-          raw=json.dumps(result,separators=(',',':'))+'\n'
-          (target/'contracts.json').write_text(raw)
-          (target/'SHA256SUMS').write_text(hashlib.sha256(raw.encode()).hexdigest()+'  contracts.json\n')
-          print(json.dumps(result,separators=(',',':')))
-          if not accepted:
-              for e in events:
-                  if e.get('Test') in failures and e.get('Output'):
-                      print(e['Output'][:600])
-              print(process.stderr[:1000])
-          raise SystemExit(0 if accepted else 1)
-          PY
-      - name: Preserve bounded safe regression receipt
-        timeout-minutes: 2
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
-        with:
-          name: startup-readiness-contracts-${{ github.sha }}
-          path: .verification/startup-readiness/*
-          include-hidden-files: true
-          if-no-files-found: error
-          retention-days: 14
-
-  public-readiness:
-    name: Bounded authenticated AAC readiness
-    if: inputs.phase == 'green'
-    runs-on: ubuntu-24.04
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - run: test ! -e .gates-disabled
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        timeout-minutes: 3
-        with:
-          go-version-file: go.work
-          cache-dependency-path: "**/go.sum"
-      - name: Install pinned public-media codecs
-        run: |
-          curl --fail --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/hls-ffmpeg.deb" https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.2-5/jellyfin-ffmpeg8_8.1.2-5-noble_amd64.deb
-          printf '%s  %s\n' b4e72894ad26c809ed0104805f5415a97be75212b9fcf9d60b89ad25bb3d43e3 "$RUNNER_TEMP/hls-ffmpeg.deb" | sha256sum --check
-          apt_options=(-o Acquire::http::Timeout=15 -o Acquire::https::Timeout=15 -o Acquire::Retries=0)
-          if ! timeout --kill-after=5s 90s sudo apt-get "${apt_options[@]}" update --error-on=any; then
-            python3 - "$RUNNER_TEMP/hls-ubuntu.sources" <<'PY'
-          import pathlib, sys
-          source = pathlib.Path('/etc/apt/sources.list.d/ubuntu.sources')
-          with source.open('rb') as stream:
-              data = stream.read(65537)
-          assert len(data) <= 65536, 'runner_ubuntu_sources_bound'
-          lines = data.decode().splitlines(keepends=True)
-          changed = False
-          for index, line in enumerate(lines):
-              if line.rstrip('\r\n') in ['URIs: http://azure.archive.ubuntu.com/ubuntu/', 'URIs: http://azure.archive.ubuntu.com/ubuntu']:
-                  lines[index] = 'URIs: https://archive.ubuntu.com/ubuntu/\n'
-                  changed = True
-          assert changed, 'runner_ubuntu_mirror_not_supported'
-          pathlib.Path(sys.argv[1]).write_text(''.join(lines))
-          PY
-            sudo install -m 0644 "$RUNNER_TEMP/hls-ubuntu.sources" /etc/apt/sources.list.d/ubuntu.sources
-            timeout --kill-after=5s 90s sudo apt-get "${apt_options[@]}" update --error-on=any
-          fi
-          timeout --kill-after=5s 180s sudo apt-get "${apt_options[@]}" install -y --no-install-recommends "$RUNNER_TEMP/hls-ffmpeg.deb"
-          echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
-      - name: Verify preparation without changing historical assertions
-        run: timeout --kill-after=5s 750s python3 apps/player/scripts/test-hls-startup-readiness.py
-      - name: Preserve original failures and separate readiness receipt
-        timeout-minutes: 2
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
-        with:
-          name: startup-readiness-public-${{ github.sha }}
-          path: |
-            .verification/hls-followon/*/receipt.json
-            .verification/hls-followon/*/startup-readiness.json
-            .verification/hls-followon/*/uninterrupted-cold-control.json
-            .verification/hls-followon/*/SHA256SUMS
-          include-hidden-files: true
-          if-no-files-found: error
-          retention-days: 14
-  source-verifier:
-    name: Verify integrated Player source after commit
-    if: inputs.phase == 'green'
-    runs-on: ubuntu-24.04
-    timeout-minutes: 8
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - run: test ! -e .gates-disabled
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        timeout-minutes: 3
-        with:
-          go-version-file: go.work
-          cache-dependency-path: "**/go.sum"
-      - run: timeout --kill-after=5s 300s make -C apps/player verify-changed BASE=origin/main
-
-  canonical-atlas:
-    name: Generate canonical Player atlas Git blob
-    runs-on: ubuntu-24.04
-    timeout-minutes: 8
+    timeout-minutes: 5
     permissions:
-      contents: write
+      actions: read
+      contents: read
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        timeout-minutes: 2
         with:
-          fetch-depth: 0
-          persist-credentials: false
-      - run: test ! -e .gates-disabled
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        timeout-minutes: 3
-        with:
-          go-version-file: go.work
-          cache-dependency-path: "**/go.sum"
-      - name: Generate exact-source canonical output
-        run: python3 scripts/tooling/generate-architecture-explorer.py player
-      - name: Publish only an unreferenced generated Git blob
+          artifact-ids: 11528526609
+          run-id: 37727797685
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/readiness-projection
+      - name: Emit checksum-bound safe complete comparison
         env:
-          GH_TOKEN: ${{ github.token }}
+          PROJECTION_ROOT: ${{ runner.temp }}/readiness-projection
         run: |
           python3 - <<'PY'
-          import hashlib,json,subprocess
+          import hashlib,json,os,re
+          from decimal import Decimal
           from pathlib import Path
-          path='apps/player/docs/architecture-explorer/index.html'
-          raw=Path(path).read_bytes()
-          assert 0 < len(raw) < 4 << 20
-          result=subprocess.run(['gh','api','repos/Kinosail/kinosail/git/blobs','--method','POST','--input','-'],
-              input=json.dumps({'content':raw.decode(),'encoding':'utf-8'}),text=True,capture_output=True,check=True,timeout=30)
-          blob=json.loads(result.stdout)
-          print(json.dumps({'revision':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
-              'path':path,'blob':blob['sha'],'sha256':hashlib.sha256(raw).hexdigest(),'bytes':len(raw)}))
-          PY
+          root=Path(os.environ['PROJECTION_ROOT'])
+          def read(name,limit,sha):
+              paths=list(root.rglob(name))
+              assert len(paths)==1
+              with paths[0].open('rb') as stream: raw=stream.read(limit+1)
+              assert 0 < len(raw) <= limit and hashlib.sha256(raw).hexdigest()==sha
+              return json.loads(raw)
+          original=read('receipt.json',4<<20,'6e1e481439f5fdc146ce11b5a4f0e98e965091ac7a7dff0e355f2cd88c268f18')
+          cold=read('uninterrupted-cold-control.json',2<<20,'66a5104017189bb5c70e51e493d3944b1c1f4375bfeb8b95df88ce5f6b8f8ed7')
+          side=read('startup-readiness.json',1<<20,'be57e5bb5ce7cdb3d52752240e254e1c4590707d02c37f0b55362542a02dc0e2')
+          revision='3d8d53268be53d22dcc6d32b4a3461aa2e3e6b39'
+          assert original['revision']==cold['revision']==side['revision']==revision
+          assert len(original['cases'])==2
+          cases=original['cases']+[cold['case']]
+          assert [c['name'] for c in cases]==['origin-refill','origin-control','uninterrupted-cold-control']
+          fields={'pts_time','dts_time','duration_time','size','data_hash','side_data_list'}
+          for c in cases:
+              rows=c['joinedPublicPacketPayloads']
+              assert 0 < len(rows) < 4096 and all(set(r)<=fields for r in rows)
+              for r in rows:
+                  assert re.fullmatch('SHA256:[a-f0-9]{64}',r['data_hash'])
+                  assert re.fullmatch('[0-9]{1,8}',r['size'])
+                  assert all(re.fullmatch('-?[0-9]{1,12}\\.[0-9]{1,12}',r[k]) for k in ['pts_time','dts_time','duration_time'])
+                  assert len(r.get('side_data_list',[]))<=8
+                  for s in r.get('side_data_list',[]):
+                      assert set(s)<={'side_data_type','skip_samples','discard_padding','skip_reason','discard_reason'}
+                      assert s.get('side_data_type')=='Skip Samples'
+                      assert all(type(v) is int and 0<=v<=1<<20 for k,v in s.items() if k!='side_data_type')
+          def comparison(a,b):
+              ra,rb=a['joinedPublicPacketPayloads'],b['joinedPublicPacketPayloads']
+              mismatches=[i for i,(x,y) in enumerate(zip(ra,rb)) if x!=y]
+              payload=[i for i,(x,y) in enumerate(zip(ra,rb)) if x['data_hash']!=y['data_hash'] or x['size']!=y['size']]
+              return {'names':[a['name'],b['name']],'counts':[len(ra),len(rb)],'exactEqual':ra==rb,
+                  'mismatchCount':len(mismatches),'firstMismatch':mismatches[0] if mismatches else None,
+                  'lastMismatch':mismatches[-1] if mismatches else None,'payloadMismatchCount':len(payload),
+                  'fieldMismatchCounts':{k:sum(x.get(k)!=y.get(k) for x,y in zip(ra,rb)) for k in sorted(fields)},
+                  'firstRows':[{'index':i,'a':ra[i],'b':rb[i]} for i in mismatches[:4]],
+                  'payloadIndexShiftMatches':{str(shift):sum(ra[i]['data_hash']==rb[i+shift]['data_hash'] for i in range(len(ra)) if 0<=i+shift<len(rb)) for shift in range(-2,3)}}
+          safe=[]
+          for c in cases:
+              rows=c['joinedPublicPacketPayloads']
+              gaps=[Decimal(b['pts_time'])-Decimal(a['pts_time'])-Decimal(a['duration_time']) for a,b in zip(rows,rows[1:])]
+              native=c['nativePCMQualification']
+              pcm=c['fullEOFNativeSamples']
+              physical=c.get('physicalAfterPublicDelivery',{})
+              safe.append({'name':c['name'],'result':c['result'],'failures':c['failures'],
+                  'packetCount':len(rows),'firstPacket':rows[0],'lastPacket':rows[-1],
+                  'maxGap':str(max([Decimal(0)]+gaps)),'maxOverlap':str(max([Decimal(0)]+[-v for v in gaps])),
+                  'initSHA256':c['initializationSHA256'],'fixtureSHA256':c['fixture']['sha256'],
+                  'PCM':{k:pcm.get(k) for k in ['public','source','publicSHA256','sourceSHA256','decodedToEOF','trimmed','rateConversionApplied','channelConversionApplied']},
+                  'nativePublic':{k:native['public'].get(k) for k in ['frames','samples','completeEOFAccounted','decodedClockOrderValid']},
+                  'nativeSource':{k:native['source'].get(k) for k in ['frames','samples','completeEOFAccounted','decodedClockOrderValid']},
+                  'endlist':physical.get('manifest',{}).get('endlist'),'sourceUnchanged':c.get('sourceUnchanged'),
+                  'workerBound':c.get('workerBound'),'encoderLifecycle':c.get('encoderLifecycle'),
+                  'emptyCacheBeforeFirstGET':c.get('emptyCacheBeforeFirstGET'),'preparationPosts':c.get('preparationPosts')})
+          print(json.dumps({'revision':revision,'projectionResult':'passed','originalReceiptSHA256':side['originalReceiptSHA256'],
+              'coldControlReceiptSHA256':side['coldControlReceiptSHA256'],'readinessFailures':side['failures'],
+              'cases':safe,'comparisons':[comparison(cases[0],cases[1]),comparison(cases[0],cases[2])]},separators=(',',':')))
+                    PY
