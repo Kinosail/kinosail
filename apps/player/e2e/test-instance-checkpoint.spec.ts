@@ -3,6 +3,7 @@ import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { configureTestInstance, login } from "./test-instance-helpers";
 import { registerNavigationCheckpoints } from "./checkpoint-navigation-cases";
+import { registerCheckpointSetup } from "./checkpoint-setup-cases";
 
 // Read-only diagnostics for the page's existing playback state; these declarations emit no JavaScript.
 declare const playbackPreparation: unknown;
@@ -35,7 +36,9 @@ async function checkpoint(page: Page, id: string, session?: string) {
   expect(response.status()).toBe(200);
   const body = await response.json();
   expect(body.item.progress).toBeTruthy();
-  return {seconds: Number(body.item.progress.seconds), revision: Number(body.item.progress.revision),
+  const seconds = body.item.progress.seconds === undefined ? 0 : body.item.progress.seconds;
+  expect(Number.isFinite(seconds)).toBe(true);
+  return {seconds, revision: Number(body.item.progress.revision),
     ...(session ? {sessionMatches: body.item.progress.session === session} : {})};
 }
 
@@ -90,7 +93,7 @@ async function observeExit(page: Page, id: string, key: string) {
   }, {item: id, key});
 }
 
-async function openMovie(page: Page, observation?: {key: string; iteration: number; testInfo: TestInfo}) {
+async function openMovie(page: Page, observation?: {key: string; iteration: number; testInfo: TestInfo; resumeAt?: number}) {
   if (!observation || observation.iteration === 0) await login(page);
   await page.goto(browsePath);
   const card = page.locator('a.card[href^="/watch/"]').filter({hasText: "Checkpoint Example"}).first();
@@ -104,9 +107,16 @@ async function openMovie(page: Page, observation?: {key: string; iteration: numb
   expect(duration).toBeGreaterThan(20);
   const session = await media.getAttribute("data-playback-session") || undefined;
   expect(Boolean(session && /^[a-zA-Z0-9_-]{8,64}$/.test(session))).toBe(true);
+  if (observation?.resumeAt !== undefined) await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThanOrEqual(observation.resumeAt - 0.1);
+  // Previous cases can leave this shared real item near its end. Establish a fresh baseline.
+  await media.evaluate((video: HTMLVideoElement) => {video.pause(); video.currentTime = 0;});
+  await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.seeking)).toBe(false);
+  await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeLessThan(0.1);
+  await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThanOrEqual(2);
   if (observation) await observeExit(page, id, observation.key);
+  const frames = await media.evaluate((video: HTMLVideoElement) => video.getVideoPlaybackQuality().totalVideoFrames);
   await media.evaluate((video: HTMLVideoElement) => video.play());
-  await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.getVideoPlaybackQuality().totalVideoFrames)).toBeGreaterThan(2);
+  await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.getVideoPlaybackQuality().totalVideoFrames)).toBeGreaterThan(frames + 2);
   await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(0.2);
   await media.evaluate((video: HTMLVideoElement) => video.pause());
   const paused = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
@@ -126,6 +136,8 @@ async function openMovie(page: Page, observation?: {key: string; iteration: numb
   }
   return {watch, media, id, paused, duration, session};
 }
+
+registerCheckpointSetup({phase, openMovie, checkpoint});
 
 test("completed paused seek persists before Library navigation and resumes actual movie frames", {tag: "@smoke"}, async ({page}, testInfo) => {
   const {watch, media, id, paused, duration} = await openMovie(page);
