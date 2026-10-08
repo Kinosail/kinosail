@@ -79,6 +79,7 @@ styleA []byte
 styleB []byte
 fragment = joinScripts(first, second)
 complete = joinScripts(fragment, first)
+completeHandler = serveScript(complete)
 styles = append(append([]byte(nil), styleA...), styleB...)
 `);
     }

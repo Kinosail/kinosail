@@ -185,8 +185,11 @@ func assertFixedScriptRequests(t *testing.T, handler http.Handler, path string, 
 
 func assertFixedScriptHeaders(t *testing.T, handler http.Handler, path, expectedCache string, response *httptest.ResponseRecorder) {
 	t.Helper()
-	if response.Header().Get("Cache-Control") != expectedCache || response.Header().Get("Content-Length") != strconv.Itoa(response.Body.Len()) {
-		t.Fatal("script response lost request-specific cache or length")
+	if response.Header().Get("Cache-Control") != expectedCache {
+		t.Fatalf("%s Cache-Control = %q, want %q", path, response.Header().Get("Cache-Control"), expectedCache)
+	}
+	if response.Header().Get("Content-Length") != strconv.Itoa(response.Body.Len()) {
+		t.Fatalf("%s Content-Length = %q, want %d delivered bytes", path, response.Header().Get("Content-Length"), response.Body.Len())
 	}
 	head := fixedScriptResponse(t, handler, http.MethodHead, path, "gzip")
 	if head.Body.Len() != 0 || head.Header().Get("Content-Encoding") != response.Header().Get("Content-Encoding") || head.Header().Get("Content-Length") != response.Header().Get("Content-Length") {
@@ -199,7 +202,7 @@ func decodeFixedScript(t *testing.T, response *httptest.ResponseRecorder) []byte
 	if !strings.Contains(response.Header().Get("Vary"), "Accept-Encoding") {
 		t.Fatal("compressed script lacks cache negotiation boundary")
 	}
-	reader, err := gzip.NewReader(response.Body)
+	reader, err := gzip.NewReader(bytes.NewReader(response.Body.Bytes()))
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -20,6 +20,8 @@ export function browserScriptBundles(repo) {
     for (const [, name, expression] of source.matchAll(/^\s*(?:var )?(\w+)\s*=\s*(.+)$/gm)) {
       let dependencies;
       if (/^webassets\.\w+$/.test(expression)) dependencies = [expression];
+      // Constructing a handler does not consume the assembled JavaScript scope.
+      else if (/^serveScript\([\w.]+\)$/.test(expression)) continue;
       // A single-source preparation replaces JSON data, preserving JS scope.
       else if (/^\w+\([\w.]+\)$/.test(expression)) dependencies = [expression.match(/^\w+\(([\w.]+)\)$/)[1]];
       else if (expression.startsWith('joinScripts(')) dependencies = expression.slice(12, -1).split(', ');
