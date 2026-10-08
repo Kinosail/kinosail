@@ -87,6 +87,8 @@ func TestRemainingRoundedAACWindowUsesAvailableAssets(t *testing.T) {
 		ready    bool
 	}{
 		{"captured-eight-second-window", prefix, 10, "", true},
+		{"captured-window-for-long-source", prefix, 120, "", true},
+		{"source-beyond-canonical-vod-bound", prefix, 7*24*60*60 + 1, "", false},
 		{"same-prefix-at-source-eof", prefix, 8, "", false},
 		{"unknown-source-duration", prefix, 0, "", false},
 		{"source-within-rounding-bound", prefix, 8.000002, "", false},
