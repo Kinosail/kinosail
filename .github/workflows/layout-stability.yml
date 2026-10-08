@@ -127,6 +127,10 @@ jobs:
           receipt.mkdir(parents=True, exist_ok=True)
           receipt.joinpath('SOURCE').write_text(subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True))
           sources = {}
+          def write(path, text):
+              raw = text.encode()
+              path.write_bytes(raw)
+              assert path.read_bytes() == raw, 'isolated_exact_bytes'
           def read(name):
               path = root / name
               raw = path.read_bytes()
@@ -144,21 +148,21 @@ jobs:
           factory = function(index, 'func copiedHLSLines(')
           scanner = function(read('hls_copied_scan.go'), 'func scanCopiedHLSLines(')
           error = re.search(r'^var errCopiedHLSIndex = .+$', index, re.M)[0]
-          bundle.joinpath('factory.go').write_text('package server\n\nimport (\n\t"context"\n\t"errors"\n\t"os/exec"\n)\n\n' + error + '\n\n' + factory)
-          bundle.joinpath('scan.go').write_text('package server\n\nimport (\n\t"bufio"\n\t"io"\n)\n\n' + scanner)
+          write(bundle.joinpath('factory.go'), 'package server\n\nimport (\n\t"context"\n\t"errors"\n\t"os/exec"\n)\n\n' + error + '\n\n' + factory)
+          write(bundle.joinpath('scan.go'), 'package server\n\nimport (\n\t"bufio"\n\t"io"\n)\n\n' + scanner)
           for name in ['hls_copied_lines_lifetime_test.go', 'hls_copied_lines_fixture_test.go', 'hls_copied_lines_observation_windows_test.go']:
-              bundle.joinpath(name).write_text(read(name))
+              write(bundle.joinpath(name), read(name))
           fixture = 'testdata/copied-probe-fixture/main.go'
           bundle.joinpath(fixture).parent.mkdir(parents=True)
-          bundle.joinpath(fixture).write_text(read(fixture))
+          write(bundle.joinpath(fixture), read(fixture))
           if root.joinpath('hls_copied_process.go').exists():
               for name in ['hls_copied_process.go', 'hls_copied_process_windows.go']:
-                  bundle.joinpath(name).write_text(read(name))
+                  write(bundle.joinpath(name), read(name))
               context = read('observability_context.go')
               activity = function(context, 'func requestActivityID(')
               session = function(context, 'func requestPlaybackSession(')
               bridge = 'package server\n\nimport "context"\n\ntype requestActivityKey struct{}\n\ntype requestActivity struct {\n\tid              string\n\tplaybackSession string\n}\n\n'
-              bundle.joinpath('activity_fixture.go').write_text(bridge + activity + '\n' + session)
+              write(bundle.joinpath('activity_fixture.go'), bridge + activity + '\n' + session)
           hashes = {p.relative_to(bundle).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest() for p in bundle.rglob('*.go')}
           facts = {'scope': 'exact factory only; request/activity integration excluded', 'sources': sources, 'bundle': hashes,
               'factorySHA256': hashlib.sha256(factory.encode()).hexdigest(), 'scannerSHA256': hashlib.sha256(scanner.encode()).hexdigest()}
