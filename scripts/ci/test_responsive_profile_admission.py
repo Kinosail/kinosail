@@ -37,13 +37,16 @@ class ResponsiveAdmissionTests(unittest.TestCase):
         cases = module.profile_cases('responsive-shell')
         self.assertEqual(len(cases), 99)
         self.assertEqual(len(set(cases)), 99)
-        self.assertEqual(len({file for file, _ in cases}), 12)
+        self.assertEqual(len({file for file, _ in cases}), 13)
         for project in module.PROJECTS:
             for complete in (False, True):
                 with patch('subprocess.run', side_effect=AssertionError('process effect')):
                     actual = module.admit(json.dumps(self.proof(cases, project, complete)).encode(),
                                           'responsive-shell', project, 'fresh', complete)
                 self.assertEqual(actual, {(file, title, project) for file, title in cases})
+
+    def test_recovery_identity_retains_both_explicit_public_control_owners(self):
+        self.assertIn(('layout-audit-player-recovery.spec.ts', 'player explains an unconfirmed failure and offers a direct retry'), self.module().profile_cases('responsive-shell'))
 
     def test_wrapper_routes_only_one_fresh_owner_and_joins_owned_cleanup(self):
         peer = fixture_peers.LibraryFixtureOwnerTests()
