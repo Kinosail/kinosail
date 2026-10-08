@@ -1,8 +1,10 @@
 import {recordHomeAssistantEvidence, cleanupHomeAssistantFixture} from "./home-assistant-document-evidence";
 import {expect, test, type Page, type BrowserContext, type CDPSession, type Request, type Response} from "@playwright/test";
 import {configureTestInstance, createViewer, loginViewer, removeViewer} from "./test-instance-helpers";
-import {openDocuments, closeDocuments, setting, observeAcceptedDocumentStates, nextDocumentClaim} from "./home-assistant-document-helpers";
+import {openDocuments, closeDocuments, setting, observeAcceptedDocumentStates, nextDocumentClaim, observeNativeDocumentRetirement} from "./home-assistant-document-helpers";
 import {inspectDocumentStatus} from "./home-assistant-document-inspection";
+
+import {installNativeReleaseDiagnostic} from "../../../packages/webassets/home-assistant-release-diagnostic-fixture.mjs";
 
 configureTestInstance();
 
@@ -73,7 +75,7 @@ test("real lost-release reload waits for lease expiry and renews only its origin
   let first: Page | undefined, second: Page | undefined, network: CDPSession | undefined, releaseRoute = "", primary: unknown;
   let failedRelease: ((request: Request) => void) | undefined, occupiedReply: ((response: Response) => void) | undefined;
   try {
-    const docs = await openDocuments(page); ({first, second} = docs);
+    const docs = await openDocuments(page, document => document.addInitScript(installNativeReleaseDiagnostic)); ({first, second} = docs);
     await expect.poll(async () => (await docs.live()).length).toBe(2);
     const original = (await docs.live()).find(target => target.itemId === docs.ids[0])!.id;
     const accepted = observeAcceptedDocumentStates(first);
@@ -113,6 +115,9 @@ test("real lost-release reload waits for lease expiry and renews only its origin
     first.on("requestfailed", failedRelease); first.on("response", occupiedReply);
     const renewed = nextDocumentClaim(first);
     void renewed.catch(() => {});
+    await first.evaluate(path => (window as any).__kinosailReleaseDiagnosticTarget(path), releasePath);
+    const retirement = network ? await observeNativeDocumentRetirement(network) : undefined;
+    retirement?.begin();
     const started = Date.now();
     await first.reload();
     const claim = await renewed;
@@ -122,7 +127,9 @@ test("real lost-release reload waits for lease expiry and renews only its origin
     dropped = Math.max(dropped, blockedRequests.size, contextAborts);
     await recordHomeAssistantEvidence(info, "actual-lost-release-prerequisite", {releaseAttempts: Math.max(releaseRequests.size, contextAborts),
       observedBlockedFailures: dropped, contextAborts, protocolBlockedFailures: blockedRequests.size,
-      actualOccupiedReplies: conflicts, sameCandidateRenewed: claim.id === original, expiresIn: claim.expiresIn, elapsedMs: elapsed});
+      actualOccupiedReplies: conflicts, sameCandidateRenewed: claim.id === original, expiresIn: claim.expiresIn, elapsedMs: elapsed,
+      nativeEndpointDiagnostic: await first.evaluate(() => (window as any).__kinosailReleaseDiagnostic()),
+      mainDocumentRetirement: retirement?.snapshot() || {protocolUnavailable: true}});
     expect(dropped).toBeGreaterThan(0); expect(conflicts).toBeGreaterThan(0);
     expect(elapsed).toBeLessThanOrEqual(35_000);
     await expect.poll(() => accepted.some(state => state.id === claim.id && state.claim === claim.claim)).toBe(true);

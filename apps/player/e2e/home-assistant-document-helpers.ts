@@ -1,4 +1,4 @@
-import {expect, type Page} from "@playwright/test";
+import {expect, type Page, type CDPSession} from "@playwright/test";
 import {login} from "./test-instance-helpers";
 
 type DocumentClaim = {id: string; claim: string; expiresIn: number};
@@ -115,4 +115,32 @@ export async function openDocuments(page: Page, prepare?: (document: Page) => Pr
 export async function closeDocuments(page: Page, documents: Array<Page | undefined>) {
   for (const document of documents) if (document && !document.isClosed()) await document.close();
   await setting(page, false);
+}
+
+/** Test-private main-frame context correlation; IDs never enter receipts. */
+export async function observeNativeDocumentRetirement(network: CDPSession) {
+  const {frameTree} = await network.send("Page.getFrameTree");
+  const mainFrame = frameTree.frame.id;
+  let departing = 0, replacing = 0, started = false, cleared = 0, retired = 0, replacements = 0, claimRequests = 0;
+  const count = (value: number) => Math.min(8, value + 1);
+  network.on("Runtime.executionContextCreated", ({context}) => {
+    if (context.auxData?.isDefault !== true || context.auxData?.frameId !== mainFrame) return;
+    if (!started) departing = context.id;
+    else if (context.id !== departing && context.id !== replacing) {replacing = context.id; replacements = count(replacements);}
+  });
+  network.on("Runtime.executionContextDestroyed", ({executionContextId}) => {
+    if (started && departing && executionContextId === departing) retired = 1;
+  });
+  network.on("Runtime.executionContextsCleared", () => {
+    if (started) {cleared = count(cleared); if (departing) retired = 1;}
+  });
+  network.on("Network.requestWillBeSent", ({request}) => {
+    if (!started || !replacing || request.method !== "POST") return;
+    try {if (new URL(request.url).pathname === "/api/v1/home-assistant/players/claims") claimRequests = count(claimRequests);}
+    catch (_) {}
+  });
+  await network.send("Runtime.enable");
+  return {begin: () => {started = true;}, snapshot: () => ({mainContextObserved: departing !== 0,
+    departingMainContextRetired: retired, contextClearEvents: cleared, replacingMainContexts: replacements,
+    replacementClaimRequests: claimRequests})};
 }
