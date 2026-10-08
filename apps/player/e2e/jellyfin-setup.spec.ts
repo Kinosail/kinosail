@@ -2,7 +2,46 @@ import { configureProviderProfile, providerRoute } from "./provider-profile-fixt
 import { createHmac } from "node:crypto";
 import { finishRootSignIn } from "./test-instance-helpers";
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page, type TestInfo, type Request, type Response } from "@playwright/test";
+
+async function observeTrustedHTTPSDisable(page: Page, info: TestInfo, action: () => Promise<void>) {
+	const parse = (raw: unknown) => {try {if (typeof raw !== "string" || raw.length > 2048) return null;
+		const value = new URL(raw); return ["http:", "https:"].includes(value.protocol) && !value.username && !value.password ? value : null;} catch {return null;}};
+	const initial = parse(page.url());
+	if (!initial || !["localhost", "127.0.0.1"].includes(initial.hostname)) throw new Error("invalid disable observation origin");
+	const owned = (raw: unknown) => {const value = parse(raw); return value?.origin === initial.origin ? value : null;};
+	const facts = {postRequests: 0, postResponses: 0, postFailures: 0, postStatus: null as number | null,
+		redirectSettings: null as boolean | null, documentStarted: false, documentCommitted: false};
+	const target = (request: {url(): string; method(): string}) => {const value = owned(request.url());
+		return value?.pathname === "/settings/trusted-https/disable" && !value.search && !value.hash && request.method() === "POST";};
+	const requested = (request: Request) => {try {
+		if (target(request)) facts.postRequests = Math.min(100, facts.postRequests + 1);
+		const value = owned(request.url());
+		if (value?.pathname === "/settings" && !value.search && request.method() === "GET" && request.isNavigationRequest() && request.frame() === page.mainFrame()) facts.documentStarted = true;
+	} catch {}};
+	const responded = (response: Response) => {try {if (!target(response.request())) return;
+		facts.postResponses = Math.min(100, facts.postResponses + 1); const status = response.status();
+		facts.postStatus = Number.isInteger(status) && status >= 100 && status <= 599 ? status : null;
+		const location = response.headers().location;
+		if (typeof location === "string" && location.length <= 2048) {const value = owned(new URL(location, initial.origin).href);
+			facts.redirectSettings = Boolean(value && value.pathname === "/settings" && !value.search && value.hash === "#trusted-https");}
+	} catch {}};
+	const failed = (request: Request) => {try {if (target(request)) facts.postFailures = Math.min(100, facts.postFailures + 1);} catch {}};
+	const committed = (frame: {url(): string}) => {try {const value = owned(frame.url());
+		if (frame === page.mainFrame() && value?.pathname === "/settings" && !value.search) facts.documentCommitted = true;
+	} catch {}};
+	page.on("request", requested); page.on("response", responded); page.on("requestfailed", failed); page.on("framenavigated", committed);
+	try {await action();} finally {
+		let timer: ReturnType<typeof setTimeout> | undefined;
+		try {const current = owned(page.url());
+			const snapshot = {schemaVersion: 1, ...facts, currentOriginOwned: Boolean(current), currentScheme: current?.protocol === "https:" ? "https" : current ? "http" : "unavailable",
+				currentPath: current ? (["/settings", "/login", "/onboarding/connection"].includes(current.pathname) ? current.pathname.slice(1).replace("onboarding/", "") : "other") : "unavailable",
+				currentFragment: current ? (current.hash === "#trusted-https" ? "trusted-https" : current.hash === "" ? "none" : "other") : "unavailable"};
+			await Promise.race([info.attach("trusted-https-disable-stages", {contentType: "application/json", body: JSON.stringify(snapshot)}), new Promise(resolve => {timer = setTimeout(resolve, 500);})]);
+		} catch { /* Observation failure preserves the original action or assertion. */ }
+		finally {clearTimeout(timer); page.off("request", requested); page.off("response", responded); page.off("requestfailed", failed); page.off("framenavigated", committed);}
+	}
+}
 
 configureProviderProfile();
 test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated public test instance");
@@ -229,6 +268,8 @@ test("Jellyfin setup stays blocked until trusted HTTPS is saved", async ({ page,
 	await choice.uncheck();
 	await jellyfin.getByRole("button", { name: "Save Jellyfin choice" }).click();
 	await page.goto("/settings#trusted-https");
-	await page.getByRole("button", { name: "Disable trusted HTTPS after restart" }).click();
-	await expect(page).toHaveURL("/settings#trusted-https");
+	await observeTrustedHTTPSDisable(page, testInfo, async () => {
+		await page.getByRole("button", { name: "Disable trusted HTTPS after restart" }).click();
+		await expect(page).toHaveURL("/settings#trusted-https");
+	});
 });
