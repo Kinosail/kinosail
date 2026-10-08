@@ -10,6 +10,31 @@ def integer(value):
     raise RuntimeError('boundary_integer_clock')
 
 
+def stream_identity(streams):
+    if not isinstance(streams, list) or len(streams) != 2:
+        raise RuntimeError('boundary_stream_identity')
+    identifiers, indices = [], []
+    for stream in streams:
+        if not isinstance(stream, dict) or not {'id', 'index', 'codec_type', 'time_base'} <= stream.keys():
+            raise RuntimeError('boundary_stream_fields')
+        identifier = stream['id']
+        if not isinstance(identifier, str) or not identifier.startswith('0x') or len(identifier) > 18:
+            raise RuntimeError('boundary_stream_id')
+        identifier = int(identifier, 0)
+        index = stream['index']
+        if identifier <= 0 or type(index) is not int or index not in [0, 1]:
+            raise RuntimeError('boundary_stream_index')
+        if Fraction(stream['time_base']) <= 0:
+            raise RuntimeError('boundary_stream_clock')
+        identifiers.append(identifier)
+        indices.append(index)
+    if len(set(identifiers)) != 2 or sorted(indices) != [0, 1]:
+        raise RuntimeError('boundary_duplicate_stream')
+    if {s['index']: s['codec_type'] for s in streams} != {0: 'video', 1: 'audio'}:
+        raise RuntimeError('boundary_stream_codec')
+    return streams
+
+
 def edit_binding(initialization, fragments, streams, packets):
     result = []
     for track in initialization['tracks']:

@@ -1,7 +1,7 @@
 """Boundary diagnosis fails closed while preserving signed raw clocks."""
 import unittest
 from hls_remaining_nonkey_boundary import (
-    edit_binding, frame_clock_diagnosis, integer, native_clock_rows, packet_tail)
+    edit_binding, frame_clock_diagnosis, integer, native_clock_rows, packet_tail, stream_identity)
 
 
 class BoundaryControls(unittest.TestCase):
@@ -96,6 +96,27 @@ class BoundaryControls(unittest.TestCase):
         for value in [None, True, 1.0, '1.5']:
             with self.assertRaises(RuntimeError):
                 integer(value)
+
+
+    def test_dedicated_stream_probe_required_fields(self):
+        streams = [{'index': 0, 'id': '0x1', 'codec_type': 'video', 'time_base': '1/16000'},
+                   {'index': 1, 'id': '0x2', 'codec_type': 'audio', 'time_base': '1/48000'}]
+        self.assertEqual(stream_identity(streams), streams)
+        for field in ['id', 'index', 'codec_type', 'time_base']:
+            incomplete = [dict(s) for s in streams]
+            incomplete[0].pop(field)
+            with self.assertRaises(RuntimeError):
+                stream_identity(incomplete)
+
+    def test_stream_identity_does_not_infer_track_from_order(self):
+        streams = [{'index': 0, 'id': '0x1', 'codec_type': 'video', 'time_base': '1/16000'},
+                   {'index': 1, 'id': '0x1', 'codec_type': 'audio', 'time_base': '1/48000'}]
+        with self.assertRaises(RuntimeError):
+            stream_identity(streams)
+        streams[1]['id'] = '0x2'
+        streams[1]['codec_type'] = 'video'
+        with self.assertRaises(RuntimeError):
+            stream_identity(streams)
 
 
 if __name__ == '__main__':

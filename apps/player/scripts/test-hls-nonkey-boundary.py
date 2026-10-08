@@ -15,7 +15,7 @@ from hls_followon_public import bounded_bytes, check
 from hls_remaining_mux import mux_case
 from hls_remaining_nonkey_evidence import observed_media
 from hls_remaining_nonkey_deadline import DiagnosticDeadline
-from hls_remaining_nonkey_boundary import edit_binding, frame_clock_diagnosis, native_clock_rows, packet_tail
+from hls_remaining_nonkey_boundary import edit_binding, frame_clock_diagnosis, native_clock_rows, packet_tail, stream_identity
 
 ROOT = Path(__file__).resolve().parents[3]
 RUN = ROOT / '.verification/hls-nonkey-boundary' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
@@ -110,9 +110,11 @@ try:
                     value = row['observations']
                     detail = {'completedStages': [], 'presentationQualification': False}
                     row['boundaryDiagnosis'] = detail
-                    streams = stream_metadata(directory / 'joined.mp4')['streams']
-                    check(len(streams) == 2 and {t['codec_type'] for t in streams} == {'video', 'audio'},
-                          'boundary_stream_identity')
+                    streams = json.loads(run(['ffprobe', '-v', 'error', '-show_streams',
+                        '-show_entries', 'stream=index,id,codec_type,time_base', '-of', 'json',
+                        str(directory / 'joined.mp4')]))['streams']
+                    detail['publicStreamRows'] = streams
+                    stream_identity(streams)
                     detail['currentStage'] = 'raw-edit-default-demux'
                     detail['defaultEditBinding'] = edit_binding(value['initialization'],
                         value['physicalFragments'], streams, value['publicPacketRows'])
@@ -122,6 +124,7 @@ try:
                         '-read_intervals', '%+#4097', '-show_packets', '-show_data_hash', 'sha256',
                         '-show_entries', 'packet=stream_index,pts,dts,duration,flags,data_hash,side_data_list',
                         '-of', 'json', str(directory / 'joined.mp4')]))['packets']
+                    detail['completeIgnoreEditPacketRows'] = raw_packets
                     check(0 < len(raw_packets) <= 4096, 'boundary_complete_ignore_edit_packet_bound')
                     raw_init = dict(value['initialization'], tracks=[
                         dict(t, edits=[]) for t in value['initialization']['tracks']])
@@ -135,6 +138,10 @@ try:
                     native_frames = json.loads(run(['ffprobe', '-v', 'error', '-select_streams', 'a:0',
                         '-show_frames', '-show_entries', 'frame=pts,nb_samples,side_data_list',
                         '-of', 'json', str(source)]))['frames']
+                    detail['completeNativeSourceFrameRows'] = native_frames
+                    detail['sourceStreamRows'] = facts['streams']
+                    check({t['index']: t['codec_type'] for t in facts['streams']} ==
+                          {0: 'video', 1: 'audio'}, 'boundary_source_stream_slots')
                     audio = [t for t in facts['streams'] if t['codec_type'] == 'audio']
                     check(len(audio) == 1, 'boundary_source_audio_identity')
                     corr = value['nativePCM']['wholePublicCorrespondence']
