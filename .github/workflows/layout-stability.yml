@@ -28,6 +28,9 @@ on:
       - "scripts/ci/test_responsive_workflow.py"
       - "apps/player/e2e/responsive-failure-witness.mjs"
       - "apps/player/e2e/playback-state-witness.mjs"
+      - "apps/player/e2e/recovery-controls-owner.mjs"
+      - "scripts/testing/recovery-controls-owner.test.mjs"
+      - "scripts/ci/test_browser_recipe_capabilities.py"
       - "scripts/testing/playback-state-witness.test.mjs"
       - "scripts/testing/responsive-failure-witness.test.mjs"
       - "apps/player/e2e/offline-browser-api.mjs"
@@ -591,7 +594,7 @@ jobs:
               'apps/player/e2e/layout-audit-beta-helpers.ts', 'apps/player/e2e/static-sources.ts',
               'scripts/testing/navigation-diagnostics.mjs', 'scripts/testing/ui-element-inventory.ts',
               'apps/player/scripts/responsive_profile_cases.py', 'apps/player/e2e/responsive-failure-witness.mjs',
-              'apps/player/e2e/playback-state-witness.mjs',
+              'apps/player/e2e/playback-state-witness.mjs', 'apps/player/e2e/recovery-controls-owner.mjs',
               'apps/player/scripts/run-library-profile.sh', 'apps/player/scripts/library_profile_admission.py',
               'apps/player/scripts/generate-test-media.sh', 'apps/player/Containerfile', 'apps/player/Containerfile.test',
               'scripts/ci/run-populated-settings.py', 'scripts/ci/browser-fixture-tls.sh',

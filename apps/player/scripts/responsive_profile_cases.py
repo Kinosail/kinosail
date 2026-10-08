@@ -82,7 +82,7 @@ CASES = (
     ('layout-audit-navigation.spec.ts', 'continue watching actions share a baseline when titles wrap'),
     ('layout-audit-player.spec.ts', 'player shows and switches its playback method without crowding actions'),
     ('layout-audit-player.spec.ts', 'player stays accessible in alternate display modes'),
-    ('layout-audit-player.spec.ts', 'player explains an unconfirmed failure and offers a direct retry'),
+    ('layout-audit-player-recovery.spec.ts', 'player explains an unconfirmed failure and offers a direct retry'),
     ('layout-audit-player.spec.ts', 'artwork-backed media copy remains readable'),
     ('layout-audit-shell.spec.ts', 'signed-in application pages retain the navigation shell'),
     ('layout-audit-shell.spec.ts', 'transcoder support stays concise and accessible'),

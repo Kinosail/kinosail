@@ -121,7 +121,7 @@ def playwright_arguments(project, discovery, profile='library-owner'):
     arguments = ['exec', 'playwright', 'test', *sorted({file for file, _ in cases}),
                  f'--project={project}', '--workers=1', '--retries=0', '--repeat-each=1',
                  '--grep', '(?:' + '|'.join(re.escape(title.replace(' › ', ' ') + (' @smoke' if file == 'test-instance-watched-departure.spec.ts'
-                                              or file == 'playback-startup.spec.ts' and title in (
+                                              or file == 'playback-startup-blocked.spec.ts' and title in (
                                                   'blocked autoplay leaves one Play control that starts compatible video from saved progress',
                                                   'blocked autoplay leaves one Play control that starts automatic video from saved progress') else ''))
                                           for file, title in cases) + ')$']

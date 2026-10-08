@@ -76,8 +76,8 @@ class PlaybackProfileTests(unittest.TestCase):
             grep = argv[argv.index('--grep')+1]
             for source in ('compatible', 'automatic'):
                 title = f'blocked autoplay leaves one Play control that starts {source} video from saved progress'
-                self.assertTrue(re.search(grep, project + ' playback-startup.spec.ts ' + title + ' @smoke'))
-                self.assertIn(('playback-startup.spec.ts', title), self.cases(project))
+                self.assertTrue(re.search(grep, project + ' playback-startup-blocked.spec.ts ' + title + ' @smoke'))
+                self.assertIn(('playback-startup-blocked.spec.ts', title), self.cases(project))
 
     def test_invalid_profile_project_state_reject_before_effects(self):
         with patch('subprocess.run', side_effect=AssertionError('process effect')), patch('os.mkdir', side_effect=AssertionError('output effect')):

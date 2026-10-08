@@ -71,7 +71,7 @@ class ResponsiveWorkflowTests(unittest.TestCase):
         self.assertEqual(len({(row['file'], row['fullTitle']) for row in receipt['identities']}), 99)
         for path in ('apps/player/scripts/responsive_profile_cases.py', 'apps/player/e2e/test-instance-helpers.ts',
                      'scripts/ci/library-internal-relay.mjs', 'apps/player/e2e/layout-audit-helpers.ts',
-                     'apps/player/e2e/responsive-failure-witness.mjs', 'apps/player/e2e/playback-state-witness.mjs'):
+                     'apps/player/e2e/responsive-failure-witness.mjs', 'apps/player/e2e/playback-state-witness.mjs', 'apps/player/e2e/recovery-controls-owner.mjs'):
             self.assertIn(path, receipt['sourceSHA256'])
         for path, digest in receipt['sourceSHA256'].items():
             self.assertEqual(digest, hashlib.sha256((ROOT / path).read_bytes()).hexdigest())
