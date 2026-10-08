@@ -159,10 +159,15 @@ export async function measureInspectorEditing(editor, inspectorPath, results, pr
         if(route.request().resourceType()!=="fetch")return route.continue();
         const owned=refresh;
         if(owned){owned.handlerEntered=true;owned.enter();}
-        const response=await route.fetch();
-        if(owned){owned.responseReturned=true;await owned.hold;owned.responseReleased=true;}
-        else await new Promise(resolve=>setTimeout(resolve,900));
-        await route.fulfill({response});
+        try {
+          const response=await route.fetch(owned?{timeout:10000}:undefined);
+          if(owned){owned.responseReturned=true;owned.ready();await owned.hold;owned.responseReleased=true;}
+          else await new Promise(resolve=>setTimeout(resolve,900));
+          await route.fulfill({response});
+        } catch(error) {
+          if(owned){owned.failure=error;owned.fail(error);try{await inspectorSignal(route.abort("failed"),1000,"Controlled inspector abort did not finish");}catch{}}
+          throw error;
+        } finally {owned?.finish();}
       });
       probe.operationPhase = "navigation";
       await editor.goto(inspectorPath,{waitUntil:"commit"});
@@ -180,32 +185,56 @@ export async function measureInspectorEditing(editor, inspectorPath, results, pr
         const language=editor.locator('select[name="language"]');const alternate=await language.evaluate((n,mode)=>[...n.options].find(option=>option.value&&option.value!==n.value&&(mode!=="retain-scroll"||option.value==="fr"))?.value,mode);
         if(!alternate)throw new Error("Synthetic inspector needs an alternate language");
         const originalScroll=await editor.evaluate(()=>scrollY),workspaceBefore=await editor.locator(".subtitle-inspector-workspace").boundingBox(),statusBefore=await editor.locator("#inspector-status").boundingBox();
-        let release, enter, timer;
+        let release, enter, ready, fail, finish, timer, failed=false;
         const hold=new Promise(resolve=>{release=resolve;}), entered=new Promise(resolve=>{enter=resolve;});
-        refresh={hold,enter,handlerEntered:false,responseReturned:false,responseReleased:false};
+        const responseReady=new Promise((resolve,reject)=>{ready=resolve;fail=reject;}), done=new Promise(resolve=>{finish=resolve;});
+        responseReady.catch(()=>{});
+        refresh={hold,enter,ready,fail,finish,handlerEntered:false,responseReturned:false,responseReleased:false};
+        const join=()=>inspectorSignal(done,10000,"Controlled inspector response cleanup did not join");
         try {
         await language.focus();await language.selectOption(alternate);
-        await Promise.race([entered,new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error("Controlled inspector refresh was not routed")),10000);})]);
+        await Promise.race([Promise.all([entered,responseReady]),new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error(refresh.handlerEntered?"Controlled inspector response was not ready":"Controlled inspector refresh was not routed")),10000);})]);
+        clearTimeout(timer);
         await editor.waitForFunction(()=>document.querySelector("#inspector-status")?.getAttribute("aria-busy")==="true");
         if(mode==="tab-away")await editor.keyboard.press("Tab");
         if(mode==="retain-scroll")await editor.evaluate(()=>scrollTo({top:Math.max(0,document.documentElement.scrollHeight-innerHeight-160),behavior:"instant"}));
         const selectorOffscreen=await language.evaluate(n=>{const r=n.getBoundingClientRect();return r.bottom<=0||r.top>=innerHeight;});
-        const scrollBefore=await editor.evaluate(()=>scrollY),statusPending=await editor.locator("#inspector-status").boundingBox(),focus=await editor.evaluateHandle(()=>document.activeElement);release();await editor.waitForFunction(()=>document.querySelector("#inspector-status")?.getAttribute("aria-busy")!=="true");
+        const scrollBefore=await editor.evaluate(()=>scrollY),statusPending=await editor.locator("#inspector-status").boundingBox(),focus=await editor.evaluateHandle(()=>document.activeElement);if(!refresh.responseReturned)throw new Error("Controlled inspector response was not ready");release();await join();if(refresh.failure)throw refresh.failure;await editor.waitForFunction(()=>document.querySelector("#inspector-status")?.getAttribute("aria-busy")!=="true");
         const focusRetained=mode==="tab-away"?await editor.evaluate(n=>n===document.activeElement,focus):await language.evaluate(n=>n===document.activeElement);await focus.dispose();
         const scrollAfter=await editor.evaluate(()=>scrollY),workspaceAfter=await editor.locator(".subtitle-inspector-workspace").boundingBox(),statusAfter=await editor.locator("#inspector-status").boundingBox();
         results.push({serviceWorkers:"blocked for controlled real inspector response",routeEntered:refresh.handlerEntered,flow:mode==="retain-scroll"?"inspector-language-refresh-preserve-scroll":mode==="tab-away"?"inspector-language-refresh-tab-away":"inspector-language-refresh-focus",focusRetained,originalScroll,scrollBefore,scrollAfter,selectorOffscreen,workspaceBefore,workspaceAfter,statusBefore,statusPending,statusAfter,scrollRetained:mode!=="retain-scroll"||Boolean(Math.abs(scrollAfter-scrollBefore)<=1&&Math.abs(scrollBefore-originalScroll)>1&&selectorOffscreen&&workspaceBefore&&workspaceAfter&&Math.abs(workspaceBefore.height-workspaceAfter.height)<=1&&statusBefore&&statusPending&&statusAfter&&Math.abs(statusBefore.height-statusPending.height)<=1&&Math.abs(statusBefore.height-statusAfter.height)<=1)});
         } catch(error) {
+          failed=true;
           probe.geometry={inspectorRefresh:{handlerEntered:refresh.handlerEntered,responseReturned:refresh.responseReturned,
-            responseReleasedBeforeFailure:refresh.responseReleased,cleanupReleased:false}};
+            responseReleasedBeforeFailure:refresh.responseReleased,cleanupReleased:false,cleanupJoined:false,cleanupCancelled:false}};
           throw error;
         } finally {
           clearTimeout(timer);release();
-          if(probe.geometry?.inspectorRefresh)probe.geometry.inspectorRefresh.cleanupReleased=true;
-          refresh=undefined;
+          const witness=probe.geometry?.inspectorRefresh;
+          if(witness)witness.cleanupReleased=true;
+          try {
+            if(refresh.handlerEntered){
+              try{await join();if(witness)witness.cleanupJoined=true;}
+              catch(error){
+                try{
+                  await inspectorSignal(editor.context().close(),1000,"Controlled inspector context did not close");
+                  if(witness)witness.cleanupCancelled=true;
+                  await inspectorSignal(done,1000,"Cancelled inspector response did not join");
+                  if(witness)witness.cleanupJoined=true;
+                }catch{if(!failed)throw error;}
+              }
+            }else if(witness)witness.cleanupJoined=true;
+          }finally{refresh=undefined;}
         }
       }
 }
 
 export function inspectorEditingContext(browser, options) {
   return browser.newContext({...options,viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce",serviceWorkers:"block"});
+}
+
+async function inspectorSignal(signal, timeout, message) {
+  let timer;
+  try{return await Promise.race([signal,new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error(message)),timeout);})]);}
+  finally{clearTimeout(timer);}
 }

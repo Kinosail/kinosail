@@ -12,17 +12,29 @@ class Editor {
   document = {activeElement: null, documentElement: {scrollHeight: 1200},
     querySelector: selector => selector === '#inspector-status' ? {getAttribute: () => this.busy ? 'true' : null} : {disabled: this.busy}};
   pendingGeometryFailure = undefined; refreshes = 0;
+  refreshFetchDelay = 0; refreshFetchFailure = undefined; responseReturned = false; requireReady = false; stallFetch = false; contextClosed = false; cancelFetch = undefined;
   response = {actual: 'owned-response-object'}; failure = undefined;
   async route(pattern, callback) {assert.equal(pattern, '**/inspect?*'); this.callback = callback;}
-  async request() {
+  async request(controlled = false) {
     this.busy = true;
     const response = this.response;
     const request = this.callback({request: () => ({resourceType: () => 'fetch'}),
-      fetch: async () => {this.calls.push('fetch'); if (this.failure) throw this.failure; return response;},
-      fulfill: async value => {assert.equal(value.response, response); this.calls.push('fulfill'); this.busy = false;},
+      fetch: async options => {
+        this.calls.push('fetch'); if (this.failure) throw this.failure;
+        if (controlled) {
+          if (this.stallFetch) return new Promise((_, reject) => {this.cancelFetch = reject;});
+          if (this.refreshFetchDelay) await new Promise(resolve => setTimeout(resolve, this.refreshFetchDelay));
+          if (this.refreshFetchFailure) {assert.equal(options.timeout, 10000); throw this.refreshFetchFailure;}
+          this.responseReturned = true; this.calls.push('response-ready');
+        }
+        return response;
+      },
+      abort: async () => {this.calls.push('abort'); this.busy = false;},
+      fulfill: async value => {assert.equal(value.response, response); this.calls.push('fulfill'); if (controlled) this.calls.push('controlled-release'); this.busy = false;},
       continue: async () => {throw new Error('unexpected non-fetch');}});
     this.requests.push(request); this.pending = request; request.catch(() => {});
   }
+  context() {return {close: async () => {this.contextClosed = true; this.cancelFetch?.(new Error('owned context cancelled'));}};}
   async goto() {await this.request();}
   async reload() {this.node.value = 'en'; await this.request(); await this.pending;}
   async waitForTimeout() {await this.pending;}
@@ -34,10 +46,10 @@ class Editor {
     if (selector === 'select[name="language"]') return {
       focus: async () => {this.document.activeElement = this.node;},
       evaluate: async (callback, argument) => callback(this.node, argument),
-      selectOption: async value => {this.refreshes++; this.node.value = value; await this.request(); await new Promise(resolve => setTimeout(resolve, 1000));},
+      selectOption: async value => {this.refreshes++; this.responseReturned = false; this.node.value = value; await this.request(true); await new Promise(resolve => setTimeout(resolve, 1000));},
     };
     return {isDisabled: async () => this.busy, setInputFiles: async () => {}, focus: async () => {},
-      boundingBox: async () => {if (this.busy && this.refreshes && this.pendingGeometryFailure) throw this.pendingGeometryFailure; return {x: 0, y: 0, width: 100, height: 50};}};
+      boundingBox: async () => {if (this.busy && this.refreshes && this.requireReady) {assert.equal(this.responseReturned, true, 'real fetch must return before pending geometry'); this.calls.push('pending-capture');} if (this.busy && this.refreshes && this.pendingGeometryFailure) throw this.pendingGeometryFailure; return {x: 0, y: 0, width: 100, height: 50};}};
   }
   keyboard = {press: async () => {this.document.activeElement = {kind: 'next-control'};}};
   async evaluate(callback, argument) {return callback(argument);}
@@ -108,5 +120,37 @@ test('missing route entry rejects controlled refresh without fabricating pending
   await withDocument(editor, () => assert.rejects(measureInspectorEditing(editor, '/inspect/0123456789abcdef', results, probe),
     /Controlled inspector refresh was not routed/));
   assert.equal(results.length, 1); assert.equal(editor.calls.filter(value => value === 'fetch').length, 2);
-  assert.deepEqual(probe.geometry.inspectorRefresh, {handlerEntered: false, responseReturned: false, responseReleasedBeforeFailure: false, cleanupReleased: true});
+  assert.deepEqual(probe.geometry.inspectorRefresh, {handlerEntered: false, responseReturned: false, responseReleasedBeforeFailure: false, cleanupReleased: true, cleanupJoined: true, cleanupCancelled: false});
+});
+
+test('delayed real fetch returns before pending capture and response release', async () => {
+  const editor = new Editor(), results = [];
+  editor.refreshFetchDelay = 1500; editor.requireReady = true;
+  await withDocument(editor, () => measureInspectorEditing(editor, '/inspect/0123456789abcdef', results, {}));
+  assert.equal(results.length, 4);
+  const steps = editor.calls.filter(value => ['response-ready', 'pending-capture', 'controlled-release'].includes(value));
+  assert.deepEqual(steps, Array.from({length: 3}, () => ['response-ready', 'pending-capture', 'controlled-release']).flat());
+});
+test('failed controlled fetch aborts and joins without pending capture or replacement cause', async () => {
+  const editor = new Editor(), failure = new Error('private controlled upstream failure'), probe = {};
+  editor.refreshFetchDelay = 1200; editor.refreshFetchFailure = failure; editor.requireReady = true;
+  await withDocument(editor, () => assert.rejects(measureInspectorEditing(editor, '/inspect/0123456789abcdef', [], probe), error => error === failure));
+  assert.equal(editor.calls.includes('pending-capture'), false);
+  assert.equal(editor.calls.filter(value => value === 'abort').length, 1);
+  assert.equal(editor.busy, false);
+  assert.equal(probe.geometry.inspectorRefresh.cleanupJoined, true);
+  assert.equal(probe.geometry.inspectorRefresh.responseReturned, false);
+  assert.doesNotMatch(JSON.stringify(probe), /private|https?:|0123456789abcdef/);
+});
+
+test('stalled owned handler is cancelled after bounded join without replacing the gate failure', async () => {
+  const editor = new Editor(), probe = {};
+  editor.stallFetch = true; editor.requireReady = true;
+  await withDocument(editor, () => assert.rejects(measureInspectorEditing(editor, '/inspect/0123456789abcdef', [], probe),
+    /Controlled inspector response was not ready/));
+  assert.equal(editor.contextClosed, true);
+  await Promise.allSettled(editor.requests);
+  assert.equal(editor.calls.includes('pending-capture'), false);
+  assert.equal(probe.geometry.inspectorRefresh.cleanupCancelled, true);
+  assert.equal(probe.geometry.inspectorRefresh.cleanupJoined, true);
 });
