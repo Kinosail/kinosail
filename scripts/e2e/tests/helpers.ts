@@ -1,5 +1,6 @@
 import { createHmac } from 'node:crypto';
 import type { Browser } from '@e2e-dev/web';
+import { requireFixtureURL, fixtureRequest, fixtureBrowserFetch, decodeFixtureJSON, fixtureItem } from '../fixture-response.mjs';
 
 export function totp(encoded: string) {
   const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
@@ -11,19 +12,16 @@ export function totp(encoded: string) {
   return ((digest.readUInt32BE(digest[19] & 15) & 0x7fffffff) % 1000000).toString().padStart(6, '0');
 }
 
-export async function api(browser: Browser, path: string, method = 'GET', body?: unknown) {
-  return browser.evaluate(async ({ path, method, body }) => {
-    const csrf = document.querySelector<HTMLMetaElement>('meta[name="kinosail-csrf"]')?.content ?? '';
-    const response = await fetch(path, { method, headers: { 'Content-Type': 'application/json', 'X-Kinosail-CSRF': csrf }, ...(body === null ? {} : { body: JSON.stringify(body) }) });
-    const text = await response.text();
-    return { status: response.status, data: text ? JSON.parse(text) : null };
-  }, { path, method, body: body ?? null });
+export async function api(browser: Browser, baseURL: string | undefined, path: string, method = 'GET', body?: unknown) {
+  const request = fixtureRequest(baseURL, path, method, body);
+  const response = await browser.evaluate(fixtureBrowserFetch, request);
+  return {status: response.status, data: response.status === 204 ? null : decodeFixtureJSON(response.raw)};
 }
 
-export async function movie(browser: Browser) {
-  const response = await api(browser, '/api/v1/library?view=movies');
+export async function movie(browser: Browser, baseURL: string | undefined) {
+  const response = await api(browser, baseURL, '/api/v1/library?view=movies');
   if (response.status !== 200) throw new Error(`library HTTP ${response.status}`);
-  const item = response.data.items.find((item: { title: string }) => item.title === 'Example Movie');
-  if (!item) throw new Error('generated movie missing');
-  return item;
+  return fixtureItem(response.data, 'Example Movie', 'video');
 }
+
+export { requireFixtureURL };

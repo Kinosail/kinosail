@@ -1,13 +1,14 @@
 import { describe, test } from '@e2e-dev/web';
 import { expect } from 'e2e';
-import { api, movie } from './helpers';
+import { api, movie, requireFixtureURL } from './helpers';
 
 // Real process/public routes: no synthetic download manager or media response.
 describe('prepared downloads and captions', { session: 'owner' }, () => {
   test('original preparation seals source bytes and invalid requests preserve the owned job', async ({ app, browser, screen }) => {
+    requireFixtureURL(app.baseUrl);
     await app.open('/settings');
-    const item = await movie(browser);
-    const playback = await api(browser, `/api/v1/items/${item.id}/playback`);
+    const item = await movie(browser, app.baseUrl);
+    const playback = await api(browser, app.baseUrl, `/api/v1/items/${item.id}/playback`);
     expect(playback.status).toBe(200);
     const source = () => browser.evaluate(async path => {
       const response = await fetch(path);
@@ -19,16 +20,16 @@ describe('prepared downloads and captions', { session: 'owner' }, () => {
     expect(original.status).toBe(200);
     expect(original.size).toBeGreaterThan(32);
     expect(original.size).toBeLessThan(1024 * 1024);
-    const previous = (await api(browser, '/api/v1/downloads')).data;
-    const started = await api(browser, `/api/v1/items/${item.id}/downloads`, 'POST', { quality: 'original' });
+    const previous = (await api(browser, app.baseUrl, '/api/v1/downloads')).data;
+    const started = await api(browser, app.baseUrl, `/api/v1/items/${item.id}/downloads`, 'POST', { quality: 'original' });
     expect(started.status).toBe(202);
     expect(previous.downloads.some((job: { id: string }) => job.id === started.data.id)).toBe(false);
     const path = `/api/v1/downloads/${started.data.id}`;
     try {
-      await expect.poll(async () => (await api(browser, path)).data.state).toBe('ready');
-      const ready = await api(browser, path);
+      await expect.poll(async () => (await api(browser, app.baseUrl, path)).data.state).toBe('ready');
+      const ready = await api(browser, app.baseUrl, path);
       expect(ready.data).toEqual(expect.objectContaining({ itemId: item.id, readyOffline: true, quality: 'original', size: original.size, sha256: original.sha256 }));
-      const manifest = await api(browser, `${path}/manifest`);
+      const manifest = await api(browser, app.baseUrl, `${path}/manifest`);
       expect(manifest.status).toBe(200);
       expect(manifest.data).toEqual({ version: 1, id: started.data.id, size: original.size, sha256: original.sha256, chunkSize: 8 * 1024 * 1024, chunks: [original.sha256] });
       await app.open('/offline-downloads');
@@ -49,8 +50,8 @@ describe('prepared downloads and captions', { session: 'owner' }, () => {
       expect(bytes.chunk).toEqual({ status: 206, size: original.size, sha256: original.sha256, range: `bytes 0-${original.size - 1}/${original.size}`, digest: `sha-256=:${Buffer.from(original.sha256, 'hex').toString('base64')}:` });
       expect(bytes.small).toEqual({ status: 206, size: 32, range: `bytes 0-31/${original.size}`, equal: true });
       expect(bytes.unchanged).toEqual({ status: 304, size: 0 });
-      const jobs = (await api(browser, '/api/v1/downloads')).data;
-      const tracks = await api(browser, `/api/v1/items/${item.id}/download-tracks`);
+      const jobs = (await api(browser, app.baseUrl, '/api/v1/downloads')).data;
+      const tracks = await api(browser, app.baseUrl, `/api/v1/items/${item.id}/download-tracks`);
       expect(tracks.status).toBe(200);
       const bodies = [
         ['missing', '{}'], ['null', 'null'], ['type', '{"quality":1}'], ['unknown quality', '{"quality":"unknown"}'],
@@ -61,38 +62,39 @@ describe('prepared downloads and captions', { session: 'owner' }, () => {
       for (const [name, body] of bodies) {
         const status = await browser.evaluate(async ({ id, body }) => (await fetch(`/api/v1/items/${id}/downloads`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Kinosail-CSRF': document.querySelector<HTMLMetaElement>('meta[name="kinosail-csrf"]')!.content }, body })).status, { id: item.id, body });
         expect(status, name).toBe(name === 'oversized' ? 413 : 400);
-        expect((await api(browser, '/api/v1/downloads')).data, name).toEqual(jobs);
+        expect((await api(browser, app.baseUrl, '/api/v1/downloads')).data, name).toEqual(jobs);
         expect(await source(), name).toEqual(original);
-        expect((await api(browser, `/api/v1/items/${item.id}/download-tracks`)).data, name).toEqual(tracks.data);
+        expect((await api(browser, app.baseUrl, `/api/v1/items/${item.id}/download-tracks`)).data, name).toEqual(tracks.data);
       }
       for (const range of ['bytes=abc', 'bytes=10-1', `bytes=${original.size}-`, 'bytes=' + '9'.repeat(129) + '-']) {
         expect(await browser.evaluate(async ({ path, range }) => (await fetch(path + '/file', { headers: { Range: range } })).status, { path, range })).toBe(416);
-        expect((await api(browser, path)).data).toEqual(ready.data);
-        expect((await api(browser, '/api/v1/downloads')).data).toEqual(jobs);
+        expect((await api(browser, app.baseUrl, path)).data).toEqual(ready.data);
+        expect((await api(browser, app.baseUrl, '/api/v1/downloads')).data).toEqual(jobs);
         expect(await source()).toEqual(original);
       }
       for (const id of ['bad', '0'.repeat(16), 'x'.repeat(257), '%00']) {
-        expect((await api(browser, `/api/v1/downloads/${id}`, 'DELETE')).status).toBe(404);
-        expect((await api(browser, '/api/v1/downloads')).data).toEqual(jobs);
+        expect((await api(browser, app.baseUrl, `/api/v1/downloads/${id}`, 'DELETE')).status).toBe(404);
+        expect((await api(browser, app.baseUrl, '/api/v1/downloads')).data).toEqual(jobs);
       }
       expect((await fetch(new URL(path + '/file', app.baseUrl))).status).toBe(401);
-      expect((await api(browser, path)).data).toEqual(ready.data);
-      expect((await api(browser, path + '/manifest')).data).toEqual(manifest.data);
+      expect((await api(browser, app.baseUrl, path)).data).toEqual(ready.data);
+      expect((await api(browser, app.baseUrl, path + '/manifest')).data).toEqual(manifest.data);
       expect(await source()).toEqual(original);
       await app.screenshot('real-prepared-download');
     } finally {
-      expect((await api(browser, path, 'DELETE')).status).toBe(204);
+      expect((await api(browser, app.baseUrl, path, 'DELETE')).status).toBe(204);
     }
-    expect((await api(browser, '/api/v1/downloads')).data).toEqual(previous);
-    expect((await api(browser, path)).status).toBe(404);
-    expect((await api(browser, path + '/file')).status).toBe(404);
+    expect((await api(browser, app.baseUrl, '/api/v1/downloads')).data).toEqual(previous);
+    expect((await api(browser, app.baseUrl, path)).status).toBe(404);
+    expect((await api(browser, app.baseUrl, path + '/file')).status).toBe(404);
     expect(await source()).toEqual(original);
   });
 
   test('real sidecar captions expose timed cues and Off preserves decoded media', async ({ app, browser, screen }) => {
+    requireFixtureURL(app.baseUrl);
     await app.open('/settings');
-    const item = await movie(browser);
-    const playback = await api(browser, `/api/v1/items/${item.id}/playback`);
+    const item = await movie(browser, app.baseUrl);
+    const playback = await api(browser, app.baseUrl, `/api/v1/items/${item.id}/playback`);
     expect(playback.status).toBe(200);
     const track = playback.data.subtitles.find((value: { language: string }) => value.language === 'en');
     expect(track.source).toMatch(/^\/subtitle\//);

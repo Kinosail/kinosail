@@ -1,8 +1,9 @@
 import { test } from '@e2e-dev/web';
 import { expect } from 'e2e';
-import { totp } from './helpers';
+import { totp, requireFixtureURL } from './helpers';
 
 test.setup('enroll an Owner with a confirmed second factor', { sessions: ['owner'] }, async ({ app, browser, session }) => {
+  requireFixtureURL(app.baseUrl);
   const response = await fetch(new URL('/api/v1/setup', app.baseUrl), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'Owner', password: 'synthetic-e2e-password', device: 'Disposable browser', totp: true, automaticUpdates: false }) });
   expect(response.status).toBe(201);
   const setup = await response.json();

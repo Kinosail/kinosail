@@ -76,6 +76,7 @@ class WorkflowSecurityTests(unittest.TestCase):
         self.assertEqual(command.count('scripts/testing/responsive-failure-witness.test.mjs'), 1)
         self.assertTrue((ROOT / 'scripts/testing/responsive-failure-witness.test.mjs').is_file())
         self.assertEqual(command.count('scripts/testing/offline-browser-api.test.mjs'), 1)
+        self.assertEqual(command.count('scripts/e2e/tests/fixture-boundary.test.mjs'), 1)
         self.assertTrue((ROOT / 'scripts/testing/offline-browser-api.test.mjs').is_file())
 
     def test_player_browser_engines_receive_verified_fixture_codecs(self):

@@ -21,7 +21,7 @@ export KINOSAIL_E2E_PLAYER_BINARY="$binaries/player"
 export KINOSAIL_E2E_SUBTITLES_BINARY="$binaries/subtitles"
 run="$(date -u +%Y%m%dT%H%M%SZ)-$$"
 mkdir -p ".e2e/runs/$run"
-shasum -a 256 package.json pnpm-lock.yaml e2e.config.ts fixture.mjs restart-control.mjs media-fixture.py tests/*.ts > ".e2e/runs/$run/inputs.sha256"
+shasum -a 256 package.json pnpm-lock.yaml e2e.config.ts fixture.mjs restart-control.mjs fixture-response.mjs media-fixture.py tests/*.ts tests/*.mjs > ".e2e/runs/$run/inputs.sha256"
 arguments=(run)
 [[ "$app" == all ]] || arguments+=(--target "$app")
 python3 ../ci/e2e-artifact.py --output ".e2e/runs/$run/context" -- \
