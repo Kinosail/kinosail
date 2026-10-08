@@ -50,6 +50,15 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 	}
 	path := filepath.Join(manager.cache, key, localName)
 	projection := manager.recipePlaylistProjection(request.Context(), item, recipe, key, localName)
+	if projection == nil {
+		completion, err := manager.remainingColdAACProjection(request.Context(), item, recipe, key, localName, request.Method, duration)
+		if err != nil {
+			remainingColdAACRejected(request.Context(), recipe, item, err)
+			localizedError(writer, request, "compatible audio is still being prepared", http.StatusServiceUnavailable)
+			return
+		}
+		projection = completion
+	}
 	if filepath.Ext(name) == ".m3u8" && serveHLSPlaylistWithSession(writer, request, path, start, hlsPlaybackDuration(recipe, duration), projection) {
 		return
 	}
