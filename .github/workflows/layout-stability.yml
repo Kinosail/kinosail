@@ -459,6 +459,7 @@ jobs:
           project = os.environ['LIBRARY_PROJECT']
           paths = sorted({f'apps/player/e2e/{file}' for file, _ in CASES} | {
               'apps/player/e2e/pnpm-lock.yaml', 'apps/player/e2e/playwright.config.ts',
+              'apps/player/e2e/test-instance-helpers.ts',
               'apps/player/scripts/run-library-profile.sh', 'apps/player/scripts/library_profile_admission.py',
               'apps/player/scripts/generate-test-media.sh', 'apps/player/Containerfile', 'apps/player/Containerfile.test',
               'scripts/ci/run-populated-settings.py', 'scripts/ci/browser-fixture-tls.sh',

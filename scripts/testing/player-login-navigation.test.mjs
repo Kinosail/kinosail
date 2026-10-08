@@ -9,7 +9,7 @@ const hooks = registerHooks({resolve(specifier, context, next) {
       && specifier.startsWith('./') && !/\.[a-z]+$/i.test(specifier)) return next(specifier + '.ts', context);
   return next(specifier, context);
 }});
-const {login} = await import('../../apps/player/e2e/test-instance-helpers.ts');
+const {login, finishRootSignIn} = await import('../../apps/player/e2e/test-instance-helpers.ts');
 hooks.deregister();
 
 // Failure modes: retrying failed navigation; submitting credentials after failure;
@@ -113,4 +113,89 @@ test('initial blank lifecycle and unavailable renderer never fabricate target co
   assert.ok(value.lifecycle.filter(record => ['domcontentloaded', 'load'].includes(record.kind)).every(record => record.route.path === 'blank'));
   assert.deepEqual(page.calls, [{target: '/login', options: {waitUntil: 'domcontentloaded'}}]);
   assert.equal(page.eventNames().length, 0);
+});
+
+// The Page peer delays accepted navigation until waitForURL, and changes
+// documents only after its awaited public Not now click.
+function controlledOffer(target = 'https://owned.fixture/account?passkey=offer&next=%2F') {
+  const calls = []; let current = 'https://owned.fixture/login';
+  return {calls, url: () => current, clickFailure: undefined,
+    async waitForURL(predicate, options) {
+      calls.push(['wait', options.timeout]);
+      if (current.endsWith('/login')) current = target;
+      if (!predicate(new URL(current))) throw Object.assign(new Error('fixed rejected outcome'), {name: 'TimeoutError'});
+    },
+    getByRole(role, options) {
+      assert.equal(role, 'link'); assert.deepEqual(options, {name: 'Not now', exact: true});
+      const page = this;
+      return {async click(optionsForClick) {
+        calls.push(['dismiss', optionsForClick.timeout]);
+        if (page.clickFailure) throw page.clickFailure;
+        current = 'https://owned.fixture/';
+      }};
+    },
+  };
+}
+
+test('root login waits for a delayed valid offer instead of an optional visibility probe', async () => {
+  const page = controlledOffer();
+  await finishRootSignIn(page, 'https://owned.fixture');
+  assert.equal(page.url(), 'https://owned.fixture/');
+  assert.equal(page.calls.filter(([kind]) => kind === 'dismiss').length, 1);
+  assert.equal(page.calls.some(([kind]) => kind === 'probe'), false);
+  assert.ok(page.calls.every(([, timeout]) => timeout > 0 && timeout <= 10000));
+});
+
+test('root login accepts exact direct root without dismissing an offer', async () => {
+  const page = controlledOffer('https://owned.fixture/');
+  await finishRootSignIn(page, 'https://owned.fixture');
+  assert.equal(page.calls.filter(([kind]) => kind === 'dismiss').length, 0);
+});
+
+test('root login rejects unknown foreign ambiguous or unsafe outcomes without clicking', async () => {
+  for (const target of ['https://foreign.fixture/', 'http://owned.fixture/',
+    'https://foreign.fixture/account?passkey=offer&next=%2F',
+    'https://owned.fixture/#extra', 'https://owned.fixture/?extra=1',
+    'https://owned.fixture/account?passkey=offer&next=%2F&next=%2F',
+    'https://owned.fixture/account?passkey=offer&next=%252F',
+    'https://owned.fixture/account?passkey=offer&next=%2F&extra=1',
+    'https://owned.fixture/account?passkey=unknown&next=%2F',
+    'https://owned.fixture/account?passkey=offer',
+    'https://owned.fixture/account?passkey=offer&next=%2F#extra',
+    'https://owned.fixture/' + 'x'.repeat(4096)]) {
+    const page = controlledOffer(target);
+    await assert.rejects(finishRootSignIn(page, 'https://owned.fixture'));
+    assert.equal(page.calls.filter(([kind]) => kind === 'dismiss').length, 0);
+  }
+});
+
+test('root login rejects invalid expected origins before Page effects', async () => {
+  for (const origin of [undefined, '', 'x'.repeat(2049), 'file:///',
+    'https://owned.fixture/path', 'https://owned.fixture/?extra=1', 'https://user:secret@owned.fixture']) {
+    const page = controlledOffer();
+    await assert.rejects(finishRootSignIn(page, origin));
+    assert.deepEqual(page.calls, []);
+  }
+});
+
+test('root login retains an awaited offer click rejection without retry', async () => {
+  const page = controlledOffer(); page.clickFailure = new Error('fixed click failure');
+  await assert.rejects(finishRootSignIn(page, 'https://owned.fixture'), error => error === page.clickFailure);
+  assert.equal(page.calls.filter(([kind]) => kind === 'dismiss').length, 1);
+});
+
+
+test('root login shares a finite ten-second budget across offer and final navigation', async (t) => {
+  let now = 1000;
+  t.mock.method(Date, 'now', () => now);
+  const page = controlledOffer();
+  const wait = page.waitForURL.bind(page);
+  page.waitForURL = async (...args) => {await wait(...args); now += 4000;};
+  await finishRootSignIn(page, 'https://owned.fixture');
+  assert.deepEqual(page.calls, [['wait', 10000], ['dismiss', 6000], ['wait', 6000]]);
+  const late = controlledOffer();
+  const lateWait = late.waitForURL.bind(late);
+  late.waitForURL = async (...args) => {await lateWait(...args); now += 10001;};
+  await assert.rejects(finishRootSignIn(late, 'https://owned.fixture'), {name: 'TimeoutError'});
+  assert.equal(late.calls.filter(([kind]) => kind === 'dismiss').length, 0);
 });

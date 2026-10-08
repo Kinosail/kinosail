@@ -1,5 +1,6 @@
 import { createHmac } from "node:crypto";
 import { expect, test, type Page } from "@playwright/test";
+import { finishRootSignIn } from "./test-instance-helpers";
 
 test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated public test instance");
 
@@ -19,13 +20,28 @@ async function login(page: Page) {
 	await page.getByLabel("Name").fill("Owner");
 	await page.getByLabel("Password", { exact: true }).fill("test-instance-password");
 	await page.getByLabel("Authentication or recovery code").fill(totp());
+	const origin = new URL(page.url()).origin;
 	await page.getByRole("button", { name: "Sign in", exact: true }).click();
-	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
+	await finishRootSignIn(page, origin);
 	await expect(page).toHaveURL("/");
 }
 
 test("repeating the active Movies link does not reload the document", async ({ page }) => {
-	await login(page);
+	const origin = new URL(test.info().project.use.baseURL!).origin;
+	let offerObserved = false;
+	const offer = (url: URL) => url.origin === origin && url.pathname === "/account" && url.searchParams.get("passkey") === "offer";
+	await page.route(offer, async route => {
+		const response = await route.fetch();
+		offerObserved = true;
+		await new Promise(resolve => setTimeout(resolve, 200));
+		await route.fulfill({ response });
+	});
+	try {
+		await login(page);
+		expect(offerObserved, "the real accepted offer response must exercise delayed password sign-in").toBe(true);
+	} finally {
+		await page.unroute(offer);
+	}
 	await page.goto("/?view=movies");
 	const movies = page.getByRole("navigation", { name: "Main navigation" }).getByRole("link", { name: "Movies", exact: true });
 	await expect(movies).toHaveAttribute("aria-current", "page");

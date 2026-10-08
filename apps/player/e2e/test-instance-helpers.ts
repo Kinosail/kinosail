@@ -61,6 +61,30 @@ export async function login(page: Page, info: TestInfo = test.info()) {
   if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
 }
 
+// Password-only fixture completion; preserve the original ten-second root budget.
+export async function finishRootSignIn(page: Page, origin: string) {
+  if (typeof origin !== "string" || origin.length > 2048) throw new Error("invalid sign-in fixture origin");
+  const expected = new URL(origin);
+  if (!["http:", "https:"].includes(expected.protocol) || expected.origin !== origin)
+    throw new Error("invalid sign-in fixture origin");
+  const deadline = Date.now() + 10_000;
+  const remaining = () => {
+    const value = deadline - Date.now();
+    if (value <= 0) throw Object.assign(new Error("sign-in fixture did not reach Home"), {name: "TimeoutError"});
+    return value;
+  };
+  const root = (url: URL) => url.pathname === "/" && url.search === "";
+  await page.waitForURL(url => url.href.length <= 4096 && url.origin === origin && url.hash === "" &&
+    (root(url) || url.pathname === "/account" && url.searchParams.size === 2 &&
+      url.searchParams.getAll("passkey").length === 1 && url.searchParams.get("passkey") === "offer" &&
+      url.searchParams.getAll("next").length === 1 && url.searchParams.get("next") === "/"), {timeout: remaining()});
+  remaining();
+  if (new URL(page.url()).pathname === "/account")
+    await page.getByRole("link", {name: "Not now", exact: true}).click({timeout: remaining()});
+  await page.waitForURL(url => url.href.length <= 4096 && url.origin === origin && url.hash === "" && root(url), {timeout: remaining()});
+  remaining();
+}
+
 export async function loginViewer(page: Page, name: string, password: string) {
   await page.goto("/login");
   await page.getByLabel("Name").fill(name);

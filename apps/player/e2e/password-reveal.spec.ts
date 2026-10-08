@@ -1,5 +1,6 @@
 import { createHmac } from "node:crypto";
 import { expect, test } from "@playwright/test";
+import { finishRootSignIn } from "./test-instance-helpers";
 import AxeBuilder from "@axe-core/playwright";
 
 test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated public test instance");
@@ -64,8 +65,9 @@ test("the password reveal control stays aligned across responsive settings", asy
 	await page.getByLabel("Name").fill("Owner");
 	await page.getByLabel("Password", { exact: true }).fill("test-instance-password");
 	await page.getByLabel("Authentication or recovery code").fill(totp());
+	const origin = new URL(page.url()).origin;
 	await page.getByRole("button", { name: "Sign in", exact: true }).click();
-	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
+	await finishRootSignIn(page, origin);
 	await expect(page).toHaveURL("/");
 
 	for (const viewport of [
