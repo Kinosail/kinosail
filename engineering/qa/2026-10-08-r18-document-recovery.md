@@ -45,3 +45,12 @@ produce; they are isolated checks. Actual persisted BFCache and ordinary HTTP
 remain separate admission boundaries. Source-only proof cannot satisfy them.
 Final independent review, both served asset hashes, strict protected checks,
 fetched main ancestry and automatic publication are required before delivery.
+
+The next written-first checkpoint adds isolated malformed-response, bounded-reader,
+SSE coalescing, retired-document and private diagnostic controls. It extracts the
+existing real-document test setup unchanged. The identity helper remains absent;
+these controls have not run and must receive a bounded hosted invocation later.
+The first test-only hosted baseline remains pinned to `b28aba970f669ce2d0d5c329eab48ae7cb58a13b`.
+The existing media presentation clears its source on pagehide, and the queue closes
+its state. Actual playable persisted BFCache needs that owner's disposition;
+virtual identity re-entry cannot establish media restoration.
