@@ -13,8 +13,10 @@ import (
 // These isolated controls cover source/route, cancellation and replacement paths
 // absent from the public ten-second fixture; fake assets do not prove AAC content.
 func TestRemainingColdAACEligibilityCannotBroadenCompletionWait(t *testing.T) {
-	facts := MediaFacts{Kind: "audio", Container: "flac", Duration: 10,
-		Audio: []AudioFacts{{Index: 0, SourceIndex: 0, Codec: "flac", SampleRate: 48000, Channels: 2, ChannelLayout: "stereo"}}}
+	facts := MediaFacts{
+		Kind: "audio", Container: "flac", Duration: 10,
+		Audio: []AudioFacts{{Index: 0, SourceIndex: 0, Codec: "flac", SampleRate: 48000, Channels: 2, ChannelLayout: "stereo"}},
+	}
 	recipe := hlsRecipe{mode: "audio-transcode"}
 	if !remainingColdAACEligible(facts, recipe, "audio/index.m3u8", http.MethodGet, 10) {
 		t.Fatal("qualified short source did not retain its complete timeline")
@@ -62,7 +64,8 @@ func TestRemainingColdAACEligibilityCannotBroadenCompletionWait(t *testing.T) {
 }
 
 func TestRemainingColdAACDoesNotWaitForPreparedOrRefillJobs(t *testing.T) {
-	for _, job := range []*hlsJob{nil,
+	for _, job := range []*hlsJob{
+		nil,
 		{done: make(chan struct{}), preparation: &startupEncoding{}},
 		{done: make(chan struct{}), startNumber: 4},
 	} {

@@ -16,9 +16,11 @@ func remainingColdAACEligible(facts MediaFacts, recipe hlsRecipe, name, method s
 	return remainingColdAACRoute(name, method, duration) && facts.Duration == duration &&
 		remainingOriginSource(facts, 0) && remainingPlainAudio(recipe) && remainingColdAACRecipe(recipe)
 }
+
 func remainingColdAACRoute(name, method string, duration float64) bool {
 	return name == "audio/index.m3u8" && method == http.MethodGet && duration > 8.000002 && duration <= 10
 }
+
 func remainingColdAACRecipe(recipe hlsRecipe) bool {
 	return recipe.offset == 0 && recipe.outputTime == 0 && (recipe.maxBitrate == 0 || recipe.maxBitrate >= 192000)
 }
@@ -83,6 +85,7 @@ func (manager *hlsManager) remainingColdAACProjection(ctx context.Context, item 
 	}
 	return manager.remainingColdAACProjector(ctx, item, recipe, key, options.Cache, job, duration, generation, observed), nil
 }
+
 func (manager *hlsManager) remainingColdAACProjector(ctx context.Context, item library.Item, recipe hlsRecipe, key, policy string, job *hlsJob, duration float64, generation, observed *remainingColdAACState) func([]byte) []byte {
 	return func(raw []byte) []byte {
 		current, err := manager.remainingColdAACSnapshot(ctx, item, recipe, key, policy, job, duration, generation)

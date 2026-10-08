@@ -156,6 +156,7 @@ func remainingColdAACFragmentDuration(line string) (float64, error) {
 	}
 	return length, nil
 }
+
 func remainingColdAACSpan(count int, total, duration float64) error {
 	if count == 0 || total < duration || total > duration+0.05 {
 		return errCopiedHLSIndex
