@@ -156,3 +156,14 @@ test('diagnostic persistence failure cannot skip existing owned session cleanup'
 test('missing default observer remains supported and malformed observer has no SDK effects',async()=>{
  for(const observer of [null,[],{},'unknown',1]){const {client,calls}=fixture();await assert.rejects(()=>withTvSession(client,ios,async()=>{},undefined,observer),/invalid TV observer/);assert.deepEqual(calls,[]);}
 });
+
+ test('close diagnostic failure preserves prior body or SDK action error after exactly one cleanup',async()=>{
+ for(const failed of ['open','body']) for(const after of [false,true]) {
+ const {client,calls}=fixture(),original=Error('original action'),diagnostic=Error('diagnostic');
+ if(failed==='open')client.apps.open=async()=>{calls.push(['open']);throw original;};
+ await assert.rejects(()=>withTvSession(client,ios,async()=>{if(failed==='body')throw original;},undefined,async(stage,operation)=>{
+ if(stage==='close'){if(after)await operation();throw diagnostic;}return operation();
+ }),error=>error===original);
+ assert.equal(calls.filter(row=>row[0]==='close').length,1);
+ }
+});

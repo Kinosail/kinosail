@@ -24,6 +24,7 @@ export async function withTvSession(client, input, use, appPath, observe = async
   if (appPath !== undefined && (typeof appPath !== 'string' || appPath.length > 2048 || resolve(appPath) !== appPath || !/^\/(?:[^\x00-\x1f\x7f]+\/)?apps\/player\/apps\/(?:native\/\.build\/tvos-simulator\/Build\/Products\/Debug-appletvsimulator\/KinosailPlayer\.app|android\/app\/build\/outputs\/apk\/debug\/app-debug\.apk)$/.test(appPath) || (apple ? !appPath.endsWith('KinosailPlayer.app') : !appPath.endsWith('app-debug.apk')))) throw Error('invalid TV app path');
   const id = selection.platform === 'ios' ? selection.udid : selection.serial;
   const app = apple ? 'com.kinosail.player' : 'com.kinosail.player.dev';
+  let actionFailed = false;
   try {
     await observe('inventory', async () => {
       const inventory = await client.devices.list({ ...selection, signal: AbortSignal.timeout(15000) });
@@ -44,11 +45,20 @@ export async function withTvSession(client, input, use, appPath, observe = async
             !['com.kinosail.player.tv.TvActivity', '.tv.TvActivity'].includes(state.activity)) throw Error('TV foreground activity mismatch');
     });
     return await observe('use', () => use(selection));
-  } finally {
+  } catch (error) { actionFailed = true; throw error; } finally {
     // Client is bound by its caller to this run's unique private session.
-    let closing = false;
-    try { await observe('close', () => { closing = true; return client.sessions.close({ signal: AbortSignal.timeout(15000) }); }); }
-    finally { if (!closing) await client.sessions.close({ signal: AbortSignal.timeout(15000) }); }
+    let closing = false, closeFailed = false;
+    const close = async () => {
+      closing = true;
+      try { return await client.sessions.close({ signal: AbortSignal.timeout(15000) }); }
+      catch (error) { closeFailed = true; throw error; }
+    };
+    try { await observe('close', close); }
+    catch (error) {
+      if (!closing) await close();
+      // A diagnostic failure after successful cleanup must not mask the action.
+      if (!actionFailed || closeFailed) throw error;
+    }
   }
 }
 /** @param {TVClient} client @param {unknown} input @param {string} label @param {string} direction @param {string} [field] */
