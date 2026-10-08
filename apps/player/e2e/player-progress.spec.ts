@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import {establishPlayedThenPaused, progressFixtureHTML} from './player-progress-fixture';
 
 // Isolated HTTP failure/ordering coverage; see engineering/qa/2026-10-04-r03-progress.
-const source = (await Promise.all(["player-progress.js", "player-progress-navigation.js"].map(path =>
+const source = (await Promise.all(["player-progress.js", "player-audio-queue.js", "player-progress-navigation.js"].map(path =>
   readFile(new URL(`../../../packages/webassets/static/${path}`, import.meta.url), "utf8")))).join("");
 const fixtureOrigin = "https://progress.kinosail.test";
 test.use({baseURL: fixtureOrigin});
@@ -24,19 +24,23 @@ test.beforeEach(async ({ page }, testInfo) => {
   });
   await page.route(`${fixtureOrigin}/`, route => route.fulfill({contentType: "text/html", body: progressFixtureHTML}));
   await page.route("**/watch/next", route => route.fulfill({ contentType: "text/html", body: "<h1>Next episode</h1>" }));
-  await page.route("**/api/v1/test-queue", route => route.fulfill({json: {items: [{id: "movie"}, {id: "next", title: "Next song", stream: "/media/next"}]}}));
+  const queueItem = (id: string) => ({id, kind: "audio", title: id === "movie" ? "Current song" : "Next song", stream: `/media/${id}`});
+  await page.route("**/api/v1/audio/movie/queue", route => route.fulfill({json: {items: [queueItem("movie"), queueItem("next")]}}));
+  await page.route("**/api/v1/items/next", route => route.fulfill({json: {profileId: "qa-viewer", item: queueItem("next")}}));
   await page.goto("/");
-  if (testInfo.title.includes("audio queue")) await page.locator("video").evaluate(media => media.dataset.queue = "/api/v1/test-queue");
+  if (testInfo.title.includes("audio queue")) await page.locator("video").evaluate(media => media.dataset.queue = "/api/v1/audio/movie/queue");
   await page.addScriptTag({ content: `
     const player = document.querySelector('video'), csrf = 'synthetic-csrf', playbackSession = 'qa-session-03';
     let managedSeek = false, playbackPreparation, preparationSeek, preparationPausePending = 0, playbackRequest = 0;
-    const playbackTraceMethod = 'direct', setPlayerTime = seconds => player.currentTime = seconds;
+    let playbackTraceMethod = 'direct', playbackTimelineOffset = 0;
+    const setPlayerTime = seconds => player.currentTime = seconds, updateNowPlaying = () => {};
+    const withPlaybackSession = path => { const url = new URL(path, location.href); url.searchParams.set('playbackSession', playbackSession); return url.href; };
     const isPictureInPicture = () => false;
     const requestPause = () => { playbackRequest++; paused = true; player.dispatchEvent(new Event("pause")); };
     const requestPlay = async () => {}, playerStorage = {get: () => '', set: () => {}};
     const playbackTrace = () => {}, flushPlaybackTrace = () => {};
     let position = 42, paused = true, ended = false;
-    Object.defineProperties(player, {currentTime: {get: () => position, set: value => position = value}, duration: {value: 100}, readyState: {value: 4}, paused: {get: () => paused}, ended: {get: () => ended}, load: {value: () => {}}});
+    Object.defineProperties(player, {currentTime: {get: () => position, set: value => position = value}, duration: {value: 100}, readyState: {value: 4}, paused: {get: () => paused}, ended: {get: () => ended}, load: {value: () => queueMicrotask(() => player.dispatchEvent(new Event('loadedmetadata')))}});
     player.addEventListener('ended', () => { ended = true; });
     Object.assign(window, {setEnded: value => ended = value, setPaused: value => paused = value, prepare: value => playbackPreparation = value});
     addEventListener('pagehide', () => player.dispatchEvent(new Event('kinosail:page-exit')));

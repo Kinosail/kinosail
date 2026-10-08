@@ -84,15 +84,16 @@ func remainingPublicAudio(t *testing.T, ctx context.Context, handler http.Handle
 func remainingPublicGet(t *testing.T, ctx context.Context, handler http.Handler, route, byteRange string, status int) []byte {
 	t.Helper()
 	request := httptest.NewRequestWithContext(ctx, http.MethodGet, route, nil)
+	request.Header.Set("X-Request-ID", remainingPublicRequestID)
 	if byteRange != "" {
 		request.Header.Set("Range", byteRange)
 	}
-	response := httptest.NewRecorder()
+	response := &remainingPublicResponse{header: make(http.Header), body: remainingPublicBoundedOutput{maximum: 2 << 20}}
 	handler.ServeHTTP(response, request)
-	if response.Code != status {
-		t.Fatalf("public cache asset returned%d, expected%d", response.Code, status)
+	if response.code != status {
+		t.Fatalf("public cache asset returned%d, expected%d", response.code, status)
 	}
-	return response.Body.Bytes()
+	return response.body.buffer.Bytes()
 }
 
 func remainingPublicPCM(t *testing.T, ctx context.Context, ffmpeg string, data []byte) []byte {
@@ -148,25 +149,13 @@ func remainingPublicRead(t *testing.T, path string) []byte {
 	return data
 }
 
-func remainingPublicWaitWorkers(t *testing.T, ctx context.Context, handler http.Handler, marker string) {
+func remainingPublicWaitWorkers(t *testing.T, ctx context.Context, handler http.Handler, marker string, publication *remainingPublicPublication, completed int) {
 	t.Helper()
 	deadline := time.Now().Add(5 * time.Second)
 	zeros := 0
 	for zeros < 2 {
-		allStopped := true
-		for _, row := range strings.Split(strings.TrimSpace(string(remainingPublicRead(t, marker))), "\n") {
-			pid, err := strconv.Atoi(strings.TrimPrefix(row, "call "))
-			if err != nil || pid < 2 {
-				t.Fatal("owned codec PID witness is invalid")
-			}
-			if !errors.Is(syscall.Kill(pid, 0), syscall.ESRCH) {
-				allStopped = false
-			}
-		}
-		metrics := remainingPublicGet(t, ctx, handler, "/settings/metrics", "", http.StatusOK)
-		for _, class := range []string{"playback", "background"} {
-			allStopped = allStopped && bytes.Contains(metrics, []byte("kinosail_workload_active{class=\""+class+"\"} 0\n"))
-		}
+		allStopped := publication.hasCompleted(completed)
+		allStopped = allStopped && remainingPublicOwnedPIDsStopped(t, marker) && remainingPublicWorkloadsStopped(t, ctx, handler)
 		if allStopped {
 			zeros++
 		} else {
@@ -197,4 +186,29 @@ func remainingPublicHash(data []byte) string {
 
 func remainingPublicQuote(value string) string {
 	return "'" + strings.ReplaceAll(value, "'", "'\"'\"'") + "'"
+}
+
+func remainingPublicOwnedPIDsStopped(t *testing.T, marker string) bool {
+	t.Helper()
+	for _, row := range strings.Split(strings.TrimSpace(string(remainingPublicRead(t, marker))), "\n") {
+		pid, err := strconv.Atoi(strings.TrimPrefix(row, "call "))
+		if err != nil || pid < 2 {
+			t.Fatal("owned codec PID witness is invalid")
+		}
+		if !errors.Is(syscall.Kill(pid, 0), syscall.ESRCH) {
+			return false
+		}
+	}
+	return true
+}
+
+func remainingPublicWorkloadsStopped(t *testing.T, ctx context.Context, handler http.Handler) bool {
+	t.Helper()
+	allStopped := true
+
+	metrics := remainingPublicGet(t, ctx, handler, "/settings/metrics", "", http.StatusOK)
+	for _, class := range []string{"playback", "background"} {
+		allStopped = allStopped && bytes.Contains(metrics, []byte("kinosail_workload_active{class=\""+class+"\"} 0\n"))
+	}
+	return allStopped
 }

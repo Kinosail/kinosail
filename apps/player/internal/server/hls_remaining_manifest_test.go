@@ -14,48 +14,7 @@ import (
 func TestRemainingAACManifestCannotBeBypassed(t *testing.T) {
 	for _, invalid := range []string{"missing", "malformed", "oversized", "symlink", "undeclared", "duplicate", "bad-duration", "nonzero-sequence"} {
 		t.Run(invalid, func(t *testing.T) {
-			manager, item, recipe, directory := remainingAACAdmissionFixture(t)
-			path := filepath.Join(directory, "audio/index.m3u8")
-			asset := "audio/segment-00000.m4s"
-			switch invalid {
-			case "missing":
-				if err := os.Remove(path); err != nil {
-					t.Fatal(err)
-				}
-			case "symlink":
-				target := filepath.Join(t.TempDir(), "manifest")
-				writeHLSLoadingFile(t, target, remainingInitialAACPrefix+"#EXT-X-ENDLIST\n")
-				if err := os.Remove(path); err != nil {
-					t.Fatal(err)
-				}
-				if err := os.Symlink(target, path); err != nil {
-					t.Fatal(err)
-				}
-			case "oversized":
-				writeHLSLoadingFile(t, path, strings.Repeat("#", (1<<20)+1))
-			case "undeclared":
-				asset = "audio/segment-99999.m4s"
-				writeHLSLoadingFile(t, filepath.Join(directory, asset), "unadvertised-cached-fragment")
-			case "duplicate":
-				writeHLSLoadingFile(t, path, strings.ReplaceAll(remainingInitialAACPrefix, "segment-00001", "segment-00000"))
-			case "bad-duration":
-				writeHLSLoadingFile(t, path, strings.ReplaceAll(remainingInitialAACPrefix, "2.005333", "NaN"))
-			case "nonzero-sequence":
-				writeHLSLoadingFile(t, path, strings.ReplaceAll(remainingInitialAACPrefix, "MEDIA-SEQUENCE:0", "MEDIA-SEQUENCE:99999"))
-			default:
-				writeHLSLoadingFile(t, path, "#EXTM3U\n#EXT-X-ENDLIST\n")
-			}
-			for _, name := range []string{asset, "audio/init.mp4"} {
-				if invalid == "undeclared" && name == "audio/init.mp4" {
-					continue
-				}
-				response := httptest.NewRecorder()
-				request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/hls/fixture/"+name, nil)
-				manager.serveRecipe(response, request, item, recipe, name)
-				if response.Code != http.StatusNotFound || len(manager.jobs) != 0 {
-					t.Fatalf("invalid %s manifest admitted%s: status%d jobs%d", invalid, name, response.Code, len(manager.jobs))
-				}
-			}
+			remainingAACAssertManifestRejected(t, invalid)
 		})
 	}
 }
@@ -72,5 +31,62 @@ func TestRemainingAACProjectedCachedFragmentsRemainReadable(t *testing.T) {
 		if response.Code != http.StatusOK || response.Body.String() != "projected-current-fragment" || len(manager.jobs) != 0 {
 			t.Fatalf("valid projected cached%s rejected: status%d jobs%d", name, response.Code, len(manager.jobs))
 		}
+	}
+}
+
+func remainingAACAssertManifestRejected(t *testing.T, invalid string) {
+	t.Helper()
+	manager, item, recipe, directory := remainingAACAdmissionFixture(t)
+	asset := remainingAACInvalidManifest(t, directory, invalid)
+	for _, name := range []string{asset, "audio/init.mp4"} {
+		if invalid == "undeclared" && name == "audio/init.mp4" {
+			continue
+		}
+		response := httptest.NewRecorder()
+		request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/hls/fixture/"+name, nil)
+		manager.serveRecipe(response, request, item, recipe, name)
+		if response.Code != http.StatusNotFound || len(manager.jobs) != 0 {
+			t.Fatalf("invalid %s manifest admitted%s: status%d jobs%d", invalid, name, response.Code, len(manager.jobs))
+		}
+	}
+}
+
+func remainingAACInvalidManifest(t *testing.T, directory, invalid string) string {
+	t.Helper()
+	path := filepath.Join(directory, "audio/index.m3u8")
+	asset := "audio/segment-00000.m4s"
+	switch invalid {
+	case "missing":
+		if err := os.Remove(path); err != nil {
+			t.Fatal(err)
+		}
+	case "symlink":
+		remainingAACSymlinkManifest(t, path)
+	case "oversized":
+		writeHLSLoadingFile(t, path, strings.Repeat("#", (1<<20)+1))
+	case "undeclared":
+		asset = "audio/segment-99999.m4s"
+		writeHLSLoadingFile(t, filepath.Join(directory, asset), "unadvertised-cached-fragment")
+	case "duplicate":
+		writeHLSLoadingFile(t, path, strings.ReplaceAll(remainingInitialAACPrefix, "segment-00001", "segment-00000"))
+	case "bad-duration":
+		writeHLSLoadingFile(t, path, strings.ReplaceAll(remainingInitialAACPrefix, "2.005333", "NaN"))
+	case "nonzero-sequence":
+		writeHLSLoadingFile(t, path, strings.ReplaceAll(remainingInitialAACPrefix, "MEDIA-SEQUENCE:0", "MEDIA-SEQUENCE:99999"))
+	default:
+		writeHLSLoadingFile(t, path, "#EXTM3U\n#EXT-X-ENDLIST\n")
+	}
+	return asset
+}
+
+func remainingAACSymlinkManifest(t *testing.T, path string) {
+	t.Helper()
+	target := filepath.Join(t.TempDir(), "manifest")
+	writeHLSLoadingFile(t, target, remainingInitialAACPrefix+"#EXT-X-ENDLIST\n")
+	if err := os.Remove(path); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(target, path); err != nil {
+		t.Fatal(err)
 	}
 }
