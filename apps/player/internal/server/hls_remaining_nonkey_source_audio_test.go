@@ -146,8 +146,7 @@ func TestRemainingNonKeySourceAudioAmbiguityAndCancellation(t *testing.T) {
 
 func remainingNonKeySourceAudioCorrespondence(t *testing.T, proof *copiedHLSAudioProof, packet [32]byte, expected []int64) {
 	t.Helper()
-	actual := []int64{proof.FirstPTS, proof.FirstNativeSample, proof.TargetPTS,
-		proof.TargetNativeSample, proof.MediaTime, proof.LeadingSamples}
+	actual := []int64{proof.FirstPTS, proof.FirstNativeSample, proof.TargetPTS, proof.TargetNativeSample, proof.MediaTime, proof.LeadingSamples}
 	if !slices.Equal(actual, expected) || proof.FirstPacket != packet || proof.SourceClock == [32]byte{} {
 		t.Fatal("nonkey complete source-clock integer correspondence")
 	}

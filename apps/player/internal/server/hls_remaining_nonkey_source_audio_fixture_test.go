@@ -29,8 +29,7 @@ func remainingNonKeySourceAudio(t *testing.T, denominator, leading int64) remain
 		return (sample*denominator + 24000) / 48000
 	}
 	priming := remainingNonKeySourceAudioPacket(-round(-prime), round(1024), -1)
-	priming["side_data_list"] = []map[string]any{{"side_data_type": "Skip Samples",
-		"skip_samples": skip, "discard_padding": 0, "skip_reason": 0, "discard_reason": 0}}
+	priming["side_data_list"] = []map[string]any{{"side_data_type": "Skip Samples", "skip_samples": skip, "discard_padding": 0, "skip_reason": 0, "discard_reason": 0}}
 	rows = append(rows, priming)
 	var ordinal int64
 	var first [32]byte
@@ -60,8 +59,7 @@ func remainingNonKeySourceAudio(t *testing.T, denominator, leading int64) remain
 		edit = 28600
 	}
 	return remainingNonKeySourceAudioFixture{map[string]any{
-		"streams": []map[string]any{{"codec_name": "aac", "profile": "LC",
-			"sample_rate": "48000", "channels": 2, "time_base": fmt.Sprintf("1/%d", denominator)}},
+		"streams":            []map[string]any{{"codec_name": "aac", "profile": "LC", "sample_rate": "48000", "channels": 2, "time_base": fmt.Sprintf("1/%d", denominator)}},
 		"packets_and_frames": rows,
 	}, output.String(), first, edit}
 }
@@ -87,8 +85,7 @@ func remainingNonKeySourceRows(fixture remainingNonKeySourceAudioFixture, kind s
 
 func remainingNonKeySourceAudioPacket(pts, duration, number int64) map[string]any {
 	hash := sha256.Sum256([]byte(fmt.Sprintf("aac-payload-%d", number)))
-	return map[string]any{"type": "packet", "pts": pts, "dts": pts,
-		"duration": duration, "data_hash": "SHA256:" + hex.EncodeToString(hash[:])}
+	return map[string]any{"type": "packet", "pts": pts, "dts": pts, "duration": duration, "data_hash": "SHA256:" + hex.EncodeToString(hash[:])}
 }
 
 func remainingNonKeySourceAudioDuration(leading, number, duration int64) int64 {
