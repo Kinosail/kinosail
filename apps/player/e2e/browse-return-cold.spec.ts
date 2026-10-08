@@ -11,7 +11,7 @@ const selected = (value: string) => mode === value || mode === "all";
 
 // Worker-scoped browser options must stay at file scope. Pinned Playwright
 // already supplies this switch; it also states this cold boundary explicitly.
-test.use({ serviceWorkers: "block", video: "off", launchOptions: { args: ["--disable-back-forward-cache"] } });
+test.use({ serviceWorkers: "block", video: "off" });
 
 if (selected("cold")) test.describe("native Back without browser cache", () => {
   for (const width of [390, 1440]) test(`cold native Back restores later Movie cards at ${width}px`, async ({ page }, info) => {
