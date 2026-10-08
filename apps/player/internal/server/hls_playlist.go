@@ -96,10 +96,3 @@ func (manager *hlsManager) readHLSRecipeManifest(directory string) ([]byte, erro
 	}
 	return readHLSManifest(root)
 }
-
-func hlsURIWithQuery(uri, query string) string {
-	if strings.Contains(uri, "?") {
-		return uri + "&" + query
-	}
-	return uri + "?" + query
-}
