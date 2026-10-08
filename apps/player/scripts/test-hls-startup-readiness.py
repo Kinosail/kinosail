@@ -7,6 +7,7 @@ from pathlib import Path
 import subprocess
 import time
 from hls_followon_public import bounded_bytes, check
+from hls_remaining_readiness import readiness_cold_control, readiness_refill_arguments
 
 ROOT = Path(__file__).resolve().parents[3]
 before = set((ROOT / '.verification/hls-followon').glob('*/receipt.json'))
@@ -22,7 +23,7 @@ paths = ['apps/player/internal/server/' + name for name in
     ['startup_window.go', 'hls_remaining_startup.go', 'hls_remaining_completion_test.go']]
 paths += ['apps/player/scripts/test-hls-startup-readiness.py', 'apps/player/scripts/test-hls-remaining.py',
     'apps/player/scripts/hls_remaining_origin.py', 'apps/player/scripts/hls_followon_public.py',
-    'apps/player/scripts/hls_remaining_process.py']
+    'apps/player/scripts/hls_remaining_process.py', 'apps/player/scripts/hls_remaining_readiness.py']
 result = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
     'tree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], cwd=ROOT, text=True).strip(),
     'result': 'failed', 'failures': [], 'command': 'python3 apps/player/scripts/test-hls-startup-readiness.py',
@@ -39,50 +40,68 @@ try:
         and original['productionSourceWitness']['trackedAndUntrackedWorktreeClean']
         and original['productionSourceWitness']['unchangedAfterPublicProof'], 'readiness_original_source_binding')
     candidate, control = original['cases']
-    result['historicalFailureTagsRetained'] = candidate['failures']
+    result['historicalFailureTagsRetained'] = {case['name']: case['failures'] for case in [candidate, control]}
     check(process.returncode == 1 and original['result'] == 'failed'
         and candidate['name'] == 'origin-refill' and candidate['failures'] == ['audio_required_new_encoder']
-        and control['name'] == 'origin-control' and control['result'] == 'passed', 'readiness_strict_boundary_retained')
+        and control['name'] == 'origin-control' and control['result'] == 'failed'
+        and control['failures'] == ['audio_required_new_encoder'], 'readiness_strict_boundary_retained')
     check(original['originProductionQualification']['result'] == 'unqualified'
         and original['originProductionQualification']['qualificationFailures'] == ['origin_unchanged_failure_boundary'],
         'readiness_original_qualification_not_relabelled')
-    for case, count in [(candidate, 2), (control, 1)]:
+    for case, count in [(candidate, 2), (control, 2)]:
         preparation, joined = case['preparationAttempt'], case['ownedProcessJoin']
         check(preparation['posts'] == 1 and preparation['publicState'] == 'queued'
             and preparation['completionState'] == 'ready' and preparation['ownedFFmpeg'] == 0
             and preparation['joinedSamples'] >= 3, 'readiness_public_preparation_ready')
-        check(not any(case.get(name) for name in ['failureClass', 'diagnosticFailureClass', 'originWitnessFailure',
+        check(not any(case.get(name) for name in ['failureClass', 'diagnosticFailureClass',
                 'cleanupFailureClass', 'cleanupFailures'])
             and case['workerBound'] and case['sourceUnchanged']
             and joined['confirmedZeroSamples'] == 2 and joined['remainingOwnedPIDs'] == []
             and not joined['forcedOwnedGroupStop'] and not joined['qualificationFailures']
             and case['encoderLifecycle']['starts'] == case['encoderLifecycle']['ends'] == count,
             'readiness_owned_worker_and_source')
-    prefix = candidate['physicalBeforeFirstGET']
-    check(prefix['segments'] == [f'segment-{n:05d}.m4s' for n in range(4)]
-        and not prefix['manifest']['endlist'] and prefix['packetCount'] == 375
-        and Decimal(prefix['firstPacket']['pts_time']) == 0
-        and Decimal(prefix['lastPacket']['pts_time']) + Decimal(prefix['lastPacket']['duration_time']) == 8,
-        'readiness_exact_physical_eight_seconds')
-    after = candidate['physicalAfterPublicDelivery']
-    retained = {v['name']: v for v in after['assets']}
-    check((prefix['generationInode'], prefix['generationDevice']) ==
-        (after['generationInode'], after['generationDevice'])
-        and all(retained.get(v['name']) == v for v in prefix['assets'] if v['name'] != 'index.m3u8'),
-        'readiness_prefix_init_and_generation_retained')
+    check(not candidate.get('originWitnessFailure')
+        and control.get('originWitnessFailure') == 'origin_actual_production_argv',
+        'readiness_legacy_fixed_pacing_witness_retained')
+    result['legacyControlWitnessFailureRetained'] = control['originWitnessFailure']
+    for case, pace in [(candidate, 0.75), (control, 0.9)]:
+        prefix = case['physicalBeforeFirstGET']
+        check(prefix['segments'] == [f'segment-{n:05d}.m4s' for n in range(4)]
+            and not prefix['manifest']['endlist'] and prefix['packetCount'] == 375
+            and Decimal(prefix['firstPacket']['pts_time']) == 0
+            and Decimal(prefix['lastPacket']['pts_time']) + Decimal(prefix['lastPacket']['duration_time']) == 8,
+            'readiness_exact_physical_eight_seconds')
+        after = case['physicalAfterPublicDelivery']
+        retained = {v['name']: v for v in after['assets']}
+        check((prefix['generationInode'], prefix['generationDevice']) ==
+            (after['generationInode'], after['generationDevice'])
+            and all(retained.get(v['name']) == v for v in prefix['assets'] if v['name'] != 'index.m3u8'),
+            'readiness_prefix_init_and_generation_retained')
+        result.setdefault('independentRefillArgv', {})[case['name']] = readiness_refill_arguments(path.parent / case['name'], pace)
+    cold = readiness_cold_control(ROOT, path.parent / 'player',
+        path.parent / 'origin-refill/media/Fixture.flac', path.parent / 'uninterrupted-cold-control')
+    result['coldControl'] = {k: cold[k] for k in ['result', 'failures', 'preparationPosts', 'emptyCacheBeforeFirstGET',
+        'sourceUnchanged', 'workerBound', 'encoderLifecycle', 'ownedProcessJoin']}
     packets = candidate['joinedPublicPacketPayloads']
-    check(len(packets) == 470 and packets == control['joinedPublicPacketPayloads'], 'readiness_exact_packet_rows')
+    check(len(packets) == 470 and packets == control['joinedPublicPacketPayloads'] == cold['joinedPublicPacketPayloads'], 'readiness_exact_packet_rows')
     gaps = [Decimal(b['pts_time']) - Decimal(a['pts_time']) - Decimal(a['duration_time'])
         for a, b in zip(packets, packets[1:])]
     check(all(p['pts_time'] == p['dts_time'] and not p.get('side_data_list')
             and Decimal(p['duration_time']).is_finite() and 0 < Decimal(p['duration_time']) <= Decimal('0.021334')
             for p in packets) and all(abs(gap) <= Decimal('0.000001') for gap in gaps),
         'readiness_complete_adjacent_packet_clock')
-    check(candidate['fixture']['sha256'] == control['fixture']['sha256']
-        and candidate['initializationSHA256'] == control['initializationSHA256']
-        and candidate['fullEOFNativeSamples']['publicSHA256'] == control['fullEOFNativeSamples']['publicSHA256'],
+    check(candidate['fixture']['sha256'] == control['fixture']['sha256'] == cold['fixture']['sha256']
+        and candidate['initializationSHA256'] == control['initializationSHA256'] == cold['initializationSHA256']
+        and candidate['fullEOFNativeSamples']['publicSHA256'] == control['fullEOFNativeSamples']['publicSHA256'] == cold['fullEOFNativeSamples']['publicSHA256'],
         'readiness_source_init_and_whole_pcm_identity')
-    for case in [candidate, control]:
+    for case in [candidate, control, cold]:
+        check(case['fullEOFNativeSamples']['source'] == 480000
+            and case['fullEOFNativeSamples']['sourceSHA256'] == candidate['fullEOFNativeSamples']['sourceSHA256']
+            and case['nativePCMQualification']['source']['completeEOFAccounted']
+            and case['fullEOFNativeSamples']['decodedToEOF'] and not case['fullEOFNativeSamples']['trimmed']
+            and not case['fullEOFNativeSamples']['rateConversionApplied']
+            and not case['fullEOFNativeSamples']['channelConversionApplied'],
+            'readiness_full_independent_source_pcm')
         native = case['nativePCMQualification']['public']
         check(native['frames'] == 470 and native['samples'] == 481280
             and native['completeEOFAccounted'] and native['decodedClockOrderValid'],
@@ -94,7 +113,8 @@ try:
         wholePublicPCMSHA256=candidate['fullEOFNativeSamples']['publicSHA256'],
         maximumPacketGapSeconds=str(max([Decimal(0)] + gaps)),
         maximumPacketOverlapSeconds=str(max([Decimal(0)] + [-gap for gap in gaps])),
-        coldReopens=2, sequentialEncoderStarts=2, peakOwnedFFmpeg=1)
+        coldReopens=2, sequentialEncoderStarts=2, preparedJourneys=2,
+        uninterruptedColdEncoderStarts=1, allThreePacketRowsAndWholePCMIdentical=True, peakOwnedFFmpeg=1)
 except (RuntimeError, KeyError, ValueError) as error:
     result['failures'].append(str(error) if isinstance(error, RuntimeError) else type(error).__name__)
 target = path.with_name('startup-readiness.json')
