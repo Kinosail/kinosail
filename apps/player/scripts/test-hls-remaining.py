@@ -17,6 +17,7 @@ from hls_remaining_audio import audio_output, replay_refill
 from hls_remaining_mux import counterfactuals
 from hls_remaining_warmup import warmup_counterfactual
 from hls_remaining_installation import installation_cases
+from hls_remaining_origin import origin_cases, origin_refill_witness, origin_source_witness, origin_selected_audio
 from hls_remaining_reopen import cold_reopen
 from hls_timeline_fixture import fixture
 from hls_timeline_http import PublicServer, sha
@@ -25,9 +26,9 @@ from hls_followon_public import bounded_bytes, check, encoder_count, measure, pr
 
 ROOT = Path(__file__).resolve().parents[3]
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--suite', choices=['remaining', 'audio-timing', 'audio-installation'], default=os.environ.get('KINOSAIL_HLS_REMAINING_SUITE', 'remaining'))
+parser.add_argument('--suite', choices=['remaining', 'audio-timing', 'audio-installation', 'audio-origin'], default=os.environ.get('KINOSAIL_HLS_REMAINING_SUITE', 'remaining'))
 SUITE = parser.parse_args().suite
-if SUITE not in ['remaining', 'audio-timing', 'audio-installation']:
+if SUITE not in ['remaining', 'audio-timing', 'audio-installation', 'audio-origin']:
     parser.error('unsupported diagnostic suite')
 RUN = ROOT / '.verification/hls-followon' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
 RUN.mkdir(parents=True)
@@ -36,7 +37,7 @@ receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], tex
     'result': 'failed', 'cases': [], 'suite': SUITE,
     'command': 'python3 apps/player/scripts/test-hls-remaining.py --suite ' + SUITE,
     'boundary': 'Disposable authenticated public Server. Raw negative frames retained; browser/native/audible qualification separate.',
-    'productionMediaOrCacheModified': False, 'expectedCases': {'remaining': 6, 'audio-timing': 5, 'audio-installation': 3}[SUITE]}
+    'productionMediaOrCacheModified': False, 'expectedCases': {'remaining': 6, 'audio-timing': 5, 'audio-installation': 3, 'audio-origin': 2}[SUITE]}
 RUN_DEADLINE = time.monotonic() + 500
 
 
@@ -139,6 +140,8 @@ def journey(name, original, metadata, offset=0, pacing=None, installation=False)
             check(re.fullmatch(r'/hls/[a-f0-9]{16}/p/[ra]-[a-zA-Z0-9-]+/index\.m3u8', hls), 'planned_recipe_route')
             check(plan['media']['fileVersion'] == str(before['sizeBytes']) + ':' + before['mtimeNanoseconds'], 'source_snapshot_binding')
             case['mode'] = plan['compatiblePlan']['mode']
+            if SUITE == 'audio-origin':
+                case['originSelectedAudio'] = origin_selected_audio(plan)
             check(case['mode'] == ('audio-transcode' if item['kind'] == 'audio' else 'remux'), 'expected_compatibility_mode')
             case['planDurationSeconds'] = plan['duration']
             if installation:
@@ -209,7 +212,13 @@ def journey(name, original, metadata, offset=0, pacing=None, installation=False)
                     cold_reopen(run, BINARY, directory, source, before, api, hls, env, RUN_DEADLINE, case)
                 except (RuntimeError, OSError, subprocess.SubprocessError, ValueError, KeyError) as error:
                     case['installationQualificationFailure'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
-            if case.get('retainedRefillFragments') and SUITE != 'audio-installation':
+            if SUITE == 'audio-origin' and case.get('retainedRefillFragments'):
+                try:
+                    origin_refill_witness(directory, source, case)
+                    cold_reopen(run, BINARY, directory, source, before, api, hls, env, RUN_DEADLINE, case)
+                except (RuntimeError, OSError, subprocess.SubprocessError, ValueError, KeyError) as error:
+                    case['originWitnessFailure'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
+            if case.get('retainedRefillFragments') and SUITE not in ['audio-installation', 'audio-origin']:
                 try:
                     check(pacing is not None, 'fresh_refill_actual_argv_unavailable')
                     value = replay_refill(run, RUN_DEADLINE, directory, source, case, Path(real))
@@ -226,10 +235,12 @@ def journey(name, original, metadata, offset=0, pacing=None, installation=False)
 
 try:
     remaining_alarm()
+    if SUITE == 'audio-origin':
+        receipt['productionSourceWitness'] = origin_source_witness(ROOT)
     subprocess.run(['go', '-C', 'apps/player', 'build', '-p=1', '-o', str(BINARY), './cmd/kinosail'], cwd=ROOT, check=True, timeout=180)
     receipt['binarySHA256'] = sha(BINARY)
     receipt['encoderVersions'] = {t: run([t, '-version']).decode().splitlines()[0] for t in ['ffmpeg', 'ffprobe']}
-    cases = [] if SUITE == 'audio-installation' else ([(10, 0.75, False), (10, 0.9, False), (8, 0.75, False), (10, 0.75, True), (10, 0.9, True)] if SUITE == 'audio-timing' else [(10, None, False), (10, 1.25, False), (8, 1.25, False)])
+    cases = [] if SUITE in ['audio-installation', 'audio-origin'] else ([(10, 0.75, False), (10, 0.9, False), (8, 0.75, False), (10, 0.75, True), (10, 0.9, True)] if SUITE == 'audio-timing' else [(10, None, False), (10, 1.25, False), (8, 1.25, False)])
     for duration, paced, marker in cases:
         name = f'{"marker" if marker else "audio"}-{duration}-{paced}'
         source = RUN / (name + '.flac')
@@ -240,6 +251,10 @@ try:
             'markerNear8Seconds': marker, 'fixtureFilter': generated}, pacing=paced)
     if SUITE == 'audio-installation':
         installation_cases(run, journey, RUN, receipt, RUN_DEADLINE)
+    if SUITE == 'audio-origin':
+        origin_cases(run, journey, RUN, receipt, RUN_DEADLINE)
+        check(origin_source_witness(ROOT) == receipt['productionSourceWitness'], 'origin_production_source_changed')
+        receipt['productionSourceWitness']['unchangedAfterPublicProof'] = True
     if SUITE == 'remaining':
         source, metadata = fixture(RUN, 'regular', 48, ','.join(str(v) for v in range(0, 32, 2)), frames=768)
         metadata = reprobe(source, metadata)

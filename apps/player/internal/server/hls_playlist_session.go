@@ -24,6 +24,13 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 		localizedNotFound(writer, request)
 		return
 	}
+	if filepath.Ext(localName) == ".m4s" || filepath.Base(localName) == "init.mp4" {
+		if err := manager.remainingAACCacheAsset(request.Context(), item, recipe, localName); err != nil {
+			slog.WarnContext(request.Context(), "HLS cache asset rejected", "diagnostic", "[PLAYBACK-HLS]", "request_id", requestActivityID(request.Context()), "playback_session", requestPlaybackSession(request.Context()), "mode", recipe.mode, "error", hlsDiagnostic(err, item.Path))
+			localizedNotFound(writer, request)
+			return
+		}
+	}
 	key := hlsRecipeKey(item.ID, recipe)
 	start := 0
 	duration := 0.0
@@ -51,6 +58,11 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 			localizedNotFound(writer, request)
 			return
 		}
+	}
+	if manager.serveRemainingAACFile(writer, request, item, recipe, localName, key) {
+		return
+	}
+	if filepath.Ext(name) == ".m4s" {
 		writer.Header().Set("Content-Type", "video/mp4")
 	}
 	manager.adoptRecipeFile(request, key, path)
