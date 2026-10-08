@@ -3,6 +3,10 @@ from pathlib import Path
 import unittest
 ROOT=Path(__file__).resolve().parents[2]
 class BrowserCapabilities(unittest.TestCase):
+ def test_required_player_command_runs_both_new_browser_controls_once(self):
+  command=next(line for line in (ROOT/'.github/workflows/app.yml').read_text().splitlines() if 'run: node --test scripts/testing/player-setup-navigation.test.mjs' in line)
+  for name in ['scripts/testing/playback-state-witness.test.mjs','scripts/testing/recovery-controls-owner.test.mjs']:
+   self.assertEqual(command.split().count(name),1,'required browser callback control must execute once')
  def test_apple_cold_firsttap_precedes_held_media_admission(self):
   source=(ROOT/'apps/player/e2e/playback-startup-blocked.spec.ts').read_text()
   cold=source.index('if (browserName === "webkit") {',source.index('phase = "pending"'))
