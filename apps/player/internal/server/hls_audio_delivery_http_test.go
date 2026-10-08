@@ -117,9 +117,10 @@ func realAudioHLSFixture(t *testing.T, extension, codec string) (copiedHTTPFixtu
 }
 
 // These controls exercise untrusted probe responses over genuinely encoded AAC
-// media. A fabricated endpoint must not authorize a cached terminal fragment.
+// audiobook media outside the corrected origin-audio fast path. A fabricated
+// endpoint must not authorize a cached terminal fragment.
 func TestRealAudioHLSHTTPTerminalMetadataRejectsWithoutMutation(t *testing.T) {
-	base, _ := realAudioHLSFixture(t, ".flac", "flac")
+	base, _ := realAudioHLSFixture(t, ".m4b", "alac")
 	speedTestGET(t, t.Context(), base.handler, base.source)
 	for _, value := range []struct{ name, output, asset string }{
 		{"missing", `{}`, ""},
@@ -155,7 +156,7 @@ func assertRejectedAudioEnd(t *testing.T, f copiedHTTPFixture, output, asset str
 	t.Helper()
 	name := damageAudioTerminalFixture(t, f, output, asset)
 	before := snapshotCopiedPolicyCache(t, f, true)
-	sourceBefore, err := os.ReadFile(filepath.Join(f.config.MediaDir, "Fixture.flac"))
+	sourceBefore, err := os.ReadFile(filepath.Join(f.config.MediaDir, "Fixture.m4b"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -172,7 +173,7 @@ func assertRejectedAudioEnd(t *testing.T, f copiedHTTPFixture, output, asset str
 			t.Fatal("terminal metadata control did not reach the emitted-packet probe")
 		}
 	}
-	sourceAfter, err := os.ReadFile(filepath.Join(f.config.MediaDir, "Fixture.flac"))
+	sourceAfter, err := os.ReadFile(filepath.Join(f.config.MediaDir, "Fixture.m4b"))
 	if err != nil || !bytes.Equal(sourceBefore, sourceAfter) {
 		t.Fatal("rejected AAC metadata changed its source media")
 	}
