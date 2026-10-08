@@ -2,6 +2,8 @@
 import contextlib
 import copy
 import io
+import importlib.util
+from types import SimpleNamespace
 import json
 import os
 from pathlib import Path
@@ -77,9 +79,32 @@ class LibraryOwnerCallerTests(unittest.TestCase):
             (self.output / ('results-' + self.project + '.json')).write_text(json.dumps(self.result))
             return subprocess.CompletedProcess(command, self.browser_status)
 
+        # This caller suite is synthetic; the real policy/probe have separate peers.
+        original_spec = importlib.util.spec_from_file_location
+        policy = self.root / 'owned-policies.json'
+        executable = self.root / 'owned-firefox'
+        def fixture_spec(name, path, *args, **kwargs):
+            if Path(path).name != 'browser-firefox-policy.py':
+                return original_spec(name, path, *args, **kwargs)
+            class Loader:
+                def create_module(self, spec): return None
+                def exec_module(self, module):
+                    def owned_policy(*arguments):
+                        test.effects.append(('firefox-policy',))
+                        return policy, executable
+                    def probe(command, **options):
+                        test.effects.append(('firefox-probe', command, options))
+                        code, raw = getattr(test, 'firefox_probe_result', (0, json.dumps({'activation':'strict_browser_https','category':'passed','status':200,'cleanup':'closed'})))
+                        return code, raw.encode()
+                    module.policy = owned_policy
+                    module.native = SimpleNamespace(read_regular=lambda *_: b'{}', run=probe)
+            return importlib.util.spec_from_loader(name, Loader())
+        fixture_environment = {'PLAYWRIGHT_FIREFOX_POLICIES_JSON': str(policy)} if self.project == 'firefox' and 'fake-provider' in (arguments or self.arguments) else {}
+
         with patch.object(sys, 'argv', [str(SOURCE), *(arguments or self.arguments)]), \
-                patch.dict(os.environ, {'NODE_EXTRA_CA_CERTS': 'synthetic-ca', **environment}, clear=True), \
+                patch.dict(os.environ, {'NODE_EXTRA_CA_CERTS': 'synthetic-ca', **fixture_environment, **environment}, clear=True), \
                 patch('subprocess.run', side_effect=process), \
+                patch('importlib.util.spec_from_file_location', side_effect=fixture_spec), \
                 patch('subprocess.check_output', return_value='synthetic-revision\n'), \
                 patch('urllib.request.build_opener', return_value=Peer()), \
                 patch('ssl.create_default_context'), \

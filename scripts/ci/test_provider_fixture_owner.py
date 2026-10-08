@@ -96,6 +96,22 @@ class ProviderFixtureTests(unittest.TestCase):
                 self.assertEqual(tls[1][-1], 'fake-provider')
             finally: peer.doCleanups()
 
+    def test_synthetic_firefox_probe_failure_does_not_initialize_owner(self):
+        peer = caller_peers.LibraryOwnerCallerTests(); peer.setUp()
+        try:
+            cases = self.provider.selected_cases('firefox'); peer.project = 'firefox'
+            peer.discovery.write_text(json.dumps(playback_report(cases, 'firefox', False)))
+            args = peer.arguments.copy(); args[args.index('--profile') + 1] = 'fake-provider'
+            args[args.index('--project') + 1] = 'firefox'
+            args += ['--ui-fixtures', str(self.ui)]
+            peer.firefox_probe_result = (1, json.dumps({'activation':'unverified','category':'certificate','status':None,'cleanup':'closed','errorCode':'SEC_ERROR_UNKNOWN_ISSUER'}))
+            with patch.object(caller_peers, 'load', return_value=SimpleNamespace(CASES=cases)):
+                self.assertEqual(peer.execute(args), 1)
+            self.assertFalse(any(row[0] == 'http' for row in peer.effects))
+            receipt = json.loads((peer.output / 'setup-and-run.json').read_text())
+            self.assertEqual(receipt['firefoxTrust']['category'], 'certificate')
+        finally: peer.doCleanups()
+
     def test_invalid_or_missing_render_inputs_and_inherited_overrides_do_not_initialize_owner(self):
         peer = caller_peers.LibraryOwnerCallerTests(); peer.setUp()
         try:
