@@ -16,7 +16,7 @@ class AudioPreparationTests(unittest.TestCase):
     def run_preparation(self, *, kind='audiobook', terminal='HLS transcode completed',
                         completed_id='audio-preparation', preparation_status=202,
                         preparation_body=b'{"state":"queued"}', adoption_status=200,
-                        active=False, malformed=False):
+                        active=False, malformed=False, adoption_headers=None, startup_id='audio-preparation'):
         calls, clock, case = [], [0.0], {'itemKind': kind}
 
         def http(path, method='GET', body=None, **options):
@@ -25,12 +25,12 @@ class AudioPreparationTests(unittest.TestCase):
                 return preparation_status, preparation_body, {'X-Request-ID': 'audio-preparation'}
             self.assertGreater(options['timeout'], 0)
             self.assertLessEqual(options['timeout'], 20)
-            return adoption_status, b'#EXTM3U\n', {}
+            return adoption_status, b'#EXTM3U\n', adoption_headers or {}
 
         def logs(*args):
             if malformed:
                 return b'{broken}\n'
-            entries = [{'msg': 'HLS startup preparation', 'request_id': 'audio-preparation', 'state': 'ready'}]
+            entries = [{'msg': 'HLS startup preparation', 'request_id': startup_id, 'state': 'ready'}]
             if terminal:
                 entries.append({'msg': terminal, 'request_id': completed_id})
             return ('\n'.join(json.dumps(v) for v in entries) + '\n').encode()
@@ -102,6 +102,60 @@ class AudioPreparationTests(unittest.TestCase):
         self.assertIsNone(error)
         self.assertEqual(sum(method == 'GET' for method, _ in calls), 0)
         self.assertEqual(case['preparationAttempt']['completionState'], 'ready')
+
+
+    def test_join_witness_distinguishes_each_missing_join_conjunct(self):
+        for options, expected in [({'terminal': None}, (True, False, 0)),
+                                  ({'completed_id': 'other'}, (True, False, 0)),
+                                  ({'startup_id': 'other'}, (False, True, 0)),
+                                  ({'active': True}, (True, True, 1))]:
+            with self.subTest(options=options):
+                case, _, _, error = self.run_preparation(**options)
+                self.assertEqual(str(error), 'one_shot_preparation_not_joined')
+                witness = case['preparationAttempt']['joinWitness']
+                self.assertEqual((bool(witness['matchedTerminalStates']), witness['encoderCompleted'],
+                                  witness['ownedFFmpeg'] or 0), expected)
+                self.assertTrue(witness['deadlineExpired'])
+                self.assertLessEqual(witness['elapsedMs'], 20050)
+                self.assertEqual(witness['joinedSamples'], 0)
+
+    def test_adoption_request_identity_is_separate_bounded_and_never_a_new_gate(self):
+        for header, present, matches in [('audio-preparation', True, True), ('other', True, False),
+                                         ('PRIVATE?token=secret', False, False), ('x' * 81, False, False)]:
+            with self.subTest(header=header):
+                case, _, _, error = self.run_preparation(adoption_headers={'X-Request-ID': header})
+                self.assertIsNone(error)
+                witness = case['preparationAttempt']['joinWitness']
+                self.assertEqual(witness['getRequestIDPresent'], present)
+                self.assertEqual(witness['getRequestIDMatchesPost'], matches)
+                self.assertNotIn(header, json.dumps(witness))
+                self.assertEqual(witness['stage'], 'joined')
+                self.assertEqual(witness['joinedSamples'], 3)
+
+    def test_terminal_failure_witness_survives_without_replacing_original_failure(self):
+        for terminal, flag in [('HLS transcode failed', 'encoderFailed'),
+                               ('HLS transcode paused after playback became inactive', 'encoderPaused')]:
+            with self.subTest(terminal=terminal):
+                case, _, _, error = self.run_preparation(terminal=terminal)
+                self.assertEqual(str(error), 'audio_playback_not_completed')
+                witness = case['preparationAttempt']['joinWitness']
+                self.assertTrue(witness[flag])
+                self.assertEqual(witness['stage'], 'join-sampling')
+                self.assertFalse(witness['deadlineExpired'])
+
+    def test_invalid_public_state_rejects_before_get_or_encoder_sampling(self):
+        for body in [b'null', b'[]', b'false', b'{}', b'{"state":false}', b'{"state":1}',
+                     b'{"state":"busy"}', b'{"state":"PRIVATE-unknown"}',
+                     b'{"state":"queued","state":"ready"}']:
+            with self.subTest(body=body):
+                case, calls, _, error = self.run_preparation(preparation_body=body)
+                self.assertIsNotNone(error)
+                self.assertEqual(calls, [('POST', '/prepare')])
+                self.assertNotIn('PRIVATE', json.dumps(case))
+        for state in ['ready', 'queued']:
+            case, _, _, error = self.run_preparation(preparation_body=json.dumps({'state': state}).encode())
+            self.assertIsNone(error)
+            self.assertEqual(case['preparationAttempt']['publicState'], state)
 
 
 class PublicTimeoutTests(unittest.TestCase):

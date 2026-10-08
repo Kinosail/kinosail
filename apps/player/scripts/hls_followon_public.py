@@ -49,46 +49,81 @@ def video_decode_order(path):
     return all(a < b for a, b in zip(times, times[1:]))
 
 
+def preparation_fields(pairs):
+    value = dict(pairs)
+    check(len(value) == len(pairs), 'one_shot_preparation_state')
+    return value
+
+
 def prepare_once(api, prepare, hls, log_path, server, source, case):
     prior = log_path.stat().st_size
     status, data, headers = api.http(prepare, 'POST', {'source': hls})
     check(status == 202 and len(data) <= 512 * 1024, 'one_shot_preparation_response')
-    value = json.loads(data)
+    value = json.loads(data, object_pairs_hook=preparation_fields)
+    check(type(value) is dict and set(value) == {'state'} and value['state'] in ['queued', 'ready'],
+          'one_shot_preparation_state')
     request_id = next((v for k, v in headers.items() if k.lower() == 'x-request-id'), '')
     check(re.fullmatch(r'[a-zA-Z0-9_-]{1,80}', request_id), 'one_shot_request_correlation')
-    case['preparationAttempt'] = {'posts': 1, 'publicState': value.get('state'), 'requestID': request_id}
+    case['preparationAttempt'] = attempt = {'posts': 1, 'publicState': value['state'], 'requestID': request_id}
     limit, joined = time.monotonic() + 20, 0
+    witness = attempt['joinWitness'] = {'stage': 'playback-adoption', 'deadlineSeconds': 20,
+        'getRequestIDPresent': False, 'getRequestIDMatchesPost': False, 'adoptionStatus': None,
+        'matchedTerminalStates': [], 'unmatchedTerminalStates': [], 'encoderCompleted': False,
+        'unmatchedEncoderCompleted': False, 'encoderFailed': False, 'encoderPaused': False,
+        'samples': 0, 'ownedFFmpeg': None, 'joinedSamples': 0}
     audio_playback = case.get('itemKind') in ['audio', 'audiobook']
-    if audio_playback:
-        # A ready speculative audio window may stop before EOF. Adopt the
-        # actual public stream before joining its successful encoder completion.
-        status, _, _ = api.http(hls, timeout=limit - time.monotonic())
-        check(status == 200, 'audio_playback_adoption_http_' + str(status))
-    while time.monotonic() < limit:
-        private = bounded_bytes(log_path, 2 * 1024 * 1024, 'private_log_bound')[prior:].decode()
-        states, completed = [], False
-        for line in private.splitlines():
-            check(len(line) <= 16 * 1024, 'private_log_line_bound')
-            if not line.startswith('{') or not line.endswith('}'):
-                continue  # An in-flight final line may not have finished writing yet.
-            entry = json.loads(line)
-            if audio_playback and entry.get('request_id') == request_id:
+    terminal_states = ['ready', 'unavailable', 'cancelled', 'bounded', 'adopted']
+    try:
+        if audio_playback:
+            # Adopt actual playback before joining successful encoder completion.
+            status, _, adoption_headers = api.http(hls, timeout=limit - time.monotonic())
+            witness['adoptionStatus'] = status
+            ids = [v for k, v in adoption_headers.items() if k.lower() == 'x-request-id']
+            present = len(ids) == 1 and type(ids[0]) is str and bool(re.fullmatch(r'[a-zA-Z0-9_-]{1,80}', ids[0]))
+            witness.update(getRequestIDPresent=present, getRequestIDMatchesPost=present and ids[0] == request_id)
+            check(status == 200, 'audio_playback_adoption_http_' + str(status))
+        witness['stage'] = 'join-sampling'
+        while time.monotonic() < limit:
+            private = bounded_bytes(log_path, 2 * 1024 * 1024, 'private_log_bound')[prior:].decode()
+            states, completed = [], False
+            for line in private.splitlines():
+                check(len(line) <= 16 * 1024, 'private_log_line_bound')
+                if not line.startswith('{') or not line.endswith('}'):
+                    continue  # An in-flight final line may not have finished writing yet.
+                entry = json.loads(line)
+                check(type(entry) is dict, 'private_log_shape')
+                matches = entry.get('request_id') == request_id
                 message = entry.get('msg')
-                check(message not in ['HLS transcode failed', 'HLS transcode paused after playback became inactive'],
-                      'audio_playback_not_completed')
-                completed = completed or message == 'HLS transcode completed'
-            if (entry.get('msg') == 'HLS startup preparation' and entry.get('request_id') == request_id
-                    and entry.get('state') in ['ready', 'unavailable', 'cancelled', 'bounded', 'adopted']):
-                states.append(entry['state'])
-        qualified = states and (not audio_playback or completed)
-        joined = joined + 1 if qualified and encoder_count(server, source) == 0 else 0
-        if joined >= 3:
-            case['preparationAttempt'].update(completionState=states[-1], ownedFFmpeg=0, joinedSamples=joined)
-            if audio_playback:
-                case['preparationAttempt'].update(playbackAdopted=True, encoderCompleted=True)
-            return
-        time.sleep(0.05)
-    raise RuntimeError('one_shot_preparation_not_joined')
+                if message == 'HLS startup preparation' and entry.get('state') in terminal_states:
+                    state = entry['state']
+                    key = 'matchedTerminalStates' if matches else 'unmatchedTerminalStates'
+                    if state not in witness[key]: witness[key].append(state)
+                    if matches: states.append(state)
+                if message == 'HLS transcode completed':
+                    witness['encoderCompleted' if matches else 'unmatchedEncoderCompleted'] = True
+                if audio_playback and matches:
+                    witness['encoderFailed'] |= message == 'HLS transcode failed'
+                    witness['encoderPaused'] |= message == 'HLS transcode paused after playback became inactive'
+                    check(not witness['encoderFailed'] and not witness['encoderPaused'], 'audio_playback_not_completed')
+                    completed = completed or message == 'HLS transcode completed'
+            qualified = states and (not audio_playback or completed)
+            if qualified:
+                count = encoder_count(server, source)
+                witness.update(samples=min(witness['samples'] + 1, 1024), ownedFFmpeg=min(count, 16))
+                joined = joined + 1 if count == 0 else 0
+            else:
+                joined = 0
+            witness['joinedSamples'] = joined
+            if joined >= 3:
+                attempt.update(completionState=states[-1], ownedFFmpeg=0, joinedSamples=joined)
+                if audio_playback: attempt.update(playbackAdopted=True, encoderCompleted=True)
+                witness['stage'] = 'joined'
+                return
+            time.sleep(0.05)
+        raise RuntimeError('one_shot_preparation_not_joined')
+    finally:
+        now = time.monotonic()
+        witness.update(elapsedMs=min(round(max(0, now - limit + 20) * 1000), 40000), deadlineExpired=now >= limit)
 
 
 def measure(api, hls, directory, source, metadata, offset, prepared_init, case):
