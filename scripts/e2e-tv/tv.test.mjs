@@ -38,7 +38,7 @@ test('wrong/missing/duplicate/non-TV/unbooted inventory cannot open an app', asy
     const { client, calls, device } = fixture();
     client.devices.list = async () => change(device);
     await assert.rejects(() => withTvSession(client, ios, async () => {}), /TV inventory mismatch/);
-    assert.deepEqual(calls, []);
+    assert.deepEqual(calls.map(call=>call[0]), ['close']);
   }
 });
 test('each accepted TV opens the correct package and closes its owned session after use', async () => {
@@ -121,3 +121,13 @@ test('server input requires actual focused editable field before text entry',asy
 test('server port is finite and invalid input causes no SDK calls',async()=>{const {enterServerAddress}=await import('./tv.mjs');for(const port of ['',18769,'80','18769\n','18770']){const {client,calls}=fixture();await assert.rejects(()=>enterServerAddress(client,ios,port));assert.deepEqual(calls,[]);}});
 
 test('ambiguous traversal app path rejects before SDK inventory',async()=>{const {client,calls}=fixture();await assert.rejects(()=>withTvSession(client,ios,async()=>{},'/tmp/repo/../repo/apps/player/apps/native/.build/tvos-simulator/Build/Products/Debug-appletvsimulator/KinosailPlayer.app'));assert.deepEqual(calls,[]);});
+
+test('inventory list rejection and malformed reports close owned session without actions', async () => {
+ for(const mode of ['throw','nonarray','oversized']) {
+  const {client,calls}=fixture();const cause=Error('controlled inventory failure');let body=false;
+  client.devices.list=async()=>{calls.push(['list']);if(mode==='throw')throw cause;return mode==='nonarray'?{}:Array(129).fill({});};
+  client.apps.reinstall=async()=>{calls.push(['install']);};
+  await assert.rejects(()=>withTvSession(client,ios,async()=>{body=true;},'/tmp/repo/apps/player/apps/native/.build/tvos-simulator/Build/Products/Debug-appletvsimulator/KinosailPlayer.app'),error=>mode==='throw'?error===cause:/TV inventory mismatch/.test(error.message));
+  assert.equal(body,false);assert.deepEqual(calls.map(call=>call[0]),['list','close']);
+ }
+});

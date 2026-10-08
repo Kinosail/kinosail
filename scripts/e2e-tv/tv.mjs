@@ -22,14 +22,14 @@ export async function withTvSession(client, input, use, appPath) {
   const selection = tvSelection(input), apple = selection.platform === 'ios';
   if (appPath !== undefined && (typeof appPath !== 'string' || appPath.length > 2048 || resolve(appPath) !== appPath || !/^\/(?:[^\x00-\x1f\x7f]+\/)?apps\/player\/apps\/(?:native\/\.build\/tvos-simulator\/Build\/Products\/Debug-appletvsimulator\/KinosailPlayer\.app|android\/app\/build\/outputs\/apk\/debug\/app-debug\.apk)$/.test(appPath) || (apple ? !appPath.endsWith('KinosailPlayer.app') : !appPath.endsWith('app-debug.apk')))) throw Error('invalid TV app path');
   const id = selection.platform === 'ios' ? selection.udid : selection.serial;
-  const inventory = await client.devices.list({ ...selection, signal: AbortSignal.timeout(15000) });
-  if (!Array.isArray(inventory) || inventory.length > 128) throw Error('TV inventory mismatch');
-  const matches = inventory.filter(d => d && d.id === id);
-  if (matches.length !== 1 || matches[0].platform !== selection.platform || matches[0].target !== 'tv' ||
-      matches[0].kind !== (apple ? 'simulator' : 'emulator') || matches[0].booted !== true ||
-      (apple && matches[0].appleOs !== 'tvos')) throw Error('TV inventory mismatch');
   const app = apple ? 'com.kinosail.player' : 'com.kinosail.player.dev';
   try {
+    const inventory = await client.devices.list({ ...selection, signal: AbortSignal.timeout(15000) });
+    if (!Array.isArray(inventory) || inventory.length > 128) throw Error('TV inventory mismatch');
+    const matches = inventory.filter(d => d && d.id === id);
+    if (matches.length !== 1 || matches[0].platform !== selection.platform || matches[0].target !== 'tv' ||
+        matches[0].kind !== (apple ? 'simulator' : 'emulator') || matches[0].booted !== true ||
+        (apple && matches[0].appleOs !== 'tvos')) throw Error('TV inventory mismatch');
     if (appPath !== undefined) await client.apps.reinstall({ ...selection, app, appPath, signal: AbortSignal.timeout(60000) });
     const opened = await client.apps.open({ ...selection, app, ...(apple ? {} : { activity: 'com.kinosail.player.tv.TvActivity' }), signal: AbortSignal.timeout(30000) });
     if ((opened?.appBundleId ?? opened?.appId) !== app) throw Error('TV foreground identity mismatch');
