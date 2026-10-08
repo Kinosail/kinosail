@@ -17,7 +17,7 @@ import (
 const maximumCopiedHLSTimelineBytes = 256 << 10
 
 func validCopiedHLSClockInput(ctx context.Context, rendition string, timeline *copiedHLSTimeline) bool {
-	return ctx.Err() == nil && hlsFile(rendition) && strings.HasSuffix(rendition, "/index.m3u8") && validCopiedHLSTimeline(timeline) && timeline.Clock == nil
+	return ctx.Err() == nil && hlsFile(rendition) && strings.HasSuffix(rendition, "/index.m3u8") && validCopiedHLSTimeline(timeline) && timeline.Strategy == "h264-idr-keys-1" && timeline.Clock == nil
 }
 
 func validCopiedHLSTimeline(timeline *copiedHLSTimeline) bool {
@@ -29,11 +29,11 @@ func validCopiedHLSTimeline(timeline *copiedHLSTimeline) bool {
 			return false
 		}
 	}
-	return timeline.Clock == nil || !math.IsNaN(*timeline.Clock) && *timeline.Clock >= 0 && *timeline.Clock <= 1
+	return validCopiedHLSPresentation(timeline) && (timeline.Clock == nil || !math.IsNaN(*timeline.Clock) && *timeline.Clock >= 0 && *timeline.Clock <= 1)
 }
 
 func validCopiedHLSHeader(timeline *copiedHLSTimeline) bool {
-	return timeline != nil && timeline.Strategy == "h264-idr-keys-1" && timeline.Policy != "" && len(timeline.Policy) <= 16<<10 &&
+	return timeline != nil && (timeline.Strategy == "h264-idr-keys-1" || timeline.Strategy == copiedHLSPrerollStrategy) && timeline.Policy != "" && len(timeline.Policy) <= 16<<10 &&
 		len(timeline.Keys) > 0 && len(timeline.Keys) <= maximumCopiedHLSKeys
 }
 
@@ -92,6 +92,11 @@ func (manager *hlsManager) readCopiedHLSTimelineContext(ctx context.Context, dir
 func (manager *hlsManager) readCopiedHLSTimelineRoot(ctx context.Context, directory, policy string, root *os.Root) (*copiedHLSTimeline, error) {
 	timeline, data, err := decodeCopiedHLSTimeline(root, policy)
 	if err != nil || ctx.Err() != nil {
+		return nil, errCopiedHLSIndex
+	}
+	if timeline.Presentation != nil && timeline.Presentation.Proof != nil {
+		// The new geometry does not yet have a generated-asset producer.
+		// Until its own certificate verifier exists, cache admission fails closed.
 		return nil, errCopiedHLSIndex
 	}
 	if timeline.Clock != nil && manager.verifyCopiedHLSCertificate(ctx, directory, root, data, timeline) != nil {
@@ -156,7 +161,7 @@ func writeCopiedHLSMetadata(root *os.Root, name string, data []byte) error {
 }
 
 func copiedHLSManifest(manifest []byte, timeline *copiedHLSTimeline) ([]byte, bool) {
-	if !validCopiedHLSTimeline(timeline) || timeline.Clock == nil ||
+	if !validCopiedHLSTimeline(timeline) || !copiedHLSPresentationBound(timeline) ||
 		!playback.PlaylistHas(manifest, "#EXT-X-PLAYLIST-TYPE:EVENT") ||
 		!bytes.Contains(manifest, []byte("#EXT-X-MAP:URI=\"init.mp4\"")) {
 		return manifest, false
@@ -167,14 +172,14 @@ func copiedHLSManifest(manifest []byte, timeline *copiedHLSTimeline) ([]byte, bo
 	target := 1.0
 	for number := range timeline.Keys {
 		end := timeline.segmentEnd(number)
-		target = max(target, math.Ceil(end-timeline.point(number)))
+		target = max(target, math.Ceil(end-copiedHLSPresentationPoint(timeline, number)))
 	}
 	var output strings.Builder
 	output.WriteString("#EXTM3U\n#EXT-X-VERSION:7\n#EXT-X-TARGETDURATION:" + strconv.FormatFloat(target, 'f', 0, 64) +
 		"\n#EXT-X-MEDIA-SEQUENCE:0\n#EXT-X-PLAYLIST-TYPE:VOD\n#EXT-X-MAP:URI=\"init.mp4\"\n")
 	for number := range timeline.Keys {
 		end := timeline.segmentEnd(number)
-		output.WriteString("#EXTINF:" + strconv.FormatFloat(end-timeline.point(number), 'f', 6, 64) +
+		output.WriteString("#EXTINF:" + strconv.FormatFloat(end-copiedHLSPresentationPoint(timeline, number), 'f', 6, 64) +
 			",\nsegment-" + copiedHLSSegmentDigits(number) + ".m4s\n")
 	}
 	output.WriteString("#EXT-X-ENDLIST\n")

@@ -22,14 +22,15 @@ type copiedHLSKey struct {
 }
 
 type copiedHLSTimeline struct {
-	Policy      string
-	Strategy    string
-	Numerator   int64
-	Denominator int64
-	TimeBase    float64
-	Keys        []copiedHLSKey
-	End         float64
-	Clock       *float64
+	Policy       string
+	Strategy     string
+	Numerator    int64
+	Denominator  int64
+	TimeBase     float64
+	Keys         []copiedHLSKey
+	End          float64
+	Clock        *float64
+	Presentation *copiedHLSPresentation
 }
 
 func (timeline *copiedHLSTimeline) point(number int) float64 {
