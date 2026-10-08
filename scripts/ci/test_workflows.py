@@ -13,6 +13,18 @@ WORKFLOWS = ROOT / '.github/workflows'
 
 
 class WorkflowSecurityTests(unittest.TestCase):
+    def test_security_fixed_go_and_network_pins_cover_every_consumer(self):
+        for name in ('go.work', 'apps/player/go.mod', 'apps/subtitles/go.mod', 'packages/go.mod'):
+            with self.subTest(manifest=name):
+                source = (ROOT / name).read_text()
+                self.assertEqual(re.findall(r'^go (.+)$', source, re.M), ['1.27.2'])
+                if name.endswith('go.mod'):
+                    self.assertEqual(re.findall(r'^\s*golang.org/x/net (\S+)', source, re.M), ['v0.60.0'])
+        for app in ('player', 'subtitles'):
+            with self.subTest(builder=app):
+                first = (ROOT / 'apps' / app / 'Containerfile').read_text().splitlines()[0]
+                self.assertEqual(first, 'FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.27.2-alpine@sha256:85dc1069ac644ea3c527b177303a406eb3358192816cd7f9e5848eb658851673 AS build')
+
     def test_deep_coverage_failure_retains_exact_profiles_without_bypass(self):
         app = (WORKFLOWS / 'app.yml').read_text()
         for name in ('Summarize exact deep coverage', 'Keep exact deep coverage profiles'):
@@ -36,9 +48,6 @@ class WorkflowSecurityTests(unittest.TestCase):
         self.assertIn('layout-auth-navigation.spec.ts\n', source)
         self.assertIn('if: always()', artifact)
         self.assertNotIn('.verification/layout/**', artifact)
-
-
-
 
     def test_system_scan_finishes_before_exact_revision_evidence_starts(self):
         # Trivy creates/removes files in the checkout. Overlap changes Git

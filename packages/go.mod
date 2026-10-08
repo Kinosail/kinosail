@@ -1,6 +1,6 @@
 module github.com/MikeO7/kinosail/packages
 
-go 1.27
+go 1.27.2
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
@@ -18,7 +18,7 @@ require (
 	github.com/russellhaering/goxmldsig v1.6.1
 	go.yaml.in/yaml/v3 v3.0.5
 	golang.org/x/crypto v0.57.0
-	golang.org/x/net v0.59.0
+	golang.org/x/net v0.60.0
 	golang.org/x/oauth2 v0.37.0
 	golang.org/x/sys v0.48.0
 	golang.org/x/text v0.42.0
