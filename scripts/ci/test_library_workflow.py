@@ -88,6 +88,15 @@ class LibraryWorkflowTests(unittest.TestCase):
                 self.assertEqual(result.returncode, 2)
                 self.assertEqual(result.stdout, b'')
 
+    def test_owned_relay_controls_source_and_first_failure_are_retained(self):
+        source = WORKFLOW.read_text()
+        block = source.split('  library-owner:\n', 1)[1].split('\n  hls-navigation:', 1)[0]
+        self.assertIn('node --test scripts/testing/library-relay.test.mjs', block)
+        self.assertIn("'scripts/ci/library-internal-relay.mjs'", block)
+        self.assertIn('fixture-startup.json', block)
+        for path in ('scripts/ci/library-internal-relay.mjs', 'scripts/testing/library-relay.test.mjs'):
+            self.assertIn('"' + path + '"', source)
+
     def test_workflow_admission_routing_and_bounded_artifacts_preserve_other_lanes(self):
         source = WORKFLOW.read_text()
         block = re.split(r'\n  [a-z][\w-]*:\n', source.split('  library-owner:\n', 1)[1])[0]

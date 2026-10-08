@@ -129,7 +129,9 @@ class LayoutSelectionTests(unittest.TestCase):
             valid[field] = value
             self.assertEqual(self.selection(valid).returncode, 2)
         for suite in ('restore-source-format', 'restore-controls', 'restore-headers', 'restore-inspect-body'):
-            valid = ['workflow_dispatch', 'R06', 'false', 'false', 'false', 'true', 'primary', suite, 'source-format']
+            valid = ['workflow_dispatch', 'R06', 'false', 'false', 'false', 'false', 'primary', suite, 'source-format', 'false']
+            self.assertEqual(self.selection(valid).returncode, 0)
+            valid[5] = 'true'
             self.assertEqual(self.selection(valid).returncode, 2)
 
     def test_every_consumer_depends_on_selection_before_setup(self):

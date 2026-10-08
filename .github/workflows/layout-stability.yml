@@ -12,6 +12,8 @@ on:
       - "scripts/ci/validate-layout-selection.py"
       - "scripts/ci/test_layout_selection.py"
       - "apps/player/scripts/run-library-profile.sh"
+      - "scripts/ci/library-internal-relay.mjs"
+      - "scripts/testing/library-relay.test.mjs"
       - "apps/player/scripts/library_profile_admission.py"
       - "scripts/ci/run-populated-settings.py"
       - "scripts/ci/test_library_workflow.py"
@@ -416,6 +418,8 @@ jobs:
         with:
           node-version: "26"
           package-manager-cache: false
+      - name: Verify owned internal relay admission and cleanup
+        run: node --test scripts/testing/library-relay.test.mjs
       - name: Install pinned selected browser dependencies
         timeout-minutes: 6
         run: |
@@ -449,7 +453,8 @@ jobs:
               'apps/player/e2e/pnpm-lock.yaml', 'apps/player/e2e/playwright.config.ts',
               'apps/player/scripts/run-library-profile.sh', 'apps/player/scripts/library_profile_admission.py',
               'apps/player/scripts/generate-test-media.sh', 'apps/player/Containerfile', 'apps/player/Containerfile.test',
-              'scripts/ci/run-populated-settings.py', 'scripts/ci/browser-fixture-tls.sh'})
+              'scripts/ci/run-populated-settings.py', 'scripts/ci/browser-fixture-tls.sh',
+              'scripts/ci/library-internal-relay.mjs'})
           receipt = {'revision': os.environ['PROOF_REVISION'], 'profile': 'library-owner', 'project': project,
                      'state': 'fresh', 'identities': [{'file': file, 'fullTitle': title} for file, title in CASES],
                      'discoveryOnly': True, 'command': playwright_arguments(project, False),
@@ -475,6 +480,7 @@ jobs:
             ${{ runner.temp }}/library46-${{ matrix.engine }}/results-${{ matrix.engine }}.json
             ${{ runner.temp }}/library46-${{ matrix.engine }}/fixture-*.txt
             ${{ runner.temp }}/library46-${{ matrix.engine }}/fixture-media.json
+            ${{ runner.temp }}/library46-${{ matrix.engine }}/fixture-startup.json
             ${{ runner.temp }}/library46-${{ matrix.engine }}/browser-results/**/trace.zip
             ${{ runner.temp }}/library46-${{ matrix.engine }}/browser-results/**/*.json
           include-hidden-files: true

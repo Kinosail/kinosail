@@ -42,6 +42,14 @@ if name=='python3':
    (output/'setup-and-run.json').write_text('{}')
    sys.exit(int(os.environ.get('CONTROL_OWNER_EXIT','0')))
  os.execv(os.environ['CONTROL_PYTHON'],[os.environ['CONTROL_PYTHON'],*args])
+if name=='node':
+ import signal,time
+ record('relay',args)
+ def stop(*_):
+  record('relay-close',[]);sys.exit(0)
+ signal.signal(signal.SIGTERM,stop)
+ print(os.environ.get('CONTROL_RELAY','{"schemaVersion":1,"port":49152}'),flush=True)
+ while True: time.sleep(1)
 if name=='curl':
  record('health',args);print('{"status":"ok"}');sys.exit(0)
 if name=='go':
@@ -69,7 +77,7 @@ elif args and args[0]=='run' and '--entrypoint' in args and '/bin/sh' in args:
 elif args and args[0]=='run' and ('ffmpeg' in args or 'ffprobe' in args):
  print('controlled codec peer; no actual codec')
 '''
-        for name in ('python3', 'docker', 'podman', 'curl', 'go', 'mktemp'):
+        for name in ('python3', 'docker', 'podman', 'curl', 'go', 'mktemp', 'node'):
             path = self.tools / name
             path.write_text('#!' + sys.executable + '\n' + program)
             path.chmod(0o755)
@@ -95,6 +103,8 @@ elif args and args[0]=='run' and ('ffmpeg' in args or 'ffprobe' in args):
         media = next(args[args.index('--volume') + 1].split(':')[0] for args in engines
                      if args[0] == 'run' and '--entrypoint' in args and '/bin/sh' in args)
         self.assertFalse(Path(media).parent.exists())
+        if any(kind == 'relay' for kind, _ in rows):
+            self.assertEqual(sum(kind == 'relay-close' for kind, _ in rows), 1)
 
     def test_invalid_selection_or_profile_environment_has_no_fixture_effects(self):
         for arguments in ([], ['chromium'], ['all', str(self.discovery), str(self.output)],
@@ -157,14 +167,28 @@ elif args and args[0]=='run' and ('ffmpeg' in args or 'ffprobe' in args):
         self.assertFalse(any(kind == 'engine' and args[0] in ('network', 'volume', 'run')
                              for kind, args in rows))
 
-    def test_bad_published_port_rejects_before_health_or_owner_and_closes_fixture(self):
-        for address in ('127.0.0.1:0', '127.0.0.1:65536', '0.0.0.0:38127',
-                        '127.0.0.1:no', '127.0.0.1:38127\n127.0.0.1:38128'):
+    def test_absent_internal_publish_uses_owned_relay_without_external_network(self):
+        result = self.run_caller(CONTROL_PORT='')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        rows = self.rows()
+        self.assertEqual(sum(kind == 'owner' for kind, _ in rows), 1)
+        self.assertEqual(sum(kind == 'relay' for kind, _ in rows), 1)
+        self.assertFalse(any(kind == 'engine' and args[0] == 'port' for kind, args in rows))
+        self.assert_cleanup(rows)
+
+    def test_bad_relay_ready_rejects_before_health_or_owner_and_closes_fixture(self):
+        for address in ('{"schemaVersion":1,"port":0}', '{"schemaVersion":1,"port":65536}',
+                        '{"schemaVersion":1,"port":"49152"}', '{}',
+                        '{"schemaVersion":1,"port":49152,"private":true}'):
             with self.subTest(address=address):
-                result = self.run_caller(CONTROL_PORT=address)
+                result = self.run_caller(CONTROL_RELAY=address)
                 rows = self.rows()
                 try:
                     self.assertEqual(result.returncode, 2, result.stderr)
+                    failure = json.loads((self.output / 'fixture-startup.json').read_text())
+                    self.assertEqual(failure, {'schemaVersion': 1, 'phase': 'relay', 'exitCode': 2,
+                                              'containerRunning': None, 'networkInternal': None,
+                                              'targetAdmitted': False})
                     self.assertFalse(any(kind in ('health', 'owner') for kind, _ in rows))
                     self.assert_cleanup(rows)
                 finally:
