@@ -133,6 +133,13 @@ func startupRenditionReady(root *os.Root, directory, key, playlist string, durat
 }
 
 func startupWindowSegments(manifest []byte, playableDuration float64, projection ...func([]byte) []byte) ([]string, bool) {
+	ordinary := len(projection) == 0 || projection[0] == nil
+	if ordinary {
+		segments, applicable, ready := remainingRoundedAACStartup(manifest, playableDuration)
+		if applicable {
+			return segments, ready
+		}
+	}
 	manifest = projectHLSPlaylist(manifest, playableDuration, projection...)
 	var segments []string
 	duration, segmentDuration := 0.0, 0.0
@@ -154,7 +161,8 @@ func startupWindowSegments(manifest []byte, playableDuration float64, projection
 		duration += segmentDuration
 		segmentDuration = 0
 		if duration >= 8 {
-			return segments, true
+			ready := !ordinary || playableDuration <= 0 || duration <= playableDuration || playback.PlaylistHas(manifest, "#EXT-X-ENDLIST")
+			return segments, ready
 		}
 	}
 	return segments, len(segments) > 0 && playback.PlaylistHas(manifest, "#EXT-X-ENDLIST")

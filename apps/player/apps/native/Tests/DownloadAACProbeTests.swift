@@ -3,9 +3,53 @@ import Foundation
 import Testing
 @testable import KinosailPlayer
 
+@Suite(.serialized)
 struct DownloadAACProbeTests {
+    @Test func rejectsMalformedTruncatedAndWrongKindWithoutChangingBytes() async throws {
+        let fixture = try await PlaybackStartupFixture()
+        defer { fixture.close() }
+        let audio = try Self.audio()
+        fixture.media = audio
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let file = directory.appendingPathComponent("download.media")
+        for (bytes, video) in [(Data("malformed media".utf8), false), (Data(audio.prefix(64)), false), (audio, true), (Data("#EXTM3U\nhttps://example.com/media\n".utf8), false)] {
+            try bytes.write(to: file)
+            let playable = await withCheckedContinuation { continuation in
+                OfflineProbe.check(file, video: video) { continuation.resume(returning: $0) }
+            }
+            #expect(!playable)
+            #expect(try Data(contentsOf: file) == bytes)
+        }
+        try audio.write(to: file)
+        let link = directory.appendingPathComponent("link.media")
+        try FileManager.default.createSymbolicLink(at: link, withDestinationURL: file)
+        for url in [link, fixture.server.url.appendingPathComponent("media/offline")] {
+            let playable = await withCheckedContinuation { continuation in
+                OfflineProbe.check(url, video: false) { continuation.resume(returning: $0) }
+            }
+            #expect(!playable)
+            #expect(try Data(contentsOf: file) == audio)
+        }
+        #expect(fixture.count("/media/offline") == 0)
+        await fixture.client.close()
+    }
     @Test func compatibleAACWithoutAFileExtensionIsPlayable() async throws {
-        let audio = try #require(Data(base64Encoded: """
+        let audio = try Self.audio()
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let file = directory.appendingPathComponent("download.media")
+        try audio.write(to: file)
+        let playable = await withCheckedContinuation { continuation in
+            OfflineProbe.check(file, video: false) { continuation.resume(returning: $0) }
+        }
+        #expect(playable)
+    }
+
+    private static func audio() throws -> Data {
+        return try #require(Data(base64Encoded: """
 AAAAHGZ0eXBNNEEgAAACAE00QSBpc29taXNvMgAAAwptb292AAAAbG12aGQAAAAAAAAAAAAAAAAAAB9AAAAJYAABAAABAAAA
 AAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC
 AAACNXRyYWsAAABcdGtoZAAAAAMAAAAAAAAAAAAAAAEAAAAAAAAJYAAAAAAAAAAAAAAAAQEAAAAAAQAAAAAAAAAAAAAAAAAA
@@ -37,15 +81,6 @@ bvDk7fBSdJZA9QgQFbwjyyToAugRCKmo0Y/T54QOGuwXeP+b+prH7XR3eFK81xL0Su9bkuqNdrbbQpxa
 d1yEr8PXISTh5B8e394fCVjTks9Mt0eAn4dl+KwLnfsGdgfutX/1fte5W/z3Abc97TAWJnYUk8bnTDYtqQ2LakMnLEg1RhVj
 RhVTRXVTNXJTNXJTwAEYgbRw
 """, options: .ignoreUnknownCharacters))
-        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        defer { try? FileManager.default.removeItem(at: directory) }
-        let file = directory.appendingPathComponent("download.media")
-        try audio.write(to: file)
-        let playable = await withCheckedContinuation { continuation in
-            OfflineProbe.check(file, video: false) { continuation.resume(returning: $0) }
-        }
-        #expect(playable)
     }
 }
 #endif

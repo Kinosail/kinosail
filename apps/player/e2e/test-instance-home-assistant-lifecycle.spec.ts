@@ -1,6 +1,6 @@
 import {expect, test, type Page, type BrowserContext} from "@playwright/test";
 import {configureTestInstance, createViewer, loginViewer, removeViewer} from "./test-instance-helpers";
-import {openDocuments, closeDocuments, setting, observeAcceptedDocumentStates} from "./home-assistant-document-helpers";
+import {openDocuments, closeDocuments, setting, observeAcceptedDocumentStates, observeActualDocumentClaims} from "./home-assistant-document-helpers";
 import {inspectDocumentStatus} from "./home-assistant-document-inspection";
 
 configureTestInstance();
@@ -22,10 +22,12 @@ test("real document targets work with denied storage and unavailable UUID and lo
     await inspectDocumentStatus(first, info, "connected");
     const before = (await docs.live()).find(target => target.itemId === docs.ids[0])!.id;
     const accepted = observeAcceptedDocumentStates(first);
+    const actualClaims = await observeActualDocumentClaims(first);
     const renewed = first.waitForResponse(response => new URL(response.url()).pathname.endsWith("/players/claims") && response.status() === 201);
     void renewed.catch(() => {});
     await first.reload();
-    const replacement = await (await renewed).json();
+    expect((await renewed).status()).toBe(201);
+    const replacement = actualClaims.at(-1)!;
     expect(typeof replacement.id).toBe("string"); expect(replacement.id).not.toBe(before);
     docs.claims.add(replacement.claim);
     await expect.poll(() => accepted.some(state => state.id === replacement.id && state.claim === replacement.claim)).toBe(true);
@@ -51,9 +53,11 @@ test("real cloned document candidate forks after occupied claim without stealing
     const renewed = second.waitForResponse(response => new URL(response.url()).pathname.endsWith("/players/claims") && response.status() === 201);
     void occupied.catch(() => {}); void renewed.catch(() => {});
     const accepted = observeAcceptedDocumentStates(second);
+    const actualClaims = await observeActualDocumentClaims(second);
     await second.goto(`/watch/${docs.ids[1]}`);
     expect((await occupied).status()).toBe(409);
-    const replacement = await (await renewed).json();
+    expect((await renewed).status()).toBe(201);
+    const replacement = actualClaims.at(-1)!;
     expect(typeof replacement.id).toBe("string"); expect(replacement.id).not.toBe(original);
     await expect.poll(() => accepted.some(state => state.id === replacement.id && state.claim === replacement.claim)).toBe(true);
     await expect.poll(async () => (await docs.live()).some(target => target.itemId === docs.ids[1] && target.id === replacement.id)).toBe(true);
@@ -69,92 +73,126 @@ test("real cloned document candidate forks after occupied claim without stealing
 
 test("real lost-release reload waits for lease expiry and renews only its original target", {tag: ["@smoke", "@routed-fault"]}, async ({page}, info) => {
   test.setTimeout(75_000);
-  let first: Page | undefined, second: Page | undefined;
+  let first: Page | undefined, second: Page | undefined, releasePath = "";
   try {
     const docs = await openDocuments(page); ({first, second} = docs);
     await expect.poll(async () => (await docs.live()).length).toBe(2);
     const original = (await docs.live()).find(target => target.itemId === docs.ids[0])!.id;
+    const accepted = observeAcceptedDocumentStates(first);
+    const actualClaims = await observeActualDocumentClaims(first);
     let dropped = 0, conflicts = 0;
-    await first.route("**/home-assistant/players/*/release", route => {dropped++; return route.abort();});
+    releasePath = `**/api/v1/home-assistant/players/${original}/release`;
+    await page.context().route(releasePath, route => {
+      if (route.request().method() !== "POST") return route.continue();
+      dropped++; return route.abort();
+    });
     first.on("response", response => {if (new URL(response.url()).pathname.endsWith("/players/claims") && response.status() === 409) conflicts++;});
     const renewed = first.waitForResponse(response => new URL(response.url()).pathname.endsWith("/players/claims") && response.status() === 201, {timeout: 40_000});
     void renewed.catch(() => {});
     const started = Date.now();
     await first.reload();
-    const claim = await (await renewed).json();
+    expect((await renewed).status()).toBe(201);
+    const claim = actualClaims.at(-1)!;
     const elapsed = Date.now() - started;
     expect(claim.id).toBe(original);
     expect(claim.expiresIn).toBe(30);
     expect(dropped).toBeGreaterThan(0); expect(conflicts).toBeGreaterThan(0);
     expect(elapsed).toBeLessThanOrEqual(35_000);
+    await expect.poll(() => accepted.some(state => state.id === claim.id && state.claim === claim.claim)).toBe(true);
     await expect.poll(async () => (await docs.live()).find(target => target.itemId === docs.ids[0])?.id).toBe(original);
-    await first.unroute("**/home-assistant/players/*/release");
+    await page.context().unroute(releasePath); releasePath = "";
     await info.attach("actual-lost-release-expiry", {body: JSON.stringify({releaseDropped: true, realOccupiedReplies: conflicts,
       sameCandidateRenewed: true, expiresIn: 30, elapsedMs: elapsed}), contentType: "application/json"});
-  } finally {await closeDocuments(page, [first, second]);}
+  } finally {
+    if (releasePath) await page.context().unroute(releasePath);
+    await closeDocuments(page, [first, second]);
+  }
 });
 
 test("actual authenticated Profile switch retires old document command effects", {tag: ["@smoke", "@routed-fault"]}, async ({page, browser}, info) => {
   test.setTimeout(75_000);
-  let first: Page | undefined, second: Page | undefined, owner: Page | undefined, profile = "";
-  let ownerContext: BrowserContext | undefined, viewerSwitched = false;
+  let first: Page | undefined, second: Page | undefined, owner: Page | undefined, viewer: Page | undefined, profile = "";
+  let ownerContext: BrowserContext | undefined, viewerContext: BrowserContext | undefined, primary: unknown, viewerSwitched = false;
   let releaseCommand = () => {};
   const name = `R18 isolated Viewer ${info.workerIndex}`, password = "r18-fictional-viewer-password";
   try {
     const docs = await openDocuments(page); ({first, second} = docs);
     await expect.poll(async () => (await docs.live()).length).toBe(2);
-    ownerContext = await browser.newContext({baseURL: new URL(page.url()).origin, storageState: await page.context().storageState()});
+    const baseURL = new URL(page.url()).origin;
+    ownerContext = await browser.newContext({baseURL, storageState: await page.context().storageState()});
     owner = await ownerContext.newPage();
     profile = await createViewer(owner, name, password);
+    // Authenticate through the real UI before starting the bounded held reply.
+    viewerContext = await browser.newContext({baseURL, ignoreHTTPSErrors: false});
+    await viewerContext.addInitScript(() => Object.defineProperty(PublicKeyCredential, "isConditionalMediationAvailable", {value: async () => false}));
+    viewer = await viewerContext.newPage();
+    await loginViewer(viewer, name, password);
+    const authenticated = await viewer.request.get("/api/v1/me");
+    expect(authenticated.status()).toBe(200);
+    expect((await authenticated.json()).viewer.id === profile, "real UI authenticated the fictional Viewer").toBe(true);
+    const sessions = (await viewer.context().cookies(baseURL)).filter(cookie => cookie.name === "__Host-kinosail_player_session");
+    expect(sessions.length, "the server issued exactly one app-owned session cookie").toBe(1);
     const target = (await docs.live()).find(target => target.itemId === docs.ids[0])!.id;
     const before = await first.locator("video").evaluate((media: HTMLVideoElement) => media.currentTime);
     const duration = await first.locator("video").evaluate((media: HTMLVideoElement) => media.duration);
     expect(Number.isFinite(duration) && duration > 2).toBe(true);
     const position = before < duration / 2 ? duration * .75 : duration * .25;
     expect(Math.abs(position - before)).toBeGreaterThan(.5);
-    let release!: () => void, captured!: () => void;
-    const barrier = new Promise<void>(resolve => release = resolve), held = new Promise<void>(resolve => captured = resolve);
+    let release!: () => void, capturedAt = 0, requestStarted = 0;
+    const barrier = new Promise<void>(resolve => release = resolve);
     releaseCommand = release;
     await first.route(`**/api/v1/home-assistant/players/${target}`, async route => {
+      if (route.request().method() !== "PUT") return route.continue();
+      const started = Date.now();
       const response = await route.fetch();
-      if (response.status() === 200 && (await response.json()).command === "seek") {captured(); await barrier;}
+      if (response.status() === 200 && (await response.json()).command === "seek") {requestStarted = started; capturedAt = Date.now(); await barrier;}
       try {await route.fulfill({response});} catch (error) {if (!first!.isClosed()) throw error;}
     });
-    // Hold an actual accepted command response; do not fabricate a handler or payload.
     expect(await owner.evaluate(async ({id, position}) => {
       const csrf = document.querySelector<HTMLMetaElement>('meta[name="kinosail-csrf"]')?.content || "";
       return (await fetch(`/api/v1/home-assistant/players/${id}/commands`, {method: "POST",
         headers: {"Content-Type": "application/json", "X-Kinosail-CSRF": csrf}, body: JSON.stringify({command: "seek", position})})).status;
     }, {id: target, position})).toBe(202);
-    await held;
-    const changed = first.waitForResponse(async response => new URL(response.url()).pathname === "/api/v1/me" &&
-      response.status() === 200 && (await response.json()).viewer.id === profile);
-    const delivered = first.waitForResponse(async response => new URL(response.url()).pathname === `/api/v1/home-assistant/players/${target}` &&
-      response.status() === 200 && (await response.json()).command === "seek");
-    void delivered.catch(() => {});
-    void changed.catch(() => {});
-    try {await loginViewer(page, name, password); viewerSwitched = true;} finally {release();}
-    expect((await delivered).status()).toBe(200);
-    await changed;
-    await expect(first.locator("[data-home-assistant-status]")).toHaveAttribute("data-home-assistant-status", "stopped");
+    await expect.poll(() => capturedAt, {timeout: 15_000, message: "actual accepted seek reply reached the held route"}).toBeGreaterThan(0);
+    const changed = first.waitForResponse(response => new URL(response.url()).pathname === "/api/v1/me" &&
+      response.status() === 200, {timeout: 5_000});
+    const delivered = first.waitForResponse(response => new URL(response.url()).pathname === `/api/v1/home-assistant/players/${target}` &&
+      response.request().method() === "PUT" && response.status() === 200, {timeout: 5_000});
+    void delivered.catch(() => {}); void changed.catch(() => {});
     let lateStates = 0;
     first.on("request", request => {if (request.method() === "PUT" && new URL(request.url()).pathname === `/api/v1/home-assistant/players/${target}`) lateStates++;});
+    // Overwrite only genuine server authority; never introduce an unauthenticated gap.
+    await page.context().addCookies(sessions); viewerSwitched = true;
+    const switched = await first.request.get("/api/v1/me", {timeout: 2_000});
+    expect(switched.status()).toBe(200);
+    expect((await switched.json()).viewer.id === profile, "shared session identifies the authenticated Viewer").toBe(true);
+    expect(Date.now() - requestStarted, "session verification leaves deadline margin").toBeLessThan(4_000);
+    release();
+    expect((await delivered).status()).toBe(200);
+    const heldMs = Date.now() - requestStarted;
+    expect(heldMs, "actual request including server fetch and browser delivery stays inside five seconds").toBeLessThan(4_000);
+    expect((await (await changed).json()).viewer.id === profile, "the actual command adapter observed the new Viewer").toBe(true);
+    await expect(first.locator("[data-home-assistant-status]")).toHaveAttribute("data-home-assistant-status", "stopped");
     await first.waitForTimeout(11_000);
     expect(lateStates).toBe(0);
     expect(await first.locator("video").evaluate((media: HTMLVideoElement) => media.currentTime)).toBeCloseTo(before, 2);
-    await info.attach("actual-authenticated-profile-retirement", {body: JSON.stringify({publicViewerChanged: true,
-      commandAcceptedBeforeSwitch: 202, commandDeliveredAfterSwitch: 200, actualCommandReplyHeld: true,
+    await info.attach("actual-authenticated-profile-retirement", {body: JSON.stringify({realUIAuthenticatedViewer: true,
+      serverIssuedSessionReplaced: true, publicViewerChanged: true, commandAcceptedBeforeSwitch: 202,
+      commandDeliveredAfterSwitch: 200, actualCommandReplyHeld: true, heldMs,
       seekSeparatedByMoreThanHalfSecond: true, lateStateWrites: 0, mediaUnchanged: true}), contentType: "application/json"});
-  } finally {
+  } catch (error) {primary = error; throw error;} finally {
     releaseCommand();
-    try {
-      for (const document of [first, second]) if (document && !document.isClosed()) await document.close();
-    } finally {
-      try {
-        const management = owner || (!viewerSwitched ? page : undefined);
-        if (management) {try {await setting(management, false);} finally {if (profile) await removeViewer(management, profile);}}
-      } finally {await ownerContext?.close();}
+    let cleanup: unknown;
+    const attempt = async (action: () => Promise<unknown>) => {try {await action();} catch (error) {cleanup ||= error;}};
+    for (const document of [first, second]) if (document && !document.isClosed()) await attempt(() => document.close());
+    const management = owner || (!viewerSwitched ? page : undefined);
+    if (management) {
+      await attempt(() => setting(management, false));
+      if (profile) await attempt(() => removeViewer(management, profile));
     }
+    if (viewerContext) await attempt(() => viewerContext!.close());
+    if (ownerContext) await attempt(() => ownerContext!.close());
+    if (!primary && cleanup) throw cleanup;
   }
 });
 

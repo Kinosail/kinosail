@@ -1,8 +1,10 @@
+import { registerSubtitleLandscapeTests } from "./subtitle-dashboard-landscape-tests";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { compactViewports, expectNoHorizontalOverflow, expectSkipLinkOffscreen, initiallyOccludedTargets, occludedTargets, setSubtitleLanguages, supportedViewports } from "./subtitle-dashboard-helpers";
 
 export function registerSubtitleLayoutTests() {
+registerSubtitleLandscapeTests();
 test("Subtitles navigation follows the Player shell at each breakpoint", async ({ page }, testInfo) => {
   for (const [width, height] of [[1440, 900], [1200, 900], [1024, 768], [390, 844]]) {
     await page.setViewportSize({ width, height });
@@ -48,7 +50,7 @@ test("phone settings expose every section without a hidden horizontal rail", asy
     })),
     bounds: nav.getBoundingClientRect().toJSON(),
   }));
-  expect(layout.links.map((link) => link.href).join(" ")).toBe("#language #cleanup #provider #libraries #automation #appearance #trusted-https #account #thanks");
+  expect(layout.links.map((link) => link.href).join(" ")).toBe("#language #cleanup #provider #libraries #automation #appearance #security #account #thanks");
   expect(layout.scrollWidth).toBeLessThanOrEqual(layout.clientWidth + 1);
   expect(layout.links.every((link) => link.left >= layout.bounds.left - 1 && link.right <= layout.bounds.right + 1 && link.top >= layout.bounds.top - 1 && link.bottom <= layout.bounds.bottom + 1)).toBe(true);
 });
@@ -192,27 +194,6 @@ test("Dashboard preserves keyboard and high-contrast operation", async ({ page }
   await expect(page.locator(".subtitle-coverage-stat > p")).toBeVisible();
   await expect(page.locator(".subtitle-coverage-stat > p")).toContainText(/\d+ of \d+ files ready/);
   await page.screenshot({ path: testInfo.outputPath("subtitle-dashboard-forced-colors.png") });
-});
-
-test("Compact navigation does not cover the current subtitle task", async ({ page }) => {
-  const failures: string[] = [];
-  for (const viewport of compactViewports) {
-    await page.setViewportSize(viewport);
-    await page.goto("/");
-    if (viewport.height <= 600) {
-      failures.push(...(await initiallyOccludedTargets(page, [".subtitle-overview-copy h2", ".subtitle-coverage-stat > p", ".subtitle-overview-actions :is(button, a.button)"], [".app-header nav"])).map((failure) => `${viewport.width}px dashboard: ${failure}`));
-    }
-    failures.push(...(await occludedTargets(page, [".subtitle-coverage-stat > p", ".subtitle-overview-copy h2", ".subtitle-overview-actions :is(button, a.button)", ".subtitle-system > summary"], [".app-header nav"])).map((failure) => `${viewport.width}px dashboard: ${failure}`));
-
-    await page.goto("/settings#provider");
-    failures.push(...(await occludedTargets(page, ["#provider h2", "#provider input[name=apiKey]", "#provider form[action='/settings/subtitles/subsource'] button"], [".app-header nav", ".search", ".settings-nav"])).map((failure) => `${viewport.width}px provider settings: ${failure}`));
-    const skip = await page.locator(".skip").boundingBox();
-    if (!skip || skip.y + skip.height > 0) failures.push(`${viewport.width}px settings: skip link is visible`);
-
-    await page.goto("/settings#trusted-https");
-    failures.push(...(await occludedTargets(page, ["#trusted-https input[name=provider]", "#trusted-https input[name=domain]", "#trusted-https form[action='/settings/trusted-https'] button"], [".app-header nav", ".search", ".settings-nav"])).map((failure) => `${viewport.width}px trusted HTTPS: ${failure}`));
-  }
-  expect(failures).toEqual([]);
 });
 
 test("Dashboard preserves its task at 200 percent reflow", async ({ page }) => {

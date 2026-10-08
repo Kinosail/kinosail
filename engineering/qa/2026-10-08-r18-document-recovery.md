@@ -78,3 +78,35 @@ rendered Retry recovery and current Player/Subtitles composed assets. Routed
 faults are identified separately from ordinary real-server success. Original
 required tests and protections remain intact. History reports actual persisted
 admission without claiming playable BFCache or ordinary HTTP qualification.
+
+## Current-main reconciliation and fixture prerequisites
+
+The first production head f2bdd4f8baa1815ba6d12db21bcefde9bf86bdd9 was tested
+in hosted run37717928169. All three original real-document journeys passed.
+The populated selection recorded60 passes, two failures and one flaky case.
+The cloned and lost-release cases encountered an unavailable Chromium response
+resource; the lost-release control also recorded zero intercepted release requests.
+The Profile control timed out and its context teardown masked the pending stage.
+These unmet fixture prerequisites do not establish lease-expiry or Profile defects.
+
+This correction captures genuine server201 bodies before navigation can retire
+their DevTools resources and fulfills those responses unchanged. Browser201,
+matching private-claim statePUT200 and an item-bound public target remain required.
+The lost-release control intercepts only the original target's releasePOST at
+context level and requires both an actual interception and real occupied replies.
+
+The fictional Viewer authenticates through real UI in a separate context before
+the command hold. Only its genuine server-issued app session cookie overwrites
+the shared session; a publicMe must identify that Viewer before the unchanged
+accepted command reply is delivered within the existing five-second deadline.
+The playback documents remain loaded. The command adapter's actualMe, stopped
+state, no late state writes and unchanged media remain mandatory. This is a
+routed session-change control, not an in-flight login journey in the shared tab.
+Claims and cookies stay in test memory, outside attachments and diagnostics.
+
+Reconciliation starts from main ef278f293ab85ffcc5932686343d7c8f4f3cb594.
+The current progress prefix/suffix outside the allocated Home Assistant block,
+native navigation and delivered PR528 queue intent source are preserved.
+All21 current required titles and the ten R18 titles remain selected.
+Persisted playable BFCache and ordinary HTTP remain unadmitted owner boundaries.
+Canonical metadata and fresh exact-head hosted checks are still required.

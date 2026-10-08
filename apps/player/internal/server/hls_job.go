@@ -40,7 +40,8 @@ func (manager *hlsManager) ensureHLSJob(ctx context.Context, item library.Item, 
 			if err := waitForReplacedHLSJob(ctx, job); err != nil {
 				return nil, err
 			}
-			continue
+			// Cancellation can publish a reusable cache before the producer joins.
+			return nil, errHLSIdentityChanged
 		}
 		if job != nil && job.cachePolicy != options.Cache {
 			replaceHLSIdentity(ctx, job, recipe)
@@ -109,6 +110,9 @@ func (manager *hlsManager) hlsSettings(item library.Item, recipe hlsRecipe) (tra
 	}
 	if recipe.subtitlePath != "" {
 		options.Cache += ":subtitle=" + sourceVersion(recipe.subtitlePath)
+	}
+	if remainingAACOriginRecipe(item, recipe) {
+		options.Cache += ":aac-origin=1"
 	}
 	options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=15"
 	if err := playback.ValidateHLSSource(item.Path, options.Cache); err != nil {

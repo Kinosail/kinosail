@@ -56,3 +56,22 @@ e1772de2b093e398b73e19dffff2858c7ff00472:engineering/qa/2026-10-03-test-overhaul
 # Independently verified SHA256 of the historical 81-byte R04 scan status log.
 # Proof: engineering/qa/2026-10-04-r04-pagination/historical-checksum-proof.json.
 30eac3c60bddf8a931deb3cca60511fcb73e5dbc:engineering/qa/2026-10-04-r04-pagination/run-context.json:generic-api-key:41
+
+# Exact historical SHA256 receipt entries; source blobs and producer were verified.
+# These are digests beside access/key filenames, not credentials or file contents.
+2776f4ce39fc7084ff20cac18e895b7a373fe685:engineering/qa/2026-10-04-r08-now-playing/visibility-red-receipt.json:generic-api-key:72
+51cb1a903ac3eb1f4c104a6a76a580a3bd2898bd:engineering/qa/2026-10-04-r08-now-playing/initial-native-receipt.json:generic-api-key:62
+6da6ce46f9ab1589f42774b7713ed28cb2d4e4ff:engineering/qa/2026-10-04-r08-now-playing/red-receipt.json:generic-api-key:55
+7ce5934078430675f83aef91681b0443a1ddba32:engineering/qa/2026-10-04-q14-browse-return/collection-repair-context.json:generic-api-key:70
+7ce5934078430675f83aef91681b0443a1ddba32:engineering/qa/2026-10-04-q14-browse-return/direct-cli-preparation-context.json:generic-api-key:34
+7ce5934078430675f83aef91681b0443a1ddba32:engineering/qa/2026-10-04-q14-browse-return/runtime-collection-prerequisite.json:generic-api-key:44
+c5563c73971f81873639aed5a0e517c785f1096a:engineering/qa/2026-10-04-q14-browse-return/prepared-context.json:generic-api-key:29
+d02c9534d2e4a67e34de979f6bfb443d7553b0e5:engineering/qa/2026-10-04-r08-now-playing/green-native-receipt.json:generic-api-key:75
+
+# Independently verified Git blob SHA1 identifiers in historical API source metadata.
+4a10b3ab0930a47dd0356a33f633ab5eed8d43ed:engineering/qa/2026-10-05-q12-ha-pagination/source-inventory.json:generic-api-key:86
+4a10b3ab0930a47dd0356a33f633ab5eed8d43ed:engineering/qa/2026-10-05-q12-ha-pagination/source-inventory.json:generic-api-key:92
+4a10b3ab0930a47dd0356a33f633ab5eed8d43ed:engineering/qa/2026-10-05-q12-ha-pagination/source-inventory.json:generic-api-key:98
+7c3674a7ee4773c50376362c0497a9c85010106f:engineering/qa/2026-10-05-q12-ha-pagination/source-inventory.json:generic-api-key:86
+7c3674a7ee4773c50376362c0497a9c85010106f:engineering/qa/2026-10-05-q12-ha-pagination/source-inventory.json:generic-api-key:92
+7c3674a7ee4773c50376362c0497a9c85010106f:engineering/qa/2026-10-05-q12-ha-pagination/source-inventory.json:generic-api-key:98

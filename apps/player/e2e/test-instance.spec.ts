@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { configureTestInstance, createViewer, firstPlayable, login, loginViewer, newViewerPage, removeViewer } from "./test-instance-helpers";
+import { configureTestInstance, createViewer, firstPlayable, login, loginViewer, newViewerPage, removeViewer, saveSubtitleChoices } from "./test-instance-helpers";
 
 configureTestInstance();
 test.use({ serviceWorkers: "block" });
@@ -20,15 +20,13 @@ test("preferred-language subtitle choices hide other tracks without changing fil
 			expect((await new AxeBuilder({ page }).include('form[action="/settings/subtitles/picker"]').analyze()).violations).toEqual([]);
 			await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-choices.png`), fullPage: true });
 		}
-		await choices.getByLabel("Playback subtitle choices").selectOption("on");
-		await choices.getByRole("button", { name: "Save subtitle choices" }).click();
+		await saveSubtitleChoices(page, "on");
 		await page.goto(watch);
 		await expect(page.locator('video track[srclang="en"]')).toHaveCount(1);
 		await expect(page.locator('video track[srclang="es"]')).toHaveCount(0);
 	} finally {
 		await page.goto("/settings#playback");
-		await choices.getByLabel("Playback subtitle choices").selectOption("off");
-		await choices.getByRole("button", { name: "Save subtitle choices" }).click();
+		await saveSubtitleChoices(page, "off");
 	}
 	await page.goto(watch);
 	await expect(page.locator('video track[srclang="es"]')).toHaveCount(1);
