@@ -36,10 +36,12 @@ func copiedHLSProbeContext(parent context.Context) (context.Context, context.Can
 }
 
 type copiedHLSProbeWatch struct {
-	scanDone bool
-	stopped  bool
-	scanErr  error
-	result   error
+	scanDone     bool
+	stopped      bool
+	scanErr      error
+	result       error
+	terminateErr error
+	observeErr   error
 }
 
 func watchCopiedHLSProbe(ctx context.Context, probe copiedHLSProbe, output io.Closer, scanned <-chan error) error {
@@ -48,7 +50,7 @@ func watchCopiedHLSProbe(ctx context.Context, probe copiedHLSProbe, output io.Cl
 	var watch copiedHLSProbeWatch
 	for {
 		if watch.observe(ctx, probe, output) {
-			return watch.result
+			return errors.Join(watch.result, watch.terminateErr, watch.observeErr)
 		}
 		select {
 		case watch.scanErr = <-scanned:
@@ -66,16 +68,14 @@ func (watch *copiedHLSProbeWatch) observe(ctx context.Context, probe copiedHLSPr
 		watch.stop(probe, output, interrupted)
 	}
 	if observeErr != nil {
-		watch.result = observeErr
+		watch.observeErr = observeErr
 	}
 	return watch.scanDone && (exited || observeErr != nil)
 }
 
 func (watch *copiedHLSProbeWatch) stop(probe copiedHLSProbe, output io.Closer, interrupted bool) {
 	if !watch.stopped {
-		if err := probe.terminate(); err != nil {
-			watch.result = err
-		}
+		watch.terminateErr = probe.terminate()
 		watch.stopped = true
 	}
 	if interrupted {
@@ -109,18 +109,16 @@ func settleCopiedHLSProbe(parent context.Context, probe copiedHLSProbe) error {
 
 func reportCopiedHLSProbeCompletion(ctx context.Context, scanErr, watchErr, waitErr, settleErr error) {
 	var errno syscall.Errno
-	if !errors.As(watchErr, &errno) {
-		errno = 0
-	}
-	exitCode := 0
+	errnoKnown := errors.As(watchErr, &errno)
+	exitCode, exitKnown := 0, waitErr == nil
 	var exit *exec.ExitError
 	if errors.As(waitErr, &exit) {
-		exitCode = exit.ExitCode()
+		exitCode, exitKnown = exit.ExitCode(), true
 	}
 	slog.ErrorContext(ctx, "copied probe completion failed",
 		"request_id", requestActivityID(ctx), "playback_session", requestPlaybackSession(ctx),
 		"failure_class", "copied_probe_completion", "scan_failed", scanErr != nil,
-		"watch_failed", watchErr != nil, "watch_errno", int(errno),
-		"wait_failed", waitErr != nil, "wait_exit_code", exitCode,
+		"watch_failed", watchErr != nil, "watch_errno", int(errno), "watch_errno_known", errnoKnown,
+		"wait_failed", waitErr != nil, "wait_exit_code", exitCode, "wait_exit_known", exitKnown,
 		"settlement_failed", settleErr != nil)
 }
