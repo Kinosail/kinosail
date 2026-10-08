@@ -39,7 +39,7 @@ jobs:
           cache-dependency-path: "**/go.sum"
       - uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a
         with:
-          version: v2.13.1
+          version: v2.14.0
           working-directory: apps/${{ inputs.app }}
           args: --timeout=5m --new-from-rev=${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || github.event.before || 'HEAD~1' }}
       - run: make single-container tidy-check
