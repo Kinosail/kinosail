@@ -104,7 +104,7 @@ func TestCopiedHLSLinesHealthy(t *testing.T) {
 			lines := 0
 			err := copiedHLSLines(ctx, executable, copiedHLSProbeArguments(mode), 1024, 1, func(line string) error {
 				if line != "probe-ready" {
-					t.Logf("nonkey owned probe healthy unexpected-line length=%d first-byte=%d pass-prefix=%t run-prefix=%t", len(line), line[0], strings.HasPrefix(line, "PASS"), strings.HasPrefix(line, "=== "))
+					t.Logf("nonkey owned probe healthy unexpected-line length=%d framed-prefix=%t pass-prefix=%t run-prefix=%t", len(line), strings.HasPrefix(line, string([]byte{0x16})), strings.HasPrefix(line, "PASS"), strings.HasPrefix(line, "=== "))
 					return errCopiedHLSIndex
 				}
 				lines++
