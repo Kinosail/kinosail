@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { configureTestInstance, login } from "./test-instance-helpers";
+import { attachResponsiveFailure } from "./responsive-failure-witness.mjs";
 
 configureTestInstance();
 
@@ -39,6 +40,7 @@ test("Home keeps continued titles and navigation reachable", async ({ page }, te
 		await page.setViewportSize(viewport);
 		await page.goto("/");
 		const feature = page.locator(".continue-shelf article").filter({ has: page.getByRole("heading", { name: "Example Movie", exact: true }) });
+		await attachResponsiveFailure(page, testInfo, "home-resume");
 		await expect(feature.getByRole("heading", { name: "Example Movie" })).toBeVisible();
 		await expect(feature.getByRole("progressbar", { name: "Watch progress" })).toBeVisible();
 		const resume = feature.getByRole("link", { name: /Example Movie/ });

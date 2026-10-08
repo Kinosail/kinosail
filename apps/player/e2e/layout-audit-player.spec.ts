@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { configureLayoutAudit, layoutProblems, login, viewports } from "./layout-audit-helpers";
 import { firstPlayable } from "./test-instance-helpers";
+import { attachResponsiveFailure } from "./responsive-failure-witness.mjs";
 
 configureLayoutAudit();
 
@@ -41,6 +42,7 @@ test("player shows and switches its playback method without crowding actions", a
 				background: getComputedStyle(panel).backgroundColor,
 			};
 		});
+		await attachResponsiveFailure(page, testInfo, "player-settings");
 		expect(settingsGeometry.clear).toBeTruthy();
 		expect(settingsGeometry.height).toBeGreaterThanOrEqual(200);
 		expect(settingsGeometry.background).not.toBe("rgba(0, 0, 0, 0)");
@@ -180,6 +182,7 @@ test("player explains an unconfirmed failure and offers a direct retry", async (
 		await page.keyboard.press("Enter");
 		await expect(page.locator("[data-playback-recovery]")).toBeVisible();
 		expect((await page.locator(".player-settings").boundingBox())?.height).toBeGreaterThanOrEqual(200);
+		await attachResponsiveFailure(page, testInfo, "player-recovery");
 		await expect(page.locator("[data-player-status]")).toBeHidden();
 		await expect(page.locator("[data-playback-recovery] [data-player-fallback]")).toHaveText("Retry playback");
 		const recoveryColors = await page.locator("[data-playback-recovery] [data-player-fallback]").evaluate((button) => {

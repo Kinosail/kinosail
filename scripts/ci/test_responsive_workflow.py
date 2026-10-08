@@ -56,7 +56,8 @@ class ResponsiveWorkflowTests(unittest.TestCase):
         for job in ('library-owner', 'camera-owner', 'hls-navigation', 'literal-verify', 'native'):
             self.assertIn('  ' + job + ':', source)
         for path in ('apps/player/scripts/responsive_profile_cases.py', 'scripts/ci/test_responsive_workflow.py',
-                     'scripts/ci/test_responsive_profile_admission.py'):
+                     'scripts/ci/test_responsive_profile_admission.py',
+                     'apps/player/e2e/responsive-failure-witness.mjs', 'scripts/testing/responsive-failure-witness.test.mjs'):
             self.assertIn('"' + path + '"', source)
 
     def test_actual_recipe_binds_all99_existing_inputs_before_receipt_write(self):
@@ -69,7 +70,8 @@ class ResponsiveWorkflowTests(unittest.TestCase):
         self.assertEqual(len(receipt['identities']), 99)
         self.assertEqual(len({(row['file'], row['fullTitle']) for row in receipt['identities']}), 99)
         for path in ('apps/player/scripts/responsive_profile_cases.py', 'apps/player/e2e/test-instance-helpers.ts',
-                     'scripts/ci/library-internal-relay.mjs', 'apps/player/e2e/layout-audit-helpers.ts'):
+                     'scripts/ci/library-internal-relay.mjs', 'apps/player/e2e/layout-audit-helpers.ts',
+                     'apps/player/e2e/responsive-failure-witness.mjs'):
             self.assertIn(path, receipt['sourceSHA256'])
         for path, digest in receipt['sourceSHA256'].items():
             self.assertEqual(digest, hashlib.sha256((ROOT / path).read_bytes()).hexdigest())

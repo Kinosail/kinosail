@@ -24,6 +24,8 @@ on:
       - "apps/player/scripts/responsive_profile_cases.py"
       - "scripts/ci/test_responsive_profile_admission.py"
       - "scripts/ci/test_responsive_workflow.py"
+      - "apps/player/e2e/responsive-failure-witness.mjs"
+      - "scripts/testing/responsive-failure-witness.test.mjs"
       - "scripts/ci/test_camera_profile_admission.py"
       - "apps/player/e2e/camera-profile-fixture.ts"
       - "apps/player/e2e/quick-connect-scan.spec.ts"
@@ -570,7 +572,7 @@ jobs:
               'apps/player/e2e/test-instance-helpers.ts', 'apps/player/e2e/layout-audit-helpers.ts',
               'apps/player/e2e/layout-audit-beta-helpers.ts', 'apps/player/e2e/static-sources.ts',
               'scripts/testing/navigation-diagnostics.mjs', 'scripts/testing/ui-element-inventory.ts',
-              'apps/player/scripts/responsive_profile_cases.py',
+              'apps/player/scripts/responsive_profile_cases.py', 'apps/player/e2e/responsive-failure-witness.mjs',
               'apps/player/scripts/run-library-profile.sh', 'apps/player/scripts/library_profile_admission.py',
               'apps/player/scripts/generate-test-media.sh', 'apps/player/Containerfile', 'apps/player/Containerfile.test',
               'scripts/ci/run-populated-settings.py', 'scripts/ci/browser-fixture-tls.sh',
