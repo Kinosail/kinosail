@@ -9,10 +9,10 @@ workflows="$repo/.github/workflows"
 fail() { printf 'workflow validation failed: %s\n' "$*" >&2; exit 1; }
 require() { grep -Fq -- "$2" "$1" || fail "$(basename "$1") must contain $2"; }
 
-for name in ci app publish release layout-stability positive-native-reentry pr503-cold-publication-witness; do
+for name in ci app publish release layout-stability positive-native-reentry pr503-cold-publication-witness native-phone-e2e native-tv-e2e; do
   [[ -f "$workflows/$name.yml" ]] || fail "missing $name.yml"
 done
-[[ "$(find "$workflows" -maxdepth 1 -name '*.yml' -type f | wc -l | tr -d ' ')" == 7 ]] ||
+[[ "$(find "$workflows" -maxdepth 1 -name '*.yml' -type f | wc -l | tr -d ' ')" == 9 ]] ||
   fail 'unexpected workflow file'
 [[ -f "$repo/.github/dependabot.yml" ]] || fail 'missing Dependabot configuration'
 [[ -f "$repo/.github/pull_request_template.md" ]] || fail 'missing pull request template'
