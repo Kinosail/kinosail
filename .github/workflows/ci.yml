@@ -237,7 +237,11 @@ jobs:
           go-version-file: go.work
           cache-dependency-path: "**/go.sum"
       - id: scanner_install
-        run: go install github.com/zricethezav/gitleaks/v8@v8.30.1
+        run: go install -ldflags="-X github.com/zricethezav/gitleaks/v8/version.Version=8.30.1" github.com/zricethezav/gitleaks/v8@v8.30.1
+      - name: Test exact receipt digest exceptions with the pinned scanner
+        env:
+          KINOSAIL_REAL_SCANNER: gitleaks
+        run: python3 -m unittest scripts.ci.test_receipt_fingerprints
       - run: python3 scripts/ci/secrets.py
       - name: Keep full-history finding locations
         if: always() && github.event_name == 'workflow_dispatch' && inputs.scan_diagnostic && steps.scanner_install.outcome == 'success'

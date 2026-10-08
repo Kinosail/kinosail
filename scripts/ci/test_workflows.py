@@ -8,6 +8,19 @@ WORKFLOWS = ROOT / '.github/workflows'
 
 
 class WorkflowSecurityTests(unittest.TestCase):
+    def test_deep_apple_lane_executes_both_native_test_targets_and_retains_results(self):
+        # Compilation cannot catch failing Swift Testing contracts or an omitted
+        # platform. The manual and weekly lane must execute both existing schemes.
+        source = (WORKFLOWS / 'app.yml').read_text().split('  client:\n', 1)[1].split('  android:\n', 1)[0]
+        self.assertIn('if: fromJSON(inputs.plan).deep', source)
+        self.assertIn('for platform in iOS tvOS', source)
+        self.assertIn('xcodebuild test', source)
+        self.assertIn('-scheme "Kinosail-$platform"', source)
+        self.assertIn('-resultBundlePath "$RUNNER_TEMP/native-$platform.xcresult"', source)
+        self.assertIn('if: always() && fromJSON(inputs.plan).deep', source)
+        self.assertIn('${{ runner.temp }}/native-*.xcresult', source)
+        self.assertNotIn('continue-on-error', source)
+
     def test_system_scan_finishes_before_exact_revision_evidence_starts(self):
         # Trivy creates/removes files in the checkout. Overlap changes Git
         # status during the E2E receipt and invalidates exact revision proof.

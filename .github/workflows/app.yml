@@ -127,7 +127,7 @@ jobs:
     name: Player Swift compilation
     if: inputs.app == 'player' && fromJSON(inputs.plan).client
     runs-on: xcode-27
-    timeout-minutes: 20
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -135,6 +135,27 @@ jobs:
       - run: make -C apps/player client-check
         env:
           DEVELOPER_DIR: /Applications/Xcode_27.1_beta.app/Contents/Developer
+      - name: Execute iOS and tvOS native contracts
+        if: fromJSON(inputs.plan).deep
+        env:
+          DEVELOPER_DIR: /Applications/Xcode_27.1_beta.app/Contents/Developer
+        run: |
+          for platform in iOS tvOS; do
+            device="$(xcrun simctl list devices available --json | python3 scripts/ci/select-simulator.py "$platform")"
+            xcodebuild test -project apps/player/apps/native/Kinosail.xcodeproj \
+              -scheme "Kinosail-$platform" -destination "id=$device" \
+              -derivedDataPath "apps/player/apps/native/.build/$([[ "$platform" == iOS ]] && echo ios || echo tvos)-simulator" \
+              -resultBundlePath "$RUNNER_TEMP/native-$platform.xcresult" \
+              -parallel-testing-enabled NO CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=-
+          done
+      - name: Retain native test results
+        if: always() && fromJSON(inputs.plan).deep
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: player-native-contracts-${{ github.sha }}
+          path: ${{ runner.temp }}/native-*.xcresult
+          retention-days: 14
+          if-no-files-found: error
 
   android:
     name: Player Android compilation
