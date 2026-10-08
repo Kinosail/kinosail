@@ -40,8 +40,6 @@ class WorkflowSecurityTests(unittest.TestCase):
 
 
 
-
-
     def test_system_scan_finishes_before_exact_revision_evidence_starts(self):
         # Trivy creates/removes files in the checkout. Overlap changes Git
         # status during the E2E receipt and invalidates exact revision proof.
@@ -132,12 +130,13 @@ class WorkflowSecurityTests(unittest.TestCase):
 
     def test_login_failure_observer_contracts_run_after_browser_dependencies(self):
         browser = (WORKFLOWS / 'app.yml').read_text().split('  browser:')[1].split('  required:')[0]
-        command = 'node --test scripts/testing/subtitle-login-navigation.test.mjs scripts/testing/subtitle-dashboard-navigation.test.mjs'
+        command = 'node --test scripts/testing/subtitle-login-navigation.test.mjs scripts/testing/subtitle-dashboard-navigation.test.mjs scripts/testing/subtitle-dashboard-registration.test.mjs'
         self.assertFalse((ROOT / 'apps/subtitles/e2e/test-instance-navigation.test.mjs').exists(),
                          'Node-only contracts must not be discovered as Playwright journeys')
         step = browser.split('      - name: Verify login navigation failure diagnostics')[1].split('      - ')[0]
         self.assertIn("if: inputs.app == 'subtitles'", step)
-        self.assertIn('run: ' + command, step)
+        self.assertTrue('run: ' + command in step, 'expected exact Node control command in browser step')
+        self.assertEqual(step.count('scripts/testing/subtitle-dashboard-registration.test.mjs'), 1)
         self.assertLess(browser.index('pnpm --dir "apps/$APP/e2e" install --frozen-lockfile'), browser.index(command))
         self.assertLess(browser.index(command), browser.index('name: Test populated browsers'))
 
@@ -162,9 +161,11 @@ class WorkflowSecurityTests(unittest.TestCase):
         self.assertLess(browser.index(command), browser.index('name: Test populated browsers'))
 
     def test_layout_failure_contracts_and_modules_are_reproducible(self):
-        command = 'node --test scripts/testing/navigation-diagnostics.test.mjs scripts/testing/layout-stability-failure.test.mjs scripts/testing/layout-stability-subtitle-background.test.mjs scripts/testing/layout-stability-flows.test.mjs scripts/testing/layout-stability-diagnostic-snapshots.test.mjs scripts/testing/layout-stability-login.test.mjs'
-        self.assertIn('      - run: ' + command, (WORKFLOWS / 'ci.yml').read_text())
-        self.assertIn('\t@' + command, (ROOT / 'Makefile').read_text())
+        command = 'node --test scripts/testing/navigation-diagnostics.test.mjs scripts/testing/layout-stability-failure.test.mjs scripts/testing/layout-stability-subtitle-background.test.mjs scripts/testing/layout-stability-flows.test.mjs scripts/testing/layout-stability-inspector.test.mjs scripts/testing/layout-stability-diagnostic-snapshots.test.mjs scripts/testing/layout-stability-login.test.mjs'
+        self.assertTrue('      - run: ' + command in (WORKFLOWS / 'ci.yml').read_text(), 'expected exact Node control command in CI')
+        self.assertTrue('\t@' + command in (ROOT / 'Makefile').read_text(), 'expected exact Node control command in Make')
+        self.assertEqual((WORKFLOWS / 'ci.yml').read_text().count('scripts/testing/layout-stability-inspector.test.mjs'), 1)
+        self.assertEqual((ROOT / 'Makefile').read_text().count('scripts/testing/layout-stability-inspector.test.mjs'), 1)
         launcher = (ROOT / 'scripts/testing/test-layout-stability-local.py').read_text()
         for name in ('layout-stability-routing.mjs', 'layout-stability-failure.mjs', 'layout-stability-flow-page.mjs', 'layout-stability-diagnostic-snapshots.mjs', 'layout-stability-theater-witness.mjs'):
             self.assertIn('"' + name + '"', launcher)

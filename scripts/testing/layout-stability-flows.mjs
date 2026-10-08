@@ -144,10 +144,26 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
       const failedDisabled=await page.locator('#subtitle-edit-form button[type="submit"]').isDisabled();const qualityRows=await page.locator("#subtitle-quality p").count();const busy=await page.locator("#inspector-status").getAttribute("aria-busy");await page.unroute("**/inspect?*");await page.reload();await page.waitForFunction(()=>!document.querySelector('#subtitle-edit-form button[type="submit"]').disabled);
       results.push({flow:"inspector-refresh-failure-retry",injectedFailure:true,before,after,pendingDisabled,failedDisabled,busy,qualityRows,retryCompleted:true,stable:pendingDisabled&&failedDisabled&&!busy&&qualityRows>0&&JSON.stringify(before)===JSON.stringify(after)});
     });
-    const editing=await browser.newContext({...options,viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce"});
+    const editing=await inspectorEditingContext(browser, options);
     probe.stage = "inspector-edit-during-refresh";
     await observeLayoutFlow(editing, options.baseURL, probe, async editor => {
-      await editor.route("**/inspect?*",async route=>{if(route.request().resourceType()==="fetch"){const response=await route.fetch();await new Promise(r=>setTimeout(r,900));await route.fulfill({response});}else await route.continue();});
+      await measureInspectorEditing(editor, inspectorPath, results, probe);
+    });
+  }
+  return results;
+}
+
+export async function measureInspectorEditing(editor, inspectorPath, results, probe) {
+      let refresh;
+      await editor.route("**/inspect?*",async route=>{
+        if(route.request().resourceType()!=="fetch")return route.continue();
+        const owned=refresh;
+        if(owned){owned.handlerEntered=true;owned.enter();}
+        const response=await route.fetch();
+        if(owned){owned.responseReturned=true;await owned.hold;owned.responseReleased=true;}
+        else await new Promise(resolve=>setTimeout(resolve,900));
+        await route.fulfill({response});
+      });
       probe.operationPhase = "navigation";
       await editor.goto(inspectorPath,{waitUntil:"commit"});
       probe.operationPhase = "inspector-edit-refresh";
@@ -158,22 +174,38 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
       await editor.waitForTimeout(1500);const preview=editor.locator('#subtitle-edit-form button[type="submit"]');
       const loadedEnabled=!await preview.isDisabled();
       if(pendingLocked&&loadedEnabled){await file.focus();await file.setInputFiles(payload);}
-      results.push({flow:"inspector-edit-during-refresh",pendingLocked,loadedEnabled,stable:pendingLocked&&loadedEnabled});
+      results.push({flow:"inspector-edit-during-refresh",serviceWorkers:"blocked for controlled real inspector response",pendingLocked,loadedEnabled,stable:pendingLocked&&loadedEnabled});
       for(const mode of ["retain","tab-away","retain-scroll"]){
         probe.stage="inspector-language-refresh-focus";await editor.reload();await editor.waitForFunction(()=>!document.querySelector('#subtitle-edit-form button[type="submit"]').disabled);
         const language=editor.locator('select[name="language"]');const alternate=await language.evaluate((n,mode)=>[...n.options].find(option=>option.value&&option.value!==n.value&&(mode!=="retain-scroll"||option.value==="fr"))?.value,mode);
         if(!alternate)throw new Error("Synthetic inspector needs an alternate language");
         const originalScroll=await editor.evaluate(()=>scrollY),workspaceBefore=await editor.locator(".subtitle-inspector-workspace").boundingBox(),statusBefore=await editor.locator("#inspector-status").boundingBox();
-        await language.focus();await language.selectOption(alternate);await editor.waitForFunction(()=>document.querySelector("#inspector-status")?.getAttribute("aria-busy")==="true");
+        let release, enter, timer;
+        const hold=new Promise(resolve=>{release=resolve;}), entered=new Promise(resolve=>{enter=resolve;});
+        refresh={hold,enter,handlerEntered:false,responseReturned:false,responseReleased:false};
+        try {
+        await language.focus();await language.selectOption(alternate);
+        await Promise.race([entered,new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error("Controlled inspector refresh was not routed")),10000);})]);
+        await editor.waitForFunction(()=>document.querySelector("#inspector-status")?.getAttribute("aria-busy")==="true");
         if(mode==="tab-away")await editor.keyboard.press("Tab");
         if(mode==="retain-scroll")await editor.evaluate(()=>scrollTo({top:Math.max(0,document.documentElement.scrollHeight-innerHeight-160),behavior:"instant"}));
         const selectorOffscreen=await language.evaluate(n=>{const r=n.getBoundingClientRect();return r.bottom<=0||r.top>=innerHeight;});
-        const scrollBefore=await editor.evaluate(()=>scrollY),statusPending=await editor.locator("#inspector-status").boundingBox(),focus=await editor.evaluateHandle(()=>document.activeElement);await editor.waitForFunction(()=>document.querySelector("#inspector-status")?.getAttribute("aria-busy")!=="true");
+        const scrollBefore=await editor.evaluate(()=>scrollY),statusPending=await editor.locator("#inspector-status").boundingBox(),focus=await editor.evaluateHandle(()=>document.activeElement);release();await editor.waitForFunction(()=>document.querySelector("#inspector-status")?.getAttribute("aria-busy")!=="true");
         const focusRetained=mode==="tab-away"?await editor.evaluate(n=>n===document.activeElement,focus):await language.evaluate(n=>n===document.activeElement);await focus.dispose();
         const scrollAfter=await editor.evaluate(()=>scrollY),workspaceAfter=await editor.locator(".subtitle-inspector-workspace").boundingBox(),statusAfter=await editor.locator("#inspector-status").boundingBox();
-        results.push({flow:mode==="retain-scroll"?"inspector-language-refresh-preserve-scroll":mode==="tab-away"?"inspector-language-refresh-tab-away":"inspector-language-refresh-focus",focusRetained,originalScroll,scrollBefore,scrollAfter,selectorOffscreen,workspaceBefore,workspaceAfter,statusBefore,statusPending,statusAfter,scrollRetained:mode!=="retain-scroll"||Boolean(Math.abs(scrollAfter-scrollBefore)<=1&&Math.abs(scrollBefore-originalScroll)>1&&selectorOffscreen&&workspaceBefore&&workspaceAfter&&Math.abs(workspaceBefore.height-workspaceAfter.height)<=1&&statusBefore&&statusPending&&statusAfter&&Math.abs(statusBefore.height-statusPending.height)<=1&&Math.abs(statusBefore.height-statusAfter.height)<=1)});
+        results.push({serviceWorkers:"blocked for controlled real inspector response",routeEntered:refresh.handlerEntered,flow:mode==="retain-scroll"?"inspector-language-refresh-preserve-scroll":mode==="tab-away"?"inspector-language-refresh-tab-away":"inspector-language-refresh-focus",focusRetained,originalScroll,scrollBefore,scrollAfter,selectorOffscreen,workspaceBefore,workspaceAfter,statusBefore,statusPending,statusAfter,scrollRetained:mode!=="retain-scroll"||Boolean(Math.abs(scrollAfter-scrollBefore)<=1&&Math.abs(scrollBefore-originalScroll)>1&&selectorOffscreen&&workspaceBefore&&workspaceAfter&&Math.abs(workspaceBefore.height-workspaceAfter.height)<=1&&statusBefore&&statusPending&&statusAfter&&Math.abs(statusBefore.height-statusPending.height)<=1&&Math.abs(statusBefore.height-statusAfter.height)<=1)});
+        } catch(error) {
+          probe.geometry={inspectorRefresh:{handlerEntered:refresh.handlerEntered,responseReturned:refresh.responseReturned,
+            responseReleasedBeforeFailure:refresh.responseReleased,cleanupReleased:false}};
+          throw error;
+        } finally {
+          clearTimeout(timer);release();
+          if(probe.geometry?.inspectorRefresh)probe.geometry.inspectorRefresh.cleanupReleased=true;
+          refresh=undefined;
+        }
       }
-    });
-  }
-  return results;
+}
+
+export function inspectorEditingContext(browser, options) {
+  return browser.newContext({...options,viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce",serviceWorkers:"block"});
 }

@@ -18,7 +18,7 @@ packages-check:
 	@$(MAKE) -C packages check
 
 tooling-check:
-	@node --test scripts/testing/navigation-diagnostics.test.mjs scripts/testing/layout-stability-failure.test.mjs scripts/testing/layout-stability-subtitle-background.test.mjs scripts/testing/layout-stability-flows.test.mjs scripts/testing/layout-stability-diagnostic-snapshots.test.mjs scripts/testing/layout-stability-login.test.mjs
+	@node --test scripts/testing/navigation-diagnostics.test.mjs scripts/testing/layout-stability-failure.test.mjs scripts/testing/layout-stability-subtitle-background.test.mjs scripts/testing/layout-stability-flows.test.mjs scripts/testing/layout-stability-inspector.test.mjs scripts/testing/layout-stability-diagnostic-snapshots.test.mjs scripts/testing/layout-stability-login.test.mjs
 	@python3 -m unittest discover -s scripts/ci -p 'test_*.py'
 	@python3 scripts/tooling/test-platform-install-kits.py
 	@./scripts/tooling/test-source-tools.sh

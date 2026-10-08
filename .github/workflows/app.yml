@@ -333,7 +333,7 @@ jobs:
         run: pnpm --dir "apps/$APP/e2e" install --frozen-lockfile
       - name: Verify login navigation failure diagnostics
         if: inputs.app == 'subtitles'
-        run: node --test scripts/testing/subtitle-login-navigation.test.mjs scripts/testing/subtitle-dashboard-navigation.test.mjs
+        run: node --test scripts/testing/subtitle-login-navigation.test.mjs scripts/testing/subtitle-dashboard-navigation.test.mjs scripts/testing/subtitle-dashboard-registration.test.mjs
       - name: Verify setup navigation failure diagnostics
         if: inputs.app == 'player'
         run: node --test scripts/testing/player-setup-navigation.test.mjs scripts/testing/playback-navigation-diagnostics.test.mjs scripts/testing/player-playback-navigation.test.mjs scripts/testing/checkpoint-progress.test.mjs scripts/testing/player-login-navigation.test.mjs scripts/testing/layout-login-navigation.test.mjs scripts/testing/navigation-repeat-offer.test.mjs scripts/testing/supporter-share-availability.test.mjs scripts/testing/jellyfin-save-witness.test.mjs scripts/testing/provider-profile-fixture.test.mjs scripts/testing/browse-return-reporter.test.mjs scripts/testing/browse-return-launch.test.mjs scripts/testing/hls-fast-departure.test.mjs scripts/testing/audio-queue-fault-witness.test.mjs scripts/testing/playback-failed-save.test.mjs scripts/testing/responsive-failure-witness.test.mjs scripts/testing/offline-browser-api.test.mjs scripts/e2e/tests/fixture-boundary.test.mjs
