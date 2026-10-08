@@ -10,9 +10,9 @@ import (
 )
 
 type remainingNonKeyLog struct {
-	mu        sync.Mutex
-	failures  map[string]string
-	overflow  bool
+	mu       sync.Mutex
+	failures map[string]string
+	overflow bool
 }
 
 type remainingNonKeyLogHandler struct {

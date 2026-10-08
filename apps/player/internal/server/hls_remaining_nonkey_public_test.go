@@ -146,7 +146,7 @@ func remainingNonKeyQualify(t *testing.T, ctx context.Context, ffmpeg, ffprobe, 
 			Codec    string `json:"codec_name"`
 			Kind     string `json:"codec_type"`
 			Frames   string `json:"nb_read_frames"`
-			Channels int `json:"channels"`
+			Channels int    `json:"channels"`
 			Rate     string `json:"sample_rate"`
 		}
 		Format struct{ Duration string }
