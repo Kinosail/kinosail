@@ -1,11 +1,13 @@
 import { expect, test } from "@playwright/test";
 import { downloadChunk, downloadHash, downloadIsolated, downloadServer, downloadPeer, openDownloadPage, inspectDownload, attachDownloadEnvironment } from "./download-pause-fixture";
+import { observeDownloadOwnership, attachDownloadOwnership } from "./download-ownership-diagnostics";
 
 test.skip(!downloadServer && !downloadIsolated, "requires an explicit disposable native download transport runner");
 test.use({serviceWorkers: "allow"});
 test.beforeEach(async ({browser}, info) => attachDownloadEnvironment(browser, info));
 
 test("same Viewer Profile in another tab preserves the transfer owner until explicit Pause", async ({page, context}, info) => {
+  await observeDownloadOwnership(context);
   const peer = await downloadPeer();
   try {
     const served = await openDownloadPage(page, peer.origin, "indexeddb");
@@ -32,6 +34,10 @@ test("same Viewer Profile in another tab preserves the transfer owner until expl
     expect((await peer.stats()).ranges).toEqual([0, downloadChunk, downloadChunk, downloadChunk * 2]);
     expect((await peer.stats()).removals).toBe(0);
     await info.attach("cross-tab-safe-resume", {body: JSON.stringify({stored: ready, peer: await peer.stats()}), contentType: "application/json"});
+  } catch (error) {
+    await attachDownloadOwnership(context, info);
+    await info.attach("download-ownership-peer-at-failure", {body: JSON.stringify(await peer.stats()), contentType: "application/json"});
+    throw error;
   } finally { await context.close(); await peer.close(); }
 });
 

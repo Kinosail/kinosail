@@ -125,7 +125,17 @@ export async function inspectDownload(page: Page, jobID: string) {
     let file: File | undefined;
     if (records.job?.storage === "opfs") file = await (await (await navigator.storage.getDirectory()).getFileHandle(id)).getFile();
     const chunks = await Promise.all(records.chunks.sort((a, b) => a.offset - b.offset).map(async (chunk) => ({offset: chunk.offset, length: chunk.length, sha256: chunk.sha256, actual: await hash(file ? await file.slice(chunk.offset, chunk.offset + chunk.length).arrayBuffer() : chunk.data!)})));
-    const bytes = file ? await file.arrayBuffer() : await new Blob(records.chunks.sort((a, b) => a.offset - b.offset).map((chunk) => chunk.data!)).arrayBuffer();
+    const assembled = new Uint8Array(records.chunks.reduce((size, chunk) => size + chunk.length, 0));
+    let offset = 0;
+    if (!file) for (const chunk of records.chunks) {
+      expectLength(chunk.data, chunk.length);
+      assembled.set(new Uint8Array(chunk.data!), offset);
+      offset += chunk.length;
+    }
+    function expectLength(data: ArrayBuffer | undefined, length: number) {
+      if (!data || data.byteLength !== length) throw new Error("Stored fixture block has an invalid length");
+    }
+    const bytes = file ? await file.arrayBuffer() : assembled.buffer;
     const locks = await navigator.locks.query();
     return {job: records.job, chunks, fileSize: bytes.byteLength, fileHash: await hash(bytes), locks: locks.held.map((lock) => lock.name)};
   }, jobID);

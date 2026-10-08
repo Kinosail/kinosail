@@ -143,6 +143,7 @@ try {
     // Delay real response bytes, without substituting mock markup or media.
     await page.route("**/*", async route => {
       const request = route.request(), url = new URL(request.url());
+      if (url.protocol !== "http:" && url.protocol !== "https:") { await route.continue(); return; }
       if ((variant==="slow-css"&&request.resourceType()==="stylesheet") || url.pathname.endsWith(".woff2") || (url.pathname.endsWith(".js")&&!url.pathname.endsWith("/theme.js")) || /\/api\/v1\/subtitle-library\/[^/]+\/inspect/.test(url.pathname) || request.resourceType() === "image") {
         try {
           const response = await route.fetch();

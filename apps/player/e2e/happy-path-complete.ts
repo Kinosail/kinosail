@@ -119,7 +119,7 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, { captur
   if (await markUnwatched.isVisible()) await markUnwatched.click();
   await page.getByRole("button", { name: "Mark watched" }).click();
   await expect(page.getByRole("button", { name: "Mark unwatched" })).toBeVisible();
-  await page.getByRole("link", { name: "Library", exact: true }).click();
+  await page.locator("a[data-browse-return]").click();
   await expect(page.getByRole("heading", { name: "My List" })).toBeVisible();
   await expect(page.getByRole("link", { name: /\bResume\b/ })).toHaveCount(0);
   // Retry playback persists fixture progress; run after the original empty-Resume assertion.

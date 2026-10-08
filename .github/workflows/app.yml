@@ -160,14 +160,18 @@ jobs:
         env:
           DEVELOPER_DIR: /Applications/Xcode_27.1_beta.app/Contents/Developer
         run: |
+          native_failed=0
           for platform in iOS tvOS; do
             device="$(xcrun simctl list devices available --json | python3 scripts/ci/select-simulator.py "$platform")"
-            xcodebuild test -project apps/player/apps/native/Kinosail.xcodeproj \
+            if ! xcodebuild test -project apps/player/apps/native/Kinosail.xcodeproj \
               -scheme "Kinosail-$platform" -destination "id=$device" \
               -derivedDataPath "apps/player/apps/native/.build/$([[ "$platform" == iOS ]] && echo ios || echo tvos)-simulator" \
               -resultBundlePath "$RUNNER_TEMP/native-$platform.xcresult" \
-              -parallel-testing-enabled NO CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=-
+              -parallel-testing-enabled NO -collect-test-diagnostics never CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=-; then
+              native_failed=1
+            fi
           done
+          exit "$native_failed"
       - name: Retain native test results
         if: always() && fromJSON(inputs.plan).deep
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a

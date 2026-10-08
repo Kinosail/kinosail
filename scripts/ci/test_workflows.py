@@ -1,6 +1,11 @@
 """Regression checks for public CI and release trust boundaries."""
 from pathlib import Path
+import json
+import os
 import re
+import subprocess
+import tempfile
+import textwrap
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -8,6 +13,39 @@ WORKFLOWS = ROOT / '.github/workflows'
 
 
 class WorkflowSecurityTests(unittest.TestCase):
+    def test_native_failure_still_executes_the_other_platform_and_fails_the_gate(self):
+        # Failure modes: iOS hides tvOS evidence; either failed platform reports
+        # success; both successful platforms incorrectly report failure.
+        source = (WORKFLOWS / 'app.yml').read_text()
+        step = source.split('      - name: Execute iOS and tvOS native contracts\n', 1)[1].split('      - name:', 1)[0]
+        script = textwrap.dedent(step.split('        run: |\n', 1)[1])
+        devices = {'devices': {
+            'com.apple.CoreSimulator.SimRuntime.iOS-26-0': [{'deviceTypeIdentifier': 'com.apple.CoreSimulator.SimDeviceType.iPhone-17', 'udid': '11111111-1111-1111-1111-111111111111', 'isAvailable': True}],
+            'com.apple.CoreSimulator.SimRuntime.tvOS-26-0': [{'deviceTypeIdentifier': 'com.apple.CoreSimulator.SimDeviceType.Apple-TV-4K', 'udid': '22222222-2222-2222-2222-222222222222', 'isAvailable': True}],
+        }}
+        with tempfile.TemporaryDirectory() as directory:
+            folder = Path(directory)
+            (folder / 'xcrun').write_text('#!/bin/sh\ncat <<\'JSON\'\n' + json.dumps(devices) + '\nJSON\n')
+            (folder / 'xcodebuild').write_text('''#!/bin/sh
+printf '%s\\n' "$*" >> "$TEST_NATIVE_LOG"
+case "$*" in *Kinosail-iOS*) exit "$TEST_IOS_EXIT";; *) exit "$TEST_TV_EXIT";; esac
+''')
+            for name in ('xcrun', 'xcodebuild'):
+                (folder / name).chmod(0o755)
+            for ios, tvos in ((1, 0), (0, 1), (0, 0)):
+                with self.subTest(ios=ios, tvos=tvos):
+                    log = folder / 'native.log'
+                    log.unlink(missing_ok=True)
+                    result = subprocess.run(['bash', '-ec', script], cwd=ROOT, capture_output=True, text=True, timeout=10,
+                        env={**os.environ, 'PATH': f'{folder}{os.pathsep}{os.environ["PATH"]}',
+                             'RUNNER_TEMP': directory, 'TEST_NATIVE_LOG': str(log),
+                             'TEST_IOS_EXIT': str(ios), 'TEST_TV_EXIT': str(tvos)})
+                    commands = log.read_text().splitlines() if log.exists() else []
+                    self.assertEqual(len(commands), 2, result.stderr)
+                    self.assertIn('-scheme Kinosail-iOS', commands[0])
+                    self.assertIn('-scheme Kinosail-tvOS', commands[1])
+                    self.assertEqual(result.returncode, 1 if ios or tvos else 0, result.stderr)
+
     def test_deep_go_lane_installs_real_media_dependencies_before_testing(self):
         source = (WORKFLOWS / 'app.yml').read_text().split('  race:\n', 1)[1].split('  security:\n', 1)[0]
         step = source.split('      - name: Install deep media fixture codecs\n', 1)[1].split('      - env:', 1)[0]
