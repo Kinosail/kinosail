@@ -163,9 +163,14 @@ try {
     await page.locator("body").waitFor({state: "visible"});
     if(variant==="slow-css") {await page.waitForFunction(()=>[...document.querySelectorAll('link[rel~="stylesheet"]')].every(link=>link.sheet));await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));}
     await page.waitForTimeout(200);
+    // Observe a fresh frame after native paint/resize initialization. A cached
+    // prepaint sample can otherwise disagree with already settled dock padding.
+    const baselineAfter = await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve(performance.now())))));
+    await page.waitForFunction(after => window.layoutAudit.frames.at(-1)?.time >= after, baselineAfter);
     const initialState = await page.evaluate(inspect);
     initialState.bookmark = await page.evaluate(bookmarkSnapshot);
-    const initialBoxes=await page.evaluate(()=>window.layoutAudit.frames.at(-1)?.boxes||[]);
+    const initialFrame=await page.evaluate(()=>window.layoutAudit.frames.at(-1));
+    const initialBoxes=initialFrame.boxes;
     if (engine === "chromium") {
       // CDP captures pixels without Playwright's font-readiness hook, which can
       // itself force an optional font swap and contaminate layout measurements.
@@ -189,7 +194,7 @@ try {
     const timeoutsPresent=!["/settings#session-timeouts","/settings#security"].includes(path)||[initialState,finalState].every(s=>s.timeouts?.anchorPresent&&s.timeouts.visible&&JSON.stringify(s.timeouts.access)==='["private","public"]');
     const bookmarkRequired=routes.filter(route=>route.startsWith("/settings#")).includes(path)||(app==="player"&&path==="/settings#%61ccess");
     const bookmarkVisible=[initialState,finalState].every(s=>bookmarkRequired?Boolean(s.bookmark?.resolved&&s.bookmark.visible):!s.bookmark?.resolved||s.bookmark.visible);
-    reports.push({viewport,path,variant,scaleApplied:!scale||finalState.rootScale===scale,status:response.status(),unexpected,aggregateUnexpected,identifiedDOMCLS,unattributedCLS,moved,categoryStable,timeoutsPresent,bookmarkRequired,bookmarkVisible,initialState,finalState,...audit});
+    reports.push({viewport,path,variant,baselineAfter,initialFrameTime:initialFrame.time,scaleApplied:!scale||finalState.rootScale===scale,status:response.status(),unexpected,aggregateUnexpected,identifiedDOMCLS,unattributedCLS,moved,categoryStable,timeoutsPresent,bookmarkRequired,bookmarkVisible,initialState,finalState,...audit});
     console.log(JSON.stringify({viewport: viewport.width, path, unexpected, overflow: audit.overflow,
       sources: audit.shifts.flatMap(shift => shift.sources.map(source => source.node))}));
     if (engine === "chromium") {

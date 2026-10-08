@@ -21,8 +21,8 @@ export async function attachDownloadEnvironment(browser: Browser, info: TestInfo
   }), contentType: "application/json"});
 }
 
-export async function downloadPeer() {
-  if (downloadServer) {
+export async function downloadPeer(forceIsolated = false) {
+  if (downloadServer && !forceIsolated) {
     expect((await fetch(`${downloadServer}/__download-pause?reset=1`, {method: "POST"})).ok).toBe(true);
     return {
       origin: downloadServer,
@@ -91,9 +91,9 @@ export async function downloadPeer() {
 
 export async function openDownloadPage(page: Page, origin: string, storage: "opfs" | "indexeddb") {
   if (storage === "indexeddb") await page.addInitScript(() => Object.defineProperty(navigator.storage, "getDirectory", {configurable: true, value: undefined}));
-  await page.goto(`${origin}/offline-downloads`);
+  await page.goto(`${origin}/offline-downloads`, {waitUntil: "commit"});
   await expect.poll(() => page.evaluate(() => navigator.serviceWorker.controller?.scriptURL)).toBe(`${origin}/service-worker.js?v=55`);
-  await page.reload();
+  await page.reload({waitUntil: "commit"});
   const button = page.locator("[data-download-device]");
   await expect(button).toHaveAttribute("data-bound", "true");
   const jobID = await button.getAttribute("data-job-id");

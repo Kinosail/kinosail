@@ -238,7 +238,10 @@ test.describe("acknowledged Library navigation", () => {
       expect(response.status()).toBe(204);
       acknowledgementHeld = true;
       await progressGate;
-      await route.fulfill({response});
+      try {await route.fulfill({response});}
+      catch (error) {
+        if (!destinationRequested || !String(error).includes("Route is already handled")) throw error;
+      }
     });
     await page.route("**/?view=movies", async route => {
       destinationRequested = true;

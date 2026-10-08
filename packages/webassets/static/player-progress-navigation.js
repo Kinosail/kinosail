@@ -65,15 +65,24 @@ document.addEventListener("click", event => {
 });
 document.addEventListener("submit", event => {
   const form = event.target;
-  if (!(form instanceof HTMLFormElement) || form.target && form.target !== "_self" ||
-      new URL(form.action).origin !== location.origin || new URL(form.action).pathname !== `/watched/${progressItem()}`) return;
+  if (!(form instanceof HTMLFormElement)) return;
+  const submitter = event.submitter;
+  if (submitter && !(submitter instanceof HTMLButtonElement || submitter instanceof HTMLInputElement)) return;
+  let action;
+  try { action = new URL(submitter?.hasAttribute("formaction") ? submitter.formAction : form.action); }
+  catch (_) { return; }
+  const target = submitter?.hasAttribute("formtarget") ? submitter.formTarget : form.target;
+  const method = submitter?.hasAttribute("formmethod") ? submitter.formMethod : form.method;
+  if (method !== "post" || target && target !== "_self" ||
+      action.origin !== location.origin || action.pathname !== `/watched/${progressItem()}`) return;
+  watchedDeparture ||= watchedSubmission?.eventPhase === Event.NONE && !watchedSubmission.defaultPrevented;
+  watchedSubmission = event;
   setTimeout(() => { if (!event.defaultPrevented) player.dispatchEvent(new Event("kinosail:navigation")); });
 });
 // Manual watched status must follow the current page's final position write.
 document.addEventListener("submit", event => {
+  if (watchedSubmission !== event || event.defaultPrevented || watchedReplay || watchedDeparture || !progressNavigationAllowed()) return;
   const form = event.target;
-  if (!(form instanceof HTMLFormElement) || new URL(form.action).origin !== location.origin ||
-      new URL(form.action).pathname !== `/watched/${progressItem()}` || !progressNavigationAllowed()) return;
   event.preventDefault();
   if (progressNavigation) return;
   requestPause();
@@ -83,8 +92,9 @@ document.addEventListener("submit", event => {
     if (progressNavigation !== navigation || !ownsProgressNavigation()) { cancelProgressNavigation(); return; }
     cancelProgressNavigation();
     if (!form.checkValidity()) return;
-    progressPlayedItem = undefined;
-    form.requestSubmit(event.submitter);
+    watchedReplay = true;
+    try { form.requestSubmit(event.submitter); }
+    finally { watchedReplay = false; }
   };
   progressNavigation = navigation;
   progressContinuation = navigation.leave;

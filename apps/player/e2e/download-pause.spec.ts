@@ -1,9 +1,42 @@
 import { expect, test } from "@playwright/test";
+import {createServer, type ServerResponse} from "node:http";
 import { downloadChunk, downloadBytes, downloadHash, firstBlockHash, downloadIsolated, downloadServer, downloadPeer, openDownloadPage, inspectDownload, attachDownloadEnvironment } from "./download-pause-fixture";
 
 test.skip(!downloadServer && !downloadIsolated, "requires an explicit disposable download transport runner");
 test.use({serviceWorkers: "allow"});
 test.beforeEach(async ({browser}, info) => attachDownloadEnvironment(browser, info));
+
+test("bound download controls and their native service worker do not wait for an unrelated image", {tag: "@smoke"}, async ({page}, info) => {
+  const peer = await downloadPeer(true);
+  const pending = new Set<ServerResponse>();
+  let images = 0;
+  const imagePeer = createServer((_request, response) => {
+    images++;
+    pending.add(response);
+    response.on("close", () => pending.delete(response));
+  });
+  await new Promise<void>(resolve => imagePeer.listen(0, "127.0.0.1", resolve));
+  const address = imagePeer.address();
+  if (!address || typeof address === "string") throw new Error("Missing delayed image port");
+  const imageURL = `http://127.0.0.1:${address.port}/qa-delayed-resource.png`;
+  page.setDefaultNavigationTimeout(3000);
+  await page.addInitScript(imageURL => document.addEventListener("DOMContentLoaded", () => {
+    const image = document.createElement("img"); image.src = imageURL; image.alt = ""; document.body.append(image);
+  }, {once: true}), imageURL);
+  try {
+    const served = await openDownloadPage(page, peer.origin, "indexeddb");
+    await expect(page.locator("[data-download-device]")).toBeEnabled();
+    await expect.poll(() => images).toBeGreaterThanOrEqual(2);
+    expect(await page.evaluate(() => document.readyState)).not.toBe("complete");
+    expect(await peer.stats()).toEqual({ranges: [], closed: 0, removals: 0});
+    await info.attach("ready-before-document-load", {body: JSON.stringify({served, transport: "Isolated Node HTTP download and ancillary image peers",
+      environment: "Native service worker and bound production download bundle; held ancillary image; no transfer or removal"}), contentType: "application/json"});
+  } finally {
+    for (const response of pending) {response.setHeader("Content-Type", "image/png"); response.end(Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl2nZsAAAAASUVORK5CYII=", "base64"));}
+    await new Promise<void>((resolve, reject) => {imagePeer.close(error => error ? reject(error) : resolve()); imagePeer.closeAllConnections();});
+    await peer.close();
+  }
+});
 
 for (const storage of ["opfs", "indexeddb"] as const) {
 for (const width of downloadServer ? [390, 1440, 1920] : [storage === "opfs" ? 390 : 1440]) {

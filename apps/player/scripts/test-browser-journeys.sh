@@ -74,6 +74,8 @@ run_populated_player_journeys() {
     --required-title 'Owner settings search finds a setting across task families' \
     --required-title 'real Server rejects invalid progress without changing stored state and web reports the rejection' \
     --required-title 'populated player retries the latest progress through the real Server and renders accessible states' \
+    --required-title 'accepted Mark watched survives late native media callbacks from the departing page' \
+    --required-title 'accepted Mark unwatched survives late native media callbacks from the departing page' \
     --required-title 'completed paused seek persists before Library navigation and resumes actual movie frames' \
     --required-title 'Library exit checkpoints actual playing time before teardown without reset-position overwrite' \
     --required-title 'volume icon renders balanced sound waves and keeps accessible mute controls' \
@@ -85,5 +87,5 @@ run_populated_player_journeys() {
     --required-title 'queued short track resumes its saved position without claiming unplayed progress' \
     --required-title 'ended offline queue requires its own watched acknowledgement: failed' \
     --required-title 'canonical catalog year strings survive queue validation and current-track identity' \
-    -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts test-instance-audio-queue.spec.ts player-audio-policy.spec.ts player-audio-queue-lifecycle.spec.ts --grep=@smoke --workers=1
+    -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-watched-startup.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts test-instance-audio-queue.spec.ts player-audio-policy.spec.ts player-audio-queue-lifecycle.spec.ts --grep=@smoke --workers=1
 }
