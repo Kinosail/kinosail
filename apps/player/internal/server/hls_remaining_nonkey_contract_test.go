@@ -14,37 +14,42 @@ import (
 func TestRemainingNonKeyTypedOriginsAndCuts(t *testing.T) {
 	for _, origin := range []float64{12.5, 13.5, 18.2} {
 		t.Run(fmt.Sprintf("%.1f", origin), func(t *testing.T) {
-			timeline := remainingNonKeyContractTimeline(t, origin, true)
-			if !validCopiedHLSTimeline(timeline) {
-				t.Fatal("nonkey typed presentation certificate rejected")
-			}
-			decode := math.Floor(origin/2) * 2
-			if timeline.point(0) != decode || timeline.Clock != nil {
-				t.Fatal("nonkey mapping reinterpreted physical keys or old Clock")
-			}
-			physical := remainingNonKeyPhysicalManifest(timeline, len(timeline.Keys))
-			projected, valid := copiedHLSManifest(physical, timeline)
-			if !valid {
-				t.Fatal("nonkey certified presentation projection unavailable")
-			}
-			first, total := remainingNonKeyContractExtents(t, projected)
-			if math.Abs(first-(decode+2-origin)) > 0.000001 || math.Abs(total-(32-origin)) > 0.000001 {
-				t.Fatalf("nonkey cuts first=%f total=%f", first, total)
-			}
-			projection := func(input []byte) []byte {
-				value, accepted := copiedHLSManifest(input, timeline)
-				if !accepted {
-					return nil
-				}
-				return value
-			}
-			// The physical prefix has four GOPs; presentation requires a fifth.
-			prefix := remainingNonKeyPhysicalManifest(timeline, 4)
-			segments, ready := startupWindowSegments(prefix, 32-origin, projection)
-			if !ready || len(segments) != 5 || segments[4] != "segment-00004.m4s" {
-				t.Fatalf("nonkey startup required %d cuts, ready=%t; expected five", len(segments), ready)
-			}
+			remainingNonKeyTypedOriginAndCuts(t, origin)
 		})
+	}
+}
+
+func remainingNonKeyTypedOriginAndCuts(t *testing.T, origin float64) {
+	t.Helper()
+	timeline := remainingNonKeyContractTimeline(t, origin, true)
+	if !validCopiedHLSTimeline(timeline) {
+		t.Fatal("nonkey typed presentation certificate rejected")
+	}
+	decode := math.Floor(origin/2) * 2
+	if timeline.point(0) != decode || timeline.Clock != nil {
+		t.Fatal("nonkey mapping reinterpreted physical keys or old Clock")
+	}
+	physical := remainingNonKeyPhysicalManifest(timeline, len(timeline.Keys))
+	projected, valid := copiedHLSManifest(physical, timeline)
+	if !valid {
+		t.Fatal("nonkey certified presentation projection unavailable")
+	}
+	first, total := remainingNonKeyContractExtents(t, projected)
+	if math.Abs(first-(decode+2-origin)) > 0.000001 || math.Abs(total-(32-origin)) > 0.000001 {
+		t.Fatalf("nonkey cuts first=%f total=%f", first, total)
+	}
+	projection := func(input []byte) []byte {
+		value, accepted := copiedHLSManifest(input, timeline)
+		if !accepted {
+			return nil
+		}
+		return value
+	}
+	// The physical prefix has four GOPs; presentation requires a fifth.
+	prefix := remainingNonKeyPhysicalManifest(timeline, 4)
+	segments, ready := startupWindowSegments(prefix, 32-origin, projection)
+	if !ready || len(segments) != 5 || segments[4] != "segment-00004.m4s" {
+		t.Fatalf("nonkey startup required %d cuts, ready=%t; expected five", len(segments), ready)
 	}
 }
 
@@ -57,9 +62,11 @@ func TestRemainingNonKeyPendingCannotProjectAndLegacyClockStaysStrict(t *testing
 	if _, valid := copiedHLSManifest(physical, pending); valid {
 		t.Fatal("nonkey pending origin certified an inert EVENT prefix")
 	}
-	legacy := &copiedHLSTimeline{Policy: "owned-source-policy", Strategy: "h264-idr-keys-1",
+	legacy := &copiedHLSTimeline{
+		Policy: "owned-source-policy", Strategy: "h264-idr-keys-1",
 		Numerator: 1, Denominator: 1000, TimeBase: 0.001,
-		Keys: []copiedHLSKey{{PTS: 12000, DTS: 11917}, {PTS: 14000, DTS: 13917}}, End: 16}
+		Keys: []copiedHLSKey{{PTS: 12000, DTS: 11917}, {PTS: 14000, DTS: 13917}}, End: 16,
+	}
 	clock := -0.5
 	legacy.Clock = &clock
 	if validCopiedHLSTimeline(legacy) {
@@ -77,28 +84,7 @@ func TestRemainingNonKeyOriginDamageRejects(t *testing.T) {
 			value := remainingNonKeyContractObject(12.5, true)
 			mapping := value["Presentation"].(map[string]any)
 			proof := mapping["Proof"].(map[string]any)
-			switch damage {
-			case "missing":
-				delete(value, "Presentation")
-			case "exact":
-				mapping["RequestedMicros"] = 12000000
-			case "before":
-				mapping["RequestedMicros"] = 11999999
-			case "next":
-				mapping["RequestedMicros"] = 14000000
-			case "eof":
-				mapping["RequestedMicros"] = 32000000
-			case "decode":
-				mapping["Decode"] = copiedHLSKey{PTS: 10000, DTS: 9917}
-			case "old-clock":
-				value["Clock"] = 0
-			case "signed-clock":
-				proof["VideoPTS"] = 0.5
-			case "legacy-with-origin":
-				value["Strategy"] = "h264-idr-keys-1"
-			case "unknown-strategy":
-				value["Strategy"] = "h264-idr-preroll-unknown"
-			}
+			remainingNonKeyDamageOrigin(value, mapping, proof, damage)
 			var timeline copiedHLSTimeline
 			remainingNonKeyContractDecode(t, value, &timeline)
 			if validCopiedHLSTimeline(&timeline) {
@@ -131,13 +117,17 @@ func remainingNonKeyContractObject(origin float64, bound bool) map[string]any {
 	}
 	mapping := map[string]any{"RequestedMicros": int64(math.Round(origin * 1000000)), "Decode": keys[0]}
 	if bound {
-		mapping["Proof"] = map[string]any{"VideoPTS": float64(decode)/1000 - origin,
+		mapping["Proof"] = map[string]any{
+			"VideoPTS": float64(decode)/1000 - origin,
 			"VideoScale": 1000, "VideoMediaTime": int64(math.Round((origin-float64(decode)/1000)*1000)) + 83,
-			"VideoDecodeTime": 0, "VideoComposition": 83}
+			"VideoDecodeTime": 0, "VideoComposition": 83,
+		}
 	}
-	return map[string]any{"Policy": "owned-source-policy", "Strategy": "h264-idr-preroll-1",
+	return map[string]any{
+		"Policy": "owned-source-policy", "Strategy": "h264-idr-preroll-1",
 		"Numerator": 1, "Denominator": 1000, "TimeBase": 0.001, "Keys": keys, "End": 32,
-		"Clock": nil, "Presentation": mapping}
+		"Clock": nil, "Presentation": mapping,
+	}
 }
 
 func remainingNonKeyPhysicalManifest(timeline *copiedHLSTimeline, count int) []byte {
@@ -170,4 +160,26 @@ func remainingNonKeyContractExtents(t *testing.T, manifest []byte) (float64, flo
 		total += length
 	}
 	return first, total
+}
+
+func remainingNonKeyDamageOrigin(value, mapping, proof map[string]any, damage string) {
+	origins := map[string]int64{"exact": 12000000, "before": 11999999, "next": 14000000, "eof": 32000000}
+	if origin, found := origins[damage]; found {
+		mapping["RequestedMicros"] = origin
+		return
+	}
+	switch damage {
+	case "missing":
+		delete(value, "Presentation")
+	case "decode":
+		mapping["Decode"] = copiedHLSKey{PTS: 10000, DTS: 9917}
+	case "old-clock":
+		value["Clock"] = 0
+	case "signed-clock":
+		proof["VideoPTS"] = 0.5
+	case "legacy-with-origin":
+		value["Strategy"] = "h264-idr-keys-1"
+	case "unknown-strategy":
+		value["Strategy"] = "h264-idr-preroll-unknown"
+	}
 }

@@ -39,16 +39,7 @@ func validCopiedHLSAudioLimits(audio *copiedHLSAudioProof) bool {
 }
 
 func validCopiedHLSAudioPhase(audio *copiedHLSAudioProof) bool {
-	switch audio.LeadingSamples {
-	case 1024:
-		if audio.SourcePhase != 0 {
-			return false
-		}
-	case 16:
-		if audio.SourcePhase != -8 || audio.Denominator != 48000 {
-			return false
-		}
-	default:
+	if !validCopiedHLSAudioLeadingPhase(audio) {
 		return false
 	}
 	if !copiedHLSAudioOrdinal(audio.FirstNativeSample, audio.LeadingSamples) ||
@@ -79,4 +70,20 @@ func validCopiedHLSAudioEdit(audio *copiedHLSAudioProof) bool {
 	return audio.MediaTime >= 32 && audio.MediaTime <= 16*48000 &&
 		audio.OriginalMediaTime >= 32 && audio.OriginalMediaTime <= 16*48000 &&
 		audio.MediaTime == desired-audio.FirstNativeSample && delta >= -32 && delta <= 32
+}
+
+func validCopiedHLSAudioLeadingPhase(audio *copiedHLSAudioProof) bool {
+	switch audio.LeadingSamples {
+	case 1024:
+		if audio.SourcePhase != 0 {
+			return false
+		}
+	case 16:
+		if audio.SourcePhase != -8 || audio.Denominator != 48000 {
+			return false
+		}
+	default:
+		return false
+	}
+	return true
 }

@@ -3,7 +3,6 @@ package server
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -69,15 +68,19 @@ func TestRemainingNonKeyAudioProofMetadata(t *testing.T) {
 
 func remainingNonKeyAudioProofObject(container string) map[string]any {
 	clock, packet := [32]byte{1}, [32]byte{2}
-	value := map[string]any{"Codec": "aac", "Profile": "LC", "SampleRate": 48000, "Channels": 2,
+	value := map[string]any{
+		"Codec": "aac", "Profile": "LC", "SampleRate": 48000, "Channels": 2,
 		"Numerator": 1, "Denominator": 1000, "SourceClock": clock, "FirstPacket": packet,
 		"FirstPTS": 11925, "FirstNativeSample": 572416, "RequestedSample": 600000,
 		"TargetPTS": 599040, "TargetNativeSample": 599040, "TargetSamples": 1024,
-		"LeadingSamples": 1024, "SourcePhase": 0, "MediaTime": 27584, "OriginalMediaTime": 27600}
+		"LeadingSamples": 1024, "SourcePhase": 0, "MediaTime": 27584, "OriginalMediaTime": 27600,
+	}
 	if container == "mp4" {
-		for field, replacement := range map[string]any{"Denominator": 48000, "FirstPTS": 571400,
+		for field, replacement := range map[string]any{
+			"Denominator": 48000, "FirstPTS": 571400,
 			"FirstNativeSample": 571408, "TargetPTS": 599048, "TargetNativeSample": 599056,
-			"LeadingSamples": 16, "SourcePhase": -8, "MediaTime": 28600, "OriginalMediaTime": 28600} {
+			"LeadingSamples": 16, "SourcePhase": -8, "MediaTime": 28600, "OriginalMediaTime": 28600,
+		} {
 			value[field] = replacement
 		}
 	}
@@ -89,7 +92,7 @@ func remainingNonKeyAudioProofObject(container string) map[string]any {
 // certify those operations or allow naked geometry to become publicly ready.
 func TestRemainingNonKeyAudioProofDoesNotGrantCacheReadiness(t *testing.T) {
 	for _, container := range []string{"mkv", "mp4"} {
-		t.Run(fmt.Sprintf("synthetic-%s", container), func(t *testing.T) {
+		t.Run("synthetic-"+container, func(t *testing.T) {
 			_, directory, _ := remainingNonKeyAssetFixture(t)
 			value := remainingNonKeyContractObject(12.5, true)
 			value["Presentation"].(map[string]any)["Proof"].(map[string]any)["Audio"] = remainingNonKeyAudioProofObject(container)
