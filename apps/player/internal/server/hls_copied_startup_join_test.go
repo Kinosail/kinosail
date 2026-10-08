@@ -3,6 +3,7 @@ package server
 import (
 	"bytes"
 	"context"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -31,17 +32,7 @@ func TestCopiedStartupCanceledProducerJoinsBeforeHTTPRefill(t *testing.T) {
 	job := &hlsJob{lifecycle: lifecycle, cancel: stop, preparation: &startupEncoding{}, done: make(chan struct{}), activity: make(chan struct{}, 1), cachePolicy: policy.Cache}
 	key := hlsRecipeKey(item.ID, recipe)
 	manager.jobs[key] = job
-	joined := false
-	join := func() {
-		manager.mu.Lock()
-		defer manager.mu.Unlock()
-		if !joined {
-			delete(manager.jobs, key)
-			close(job.done)
-			joined = true
-		}
-	}
-	t.Cleanup(join)
+	join := copiedStartupJoin(t, manager, key, job)
 	ctx, cancel := context.WithTimeout(t.Context(), 3*time.Second)
 	defer cancel()
 	response := httptest.NewRecorder()
@@ -58,12 +49,7 @@ func TestCopiedStartupCanceledProducerJoinsBeforeHTTPRefill(t *testing.T) {
 		t.Fatal("missing-fragment request completed before canceled producer joined")
 	case <-time.After(100 * time.Millisecond):
 	}
-	if job.preparation.adopted.Load() {
-		t.Fatal("canceled copied producer was adopted")
-	}
-	if _, err := os.Stat(marker); !os.IsNotExist(err) {
-		t.Fatal("replacement started before old producer joined")
-	}
+	copiedStartupNoRefill(t, job, marker)
 	join()
 	select {
 	case <-done:
@@ -73,6 +59,87 @@ func TestCopiedStartupCanceledProducerJoinsBeforeHTTPRefill(t *testing.T) {
 	if response.Code != http.StatusOK || response.Body.String() != "first fragment" {
 		t.Fatalf("refill = %d %q", response.Code, response.Body.String())
 	}
+	copiedStartupRefillSettled(t, ctx, manager, key, marker)
+	if job.preparation.adopted.Load() {
+		t.Fatal("joined canceled producer was adopted late")
+	}
+	check()
+}
+
+func TestCopiedStartupWaitingRequestCancellationHasNoEffects(t *testing.T) {
+	for _, deadline := range []bool{false, true} {
+		t.Run(map[bool]string{false: "canceled", true: "deadline"}[deadline], func(t *testing.T) {
+			copiedStartupCancellation(t, deadline)
+		})
+	}
+}
+
+func copiedStartupCancellation(t *testing.T, deadline bool) {
+	t.Helper()
+	manager, item, recipe, directory, initialization := copiedRecoveryEnclosingFixture(t)
+	check := copiedStartupRetained(t, directory, item.Path)
+	marker := filepath.Join(t.TempDir(), "refills")
+	copiedRecoveryEncoderOutput(t, manager, "printf started > "+copiedRecoveryQuote(marker), initialization, "first fragment", copiedRecoveryManifest)
+	policy, err := manager.hlsSettings(item, recipe)
+	if err != nil {
+		t.Fatal(err)
+	}
+	lifecycle, stop := context.WithCancelCause(t.Context())
+	stop(errHLSInactive)
+	job := &hlsJob{lifecycle: lifecycle, cancel: stop, preparation: &startupEncoding{}, done: make(chan struct{}), cachePolicy: policy.Cache}
+	key := hlsRecipeKey(item.ID, recipe)
+	manager.jobs[key] = job
+	ctx, cancel := context.WithCancel(t.Context())
+	if deadline {
+		ctx, cancel = context.WithTimeout(t.Context(), 100*time.Millisecond)
+	}
+	defer cancel()
+	done := make(chan error, 1)
+	go func() { done <- manager.prepareSegment(ctx, item, recipe, "1080p/segment-00000.m4s") }()
+	if !deadline {
+		time.Sleep(100 * time.Millisecond)
+		cancel()
+	}
+	select {
+	case err := <-done:
+		if err == nil || !errors.Is(err, ctx.Err()) {
+			t.Fatalf("canceled request = %v, context = %v", err, ctx.Err())
+		}
+	case <-time.After(time.Second):
+		t.Fatal("canceled request failed to settle without producer join")
+	}
+	copiedStartupNoRefill(t, job, marker)
+	check()
+}
+
+func copiedStartupJoin(t *testing.T, manager *hlsManager, key string, job *hlsJob) func() {
+	t.Helper()
+	joined := false
+	join := func() {
+		manager.mu.Lock()
+		defer manager.mu.Unlock()
+		if !joined {
+			delete(manager.jobs, key)
+			close(job.done)
+			joined = true
+		}
+	}
+	t.Cleanup(join)
+	return join
+}
+
+func copiedStartupNoRefill(t *testing.T, job *hlsJob, marker string) {
+	t.Helper()
+	if job.preparation.adopted.Load() {
+		t.Fatal("request adopted canceled producer before join")
+	}
+	if _, err := os.Stat(marker); !os.IsNotExist(err) {
+		t.Fatal("request started a replacement before join")
+	}
+}
+
+func copiedStartupRefillSettled(t *testing.T, ctx context.Context, manager *hlsManager, key, marker string) {
+	t.Helper()
 	manager.mu.Lock()
 	replacement := manager.jobs[key]
 	manager.mu.Unlock()
@@ -84,56 +151,6 @@ func TestCopiedStartupCanceledProducerJoinsBeforeHTTPRefill(t *testing.T) {
 	used, err := os.ReadFile(marker)
 	if err != nil || strings.Count(string(used), "refill") != 1 {
 		t.Fatalf("refill count = %q, %v", used, err)
-	}
-	if job.preparation.adopted.Load() {
-		t.Fatal("joined canceled producer was adopted late")
-	}
-	check()
-}
-
-func TestCopiedStartupWaitingRequestCancellationHasNoEffects(t *testing.T) {
-	for _, deadline := range []bool{false, true} {
-		t.Run(map[bool]string{false: "canceled", true: "deadline"}[deadline], func(t *testing.T) {
-			manager, item, recipe, directory, initialization := copiedRecoveryEnclosingFixture(t)
-			check := copiedStartupRetained(t, directory, item.Path)
-			marker := filepath.Join(t.TempDir(), "refills")
-			copiedRecoveryEncoderOutput(t, manager, "printf started > "+copiedRecoveryQuote(marker), initialization, "first fragment", copiedRecoveryManifest)
-			policy, err := manager.hlsSettings(item, recipe)
-			if err != nil {
-				t.Fatal(err)
-			}
-			lifecycle, stop := context.WithCancelCause(t.Context())
-			stop(errHLSInactive)
-			job := &hlsJob{lifecycle: lifecycle, cancel: stop, preparation: &startupEncoding{}, done: make(chan struct{}), cachePolicy: policy.Cache}
-			key := hlsRecipeKey(item.ID, recipe)
-			manager.jobs[key] = job
-			ctx, cancel := context.WithCancel(t.Context())
-			if deadline {
-				ctx, cancel = context.WithTimeout(t.Context(), 100*time.Millisecond)
-			}
-			defer cancel()
-			done := make(chan error, 1)
-			go func() { done <- manager.prepareSegment(ctx, item, recipe, "1080p/segment-00000.m4s") }()
-			if !deadline {
-				time.Sleep(100 * time.Millisecond)
-				cancel()
-			}
-			select {
-			case err := <-done:
-				if err != ctx.Err() || err == nil {
-					t.Fatalf("canceled request = %v, context = %v", err, ctx.Err())
-				}
-			case <-time.After(time.Second):
-				t.Fatal("canceled request failed to settle without producer join")
-			}
-			if job.preparation.adopted.Load() {
-				t.Fatal("rejected request adopted canceled producer")
-			}
-			if _, err := os.Stat(marker); !os.IsNotExist(err) {
-				t.Fatal("rejected request started a replacement")
-			}
-			check()
-		})
 	}
 }
 
