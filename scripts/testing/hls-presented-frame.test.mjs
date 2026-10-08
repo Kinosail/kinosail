@@ -134,18 +134,18 @@ test('registered HLS case rejects before authority reads and before browser cont
   pixelFormat:'yuv420p',marker:'ten binary luminance bits + complement + black/white guards'};
  const source=stripTypeScriptTypes(readFileSync(new URL('../../apps/player/e2e/hls-presented-seek.ts',import.meta.url),'utf8'))
   .replace(/^import .*;\n/gm,'').replace(/^export /gm,'');
- async function invoke(selectedRun){
+ async function invoke(selectedRun,observeOtherFile=false){
   let callback,promisesReads=0,reads=0,opens=0,contexts=0;const stopped=new Error('control stops before actual browser');
   const register=(_,fn)=>{callback=fn;};register.setTimeout=()=>{};
   const sandbox={test:register,expect:()=>{},URL,Buffer,TextDecoder,join,resolve:()=>root,
    process:{env:{KINOSAIL_HLS_PRESENTATION_PROOF:'1',KINOSAIL_STARTUP_RUN:selectedRun}},decodeFixtureJSON,
    readFile:async(...args)=>{promisesReads++;return readFile(...args);},...presentationFiles};
-  const original={openSync:descriptorFS.openSync,readSync:descriptorFS.readSync,closeSync:descriptorFS.closeSync},descriptors=new Set();
-  descriptorFS.openSync=(path,...args)=>{if(path===mapPath)opens++;const fd=original.openSync(path,...args);if(path===mapPath)descriptors.add(fd);return fd;};
-  descriptorFS.readSync=(fd,...args)=>{if(descriptors.has(fd))reads++;return original.readSync(fd,...args);};
-  descriptorFS.closeSync=fd=>{descriptors.delete(fd);return original.closeSync(fd);};syncBuiltinESMExports();
+  const original={openSync:descriptorFS.openSync,readSync:descriptorFS.readSync};
+  descriptorFS.openSync=(...args)=>{opens++;return original.openSync(...args);};
+  descriptorFS.readSync=(...args)=>{reads++;return original.readSync(...args);};syncBuiltinESMExports();
   let failure;
   try{
+   if(observeOtherFile){const fd=descriptorFS.openSync(statePath,'r');try{descriptorFS.readSync(fd,Buffer.alloc(1),0,1,0);}finally{descriptorFS.closeSync(fd);}}
    runInNewContext(source+'\nregisterPresentedSeek();',sandbox);
    try{await callback({baseURL:'http://localhost:12345',browser:{async newContext(){contexts++;throw stopped;}}},{});}catch(error){failure=error;}
   }finally{Object.assign(descriptorFS,original);syncBuiltinESMExports();}
@@ -154,6 +154,7 @@ test('registered HLS case rejects before authority reads and before browser cont
  try{
   writeFileSync(statePath,JSON.stringify({cookies:[],origins:[]}),{mode:0o600});
   writeFileSync(mapPath,JSON.stringify(valid),{mode:0o600});
+  const observation=await invoke('relative',true);assert.equal(observation.opens,1);assert.equal(observation.reads,1);assert.equal(observation.contexts,0);
   const admitted=await invoke(run);assert.ok(admitted.reads>0);assert.equal(admitted.promisesReads,0);assert.equal(admitted.contexts,1);assert.equal(admitted.failure,admitted.stopped);
   for(const selectedRun of [undefined,'relative',run+'x','x'.repeat(4097),join(root,'foreign','20261008T220000Z')]){
    const rejected=await invoke(selectedRun);assert.equal(rejected.opens,0);assert.equal(rejected.reads,0);assert.equal(rejected.promisesReads,0);assert.equal(rejected.contexts,0);
