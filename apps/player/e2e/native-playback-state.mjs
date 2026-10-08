@@ -1,6 +1,6 @@
 // Closed observations of the existing native smoke video; never attach source URLs or SDK errors.
 export async function attachNativePlaybackState(video, info, phase) {
-  if (!['before-click', 'after-click', 'failure'].includes(phase)) throw Error('invalid native playback phase');
+  if (!['before-play', 'after-click', 'failure'].includes(phase)) throw Error('invalid native playback phase');
   let timer;
   try {
     const media = await Promise.race([video.evaluate(element => ({

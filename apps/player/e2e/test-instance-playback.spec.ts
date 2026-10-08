@@ -15,13 +15,18 @@ test("@smoke native playback seeks and retains controls on a populated title", a
   await video.evaluate((media: HTMLVideoElement, position) => { media.pause(); media.currentTime = position; }, seekTo);
   await expect.poll(() => video.evaluate((media: HTMLVideoElement) => media.currentTime)).toBeGreaterThanOrEqual(seekTo - 0.1);
   await expect.poll(() => video.evaluate((media: HTMLVideoElement) => media.readyState)).toBeGreaterThanOrEqual(2);
-  await video.evaluate((media: HTMLVideoElement) => media.play());
-  await expect.poll(() => video.evaluate((media: HTMLVideoElement) => media.currentTime)).toBeGreaterThan(seekTo);
-  await attachNativePlaybackState(video, testInfo, "before-click");
   try {
+    await expect.poll(() => video.evaluate((media: HTMLVideoElement, position) =>
+      !media.seeking && !media.ended && Number.isFinite(media.currentTime) &&
+      Math.abs(media.currentTime - position) <= 0.1 && media.currentTime < media.duration, seekTo)).toBe(true);
+    const settled = await video.evaluate((media: HTMLVideoElement) => media.currentTime);
+    await attachNativePlaybackState(video, testInfo, "before-play");
+    await video.evaluate((media: HTMLVideoElement) => media.play());
+    await expect.poll(() => video.evaluate((media: HTMLVideoElement) =>
+      !media.paused && !media.ended ? media.currentTime : 0)).toBeGreaterThan(settled);
     await video.dispatchEvent("click");
-    await attachNativePlaybackState(video, testInfo, "after-click");
     await expect(video).toHaveJSProperty("paused", false);
+    await attachNativePlaybackState(video, testInfo, "after-click");
   } catch (error) {
     await attachNativePlaybackState(video, testInfo, "failure");
     throw error;
