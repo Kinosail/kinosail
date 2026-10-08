@@ -125,13 +125,13 @@ export function startRelay(target, deadline = Date.now() + 2000) {
   return new Promise((resolve, reject) => {
     const sockets = new Set();
     let settled = false, timer;
-    const server = createServer(client => {
+    const server = createServer({allowHalfOpen: true}, client => {
       if (sockets.size >= 128) { client.destroy(); return; }
-      const peer = createConnection({host: target.ip, port: 38127});
+      const peer = createConnection({host: target.ip, port: 38127, allowHalfOpen: true});
       sockets.add(client); sockets.add(peer);
       const stop = () => { client.destroy(); peer.destroy(); sockets.delete(client); sockets.delete(peer); };
       client.on('error', stop); peer.on('error', stop);
-      client.on('close', stop); peer.on('close', stop);
+      client.on('close', () => sockets.delete(client)); peer.on('close', () => sockets.delete(peer));
       peer.setTimeout(5000, stop);
       peer.once('connect', () => peer.setTimeout(0));
       client.pipe(peer); peer.pipe(client);

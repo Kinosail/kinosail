@@ -5,6 +5,7 @@ import {runInNewContext} from 'node:vm';
 import {EventEmitter} from 'node:events';
 import {PassThrough, Duplex} from 'node:stream';
 import {createHash} from 'node:crypto';
+import {createServer, createConnection} from 'node:net';
 const id='a'.repeat(64), netID='b'.repeat(64), image='sha256:'+'c'.repeat(64), name='kinosail-library-123-456';
 const token='d'.repeat(32);
 const container={owner:token,id,name:'/'+name,image,running:true,networks:[{name,id:netID,ip:'172.28.0.2'}]};
@@ -19,7 +20,7 @@ function owner(overrides={}) {
  const context={JSON,Buffer,Error,Set,Promise,Date,createHash,setTimeout,clearTimeout,process:{platform:'linux',argv:[],env:{}},
   networkInterfaces:()=>({['br-'+netID.slice(0,12)]:[{address:'172.28.0.1',family:'IPv4',internal:false,cidr:'172.28.0.1/16'}]}),
   execFileSync:(engine,args,options)=>{calls.push(['inspect',engine,args[0]]);if(overrides.beforeCommand)overrides.beforeCommand(options);if(args[0]==='context')return args[1]==='show'?'default\n':JSON.stringify('unix:///var/run/docker.sock');return metadataOverride?metadataOverride(engine,args,options):JSON.stringify(args[0]==='inspect'?container:network);},
-  createServer:callback=>{listener.connection=callback;return listener;},
+  createServer:(options,callback=options)=>{listener.connection=callback;return listener;},
   createConnection:options=>{calls.push(['connect',options.host,options.port]);const socket=new PassThrough();socket.setTimeout=()=>socket;sockets.push(socket);return socket;},
   ...rest};
  const api=runInNewContext(`(()=>{${source}\nreturn {inspectTarget,startRelay,ownedResource:typeof ownedResource==='function'?ownedResource:undefined,localDocker:typeof localDocker==='function'?localDocker:undefined};})()`,context);
@@ -153,4 +154,61 @@ test('opaque streams preserve binary bytes both ways and cleanup joins both endp
  assert.deepEqual(Buffer.concat(sent),request);assert.deepEqual(Buffer.concat(received),response);
  await relay.close();assert.equal(client.destroyed,true);assert.equal(peer.destroyed,true);
  assert.equal(o.listener.listening,false);
+});
+
+test('real TCP request half-close retains the entire delayed return stream',async()=>{
+ const request=Buffer.from([22,3,1,0,255]), response=Buffer.alloc(262144,0xa5);
+ const upstreamSockets=new Set(),requests=[];
+ let requestSeen;const upstreamReceived=new Promise(resolve=>{requestSeen=resolve;});
+ const upstream=createServer({allowHalfOpen:true},socket=>{
+  upstreamSockets.add(socket);socket.on('error',()=>{});socket.once('close',()=>upstreamSockets.delete(socket));
+  socket.on('data',chunk=>{requests.push(Buffer.from(chunk));if(Buffer.concat(requests).length===request.length)requestSeen();});
+  socket.once('end',()=>setImmediate(()=>socket.end(response)));
+ });
+ await new Promise((resolve,reject)=>{upstream.once('error',reject);upstream.listen(0,'127.0.0.1',resolve);});
+ let relay,client;
+ try {
+  const o=owner({createServer,createConnection:options=>{
+   assert.equal(options.host,'172.28.0.2');assert.equal(options.port,38127);
+   return createConnection({...options,host:'127.0.0.1',port:upstream.address().port});
+  }});
+  relay=await o.api.startRelay({ip:'172.28.0.2'});
+  const received=[];
+  client=createConnection({host:'127.0.0.1',port:relay.port,allowHalfOpen:true});
+  client.on('data',chunk=>received.push(Buffer.from(chunk)));
+  await new Promise((resolve,reject)=>{
+   const deadline=setTimeout(()=>reject(new Error('owned TCP return did not finish')),2000);
+   client.once('connect',()=>{client.write(request);void upstreamReceived.then(()=>client.end());});
+   client.once('error',error=>{clearTimeout(deadline);reject(error);});
+   client.once('end',()=>{clearTimeout(deadline);resolve();});
+  });
+  assert.deepEqual(Buffer.concat(requests),request);
+  const bytes=Buffer.concat(received);
+  assert.equal(bytes.length,response.length,'return bytes must survive request FIN');
+  assert.deepEqual(bytes,response);
+ } finally {
+  client?.destroy();await relay?.close();
+  for(const socket of upstreamSockets)socket.destroy();
+  await new Promise(resolve=>upstream.close(resolve));
+ }
+ assert.equal(upstream.listening,false);
+});
+
+test('endpoint errors still destroy both directions and owned close joins the listener',async()=>{
+ for(const side of ['client','peer']) {
+  const o=owner(),relay=await o.api.startRelay({ip:'172.28.0.2'}),client=new PassThrough();
+  o.listener.connection(client);const peer=o.sockets[0];
+  (side==='client'?client:peer).emit('error',new Error('owned peer failure'));
+  assert.equal(client.destroyed,true);assert.equal(peer.destroyed,true);
+  await relay.close();assert.equal(o.listener.listening,false);
+ }
+});
+
+test('socket pair cap rejects the next connection and explicit cleanup joins every owned pair',async()=>{
+ const o=owner(),relay=await o.api.startRelay({ip:'172.28.0.2'}),clients=[];
+ for(let index=0;index<64;index++){const client=new PassThrough();clients.push(client);o.listener.connection(client);}
+ const excess=new PassThrough();o.listener.connection(excess);
+ assert.equal(excess.destroyed,true);assert.equal(o.sockets.length,64);
+ await relay.close();assert.equal(o.listener.listening,false);
+ assert.ok([...clients,...o.sockets].every(socket=>socket.destroyed));
 });
