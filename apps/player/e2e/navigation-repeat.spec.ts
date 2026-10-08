@@ -26,9 +26,8 @@ async function login(page: Page) {
 	await expect(page).toHaveURL("/");
 }
 
-test.describe(() => {
-  test.use({serviceWorkers: "block"});
-test("repeating the active Movies link does not reload the document", async ({ page }, testInfo) => {
+const routedTest = test.extend({serviceWorkers: "block"});
+routedTest("repeating the active Movies link does not reload the document", async ({ page }, testInfo) => {
 	const origin = new URL(test.info().project.use.baseURL!).origin;
 	await login(page);
 	let offerObserved = false;
@@ -86,7 +85,6 @@ test("repeating the active Movies link does not reload the document", async ({ p
 
 	expect(documentRequests, "repeating the active link must not start document navigations").toEqual([]);
 	expect(page.url()).toContain("/?view=movies");
-});
 });
 
 test("refresh keeps compact navigation and sign out reachable", async ({ page }) => {

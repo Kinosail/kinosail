@@ -1,16 +1,20 @@
 import {test as check} from 'node:test';
 import assert from 'node:assert/strict';
 import {registerHooks} from 'node:module';
+import {spawnSync} from 'node:child_process';
 
 // Exercise the actual case callback. Redirect-hop requests deliberately do not
 // enter Page routes; this models the pinned driver's documented route boundary.
 const registrations = new Map();
 const fixtures = new Map();
+const contexts = new Map();
+let currentContext = [];
 let currentFixtures = {};
 const origin = 'https://owned.fixture';
-const test = (title, callback) => {registrations.set(title, callback); fixtures.set(title, {...currentFixtures});};
+const test = (title, callback) => {registrations.set(title, callback); fixtures.set(title, {...currentFixtures}); contexts.set(title, [...currentContext]);};
+test.extend = values => (title, callback) => {registrations.set(title, callback); fixtures.set(title, {...currentFixtures, ...values}); contexts.set(title, [...currentContext]);};
 test.use = value => {currentFixtures = {...currentFixtures, ...value};};
-test.describe = callback => {const previous = currentFixtures; currentFixtures = {...previous}; callback(); currentFixtures = previous;};
+test.describe = callback => {const previous = currentFixtures, context = currentContext; currentFixtures = {...previous}; currentContext = [...context, '']; callback(); currentFixtures = previous; currentContext = context;};
 test.skip = () => {};
 test.info = () => ({project: {use: {baseURL: origin}}});
 const expect = value => ({
@@ -35,6 +39,29 @@ hooks.deregister();
 delete globalThis.kinosailOfferControl;
 const run = registrations.get('repeating the active Movies link does not reload the document');
 assert.equal(typeof run, 'function');
+
+check('actual isolated registration keeps the closed Library discovery identity admissible', () => {
+  const title = 'repeating the active Movies link does not reload the document';
+  const code = `import importlib.util,json,sys,pathlib
+root=pathlib.Path.cwd()
+spec=importlib.util.spec_from_file_location('controls',root/'scripts/ci/test_library_profile_admission.py')
+controls=importlib.util.module_from_spec(spec);spec.loader.exec_module(controls)
+module=controls.load();value=controls.report(module.CASES,'chromium',False)
+row=json.loads(sys.stdin.read())
+suite=next(s for s in value['suites'] if s['title']=='navigation-repeat.spec.ts' and s['specs'][0]['title']==row['title'])
+specs=suite['specs'];suite['specs']=[]
+parent=suite
+for title in row['context']:
+ child={'title':title,'specs':[]};parent['suites']=[child];parent=child
+parent['specs']=specs
+try: module.admit(json.dumps(value).encode(),'library-owner','chromium','fresh',False)
+except ValueError as error: print(str(error));sys.exit(2)
+print('46 exact collection identities admitted; no Owner or process effects')`;
+  const result = spawnSync('python3', ['-c', code], {cwd: new URL('../../', import.meta.url),
+    env: {...process.env, PYTHONDONTWRITEBYTECODE: '1'}, input: JSON.stringify({title, context: contexts.get(title)}),
+    encoding: 'utf8', timeout: 5000, maxBuffer: 16384});
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+});
 
 class PageControl {
   current = origin + '/login';
