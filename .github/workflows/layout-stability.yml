@@ -475,6 +475,31 @@ jobs:
           result={'result':'passed','revision':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'tree':subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip(),'sourceSHA256':{str(v):hashlib.sha256(v.read_bytes()).hexdigest() for v in paths},'passed':passed,'publicCache':receipts[0],'all50NativeAcceptance':False}
           pathlib.Path(sys.argv[2]).write_text(json.dumps(result,indent=2)+'\n')
           PY
+      - name: Preserve bounded admission failure classes
+        if: always()
+        run: |
+          python3 - "$RUNNER_TEMP/remaining-after-private.jsonl" .verification/hls-followon/cache-admission/failure-classes.json <<'PY'
+          import hashlib,json,pathlib,re,sys
+          path=pathlib.Path(sys.argv[1])
+          if not path.exists():
+              raise SystemExit(0)
+          with path.open('rb') as stream:
+              raw=stream.read((8<<20)+1)
+          assert len(raw)<=8<<20, 'admission_private_diagnostic_bound'
+          rows=[]
+          for line in raw.decode(errors='replace').splitlines():
+              if line.startswith('{'):
+                  try:
+                      rows.append(json.loads(line))
+                  except json.JSONDecodeError:
+                      continue
+          tests=[{'action':v['Action'],'test':v['Test']} for v in rows if v.get('Action') in ['run','pass','fail','skip'] and re.fullmatch(r'TestRemaining[A-Za-z0-9_./-]+',v.get('Test',''))]
+          patterns=[r'historical AAC collision not reproduced: samples[0-9]+ equal(?:true|false)',r'historical generated AAC refill has a different ordinal boundary',r'complete native AAC samples = [0-9]+, expected481280',r'owned cache encoder did not join with two zero observations',r'public cache asset returned[0-9]+, expected[0-9]+',r'full public AAC decode failed: (?:exit status [0-9]+|signal: killed)',r'historical generated AAC refill failed: (?:exit status [0-9]+|signal: killed)',r'physical AAC EOF was not published within the bounded cache proof',r'old AAC cache rebuild did not restore the exact full-EOF control with one encoder',r'panic: test timed out after [0-9]+[ms]']
+          classes=sorted({m.group(0) for v in rows for pattern in patterns if (m:=re.search(pattern,v.get('Output','')))})
+          result={'privateLogSHA256':hashlib.sha256(raw).hexdigest(),'privateLogBytes':len(raw),'observedTests':tests[:512],'safeFailureClasses':classes[:32],'rawDiagnosticsPublished':False}
+          output=pathlib.Path(sys.argv[2]);output.parent.mkdir(parents=True,exist_ok=True)
+          output.write_text(json.dumps(result,indent=2)+'\n')
+          PY
       - name: Preserve safe admission evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
