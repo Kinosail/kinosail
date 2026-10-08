@@ -88,8 +88,11 @@ exports.firefox={
         # Replace the global URL constructor solely to witness whether it was called.
         bootstrap=self.root/'url-witness.cjs'
         bootstrap.write_text("global.URL=class {constructor(){require('fs').writeFileSync(process.env.CALLS,'URL parsed');throw Error('URL parsed');}}")
-        for args in ([],['x'*2049,'/owned/firefox','/owned/policies.json'],
-                ['https://localhost:1234','x'*4097,'/owned/policies.json']):
+        for args in ([],['https://localhost:1234','/owned/firefox'],
+                ['https://localhost:1234','/owned/firefox',''],
+                ['x'*2049,'/owned/firefox','/owned/policies.json'],
+                ['https://localhost:1234','x'*4097,'/owned/policies.json'],
+                ['https://localhost:1234','/owned/firefox','x'*4097]):
             with self.subTest(lengths=[len(value) for value in args]):
                 self.log.unlink(missing_ok=True)
                 result=subprocess.run(['node','--require',str(bootstrap),str(self.root/SOURCE.name),*args],
