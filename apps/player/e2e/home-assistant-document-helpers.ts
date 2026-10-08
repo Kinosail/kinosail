@@ -41,7 +41,7 @@ export async function targets(page: Page): Promise<Target[]> {
   return (await response.json()).players;
 }
 
-export async function openDocuments(page: Page, prepare?: (document: Page) => Promise<void>) {
+export async function openDocuments(page: Page, prepare?: (document: Page) => Promise<void>, options: {initialClaimsRequired?: boolean} = {}) {
   await login(page);
   await setting(page, true);
   const existing = new Set((await targets(page)).map(target => target.id));
@@ -66,10 +66,10 @@ export async function openDocuments(page: Page, prepare?: (document: Page) => Pr
     }
   });
   const live = async () => (await targets(page)).filter(target => ids.includes(target.itemId) && !existing.has(target.id));
-  const initialFirst = nextDocumentClaim(first), initialSecond = nextDocumentClaim(second);
+  const initialClaims = options.initialClaimsRequired === false ? [] : [nextDocumentClaim(first), nextDocumentClaim(second)];
   await first.goto(`/watch/${ids[0]}`);
   await second.goto(`/watch/${ids[1]}`);
-  for (const claim of await Promise.all([initialFirst, initialSecond])) {
+  for (const claim of await Promise.all(initialClaims)) {
     expect(typeof claim.claim === "string" && claim.claim.length >= 20).toBe(true);
     expect(claim.expiresIn).toBe(30);
     claims.add(claim.claim);

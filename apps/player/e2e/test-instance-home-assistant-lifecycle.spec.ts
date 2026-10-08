@@ -196,7 +196,7 @@ test("rendered document claim failure exposes accessible Retry and recovers with
   let first: Page | undefined, second: Page | undefined, failing = true;
   try {
     const docs = await openDocuments(page, document => document.route("**/home-assistant/players/claims", route => failing
-      ? route.fulfill({status: 503}) : route.continue()));
+      ? route.fulfill({status: 503}) : route.continue()), {initialClaimsRequired: false});
     ({first, second} = docs);
     await expect(first.locator("[data-home-assistant-status]")).toHaveAttribute("data-home-assistant-status", "unavailable");
     await inspectDocumentStatus(first, info, "unavailable");
