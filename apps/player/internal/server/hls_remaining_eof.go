@@ -80,15 +80,16 @@ func (manager *hlsManager) remainingColdAACProjection(ctx context.Context, item 
 	if err != nil || !wait {
 		return nil, err
 	}
-	if err := remainingColdAACWait(ctx, job); err != nil {
+	generation, err := manager.remainingColdAACGeneration(key)
+	if err != nil {
 		return nil, err
 	}
-	observed, err := manager.remainingColdAACSnapshot(ctx, item, recipe, key, options.Cache, job, duration)
+	observed, err := manager.remainingColdAACComplete(ctx, item, recipe, key, options.Cache, job, duration, generation)
 	if err != nil {
 		return nil, err
 	}
 	return func(raw []byte) []byte {
-		current, err := manager.remainingColdAACSnapshot(ctx, item, recipe, key, options.Cache, job, duration)
+		current, err := manager.remainingColdAACSnapshot(ctx, item, recipe, key, options.Cache, job, duration, generation)
 		if err != nil || !observed.same(current) || !bytes.Equal(raw, current.manifest) {
 			if err == nil {
 				err = errHLSIdentityChanged
@@ -118,7 +119,7 @@ func (manager *hlsManager) remainingColdAACStable(ctx context.Context, item libr
 	return nil
 }
 
-func (manager *hlsManager) remainingColdAACSnapshot(ctx context.Context, item library.Item, recipe hlsRecipe, key, policy string, job *hlsJob, duration float64) (*remainingColdAACState, error) {
+func (manager *hlsManager) remainingColdAACSnapshot(ctx context.Context, item library.Item, recipe hlsRecipe, key, policy string, job *hlsJob, duration float64, generation ...*remainingColdAACState) (*remainingColdAACState, error) {
 	if err := manager.remainingColdAACStable(ctx, item, recipe, key, policy, job); err != nil {
 		return nil, err
 	}
@@ -135,6 +136,12 @@ func (manager *hlsManager) remainingColdAACSnapshot(ctx context.Context, item li
 		if err := state.retain(root, name); err != nil {
 			return nil, err
 		}
+	}
+	if len(generation) > 1 || len(generation) == 1 && !state.sameGeneration(generation[0]) {
+		return nil, errHLSIdentityChanged
+	}
+	if err := manager.remainingColdAACVerifyGeneration(key, state); err != nil {
+		return nil, err
 	}
 	if err := remainingAACReadyRoot(root, policy); err != nil {
 		return nil, err
@@ -153,6 +160,9 @@ func (manager *hlsManager) remainingColdAACSnapshot(ctx context.Context, item li
 		}
 	}
 	if err := manager.remainingColdAACStable(ctx, item, recipe, key, policy, job); err != nil {
+		return nil, err
+	}
+	if err := manager.remainingColdAACVerifyGeneration(key, state); err != nil {
 		return nil, err
 	}
 	return state, nil
@@ -222,4 +232,51 @@ func (state *remainingColdAACState) same(other *remainingColdAACState) bool {
 		}
 	}
 	return true
+}
+
+// Capture the recipe and rendition identities before waiting for publication.
+func (manager *hlsManager) remainingColdAACGeneration(key string) (*remainingColdAACState, error) {
+	root, err := manager.openCopiedHLSRoot(filepath.Join(manager.cache, key))
+	if err != nil {
+		return nil, errCopiedHLSIndex
+	}
+	defer root.Close()
+	state := &remainingColdAACState{files: make(map[string]fs.FileInfo)}
+	for _, name := range []string{".", "audio"} {
+		if err := state.retain(root, name); err != nil {
+			return nil, err
+		}
+	}
+	return state, nil
+}
+
+func (state *remainingColdAACState) sameGeneration(other *remainingColdAACState) bool {
+	if other == nil {
+		return false
+	}
+	for _, name := range []string{".", "audio"} {
+		a, b := state.files[name], other.files[name]
+		if a == nil || b == nil || !remainingColdAACSameFile(a, b) {
+			return false
+		}
+	}
+	return true
+}
+
+func (manager *hlsManager) remainingColdAACVerifyGeneration(key string, retained *remainingColdAACState) error {
+	canonical, err := manager.remainingColdAACGeneration(key)
+	if err != nil {
+		return err
+	}
+	if !retained.sameGeneration(canonical) {
+		return errHLSIdentityChanged
+	}
+	return nil
+}
+
+func (manager *hlsManager) remainingColdAACComplete(ctx context.Context, item library.Item, recipe hlsRecipe, key, policy string, job *hlsJob, duration float64, generation *remainingColdAACState) (*remainingColdAACState, error) {
+	if err := remainingColdAACWait(ctx, job); err != nil {
+		return nil, err
+	}
+	return manager.remainingColdAACSnapshot(ctx, item, recipe, key, policy, job, duration, generation)
 }

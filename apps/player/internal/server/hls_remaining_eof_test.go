@@ -287,11 +287,24 @@ func TestRemainingColdAACConcurrentReadersShareJoinedPublication(t *testing.T) {
 			completed <- problem
 		})
 	}
-	// The wait cannot retain the job mutex, which guards unrelated requests.
-	if !manager.mu.TryLock() {
+	// A pending worker must leave the metadata lock available to other requests.
+	select {
+	case <-job.done:
+		t.Fatal("worker joined before the lock oracle")
+	default:
+	}
+	unlocked := make(chan struct{})
+	go func() { manager.mu.Lock(); manager.mu.Unlock(); close(unlocked) }()
+	select {
+	case <-unlocked:
+	case <-time.After(time.Second):
 		t.Fatal("completion wait retained the manager mutex")
 	}
-	manager.mu.Unlock()
+	select {
+	case err := <-completed:
+		t.Fatalf("reader escaped before worker join: %v", err)
+	default:
+	}
 	close(job.done)
 	readers.Wait()
 	for range 2 {
@@ -301,5 +314,74 @@ func TestRemainingColdAACConcurrentReadersShareJoinedPublication(t *testing.T) {
 	}
 	if manager.jobs[key] != job || len(job.activity) != 0 || job.preparation != nil {
 		t.Fatal("reader changed shared encoder ownership")
+	}
+}
+
+func TestRemainingColdAACCompletionRejectsGenerationChangedBeforeJoin(t *testing.T) {
+	for _, changed := range []string{"root", "rendition"} {
+		t.Run(changed, func(t *testing.T) {
+			manager, item, recipe, directory := remainingAACAdmissionFixture(t)
+			key := hlsRecipeKey(item.ID, recipe)
+			options, err := manager.hlsSettings(item, recipe)
+			if err != nil {
+				t.Fatal(err)
+			}
+			generation, err := manager.remainingColdAACGeneration(key)
+			if err != nil {
+				t.Fatal(err)
+			}
+			job := &hlsJob{done: make(chan struct{}), cachePolicy: options.Cache}
+			manager.jobs[key] = job
+			target := directory
+			if changed == "rendition" {
+				target = filepath.Join(directory, "audio")
+			}
+			if err := os.Rename(target, target+".before-join"); err != nil {
+				t.Fatal(err)
+			}
+			cloneRemainingColdFixture(t, target+".before-join", target)
+			manifest := remainingInitialAACPrefix + "#EXTINF:0.021333,\nsegment-00005.m4s\n#EXT-X-ENDLIST\n"
+			writeHLSLoadingFile(t, filepath.Join(directory, "audio/index.m3u8"), manifest)
+			for n := range 6 {
+				writeHLSLoadingFile(t, filepath.Join(directory, "audio", fmtRemainingColdSegment(n)), "synthetic-fragment")
+			}
+			close(job.done)
+			if _, err := manager.remainingColdAACComplete(t.Context(), item, recipe, key, options.Cache, job, 10, generation); err == nil {
+				t.Fatal("replacement generation inherited the old worker's completion")
+			}
+		})
+	}
+}
+
+func TestRemainingColdAACRetainedRootCannotHideCanonicalReplacement(t *testing.T) {
+	for _, changed := range []string{"root", "rendition"} {
+		t.Run(changed, func(t *testing.T) {
+			manager, _, _, directory := remainingAACAdmissionFixture(t)
+			key := filepath.Base(directory)
+			bound, err := manager.remainingColdAACGeneration(key)
+			if err != nil {
+				t.Fatal(err)
+			}
+			held, err := manager.openCopiedHLSRoot(directory)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer held.Close()
+			target := directory
+			if changed == "rendition" {
+				target = filepath.Join(directory, "audio")
+			}
+			if err := os.Rename(target, target+".during-read"); err != nil {
+				t.Fatal(err)
+			}
+			cloneRemainingColdFixture(t, target+".during-read", target)
+			old, err := held.Lstat(".")
+			if err != nil || !os.SameFile(bound.files["."], old) {
+				t.Fatal("retained root no longer demonstrates the original gap")
+			}
+			if manager.remainingColdAACVerifyGeneration(key, bound) == nil {
+				t.Fatal("retained directory hid a canonical replacement")
+			}
+		})
 	}
 }
