@@ -12,12 +12,13 @@ jobs:
       matrix:
         os: [ubuntu-24.04, macos-15, windows-2025]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 15
+    timeout-minutes: 18
     defaults:
       run:
         shell: bash
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - timeout-minutes: 2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ inputs.candidate }}
           fetch-depth: 0
@@ -32,15 +33,17 @@ jobs:
         timeout-minutes: 3
         with: {go-version-file: go.work, cache: false}
       - name: Run real configured-probe controls
+        timeout-minutes: 8
         working-directory: apps/player
         run: |
           mkdir -p "$GITHUB_WORKSPACE/.verification/copied-probe"
           git rev-parse HEAD > "$GITHUB_WORKSPACE/.verification/copied-probe/SOURCE"
           go env GOOS GOARCH GOVERSION
-          gofmt -d internal/server/hls_copied_lines*go
+          gofmt -d internal/server/hls_copied_lines*go > "$GITHUB_WORKSPACE/.verification/copied-probe/format.diff"
           go test -json ./internal/server -run '^TestCopiedHLSLines' -count=1 -timeout=2m > "$GITHUB_WORKSPACE/.verification/copied-probe/receipt.jsonl"
       - name: Project bounded safe lifetime facts
         if: always()
+        timeout-minutes: 1
         run: |
           python3 - <<'PY'
           import hashlib, json, pathlib
@@ -51,6 +54,11 @@ jobs:
           assert not any(r.get('Action') == 'skip' for r in rows), 'probe_no_skip'
           required = ['TestCopiedHLSLinesOwnedLifetime', 'TestCopiedHLSLinesHealthy', 'TestCopiedHLSLinesCancelledBeforeStart']
           assert all(any(r.get('Action') == 'run' and r.get('Test') == name for r in rows) for name in required), 'probe_controls_executed'
+          outcomes = {r.get('Test'): r['Action'] for r in rows if r.get('Test') and r.get('Action') in ['pass', 'fail']}
+          controls = ['TestCopiedHLSLinesCancelledBeforeStart', 'TestCopiedHLSLinesHealthy', 'TestCopiedHLSLinesHealthy/healthy', 'TestCopiedHLSLinesHealthy/healthy-closed']
+          assert all(outcomes.get(name) == 'pass' for name in controls), 'probe_healthy_controls_pass'
+          cases = ['held_stdout', 'early_stdout_closure', 'parent_exits_before_descendant', 'scanner_rejection', 'explicit_cancellation']
+          assert all(outcomes.get('TestCopiedHLSLinesOwnedLifetime/' + name) in ['pass', 'fail'] for name in cases), 'probe_all_lifetime_results'
           print(json.dumps({'receiptSHA256': hashlib.sha256(raw).hexdigest(), 'bytes': len(raw), 'noSkip': True}))
           for row in rows:
               test = row.get('Test', '')
