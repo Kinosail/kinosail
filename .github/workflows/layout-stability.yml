@@ -48,7 +48,7 @@ on:
       campaign_proof:
         description: Run one bounded campaign proof instead of layout diagnosis
         type: choice
-        options: [none, R06, Q14, Q09, Q47, HLS, HLS-navigation, Library, Camera, Responsive, Playback, Offline, Provider, Verify-changed]
+        options: [none, R06, Q14, Q09, Q47, HLS, HLS-navigation, Library, Camera, Responsive, Playback, Offline, Provider, Verify-changed, Native-platforms]
         default: none
       campaign_q14_suite:
         description: Select one fixed Q14 public suite; primary keeps its two repeats
@@ -190,7 +190,7 @@ jobs:
   campaign-proof:
     needs: selection-admission
     name: Bounded campaign proof
-    if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof != 'none' && inputs.campaign_proof != 'HLS' && inputs.campaign_proof != 'HLS-navigation' && inputs.campaign_proof != 'Library' && inputs.campaign_proof != 'Camera' && inputs.campaign_proof != 'Responsive' && inputs.campaign_proof != 'Playback' && inputs.campaign_proof != 'Offline' && inputs.campaign_proof != 'Provider' && inputs.campaign_proof != 'Verify-changed'
+    if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof != 'none' && inputs.campaign_proof != 'HLS' && inputs.campaign_proof != 'HLS-navigation' && inputs.campaign_proof != 'Library' && inputs.campaign_proof != 'Camera' && inputs.campaign_proof != 'Responsive' && inputs.campaign_proof != 'Playback' && inputs.campaign_proof != 'Offline' && inputs.campaign_proof != 'Provider' && inputs.campaign_proof != 'Verify-changed' && inputs.campaign_proof != 'Native-platforms'
     runs-on: ubuntu-24.04
     timeout-minutes: 12
     env:
@@ -1159,3 +1159,13 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 3
+
+  native-phone:
+    needs: selection-admission
+    if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof == 'Native-platforms'
+    uses: ./.github/workflows/native-phone-e2e.yml
+
+  native-tv:
+    needs: selection-admission
+    if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof == 'Native-platforms'
+    uses: ./.github/workflows/native-tv-e2e.yml

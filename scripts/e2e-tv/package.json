@@ -1,0 +1,22 @@
+{
+  "name": "@kinosail/native-tv-e2e",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "^22.22.3 || >=24.8.0"
+  },
+  "scripts": {
+    "test": "node --test *.test.mjs && python3 -m unittest discover -p test_hosted.py",
+    "tvos": "python3 hosted.py tvos",
+    "androidtv": "python3 hosted.py androidtv",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "e2e": "0.17.0",
+    "agent-device": "0.21.22",
+    "pngjs": "7.0.0",
+    "typescript": "7.0.2",
+    "@types/node": "26.6.4",
+    "@types/pngjs": "6.0.5"
+  }
+}

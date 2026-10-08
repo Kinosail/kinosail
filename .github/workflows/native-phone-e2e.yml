@@ -1,0 +1,157 @@
+name: Player native phone E2E
+on:
+  workflow_dispatch:
+  workflow_call:
+permissions:
+  contents: read
+jobs:
+  ios:
+    name: Player disposable iOS runtime
+    runs-on: xcode-27
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: scripts/e2e-mobile
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.1_beta.app/Contents/Developer
+      E2E_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version-file: apps/player/go.mod
+          cache-dependency-path: '**/go.sum'
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '26.8.2'
+      - name: Install exact phone SDK dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Strictly typecheck native harness
+        run: npm run typecheck
+      - name: Verify native harness boundaries
+        run: npm test
+      - name: Require fixture tools
+        run: |
+          command -v ffmpeg
+          command -v ffprobe
+          xcodebuild -version
+      - name: Compile and run on a new iOS simulator
+        id: native
+        run: python3 hosted.py ios
+      - name: Clean only this run's device
+        id: cleanup
+        if: always()
+        run: python3 cleanup.py
+      - name: Sanitize and remove private output
+        id: privacy
+        if: always() && steps.cleanup.outcome == 'success'
+        run: node publish.mjs
+      - name: Upload sanitized evidence only
+        if: always() && steps.privacy.outcome == 'success'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: player-ios-native-${{ github.sha }}
+          path: scripts/e2e-mobile/.e2e/published/
+          retention-days: 14
+          if-no-files-found: error
+          include-hidden-files: true
+      - name: Record trusted rejection metadata
+        id: rejection
+        if: always() && steps.privacy.outcome != 'success'
+        env:
+          NATIVE_OUTCOME: ${{ steps.native.outcome || 'skipped' }}
+          CLEANUP_OUTCOME: ${{ steps.cleanup.outcome || 'skipped' }}
+          PRIVACY_OUTCOME: ${{ steps.privacy.outcome || 'skipped' }}
+        run: node rejection.mjs
+      - name: Upload rejection metadata only
+        if: always() && steps.rejection.outcome == 'success'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: player-ios-native-rejection-${{ github.sha }}
+          path: scripts/e2e-mobile/.e2e-rejection/
+          retention-days: 14
+          if-no-files-found: error
+          include-hidden-files: true
+  android:
+    name: Player disposable Android runtime
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: scripts/e2e-mobile
+    env:
+      E2E_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version-file: apps/player/go.mod
+          cache-dependency-path: '**/go.sum'
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '26.8.2'
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd
+        with:
+          packages: 'platform-tools emulator platforms;android-37.0 system-images;android-36;google_apis;x86_64'
+      - name: Enable emulator KVM
+        working-directory: .
+        run: |
+          sudo sh -c 'echo KERNEL==\"kvm\",GROUP=\"kvm\",MODE=\"0666\",OPTIONS+=\"static_node=kvm\" > /etc/udev/rules.d/99-kvm4all.rules'
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Install fixture tools
+        working-directory: .
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Install exact phone SDK dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Strictly typecheck native harness
+        run: npm run typecheck
+      - name: Verify native harness boundaries
+        run: npm test
+      - name: Compile and run on a new Android emulator
+        id: native
+        run: python3 hosted.py android
+      - name: Clean only this run's device
+        id: cleanup
+        if: always()
+        run: python3 cleanup.py
+      - name: Sanitize and remove private output
+        id: privacy
+        if: always() && steps.cleanup.outcome == 'success'
+        run: node publish.mjs
+      - name: Upload sanitized evidence only
+        if: always() && steps.privacy.outcome == 'success'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: player-android-native-${{ github.sha }}
+          path: scripts/e2e-mobile/.e2e/published/
+          retention-days: 14
+          if-no-files-found: error
+          include-hidden-files: true
+      - name: Record trusted rejection metadata
+        id: rejection
+        if: always() && steps.privacy.outcome != 'success'
+        env:
+          NATIVE_OUTCOME: ${{ steps.native.outcome || 'skipped' }}
+          CLEANUP_OUTCOME: ${{ steps.cleanup.outcome || 'skipped' }}
+          PRIVACY_OUTCOME: ${{ steps.privacy.outcome || 'skipped' }}
+        run: node rejection.mjs
+      - name: Upload rejection metadata only
+        if: always() && steps.rejection.outcome == 'success'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: player-android-native-rejection-${{ github.sha }}
+          path: scripts/e2e-mobile/.e2e-rejection/
+          retention-days: 14
+          if-no-files-found: error
+          include-hidden-files: true

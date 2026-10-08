@@ -1,0 +1,88 @@
+// @ts-check
+import { resolve } from 'node:path';
+// A finite TV SDK fixture. Caller first validates V7 private run ownership.
+/** @typedef {import('agent-device').AgentDeviceClient} TVClient */
+/** @typedef {{platform:'ios',target:'tv',udid:string}|{platform:'android',target:'tv',serial:string}} TVSelection */
+/** @param {unknown} value @returns {TVSelection} */
+export function tvSelection(value) {
+  const input = /** @type {Record<string,unknown>} */ (value);
+  if (!input || typeof input !== 'object' || Array.isArray(input) ||
+      ![Object.prototype, null].includes(Object.getPrototypeOf(input))) throw Error('invalid TV selector');
+  const apple = input.platform === 'ios';
+  if ((!apple && input.platform !== 'android') || input.target !== 'tv' ||
+      Object.keys(input).sort().join(',') !== (apple ? 'platform,target,udid' : 'platform,serial,target')) throw Error('invalid TV selector');
+  const id = apple ? input.udid : input.serial;
+  if (typeof id !== 'string' || !(apple
+    ? /^[A-Fa-f0-9]{8}(?:-[A-Fa-f0-9]{4}){3}-[A-Fa-f0-9]{12}$/
+    : /^emulator-[0-9]{4,5}$/).test(id)) throw Error('invalid TV selector');
+  return apple ? { platform: 'ios', target: 'tv', udid: id } : { platform: 'android', target: 'tv', serial: id };
+}
+/** @param {TVClient} client @param {unknown} input @param {(selection:TVSelection)=>Promise<unknown>} use @param {string|undefined} [appPath] */
+export async function withTvSession(client, input, use, appPath) {
+  const selection = tvSelection(input), apple = selection.platform === 'ios';
+  if (appPath !== undefined && (typeof appPath !== 'string' || appPath.length > 2048 || resolve(appPath) !== appPath || !/^\/(?:[^\x00-\x1f\x7f]+\/)?apps\/player\/apps\/(?:native\/\.build\/tvos-simulator\/Build\/Products\/Debug-appletvsimulator\/KinosailPlayer\.app|android\/app\/build\/outputs\/apk\/debug\/app-debug\.apk)$/.test(appPath) || (apple ? !appPath.endsWith('KinosailPlayer.app') : !appPath.endsWith('app-debug.apk')))) throw Error('invalid TV app path');
+  const id = selection.platform === 'ios' ? selection.udid : selection.serial;
+  const inventory = await client.devices.list({ ...selection, signal: AbortSignal.timeout(15000) });
+  if (!Array.isArray(inventory) || inventory.length > 128) throw Error('TV inventory mismatch');
+  const matches = inventory.filter(d => d && d.id === id);
+  if (matches.length !== 1 || matches[0].platform !== selection.platform || matches[0].target !== 'tv' ||
+      matches[0].kind !== (apple ? 'simulator' : 'emulator') || matches[0].booted !== true ||
+      (apple && matches[0].appleOs !== 'tvos')) throw Error('TV inventory mismatch');
+  const app = apple ? 'com.kinosail.player' : 'com.kinosail.player.dev';
+  try {
+    if (appPath !== undefined) await client.apps.reinstall({ ...selection, app, appPath, signal: AbortSignal.timeout(60000) });
+    const opened = await client.apps.open({ ...selection, app, ...(apple ? {} : { activity: 'com.kinosail.player.tv.TvActivity' }), signal: AbortSignal.timeout(30000) });
+    if ((opened?.appBundleId ?? opened?.appId) !== app) throw Error('TV foreground identity mismatch');
+    if (!apple) {
+      const state = await client.command.appState({ ...selection, signal: AbortSignal.timeout(15000) });
+      if (state.platform !== 'android' || state.package !== app ||
+          !['com.kinosail.player.tv.TvActivity', '.tv.TvActivity'].includes(state.activity)) throw Error('TV foreground activity mismatch');
+    }
+    return await use(selection);
+  } finally {
+    // Client is bound by its caller to this run's unique private session.
+    await client.sessions.close({ signal: AbortSignal.timeout(15000) });
+  }
+}
+/** @param {TVClient} client @param {unknown} input @param {string} label @param {string} direction @param {string} [field] */
+export async function focusAndSelect(client, input, label, direction, field = 'label') {
+  const selection = tvSelection(input);
+  if ((field !== 'label' && field !== 'identifier') || typeof label !== 'string' || !label.length || label.length > 256 || /[\x00-\x1f\x7f]/.test(label) ||
+      (direction !== 'up' && direction !== 'down' && direction !== 'left' && direction !== 'right')) throw Error('invalid TV navigation');
+  const signal = AbortSignal.timeout(15000);
+  for (let moves = 0; moves < 32; moves++) {
+    const snapshot = await client.capture.snapshot({ ...selection, signal });
+    if (!snapshot || !Array.isArray(snapshot.nodes) || snapshot.nodes.length > 10000 || snapshot.truncated === true) throw Error('invalid TV snapshot');
+    const matches = snapshot.nodes.filter(n => n && n[field] === label);
+    if (matches.length > 1) throw Error('invalid TV snapshot');
+    if (matches[0]?.focused === true) {
+      await client.command.tvRemote({ ...selection, button: 'select', signal });
+      return;
+    }
+    await client.command.tvRemote({ ...selection, button: direction, signal });
+  }
+  throw Error('TV focus not reached');
+}
+
+/** @param {TVClient} client @param {unknown} input @param {unknown} port */
+export async function enterServerAddress(client, input, port) {
+  const selection = tvSelection(input);
+  if (port !== '18769') throw Error('invalid TV server port');
+  const signal = AbortSignal.timeout(15000);
+  for (let moves = 0; moves < 32; moves++) {
+    const snapshot = await client.capture.snapshot({ ...selection, signal });
+    if (!snapshot || !Array.isArray(snapshot.nodes) || snapshot.nodes.length > 10000 || snapshot.truncated === true) throw Error('invalid TV snapshot');
+    const fields = snapshot.nodes.filter(n => n && (n.label === 'Server address' || n.contentDescription === 'Server address') &&
+      (n.editable === true || /(?:TextField|EditText)$/.test(n.type ?? '')));
+    if (fields.length > 1) throw Error('ambiguous TV address field');
+    if (fields[0]?.focused === true) {
+      await client.command.tvRemote({ ...selection, button: 'select', signal });
+      // Fresh reinstall supplies an empty public field. Focused typing uses no coordinate tap.
+      await client.interactions.type({ ...selection, text: `http://${selection.platform === 'ios' ? '127.0.0.1' : '10.0.2.2'}:${port}`, signal });
+      await client.command.tvRemote({ ...selection, button: selection.platform === 'ios' ? 'menu' : 'back', signal });
+      return;
+    }
+    await client.command.tvRemote({ ...selection, button: 'up', signal });
+  }
+  throw Error('TV address focus not reached');
+}

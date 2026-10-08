@@ -21,6 +21,10 @@ export async function readFixtureSetupResponse(response, baseURL) {
   const bytes = new Uint8Array(size); let offset = 0;
   for (const chunk of chunks) {bytes.set(chunk, offset); offset += chunk.byteLength;}
   const data = decodeFixtureJSON(new TextDecoder('utf-8', {fatal: true}).decode(bytes));
+  return validateFixtureSetup(data);
+}
+
+export function validateFixtureSetup(data) {
   const keys = (value, names) => value !== null && typeof value === 'object' && !Array.isArray(value)
     && Object.keys(value).length === names.length && names.every(name => Object.hasOwn(value, name));
   if (!keys(data, ['token', 'expiresIn', 'mfaEnrollmentRequired', 'totp'])

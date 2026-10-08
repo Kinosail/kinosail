@@ -1,0 +1,23 @@
+{
+  "name": "@kinosail/native-phone-e2e",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "^22.22.3 || >=24.8.0"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "ios": "python3 hosted.py ios",
+    "android": "python3 hosted.py android",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "e2e": "0.17.0",
+    "@e2e-dev/mobile": "0.10.0",
+    "agent-device": "0.21.22",
+    "pngjs": "7.0.0",
+    "typescript": "7.0.2",
+    "@types/node": "26.6.4",
+    "@types/pngjs": "6.0.5"
+  }
+}
