@@ -87,6 +87,9 @@ def readiness_cold_control(root, binary, original, directory):
             and case['ownedProcessJoin']['remainingOwnedPIDs'] == [], 'readiness_cold_single_joined_encoder')
         check(source_snapshot(original)['sha256'] == before['sha256'], 'readiness_cold_same_original')
         case['result'] = 'passed'
+    except Exception as error:
+        case['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
+        case['failures'].append('readiness_cold_control_unqualified')
     finally:
         signal.setitimer(signal.ITIMER_REAL, 0)
         signal.signal(signal.SIGALRM, prior_alarm)
@@ -97,25 +100,7 @@ def readiness_cold_control(root, binary, original, directory):
 def readiness_uninterrupted_audio(api, hls, directory, case, source, run, deadline):
     """Read real public media once, without a prepared-prefix assumption."""
     status, master, _ = api.http(hls)
-    check(status == 200 and re.findall(r'^audio/index\.m3u8(directory, pacing):
-    """Validate both paced argv witnesses without changing the legacy0.75 oracle."""
-    source = directory / 'media/Fixture.flac'
-    roots = list((directory / 'cache').glob('*-plan-*'))
-    check(len(roots) == 1, 'readiness_observed_single_generation')
-    root = roots[0]
-    arguments = json.loads(bounded_bytes(directory / 'refill-recipe-private.json', 8192, 'readiness_actual_argv_bound'))
-    expected = ['-hide_banner', '-loglevel', 'error', '-y', '-avoid_negative_ts', 'disabled', '-max_delay', '5000000',
-        '-ss', '0.000', '-readrate', str(pacing), '-i', str(source), '-map', '0:a:0', '-vn', '-sn', '-dn',
-        '-c:a', 'aac', '-ac', '2', '-b:a', '192000', '-output_ts_offset', str(8 - 382976 / 48000),
-        '-bsf:a', 'noise=amount=0:drop=lt(pts\\,382976)', '-f', 'hls', '-hls_time', '2',
-        '-hls_playlist_type', 'event', '-hls_segment_type', 'fmp4', '-hls_segment_options',
-        'movflags=+frag_discont+skip_sidx', '-hls_flags', 'temp_file', '-hls_fmp4_init_filename', 'init.mp4',
-        '-start_number', '4', '-hls_segment_filename', str(root / 'audio/segment-%05d.m4s'),
-        str(root / '.seek-4/audio/index.m3u8')]
-    check(arguments == expected, 'readiness_exact_refill_argv')
-    return {'actualSourceSeekSeconds': 0, 'logicalRefillCutSeconds': 8,
-        'testOnlyReadrate': pacing, 'productionArgumentsNotTransformed': True}
-, master.decode(), re.M) == ['audio/index.m3u8'],
+    check(status == 200 and re.findall(r'^audio/index\.m3u8$', master.decode(), re.M) == ['audio/index.m3u8'],
         'readiness_cold_master')
     base = hls.removesuffix('index.m3u8') + 'audio/'
     status, raw, _ = api.http(base + 'index.m3u8')

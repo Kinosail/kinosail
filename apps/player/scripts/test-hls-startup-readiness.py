@@ -80,8 +80,10 @@ try:
         result.setdefault('independentRefillArgv', {})[case['name']] = readiness_refill_arguments(path.parent / case['name'], pace)
     cold = readiness_cold_control(ROOT, path.parent / 'player',
         path.parent / 'origin-refill/media/Fixture.flac', path.parent / 'uninterrupted-cold-control')
-    result['coldControl'] = {k: cold[k] for k in ['result', 'failures', 'preparationPosts', 'emptyCacheBeforeFirstGET',
-        'sourceUnchanged', 'workerBound', 'encoderLifecycle', 'ownedProcessJoin']}
+    result['coldControl'] = {k: cold.get(k) for k in ['result', 'failures', 'preparationPosts', 'emptyCacheBeforeFirstGET',
+        'sourceUnchanged', 'workerBound', 'encoderLifecycle', 'ownedProcessJoin', 'failureClass', 'cleanupFailures']}
+    check(cold['result'] == 'passed' and not cold['failures'] and not cold.get('failureClass'),
+        'readiness_uninterrupted_control_passed')
     packets = candidate['joinedPublicPacketPayloads']
     check(len(packets) == 470 and packets == control['joinedPublicPacketPayloads'] == cold['joinedPublicPacketPayloads'], 'readiness_exact_packet_rows')
     gaps = [Decimal(b['pts_time']) - Decimal(a['pts_time']) - Decimal(a['duration_time'])
