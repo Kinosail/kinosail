@@ -110,6 +110,12 @@ func speedFailureErrorFields(entry, facts map[string]any) {
 			facts[field] = value
 		}
 	}
+	if stage, ok := entry["manifest_failure_stage"].(string); ok {
+		switch stage {
+		case "open", "descriptor", "read", "path", "not_manifest":
+			facts["manifest_failure_stage"] = stage
+		}
+	}
 	if reason, ok := entry["error"].(string); ok && len(reason) > 0 && len(reason) <= 8<<10 {
 		facts["error_category"] = speedFailureErrorCategory(reason)
 	}
@@ -147,4 +153,20 @@ func speedFailureErrorCategory(reason string) string {
 		}
 	}
 	return "other"
+}
+
+func TestHLSSpeedManifestStageWitnessIsClosedAndIndependent(t *testing.T) {
+	for _, stage := range []string{"open", "descriptor", "read", "path", "not_manifest"} {
+		facts := speedErrorWitnessFacts(t, map[string]any{"msg": "HLS segment preparation failed", "error": "copied HLS timeline is unavailable", "manifest_failure_stage": stage})
+		if facts["manifest_failure_stage"] != stage || facts["error_category"] != "copied_index" {
+			t.Fatal("bounded manifest stage or original category lost")
+		}
+	}
+	for _, stage := range []any{nil, false, 42, "", "private-path", strings.Repeat("x", 4097)} {
+		entry := map[string]any{"msg": "HLS segment preparation failed", "manifest_failure_stage": stage}
+		facts := speedErrorWitnessFacts(t, entry)
+		if _, found := facts["manifest_failure_stage"]; found {
+			t.Fatal("unknown stage leaked")
+		}
+	}
 }
