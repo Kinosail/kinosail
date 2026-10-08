@@ -12,21 +12,23 @@ const engine = process.env.KINOSAIL_LAYOUT_BROWSER || "chromium";
 let phase = "browser-launch", activePage, browser, authContext, routeFailure;
 const loginResponses = [];
 const reports = [], flows = [], flowProbe = {stage: "not-started"};
-let failureRecorded = false;
-async function recordFailure(error, failedPage = flowProbe.page || activePage) {
-  if (failureRecorded) return;
-  failureRecorded = true;
-  const source = String(error.stack || "").match(/(layout-stability[\w-]*\.mjs):(\d+):(\d+)/);
-  const failure = {app, engine, stage: phase, flowStage: flowProbe.stage,
-    errorClass: ["TimeoutError", "TypeError", "ReferenceError", "SyntaxError"].includes(error.name) ? error.name : "Error",
-    sourceLocation: source ? {file: source[1], line: Number(source[2]), column: Number(source[3])} : undefined,
-    request: routeFailure,
-    completedCases: reports.length, completedFlows: flows.length, media: flowProbe.media, probe: flowProbe.geometry, loginResponses,
-    authCookieCount: phase.startsWith("login") && authContext ? await authContext.cookies().then(c=>c.length).catch(()=>undefined) : undefined,
-    pageState: failedPage ? (new URL(failedPage.url()).pathname === "/login" ? "login" : "other") : "not-created"};
-  await writeFile(join(run, "failure.json"), JSON.stringify(failure, null, 2));
-  await failedPage?.screenshot({path: join(run, "failure.png")}).catch(() => {});
-  await failedPage?.context().tracing.stop({path: join(run, "failure-trace.zip")}).catch(() => {});
+let failureCapture;
+function recordFailure(error, failedPage = flowProbe.page || activePage) {
+  if (failureCapture) return failureCapture;
+  failureCapture = (async () => {
+    const source = String(error.stack || "").match(/(layout-stability[\w-]*\.mjs):(\d+):(\d+)/);
+    const failure = {app, engine, stage: phase, flowStage: flowProbe.stage,
+      errorClass: ["TimeoutError", "TypeError", "ReferenceError", "SyntaxError"].includes(error.name) ? error.name : "Error",
+      sourceLocation: source ? {file: source[1], line: Number(source[2]), column: Number(source[3])} : undefined,
+      request: routeFailure,
+      completedCases: reports.length, completedFlows: flows.length, media: flowProbe.media, probe: flowProbe.geometry, loginResponses,
+      authCookieCount: phase.startsWith("login") && authContext ? await authContext.cookies().then(c=>c.length).catch(()=>undefined) : undefined,
+      pageState: failedPage ? (new URL(failedPage.url()).pathname === "/login" ? "login" : "other") : "not-created"};
+    await writeFile(join(run, "failure.json"), JSON.stringify(failure, null, 2));
+    await failedPage?.screenshot({path: join(run, "failure.png")}).catch(() => {});
+    await failedPage?.context().tracing.stop({path: join(run, "failure-trace.zip")}).catch(() => {});
+  })();
+  return failureCapture;
 }
 flowProbe.openPage = async context => {
   await context.tracing.start({screenshots: true, snapshots: true});

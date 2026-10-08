@@ -132,7 +132,7 @@ const loadDefaultSubtitles = () => {
   });
 };
 loadDefaultSubtitles();
-player.addEventListener("loadedmetadata", loadDefaultSubtitles, {once: true});
+if (player.readyState === 0) player.addEventListener("loadedmetadata", loadDefaultSubtitles, {once: true});
 addEventListener("pagehide", () => {
   if (document.pictureInPictureElement === player || player.webkitPresentationMode === "picture-in-picture") return;
   subtitleAbort.abort();
