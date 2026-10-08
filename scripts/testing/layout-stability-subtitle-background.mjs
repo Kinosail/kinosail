@@ -35,6 +35,12 @@ export async function measureSubtitleBackground(browser, options, results, probe
   };
   setPhase("navigation");
   try {
+    let observerTimer;
+    try {
+      await Promise.race([navigation.observeDocument(), new Promise(resolve => {observerTimer = setTimeout(resolve, 500);})]);
+    } catch { /* Observation setup cannot replace the original navigation. */ }
+    finally {clearTimeout(observerTimer);}
+    navigation.markNavigation("/?view=library");
     await page.goto("/?view=library",{waitUntil:"domcontentloaded"});
     setPhase("baseline-geometry");
     const before = await geometry(); countBefore = await page.locator(".subtitle-file").count();
