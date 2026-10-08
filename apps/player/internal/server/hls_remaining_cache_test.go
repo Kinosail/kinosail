@@ -187,10 +187,7 @@ func remainingAACAssertCurrentCache(t *testing.T, asset string) {
 	}
 	writeHLSLoadingFile(t, filepath.Join(directory, asset), string(payload))
 	path := filepath.Join(directory, asset)
-	before, err := os.Stat(path)
-	if err != nil {
-		t.Fatal(err)
-	}
+	before := remainingAACAssetInfo(t, path)
 	response := httptest.NewRecorder()
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/hls/"+item.ID+"/p/fixture/"+asset, nil)
 	manager.serveRecipe(response, request, item, recipe, asset)
@@ -204,4 +201,13 @@ func remainingAACAssertCurrentCache(t *testing.T, asset string) {
 	if !os.SameFile(before, after) || before.Size() != after.Size() || !before.ModTime().Equal(after.ModTime()) || jobs != 0 {
 		t.Fatal("cached delivery replaced the asset or scheduled encoding")
 	}
+}
+
+func remainingAACAssetInfo(t *testing.T, path string) os.FileInfo {
+	t.Helper()
+	info, err := os.Stat(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return info
 }
