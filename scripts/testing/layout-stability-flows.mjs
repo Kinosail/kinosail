@@ -6,7 +6,7 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
   for (const viewport of [{width:390,height:844},{width:1440,height:900},...(inspectorPath?[{width:320,height:800}]:[])]) {
     probe.stage="library-journey-navigation";
     const context = await browser.newContext({...options,viewport,ignoreHTTPSErrors:false,reducedMotion:"reduce",serviceWorkers:"block"});
-    const page = await context.newPage();
+    const page = await probe.openPage(context);
     if(inspectorPath&&viewport.width===320)await context.addInitScript(()=>{const apply=()=>{if(!document.documentElement)return false;document.documentElement.style.fontSize="200%";return true;};if(!apply()){const observer=new MutationObserver(()=>{if(apply())observer.disconnect();});observer.observe(document,{childList:true});}});
     await page.goto(inspectorPath ? "/?view=library" : "/?view=movies",{waitUntil:"domcontentloaded"});
     probe.stage="HTMX-search";
@@ -67,7 +67,7 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
     probe.stage="enlarged-dock-end-focus";
     const context=await browser.newContext({...options,viewport,ignoreHTTPSErrors:false,reducedMotion:"reduce"});
     await context.addInitScript(()=>{const apply=()=>{if(!document.documentElement)return false;document.documentElement.style.fontSize="200%";return true;};if(!apply()){const observer=new MutationObserver(()=>{if(apply())observer.disconnect();});observer.observe(document,{childList:true});}});
-    const page=await context.newPage();await page.goto("/settings#thanks");
+    const page=await probe.openPage(context);await page.goto("/settings#thanks");
     const last=page.locator("main").locator('button:enabled, input:enabled:not([type=hidden]), select:enabled, textarea:enabled, a[href]').last();
     await last.focus();
     await page.keyboard.press("Shift+Tab");await page.keyboard.press("Tab");
@@ -83,28 +83,36 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
   }
   const context = await browser.newContext({...options,viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce"});
   probe.stage = "theater-idle-exit";
-  const page = await context.newPage();
+  const page = await probe.openPage(context);
   await page.goto(watchPath,{waitUntil:"domcontentloaded"});
   probe.media = await page.locator("video").evaluate(video=>({readyState:video.readyState,errorCode:video.error?.code,mp4:video.canPlayType('video/mp4; codecs="avc1.42E01E"')}));
   const theater = page.locator("[data-theater]");
   if (await theater.isVisible()) {
-    await page.locator("video").evaluate(video=>{video.loop=true;});
+    const mediaState=()=>page.locator("video").evaluate(video=>({paused:video.paused,ended:video.ended,seeking:video.seeking,duration:video.duration,currentTime:video.currentTime,readyState:video.readyState,errorCode:video.error?.code,frames:video.getVideoPlaybackQuality().totalVideoFrames,playing:video.closest(".media-stage").classList.contains("is-playing"),busy:video.closest(".media-stage").classList.contains("is-busy"),settings:video.closest(".media-stage").classList.contains("has-settings"),focusVisible:document.activeElement?.matches(":focus-visible"),focusedControl:document.activeElement?.getAttribute("aria-label")}));
+    await page.locator("video").evaluate(video=>{video.pause();video.loop=true;video.currentTime=0;});
+    try {await page.waitForFunction(()=>{const video=document.querySelector("video");return !video.seeking&&video.currentTime<.1&&video.readyState>=2;},undefined,{timeout:10000});}
+    catch(error){probe.media=await mediaState();throw error;}
+    const frames=await page.locator("video").evaluate(video=>video.getVideoPlaybackQuality().totalVideoFrames);
     if(await page.locator("video").evaluate(video=>video.paused))await page.getByRole("button",{name:"Play",exact:true}).first().click();
+    try {await page.waitForFunction(frames=>{const video=document.querySelector("video"),stage=document.querySelector(".media-stage");return !video.paused&&!video.ended&&!video.error&&video.currentTime>.2&&video.readyState>=2&&video.getVideoPlaybackQuality().totalVideoFrames>frames+2&&stage.classList.contains("is-playing")&&!stage.classList.contains("is-busy");},frames,{timeout:10000});}
+    catch(error){probe.media=await mediaState();throw error;}
+    const beforeTheater=await mediaState();
     await theater.click();
     await page.mouse.move(0,0);await page.waitForTimeout(2700);
+    const idleState=await mediaState();
     const hiddenAfterIdle=await page.locator(".player-stage-toolbar").evaluate(n=>n.hidden);
     await page.keyboard.press("Escape");await page.waitForTimeout(100);
     const visibleAfterExit=await page.locator(".player-stage-toolbar").isVisible();
     const before=await page.locator(".media-stage").boundingBox();
     const stage=await page.locator(".media-stage").boundingBox();await page.mouse.move(stage.x+15,stage.y+15);await page.waitForTimeout(200);
     const after=await page.locator(".media-stage").boundingBox();
-    results.push({flow:"theater-idle-exit",hiddenAfterIdle,visibleAfterExit,before,after,stable:hiddenAfterIdle&&visibleAfterExit&&JSON.stringify(before)===JSON.stringify(after)});
+    results.push({flow:"theater-idle-exit",framesBeforePlay:frames,beforeTheater,idleState,hiddenAfterIdle,visibleAfterExit,before,after,stable:hiddenAfterIdle&&visibleAfterExit&&JSON.stringify(before)===JSON.stringify(after)});
   } else results.push({flow:"theater-idle-exit",result:"native control mode has no Theater"});
   await context.close();
   if(inspectorPath){
     probe.stage = "inspector-refresh-failure-retry";
-    const context=await browser.newContext({...options,viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce"});
-    const page=await context.newPage();
+    const context=await browser.newContext({...options,viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce",serviceWorkers:"block"});
+    const page=await probe.openPage(context);
     await page.route("**/inspect?*",async route=>{if(route.request().resourceType()==="fetch"){await new Promise(r=>setTimeout(r,900));await route.abort("failed");}else await route.continue();});
     await page.goto(inspectorPath,{waitUntil:"commit"});await page.locator(".subtitle-inspector-workspace").waitFor({state:"visible"});
     const before=await page.locator(".subtitle-inspector-workspace").boundingBox();const pendingDisabled=await page.locator('#subtitle-edit-form button[type="submit"]').isDisabled();await page.waitForTimeout(2000);
@@ -112,9 +120,10 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
     const failedDisabled=await page.locator('#subtitle-edit-form button[type="submit"]').isDisabled();const qualityRows=await page.locator("#subtitle-quality p").count();const busy=await page.locator("#inspector-status").getAttribute("aria-busy");await page.unroute("**/inspect?*");await page.reload();await page.waitForFunction(()=>!document.querySelector('#subtitle-edit-form button[type="submit"]').disabled);
     results.push({flow:"inspector-refresh-failure-retry",injectedFailure:true,before,after,pendingDisabled,failedDisabled,busy,qualityRows,retryCompleted:true,stable:pendingDisabled&&failedDisabled&&!busy&&qualityRows>0&&JSON.stringify(before)===JSON.stringify(after)});
     await context.close();
-    const editing=await browser.newContext({...options,viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce"});
+    // Reloads must keep using the explicitly delayed HTTP route for pending-state measurements.
+    const editing=await browser.newContext({...options,viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce",serviceWorkers:"block"});
     probe.stage = "inspector-edit-during-refresh";
-    const editor=await editing.newPage();
+    const editor=await probe.openPage(editing);
     await editor.route("**/inspect?*",async route=>{if(route.request().resourceType()==="fetch"){const response=await route.fetch();await new Promise(r=>setTimeout(r,900));await route.fulfill({response});}else await route.continue();});
     await editor.goto(inspectorPath,{waitUntil:"commit"});
     await editor.waitForFunction(()=>document.querySelector("#inspector-status")?.getAttribute("aria-busy")==="true");

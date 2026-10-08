@@ -30,9 +30,11 @@ for (const viewport of [{width: 320, height: 568}, {width: 390, height: 844}, {w
       }));
       expect(occluded).toEqual([]);
       const box = await play.boundingBox();
-      await page.touchscreen.tap(box!.x + box!.width / 2, box!.y + box!.height * .9);
+      await play.tap({position: {x: box!.width / 2, y: box!.height * .9}});
       await expect(page.locator("video")).toHaveJSProperty("paused", false);
-      await page.touchscreen.tap(box!.x + box!.width / 2, box!.y + box!.height * .1);
+      // Touch Play may enter fullscreen and move the transport targets.
+      const playingBox = await play.boundingBox();
+      await play.tap({position: {x: playingBox!.width / 2, y: playingBox!.height * .1}});
       await expect(page.locator("video")).toHaveJSProperty("paused", true);
       await expect(page.locator("video")).toHaveJSProperty("currentTime", 20);
       await page.screenshot({path: testInfo.outputPath(`${theater ? "theater" : "inline"}-${viewport.width}.png`)});

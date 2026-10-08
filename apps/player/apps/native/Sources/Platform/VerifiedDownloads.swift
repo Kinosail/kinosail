@@ -139,11 +139,15 @@
       VerifiedDownload.failure("The saved download could not be read. Remove it and try again.")
     }
 
-    func ready<T: Sendable>(_ operation: @escaping @Sendable () throws -> T) async throws -> T {
+    func ready<T: Sendable>(scope: String? = nil, _ operation: @escaping @Sendable () throws -> T) async throws -> T {
       try await withCheckedThrowingContinuation { continuation in
         queue.async { [self] in
           let run = {
-            do { guard !self.storageError else { throw self.failure() }; continuation.resume(returning: try operation()) }
+            do {
+              if let scope { try self.requireScope(scope) }
+              guard !self.storageError else { throw self.failure() }
+              continuation.resume(returning: try operation())
+            }
             catch { continuation.resume(throwing: error) }
           }
           if restored { run() } else { waiting.append(run) }
