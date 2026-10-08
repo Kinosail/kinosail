@@ -53,6 +53,40 @@ test('removal cancels the owner before waiting for its lock and preserves a newe
   expect(result).toEqual({removed: true, absent: true, aborted: true, staleRemoval: false, retained: true});
 });
 
+test('public removal settles a pending Resume wait without reviving the deleted job', async ({page}) => {
+  await setup(page);
+  try {
+    await page.evaluate(`(async () => {
+      const id = 'aaaaaaaaaaaaaaaa';
+      const button = document.createElement('button');
+      button.dataset.jobId = id; button.textContent = 'Download to this device';
+      document.body.append(button);
+      await saveOfflineJob({id, storage: 'indexeddb', state: 'needs_attention'});
+      let entered;
+      const ready = new Promise(resolve => entered = resolve);
+      window.pendingRemovalOwner = navigator.locks.request(offlineJobLockName(id), () => {
+        entered(); return new Promise(resolve => window.releaseRemovalOwner = resolve);
+      });
+      await ready;
+      const detail = {state: 'needs_attention', error: 'paused'};
+      offlineStatuses.set(id, detail);
+      window.pendingResume = syncOfflineDownloadButton(button, detail);
+    })()`);
+    await expect.poll(() => page.evaluate(`navigator.locks.query().then(snapshot => snapshot.pending.filter(lock => lock.name === offlineJobLockName('aaaaaaaaaaaaaaaa') && lock.mode === 'shared').length)`)).toBe(1);
+    await page.evaluate(`void (window.pendingRemoval = window.KinosailOfflineMedia.remove('aaaaaaaaaaaaaaaa', true))`);
+    await expect.poll(() => page.evaluate(`navigator.locks.query().then(snapshot => snapshot.pending.filter(lock => lock.name === offlineJobLockName('aaaaaaaaaaaaaaaa') && lock.mode === 'exclusive').length)`)).toBe(1);
+    const result = await page.evaluate(`(async () => {
+      releaseRemovalOwner();
+      const removed = await pendingRemoval;
+      await Promise.all([pendingRemovalOwner, pendingResume]);
+      return {removed, absent: !await getOfflineJob('aaaaaaaaaaaaaaaa'), staleResume: document.querySelector('button').textContent === 'Resume on this device'};
+    })()`);
+    expect(result).toEqual({removed: true, absent: true, staleResume: false});
+  } finally {
+    await page.evaluate(`window.releaseRemovalOwner?.()`);
+  }
+});
+
 test('the first available shared slot starts queued work and queued cancellation is immediate', async ({page}) => {
   await setup(page);
   const result = await page.evaluate(`(async () => {
