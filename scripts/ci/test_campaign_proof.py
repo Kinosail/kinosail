@@ -40,7 +40,7 @@ class CampaignProofTests(unittest.TestCase):
     def test_focused_route_does_not_replace_normal_ci(self):
         source = LAYOUT.read_text()
         self.assertIn('campaign_proof:', source)
-        self.assertIn('options: [none, R06, Q14, Q09, Q47, HLS, HLS-navigation, Library]', source)
+        self.assertIn('options: [none, R06, Q14, Q09, Q47, HLS, HLS-navigation, Library, Camera]', source)
         self.assertIn("if: github.event_name != 'workflow_dispatch' || inputs.campaign_proof == 'none'", source)
         self.assertIn("if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof != 'none'", source)
         self.assertIn('name: Bounded campaign proof', source)
