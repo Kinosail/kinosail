@@ -43,11 +43,22 @@ if name=='python3':
    sys.exit(int(os.environ.get('CONTROL_OWNER_EXIT','0')))
  os.execv(os.environ['CONTROL_PYTHON'],[os.environ['CONTROL_PYTHON'],*args])
 if name=='node':
- import signal,time
+ import signal,time,hashlib
+ if len(args)>1 and args[1]=='topology':
+  record('topology',[])
+  if os.environ.get('DOCKER_HOST','') not in ('','unix:///var/run/docker.sock') or os.environ.get('DOCKER_CONTEXT','') not in ('','default') or args[2]!='docker':sys.exit(2)
+  print('local-rootful-docker');sys.exit(0)
+ if len(args)>1 and args[1]=='owned':
+  _,_,engine,kind,resource,token,expected=args
+  identity=hashlib.sha256((kind+':'+resource).encode()).hexdigest()
+  record('resource-proof',[kind,resource,expected,identity])
+  if kind=='volume' and os.environ.get('CONTROL_VOLUME_COLLISION')=='1' or kind=='container' and os.environ.get('CONTROL_CONTAINER_COLLISION')=='1':sys.exit(2)
+  print(identity);sys.exit(0)
  record('relay',args)
  def stop(*_):
   record('relay-close',[]);sys.exit(0)
  signal.signal(signal.SIGTERM,stop)
+ time.sleep(float(os.environ.get('CONTROL_RELAY_DELAY','0')))
  print(os.environ.get('CONTROL_RELAY','{"schemaVersion":1,"port":49152}'),flush=True)
  while True: time.sleep(1)
 if name=='curl':
@@ -69,7 +80,11 @@ elif args[:2]==['image','inspect']:
 elif args and args[0]=='port':
  print(os.environ.get('CONTROL_PORT','127.0.0.1:38127'))
 elif args and args[0]=='run' and '--detach' in args:
- sys.exit(7) if os.environ.get('CONTROL_START_FAIL')=='1' else print('abcdef123456')
+ sys.exit(7) if os.environ.get('CONTROL_START_FAIL')=='1' or os.environ.get('CONTROL_CONTAINER_COLLISION')=='1' else print('abcdef123456')
+elif args and args[0]=='rm' and os.environ.get('CONTROL_CONTAINER_COLLISION')=='1':
+ record('foreign-removed',['container'])
+elif args[:2]==['volume','rm'] and os.environ.get('CONTROL_VOLUME_COLLISION')=='1':
+ record('foreign-removed',['volume'])
 elif args and args[0]=='run' and '--entrypoint' in args and '/bin/sh' in args:
  destination=args[args.index('--volume')+1].split(':')[0]
  for name in ('Example Photo One.jpg','Example Photo Two.jpg'):
@@ -96,10 +111,12 @@ elif args and args[0]=='run' and ('ffmpeg' in args or 'ffprobe' in args):
         self.assertEqual(len(volumes), 3)
         self.assertEqual({args[-1] for args in engines if args[:2] == ['volume', 'rm']}, set(volumes))
         network = next(args[-1] for args in engines if args[:2] == ['network', 'create'])
-        self.assertIn(['network', 'rm', network], engines)
+        network_id = next(argv[3] for kind, argv in rows if kind == 'resource-proof' and argv[:2] == ['network', network])
+        self.assertIn(['network', 'rm', network_id], engines)
         run = next(args for args in engines if args[0] == 'run' and '--detach' in args)
         container_name = run[run.index('--name') + 1]
-        self.assertIn(['rm', '--force', container_name], engines)
+        container_id = next(argv[3] for kind, argv in rows if kind == 'resource-proof' and argv[:2] == ['container', container_name])
+        self.assertIn(['rm', '--force', container_id], engines)
         media = next(args[args.index('--volume') + 1].split(':')[0] for args in engines
                      if args[0] == 'run' and '--entrypoint' in args and '/bin/sh' in args)
         self.assertFalse(Path(media).parent.exists())
@@ -133,6 +150,7 @@ elif args and args[0]=='run' and ('ffmpeg' in args or 'ffprobe' in args):
         self.assertEqual(result.returncode, 0, result.stderr)
         rows = self.rows()
         self.assertEqual(rows[0][0], 'admit')
+        self.assertEqual(sum(kind == 'topology' for kind, _ in rows), 1)
         self.assertEqual(sum(kind == 'owner' for kind, _ in rows), 1)
         engines = [args for kind, args in rows if kind == 'engine']
         self.assertEqual(sum(args[0] == 'run' and '--detach' in args for args in engines), 1)
@@ -217,6 +235,46 @@ elif args and args[0]=='run' and ('ffmpeg' in args or 'ffprobe' in args):
                     self.events.unlink()
                     if self.output.exists():
                         shutil.rmtree(self.output)
+
+    def test_valid_near_budget_relay_startup_reaches_owner(self):
+        result = self.run_caller(CONTROL_RELAY_DELAY='13')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(sum(kind == 'owner' for kind, _ in self.rows()), 1)
+        self.assert_cleanup(self.rows())
+
+    def test_expired_relay_startup_has_no_owner_and_joins_cleanup(self):
+        import time
+        start = time.monotonic()
+        result = self.run_caller(CONTROL_RELAY_DELAY='16')
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertLess(time.monotonic() - start, 20)
+        self.assertFalse(any(kind == 'owner' for kind, _ in self.rows()))
+        self.assert_cleanup(self.rows())
+
+    def test_unsupported_or_remote_daemon_has_no_fixture_effects(self):
+        for environment in ({'DOCKER_HOST': 'tcp://outside.invalid:2375'},
+                            {'DOCKER_CONTEXT': 'remote-fixture'}, {'CONTAINER_ENGINE': 'podman'}):
+            with self.subTest(environment=environment):
+                result = self.run_caller(**environment)
+                try:
+                    self.assertEqual(result.returncode, 2)
+                    self.assertFalse(any(kind in ('owner', 'health', 'workspace', 'engine', 'relay')
+                                         for kind, _ in self.rows()))
+                finally:
+                    if self.events.exists(): self.events.unlink()
+                    if self.output.exists(): shutil.rmtree(self.output)
+
+    def test_foreign_container_collision_is_never_removed(self):
+        result = self.run_caller(CONTROL_CONTAINER_COLLISION='1')
+        self.assertEqual(result.returncode, 7, result.stderr)
+        self.assertFalse(any(kind == 'foreign-removed' for kind, _ in self.rows()))
+        self.assertFalse(any(kind == 'owner' for kind, _ in self.rows()))
+
+    def test_foreign_existing_volume_is_not_adopted_or_removed(self):
+        result = self.run_caller(CONTROL_VOLUME_COLLISION='1')
+        self.assertFalse(any(kind == 'foreign-removed' for kind, _ in self.rows()))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse(any(kind == 'owner' for kind, _ in self.rows()))
 
     def test_unknown_image_identity_rejects_before_server_or_owner(self):
         result = self.run_caller(CONTROL_IMAGE='unknown-image')

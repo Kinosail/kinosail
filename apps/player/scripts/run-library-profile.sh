@@ -23,15 +23,20 @@ python3 "$helper" --url "$scheme://localhost:38127" "${selection[@]}" --admit-on
 source "$repo/scripts/ci/browser-fixture-tls.sh"
 export KINOSAIL_BROWSER_TEST=1 KINOSAIL_BROWSER_PROJECT="$project"
 validate_browser_fixture_tls
+relay="$repo/scripts/ci/library-internal-relay.mjs"
+node "$relay" topology "$engine" >/dev/null
+owner="$(python3 -c 'import secrets; print(secrets.token_hex(16))')"
+[[ "$owner" =~ ^[a-f0-9]{32}$ ]]
 workspace="$(mktemp -d /tmp/kinosail-library.XXXXXX)"
 workspace="$(cd "$workspace" && pwd)"
 suffix="$$-$RANDOM"
 network="kinosail-library-$suffix" container="kinosail-library-$suffix"
-network_created=0 container_started=0 relay_pid=""
+network_created=0 container_started=0 relay_pid="" network_id="" container_id=""
+proof() { node "$relay" owned "$engine" "$1" "$2" "$owner" "$3"; }
 phase=image
-volumes=()
+volumes=() volume_ids=()
 cleanup() {
-  local status="${1:-$?}" failed=0 volume
+  local status="${1:-$?}" failed=0 volume index
   trap - EXIT
   set +e
   if [[ "$status" != 0 ]]; then
@@ -64,12 +69,19 @@ PYTHON
     kill "$relay_pid" 2>/dev/null
     wait "$relay_pid"; relay_pid=""
   fi
-  if [[ "$container_started" == 1 ]]; then "$engine" rm --force "$container" >/dev/null || failed=1; fi
+  if [[ -n "$container_id" ]]; then
+    if proof container "$container" "$container_id" >/dev/null; then "$engine" rm --force "$container_id" >/dev/null || failed=1; else failed=1; fi
+  elif [[ "$container_started" == 1 ]]; then failed=1; fi
   remove_browser_fixture_trust || failed=1
   if [[ "${#volumes[@]}" -gt 0 ]]; then
-    for volume in "${volumes[@]}"; do "$engine" volume rm "$volume" >/dev/null || failed=1; done
+    for ((index=0; index<${#volumes[@]}; index++)); do
+      volume="${volumes[$index]}"
+      if proof volume "$volume" "${volume_ids[$index]}" >/dev/null; then "$engine" volume rm "$volume" >/dev/null || failed=1; else failed=1; fi
+    done
   fi
-  if [[ "$network_created" == 1 ]]; then "$engine" network rm "$network" >/dev/null || failed=1; fi
+  if [[ -n "$network_id" ]]; then
+    if proof network "$network" "$network_id" >/dev/null; then "$engine" network rm "$network_id" >/dev/null || failed=1; else failed=1; fi
+  elif [[ "$network_created" == 1 ]]; then failed=1; fi
   if [[ "$failed" == 0 ]]; then rm -rf -- "$workspace"; else echo 'Owned library fixture cleanup failed; retain its workspace' >&2; fi
   if [[ "$status" == 0 && "$failed" != 0 ]]; then status=1; fi
   exit "$status"
@@ -90,16 +102,19 @@ mkdir "$workspace/media"
 "$engine" run --rm --network none --entrypoint ffmpeg localhost/kinosail:dev -version >"$workspace/ffmpeg.txt"
 "$engine" run --rm --network none --entrypoint ffprobe localhost/kinosail:dev -version >"$workspace/ffprobe.txt"
 phase=network
-"$engine" network create --internal "$network" >/dev/null
+"$engine" network create --internal --label "org.kinosail.fixture-owner=$owner" "$network" >/dev/null
 network_created=1
+network_id="$(proof network "$network" -)"
 for role in config cache backups; do
   volume="kinosail-library-$role-$suffix"
-  "$engine" volume create "$volume" >/dev/null
+  "$engine" volume create --label "org.kinosail.fixture-owner=$owner" "$volume" >/dev/null
+  volume_id="$(proof volume "$volume" -)"
   volumes+=("$volume")
+  volume_ids+=("$volume_id")
 done
 phase=container
-container_started=1
-"$engine" run --detach --init --name "$container" --network "$network" \
+set +e
+"$engine" run --detach --init --name "$container" --label "org.kinosail.fixture-owner=$owner" --network "$network" \
   --read-only --cap-drop ALL --security-opt no-new-privileges --pids-limit 256 \
   --tmpfs /tmp:rw,noexec,nosuid,nodev,size=256m \
   --volume "${volumes[0]}:/config" --volume "${volumes[1]}:/cache" --volume "${volumes[2]}:/backups" \
@@ -112,19 +127,29 @@ container_started=1
   --env KINOSAIL_TMDB_TOKEN=local-synthetic-test-catalogue \
   --env KINOSAIL_BACKUP_KEY=local-test-instance-backup-key \
   --entrypoint /bin/sh localhost/kinosail:test-instance -c 'httpd -f -p 127.0.0.1:8090 -h /media & exec kinosail' >/dev/null
+status=$?
+set -e
+container_id="$(proof container "$container" - || true)"
+if [[ -n "$container_id" ]]; then container_started=1; fi
+if [[ "$status" != 0 ]]; then exit "$status"; fi
+[[ -n "$container_id" ]] || exit 2
 phase=relay
-node "$repo/scripts/ci/library-internal-relay.mjs" "$engine" "$container" "$network" "$image_id" \
+node "$relay" "$engine" "$container" "$network" "$image_id" "$owner" \
   >"$workspace/relay-ready.json" 2>"$workspace/relay-failure.json" &
 relay_pid=$!
-for _ in {1..80}; do
-  [[ -s "$workspace/relay-ready.json" ]] && break
-  kill -0 "$relay_pid" 2>/dev/null || break
-  sleep 0.05
-done
-port="$(python3 - "$workspace/relay-ready.json" <<'PYTHON'
-import json, pathlib, sys
+# Four bounded 3s metadata reads plus 2s listener; a real 1s watchdog margin.
+port="$(python3 - "$workspace/relay-ready.json" "$relay_pid" <<'PYTHON'
+import json, os, pathlib, sys, time
 try:
     path = pathlib.Path(sys.argv[1])
+    pid = int(sys.argv[2])
+    if pid <= 0: raise ValueError()
+    deadline = time.monotonic() + 15
+    while True:
+        if time.monotonic() >= deadline: raise ValueError()
+        os.kill(pid, 0)
+        if path.exists() and path.stat().st_size > 0: break
+        time.sleep(min(0.05, max(0, deadline - time.monotonic())))
     if path.is_symlink() or not path.is_file() or path.stat().st_size > 1024: raise ValueError()
     text = path.read_text()
     value = json.loads(text)
