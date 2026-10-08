@@ -169,12 +169,6 @@ jobs:
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         timeout-minutes: 3
         with: {go-version-file: go.work, cache: false}
-      - name: Build actual Windows production source
-        if: matrix.source == 'candidate'
-        timeout-minutes: 6
-        working-directory: apps/player
-        run: |
-          go build ./... > "$GITHUB_WORKSPACE/.verification/copied-probe/production-build.log" 2>&1
       - name: Run unchanged isolated Windows lifetime assertions
         if: always()
         timeout-minutes: 8
@@ -185,3 +179,58 @@ jobs:
           go test -json ./internal/copiedprobelifetime -run '^TestCopiedHLSLines' -count=1 -timeout=2m > "$GITHUB_WORKSPACE/.verification/copied-probe/receipt.jsonl"
       - *probe-projection
       - *probe-artifact
+
+  windows-production:
+    name: Actual Windows production compilation
+    runs-on: windows-2025
+    timeout-minutes: 15
+    defaults: {run: {shell: bash}}
+    env: {TARGET_SHA: "${{ inputs.candidate }}"}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        timeout-minutes: 2
+        env: {GIT_CONFIG_COUNT: '1', GIT_CONFIG_KEY_0: core.autocrlf, GIT_CONFIG_VALUE_0: 'false'}
+        with: {ref: "${{ inputs.candidate }}", fetch-depth: 0, persist-credentials: false}
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        timeout-minutes: 3
+        with: {go-version-file: go.work, cache: false}
+      - name: Compile unmodified exact production source
+        id: production
+        timeout-minutes: 6
+        working-directory: apps/player
+        run: |
+          [[ "$TARGET_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          test ! -e "$GITHUB_WORKSPACE/.gates-disabled"
+          git diff --exit-code
+          mkdir -p "$GITHUB_WORKSPACE/.verification/copied-probe"
+          git rev-parse HEAD > "$GITHUB_WORKSPACE/.verification/copied-probe/SOURCE"
+          go build ./... > "$GITHUB_WORKSPACE/.verification/copied-probe/production-build.log" 2>&1
+      - name: Project bounded production compilation outcome
+        if: always()
+        timeout-minutes: 1
+        env: {PROBE_BUILD_OUTCOME: "${{ steps.production.outcome }}"}
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, re
+          source = pathlib.Path('.verification/copied-probe/SOURCE').read_text().strip()
+          assert source == os.environ['TARGET_SHA'] and re.fullmatch('[0-9a-f]{40}', source), 'production_source_binding'
+          with pathlib.Path('.verification/copied-probe/production-build.log').open('rb') as stream:
+              raw = stream.read((1 << 20) + 1)
+          assert len(raw) <= (1 << 20), 'production_diagnostic_bound'
+          print(json.dumps({'scope': 'actual unmodified Windows production source', 'source': source,
+              'outcome': os.environ['PROBE_BUILD_OUTCOME'], 'diagnosticBytes': len(raw), 'diagnosticSHA256': hashlib.sha256(raw).hexdigest()}))
+          for match in re.finditer(r'([A-Za-z0-9_]+\.go):(\d+):(\d+): (undefined|cannot use|unknown field|syntax error)', raw.decode(errors='replace')):
+              print(json.dumps({'source': match[1], 'line': int(match[2]), 'column': int(match[3]), 'class': match[4]}))
+          assert os.environ['PROBE_BUILD_OUTCOME'] == 'success', 'actual_production_compile_pass'
+          PY
+      - name: Preserve exact Windows production compile receipt
+        if: always()
+        timeout-minutes: 2
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: copied-probe-Windows-production-${{ inputs.candidate }}
+          path: .verification/copied-probe/*
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
