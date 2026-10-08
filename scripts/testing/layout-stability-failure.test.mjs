@@ -77,3 +77,50 @@ for (const scenario of ["single", "second-rejection", "collection-failure", "col
     assert.doesNotMatch(child.stdout + child.stderr + JSON.stringify(report), /private .* detail/);
   } finally { rmSync(dir, {recursive: true, force: true}); }
 });
+
+const authMaskSelector = 'input[name="name"], input[name="username"], input[name="password"], input[name="code"], input[autocomplete="one-time-code"]';
+
+test("actual failure capture masks credential inputs without changing geometry or collecting values", async () => {
+  const locator = {fixedCredentialMask: true}, screenshots = [], traces = [];
+  const page = {
+    locator: selector => { assert.equal(selector, authMaskSelector); return locator; },
+    screenshot: async options => { screenshots.push(options); },
+    context: () => ({tracing: {stop: async options => { traces.push(options); }}}),
+  };
+  await failureModule.captureLayoutFailure(page, "/owned/run");
+  assert.equal(screenshots.length, 1);
+  assert.deepEqual(screenshots[0], {path: "/owned/run/failure.png", mask: [locator], maskColor: "#000000"});
+  assert.deepEqual(traces, [{path: "/owned/run/failure-trace.zip"}]);
+  assert.equal(Object.hasOwn(screenshots[0], "fullPage"), false);
+});
+
+test("failed credential-mask construction never captures an unmasked fallback", async () => {
+  let screenshots = 0, traces = 0;
+  const page = {
+    locator: () => { throw new Error("synthetic private mask failure"); },
+    screenshot: async () => { screenshots++; },
+    context: () => ({tracing: {stop: async () => { traces++; }}}),
+  };
+  await failureModule.captureLayoutFailure(page, "/owned/run");
+  assert.equal(screenshots, 0);
+  assert.equal(traces, 1);
+});
+
+test("capture and trace failures preserve the original failure without an unmasked retry", async () => {
+  const original = new Error("original public navigation failure");
+  let screenshots = 0, traces = 0;
+  const page = {
+    locator: () => ({}),
+    screenshot: async () => { screenshots++; throw new Error("private capture failure"); },
+    context: () => ({tracing: {stop: async () => { traces++; throw new Error("private trace failure"); }}}),
+  };
+  await assert.rejects(async () => {
+    await failureModule.captureLayoutFailure(page, "/owned/run");
+    throw original;
+  }, error => error === original);
+  assert.equal(screenshots, 1); assert.equal(traces, 1);
+});
+
+test("an unavailable page cannot initiate failure capture", async () => {
+  await failureModule.captureLayoutFailure(undefined, "/owned/run");
+});

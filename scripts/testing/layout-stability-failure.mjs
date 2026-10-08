@@ -56,6 +56,9 @@ export async function layoutLoginDocument(page, expected, previous) {
 }
 
 export async function captureLayoutFailure(page, run) {
-  await page?.screenshot({path: join(run, "failure.png")}).catch(() => {});
-  await page?.context().tracing.stop({path: join(run, "failure-trace.zip")}).catch(() => {});
+  try {
+    if (page) await page.screenshot({path: join(run, "failure.png"),
+      mask: [page.locator('input[name="name"], input[name="username"], input[name="password"], input[name="code"], input[autocomplete="one-time-code"]')], maskColor: "#000000"});
+  } catch { /* Never retry without the credential mask. */ }
+  try { await page?.context().tracing.stop({path: join(run, "failure-trace.zip")}); } catch { /* Preserve the original failure. */ }
 }
