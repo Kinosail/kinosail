@@ -7,7 +7,6 @@ import hmac
 import json
 import os
 from pathlib import Path
-import re
 import struct
 import ssl
 import subprocess
@@ -33,7 +32,7 @@ library = any(value is not None for value in (args.profile, args.project, args.s
 discovery = None
 if library:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'apps/player/scripts'))
-    from library_profile_admission import CASES, admit, read_proof, selection
+    from library_profile_admission import admit, playwright_arguments, read_proof, selection
     try:
         selection((args.profile, args.project, args.state))
         if (args.command or args.required_title or not args.discovery
@@ -80,9 +79,7 @@ if url.scheme == 'https':
 command = args.command[1:] if args.command[:1] == ['--'] else args.command
 if library:
     command = ['pnpm', '--dir', str(Path(__file__).resolve().parents[2] / 'apps/player/e2e'),
-               'exec', 'playwright', 'test', *sorted({file for file, _ in CASES}),
-               f'--project={args.project}', '--workers=1', '--retries=0', '--repeat-each=1',
-               '--grep', '(?:' + '|'.join(re.escape(title) for _, title in CASES) + ')$']
+               *playwright_arguments(args.project, False)]
 if not command:
     parser.error('requires a browser command')
 if args.required_title and any(not title.strip() or len(title) > 240 or '\n' in title or '\r' in title for title in args.required_title):

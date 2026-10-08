@@ -9,7 +9,7 @@ def selection(arguments):
     event, campaign, remaining, timing, installation, metadata, q14, r06, q47 = arguments
     if event not in ('pull_request', 'workflow_dispatch'):
         raise ValueError
-    if campaign not in ('none', 'R06', 'Q14', 'Q09', 'Q47', 'HLS', 'HLS-navigation'):
+    if campaign not in ('none', 'R06', 'Q14', 'Q09', 'Q47', 'HLS', 'HLS-navigation', 'Library'):
         raise ValueError
     if any(value not in ('true', 'false') for value in (remaining, timing, installation, metadata)):
         raise ValueError

@@ -2,6 +2,8 @@
 import json
 import math
 import os
+import re
+import sys
 from pathlib import Path
 import stat
 
@@ -63,6 +65,17 @@ def selection(arguments):
             or arguments[2] != 'fresh'):
         raise ValueError('fixed library profile/project/fresh state required')
     return tuple(arguments)
+
+
+def playwright_arguments(project, discovery):
+    """One exact selector for discovery and execution; no process effects."""
+    selection(('library-owner', project, 'fresh'))
+    if type(discovery) is not bool:
+        raise ValueError('explicit discovery mode required')
+    arguments = ['exec', 'playwright', 'test', *sorted({file for file, _ in CASES}),
+                 f'--project={project}', '--workers=1', '--retries=0', '--repeat-each=1',
+                 '--grep', '(?:' + '|'.join(re.escape(title) for _, title in CASES) + ')$']
+    return arguments + (['--list', '--reporter=json'] if discovery else [])
 
 
 def read_proof(path):
@@ -193,3 +206,14 @@ def admit_report(value, project, completed):
     if found != {(file, title, project) for file, title in CASES}:
         raise ValueError('all46 fixed identities required')
     return found
+
+
+if __name__ == '__main__':
+    try:
+        if len(sys.argv) != 3 or sys.argv[2] not in ('discovery', 'execution'):
+            raise ValueError
+        arguments = playwright_arguments(sys.argv[1], sys.argv[2] == 'discovery')
+    except (ValueError, TypeError):
+        print('invalid fixed library selector', file=sys.stderr)
+        raise SystemExit(2)
+    sys.stdout.write('\0'.join(arguments) + '\0')
