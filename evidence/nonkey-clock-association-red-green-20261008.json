@@ -1,0 +1,155 @@
+{
+  "format": "nonkey-clock-association-proof-1",
+  "sourceAcceptance": false,
+  "productionReadiness": false,
+  "ownedRecovery": {
+    "pr": 530,
+    "head": "8cc8ff7511fad866238e180547c18e3ba35bbe8e",
+    "tree": "77ccb59e06b53aafb440da8cedbcb1ba08906c8d"
+  },
+  "strictPublic": {
+    "run": 37814920250,
+    "job": 113440978676,
+    "runner": "f8490c89340205e67a7d56ea3b59c89d6e41440c",
+    "source": "8cc8ff7511fad866238e180547c18e3ba35bbe8e",
+    "allMetadataGeometryLegacyNakedControls": "pass",
+    "goSkipped": false,
+    "exact12ReadySeconds": 3.15,
+    "nonkey12_5": {
+      "seconds": 1.22,
+      "phase": "copied-video-index",
+      "internal": "unavailable",
+      "public": "queued",
+      "result": "fail"
+    },
+    "artifact": 11565649967,
+    "apiArchiveDigest": "sha256:ebe717aaf507ac60729e56cb421b40fff4f2eb1f011284fa8df40b0c1eda080d"
+  },
+  "diagnosticRed": {
+    "source": "e1f48bcab6f936a70170c86a0bf2fc4e9c30bf56",
+    "run": 37816054045,
+    "job": 113444863524,
+    "unitTests": 72,
+    "conflictingHeaderFailures": 3,
+    "missingComparedRowsError": true,
+    "mediaExecuted": false,
+    "mediaArtifact": null
+  },
+  "diagnosticGreen": {
+    "source": "44b065c90de05e26b240194d8e0f6a64c5d009d4",
+    "tree": "5c5b126ea5e65d3e16126aadba6690b2397c7886",
+    "run": 37816814467,
+    "job": 113447444017,
+    "unitTests": 72,
+    "unitResult": "pass",
+    "fixedCasesObserved": 18,
+    "hypothesesMatched": 18,
+    "derivedWholePCMEOFMatches": 6,
+    "adjacentOneSamplePCMMismatches": 6,
+    "editedPerTrackPayloadVideoSourceAssetsPreserved": 12,
+    "editedMKVGlobalOrderFalse": 5,
+    "rawRequestedSequenceFalse": 18,
+    "receiptReportedSHA256": "d2c1e7d52944547688211787feba33a69d0ceeb6dce4f8f44af34a9b22cb3551",
+    "artifact": 11567930783,
+    "apiArchiveDigest": "sha256:ea2151a136daa4213e7b2d5aa79d601ff0f7d2c912ce765f73ba3b1d53579bc3"
+  },
+  "measuredPrefix": {
+    "sharedDeadlineSeconds": 2,
+    "processesPerSource": 2,
+    "threads": 1,
+    "normalizedOutputCap": 1024,
+    "outputFilterPTSSamplesMatchFirst1024": true,
+    "parsingAndEqualityInsideDeadline": true,
+    "ordinalTargetPacketAssociationInsideDeadline": false,
+    "mkv": {
+      "elapsedSeconds": 0.09284584999998913,
+      "nativeFrames": 1031,
+      "filterFrames": 1025,
+      "leadingNative": [
+        [
+          0,
+          1024
+        ],
+        [
+          21,
+          1024
+        ],
+        [
+          43,
+          1024
+        ]
+      ],
+      "leadingNormalized": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ],
+        [
+          2048,
+          1024
+        ]
+      ],
+      "firstPacket": {
+        "pts": -21,
+        "duration": 21,
+        "skipSamples": 1024,
+        "discardPadding": 0
+      }
+    },
+    "mp4": {
+      "elapsedSeconds": 0.09025516799999878,
+      "nativeFrames": 1032,
+      "filterFrames": 1025,
+      "leadingNativeAndNormalized": [
+        [
+          0,
+          16
+        ],
+        [
+          16,
+          1024
+        ],
+        [
+          1032,
+          1024
+        ]
+      ],
+      "nativeThirdOrdinal": 1040,
+      "phaseFromRow2": -8,
+      "firstPacket": {
+        "pts": -1008,
+        "duration": 1024,
+        "skipSamples": 1008,
+        "discardPadding": 0
+      },
+      "secondPacket": {
+        "pts": 16,
+        "duration": 1016
+      },
+      "leading16SamplesRetained": true
+    }
+  },
+  "pendingProducerContracts": [
+    "Bootstrap and every interior clock/sample row",
+    "Actual skip/delay metadata and ambiguity rejection",
+    "Unique source-to-first-private-packet association",
+    "One unchanged deadline covering processes, parsing, target/packet association and joins",
+    "Corrected private initialization and complete prefix certificate",
+    "Source/policy/root/generation binding",
+    "Public decoded-video/AAC-interior/whole-PCM/EOF and refill/reopen/adoption proof"
+  ],
+  "boundaries": {
+    "zipDownloaded": false,
+    "archiveIndependentlyRehashed": false,
+    "genericSourceEligibility": false,
+    "nativePresentation": false,
+    "simulatorRetest": false,
+    "manualDeployment": false,
+    "inherited14FingerprintsChanged": false,
+    "inheritedSecurityHoldResolved": false
+  }
+}
