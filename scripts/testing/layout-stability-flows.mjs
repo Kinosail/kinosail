@@ -88,17 +88,25 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
   probe.media = await page.locator("video").evaluate(video=>({readyState:video.readyState,errorCode:video.error?.code,mp4:video.canPlayType('video/mp4; codecs="avc1.42E01E"')}));
   const theater = page.locator("[data-theater]");
   if (await theater.isVisible()) {
-    await page.locator("video").evaluate(video=>{video.loop=true;});
+    const mediaState=()=>page.locator("video").evaluate(video=>({paused:video.paused,ended:video.ended,seeking:video.seeking,duration:video.duration,currentTime:video.currentTime,readyState:video.readyState,errorCode:video.error?.code,frames:video.getVideoPlaybackQuality().totalVideoFrames,playing:video.closest(".media-stage").classList.contains("is-playing"),busy:video.closest(".media-stage").classList.contains("is-busy"),settings:video.closest(".media-stage").classList.contains("has-settings"),focusVisible:document.activeElement?.matches(":focus-visible"),focusedControl:document.activeElement?.getAttribute("aria-label")}));
+    await page.locator("video").evaluate(video=>{video.pause();video.loop=true;video.currentTime=0;});
+    try {await page.waitForFunction(()=>{const video=document.querySelector("video");return !video.seeking&&video.currentTime<.1&&video.readyState>=2;},undefined,{timeout:10000});}
+    catch(error){probe.media=await mediaState();throw error;}
+    const frames=await page.locator("video").evaluate(video=>video.getVideoPlaybackQuality().totalVideoFrames);
     if(await page.locator("video").evaluate(video=>video.paused))await page.getByRole("button",{name:"Play",exact:true}).first().click();
+    try {await page.waitForFunction(frames=>{const video=document.querySelector("video"),stage=document.querySelector(".media-stage");return !video.paused&&!video.ended&&!video.error&&video.currentTime>.2&&video.readyState>=2&&video.getVideoPlaybackQuality().totalVideoFrames>frames+2&&stage.classList.contains("is-playing")&&!stage.classList.contains("is-busy");},frames,{timeout:10000});}
+    catch(error){probe.media=await mediaState();throw error;}
+    const beforeTheater=await mediaState();
     await theater.click();
     await page.mouse.move(0,0);await page.waitForTimeout(2700);
+    const idleState=await mediaState();
     const hiddenAfterIdle=await page.locator(".player-stage-toolbar").evaluate(n=>n.hidden);
     await page.keyboard.press("Escape");await page.waitForTimeout(100);
     const visibleAfterExit=await page.locator(".player-stage-toolbar").isVisible();
     const before=await page.locator(".media-stage").boundingBox();
     const stage=await page.locator(".media-stage").boundingBox();await page.mouse.move(stage.x+15,stage.y+15);await page.waitForTimeout(200);
     const after=await page.locator(".media-stage").boundingBox();
-    results.push({flow:"theater-idle-exit",hiddenAfterIdle,visibleAfterExit,before,after,stable:hiddenAfterIdle&&visibleAfterExit&&JSON.stringify(before)===JSON.stringify(after)});
+    results.push({flow:"theater-idle-exit",framesBeforePlay:frames,beforeTheater,idleState,hiddenAfterIdle,visibleAfterExit,before,after,stable:hiddenAfterIdle&&visibleAfterExit&&JSON.stringify(before)===JSON.stringify(after)});
   } else results.push({flow:"theater-idle-exit",result:"native control mode has no Theater"});
   await context.close();
   if(inspectorPath){

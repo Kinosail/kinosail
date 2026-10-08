@@ -20,7 +20,7 @@ export function registerCheckpointSetup(flows: {
     const stored = await flows.checkpoint(page, seed.id, seed.session);
     expect(stored.sessionMatches).toBe(true);
     expect(stored.revision).toBeGreaterThan(before.revision);
-    const fresh = await flows.openMovie(page, {key: "kinosail:checkpoint-near-end-setup", iteration: 0, testInfo: info, resumeAt: nearEnd});
+    const fresh = await flows.openMovie(page, {key: "kinosail:checkpoint-near-end-setup", iteration: 1, testInfo: info, resumeAt: nearEnd});
     expect(fresh.id).toBe(seed.id);
     expect(Number(await fresh.media.getAttribute("data-start"))).toBeGreaterThanOrEqual(nearEnd - 0.1);
     expect(fresh.paused).toBeGreaterThan(0.2);

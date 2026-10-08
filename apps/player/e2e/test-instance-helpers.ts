@@ -1,5 +1,6 @@
 import { createHmac } from "node:crypto";
 import { expect, test, type Browser, type Page } from "@playwright/test";
+import {gotoAuthForm} from "../../../scripts/testing/auth-form-navigation";
 
 export { downloadsSource } from "./static-sources";
 
@@ -26,7 +27,7 @@ export function totp(): string {
 }
 
 export async function login(page: import("@playwright/test").Page) {
-  const response = await page.goto("/login", {waitUntil: "commit"});
+  const response = await gotoAuthForm(page, "/login", test.info());
   expect(response?.status()).toBe(200);
   expect(response!.request().redirectedFrom()).toBeNull();
   const loginURL = new URL(response!.url());
@@ -51,6 +52,31 @@ export async function loginViewer(page: Page, name: string, password: string) {
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
   await page.waitForURL(url => url.pathname !== "/login");
+}
+
+export async function saveSubtitleChoices(page: Page, choice: "on" | "off") {
+  const form = page.locator('form[action="/settings/subtitles/picker"]');
+  await form.getByLabel("Playback subtitle choices").selectOption(choice);
+  const previousDocument = await page.evaluate(() => performance.timeOrigin);
+  const action = new URL("/settings/subtitles/picker", page.url()).href, destination = new URL("/settings", page.url()).href;
+  const [response, redirected] = await Promise.all([
+    page.waitForResponse(response => response.request().method() === "POST" &&
+      response.url() === action, {timeout: 10_000}),
+    page.waitForResponse(response => response.url() === destination && response.request().method() === "GET" &&
+      response.request().redirectedFrom()?.url() === action && response.request().redirectedFrom()?.method() === "POST", {timeout: 10_000}),
+    form.getByRole("button", {name: "Save subtitle choices", exact: true}).click({noWaitAfter: true}),
+  ]);
+  expect(response.status()).toBe(303);
+  expect(response.headers().location).toBe("/settings#playback");
+  expect(redirected.status()).toBe(200);
+  expect(redirected.request().redirectedFrom()).toBe(response.request());
+  await page.waitForFunction(previous => performance.timeOrigin !== previous, previousDocument, {timeout: 10_000});
+  const refreshed = await page.reload({waitUntil: "load"});
+  expect(refreshed?.status()).toBe(200);
+  await expect(page).toHaveURL(destination + "#playback");
+  await expect(form.getByLabel("Playback subtitle choices")).toHaveValue(choice);
+  await test.info().attach("subtitle-choice-save", {body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
+    choice, status: response.status(), verified: "fresh settings GET after real POST acknowledgement"}), contentType: "application/json"});
 }
 
 export async function createViewer(page: Page, name: string, password: string): Promise<string> {

@@ -1,5 +1,6 @@
-import { expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { createHmac } from "node:crypto";
+import {gotoAuthForm} from "../../../scripts/testing/auth-form-navigation";
 
 export const supportedViewports = [{ width: 1440, height: 900 }, { width: 1024, height: 768 }, { width: 720, height: 450 }, { width: 568, height: 320 }, { width: 390, height: 844 }, { width: 320, height: 800 }];
 export const compactViewports = supportedViewports.slice(1);
@@ -19,7 +20,7 @@ export async function login(page: import("@playwright/test").Page) {
   await page.addInitScript(() => {
     if ("PublicKeyCredential" in window) Object.defineProperty(PublicKeyCredential, "isConditionalMediationAvailable", { value: async () => false });
   });
-  const response = await page.goto("/login?next=/", {waitUntil: "commit"});
+  const response = await gotoAuthForm(page, "/login?next=/", test.info());
   expect(response?.status()).toBe(200);
   expect(response!.request().redirectedFrom()).toBeNull();
   const loginURL = new URL(response!.url());
