@@ -40,9 +40,10 @@ jobs:
           mkdir -p "$GITHUB_WORKSPACE/.verification/copied-probe"
           git rev-parse HEAD > "$GITHUB_WORKSPACE/.verification/copied-probe/SOURCE"
           go env GOOS GOARCH GOVERSION
-          gofmt -d internal/server/hls_copied_lines*go internal/server/testdata/copied-probe-fixture/main.go > "$GITHUB_WORKSPACE/.verification/copied-probe/format.diff"
+          gofmt -d internal/server/hls_copied_index.go internal/server/hls_copied_process*go internal/server/hls_copied_lines*go internal/server/testdata/copied-probe-fixture/main.go > "$GITHUB_WORKSPACE/.verification/copied-probe/format.diff"
           go test -json ./internal/server -run '^TestCopiedHLSLines' -count=1 -timeout=2m > "$GITHUB_WORKSPACE/.verification/copied-probe/receipt.jsonl"
-      - name: Project bounded safe lifetime facts
+      - &probe-projection
+        name: Project bounded safe lifetime facts
         if: always()
         timeout-minutes: 1
         run: |
@@ -82,13 +83,105 @@ jobs:
           new_controls = ['TestCopiedHLSLinesMissingExecutable', 'TestCopiedHLSLinesInsufficientBudget', 'TestCopiedHLSLinesImmediateExit']
           assert all(outcomes.get(name) in ['pass', 'fail'] for name in new_controls), 'probe_added_controls_terminal'
           PY
-      - name: Preserve exact safe receipt including failed controls
+      - &probe-artifact
+        name: Preserve exact safe receipt including failed controls
         if: always()
         timeout-minutes: 2
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: copied-probe-lifetime-${{ matrix.os }}-${{ inputs.candidate }}
+          name: copied-probe-lifetime-${{ matrix.os }}-${{ matrix.source || 'full-package' }}-${{ inputs.candidate }}
           path: .verification/copied-probe/*
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
+
+  windows-factory:
+    name: Exact isolated Windows factory (${{ matrix.source }})
+    strategy:
+      fail-fast: false
+      matrix: {source: [baseline, candidate], os: [windows-2025]}
+    runs-on: windows-2025
+    timeout-minutes: 18
+    defaults: {run: {shell: bash}}
+    env:
+      TARGET_SHA: ${{ matrix.source == 'baseline' && '3ea03df5efad01d7ca337e9730b26f0829f1195e' || inputs.candidate }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        timeout-minutes: 2
+        env: {GIT_CONFIG_COUNT: '1', GIT_CONFIG_KEY_0: core.autocrlf, GIT_CONFIG_VALUE_0: 'false'}
+        with: {ref: "${{ env.TARGET_SHA }}", fetch-depth: 0, persist-credentials: false}
+      - name: Bind exact source and isolate the factory coverage gap
+        timeout-minutes: 1
+        working-directory: apps/player
+        run: |
+          [[ "$TARGET_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          test ! -e "$GITHUB_WORKSPACE/.gates-disabled"
+          python3 - <<'PY'
+          import hashlib, json, pathlib, re, shutil, subprocess
+          root = pathlib.Path('internal/server')
+          bundle = pathlib.Path('internal/copiedprobelifetime')
+          assert not bundle.exists(), 'isolated_bundle_absent'
+          bundle.mkdir()
+          receipt = pathlib.Path('../../.verification/copied-probe')
+          receipt.mkdir(parents=True, exist_ok=True)
+          receipt.joinpath('SOURCE').write_text(subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True))
+          sources = {}
+          def read(name):
+              path = root / name
+              raw = path.read_bytes()
+              assert 0 < len(raw) <= (128 << 10), 'isolated_source_bound'
+              blob = subprocess.check_output(['git', 'rev-parse', 'HEAD:apps/player/' + path.as_posix()], text=True).strip()
+              actual = hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest()
+              assert actual == blob, 'isolated_git_blob_binding'
+              sources[name] = {'gitBlob': blob, 'sha256': hashlib.sha256(raw).hexdigest()}
+              return raw.decode()
+          def function(text, signature):
+              begin = text.index(signature)
+              end = text.find('\nfunc ', begin + len(signature))
+              return text[begin:end if end != -1 else len(text)]
+          index = read('hls_copied_index.go')
+          factory = function(index, 'func copiedHLSLines(')
+          scanner = function(read('hls_copied_scan.go'), 'func scanCopiedHLSLines(')
+          error = re.search(r'^var errCopiedHLSIndex = .+$', index, re.M)[0]
+          bundle.joinpath('factory.go').write_text('package server\n\nimport (\n\t"context"\n\t"errors"\n\t"os/exec"\n)\n\n' + error + '\n\n' + factory)
+          bundle.joinpath('scan.go').write_text('package server\n\nimport (\n\t"bufio"\n\t"io"\n)\n\n' + scanner)
+          for name in ['hls_copied_lines_lifetime_test.go', 'hls_copied_lines_fixture_test.go', 'hls_copied_lines_observation_windows_test.go']:
+              bundle.joinpath(name).write_text(read(name))
+          fixture = 'testdata/copied-probe-fixture/main.go'
+          bundle.joinpath(fixture).parent.mkdir(parents=True)
+          bundle.joinpath(fixture).write_text(read(fixture))
+          if root.joinpath('hls_copied_process.go').exists():
+              for name in ['hls_copied_process.go', 'hls_copied_process_windows.go']:
+                  bundle.joinpath(name).write_text(read(name))
+              context = read('observability_context.go')
+              activity = function(context, 'func requestActivityID(')
+              session = function(context, 'func requestPlaybackSession(')
+              bridge = 'package server\n\nimport "context"\n\ntype requestActivityKey struct{}\n\ntype requestActivity struct {\n\tid              string\n\tplaybackSession string\n}\n\n'
+              bundle.joinpath('activity_fixture.go').write_text(bridge + activity + '\n' + session)
+          hashes = {p.relative_to(bundle).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest() for p in bundle.rglob('*.go')}
+          facts = {'scope': 'exact factory only; request/activity integration excluded', 'sources': sources, 'bundle': hashes,
+              'factorySHA256': hashlib.sha256(factory.encode()).hexdigest(), 'scannerSHA256': hashlib.sha256(scanner.encode()).hexdigest()}
+          receipt.joinpath('BUNDLE.json').write_text(json.dumps(facts, sort_keys=True))
+          print(json.dumps({'scope': facts['scope'], 'bundleSHA256': hashlib.sha256(receipt.joinpath('BUNDLE.json').read_bytes()).hexdigest(),
+              'files': len(hashes), 'factorySHA256': facts['factorySHA256'], 'scannerSHA256': facts['scannerSHA256']}))
+          PY
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        timeout-minutes: 3
+        with: {go-version-file: go.work, cache: false}
+      - name: Build actual Windows production source
+        if: matrix.source == 'candidate'
+        timeout-minutes: 6
+        working-directory: apps/player
+        run: |
+          go build ./... > "$GITHUB_WORKSPACE/.verification/copied-probe/production-build.log" 2>&1
+      - name: Run unchanged isolated Windows lifetime assertions
+        if: always()
+        timeout-minutes: 8
+        working-directory: apps/player
+        run: |
+          go env GOOS GOARCH GOVERSION
+          gofmt -d internal/copiedprobelifetime/*.go internal/copiedprobelifetime/testdata/copied-probe-fixture/main.go > "$GITHUB_WORKSPACE/.verification/copied-probe/format.diff"
+          go test -json ./internal/copiedprobelifetime -run '^TestCopiedHLSLines' -count=1 -timeout=2m > "$GITHUB_WORKSPACE/.verification/copied-probe/receipt.jsonl"
+      - *probe-projection
+      - *probe-artifact
