@@ -35,6 +35,13 @@ prepare_audio_queue_fixture() {
   chmod -R a+rX "$1/R08 Fictional Session"
 }
 
+prepare_home_assistant_document_fixture() {
+  local repo
+  repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+  python3 "$repo/scripts/testing/prepare-home-assistant-document-fixture.py" "$1/R18 Fictional Documents"
+  chmod -R a+rX "$1/R18 Fictional Documents"
+}
+
 run_library_pagination_journey() {
   GOMAXPROCS=2 KINOSAIL_LIBRARY_BROWSER=1 KINOSAIL_BROWSER_PROJECT="$1" \
     KINOSAIL_E2E_OUTPUT_DIR="$2" KINOSAIL_E2E_ARTIFACT_DIR="$3" \
@@ -85,5 +92,8 @@ run_populated_player_journeys() {
     --required-title 'queued short track resumes its saved position without claiming unplayed progress' \
     --required-title 'ended offline queue requires its own watched acknowledgement: failed' \
     --required-title 'canonical catalog year strings survive queue validation and current-track identity' \
-    -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts test-instance-audio-queue.spec.ts player-audio-policy.spec.ts player-audio-queue-lifecycle.spec.ts --grep=@smoke --workers=1
+    --required-title 'real simultaneous browser documents publish distinct Home Assistant targets' \
+    --required-title 'real public Home Assistant seek affects only its addressed browser document' \
+    --required-title 'real Home Assistant document reload retains its target without storing claim authority' \
+    -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts test-instance-audio-queue.spec.ts player-audio-policy.spec.ts player-audio-queue-lifecycle.spec.ts test-instance-home-assistant-documents.spec.ts --grep=@smoke --workers=1
 }
