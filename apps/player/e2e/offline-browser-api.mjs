@@ -98,7 +98,7 @@ function players(data) {
   const ids = new Set();
   return data.players.map(player => {
     if (!keys(player, ['id', 'name', 'state', 'title', 'itemId', 'position', 'duration', 'volume', 'muted'], ['id', 'name', 'state', 'position', 'duration', 'volume', 'muted'])
-        || typeof player.id !== 'string' || !/^[A-Za-z0-9_-]{1,64}$/.test(player.id) || ids.has(player.id) || !byteText(player.name, 80) || !player.name.trim()
+        || typeof player.id !== 'string' || !/^[A-Za-z0-9_-]{1,64}$/.test(player.id) || ids.has(player.id) || !byteText(player.name, 80) || !/[\P{White_Space}]/u.test(player.name)
         || !['playing', 'paused', 'idle', 'buffering'].includes(player.state)
         || !['position', 'duration'].every(key => finite(player[key], 1e9)) || !finite(player.volume, 1)
         || typeof player.muted !== 'boolean' || Object.hasOwn(player, 'title') && !byteText(player.title, 256)

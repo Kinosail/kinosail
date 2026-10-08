@@ -184,3 +184,16 @@ test('valid unrelated bounded HA item identities do not reject the owned player'
  const rows=await offlineBrowserAPI(peer({players:[valid, {...player,id:'browser-2'}]}).page,'players');
  assert.equal(rows[0].itemId,valid.itemId);assert.equal(rows.some(row=>row.itemId===movie.id),true);
 });
+
+test('Go Unicode White_Space admits valid FEFF names and the owned player',async()=>{
+ const player={id:'browser-1',name:'Browser',state:'playing',itemId:movie.id,position:1,duration:12,volume:1,muted:false};
+ const valid={...player,id:'browser-2',name:'\uFEFF',itemId:'unrelated-local-item'};
+ const rows=await offlineBrowserAPI(peer({players:[valid,player]}).page,'players');
+ assert.equal(rows[0].itemId,valid.itemId);assert.equal(rows.some(row=>row.itemId===movie.id),true);
+});
+test('Go Unicode White_Space rejects blank NEL before downstream actions',async()=>{
+ const player={id:'browser-1',name:'\u0085',state:'playing',itemId:movie.id,position:1,duration:12,volume:1,muted:false};
+ let actions=0;
+ await assert.rejects(async()=>{await offlineBrowserAPI(peer({players:[player]}).page,'players');actions++;});
+ assert.equal(actions,0);
+});
