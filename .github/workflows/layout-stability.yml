@@ -79,6 +79,10 @@ jobs:
                   'PCM':{k:pcm.get(k) for k in ['public','source','publicSHA256','sourceSHA256','decodedToEOF','trimmed','rateConversionApplied','channelConversionApplied']},
                   'nativePublic':{k:native['public'].get(k) for k in ['frames','samples','completeEOFAccounted','decodedClockOrderValid']},
                   'nativeSource':{k:native['source'].get(k) for k in ['frames','samples','completeEOFAccounted','decodedClockOrderValid']},
+                  'physical':{'packetCount':physical.get('packetCount'),'segmentCount':len(physical.get('segments',[])),
+                      'lastSegment':physical.get('segments',[])[-1:],'firstPacket':physical.get('firstPacket'),'lastPacket':physical.get('lastPacket'),
+                      'manifest':{k:physical.get('manifest',{}).get(k) for k in ['endlist','playlistType','durationSeconds']}},
+                  'publicVariant':{k:(c.get('publicVariant') or {}).get(k) for k in ['endlist','playlistType','durationSeconds']},
                   'endlist':physical.get('manifest',{}).get('endlist'),'sourceUnchanged':c.get('sourceUnchanged'),
                   'workerBound':c.get('workerBound'),'encoderLifecycle':c.get('encoderLifecycle'),
                   'emptyCacheBeforeFirstGET':c.get('emptyCacheBeforeFirstGET'),'preparationPosts':c.get('preparationPosts')})
