@@ -106,7 +106,10 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, { captur
   await expect(backToSearch).toHaveAttribute("href", "/?q=Arrival");
   await backToSearch.click();
   await expect(page).toHaveURL("/?q=Arrival");
-  await page.getByRole("link", { name: "Home", exact: true }).first().click();
+  const home = page.getByRole("link", { name: "Home", exact: true }).filter({ visible: true });
+  await expect(home).toHaveCount(1);
+  await expect(home).toHaveAttribute("href", "/?view=all");
+  await home.click();
   await expect(page.getByRole("link", { name: /\bResume\b/ })).toHaveAttribute("href", watchPath);
   await expect(page.getByRole("heading", { name: "My List" })).toBeVisible();
 

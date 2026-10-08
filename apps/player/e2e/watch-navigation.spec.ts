@@ -41,6 +41,7 @@ for (const width of [390, 1440, 1920]) {
 }
 
 for (const path of ["/?view=all", "/"]) test(`${path === "/" ? "Plain root" : "Home"} keeps its exact return after Mark watched`, async ({page}, info) => {
+  if (path === "/?view=all") await page.setViewportSize({width: 390, height: 844});
   await page.goto(`${origin}${path}`);
   const movie = page.locator('a.card[href^="/watch/"]').first();
   const href = (await movie.getAttribute("href"))!;
@@ -57,4 +58,15 @@ for (const path of ["/?view=all", "/"]) test(`${path === "/" ? "Plain root" : "H
   await back.click();
   await expect(page).toHaveURL(`${origin}${path}`);
   await expect(page.getByRole("link", {name: /\bResume\b/})).toHaveCount(0);
+  if (path === "/?view=all") {
+    await expect(page.locator("nav.mobile-navigation")).toHaveClass(/has-personal-tabs/);
+    const homeLinks = page.getByRole("link", {name: "Home", exact: true, includeHidden: true});
+    await expect(homeLinks).toHaveCount(2);
+    await expect(homeLinks.first()).toBeHidden();
+    const visibleHome = homeLinks.filter({visible: true});
+    await expect(visibleHome).toHaveCount(1);
+    await expect(visibleHome).toHaveAttribute("href", "/?view=all");
+    await visibleHome.click();
+    await expect(page).toHaveURL(`${origin}/?view=all`);
+  }
 });
