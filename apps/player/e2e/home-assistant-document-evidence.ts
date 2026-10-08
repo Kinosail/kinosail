@@ -12,3 +12,22 @@ export async function recordHomeAssistantEvidence(info: TestInfo, label: string,
     test: info.title, project: info.project.name, retry: info.retry, label, evidence}) + "\n");
   await info.attach(label, {body, contentType: "application/json"});
 }
+
+type FixtureCleanup = {operation: string; action: () => Promise<unknown>};
+
+export async function cleanupHomeAssistantFixture(info: TestInfo, primary: unknown, actions: FixtureCleanup[]) {
+  let failure: unknown;
+  const failures: Array<{operation: string; failureClass: string}> = [];
+  for (const {operation, action} of actions) {
+    try {await action();} catch (error) {
+      failure ||= error;
+      failures.push({operation, failureClass: error instanceof Error && error.name === "TimeoutError" ? "timeout" : "operation-failed"});
+    }
+  }
+  if (failures.length) {
+    try {await recordHomeAssistantEvidence(info, "actual-fixture-cleanup", {primaryFailurePreserved: !!primary, failures});}
+    catch (error) {failure ||= error;}
+  }
+  if (!primary && failure) throw failure;
+}
+

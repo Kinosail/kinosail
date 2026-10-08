@@ -1,28 +1,10 @@
-import {recordHomeAssistantEvidence} from "./home-assistant-document-evidence";
-import {expect, test, type Page, type BrowserContext, type CDPSession, type Request, type Response, type TestInfo} from "@playwright/test";
+import {recordHomeAssistantEvidence, cleanupHomeAssistantFixture} from "./home-assistant-document-evidence";
+import {expect, test, type Page, type BrowserContext, type CDPSession, type Request, type Response} from "@playwright/test";
 import {configureTestInstance, createViewer, loginViewer, removeViewer} from "./test-instance-helpers";
 import {openDocuments, closeDocuments, setting, observeAcceptedDocumentStates, nextDocumentClaim} from "./home-assistant-document-helpers";
 import {inspectDocumentStatus} from "./home-assistant-document-inspection";
 
 configureTestInstance();
-
-type FixtureCleanup = {operation: string; action: () => Promise<unknown>};
-
-async function cleanupFixture(info: TestInfo, primary: unknown, actions: FixtureCleanup[]) {
-  let failure: unknown;
-  const failures: Array<{operation: string; failureClass: string}> = [];
-  for (const {operation, action} of actions) {
-    try {await action();} catch (error) {
-      failure ||= error;
-      failures.push({operation, failureClass: error instanceof Error && error.name === "TimeoutError" ? "timeout" : "operation-failed"});
-    }
-  }
-  if (failures.length) {
-    try {await recordHomeAssistantEvidence(info, "actual-fixture-cleanup", {primaryFailurePreserved: !!primary, failures});}
-    catch (error) {failure ||= error;}
-  }
-  if (!primary && failure) throw failure;
-}
 
 test("real document targets work with denied storage and unavailable UUID and locks", {tag: "@smoke"}, async ({page}, info) => {
   let first: Page | undefined, second: Page | undefined;
@@ -149,7 +131,7 @@ test("real lost-release reload waits for lease expiry and renews only its origin
       faultMechanism: network ? "Browser context abort + Chromium network block" : "Browser context abort",
       contextAborts, protocolBlockedFailures: blockedRequests.size, sameCandidateRenewed: true, expiresIn: 30, elapsedMs: elapsed});
   } catch (error) {primary = error; throw error;} finally {
-    await cleanupFixture(info, primary, [
+    await cleanupHomeAssistantFixture(info, primary, [
       {operation: "remove-release-observers", action: async () => {
         if (first && failedRelease) first.off("requestfailed", failedRelease);
         if (first && occupiedReply) first.off("response", occupiedReply);
@@ -249,7 +231,7 @@ test("actual authenticated Profile switch retires old document command effects",
   } catch (error) {primary = error; throw error;} finally {
     releaseCommand();
     const management = owner || (!viewerSwitched ? page : undefined);
-    await cleanupFixture(info, primary, [
+    await cleanupHomeAssistantFixture(info, primary, [
       {operation: "close-first-document", action: async () => {if (first && !first.isClosed()) await first.close();}},
       {operation: "close-second-document", action: async () => {if (second && !second.isClosed()) await second.close();}},
       {operation: "disable-home-assistant-fixture", action: async () => {if (management) await setting(management, false);}},
