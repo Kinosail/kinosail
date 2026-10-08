@@ -19,7 +19,7 @@ export function fixture(options = {}) {
     return id;
   };
   const context = vm.createContext({
-    AbortController, Response, TextDecoder, JSON, performance: {now: () => now,
+    AbortController, Response, TextDecoder, TextEncoder, JSON, performance: {now: () => now,
       getEntriesByType: () => [{type: options.navigationType || 'navigate'}]},
     addEventListener: events.addEventListener.bind(events), removeEventListener: events.removeEventListener.bind(events),
     setTimeout: timeout, clearTimeout: id => timers.delete(id),
