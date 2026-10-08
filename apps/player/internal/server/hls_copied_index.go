@@ -124,8 +124,8 @@ func copiedHLSLines(parent context.Context, executable string, arguments []strin
 	waitErr := probe.wait()
 	settleErr := settleCopiedHLSProbe(parent, probe)
 	if watchErr != nil || waitErr != nil || settleErr != nil || ctx.Err() != nil {
-		if err == nil && ctx.Err() == nil {
-			reportCopiedHLSProbeCompletion(parent, watchErr, waitErr, settleErr)
+		if ctx.Err() == nil {
+			reportCopiedHLSProbeCompletion(parent, err, watchErr, waitErr, settleErr)
 		}
 		return errCopiedHLSIndex
 	}

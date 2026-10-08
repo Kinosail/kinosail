@@ -107,7 +107,7 @@ func settleCopiedHLSProbe(parent context.Context, probe copiedHLSProbe) error {
 	return result
 }
 
-func reportCopiedHLSProbeCompletion(ctx context.Context, watchErr, waitErr, settleErr error) {
+func reportCopiedHLSProbeCompletion(ctx context.Context, scanErr, watchErr, waitErr, settleErr error) {
 	var errno syscall.Errno
 	if !errors.As(watchErr, &errno) {
 		errno = 0
@@ -119,7 +119,7 @@ func reportCopiedHLSProbeCompletion(ctx context.Context, watchErr, waitErr, sett
 	}
 	slog.ErrorContext(ctx, "copied probe completion failed",
 		"request_id", requestActivityID(ctx), "playback_session", requestPlaybackSession(ctx),
-		"failure_class", "copied_probe_completion",
+		"failure_class", "copied_probe_completion", "scan_failed", scanErr != nil,
 		"watch_failed", watchErr != nil, "watch_errno", int(errno),
 		"wait_failed", waitErr != nil, "wait_exit_code", exitCode,
 		"settlement_failed", settleErr != nil)
