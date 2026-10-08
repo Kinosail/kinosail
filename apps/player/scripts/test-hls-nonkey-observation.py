@@ -9,6 +9,7 @@ import re
 import shutil
 import socket
 import subprocess
+import sys
 import threading
 import time
 from hls_timeline_fixture import fixture
@@ -18,12 +19,16 @@ from hls_timeline_preparation import prepare_scene
 from hls_followon_public import check, bounded_bytes, encoder_count, sample_resources, prepare_once, measure
 from hls_followon_frames import stream_metadata
 from hls_remaining_nonkey_evidence import observed_media
+from hls_remaining_process import finish_processes
 
 ROOT = Path(__file__).resolve().parents[3]
 RUN = ROOT / '.verification/hls-nonkey' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
 RUN.mkdir(parents=True)
 binary = RUN / 'player'
 receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+    'tree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip(),
+    'trackedSourceClean': not subprocess.check_output(
+        ['git', 'status', '--porcelain', '--untracked-files=no'], text=True).strip(),
     'result': 'failed', 'cases': [], 'productionAcceptance': False,
     'boundary': 'Synthetic authenticated public diagnostic; all raw data retained, no discard map applied.',
     'originalFailuresPreserved': True, 'nativeSafariNoxAcceptance': False}
@@ -101,11 +106,11 @@ def journey(name, original, metadata, offset=0, cold=False, one_shot=False, audi
     case['resources'] = resources
     log_path = directory / 'server.log'
     with log_path.open('w') as log:
-        server = subprocess.Popen([str(binary)], cwd=ROOT, env=env, stdout=log, stderr=log)
+        server = subprocess.Popen([str(binary)], cwd=ROOT, env=env, stdout=log, stderr=log, start_new_session=True)
         stop = threading.Event()
         sampler = threading.Thread(target=sample_resources, args=(server, source, stop, resources), daemon=True)
-        sampler.start()
         try:
+            sampler.start()
             api.authorize()
             item_id = next(i['id'] for i in api.call('/api/v1/library')['items'] if i['title'] == 'Fixture')
             plan = api.call('/api/v1/items/' + item_id + '/playback?videoCodecs=h264&audioCodecs=aac')
@@ -116,6 +121,12 @@ def journey(name, original, metadata, offset=0, cold=False, one_shot=False, audi
             case['referenceClock'] = {'originSeconds': origin, 'requestedSourcePTS': origin + offset,
                 'expectedFrames': sum(point >= origin + offset - 0.000001 for point in metadata['sourceFramePTS']),
                 'method': 'independent ffprobe decoded source PTS minus demux format start_time'}
+            expected = [v for v in metadata['sourceFramePTS'] if v >= origin + offset - 0.000001]
+            check(len(expected) == {0: 768, 12: 480, 12.5: 468}[offset], 'literal_reference_frame_count')
+            expected_starts_at_key = any(abs(k - expected[0]) <= 0.0000011
+                                        for k in metadata['keyframesSeconds'])
+            check(expected_starts_at_key == (offset != 12.5), 'independent_key_control')
+            case['referenceClock']['firstExpectedFrameIsKey'] = expected_starts_at_key
             if offset and offset % 2:
                 check(all(abs(k - origin - offset) > 0.05 for k in metadata['keyframesSeconds']), 'fixture_offset_is_key')
             if offset:
@@ -141,34 +152,38 @@ def journey(name, original, metadata, offset=0, cold=False, one_shot=False, audi
             measure(api, hls, directory, source, metadata, offset, prepared_init, case)
             case['originalPublicAssertions'] = list(case['failures'])
             physical = sorted(directory.glob('segment-*.m4s'))
-            case['observations'] = observed_media(source, directory / 'public.mp4',
-                api.initialization, physical, origin, offset)
+            case['observations'] = {}
+            observed_media(source, directory / 'public.mp4', api.initialization,
+                           physical, metadata, offset, case['observations'])
+            if not case['observations']['packetClockQualification']['qualified']:
+                case['failures'].append('nonkey_packet_clock')
             if not case['observations']['mapping']['exactRequestedSequence']:
                 case['failures'].append('exact_requested_source_sequence')
+            if not case['observations']['nativePCM']['publicAndSourceCompleteEOFAccounted']:
+                case['failures'].append('complete_native_pcm_eof_accounting')
             if not case['observations']['nativePCM']['wholePublicEqualsReference']:
                 case['failures'].append('full_native_pcm_reference')
             case['result'] = 'passed' if not case['failures'] else 'failed'
         except Exception as error:
             case['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
         finally:
-            join_limit = time.monotonic() + 15
-            while encoder_count(server, source) > 0 and time.monotonic() < join_limit:
-                time.sleep(0.05)
-            case['ownedFFmpegBeforeTeardown'] = encoder_count(server, source)
-            stop.set()
-            sampler.join(timeout=5)
-            server.terminate()
             try:
-                server.wait(timeout=10)
-            except subprocess.TimeoutExpired:
-                server.kill()
-                server.wait(timeout=5)
+                case.update(finish_processes(server, source, stop, sampler))
+            except (OSError, subprocess.SubprocessError) as error:
+                case['cleanupFailureClass'] = type(error).__name__
+                case['failures'].append('owned_process_cleanup_failed')
+                case['result'] = 'failed'
             log.flush()
             private = bounded_bytes(log_path, 2 * 1024 * 1024, 'private_log_bound').decode()
             case.update(safe_seek_phases(private))
             lifecycle = safe_encoder_lifecycle(private)
             case['encoderLifecycle'] = lifecycle
-            case['workerBound'] = (resources['samples'] > 0 and resources['peakOwnedFFmpeg'] <= 1
+            joined = case.get('ownedProcessJoin', {})
+            case['workerBound'] = (joined.get('confirmedZeroSamples') == 2
+                and joined.get('remainingOwnedPIDs') == [] and not joined.get('forcedOwnedGroupStop')
+                and not joined.get('qualificationFailures') and not case.get('cleanupFailures')
+                and not case.get('cleanupFailureClass') and not sampler.is_alive()
+                and resources['samples'] > 0 and resources['peakOwnedFFmpeg'] <= 1
                 and resources['samplingErrors'] == 0 and lifecycle['validSequence'] and lifecycle['peakActive'] == 1
                 and case['ownedFFmpegBeforeTeardown'] == 0)
             if not case['workerBound']:
@@ -182,6 +197,7 @@ def journey(name, original, metadata, offset=0, cold=False, one_shot=False, audi
 
 
 try:
+    check(receipt['trackedSourceClean'], 'nonkey_dirty_tracked_source')
     subprocess.run(['go', '-C', 'apps/player', 'build', '-p=1', '-o', str(binary), './cmd/kinosail'],
         cwd=ROOT, check=True, timeout=180)
     receipt['binarySHA256'] = sha(binary)
@@ -199,10 +215,13 @@ except Exception as error:
     receipt['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
 finally:
     target = RUN / 'receipt.json'
-    target.write_text(json.dumps(receipt, indent=2, allow_nan=False) + '\n')
-    modules = [Path(__file__)] + [Path(__file__).with_name(n) for n in
-        ['hls_remaining_nonkey_evidence.py', 'hls_remaining_nonkey_init.py',
-         'hls_remaining_nonkey_fragment.py', 'hls_followon_public.py', 'hls_followon_frames.py']]
+    files = {Path(__file__)} | {Path(m.__file__).resolve() for m in list(sys.modules.values())
+        if getattr(m, '__file__', None) and Path(m.__file__).resolve().parent == Path(__file__).resolve().parent}
+    receipt['executedScriptSHA256'] = {str(p.relative_to(ROOT)): sha(p) for p in sorted(files)}
+    raw = json.dumps(receipt, separators=(',', ':'), allow_nan=False) + '\n'
+    check(0 < len(raw.encode()) <= 16 << 20, 'nonkey_lossless_receipt_bound')
+    target.write_text(raw)
+    modules = sorted(files)
     (RUN / 'SHA256SUMS').write_text(''.join(sha(p) + '  ' + str(p.relative_to(ROOT)) + '\n'
         for p in modules) + sha(target) + '  receipt.json\n')
     print(json.dumps({'result': receipt['result'], 'revision': receipt['revision'],

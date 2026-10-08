@@ -19,12 +19,16 @@ def packet_rows(path):
     check(process.returncode == 0 and len(process.stdout) <= 4 << 20, 'nonkey_packet_probe')
     rows = json.loads(process.stdout).get('packets', [])
     check(0 < len(rows) <= 4096, 'nonkey_complete_packet_bound')
-    for row in rows:
+    missing = []
+    for number, row in enumerate(rows):
         check(re.fullmatch(r'SHA256:[a-f0-9]{64}', row.get('data_hash', '')) is not None,
               'nonkey_packet_hash')
         for field in ['pts_time', 'dts_time', 'duration_time']:
-            check(field in row and math.isfinite(float(row[field])), 'nonkey_packet_clock')
-    return rows
+            if field not in row:
+                missing.append({'packet': number, 'field': field})
+            else:
+                check(math.isfinite(float(row[field])), 'nonkey_packet_clock')
+    return rows, missing
 
 
 def audio_stream(path):
@@ -62,6 +66,7 @@ def native_pcm(path, offset=None):
         'decodedFrameRows': frames, 'decodedFrameSampleSum': sum(f['nb_samples'] for f in frames),
         'rateConversionApplied': False, 'channelConversionApplied': False,
         'timeBudgetApplied': False, 'outputReferenceSeekSeconds': offset,
+        'completeEOFAccounted': offset is None and len(data) // 4 == sum(f['nb_samples'] for f in frames),
         'decodedFrameRowsScope': 'Complete input decode before optional reference output seek',
         'stream': stream}, data
 
@@ -97,30 +102,79 @@ def frame_mapping(source_rows, public_rows, requested):
         'allRawFramesRetained': True, 'negativeFramesDiscarded': 0}
 
 
-def observed_media(source, public, init, fragments, origin, offset):
+def observed_media(source, public, init, fragments, metadata, offset, result):
+    result.update(boundary='All default-decoder facts retained by stage; edits never applied by oracle.',
+                  completedStages=[])
+    def stage(name):
+        result['currentStage'] = name
+    def completed(name):
+        result['completedStages'].append(name)
+    stage('source-decode')
     source_facts, source_rows = decode_frames(source)
+    result.update(sourceDecode=source_facts, sourceFrameRows=source_rows)
+    points = metadata['sourceFramePTS']
+    check(len(points) == len(source_rows) and all(abs(row[0] - point) <= 0.0000011
+          for row, point in zip(source_rows, points)), 'nonkey_independent_source_pts')
+    result['independentSourcePTSBound'] = True
+    completed('source-decode')
+    stage('public-decode')
     public_facts, public_rows = decode_frames(public)
+    result.update(publicDecode=public_facts, publicFrameRows=public_rows)
+    completed('public-decode')
+    stage('reference-decode')
     reference_facts, reference_rows = decode_frames(source, offset)
-    mapping = frame_mapping(source_rows, public_rows, origin + offset)
+    result.update(referenceDecode=reference_facts, referenceFrameRows=reference_rows)
+    mapping = frame_mapping(source_rows, public_rows, metadata['sourceTimeOriginSeconds'] + offset)
+    result['mapping'] = mapping
     expected_hashes = [source_rows[n][1] for n in mapping['expectedSourceIndices']]
     check([digest for _, digest in reference_rows] == expected_hashes,
           'nonkey_independent_output_seek_reference')
-    source_packets, public_packets = packet_rows(source), packet_rows(public)
+    completed('reference-decode')
+    stage('initialization')
+    result['initializationSHA256'] = hashlib.sha256(init).hexdigest()
+    result['initialization'] = initialization_metadata(init)
+    completed('initialization')
+    stage('physical-fragments')
+    result['physicalFragments'] = []
+    check(0 < len(fragments) <= 32, 'nonkey_physical_fragment_count')
+    for path in fragments:
+        data = bounded_bytes(path, 2 << 20, 'nonkey_fragment_bound')
+        row = {'name': path.name, 'sha256': hashlib.sha256(data).hexdigest()}
+        result['physicalFragments'].append(row)
+        row['tracks'] = fragment_metadata(data)
+    completed('physical-fragments')
+    stage('source-packets')
+    source_packets, source_missing = packet_rows(source)
+    result['sourcePacketRows'] = source_packets
+    result['packetClockQualification'] = {'sourceMissingFields': source_missing,
+        'publicMissingFields': None, 'qualified': False, 'missingValuesInferred': False}
+    completed('source-packets')
+    stage('public-packets')
+    public_packets, public_missing = packet_rows(public)
+    result['publicPacketRows'] = public_packets
+    result['packetClockQualification'].update(publicMissingFields=public_missing,
+                                               qualified=not source_missing and not public_missing)
     public_video = [row for row in public_packets if row['stream_index'] == 0]
-    check(public_video and 'K' in public_video[0]['flags'], 'nonkey_first_packet_idr')
+    result['firstPublicVideoPacketKeyFlag'] = bool(public_video and 'K' in public_video[0]['flags'])
+    result['IDRNALQualificationPerformed'] = False
+    check(result['firstPublicVideoPacketKeyFlag'], 'nonkey_first_packet_key')
+    completed('public-packets')
+    result['nativePCM'] = {}
+    stage('source-native-pcm')
     source_pcm, source_bytes = native_pcm(source)
+    result['nativePCM']['source'] = source_pcm
+    completed('source-native-pcm')
+    stage('public-native-pcm')
     public_pcm, public_bytes = native_pcm(public)
+    result['nativePCM']['public'] = public_pcm
+    completed('public-native-pcm')
+    stage('reference-native-pcm')
     reference_pcm, _ = native_pcm(source, offset)
-    return {'mapping': mapping, 'sourceDecode': source_facts, 'publicDecode': public_facts,
-        'referenceDecode': reference_facts, 'sourcePacketRows': source_packets,
-        'publicPacketRows': public_packets, 'initialization': initialization_metadata(init),
-        'initializationSHA256': hashlib.sha256(init).hexdigest(),
-        'physicalFragments': [{'name': p.name, 'sha256': hashlib.sha256(bounded_bytes(
-            p, 2 << 20, 'nonkey_fragment_bound')).hexdigest(),
-            'tracks': fragment_metadata(bounded_bytes(p, 2 << 20, 'nonkey_fragment_bound'))}
-            for p in fragments],
-        'nativePCM': {'source': source_pcm, 'public': public_pcm, 'referenceSeek': reference_pcm,
-            'wholePublicCorrespondence': pcm_tail_correspondence(source_bytes, public_bytes, round(offset * 48000)),
-            'wholePublicEqualsReference': public_pcm['sha256'] == reference_pcm['sha256'],
-            'publicMinusReferenceSamples': public_pcm['samples'] - reference_pcm['samples']},
-        'boundary': 'Full default real-decoder observations; edits are recorded, never applied by the oracle.'}
+    result['nativePCM'].update(referenceSeek=reference_pcm,
+        wholePublicCorrespondence=pcm_tail_correspondence(source_bytes, public_bytes, round(offset * 48000)),
+        wholePublicEqualsReference=public_pcm['sha256'] == reference_pcm['sha256'],
+        publicMinusReferenceSamples=public_pcm['samples'] - reference_pcm['samples'],
+        publicAndSourceCompleteEOFAccounted=source_pcm['completeEOFAccounted'] and public_pcm['completeEOFAccounted'])
+    completed('reference-native-pcm')
+    stage('complete')
+    return result

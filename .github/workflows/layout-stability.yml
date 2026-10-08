@@ -2,12 +2,18 @@ name: Bounded non-key presentation observation
 
 on:
   workflow_dispatch:
+    inputs:
+      phase:
+        type: choice
+        options: [public, observe, mux]
+        default: public
 
 permissions:
   contents: read
 
 jobs:
   nonkey-public:
+    if: inputs.phase != 'mux'
     name: Strict source-bound non-key public regression
     runs-on: ubuntu-24.04
     timeout-minutes: 25
@@ -60,7 +66,8 @@ jobs:
           from pathlib import Path
           paths=list(Path('.verification/hls-nonkey').glob('*/receipt.json'))
           assert len(paths)==1
-          raw=paths[0].read_bytes()
+          with paths[0].open('rb') as stream:
+              raw=stream.read((16<<20)+1)
           assert 0<len(raw)<16<<20
           receipt=json.loads(raw)
           for case in receipt['cases']:
@@ -75,16 +82,18 @@ jobs:
                   'actualLastIndices':mapping.get('actualSourceIndices',[])[-3:],
                   'precedingFrames':mapping.get('precedingSourceFrames',[]),
                   'exactRequestedSequence':mapping.get('exactRequestedSequence'),
+                  'packetClockQualification':value.get('packetClockQualification'),
                   'init':value.get('initialization'),'fragmentCount':len(value.get('physicalFragments',[])),
                   'firstRawFragment':[{'trackID':t['trackID'],'samples':len(t['samples']),
                       'firstSamples':t['samples'][:4],'lastSamples':t['samples'][-2:]}
                       for t in value.get('physicalFragments',[{}])[0].get('tracks',[])],
-                  'nativePCM':{k:{field:v.get(field) for field in ['samples','sha256','decodedFrameSampleSum']}
+                  'nativePCM':{k:{field:v.get(field) for field in ['samples','sha256','decodedFrameSampleSum','completeEOFAccounted']}
                       for k,v in pcm.items() if k in ['source','public','referenceSeek']},
                   'wholePublicCorrespondence':pcm.get('wholePublicCorrespondence'),
                   'wholePublicEqualsReference':pcm.get('wholePublicEqualsReference'),
                   'publicMinusReferenceSamples':pcm.get('publicMinusReferenceSamples'),
-                  'workerBound':case.get('workerBound'),'sourceUnchanged':case.get('sourceUnchanged')}
+                  'completedStages':value.get('completedStages'),'currentStage':value.get('currentStage'),
+                  'ownedProcessJoin':case.get('ownedProcessJoin'),'workerBound':case.get('workerBound'),'sourceUnchanged':case.get('sourceUnchanged')}
               print(json.dumps(facts,separators=(',',':')))
           PY
       - name: Preserve complete safe evidence including failed regression
@@ -101,6 +110,7 @@ jobs:
           retention-days: 14
 
   accepted-aac-control:
+    if: inputs.phase == 'public'
     name: Unchanged accepted AAC packet and native PCM control
     runs-on: ubuntu-24.04
     timeout-minutes: 25
@@ -154,6 +164,65 @@ jobs:
             .verification/hls-followon/*/startup-readiness.json
             .verification/hls-followon/*/uninterrupted-cold-control.json
             .verification/hls-followon/*/SHA256SUMS
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
+  nonkey-mux:
+    if: inputs.phase == 'mux'
+    name: Fixed inner and outer mux timestamp counterfactuals
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - run: test ! -e .gates-disabled
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        timeout-minutes: 3
+        with:
+          go-version-file: go.work
+          cache-dependency-path: "**/go.sum"
+      - name: Install pinned public-media codecs
+        run: |
+          curl --fail --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/hls-ffmpeg.deb" https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.2-5/jellyfin-ffmpeg8_8.1.2-5-noble_amd64.deb
+          printf '%s  %s\n' b4e72894ad26c809ed0104805f5415a97be75212b9fcf9d60b89ad25bb3d43e3 "$RUNNER_TEMP/hls-ffmpeg.deb" | sha256sum --check
+          apt_options=(-o Acquire::http::Timeout=15 -o Acquire::https::Timeout=15 -o Acquire::Retries=0)
+          if ! timeout --kill-after=5s 90s sudo apt-get "${apt_options[@]}" update --error-on=any; then
+            python3 - "$RUNNER_TEMP/hls-ubuntu.sources" <<'PY'
+          import pathlib, sys
+          source = pathlib.Path('/etc/apt/sources.list.d/ubuntu.sources')
+          with source.open('rb') as stream:
+              data = stream.read(65537)
+          assert len(data) <= 65536, 'runner_ubuntu_sources_bound'
+          lines = data.decode().splitlines(keepends=True)
+          changed = False
+          for index, line in enumerate(lines):
+              if line.rstrip('\r\n') in ['URIs: http://azure.archive.ubuntu.com/ubuntu/', 'URIs: http://azure.archive.ubuntu.com/ubuntu']:
+                  lines[index] = 'URIs: https://archive.ubuntu.com/ubuntu/\n'
+                  changed = True
+          assert changed, 'runner_ubuntu_mirror_not_supported'
+          pathlib.Path(sys.argv[1]).write_text(''.join(lines))
+          PY
+            sudo install -m 0644 "$RUNNER_TEMP/hls-ubuntu.sources" /etc/apt/sources.list.d/ubuntu.sources
+            timeout --kill-after=5s 90s sudo apt-get "${apt_options[@]}" update --error-on=any
+          fi
+          timeout --kill-after=5s 180s sudo apt-get "${apt_options[@]}" install -y --no-install-recommends "$RUNNER_TEMP/hls-ffmpeg.deb"
+          echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
+      - name: Verify all strict diagnostic controls
+        run: python3 -m unittest discover -s apps/player/scripts -p 'test_hls_remaining_nonkey_*.py'
+      - name: Observe fixed counterfactuals without production admission
+        run: timeout --kill-after=5s 420s python3 apps/player/scripts/test-hls-nonkey-mux-observation.py
+      - name: Preserve complete safe counterfactual receipt
+        timeout-minutes: 2
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: nonkey-mux-observation-${{ github.sha }}
+          path: |
+            .verification/hls-nonkey-mux/*/receipt.json
+            .verification/hls-nonkey-mux/*/SHA256SUMS
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
