@@ -30,7 +30,9 @@ const shim = 'data:text/javascript,' + encodeURIComponent('export const {test,ex
 const hooks = registerHooks({resolve(specifier, context, next) {
   if (specifier === '@playwright/test' && context.parentURL?.startsWith(qaRoot))
     return {url: shim, shortCircuit: true};
-  if (context.parentURL?.startsWith(qaRoot) && specifier.startsWith('./') && !/\.[a-z]+$/i.test(specifier))
+  if (context.parentURL === qaRoot + 'test-instance-helpers.ts' && specifier === '../../../scripts/testing/auth-form-navigation')
+    return next(specifier + '.ts', context);
+  if (context.parentURL?.startsWith(qaRoot) && new URL('.', context.parentURL).href === qaRoot && specifier.startsWith('./') && !/\.[a-z]+$/i.test(specifier))
     return next(specifier + '.ts', context);
   return next(specifier, context);
 }});

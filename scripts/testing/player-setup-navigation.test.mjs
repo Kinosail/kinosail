@@ -10,6 +10,8 @@ import {join} from 'node:path';
 // Playwright imports. Resolve only sibling QA source, without changing shipping imports.
 const qaRoot = new URL('../../apps/player/e2e/', import.meta.url).href;
 const hooks = registerHooks({resolve(specifier, context, next) {
+  if (context.parentURL === qaRoot + 'happy-path-setup.ts' && specifier === '../../../scripts/testing/auth-form-navigation')
+    return next(specifier + '.ts', context);
   if (context.parentURL?.startsWith(qaRoot) && new URL('.', context.parentURL).href === qaRoot
       && specifier.startsWith('./') && !/\.[a-z]+$/i.test(specifier)) {
     return next(specifier + '.ts', context);
@@ -36,10 +38,13 @@ for (const app of ['player', 'subtitles']) for (const placement of ['physical', 
       writeFileSync(join(qa, 'package.json'), JSON.stringify({type: 'module'}));
       writeFileSync(join(qa, 'sibling.ts'), "export const value: string = 'qa-ts-preserved';\n");
       const sibling = app === 'player' ? './sibling' : './sibling.ts';
-      writeFileSync(join(qa, 'entry.ts'), `import {value} from '${sibling}';\nimport dependency from 'resolver-probe';\nexport default [value, dependency.value];\n`);
+      mkdirSync(join(directory, 'scripts', 'testing'), {recursive: true});
+      writeFileSync(join(directory, 'scripts', 'testing', 'auth-form-navigation.ts'), "export const auth: string = 'nested-auth-preserved';\n");
+      const authImport = app === 'player' ? '../../../scripts/testing/auth-form-navigation' : '../../../scripts/testing/auth-form-navigation.ts';
+      writeFileSync(join(qa, 'happy-path-setup.ts'), `import {value} from '${sibling}';\nimport dependency from 'resolver-probe';\nimport {auth} from '${authImport}';\nexport default [value, dependency.value, auth];\n`);
       const currentSource = readFileSync(new URL(import.meta.url), 'utf8');
       const hook = app === 'player' ? currentSource.slice(currentSource.indexOf('const hooks = registerHooks('), currentSource.indexOf('const {openHappyPathSetup: login}')) : 'const hooks = {deregister() {}};';
-      writeFileSync(join(qa, 'runner.mjs'), `import {registerHooks} from 'node:module';\nimport assert from 'node:assert/strict';\nconst qaRoot = new URL('./', import.meta.url).href;\n${hook}\ntry { const result = await import('./entry.ts'); assert.deepEqual(result.default, ['qa-ts-preserved', 'dependency-js-preserved']); } finally { hooks.deregister(); }\n`);
+      writeFileSync(join(qa, 'runner.mjs'), `import {registerHooks} from 'node:module';\nimport assert from 'node:assert/strict';\nconst qaRoot = new URL('./', import.meta.url).href;\n${hook}\ntry { const result = await import('./happy-path-setup.ts'); assert.deepEqual(result.default, ['qa-ts-preserved', 'dependency-js-preserved', 'nested-auth-preserved']); } finally { hooks.deregister(); }\n`);
       const result = spawnSync(process.execPath, [join(qa, 'runner.mjs')], {env: {}, encoding: 'utf8', timeout: 3000, maxBuffer: 32768});
       assert.equal(result.error, undefined);
       assert.equal(result.status, 0, result.stderr);
@@ -57,7 +62,8 @@ class FailedSetupPage extends EventEmitter {
     this.calls.push({target, options});
     throw this.failure;
   }
-  async evaluate() {return {readyState: 'complete', libraryMarker: false, setupForm: true, timeOrigin: 1000};}
+  context() {return {browser: () => ({browserType: () => ({name: () => 'chromium'})})};}
+  async evaluate() {if (!this.calls.length) return 1000; return {readyState: 'complete', libraryMarker: false, setupForm: true, timeOrigin: 1000};}
   url() {return 'https://owned.fixture/setup?secret=private-synthetic-marker';}
   getByLabel() {throw new Error('credentials or form actions must not run after failed navigation');}
 }
@@ -70,7 +76,7 @@ for (const brokenAttachment of [false, true]) {
         if (brokenAttachment) throw new Error('attachment unavailable');
       }};
     await assert.rejects(login(page, info), error => error === page.failure);
-    assert.deepEqual(page.calls, [{target: '/setup', options: {waitUntil: 'commit'}}]);
+    assert.deepEqual(page.calls, [{target: '/setup', options: {waitUntil: 'commit', timeout: 10000}}]);
     assert.equal(attachments.length, 1);
     const value = JSON.parse(attachments[0].value.body);
     assert.equal(value.errorCategory, 'timeout');
@@ -84,7 +90,7 @@ for (const brokenAttachment of [false, true]) {
 
 test('a stalled document evaluation cannot keep failed setup diagnostics alive', async () => {
   const page = new FailedSetupPage();
-  page.evaluate = () => new Promise(() => {});
+  page.evaluate = () => page.calls.length ? new Promise(() => {}) : Promise.resolve(1000);
   const info = {project: {use: {baseURL: 'https://owned.fixture'}}, attach: async () => {}};
   let timer;
   try {
@@ -123,7 +129,7 @@ for (const setup of ['reject', 'stall']) test(`observation setup ${setup} cannot
       new Promise((_, reject) => {timer = setTimeout(() => reject(new Error('observation prevented navigation')), 1500);}),
     ]);
   } finally {clearTimeout(timer);}
-  assert.deepEqual(page.calls, [{target: '/setup', options: {waitUntil: 'commit'}}]);
+  assert.deepEqual(page.calls, [{target: '/setup', options: {waitUntil: 'commit', timeout: 10000}}]);
   assert.equal(JSON.parse(attachments.at(-1).body).errorCategory, 'timeout');
   assert.equal(page.eventNames().length, 0);
 });
