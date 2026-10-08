@@ -32,8 +32,10 @@ func TestRemainingNonKeyCompleteSourceAudioClock(t *testing.T) {
 			remainingNonKeySourceAudioCorrespondence(t, proof, fixture.first, []int64{
 				value.firstPTS, value.firstNative, value.targetPTS, value.target, value.edit, value.leading,
 			})
-			mapping := &copiedHLSPresentation{RequestedMicros: 12_500_000,
-				Proof: &copiedHLSPresentationProof{Audio: proof}}
+			mapping := &copiedHLSPresentation{
+				RequestedMicros: 12_500_000,
+				Proof:           &copiedHLSPresentationProof{Audio: proof},
+			}
 			if !validCopiedHLSAudioProof(mapping) {
 				t.Fatal("nonkey derived source-clock tuple invalid")
 			}
@@ -41,11 +43,8 @@ func TestRemainingNonKeyCompleteSourceAudioClock(t *testing.T) {
 	}
 }
 
-func TestRemainingNonKeySourceAudioDamagedInterior(t *testing.T) {
-	cases := []struct {
-		name   string
-		damage func(*remainingNonKeySourceAudioFixture)
-	}{
+func remainingNonKeySourceAudioInteriorDamages() []remainingNonKeySourceAudioDamage {
+	return []remainingNonKeySourceAudioDamage{
 		{"interior-frame-gap", func(f *remainingNonKeySourceAudioFixture) {
 			remainingNonKeySourceRows(*f, "frame")[9]["pts"] = 195
 		}},
@@ -98,7 +97,10 @@ func TestRemainingNonKeySourceAudioDamagedInterior(t *testing.T) {
 		}},
 		{"edit-outside-limit", func(f *remainingNonKeySourceAudioFixture) { f.edit = 28000 }},
 	}
-	for _, value := range cases {
+}
+
+func TestRemainingNonKeySourceAudioDamagedInterior(t *testing.T) {
+	for _, value := range remainingNonKeySourceAudioInteriorDamages() {
 		t.Run(value.name, func(t *testing.T) {
 			fixture := remainingNonKeySourceAudio(t, 1000, 1024)
 			value.damage(&fixture)
@@ -148,5 +150,16 @@ func remainingNonKeySourceAudioCorrespondence(t *testing.T, proof *copiedHLSAudi
 		proof.TargetNativeSample, proof.MediaTime, proof.LeadingSamples}
 	if !slices.Equal(actual, expected) || proof.FirstPacket != packet || proof.SourceClock == [32]byte{} {
 		t.Fatal("nonkey complete source-clock integer correspondence")
+	}
+}
+
+// Reject requests outside the bounded source-prefix and integer sample grid.
+func TestRemainingNonKeySourceAudioRequestedEligibility(t *testing.T) {
+	fixture := remainingNonKeySourceAudio(t, 1000, 1024)
+	data := fixture.encode(t)
+	for _, micros := range []int64{-1, 0, 20_000_001, 12_500_001} {
+		if _, err := deriveCopiedHLSSourceAudio(t.Context(), data, []byte(fixture.normalized), fixture.first, micros, fixture.edit); err == nil {
+			t.Fatalf("nonkey ineligible source-clock request admitted micros=%d", micros)
+		}
 	}
 }

@@ -25,7 +25,9 @@ func remainingNonKeySourceAudio(t *testing.T, denominator, leading int64) remain
 	if leading == 16 {
 		phase, skip, prime = -8, 1008, -1008
 	}
-	round := func(sample int64) int64 { return (sample*denominator + 24000) / 48000 }
+	round := func(sample int64) int64 {
+		return (sample*denominator + 24000) / 48000
+	}
 	priming := remainingNonKeySourceAudioPacket(-round(-prime), round(1024), -1)
 	priming["side_data_list"] = []map[string]any{{"side_data_type": "Skip Samples",
 		"skip_samples": skip, "discard_padding": 0, "skip_reason": 0, "discard_reason": 0}}
@@ -94,4 +96,9 @@ func remainingNonKeySourceAudioDuration(leading, number, duration int64) int64 {
 		return 1016
 	}
 	return duration
+}
+
+type remainingNonKeySourceAudioDamage struct {
+	name   string
+	damage func(*remainingNonKeySourceAudioFixture)
 }
