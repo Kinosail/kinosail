@@ -5,7 +5,6 @@ import (
 	"context"
 	"github.com/MikeO7/kinosail/packages/library"
 	"net/http"
-	"os"
 	"path/filepath"
 	"time"
 )
