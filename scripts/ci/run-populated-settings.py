@@ -4,6 +4,7 @@ import argparse
 import base64
 import hashlib
 import hmac
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -175,6 +176,25 @@ def verify_results(path, required_titles=None):
 
 exit_code = 1
 try:
+    if library and args.profile == 'fake-provider' and args.project == 'firefox':
+        receipt['firefoxTrust'] = {'activation': 'unverified', 'category': 'policy_ownership', 'status': None, 'cleanup': 'not_started'}
+        spec = importlib.util.spec_from_file_location('firefox_policy', Path(__file__).with_name('browser-firefox-policy.py'))
+        firefox_policy = importlib.util.module_from_spec(spec); spec.loader.exec_module(firefox_policy)
+        certificate = Path(os.environ.get('NODE_EXTRA_CA_CERTS', ''))
+        nonce = os.environ.get('KINOSAIL_FIREFOX_TRUST_NONCE', '')
+        policy, executable = firefox_policy.policy(certificate, certificate.parent, nonce)
+        if os.environ.get('PLAYWRIGHT_FIREFOX_POLICIES_JSON') != str(policy):
+            receipt['firefoxTrust']['category'] = 'child_environment'
+            raise ValueError('Firefox child policy environment changed')
+        receipt['firefoxPolicySHA256'] = hashlib.sha256(firefox_policy.native.read_regular(policy, 4096)).hexdigest()
+        probe = Path(__file__).resolve().parents[2] / 'apps/player/e2e/strict-firefox-probe.cjs'
+        # The child returns a closed diagnosis even on navigation failure; no raw URL or error body.
+        probe_exit, raw = firefox_policy.native.run(['node', str(probe), args.url, str(executable), str(policy)], timeout=50, check=False)
+        receipt['firefoxTrust'] = json.loads(raw)
+        receipt['firefoxProbeExitCode'] = probe_exit
+        if probe_exit != 0 or receipt['firefoxTrust'] != {'activation': 'strict_browser_https', 'category': 'passed', 'status': 200, 'cleanup': 'closed'}:
+            raise RuntimeError('Firefox browser HTTPS trust preflight failed')
+        firefox_policy.policy(certificate, certificate.parent, nonce)
     owner = call('/api/v1/setup', 'POST', {'name': 'Owner', 'password': 'test-instance-password', 'totp': True}, expected=201)
     secret = owner['totp']['secret']
     digest = hmac.new(base64.b32decode(secret), struct.pack('>Q', int(time.time() / 30)), hashlib.sha1).digest()

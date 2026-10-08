@@ -163,6 +163,56 @@ class PopulatedHTTPSFixture(unittest.TestCase):
         self.assertTrue(self.marker.exists())
         self.assertEqual(json.loads((self.output / "setup-and-run.json").read_text())["exitCode"], 0)
 
+    def test_firefox_strict_browser_failure_precedes_owner_side_effects(self):
+        import importlib.util
+        import shutil
+        from unittest.mock import patch
+        self.root=self.root.resolve(); self.output=self.root/'results'
+        project=self.root/'project'; helpers=project/'scripts/ci'; helpers.mkdir(parents=True)
+        for name in ('run-populated-settings.py','browser-fixture-tls.sh','browser-native-ca.py','browser-firefox-policy.py'):
+            shutil.copyfile(SOURCE.with_name(name),helpers/name)
+        scripts=project/'apps/player/scripts'; scripts.mkdir(parents=True)
+        for name in ('library_profile_admission.py','provider_profile_cases.py'):
+            shutil.copyfile(SOURCE.parents[2]/'apps/player/scripts'/name,scripts/name)
+        sys.path.insert(0,str(SOURCE.parent)); sys.path.insert(0,str(scripts))
+        try:
+            from test_playback_profile_admission import playback_report
+            from provider_profile_cases import CASES, UI_FILES
+            discovery=self.root/'discovery.json'; discovery.write_text(json.dumps(playback_report(CASES,'firefox',False)))
+            ui=self.root/'ui'; ui.mkdir()
+            for name in UI_FILES: (ui/name).write_text('<html>synthetic owner renderer peer</html>')
+        finally:
+            sys.path.remove(str(scripts)); sys.path.remove(str(SOURCE.parent))
+        app=project/'apps/player/e2e'; dependency=app/'node_modules/@playwright/test'; dependency.mkdir(parents=True)
+        shutil.copyfile(SOURCE.parents[2]/'apps/player/e2e/strict-firefox-probe.cjs',app/'strict-firefox-probe.cjs')
+        home=self.root/'home'; executable=home/'.cache/ms-playwright/firefox-1543/firefox/firefox'
+        executable.parent.mkdir(parents=True); executable.write_text('owned executable')
+        certificate=self.root/'browser-fixture-ca.crt'; certificate.write_bytes(self.ca.read_bytes())
+        (dependency/'package.json').write_text('{"main":"index.cjs"}')
+        (dependency/'index.cjs').write_text("exports.firefox={executablePath:()=>process.env.EXECUTABLE,"
+            "launch:async()=>({newContext:async()=>({newPage:async()=>({goto:async()=>{throw new Error('SEC_ERROR_UNKNOWN_ISSUER private-detail')}})}),"
+            "close:async()=>require('fs').writeFileSync(process.env.CLOSED,'closed')})};")
+        spec=importlib.util.spec_from_file_location('installed_firefox',helpers/'browser-native-ca.py')
+        module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+        env=self.env|{'KINOSAIL_BROWSER_PROJECT':'firefox','EXECUTABLE':str(executable)}
+        with patch.object(module.sys,'platform','linux'),patch.object(Path,'home',return_value=home),patch.dict(os.environ,env):
+            module.install('firefox',certificate,self.root,'123-456')
+        wrapper="import sys,runpy;from pathlib import Path;sys.platform='linux';home=sys.argv.pop(1);Path.home=classmethod(lambda cls:Path(home));sys.argv.pop(0);runpy.run_path(sys.argv[0],run_name='__main__')"
+        closed=self.root/'closed'
+        env.update(NODE_EXTRA_CA_CERTS=str(certificate),PLAYWRIGHT_FIREFOX_POLICIES_JSON=str(executable.parent/'distribution/policies.json'),
+            KINOSAIL_FIREFOX_TRUST_NONCE='123-456',CLOSED=str(closed))
+        result=subprocess.run([sys.executable,'-c',wrapper,str(home),str(helpers/'run-populated-settings.py'),
+            '--url',self.url,'--output',str(self.output),'--profile','fake-provider','--project','firefox',
+            '--state','fresh','--discovery',str(discovery),'--ui-fixtures',str(ui)],cwd=self.root,env=env,capture_output=True,text=True,timeout=10)
+        self.assertEqual(result.returncode,1,result.stderr)
+        self.assertEqual(self.requests,[])
+        self.assertTrue(closed.exists(), result.stderr+result.stdout)
+        receipt=json.loads((self.output/'setup-and-run.json').read_text())
+        self.assertEqual(receipt['ownerSetup'],'pending')
+        self.assertEqual(receipt['firefoxTrust']['category'],'certificate')
+        self.assertEqual(receipt['firefoxTrust']['cleanup'],'closed')
+        self.assertNotIn('private-detail',result.stdout+result.stderr+json.dumps(receipt))
+
     def test_unknown_remote_ambiguous_oversized_urls_have_no_effects(self):
         for value in (self.url + "?unknown=1", self.url + "?", self.url + "#",
                 self.url + "/", " " + self.url, self.url + "\n",
