@@ -5,6 +5,7 @@ const subtitleRetry = document.querySelector("[data-subtitle-retry]");
 const subtitleSelector = document.querySelector("[data-subtitles]");
 const subtitleLoads = new Map();
 let subtitleAbort = new AbortController();
+let subtitleChoiceChanged = false;
 const selectedSubtitle = () => subtitleElements.find((element) => element.track.mode === "showing");
 const updateSubtitleStatus = () => {
   const load = subtitleLoads.get(selectedSubtitle());
@@ -106,6 +107,7 @@ const loadSelectedSubtitles = () => {
 };
 player.textTracks?.addEventListener?.("change", loadSelectedSubtitles);
 subtitleSelector?.addEventListener("change", () => {
+  subtitleChoiceChanged = true;
   for (const [element, load] of subtitleLoads) {
     if (load.state === "failed") {
       load.cancel();
@@ -122,10 +124,15 @@ subtitleRetry?.addEventListener("click", () => {
   subtitleLoads.delete(element);
   void loadSubtitle(element);
 });
-subtitleElements.filter((element) => element.default).forEach((element) => {
-  element.track.mode = "showing";
-  void loadSubtitle(element);
-});
+const loadDefaultSubtitles = () => {
+  if (subtitleChoiceChanged || subtitleAbort.signal.aborted) return;
+  subtitleElements.filter((element) => element.default).forEach((element) => {
+    element.track.mode = "showing";
+    void loadSubtitle(element);
+  });
+};
+loadDefaultSubtitles();
+player.addEventListener("loadedmetadata", loadDefaultSubtitles);
 addEventListener("pagehide", () => {
   if (document.pictureInPictureElement === player || player.webkitPresentationMode === "picture-in-picture") return;
   subtitleAbort.abort();

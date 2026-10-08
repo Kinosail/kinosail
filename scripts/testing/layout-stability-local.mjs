@@ -13,12 +13,16 @@ let phase = "browser-launch", activePage, browser, authContext;
 const loginResponses = [];
 const reports = [], flows = [], flowProbe = {stage: "not-started"};
 process.once("uncaughtException", async error => {
+  const source = String(error.stack || "").match(/(layout-stability[\w-]*\.mjs):(\d+):(\d+)/);
   const failure = {app, engine, stage: phase, flowStage: flowProbe.stage,
     errorClass: ["TimeoutError", "TypeError", "ReferenceError", "SyntaxError"].includes(error.name) ? error.name : "Error",
+    sourceLocation: source ? {file: source[1], line: Number(source[2]), column: Number(source[3])} : undefined,
     completedCases: reports.length, completedFlows: flows.length, media: flowProbe.media, probe: flowProbe.geometry, loginResponses,
     authCookieCount: phase.startsWith("login") && authContext ? await authContext.cookies().then(c=>c.length).catch(()=>undefined) : undefined,
     pageState: activePage ? (new URL(activePage.url()).pathname === "/login" ? "login" : "other") : "not-created"};
   await writeFile(join(run, "failure.json"), JSON.stringify(failure, null, 2));
+  await activePage?.screenshot({path: join(run, "failure.png")}).catch(() => {});
+  await activePage?.context().tracing.stop({path: join(run, "failure-trace.zip")}).catch(() => {});
   await browser?.close();
   process.exit(1);
 });
@@ -186,7 +190,7 @@ try {
 } finally {
   await writeFile(join(run, "measurements.json"), JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION, app, engine,browserVersion:browser.version(),
     result: "measurement", command: "python3 scripts/testing/test-layout-stability-local.py", data: "Synthetic media and account; delayed real font/bundle/image responses", reports,flows}, null, 2));
-  await browser.close();
 }
+await browser.close();
 if (process.env.KINOSAIL_LAYOUT_ENFORCE && reports.some(report => report.identifiedDOMCLS > 0.001 || report.overflow > 1 || !report.categoryStable || !report.timeoutsPresent || !report.bookmarkVisible || !report.scaleApplied || report.moved.length>0)) process.exitCode = 1;
 if(flows.some(f=>f.pendingStable===false||f.failureRetainsContent===false||f.caretPreserved===false||f.focusRetained===false||f.scrollRetained===false||f.settled?.inert||f.settled?.skeleton||f.stable===false||f.overflow>1))process.exitCode=1;

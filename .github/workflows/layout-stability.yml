@@ -119,6 +119,7 @@ jobs:
             .verification/layout/*/*/measurements.json
             .verification/layout/*/*/failure.json
             .verification/layout/*/*/*.png
+            .verification/layout/*/*/failure-trace.zip
             .verification/layout-fixtures/results.json
             .verification/layout-fixtures/**/apple-intent-receipt.json
             .verification/layout-fixtures/**/native-pause-after-interruption.png

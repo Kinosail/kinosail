@@ -55,6 +55,9 @@ jobs:
           go-version-file: apps/${{ inputs.app }}/go.mod
           cache-dependency-path: "**/go.sum"
       - run: sudo apt-get update && sudo apt-get install -y libarchive-tools
+      - name: Install deep media fixture codecs
+        if: fromJSON(inputs.plan).deep
+        run: sudo apt-get install -y ffmpeg
       - env:
           APP: ${{ inputs.app }}
           KINOSAIL_GO_TEST_MODE: ${{ fromJSON(inputs.plan).deep && 'deep' || 'quick' }}
@@ -135,6 +138,23 @@ jobs:
       - run: make -C apps/player client-check
         env:
           DEVELOPER_DIR: /Applications/Xcode_27.1_beta.app/Contents/Developer
+      - name: Prepare decoded native media fixture
+        if: fromJSON(inputs.plan).deep
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+        run: |
+          command -v ffmpeg >/dev/null || brew install ffmpeg
+          media="$RUNNER_TEMP/native-media.mp4"
+          ffmpeg -nostdin -v error -f lavfi -i testsrc2=s=320x180:r=12:d=12 \
+            -f lavfi -i sine=frequency=440:sample_rate=48000:duration=12 \
+            -c:v libx264 -threads 1 -preset ultrafast -crf 38 -pix_fmt yuv420p \
+            -c:a aac -b:a 48k -movflags +faststart -shortest "$media"
+          test "$(stat -f %z "$media")" -le 1048576
+          shasum -a 256 "$media" > "$RUNNER_TEMP/native-media.sha256"
+          ffprobe -v error -show_format -show_streams -of json "$media" > "$RUNNER_TEMP/native-media.json"
+          for name in kinosail-appletv-task7-media.mp4 kinosail-player-buffer-bar.mp4 kinosail-landscape-task10-media.mp4; do
+            ln "$media" "/tmp/$name"
+          done
       - name: Execute iOS and tvOS native contracts
         if: fromJSON(inputs.plan).deep
         env:
@@ -153,7 +173,10 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: player-native-contracts-${{ github.sha }}
-          path: ${{ runner.temp }}/native-*.xcresult
+          path: |
+            ${{ runner.temp }}/native-*.xcresult
+            ${{ runner.temp }}/native-media.json
+            ${{ runner.temp }}/native-media.sha256
           retention-days: 14
           if-no-files-found: error
 

@@ -8,6 +8,13 @@ WORKFLOWS = ROOT / '.github/workflows'
 
 
 class WorkflowSecurityTests(unittest.TestCase):
+    def test_deep_go_lane_installs_real_media_dependencies_before_testing(self):
+        source = (WORKFLOWS / 'app.yml').read_text().split('  race:\n', 1)[1].split('  security:\n', 1)[0]
+        step = source.split('      - name: Install deep media fixture codecs\n', 1)[1].split('      - env:', 1)[0]
+        self.assertIn('if: fromJSON(inputs.plan).deep', step)
+        self.assertIn('sudo apt-get install -y ffmpeg', step)
+        self.assertLess(source.index('Install deep media fixture codecs'), source.index('scripts/ci/test-go.sh'))
+
     def test_deep_apple_lane_executes_both_native_test_targets_and_retains_results(self):
         # Compilation cannot catch failing Swift Testing contracts or an omitted
         # platform. The manual and weekly lane must execute both existing schemes.
@@ -20,6 +27,17 @@ class WorkflowSecurityTests(unittest.TestCase):
         self.assertIn('if: always() && fromJSON(inputs.plan).deep', source)
         self.assertIn('${{ runner.temp }}/native-*.xcresult', source)
         self.assertNotIn('continue-on-error', source)
+
+    def test_deep_apple_media_contracts_receive_bounded_decodable_fixtures(self):
+        source = (WORKFLOWS / 'app.yml').read_text().split('  client:\n', 1)[1].split('  android:\n', 1)[0]
+        step = source.split('      - name: Prepare decoded native media fixture\n', 1)[1].split('      - name:', 1)[0]
+        self.assertIn('if: fromJSON(inputs.plan).deep', step)
+        self.assertIn('ffmpeg', step)
+        self.assertIn('-le 1048576', step)
+        for path in ('kinosail-appletv-task7-media.mp4', 'kinosail-player-buffer-bar.mp4', 'kinosail-landscape-task10-media.mp4'):
+            self.assertIn(path, step)
+        self.assertLess(source.index('Prepare decoded native media fixture'), source.index('Execute iOS and tvOS native contracts'))
+        self.assertIn('${{ runner.temp }}/native-media.json', source)
 
     def test_system_scan_finishes_before_exact_revision_evidence_starts(self):
         # Trivy creates/removes files in the checkout. Overlap changes Git

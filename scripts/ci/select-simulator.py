@@ -41,6 +41,14 @@ def select(platform, raw):
             identifier = device.get('udid')
             if not isinstance(identifier, str) or not re.fullmatch(r'[0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}', identifier):
                 raise ValueError('invalid device identifier')
+            kind = device.get('deviceTypeIdentifier')
+            if not isinstance(kind, str) or len(kind) > 128:
+                raise ValueError('invalid device type')
+            family = 'iPhone-' if platform == 'iOS' else 'Apple-TV-'
+            if not kind.startswith('com.apple.CoreSimulator.SimDeviceType.' + family):
+                continue
+            if not re.fullmatch(r'com\.apple\.CoreSimulator\.SimDeviceType\.' + family + r'[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*', kind):
+                raise ValueError('invalid device type')
             choices.append((version, identifier))
     if not choices:
         raise ValueError('compatible simulator required')
