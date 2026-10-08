@@ -184,3 +184,20 @@ export async function presentationProblems(page: Page) {
 		};
 	});
 }
+
+export async function expectRecoveryContrast(page: Page, message: string) {
+	const ratio = await page.locator("[data-playback-recovery] [data-player-fallback]").evaluate(button => {
+		const style = getComputedStyle(button);
+		const luminance = (color: string) => {
+			const channels = color.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+			if (!channels) throw new Error("Recovery contrast requires opaque RGB colors");
+			return channels.slice(1).map(Number).map(channel => {
+				const value = channel / 255;
+				return value <= .04045 ? value / 12.92 : ((value + .055) / 1.055) ** 2.4;
+			}).reduce((sum, value, index) => sum + value * [.2126, .7152, .0722][index], 0);
+		};
+		const [lighter, darker] = [luminance(style.color), luminance(style.backgroundColor)].sort((a, b) => b - a);
+		return (lighter + .05) / (darker + .05);
+	});
+	expect(ratio, `${message} Retry text contrast`).toBeGreaterThanOrEqual(4.5);
+}

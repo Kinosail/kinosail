@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { configureLayoutAudit, layoutProblems, login, viewports } from "./layout-audit-helpers";
+import { configureLayoutAudit, expectRecoveryContrast, layoutProblems, login, viewports } from "./layout-audit-helpers";
 import { firstPlayable } from "./test-instance-helpers";
 import { attachResponsiveFailure } from "./responsive-failure-witness.mjs";
 
@@ -191,6 +191,7 @@ test("player explains an unconfirmed failure and offers a direct retry", async (
 		});
 		expect(recoveryColors.color).not.toBe(recoveryColors.background);
 		expect(recoveryColors.background).not.toBe("rgba(0, 0, 0, 0)");
+		await expectRecoveryContrast(page, `${viewport.width}px recovery settings`);
 		expect((await new AxeBuilder({ page }).analyze()).violations, `${viewport.width}px recovery settings accessibility`).toEqual([]);
 		expect(await layoutProblems(page), `${viewport.width}px recovery settings`).toEqual({
 			documentOverflow: 0,
@@ -231,6 +232,7 @@ test("player explains an unconfirmed failure and offers a direct retry", async (
 	});
 	expect(lightColors.color).not.toBe(lightColors.background);
 	expect(lightColors.background).not.toBe("rgba(0, 0, 0, 0)");
+	await expectRecoveryContrast(page, "light recovery settings");
 	const header = page.locator(".player-settings header");
 	await header.scrollIntoViewIfNeeded();
 	expect(await header.evaluate((element) => getComputedStyle(element).color === getComputedStyle(element).backgroundColor)).toBe(false);
