@@ -1,4 +1,4 @@
-import {expect, test, type Page} from "@playwright/test";
+import {expect, test, type Page, type BrowserContext} from "@playwright/test";
 import {configureTestInstance, createViewer, loginViewer, removeViewer} from "./test-instance-helpers";
 import {openDocuments, closeDocuments, setting, observeAcceptedDocumentStates} from "./home-assistant-document-helpers";
 import {inspectDocumentStatus} from "./home-assistant-document-inspection";
@@ -94,13 +94,14 @@ test("real lost-release reload waits for lease expiry and renews only its origin
 test("actual authenticated Profile switch retires old document command effects", {tag: ["@smoke", "@routed-fault"]}, async ({page, browser}, info) => {
   test.setTimeout(75_000);
   let first: Page | undefined, second: Page | undefined, owner: Page | undefined, profile = "";
+  let ownerContext: BrowserContext | undefined, viewerSwitched = false;
   let releaseCommand = () => {};
   const name = `R18 isolated Viewer ${info.workerIndex}`, password = "r18-fictional-viewer-password";
   try {
     const docs = await openDocuments(page); ({first, second} = docs);
     await expect.poll(async () => (await docs.live()).length).toBe(2);
-    const context = await browser.newContext({baseURL: new URL(page.url()).origin, storageState: await page.context().storageState()});
-    owner = await context.newPage();
+    ownerContext = await browser.newContext({baseURL: new URL(page.url()).origin, storageState: await page.context().storageState()});
+    owner = await ownerContext.newPage();
     profile = await createViewer(owner, name, password);
     const target = (await docs.live()).find(target => target.itemId === docs.ids[0])!.id;
     const before = await first.locator("video").evaluate((media: HTMLVideoElement) => media.currentTime);
@@ -128,7 +129,8 @@ test("actual authenticated Profile switch retires old document command effects",
     const delivered = first.waitForResponse(async response => new URL(response.url()).pathname === `/api/v1/home-assistant/players/${target}` &&
       response.status() === 200 && (await response.json()).command === "seek");
     void delivered.catch(() => {});
-    try {await loginViewer(page, name, password);} finally {release();}
+    void changed.catch(() => {});
+    try {await loginViewer(page, name, password); viewerSwitched = true;} finally {release();}
     expect((await delivered).status()).toBe(200);
     await changed;
     await expect(first.locator("[data-home-assistant-status]")).toHaveAttribute("data-home-assistant-status", "stopped");
@@ -142,8 +144,14 @@ test("actual authenticated Profile switch retires old document command effects",
       seekSeparatedByMoreThanHalfSecond: true, lateStateWrites: 0, mediaUnchanged: true}), contentType: "application/json"});
   } finally {
     releaseCommand();
-    for (const document of [first, second]) if (document && !document.isClosed()) await document.close();
-    if (owner) {await setting(owner, false); if (profile) await removeViewer(owner, profile); await owner.context().close();}
+    try {
+      for (const document of [first, second]) if (document && !document.isClosed()) await document.close();
+    } finally {
+      try {
+        const management = owner || (!viewerSwitched ? page : undefined);
+        if (management) {try {await setting(management, false);} finally {if (profile) await removeViewer(management, profile);}}
+      } finally {await ownerContext?.close();}
+    }
   }
 });
 
