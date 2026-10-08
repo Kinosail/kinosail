@@ -97,6 +97,15 @@ class RemainingProfileWorkflowTests(unittest.TestCase):
         self.assertIn("go test ./internal/server -run '^TestWriteUIStateFixtures$' -count=1", caller)
         self.assertTrue((ROOT/'apps/player/go.mod').is_file())
 
+    def test_provider_native_trust_tools_and_helper_receipt_are_closed(self):
+        block=self.block('provider-owner')
+        self.assertIn('sudo apt-get install --no-install-recommends -y libnss3-tools',block)
+        self.assertLess(block.index('--admit-only'),block.index('libnss3-tools'))
+        self.assertLess(block.index('libnss3-tools'),block.index('run: ./apps/player/scripts/run-library-profile.sh'))
+        self.assertIn("'scripts/ci/browser-native-ca.py'",self.recipe('provider-owner'))
+        for job in ('playback-owner','offline-owner','camera-owner','library-owner','responsive-owner'):
+            self.assertNotIn('libnss3-tools',self.block(job))
+
     def test_actual_recipes_write_only_at_fresh_discovery_paths_with_exact_current_inputs(self):
         sys.path.insert(0,str(ROOT/'apps/player/scripts'))
         try:

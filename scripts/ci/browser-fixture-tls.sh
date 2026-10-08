@@ -6,6 +6,9 @@ BROWSER_FIXTURE_CA_PATH=""
 BROWSER_FIXTURE_NODE_CA_PREVIOUS=""
 BROWSER_FIXTURE_NODE_CA_WAS_SET=""
 BROWSER_FIXTURE_NODE_CA_PATH=""
+BROWSER_FIXTURE_NATIVE_PROJECT=""
+BROWSER_FIXTURE_NATIVE_WORKSPACE=""
+BROWSER_FIXTURE_NATIVE_NONCE=""
 
 browser_fixture_uses_tls() {
   if [[ $# -gt 1 || "${1:-}" != '' && "${1:-}" != fake-provider ]]; then return 2; fi
@@ -36,7 +39,13 @@ trust_browser_fixture_tls() {
   # The app command exports its public CA only, never its private identity.
   if [[ -L "$certificate" ]]; then echo 'invalid browser fixture export path' >&2; return 2; fi
   "$1" exec "$2" kinosail tls-certificate >"$certificate" || return
-  install_browser_fixture_ca "$certificate" "$4"
+  install_browser_fixture_ca "$certificate" "$4" || return
+  if [[ "${5:-}" == fake-provider && "$KINOSAIL_BROWSER_PROJECT" != webkit ]]; then
+    BROWSER_FIXTURE_NATIVE_PROJECT="$KINOSAIL_BROWSER_PROJECT"
+    BROWSER_FIXTURE_NATIVE_WORKSPACE="$3"
+    BROWSER_FIXTURE_NATIVE_NONCE="$4"
+    install_browser_native_ca "$BROWSER_FIXTURE_NATIVE_PROJECT" "$certificate" "$3" "$4"
+  fi
 }
 
 validate_browser_fixture_ca() {
@@ -74,13 +83,30 @@ install_browser_fixture_ca() {
   export NODE_EXTRA_CA_CERTS="$certificate"
 }
 
+install_browser_native_ca() {
+  python3 "${BASH_SOURCE[0]%/*}/browser-native-ca.py" install "$@"
+}
+
+remove_browser_native_ca() {
+  python3 "${BASH_SOURCE[0]%/*}/browser-native-ca.py" remove "$BROWSER_FIXTURE_NATIVE_PROJECT" \
+    "$BROWSER_FIXTURE_NATIVE_WORKSPACE/browser-fixture-ca.crt" "$BROWSER_FIXTURE_NATIVE_WORKSPACE" "$BROWSER_FIXTURE_NATIVE_NONCE"
+}
+
 remove_browser_fixture_trust() {
-  if [[ -z "${BROWSER_FIXTURE_CA_PATH:-}" ]]; then return 0; fi
+  local failed=0
+  if [[ -n "$BROWSER_FIXTURE_NATIVE_PROJECT" ]]; then
+    if remove_browser_native_ca; then
+      BROWSER_FIXTURE_NATIVE_PROJECT=""
+      BROWSER_FIXTURE_NATIVE_WORKSPACE=""
+      BROWSER_FIXTURE_NATIVE_NONCE=""
+    else failed=1; fi
+  fi
+  if [[ -z "${BROWSER_FIXTURE_CA_PATH:-}" ]]; then return "$failed"; fi
   if [[ ! "$BROWSER_FIXTURE_CA_PATH" =~ ^/usr/local/share/ca-certificates/kinosail-browser-fixture-[0-9]+-[0-9]+\.crt$ ]]; then
     echo 'invalid browser fixture cleanup path' >&2
     return 2
   fi
-  sudo rm -f -- "$BROWSER_FIXTURE_CA_PATH"
+  sudo rm -f -- "$BROWSER_FIXTURE_CA_PATH" || return
   sudo update-ca-certificates >/dev/null || return
   BROWSER_FIXTURE_CA_PATH=""
   if [[ "${NODE_EXTRA_CA_CERTS-}" == "${BROWSER_FIXTURE_NODE_CA_PATH-}" && -n "${BROWSER_FIXTURE_NODE_CA_PATH-}" ]]; then
@@ -91,6 +117,7 @@ remove_browser_fixture_trust() {
     fi
   fi
   BROWSER_FIXTURE_NODE_CA_PATH=""
+  return "$failed"
 }
 
 trust_native_browser_fixture_tls() {

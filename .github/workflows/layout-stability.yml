@@ -837,6 +837,8 @@ jobs:
           timeout --kill-after=2s 60s pnpm --dir apps/player/e2e "${arguments[@]}" | head -c 2097153 > ".verification/provider-${PROFILE_PROJECT}/discovery.json"
           test "$(wc -c < ".verification/provider-${PROFILE_PROJECT}/discovery.json")" -le 2097152
           env -u KINOSAIL_PROVIDER_PROFILE python3 scripts/ci/run-populated-settings.py --url "https://localhost:38127" --output "$RUNNER_TEMP/provider-${PROFILE_PROJECT}" --profile fake-provider --project "$PROFILE_PROJECT" --state fresh --discovery "$GITHUB_WORKSPACE/.verification/provider-${PROFILE_PROJECT}/discovery.json" --admit-only
+      - name: Install native browser CA trust tool
+        run: sudo apt-get install --no-install-recommends -y libnss3-tools
       - name: Record immutable selection and source recipe
         env:
           PROFILE_PROJECT: ${{ matrix.engine }}
@@ -848,7 +850,7 @@ jobs:
           from library_profile_admission import profile_cases, playwright_arguments
           project = os.environ['PROFILE_PROJECT']
           CASES = profile_cases('fake-provider', project)
-          paths = sorted({f'apps/player/e2e/{file}' for file, _ in CASES} | {'apps/player/Containerfile.test', 'apps/player/e2e/test-instance-helpers.ts', 'apps/player/internal/server/ui_state_fixtures_test.go', 'apps/player/internal/server/static/player.js', 'apps/player/e2e/playwright.config.ts', 'apps/player/scripts/provider_profile_cases.py', 'apps/player/scripts/run-library-profile.sh', 'apps/player/internal/server/server.go', 'apps/player/e2e/static-sources.ts', 'apps/player/Containerfile', 'scripts/ci/library-internal-relay.mjs', 'scripts/ci/run-populated-settings.py', 'apps/player/e2e/pnpm-lock.yaml', 'apps/player/scripts/generate-test-media.sh', 'scripts/testing/navigation-diagnostics.mjs', 'apps/player/e2e/provider-profile-fixture.ts', 'apps/player/internal/server/assets.go', 'apps/player/scripts/library_profile_admission.py', 'scripts/ci/browser-fixture-tls.sh'})
+          paths = sorted({f'apps/player/e2e/{file}' for file, _ in CASES} | {'apps/player/Containerfile.test', 'apps/player/e2e/test-instance-helpers.ts', 'apps/player/internal/server/ui_state_fixtures_test.go', 'apps/player/internal/server/static/player.js', 'apps/player/e2e/playwright.config.ts', 'apps/player/scripts/provider_profile_cases.py', 'apps/player/scripts/run-library-profile.sh', 'apps/player/internal/server/server.go', 'apps/player/e2e/static-sources.ts', 'apps/player/Containerfile', 'scripts/ci/library-internal-relay.mjs', 'scripts/ci/run-populated-settings.py', 'apps/player/e2e/pnpm-lock.yaml', 'apps/player/scripts/generate-test-media.sh', 'scripts/testing/navigation-diagnostics.mjs', 'apps/player/e2e/provider-profile-fixture.ts', 'apps/player/internal/server/assets.go', 'apps/player/scripts/library_profile_admission.py', 'scripts/ci/browser-fixture-tls.sh', 'scripts/ci/browser-native-ca.py'})
           receipt = {'revision': os.environ['PROOF_REVISION'], 'profile': 'fake-provider', 'project': project,
                      'state': 'fresh', 'identities': [{'file': file, 'fullTitle': title} for file, title in CASES],
                      'discoveryOnly': True, 'command': playwright_arguments(project, False, 'fake-provider'),

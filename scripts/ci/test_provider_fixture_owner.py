@@ -132,6 +132,10 @@ for name in """ + repr(self.provider.UI_FILES) + """:(path/name).write_text('<sv
             for name, body in {'uname':'#!/bin/sh\nprintf Linux\n', 'sudo':'#!/bin/sh\nexit 0\n'}.items():
                 (peer.tools / name).write_text(body); (peer.tools / name).chmod(0o755)
             peer.env.update(CI='true',GITHUB_ACTIONS='true',RUNNER_OS='Linux',CONTROL_CA=str(cert))
+            python = peer.tools / 'python3'
+            source = python.read_text().replace("if name=='python3':", "if name=='python3':\n if args and args[0].endswith('browser-native-ca.py'):\n  record('native-trust',args[1:]);sys.exit(0)")
+            python.write_text(source)
+
             docker = peer.tools / 'docker'; content = docker.read_text()
             content = content.replace("record('engine',args)", "if args and args[0]=='exec':print(pathlib.Path(os.environ['CONTROL_CA']).read_text(),end='');sys.exit(0)\nif args[:2]==['inspect','--format']:print('abcdef123456');sys.exit(0)\nrecord('engine',args)")
             docker.write_text(content)
@@ -148,6 +152,7 @@ for name in """ + repr(self.provider.UI_FILES) + """:(path/name).write_text('<sv
             self.assertIn('--ui-fixtures', owner)
             self.assertLess(next(i for i,(kind,_) in enumerate(rows) if kind=='render'), next(i for i,(kind,args) in enumerate(rows) if kind=='engine' and args[0]=='run' and '--detach' in args))
             self.assertEqual(sum(kind == 'owner' for kind, _ in rows), 1)
+            self.assertEqual([argv[0] for kind,argv in rows if kind=='native-trust'], ['install','remove'])
             peer.assert_cleanup(rows)
         finally: peer.doCleanups()
 

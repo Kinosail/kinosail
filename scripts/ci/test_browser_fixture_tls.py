@@ -56,7 +56,8 @@ class BrowserFixtureTLS(unittest.TestCase):
 
     def test_fake_provider_explicit_mode_requires_real_tls_for_each_engine(self):
         for project in ('chromium', 'firefox', 'webkit'):
-            result = self.call('browser_fixture_uses_tls fake-provider\n'
+            result = self.call('install_browser_native_ca() { :; }; remove_browser_native_ca() { :; }\n'
+                               'browser_fixture_uses_tls fake-provider\n'
                                'validate_browser_fixture_tls fake-provider\n'
                                'trust_browser_fixture_tls docker abcdef123456 "$2" 123-456 fake-provider\n'
                                'remove_browser_fixture_trust', KINOSAIL_BROWSER_PROJECT=project)
