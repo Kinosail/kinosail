@@ -28,17 +28,24 @@ async function login(page: Page) {
 
 test("repeating the active Movies link does not reload the document", async ({ page }) => {
 	const origin = new URL(test.info().project.use.baseURL!).origin;
+	await login(page);
 	let offerObserved = false;
-	const offer = (url: URL) => url.origin === origin && url.pathname === "/account" && url.searchParams.get("passkey") === "offer";
+	const target = new URL("/account?passkey=offer&next=%2F", origin);
+	const offer = (url: URL) => url.href === target.href;
 	await page.route(offer, async route => {
-		const response = await route.fetch();
-		offerObserved = true;
+		const response = await route.fetch({ maxRedirects: 0 });
+		if (response.status() !== 200 || response.url() !== target.href) {
+			await route.abort();
+			throw new Error("the owned passkey offer response was not accepted");
+		}
 		await new Promise(resolve => setTimeout(resolve, 200));
 		await route.fulfill({ response });
+		offerObserved = true;
 	});
 	try {
-		await login(page);
-		expect(offerObserved, "the real accepted offer response must exercise delayed password sign-in").toBe(true);
+		await page.goto(target.href, { waitUntil: "commit" });
+		await finishRootSignIn(page, origin);
+		expect(offerObserved, "the real authenticated offer response must exercise delayed completion").toBe(true);
 	} finally {
 		await page.unroute(offer);
 	}

@@ -1,0 +1,109 @@
+import {test as check} from 'node:test';
+import assert from 'node:assert/strict';
+import {registerHooks} from 'node:module';
+
+// Exercise the actual case callback. Redirect-hop requests deliberately do not
+// enter Page routes; this models the pinned driver's documented route boundary.
+const registrations = new Map();
+const origin = 'https://owned.fixture';
+const test = (title, callback) => registrations.set(title, callback);
+test.skip = () => {};
+test.info = () => ({project: {use: {baseURL: origin}}});
+const expect = value => ({
+  toBe: expected => assert.equal(value, expected),
+  toEqual: expected => assert.deepEqual(value, expected),
+  toContain: expected => assert.ok(value.includes(expected)),
+  toHaveAttribute: async (name, expected) => assert.equal(value[name], expected),
+  toHaveURL: async expected => assert.equal(value.url(), new URL(expected, origin).href),
+});
+globalThis.kinosailOfferControl = {test, expect};
+const qaRoot = new URL('../../apps/player/e2e/', import.meta.url).href;
+const shim = 'data:text/javascript,' + encodeURIComponent('export const {test,expect}=globalThis.kinosailOfferControl;');
+const hooks = registerHooks({resolve(specifier, context, next) {
+  if (specifier === '@playwright/test' && context.parentURL?.startsWith(qaRoot))
+    return {url: shim, shortCircuit: true};
+  if (context.parentURL?.startsWith(qaRoot) && specifier.startsWith('./') && !/\.[a-z]+$/i.test(specifier))
+    return next(specifier + '.ts', context);
+  return next(specifier, context);
+}});
+await import('../../apps/player/e2e/navigation-repeat.spec.ts');
+hooks.deregister();
+delete globalThis.kinosailOfferControl;
+const run = registrations.get('repeating the active Movies link does not reload the document');
+assert.equal(typeof run, 'function');
+
+class PageControl {
+  current = origin + '/login';
+  routes = [];
+  calls = [];
+  response = {status: () => 200, url: () => origin + '/account?passkey=offer&next=%2F'};
+  url() {return this.current;}
+  async route(matcher, handler) {this.routes.push({matcher, handler});}
+  async unroute(matcher) {this.routes = this.routes.filter(row => row.matcher !== matcher);}
+  async goto(path, options) {
+    const target = new URL(path, origin);
+    this.calls.push({kind: 'goto', path: target.pathname, options});
+    const row = this.routes.find(({matcher}) => matcher(target));
+    if (row) {
+      const started = Date.now();
+      await row.handler({
+        request: () => ({url: () => target.href, method: () => 'GET'}),
+        fetch: async () => {this.calls.push({kind: 'fetch', path: target.pathname}); return this.response;},
+        fulfill: async ({response}) => {
+          assert.equal(response, this.response, 'the actual accepted response must be forwarded unchanged');
+          this.calls.push({kind: 'fulfill', elapsed: Date.now()-started});
+        },
+        abort: async () => {this.calls.push({kind: 'abort'});},
+      });
+    }
+    this.current = target.href;
+  }
+  getByLabel() {return {fill: async () => {}};}
+  getByRole(role, options) {
+    if (role === 'navigation') return {getByRole: () => ({'aria-current': 'page'})};
+    return {click: async () => {
+      if (options.name === 'Sign in') {
+        this.calls.push({kind: 'password'});
+        // Real accepted POST redirect: routing only covers its original /login,
+        // not the /account redirect hop. No preference or auth result is changed.
+        this.current = origin + '/account?passkey=offer&next=%2F';
+      } else if (options.name === 'Not now') {
+        this.calls.push({kind: 'dismiss'}); this.current = origin + '/';
+      } else throw new Error('unexpected fixture action');
+    }};
+  }
+  async waitForURL(predicate) {assert.equal(predicate(new URL(this.current)), true);}
+  on() {}
+  async evaluate() {this.calls.push({kind: 'movies-repeat'});}
+  async waitForTimeout() {}
+}
+
+check('actual navigation case delays an explicit accepted offer despite un-routed password redirects', async () => {
+  const page = new PageControl();
+  await run({page});
+  assert.equal(page.calls.filter(row => row.kind === 'password').length, 1);
+  assert.equal(page.calls.filter(row => row.kind === 'fetch').length, 1);
+  assert.deepEqual(page.calls.filter(row => row.kind === 'fetch').map(row => row.path), ['/account']);
+  assert.equal(page.calls.filter(row => row.kind === 'fulfill').length, 1);
+  assert.ok(page.calls.find(row => row.kind === 'fulfill').elapsed >= 180, 'the declared 200ms timer must actually delay the response');
+  assert.equal(page.calls.filter(row => row.kind === 'dismiss').length, 2);
+  assert.equal(page.calls.filter(row => row.kind === 'movies-repeat').length, 1);
+  assert.equal(page.current, origin + '/?view=movies');
+  assert.equal(page.routes.length, 0);
+});
+
+for (const [name, status, url] of [
+  ['rejected status', 401, origin + '/account?passkey=offer&next=%2F'],
+  ['redirect status', 303, origin + '/account?passkey=offer&next=%2F'],
+  ['foreign origin', 200, 'https://foreign.fixture/account?passkey=offer&next=%2F'],
+  ['wrong outcome', 200, origin + '/login'],
+  ['unknown query', 200, origin + '/account?passkey=offer&next=%2F&unknown=1'],
+]) check(`actual offer fixture rejects ${name} without forwarding or repeating Movies`, async () => {
+  const page = new PageControl(); page.response = {status: () => status, url: () => url};
+  await assert.rejects(run({page}));
+  assert.equal(page.calls.filter(row => row.kind === 'fetch').length, 1);
+  assert.equal(page.calls.filter(row => row.kind === 'abort').length, 1);
+  assert.equal(page.calls.filter(row => row.kind === 'fulfill').length, 0);
+  assert.equal(page.calls.filter(row => row.kind === 'movies-repeat').length, 0);
+  assert.equal(page.routes.length, 0);
+});

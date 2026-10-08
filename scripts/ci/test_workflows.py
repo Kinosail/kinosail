@@ -57,6 +57,17 @@ class WorkflowSecurityTests(unittest.TestCase):
                 self.assertNotIn('continue-on-error:', export)
                 self.assertNotIn('digests/', checks)
 
+    def test_delayed_offer_callback_control_runs_for_every_selected_player_engine(self):
+        import shlex
+        app = (WORKFLOWS / 'app.yml').read_text()
+        step = app.split('      - name: Verify setup navigation failure diagnostics\n', 1)[1].split('\n      - ', 1)[0]
+        self.assertIn("if: inputs.app == 'player'\n", step)
+        self.assertNotIn('matrix.engine', step)
+        command = shlex.split(step.split('run: ', 1)[1].strip())
+        self.assertEqual(command[:2], ['node', '--test'])
+        self.assertEqual(command.count('scripts/testing/navigation-repeat-offer.test.mjs'), 1)
+        self.assertTrue((ROOT / 'scripts/testing/navigation-repeat-offer.test.mjs').is_file())
+
     def test_player_browser_engines_receive_verified_fixture_codecs(self):
         # Actual HLS navigation fixtures spawn FFmpeg in every selected engine.
         # Container codecs cannot satisfy a host fixture's executable dependency.
