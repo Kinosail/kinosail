@@ -21,13 +21,15 @@ if (!["deployed", "current", "candidate"].includes(phase)) throw new Error("Unkn
 const pinned = {deployed: "5f91114d16e7c049e0da1d9c119653a6e8161b90", current: "ee567e9b9d6b4dc4211055e1f2ef968c5ce63209"};
 const source = await readFile(new URL("../../../packages/webassets/static/player-progress.js", import.meta.url), "utf8");
 const navigationSource = await readFile(new URL("../../../packages/webassets/static/player-progress-navigation.js", import.meta.url), "utf8");
+const queueSource = await readFile(new URL("../../../packages/webassets/static/player-audio-queue.js", import.meta.url), "utf8");
 const historical = phase === "candidate" ? "" : execFileSync("git", ["show", `${pinned[phase as keyof typeof pinned]}:packages/webassets/static/player-progress.js`], {encoding: "utf8"});
 test.use({serviceWorkers: phase === "candidate" ? "allow" : "block"});
 test.beforeEach(async ({page}) => {
   if (historical) await page.route(/\/static\/player\.js(?:\?.*)?$/, async route => {
     const response = await route.fetch(), body = await response.text();
     expect(body).toContain(source);
-    await route.fulfill({response, body: body.replace(source, historical).replace(navigationSource, "")});
+    expect(body).toContain(queueSource);
+    await route.fulfill({response, body: body.replace(source, historical).replace(queueSource, "").replace(navigationSource, "")});
   });
 });
 

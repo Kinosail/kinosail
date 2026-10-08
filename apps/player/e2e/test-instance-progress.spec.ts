@@ -8,6 +8,7 @@ import AxeBuilder from "@axe-core/playwright";
 configureTestInstance();
 const baseline = process.env.KINOSAIL_R03_BASELINE === "1";
 const currentSource = await readFile(new URL("../../../packages/webassets/static/player-progress.js", import.meta.url), "utf8");
+const queueSource = await readFile(new URL("../../../packages/webassets/static/player-audio-queue.js", import.meta.url), "utf8");
 const baselineSource = baseline ? execFileSync("git", ["show", "2e9ede47:packages/webassets/static/player-progress.js"], {encoding: "utf8"}) : "";
 // Baseline asset replay must bypass the candidate's service-worker precache.
 test.use({serviceWorkers: baseline ? "block" : "allow"});
@@ -61,7 +62,8 @@ test.beforeEach(async ({page}) => {
     const response = await route.fetch();
     const body = await response.text();
     expect(body).toContain(currentSource);
-    await route.fulfill({response, body: body.replace(currentSource, baselineSource)});
+    expect(body).toContain(queueSource);
+    await route.fulfill({response, body: body.replace(currentSource, baselineSource).replace(queueSource, "")});
   });
 });
 
