@@ -11,7 +11,7 @@ from hls_timeline_fixture import fixture
 from hls_timeline_http import sha, source_state
 from hls_followon_frames import stream_metadata
 from hls_followon_public import check
-from hls_remaining_nonkey_evidence import native_pcm, pcm_tail_correspondence
+from hls_remaining_nonkey_evidence import audio_stream, native_pcm, pcm_tail_correspondence
 from hls_remaining_nonkey_boundary import native_clock_rows
 from hls_remaining_nonkey_aac_clock import frame_md5, filter_clock
 from hls_remaining_nonkey_deadline import DiagnosticDeadline
@@ -23,7 +23,7 @@ receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], tex
     'tree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip(),
     'trackedSourceClean': not subprocess.check_output(
         ['git', 'status', '--porcelain', '--untracked-files=no'], text=True).strip(),
-    'result': 'failed', 'cases': [], 'productionAcceptance': False,
+    'result': 'failed', 'cases': [], 'sourceQualifications': [], 'productionAcceptance': False,
     'boundary': 'CLI user-filter clocks before automatic output trim, and separate PCM output packet clocks.'}
 guard = DiagnosticDeadline(240)
 guard.__enter__()
@@ -80,23 +80,29 @@ try:
              '-c', 'copy', str(mp4)])
     for source in [regular, mp4]:
         before = source_state(source)
+        qualification = {'container': source.suffix[1:], 'result': 'in-flight', 'sourceState': before}
+        receipt['sourceQualifications'].append(qualification)
         metadata = stream_metadata(source)
-        audio = [s for s in metadata['streams'] if s['codec_type'] == 'audio']
-        check(len(audio) == 1 and audio[0]['sample_rate'] == '48000' and audio[0]['channels'] == 2,
-              'aac_clock_native_source_format')
+        qualification['streamRows'] = metadata['streams']
+        audio = audio_stream(source)
+        qualification['audioStream'] = audio
         raw, _ = command(['ffprobe', '-v', 'error', '-select_streams', 'a:0', '-show_frames',
             '-show_entries', 'frame=pts,nb_samples,side_data_list', '-of', 'json', str(source)])
         raw_frames = json.loads(raw)['frames']
-        clock = native_clock_rows(raw_frames, audio[0]['time_base'], 0, None)
+        qualification['rawNativeSourceFrameRows'] = raw_frames
+        clock = native_clock_rows(raw_frames, audio['time_base'], 0, None)
         original, whole_pcm = native_pcm(source)
+        qualification.update(rawNativeSourceClock=clock, sourcePCM=original)
         check(original['completeEOFAccounted'] and clock['nativeSampleSum'] == original['samples'],
               'aac_clock_source_complete_extent')
+        qualification.update(result='observed', sourceUnchanged=source_state(source) == before)
+        check(qualification['sourceUnchanged'], 'aac_clock_source_setup_changed')
         baseline = None
         for offset in [None, 12.5, 13.5, 18.2]:
             row = {'container': source.suffix[1:], 'seekSeconds': offset, 'result': 'in-flight',
                 'sourceCompleteEOFAccounted': True, 'rawNativeSourceFrameRows': raw_frames,
                 'rawNativeSourceClock': clock, 'sourceStreamRows': metadata['streams'],
-                'sourcePCM': original}
+                'sourcePCM': original, 'sourceAudioStream': audio}
             receipt['cases'].append(row)
             try:
                 facts, pcm = (original, whole_pcm) if offset is None else native_pcm(source, offset)
