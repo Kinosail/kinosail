@@ -1,0 +1,113 @@
+{
+  "recordedUTC": "2026-10-08T15:01:02Z",
+  "boundary": "Public preparation regression only; no production repair, clock/native/all50 acceptance.",
+  "base": "c452a2e73cebac42d280247fa9684efb630ecc93",
+  "pr503": "7d1c675dca4cbc2256a4f1777844db44bcd1f228",
+  "branch": "codex/hls-certified-nonkey-origin-20261008",
+  "source": "db2232f601d657fe1951fb5d578c8d39a88951fe",
+  "runner": "03abf6e6aaddb668ef6899631b6370e09635d3bb",
+  "fixture": {
+    "sha256": "c1641a6a8af53f2f7724a18121421bb49b69d98646c536ff0a219ab9f6a1221f",
+    "videoCodec": "h264",
+    "videoFrames": 768,
+    "idrKeys": 16,
+    "keySpacingSeconds": 2,
+    "genuineEOFSeconds": 32,
+    "audioCodec": "aac",
+    "sampleRate": 48000,
+    "channels": 2
+  },
+  "preservedFirstAttempt": {
+    "source": "52dfb96a1b3b8287a30ba340dd2d610c897c05ae",
+    "run": 37795642295,
+    "job": 113374269661,
+    "result": "failed",
+    "exact12": "passed",
+    "nonkey12_5": "deadline with public state queued; not the intended phase-qualified RED",
+    "artifact": 11558113706,
+    "artifactZipSHA256": "9fa33d162a32b9fbd6aff89e50535a9314729ae5583f2f12b1b46ba646817bc5",
+    "limits": [
+      "Failed case bypassed its final source hash check",
+      "Missing or unreadable owned PID log could bypass join assertion"
+    ]
+  },
+  "strengthenedAttempt": {
+    "run": 37796956453,
+    "job": 113378807223,
+    "result": "failed",
+    "exact12": "passed in 3.82 seconds",
+    "nonkey12_5": "copied-video-index/internal unavailable/public queued in 2.21 seconds",
+    "artifact": 11559500963,
+    "artifactZipSHA256": "585ecd1f2a769faa91a02365af3cf4a11b366c9a354fd8984c2be043aa0b3568",
+    "setup": "passed",
+    "actualTestAndNoSkip": "passed",
+    "ownedCodecAndSourceFailureCleanup": "executed without failure",
+    "deadlineIncreased": false,
+    "retries": 0,
+    "safeProjection": [
+      {
+        "Time": "2026-10-08T15:00:30.732369015Z",
+        "Action": "output",
+        "Package": "github.com/MikeO7/kinosail-player/internal/server",
+        "Test": "TestRemainingNonKeyPreparationReachesReady/offset-12.0",
+        "Output": "    hls_remaining_nonkey_public_test.go:37: nonkey fixture qualified offset=12.0 sha=c1641a6a8af53f2f7724a18121421bb49b69d98646c536ff0a219ab9f6a1221f frames=768 idr-keys=16 eof=32\n"
+      },
+      {
+        "Time": "2026-10-08T15:00:32.687006396Z",
+        "Action": "output",
+        "Package": "github.com/MikeO7/kinosail-player/internal/server",
+        "Test": "TestRemainingNonKeyPreparationReachesReady/offset-12.0",
+        "Output": "    hls_remaining_nonkey_public_test.go:37: nonkey regression offset=12.0 phase=public-preparation state=ready fixture=c1641a6a8af53f2f7724a18121421bb49b69d98646c536ff0a219ab9f6a1221f frames=768 idr-keys=16\n"
+      },
+      {
+        "Time": "2026-10-08T15:00:32.842093738Z",
+        "Action": "pass",
+        "Package": "github.com/MikeO7/kinosail-player/internal/server",
+        "Test": "TestRemainingNonKeyPreparationReachesReady/offset-12.0",
+        "Elapsed": 3.82
+      },
+      {
+        "Time": "2026-10-08T15:00:34.857980389Z",
+        "Action": "output",
+        "Package": "github.com/MikeO7/kinosail-player/internal/server",
+        "Test": "TestRemainingNonKeyPreparationReachesReady/offset-12.5",
+        "Output": "    hls_remaining_nonkey_public_test.go:37: nonkey fixture qualified offset=12.5 sha=c1641a6a8af53f2f7724a18121421bb49b69d98646c536ff0a219ab9f6a1221f frames=768 idr-keys=16 eof=32\n"
+      },
+      {
+        "Time": "2026-10-08T15:00:34.944657938Z",
+        "Action": "output",
+        "Package": "github.com/MikeO7/kinosail-player/internal/server",
+        "Test": "TestRemainingNonKeyPreparationReachesReady/offset-12.5",
+        "Output": "    hls_remaining_nonkey_public_test.go:37: nonkey regression offset=12.5 phase=copied-video-index internal-state=unavailable public-state=queued expected=ready fixture=c1641a6a8af53f2f7724a18121421bb49b69d98646c536ff0a219ab9f6a1221f\n",
+        "OutputType": "error"
+      },
+      {
+        "Time": "2026-10-08T15:00:35.048468993Z",
+        "Action": "fail",
+        "Package": "github.com/MikeO7/kinosail-player/internal/server",
+        "Test": "TestRemainingNonKeyPreparationReachesReady/offset-12.5",
+        "Elapsed": 2.21
+      },
+      {
+        "Time": "2026-10-08T15:00:35.048498258Z",
+        "Action": "fail",
+        "Package": "github.com/MikeO7/kinosail-player/internal/server",
+        "Test": "TestRemainingNonKeyPreparationReachesReady",
+        "Elapsed": 6.03
+      },
+      {
+        "Time": "2026-10-08T15:00:35.051942064Z",
+        "Action": "fail",
+        "Package": "github.com/MikeO7/kinosail-player/internal/server",
+        "Elapsed": 11.352
+      }
+    ]
+  },
+  "productionChanged": false,
+  "clockQualified": false,
+  "nativeQualified": false,
+  "all50Retested": false,
+  "manualDeployment": false,
+  "localFilesystemWritten": false,
+  "next": "Write the certified presentation/cut/cache and bounded AAC-clock regressions before minimal production changes; preserve incoming policy/rooted/PR524 ownership and all original failures."
+}
