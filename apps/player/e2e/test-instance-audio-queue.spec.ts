@@ -127,7 +127,10 @@ test("real album queue advances source and all Now Playing identity to the ficti
 
 // Isolated 503 injection in an actual Go-rendered page. Initial and Retry 204
 // acknowledgements remain real Server requests; canonical queue cases are unrouted.
-test("mobile R03 progress notice stays hidden after real acknowledgement and reopens only on failure", {tag: ["@smoke", "@routed-fault"]}, async ({page}, testInfo) => mobileProgressFault(page, testInfo, albumTracks));
+test.describe(() => {
+  test.use({serviceWorkers: "block"});
+  test("mobile R03 progress notice stays hidden after real acknowledgement and reopens only on failure", {tag: ["@smoke", "@routed-fault"]}, async ({page}, testInfo) => mobileProgressFault(page, testInfo, albumTracks));
+});
 
 test("real album queue keeps system previous and next current and exposes only fresh current-track actions", {tag: "@smoke"}, async ({page}, testInfo) => {
   await login(page);
@@ -189,4 +192,7 @@ test("real album queue keeps system previous and next current and exposes only f
 
 // Actual Go markup and delivered CSS with isolated queue-read delay, 503, and
 // single-item projections. Canonical advances above remain unrouted.
-test("album queue keeps accessible responsive controls through pending loaded empty and failed reads", {tag: ["@smoke", "@routed-fault"]}, async ({page}, testInfo) => queueReadFault(page, testInfo, albumTracks));
+test.describe(() => {
+  test.use({serviceWorkers: "block"});
+  test("album queue keeps accessible responsive controls through pending loaded empty and failed reads", {tag: ["@smoke", "@routed-fault"]}, async ({page}, testInfo) => queueReadFault(page, testInfo, albumTracks));
+});

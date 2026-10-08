@@ -48,3 +48,40 @@ test('fulfillment rejection remains an original failure with bounded facts',asyn
  assert.equal(facts.fulfillFailed,true);assert.equal(facts.fulfilled,false);
  assert.equal(JSON.stringify(facts).includes('PRIVATE'),false);
 });
+
+// Resolve actual pinned fixture pools without running hooks, browser or Server.
+test('only the two routed queue faults block workers in every pinned engine', async t => {
+ const {createRequire}=await import('node:module');
+ const {dirname,join}=await import('node:path');
+ const {fileURLToPath}=await import('node:url');
+ const {mkdtempSync,readFileSync,rmSync}=await import('node:fs');
+ const {tmpdir}=await import('node:os');
+ const directory=fileURLToPath(new URL('../../apps/player/e2e/',import.meta.url));
+ const require=createRequire(join(directory,'package.json'));
+ const packagePath=createRequire(require.resolve('@playwright/test')).resolve('playwright/package.json');
+ assert.equal(JSON.parse(readFileSync(packagePath,'utf8')).version,'1.63.0');
+ const cache=mkdtempSync(join(tmpdir(),'kino-queue-fixture-'));
+ const keys=['KINOSAIL_BROWSER_MATRIX','KINOSAIL_BROWSER_PROJECT','PWTEST_CACHE_DIR'];
+ const before=Object.fromEntries(keys.map(key=>[key,process.env[key]]));
+ try {
+  process.env.KINOSAIL_BROWSER_MATRIX='full';delete process.env.KINOSAIL_BROWSER_PROJECT;process.env.PWTEST_CACHE_DIR=cache;
+  const {configLoader,testLoader,poolBuilder}=require(join(dirname(packagePath),'lib/common/index.js'));
+  const config=await configLoader.loadConfig({configDir:directory,resolvedConfigFile:join(directory,'playwright.config.ts')});
+  const errors=[],suite=await testLoader.loadTestFile(join(directory,'test-instance-audio-queue.spec.ts'),config,errors);
+  assert.deepEqual(errors,[]);assert.equal(suite.allTests().length,4);
+  assert.equal(suite.allTests().filter(row=>row.tags.includes('@routed-fault')).length,2);
+  for(const project of config.projects) await t.test(project.project.name,async()=>{
+   poolBuilder.PoolBuilder.createForWorker(project).buildPools(suite,errors);assert.deepEqual(errors,[]);
+   for(const registered of suite.allTests()) {
+    assert.deepEqual(registered.titlePath().filter(Boolean),['test-instance-audio-queue.spec.ts',registered.title]);
+    const option=registered._pool._registrations.get('serviceWorkers').fn;
+    let resolved=option;
+    if(typeof option==='function') await option({contextOptions:project.project.use.contextOptions??{}},value=>{resolved=value;});
+    assert.equal(resolved,registered.tags.includes('@routed-fault')?'block':'allow');
+   }
+  });
+ } finally {
+  for(const key of keys) {if(before[key]===undefined)delete process.env[key];else process.env[key]=before[key];}
+  rmSync(cache,{recursive:true,force:true});
+ }
+});
