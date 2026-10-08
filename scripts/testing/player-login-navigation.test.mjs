@@ -155,6 +155,7 @@ test('root login accepts exact direct root without dismissing an offer', async (
 test('root login rejects unknown foreign ambiguous or unsafe outcomes without clicking', async () => {
   for (const target of ['https://foreign.fixture/', 'http://owned.fixture/',
     'https://foreign.fixture/account?passkey=offer&next=%2F',
+    'https://user:secret@owned.fixture/account?passkey=offer&next=%2F',
     'https://owned.fixture/#extra', 'https://owned.fixture/?extra=1',
     'https://owned.fixture/account?passkey=offer&next=%2F&next=%2F',
     'https://owned.fixture/account?passkey=offer&next=%252F',
@@ -198,4 +199,12 @@ test('root login shares a finite ten-second budget across offer and final naviga
   late.waitForURL = async (...args) => {await lateWait(...args); now += 10001;};
   await assert.rejects(finishRootSignIn(late, 'https://owned.fixture'), {name: 'TimeoutError'});
   assert.equal(late.calls.filter(([kind]) => kind === 'dismiss').length, 0);
+});
+
+
+test('root login revalidates the actual destination before an offer click', async () => {
+  const page = controlledOffer();
+  page.url = () => 'https://foreign.fixture/account?passkey=offer&next=%2F';
+  await assert.rejects(finishRootSignIn(page, 'https://owned.fixture'));
+  assert.equal(page.calls.filter(([kind]) => kind === 'dismiss').length, 0);
 });

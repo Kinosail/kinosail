@@ -73,15 +73,20 @@ export async function finishRootSignIn(page: Page, origin: string) {
     if (value <= 0) throw Object.assign(new Error("sign-in fixture did not reach Home"), {name: "TimeoutError"});
     return value;
   };
+  const owned = (url: URL) => url.href.length <= 4096 && url.origin === origin &&
+    url.username === "" && url.password === "" && url.hash === "";
   const root = (url: URL) => url.pathname === "/" && url.search === "";
-  await page.waitForURL(url => url.href.length <= 4096 && url.origin === origin && url.hash === "" &&
-    (root(url) || url.pathname === "/account" && url.searchParams.size === 2 &&
-      url.searchParams.getAll("passkey").length === 1 && url.searchParams.get("passkey") === "offer" &&
-      url.searchParams.getAll("next").length === 1 && url.searchParams.get("next") === "/"), {timeout: remaining()});
+  const accepted = (url: URL) => owned(url) && (root(url) || url.pathname === "/account" &&
+    url.searchParams.size === 2 && url.searchParams.getAll("passkey").length === 1 &&
+    url.searchParams.get("passkey") === "offer" && url.searchParams.getAll("next").length === 1 &&
+    url.searchParams.get("next") === "/");
+  await page.waitForURL(accepted, {timeout: remaining()});
   remaining();
-  if (new URL(page.url()).pathname === "/account")
+  const current = page.url();
+  if (current.length > 4096 || !accepted(new URL(current))) throw new Error("unexpected sign-in fixture destination");
+  if (new URL(current).pathname === "/account")
     await page.getByRole("link", {name: "Not now", exact: true}).click({timeout: remaining()});
-  await page.waitForURL(url => url.href.length <= 4096 && url.origin === origin && url.hash === "" && root(url), {timeout: remaining()});
+  await page.waitForURL(url => owned(url) && root(url), {timeout: remaining()});
   remaining();
 }
 
