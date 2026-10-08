@@ -90,6 +90,16 @@ try:
     check(cold['result'] == 'passed' and not cold['failures'] and not cold.get('failureClass'),
         'readiness_uninterrupted_control_passed')
     packets = candidate['joinedPublicPacketPayloads']
+    late = cold['lateEOFPublic']
+    result['coldFirstAndLateEOF'] = {'firstSegments': cold['publicVariantSegments'],
+        'lateSegments': late['publicVariantSegments'], 'physicalPackets': cold['physicalAfterPublicDelivery']['packetCount'],
+        'firstPackets': len(cold['joinedPublicPacketPayloads']), 'latePackets': len(late['joinedPublicPacketPayloads']),
+        'latePCMSamples': late['fullEOFNativeSamples']['public'], 'latePCMSHA256': late['fullEOFNativeSamples']['publicSHA256'],
+        'lateExactPreparedPackets': packets == late['joinedPublicPacketPayloads']}
+    check(packets == late['joinedPublicPacketPayloads']
+        and late['initializationSHA256'] == candidate['initializationSHA256']
+        and late['fullEOFNativeSamples']['publicSHA256'] == candidate['fullEOFNativeSamples']['publicSHA256'],
+        'readiness_late_public_retains_every_packet')
     check(len(packets) == 470 and packets == control['joinedPublicPacketPayloads'] == cold['joinedPublicPacketPayloads'], 'readiness_exact_packet_rows')
     gaps = [Decimal(b['pts_time']) - Decimal(a['pts_time']) - Decimal(a['duration_time'])
         for a, b in zip(packets, packets[1:])]

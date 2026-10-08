@@ -73,7 +73,17 @@ def readiness_cold_control(root, binary, original, directory):
                     'readiness_cold_independent_empty_cache')
                 case['emptyCacheBeforeFirstGET'] = True
                 readiness_uninterrupted_audio(api, hls, directory, case, source, run, deadline)
-                case['physicalAfterPublicDelivery'] = physical(cache, item['id'])
+                before_late = physical(cache, item['id'])
+                check(before_late['manifest']['endlist'], 'readiness_cold_physical_eof_before_late_get')
+                late_directory = directory / 'late-eof'
+                late_directory.mkdir()
+                late = {'name': 'same-generation-late-eof'}
+                readiness_uninterrupted_audio(api, hls, late_directory, late, source, run, deadline)
+                case['lateEOFPublic'] = late
+                case['physicalBeforeLateEOFGET'] = before_late
+                after_late = physical(cache, item['id'])
+                check(before_late == after_late, 'readiness_cold_late_get_preserves_generation')
+                case['physicalAfterPublicDelivery'] = after_late
             finally:
                 signal.setitimer(signal.ITIMER_REAL, 0)
                 signal.signal(signal.SIGTERM, signal.SIG_IGN)
@@ -108,16 +118,25 @@ def readiness_uninterrupted_audio(api, hls, directory, case, source, run, deadli
     check(status == 200 and facts['endlist'] and facts['playlistType'] == 'VOD'
         and abs(facts['durationSeconds'] - 10) < 0.1 and 0 < len(segments) <= 16,
         'readiness_cold_public_timeline')
+    case['publicVariant'] = facts
+    case['publicVariantSegments'] = [name for name, _ in segments]
+    case['publicVariantSHA256'] = hashlib.sha256(raw).hexdigest()
     status, init, _ = api.http(base + 'init.mp4')
     check(status == 200 and 0 < len(init) <= 2 << 20, 'readiness_cold_init')
     case['initializationSHA256'] = hashlib.sha256(init).hexdigest()
     joined = init
-    for name, _ in segments:
+    case['publicFragments'] = []
+    for name, advertised in segments:
         check(re.fullmatch(r'segment-[0-9]{5}\.m4s', name), 'readiness_cold_segment_name')
         status, fragment, _ = api.http(base + name)
         check(status == 200 and fragment, 'readiness_cold_segment')
         joined += fragment
         check(len(joined) <= 16 << 20, 'readiness_cold_media_bound')
+        part = directory / 'fragment.mp4'
+        part.write_bytes(init + fragment)
+        rows = packet_evidence(run, part)
+        case['publicFragments'].append({'name': name, 'advertisedSeconds': advertised,
+            'packets': len(rows), 'firstPacket': rows[0], 'lastPacket': rows[-1]})
     check(api.http(base + 'init.mp4')[1] == init, 'readiness_cold_init_changed')
     public_path = directory / 'public.mp4'
     public_path.write_bytes(joined)
