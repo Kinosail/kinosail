@@ -1,6 +1,6 @@
 import {expect, test, type Page} from "@playwright/test";
 import {configureTestInstance, createViewer, loginViewer, removeViewer} from "./test-instance-helpers";
-import {openDocuments, closeDocuments, setting} from "./home-assistant-document-helpers";
+import {openDocuments, closeDocuments, setting, observeAcceptedDocumentStates} from "./home-assistant-document-helpers";
 import {inspectDocumentStatus} from "./home-assistant-document-inspection";
 
 configureTestInstance();
@@ -21,8 +21,14 @@ test("real document targets work with denied storage and unavailable UUID and lo
       "Browser storage is unavailable. Reloading creates a new Home Assistant target.");
     await inspectDocumentStatus(first, info, "connected");
     const before = (await docs.live()).find(target => target.itemId === docs.ids[0])!.id;
+    const accepted = observeAcceptedDocumentStates(first);
+    const renewed = first.waitForResponse(response => new URL(response.url()).pathname.endsWith("/players/claims") && response.status() === 201);
     await first.reload();
-    await expect.poll(async () => (await docs.live()).find(target => target.itemId === docs.ids[0])?.id).not.toBe(before);
+    const replacement = await (await renewed).json();
+    expect(typeof replacement.id).toBe("string"); expect(replacement.id).not.toBe(before);
+    docs.claims.add(replacement.claim);
+    await expect.poll(() => accepted.some(state => state.id === replacement.id && state.claim === replacement.claim)).toBe(true);
+    await expect.poll(async () => (await docs.live()).some(target => target.itemId === docs.ids[0] && target.id === replacement.id)).toBe(true);
     expect(await first.evaluate(claims => !Object.keys(localStorage).some(key => claims.some(claim => (localStorage.getItem(key) || "").includes(claim))), [...docs.claims])).toBe(true);
     await info.attach("actual-storage-degradation", {body: JSON.stringify({secureContext: true, distinctTargets: 2,
       deniedStorage: true, uuidAndLocksUnavailable: true, reloadChangesTarget: true, claimPersisted: false}), contentType: "application/json"});
@@ -41,12 +47,18 @@ test("real cloned document candidate forks after occupied claim without stealing
     await second.addInitScript(({profile, candidate}) => sessionStorage.setItem(`kinosail-home-assistant-document:${profile}`, candidate),
       {profile, candidate: original});
     const occupied = second.waitForResponse(response => new URL(response.url()).pathname.endsWith("/home-assistant/players/claims") && response.status() === 409);
+    const renewed = second.waitForResponse(response => new URL(response.url()).pathname.endsWith("/players/claims") && response.status() === 201);
+    const accepted = observeAcceptedDocumentStates(second);
     await second.goto(`/watch/${docs.ids[1]}`);
     expect((await occupied).status()).toBe(409);
+    const replacement = await (await renewed).json();
+    expect(typeof replacement.id).toBe("string"); expect(replacement.id).not.toBe(original);
+    await expect.poll(() => accepted.some(state => state.id === replacement.id && state.claim === replacement.claim)).toBe(true);
+    await expect.poll(async () => (await docs.live()).some(target => target.itemId === docs.ids[1] && target.id === replacement.id)).toBe(true);
     await expect.poll(async () => (await docs.live()).length).toBe(2);
     const live = await docs.live();
     expect(live.find(target => target.itemId === docs.ids[0])!.id).toBe(original);
-    expect(live.find(target => target.itemId === docs.ids[1])!.id).not.toBe(original);
+    expect(live.find(target => target.itemId === docs.ids[1])!.id).toBe(replacement.id);
     await expect(second.locator("[data-home-assistant-lifetime]")).toHaveText(/fresh page received its own target/);
     await info.attach("actual-cloned-candidate", {body: JSON.stringify({occupiedStatus: 409, forked: true,
       originalTargetPreserved: true, distinctTargets: 2}), contentType: "application/json"});

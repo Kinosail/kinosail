@@ -3,6 +3,17 @@ import {login} from "./test-instance-helpers";
 
 type Target = {id: string; itemId: string; position: number; duration: number};
 
+// Test-private observations. Claim values never enter attachments or diagnostics.
+export function observeAcceptedDocumentStates(page: Page) {
+  const accepted: Array<{id: string; claim: string}> = [];
+  page.on("response", async response => {
+    const match = new URL(response.url()).pathname.match(/^\/api\/v1\/home-assistant\/players\/([A-Za-z0-9_-]+)$/);
+    if (match && response.request().method() === "PUT" && response.status() === 200 && accepted.length < 100)
+      accepted.push({id: match[1], claim: (await response.request().allHeaders())["x-kinosail-player-claim"] || ""});
+  });
+  return accepted;
+}
+
 export async function setting(page: Page, enabled: boolean) {
   expect(await page.evaluate(async enabled => {
     const csrf = document.querySelector<HTMLMetaElement>('meta[name="kinosail-csrf"]')?.content || "";
