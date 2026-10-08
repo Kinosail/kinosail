@@ -3,7 +3,7 @@ import json
 import math
 import re
 
-from campaign_q14_suites import ACCEPTANCE, PREREQUISITES, SAFETY_NAMES, SPECS as EXTENDED_SPECS, SUITES, ATTACHMENTS as EXTENDED_ATTACHMENTS, boundary
+from campaign_q14_suites import ACCEPTANCE, PREREQUISITES, SAFETY_NAMES, SPECS as EXTENDED_SPECS, SUITES, ATTACHMENTS as EXTENDED_ATTACHMENTS, boundary, full_title
 
 SPECS = ["browse-return.spec.ts", "browse-return-cold.spec.ts", "browse-return-bfcache.spec.ts"]
 PRIMARY = [f"visible Player Back preserves Movies query, offset, extent, focus and scroll at {width}px" for width in (390, 1440)]
@@ -152,7 +152,7 @@ def admit(report, collection=False, suite="primary", project="chromium"):
         return None
     expected = SUITES[selected] if extended else COLLECTION if collection else [(SPECS[0], title) for title in PRIMARY]
     collected = report["collected"]
-    if not isinstance(collected, list) or len(collected) != len(expected) or not all(fields(item, "file title" + (" fullTitle" if identified else "")) and (not identified or item["fullTitle"] == item["title"]) and (item["file"], item["title"]) in expected for item in collected):
+    if not isinstance(collected, list) or len(collected) != len(expected) or not all(fields(item, "file title" + (" fullTitle" if identified else "")) and (item["file"], item["title"]) in expected and (not identified or item["fullTitle"] == full_title(item["file"], item["title"])) for item in collected):
         return None
     if len({(item["file"], item["title"]) for item in collected}) != len(expected):
         return None
@@ -160,7 +160,7 @@ def admit(report, collection=False, suite="primary", project="chromium"):
     if not isinstance(cases, list) or len(cases) > (0 if collection else len(expected)):
         return None
     for case in cases:
-        if not fields(case, "file title status retry durationMs expectedStatus failures attachments" + (" fullTitle" if identified else "")) or (identified and case["fullTitle"] != case["title"]) or (case["file"], case["title"]) not in expected:
+        if not fields(case, "file title status retry durationMs expectedStatus failures attachments" + (" fullTitle" if identified else "")) or (case["file"], case["title"]) not in expected or (identified and case["fullTitle"] != full_title(case["file"], case["title"])):
             return None
         if case["status"] not in ("passed", "failed", "timedOut", "skipped", "interrupted") or not integer(case["retry"], 0, 0) or not integer(case["durationMs"], 0, 60_000) or case["expectedStatus"] != "passed":
             return None

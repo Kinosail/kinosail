@@ -21,6 +21,18 @@ SUITES = {
         "cold native Back restores the scrolled Home Movies destination without a Library grid")],
 }
 SUITES["all"] = PRIMARY + SUITES["htmx"] + SUITES["shows"] + SUITES["cold"] + SUITES["search"] + SUITES["bfcache"]
+CONTEXTS = {identity: context for mode, context in (
+    ("cold", "native Back without browser cache"),
+    ("search", "live HTMX search then cold playback Back"),
+    ("bfcache", "observed native browser cache"),
+) for identity in SUITES[mode]}
+
+
+def full_title(file, title):
+    context = CONTEXTS.get((file, title))
+    return context + " > " + title if context else title
+
+
 BASE = {"before-state", "player-state", "returned-state", "served-browse-asset"}
 HOME = {"home-before-state", "home-returned-state", "served-browse-asset"}
 ATTACHMENTS = BASE | HOME | {"letter-state", "original-url-state", "cold-boundary-state", "native-cache-boundary-state",
