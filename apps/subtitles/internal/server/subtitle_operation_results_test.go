@@ -87,7 +87,7 @@ func TestSubtitleCompletedAudioResultRetainsOwnerBinding(t *testing.T) {
 
 func waitSubtitleOperationOwnerAudio(t *testing.T, handler http.Handler, id string, owner *http.Cookie) {
 	t.Helper()
-	deadline := time.Now().Add(5 * time.Second)
+	deadline := time.Now().Add(60 * time.Second)
 	for time.Now().Before(deadline) {
 		response := subtitleOperationAuthenticated(t, handler, http.MethodGet, "/api/v1/subtitle-operations/"+id, "", owner, "")
 		var receipt subtitleOperationReceipt

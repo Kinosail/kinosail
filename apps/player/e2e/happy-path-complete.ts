@@ -5,7 +5,7 @@ import { expectAccessible, openQuickConnect, openSettings, signOut, totp, type H
 export async function completeHappyPath(page: Page, testInfo: TestInfo, { capture, errors, passkeyCreated }: HappyPathState) {
 	await page.getByText("More", { exact: true }).click();
 	await expectAccessible(page, capture);
-	await page.getByRole("link", { name: "Home", exact: true }).first().click();
+	await page.getByRole("link", { name: "Home", exact: true }).filter({ visible: true }).first().click();
 	await openSettings(page);
 	await expect(page.getByRole("heading", { name: "Server settings" })).toBeVisible();
 	await expectAccessible(page, capture);
@@ -106,7 +106,7 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, { captur
   await expect(backToSearch).toHaveAttribute("href", "/?q=Arrival");
   await backToSearch.click();
   await expect(page).toHaveURL("/?q=Arrival");
-  await page.getByRole("link", { name: "Home", exact: true }).first().click();
+  await page.getByRole("link", { name: "Home", exact: true }).filter({ visible: true }).first().click();
   await expect(page.getByRole("link", { name: /\bResume\b/ })).toHaveAttribute("href", watchPath);
   await expect(page.getByRole("heading", { name: "My List" })).toBeVisible();
 
