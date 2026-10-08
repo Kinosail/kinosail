@@ -1,7 +1,7 @@
 import { describe, test } from '@e2e-dev/web';
 import { expect } from 'e2e';
 import { api, requireFixtureURL } from './helpers';
-import { fixtureItem, fixtureAlbum, fixtureAlbumTracks } from '../fixture-response.mjs';
+import { fixtureItem, fixtureAlbum, fixtureAlbumTracks, fixtureReader, fixtureWatchProgress } from '../fixture-response.mjs';
 
 describe('populated audio and readers', { session: 'owner' }, () => {
   test('album queue plays two real tracks and rejects invalid progress without mutation', async ({ app, browser, screen }) => {
@@ -29,11 +29,16 @@ describe('populated audio and readers', { session: 'owner' }, () => {
     await expect.poll(() => browser.evaluate(() => document.querySelector('audio')?.currentTime ?? 0)).toBeGreaterThan(0.2);
     await browser.evaluate(() => document.querySelector('audio')!.pause());
     const progressPath = '/api/v1/items/' + first.id + '/watch-progress';
-    await expect.poll(async () => (await api(browser, app.baseUrl, progressPath)).data.seconds).toBeGreaterThan(0);
-    const before = await api(browser, app.baseUrl, progressPath);
+    const progress = async () => {
+      const response = await api(browser, app.baseUrl, progressPath);
+      expect(response.status).toBe(200);
+      return fixtureWatchProgress(response.data);
+    };
+    await expect.poll(async () => (await progress()).seconds).toBeGreaterThan(0);
+    const before = await progress();
     for (const body of [{}, { seconds: null }, { seconds: -1 }, { seconds: '1' }, { seconds: 1000000001 }, { seconds: 1, unknown: true }]) {
       expect((await api(browser, app.baseUrl, '/api/v1/items/' + first.id + '/progress', 'PUT', body)).status).toBe(400);
-      expect((await api(browser, app.baseUrl, progressPath)).data).toEqual(before.data);
+      expect(await progress()).toEqual(before);
       expect((await api(browser, app.baseUrl, queuePath)).data.items.map((t: { id: string }) => t.id)).toEqual([first.id, second.id]);
     }
     expect((await api(browser, app.baseUrl, '/api/v1/audio/missing/queue')).status).toBe(404);
@@ -54,6 +59,8 @@ describe('populated audio and readers', { session: 'owner' }, () => {
     const book = fixtureItem(books.data, 'E2E EPUB', 'book');
     expect(book).toBeDefined();
     const reader = await api(browser, app.baseUrl, '/api/v1/books/' + book.id + '/reader');
+    expect(reader.status).toBe(200);
+    fixtureReader(reader.data, book);
     expect(reader.data.type).toBe('epub');
     expect(reader.data.pages).toHaveLength(2);
     await app.open('/read/' + book.id);

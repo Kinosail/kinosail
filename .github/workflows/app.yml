@@ -336,7 +336,7 @@ jobs:
         run: node --test scripts/testing/subtitle-login-navigation.test.mjs scripts/testing/subtitle-dashboard-navigation.test.mjs scripts/testing/subtitle-dashboard-registration.test.mjs
       - name: Verify setup navigation failure diagnostics
         if: inputs.app == 'player'
-        run: node --test scripts/testing/player-setup-navigation.test.mjs scripts/testing/playback-navigation-diagnostics.test.mjs scripts/testing/player-playback-navigation.test.mjs scripts/testing/checkpoint-progress.test.mjs scripts/testing/player-login-navigation.test.mjs scripts/testing/layout-login-navigation.test.mjs scripts/testing/library-mutation-witness.test.mjs scripts/testing/download-resume-guard.test.mjs scripts/testing/navigation-repeat-offer.test.mjs scripts/testing/supporter-share-availability.test.mjs scripts/testing/jellyfin-save-witness.test.mjs scripts/testing/trusted-https-disable-witness.test.mjs scripts/testing/provider-profile-fixture.test.mjs scripts/testing/browse-return-reporter.test.mjs scripts/testing/browse-return-launch.test.mjs scripts/testing/hls-fast-departure.test.mjs scripts/testing/audio-queue-fault-witness.test.mjs scripts/testing/playback-failed-save.test.mjs scripts/testing/responsive-failure-witness.test.mjs scripts/testing/offline-browser-api.test.mjs scripts/testing/offline-opfs-fixture.test.mjs scripts/testing/offline-seek-witness.test.mjs scripts/e2e/tests/fixture-boundary.test.mjs
+        run: node --test scripts/testing/player-setup-navigation.test.mjs scripts/testing/playback-navigation-diagnostics.test.mjs scripts/testing/player-playback-navigation.test.mjs scripts/testing/checkpoint-progress.test.mjs scripts/testing/player-login-navigation.test.mjs scripts/testing/layout-login-navigation.test.mjs scripts/testing/library-mutation-witness.test.mjs scripts/testing/download-resume-guard.test.mjs scripts/testing/navigation-repeat-offer.test.mjs scripts/testing/supporter-share-availability.test.mjs scripts/testing/jellyfin-save-witness.test.mjs scripts/testing/trusted-https-disable-witness.test.mjs scripts/testing/provider-profile-fixture.test.mjs scripts/testing/browse-return-reporter.test.mjs scripts/testing/browse-return-launch.test.mjs scripts/testing/hls-fast-departure.test.mjs scripts/testing/audio-queue-fault-witness.test.mjs scripts/testing/playback-failed-save.test.mjs scripts/testing/responsive-failure-witness.test.mjs scripts/testing/playback-state-witness.test.mjs scripts/testing/compatibility-document.test.mjs scripts/testing/native-playback-state.test.mjs scripts/testing/recovery-controls-owner.test.mjs scripts/testing/offline-browser-api.test.mjs scripts/testing/offline-opfs-fixture.test.mjs scripts/testing/offline-seek-witness.test.mjs scripts/testing/hls-presented-frame.test.mjs scripts/e2e/tests/fixture-boundary.test.mjs scripts/e2e/tests/recovery-control.test.mjs scripts/e2e/tests/fixture-reader.test.mjs
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
       - parallel:
           - env:
@@ -403,7 +403,11 @@ jobs:
           ffmpeg -hide_banner -encoders > "$RUNNER_TEMP/public-flow-encoders.txt"
           grep -Eq '[[:space:]]libx264[[:space:]]' "$RUNNER_TEMP/public-flow-encoders.txt"
           grep -Eq '[[:space:]]aac[[:space:]]' "$RUNNER_TEMP/public-flow-encoders.txt"
+          command -v xvfb-run
           pnpm --dir scripts/e2e install --frozen-lockfile
+      - name: Verify Player SDK gap controls
+        if: inputs.app == 'player' && matrix.engine == 'chromium'
+        run: node --test scripts/e2e/tests/gap-launch.test.mjs scripts/e2e/tests/pdf-pixels.test.mjs scripts/e2e/tests/sdk-gap-boundary.test.mjs
       - name: Verify complete Player recovery suites
         if: inputs.app == 'player' && matrix.engine == 'chromium'
         env:
@@ -422,7 +426,13 @@ jobs:
         env:
           APP: ${{ inputs.app }}
           E2E_TELEMETRY_DISABLED: "1"
-        run: scripts/e2e/run.sh "$APP"
+          DEEP: ${{ fromJSON(inputs.plan).deep && 'true' || 'false' }}
+        run: |
+          if [[ "$APP" == player && "$DEEP" == true ]]; then
+            scripts/e2e/run.sh "$APP" --gaps
+          else
+            scripts/e2e/run.sh "$APP"
+          fi
       - name: Keep public-flow evidence
         if: always() && matrix.engine == 'chromium'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
@@ -518,11 +528,15 @@ jobs:
             .verification/hls-source-version/*/SHA256SUMS
           retention-days: 14
           if-no-files-found: error
+      - name: Verify coded HLS presentation fixture controls
+        if: inputs.app == 'player' && matrix.engine == 'chromium'
+        run: python3 -m unittest discover -s apps/player/scripts -p test_hls_presented_fixture.py
       - name: Verify bounded startup and request boundary
         if: inputs.app == 'player' && matrix.engine == 'chromium'
         env:
           GOMAXPROCS: "4"
           KINOSAIL_STARTUP_BROWSER_CHANNEL: chromium
+          KINOSAIL_HLS_PRESENTATION_PROOF: ${{ fromJSON(inputs.plan).deep && '1' || '0' }}
         run: python3 apps/player/scripts/test-startup-local.py
       - name: Verify bounded HLS phase evidence
         if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
@@ -540,6 +554,8 @@ jobs:
             .verification/startup/*/resources.json
             .verification/startup/*/SHA256SUMS
             .verification/startup/*/results/**/startup-measurements.json
+            .verification/startup/*/source-frame-map.json
+            .verification/startup/*/results/**/hls-presented-frame.json
           retention-days: 7
           if-no-files-found: error
       - name: Keep verifiable E2E artifact

@@ -9,16 +9,26 @@ import socket
 import subprocess
 import time
 import threading
+import sys
+from hls_presented_fixture import proof_enabled, build_fixture
+
+try:
+    presentation_proof = proof_enabled(os.environ)
+except ValueError:
+    print('invalid presentation proof option', file=sys.stderr)
+    raise SystemExit(2)
 
 root = Path(__file__).resolve().parents[3]
 run = root / '.verification/startup' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
-run.mkdir(parents=True)
+run.mkdir(parents=True, mode=0o700 if presentation_proof else 0o755)
 media = run / 'media'
 media.mkdir()
 binary = run / 'kinosail-player'
 env = dict(os.environ, GOCACHE='/tmp/kinosail-apple-go-cache')
 revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip()
 working_diff = hashlib.sha256(subprocess.check_output(['git', 'diff', 'HEAD'], cwd=root)).hexdigest()
+source_inputs = ['.github/workflows/app.yml', 'apps/player/scripts/test-startup-local.py', 'apps/player/scripts/hls_presented_fixture.py', 'apps/player/e2e/test-instance-startup.spec.ts', 'apps/player/e2e/hls-presented-seek.ts', 'apps/player/e2e/hls-presented-frame.mjs', 'apps/player/e2e/hls-presentation-state.mjs', 'apps/player/e2e/apple-playback.config.ts', 'apps/player/e2e/happy-path-helpers.ts', 'apps/player/e2e/startup-playback-exit.ts', 'apps/player/e2e/offline-browser-api.mjs', 'scripts/e2e/fixture-response.mjs', 'packages/webassets/static/player-core.js', 'packages/webassets/static/player-controls.js', 'packages/webassets/static/player-progress.js', 'apps/player/internal/server/static/player-streaming-adaptive.js', 'apps/player/internal/server/static/player-streaming-recovery.js', 'apps/player/internal/server/hls.go', 'apps/player/internal/server/hls_presentation.go', 'apps/player/internal/server/hls_seek.go', 'apps/player/internal/server/hls_playlist.go']
+source_hashes = {name: hashlib.sha256((root / name).read_bytes()).hexdigest() for name in source_inputs}
 build = ['go', '-C', 'apps/player', 'build', '-p=1', '-o', str(binary), './cmd/kinosail']
 subprocess.run(build, cwd=root, env=env, check=True)
 hdr = ['ffmpeg', '-nostdin', '-v', 'error', '-f', 'lavfi', '-i', 'testsrc2=s=1280x720:r=24:d=64',
@@ -33,6 +43,7 @@ direct = ['ffmpeg', '-nostdin', '-v', 'error', '-f', 'lavfi', '-i', 'testsrc2=s=
           '-movflags', '+faststart', str(media / 'Direct.mp4')]
 for recipe in [hdr, direct]:
     subprocess.run(recipe, check=True)
+presentation_fixture = build_fixture(media, run) if presentation_proof else None
 for name in ['Warm.mkv', 'Adopt.mkv', 'Compete.mkv', 'Invalidation.mkv']:
     os.link(media / 'Cold.mkv', media / name)
 for name in ['Cold', 'Warm', 'Adopt', 'Compete', 'Invalidation', 'Direct']:
@@ -142,11 +153,13 @@ finally:
         'command': 'python3 apps/player/scripts/test-startup-local.py', 'build': build, 'browser': browser,
         'encoderVersions': {tool: subprocess.check_output([tool, '-version'], text=True).splitlines()[0] for tool in ['ffmpeg', 'ffprobe']},
         'baseline': env.get('KINOSAIL_STARTUP_BASELINE') == '1', 'mediaCommands': [hdr, direct],
+        'presentationProof': presentation_proof, 'presentationFixture': presentation_fixture,
+        'sourceSHA256': source_hashes, 'sourceDrift': any(hashlib.sha256((root / name).read_bytes()).hexdigest() != digest for name, digest in source_hashes.items()),
         'fixtureMetadata': metadata, 'binarySHA256': checksum(binary),
         'environment': f'{platform.system()} {platform.machine()} {env.get("KINOSAIL_STARTUP_BROWSER_CHANNEL", "chrome")}; serial Go build; supported HTTP loopback; synthetic media',
         'boundary': '720p HEVC Main 10 PQ/EAC3 is codec-representative, not movie/Nox workload-equivalent. No device or production proof.',
         'mediaSHA256': {p.name: checksum(p) for p in media.iterdir()}}, indent=2) + '\n')
     (run / 'SHA256SUMS').write_text(''.join(f'{checksum(p)}  {p.relative_to(run)}\n' for p in sorted(run.rglob('*'))
-        if p.is_file() and p.name != 'SHA256SUMS' and not any(part in {'config', 'backups'} for part in p.relative_to(run).parts)))
+        if p.is_file() and p.name not in {'SHA256SUMS', 'presentation-auth.json'} and not any(part in {'config', 'backups'} for part in p.relative_to(run).parts)))
     print(f'E2E artifact: {run}', flush=True)
 raise SystemExit(result if result is not None else 1)

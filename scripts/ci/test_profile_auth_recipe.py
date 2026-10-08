@@ -15,6 +15,18 @@ JOBS = [('library-owner', 'LIBRARY_PROJECT', 46),
         ('provider-owner', 'PROFILE_PROJECT', 15), ('responsive-owner', 'RESPONSIVE_PROJECT', 99)]
 
 class ProfileAuthRecipeTests(unittest.TestCase):
+    def test_required_playback_observation_controls_run_once_before_sdk_install(self):
+        source = (ROOT / '.github/workflows/app.yml').read_text()
+        marker = '      - name: Verify setup navigation failure diagnostics'
+        controls = source.split(marker, 1)[1].split('      - ', 1)[0]
+        self.assertIn("if: inputs.app == 'player'", controls)
+        for name in ['compatibility-document.test.mjs', 'native-playback-state.test.mjs']:
+            with self.subTest(name=name):
+                path = 'scripts/testing/' + name
+                self.assertEqual(source.count(path), 1, 'required playback control missing or duplicated')
+                self.assertEqual(controls.count(path), 1)
+                self.assertLess(source.index(path), source.index('      - name: Install public-flow runner'))
+
     def test_actual_offline_recipe_binds_seek_witness_before_write(self):
         name = 'apps/player/e2e/offline-seek-witness.mjs'
         with patch.dict(os.environ, {'PROFILE_PROJECT': 'webkit', 'PROOF_REVISION': 'fixture-revision'}), patch.object(Path, 'write_text') as write:

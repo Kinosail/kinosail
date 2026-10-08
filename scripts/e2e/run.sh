@@ -2,8 +2,10 @@
 # Build real app binaries and keep the existing checksummed E2E receipt format.
 set -euo pipefail
 app="${1-all}"
-if (( $# > 1 )) || [[ "$app" != all && "$app" != player && "$app" != subtitles ]]; then
-  printf 'usage: %s [all|player|subtitles]\n' "$0" >&2
+gaps="${2-}"
+if (( $# > 2 )) || [[ "$app" != all && "$app" != player && "$app" != subtitles ]] || \
+   [[ "$gaps" != '' && "$gaps" != --gaps ]] || [[ "$gaps" == --gaps && "$app" == subtitles ]]; then
+  printf 'usage: %s [all|player|subtitles] [--gaps]\n' "$0" >&2
   exit 2
 fi
 repo="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -21,8 +23,13 @@ export KINOSAIL_E2E_PLAYER_BINARY="$binaries/player"
 export KINOSAIL_E2E_SUBTITLES_BINARY="$binaries/subtitles"
 run="$(date -u +%Y%m%dT%H%M%SZ)-$$"
 mkdir -p ".e2e/runs/$run"
-shasum -a 256 package.json pnpm-lock.yaml e2e.config.ts fixture.mjs restart-control.mjs fixture-response.mjs fixture-setup.mjs media-fixture.py tests/*.ts tests/*.mjs > ".e2e/runs/$run/inputs.sha256"
+shasum -a 256 package.json pnpm-lock.yaml e2e.config.ts fixture.mjs restart-control.mjs recovery-control.mjs fixture-response.mjs fixture-setup.mjs media-fixture.py gap-launch.mjs public-flow-gap.config.ts public-flow-gap-engine.ts pdf-pixels.mjs deep-tests/*.ts tests/*.ts tests/*.mjs > ".e2e/runs/$run/inputs.sha256"
 arguments=(run)
 [[ "$app" == all ]] || arguments+=(--target "$app")
 python3 ../ci/e2e-artifact.py --output ".e2e/runs/$run/context" -- \
   pnpm exec e2e "${arguments[@]}" --output ".e2e/runs/$run/runner"
+
+if [[ "$gaps" == --gaps ]]; then
+  python3 ../ci/e2e-artifact.py --output ".e2e/runs/$run/gap-context" -- \
+    node gap-launch.mjs "$run"
+fi
