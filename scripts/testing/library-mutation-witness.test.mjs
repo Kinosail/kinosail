@@ -41,7 +41,13 @@ function peer(options = {}) {
     }});
   const button = {evaluate: async () => {log.push('form'); return {
     action: options.formAction ?? base + (options.action ?? '/settings/profiles'), method: options.formMethod ?? 'post'};},
-    click: async () => {
+    click: async (clickOptions = {}) => {
+      if (options.heldClick) {
+        let timer;
+        try {await Promise.race([options.heldClick, new Promise((_, no) => {
+          timer = setTimeout(() => no(new Error('action deadline')), clickOptions.timeout ?? 60000);
+        })]);} finally {clearTimeout(timer);}
+      }
       log.push('click'); if (options.clickError) throw options.clickError;
       page.emit('request', post);
       if (options.stall) return;
@@ -151,4 +157,16 @@ test('missing response times out without qualifying success', {timeout:12000}, a
   const p = peer({stall:true}); await assert.rejects(libraryMutation(p.page, base, descriptor, p.button, p.info), /mutation deadline/);
   assert.equal(p.attachments[0].postRequests, 1); assert.equal(p.attachments[0].postStatus, null);
   assert.equal(p.attachments[0].outcome, 'failed'); clean(p);
+});
+test('a held public click obeys the shared deadline and removes listeners before return', {timeout:13000}, async () => {
+  let release;
+  const heldClick = new Promise(resolve => {release = resolve;}), p = peer({heldClick});
+  const result = libraryMutation(p.page, base, descriptor, p.button, p.info);
+  result.catch(() => {});
+  try {
+    await new Promise(resolve => setTimeout(resolve, 10500));
+    clean(p);
+    assert.equal(p.attachments[0].outcome, 'failed');
+  } finally {release();}
+  await assert.rejects(result, /deadline/);
 });

@@ -94,15 +94,17 @@ export async function libraryMutation(page, baseURL, descriptor, button, testInf
   };
   const listeners = {request, response, requestfailed: requestFailed, framenavigated: committed};
   for (const [event, callback] of Object.entries(listeners)) page.on(event, callback);
+  const started = performance.now();
+  const remaining = () => Math.max(1, Math.ceil(10000 - (performance.now() - started)));
   timer = setTimeout(() => failed(new Error('Library mutation deadline')), 10000);
   let original;
   try {
-    await button.click();
+    await button.click({timeout: remaining()});
     await complete;
     await page.waitForFunction(({origin, path, previous}) => location.origin === origin && location.pathname === path &&
       !location.search && !location.hash && Number.isFinite(performance.timeOrigin) && performance.timeOrigin > 0 && performance.timeOrigin !== previous &&
       performance.getEntriesByType('navigation')[0]?.type !== 'back_forward' && document.readyState !== 'loading',
-      {origin: base.origin, path: destination, previous}, {timeout: 10000});
+      {origin: base.origin, path: destination, previous}, {timeout: remaining()});
     if (failure) throw failure;
     state.documentReady = true; state.outcome = 'complete';
   } catch (error) {original = error;}
