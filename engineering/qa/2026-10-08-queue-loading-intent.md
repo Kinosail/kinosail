@@ -43,4 +43,3 @@ invocation, synthetic intent or synthetic metadata event is used to replace it.
 [Chrome Media Session guidance](https://developer.chrome.com/blog/media-session)
 also distinguishes loading from active platform controls. The media owner must
 admit the actual platform path separately; green variant checks cannot release it.
-
