@@ -13,6 +13,11 @@ on:
         description: Keep metadata-only full-history scan evidence
         type: boolean
         default: false
+      native_probe:
+        description: Add one isolated native regression suite after the complete deep run
+        type: choice
+        options: [none, AAC, storage]
+        default: none
       coverage_diagnostic:
         description: Keep exact deep Go coverage profiles
         type: boolean
@@ -182,6 +187,7 @@ jobs:
       pull-requests: read
     with:
       app: player
+      native_probe: ${{ github.event_name == 'workflow_dispatch' && inputs.native_probe || 'none' }}
       plan: ${{ needs.plan.outputs.plan }}
       coverage_diagnostic: ${{ github.event_name == 'workflow_dispatch' && inputs.coverage_diagnostic }}
 
@@ -237,7 +243,11 @@ jobs:
           go-version-file: go.work
           cache-dependency-path: "**/go.sum"
       - id: scanner_install
-        run: go install github.com/zricethezav/gitleaks/v8@v8.30.1
+        run: go install -ldflags="-X github.com/zricethezav/gitleaks/v8/version.Version=8.30.1" github.com/zricethezav/gitleaks/v8@v8.30.1
+      - name: Test exact receipt digest exceptions with the pinned scanner
+        env:
+          KINOSAIL_REAL_SCANNER: gitleaks
+        run: python3 -m unittest scripts.ci.test_receipt_fingerprints
       - run: python3 scripts/ci/secrets.py
       - name: Keep full-history finding locations
         if: always() && github.event_name == 'workflow_dispatch' && inputs.scan_diagnostic && steps.scanner_install.outcome == 'success'

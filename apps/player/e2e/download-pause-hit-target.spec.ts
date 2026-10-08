@@ -37,7 +37,7 @@ test("actual Go phone: fictional download controls and ready Play link remain re
   await page.setViewportSize({width: 390, height: 844});
   const peer = await downloadPeer();
   try {
-    const served = await openDownloadPage(page, peer.origin, "indexeddb");
+    const served = await openDownloadPage(page, peer.origin, "indexeddb", info);
     await info.attach("served-hit-target-bundle", {body: JSON.stringify(served), contentType: "application/json"});
     await page.locator("[data-download-device]").click();
     await expect.poll(async () => (await inspectDownload(page, served.jobID)).job?.bytes).toBe(downloadChunk);

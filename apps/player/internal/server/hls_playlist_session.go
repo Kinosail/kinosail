@@ -101,6 +101,10 @@ func (manager *hlsManager) waitForRecipeSegment(request *http.Request, item libr
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 		if err := manager.prepareSegment(segmentContext, item, recipe, name); err != nil {
 			slog.WarnContext(request.Context(), "HLS segment preparation failed", "diagnostic", "[PLAYBACK-HLS]", "request_id", requestActivityID(request.Context()), "error", hlsDiagnostic(err, item.Path))
+			if !errors.Is(err, os.ErrNotExist) {
+				cancel()
+				return false
+			}
 		}
 	}
 	ready := waitForHLSFile(segmentContext, path)
@@ -259,13 +263,6 @@ func requestedHLSStart(request *http.Request) (int, error) {
 		return 0, errors.New("resume position is invalid")
 	}
 	return start, nil
-}
-
-func hlsURIWithQuery(uri, query string) string {
-	if strings.Contains(uri, "?") {
-		return uri + "&" + query
-	}
-	return uri + "?" + query
 }
 
 func (manager *hlsManager) prepareRecipePlaylist(writer http.ResponseWriter, request *http.Request, item library.Item, recipe hlsRecipe) bool {

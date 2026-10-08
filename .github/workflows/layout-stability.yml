@@ -103,7 +103,7 @@ jobs:
           KINOSAIL_BROWSER_MATRIX: full
           KINOSAIL_TEST_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
           PLAYWRIGHT_JSON_OUTPUT_NAME: ../../../.verification/layout-fixtures/results.json
-        run: pnpm --dir apps/player/e2e exec playwright test --config layout-stability.config.ts --project "${{ matrix.browser }}" --reporter=list,json layout-stability.spec.ts skeleton-layout.spec.ts player-apple-intent.spec.ts player-apple-launch.spec.ts
+        run: pnpm --dir apps/player/e2e exec playwright test --config layout-stability.config.ts --project "${{ matrix.browser }}" --reporter=list,json layout-stability.spec.ts skeleton-layout.spec.ts player-apple-intent.spec.ts player-apple-launch.spec.ts layout-auth-navigation.spec.ts
       - name: Measure disposable native Servers
         env:
           KINOSAIL_LAYOUT_BROWSER: ${{ matrix.browser }}
@@ -123,7 +123,13 @@ jobs:
             .verification/layout/*/*/measurements.json
             .verification/layout/*/*/failure.json
             .verification/layout/*/*/*.png
+            .verification/layout/*/*/failure-trace.zip
+            .verification/layout/*/*/login-original-navigation-trace.zip
+            .verification/layout/*/*/firefox-auth-form-navigation-recovery.json
             .verification/layout-fixtures/results.json
+            .verification/layout-fixtures/**/login-original-navigation-trace.zip
+            .verification/layout-fixtures/**/firefox-auth-form-navigation-recovery.json
+            .verification/layout-fixtures/**/layout-login-rejection.json
             .verification/layout-fixtures/**/apple-intent-receipt.json
             .verification/layout-fixtures/**/native-pause-after-interruption.png
             .verification/layout-fixtures/**/trace.zip

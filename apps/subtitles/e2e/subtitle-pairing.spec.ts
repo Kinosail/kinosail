@@ -6,6 +6,9 @@ import { expect, test } from "@playwright/test";
 const fixtureDir = process.env.KINOSAIL_UI_FIXTURE_DIR;
 const revision = process.env.KINOSAIL_TEST_REVISION ?? execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
 test.skip(!fixtureDir, "requires TestWriteUIStateFixturesSubtitlePairingPreservesDialogueCorrespondenceThroughCleanup artifacts");
+// Cue comparisons exercise native input behavior after seeking focuses the video.
+// Keep the following checkbox click independent of that focus scroll animation.
+test.use({reducedMotion: "reduce"});
 
 for (const width of [390, 1440]) {
   test(`cleanup compares the same dialogue at ${width}px`, { tag: "@smoke" }, async ({ page }, testInfo) => {

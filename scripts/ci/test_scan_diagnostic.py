@@ -130,7 +130,7 @@ class ScanDiagnosticTests(unittest.TestCase):
         source = workflow.read_text()
         gate = source.split('  secrets:\n', 1)[1].split('\n  codeql:', 1)[0]
         self.assertEqual(gate.count('run: python3 scripts/ci/secrets.py'), 1)
-        self.assertEqual(gate.count('go install github.com/zricethezav/gitleaks/v8@v8.30.1'), 1)
+        self.assertEqual(gate.count('go install -ldflags="-X github.com/zricethezav/gitleaks/v8/version.Version=8.30.1" github.com/zricethezav/gitleaks/v8@v8.30.1'), 1)
         self.assertIn("always() && github.event_name == 'workflow_dispatch' && inputs.scan_diagnostic", gate)
         self.assertNotIn('continue-on-error', gate)
         self.assertIn('path: ${{ runner.temp }}/scan-safe.json', gate)

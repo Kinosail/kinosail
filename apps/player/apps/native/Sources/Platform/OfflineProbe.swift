@@ -1,6 +1,7 @@
 #if os(iOS)
 import AVFoundation
 import Foundation
+import OSLog
 import Synchronization
 
 /// Decodes one local sample through the same AVFoundation stack as the player.
@@ -37,17 +38,22 @@ enum OfflineProbe {
         let finished = ProbeCompletion(completion)
         let worker = Task.detached(priority: .utility) {
             var playable = false
+            var failure: NSError?, samples = 0, readerStatus = 0
             do {
                 let asset = try asset(url)
+                finished.phase("playable")
                 guard try await asset.load(.isPlayable) else { throw ClientError.invalidResponse }
+                finished.phase("tracks")
                 let tracks = try await asset.loadTracks(withMediaType: video ? .video : .audio)
                 guard let track = tracks.first else { throw ClientError.invalidResponse }
                 if video {
+                    finished.phase("geometry")
                     let size = try await track.load(.naturalSize)
                     guard size.width.isFinite, size.height.isFinite, size.width > 0, size.height > 0,
                           size.width <= 8192, size.height <= 8192, size.width * size.height <= 16_777_216 else { throw ClientError.invalidResponse }
                 }
                 try Task.checkCancellation()
+                finished.phase("reader")
                 let reader = try AVAssetReader(asset: asset)
                 reader.timeRange = CMTimeRange(start: .zero, duration: CMTime(seconds: 2, preferredTimescale: 600))
                 let settings: [String: Any] = video
@@ -57,28 +63,48 @@ enum OfflineProbe {
                 output.alwaysCopiesSampleData = false
                 guard reader.canAdd(output) else { throw ClientError.invalidResponse }
                 reader.add(output)
-                guard reader.startReading() else { throw ClientError.invalidResponse }
+                finished.phase("start-reading")
+                guard reader.startReading() else {
+                    if let error = reader.error { throw error }
+                    throw ClientError.invalidResponse
+                }
                 defer { reader.cancelReading() }
+                finished.phase("sample")
                 if let sample = output.copyNextSampleBuffer() {
+                    samples = CMSampleBufferGetNumSamples(sample)
                     playable = video ? CMSampleBufferGetImageBuffer(sample) != nil : CMSampleBufferGetNumSamples(sample) > 0 && CMSampleBufferGetDataBuffer(sample) != nil
                 }
-            } catch { playable = false }
-            finished.finish(playable)
+                readerStatus = reader.status.rawValue
+                failure = reader.error as NSError?
+                finished.phase("complete")
+            } catch { failure = error as NSError; playable = false }
+            finished.finish(playable, error: failure, samples: samples, readerStatus: readerStatus)
         }
         Task.detached {
             try? await Task.sleep(for: .seconds(20))
-            if finished.finish(false) { worker.cancel() }
+            if finished.finish(false, cause: "deadline") { worker.cancel() }
         }
     }
 }
 private final class ProbeCompletion: Sendable {
-    private let finished = Mutex(false)
+    private static let log = Logger(subsystem: "com.kinosail.player", category: "offline-probe")
+    private let state = Mutex((finished: false, phase: "asset"))
+    private let started = Date()
     private let completion: @Sendable (Bool) -> Void
     init(_ completion: @escaping @Sendable (Bool) -> Void) { self.completion = completion }
-    @discardableResult func finish(_ value: Bool) -> Bool {
-        let first = finished.withLock { state in if state { return false }; state = true; return true }
-        if first { completion(value) }
-        return first
+    func phase(_ value: String) { state.withLock { $0.phase = value } }
+    @discardableResult func finish(_ value: Bool, cause: String = "worker", error: NSError? = nil, samples: Int = 0, readerStatus: Int = 0) -> Bool {
+        let phase = state.withLock { state -> String? in
+            guard !state.finished else { return nil }
+            state.finished = true
+            return state.phase
+        }
+        guard let phase else { return false }
+        let domain = error.map { ["NSCocoaErrorDomain", "NSPOSIXErrorDomain", "NSOSStatusErrorDomain", "AVFoundationErrorDomain", "CoreMediaErrorDomain"].contains($0.domain) ? $0.domain : "other" } ?? "none"
+        let code = error?.code ?? 0, elapsed = Date().timeIntervalSince(started)
+        Self.log.notice("Offline probe playable=\(value) cause=\(cause, privacy: .public) phase=\(phase, privacy: .public) elapsed=\(elapsed) samples=\(samples) reader=\(readerStatus) errorDomain=\(domain, privacy: .public) errorCode=\(code)")
+        completion(value)
+        return true
     }
 }
 #endif
