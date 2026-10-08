@@ -571,7 +571,7 @@ jobs:
                      'sourceSHA256': {path: hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest() for path in paths},
                      'data': 'one disposable full-media Server, one MFA Owner, synthetic local TMDB, internal network',
                      'boundary': 'Linux hosted browser and disposable container; no physical device/provider pairing proof'}
-          pathlib.Path(f'.verification/library-{project}/source-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+          pathlib.Path(f'.verification/responsive-{project}/source-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
           PYTHON
       - name: Run one disposable full-media MFA Owner and strict Responsive99
         env:

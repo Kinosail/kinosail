@@ -7,6 +7,7 @@ import re
 import subprocess
 import sys
 import textwrap
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -75,6 +76,35 @@ class ResponsiveWorkflowTests(unittest.TestCase):
         self.assertIn('--workers=1', receipt['command'])
         self.assertIn('--retries=0', receipt['command'])
         self.assertIn('--repeat-each=1', receipt['command'])
+
+    def test_actual_recipe_writes_only_into_the_fresh_discovery_artifact_directory(self):
+        read = Path.read_bytes
+        def source_bytes(path):
+            return read(ROOT / path)
+        with tempfile.TemporaryDirectory() as temporary:
+            original = Path.cwd()
+            fresh = Path(temporary)
+            artifact = fresh / '.verification/responsive-webkit'
+            artifact.mkdir(parents=True)
+            (artifact / 'discovery.json').write_text('{}')
+            sys.path.insert(0, str(ROOT / 'apps/player/scripts'))
+            try:
+                os.chdir(fresh)
+                with patch.dict(os.environ, {'RESPONSIVE_PROJECT': 'webkit', 'PROOF_REVISION': 'fixture-revision'}), \
+                        patch.object(Path, 'read_bytes', source_bytes), \
+                        patch('subprocess.run', side_effect=AssertionError('fixture process effect')):
+                    exec(compile(self.recipe(), 'responsive-source-recipe', 'exec'), {})
+                receipt = json.loads((artifact / 'source-receipt.json').read_text())
+                self.assertEqual(len(receipt['identities']), 99)
+                self.assertEqual(receipt['profile'], 'responsive-shell')
+                for path, digest in receipt['sourceSHA256'].items():
+                    self.assertEqual(digest, hashlib.sha256(read(ROOT / path)).hexdigest())
+                self.assertEqual({p.relative_to(fresh).as_posix() for p in fresh.rglob('*') if p.is_file()},
+                                 {'.verification/responsive-webkit/discovery.json',
+                                  '.verification/responsive-webkit/source-receipt.json'})
+            finally:
+                os.chdir(original)
+                sys.path.remove(str(ROOT / 'apps/player/scripts'))
 
     def test_missing_source_rejects_before_any_receipt_write(self):
         read = Path.read_bytes
