@@ -236,14 +236,36 @@ private func backgroundManifestRequest(_ probe: BackgroundAuthorizationProbe, ac
     // Freeze the original readiness decision before emitting the timing receipt.
     let observed = probe.fixture.requests
     let readinessFinished = ContinuousClock.now
+    // Observe late delivery without changing the original readiness assertion.
+    let diagnosticDeadline = readinessFinished.advanced(by: .seconds(10))
+    var diagnosticInterrupted = false
+    if observed.isEmpty {
+        while probe.fixture.requests.isEmpty && ContinuousClock.now < diagnosticDeadline {
+            do { try await Task.sleep(for: .milliseconds(5)) }
+            catch { diagnosticInterrupted = true; break }
+        }
+    }
+    let diagnosticFinished = ContinuousClock.now
     let milliseconds: (Duration) -> Double = { duration in
         let parts = duration.components
         return Double(parts.seconds) * 1000 + Double(parts.attoseconds) / 1e15
     }
+    let delivery = FixtureURLProtocol.entries.withLock { $0[probe.fixture.host] }
+    let diagnosticRequest = delivery?.requests.first
+    let diagnosticRequestMatches = delivery?.requests.count == 1
+        && diagnosticRequest?.url?.path == path + "/manifest"
+        && diagnosticRequest?.value(forHTTPHeaderField: "Authorization") == access.header
+        && diagnosticRequest?.value(forHTTPHeaderField: "X-Kinosail-Viewer-Profile") == access.profileID
     let diagnostic: [String: Any] = ["enqueueFinishedMs": milliseconds(began.duration(to: enqueued)),
         "readinessFinishedMs": milliseconds(began.duration(to: readinessFinished)),
         "polls": polls, "iterationBound": 200, "longestPollGapMs": milliseconds(longestGap),
-        "callerTaskPriority": Task.currentPriority.rawValue, "initialRequestCount": observed.count]
+        "callerTaskPriority": Task.currentPriority.rawValue, "initialRequestCount": observed.count,
+        "diagnosticDeadlineMs": 10_000, "diagnosticFinishedMs": milliseconds(began.duration(to: diagnosticFinished)),
+        "diagnosticInterrupted": diagnosticInterrupted,
+        "diagnosticRequestCount": delivery?.requests.count ?? 0,
+        "diagnosticRequestMatches": diagnosticRequestMatches,
+        "admissionElapsedMs": (delivery?.requestAdmissions ?? []).map { milliseconds(began.duration(to: $0)) },
+        "arrivalElapsedMs": (delivery?.requestArrivals ?? []).map { milliseconds(began.duration(to: $0)) }]
     if let data = try? JSONSerialization.data(withJSONObject: diagnostic, options: [.sortedKeys]),
        let text = String(data: data, encoding: .utf8) { print("BACKGROUND_MANIFEST_TIMING \(text)") }
     let request = try #require(observed.first)
