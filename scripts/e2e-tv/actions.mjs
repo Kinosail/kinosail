@@ -1,6 +1,7 @@
 import { constants, openSync, closeSync, fstatSync, lstatSync, ftruncateSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { readControl } from './control.mjs';
+import { tvAddressFailure } from './tv.mjs';
 const stages = ['inventory','reinstall','open','foreground','use','close','owner','library','server_address','connect','approval','movies','movie_focus','play','decoded_frames','pause','menu','progress','relaunch','restored_connection','persisted_progress'];
 function fields(value, expected) {
  if(!value || typeof value!=='object' || Array.isArray(value) || Object.keys(value).sort().join(',')!==expected.sort().join(','))throw Error('invalid TV action fields');
@@ -15,7 +16,17 @@ export function validateTvActions(value) {
   if(event.status==='started')stack.push(event.stage);
   else if(stack.pop()!==event.stage)throw Error('conflicting TV action order');
   if(event.status==='failed'){
-   const failure=event.failure;fields(failure,['category','ownKeyCount','recognizedKeyMask']);
+   const failure=event.failure;fields(failure,['category','ownKeyCount','recognizedKeyMask',...(Object.hasOwn(failure,'address')?['address']:[])]);
+   if(Object.hasOwn(failure,'address')){
+    if(event.stage!=='server_address')throw Error('conflicting TV address stage');
+    const address=failure.address;fields(address,['substage','candidateCount','focusedPropertyPresent','inheritedLabel']);
+    if(!['capture','snapshot_validation','candidate_match','focus','select','type','menu'].includes(address.substage)
+      || address.candidateCount!==null && (!Number.isInteger(address.candidateCount) || address.candidateCount<0 || address.candidateCount>10000)
+      || ['focusedPropertyPresent','inheritedLabel'].some(key=>address.candidateCount===null?address[key]!==null:typeof address[key]!=='boolean'))throw Error('invalid TV address observation');
+    if(['capture','snapshot_validation'].includes(address.substage) && address.candidateCount!==null
+      || address.substage==='focus' && address.candidateCount>1
+      || ['select','type','menu'].includes(address.substage) && address.candidateCount!==null && (address.candidateCount!==1 || address.focusedPropertyPresent!==true))throw Error('conflicting TV address observation');
+   }
    if(failure.category!=='unqualified' || failure.ownKeyCount!==null && (!Number.isInteger(failure.ownKeyCount) || failure.ownKeyCount<0 || failure.ownKeyCount>128) || !Number.isInteger(failure.recognizedKeyMask) || failure.recognizedKeyMask<0 || failure.recognizedKeyMask>15 || failure.ownKeyCount===null && failure.recognizedKeyMask!==0)throw Error('invalid TV failure shape');
    if(failure.ownKeyCount!==null && failure.ownKeyCount<[1,2,4,8].filter(bit=>failure.recognizedKeyMask&bit).length)throw Error('conflicting TV failure shape');
   }
@@ -54,7 +65,8 @@ export function createTvActions(directory=process.cwd()) {
    events.push({stage,status:'started'});save();
    let result;
    try{result=await operation();}catch(error){
-    events.push({stage,status:'failed',failure:failureShape(error)});
+    const address=stage==='server_address'?tvAddressFailure(error):undefined;
+    events.push({stage,status:'failed',failure:{...failureShape(error),...(address?{address}: {})}});
     try{save();}catch{} // A frozen/opaque SDK failure remains the original thrown value.
     throw error;
    }
