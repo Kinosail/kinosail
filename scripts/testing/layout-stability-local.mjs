@@ -9,7 +9,7 @@ const {chromium, webkit, firefox} = require("@playwright/test");
 const AxeBuilder = require("@axe-core/playwright").default;
 const baseURL = process.env.KINOSAIL_E2E_URL, app = process.env.KINOSAIL_LAYOUT_APP, run = process.env.KINOSAIL_LAYOUT_RUN;
 const engine = process.env.KINOSAIL_LAYOUT_BROWSER || "chromium";
-let phase = "browser-launch", activePage, browser, authContext;
+let phase = "browser-launch", activePage, browser, authContext, routeFailure;
 const loginResponses = [];
 const reports = [], flows = [], flowProbe = {stage: "not-started"};
 let failureRecorded = false;
@@ -20,6 +20,7 @@ async function recordFailure(error, failedPage = flowProbe.page || activePage) {
   const failure = {app, engine, stage: phase, flowStage: flowProbe.stage,
     errorClass: ["TimeoutError", "TypeError", "ReferenceError", "SyntaxError"].includes(error.name) ? error.name : "Error",
     sourceLocation: source ? {file: source[1], line: Number(source[2]), column: Number(source[3])} : undefined,
+    request: routeFailure,
     completedCases: reports.length, completedFlows: flows.length, media: flowProbe.media, probe: flowProbe.geometry, loginResponses,
     authCookieCount: phase.startsWith("login") && authContext ? await authContext.cookies().then(c=>c.length).catch(()=>undefined) : undefined,
     pageState: failedPage ? (new URL(failedPage.url()).pathname === "/login" ? "login" : "other") : "not-created"};
@@ -141,9 +142,17 @@ try {
     await page.route("**/*", async route => {
       const request = route.request(), url = new URL(request.url());
       if ((variant==="slow-css"&&request.resourceType()==="stylesheet") || url.pathname.endsWith(".woff2") || (url.pathname.endsWith(".js")&&!url.pathname.endsWith("/theme.js")) || /\/api\/v1\/subtitle-library\/[^/]+\/inspect/.test(url.pathname) || request.resourceType() === "image") {
-        const response = await route.fetch();
-        await new Promise(resolve => setTimeout(resolve, variant==="slow-css"&&request.resourceType()==="script"?2400:1200));
-        await route.fulfill({response});
+        try {
+          const response = await route.fetch();
+          await new Promise(resolve => setTimeout(resolve, variant==="slow-css"&&request.resourceType()==="script"?2400:1200));
+          await route.fulfill({response});
+        } catch (error) {
+          routeFailure = {protocol: url.protocol, resourceType: request.resourceType(),
+            sameOrigin: url.origin === new URL(baseURL).origin};
+          await route.abort("failed").catch(() => {});
+          await recordFailure(error, page);
+          throw error;
+        }
       } else await route.continue();
     });
     const name = `${viewport.width}-${variant}-${path.replace(/[^a-z0-9]+/gi, "-")}`;

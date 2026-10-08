@@ -30,6 +30,23 @@ for (const preference of ["default", "off"] as const) {
   });
 }
 
+test("later metadata preserves a native Off caption choice @smoke", async ({page}) => {
+  const peer = await captionPeer(page, "headers");
+  try {
+    await openCaptionPlayer(page, peer.origin);
+    await expect.poll(async () => (await peer.stats()).calls).toBe(1);
+    await page.locator("video").evaluate((video: HTMLVideoElement) => {
+      video.dispatchEvent(new Event("loadedmetadata"));
+      // Native media controls change TextTrack mode without the app selector.
+      video.textTracks[0].mode = "disabled";
+      video.dispatchEvent(new Event("loadedmetadata"));
+    });
+    await expect.poll(() => page.locator("track").evaluate((track: HTMLTrackElement) => track.track.mode)).toBe("disabled");
+    await expect(page.locator("[data-subtitle-status]")).toBeHidden();
+    expect((await peer.stats()).calls).toBe(1);
+  } finally { await peer.close(); }
+});
+
 test("persisted caption restore cancels the old attempt and reloads the selected language", async ({page}, info) => {
   test.skip(!isolated || Boolean(serverOrigin), "isolated native PageTransitionEvent control for persisted caption lifecycle");
   const peer = await captionPeer(page, "body");
