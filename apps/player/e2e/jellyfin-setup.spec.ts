@@ -142,8 +142,59 @@ test("Jellyfin setup stays blocked until trusted HTTPS is saved", async ({ page,
 	await expect(page).toHaveURL(/\/onboarding\/connection/);
 	await expect(testStatus).toContainText("configured sign-in address does not match this trusted HTTPS address");
 	saveFails = false;
-	await trusted.getByRole("button", { name: "Save trusted HTTPS" }).click();
-	await expect(page).toHaveURL("/onboarding/connection");
+	const expectedOrigin = new URL(testInfo.project.use.baseURL!).origin;
+	const put = {requests: 0, responses: 0, failures: 0, status: null as number | null};
+	const nativePost = {requests: 0, responses: 0, failures: 0, status: null as number | null};
+	const facts = {documentStarted: false, documentCommitted: false};
+	const ownedURL = (raw: string) => {
+		if (typeof raw !== "string" || raw.length > 4096) return null;
+		try {const url = new URL(raw); return url.origin === expectedOrigin && !url.username && !url.password ? url : null;}
+		catch {return null;}
+	};
+	const entry = (raw: string, method: string) => {
+		const url = ownedURL(raw);
+		if (!url || url.search || url.hash) return null;
+		if (url.pathname === "/api/v1/settings/trusted-https" && method === "PUT") return put;
+		if (url.pathname === "/onboarding/trusted-https" && method === "POST") return nativePost;
+		return null;
+	};
+	const requested = (request: {url(): string; method(): string; isNavigationRequest(): boolean; frame(): unknown}) => {
+		const row = entry(request.url(), request.method());
+		if (row) row.requests = Math.min(8, row.requests + 1);
+		const url = ownedURL(request.url());
+		if (url?.pathname === "/onboarding/connection" && !url.search && request.isNavigationRequest() && request.frame() === page.mainFrame()) facts.documentStarted = true;
+	};
+	const responded = (response: {url(): string; status(): number; request(): {method(): string}}) => {
+		const row = entry(response.url(), response.request().method());
+		if (!row) return;
+		row.responses = Math.min(8, row.responses + 1);
+		const status = response.status();
+		row.status = Number.isInteger(status) && status >= 100 && status <= 599 ? status : null;
+	};
+	const failed = (request: {url(): string; method(): string}) => {
+		const row = entry(request.url(), request.method());
+		if (row) row.failures = Math.min(8, row.failures + 1);
+	};
+	const committed = (frame: {url(): string}) => {
+		const url = ownedURL(frame.url());
+		if (frame === page.mainFrame() && url?.pathname === "/onboarding/connection" && !url.search) facts.documentCommitted = true;
+	};
+	page.on("request", requested); page.on("response", responded); page.on("requestfailed", failed); page.on("framenavigated", committed);
+	try {
+		await trusted.getByRole("button", { name: "Save trusted HTTPS" }).click();
+		await expect(page).toHaveURL("/onboarding/connection");
+	} finally {
+		const current = ownedURL(page.url());
+		const snapshot = {putRequests: put.requests, putResponses: put.responses, putFailures: put.failures, putStatus: put.status,
+			nativePostRequests: nativePost.requests, nativePostResponses: nativePost.responses, nativePostFailures: nativePost.failures, nativePostStatus: nativePost.status,
+			...facts, currentOriginOwned: Boolean(current), currentPath: current ? (current.pathname === "/onboarding/connection" ? "connection" : "other") : "unavailable",
+			currentFragment: current ? (current.hash === "" ? "none" : current.hash === "#trusted-https-configuration" ? "trusted-https" : current.hash === "#jellyfin" ? "jellyfin" : "other") : "unavailable"};
+		let timer: ReturnType<typeof setTimeout> | undefined;
+		try {await Promise.race([testInfo.attach("jellyfin-save-stages", {contentType: "application/json", body: JSON.stringify(snapshot)}),
+			new Promise(resolve => {timer = setTimeout(resolve, 500);})]);}
+		catch { /* Diagnostic failure cannot replace the Save or destination assertion. */ }
+		finally {clearTimeout(timer); page.off("request", requested); page.off("response", responded); page.off("requestfailed", failed); page.off("framenavigated", committed);}
+	}
 	await expect(disclosure.locator(":scope > summary")).toHaveText(/Review trusted HTTPS setup/);
 	await expect(trusted).toBeHidden();
 	await expect(choice).toBeEnabled();
