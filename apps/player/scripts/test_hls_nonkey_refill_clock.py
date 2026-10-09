@@ -3,7 +3,7 @@ Failure matrix: ambiguous first payload, absent/inexact clocks, foreign timebase
 unbounded packet rows, integer rescale ties and distinct canonical track origins.
 """
 import unittest
-from hls_nonkey_refill_clock import audio_origin, rescale_us, refill_shift
+from hls_nonkey_refill_clock import audio_origin, rescale_us, refill_shift, matrix_failure
 
 HASH = 'SHA256:' + 'a' * 64
 OTHER = 'SHA256:' + 'b' * 64
@@ -54,6 +54,16 @@ class RefillClockTests(unittest.TestCase):
     def test_refill_shift_does_not_choose_against_pcm(self):
         self.assertEqual(refill_shift(-571400, 20000000, 8095833, 48000), 0)
         self.assertEqual(refill_shift(-571400, 20000020, 8095833, 48000), 1)
+
+class MatrixFailureTests(unittest.TestCase):
+    def test_failed_cell_keeps_only_a_safe_class(self):
+        self.assertEqual(matrix_failure(RuntimeError('fixed_failure')), 'fixed_failure')
+        self.assertEqual(matrix_failure(RuntimeError('/private/fixture')), 'RuntimeError')
+        self.assertEqual(matrix_failure(ValueError('private details')), 'ValueError')
+
+    def test_shared_deadline_remains_terminal(self):
+        with self.assertRaises(RuntimeError):
+            matrix_failure(RuntimeError('bounded_diagnostic_deadline'))
 
 if __name__ == '__main__':
     unittest.main()
