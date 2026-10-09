@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/catalog"
+	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/workload"
 )
 
@@ -84,23 +85,29 @@ func remainingNonKeyActualClock(t *testing.T, ctx context.Context, ffmpeg, ffpro
 		filepath.Ext(source), offset, elapsed.Nanoseconds(), proof.SourceClock, proof.FirstPacket,
 		proof.FirstNativeSample, proof.TargetNativeSample, proof.TargetPTS, proof.MediaTime,
 		proof.OriginalMediaTime, proof.LeadingSamples, proof.SourcePhase)
+	remainingNonKeyCollectorRejects(t, ctx, manager, item, recipe, first, original, options.Cache)
+}
+
+func remainingNonKeyCollectorRejects(t *testing.T, ctx context.Context, manager *hlsManager, item library.Item, recipe hlsRecipe, first [32]byte, original int64, policy string) {
+	t.Helper()
+	before := remainingNonKeyCollectorHash(t, item.Path)
 	for _, damage := range []string{"absent-packet", "canceled", "changed-policy"} {
 		t.Run(damage, func(t *testing.T) {
 			request, release := context.WithCancel(ctx)
 			defer release()
-			packet, policy := first, options.Cache
+			packet, currentPolicy := first, policy
 			switch damage {
 			case "absent-packet":
 				packet = [32]byte{1}
 			case "canceled":
 				release()
 			case "changed-policy":
-				policy += ":changed"
+				currentPolicy += ":changed"
 			}
-			if value, err := manager.measureCopiedHLSSourceAudio(request, item, recipe, policy, packet, int64(offset*1_000_000), original); err == nil || value != nil {
+			if value, err := manager.measureCopiedHLSSourceAudio(request, item, recipe, currentPolicy, packet, int64(recipe.offset*1_000_000), original); err == nil || value != nil {
 				t.Fatal("nonkey invalid source-clock operation produced a proof")
 			}
-			if remainingNonKeyCollectorHash(t, source) != before {
+			if remainingNonKeyCollectorHash(t, item.Path) != before {
 				t.Fatal("nonkey rejected source-clock operation changed source")
 			}
 		})
@@ -112,8 +119,8 @@ func remainingNonKeyActualClock(t *testing.T, ctx context.Context, ffmpeg, ffpro
 func remainingNonKeyCollectorPrivateAudio(t *testing.T, ctx context.Context, ffmpeg, ffprobe, source string, offset float64) ([32]byte, int64) {
 	t.Helper()
 	directory := t.TempDir()
-	remainingNonKeyCollectorCommand(t, ctx, ffmpeg, "-nostdin", "-v", "error", "-ss", fmt.Sprint(offset),
-		"-i", source, "-map", "0:v:0", "-map", "0:a:0", "-c", "copy", "-avoid_negative_ts", "disabled",
+	remainingNonKeyCollectorCommand(t, ctx, ffmpeg, "-nostdin", "-v", "error", "-y", "-ss", fmt.Sprint(offset),
+		"-i", source, "-map", "0:v:0", "-map", "0:a:0?", "-sn", "-c", "copy", "-avoid_negative_ts", "disabled",
 		"-f", "hls", "-hls_time", "2", "-hls_playlist_type", "event", "-hls_segment_type", "fmp4",
 		"-hls_segment_options", "movflags=+skip_sidx:avoid_negative_ts=disabled",
 		"-hls_flags", "temp_file", "-hls_fmp4_init_filename", "init.mp4",
@@ -149,11 +156,12 @@ func remainingNonKeyCollectorSources(t *testing.T, ctx context.Context, ffmpeg s
 	directory := t.TempDir()
 	mkv, mp4 := filepath.Join(directory, "Clock.mkv"), filepath.Join(directory, "Clock.mp4")
 	remainingNonKeyCollectorCommand(t, ctx, ffmpeg, "-nostdin", "-v", "error",
-		"-f", "lavfi", "-i", "testsrc2=s=640x360:r=24:d=32",
-		"-f", "lavfi", "-i", "sine=frequency=440:sample_rate=48000:duration=32",
+		"-f", "lavfi", "-i", "testsrc2=s=640x360:r=24:d=32.0",
+		"-f", "lavfi", "-i", "sine=frequency=440:sample_rate=48000:duration=32.0",
 		"-c:v", "libx264", "-threads", "2", "-preset", "veryfast", "-crf", "32",
-		"-g", "48", "-keyint_min", "48", "-sc_threshold", "0", "-frames:v", "768",
-		"-c:a", "aac", "-ac", "2", "-avoid_negative_ts", "disabled", mkv)
+		"-pix_fmt", "yuv420p", "-g", "48", "-keyint_min", "1", "-sc_threshold", "0",
+		"-force_key_frames", "0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30", "-frames:v", "768",
+		"-c:a", "aac", "-ac", "2", mkv)
 	remainingNonKeyCollectorCommand(t, ctx, ffmpeg, "-nostdin", "-v", "error", "-i", mkv,
 		"-map", "0:v:0", "-map", "0:a:0", "-c", "copy", mp4)
 	return []string{mkv, mp4}

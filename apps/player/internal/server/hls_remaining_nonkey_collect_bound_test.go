@@ -71,6 +71,11 @@ func remainingNonKeyCollectorOperationBound(t *testing.T, name string) {
 	if elapsed > 2*time.Second {
 		t.Fatal("nonkey source-clock operation exceeded original shared two-second budget")
 	}
+	remainingNonKeyCollectorBoundWitness(t, manager, item.Path, marker, name, original, before, elapsed)
+}
+
+func remainingNonKeyCollectorBoundWitness(t *testing.T, manager *hlsManager, source, marker, name string, original os.FileInfo, before [32]byte, elapsed time.Duration) {
+	t.Helper()
 	data, err := os.ReadFile(marker)
 	if err != nil || len(data) == 0 || len(data) > 1024 {
 		t.Fatal("nonkey source-clock controlled processes never executed")
@@ -82,11 +87,11 @@ func remainingNonKeyCollectorOperationBound(t *testing.T, name string) {
 	for _, pid := range pids {
 		copiedRecoveryAssertStopped(t, []byte(pid))
 	}
-	if remainingNonKeyCollectorHash(t, item.Path) != before {
+	if remainingNonKeyCollectorHash(t, source) != before {
 		t.Fatal("nonkey source-clock rejection changed source bytes")
 	}
 	if name == "same-byte-source-replacement" {
-		replaced, err := os.Stat(item.Path)
+		replaced, err := os.Stat(source)
 		if err != nil || os.SameFile(original, replaced) || original.Size() != replaced.Size() || !original.ModTime().Equal(replaced.ModTime()) {
 			t.Fatal("nonkey source-clock controlled replacement did not retain bytes and timestamps on a different inode")
 		}
