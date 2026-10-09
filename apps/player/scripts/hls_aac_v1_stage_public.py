@@ -89,7 +89,9 @@ def settle(process, row):
             failures.append('v1_stage_group_observation_failed')
             return None
     try:
-        if process.poll() is None or observe() != []:
+        # The leader remains an unreaped direct child until this termination.
+        # A final retry after Wait performs observation only; it never signals.
+        if process.returncode is None:
             try:
                 os.killpg(process.pid, signal.SIGKILL)
             except ProcessLookupError:
@@ -112,12 +114,17 @@ def execute(binary, args, directory, number, guard, row, cli_owners):
         cli_owners.append((process, row))
         row['commandStarted'] = True
         try:
-            while process.poll() is None:
+            exited = None
+            while exited is None:
+                exited = os.waitid(os.P_PID, process.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
+                if exited is not None:
+                    break
                 inventory(directory, number)
                 check(os.fstat(error.fileno()).st_size <= 2 << 20, 'v1_stage_private_log_bound')
                 check(time.monotonic() < end, 'v1_stage_command_deadline')
                 time.sleep(0.01)
-            check(process.returncode == 0, 'v1_stage_command_failed')
+            row.update(leaderExitObservedUnreaped=True, exitStatus=exited.si_status)
+            check(exited.si_code == os.CLD_EXITED and exited.si_status == 0, 'v1_stage_command_failed')
         except Exception as failure:
             row['failureClass'] = str(failure) if isinstance(failure, RuntimeError) else type(failure).__name__
             raise
@@ -142,10 +149,10 @@ def media_evidence(source_frames, media, directory, timeline, number, row):
     generated = bounded_bytes(directory / 'init.mp4', 2 << 20, 'v1_stage_generated_init_bound')
     row.update(canonicalInitSHA256=hashlib.sha256(init).hexdigest(),
         generatedInitSHA256=hashlib.sha256(generated).hexdigest(),
-        canonicalInitMetadata=initialization_metadata(init),
-        generatedInitMetadata=initialization_metadata(generated),
         initByteDifferences=sum(a != b for a, b in zip(init, generated)) + abs(len(init) - len(generated)),
-        exactInitSHA256=generated == init)
+        exactInitSHA256=generated == init, canonicalInitBytes=len(init), generatedInitBytes=len(generated))
+    row['canonicalInitMetadata'] = initialization_metadata(init)
+    row['generatedInitMetadata'] = initialization_metadata(generated)
     name = 'segment-' + format(number, '05d') + '.m4s'
     original = bounded_bytes(media / name, 64 << 20, 'v1_stage_canonical_fragment_bound')
     fragment = bounded_bytes(directory / name, 64 << 20, 'v1_stage_requested_fragment_bound')
@@ -186,7 +193,13 @@ def prove(binary, source, media, rows, timeline, run, guard, receipt, cli_owners
             directory = run / ('stage-' + str(number))
             directory.mkdir()
             try:
+                original = template(rows, 0 if number == 0 else 4, source)
+                row['originalTemplateSHA256'] = hashlib.sha256(repr(original).encode()).hexdigest()
                 args = arguments(rows, source, retained, directory, timeline, number)
+                row['numericArguments'] = {'inputSeekSeconds': float(option(args, '-ss')),
+                    'startNumber': int(option(args, '-start_number')),
+                    'durationSeconds': float(option(args, '-t')),
+                    'muxOffsetSeconds': float(option(args, '-output_ts_offset') or '0')}
                 row['oldProfileTemplateCut'] = 0 if number == 0 else 4
                 row['executedArgumentsSHA256'] = hashlib.sha256(repr(args).encode()).hexdigest()
                 row['sourceFDInputWitnessed'] = identity(os.stat(option(args, '-i'))) == identity(witness)

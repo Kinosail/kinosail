@@ -46,6 +46,7 @@ def run(command, timeout=60):
 
 
 try:
+    check(sys.platform == 'linux' and hasattr(__import__('os'), 'WNOWAIT'), 'v1_stage_linux_waitid_required')
     check(shutil.disk_usage(RUN).free >= 2 << 30, 'v1_stage_hosted_disk_budget')
     regular, _ = fixture(RUN, 'regular', 48, ','.join(str(v) for v in range(0, 32, 2)), frames=768)
     media = RUN / 'media'
@@ -115,7 +116,9 @@ finally:
             'hls_aac_v2_public_http.py', 'hls_aac_v2_public_evidence.py', 'hls_followon_public.py',
             'hls_remaining_nonkey_deadline.py', 'hls_remaining_process.py', 'hls_timeline_http.py',
             'hls_timeline_fixture.py', 'hls_timeline_packets.py', 'hls_remaining_nonkey_evidence.py',
-            'hls_remaining_nonkey_init.py', 'hls_remaining_nonkey_fragment.py', 'hls_followon_frames.py']]]
+            'hls_remaining_nonkey_init.py', 'hls_remaining_nonkey_fragment.py', 'hls_followon_frames.py',
+            'hls_remaining_nonkey_boundary.py', 'hls_nonkey_browser_audio_boundary.py',
+            'hls_nonkey_browser_packet_association.py', 'hls_nonkey_browser_packet_clock.py']]]
         receipt['executedScriptSHA256'] = {str(path.relative_to(ROOT)): sha(path) for path in files}
         raw = json.dumps(receipt, separators=(',', ':'), allow_nan=False) + '\n'
         check(0 < len(raw.encode()) <= 32 << 20, 'v1_stage_receipt_bound')
