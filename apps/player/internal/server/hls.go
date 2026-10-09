@@ -217,7 +217,7 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 	}
 	defer output.close()
 	timeline, _ := manager.readCopiedHLSTimeline(root, options.Cache)
-	if !copiedHLSPendingProducerRecipe(timeline, sourceRecipe) {
+	if !copiedHLSPendingProducerWindow(timeline, sourceRecipe, recipe) {
 		return errCopiedHLSIndex
 	}
 	if timeline != nil {

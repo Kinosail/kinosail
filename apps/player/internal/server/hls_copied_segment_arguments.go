@@ -15,6 +15,13 @@ func copiedHLSPendingProducerRecipe(timeline *copiedHLSTimeline, recipe hlsRecip
 		!recipe.dialogueBoost && !recipe.normalizeLoudness && len(recipe.omitted) == 0
 }
 
+func copiedHLSPendingProducerWindow(timeline *copiedHLSTimeline, source, window hlsRecipe) bool {
+	if timeline == nil || timeline.Presentation == nil && timeline.Strategy != copiedHLSPrerollStrategy {
+		return true
+	}
+	return copiedHLSPendingProducerRecipe(timeline, source) && source.mode == window.mode
+}
+
 func indexedCopiedHLSSegmentArguments(arguments []string, timeline *copiedHLSTimeline) []string {
 	if timeline == nil {
 		return arguments
