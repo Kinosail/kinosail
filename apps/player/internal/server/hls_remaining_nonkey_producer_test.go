@@ -81,7 +81,7 @@ type remainingNonKeyProducerFixture struct {
 	item      library.Item
 	recipe    hlsRecipe
 	options   transcodeSettings
-	facts     MediaFacts
+	facts     probeResult
 	directory string
 	timeline  *copiedHLSTimeline
 	marker    string
@@ -242,4 +242,3 @@ func remainingNonKeyProducerJoin(t *testing.T, media string, maximum int) (strin
 	}
 	return path, cuts
 }
-

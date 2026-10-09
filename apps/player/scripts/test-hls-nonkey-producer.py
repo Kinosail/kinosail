@@ -3,6 +3,7 @@
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -46,6 +47,8 @@ def retain_go_output(stdout,stderr,complete):
     receipt['goStdoutSHA256']=hashlib.sha256(stdout).hexdigest()
     receipt['goStderrSHA256']=hashlib.sha256(stderr).hexdigest()
     receipt['goStderrBytes']=len(stderr)
+    compile_lines=[v.get('Output','') for v in events]+stderr.decode(errors='replace').splitlines()
+    receipt['safeGoCompilerMessages']=[line.strip()[:1000] for line in compile_lines if re.search(r'hls_remaining_nonkey_producer(?:_packets)?_test\\.go:[0-9]+:',line)][:64]
     receipt['tests']=[{'test':v.get('Test'),'action':v['Action']} for v in events if v.get('Test') and v['Action'] in ['pass','fail','skip']]
     receipt['safeGoMessages']=[v['Output'].strip() for v in events if v.get('Output') and
         ('pending producer ' in v['Output'] or 'nonkey actual-pending-producer ' in v['Output'])][:64]
@@ -65,6 +68,8 @@ try:
     test=ROOT/'apps/player/internal/server/hls_remaining_nonkey_producer_test.go'
     unformatted=run(['gofmt','-l',str(test),str(ROOT/'apps/player/internal/server/hls_remaining_nonkey_producer_packets_test.go')],10,65536)
     receipt['testSourceFormatted']=not unformatted.strip()
+    if not receipt['testSourceFormatted']:
+        receipt['safeTestFormattingDiff']=run(['gofmt','-d',str(test),str(ROOT/'apps/player/internal/server/hls_remaining_nonkey_producer_packets_test.go')],10,65536).decode()
     check(receipt['testSourceFormatted'],'producer_test_source_unformatted')
     receipt['currentStage']='actual-canonical-producer'
     env=dict(os.environ,KINOSAIL_COPIED_RECOVERY_MEDIA='1',KINOSAIL_NONKEY_CLI_REFERENCE=str(reference))
@@ -120,7 +125,7 @@ finally:
         target.write_text(raw)
         (RUN/'SHA256SUMS').write_text(sha(target)+'  receipt.json\n'+''.join(sha(p)+'  '+str(p.relative_to(ROOT))+'\n' for p in files))
         print(json.dumps({k:receipt.get(k) for k in ['revision','tree','result','failureClass','currentStage',
-            'testSourceFormatted','goReturnCode','goOutputComplete','tests','safeGoMessages','sourcesUnchanged','sourceObservations','ownedGoProcessJoin','ownedGoCleanupFailureClass',
+            'testSourceFormatted','safeTestFormattingDiff','goReturnCode','goOutputComplete','tests','safeGoMessages','safeGoCompilerMessages','sourcesUnchanged','sourceObservations','ownedGoProcessJoin','ownedGoCleanupFailureClass',
             'referenceReceiptSHA256','referenceSHA256','productionAcceptance','certificateAcceptance']}|
             {'receiptSHA256':sha(target)}),flush=True)
     guard.__exit__()
