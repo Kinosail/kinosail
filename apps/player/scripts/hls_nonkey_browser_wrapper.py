@@ -41,7 +41,8 @@ if eligible:
         arguments[-1:-1] = ['-hls_segment_options', options]
     evidence = {'pid': os.getpid(), 'parent': os.getppid(), 'request': selected,
                 'inputSeek': case['inputSeek'], 'sourceIDRPTS': case['sourceIDRPTS'],
-                'delta': case['delta'], 'sourceMatched': True, 'indexedJobChanged': False,
+                'delta': case['delta'], 'measuredDeltaRational':case['measuredDeltaRational'],
+                'sourceMatched': True, 'indexedJobChanged': False,
                 'originalArgvSHA256': hashlib.sha256(json.dumps(original).encode()).hexdigest(),
                 'actualArgvSHA256': hashlib.sha256(json.dumps(arguments).encode()).hexdigest()}
     path = Path(config['invocations'])

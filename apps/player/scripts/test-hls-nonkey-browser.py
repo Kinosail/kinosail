@@ -18,6 +18,7 @@ from hls_remaining_nonkey_evidence import observed_media, native_pcm
 from hls_remaining_nonkey_boundary import packet_tail
 from hls_remaining_process import finish_processes, join_group
 from hls_nonkey_browser_public import chromium_join, public_media
+from hls_nonkey_browser_config import measured_delta
 from hls_followon_public import bounded_bytes, check, prepare_once, sample_resources
 from hls_remaining_nonkey_deadline import DiagnosticDeadline
 
@@ -42,6 +43,7 @@ def run(argv, timeout=60, bound=4<<20):
 
 
 try:
+    receipt['currentStage']='strict-cli-source-proof'
     # The original all-frame, payload-tail, native PCM and negative-control proof stays unchanged.
     run([sys.executable,str(ROOT/'apps/player/scripts/test-hls-nonkey-supported-followon.py')],300,2<<20)
     paths = list((ROOT/'.verification/hls-nonkey-mux').glob('seek-followon-*/receipt.json'))
@@ -51,6 +53,7 @@ try:
           and cli['priorProducerGateRemainsEmpty'] and not cli['productionAcceptance'],'browser_cli_binding')
     receipt['unchangedCLIReceipt'] = {'sha256':sha(paths[0]),'revision':cli['revision'],'tree':cli['tree'],
         'qualifiedConsumerCases':cli['qualifiedConsumerCases'],'priorProducerGateRemainsEmpty':True}
+    receipt['currentStage']='canonical-server-build'
     binary = RUN/'kinosail'
     run(['go','-C',str(ROOT/'apps/player'),'build','-p=1','-o',str(binary),'./cmd/kinosail'],180)
     real = shutil.which('ffmpeg')
@@ -78,12 +81,17 @@ try:
         adapter = directory/'diagnostic-ffmpeg'
         adapter.write_text((ROOT/'apps/player/scripts/hls_nonkey_browser_wrapper.py').read_text())
         adapter.chmod(0o700)
+        receipt['currentStage']='fixed-producer-rational-config'
         producer = directory/'producer-private.json'
-        producer.write_text(json.dumps({'source':str(source),'ffmpeg':real,'invocations':str(invocations),
-            'cases':[{'request':v['requestedRelativeSeconds'],
-                'sourceIDRPTS':float(v['requiredPrecedingIDR']['pts_time']),
-                'inputSeek':float(v['requiredPrecedingIDR']['pts_time'])-float(source_facts['metadata']['format']['start_time']),
-                'delta':float(v['measuredDeltaSeconds'])} for v in selected_cases]}))
+        producer_cases=[]
+        for value in selected_cases:
+            delta=measured_delta(value['measuredDeltaSeconds'])
+            producer_cases.append({'request':value['requestedRelativeSeconds'],
+                'sourceIDRPTS':float(value['requiredPrecedingIDR']['pts_time']),
+                'inputSeek':float(value['requiredPrecedingIDR']['pts_time'])-float(source_facts['metadata']['format']['start_time']),
+                'delta':delta['seconds'],'measuredDeltaRational':delta['rational']})
+        receipt['rationalProducerClocks']=[{'request':v['request'],'deltaRational':v['measuredDeltaRational'],'deltaSeconds':v['delta']} for v in producer_cases]
+        producer.write_text(json.dumps({'source':str(source),'ffmpeg':real,'invocations':str(invocations),'cases':producer_cases}))
         with socket.socket() as listener:
             listener.bind(('127.0.0.1',0)); port=listener.getsockname()[1]
         api = PublicServer('http://localhost:'+str(port))
@@ -102,6 +110,7 @@ try:
             sampler=threading.Thread(target=sample_resources,args=(server,source,stop,resources),daemon=True)
             sampler.start()
             try:
+                receipt['currentStage']='authenticated-public-setup'
                 api.authorize()
                 items=api.call('/api/v1/library')['items']
                 item=next(v for v in items if v['title']=='Fixture')
@@ -114,6 +123,7 @@ try:
                     selected=plan['compatible'].replace('/index.m3u8','-o'+str(round(requested*1000))+'/index.m3u8')
                     check(re.fullmatch(r'/hls/[a-f0-9]{16}/p/r-[a-zA-Z0-9-]+/index\.m3u8',selected),
                           'browser_public_recipe')
+                    receipt['currentStage']='public-preparation'
                     preparation={'request':requested}
                     status,_,_=api.http('/api/v1/items/'+item['id']+'/playback-prepare','POST',{'source':selected},authenticated=False)
                     check(status==401,'browser_unauthorized_preparation')
@@ -128,8 +138,12 @@ try:
                                 preparation['safeCompletionPhase']=entry.get('phase','completion')
                     check(preparation['preparationAttempt']['completionState']==('ready' if requested==12 else 'unavailable'),
                           'browser_preparation_boundary_changed')
+                    receipt['currentStage']='public-media-delivery'
                     joined,manifest,assets,delivery=public_media(api,selected,directory/('public-'+str(requested)),log_path,server,source)
+                    receipt['currentStage']='complete-raw-media-observation'
                     observed={}
+                    partial={'request':requested,'observations':observed}
+                    case['publicCases'].append(partial)
                     metadata={'sourceFramePTS':source_facts['sourceFramePTS'],
                               'sourceTimeOriginSeconds':float(source_facts['metadata']['format']['start_time'])}
                     observed_media(source,joined,assets[0].read_bytes(),assets[1:],metadata,requested,observed)
@@ -141,7 +155,8 @@ try:
                         'delivery':delivery,'manifestSHA256':hashlib.sha256(manifest).hexdigest(),'audioDiscontinuities':[],
                         'fragmentAudioFacts':[],
                         'mediaSHA256Before':{p.name:sha(p) for p in assets},'publicJoinedSHA256':sha(joined)}
-                    case['publicCases'].append(public_case)
+                    partial.update(public_case)
+                    public_case=partial
                     previous_audio=None
                     for fragment in assets[1:]:
                         joined_fragment=joined.parent/'fragment.mp4'
@@ -164,6 +179,7 @@ try:
                     'referenceID':ref_item['id'],'cases':browser_cases,'output':str(output),
                     'browserOwnerFile':str(directory/'browser-owner-private.json')}))
                 private.chmod(0o600)
+                receipt['currentStage']='actual-browser-execution'
                 node=subprocess.Popen(['node',str(ROOT/'apps/player/e2e/hls-nonkey-browser.mjs'),str(private)],
                     stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True)
                 node_failed=False
@@ -225,13 +241,26 @@ try:
                   'audioQualified':v.get('qualification',{}).get('qualified'),'failureClass':v.get('failureClass')}
                  for v in case['browser']['cases']],
             'productionAcceptance':False,'browserAudioPresentationAccepted':False}),flush=True)
+    receipt['currentStage']='complete'
     receipt['result']='observed'
 except Exception as error:
     receipt['failureClass']=str(error) if isinstance(error,RuntimeError) else type(error).__name__
+    trace=error.__traceback__
+    frames=[]
+    while trace is not None and len(frames)<32:
+        code=trace.tb_frame.f_code
+        name=Path(code.co_filename).name
+        function=code.co_name if re.fullmatch(r'[a-zA-Z_][a-zA-Z0-9_]{0,79}',code.co_name) else 'module'
+        frames.append({'file':name if re.fullmatch(r'[a-zA-Z0-9_.-]{1,100}',name) else 'bounded-file',
+            'function':function,'line':trace.tb_lineno})
+        trace=trace.tb_next
+    receipt['safeFailureFrames']=frames[-4:]
+    receipt['failureMessageIncluded']=False
 finally:
     with guard.cleanup():
         receipt['handledTerminationSignals']=guard.signals
-        files={Path(__file__),ROOT/'apps/player/scripts/hls_nonkey_browser_wrapper.py',ROOT/'apps/player/scripts/hls_nonkey_browser_public.py',
+        files={Path(__file__),ROOT/'apps/player/scripts/hls_nonkey_browser_wrapper.py',ROOT/'apps/player/scripts/hls_nonkey_browser_public.py',ROOT/'apps/player/scripts/hls_nonkey_browser_config.py',
+               ROOT/'apps/player/scripts/test_hls_nonkey_browser_config.py',
                *list((ROOT/'apps/player/e2e').glob('hls-nonkey-browser*.mjs'))}
         receipt['executedScriptSHA256']={str(p.relative_to(ROOT)):sha(p) for p in files}
         raw=json.dumps(receipt,separators=(',',':'),allow_nan=False)+'\n'
@@ -240,7 +269,9 @@ finally:
         target.write_text(raw)
         (RUN/'SHA256SUMS').write_text(sha(target)+'  receipt.json\n'+''.join(sha(p)+'  '+str(p.relative_to(ROOT))+'\n' for p in sorted(files)))
         print(json.dumps({'revision':receipt['revision'],'tree':receipt['tree'],'result':receipt['result'],
-            'failureClass':receipt.get('failureClass'),'receiptSHA256':sha(target),
+            'failureClass':receipt.get('failureClass'),'currentStage':receipt.get('currentStage'),
+            'safeFailureFrames':receipt.get('safeFailureFrames',[]),'rationalProducerClocks':receipt.get('rationalProducerClocks',[]),
+            'receiptSHA256':sha(target),
             'productionAcceptance':False,'preparationAcceptance':False,'browserAudioPresentationAccepted':False}))
     guard.__exit__()
 raise SystemExit(0 if receipt['result']=='observed' else 1)
