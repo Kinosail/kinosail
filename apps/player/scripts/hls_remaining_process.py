@@ -171,7 +171,10 @@ def qualified_audio_lifecycle(case, life):
     # The bounded preparation can stop at the rounded four-cut AAC prefix.
     # Only that exact owned prefix permits one sequential playback refill.
     preparation = case.get('preparationAttempt', {})
-    if (case.get('planDurationSeconds') != 10 or not isinstance(preparation, dict) or
+    if (type(case.get('planDurationSeconds')) not in [int, float] or
+            case['planDurationSeconds'] != 10 or not isinstance(preparation, dict) or
+            type(preparation.get('posts')) is not int or
+            type(preparation.get('ownedFFmpeg')) is not int or
             preparation.get('posts') != 1 or preparation.get('completionState') != 'ready' or
             preparation.get('ownedFFmpeg') != 0):
         return life['starts'] == life['ends'] == 1
@@ -191,13 +194,24 @@ def qualified_audio_lifecycle(case, life):
     public = case.get('publicVariant', {})
     if not isinstance(manifest, dict) or not isinstance(public, dict):
         return False
+    starts = case.get('encoderStarts')
+    if (not isinstance(starts, list) or len(starts) != 2 or
+            any(not isinstance(start, dict) or
+                any(type(start.get(key)) is not int for key in ['input_seek_ms', 'segment_start'])
+                for start in starts) or not isinstance(life, dict) or
+            any(type(life.get(key)) is not int for key in ['starts', 'ends', 'peakActive', 'activeAtTeardown']) or
+            life.get('validSequence') is not True):
+        return False
     duration = manifest.get('durationSeconds')
     return (type(duration) in [int, float] and math.isfinite(duration) and
         abs(duration - 8) <= 0.000002 and manifest.get('playlistType') == 'EVENT' and
+        type(manifest.get('segmentCount')) is int and type(prefix.get('packetCount')) is int and
         manifest.get('endlist') is False and manifest.get('segmentCount') == 4 and
         prefix.get('packetCount') == 375 and prefix.get('segments') ==
         [f'segment-{number:05d}.m4s' for number in range(4)] and
         public.get('playlistType') == 'VOD' and public.get('endlist') is True and
+        type(public.get('durationSeconds')) in [int, float] and
+        type(public.get('segmentCount')) is int and
         public.get('durationSeconds') == 10 and public.get('segmentCount') == 6 and
         case.get('encoderStartsBounded') is True and case.get('encoderStarts') == [
             {'input_seek_ms': 0, 'segment_start': 0, 'mode': 'audio-transcode', 'workClass': 'background'},

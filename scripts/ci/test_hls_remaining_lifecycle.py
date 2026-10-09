@@ -7,7 +7,7 @@ from types import SimpleNamespace
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "apps/player/scripts"))
-from hls_remaining_process import annotate_case, source_snapshot
+from hls_remaining_process import annotate_case, source_snapshot, qualified_audio_lifecycle
 
 class AudioLifecycleTests(unittest.TestCase):
     def case(self, duration=10):
@@ -61,6 +61,7 @@ class AudioLifecycleTests(unittest.TestCase):
             "unknown asset": lambda c: c["physicalBeforeFirstGET"]["assets"][0].update(name="unknown"),
             "malformed hash": lambda c: c["physicalBeforeFirstGET"]["assets"][0].update(sha256="unknown"),
             "empty asset": lambda c: c["physicalBeforeFirstGET"]["assets"][0].update(size=0),
+            "oversized asset": lambda c: c["physicalBeforeFirstGET"]["assets"][0].update(size=(16 << 20)+1),
             "malformed preparation": lambda c: c.update(preparationAttempt=None),
             "malformed manifest": lambda c: c["physicalBeforeFirstGET"].update(manifest="unknown"),
             "malformed public": lambda c: c.update(publicVariant=None),
@@ -88,6 +89,7 @@ class AudioLifecycleTests(unittest.TestCase):
 
     def test_extra_concurrent_wrong_role_or_wrong_seek_does_not_qualify(self):
         for starts, concurrent in [
+            ([(0,0,"background")], False),
             ([(0,0,"background"),(8000,4,"playback"),(10000,5,"playback")], False),
             ([(0,0,"background"),(8000,4,"playback")], True),
             ([(0,0,"background"),(8000,4,"background")], False),
@@ -97,6 +99,30 @@ class AudioLifecycleTests(unittest.TestCase):
                 case = self.annotate(self.case(), starts, concurrent)
                 self.assertEqual(case["result"], "failed")
                 self.assertIn("audio_required_new_encoder", case["failures"])
+
+    def test_two_worker_certificate_rejects_boolean_numeric_values(self):
+        certified = self.annotate(self.case())
+        paths = [("preparationAttempt", "posts"), ("preparationAttempt", "ownedFFmpeg"),
+            ("encoderStarts", 0, "input_seek_ms"), ("encoderStarts", 0, "segment_start"),
+            ("encoderLifecycle", "peakActive"), ("encoderLifecycle", "activeAtTeardown")]
+        for path in paths:
+            with self.subTest(path=path):
+                case = copy.deepcopy(certified)
+                target = case
+                for key in path[:-1]:
+                    target = target[key]
+                target[path[-1]] = bool(target[path[-1]])
+                self.assertFalse(qualified_audio_lifecycle(case, case["encoderLifecycle"]))
+        for field, value in [("validSequence", 1), ("starts", "2"), ("ends", 2.0)]:
+            with self.subTest(field=field):
+                case = copy.deepcopy(certified)
+                case["encoderLifecycle"][field] = value
+                self.assertFalse(qualified_audio_lifecycle(case, case["encoderLifecycle"]))
+
+    def test_ordinary_one_worker_does_not_require_optional_prefix_certificate(self):
+        case = self.case(8)
+        case["preparationAttempt"] = None
+        self.assertEqual(self.annotate(case, [(0,0,"background")])["result"], "passed")
 
 if __name__ == "__main__":
     unittest.main()
