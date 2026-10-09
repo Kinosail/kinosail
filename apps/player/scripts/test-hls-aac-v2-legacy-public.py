@@ -160,10 +160,18 @@ try:
         selected, owner.log_path, owner.process, source, prepared)
     check(prepared['preparationAttempt']['completionState'] == 'ready', 'legacy_real_seed_not_ready')
     idle(owner.api, owner.process, source)
+    check(len(owner.source_invocation_rows()) == 1, 'legacy_seed_source_invocation_control')
+    # Adopt only the disposable baseline seed before sealing independent clones.
+    check(owner.api.http(selected)[0] == 200
+        and owner.api.http(selected.removesuffix('index.m3u8') + '360p/index.m3u8')[0] == 200,
+        'legacy_seed_baseline_adoption_failed')
+    idle(owner.api, owner.process, source)
+    check(len(owner.source_invocation_rows()) == 1, 'legacy_seed_adoption_refilled_source')
     certificates = list((seed / 'cache').glob('*/.copy-clock'))
     check(len(certificates) == 1 and json.loads(bounded_bytes(certificates[0], 4096, 'legacy_certificate_bound'))['version'] == 1,
         'legacy_real_version1_control')
     owner.stop()
+    check(not certificates[0].with_name('.startup').exists(), 'legacy_seed_unadopted_startup_marker')
     receipt['seedSessions'] = owner.sessions
     owner = None
     for asset in ['master', 'rendition']:
