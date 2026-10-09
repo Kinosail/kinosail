@@ -32,8 +32,20 @@ func TestCopiedAACSlowNetworkDoesNotRetainMetadataLease(t *testing.T) {
 	var releaseOnce sync.Once
 	releaseDelivery:=func(){releaseOnce.Do(func(){close(writer.release)})}
 	defer releaseDelivery()
-	request:=httptest.NewRequestWithContext(t.Context(),http.MethodGet,"/init.mp4",nil)
+	requestContext,cancelRequest:=context.WithCancel(t.Context())
+	request:=httptest.NewRequestWithContext(requestContext,http.MethodGet,"/init.mp4",nil)
 	done:=make(chan bool,1)
+	joined:=false
+	t.Cleanup(func(){
+		cancelRequest()
+		releaseDelivery()
+		if !joined {
+			select {
+			case <-done: joined=true
+			case <-time.After(3*time.Second): t.Error("owned retained-asset caller did not join during cleanup")
+			}
+		}
+	})
 	go func(){done<-manager.serveCopiedAACFile(writer,request,item,recipe,"360p/init.mp4",filepath.Base(directory))}()
 	select {
 	case <-writer.entered:
@@ -48,6 +60,7 @@ func TestCopiedAACSlowNetworkDoesNotRetainMetadataLease(t *testing.T) {
 	releaseDelivery()
 	select {
 	case handled:=<-done:
+		joined=true
 		if !handled||writer.Code!=http.StatusOK||writer.Body.Len()==0 { t.Fatal("retained asset delivery failed after independent admission") }
 	case <-time.After(time.Second): t.Fatal("controlled asset delivery did not join")
 	}

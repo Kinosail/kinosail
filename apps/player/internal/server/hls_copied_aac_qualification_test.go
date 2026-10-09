@@ -31,6 +31,16 @@ func TestCopiedAACSourceRootRevocationCannotInstallOrReuseEligibility(t *testing
 	ctx,cancel:=context.WithTimeout(t.Context(),2*time.Second)
 	defer cancel()
 	done:=make(chan error,1)
+	joined:=false
+	t.Cleanup(func(){
+		cancel()
+		if !joined {
+			select {
+			case <-done: joined=true
+			case <-time.After(3*time.Second): t.Error("owned qualification caller did not join during cleanup")
+			}
+		}
+	})
 	go func(){done<-manager.qualifyCopiedAAC(ctx,item,recipe,true)}()
 	deadline:=time.Now().Add(time.Second)
 	var pid []byte
@@ -42,7 +52,9 @@ func TestCopiedAACSourceRootRevocationCannotInstallOrReuseEligibility(t *testing
 	if len(pid)==0 { t.Fatal("controlled qualification never opened its probe") }
 	manager.index.SetRoots(nil)
 	writeHLSLoadingFile(t,release,"released")
-	if err:=<-done;err==nil { t.Fatal("revoked root installed source qualification") }
+	qualificationErr:=<-done
+	joined=true
+	if qualificationErr==nil { t.Fatal("revoked root installed source qualification") }
 	copiedRecoveryAssertStopped(t,pid)
 	key:=hlsRecipeKey(item.ID,recipe)
 	if _,_,known:=manager.copiedAACPolicy(key,base.Cache,before);known { t.Fatal("failed root proof became a completed unsupported decision") }
