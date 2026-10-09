@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -57,11 +58,7 @@ func requireCopiedAACPartialRead(t *testing.T, shape string, row copiedAACPartia
 		t.Fatal(err)
 	}
 	result := copiedAACPartialResponse(t, manager, item, recipe, row.name, row.method, row.rangeValue)
-	if result.Code != control.Code || result.Body.String() != control.Body.String() ||
-		result.Header().Get("Content-Type") != control.Header().Get("Content-Type") ||
-		result.Header().Get("Content-Range") != control.Header().Get("Content-Range") {
-		t.Errorf("partial read status/body/headers differ from qualified complete control: status=%d wanted=%d", result.Code, control.Code)
-	}
+	requireCopiedAACPartialEqualResponse(t, result, control)
 	requireCopiedAACLegacyInventory(t, before, copiedAACPartialSnapshot(t, directory))
 	requireCopiedAACPartialSource(t, source, item.Path)
 	after, err := os.ReadDir("/proc/self/fd")
@@ -76,6 +73,15 @@ func requireCopiedAACPartialRead(t *testing.T, shape string, row copiedAACPartia
 		t.Error("partial read erased sticky Version2 eligibility")
 	}
 	t.Logf("partial_read shape=%s method=%s ranged=%t status=%d source_unchanged=true cache_unchanged=true", shape, row.method, row.rangeValue != "", result.Code)
+}
+
+func requireCopiedAACPartialEqualResponse(t *testing.T, result, control *httptest.ResponseRecorder) {
+	t.Helper()
+	if result.Code != control.Code || result.Body.String() != control.Body.String() ||
+		result.Header().Get("Content-Type") != control.Header().Get("Content-Type") ||
+		result.Header().Get("Content-Range") != control.Header().Get("Content-Range") {
+		t.Errorf("partial read status/body/headers differ from qualified complete control: status=%d wanted=%d", result.Code, control.Code)
+	}
 }
 
 func TestCopiedAACPartialSlowNetworkReleasesLeaseAndKeepsOpenedBytes(t *testing.T) {
