@@ -1,3 +1,4 @@
+import {holdStartupMedia} from "./startup-media-hold.mjs";
 import {attachPlaybackState, startWatchedPlayback} from "./playback-state-witness.mjs";
 import { attachResponsiveFailure } from "./responsive-failure-witness.mjs";
 import { expect, test } from "@playwright/test";
@@ -17,7 +18,7 @@ function totp(): string {
 	return ((digest.readUInt32BE(offset) & 0x7fffffff) % 1_000_000).toString().padStart(6, "0");
 }
 
-test("player stage stays visible across loading and bandwidth changes", async ({ page }, testInfo) => {
+test("player stage stays visible across loading and bandwidth changes", async ({ page, baseURL }, testInfo) => {
 	await page.goto("/login");
 	await page.getByLabel("Name").fill("Owner");
 	await page.getByLabel("Password", { exact: true }).fill("test-instance-password");
@@ -28,20 +29,45 @@ test("player stage stays visible across loading and bandwidth changes", async ({
 	const movie = page.getByRole("link", { name: /Example Movie/ });
 	const watch = await movie.getAttribute("href");
 	const playbackState = await attachPlaybackState(page, testInfo, watch, "before-loading");
-	await movie.click();
+	const hold = await holdStartupMedia(page, "direct", {baseURL, watch});
 	const video = page.locator("video");
-	await video.waitFor({ state: "visible" });
-	const stage = await page.locator(".media-stage").boundingBox();
-	expect(await video.evaluate((element) => element.dataset.hls || element.dataset.adaptive || element.getAttribute("src"))).toMatch(/\/(media|stream|hls)\//);
-	expect(stage?.width).toBeGreaterThan(300);
-	expect(stage?.height).toBeGreaterThan(150);
+	const viewports = [{ width: 1440, height: 900 }, { width: 1024, height: 768 }, { width: 720, height: 450 }, { width: 390, height: 844 }, { width: 320, height: 800 }];
+	let primaryFailed = false;
 	try {
+		await movie.click();
+		await video.waitFor({ state: "visible" });
+		const stage = await page.locator(".media-stage").boundingBox();
+		expect(await video.evaluate((element) => element.dataset.hls || element.dataset.adaptive || element.getAttribute("src"))).toMatch(/\/(media|stream|hls)\//);
+		expect(stage?.width).toBeGreaterThan(300);
+		expect(stage?.height).toBeGreaterThan(150);
 		await startWatchedPlayback(page, playbackState);
-		await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime)).toBeGreaterThan(0.25);
+		await expect.poll(() => hold.snapshot().mediaEntered + hold.snapshot().hlsEntered).toBeGreaterThan(0);
+		await hold.attach(testInfo, "pending");
+		await expect(page.getByRole("status").filter({ hasText: "Loading video…" })).toBeVisible();
+		await expect(page.locator("[data-buffered]")).toBeHidden();
+		for (const viewport of viewports) {
+			await page.setViewportSize(viewport);
+			expect(hold.snapshot().released).toBe(false);
+			await expect(page.locator("[data-player-status]")).toBeVisible();
+			expect((await page.locator("[data-player-status]").boundingBox())?.width).toBeLessThanOrEqual(Math.min(320, viewport.width - 16) + 0.01);
+			await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-loading.png`), fullPage: true });
+		}
 	} catch (error) {
-		await attachResponsiveFailure(page, testInfo, "player-settings");
-		throw error;
+		primaryFailed = true;
+		await hold.attach(testInfo, "opening");
+		await attachResponsiveFailure(page, testInfo, "player-loading-width"); throw error;
+	} finally {
+		hold.release();
+		try { expect(await hold.close(), "owned loading routes settle").toBe(true); }
+		catch (error) { if (!primaryFailed) throw error; }
 	}
+	try {
+		await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime)).toBeGreaterThan(0.25);
+		await expect(page.locator("[data-player-status]")).toBeHidden();
+	} catch (error) {
+		await attachResponsiveFailure(page, testInfo, "player-settings"); throw error;
+	}
+	// Synthetic state exercise below is not a network-bandwidth or starvation proof.
 	await video.dispatchEvent("stalled");
 	await expect(page.locator("[data-player-status]")).toBeHidden();
 	await video.evaluate((element) => {
@@ -53,15 +79,9 @@ test("player stage stays visible across loading and bandwidth changes", async ({
 	await video.dispatchEvent("loadstart");
 	await expect(page.getByRole("status").filter({ hasText: "Loading video…" })).toBeVisible();
 	await expect(page.locator("[data-buffered]")).toBeHidden();
-	for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }, { width: 720, height: 450 }, { width: 390, height: 844 }, { width: 320, height: 800 }]) {
+	for (const viewport of viewports) {
 		await page.setViewportSize(viewport);
 		await video.dispatchEvent("loadstart");
-		try {
-			expect((await page.locator("[data-player-status]").boundingBox())?.width).toBeLessThanOrEqual(Math.min(320, viewport.width - 16) + 0.01);
-		} catch (error) {
-			await attachResponsiveFailure(page, testInfo, "player-loading-width"); throw error;
-		}
-		await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-loading.png`), fullPage: true });
 		await video.dispatchEvent("canplay");
 		await video.dispatchEvent("stalled");
 		await expect(page.locator("[data-player-status]")).toBeHidden();
