@@ -93,7 +93,7 @@ func TestCopiedAACLegacyRetainedReadRejectsSourceRootAndGenerationChanges(t *tes
 	if runtime.GOOS != "linux" {
 		t.Skip("selected compatibility reader is Linux-only")
 	}
-	for _, damage := range []string{"source", "source-root", "generation", "rendition", "source-binding", "master", "manifest"} {
+	for _, damage := range []string{"source", "source-root", "generation", "rendition", "source-binding", "master", "manifest", "certificate", "timeline"} {
 		t.Run(damage, func(t *testing.T) {
 			manager, item, recipe, directory, _ := copiedAACLegacyFixture(t)
 			held, err := manager.openCopiedHLSLegacyGeneration(t.Context(), item, recipe, directory)
@@ -166,6 +166,20 @@ func damageCopiedAACLegacy(t *testing.T, manager *hlsManager, item library.Item,
 		if err := os.CopyFS(name, os.DirFS(retired)); err != nil {
 			t.Fatal(err)
 		}
+	case "certificate", "timeline":
+		name := ".copy-clock"
+		if damage == "timeline" {
+			name = ".copy-timeline"
+		}
+		path := filepath.Join(directory, name)
+		data, err := os.ReadFile(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := os.Rename(path, path+"-retired"); err != nil {
+			t.Fatal(err)
+		}
+		writeHLSLoadingFile(t, path, string(data))
 	case "source-binding":
 		writeHLSLoadingFile(t, filepath.Join(directory, ".source"), "wrong policy")
 	case "master":
@@ -229,5 +243,44 @@ func requireCopiedAACLegacyInventory(t *testing.T, before, after map[string]copi
 			!previous.info.ModTime().Equal(current.info.ModTime()) {
 			t.Fatal("legacy read changed cache content or identity")
 		}
+	}
+}
+
+func TestCopiedAACLegacyCancellationAndCloseReleaseDescriptors(t *testing.T) {
+	if runtime.GOOS != "linux" {
+		t.Skip("selected compatibility reader is Linux-only")
+	}
+	manager, item, recipe, directory, _ := copiedAACLegacyFixture(t)
+	before, err := os.ReadDir("/proc/self/fd")
+	if err != nil {
+		t.Fatal(err)
+	}
+	canceled, cancelBefore := context.WithCancel(t.Context())
+	cancelBefore()
+	if held, err := manager.openCopiedHLSLegacyGeneration(canceled, item, recipe, directory); err == nil {
+		held.close()
+		t.Fatal("canceled caller acquired a legacy generation")
+	}
+	ctx, cancel := context.WithCancel(t.Context())
+	defer cancel()
+	held, err := manager.openCopiedHLSLegacyGeneration(ctx, item, recipe, directory)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer held.close()
+	cancel()
+	if held.current() {
+		t.Fatal("post-open cancellation retained legacy admission")
+	}
+	held.close()
+	held.close()
+	_, release, err := manager.copiedHLSMetadataAdmission(t.Context())
+	if err != nil {
+		t.Fatal("closed legacy generation retained metadata admission")
+	}
+	release()
+	after, err := os.ReadDir("/proc/self/fd")
+	if err != nil || len(before) != len(after) {
+		t.Fatal("legacy close did not restore the descriptor baseline")
 	}
 }
