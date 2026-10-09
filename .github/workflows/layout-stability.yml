@@ -2,7 +2,7 @@ name: Bounded non-key presentation observation
 on:
   workflow_dispatch:
     inputs:
-      phase: {type: choice, options: [public, observe, mux, boundary, aac-edit, aac-derived, aac-clock, aac-normalized, aac-prefix, cutoff, remaining], default: public}
+      phase: {type: choice, options: [public, observe, mux, capability, boundary, aac-edit, aac-derived, aac-clock, aac-normalized, aac-prefix, cutoff, remaining], default: public}
       candidate: {description: Exact reviewed source SHA for remaining phase, type: string}
 permissions: {contents: read}
 jobs:
@@ -55,7 +55,7 @@ jobs:
           echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
       - name: Verify strict initialization and fragment parsers
         if: inputs.phase != 'remaining'
-        run: python3 -m unittest discover -s apps/player/scripts -p 'test_hls_remaining_nonkey_*.py'
+        run: python3 -m unittest discover -s apps/player/scripts -p 'test_hls_*nonkey_*.py'
       - name: Capture full public frames, packets, edits and native PCM
         if: inputs.phase != 'remaining'
         run: timeout --kill-after=90s 750s python3 apps/player/scripts/test-hls-nonkey-observation.py
@@ -189,7 +189,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
   nonkey-mux:
-    if: inputs.phase == 'mux' || inputs.phase == 'boundary' || inputs.phase == 'aac-edit' || inputs.phase == 'aac-derived' || inputs.phase == 'aac-clock' || inputs.phase == 'aac-normalized' || inputs.phase == 'aac-prefix'
+    if: inputs.phase == 'mux' || inputs.phase == 'capability' || inputs.phase == 'boundary' || inputs.phase == 'aac-edit' || inputs.phase == 'aac-derived' || inputs.phase == 'aac-clock' || inputs.phase == 'aac-normalized' || inputs.phase == 'aac-prefix'
     name: Fixed inner and outer mux timestamp counterfactuals
     runs-on: ubuntu-24.04
     timeout-minutes: 25
@@ -229,8 +229,8 @@ jobs:
       - name: Verify all strict diagnostic controls
         run: python3 -m unittest discover -s apps/player/scripts -p 'test_hls_remaining_nonkey_*.py'
       - name: Observe fixed counterfactuals without production admission
-        if: inputs.phase == 'mux'
-        run: timeout --kill-after=90s 420s python3 apps/player/scripts/test-hls-nonkey-mux-observation.py
+        if: inputs.phase == 'mux' || inputs.phase == 'capability'
+        run: timeout --kill-after=90s 420s python3 apps/player/scripts/${{ inputs.phase == 'capability' && 'test-hls-nonkey-supported.py' || 'test-hls-nonkey-mux-observation.py' }}
       - name: Observe edit, demux and native boundary clocks
         if: inputs.phase == 'boundary'
         run: timeout --kill-after=90s 300s python3 apps/player/scripts/test-hls-nonkey-boundary.py
