@@ -63,7 +63,9 @@ It uses the pinned FFmpeg 8.1.2-5 package, the same public source and separate
 disposable cache clones. Candidate traffic sends no preparation POST.
 
 - Complete cold and warm master/rendition GET and HEAD must match baseline 200
-  and exact bodies. Warm controls reject an absent binding before exact restoration.
+  and exact bodies. Warm-request controls reject an absent binding before exact restoration.
+  A separate deterministic contract proves sticky positive eligibility; these
+  public warm requests alone are not a policy-table witness.
 - Init, first and final media GET/HEAD and Range must match baseline status,
   exact bytes and Content-Range behavior.
 - A playlist-to-all-media journey must serve all ten fragments and exactly 480

@@ -4,14 +4,12 @@ import hashlib
 import json
 from pathlib import Path
 import platform
-import re
 import shutil
 import subprocess
 import sys
 import time
-import urllib.error
-import urllib.request
 from hls_followon_frames import decode_frames
+from hls_aac_v2_compat_public import diagnostics, fault, requests, require_diagnostics, responses, snapshot
 from hls_aac_v2_public_http import ActualServer, idle
 from hls_followon_public import bounded_bytes, check, prepare_once
 from hls_remaining_nonkey_deadline import DiagnosticDeadline
@@ -29,7 +27,8 @@ receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], tex
         'codecPackageSHA256': 'b4e72894ad26c809ed0104805f5415a97be75212b9fcf9d60b89ad25bb3d43e3'},
     'baselineRevision': '664f4e2ad40049b03a5da62dba444adc3caa97ec',
     'scope': 'Complete adopted Version1 master/rendition, init, every media fragment and Range; no candidate POST, migration or regeneration',
-    'result': 'failed', 'cases': [], 'releaseBlocker': 'supported-client-version1-request-path-unverified',
+    'result': 'failed', 'cases': [], 'releaseBlocker': 'version1-lazy-startup-migration-still-unverified',
+    'completeAdoptedVersion1Acceptance': False,
     'olderClientAcceptance': False, 'productionAcceptance': False, 'nativeAcceptance': False,
     'remainingBoundaries': ['Version1 lazy/interrupted continuation', 'speculative startup adoption',
         'concurrent migration and filesystem races', 'actual native client and all50', 'historical Version1 AAC failures']}
@@ -43,101 +42,6 @@ def run(command, timeout=60):
     check(result.returncode == 0 and len(result.stdout) <= 2 << 20 and len(result.stderr) <= 2 << 20,
           'legacy_command_failed_or_unbounded')
     return result.stdout
-
-
-def snapshot(cache):
-    result = {}
-    paths = sorted(cache.rglob('*'))
-    check(len(paths) <= 96, 'binding_cache_path_bound')
-    for path in paths:
-        if path.is_dir():
-            continue
-        check(path.is_file() and not path.is_symlink(), 'binding_cache_kind')
-        stat = path.stat()
-        result[str(path.relative_to(cache))] = {'inode': stat.st_ino, 'bytes': stat.st_size,
-            'mtimeNs': stat.st_mtime_ns, 'sha256': hashlib.sha256(
-                bounded_bytes(path, 2 << 20, 'binding_cache_bytes_bound')).hexdigest()}
-    return result
-
-
-
-def http(owner, target, method, ranged=False):
-    if not ranged:
-        return owner.api.http(target, method=method)
-    request = urllib.request.Request(owner.api.url + target, method=method,
-        headers={'Authorization': 'Bearer ' + owner.api.token, 'Range': 'bytes=7-31'})
-    try:
-        response = owner.api.opener.open(request, timeout=40)
-    except urllib.error.HTTPError as error:
-        response = error
-    with response:
-        body = response.read((2 << 20) + 1)
-        check(len(body) <= 2 << 20, 'compat_range_response_bound')
-        return response.getcode(), body, dict(response.headers)
-
-
-def requests(asset, method, selected):
-    prefix = selected.removesuffix('index.m3u8') + '360p/'
-    names = {'master': selected, 'rendition': prefix + 'index.m3u8',
-        'init': prefix + 'init.mp4', 'first': prefix + 'segment-00000.m4s',
-        'last': prefix + 'segment-00009.m4s'}
-    if asset == 'journey':
-        return [(selected, 'GET', False), (prefix + 'index.m3u8', 'GET', False),
-            (prefix + 'init.mp4', 'GET', False),
-            *[(prefix + 'segment-' + str(n).zfill(5) + '.m4s', 'GET', False) for n in range(10)]]
-    return [(names[asset], 'GET' if method == 'RANGE' else method, method == 'RANGE')]
-
-
-def responses(owner, steps):
-    result = []
-    for target, method, ranged in steps:
-        status, body, headers = http(owner, target, method, ranged)
-        result.append((status, body, headers))
-    return result
-
-
-def fault(cache, name):
-    directories = [p for p in cache.iterdir() if p.is_dir()]
-    check(len(directories) == 1, 'compat_generation_count')
-    directory = directories[0]
-    target = {'missing-source': '.source', 'wrong-source': '.source',
-        'missing-clock': '.copy-clock', 'wrong-version': '.copy-clock',
-        'wrong-timeline': '.copy-timeline', 'wrong-master': 'index.m3u8',
-        'wrong-init': '360p/init.mp4', 'wrong-first': '360p/segment-00000.m4s'}[name]
-    path = directory / target
-    if name.startswith('missing-'):
-        path.unlink()
-    elif name == 'wrong-version':
-        value = json.loads(bounded_bytes(path, 4096, 'compat_certificate_bound'))
-        value['version'] = 2
-        path.write_text(json.dumps(value, separators=(',', ':')))
-    else:
-        data = bytearray(bounded_bytes(path, 2 << 20, 'compat_fault_bound'))
-        check(len(data) > 16, 'compat_fault_minimum')
-        data[len(data) // 2] ^= 1
-        path.write_bytes(data)
-
-
-def diagnostics(owner, replies, rejected):
-    rows = []
-    request_ids = [next((v for k, v in headers.items() if k.lower() == 'x-request-id'), '')
-        for _, _, headers in replies]
-    check(all(re.fullmatch(r'[a-zA-Z0-9_-]{8,96}', v) for v in request_ids), 'compat_request_id')
-    for line in bounded_bytes(owner.log_path, 2 << 20, 'compat_private_log_bound').splitlines():
-        try:
-            entry = json.loads(line)
-        except json.JSONDecodeError:
-            continue
-        if entry.get('request_id') not in request_ids or entry.get('msg') != 'HLS copied playlist rejected':
-            continue
-        valid = (set(entry) == {'time', 'level', 'msg', 'request_id', 'playback_session', 'failure_class'}
-            and entry.get('level') == 'WARN' and entry.get('playback_session') == ''
-            and entry.get('failure_class') in ['invalid-source-binding', 'invalid-generation-or-manifest',
-                'invalid-legacy-generation'])
-        rows.append({'boundedFieldsAndCorrelationValid': valid})
-    check(len(rows) == (len(replies) if rejected else 0)
-        and all(v['boundedFieldsAndCorrelationValid'] for v in rows), 'compat_rejection_diagnostic')
-    return rows
 
 
 def arm(label, method, asset, candidate, baseline, seed_cache, selected, invalid=None, warm=False):
@@ -196,7 +100,7 @@ def arm(label, method, asset, candidate, baseline, seed_cache, selected, invalid
             bodySHA256=[hashlib.sha256(v[1]).hexdigest() for v in actual],
             cacheUnchanged=immediate == original, sourceCalls=calls)
         idle(owner.api, owner.process, source)
-        row['diagnostics'] = diagnostics(owner, actual, invalid is not None)
+        row['diagnostics'] = diagnostics(owner, actual)
         owner.stop()
         row.update(finalCacheUnchanged=snapshot(directory / 'cache') == original,
             finalSourceCalls=len(owner.source_invocation_rows()), sourceUnchanged=source_state(source) == before)
@@ -220,6 +124,7 @@ def arm(label, method, asset, candidate, baseline, seed_cache, selected, invalid
             restored = responses(owner, steps)
             check(all(a[:2] == b[:2] for a, b in zip(restored, controls)), 'compat_baseline_restore')
             row['baselineRestoredExactBody'] = True
+        require_diagnostics(row['diagnostics'], len(actual) if invalid else 0)
         row['result'] = 'observed'
     except Exception as error:
         row['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
@@ -298,8 +203,7 @@ try:
                     'wrong-timeline', 'wrong-master', 'wrong-init', 'wrong-first']:
         arm(invalid, 'GET', 'master', candidate, baseline, seed / 'cache', selected, invalid)
     if len(receipt['cases']) == 26 and all(v['result'] == 'observed' for v in receipt['cases']):
-        receipt['olderClientAcceptance'] = True
-        receipt['releaseBlocker'] = None
+        receipt['completeAdoptedVersion1Acceptance'] = True
         receipt['result'] = 'observed'
 except Exception as error:
     receipt['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
@@ -321,7 +225,7 @@ finally:
             'hls_timeline_fixture.py', 'hls_timeline_packets.py', 'hls_remaining_nonkey_evidence.py',
             'hls_remaining_nonkey_boundary.py', 'hls_nonkey_browser_public.py',
             'hls_nonkey_browser_audio_boundary.py', 'hls_nonkey_browser_packet_association.py',
-            'hls_nonkey_browser_packet_clock.py', 'hls_followon_frames.py']
+            'hls_nonkey_browser_packet_clock.py', 'hls_followon_frames.py', 'hls_aac_v2_compat_public.py']
         files = [Path(__file__), *(Path(__file__).with_name(name) for name in names)]
         receipt['executedScriptSHA256'] = {str(p.relative_to(ROOT)): sha(p) for p in files}
         raw = json.dumps(receipt, separators=(',', ':'), allow_nan=False) + '\n'
@@ -336,7 +240,8 @@ finally:
                 'cacheUnchanged', 'sourceCalls', 'sourceUnchanged', 'olderClientPlaylistPlayable',
                 'baselineRestoredExactBody', 'exactBaselineBodies', 'baselineDecodedFrames', 'candidateDecodedFrames',
                 'warm', 'warmMissingBindingRejectedWithoutWrites', 'diagnostics']} for v in receipt['cases']],
-            'olderClientAcceptance': receipt['olderClientAcceptance'], 'releaseBlocker': receipt['releaseBlocker'],
+            'completeAdoptedVersion1Acceptance': receipt['completeAdoptedVersion1Acceptance'],
+            'olderClientAcceptance': False, 'releaseBlocker': receipt['releaseBlocker'],
             'productionAcceptance': False, 'nativeAcceptance': False}), flush=True)
     guard.__exit__()
 raise SystemExit(0 if receipt['result'] == 'observed' else 1)

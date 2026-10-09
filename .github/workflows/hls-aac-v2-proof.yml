@@ -265,7 +265,7 @@ jobs:
     name: Actual Version1 older-client cache compatibility
     needs: contracts
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         timeout-minutes: 2
