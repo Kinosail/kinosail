@@ -3,12 +3,14 @@ package server
 import (
 	"context"
 	"crypto/sha256"
+	"io"
 	"io/fs"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"runtime"
+	"syscall"
 	"testing"
 )
 
@@ -20,29 +22,22 @@ type copiedAACLegacyEntry struct {
 // Gap: the old limited content map cannot detect new entries or equal-byte writes.
 func copiedAACLegacyInventory(t *testing.T, directory string) map[string]copiedAACLegacyEntry {
 	t.Helper()
+	root, err := os.OpenRoot(directory)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer root.Close()
 	result := map[string]copiedAACLegacyEntry{}
-	err := filepath.WalkDir(directory, func(path string, entry fs.DirEntry, walkErr error) error {
+	err = fs.WalkDir(root.FS(), ".", func(name string, _ fs.DirEntry, walkErr error) error {
 		if walkErr != nil {
 			return walkErr
 		}
-		info, err := entry.Info()
-		if err != nil {
-			return err
-		}
-		name, err := filepath.Rel(directory, path)
-		if err != nil {
-			return err
-		}
-		if len(result) >= 128 || !info.IsDir() && (!info.Mode().IsRegular() || info.Size() > 2<<20) {
+		if len(result) >= 128 {
 			t.Fatal("legacy test inventory exceeded its bounded fixture")
 		}
-		value := copiedAACLegacyEntry{info: info}
-		if info.Mode().IsRegular() {
-			data, err := os.ReadFile(path)
-			if err != nil {
-				return err
-			}
-			value.hash = sha256.Sum256(data)
+		value, err := copiedAACLegacyInventoryEntry(root, name)
+		if err != nil {
+			return err
 		}
 		result[name] = value
 		return nil
@@ -51,6 +46,41 @@ func copiedAACLegacyInventory(t *testing.T, directory string) map[string]copiedA
 		t.Fatal(err)
 	}
 	return result
+}
+
+func copiedAACLegacyInventoryEntry(root *os.Root, name string) (copiedAACLegacyEntry, error) {
+	info, err := root.Lstat(name)
+	if err != nil {
+		return copiedAACLegacyEntry{}, err
+	}
+	value := copiedAACLegacyEntry{info: info}
+	if info.IsDir() {
+		return value, nil
+	}
+	if !info.Mode().IsRegular() || info.Size() > 2<<20 {
+		return value, errCopiedHLSIndex
+	}
+	data, err := copiedAACLegacyInventoryContent(root, name, info)
+	value.hash = sha256.Sum256(data)
+	return value, err
+}
+
+func copiedAACLegacyInventoryContent(root *os.Root, name string, before os.FileInfo) ([]byte, error) {
+	file, err := root.OpenFile(name, os.O_RDONLY|syscall.O_NONBLOCK, 0)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	opened, err := file.Stat()
+	if err != nil || !sameCopiedHLSFile(before, opened) {
+		return nil, errCopiedHLSIndex
+	}
+	data, err := io.ReadAll(io.LimitReader(file, (2<<20)+1))
+	current, statErr := root.Lstat(name)
+	if err != nil || statErr != nil || int64(len(data)) != before.Size() || !sameCopiedHLSFile(before, current) {
+		return nil, errCopiedHLSIndex
+	}
+	return data, nil
 }
 
 func requireCopiedAACLegacyInventory(t *testing.T, before, after map[string]copiedAACLegacyEntry) {
@@ -113,32 +143,37 @@ func TestCopiedAACLegacyMissingTimelineIsHandledBeforePreparation(t *testing.T) 
 	}
 	for _, warm := range []bool{false, true} {
 		t.Run(map[bool]string{false: "cold", true: "sticky-positive"}[warm], func(t *testing.T) {
-			manager, item, recipe, directory, base := copiedAACLegacyFixture(t)
-			key := hlsRecipeKey(item.ID, recipe)
-			if !warm {
-				manager.copiedMetadata.mu.Lock()
-				delete(manager.copiedMetadata.aacPolicies, key)
-				manager.copiedMetadata.mu.Unlock()
-			}
-			if err := os.Remove(filepath.Join(directory, ".copy-timeline")); err != nil {
-				t.Fatal(err)
-			}
-			before := copiedAACLegacyInventory(t, directory)
-			request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/index.m3u8", nil)
-			writer := httptest.NewRecorder()
-			if !manager.serveCopiedHLSLegacy(writer, request, item, recipe, "index.m3u8") || writer.Code != http.StatusNotFound {
-				t.Fatal("missing indexed timeline fell through to preparation")
-			}
-			requireCopiedAACLegacyInventory(t, before, copiedAACLegacyInventory(t, directory))
-			info, err := os.Stat(item.Path)
-			if err != nil {
-				t.Fatal(err)
-			}
-			selected, _, known := manager.copiedAACPolicy(key, base, info)
-			if selected != warm || known != warm {
-				t.Fatal("rejection changed the producer decision")
-			}
+			requireCopiedAACLegacyMissingTimeline(t, warm)
 		})
+	}
+}
+
+func requireCopiedAACLegacyMissingTimeline(t *testing.T, warm bool) {
+	t.Helper()
+	manager, item, recipe, directory, base := copiedAACLegacyFixture(t)
+	key := hlsRecipeKey(item.ID, recipe)
+	if !warm {
+		manager.copiedMetadata.mu.Lock()
+		delete(manager.copiedMetadata.aacPolicies, key)
+		manager.copiedMetadata.mu.Unlock()
+	}
+	if err := os.Remove(filepath.Join(directory, ".copy-timeline")); err != nil {
+		t.Fatal(err)
+	}
+	before := copiedAACLegacyInventory(t, directory)
+	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/index.m3u8", nil)
+	writer := httptest.NewRecorder()
+	if !manager.serveCopiedHLSLegacy(writer, request, item, recipe, "index.m3u8") || writer.Code != http.StatusNotFound {
+		t.Fatal("missing indexed timeline fell through to preparation")
+	}
+	requireCopiedAACLegacyInventory(t, before, copiedAACLegacyInventory(t, directory))
+	info, err := os.Stat(item.Path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	selected, _, known := manager.copiedAACPolicy(key, base, info)
+	if selected != warm || known != warm {
+		t.Fatal("rejection changed the producer decision")
 	}
 }
 

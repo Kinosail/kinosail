@@ -22,9 +22,16 @@ func (manager *hlsManager) openCopiedHLSLegacyGeneration(parent context.Context,
 	if err != nil {
 		return nil, err
 	}
-	value := &copiedAACGeneration{manager: manager, ctx: ctx, item: item, recipe: recipe,
-		directory: directory, policy: base.Cache, release: release,
-		legacy: &copiedHLSLegacyRead{sourceInfo: before, entries: make(map[string]os.FileInfo)}}
+	value := &copiedAACGeneration{
+		manager:   manager,
+		ctx:       ctx,
+		item:      item,
+		recipe:    recipe,
+		directory: directory,
+		policy:    base.Cache,
+		release:   release,
+		legacy:    &copiedHLSLegacyRead{sourceInfo: before, entries: make(map[string]os.FileInfo)},
+	}
 	value.legacy.source, _, err = openCopiedHLSSourceAudio(ctx, item.Path, before)
 	if err == nil {
 		err = value.open(ctx)

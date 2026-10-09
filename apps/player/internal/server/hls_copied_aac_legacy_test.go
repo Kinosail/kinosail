@@ -41,8 +41,13 @@ func copiedAACLegacyFixture(t *testing.T) (*hlsManager, library.Item, hlsRecipe,
 	if err != nil {
 		t.Fatal(err)
 	}
-	certificate, err := json.Marshal(copiedHLSClockCertificate{Version: 1, Rendition: "360p",
-		Timeline: sha256.Sum256(data), Initialization: sha256.Sum256(initialization), First: sha256.Sum256(first)})
+	certificate, err := json.Marshal(copiedHLSClockCertificate{
+		Version:        1,
+		Rendition:      "360p",
+		Timeline:       sha256.Sum256(data),
+		Initialization: sha256.Sum256(initialization),
+		First:          sha256.Sum256(first),
+	})
 	if err != nil {
 		t.Fatal(err)
 	}
