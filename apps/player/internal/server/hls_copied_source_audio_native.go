@@ -10,8 +10,16 @@ func copiedHLSSourceAudioNative(ctx context.Context, executable, source string, 
 		return nil, err
 	}
 	clock, err := readCopiedHLSSourceAudio(ctx, native)
-	if err != nil || copiedHLSSourceAudioPacketIndex(clock, first) < 1 {
+	if err != nil || !copiedHLSSourceAudioInitialPacket(clock, first) {
 		return nil, errCopiedHLSIndex
 	}
 	return native, nil
+}
+
+func copiedHLSSourceAudioInitialPacket(clock *copiedHLSSourceAudioClock, first [32]byte) bool {
+	frame := copiedHLSSourceAudioPacketIndex(clock, first)
+	if clock.leading == 1024 {
+		frame--
+	}
+	return frame >= 2
 }
