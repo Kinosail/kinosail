@@ -89,7 +89,9 @@ def warm_probe(root, run, baseline, source, owners, witness):
         and row['sourceUnchanged'], 'lazy_probe_setup_late_mutation')
     check(snapshot(run / 'empty-cache') == {}, 'lazy_probe_template_already_populated')
     shutil.copytree(cache, run / 'empty-cache', dirs_exist_ok=True)
-    check(set(snapshot(run / 'empty-cache')) == {name}, 'lazy_probe_template_identity')
+    copied = snapshot(run / 'empty-cache')
+    row['copiedProbeSHA256Matched'] = set(copied) == {name} and copied[name]['sha256'] == state[name]['sha256']
+    check(row['copiedProbeSHA256Matched'], 'lazy_probe_template_identity')
     row['stage'] = 'qualified'
 
 
