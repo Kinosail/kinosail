@@ -35,7 +35,7 @@ export function appColorAppendFacts(value,plan,pieces){
   if(!value || value.overflow || value.failures?.length || !Array.isArray(value.buffers) ||
     !value.buffers.length || value.buffers.length>8 || !Array.isArray(value.appends) ||
     !value.appends.length || value.appends.length>128)return result;
-  const sequences=new Map();let initCount=0,healthy=true;
+  const sequences=new Map(),initialized=new Set();let initCount=0,healthy=true;
   for(const [ordinal,row] of value.appends.entries()){
     let payload;
     try{
@@ -61,13 +61,14 @@ export function appColorAppendFacts(value,plan,pieces){
         const actual=Buffer.from(row.initBytes);
         if(!actual.equals(plan.init))throw Error('app_init_bytes');
         const facts=colorFacts(Buffer.concat([actual,...pieces.slice(1)]));
-        result.actualInitFacts.push(facts);initCount++;
+        result.actualInitFacts.push(facts);initCount++;initialized.add(row.bufferID);
         if(facts.avcSHA256!==plan.facts.avcSHA256 || facts.colr?.type!=='nclx' ||
           facts.colr.primaries!==6 || facts.colr.transfer!==6 || facts.colr.matrix!==6 ||
           facts.colr.fullRange!==0)healthy=false;
       }catch{healthy=false;}
     }else if(row.initBytes!==null)healthy=false;
     if(expected?.fragmentIndices.length){
+      if(!initialized.has(row.bufferID))healthy=false;
       if(!sequences.has(row.bufferID))sequences.set(row.bufferID,[]);
       sequences.get(row.bufferID).push(...expected.fragmentIndices);
     }
