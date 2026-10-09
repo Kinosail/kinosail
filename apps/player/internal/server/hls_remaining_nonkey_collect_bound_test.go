@@ -58,6 +58,10 @@ func remainingNonKeyCollectorOperationBound(t *testing.T, name string) {
 	manager.probe.executable = remainingNonKeyCollectorAdapter(t, tools, "probe", marker, nativePath, probeAction)
 	manager.ffmpeg = remainingNonKeyCollectorAdapter(t, tools, "normalize", marker, normalizedPath, normalizedAction)
 	before := remainingNonKeyCollectorHash(t, item.Path)
+	original, err := os.Stat(item.Path)
+	if err != nil {
+		t.Fatal("source-clock original source identity")
+	}
 	started := time.Now()
 	proof, err := manager.measureCopiedHLSSourceAudio(t.Context(), item, recipe, options.Cache, fixture.first, 12_500_000, fixture.edit)
 	elapsed := time.Since(started)
@@ -80,6 +84,12 @@ func remainingNonKeyCollectorOperationBound(t *testing.T, name string) {
 	}
 	if remainingNonKeyCollectorHash(t, item.Path) != before {
 		t.Fatal("nonkey source-clock rejection changed source bytes")
+	}
+	if name == "same-byte-source-replacement" {
+		replaced, err := os.Stat(item.Path)
+		if err != nil || os.SameFile(original, replaced) || original.Size() != replaced.Size() || !original.ModTime().Equal(replaced.ModTime()) {
+			t.Fatal("nonkey source-clock controlled replacement did not retain bytes and timestamps on a different inode")
+		}
 	}
 	entries, err := os.ReadDir(manager.cache)
 	if err != nil || len(entries) != 0 {
@@ -116,6 +126,9 @@ func TestRemainingNonKeySourceClockRejectsRevokedRoot(t *testing.T) {
 	marker, nativePath := filepath.Join(tools, "owned-pids"), filepath.Join(tools, "native.json")
 	writeHLSLoadingFile(t, nativePath, native.String())
 	manager.probe.executable = remainingNonKeyCollectorAdapter(t, tools, "probe", marker, nativePath, "sleep 0.2\n")
+	normalizedPath := filepath.Join(tools, "normalized.txt")
+	writeHLSLoadingFile(t, normalizedPath, fixture.normalized)
+	manager.ffmpeg = remainingNonKeyCollectorAdapter(t, tools, "normalize", marker, normalizedPath, "")
 	ctx, cancel := context.WithTimeout(t.Context(), 2*time.Second)
 	defer cancel()
 	revoked := make(chan bool, 1)

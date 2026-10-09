@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/catalog"
+	"github.com/MikeO7/kinosail/packages/workload"
 )
 
 func TestRemainingNonKeyActualSourceClock(t *testing.T) {
@@ -42,6 +43,10 @@ func TestRemainingNonKeyActualSourceClock(t *testing.T) {
 func remainingNonKeyActualClock(t *testing.T, ctx context.Context, ffmpeg, ffprobe, source string, offset float64) {
 	t.Helper()
 	first, original := remainingNonKeyCollectorPrivateAudio(t, ctx, ffmpeg, ffprobe, source, offset)
+	expectedHash, expected := remainingNonKeyCollectorExpected(t, source, offset)
+	if fmt.Sprintf("%x", first) != expectedHash || original != expected[8] {
+		t.Fatal("nonkey actual private fixture differs from independently measured packet and edit")
+	}
 	manager, item, _, _ := hlsLoadingFixture(t)
 	item.Path = source
 	manager.index = &libraryIndex{Index: catalog.NewMemoryIndex(nil, true)}
@@ -52,6 +57,12 @@ func remainingNonKeyActualClock(t *testing.T, ctx context.Context, ffmpeg, ffpro
 	if err != nil {
 		t.Fatal("source-clock initial policy")
 	}
+	releaseWork, err := manager.workloads.Acquire(ctx, workload.Playback)
+	if err != nil {
+		t.Fatal("source-clock owner reservation")
+	}
+	defer releaseWork()
+	remainingNonKeyCollectorReserved(t, manager)
 	before := remainingNonKeyCollectorHash(t, source)
 	started := time.Now()
 	proof, err := manager.measureCopiedHLSSourceAudio(ctx, item, recipe, options.Cache, first, int64(offset*1_000_000), original)
@@ -66,6 +77,9 @@ func remainingNonKeyActualClock(t *testing.T, ctx context.Context, ffmpeg, ffpro
 	if remainingNonKeyCollectorHash(t, source) != before {
 		t.Fatal("nonkey source-clock producer changed its source")
 	}
+	remainingNonKeyCollectorCorrespondence(t, proof, expected)
+	remainingNonKeyCollectorReserved(t, manager)
+	remainingNonKeyCollectorCacheEmpty(t, manager)
 	t.Logf("nonkey actual-clock container=%s offset=%.1f elapsed_ns=%d source_clock=%x first_packet=%x first_native=%d target_native=%d target_pts=%d media_time=%d original_media_time=%d leading=%d phase=%d",
 		filepath.Ext(source), offset, elapsed.Nanoseconds(), proof.SourceClock, proof.FirstPacket,
 		proof.FirstNativeSample, proof.TargetNativeSample, proof.TargetPTS, proof.MediaTime,
@@ -124,7 +138,10 @@ func remainingNonKeyCollectorPrivateAudio(t *testing.T, ctx context.Context, ffm
 	if first == [32]byte{} {
 		t.Fatal("source-clock actual private packet identity")
 	}
-	return first, remainingNonKeyCollectorAudioEdit(t, initialization)
+	original := remainingNonKeyCollectorAudioEdit(t, initialization)
+	t.Logf("nonkey actual-clock-input container=%s offset=%.1f source_sha=%x private_init_sha=%x private_first_sha=%x first_aac_sha=%x original_edit=%d",
+		filepath.Ext(source), offset, remainingNonKeyCollectorHash(t, source), sha256.Sum256(initialization), sha256.Sum256(fragment), first, original)
+	return first, original
 }
 
 func remainingNonKeyCollectorSources(t *testing.T, ctx context.Context, ffmpeg string) []string {
@@ -171,4 +188,21 @@ func remainingNonKeyCollectorRead(t *testing.T, name string, maximum int) []byte
 func remainingNonKeyCollectorHash(t *testing.T, name string) [32]byte {
 	t.Helper()
 	return sha256.Sum256(remainingNonKeyCollectorRead(t, name, 64<<20))
+}
+
+func remainingNonKeyCollectorReserved(t *testing.T, manager *hlsManager) {
+	t.Helper()
+	metrics := manager.workloads.Metrics()
+	if metrics.Capacity != 1 || metrics.ActivePlayback != 1 || metrics.ActiveBackground != 0 ||
+		metrics.WaitingPlayback != 0 || metrics.WaitingBackground != 0 {
+		t.Fatal("nonkey source-clock nested or released the owner reservation")
+	}
+}
+
+func remainingNonKeyCollectorCacheEmpty(t *testing.T, manager *hlsManager) {
+	t.Helper()
+	entries, err := os.ReadDir(manager.cache)
+	if err != nil || len(entries) != 0 || len(manager.jobs) != 0 {
+		t.Fatal("nonkey source-clock measurement exposed cache output")
+	}
 }
