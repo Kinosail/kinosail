@@ -15,9 +15,9 @@ def cache_state(cache):
     directory = paths[0].parent
     timeline = json.loads(bounded_bytes(paths[0], 256 << 10, 'v2_timeline_bound'))
     certificate = json.loads(bounded_bytes(directory / '.copy-clock', 4096, 'v2_certificate_bound'))
-    check(certificate['Version'] == 2 and timeline.get('Clock') == 0
+    check(certificate['version'] == 2 and timeline.get('Clock') == 0
           and timeline.get('AudioOrigin') is not None, 'v2_bound_origin_required')
-    rendition = certificate['Rendition']
+    rendition = certificate['rendition']
     check(rendition in ['360p', '480p', '720p', '1080p'], 'v2_rendition_allowlist')
     media = directory / rendition
     names = sorted(path.name for path in media.glob('segment-*.m4s'))
@@ -27,7 +27,7 @@ def cache_state(cache):
               for name in ['init.mp4', *names]}
     return directory, media, {'metadataSHA256': bound, 'assetSHA256': assets,
         'segments': names, 'audioOrigin': timeline['AudioOrigin'],
-        'certificateVersion': certificate['Version'], 'clock': timeline['Clock']}
+        'certificateVersion': certificate['version'], 'clock': timeline['Clock']}
 
 
 def assert_fixed_packets(observed):
@@ -43,6 +43,7 @@ def assert_fixed_packets(observed):
     check([row['data_hash'] for row in right] == [row['data_hash'] for row in expected],
           'v2_every_aac_payload')
     for actual, reference in zip(right, expected):
+        check(actual['duration'] == reference['duration'], 'v2_every_aac_duration')
         check(actual['pts'] - reference['pts'] == -576000
               and actual['dts'] - reference['dts'] == -576000,
               'v2_every_aac_clock')

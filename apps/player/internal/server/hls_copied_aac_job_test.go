@@ -14,8 +14,10 @@ func TestCopiedAACReplacementCancelsAndJoinsBeforeCacheMutation(t *testing.T) {
 	if runtime.GOOS != "linux" {
 		t.Skip("qualified retained-source producer is Linux-only")
 	}
-	manager, item, recipe, directory, policy, _ := copiedRecoveryFixture(t)
+	manager, item, recipe, directory, policy, timeline := copiedRecoveryFixture(t)
 	copiedAACSourceRoots(manager, item)
+	copiedRecoveryProbe(t, manager, "")
+	if err := manager.bindCopiedHLSClock(t.Context(), item, recipe, directory, "360p/index.m3u8", policy, timeline); err != nil { t.Fatal(err) }
 	before := copiedRecoveryPreserved(t, directory)
 	info, err := os.Stat(item.Path)
 	if err != nil {
@@ -32,6 +34,13 @@ func TestCopiedAACReplacementCancelsAndJoinsBeforeCacheMutation(t *testing.T) {
 	oldContext, old := manager.newHLSJob(t.Context(), 0)
 	old.cachePolicy = policy
 	manager.jobs[key] = old
+	defer func() {
+		old.cancel(context.Canceled)
+		manager.mu.Lock()
+		if manager.jobs[key] == old { delete(manager.jobs, key) }
+		manager.mu.Unlock()
+		close(old.done)
+	}()
 	ctx, cancel := context.WithTimeout(t.Context(), 100*time.Millisecond)
 	defer cancel()
 	_, err = manager.ensureHLSJob(ctx, item, key, options, recipe)
@@ -42,10 +51,6 @@ func TestCopiedAACReplacementCancelsAndJoinsBeforeCacheMutation(t *testing.T) {
 		t.Fatal("replacement changed ownership before old worker joined")
 	}
 	before()
-	manager.mu.Lock()
-	delete(manager.jobs, key)
-	manager.mu.Unlock()
-	close(old.done)
 }
 
 func TestCopiedAACRefillKeepsCanonicalPolicy(t *testing.T) {
