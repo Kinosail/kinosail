@@ -1,13 +1,13 @@
 """Pinned source-grid and every-cut controls missing from the endpoint-only timeline check."""
 import copy
 import unittest
-from hls_aac_v2_public_evidence import assert_fixed_source_grid, assert_fixed_timeline
+from hls_aac_v2_public_evidence import assert_fixed_cache_grid, assert_fixed_source_grid, assert_fixed_timeline
 
 
 class FixedTimelineControls(unittest.TestCase):
     def setUp(self):
         self.data = {'streams': [{'time_base': '1/16000'}], 'packets': [
-            {'pts': round(n * 1000 / 24) * 16, 'duration': 656, 'flags': 'K_' if n % 48 == 0 else '__'}
+            {'pts': round(n * 1000 / 24) * 16, 'dts': round(n * 1000 / 24) * 16 - 1328, 'duration': 656, 'flags': 'K_' if n % 48 == 0 else '__'}
             for n in range(768)]}
         self.grid = assert_fixed_source_grid(self.data)
         self.facts = {'endlist': True, 'playlistType': 'VOD', 'durationSeconds': 19.999}
@@ -47,3 +47,32 @@ class FixedTimelineControls(unittest.TestCase):
         self.facts.update(endlist=False, playlistType='EVENT')
         with self.assertRaises(RuntimeError):
             assert_fixed_timeline(self.facts, self.fragments, self.grid)
+
+    def test_truncated_source_packet_table_is_rejected(self):
+        self.data['packets'].pop()
+        with self.assertRaises(RuntimeError):
+            assert_fixed_source_grid(self.data)
+
+    def test_duplicate_source_packet_is_rejected(self):
+        self.data['packets'][100] = copy.deepcopy(self.data['packets'][99])
+        with self.assertRaises(RuntimeError):
+            assert_fixed_source_grid(self.data)
+
+    def test_nonpositive_source_duration_is_rejected(self):
+        self.data['packets'][100]['duration'] = 0
+        with self.assertRaises(RuntimeError):
+            assert_fixed_source_grid(self.data)
+
+    def test_every_cached_key_dts_is_source_bound(self):
+        cache = {'timelineGrid': [1, 16000], 'timelineEnd': 31.999,
+                 'timelineKeys': copy.deepcopy(self.grid['keys'][6:])}
+        assert_fixed_cache_grid(cache, self.grid)
+        cache['timelineKeys'][4]['DTS'] += 1
+        with self.assertRaises(RuntimeError):
+            assert_fixed_cache_grid(cache, self.grid)
+
+    def test_cached_end_cannot_shift_by_one_source_tick(self):
+        cache = {'timelineGrid': [1, 16000], 'timelineEnd': 31.999 + 1 / 16000,
+                 'timelineKeys': copy.deepcopy(self.grid['keys'][6:])}
+        with self.assertRaises(RuntimeError):
+            assert_fixed_cache_grid(cache, self.grid)
