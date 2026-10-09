@@ -8,6 +8,7 @@ import sys
 from hls_followon_public import check, bounded_bytes
 from hls_remaining_process import native_pcm, asset_snapshot, source_snapshot
 from hls_timeline_packets import manifest_facts
+from hls_remaining_capture import origin_refill_template
 
 
 def marker_clock(reference, observed):
@@ -75,7 +76,7 @@ def replay_refill(run, run_deadline, directory, source, case, executable):
     args = json.loads(raw)
     segments = case['retainedRefillFragments']
     number = int(segments[0]['name'].removeprefix('segment-').removesuffix('.m4s'))
-    check(isinstance(args, list) and 0 < len(args) <= 96 and all(type(v) is str and len(v) <= 4096 for v in args), 'refill_recipe_shape')
+    check(isinstance(args, list) and 0 < len(args) <= 96 and all(type(v) is str and len(v.encode()) <= 4096 for v in args), 'refill_recipe_shape')
     check(number == 4 and [v for v in case['encoderStarts'] if v['segment_start'] > 0] ==
         [{'input_seek_ms': 8000, 'segment_start': 4, 'mode': 'audio-transcode', 'workClass': 'playback'}], 'refill_recipe_phase')
     generations = list((directory / 'cache').glob('*-plan-*'))
@@ -84,17 +85,13 @@ def replay_refill(run, run_deadline, directory, source, case, executable):
     generation = root.stat()
     check((generation.st_ino, generation.st_dev) == (case['physicalBeforeFirstGET']['generationInode'],
         case['physicalBeforeFirstGET']['generationDevice']), 'refill_recipe_generation_identity')
-    expected = ['-hide_banner', '-loglevel', 'error', '-y', '-avoid_negative_ts', 'disabled', '-max_delay', '5000000',
-        '-ss', '8.000', '-readrate', str(case['testOnlyRealCodecPacing']['readrate']), '-i', str(source),
-        '-map', '0:a:0', '-vn', '-sn', '-dn', '-c:a', 'aac', '-ac', '2', '-b:a', '192000', '-output_ts_offset', '8.000',
-        '-f', 'hls', '-hls_time', '2', '-hls_playlist_type', 'event', '-hls_segment_type', 'fmp4',
-        '-hls_segment_options', 'movflags=+frag_discont+skip_sidx', '-hls_flags', 'temp_file',
-        '-hls_fmp4_init_filename', 'init.mp4', '-start_number', '4', '-hls_segment_filename',
-        str(root / 'audio/segment-%05d.m4s'), str(root / '.seek-4/audio/index.m3u8')]
+    expected = origin_refill_template(source, root, case)
     check(args == expected, 'refill_recipe_closed_actual_template')
     check(hashlib.sha256(bounded_bytes(executable, 256 << 20, 'refill_codec_bound')).hexdigest() ==
-        case['testOnlyRealCodecPacing']['executableSHA256'], 'refill_recipe_installed_codec')
+        case['actualCodecInvocation']['executableSHA256'], 'refill_recipe_installed_codec')
     result.update(privateActualArgvSHA256=hashlib.sha256(raw).hexdigest(), closedActualTemplateQualified=True,
+        actualSourceSeekSeconds=0, logicalRefillCutSeconds=8, outputOffsetSeconds=8 - 382976 / 48000,
+        originDropSamples=382976, selectedAudio=case['originSelectedAudio'], testOnlyReadrate=(case.get('testOnlyRealCodecPacing') or {}).get('readrate'),
         modifications=['owned_output_paths_replaced'], actualPacingAndInputFlagsPreserved=True, stage='encode')
     stage = directory / 'isolated-refill-replay'
     stage.mkdir()

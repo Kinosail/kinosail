@@ -14,6 +14,7 @@ import threading
 import time
 from hls_remaining_process import annotate_case, finish_processes, physical, source_snapshot
 from hls_remaining_audio import audio_output, replay_refill
+from hls_remaining_capture import capture_codec
 from hls_remaining_mux import counterfactuals
 from hls_remaining_warmup import warmup_counterfactual
 from hls_remaining_installation import installation_cases
@@ -95,26 +96,8 @@ def journey(name, original, metadata, offset=0, pacing=None, installation=False)
         KINOSAIL_TLS_ENABLED='false', KINOSAIL_DATA_DIR=str(directory / 'config'),
         KINOSAIL_MEDIA_DIR=str(media), KINOSAIL_CACHE_DIR=str(directory / 'cache'),
         KINOSAIL_BACKUP_DIR=str(directory / 'backups'), KINOSAIL_BACKUP_KEY='synthetic-remaining-key')
-    if pacing is not None:
-        real = shutil.which('ffmpeg')
-        check(real is not None, 'ffmpeg_unavailable')
-        wrapper = directory / 'paced-ffmpeg'
-        invocation = directory / 'pacing-invocations.jsonl'
-        wrapper.write_text('#!/usr/bin/env python3\nimport os,sys,json\na=sys.argv[1:]\n'
-            "if '-hls_time' in a:\n"
-            " if '-readrate' in a: a[a.index('-readrate')+1]=" + repr(str(pacing)) + '\n'
-            " else: a[a.index('-i'):a.index('-i')]=['-readrate'," + repr(str(pacing)) + ']\n'
-            + ' with open(' + repr(str(invocation)) + ", 'a') as f: f.write(json.dumps({'pid':os.getpid(),'parent':os.getppid(),'sourceMatched':" + repr(str(source)) + " in a,'readrate':a[a.index('-readrate')+1]})+'\\n')\n"
-            + " if '-start_number' in a and " + repr(str(source)) + " in a:\n"
-            + '  value=json.dumps(a)\n  if len(value.encode())<=8192:\n'
-            + '   with open(' + repr(str(directory / 'refill-recipe-private.json')) + ", 'w') as f: f.write(value)\n"
-            + ("  if a[a.index('-start_number')+1]=='4':\n   sys.path.insert(0," + repr(str(Path(__file__).parent)) + ")\n   from hls_remaining_installation import installed_refill\n"
-                + "   a=installed_refill(a," + repr(str(source)) + ',' + repr(str(directory))
-                + ",os.environ.get('KINOSAIL_INSTALLATION_RECEIPT_DIR'))\n" if installation else '')
-            + 'os.execv(' + repr(real) + ',[' + repr(real) + ']+a)\n')
-        wrapper.chmod(0o700)
-        env['KINOSAIL_FFMPEG'] = str(wrapper)
-        case['testOnlyRealCodecPacing'] = {'readrate': pacing, 'wrapperSHA256': sha(wrapper), 'executableSHA256': sha(Path(real))}
+    if pacing is not None or source.suffix == '.flac':
+        real, invocation = capture_codec(directory, source, pacing, installation, env, case)
     resources = {'samples': 0, 'peakOwnedFFmpeg': 0, 'samplingErrors': 0}
     case['resources'] = resources
     log_path = directory / 'server.log'
@@ -140,7 +123,7 @@ def journey(name, original, metadata, offset=0, pacing=None, installation=False)
             check(re.fullmatch(r'/hls/[a-f0-9]{16}/p/[ra]-[a-zA-Z0-9-]+/index\.m3u8', hls), 'planned_recipe_route')
             check(plan['media']['fileVersion'] == str(before['sizeBytes']) + ':' + before['mtimeNanoseconds'], 'source_snapshot_binding')
             case['mode'] = plan['compatiblePlan']['mode']
-            if SUITE == 'audio-origin':
+            if item['kind'] == 'audio':
                 case['originSelectedAudio'] = origin_selected_audio(plan)
             check(case['mode'] == ('audio-transcode' if item['kind'] == 'audio' else 'remux'), 'expected_compatibility_mode')
             case['planDurationSeconds'] = plan['duration']
@@ -220,7 +203,7 @@ def journey(name, original, metadata, offset=0, pacing=None, installation=False)
                     case['originWitnessFailure'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
             if case.get('retainedRefillFragments') and SUITE not in ['audio-installation', 'audio-origin']:
                 try:
-                    check(pacing is not None, 'fresh_refill_actual_argv_unavailable')
+                    check('actualCodecInvocation' in case, 'fresh_refill_actual_argv_unavailable')
                     value = replay_refill(run, RUN_DEADLINE, directory, source, case, Path(real))
                     case['isolatedFreshRefillReplay'] = value
                     value['matchesCanonicalPCM'] = value['pcmSHA256'] == case['refillNativeEOF']['pcmSHA256']
