@@ -5,7 +5,6 @@ import (
 	"os/exec"
 
 	"github.com/MikeO7/kinosail/packages/library"
-	"github.com/MikeO7/kinosail/packages/playback"
 )
 
 func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item, root, name, width, videoRate, audioRate string, duration float64, options transcodeSettings, sourceRecipe, recipe hlsRecipe, start float64, startNumber int) error { //nolint:cyclop,funlen // One FFmpeg command is assembled from the validated playback recipe.
@@ -35,14 +34,7 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 	if err != nil {
 		return err
 	}
-	copyInput := "0"
-	if recipe.mode != "transcode" && len(sourceRecipe.omitted) > 0 {
-		arguments, copyInput, err = hlsSkipInput(arguments, directory, item.Path, duration, sourceRecipe)
-		if err != nil {
-			return err
-		}
-	}
-	arguments, err = playback.HLSCodecArguments(playback.HLSCodecInput{AudioOnly: item.Kind == "audio" || item.Kind == "audiobook", Arguments: arguments, Video: video, Compatibility: videoCompatibilityArguments(options.Codec), ItemPath: item.Path, VideoRate: videoRate, AudioRate: audioRate, CopyInput: copyInput, Recipe: sharedHLSRecipe(recipe), Policy: hlsPolicy()})
+	arguments, err = hlsVariantCodecArguments(arguments, directory, item, duration, options, sourceRecipe, recipe, video, videoRate, audioRate)
 	if err != nil {
 		return err
 	}

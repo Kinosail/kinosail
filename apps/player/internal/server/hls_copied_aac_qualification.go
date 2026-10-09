@@ -128,12 +128,15 @@ func (manager *hlsManager) copiedAACQualificationSource(ctx context.Context, ite
 	}
 	return base, before, nil
 }
+
 func (manager *hlsManager) copiedAACNeedsQualification(directory string, force bool) bool {
 	return force || manager.copiedHLSTimelinePresent(directory) || manager.copiedAACMarkerPresent(directory)
 }
+
 func (manager *hlsManager) copiedAACQualificationAllowed(ctx context.Context, item library.Item) bool {
 	return manager.index != nil && manager.index.Safe(item.Path) && ctx.Err() == nil
 }
+
 func (manager *hlsManager) copiedAACQualificationComplete(ctx context.Context, item library.Item, recipe hlsRecipe, policy string, before os.FileInfo, file *os.File) bool {
 	after, statErr := os.Lstat(item.Path)
 	opened, openErr := file.Stat()

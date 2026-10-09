@@ -2,7 +2,9 @@ package server
 
 import (
 	"context"
+
 	"github.com/MikeO7/kinosail/packages/library"
+	"github.com/MikeO7/kinosail/packages/playback"
 )
 
 func hlsVariantInputArguments(ctx context.Context, source string, recipe hlsRecipe, timeline *copiedHLSTimeline, input []string, fromBeginning bool, start float64, startNumber int) ([]string, error) {
@@ -61,4 +63,16 @@ func (manager *hlsManager) hlsVariantRemainingRefill(ctx context.Context, item l
 		return remainingAudioOriginRefill(mediaFactsFor(item, manager.probe.facts(ctx, item)), sourceRecipe, recipe, start, number, audioRate)
 	}
 	return nil
+}
+
+func hlsVariantCodecArguments(arguments []string, directory string, item library.Item, duration float64, options transcodeSettings, sourceRecipe, recipe hlsRecipe, video []string, videoRate, audioRate string) ([]string, error) {
+	copyInput := "0"
+	var err error
+	if recipe.mode != "transcode" && len(sourceRecipe.omitted) > 0 {
+		arguments, copyInput, err = hlsSkipInput(arguments, directory, item.Path, duration, sourceRecipe)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return playback.HLSCodecArguments(playback.HLSCodecInput{AudioOnly: item.Kind == "audio" || item.Kind == "audiobook", Arguments: arguments, Video: video, Compatibility: videoCompatibilityArguments(options.Codec), ItemPath: item.Path, VideoRate: videoRate, AudioRate: audioRate, CopyInput: copyInput, Recipe: sharedHLSRecipe(recipe), Policy: hlsPolicy()})
 }
