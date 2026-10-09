@@ -101,6 +101,7 @@ struct HomeScreen: View {
         }
         #if os(tvOS)
         .focusScope(homeFocus)
+        .onExitCommand { focusTopBar?() }
         .navigationTitle("")
         .navigationDestination(item: $quickPlay) { DestinationScreen(destination: $0) }
         #else
