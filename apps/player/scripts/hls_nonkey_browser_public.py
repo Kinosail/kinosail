@@ -7,8 +7,9 @@ import re
 import signal
 import time
 from hls_followon_public import bounded_bytes, check, encoder_count
-from hls_timeline_http import sha
+from hls_timeline_http import sha, source_state
 from hls_timeline_packets import manifest_facts
+from hls_remaining_nonkey_evidence import native_pcm
 from hls_remaining_process import group_members
 
 def chromium_join(node, path):
@@ -149,3 +150,22 @@ def safe_transport_projection(case):
         'producerInvocations':case.get('actualProducerInvocations',[]),
         'heldTransportControls':case.get('heldTransportControls',[]),
         'sourceUnchanged':case.get('sourceUnchanged'),'referenceUnchanged':case.get('referenceUnchanged')}
+
+def browser_reference_config(api,item,source,reference,source_facts):
+    source_identity,reference_identity=source_state(source),source_state(reference)
+    check(source_identity['sha256']==reference_identity['sha256']==source_facts['state']['sha256'],
+          'browser_reference_complete_coded_file_binding')
+    plan=api.call('/api/v1/items/'+item['id']+'/playback?videoCodecs=h264&audioCodecs=aac')
+    selected=plan.get('direct')
+    check(plan.get('directAllowed') is True and selected=='/media/'+item['id'],
+          'browser_reference_actual_direct_plan')
+    status,data,_=api.http(selected)
+    check(status==200 and 0<len(data)<=2<<20 and hashlib.sha256(data).hexdigest()==reference_identity['sha256'],
+          'browser_reference_actual_direct_bytes')
+    pcm,_=native_pcm(reference)
+    return {'referenceSource':selected,'referencePath':str(reference),
+        'referenceSourceSHA256':reference_identity['sha256'],'expectedReferencePCMFull':{'samples':pcm['samples'],'sha256':pcm['sha256']}}, {
+        'sourceSHA256':source_identity['sha256'],'referenceSHA256':reference_identity['sha256'],
+        'cliCodedSourceSHA256':source_facts['state']['sha256'],'completeFileByteIdentity':True,
+        'actualDirectPlanBound':True,'authenticatedFullDirectSHA256':hashlib.sha256(data).hexdigest(),
+        'completeReferencePCM':pcm,'sourceStreamMetadata':source_facts['metadata']}

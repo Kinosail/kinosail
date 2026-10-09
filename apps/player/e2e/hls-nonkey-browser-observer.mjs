@@ -23,6 +23,16 @@ export function consumerQualification(row, reference, expected) {
   const seek=row.label!=='forced-source-coordinate-seek' || row.forceSeek?.seeking && row.forceSeek?.seeked;
   return {...frame,qualified:Boolean(frame.qualified && healthy && actualQuality && seek && row.referenceComplete)};
 }
+export function directReferenceQualification(row,reference,expected){
+  const phase=row.observer?.phases?.at(-1);
+  if(!phase)return {qualified:false,reason:'missing_observer'};
+  const frame=frameQualification(phase,reference,expected);
+  const healthy=row.result==='observed' && row.directReferenceBytesVerified===true && row.adapter?.direct===true &&
+    !row.pageErrors && !row.snapshotFailure && !row.httpBodyFailure && !row.httpOverflow &&
+    !row.directReferenceRouteMismatch && phase.firstCallbackGap===0 &&
+    phase.quality?.droppedVideoFrames===0;
+  return {...frame,qualified:Boolean(frame.qualified && healthy)};
+}
 export function completeAudioQualification(value, expected) {
   return {qualified:Boolean(value.completeDecode && value.sampleRate===48000 && value.channels===2 &&
     value.samples===expected.samples && value.s16leSHA256===expected.sha256),
@@ -60,6 +70,7 @@ export function installBrowserObserver() {
     }
     const canvas=document.createElement('canvas');
     const context=canvas.getContext('2d',{willReadFrequently:true});
+    state.canvasAttributes=context.getContextAttributes?.()||null;
     let previous;
     const capture=(_,metadata)=>{
       video.requestVideoFrameCallback(capture);
@@ -91,7 +102,7 @@ export function installBrowserObserver() {
     const quality=video?.getVideoPlaybackQuality?.();
     if(state.active)state.active.quality=quality?{droppedVideoFrames:quality.droppedVideoFrames,totalVideoFrames:quality.totalVideoFrames}:null;
     for(const value of state.phases)await Promise.all(value.pending);
-    return {phases:state.phases.map(({pending,...value})=>value),captureErrors:state.captureErrors};
+    return {phases:state.phases.map(({pending,...value})=>value),captureErrors:state.captureErrors,canvasAttributes:state.canvasAttributes};
   };
 }
 export async function browserAudioDecode(bytes) {

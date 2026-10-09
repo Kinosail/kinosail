@@ -17,7 +17,7 @@ from hls_timeline_packets import manifest_facts, fragment_audio
 from hls_remaining_nonkey_evidence import observed_media, native_pcm
 from hls_remaining_nonkey_boundary import packet_tail
 from hls_remaining_process import finish_processes, join_group
-from hls_nonkey_browser_public import chromium_join, public_media, safe_transport_projection
+from hls_nonkey_browser_public import chromium_join, public_media, safe_transport_projection, browser_reference_config
 from hls_nonkey_browser_config import measured_delta, diagnostic_result
 from hls_followon_public import bounded_bytes, check, prepare_once, sample_resources
 from hls_remaining_nonkey_deadline import DiagnosticDeadline
@@ -118,6 +118,7 @@ try:
                 ref_item=next(v for v in items if v['title']=='Reference')
                 plan=api.call('/api/v1/items/'+item['id']+'/playback?videoCodecs=h264&audioCodecs=aac')
                 check(plan['compatiblePlan']['mode']=='remux','browser_public_remux_policy')
+                reference_config,case['referenceBindings']=browser_reference_config(api,ref_item,source,reference,source_facts)
                 browser_cases=[]
                 for selected_case in selected_cases:
                     requested=selected_case['requestedRelativeSeconds']
@@ -188,7 +189,7 @@ try:
                 output=directory/'browser.json'
                 private=directory/'browser-private.json'
                 private.write_text(json.dumps({'origin':api.url,'token':api.token,'itemID':item['id'],
-                    'referenceID':ref_item['id'],'cases':browser_cases,'output':str(output),
+                    'referenceID':ref_item['id'],**reference_config,'cases':browser_cases,'output':str(output),
                     'browserOwnerFile':str(directory/'browser-owner-private.json')}))
                 private.chmod(0o600)
                 receipt['currentStage']='actual-browser-execution'

@@ -3,12 +3,13 @@ import {createHash} from 'node:crypto';
 import {createReadStream} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {chromium} from '@playwright/test';
-import {installBrowserObserver,frameQualification,consumerQualification,browserAudioDecode,completeAudioQualification} from './hls-nonkey-browser-observer.mjs';
+import {installBrowserObserver,frameQualification,consumerQualification,browserAudioDecode,completeAudioQualification,directReferenceQualification} from './hls-nonkey-browser-observer.mjs';
+import {directReferenceBodyFacts,safeBrowserProjection} from './hls-nonkey-browser-reference.mjs';
 const input=await readFile(process.argv[2]);if(input.length>65536)throw Error('private_input_bound');
 const config=JSON.parse(input), result={cases:[],productionAcceptance:false,clientSourceChanged:false,
   browserAudioPresentationAccepted:false,reference:undefined};
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
-let browserServer,browser,context,browserIdentity;
+let browserServer,browser,context,browserIdentity,referenceBytes;
 let terminated=false,settlePromise;
 const groupMembers=id=>{
   const raw=execFileSync('ps',['-eo','pid=,pgid='],{encoding:'utf8',timeout:3000,maxBuffer:262144});
@@ -59,13 +60,22 @@ async function observe(id,request,label){
   const row={request,label,result:'observation-failed',http:[],failureClass:undefined};
   const expected=config.cases.find(v=>v.request===request);
   const mediaPending=[];
-  row.observedSelectedAssets={};row.unexpectedSelectedAssets=[];
+  row.observedSelectedAssets={};row.unexpectedSelectedAssets=[];row.directReferenceBodies=[];
   const page=await context.newPage();
   page.on('response',response=>{
     const url=new URL(response.url());
     if(url.origin!==config.origin)return;
     if(row.http.length>=1024){row.httpOverflow=true;return;}
     const path=url.pathname;
+    if(label==='source-reference' && path.startsWith('/media/')){
+      if(path!==config.referenceSource)row.directReferenceRouteMismatch=true;
+      mediaPending.push(response.body().then(bytes=>{
+        if(row.directReferenceBodies.length>=32)throw Error('reference_response_bound');
+        const facts=directReferenceBodyFacts(response.status(),response.headers()['content-range'],bytes,referenceBytes);
+        row.directReferenceBodies.push(facts);
+        if(!facts.matched)row.httpBodyFailure=true;
+      }).catch(()=>{row.httpBodyFailure=true;}));
+    }
     if(label!=='source-reference' && path.startsWith('/media/'))row.directMediaRequested=true;
     if(label!=='source-reference' && path.startsWith('/hls/')){
       const prefix=expected.selectedSource.slice(0,expected.selectedSource.lastIndexOf('/')+1);
@@ -139,6 +149,8 @@ async function observe(id,request,label){
   }catch(error){row.failureClass=error.message?.match(/^[a-z_]+(?:_[0-9]+)?$/)?.[0]||error.name||'browser_operation';}
   finally{
     await Promise.all(mediaPending);
+    if(label==='source-reference')row.directReferenceBytesVerified=Boolean(row.directReferenceBodies.length>0 &&
+      !row.directReferenceRouteMismatch && !row.httpBodyFailure && row.directReferenceBodies.every(v=>v.matched));
     try{row.observer=await page.evaluate(()=>window.nonkeySnapshot());}catch{row.snapshotFailure=true;}
     if(label!=='source-reference')row.selectedPublicHLSObserved=Boolean(!row.wrongHLSRecipe && !row.directMediaRequested &&
       !row.httpBodyFailure && expected?.initialDeliveryStable && Object.entries(expected.publicAssetSHA256).every(([name,digest])=>{
@@ -149,6 +161,9 @@ async function observe(id,request,label){
   return row;
 }
 try{
+  referenceBytes=await readFile(config.referencePath);
+  if(referenceBytes.length>2<<20 || sha(referenceBytes)!==config.referenceSourceSHA256)throw Error('reference_file_byte_binding');
+  result.referenceCodedSourceSHA256=sha(referenceBytes);
   const executable=chromium.executablePath();
   const binaryHash=createHash('sha256');let binaryBytes=0;
   for await(const part of createReadStream(executable)){
@@ -177,7 +192,23 @@ try{
   result.referenceComplete=Boolean(reference?.ended && reference.rows.length===768 &&
     reference.droppedCallbacks===0 && reference.firstCallbackGap===0 &&
     reference.captureErrors.length===0 && reference.quality?.droppedVideoFrames===0 &&
-    result.reference.result==='observed' && !result.reference.pageErrors && !reference.events.some(e=>e.errorCode>0 || e.name==='error'));
+    result.reference.directReferenceBytesVerified===true && result.reference.adapter?.direct===true && result.reference.result==='observed' && !result.reference.pageErrors && !reference.events.some(e=>e.errorCode>0 || e.name==='error'));
+  result.referenceCalibration=[];
+  console.log(JSON.stringify({referenceInitial:safeBrowserProjection(result.reference),referenceComplete:result.referenceComplete}));
+  for(const request of [0,12.5]){
+    const row=await observe(config.referenceID,request,'source-reference');
+    const expected=request===0?Array.from({length:768},(_,n)=>n):config.cases.find(v=>v.request===request).expectedSourceIndices;
+    row.directQualification=directReferenceQualification(row,reference?.rows||[],expected);
+    result.referenceCalibration.push(row);
+    console.log(JSON.stringify({directCalibration:safeBrowserProjection(row)}));
+  }
+  const calibrationPage=await context.newPage();await calibrationPage.goto(config.origin+'/healthz');
+  try{
+    result.referenceAudioContextFull=await calibrationPage.evaluate(browserAudioDecode,[...referenceBytes]);
+    result.referenceAudioContextQualification=completeAudioQualification(result.referenceAudioContextFull,config.expectedReferencePCMFull);
+    console.log(JSON.stringify({sourceAudioContext:result.referenceAudioContextFull,expectedReferencePCMFull:config.expectedReferencePCMFull,
+      qualification:result.referenceAudioContextQualification}));
+  }finally{await calibrationPage.close();}
   for(const item of config.cases){
     if(terminated)throw Error('handled_browser_termination');
     for(const label of ['unchanged-client','forced-source-coordinate-seek']){
@@ -189,10 +220,7 @@ try{
       row.consumerQualification=consumerQualification(row,reference?.rows||[],item.expectedSourceIndices);
       row.frameConsumerQualified=row.consumerQualification.qualified;
       result.cases.push(row);
-      console.log(JSON.stringify({request:row.request,label:row.label,result:row.result,currentStage:row.currentStage,
-        failureClass:row.failureClass,frames:selected?.rows?.length,droppedCallbacks:selected?.droppedCallbacks,
-        actualFirstSourceIndices:row.frameQualification?.actualSourceIndices?.slice(0,4),
-        frameQualified:row.frameConsumerQualified,referenceComplete:row.referenceComplete}));
+      console.log(JSON.stringify({actualBrowser:safeBrowserProjection(row)}));
     }
     const bytes=await readFile(item.publicJoinedPath);
     if(bytes.length>8<<20)throw Error('public_joined_bound');
@@ -204,6 +232,7 @@ try{
     }catch(error){audio.failureClass=error.name||'browser_audio_decode';}
     finally{await page.close();}
     result.cases.push(audio);
+    console.log(JSON.stringify({publicAudioContext:audio.actual,expectedPCM:item.expectedPCM,qualification:audio.qualification,failureClass:audio.failureClass}));
   }
   result.result='observed';
 }catch(error){result.result='failed';result.failureClass=error.message?.match(/^[a-z_]+$/)?.[0]||error.name;}
