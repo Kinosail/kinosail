@@ -3,6 +3,7 @@ import hashlib
 import importlib.util
 import os
 from pathlib import Path
+import stat
 import subprocess
 import sys
 import tempfile
@@ -48,11 +49,20 @@ class DataDigest(unittest.TestCase):
         result = subprocess.run([sys.executable, '-I', str(HELPER)], capture_output=True, timeout=3)
         self.assertNotEqual(result.returncode, 0); self.assertEqual(result.stdout+result.stderr, b'')
 
-    def test_nonprivate_root_rejected_without_reads(self):
-        module=self.module()
-        os.chmod(self.root,0o755)
-        with patch.object(module.os,'read',side_effect=AssertionError('read rejected root')):
-            with self.assertRaises(ValueError): module.data_digest(self.fd)
+    def test_nonprivate_root_descriptor_metadata_rejected_without_io(self):
+        module=self.module(); actual=os.fstat(self.fd)
+        self.assertEqual(stat.S_IMODE(actual.st_mode),0o700)
+        # Synthetic mode metadata; preserve the real private root and all other stat fields.
+        values,fields=actual.__reduce__()[1]
+        for permissions in range(1,0o100):
+            mode=0o700|permissions
+            rejected=os.stat_result((stat.S_IFMT(actual.st_mode)|mode,*values[1:]),fields)
+            with self.subTest(mode=oct(mode)), patch.object(module.os,'fstat',return_value=rejected), \
+                patch.object(module.os,'read',side_effect=AssertionError('read rejected root')), \
+                patch.object(module.os,'open',side_effect=AssertionError('open rejected root')), \
+                patch.object(module.os,'scandir',side_effect=AssertionError('scan rejected root')):
+                with self.assertRaisesRegex(ValueError,'^invalid root$'): module.data_digest(self.fd)
+            self.assertEqual(stat.S_IMODE(os.fstat(self.fd).st_mode),0o700)
 
     def test_rejected_types_and_bounds_no_reads(self):
         module = self.module()
