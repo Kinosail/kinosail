@@ -92,3 +92,20 @@ func copiedAACPlaylistSnapshot(t *testing.T,directory string) map[string][32]byt
     }
     return result
 }
+
+func TestCopiedAACPlaylistRejectsUnboundMasterURISet(t *testing.T) {
+    if runtime.GOOS!="linux" {t.Skip("qualified retained-source producer is Linux-only")}
+    manager,directory,held:=copiedAACGenerationFixture(t)
+    item,recipe,policy:=held.item,held.recipe,held.policy
+    held.close()
+    original,err:=os.ReadFile(filepath.Join(directory,"index.m3u8"))
+    if err!=nil {t.Fatal(err)}
+    for _,master:=range []string{string(original)+"../escape.m3u8\n",string(original)+"360p/index.m3u8\n",strings.Replace(string(original),policy,policy+"-wrong",1),string(original)+"720p/index.m3u8\n"} {
+        writeHLSLoadingFile(t,filepath.Join(directory,"index.m3u8"),master)
+        before:=copiedAACPlaylistSnapshot(t,directory)
+        response:=httptest.NewRecorder()
+        request:=httptest.NewRequestWithContext(t.Context(),http.MethodGet,"/index.m3u8",nil)
+        if !manager.serveCopiedAACPlaylist(response,request,item,recipe,"index.m3u8",filepath.Base(directory),0,20)||response.Code!=http.StatusNotFound {t.Fatal("unbound master URI set was served")}
+        if !reflect.DeepEqual(copiedAACPlaylistSnapshot(t,directory),before) {t.Fatal("rejected master changed cache")}
+    }
+}
