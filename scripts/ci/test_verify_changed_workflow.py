@@ -93,11 +93,20 @@ else:
         self.assertIn('version: 11.22.0', text)
         self.assertIn('node-version: 26', text)
         self.assertIn('govulncheck@v1.7.0', text)
-        self.assertIn('golangci-lint@v2.13.1', text)
+        self.assertIn('golangci-lint@v2.14.0', text)
         self.assertLess(text.index('run-verify-changed.sh "$APP_SELECTION" --admit-only'),
                         text.index('actions/setup-go@'))
         self.assertIn('if: always()', text)
         self.assertIn('run-verify-changed.sh "$APP_SELECTION"', text)
+
+    def test_every_hosted_linter_lane_uses_the_v5_export_reader_pin(self):
+        expected = {'ci.yml': (1, 1), 'app.yml': (1, 0), 'layout-stability.yml': (1, 1)}
+        for name, (actions, installs) in expected.items():
+            with self.subTest(workflow=name):
+                source = (ROOT / '.github/workflows' / name).read_text()
+                self.assertEqual(source.count('version: v2.14.0'), actions)
+                self.assertEqual(source.count('golangci-lint@v2.14.0'), installs)
+                self.assertNotIn('v2.13.1', source)
 
     def test_actual_layout_selection_rejects_every_unused_override(self):
         defaults = ['false', 'false', 'false', 'false', 'primary', 'protocol', 'source-format', 'false']
