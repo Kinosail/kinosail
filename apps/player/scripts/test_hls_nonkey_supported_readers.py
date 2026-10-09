@@ -58,7 +58,8 @@ class SupportedReaderControls(unittest.TestCase):
         self.assertEqual(hex_dump(data), bytes.fromhex('0000000365888400000002419a'))
 
     def test_malformed_packet_hex_rejected(self):
-        for bad in ['00000000: xyz  text', 'offset: 0000  text', '00000000: 0  text']:
+        for bad in ['00000000: xyz  text', 'offset: 0000  text', '00000000: 0  text',
+                    '00000000: 0000  text\n00000010: 0011  text']:
             with self.subTest(value=bad), self.assertRaises(RuntimeError):
                 hex_dump(bad)
 

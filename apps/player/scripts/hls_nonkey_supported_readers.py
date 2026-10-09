@@ -4,35 +4,44 @@ import hashlib
 import json
 import re
 from hls_followon_frames import parse_frames, frame_facts, stream_metadata
-from hls_followon_public import check
+from hls_followon_public import bounded_bytes, check
 
 
 def hex_dump(text):
     chunks = []
+    position = 0
     for line in text.splitlines():
         if not line.strip():
             continue
         check(re.match(r'^[0-9a-f]{8}: ', line) is not None, 'capability_packet_hex_shape')
         value = line.split(': ', 1)[1].split('  ', 1)[0].replace(' ', '')
         check(re.fullmatch(r'(?:[0-9a-f]{2})+', value) is not None, 'capability_packet_hex_bytes')
-        chunks.append(bytes.fromhex(value))
+        data = bytes.fromhex(value)
+        check(int(line[:8], 16) == position and 0 < len(data) <= 16, 'capability_packet_hex_extent')
+        chunks.append(data)
+        position += len(data)
     return b''.join(chunks)
 
 
 def nal_evidence(run, path, first_only=False):
     command = ['ffprobe', '-v', 'error', '-select_streams', 'v:0',
         '-read_intervals', '%+#4097', '-show_packets', '-show_streams',
-        '-show_data', '-show_entries', 'stream=extradata,time_base:packet=pts,pts_time,dts,flags,data',
+        '-show_data', '-show_data_hash', 'sha256', '-show_entries',
+        'stream=index,codec_type,codec_name,extradata,time_base:packet=pts,pts_time,dts,flags,size,data,data_hash',
         '-of', 'json', str(path)]
     result = json.loads(run(command, 30, 8 << 20))
     streams, packets = result.get('streams', []), result.get('packets', [])
     check(len(streams) == 1 and 0 < len(packets) <= 4096, 'capability_nal_probe_shape')
+    check(streams[0].get('index') == 0 and streams[0].get('codec_type') == 'video'
+          and streams[0].get('codec_name') == 'h264', 'capability_nal_h264_identity')
     config = hex_dump(streams[0]['extradata'])
     check(len(config) >= 5 and config[0] == 1, 'capability_avcc_configuration')
     width = (config[4] & 3) + 1
     rows = []
     for number, packet in enumerate(packets[:1] if first_only else packets):
         data, position, types = hex_dump(packet['data']), 0, []
+        check(len(data) == int(packet['size']), 'capability_packet_payload_size')
+        check('SHA256:' + hashlib.sha256(data).hexdigest() == packet['data_hash'], 'capability_packet_payload_hash')
         while position < len(data):
             check(position + width <= len(data), 'capability_nal_length_bound')
             size = int.from_bytes(data[position:position + width], 'big')
@@ -40,7 +49,7 @@ def nal_evidence(run, path, first_only=False):
             check(size > 0 and position + size <= len(data), 'capability_nal_payload_bound')
             types.append(data[position] & 31)
             position += size
-        row = {key: packet[key] for key in ['pts', 'pts_time', 'dts', 'flags'] if key in packet}
+        row = {key: packet[key] for key in ['pts', 'pts_time', 'dts', 'flags', 'size', 'data_hash'] if key in packet}
         row.update(packetNumber=number, payloadSHA256=hashlib.sha256(data).hexdigest(),
                    nalTypes=types, containsIDR=5 in types)
         rows.append(row)
@@ -54,10 +63,11 @@ def expected_sequence(source_rows, requested):
     return [digest for point, digest in source_rows if Fraction(str(point)) >= requested - Fraction(1, 1000000)]
 
 
-def reader_case(run, path, label, input_options, source_rows, requested, reference_pcm, row):
-    row.update(label=label, result='in-flight', inputOptions=input_options, rawProducerAcceptance=False)
+def reader_case(run, path, label, input_options, source_rows, requested, reference_pcm, row, copyts=True):
+    row.update(label=label, result='in-flight', inputOptions=input_options,
+               copytsApplied=copyts, rawProducerAcceptance=False)
     command = ['ffmpeg', '-nostdin', '-v', 'error', '-xerror', '-threads', '2',
-               '-copyts', *input_options, '-i', str(path)]
+               *(['-copyts'] if copyts else []), *input_options, '-i', str(path)]
     video = command + ['-an', '-frames:v', '4097', '-fps_mode', 'passthrough',
                        '-enc_time_base', '1:1000000', '-f', 'framemd5', 'pipe:1']
     row['videoCommand'] = video
@@ -117,21 +127,35 @@ def consumers(run, directory, source_rows, requested, public_rows, reference_pcm
         ('accurate-relative', ['-ss', str(float(relative)), '-accurate_seek']),
         ('inaccurate-absolute-control', ['-seek_timestamp', '1', '-ss', str(float(absolute)), '-noaccurate_seek']),
         ('accurate-absolute-zero', ['-seek_timestamp', '1', '-ss', '0', '-accurate_seek']),
-        ('accurate-relative-zero', ['-ss', '0', '-accurate_seek'])]
+        ('accurate-relative-zero', ['-ss', '0', '-accurate_seek']),
+        ('accurate-absolute-normal-clock', ['-seek_timestamp', '1', '-ss', str(float(absolute)), '-accurate_seek']),
+        ('accurate-absolute-zero-normal-clock', ['-seek_timestamp', '1', '-ss', '0', '-accurate_seek'])]
     for label, argv in options:
         row = {}
         result['readers'].append(row)
-        reader_case(run, path, label, argv, source_rows, requested, reference_pcm, row)
+        reader_case(run, path, label, argv, source_rows, requested, reference_pcm, row,
+                    copyts=not label.endswith('-normal-clock'))
+    media = [directory / 'init.mp4', *sorted(directory.glob('segment-*.m4s'))]
+    before = {p.name: hashlib.sha256(bounded_bytes(p, 2 << 20, 'capability_reader_asset_bound')).hexdigest() for p in media}
+    result['readerMediaSHA256Before'] = before
     manifest = (directory / 'index.m3u8').read_text()
     check('#EXT-X-ENDLIST' in manifest and '#EXT-X-START' not in manifest, 'capability_finalized_hls_control')
-    for precise in ['NO', 'YES']:
-        label = 'finalized-hls-start-' + precise.lower()
-        playlist = directory / (label + '.m3u8')
-        content = manifest.replace('#EXTM3U\n', '#EXTM3U\n#EXT-X-START:TIME-OFFSET='
-            + str(float(relative)) + ',PRECISE=' + precise + '\n', 1)
-        playlist.write_text(content)
-        row = {'playlistSHA256': hashlib.sha256(content.encode()).hexdigest(),
-               'playlistComplete': True, 'identicalMediaAssets': True}
-        result['readers'].append(row)
-        reader_case(run, playlist, label, ['-allowed_extensions', 'mp4,m4s', '-prefer_x_start', '1'],
-                    source_rows, requested, reference_pcm, row)
+    source_origin_candidate = requested - Fraction(clock['matchedFirstSourceVideoPTS'])
+    result['playlistOffsetQualification'] = 'Unqualified origin candidates; no certified HLS playlist/source origin'
+    for candidate, offset in [('container-relative', relative), ('first-video-source', source_origin_candidate)]:
+        for precise in ['NO', 'YES']:
+            label = 'finalized-hls-start-' + candidate + '-' + precise.lower()
+            playlist = directory / (label + '.m3u8')
+            content = manifest.replace('#EXTM3U\n', '#EXTM3U\n#EXT-X-START:TIME-OFFSET='
+                + str(float(offset)) + ',PRECISE=' + precise + '\n', 1)
+            playlist.write_text(content)
+            row = {'playlistSHA256': hashlib.sha256(content.encode()).hexdigest(),
+                   'playlistComplete': True, 'playlistOffsetCandidate': candidate,
+                   'playlistOffsetSeconds': str(offset), 'playlistOriginCertified': False}
+            result['readers'].append(row)
+            reader_case(run, playlist, label, ['-allowed_extensions', 'mp4,m4s', '-prefer_x_start', '1'],
+                        source_rows, requested, reference_pcm, row)
+    result['readerMediaSHA256After'] = {p.name: hashlib.sha256(bounded_bytes(
+        p, 2 << 20, 'capability_reader_asset_bound')).hexdigest() for p in media}
+    result['readerMediaUnchanged'] = result['readerMediaSHA256After'] == before
+    check(result['readerMediaUnchanged'], 'capability_reader_media_changed')

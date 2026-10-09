@@ -55,7 +55,7 @@ jobs:
           echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
       - name: Verify strict initialization and fragment parsers
         if: inputs.phase != 'remaining'
-        run: python3 -m unittest discover -s apps/player/scripts -p 'test_hls_*nonkey_*.py'
+        run: python3 -m unittest discover -s apps/player/scripts -p 'test_hls_remaining_nonkey_*.py'
       - name: Capture full public frames, packets, edits and native PCM
         if: inputs.phase != 'remaining'
         run: timeout --kill-after=90s 750s python3 apps/player/scripts/test-hls-nonkey-observation.py
@@ -227,7 +227,7 @@ jobs:
           timeout --kill-after=5s 180s sudo apt-get "${apt_options[@]}" install -y --no-install-recommends "$RUNNER_TEMP/hls-ffmpeg.deb"
           echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
       - name: Verify all strict diagnostic controls
-        run: python3 -m unittest discover -s apps/player/scripts -p 'test_hls_remaining_nonkey_*.py'
+        run: python3 -m unittest discover -s apps/player/scripts -p 'test_hls_*nonkey_*.py'
       - name: Observe fixed counterfactuals without production admission
         if: inputs.phase == 'mux' || inputs.phase == 'capability'
         run: timeout --kill-after=90s 420s python3 apps/player/scripts/${{ inputs.phase == 'capability' && 'test-hls-nonkey-supported.py' || 'test-hls-nonkey-mux-observation.py' }}

@@ -114,6 +114,12 @@ def inspect_case(case_run, source, directory, metadata, wanted, source_nals, sou
         public_nals = nal_evidence(case_run, public, True)
         row['firstPublicAccessUnit'] = public_nals
         actual = public_nals['rows'][0]
+        first_packet = next(p for p in observation['publicPacketRows'] if p['stream_index'] == 0)
+        check(first_packet['data_hash'] == 'SHA256:' + actual['payloadSHA256'], 'capability_independent_first_payload')
+        source_hashes = [p['data_hash'].removeprefix('SHA256:') for p in observation['sourcePacketRows']
+                         if p['stream_index'] == 0]
+        check(source_hashes == [p['payloadSHA256'] for p in source_nals['rows']], 'capability_independent_source_payloads')
+        row['independentPacketPayloadBindingsQualified'] = True
         matches = [p for p in source_nals['rows'] if p['payloadSHA256'] == actual['payloadSHA256']]
         row['firstPublicSourcePacketMatches'] = matches
         row['firstAccessUnitMatchesRequiredIDR'] = len(matches) == 1 and matches[0]['payloadSHA256'] == row['requiredPrecedingIDR']['payloadSHA256']
@@ -173,17 +179,24 @@ try:
     receipt['mp4CopyCommand'] = copy_command
     for source in [regular, mp4]:
         before = source_state(source)
+        source_evidence = {'container': source.suffix[1:], 'path': str(source), 'state': before, 'currentStage': 'metadata'}
+        receipt['sources'].append(source_evidence)
         source_facts = stream_metadata(source)
+        source_evidence['metadata'] = source_facts
+        source_evidence['currentStage'] = 'independent-frame-clock'
         origin = Fraction(source_facts['format']['start_time'])
         check(abs(float(origin)) <= 0.1, 'capability_source_origin_bound')
         frame_probe = ['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_frames',
                        '-show_entries', 'frame=best_effort_timestamp_time', '-of', 'json', str(source)]
         points = [float(r['best_effort_timestamp_time']) for r in json.loads(run(frame_probe))['frames']]
         check(len(points) == 768 and all(math.isfinite(p) for p in points), 'capability_complete_source_frame_clock')
+        source_evidence.update(frameProbeCommand=frame_probe, sourceFramePTS=points, currentStage='source-decode')
         source_decode, source_rows = decode_frames(source)
+        source_evidence.update(sourceDecode=source_decode, completeSourceFrameRows=source_rows, currentStage='source-nal')
         check(len(source_rows) == len(points) and all(abs(r[0] - p) <= 0.0000011
             for r, p in zip(source_rows, points)), 'capability_independent_source_pts')
         source_nals = nal_evidence(run, source)
+        source_evidence.update(sourceNALs=source_nals, currentStage='source-idr-clock')
         check(source_nals['completeVideoPacketCount'] == 768, 'capability_complete_source_payloads')
         wanted = origin + Fraction(25, 2)
         keys = [r for r in source_nals['rows'] if r['containsIDR'] and Fraction(r['pts_time']) <= wanted]
@@ -193,13 +206,10 @@ try:
         delta = wanted - key_time
         source_metadata = dict(metadata, sha256=sha(source), streamOrigins=source_facts,
             sourceTimeOriginSeconds=float(origin), sourceFramePTS=points)
+        source_evidence.update(requestedSourcePTS=str(wanted), requiredPrecedingIDR=key,
+                               measuredDeltaSeconds=str(delta), currentStage='reference-pcm')
         reference_info, reference_pcm = native_pcm(source, 12.5)
-        source_evidence = {'container': source.suffix[1:], 'state': before, 'metadata': source_facts,
-            'frameProbeCommand': frame_probe, 'sourceFramePTS': points, 'sourceDecode': source_decode,
-            'completeSourceFrameRows': source_rows, 'sourceNALs': source_nals,
-            'requestedSourcePTS': str(wanted), 'requiredPrecedingIDR': key,
-            'measuredDeltaSeconds': str(delta), 'independentAudioReference': reference_info}
-        receipt['sources'].append(source_evidence)
+        source_evidence.update(independentAudioReference=reference_info, currentStage='producer-and-reader-cases')
         output = ['-avoid_negative_ts', 'disabled', '-output_ts_offset', str(-float(delta))]
         segment = 'movflags=+skip_sidx:avoid_negative_ts=disabled:use_editlist=1'
         candidates = [('request-default', {}, 12.5),
@@ -234,6 +244,7 @@ try:
             row['assetSHA256'] = {p.name: sha(p) for p in sorted(directory.iterdir()) if p.is_file()}
             print(json.dumps(project(row), separators=(',', ':')), flush=True)
         source_evidence['sourceUnchanged'] = source_state(source) == before
+        source_evidence['currentStage'] = 'complete'
         check(source_evidence['sourceUnchanged'], 'capability_source_changed')
     check(len(receipt['cases']) == 16, 'capability_exact_case_count')
     receipt['qualifyingProducerCases'] = [r['container'] + ':' + r['label'] for r in receipt['cases']
@@ -245,6 +256,14 @@ except Exception as error:
 finally:
     with guard.cleanup():
         receipt['handledTerminationSignals'] = guard.signals
+        for source_evidence in receipt['sources']:
+            try:
+                source_evidence['finalSourceState'] = source_state(Path(source_evidence['path']))
+                source_evidence['sourceUnchangedAtCleanup'] = source_evidence['finalSourceState'] == source_evidence['state']
+                check(source_evidence['sourceUnchangedAtCleanup'], 'capability_final_source_changed')
+            except Exception as error:
+                source_evidence['finalSourceCheckFailure'] = failure(error)
+                receipt.update(result='failed', failureClass='capability_final_source_check_failed')
         receipt['elapsedScope'] = '240-second shared command deadline, then bounded receipt cleanup'
         receipt['allInstrumentedCommandsSettled'] = all(c['result'] != 'in-flight'
             for row in receipt['cases'] for c in row.get('commands', []))
