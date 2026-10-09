@@ -62,7 +62,14 @@ func privateListener(path string) (net.Listener, error) {
 	if err := os.MkdirAll(publicgateway.Directory, 0o700); err != nil {
 		return nil, err
 	}
-	if err := os.Chmod(publicgateway.Directory, 0o700); err != nil {
+	directory, err := os.Lstat(publicgateway.Directory)
+	if err != nil {
+		return nil, err
+	}
+	if !directory.IsDir() || directory.Mode()&os.ModeSymlink != 0 {
+		return nil, errors.New("invalid public socket directory")
+	}
+	if err := os.Chmod(publicgateway.Directory, 0o700); err != nil { // #nosec G302 -- Private directory needs owner traversal; group and other permissions remain zero.
 		return nil, err
 	}
 	if info, err := os.Lstat(path); err == nil {

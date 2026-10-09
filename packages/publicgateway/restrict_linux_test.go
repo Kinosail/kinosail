@@ -21,7 +21,11 @@ func TestGatewayNetworkRestrictionAcrossAllThreads(t *testing.T) {
 	if os.Getenv("KINOSAIL_TEST_GATEWAY_FILTER") != "1" {
 		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 		defer cancel()
-		cmd := exec.CommandContext(ctx, os.Args[0], "-test.run=^TestGatewayNetworkRestrictionAcrossAllThreads$")
+		executable, err := os.Executable()
+		if err != nil {
+			t.Fatal(err)
+		}
+		cmd := exec.CommandContext(ctx, executable, "-test.run=^TestGatewayNetworkRestrictionAcrossAllThreads$") // #nosec G204 -- Reexecutes this test binary from os.Executable with a fixed selector; no shell or caller-controlled path.
 		cmd.Env = append(os.Environ(), "KINOSAIL_TEST_GATEWAY_FILTER=1")
 		if output, err := cmd.CombinedOutput(); err != nil {
 			t.Fatalf("restricted child: %v %s", err, output)
@@ -82,5 +86,14 @@ func TestGatewayNetworkRestrictionAcrossAllThreads(t *testing.T) {
 	_, _, errno := unix.Syscall(unix.SYS_IO_URING_SETUP, 0, 0, 0)
 	if errno != unix.EPERM {
 		t.Fatalf("io_uring bypass = %v", errno)
+	}
+}
+
+func TestNetworkFilterFitsKernelProgramLength(t *testing.T) {
+	for _, arch := range []uint32{unix.AUDIT_ARCH_X86_64, unix.AUDIT_ARCH_AARCH64} {
+		filter := networkFilter(arch)
+		if len(filter) == 0 || len(filter) > 65535 {
+			t.Fatalf("invalid generated filter length %d", len(filter))
+		}
 	}
 }
