@@ -1,7 +1,7 @@
 import { constants, openSync, closeSync, fstatSync, lstatSync, ftruncateSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { readControl } from './control.mjs';
-import { tvAddressFailure } from './tv.mjs';
+import { tvAddressFailure, tvCaptureCodes } from './tv.mjs';
 const stages = ['inventory','reinstall','open','foreground','use','close','owner','library','server_address','connect','approval','movies','movie_focus','play','decoded_frames','pause','menu','progress','relaunch','restored_connection','persisted_progress'];
 function fields(value, expected) {
  if(!value || typeof value!=='object' || Array.isArray(value) || Object.keys(value).sort().join(',')!==expected.sort().join(','))throw Error('invalid TV action fields');
@@ -19,7 +19,8 @@ export function validateTvActions(value) {
    const failure=event.failure;fields(failure,['category','ownKeyCount','recognizedKeyMask',...(Object.hasOwn(failure,'address')?['address']:[])]);
    if(Object.hasOwn(failure,'address')){
     if(event.stage!=='server_address')throw Error('conflicting TV address stage');
-    const address=failure.address;fields(address,['substage','candidateCount','focusedPropertyPresent','inheritedLabel']);
+    const address=failure.address;fields(address,['substage','candidateCount','focusedPropertyPresent','inheritedLabel',...(Object.hasOwn(address,'sdkCode')?['sdkCode']:[])]);
+    if(Object.hasOwn(address,'sdkCode') && (address.substage!=='capture' || !tvCaptureCodes.includes(address.sdkCode)))throw Error('invalid TV capture code');
     if(!['capture','snapshot_validation','candidate_match','focus','select','type','menu'].includes(address.substage)
       || address.candidateCount!==null && (!Number.isInteger(address.candidateCount) || address.candidateCount<0 || address.candidateCount>10000)
       || ['focusedPropertyPresent','inheritedLabel'].some(key=>address.candidateCount===null?address[key]!==null:typeof address[key]!=='boolean'))throw Error('invalid TV address observation');
