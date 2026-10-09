@@ -121,14 +121,25 @@ func (value *copiedAACGeneration) openCertificate() error {
 }
 
 func (value *copiedAACGeneration) current() bool {
-	data, err := json.Marshal(value.timeline)
+	version := 2
 	if value.legacy != nil {
-		return err == nil && bytes.Equal(data, value.timelineData) && value.certificate.Version == 1 && value.certificate.Timeline == sha256.Sum256(value.timelineData) && value.ctx.Err() == nil && value.legacy.current(value)
+		version = 1
 	}
-	return err == nil && bytes.Equal(data, value.timelineData) && value.certificate.Version == 2 && value.certificate.Timeline == sha256.Sum256(value.timelineData) && value.ctx.Err() == nil &&
-		value.manager.validateHLSPolicy(value.ctx, value.item, value.recipe, value.policy) == nil &&
+	if !value.invariant(version) {
+		return false
+	}
+	if value.legacy != nil {
+		return value.legacy.current(value)
+	}
+	return value.manager.validateHLSPolicy(value.ctx, value.item, value.recipe, value.policy) == nil &&
 		copiedHLSBoundMetadata(value.root, value.timelineData, value.certificateData, value.policy) &&
 		value.manager.copiedHLSCanonicalGeneration(value.directory, value.certificate.Rendition, value.root, value.media)
+}
+
+func (value *copiedAACGeneration) invariant(version int) bool {
+	data, err := json.Marshal(value.timeline)
+	return err == nil && bytes.Equal(data, value.timelineData) && value.certificate.Version == version &&
+		value.certificate.Timeline == sha256.Sum256(value.timelineData) && value.ctx.Err() == nil
 }
 
 func (value *copiedAACGeneration) nameAllowed(name string) bool {

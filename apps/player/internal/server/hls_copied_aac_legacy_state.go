@@ -18,15 +18,27 @@ type copiedHLSLegacyRead struct {
 }
 
 func (legacy *copiedHLSLegacyRead) bind(held *copiedAACGeneration) error {
+	if legacy.bindMetadata(held) != nil || legacy.bindManifests(held) != nil {
+		return errCopiedHLSIndex
+	}
+	return legacy.completeAssets(held)
+}
+
+func (legacy *copiedHLSLegacyRead) bindMetadata(held *copiedAACGeneration) error {
 	for _, metadata := range []struct {
-		name string
-		data []byte
-	}{{".source", []byte(held.policy)}, {".copy-timeline", held.timelineData}, {".copy-clock", held.certificateData}} {
-		data, err := legacy.read(held.root, metadata.name, maximumCopiedHLSTimelineBytes)
+		name  string
+		data  []byte
+		limit int64
+	}{{".source", []byte(held.policy), 16 << 10}, {".copy-timeline", held.timelineData, maximumCopiedHLSTimelineBytes}, {".copy-clock", held.certificateData, 4096}} {
+		data, err := legacy.read(held.root, metadata.name, metadata.limit)
 		if err != nil || !bytes.Equal(data, metadata.data) {
 			return errCopiedHLSIndex
 		}
 	}
+	return nil
+}
+
+func (legacy *copiedHLSLegacyRead) bindManifests(held *copiedAACGeneration) error {
 	var err error
 	legacy.master, err = legacy.read(held.root, "index.m3u8", maximumCopiedHLSTimelineBytes)
 	if err != nil || !copiedAACMasterAllowed(legacy.master, held.policy, held.certificate.Rendition) {
@@ -40,7 +52,7 @@ func (legacy *copiedHLSLegacyRead) bind(held *copiedAACGeneration) error {
 	if _, valid := copiedHLSManifest(legacy.manifest, held.timeline); !valid {
 		return errCopiedHLSIndex
 	}
-	return legacy.completeAssets(held)
+	return nil
 }
 
 func (legacy *copiedHLSLegacyRead) read(root *os.Root, name string, limit int64) ([]byte, error) {
@@ -76,6 +88,14 @@ func (legacy *copiedHLSLegacyRead) completeAssets(held *copiedAACGeneration) err
 }
 
 func (legacy *copiedHLSLegacyRead) current(held *copiedAACGeneration) bool {
+	_, startupErr := held.root.Lstat(".startup")
+	return legacy.sourceCurrent(held) && os.IsNotExist(startupErr) &&
+		copiedHLSBoundMetadata(held.root, held.timelineData, held.certificateData, held.policy) &&
+		held.manager.copiedHLSCanonicalGeneration(held.directory, held.certificate.Rendition, held.root, held.media) &&
+		legacy.entriesCurrent(held.root) && legacy.manifestsCurrent(held)
+}
+
+func (legacy *copiedHLSLegacyRead) sourceCurrent(held *copiedAACGeneration) bool {
 	if legacy.source == nil || !held.manager.copiedAACQualificationComplete(held.ctx, held.item, held.recipe, held.policy, legacy.sourceInfo, legacy.source) {
 		return false
 	}
@@ -83,22 +103,21 @@ func (legacy *copiedHLSLegacyRead) current(held *copiedAACGeneration) bool {
 	if err != nil {
 		return false
 	}
-	if _, err := held.manager.copiedAACSettings(held.item, held.recipe, base); err != nil {
-		return false
-	}
-	if _, err := held.root.Lstat(".startup"); !os.IsNotExist(err) {
-		return false // The immutable reader cannot adopt speculative startup state.
-	}
-	if !copiedHLSBoundMetadata(held.root, held.timelineData, held.certificateData, held.policy) ||
-		!held.manager.copiedHLSCanonicalGeneration(held.directory, held.certificate.Rendition, held.root, held.media) {
-		return false
-	}
+	_, err = held.manager.copiedAACSettings(held.item, held.recipe, base)
+	return err == nil
+}
+
+func (legacy *copiedHLSLegacyRead) entriesCurrent(root *os.Root) bool {
 	for name, before := range legacy.entries {
-		after, err := held.root.Lstat(name)
+		after, err := root.Lstat(name)
 		if err != nil || !sameCopiedHLSFile(before, after) {
 			return false
 		}
 	}
+	return true
+}
+
+func (legacy *copiedHLSLegacyRead) manifestsCurrent(held *copiedAACGeneration) bool {
 	master, masterErr := copiedHLSCacheFile(held.root, "index.m3u8", maximumCopiedHLSTimelineBytes)
 	manifest, manifestErr := copiedHLSCacheFile(held.media, "index.m3u8", maximumCopiedHLSTimelineBytes)
 	return held.ctx.Err() == nil && masterErr == nil && manifestErr == nil &&

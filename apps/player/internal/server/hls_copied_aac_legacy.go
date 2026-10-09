@@ -38,10 +38,7 @@ func (manager *hlsManager) openCopiedHLSLegacyGeneration(parent context.Context,
 
 // Presence with an unreadable or mismatched binding is a handled rejection,
 // never permission to enter preparation and replace the existing generation.
-func (manager *hlsManager) copiedHLSLegacyBinding(request *http.Request, item library.Item, recipe hlsRecipe, directory string) (bool, string) {
-	if (request.Method != http.MethodGet && request.Method != http.MethodHead) || !copiedAACRecipeSupported(item, recipe) {
-		return false, ""
-	}
+func (manager *hlsManager) copiedHLSLegacyBinding(item library.Item, recipe hlsRecipe, directory string) (bool, string) {
 	root, err := manager.openCopiedHLSRoot(directory)
 	if os.IsNotExist(err) {
 		return false, ""
@@ -73,8 +70,11 @@ func (manager *hlsManager) copiedHLSLegacyBinding(request *http.Request, item li
 }
 
 func (manager *hlsManager) serveCopiedHLSLegacy(writer http.ResponseWriter, request *http.Request, item library.Item, recipe hlsRecipe, name string) bool {
+	if (request.Method != http.MethodGet && request.Method != http.MethodHead) || !copiedAACRecipeSupported(item, recipe) {
+		return false
+	}
 	directory := filepath.Join(manager.cache, hlsRecipeKey(item.ID, recipe))
-	handled, failure := manager.copiedHLSLegacyBinding(request, item, recipe, directory)
+	handled, failure := manager.copiedHLSLegacyBinding(item, recipe, directory)
 	if !handled {
 		return false
 	}
