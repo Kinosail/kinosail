@@ -149,6 +149,10 @@ func (held *copiedAACGeneration) masterAllowed(master []byte) bool {
 	if err != nil || sha256.Sum256(data) != held.certificate.Initialization || held.ctx.Err() != nil {
 		return false
 	}
+	return entry.initializationMatches(data)
+}
+
+func (entry copiedAACMasterEntry) initializationMatches(data []byte) bool {
 	initialization, err := isobmff.Parse(data)
 	video, found := initialization.Video()
 	if err != nil || !found {

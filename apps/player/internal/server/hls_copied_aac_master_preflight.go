@@ -5,6 +5,7 @@ import (
 	"context"
 	"os"
 
+	"github.com/MikeO7/kinosail/packages/isobmff"
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
@@ -29,7 +30,7 @@ func (manager *hlsManager) copiedAACMasterPreflight(parent context.Context, item
 		return nil // Preserve the existing initial-owner path while master is absent.
 	}
 	if timeline.Clock == nil {
-		return manager.copiedAACPendingMasterCurrent(ctx, item, recipe, directory, root, entry.rendition, policy)
+		return manager.copiedAACPendingMasterCurrent(ctx, item, recipe, directory, root, entry, policy)
 	}
 	return manager.copiedAACBoundMasterCurrent(ctx, item, recipe, directory, root, master)
 }
@@ -54,14 +55,18 @@ func copiedAACPresentMaster(ctx context.Context, root *os.Root, policy string) (
 	return master, entry, timeline, nil
 }
 
-func (manager *hlsManager) copiedAACPendingMasterCurrent(ctx context.Context, item library.Item, recipe hlsRecipe, directory string, root *os.Root, rendition, policy string) error {
-	media, err := root.OpenRoot(rendition)
+func (manager *hlsManager) copiedAACPendingMasterCurrent(ctx context.Context, item library.Item, recipe hlsRecipe, directory string, root *os.Root, entry copiedAACMasterEntry, policy string) error {
+	media, err := root.OpenRoot(entry.rendition)
 	if err != nil {
 		return errCopiedHLSIndex
 	}
 	defer media.Close()
+	data, err := copiedHLSCacheFile(media, "init.mp4", isobmff.MaximumInitializationBytes)
+	if err != nil || !entry.initializationMatches(data) {
+		return errCopiedHLSIndex
+	}
 	if ctx.Err() != nil || manager.validateHLSPolicy(ctx, item, recipe, policy) != nil ||
-		!manager.copiedHLSCanonicalGeneration(directory, rendition, root, media) {
+		!manager.copiedHLSCanonicalGeneration(directory, entry.rendition, root, media) {
 		return errCopiedHLSIndex
 	}
 	// No certificate/timeline hash agreement is required before the bound commit.
