@@ -50,7 +50,7 @@ func registerPlayer(mux *http.ServeMux, index *libraryIndex, progress *progressS
 	progressHandlers := catalog.NewProgressHTTPHandlers(progress, index, timelineFromPlaybackToken, localizedError, localizedNotFound, apiStoreStatus)
 	mux.HandleFunc("GET /item/{id}", showItemDetails(index))
 	mux.HandleFunc("POST /item/{id}/list", saveDetailsList(index, lists))
-	mux.HandleFunc("GET /watch/{id}", watch(index, progress, settings, lists, probe, metadata, rooms))
+	mux.HandleFunc("GET /watch/{id}", watch(index, progress, settings, lists, probe, metadata, rooms, hls))
 	mux.HandleFunc("GET /hls/{id}/{file...}", hls.serve)
 	mux.HandleFunc("GET /hls/{id}/audio/{track}/{file...}", hls.serve)
 	mux.HandleFunc("POST /progress/{id}", progressHandlers.Save())
@@ -73,7 +73,7 @@ type (
 	subtitleTrack  = sharedplayback.SubtitleTrack
 )
 
-func watch(index *libraryIndex, progress *progressStore, settings *settingsStore, lists *listStore, probe *mediaProbe, metadata *metadataStore, rooms *watchRoomAdapter) http.HandlerFunc {
+func watch(index *libraryIndex, progress *progressStore, settings *settingsStore, lists *listStore, probe *mediaProbe, metadata *metadataStore, rooms *watchRoomAdapter, hls *hlsManager) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		item, found := visibleItem(request, index, request.PathValue("id"))
 		if !found {
@@ -84,6 +84,11 @@ func watch(index *libraryIndex, progress *progressStore, settings *settingsStore
 		policy := writer.Header().Get("Content-Security-Policy")
 		writer.Header().Set("Content-Security-Policy", strings.Replace(policy, "script-src 'self'", "script-src 'self' https://www.gstatic.com", 1))
 		data := buildPlayerData(request, item, index, progress, settings, lists, probe, metadata)
+		if err := hls.applySeekPlayback(request, item, mediaFactsFor(item, probe.facts(request.Context(), item)), &data); err != nil {
+			localizedError(writer, request, "playback seek plan is unavailable", http.StatusConflict)
+			return
+		}
+		data.Finalize(request)
 		data.Room, data.RoomLeader, data.RoomItems = rooms.player(request, index, item)
 		if err := playerView.Execute(writer, request, data); err != nil {
 			localizedError(writer, request, err.Error(), http.StatusInternalServerError)
@@ -127,7 +132,6 @@ func buildPlayerData(request *http.Request, item library.Item, index *libraryInd
 	applyPlayback(request, settings, mediaFactsFor(item, media), &data)
 	setPlaybackSession(request, data.PlaybackSession)
 	data.NativeControls = !data.SubtitlePickerLimited
-	data.Finalize(request)
 	return data
 }
 

@@ -76,10 +76,6 @@ func (manager *hlsManager) hlsDuration(request *http.Request, item library.Item)
 	return manager.probe.duration(request.Context(), item)
 }
 
-func (manager *hlsManager) serveSharedHLSRecipe(writer http.ResponseWriter, request *http.Request, item library.Item, recipe playback.HLSRecipe, file string) {
-	manager.serveRecipe(writer, request, item, localHLSRecipe(recipe), file)
-}
-
 func hlsForbidden(writer http.ResponseWriter, request *http.Request) {
 	localizedError(writer, request, "transcoding is not allowed", http.StatusForbidden)
 }

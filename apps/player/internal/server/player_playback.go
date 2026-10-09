@@ -109,6 +109,7 @@ func playbackPresentation(plan PlaybackPlan) (string, string) {
 			"hdr-unsupported":           "This device cannot display the original HDR format.",
 			"subtitle-burn-in-required": "The selected subtitles must be added to the video.",
 			"automatic-marker-skip":     "Exact automatic skipping requires video conversion.",
+			"exact-seek-required":       "Exact seeking requires video conversion. The selected audio is converted to AAC.",
 		}[plan.Reason]
 		if description == "" {
 			description = "Converts the original video for this device."

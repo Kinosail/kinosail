@@ -10,7 +10,7 @@ import {fixtureBrowserFetch, decodeFixtureJSON, fixtureWatchProgress} from '../.
 // It observes real decoded pixels; no currentTime assignment or fake seek event.
 export function registerPresentedSeek() {
  if (process.env.KINOSAIL_HLS_PRESENTATION_PROOF !== '1') return;
- test('copied HLS backward seek presents the exact requested source frame first', async ({browser, baseURL}, info) => {
+ test('compatible HLS backward seek presents the exact requested source frame first', async ({browser, baseURL}, info) => {
   test.setTimeout(120_000);
   if (typeof baseURL !== 'string' || baseURL.length > 2048) throw new Error('owned startup origin required');
   const origin = new URL(baseURL);
@@ -34,16 +34,17 @@ export function registerPresentedSeek() {
   const context = await browser.newContext({baseURL, storageState, ignoreHTTPSErrors: false});
   let page: import('@playwright/test').Page;
   try {page = await context.newPage();} catch (error) {await context.close().catch(() => {}); throw error;}
-  const rows: {kind: string, offset: number, status: number | null, range: boolean, failed: boolean}[] = [];
+  const rows: {kind: string, mode: string, offset: number, status: number | null, range: boolean, failed: boolean}[] = [];
   let itemID = '', overflow = false, phase = 'owned-library', primary: unknown;
   let observation: unknown = null, initial: unknown = null, persisted: unknown = null;
   const selected = (request: Request) => {
    if (request.url().length > 4096) return null;
-   const url = new URL(request.url());
+   let url;
+   try {url = new URL(request.url());} catch (_) {return null;}
    if (url.origin !== origin.origin || request.method() !== 'GET') return null;
-   const match = url.pathname.match(new RegExp(`^/hls/${itemID}/p/([ra])-a0-s0-none-t0-b0-o(30000|12500)/(?:index\\.m3u8|[0-9]+p/(?:index\\.m3u8|init\\.mp4|segment-[0-9]{5}\\.m4s))$`));
+   const match = url.pathname.match(new RegExp(`^/hls/${itemID}/p/([rat])-a0-s0-none-t0-b0(?:-c(?:av1|hevc|vp9))?(?:-z[1-9][0-9]{1,4}x[1-9][0-9]{1,4})?-o(30000|12500)/(?:index\\.m3u8|[0-9]+p/(?:index\\.m3u8|init\\.mp4|segment-[0-9]{5}\\.m4s))$`));
    if (!match) return null;
-   return {kind: url.pathname.endsWith('index.m3u8') ? 'playlist' : 'fragment', offset: Number(match[2]) / 1000};
+   return {kind: url.pathname.endsWith('index.m3u8') ? 'playlist' : 'fragment', mode: match[1] === 'r' ? 'remux' : match[1] === 'a' ? 'audio-transcode' : 'transcode', offset: Number(match[2]) / 1000};
   };
   const record = (request: Request, status: number | null, failed: boolean) => {
    const row = selected(request); if (!row) return;
@@ -73,6 +74,8 @@ export function registerPresentedSeek() {
    phase = 'resume-old-window';
    await page.goto(`/watch/${itemID}`);
    const video = page.locator('video');
+   await expect(video).toHaveAttribute('data-compatibility-mode', 'transcode');
+   await expect(video).toHaveAttribute('data-compatibility-label', 'Transcoding video');
    await expect.poll(() => video.evaluate(v => v.readyState), {timeout: 30_000}).toBeGreaterThanOrEqual(2);
    await expect.poll(() => rows.some(row => row.kind === 'playlist' && row.offset === 30 && row.status === 200)).toBe(true);
    await page.evaluate(() => (window as any).hlsPresented.prepare());
@@ -105,7 +108,9 @@ export function registerPresentedSeek() {
    expect(await slider.inputValue()).toBe('12.5');
    await page.mouse.up();
    await expect.poll(() => page.evaluate(() => (window as any).hlsPresented.snapshot().committed)).toBe(true);
-   await expect.poll(() => rows.some(row => row.kind === 'playlist' && row.offset === 12.5 && row.status === 200), {timeout: 30_000}).toBe(true);
+   await expect.poll(() => rows.some(row => row.kind === 'playlist' && row.mode === 'transcode' && row.offset === 12.5 && row.status === 200), {timeout: 30_000}).toBe(true);
+   await expect(video).toHaveAttribute('data-compatibility-mode', 'transcode');
+   await expect(video).toHaveAttribute('data-compatibility-label', 'Transcoding video');
    phase = 'first-settled-presented-frame';
    await expect.poll(() => page.evaluate(() => (window as any).hlsPresented.snapshot().frames.some((f: any) => f.afterCommit && f.visible && !f.pending && f.frameIndex < 720)), {timeout: 20_000}).toBe(true);
    observation = await page.evaluate(() => (window as any).hlsPresented.snapshot());
@@ -135,7 +140,7 @@ export function registerPresentedSeek() {
     command: 'existing startup runner; opt-in real HLS presentation case', sourceSHA256: source.sourceSHA256,
     sourcePTS: {origin: source.sourcePTS[0], target: source.sourcePTS[300], preroll: source.sourcePTS[288]},
     requestedSeconds: 12.5, initial, observation, persisted, network: rows, overflow,
-    boundary: 'Chromium real decoded coded pixels; no physical Safari, audible output, or old raw-preroll oracle change'};
+    expectedMode: 'transcode', boundary: 'Chromium real decoded coded pixels after truthful compatible conversion; no physical Safari or audible output'};
    try {
     const raw = JSON.stringify(receipt); if (Buffer.byteLength(raw) > 24576) throw new Error('presentation receipt exceeded bound');
     const path = info.outputPath('hls-presented-frame.json'); await writeFile(path, raw); await chmod(path, 0o600);

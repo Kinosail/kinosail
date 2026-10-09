@@ -1,7 +1,16 @@
-import os,subprocess,tempfile,unittest
+import ast,os,subprocess,tempfile,unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 class PresentedWiringTests(unittest.TestCase):
+ def test_seek_operation_controls_and_generated_runtime_recipe_bind_changed_inputs(self):
+  app=(ROOT/'.github/workflows/app.yml').read_text()
+  self.assertEqual(app.count('scripts/testing/player-seek-plan.test.mjs'),1,'seek admission callbacks must execute exactly once')
+  tree=ast.parse((ROOT/'apps/player/scripts/test-startup-local.py').read_text())
+  inputs=next(ast.literal_eval(node.value) for node in tree.body if isinstance(node,ast.Assign) and any(isinstance(target,ast.Name) and target.id=='source_inputs' for target in node.targets))
+  for name in ['apps/player/internal/server/static/player.js','apps/player/internal/server/playback_seek.go',
+   'apps/player/internal/server/player_playback_seek.go','apps/player/internal/server/api_product.go','apps/player/internal/server/api_playback_sources.go',
+   'apps/player/internal/server/player.go','apps/player/internal/server/player_playback.go']:
+   self.assertIn(name,inputs,'actual compatible plan/source operation is missing from the runtime source recipe')
  def test_presentation_cannot_use_the_legacy_baseline_owner_recipe(self):
   with tempfile.TemporaryDirectory() as d:
    root=Path(d);scripts=root/'apps/player/scripts';scripts.mkdir(parents=True)

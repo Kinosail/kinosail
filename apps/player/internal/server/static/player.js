@@ -81,21 +81,38 @@ const showPlaybackMode = (compatible, pending = false) => {
 };
 const codecTypes = codecCapabilities.codecs;
 const supportsCodec = (codec) => codecCapabilities.supports(player, playbackMediaFacts, codec);
-const negotiateStream = async (generation) => {
-  if (!stream || !player.dataset.playbackApi) return;
+const negotiateStream = async (generation, position, seekRequired = false) => {
+  if (generation !== adaptiveGeneration || destroyed) return;
+  const copied = ["remux", "audio-transcode"].includes(player.dataset.compatibilityMode);
+  if (seekRequired && !copied) return;
+  const unavailable = () => { throw new Error("Compatible seek plan is unavailable"); };
+  if (!stream || !player.dataset.playbackApi) { if (seekRequired) unavailable(); return; }
   // These plans copy the original video (or contain only audio). Detecting
   // alternative video encoders cannot improve them and delays first playback.
-  if (["remux", "audio-transcode"].includes(player.dataset.compatibilityMode)) return;
+  if (copied && !seekRequired) return;
   const controller = new AbortController();
   let expire;
   const budget = new Promise((resolve) => { expire = setTimeout(() => { controller.abort(); resolve(null); }, 1500); });
   try {
-    const codecs = await Promise.race([Promise.all(codecTypes.map(async (codec) => await supportsCodec(codec) ? codec[0] : "")), budget]);
+    const origin = new URL(playbackURLBase).origin;
+    const current = new URL(stream, origin), api = new URL(player.dataset.playbackApi, origin);
+    const recipePattern = /^([rat])-a(0|[1-9]\d{0,2})-s(0|[1-9]\d{0,2})-(none|text|image|external)-t[01]-b(0|[1-9]\d{0,8})(?:-c(?:av1|hevc|vp9))?(?:-z[1-9]\d{1,3}x[1-9]\d{1,3})?(?:-k[0-9a-z]{1,10}_[0-9a-z]{1,10}(?:\.[0-9a-z]{1,10}_[0-9a-z]{1,10}){0,31})?(?:-o[1-9]\d{0,8})?(?:-e[1-3])?$/;
+    const match = current.pathname.match(/^\/hls\/([a-f0-9]{16})\/p\/([rat]-[A-Za-z0-9_.-]{1,2048})\/index\.m3u8$/);
+    if (!match || stream.length > 2048 || current.origin !== origin || current.hash || current.username || current.password ||
+      api.origin !== origin || api.pathname !== `/api/v1/items/${match[1]}/playback` || api.search || api.hash || api.username || api.password) unavailable();
+    const selectedRecipe = match[2].match(recipePattern);
+    if (!selectedRecipe || seekRequired && (!Number.isFinite(position) || Object.is(position, -0) || position < 0 || position > 604800 || Math.abs(position * 10 - Math.round(position * 10)) > 0.0000001)) unavailable();
+    const codecs = copied ? ["h264"] : await Promise.race([Promise.all(codecTypes.map(async (codec) => await supportsCodec(codec) ? codec[0] : "")), budget]);
     if (!codecs || controller.signal.aborted || generation !== adaptiveGeneration || destroyed) return;
     const supported = codecs.filter(Boolean);
-    if (!supported.some((codec) => codec !== "h264")) return;
-    const response = await fetch(`${player.dataset.playbackApi}?videoCodecs=${encodeURIComponent(supported.join(","))}`, {signal: controller.signal});
-    if (!response.ok || !response.body) return;
+    if (!seekRequired && !supported.some((codec) => codec !== "h264")) return;
+    api.searchParams.set("videoCodecs", supported.join(","));
+    if (seekRequired) {
+      api.searchParams.set("position", String(position));
+      api.searchParams.set("recipe", match[2].replace(/-o\d+(?=-e[1-3]$|$)/, ""));
+    }
+    const response = await fetch(api.href, {signal: controller.signal, credentials: "same-origin", redirect: "error"});
+    if (!response.ok || !response.body || response.url !== api.href || !/^application\/json(?:\s*;|$)/i.test(response.headers.get("content-type") || "")) unavailable();
     const reader = response.body.getReader();
     const chunks = [];
     let size = 0;
@@ -104,26 +121,52 @@ const negotiateStream = async (generation) => {
         const {done, value} = await reader.read();
         if (done) break;
         size += value.byteLength;
-        if (size > 1048576) { await reader.cancel(); return; }
+        if (size > 1048576) { await reader.cancel(); unavailable(); }
         chunks.push(value);
       }
     } finally { reader.releaseLock(); }
-    if (controller.signal.aborted || generation !== adaptiveGeneration || destroyed) return;
+    if (controller.signal.aborted) { if (seekRequired) unavailable(); return; }
+    if (generation !== adaptiveGeneration || destroyed) return;
     const bytes = new Uint8Array(size);
     let offset = 0;
     for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
-    const result = JSON.parse(new TextDecoder("utf-8", {fatal: true}).decode(bytes));
+    const raw = new TextDecoder("utf-8", {fatal: true}).decode(bytes);
+    const keys = []; let tokens = 0;
+    for (const token of raw.matchAll(/"(?:\\.|[^"\\])*"|[{}\[\]]/g)) {
+      if (++tokens > 30000) unavailable();
+      const value = token[0];
+      if (value === "{" || value === "[") { keys.push(value === "{" ? new Set() : null); if (keys.length > 8) unavailable(); }
+      else if (value === "}" || value === "]") keys.pop();
+      else if (/^\s*:/.test(raw.slice(token.index + value.length))) {
+        const currentKeys = keys.at(-1), key = JSON.parse(value);
+        if (!currentKeys || currentKeys.has(key) || currentKeys.size >= 128) unavailable();
+        currentKeys.add(key);
+      }
+    }
+    const result = JSON.parse(raw);
     const compatible = result?.compatible;
     const plan = result?.compatiblePlan;
+    const responseKeys = new Set(["policy", "media", "plan", "compatiblePlan", "compatibleLabel", "compatibleDescription", "qualities", "directAllowed", "direct", "compatibleDuration", "compatibleProgressToken", "compatible", "download", "directType", "summary", "duration", "start", "audio", "chapters", "markers", "autoSkip", "subtitles", "subtitleLanguage", "subtitlePickerLimited", "next", "downloadNext", "trickplay", "progressToken", "replayGain"]);
+    const planKeys = new Set(["allowed", "mode", "reason", "container", "videoCodec", "audioCodec", "subtitleMode", "colorMode", "audioIndex", "subtitleIndex", "subtitleSourceIndex", "subtitleText", "subtitleExternal", "subtitleExternalIndex", "maxBitrate", "width", "height", "adaptive", "qualities", "markerMode", "timeline", "audioCompatibilityRequired"]);
+    if (!result || Array.isArray(result) || Object.keys(result).some((key) => !responseKeys.has(key)) || !plan || Array.isArray(plan) || Object.keys(plan).some((key) => !planKeys.has(key))) unavailable();
     if (typeof compatible !== "string" || compatible.length > 2048 || !compatible.startsWith("/hls/") || /[\\\u0000-\u0020]/.test(compatible) ||
-      !plan || plan.allowed !== true || !["remux", "audio-transcode", "transcode"].includes(plan.mode)) return;
+      !plan || plan.allowed !== true || !["remux", "audio-transcode", "transcode"].includes(plan.mode) ||
+      typeof result.compatibleLabel !== "string" || result.compatibleLabel.length > 128 ||
+      typeof result.compatibleDescription !== "string" || result.compatibleDescription.length > 1024) unavailable();
     const url = new URL(compatible, playbackURLBase);
-    if (url.origin !== new URL(playbackURLBase).origin || !url.pathname.startsWith("/hls/") || url.username || url.password || url.hash) return;
+    const mode = {remux: "r", "audio-transcode": "a", transcode: "t"}[plan.mode];
+    const returned = url.pathname.match(/^\/hls\/([a-f0-9]{16})\/p\/([^/]+)\/index\.m3u8$/);
+    const returnedRecipe = returned?.[2].match(recipePattern);
+    if (url.origin !== origin || returned?.[1] !== match[1] || !returnedRecipe || returnedRecipe[1] !== mode ||
+      url.username || url.password || url.hash || url.search || !Number.isInteger(plan.audioIndex) || plan.audioIndex < 0 || plan.audioIndex > 255 ||
+      Number(returnedRecipe[2]) !== plan.audioIndex || returnedRecipe[2] !== selectedRecipe[2] || returnedRecipe[3] !== selectedRecipe[3] ||
+      returnedRecipe[4] !== selectedRecipe[4] || returnedRecipe[5] !== selectedRecipe[5] || /-e[1-3]$/.exec(returned[2])?.[0] !== /-e[1-3]$/.exec(match[2])?.[0] ||
+      result.compatibleLabel !== {remux: "Remux", "audio-transcode": "Transcoding audio", transcode: "Transcoding video"}[plan.mode]) unavailable();
     stream = withPlaybackSession(compatible);
     player.dataset.compatibilityMode = plan.mode;
     if (typeof result.compatibleLabel === "string" && result.compatibleLabel.length <= 128) player.dataset.compatibilityLabel = result.compatibleLabel;
     if (typeof result.compatibleDescription === "string" && result.compatibleDescription.length <= 1024) player.dataset.compatibilityDescription = result.compatibleDescription;
-  } catch (_) {} finally { clearTimeout(expire); }
+  } catch (_) { if (seekRequired) unavailable(); } finally { clearTimeout(expire); }
 };
 const loadHls = () => {
   if (typeof Hls !== "undefined") return Promise.resolve(true);

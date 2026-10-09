@@ -7,6 +7,7 @@ import subprocess
 import time
 from hls_timeline_packets import manifest_facts, fragment_packets, fragment_audio
 from hls_followon_frames import decode_frames, audio_sequence
+from hls_seek_identity import decode_identity, qualify_sequence
 
 
 def check(condition, failure):
@@ -53,6 +54,32 @@ def preparation_fields(pairs):
     value = dict(pairs)
     check(len(value) == len(pairs), 'one_shot_preparation_state')
     return value
+
+
+def seek_plan(api, item, position, file_version, duration, mode):
+    check(type(item) is str and re.fullmatch(r'[a-f0-9]{16}', item) and
+        type(position) in (int, float) and math.isfinite(position) and 0 < position < duration and
+        abs(position*10-round(position*10)) < .0000001 and mode in ['remux', 'transcode'], 'seek_plan_inputs')
+    status, raw, _ = api.http('/api/v1/items/'+item+'/playback?videoCodecs=h264&audioCodecs=aac&position='+str(position))
+    check(status == 200 and type(raw) is bytes and 0 < len(raw) <= 2*1024*1024, 'seek_plan_response')
+    try:
+        value = json.loads(raw.decode('utf-8', 'strict'), object_pairs_hook=preparation_fields,
+            parse_constant=lambda _: (_ for _ in ()).throw(ValueError()))
+    except (ValueError, UnicodeError, RecursionError):
+        raise RuntimeError('seek_plan_response') from None
+    check(type(value) is dict and type(value.get('compatiblePlan')) is dict and type(value.get('media')) is dict, 'seek_plan_shape')
+    plan, source, rows = value['compatiblePlan'], value.get('compatible'), value.get('qualities', [])
+    prefix, label = ('r', 'Remux') if mode == 'remux' else ('t', 'Transcoding video')
+    check(plan.get('allowed') is True and plan.get('mode') == mode and type(plan.get('audioIndex')) is int and plan['audioIndex'] == 0 and
+        type(source) is str and len(source) <= 2048 and re.fullmatch('/hls/'+item+'/p/'+prefix+r'-a0-s0-none-t0-b0(?:-z640x360)?/index\.m3u8', source) and
+        value.get('compatibleLabel') == label and type(value.get('duration')) in (int, float) and
+        math.isfinite(value['duration']) and value['duration'] == duration and value['media'].get('fileVersion') == file_version, 'seek_plan_binding')
+    check(type(rows) is list and len(rows) <= 8 and (mode != 'transcode' or rows), 'seek_plan_qualities')
+    qualities = []
+    for row in rows:
+        check(type(row) is dict and type(row.get('label')) is str and re.fullmatch(r'[1-9][0-9]{2,3}p', row['label']) and row['label'] not in qualities, 'seek_plan_qualities')
+        qualities.append(row['label'])
+    return {'mode': mode, 'source': source, 'qualities': qualities}
 
 
 def prepare_once(api, prepare, hls, log_path, server, source, case):
@@ -131,8 +158,16 @@ def measure(api, hls, directory, source, metadata, offset, prepared_init, case):
     status, master, _ = api.http(hls)
     check(status == 200, 'master_http_' + str(status))
     renditions = re.findall(r'^[1-9][0-9]{2,3}p/index\.m3u8$', master.decode(), re.M)
-    check(len(renditions) == 1, 'one_copied_video_rendition')
-    base = hls.removesuffix('index.m3u8') + renditions[0].removesuffix('index.m3u8')
+    if case['mode'] == 'transcode':
+        allowed = case['plannedQualities']
+        check(1 <= len(renditions) <= 8 and len(set(renditions)) == len(renditions) and
+            all(value.removesuffix('/index.m3u8') in allowed for value in renditions), 'qualified_conversion_renditions')
+        selected = max(renditions, key=lambda value: int(value.split('p/')[0]))
+    else:
+        check(len(renditions) == 1, 'one_copied_video_rendition')
+        selected = renditions[0]
+    case['measuredRendition'] = selected
+    base = hls.removesuffix('index.m3u8') + selected.removesuffix('index.m3u8')
     status, variant, _ = api.http(base + 'index.m3u8')
     check(status == 200, 'variant_http_' + str(status))
     facts, segments = manifest_facts(variant)
@@ -214,7 +249,22 @@ def measure(api, hls, directory, source, metadata, offset, prepared_init, case):
             failure.append('fragment_video_discontinuity')
         if abs(packets['videoSpanSeconds'] - packets['advertisedSeconds']) > 0.15:
             failure.append('fragment_video_duration')
-    if actual['identity'] != reference['identity']:
+    if case['mode'] == 'transcode':
+        check(metadata.get('sourceCode') is True, 'converted_identity_not_qualified')
+        source_directory, delivered_directory = directory/'source-identity', directory/'delivered-identity'
+        source_directory.mkdir();delivered_directory.mkdir()
+        source_indices = decode_identity(source, source_directory)
+        qualify_sequence(source_indices, list(range(768)))
+        mapped = decode_identity(public, delivered_directory)
+        expected = [n for n, point in enumerate(metadata['sourceFramePTS']) if point >= metadata['sourceTimeOriginSeconds'] + offset - .000001]
+        case['codedSourceCorrespondence'] = {'expectedSourceIndices': expected, 'publicSourceIndices': mapped,
+            'sourceFramesIndependentlyQualified': True, 'negativeFramesRetained': True,
+            'oracle': 'fixed source code + complement + separated guards; no lossy pixel-MD5 claim'}
+        try:
+            qualify_sequence(mapped, expected)
+        except RuntimeError:
+            failure.extend(['presented_source_frames', 'exact_requested_source_sequence'])
+    elif actual['identity'] != reference['identity']:
         failure.append('presented_source_frames')
         if offset:
             # Diagnose the failed window independently; never trim delivered frames

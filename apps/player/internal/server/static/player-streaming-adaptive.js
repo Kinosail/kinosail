@@ -47,11 +47,21 @@ const streamOffset = (seconds) => Number.isFinite(seconds) && seconds >= 0.1 && 
 const streamAt = (seconds) => {
   const offset = streamOffset(seconds);
   const source = new URL(stream, playbackURLBase);
-  source.pathname = source.pathname.replace(/-o\d+(?=\/index\.m3u8$)/, "");
-  if (offset) source.pathname = source.pathname.replace(/\/index\.m3u8$/, `-o${Math.round(offset * 1000)}/index.m3u8`);
+  source.pathname = source.pathname.replace(/-o\d+(?=(?:-e[1-3])?\/index\.m3u8$)/, "");
+  if (offset) source.pathname = source.pathname.replace(/(-e[1-3])?\/index\.m3u8$/, (_, effects = "") => `-o${Math.round(offset * 1000)}${effects}/index.m3u8`);
   return {offset, source: `${source.pathname}${source.search}${source.hash}`};
 };
-const useAdaptive = (preference = "auto", resume = false, target = resume ? pendingResume?.seconds ?? player.currentTime : Number(player.dataset.start) || 0) => {
+const useAdaptive = async (preference = "auto", resume = false, target = resume ? pendingResume?.seconds ?? player.currentTime : Number(player.dataset.start) || 0, generation = ++adaptiveGeneration) => {
+  try {
+    await negotiateStream(generation, streamOffset(target), true);
+  } catch (_) {
+    if (generation === adaptiveGeneration && !destroyed) {
+      adaptiveSeekSwitch = false;
+      showFailure("Compatible seek plan is unavailable.", "Retry playback", () => useAdaptive(preference, resume, target));
+    }
+    return;
+  }
+  if (generation !== adaptiveGeneration || destroyed) return;
   cancelNetworkRecovery();
   // A direct source may publish metadata while the adapter is loading. Retain
   // the intended position/play state for the compatible source's metadata too.
@@ -159,11 +169,13 @@ const startAdaptive = async (resume = false) => {
     qualityControl.hidden = false;
     qualityState.textContent = "Auto";
     if (player.dataset.hls && typeof Hls !== "undefined" && Hls.isSupported()) {
-      useAdaptive(preference === "original" ? "auto" : preference, resume, target());
+      await useAdaptive(preference === "original" ? "auto" : preference, resume, target(), generation);
     } else {
-      if (typeof Hls !== "undefined" && Hls.isSupported()) useAdaptive(preference === "original" ? "auto" : preference, resume, target());
+      if (typeof Hls !== "undefined" && Hls.isSupported()) await useAdaptive(preference === "original" ? "auto" : preference, resume, target(), generation);
       else if (player.canPlayType("application/vnd.apple.mpegurl")) {
         const position = target();
+        await negotiateStream(generation, streamOffset(position), true);
+        if (generation !== adaptiveGeneration || destroyed) return;
         resumeAfterSourceChange(!resume && networkWantsPlay, true, position);
         const selected = streamAt(position);
         adaptiveActive = true;
@@ -182,10 +194,15 @@ const startAdaptive = async (resume = false) => {
       } else {
         const loaded = needsHls ? adapterLoaded : await loadHls();
         if (generation !== adaptiveGeneration) return;
-        if (loaded && Hls.isSupported()) useAdaptive(preference === "original" ? "auto" : preference, resume, target());
+        if (loaded && Hls.isSupported()) await useAdaptive(preference === "original" ? "auto" : preference, resume, target(), generation);
         else if (player.dataset.fallback) location.replace(player.dataset.fallback);
         else qualityState.textContent = "Playback unavailable";
       }
+    }
+  } catch (_) {
+    if (generation === adaptiveGeneration && !destroyed) {
+      adaptiveSeekSwitch = false;
+      showFailure("Compatible seek plan is unavailable.", "Retry playback", () => { adaptiveActive = false; startAdaptive(resume); });
     }
   } finally {
     player.removeEventListener("kinosail:seek-intent", retainInitialSeek);

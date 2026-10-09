@@ -21,9 +21,10 @@ from hls_remaining_installation import installation_cases
 from hls_remaining_origin import origin_cases, origin_refill_witness, origin_source_witness, origin_selected_audio
 from hls_remaining_reopen import cold_reopen
 from hls_timeline_fixture import fixture
+from hls_presented_fixture import build_fixture
 from hls_timeline_http import PublicServer, sha
 from hls_followon_frames import decode_frames, stream_metadata
-from hls_followon_public import bounded_bytes, check, encoder_count, measure, prepare_once, sample_resources
+from hls_followon_public import bounded_bytes, check, encoder_count, measure, prepare_once, sample_resources, seek_plan
 
 ROOT = Path(__file__).resolve().parents[3]
 parser = argparse.ArgumentParser(description=__doc__)
@@ -75,7 +76,6 @@ def reprobe(path, metadata):
     return dict(metadata, sourceFramePTS=times, keyframesSeconds=keys, sourceTimeOriginSeconds=origin,
         durationSeconds=float(facts['format']['duration']), streamOrigins=facts)
 
-
 def journey(name, original, metadata, offset=0, pacing=None, installation=False):
     case = {'name': name, 'result': 'failed', 'failures': [], 'resumeOffsetSeconds': offset}
     receipt['cases'].append(case)
@@ -120,12 +120,12 @@ def journey(name, original, metadata, offset=0, pacing=None, installation=False)
             hls = plan['compatible']
             if offset:
                 hls = hls.replace('/index.m3u8', '-o' + str(round(offset * 1000)) + '/index.m3u8')
-            check(re.fullmatch(r'/hls/[a-f0-9]{16}/p/[ra]-[a-zA-Z0-9-]+/index\.m3u8', hls), 'planned_recipe_route')
+            check(re.fullmatch(r'/hls/[a-f0-9]{16}/p/[rat]-[a-zA-Z0-9-]+/index\.m3u8', hls), 'planned_recipe_route')
             check(plan['media']['fileVersion'] == str(before['sizeBytes']) + ':' + before['mtimeNanoseconds'], 'source_snapshot_binding')
             case['mode'] = plan['compatiblePlan']['mode']
             if item['kind'] == 'audio':
                 case['originSelectedAudio'] = origin_selected_audio(plan)
-            check(case['mode'] == ('audio-transcode' if item['kind'] == 'audio' else 'remux'), 'expected_compatibility_mode')
+            check(case['mode'] == ('audio-transcode' if item['kind'] == 'audio' else 'remux'), 'initial_compatibility_mode')
             case['planDurationSeconds'] = plan['duration']
             if installation:
                 selected = next(v for v in plan['media']['audio'] if v['Index'] == plan['compatiblePlan'].get('audioIndex', 0))
@@ -140,6 +140,19 @@ def journey(name, original, metadata, offset=0, pacing=None, installation=False)
             check(status == 401 and encoder_count(server, source) == 0 and not list(cache.glob(item['id'] + '-plan-*')), 'unauthenticated_side_effect')
             case['unauthenticatedPreparation'] = {'status': status, 'cacheUnchanged': True}
             prepare_once(api, prepare, hls, log_path, server, source, case)
+            if item['kind'] == 'video' and offset:
+                # Key preparation can certify the existing copied window. A
+                # non-key preparation is unavailable without creating output;
+                # the public operation then selects a truthful compatible mode.
+                planned = seek_plan(api, item['id'], offset, plan['media']['fileVersion'], plan['duration'],
+                    'remux' if name.startswith('exact-key') else 'transcode')
+                hls = planned['source'].replace('/index.m3u8', '-o' + str(round(offset*1000)) + '/index.m3u8')
+                expected_prefix = 'r' if name.startswith('exact-key') else 't'
+                check(re.fullmatch(r'/hls/'+item['id']+'/p/'+expected_prefix+r'-a0-s0-none-t0-b0(?:-z640x360)?-o'+str(round(offset*1000))+r'/index\.m3u8', hls), 'truthful_seek_recipe')
+                case['mode'], case['plannedQualities'] = planned['mode'], planned['qualities']
+                if case['mode'] == 'transcode':
+                    check(not list(cache.glob(item['id'] + '-plan-*')), 'uncertified_copy_created_output')
+                    case['effectiveSeekDelivery'] = 'cold-compatible-after-unavailable-copy-preparation'
             if item['kind'] == 'audio':
                 if case['preparationAttempt']['completionState'] != 'ready':
                     case['failures'].append('audio_preparation_not_ready')
@@ -156,12 +169,13 @@ def journey(name, original, metadata, offset=0, pacing=None, installation=False)
                 case['expectedTimelineSeconds'] = plan['duration'] - offset
                 measure(api, hls, directory, source, metadata, offset, None, case)
                 public_rows = case['timestampedFrameEvidence']
-                index = {v: n for n, (_, v) in enumerate(source_rows)}
-                mapped = [index.get(row['md5']) for row in public_rows]
-                case['rawSourceCorrespondence'] = {'expectedSourceIndices': expected, 'publicSourceIndices': mapped,
-                    'sourceHashesUnique': len(index) == len(source_rows), 'negativeFramesRetained': True}
-                if len(index) != len(source_rows) or mapped != expected:
-                    case['failures'].append('exact_requested_source_sequence')
+                if case['mode'] != 'transcode':
+                    index = {v: n for n, (_, v) in enumerate(source_rows)}
+                    mapped = [index.get(row['md5']) for row in public_rows]
+                    case['rawSourceCorrespondence'] = {'expectedSourceIndices': expected, 'publicSourceIndices': mapped,
+                        'sourceHashesUnique': len(index) == len(source_rows), 'negativeFramesRetained': True}
+                    if len(index) != len(source_rows) or mapped != expected:
+                        case['failures'].append('exact_requested_source_sequence')
             case['result'] = 'passed' if not case['failures'] else 'failed'
         except Exception as error:
             case['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
@@ -215,7 +229,6 @@ def journey(name, original, metadata, offset=0, pacing=None, installation=False)
                     if isinstance(error, RuntimeError) and str(error) in ['bounded_diagnostic_deadline', 'bounded_run_deadline']:
                         raise
 
-
 try:
     remaining_alarm()
     if SUITE == 'audio-origin':
@@ -242,6 +255,10 @@ try:
         source, metadata = fixture(RUN, 'regular', 48, ','.join(str(v) for v in range(0, 32, 2)), frames=768)
         metadata = reprobe(source, metadata)
         journey('exact-key-control12', source, metadata, offset=12)
+        code = build_fixture(RUN, RUN)
+        source = RUN / 'HLS Presented.mkv'
+        metadata = reprobe(source, {'command': code['command'], 'sha256': code['sourceSHA256'],
+            'durationSeconds': 32, 'frameRate': 24, 'videoFrames': 768, 'sourceCode': True})
         journey('nonkey-mkv12.5', source, metadata, offset=12.5)
         mp4 = RUN / 'copy.mp4'
         run(['ffmpeg', '-nostdin', '-v', 'error', '-i', str(source), '-map', '0:v:0', '-map', '0:a:0', '-c', 'copy', str(mp4)], 60)

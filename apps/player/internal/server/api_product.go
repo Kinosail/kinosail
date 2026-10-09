@@ -5,7 +5,6 @@ import (
 	_ "embed"
 	"errors"
 	"net/http"
-	"net/url"
 	"strconv"
 	"time"
 
@@ -118,6 +117,11 @@ func serveOpenAPI(writer http.ResponseWriter, _ *http.Request) {
 
 func apiPlaybackInfo(api apiServices) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
+		seek, err := requestedPlaybackSeek(request)
+		if err != nil {
+			apiError(writer, errPlaybackSeek, http.StatusBadRequest)
+			return
+		}
 		client, err := requestedPlaybackCapabilities(request, api.settings)
 		if err != nil {
 			apiError(writer, err, http.StatusBadRequest)
@@ -131,6 +135,16 @@ func apiPlaybackInfo(api apiServices) http.HandlerFunc {
 		media, viewer := api.probe.inspect(request.Context(), item), currentViewer(request)
 		canStream, canTranscode := viewer.Permits("stream", true), (item.Kind == "video" || item.Kind == "audio" || item.Kind == "audiobook") && viewer.Permits("stream", viewer.Owner || viewer.Transcode)
 		facts := mediaFactsFor(item, media)
+		if seek.position != nil && !validHLSOffset(*seek.position, facts.Duration) {
+			apiError(writer, errPlaybackSeek, http.StatusBadRequest)
+			return
+		}
+		if seek.recipe != nil {
+			if _, err := sharedplayback.ResolveHLSSource(sharedHLSRecipe(*seek.recipe), facts, item.Subtitles); err != nil {
+				apiError(writer, errPlaybackSeek, http.StatusBadRequest)
+				return
+			}
+		}
 		preferences := defaultMediaPreferences().Playback
 		if api.experience != nil {
 			preferences = api.experience.playback(viewer.ID, item)
@@ -147,34 +161,22 @@ func apiPlaybackInfo(api apiServices) http.HandlerFunc {
 		result := apiPlayback{Plan: plan, Summary: media.Summary, Duration: media.Duration, Start: api.progress.Get(request, item.ID).Seconds, Audio: apiAudioSources(item.ID, media.Audio, canTranscode), Chapters: media.Chapters, Markers: media.Markers, AutoSkip: automaticSkipSelection(media.Markers, api.settings.autoSkip()), Next: autoNext(request, api.settings, api.index, item), ReplayGain: apiReplayGainFor(media.ReplayGain), SubtitleLanguage: api.settings.subtitleLanguage(), SubtitlePickerLimited: api.settings.subtitlePickerLimited()}
 		result.Media = facts
 		result.Policy = api.settings.playbackMode()
+		if seek.position != nil {
+			result.Start = *seek.position
+		}
 		sharedplayback.ApplyAPIPlaybackTimeline(&result, plan, result.Start, media.Duration, media.Chapters, media.Markers, api.settings.autoSkip(), result.AutoSkip, func() string { return recipeFor(plan).token() })
-		api.applyPlaybackSources(&result, item, media, viewer, facts, client, plan, preferences, canStream, canTranscode)
+		if err := api.applyPlaybackSources(request, seek, &result, item, media, viewer, facts, client, plan, preferences, canStream, canTranscode); err != nil {
+			status := http.StatusConflict
+			if errors.Is(err, errPlaybackSeek) {
+				status = http.StatusBadRequest
+			}
+			apiError(writer, errors.New("playback seek plan is unavailable"), status)
+			return
+		}
 		if result.Download != "" {
 			result.DownloadNext = nextEpisode(request, api.index, item)
 		}
 		writeJSON(writer, result, http.StatusOK)
-	}
-}
-
-func (api apiServices) applyPlaybackSources(result *apiPlayback, item library.Item, media probeResult, viewer viewerProfile, facts MediaFacts, client ClientCapabilities, plan PlaybackPlan, preferences playbackPreferences, canStream, canTranscode bool) { //nolint:cyclop // Independent source capabilities remain below the repository complexity ceiling.
-	effects := (preferences.DialogueBoost || preferences.NightMode) && len(facts.Audio) > 0
-	if canStream && plan.MarkerMode != "server" && !effects {
-		result.DirectAllowed = true
-		result.Direct = "/media/" + item.ID
-		result.DirectType = directMediaType(item.Path, facts)
-		result.Subtitles = playbackSubtitleChoices(item, media, api.settings.subtitleLanguage(), api.settings.subtitlesDefault(), api.settings.subtitlePickerLimited())
-	}
-	if canStream && item.Kind == "video" {
-		result.Trickplay = "/trickplay/" + item.ID + "/{second}"
-		if plan.MarkerMode == "server" {
-			result.Trickplay += "?playbackToken=" + url.QueryEscape(result.ProgressToken)
-		}
-	}
-	if canTranscode {
-		api.applyCompatiblePlaybackSource(result, item.ID, media, viewer, facts, client, plan, preferences)
-	}
-	if viewer.Permits("download", viewer.Owner || viewer.Downloads) {
-		result.Download = "/download/" + item.ID
 	}
 }
 
@@ -243,27 +245,6 @@ func (service productMetadata) Save(id string, record sharedmetadata.Record) err
 
 func (service productMetadata) Fetch(ctx context.Context, item library.Item) error {
 	return service.store.fetch(ctx, item)
-}
-
-func (api apiServices) applyCompatiblePlaybackSource(result *apiPlayback, itemID string, media probeResult, viewer viewerProfile, facts MediaFacts, client ClientCapabilities, plan PlaybackPlan, preferences playbackPreferences) {
-	compatible := playbackWithAutomaticSkip(facts, client, viewerPlaybackPolicy(viewer), NetworkIntent{PreferCompatibility: true}, media.Markers, api.settings.autoSkip())
-	if plan.MarkerMode == "server" && plan.Mode != "transcode" {
-		compatible = plan
-	}
-	compatible, effects := audioEnhancedPlan(compatible, preferences, len(facts.Audio) > 0)
-	if compatible.Allowed && compatible.Mode != "direct" {
-		recipe := audioEnhancedRecipe(compatible, preferences, effects)
-		result.CompatibleDuration = media.Duration
-		if compatible.MarkerMode == "server" {
-			result.CompatibleDuration = compatible.Timeline.Duration
-			result.CompatibleProgressToken = recipe.token()
-		}
-		result.Compatible = "/hls/" + itemID + "/p/" + recipe.token() + "/index.m3u8"
-		result.CompatiblePlan = &compatible
-		result.CompatibleLabel, result.CompatibleDescription = playbackPresentation(compatible)
-		applyAudioEnhancementPresentation(result, compatible, preferences, effects)
-		result.Qualities = compatible.Qualities
-	}
 }
 
 func requestedPlaybackCapabilities(request *http.Request, settings *settingsStore) (ClientCapabilities, error) {
