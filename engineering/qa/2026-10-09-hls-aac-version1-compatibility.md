@@ -192,3 +192,31 @@ cross-version malformed-master controls. Preserve historical bandwidth
 estimates; existing Version1 certificates do not authenticate an arbitrary
 syntactically valid bandwidth edit. No assertion or gate may be weakened.
 Lazy continuation tests remain independently held.
+
+
+## Written-first cross-version master failure matrix
+
+A separate bounded public job builds real old and candidate Servers from exact
+source. It seeds genuine complete Version1 and Version2 caches and joins all
+source workers. Both positive candidate journeys must serve ten cuts and
+480 exact decoded source frames without encoders or cache changes.
+
+Independent clones then damage the bandwidth-policy marker, remove STREAM-INF,
+make bandwidth malformed, duplicate bandwidth or STREAM-INF, add an unknown
+tag or attribute, remove CODECS or duplicate the rendition.
+Other clones replace codec, geometry or video range with syntactically valid
+values that disagree with the certified init. These are semantic controls.
+
+For all twelve faults in both versions, master and rendition GET/HEAD must
+return 404. Startup, planning, immediate, idle and joined observations must
+preserve every cache file and source. Candidate requests send no preparation
+POST, start zero source encoders and emit one safe correlated WARN each.
+Failed setup and process joins remain in the exact-source receipt.
+The separate strict Version2 packet/PCM and missing-binding gates remain intact.
+
+A missing STREAM-INF can make an existing master look nonreusable before the
+playlist reader runs. The rejection boundary must precede any preparation
+that could delete or restart that malformed indexed generation.
+Do not replace historical bandwidth estimates or invent a Version1 master hash.
+The inherited certificate binds timeline, init and first media, not every
+possible syntactically valid edit to a historical master.
