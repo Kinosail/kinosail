@@ -29,7 +29,7 @@ RUN = ROOT / '.verification/hls-nonkey-browser' / time.strftime('%Y%m%dT%H%M%SZ'
 RUN.mkdir(parents=True)
 receipt = {'revision': subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
     'tree': subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip(),
-    'productionAcceptance': False, 'sourceAndClientUnchanged': True, 'containers': [], 'result': 'failed',
+    'productionAcceptance': False, 'sourceAndClientUnchanged': False, 'clientUnchanged': True, 'productionChange': 'video-only-copypriorss', 'containers': [], 'result': 'failed',
     'browserAudioPresentationAccepted': False, 'transport': 'Real Go authenticated unindexed cold HLS',
     'preparationAcceptance': False}
 guard = DiagnosticDeadline(840)
@@ -282,7 +282,7 @@ finally:
         receipt['handledTerminationSignals']=guard.signals
         files={Path(__file__),ROOT/'apps/player/scripts/hls_nonkey_browser_wrapper.py',ROOT/'apps/player/scripts/hls_nonkey_browser_public.py',ROOT/'apps/player/scripts/hls_nonkey_browser_config.py',
                ROOT/'apps/player/scripts/test_hls_nonkey_browser_config.py',ROOT/'apps/player/scripts/hls_nonkey_browser_video.py',ROOT/'apps/player/scripts/test_hls_nonkey_browser_video.py',ROOT/'apps/player/scripts/hls_nonkey_browser_color_clock.py',ROOT/'apps/player/scripts/test_hls_nonkey_browser_color_clock.py',ROOT/'apps/player/scripts/hls_nonkey_browser_audio_boundary.py',ROOT/'apps/player/scripts/test_hls_nonkey_browser_audio_boundary.py',
-               ROOT/'apps/player/scripts/hls_nonkey_browser_packet_association.py',ROOT/'apps/player/scripts/test_hls_nonkey_browser_packet_association.py',*list((ROOT/'apps/player/e2e').glob('hls-nonkey-browser*.mjs'))}
+               ROOT/'apps/player/scripts/hls_nonkey_browser_packet_association.py',ROOT/'apps/player/scripts/test_hls_nonkey_browser_packet_association.py',ROOT/'apps/player/internal/server/hls_copied_startup.go',ROOT/'apps/player/internal/server/hls_copied_audio_preroll_contract_test.go',*list((ROOT/'apps/player/e2e').glob('hls-nonkey-browser*.mjs'))}
         receipt['executedScriptSHA256']={str(p.relative_to(ROOT)):sha(p) for p in files}
         raw=json.dumps(receipt,separators=(',',':'),allow_nan=False)+'\n'
         check(0<len(raw.encode())<=32<<20,'browser_receipt_bound')

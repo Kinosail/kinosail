@@ -64,6 +64,36 @@ jobs:
         timeout-minutes: 2
         run: |
           python3 -m unittest discover -s apps/player/scripts -p 'test_hls_*nonkey_*.py'
+          go -C apps/player test ./internal/server -run '^TestCopiedHLS(VideoPrerollDoesNotSuppressCopiedAudio|PrerollScopeKeepsLegacyAndAdmission)
+          node --test apps/player/e2e/hls-nonkey-browser-controls.test.mjs
+      - name: Observe actual public transport and decoded presentation once
+        run: |
+          python3 - <<'PY'
+          import json, os, pathlib, time
+          remaining=2700-(time.time()-int(os.environ['NONKEY_JOB_STARTED']))
+          path=pathlib.Path('.verification/hls-nonkey-browser/budget.json')
+          path.parent.mkdir(parents=True,exist_ok=True)
+          path.write_text(json.dumps({'revision':os.environ['GITHUB_SHA'],'remainingSeconds':remaining,'requiredSeconds':1230})+'\n')
+          assert remaining>=1230, 'hosted_browser_cleanup_artifact_budget'
+          PY
+          timeout --kill-after=90s 900s python3 apps/player/scripts/test-hls-nonkey-browser.py
+      - name: Preserve complete safe observations and historical strict CLI controls
+        timeout-minutes: 2
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: nonkey-actual-browser-observation-${{ github.sha }}
+          path: |
+            .verification/hls-nonkey-browser/budget.json
+            .verification/hls-nonkey-browser/*/receipt.json
+            .verification/hls-nonkey-browser/*/SHA256SUMS
+            .verification/hls-nonkey-browser/*/*/browser.json
+            .verification/hls-nonkey-mux/*/receipt.json
+            .verification/hls-nonkey-mux/*/SHA256SUMS
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+ -count=1
           node --test apps/player/e2e/hls-nonkey-browser-controls.test.mjs
       - name: Observe actual public transport and decoded presentation once
         run: |
