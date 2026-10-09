@@ -37,6 +37,7 @@ func TestCopiedHLSAACCutPinnedPacketBoundaries(t *testing.T) {
 	if len(hashes) < 6 {
 		t.Fatal("pinned AAC control packet bound")
 	}
+	copiedHLSAACControlInputRescale(t, encoder, probe, source, directory)
 	cases := []struct {
 		name string
 		key copiedHLSKey
@@ -47,6 +48,7 @@ func TestCopiedHLSAACCutPinnedPacketBoundaries(t *testing.T) {
 		{"preserve_935_through_938", copiedHLSKey{PTS: 960000, DTS: 956000}, 48000, -4600, 1},
 		{"fractional_seek_exact_dts", copiedHLSKey{PTS: 960001, DTS: 956001}, 48000, -5024, 1},
 		{"fractional_dts_packet_before_key", copiedHLSKey{PTS: 256000, DTS: 255731}, 12800, -2033, 2},
+		{"half_tick_packet_before_key", copiedHLSKey{PTS: 256000, DTS: 255730}, 12800, -2037, 2},
 	}
 	for _, selected := range cases {
 		t.Run(selected.name, func(t *testing.T) {
@@ -105,25 +107,67 @@ func copiedHLSAACControlCommand(t *testing.T, executable string, arguments ...st
 	return output
 }
 
-func copiedHLSAACControlHashes(t *testing.T, probe, path string) []string {
+type copiedHLSAACControlPacket struct {
+	PTS int64 `json:"pts"`
+	Hash string `json:"data_hash"`
+}
+
+func copiedHLSAACControlPackets(t *testing.T, probe, path string) []copiedHLSAACControlPacket {
 	t.Helper()
 	output := copiedHLSAACControlCommand(t, probe, "-v", "error", "-threads", "1",
-		"-select_streams", "a:0", "-show_packets", "-show_data_hash", "sha256",
-		"-show_entries", "packet=data_hash", "-of", "json", path)
+		"-select_streams", "a:0", "-show_packets", "-show_streams", "-show_data_hash", "sha256",
+		"-show_entries", "packet=pts,data_hash:stream=time_base", "-of", "json", path)
 	var data struct {
-		Packets []struct {
-			Hash string `json:"data_hash"`
-		} `json:"packets"`
+		Packets []copiedHLSAACControlPacket `json:"packets"`
+		Streams []struct {
+			TimeBase string `json:"time_base"`
+		} `json:"streams"`
 	}
-	if json.Unmarshal(output, &data) != nil || len(data.Packets) == 0 || len(data.Packets) > 32 {
-		t.Fatal("bounded pinned AAC control packet shape")
+	if json.Unmarshal(output, &data) != nil || len(data.Packets) == 0 || len(data.Packets) > 32 ||
+		len(data.Streams) != 1 || data.Streams[0].TimeBase != "1/48000" {
+		t.Fatal("bounded pinned AAC control packet clock shape")
 	}
-	result := make([]string, len(data.Packets))
-	for index, packet := range data.Packets {
+	for _, packet := range data.Packets {
 		if len(packet.Hash) != 71 {
 			t.Fatal("pinned AAC control payload hash shape")
 		}
+	}
+	return data.Packets
+}
+
+func copiedHLSAACControlHashes(t *testing.T, probe, path string) []string {
+	t.Helper()
+	packets := copiedHLSAACControlPackets(t, probe, path)
+	result := make([]string, len(packets))
+	for index, packet := range packets {
 		result[index] = packet.Hash
 	}
 	return result
+}
+
+func copiedHLSAACControlInputRescale(t *testing.T, encoder, probe, source, directory string) {
+	t.Helper()
+	shifted := filepath.Join(directory, "shifted.nut")
+	copiedHLSAACControlCommand(t, encoder, "-nostdin", "-v", "error", "-threads", "1", "-copyts",
+		"-i", source, "-map", "0:a:0", "-copypriorss:a", "1", "-c:a", "copy", "-bsf:a",
+		"setts=pts=PTS-STARTPTS+954977:dts=DTS-STARTDTS+954977",
+		"-avoid_negative_ts", "disabled", "-f", "nut", "-y", shifted)
+	before := copiedHLSAACControlPackets(t, probe, shifted)
+	seeked := filepath.Join(directory, "seeked.nut")
+	copiedHLSAACControlCommand(t, encoder, "-nostdin", "-v", "error", "-threads", "1",
+		"-seek_timestamp", "1", "-ss", "20.000020", "-i", shifted, "-map", "0:a:0",
+		"-copypriorss:a", "1", "-c:a", "copy", "-bsf:a", "setts=pts=PTS+24000:dts=DTS+24000",
+		"-avoid_negative_ts", "disabled", "-f", "nut", "-y", seeked)
+	after := copiedHLSAACControlPackets(t, probe, seeked)
+	positions := make(map[string][]int64)
+	for _, packet := range before {
+		positions[packet.Hash] = append(positions[packet.Hash], packet.PTS)
+	}
+	for _, packet := range after {
+		matches := positions[packet.Hash]
+		if len(matches) != 1 || matches[0]-packet.PTS+24000 != 960001 {
+			t.Fatal("actual fractional input seek did not rebase by960001 ticks")
+		}
+	}
+	t.Logf("actual seek20.000020s rebases all %d uniquely copied packets by960001 ticks at1/48000", len(after))
 }
