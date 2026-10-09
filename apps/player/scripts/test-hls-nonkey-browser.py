@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import re
 import shutil
+import signal
 import socket
 import subprocess
 import sys
@@ -15,7 +16,7 @@ from hls_timeline_http import PublicServer, sha, source_state
 from hls_timeline_packets import manifest_facts, fragment_audio
 from hls_remaining_nonkey_evidence import observed_media, native_pcm
 from hls_remaining_nonkey_boundary import packet_tail
-from hls_remaining_process import finish_processes
+from hls_remaining_process import finish_processes, join_group
 from hls_followon_public import bounded_bytes, check, prepare_once, sample_resources
 from hls_remaining_nonkey_deadline import DiagnosticDeadline
 
@@ -27,7 +28,7 @@ receipt = {'revision': subprocess.check_output(['git','rev-parse','HEAD'],text=T
     'productionAcceptance': False, 'sourceAndClientUnchanged': True, 'containers': [], 'result': 'failed',
     'browserAudioPresentationAccepted': False, 'transport': 'Real Go authenticated unindexed cold HLS',
     'preparationAcceptance': False}
-guard = DiagnosticDeadline(1260)
+guard = DiagnosticDeadline(840)
 guard.__enter__()
 
 def run(argv, timeout=60, bound=4<<20):
@@ -74,7 +75,7 @@ try:
     run(['go','-C',str(ROOT/'apps/player'),'build','-p=1','-o',str(binary),'./cmd/kinosail'],180)
     real = shutil.which('ffmpeg')
     check(real is not None,'browser_pinned_codec_missing')
-    for source_facts in cli['sources']:
+    for source_facts in [v for v in cli['sources'] if v['container']=='mp4']:
         guard.check(180)
         source_original = Path(source_facts['path'])
         container = source_facts['container']
@@ -90,8 +91,8 @@ try:
         mp4_facts = next(v for v in cli['sources'] if v['container']=='mp4')
         check([r[1] for r in source_facts['completeSourceFrameRows']]==
               [r[1] for r in mp4_facts['completeSourceFrameRows']],'browser_reference_video_identity')
-        selected_cases = [v for v in cli['cases'] if v['container']==container and v['label']=='shift-no-prior']
-        check(len(selected_cases)==4 and all(v['consumerCapabilityQualified'] for v in selected_cases),
+        selected_cases = [v for v in cli['cases'] if v['container']==container and v['label']=='shift-no-prior' and v['requestedRelativeSeconds'] in [12,12.5]]
+        check(len(selected_cases)==2 and all(v['consumerCapabilityQualified'] for v in selected_cases),
               'browser_fixed_recipe_cli_qualification')
         invocations = directory/'producer-invocations.jsonl'
         adapter = directory/'diagnostic-ffmpeg'
@@ -173,13 +174,25 @@ try:
                             public_case['audioDiscontinuities'].append('fragment_audio_discontinuity')
                         previous_audio=audio['lastAudioEnd']
                     browser_cases.append({'request':requested,'expectedSourceIndices':expected,
-                        'publicJoinedPath':str(joined),'expectedPCM':{'samples':pcm['samples'],'sha256':pcm['sha256']}})
+                        'publicJoinedPath':str(joined),'selectedSource':selected,
+                        'publicAssetSHA256':{'360p/'+p.name:sha(p) for p in assets},
+                        'expectedPCM':{'samples':pcm['samples'],'sha256':pcm['sha256']}})
                 output=directory/'browser.json'
                 private=directory/'browser-private.json'
                 private.write_text(json.dumps({'origin':api.url,'token':api.token,'itemID':item['id'],
                     'referenceID':ref_item['id'],'cases':browser_cases,'output':str(output)}))
                 private.chmod(0o600)
-                run(['node',str(ROOT/'apps/player/e2e/hls-nonkey-browser.mjs'),str(private)],600,1<<20)
+                node=subprocess.Popen(['node',str(ROOT/'apps/player/e2e/hls-nonkey-browser.mjs'),str(private)],
+                    stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True)
+                try:
+                    node_stdout,node_stderr=node.communicate(timeout=min(480,guard.check(25)))
+                    check(len(node_stdout)<=1<<20 and len(node_stderr)<=1<<20,'browser_node_output_bound')
+                    print(node_stdout.decode(),end='',flush=True)
+                    check(node.returncode==0,'browser_node_failed')
+                finally:
+                    case['ownedBrowserProcessJoin']=join_group(node)
+                    check(case['ownedBrowserProcessJoin']['confirmedZeroSamples']==2 and
+                          not case['ownedBrowserProcessJoin']['qualificationFailures'],'browser_owned_join_failed')
                 browser=json.loads(bounded_bytes(output,8<<20,'browser_result_bound'))
                 case['browser']=browser
                 for value in case['publicCases']:

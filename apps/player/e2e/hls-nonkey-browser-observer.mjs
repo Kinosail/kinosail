@@ -4,7 +4,8 @@ export function frameQualification(facts, reference, expected) {
   const actual=facts.rows.map(r=>identities.get(r.sha256) ?? null);
   const unique=identities.size===reference.length;
   const exact=unique && actual.length===expected.length && actual.every((v,n)=>v===expected[n]);
-  return {qualified:Boolean(facts.ended && exact && facts.droppedCallbacks===0 && facts.captureErrors.length===0),
+  return {qualified:Boolean(facts.ended && exact && facts.droppedCallbacks===0 && facts.captureErrors.length===0 &&
+      !(facts.quality?.droppedVideoFrames>0) && !facts.events?.some(e=>e.name==='error' || e.errorCode>0)),
     exactRequestedSequence:exact, actualSourceIndices:actual, expectedSourceIndices:expected,
     allObserverRowsRetained:true, sourceReferenceUnique:unique, genuinePresentedEOF:facts.ended};
 }
@@ -22,7 +23,9 @@ export function installBrowserObserver() {
     video.nonkeyAttached=true;
     video.playbackRate=0.5;
     const phase=label=>{
-      const value={label,rows:[],events:[],ended:false,droppedCallbacks:0,captureErrors:[],pending:[]};
+      const quality=video.getVideoPlaybackQuality?.();
+      const value={label,rows:[],events:[],ended:false,droppedCallbacks:0,captureErrors:[],pending:[],
+        qualityAtStart:quality?{droppedVideoFrames:quality.droppedVideoFrames,totalVideoFrames:quality.totalVideoFrames}:null};
       state.phases.push(value);state.active=value;return value;
     };
     phase('initial-unchanged-client');
@@ -50,6 +53,7 @@ export function installBrowserObserver() {
       if(value.rows.length>=2048){value.captureErrors.push('frame_bound');video.pause();return;}
       const row={mediaTime:metadata.mediaTime,presentedFrames:metadata.presentedFrames,
         rawTime:rawTime.call(video),projectedTime:video.currentTime,width:video.videoWidth,height:video.videoHeight};
+      if(previous===undefined && metadata.presentedFrames>1)value.droppedCallbacks+=metadata.presentedFrames-1;
       if(previous!==undefined && metadata.presentedFrames>previous+1)value.droppedCallbacks+=metadata.presentedFrames-previous-1;
       previous=metadata.presentedFrames;
       value.rows.push(row);
@@ -67,6 +71,9 @@ export function installBrowserObserver() {
   new MutationObserver(()=>document.querySelectorAll('video').forEach(attach)).observe(document,{childList:true,subtree:true});
   document.querySelectorAll('video').forEach(attach);
   window.nonkeySnapshot=async()=>{
+    const video=document.querySelector('video');
+    const quality=video?.getVideoPlaybackQuality?.();
+    if(state.active)state.active.quality=quality?{droppedVideoFrames:quality.droppedVideoFrames,totalVideoFrames:quality.totalVideoFrames}:null;
     for(const value of state.phases)await Promise.all(value.pending);
     return {phases:state.phases.map(({pending,...value})=>value),captureErrors:state.captureErrors};
   };

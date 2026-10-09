@@ -23,11 +23,27 @@ const api=async(path,method='GET',body)=>{
 };
 async function observe(id,request,label){
   const row={request,label,result:'observation-failed',http:[],failureClass:undefined};
+  const expected=config.cases.find(v=>v.request===request);
+  const mediaPending=[];
+  row.observedSelectedAssets={};
   const page=await context.newPage();
   page.on('response',response=>{
     const url=new URL(response.url());
     if(url.origin!==config.origin || row.http.length>=1024)return;
     const path=url.pathname;
+    if(label!=='source-reference' && path.startsWith('/media/'))row.directMediaRequested=true;
+    if(label!=='source-reference' && path.startsWith('/hls/')){
+      const prefix=expected.selectedSource.slice(0,expected.selectedSource.lastIndexOf('/')+1);
+      if(!path.startsWith(prefix))row.wrongHLSRecipe=true;
+      const name=path.slice(prefix.length);
+      if(Object.hasOwn(expected.publicAssetSHA256,name)){
+        mediaPending.push(response.body().then(bytes=>{
+          if(bytes.length>2<<20)throw Error('public_browser_asset_bound');
+          row.observedSelectedAssets[name]={status:response.status(),sha256:sha(bytes),
+            expectedSHA256:expected.publicAssetSHA256[name]};
+        }).catch(()=>{row.httpBodyFailure=true;}));
+      }
+    }
     const kind=path.endsWith('.m4s')?'fragment':path.endsWith('init.mp4')?'init':path.endsWith('.m3u8')?'playlist':
       path==='/static/player.js'?'player-bundle':path.startsWith('/api/v1/')?'api':path.startsWith('/watch/')?'watch':'other';
     row.http.push({kind,status:response.status()});
@@ -70,10 +86,18 @@ async function observe(id,request,label){
     await page.locator('video').evaluate(v=>{v.playbackRate=0.5;return v.play();});
     row.currentStage='complete-presented-EOF';
     await page.waitForFunction(()=>window.nonkeyObservation?.active?.ended,{},{timeout:85000});
+    row.adapter=await page.locator('video').evaluate(v=>({blob:v.currentSrc.startsWith('blob:'),
+      publicHLS:v.currentSrc.includes('/hls/'),direct:v.currentSrc.includes('/media/'),
+      nativeHLS:v.canPlayType('application/vnd.apple.mpegurl'),hlsAvailable:typeof window.Hls!=='undefined'}));
     row.result='observed';row.currentStage='complete';
   }catch(error){row.failureClass=error.message?.match(/^[a-z_]+(?:_[0-9]+)?$/)?.[0]||error.name||'browser_operation';}
   finally{
+    await Promise.all(mediaPending);
     try{row.observer=await page.evaluate(()=>window.nonkeySnapshot());}catch{row.snapshotFailure=true;}
+    if(label!=='source-reference')row.selectedPublicHLSObserved=Boolean(!row.wrongHLSRecipe && !row.directMediaRequested &&
+      !row.httpBodyFailure && expected && Object.entries(expected.publicAssetSHA256).every(([name,digest])=>{
+        const observed=row.observedSelectedAssets[name];return observed?.status===200 && observed.sha256===digest;
+      }) && (row.adapter?.blob && row.adapter?.hlsAvailable || row.adapter?.publicHLS));
     await page.close();
   }
   return row;
@@ -87,7 +111,8 @@ try{
   result.reference=await observe(config.referenceID,0,'source-reference');
   const reference=result.reference.observer?.phases?.[0];
   result.referenceComplete=Boolean(reference?.ended && reference.rows.length===768 &&
-    reference.droppedCallbacks===0 && reference.captureErrors.length===0);
+    reference.droppedCallbacks===0 && reference.captureErrors.length===0 && !(reference.quality?.droppedVideoFrames>0) &&
+    result.reference.result==='observed' && !result.reference.pageErrors && !reference.events.some(e=>e.errorCode>0 || e.name==='error'));
   for(const item of config.cases){
     for(const label of ['unchanged-client','forced-source-coordinate-seek']){
       const row=await observe(config.itemID,item.request,label);
@@ -95,7 +120,8 @@ try{
       const selected=row.observer?.phases?.at(-1);
       if(selected && reference)row.frameQualification=frameQualification(selected,reference.rows,item.expectedSourceIndices);
       row.referenceComplete=result.referenceComplete;
-      row.frameConsumerQualified=Boolean(result.referenceComplete && row.frameQualification?.qualified &&
+      row.frameConsumerQualified=Boolean(row.result==='observed' && !row.pageErrors &&
+        row.selectedPublicHLSObserved && result.referenceComplete && row.frameQualification?.qualified &&
         (label!=='forced-source-coordinate-seek' || row.forceSeek?.seeking && row.forceSeek?.seeked));
       result.cases.push(row);
       console.log(JSON.stringify({request:row.request,label:row.label,result:row.result,currentStage:row.currentStage,

@@ -8,7 +8,7 @@ jobs:
   nonkey-browser:
     name: Authenticated cold HLS and unchanged actual browser
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with: {fetch-depth: 0, persist-credentials: false}
@@ -21,12 +21,14 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with: {node-version: 26}
       - name: Install existing pinned browser dependencies
+        timeout-minutes: 3
         run: pnpm --dir apps/player/e2e install --frozen-lockfile
       - name: Install existing hosted Chromium runtime
         timeout-minutes: 5
         working-directory: apps/player/e2e
         run: pnpm exec playwright install --with-deps chromium
       - name: Install pinned public-media codecs
+        timeout-minutes: 9
         run: |
           curl --fail --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/hls-ffmpeg.deb" https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.2-5/jellyfin-ffmpeg8_8.1.2-5-noble_amd64.deb
           printf '%s  %s\n' b4e72894ad26c809ed0104805f5415a97be75212b9fcf9d60b89ad25bb3d43e3 "$RUNNER_TEMP/hls-ffmpeg.deb" | sha256sum --check
@@ -53,11 +55,12 @@ jobs:
           timeout --kill-after=5s 180s sudo apt-get "${apt_options[@]}" install -y --no-install-recommends "$RUNNER_TEMP/hls-ffmpeg.deb"
           echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
       - name: Verify all strict source and browser observer controls
+        timeout-minutes: 2
         run: |
           python3 -m unittest discover -s apps/player/scripts -p 'test_hls_*nonkey_*.py'
           node --test apps/player/e2e/hls-nonkey-browser-controls.test.mjs
       - name: Observe actual public transport and decoded presentation once
-        run: timeout --kill-after=90s 1380s python3 apps/player/scripts/test-hls-nonkey-browser.py
+        run: timeout --kill-after=90s 900s python3 apps/player/scripts/test-hls-nonkey-browser.py
       - name: Preserve complete safe observations and historical strict CLI controls
         timeout-minutes: 2
         if: always()
