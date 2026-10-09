@@ -1,6 +1,6 @@
 """Rational handoff controls written before the bounded clock parser."""
 import unittest
-from hls_nonkey_browser_config import measured_delta, ordinary_cold_arguments
+from hls_nonkey_browser_config import measured_delta, ordinary_cold_arguments, diagnostic_result
 
 class BrowserRationalHandoff(unittest.TestCase):
     def test_rational_source_clock_preserved(self):
@@ -28,6 +28,15 @@ class BrowserOrdinaryProducer(unittest.TestCase):
         for extra in [['-ss'],['-start_number'],['-i','fixed.mp4'],['-hls_time','2'],['-ss','12']]:
             with self.subTest(extra=extra):
                 self.assertFalse(ordinary_cold_arguments(self.arguments()+extra,'fixed.mp4'))
+
+class BrowserHeldTransportControls(unittest.TestCase):
+    def test_failed_prepared_control_keeps_overall_diagnostic_failed(self):
+        observed={'result':'observed','browser':{'result':'observed'}}
+        failed=dict(observed,heldTransportControls=[{'request':12,'failureClass':'browser_complete_aac_payload_tail'}])
+        self.assertEqual(diagnostic_result([observed]),'observed')
+        self.assertEqual(diagnostic_result([failed]),'failed')
+        self.assertEqual(diagnostic_result([observed,{'result':'failed'}]),'failed')
+        self.assertEqual(diagnostic_result([]),'failed')
 
 if __name__=='__main__':
     unittest.main()
