@@ -9,7 +9,7 @@ Historical R12/R13/R15 and R16 failures remain immutable. R16 normal-initial plu
 - Scoped video preroll must retain AAC packets while excluding earlier video keys.
 - First canonical AAC packet must uniquely match a bounded source window by SHA256 and integer PTS. Missing or ambiguous payload identity fails closed.
 - Source/canonical AAC codec, profile, selected track, sample rate, channels and timebase must agree. No float or unknown packet clocks are admitted.
-- Edited and raw canonical first packet must have equal identity, duration and DTS; raw PTS zero and a bounded edit must explain the actual initial seek.
+- Edited and raw canonical first packet must have equal payload and duration, with equal PTS/DTS edit deltas; raw PTS zero and a bounded edit must explain the actual initial seek.
 - Initial edited video clock must be zero; a shared video clock cannot supply an audio origin.
 - Actual microsecond seek and mux values require integer rescaling. Fractional carry, negative values, overflow and invalid key DTS must reject or correct exactly.
 - Source identity, policy, rooted init/first assets and actual canonical generation must stay unchanged through one inherited two-second lease and owned probe settlement.
