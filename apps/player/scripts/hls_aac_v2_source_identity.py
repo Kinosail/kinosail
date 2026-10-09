@@ -1,5 +1,6 @@
 """Typed private captured-input identity; never authorizes a Server worker."""
 import os
+from pathlib import Path
 import re
 import stat
 from hls_followon_public import check
@@ -38,3 +39,27 @@ def matches_source_input(value, row, source):
         check(validate_identity(row.get('inputWitness')) == regular_identity(source),
             'v2_source_witness_identity')
     return True
+
+
+def captured_input_identity(args):
+    check(type(args) is list and 0 < len(args) <= 128
+        and all(type(value) is str and len(value) <= 2048 for value in args),
+        'v2_actual_argv_shape')
+    check(args.count('-i') == 1 and args[-1] != '-i', 'v2_argv_single_input_required')
+    return regular_identity(args[args.index('-i') + 1])
+
+
+def option(args, name):
+    matches = [args[n + 1] for n, value in enumerate(args[:-1]) if value == name]
+    check(len(matches) <= 1, 'v2_argv_duplicate_option')
+    return matches[0] if matches else None
+
+
+def startup_fixture(value, args):
+    path = Path(value)
+    return (path.is_absolute() and path.parent.parent == Path('/tmp')
+        and re.fullmatch(r'kinosail-transcoder-check-[a-zA-Z0-9_-]{1,64}', path.parent.name)
+        and path.name in ['source.mp4', 'source.mkv']
+        and args[-1] == str(path.parent / 'index.m3u8')
+        and option(args, '-hls_time') == '1' and option(args, '-frames:v') == '24'
+        and option(args, '-c:a') == 'aac' and '-shortest' in args)

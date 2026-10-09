@@ -22,9 +22,8 @@ def bounded_bytes(path, limit, failure):
 
 
 def encoder_count(server, source):
-    rows = subprocess.check_output(['ps', '-eo', 'ppid=,args='], text=True, timeout=5).splitlines()
-    return sum(1 for row in rows if row.strip() and row.strip().split(maxsplit=1)[0] == str(server.pid)
-               and 'ffmpeg' in row and '-hls_time' in row and str(source) in row)
+    from hls_aac_v2_live_observer import owned_hls_count
+    return owned_hls_count(server, source)
 
 
 def sample_resources(server, source, stop, resources):

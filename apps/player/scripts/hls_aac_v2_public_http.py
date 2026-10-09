@@ -1,7 +1,6 @@
 """Owned actual Go HTTP process and public cached-delivery controls."""
 import json
 import os
-from pathlib import Path
 import re
 import shutil
 import socket
@@ -13,7 +12,7 @@ from hls_remaining_process import finish_processes
 from hls_timeline_http import PublicServer, sha, source_state
 from hls_timeline_packets import manifest_facts
 from hls_aac_v2_public_evidence import assert_fixed_timeline
-from hls_aac_v2_source_identity import matches_source_input
+from hls_aac_v2_source_identity import matches_source_input, option, regular_identity, startup_fixture
 
 
 class ActualServer:
@@ -29,29 +28,41 @@ class ActualServer:
         probe = shutil.which('ffprobe')
         check(real is not None and probe is not None, 'v2_pinned_codec_missing')
         adapter = directory / 'owned-ffmpeg'
-        adapter.write_text('#!/usr/bin/python3\nimport json,os,sys\n'
-            'args=sys.argv[1:]\n'
-            'if "-hls_time" in args:\n'
-            '    with open(os.environ["V2_ARGV_CAPTURE"],"a") as stream:\n'
-            '        stream.write(json.dumps({"args":args,"parent":os.getppid()})+"\\n")\n'
-            'os.execv(os.environ["V2_REAL_FFMPEG"],[os.environ["V2_REAL_FFMPEG"],*args])\n')
+        adapter.write_text("#!/usr/bin/python3\n"
+            "import json,os,sys\n"
+            "args=sys.argv[1:]\n"
+            "if \"-hls_time\" in args:\n"
+            "    sys.path.insert(0,os.environ[\"V2_OBSERVER_ROOT\"])\n"
+            "    from hls_aac_v2_source_identity import captured_input_identity\n"
+            "    row={\"args\":args,\"parent\":os.getppid()}\n"
+            "    try:\n"
+            "        row[\"inputWitness\"]=captured_input_identity(args)\n"
+            "    except RuntimeError:\n"
+            "        row[\"inputWitnessFailureClass\"]=\"v2_actual_input_identity_unqualified\"\n"
+            "    with open(os.environ[\"V2_ARGV_CAPTURE\"],\"a\") as stream:\n"
+            "        stream.write(json.dumps(row)+\"\\n\")\n"
+            "os.execv(os.environ[\"V2_REAL_FFMPEG\"],[os.environ[\"V2_REAL_FFMPEG\"],*args])\n")
         adapter.chmod(0o700)
         self.env = dict(os.environ, KINOSAIL_LISTEN='127.0.0.1:' + str(port),
             KINOSAIL_AUTH_URL=self.api.url, KINOSAIL_TLS_ENABLED='false',
             KINOSAIL_DATA_DIR=str(directory / 'config'), KINOSAIL_MEDIA_DIR=str(source.parent),
             KINOSAIL_CACHE_DIR=str(directory / 'cache'), KINOSAIL_BACKUP_DIR=str(directory / 'backups'),
             KINOSAIL_BACKUP_KEY='synthetic-v2-public-key', KINOSAIL_FFMPEG=str(adapter),
-            KINOSAIL_FFPROBE=probe, V2_ARGV_CAPTURE=str(self.invocations), V2_REAL_FFMPEG=real)
+            KINOSAIL_FFPROBE=probe, V2_ARGV_CAPTURE=str(self.invocations), V2_REAL_FFMPEG=real,
+            V2_OBSERVER_ROOT=str(root / 'apps/player/scripts'))
         self.process, self.log, self.sampler = None, None, None
         self.sessions = []
         self.owned_pids = set()
+        self.source_witness = regular_identity(source)
         self.before = source_state(source)
+        check(regular_identity(source) == self.source_witness, 'v2_initial_source_identity_unqualified')
 
     def start(self, authorize=False, binary=None):
         check(self.process is None, 'v2_session_already_owned')
         self.log = self.log_path.open('a')
         self.process = subprocess.Popen([str(binary or self.binary)], cwd=self.root, env=self.env,
             stdout=self.log, stderr=self.log, start_new_session=True)
+        self.process._copiedSourceWitness = dict(self.source_witness)
         self.owned_pids.add(self.process.pid)
         self.stop_event = threading.Event()
         self.resources = {'samples': 0, 'peakOwnedFFmpeg': 0, 'samplingErrors': 0}
@@ -124,14 +135,7 @@ def source_invocations(rows, source, owned_pids):
         if matches_source_input(inputs[0], row, source):
             selected.append(row)
             continue
-        path = Path(inputs[0])
-        check(path.is_absolute() and path.parent.parent == Path('/tmp')
-              and re.fullmatch(r'kinosail-transcoder-check-[a-zA-Z0-9_-]{1,64}', path.parent.name)
-              and path.name in ['source.mp4', 'source.mkv']
-              and args[-1] == str(path.parent / 'index.m3u8')
-              and option(args, '-hls_time') == '1' and option(args, '-frames:v') == '24'
-              and option(args, '-c:a') == 'aac' and '-shortest' in args,
-              'v2_unknown_non_source_hls_invocation')
+        check(startup_fixture(inputs[0], args), 'v2_unknown_non_source_hls_invocation')
     check(len(selected) <= 16, 'v2_encoder_invocation_bound')
     return selected
 
@@ -156,12 +160,6 @@ def diagnostic_producer_rows(rows, source, owned_pids):
         fields['globalCopyPriorSS'] = '-copypriorss' in args
         output.append(fields)
     return output
-
-def option(args, name):
-    matches = [args[n + 1] for n, value in enumerate(args[:-1]) if value == name]
-    check(len(matches) <= 1, 'v2_argv_duplicate_option')
-    return matches[0] if matches else None
-
 
 def actual_producer_rows(rows):
     output = []

@@ -135,3 +135,21 @@ All20 captured/sampler controls passed again; this attempt qualifies no new live
 Artifact11650270839 and API archive digest `sha256:d3589afd7813fa9ffcda219ed14475e5dbffa1f7ce4f3e31855d5fe250469e32` remain preserved.
 Future uploads select only receipts, contract text and checksum files; public fixture files and private codec/capture logs remain on the hosted runner.
 Production and all compatibility/ownership gates remain unchanged.
+
+## Qualified live RED and narrowly staged observer repair
+
+Head `15e09ca1661d21200a814d8079647161a8b98c2f` / tree `a10a844aae85d6ef049f190b0e33fa6159d24ea8` failed run38003516837 with four causal live failures.
+All20 prior controls passed; all four actual children were alive with pinned argv and the fixed source seal.
+Retained FD and permitted startup activity returned zero; the wrong other-inode FD also returned zero.
+The actual generated wrapper omitted its actual input witness.
+Artifact11648944910 has API archive digest `sha256:9c2fece7e5d8d0473b67ab15d7d5da2460835ee1d1b047de2ace1014b8ed0b38`; no archive was downloaded.
+Every owned group reached two zero observations without errors; source guards passed and retained FDs closed afterward.
+
+The staged observer reads bounded actual owned-child argv, parent and process start identity.
+It counts source-FD and exact permitted startup HLS activity separately from source-call attribution.
+A live unknown input is a qualification failure, never a zero count.
+The generated wrapper records its sole actual regular input identity before exec, or a safe qualification-failure class.
+The source witness is retained before Server start and supplied to the sampler.
+All24 written-first controls and their resource limits remain unchanged.
+Initial-source replacement and transient process races are conservative failure paths, not newly qualified acceptance.
+Real Server lifecycle, ownership/migration, public GET hydration and production remain held.
