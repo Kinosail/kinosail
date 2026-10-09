@@ -1,6 +1,6 @@
 module github.com/MikeO7/kinosail-subtitles
 
-go 1.27
+go 1.27.2
 
 require (
 	github.com/MikeO7/kinosail/packages v0.0.0

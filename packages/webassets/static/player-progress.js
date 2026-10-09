@@ -1,4 +1,6 @@
-let progressRevision = 0;
+let progressRevision = 0, progressPlayedItem, watchedSubmission;
+let watchedDeparture = false, watchedReplay = false;
+let queueSourceChanging = false, queueProgressReady = true;
 // One page-owned pending position; never replay a closed page's session over newer state.
 let pendingProgress, progressFlight, progressFailure = "", progressContinuation, progressNavigation;
 const progressNotice = document.querySelector("[data-progress-notice]");
@@ -13,6 +15,7 @@ const progressItem = () => {
   } catch (_) { return undefined; }
 };
 const progressProfile = () => document.body.dataset.viewerProfile || "";
+const progressChanged = () => Boolean(progressItem()) && progressPlayedItem === progressItem();
 const ownsProgress = (value) => value && value.profile === progressProfile() && value.item === progressItem() &&
   value.revision === progressRevision && player.dataset.castActive !== "true" && player.dataset.offline !== "true";
 const clearProgress = (continueNavigation = false) => {
@@ -56,7 +59,7 @@ const sendProgress = (closing = false) => {
         response = await fetch(player.dataset.progress, {
           method: "POST",
           headers: {"Content-Type": "application/x-www-form-urlencoded", "X-Playback-Session": playbackSession, ...(csrf ? {"X-Kinosail-CSRF": csrf} : {})},
-          body: new URLSearchParams({seconds: observed.seconds, session: playbackSession, revision: observed.revision, ...(observed.watched ? {watched: true} : {})}),
+          body: new URLSearchParams({seconds: observed.seconds, session: playbackSession, revision: observed.revision, watched: observed.watched}),
           keepalive: true, signal: controller.signal,
         });
         if (response.redirected || response.status === 401) failure = "authentication";
@@ -107,7 +110,9 @@ progressContinue?.addEventListener("click", () => {
 });
 addEventListener("online", () => retryProgress());
 const save = (watched = false, closing = false) => {
-  if (playbackPreparation) return Promise.resolve();
+  if (watchedDeparture || (watchedSubmission?.eventPhase === Event.NONE && !watchedSubmission.defaultPrevented)) return Promise.resolve({ok: true});
+  if (playbackPreparation || queueSourceChanging || !queueProgressReady) return Promise.resolve();
+  if (!watched && !progressChanged()) return Promise.resolve({ok: true});
   if (player.dataset.castActive === "true" || player.dataset.offline === "true") {
     clearProgress();
     return player.dataset.offline === "true" ? window.KinosailOfflineMedia?.saveProgress(player, watched) : Promise.resolve();
@@ -124,37 +129,12 @@ const save = (watched = false, closing = false) => {
   return sendProgress(closing);
 };
 player.addEventListener("play", () => { if (pendingProgress?.watched) clearProgress(); });
-let audioQueue = [];
-let queuedAudio;
-const warmAudio = () => {
-  if (!audioQueue.length) return;
-  queuedAudio = new Audio(audioQueue[0].stream);
-  queuedAudio.preload = "auto";
-};
-const advanceQueue = async () => {
-  if (!audioQueue.length) return false;
-  const next = audioQueue.shift();
-  window.KinosailOfflineMedia?.unbindProgress(player);
-  delete player.dataset.offline;
-  player.dataset.progress = `/progress/${next.id}`;
-  if (player.dataset.castApi) player.dataset.castApi = `/api/v1/items/${next.id}/cast`;
-  player.dataset.title = next.title;
-  player.dataset.artwork = next.artwork || "";
-  player.dataset.start = next.progress?.seconds || 0;
-  player.src = next.stream;
-  player.load();
-  warmAudio();
-  await requestPlay("queue-advance");
-  return true;
-};
-if (player.dataset.queue) fetch(player.dataset.queue).then((response) => response.json()).then(({items}) => {
-  audioQueue = items.slice(1);
-  warmAudio();
-}).catch(() => {});
+for (const event of ["playing", "kinosail:seek-intent"]) player.addEventListener(event, () => { if (!playbackPreparation && !queueSourceChanging && queueProgressReady && (event !== "playing" || !player.paused)) progressPlayedItem = progressItem(); });
+player.addEventListener("seeking", () => { if (!managedSeek && !playbackPreparation && !queueSourceChanging && queueProgressReady) progressPlayedItem = progressItem(); });
 const resumeFromSavedProgress = () => {
   if (player.dataset.offline === "true") return;
   const start = Number(player.dataset.start);
-  if (start > 0 && start < player.duration - 10) {
+  if (start > 0 && start < player.duration) {
     if (Math.abs(player.currentTime - start) >= 0.1) setPlayerTime(start);
     if (player.hasAttribute("data-autoplay") && playbackTraceMethod !== "native-hls") requestPlay("resume-progress").catch(() => {});
   }
@@ -185,11 +165,10 @@ player.addEventListener("ended", async () => {
     if (player.dataset.next) location.assign(player.dataset.next);
   };
   if (player.dataset.offline === "true") {
-    await save(true);
-    await continuePlayback();
+    if ((await save(true))?.ok) await continuePlayback();
     return;
   }
-  progressContinuation = player.dataset.queue || player.dataset.next ? continuePlayback : undefined;
+  progressContinuation = audioQueue.length || player.dataset.next ? continuePlayback : undefined;
   await save(true);
 });
 player.addEventListener("kinosail:page-exit", () => {
@@ -225,8 +204,8 @@ if (player.dataset.homeAssistant === "true") {
     const command = await response.json();
     if (command.command === "play") await requestPlay("home-assistant");
     if (command.command === "pause") requestPause();
-    if (command.command === "stop") { requestPause(); setPlayerTime(0); }
-    if (command.command === "seek") setPlayerTime(command.position);
+    if (command.command === "stop") { requestPause(); setPlayerTime(0, true); }
+    if (command.command === "seek") setPlayerTime(command.position, true);
     if (command.command === "volume") player.volume = command.volume;
     if (command.command === "mute") player.muted = command.muted;
     if (command.command === "play_media") location.assign(`/watch/${encodeURIComponent(command.itemId)}`);

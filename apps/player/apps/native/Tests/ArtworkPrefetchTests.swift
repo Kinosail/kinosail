@@ -44,9 +44,41 @@ struct ArtworkPrefetchTests {
                 data: Data("{\"items\":[],\"total\":0,\"offset\":0,\"limit\":60}".utf8), status: 200, headers: [:])
         }
         let loader = ArtworkLoader()
+        let began = ContinuousClock.now
+        var returned = began, lastPoll = began, readinessFinished = began
+        var longestPollGap = Duration.zero
+        var polls = 0, initialRequestCount = 0
+        defer {
+            let arrivals = FixtureURLProtocol.entries.withLock { values in
+                let entry = values[fixture.host]
+                return zip(entry?.requests ?? [], entry?.requestArrivals ?? []).map { request, instant in
+                    ["category": ["/art/slow", "/art/visible", "/art/queued", "/api/v1/library"].contains(request.url?.path ?? "") ? request.url!.path : "other",
+                     "elapsedMs": Self.milliseconds(began.duration(to: instant))] as [String: Any]
+                }
+            }
+            let receipt: [String: Any] = ["prefetchReturnedMs": Self.milliseconds(began.duration(to: returned)),
+                "longestPollGapMs": Self.milliseconds(longestPollGap), "polls": polls,
+                "callerTaskPriority": Task.currentPriority.rawValue, "deadlineMs": 10_000,
+                "readinessFinishedMs": Self.milliseconds(began.duration(to: readinessFinished)),
+                "initialRequestCount": initialRequestCount, "arrivals": arrivals]
+            if let data = try? JSONSerialization.data(withJSONObject: receipt, options: [.sortedKeys]),
+               let text = String(data: data, encoding: .utf8) { print("ARTWORK_PREFETCH_TIMING \(text)") }
+        }
         try await loader.prefetch(paths: ["/art/slow", "/art/queued"], client: fixture.client, dimension: 800)
-        for _ in 0..<200 where fixture.requests.isEmpty { try await Task.sleep(for: .milliseconds(5)) }
+        returned = ContinuousClock.now
+        lastPoll = returned
+        let deadline = ContinuousClock.now.advanced(by: .seconds(10))
+        while fixture.requests.isEmpty && ContinuousClock.now < deadline {
+            try await Task.sleep(for: .milliseconds(5))
+            let now = ContinuousClock.now
+            longestPollGap = max(longestPollGap, lastPoll.duration(to: now))
+            lastPoll = now
+            polls += 1
+        }
+        readinessFinished = ContinuousClock.now
+        initialRequestCount = fixture.requests.count
         #expect(fixture.requests.count == 1)
+        #expect(fixture.requests.first?.url?.path == "/art/slow")
         let catalog = try await fixture.client.library(view: .movies)
         #expect(catalog.items.isEmpty)
         let visible = try await loader.image(path: "/art/visible", client: fixture.client, dimension: 800)
@@ -117,6 +149,11 @@ struct ArtworkPrefetchTests {
         await #expect(throws: CancellationError.self) { try await task.value }
         try await loader.prefetch(paths: [], client: fixture.client, dimension: 800)
         #expect(fixture.requests.isEmpty)
+    }
+
+    private static func milliseconds(_ duration: Duration) -> Double {
+        let parts = duration.components
+        return Double(parts.seconds) * 1000 + Double(parts.attoseconds) / 1e15
     }
 
 }

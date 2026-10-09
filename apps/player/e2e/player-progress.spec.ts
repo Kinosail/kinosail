@@ -1,8 +1,9 @@
 import { expect, test, type Page, type Route } from "@playwright/test";
 import { readFile } from "node:fs/promises";
+import {establishPlayedThenPaused, progressFixtureHTML} from './player-progress-fixture';
 
 // Isolated HTTP failure/ordering coverage; see engineering/qa/2026-10-04-r03-progress.
-const source = (await Promise.all(["player-progress.js", "player-progress-navigation.js"].map(path =>
+const source = (await Promise.all(["player-progress.js", "player-audio-queue.js", "player-progress-navigation.js"].map(path =>
   readFile(new URL(`../../../packages/webassets/static/${path}`, import.meta.url), "utf8")))).join("");
 const fixtureOrigin = "https://progress.kinosail.test";
 test.use({baseURL: fixtureOrigin});
@@ -21,34 +22,31 @@ test.beforeEach(async ({ page }, testInfo) => {
     if (aborted) return route.abort("failed");
     await route.fulfill({ status, headers: { "X-Request-ID": "qa-request-03" }, body: status === 204 ? "" : "private-server-error?token=synthetic" });
   });
-  await page.route(`${fixtureOrigin}/`, route => route.fulfill({ contentType: "text/html", body: `
-    <!doctype html><html lang="en"><head><meta charset="utf-8"><title>R03 fixture</title></head>
-    <body data-viewer-profile="qa-viewer"><main class="player-shell">
-      <video data-progress="/progress/movie?playbackToken=synthetic" data-start="0"></video>
-      <div class="player-progress-notice" data-progress-notice hidden>
-        <span role="status" aria-live="polite" data-progress-status></span>
-        <button class="quiet" type="button" data-progress-retry>Retry saving position</button>
-        <button class="quiet" type="button" data-progress-continue hidden>Continue without saving</button>
-      </div>
-      <label>Audio track <select data-audio-track><option value="0">Original</option><option value="1">Other</option></select></label><small data-audio-status></small>
-    </main></body></html>` }));
+  await page.route(`${fixtureOrigin}/`, route => route.fulfill({contentType: "text/html", body: progressFixtureHTML}));
   await page.route("**/watch/next", route => route.fulfill({ contentType: "text/html", body: "<h1>Next episode</h1>" }));
-  await page.route("**/api/v1/test-queue", route => route.fulfill({json: {items: [{id: "movie"}, {id: "next", title: "Next song", stream: "/media/next"}]}}));
+  const queueItem = (id: string) => ({id, kind: "audio", title: id === "movie" ? "Current song" : "Next song", stream: `/media/${id}`});
+  await page.route("**/api/v1/audio/movie/queue", route => route.fulfill({json: {items: [queueItem("movie"), queueItem("next")]}}));
+  await page.route("**/api/v1/items/next", route => route.fulfill({json: {profileId: "qa-viewer", item: queueItem("next")}}));
   await page.goto("/");
-  if (testInfo.title.includes("audio queue")) await page.locator("video").evaluate(media => media.dataset.queue = "/api/v1/test-queue");
+  if (testInfo.title.includes("audio queue")) await page.locator("video").evaluate(media => media.dataset.queue = "/api/v1/audio/movie/queue");
   await page.addScriptTag({ content: `
     const player = document.querySelector('video'), csrf = 'synthetic-csrf', playbackSession = 'qa-session-03';
-    let playbackPreparation, preparationSeek, preparationPausePending = 0, playbackRequest = 0;
-    const playbackTraceMethod = 'direct', setPlayerTime = seconds => player.currentTime = seconds;
+    let managedSeek = false, playbackPreparation, preparationSeek, preparationPausePending = 0, playbackRequest = 0;
+    let playbackTraceMethod = 'direct', playbackTimelineOffset = 0;
+    const setPlayerTime = seconds => player.currentTime = seconds, updateNowPlaying = () => {};
+    const withPlaybackSession = path => { const url = new URL(path, location.href); url.searchParams.set('playbackSession', playbackSession); return url.href; };
     const isPictureInPicture = () => false;
     const requestPause = () => { playbackRequest++; paused = true; player.dispatchEvent(new Event("pause")); };
     const requestPlay = async () => {}, playerStorage = {get: () => '', set: () => {}};
     const playbackTrace = () => {}, flushPlaybackTrace = () => {};
-    let position = 42, paused = true;
-    Object.defineProperties(player, {currentTime: {get: () => position, set: value => position = value}, duration: {value: 100}, readyState: {value: 4}, paused: {get: () => paused}, load: {value: () => {}}});
-    Object.assign(window, {setPaused: value => paused = value, prepare: value => playbackPreparation = value});
+    let position = 42, paused = true, ended = false;
+    Object.defineProperties(player, {currentTime: {get: () => position, set: value => position = value}, duration: {value: 100}, readyState: {value: 4}, paused: {get: () => paused}, ended: {get: () => ended}, load: {value: () => queueMicrotask(() => player.dispatchEvent(new Event('loadedmetadata')))}});
+    player.addEventListener('ended', () => { ended = true; });
+    Object.assign(window, {setEnded: value => ended = value, setPaused: value => paused = value, prepare: value => playbackPreparation = value});
     addEventListener('pagehide', () => player.dispatchEvent(new Event('kinosail:page-exit')));
   ` + source });
+  // This ordering fixture starts after playback has reached its paused position.
+  await establishPlayedThenPaused(page);
 });
 
 async function pauseAt(page: Page, seconds: number) {
@@ -220,6 +218,8 @@ test("watched failure on the last title survives later pause and hiding events",
   await page.locator("video").dispatchEvent("ended");
   await expect(page.locator("[data-progress-status]")).toHaveText("Watched status is not saved. Retry while this page is open.");
   await expect(page.locator("[data-progress-continue]")).toBeHidden();
+  // A later seek can clear ended; the pending watched revision must still win.
+  await page.evaluate(() => (window as Window & {setEnded(value: boolean): void}).setEnded(false));
   await pauseAt(page, 100);
   await page.evaluate(() => dispatchEvent(new Event("pagehide")));
   await expect.poll(() => requests.length).toBe(2);
@@ -264,4 +264,29 @@ test("audio queue does not drop a failed watched save when it advances", async (
   await expect(page.locator("video")).toHaveAttribute("data-progress", "/progress/next");
   expect(requests.at(-1)!.body.get("watched")).toBe("true");
   await expect(page.locator("[data-progress-notice]")).toBeHidden();
+});
+
+test('a watched form that becomes invalid while saving keeps subsequent position saves active',async({page})=>{
+  deferred=true;
+  await page.locator('main').evaluate(main=>main.insertAdjacentHTML('beforeend','<form action="/watched/movie" method="post"><input aria-label="Required confirmation" required value="ready"><button name="watched" value="true">Mark watched</button></form>'));
+  await pauseAt(page,42);
+  await expect.poll(()=>requests.length).toBe(1);
+  await page.getByRole('button',{name:'Mark watched',exact:true}).click();
+  await page.getByLabel('Required confirmation').fill('');
+  await requests[0].route.fulfill({status:204});
+  await expect.poll(()=>requests.length).toBe(2);
+  await requests[1].route.fulfill({status:204});
+  await expect(page.locator('[data-progress-notice]')).toBeHidden();
+  await pauseAt(page,60);
+  await expect.poll(()=>requests.length).toBe(3);
+  expect(requests[2].body.get('seconds')).toBe('60');
+});
+
+test('an unplayed audio-track change navigates without writing unchanged progress',async({page})=>{
+  await page.route(`${fixtureOrigin}/?compatible=1&audio=1`,route=>route.fulfill({contentType:'text/html',body:'<h1>Selected audio</h1>'}));
+  await page.locator('video').evaluate(media=>{media.dataset.progress='/progress/unplayed';media.currentTime=0;});
+  await page.getByLabel('Audio track').selectOption('1');
+  await expect(page.getByRole('heading',{name:'Selected audio'})).toBeVisible();
+  expect(new URL(page.url()).searchParams.get('audio')).toBe('1');
+  expect(requests).toEqual([]);
 });

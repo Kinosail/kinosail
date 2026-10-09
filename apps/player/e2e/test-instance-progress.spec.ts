@@ -8,9 +8,10 @@ import AxeBuilder from "@axe-core/playwright";
 configureTestInstance();
 const baseline = process.env.KINOSAIL_R03_BASELINE === "1";
 const currentSource = await readFile(new URL("../../../packages/webassets/static/player-progress.js", import.meta.url), "utf8");
+const queueSource = await readFile(new URL("../../../packages/webassets/static/player-audio-queue.js", import.meta.url), "utf8");
 const baselineSource = baseline ? execFileSync("git", ["show", "2e9ede47:packages/webassets/static/player-progress.js"], {encoding: "utf8"}) : "";
-// Baseline asset replay must bypass the candidate's service-worker precache.
-test.use({serviceWorkers: baseline ? "block" : "allow"});
+// Controlled HTTP responses must reach Playwright before the native fetch consumes them.
+test.use({serviceWorkers: "block"});
 async function serverProgress(page: Page, id: string) {
   const response = await page.request.get(`/api/v1/items/${id}`);
   expect(response.status()).toBe(200);
@@ -61,7 +62,8 @@ test.beforeEach(async ({page}) => {
     const response = await route.fetch();
     const body = await response.text();
     expect(body).toContain(currentSource);
-    await route.fulfill({response, body: body.replace(currentSource, baselineSource)});
+    expect(body).toContain(queueSource);
+    await route.fulfill({response, body: body.replace(currentSource, baselineSource).replace(queueSource, "")});
   });
 });
 
@@ -87,7 +89,8 @@ test("real Server rejects invalid progress without changing stored state and web
   const before = await serverProgress(page, id);
   await media.evaluate(video => video.dataset.progress = video.dataset.progress!.split("?")[0] + "?playbackToken=invalid");
   const rejected = page.waitForResponse(response => new URL(response.url()).pathname === `/progress/${id}` && response.status() === 400);
-  await media.dispatchEvent("pause");
+  // Advance the position so deduplication cannot suppress the rejected request.
+  await media.evaluate((video: HTMLVideoElement) => { video.currentTime = Math.min(video.duration, video.currentTime + 1); video.dispatchEvent(new Event("pause")); });
   await rejected;
   const after = await serverProgress(page, id);
   expect(after).toEqual(before);
@@ -154,4 +157,32 @@ test("populated player retries the latest progress through the real Server and r
   await page.reload();
   await expect(page.locator("[data-progress-notice]")).toBeHidden();
   expect(await page.locator("[data-progress-status]").textContent()).not.toContain("Your position is saved");
+});
+
+test('Mark watched waits for an older played-position request before changing stored status', {tag:'@smoke'}, async ({page},info) => {
+  await login(page);
+  const watch=await firstPlayable(page), id=watch.split('/').at(-1)!;
+  const publicProgress=()=>page.evaluate(async id=>{const response=await fetch(`/api/v1/items/${id}`);if(response.status!==200)throw new Error(`Public progress HTTP ${response.status}`);return (await response.json()).item.progress;},id);
+  await page.goto(watch);
+  const media=page.locator('video');
+  await media.evaluate(async(video:HTMLVideoElement)=>{video.muted=true;await video.play();});
+  await expect.poll(()=>media.evaluate((video:HTMLVideoElement)=>video.getVideoPlaybackQuality().totalVideoFrames)).toBeGreaterThan(2);
+  let release!:()=>void, held=false, watchedRequests=0;
+  const barrier=new Promise<void>(resolve=>release=resolve);
+  page.on('request',request=>{if(new URL(request.url()).pathname===`/watched/${id}`)watchedRequests++;});
+  await page.route(`**/progress/${id}*`,async route=>{held=true;await barrier;await route.continue();});
+  try {
+    await media.evaluate((video:HTMLVideoElement)=>video.pause());
+    await expect.poll(()=>held).toBe(true);
+    await page.getByRole('button',{name:'Mark watched',exact:true}).click();
+    await expect(page.locator('[data-progress-status]')).toHaveText('Saving progress…');
+    expect(watchedRequests).toBe(0);
+    await page.screenshot({path:info.outputPath('watched-awaits-position.png'),fullPage:true});
+    release();
+    await expect(page.getByRole('button',{name:'Mark unwatched',exact:true})).toBeVisible();
+    await expect.poll(()=>publicProgress().then(state=>state.watched)).toBe(true);
+    await page.getByRole('link',{name:'Library',exact:true}).click();
+    await expect(page).toHaveURL('/');
+    expect((await publicProgress()).watched).toBe(true);
+  } finally {release();}
 });

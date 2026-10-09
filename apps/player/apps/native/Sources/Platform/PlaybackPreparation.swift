@@ -91,7 +91,7 @@ extension PlaybackEngine {
 
     func fetchPlaybackPreparation(for item: MediaItem, client: ServerClient) async throws -> PlaybackPreparation {
         async let source = client.playback(itemID: item.id)
-        async let preferences = client.playbackPreferences(itemID: item.id)
+        async let preferences = client.playbackPreparationPreferences(itemID: item.id)
         let prepared = PlaybackPreparation(itemID: item.id, clientID: client.identity, saved: Date(),
                                            source: try await source, preferences: try await preferences.playback)
         return try prepared.validated()

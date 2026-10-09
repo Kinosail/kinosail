@@ -1,10 +1,40 @@
 #!/usr/bin/env bash
 
+# The container owner shares these volume names and the fixture directory.
+# shellcheck disable=SC2034,SC2154
+start_fresh_server() {
+  local fixed_port="$1"
+  if [[ -n "$container" ]]; then
+    "$engine" rm --force "$container" >/dev/null
+    container=""
+  fi
+  remove_state_volumes
+  suffix="$$-$RANDOM"
+  config_volume="kinosail-test-config-$suffix"
+  cache_volume="kinosail-test-cache-$suffix"
+  backup_volume="kinosail-test-backups-$suffix"
+  create_state_volumes
+  start_server "$fixed_port"
+  if browser_fixture_uses_tls; then
+    remove_browser_fixture_trust
+    trust_browser_fixture_tls "$engine" "$container" "$mcp_dir" "$suffix"
+  fi
+}
+
 prepare_player_checkpoint_fixture() {
   local engine="$1" image="$2" media_dir="$3"
   shift 3
   "$engine" "$@" --rm --entrypoint sh "$image" -c 'ffmpeg -hide_banner -loglevel error -f lavfi -i testsrc2=size=320x180:rate=24:duration=30 -c:v libx264 -threads 1 -preset ultrafast -crf 35 -pix_fmt yuv420p -movflags +faststart /tmp/checkpoint.mp4 && cat /tmp/checkpoint.mp4' >"$media_dir/Checkpoint Example.mp4"
   chmod a+r "$media_dir/Checkpoint Example.mp4"
+}
+
+prepare_audio_queue_fixture() {
+  local repo
+  repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+  python3 "$repo/scripts/testing/prepare-audio-queue-fixture.py" "$1/R08 Fictional Session"
+  chmod -R a+rX "$1/R08 Fictional Session"
+  python3 "$repo/scripts/testing/prepare-queue-loading-intent-fixture.py" "$1/Queue Intent Long Session"
+  chmod -R a+rX "$1/Queue Intent Long Session"
 }
 
 run_library_pagination_journey() {
@@ -30,6 +60,13 @@ run_download_pause_journeys() {
   done
 }
 
+run_native_intent_regression() {
+  KINOSAIL_BROWSER_PROJECT="$1" KINOSAIL_E2E_VIDEO=off \
+    KINOSAIL_E2E_OUTPUT_DIR="$2" KINOSAIL_E2E_ARTIFACT_DIR="$3" \
+    PLAYWRIGHT_HTML_OUTPUT_DIR="$3/html-$1" \
+    pnpm --dir e2e test player-native-intent-regression.spec.ts --workers=1 --retries=0
+}
+
 run_populated_player_journeys() {
   local repo
   repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
@@ -39,7 +76,22 @@ run_populated_player_journeys() {
     --required-title 'Owner settings search finds a setting across task families' \
     --required-title 'real Server rejects invalid progress without changing stored state and web reports the rejection' \
     --required-title 'populated player retries the latest progress through the real Server and renders accessible states' \
+    --required-title 'accepted Mark watched survives late native media callbacks from the departing page' \
+    --required-title 'accepted Mark unwatched survives late native media callbacks from the departing page' \
     --required-title 'completed paused seek persists before Library navigation and resumes actual movie frames' \
     --required-title 'Library exit checkpoints actual playing time before teardown without reset-position overwrite' \
-    -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-checkpoint.spec.ts --grep=@smoke --workers=1
+    --required-title 'volume icon renders balanced sound waves and keeps accessible mute controls' \
+    --required-title 'real album queue advances source and all Now Playing identity to the fictional second track' \
+    --required-title 'real album queue keeps system previous and next current and exposes only fresh current-track actions' \
+    --required-title 'mobile R03 progress notice stays hidden after real acknowledgement and reopens only on failure' \
+    --required-title 'album queue keeps accessible responsive controls through pending loaded empty and failed reads' \
+    --required-title 'late initial queue response cannot warm media or publish controls after pagehide' \
+    --required-title 'queued short track resumes its saved position without claiming unplayed progress' \
+    --required-title 'ended offline queue requires its own watched acknowledgement: failed' \
+    --required-title 'canonical catalog year strings survive queue validation and current-track identity' \
+    --required-title 'real queued track preserves seek arriving before actual metadata' \
+    --required-title 'real queued track preserves stop arriving before actual metadata' \
+    --required-title 'real queued saved35 track preserves seek arriving before actual metadata' \
+    --required-title 'real queued saved35 track preserves stop arriving before actual metadata' \
+    -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-watched-startup.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts test-instance-audio-queue.spec.ts test-instance-queue-loading-intent.spec.ts player-audio-policy.spec.ts player-audio-queue-lifecycle.spec.ts --grep=@smoke --workers=1
 }

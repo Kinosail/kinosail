@@ -15,20 +15,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/workload"
 )
 
-type hlsJob struct {
-	observation     *hlsObservation
-	preparation     *startupEncoding
-	done            chan struct{}
-	err             error
-	cancel          context.CancelCauseFunc
-	activity        chan struct{}
-	startNumber     int
-	requestID       string
-	playbackSession string
-	cachePolicy     string
-	replacing       bool
-}
-
 type hlsManager struct {
 	startup        *startupPreparation
 	copiedMetadata copiedHLSMetadata
@@ -119,8 +105,9 @@ func (manager *hlsManager) prepareAttempt(ctx context.Context, item library.Item
 	}
 	if startupActualPlayback(ctx) {
 		manager.startup.playback(key)
+		manager.keepHLSAlive(key, ctx)
 	}
-	if manager.reusableCopiedHLS(ctx, filepath.Dir(playlist), item.Path, options.Cache, recipe) {
+	if manager.reusableCopiedHLS(ctx, item, filepath.Dir(playlist), options.Cache, recipe) {
 		return refreshCachedVideoHLSMaster(playlist, facts, recipe, options.Cache)
 	}
 	job, err := manager.ensureHLSJob(ctx, item, key, options, recipe)
@@ -151,6 +138,9 @@ func (manager *hlsManager) encodeVariants(ctx context.Context, item library.Item
 	if err := playback.BindHLSSource(directory, item.Path, options.Cache); err != nil {
 		return err
 	}
+	if err := manager.bindStartupCompletion(ctx, directory, options.Cache); err != nil {
+		return err
+	}
 	if err := manager.bindCopiedHLSTimeline(ctx, directory, startNumber); err != nil {
 		return err
 	}
@@ -170,14 +160,9 @@ func (manager *hlsManager) encodeVariants(ctx context.Context, item library.Item
 	window.subtitleTime = start
 	if recipe.mode != "transcode" {
 		quality := sourceQuality(facts, recipe.maxBitrate)
-		results, stop := playback.StartHLSWorker(ctx, func(ctx context.Context) error {
+		return manager.publishCopiedHLSWorker(ctx, item.Path, directory, options.Cache, quality, startNumber, func(ctx context.Context) error {
 			return manager.encodeVariant(ctx, item, directory, quality.Label, strconv.Itoa(quality.Width), strconv.FormatInt((quality.Bitrate-128_000)/1000, 10)+"k", "128k", facts.Duration, options, recipe, window, start, startNumber)
 		})
-		defer stop()
-		if startNumber > 0 {
-			return <-results
-		}
-		return publishVariants(ctx, item.Path, directory, options.Cache, []PlaybackQuality{quality}, results, 1, false)
 	}
 	if err := playback.BindHLSEncoder(directory, options, startNumber > 0); err != nil {
 		return err
@@ -227,17 +212,21 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 		return err
 	}
 	defer release()
-	directory, playlistDirectory, err := preparePresentationDirectories(root, name, startNumber)
+	ctx, directory, playlist, output, err := manager.prepareCopiedHLSOutput(ctx, root, name, options.Cache, recipe.mode, startNumber)
 	if err != nil {
 		return err
 	}
-	playlist := filepath.Join(playlistDirectory, "index.m3u8")
+	defer output.close()
 	timeline, _ := manager.readCopiedHLSTimeline(root, options.Cache)
 	if timeline != nil {
 		if startNumber < 0 || startNumber >= len(timeline.Keys) {
 			return errCopiedHLSIndex
 		}
 		start = timeline.point(startNumber)
+	}
+	var refill *remainingAudioOrigin
+	if timeline == nil && startNumber > 0 && item.Kind == "audio" {
+		refill = remainingAudioOriginRefill(mediaFactsFor(item, manager.probe.facts(ctx, item)), sourceRecipe, recipe, start, startNumber, audioRate)
 	}
 	input, video := videoArguments(options, width)
 	arguments := startupInputArguments(ctx, []string{"-hide_banner", "-loglevel", "error", "-y"})
@@ -247,10 +236,13 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 	if recipe.mode == "transcode" {
 		arguments = append(arguments, input...)
 	}
-	if start > 0 {
+	if start > 0 || timeline != nil {
 		seek := ffmpegSeconds(start)
 		if timeline != nil {
 			seek = copiedHLSInputTime(start)
+			arguments = append(arguments, "-seek_timestamp", "1")
+		} else if refill != nil {
+			seek = "0.000"
 		}
 		arguments = append(arguments, "-ss", seek)
 	}
@@ -267,19 +259,24 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 		return err
 	}
 	if timeline == nil && startNumber > 0 {
-		arguments = append(arguments, "-output_ts_offset", ffmpegSeconds(recipe.outputTime))
+		if refill != nil {
+			arguments = append(arguments, "-output_ts_offset", refill.output, "-bsf:a", refill.drop)
+		} else {
+			arguments = append(arguments, "-output_ts_offset", ffmpegSeconds(recipe.outputTime))
+		}
 	}
 	arguments, err = copiedHLSSeekArguments(arguments, timeline, startNumber)
 	if err != nil {
 		return err
 	}
+	arguments = append(arguments, output.arguments()...)
 	arguments = append(arguments, indexedCopiedHLSSegmentArguments(hlsSegmentArguments(recipe.mode, directory, playlist, startNumber), timeline)...)
 	//nolint:gosec // G204: executable is installation config and input is found only by a Library scan.
 	command := exec.CommandContext(ctx, manager.ffmpeg, arguments...)
-	if err := runHLSCommand(ctx, command, item.Path, root); err != nil {
+	if err := output.run(command, item.Path, root); err != nil {
 		return err
 	}
-	return finalizePlaylist(playlist)
+	return output.publish(manager, ctx, item, recipe, options.Cache)
 }
 
 func (manager *hlsManager) availableHLSQualities(facts MediaFacts, recipe hlsRecipe, options transcodeSettings) []PlaybackQuality {

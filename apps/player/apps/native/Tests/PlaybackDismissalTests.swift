@@ -26,6 +26,31 @@ import Testing
         #expect(!dismissal.closing)
     }
 
+    @Test func rightwardEdgeGestureDismissesOnceAndPreservesControlRegions() {
+        let dismissal = PlaybackDismissal()
+        var closes = 0
+        let close = { closes += 1 }
+        let size = CGSize(width: 402, height: 874)
+        for (translation, start) in [
+            (CGSize(width: 99, height: 0), CGPoint(x: 10, y: 200)),
+            (CGSize(width: -150, height: 0), CGPoint(x: 10, y: 200)),
+            (CGSize(width: 150, height: 120), CGPoint(x: 10, y: 200)),
+            (CGSize(width: 150, height: 0), CGPoint(x: 40, y: 200)),
+            (CGSize(width: 150, height: 0), CGPoint(x: 10, y: 40)),
+            (CGSize(width: 150, height: 0), CGPoint(x: 10, y: 750)),
+        ] {
+            dismissal.dragEnded(translation: translation, start: start, size: size, excludedBottom: 144, close: close)
+        }
+        #expect(closes == 0)
+        #expect(!dismissal.closing)
+        dismissal.dragEnded(translation: CGSize(width: 140, height: 20), start: CGPoint(x: 10, y: 200),
+                            size: size, excludedBottom: 144, close: close)
+        #expect(closes == 1)
+        #expect(dismissal.closing)
+        dismissal.requestClose(close)
+        #expect(closes == 1)
+    }
+
     @Test func downwardBackgroundGestureAndCloseButtonDismissOnlyOnce() {
         let dismissal = PlaybackDismissal()
         var closes = 0

@@ -11,6 +11,22 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
+type hlsJob struct {
+	lifecycle       context.Context
+	observation     *hlsObservation
+	preparation     *startupEncoding
+	done            chan struct{}
+	err             error
+	cancel          context.CancelCauseFunc
+	activity        chan struct{}
+	startNumber     int
+	requestID       string
+	playbackSession string
+	pages           map[string]bool
+	cachePolicy     string
+	replacing       bool
+}
+
 func (manager *hlsManager) ensureHLSJob(ctx context.Context, item library.Item, key string, options transcodeSettings, recipe hlsRecipe) (*hlsJob, error) {
 	for {
 		manager.mu.Lock()
@@ -19,6 +35,14 @@ func (manager *hlsManager) ensureHLSJob(ctx context.Context, item library.Item, 
 			return nil, err
 		}
 		job := manager.jobs[key]
+		if startupJobStopping(job) {
+			manager.mu.Unlock()
+			if err := waitForReplacedHLSJob(ctx, job); err != nil {
+				return nil, err
+			}
+			// Cancellation can publish a reusable cache before the producer joins.
+			return nil, errHLSIdentityChanged
+		}
 		if job != nil && job.cachePolicy != options.Cache {
 			replaceHLSIdentity(ctx, job, recipe)
 			manager.mu.Unlock()
@@ -40,7 +64,8 @@ func (manager *hlsManager) ensureHLSJob(ctx context.Context, item library.Item, 
 			//nolint:contextcheck // The Server lifecycle owns shared output after this request ends.
 			go manager.encode(jobContext, item, job, key, options, recipe, 0, false)
 		}
-		adoptStartupJob(ctx, job)
+		manager.adoptStartupJob(ctx, job, key)
+		retainHLSPage(job, ctx)
 		manager.mu.Unlock()
 		return job, nil
 	}
@@ -54,6 +79,15 @@ func replaceHLSIdentity(ctx context.Context, job *hlsJob, recipe hlsRecipe) {
 	job.replacing = true
 	job.cancel(errHLSIdentityChanged)
 	slog.InfoContext(ctx, "HLS stream identity changed", "request_id", requestActivityID(ctx), "playback_session", requestPlaybackSession(ctx), "mode", recipe.mode)
+}
+
+func waitForReplacedHLSJob(ctx context.Context, job *hlsJob) error {
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	case <-job.done:
+		return nil
+	}
 }
 
 func (manager *hlsManager) prepare(ctx context.Context, item library.Item, recipe hlsRecipe) error {
@@ -77,7 +111,10 @@ func (manager *hlsManager) hlsSettings(item library.Item, recipe hlsRecipe) (tra
 	if recipe.subtitlePath != "" {
 		options.Cache += ":subtitle=" + sourceVersion(recipe.subtitlePath)
 	}
-	options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=14"
+	if remainingAACOriginRecipe(item, recipe) {
+		options.Cache += ":aac-origin=1"
+	}
+	options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=15"
 	if err := playback.ValidateHLSSource(item.Path, options.Cache); err != nil {
 		return transcodeSettings{}, err
 	}

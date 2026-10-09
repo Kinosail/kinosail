@@ -24,6 +24,13 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 		localizedNotFound(writer, request)
 		return
 	}
+	if filepath.Ext(localName) == ".m4s" || filepath.Base(localName) == "init.mp4" {
+		if err := manager.remainingAACCacheAsset(request.Context(), item, recipe, localName); err != nil {
+			slog.WarnContext(request.Context(), "HLS cache asset rejected", "diagnostic", "[PLAYBACK-HLS]", "request_id", requestActivityID(request.Context()), "playback_session", requestPlaybackSession(request.Context()), "mode", recipe.mode, "error", hlsDiagnostic(err, item.Path))
+			localizedNotFound(writer, request)
+			return
+		}
+	}
 	key := hlsRecipeKey(item.ID, recipe)
 	start := 0
 	duration := 0.0
@@ -43,6 +50,10 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 	}
 	path := filepath.Join(manager.cache, key, localName)
 	projection := manager.recipePlaylistProjection(request.Context(), item, recipe, key, localName)
+	projection, ready := manager.remainingColdAACResponse(writer, request, item, recipe, key, localName, duration, projection)
+	if !ready {
+		return
+	}
 	if filepath.Ext(name) == ".m3u8" && serveHLSPlaylistWithSession(writer, request, path, start, hlsPlaybackDuration(recipe, duration), projection) {
 		return
 	}
@@ -51,6 +62,11 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 			localizedNotFound(writer, request)
 			return
 		}
+	}
+	if manager.serveRemainingAACFile(writer, request, item, recipe, localName, key) {
+		return
+	}
+	if filepath.Ext(name) == ".m4s" {
 		writer.Header().Set("Content-Type", "video/mp4")
 	}
 	manager.adoptRecipeFile(request, key, path)
@@ -77,7 +93,7 @@ func (manager *hlsManager) recipePlaylistStart(writer http.ResponseWriter, reque
 }
 
 func (manager *hlsManager) waitForRecipeSegment(request *http.Request, item library.Item, recipe hlsRecipe, name, key, path string) bool {
-	manager.keepHLSAlive(key)
+	manager.keepHLSAlive(key, request.Context())
 	segmentContext, cancel := context.WithTimeout(request.Context(), 30*time.Second)
 	if request.Method != http.MethodGet {
 		segmentContext = context.WithValue(segmentContext, startupMetadataKey{}, true)
@@ -85,6 +101,10 @@ func (manager *hlsManager) waitForRecipeSegment(request *http.Request, item libr
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 		if err := manager.prepareSegment(segmentContext, item, recipe, name); err != nil {
 			slog.WarnContext(request.Context(), "HLS segment preparation failed", "diagnostic", "[PLAYBACK-HLS]", "request_id", requestActivityID(request.Context()), "error", hlsDiagnostic(err, item.Path))
+			if !errors.Is(err, os.ErrNotExist) {
+				cancel()
+				return false
+			}
 		}
 	}
 	ready := waitForHLSFile(segmentContext, path)
@@ -153,6 +173,9 @@ func serveHLSPlaylistWithSession(writer http.ResponseWriter, request *http.Reque
 	}
 	if playID == "" {
 		manifest = projectHLSPlaylist(manifest, duration, projection...)
+		if session := requestPlaybackSession(request.Context()); validPlaybackSession(session) {
+			manifest = hlsPlaylistWithQuery(manifest, url.Values{"playbackSession": {session}})
+		}
 	} else {
 		manifest = hlsPlaylistWithSession(manifest, playID, jellyfinMediaQueryToken(request), start, duration, projection...)
 	}
@@ -242,15 +265,9 @@ func requestedHLSStart(request *http.Request) (int, error) {
 	return start, nil
 }
 
-func hlsURIWithQuery(uri, query string) string {
-	if strings.Contains(uri, "?") {
-		return uri + "&" + query
-	}
-	return uri + "?" + query
-}
-
 func (manager *hlsManager) prepareRecipePlaylist(writer http.ResponseWriter, request *http.Request, item library.Item, recipe hlsRecipe) bool {
 	prepareContext := context.WithValue(manager.ctx, requestActivityKey{}, &requestActivity{id: requestActivityID(request.Context()), playbackSession: requestPlaybackSession(request.Context())})
+	prepareContext = context.WithValue(prepareContext, viewerContextKey{}, currentViewer(request))
 	if request.Method != http.MethodGet {
 		prepareContext = context.WithValue(prepareContext, startupMetadataKey{}, true)
 	}

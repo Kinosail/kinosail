@@ -46,7 +46,10 @@ var (
 	//go:embed static/public-login.js
 	PublicLogin []byte
 	//go:embed static/player-controls.js
-	playerControls []byte
+	playerControlsCore []byte
+	//go:embed static/player-preview.js
+	playerSeekPreview []byte
+	playerControls    = append(append([]byte(nil), playerSeekPreview...), playerControlsCore...)
 	//go:embed static/player-status.js
 	playerStatus []byte
 	//go:embed static/player-presentation.js
@@ -64,7 +67,11 @@ var (
 	playerProgress []byte
 	//go:embed static/player-progress-navigation.js
 	playerProgressNavigation []byte
-	PlayerProgress           = append(append([]byte(nil), playerProgress...), playerProgressNavigation...)
+	//go:embed static/player-audio-queue.js
+	playerAudioQueue []byte
+
+	playerProgressQueue = append(append([]byte(nil), playerProgress...), playerAudioQueue...)
+	PlayerProgress      = append(append([]byte(nil), playerProgressQueue...), playerProgressNavigation...)
 	//go:embed static/pwa.js
 	pwaCore []byte
 	//go:embed static/pwa-library.js

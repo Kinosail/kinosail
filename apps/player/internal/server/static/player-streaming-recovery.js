@@ -28,10 +28,10 @@ const showFailure = (message, action = "", recover) => {
   if (recoveryMessage) recoveryMessage.textContent = message;
   fallbackButtons.forEach((button) => { button.hidden = false; button.textContent = action; });
 };
-const useCompatibleFallback = () => {
+const useCompatibleFallback = (resume = true) => {
   playbackTrace("fallback-selected", player.dataset.compatibilityMode || "compatible");
   clearRecovery();
-  if (stream) startAdaptive(true);
+  if (stream) startAdaptive(resume);
   else location.assign(player.dataset.compatibleUrl);
 };
 fallbackButtons.forEach((button) => button.addEventListener("click", () => recoveryAction?.()));
@@ -204,7 +204,7 @@ const directIsReachable = async () => {
     if (reachabilityController === controller) reachabilityController = undefined;
   }
 };
-const recoverDirectFailure = async (code = player.error?.code || 0, verifySource = true) => {
+const recoverDirectFailure = async (code = player.error?.code || 0, verifySource = true, resume = true) => {
   if (destroyed || player.dataset.offline === "true") return;
   if (adaptiveActive) {
     if (code === MediaError.MEDIA_ERR_ABORTED) return;
@@ -225,7 +225,7 @@ const recoverDirectFailure = async (code = player.error?.code || 0, verifySource
     if (destroyed || generation !== adaptiveGeneration || player.dataset.offline === "true" || (player.currentSrc || player.src) !== failedSource) return;
     if (!reachable) return retryNetwork();
   }
-  useCompatibleFallback();
+  useCompatibleFallback(resume);
 };
 player.addEventListener("error", () => recoverDirectFailure());
 quality?.addEventListener("change", () => {
@@ -264,7 +264,7 @@ const directType = player.dataset.directType;
 const directSupport = directType ? player.canPlayType(directType) : "unknown";
 playbackTrace("capability", directSupport || "none", `${navigator.vendor || "unknown"}:${directType || "unknown"}`);
 const directTypeUnsupported = codecCapabilities.appleMatroska(directType);
-const knownAudioIncompatibility = codecCapabilities.audioIncompatible(playbackPolicy, player.dataset.compatibilityMode);
+const knownAudioIncompatibility = codecCapabilities.audioIncompatible(playbackPolicy, player.dataset.compatibilityMode, player.dataset.audioCompatibilityRequired === "true");
 if (player.dataset.hls) {
   if (knownAudioIncompatibility) {
     // A pre-planned compatible playlist is already available when the server knows the
@@ -281,7 +281,7 @@ if (player.dataset.hls) {
     if (stream) startAdaptive(false);
     else location.assign(player.dataset.compatibleUrl);
   } else if (playbackPolicy === "direct-first" && directTypeUnsupported) {
-    if (player.dataset.compatibilityMode === "transcode") recoverDirectFailure(MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED, false);
+    if (player.dataset.compatibilityMode === "transcode") recoverDirectFailure(MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED, false, false);
     else startAdaptive(false);
   } else if (knownAudioIncompatibility) {
     // Browsers can render a video stream while silently dropping an unsupported audio codec.

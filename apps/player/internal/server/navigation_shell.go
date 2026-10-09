@@ -2,6 +2,8 @@ package server
 
 import (
 	"bytes"
+	"crypto/sha256"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -140,14 +142,16 @@ func injectApplicationShell(page, navigation []byte) []byte {
 	return append(append(append([]byte(nil), page[:insertAt]...), addition...), page[insertAt:]...)
 }
 
+var applicationStyleVersion = fmt.Appendf(nil, "%x", sha256.Sum256(applicationStyle))
+
 func applicationShellCSSVersion(page []byte) []byte {
 	if start := bytes.Index(page, []byte(`/static/app.css?v=`)); start >= 0 {
 		version := start + len(`/static/app.css?v=`)
 		if end := bytes.IndexByte(page[version:], '"'); end >= 0 {
-			if bytes.Equal(page[version:version+end], []byte("electric-47")) {
+			if bytes.Equal(page[version:version+end], applicationStyleVersion) {
 				return page
 			}
-			page = append(append(append([]byte(nil), page[:version]...), []byte("electric-47")...), page[version+end:]...)
+			page = append(append(append([]byte(nil), page[:version]...), applicationStyleVersion...), page[version+end:]...)
 		}
 	}
 	return page

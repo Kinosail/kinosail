@@ -1,4 +1,5 @@
 const offlineUserPaused = () => offlineMessage("offlineUserPaused", "Download paused. Resume to continue where it stopped.");
+const offlineButtonWaits = new WeakMap();
 
 function activeOfflineDownloadButton(button, owner) {
   button.disabled = owner.controller.signal.aborted;
@@ -8,7 +9,10 @@ function activeOfflineDownloadButton(button, owner) {
 }
 
 async function syncOfflineDownloadButton(button, detail) {
+  offlineButtonWaits.get(button)?.abort();
+  offlineButtonWaits.delete(button);
   const jobID = button.dataset.jobId;
+  const profile = currentOfflineProfile();
   const owner = offlineTransfers.get(jobID);
   if (owner) { activeOfflineDownloadButton(button, owner); return; }
   if (detail.state === "ready") {
@@ -17,13 +21,34 @@ async function syncOfflineDownloadButton(button, detail) {
     return;
   }
   if (detail.state !== "needs_attention" || !navigator.locks?.query) return;
-  let locks;
-  try { locks = await navigator.locks.query(); }
-  catch (_) { return; }
-  if (!button.isConnected || offlineTransfers.has(jobID) || offlineStatuses.get(jobID) !== detail) return;
-  if (locks.held.some((lock) => lock.name === offlineJobLockName(jobID))) return;
-  button.textContent = offlineMessage("offlineResume", "Resume on this device");
-  button.disabled = false;
+  const controller = new AbortController();
+  const signal = AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]);
+  offlineButtonWaits.set(button, controller);
+  const leave = () => controller.abort();
+  addEventListener("pagehide", leave, {once: true, signal});
+  addEventListener("kinosail:offline-profile", () => {
+    if (currentOfflineProfile() !== profile || activeOfflineProfile() !== profile) leave();
+  }, {signal});
+  const current = () => !signal.aborted && button.isConnected && button.dataset.jobId === jobID &&
+    currentOfflineProfile() === profile && activeOfflineProfile() === profile &&
+    !offlineTransfers.has(jobID) && offlineStatuses.get(jobID) === detail;
+  const resume = () => {
+    if (!current()) return;
+    button.textContent = offlineMessage("offlineResume", "Resume on this device");
+    button.disabled = false;
+  };
+  try {
+    const locks = await navigator.locks.query();
+    if (!current()) return;
+    if (!locks.held.some((lock) => lock.name === offlineJobLockName(jobID))) { resume(); return; }
+    // A pause notification can precede the browser's exclusive-lock release.
+    await navigator.locks.request(offlineJobLockName(jobID), {
+      mode: "shared", signal,
+    }, resume);
+  } catch (_) {} finally {
+    controller.abort();
+    if (offlineButtonWaits.get(button) === controller) offlineButtonWaits.delete(button);
+  }
 }
 
 function controlOfflineDownload(button) {

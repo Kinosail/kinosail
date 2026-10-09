@@ -22,6 +22,8 @@ const setTheater = (enabled) => {
     stage.tabIndex = -1;
   }
   document.body.classList.toggle("player-theater", enabled);
+  const exit = stage.querySelector("[data-player-exit]");
+  if (exit) exit.hidden = !enabled;
   if (!enabled && !document.fullscreenElement) stage.querySelector(".player-stage-toolbar")?.removeAttribute("hidden");
   theaterButton?.setAttribute("aria-pressed", String(enabled));
   theaterButton?.setAttribute("aria-label", enabled ? "Exit theater" : "Theater");
@@ -79,9 +81,21 @@ document.querySelector("[data-subtitles]")?.addEventListener("change", ({target}
 if (theaterButton && !appleNativePlayback) {
   const mediaStage = theaterButton.closest(".media-stage");
   const theaterToolbar = mediaStage.querySelector(".player-stage-toolbar");
+  const exit = document.createElement("button");
+  exit.type = "button";
+  exit.className = "player-exit";
+  exit.dataset.playerExit = "";
+  exit.hidden = true;
+  exit.setAttribute("aria-keyshortcuts", "Escape");
+  exit.title = "Return to video page (Esc)";
+  exit.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><path d="m14 6-6 6 6 6"/></svg><span>Exit theater</span>';
+  exit.addEventListener("click", () => setTheater(false));
+  mediaStage.append(exit);
   let theaterIdle;
+  let scrubbing = false;
   const hideTheater = () => {
     clearTimeout(theaterIdle);
+    if (scrubbing || mediaStage.matches(".is-busy,.has-settings")) { revealTheater(); return; }
     theaterToolbar.hidden = document.body.classList.contains("player-theater") || Boolean(document.fullscreenElement);
     controls?.classList.add("is-idle");
   };
@@ -104,6 +118,10 @@ if (theaterButton && !appleNativePlayback) {
     if (playing) revealTheater();
   };
   player.addEventListener("playing", () => setTheaterPlaying(true));
+  for (const event of ["seeking", "seeked", "canplay", "waiting"]) player.addEventListener(event, revealTheater);
+  const seek = mediaStage.querySelector("[data-player-seek]");
+  for (const event of ["pointerdown", "input"]) seek?.addEventListener(event, () => { scrubbing = true; revealTheater(); });
+  for (const event of ["change", "pointerup", "pointercancel", "blur"]) seek?.addEventListener(event, () => { scrubbing = false; revealTheater(); });
   player.addEventListener("timeupdate", () => { if (!player.paused && player.currentTime > 0 && !mediaStage.classList.contains("is-playing")) setTheaterPlaying(true); });
   for (const event of ["pause", "ended", "error"]) player.addEventListener(event, () => setTheaterPlaying(false));
   const controlTarget = (target) => target.closest("button,a,input,select,textarea,label,summary,[role=button],[contenteditable]:not([contenteditable=false]),.player-settings");
@@ -146,19 +164,70 @@ if (theaterButton && !appleNativePlayback) {
   });
   if (!player.paused) setTheaterPlaying(true);
 }
+const nowPlayingDocumentSuffix = document.title.startsWith(player.dataset.title || "") ? document.title.slice((player.dataset.title || "").length) : "";
+const nowPlayingArtwork = document.querySelector("[data-now-playing-artwork]");
+const updateNowPlayingArtwork = () => {
+  if (!nowPlayingArtwork) return;
+  nowPlayingArtwork.hidden = !player.dataset.artwork;
+  nowPlayingArtwork.style.visibility = "hidden";
+  nowPlayingArtwork.removeAttribute("src");
+  if (player.dataset.artwork) {
+    nowPlayingArtwork.setAttribute("aria-busy", "true");
+    nowPlayingArtwork.src = player.dataset.artwork;
+    if (nowPlayingArtwork.complete && nowPlayingArtwork.naturalWidth) {
+      nowPlayingArtwork.style.removeProperty("visibility"); nowPlayingArtwork.removeAttribute("aria-busy");
+    }
+  } else nowPlayingArtwork.removeAttribute("aria-busy");
+};
+nowPlayingArtwork?.addEventListener("load", () => {
+  if (nowPlayingArtwork.getAttribute("src") === player.dataset.artwork && nowPlayingArtwork.complete && nowPlayingArtwork.naturalWidth) {
+    nowPlayingArtwork.style.removeProperty("visibility"); nowPlayingArtwork.removeAttribute("aria-busy");
+  }
+});
+nowPlayingArtwork?.addEventListener("error", () => {
+  if (nowPlayingArtwork.getAttribute("src") === player.dataset.artwork && nowPlayingArtwork.complete && !nowPlayingArtwork.naturalWidth) {
+    nowPlayingArtwork.hidden = true; nowPlayingArtwork.removeAttribute("src"); nowPlayingArtwork.removeAttribute("aria-busy");
+  }
+});
+const updateMediaMetadata = () => {
+  try {
+    if (navigator.mediaSession) navigator.mediaSession.metadata = typeof MediaMetadata === "function" ? new MediaMetadata({
+      title: player.dataset.title || "", artist: player.dataset.artist || "", album: player.dataset.album || "",
+      artwork: player.dataset.artwork ? [{src: player.dataset.artwork}] : [],
+    }) : null;
+  } catch (_) {
+    // Prefer no system title to retaining a previous track after an API failure.
+    try { navigator.mediaSession.metadata = null; } catch (_) {}
+  }
+};
+const updateNowPlaying = (item) => {
+  const heading = document.querySelector("[data-now-playing-title],.title-block h1");
+  if (heading) {
+    heading.replaceChildren(document.createTextNode(item.title));
+    for (const [value, rating] of [[item.year, false], [item.rating, true]]) if (value) {
+      const small = document.createElement("small"); small.textContent = String(value);
+      if (rating) { small.className = "content-rating"; small.setAttribute("aria-label", "Content rating"); }
+      heading.append(document.createTextNode(" "), small);
+    }
+  }
+  let byline = document.querySelector("[data-now-playing-byline],.title-byline");
+  if (!byline && heading) { byline = document.createElement("p"); byline.className = "title-byline"; heading.after(byline); }
+  if (byline) {
+    byline.textContent = [item.artist, item.album, item.track ? `Track ${item.track}` : ""].filter(Boolean).join(" · ");
+    byline.hidden = !byline.textContent;
+  }
+  player.setAttribute("aria-label", item.title);
+  document.title = item.title + nowPlayingDocumentSuffix;
+  updateNowPlayingArtwork(); updateMediaMetadata();
+};
+updateNowPlayingArtwork(); updateMediaMetadata();
 if ("mediaSession" in navigator) {
-  navigator.mediaSession.metadata = new MediaMetadata({
-    title: player.dataset.title,
-    artist: player.dataset.artist,
-    album: player.dataset.album,
-    artwork: player.dataset.artwork ? [{src: player.dataset.artwork}] : [],
-  });
   const actions = {
     play: () => requestPlay("media-session"), pause: () => requestPause(),
-    seekbackward: ({seekOffset = 10}) => { player.currentTime = Math.max(0, player.currentTime - seekOffset); },
-    seekforward: ({seekOffset = 10}) => { player.currentTime = Math.min(player.duration, player.currentTime + seekOffset); },
-    seekto: ({seekTime}) => { player.currentTime = seekTime; },
-    stop: () => { requestPause(); player.currentTime = 0; },
+    seekbackward: ({seekOffset = 10}) => { setPlayerTime(Math.max(0, player.currentTime - seekOffset), true); },
+    seekforward: ({seekOffset = 10}) => { setPlayerTime(Math.min(player.duration, player.currentTime + seekOffset), true); },
+    seekto: ({seekTime}) => { setPlayerTime(seekTime, true); },
+    stop: () => { requestPause(); setPlayerTime(0, true); },
   };
   if (player.dataset.next) actions.nexttrack = () => location.assign(player.dataset.next);
   for (const [action, handler] of Object.entries(actions)) {
@@ -179,12 +248,13 @@ const requestWakeLock = async () => {
 const releaseWakeLock = () => { wakeLock?.release(); wakeLock = undefined; };
 addEventListener("pagehide", () => {
   player.dispatchEvent(new Event("kinosail:page-exit"));
-  playbackTrace("session-end", "pagehide");
-  flushPlaybackTrace();
   if (isPictureInPicture()) {
+    flushPlaybackTrace();
     releaseWakeLock();
     return;
   }
+  playbackTrace("session-end", "pagehide");
+  flushPlaybackTrace();
   streaming.destroy();
   requestPause();
   player.removeAttribute("src");

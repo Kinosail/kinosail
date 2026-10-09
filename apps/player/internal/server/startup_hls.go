@@ -19,9 +19,10 @@ func startupActualPlayback(ctx context.Context) bool {
 }
 
 // Called while holding manager.mu when an actual request joins shared output.
-func adoptStartupJob(ctx context.Context, job *hlsJob) {
-	if startupActualPlayback(ctx) && job != nil && job.preparation != nil {
+func (manager *hlsManager) adoptStartupJob(ctx context.Context, job *hlsJob, key string) {
+	if startupActualPlayback(ctx) && job != nil && job.preparation != nil && !startupJobStopping(job) {
 		job.preparation.adopted.Store(true)
+		manager.clearStartupCompletion(key)
 	}
 }
 
@@ -55,6 +56,7 @@ func (manager *hlsManager) watchStartupCancellation(ctx, request context.Context
 	}
 	manager.mu.Lock()
 	if !job.preparation.adopted.Load() {
+		job.preparation.stopping = job.preparation.completeVideo
 		job.cancel(errHLSInactive)
 	}
 	manager.mu.Unlock()
@@ -65,6 +67,7 @@ func (manager *hlsManager) prepareStartupWindow(ctx context.Context, item librar
 	if ctx.Err() != nil {
 		return
 	}
+	preparation.completeVideo = manager.completeHEVCStartup(ctx, item, recipe)
 	ctx = context.WithValue(ctx, startupEncodingKey{}, preparation)
 	defer func() {
 		manager.mu.Lock()
@@ -74,7 +77,7 @@ func (manager *hlsManager) prepareStartupWindow(ctx context.Context, item librar
 		}
 	}()
 	state := "unavailable"
-	if recipe.mode == "remux" {
+	if manager.copiedHLSVideo(ctx, item, recipe) {
 		var err error
 		preparation.timeline, err = manager.indexCopiedHLS(ctx, item, recipe, preparation)
 		if err != nil {

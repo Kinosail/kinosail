@@ -3,6 +3,7 @@ import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { configureTestInstance, login } from "./test-instance-helpers";
 import { registerNavigationCheckpoints } from "./checkpoint-navigation-cases";
+import { registerCheckpointSetup, startPlaying } from "./checkpoint-setup-cases";
 
 // Read-only diagnostics for the page's existing playback state; these declarations emit no JavaScript.
 declare const playbackPreparation: unknown;
@@ -12,18 +13,21 @@ declare const progressFailure: string;
 declare const ownsProgress: (pending: unknown) => boolean;
 
 configureTestInstance();
+const browsePath = "/?q=Checkpoint%20Example&view=movies";
 const phase = process.env.KINOSAIL_CHECKPOINT_SOURCE || "candidate";
 if (!["deployed", "current", "candidate"].includes(phase)) throw new Error("Unknown checkpoint source phase");
 const pinned = {deployed: "5f91114d16e7c049e0da1d9c119653a6e8161b90", current: "ee567e9b9d6b4dc4211055e1f2ef968c5ce63209"};
 const source = await readFile(new URL("../../../packages/webassets/static/player-progress.js", import.meta.url), "utf8");
 const navigationSource = await readFile(new URL("../../../packages/webassets/static/player-progress-navigation.js", import.meta.url), "utf8");
+const queueSource = await readFile(new URL("../../../packages/webassets/static/player-audio-queue.js", import.meta.url), "utf8");
 const historical = phase === "candidate" ? "" : execFileSync("git", ["show", `${pinned[phase as keyof typeof pinned]}:packages/webassets/static/player-progress.js`], {encoding: "utf8"});
 test.use({serviceWorkers: phase === "candidate" ? "allow" : "block"});
 test.beforeEach(async ({page}) => {
   if (historical) await page.route(/\/static\/player\.js(?:\?.*)?$/, async route => {
     const response = await route.fetch(), body = await response.text();
     expect(body).toContain(source);
-    await route.fulfill({response, body: body.replace(source, historical).replace(navigationSource, "")});
+    expect(body).toContain(queueSource);
+    await route.fulfill({response, body: body.replace(source, historical).replace(queueSource, "").replace(navigationSource, "")});
   });
 });
 
@@ -32,7 +36,9 @@ async function checkpoint(page: Page, id: string, session?: string) {
   expect(response.status()).toBe(200);
   const body = await response.json();
   expect(body.item.progress).toBeTruthy();
-  return {seconds: Number(body.item.progress.seconds), revision: Number(body.item.progress.revision),
+  const seconds = body.item.progress.seconds === undefined ? 0 : body.item.progress.seconds;
+  expect(Number.isFinite(seconds)).toBe(true);
+  return {seconds, revision: Number(body.item.progress.revision),
     ...(session ? {sessionMatches: body.item.progress.session === session} : {})};
 }
 
@@ -82,14 +88,14 @@ async function observeExit(page: Page, id: string, key: string) {
       } catch { record("player-exit-guards-unavailable"); }
     }, {capture: true});
     for (const event of ["pause", "emptied"]) video.addEventListener(event, () => record(event), {capture: true});
-    document.querySelector('a.back[href="/"]')?.addEventListener("click", () => record("library-click"), {capture: true});
+    document.querySelector('[data-browse-return]')?.addEventListener("click", () => record("library-click"), {capture: true});
     record("observation-start");
   }, {item: id, key});
 }
 
-async function openMovie(page: Page, observation?: {key: string; iteration: number; testInfo: TestInfo}) {
+async function openMovie(page: Page, observation?: {key: string; iteration: number; testInfo: TestInfo; resumeAt?: number}) {
   if (!observation || observation.iteration === 0) await login(page);
-  await page.goto("/?q=Checkpoint%20Example&view=movies");
+  await page.goto(browsePath);
   const card = page.locator('a.card[href^="/watch/"]').filter({hasText: "Checkpoint Example"}).first();
   await expect(card).toBeVisible();
   const watch = (await card.getAttribute("href"))!;
@@ -101,9 +107,16 @@ async function openMovie(page: Page, observation?: {key: string; iteration: numb
   expect(duration).toBeGreaterThan(20);
   const session = await media.getAttribute("data-playback-session") || undefined;
   expect(Boolean(session && /^[a-zA-Z0-9_-]{8,64}$/.test(session))).toBe(true);
+  if (observation?.resumeAt !== undefined) await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThanOrEqual(observation.resumeAt - 0.1);
+  // Previous cases can leave this shared real item near its end. Establish a fresh baseline.
+  await media.evaluate((video: HTMLVideoElement) => {video.pause(); video.currentTime = 0;});
+  await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.seeking)).toBe(false);
+  await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeLessThan(0.1);
+  await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThanOrEqual(2);
   if (observation) await observeExit(page, id, observation.key);
-  await media.evaluate((video: HTMLVideoElement) => video.play());
-  await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.getVideoPlaybackQuality().totalVideoFrames)).toBeGreaterThan(2);
+  const frames = await media.evaluate((video: HTMLVideoElement) => video.getVideoPlaybackQuality().totalVideoFrames);
+  await startPlaying(media);
+  await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.getVideoPlaybackQuality().totalVideoFrames)).toBeGreaterThan(frames + 2);
   await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(0.2);
   await media.evaluate((video: HTMLVideoElement) => video.pause());
   const paused = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
@@ -124,6 +137,8 @@ async function openMovie(page: Page, observation?: {key: string; iteration: numb
   return {watch, media, id, paused, duration, session};
 }
 
+registerCheckpointSetup({phase, openMovie, checkpoint});
+
 test("completed paused seek persists before Library navigation and resumes actual movie frames", {tag: "@smoke"}, async ({page}, testInfo) => {
   const {watch, media, id, paused, duration} = await openMovie(page);
   const delta = paused + 10 < duration - 10 ? 10 : -10;
@@ -140,13 +155,13 @@ test("completed paused seek persists before Library navigation and resumes actua
   await testInfo.attach("paused-seek-checkpoint", {body: JSON.stringify({phase, paused, target, beforeLeaving}), contentType: "application/json"});
   await expect.poll(async () => Math.abs((await checkpoint(page, id)).seconds - target), {timeout: 3000}).toBeLessThan(0.1);
   await testInfo.attach("accepted-seek-checkpoint", {body: JSON.stringify({phase, target, saved: await checkpoint(page, id)}), contentType: "application/json"});
-  await page.getByRole("link", {name: "Library", exact: true}).click();
-  await expect(page).toHaveURL(/\/$/);
+  await page.getByRole("link", {name: "Back to search results", exact: true}).click();
+  await expect(page).toHaveURL(browsePath);
   await page.goto(watch);
   await expect.poll(async () => Math.abs(Number(await page.locator("video").getAttribute("data-start")) - target)).toBeLessThan(0.1);
   await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThanOrEqual(2);
   await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThanOrEqual(target - 0.1);
-  await page.locator("video").evaluate((video: HTMLVideoElement) => video.play());
+  await startPlaying(page.locator("video"));
   await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(target + 0.2);
   await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.getVideoPlaybackQuality().totalVideoFrames)).toBeGreaterThan(2);
   await page.screenshot({path: testInfo.outputPath("reentered-moving-movie.png"), fullPage: true});
@@ -157,7 +172,7 @@ test("Library exit checkpoints actual playing time before teardown without reset
   for (let iteration = 0; iteration < (phase === "candidate" ? 3 : 1); iteration++) {
     const observationKey = `kinosail:checkpoint-exit-observation:${iteration}`;
     const {watch, media, id, session} = await openMovie(page, {key: observationKey, iteration, testInfo});
-    await media.evaluate((video: HTMLVideoElement) => video.play());
+    await startPlaying(media);
     const first = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
     await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(first + 0.5);
     const leaveAt = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
@@ -172,8 +187,8 @@ test("Library exit checkpoints actual playing time before teardown without reset
     page.on("request", observeRequest);
     try {
       expect(beforeExit.sessionMatches).toBe(true);
-      await page.getByRole("link", {name: "Library", exact: true}).click();
-      await expect(page).toHaveURL(/\/$/);
+      await page.getByRole("link", {name: "Back to search results", exact: true}).click();
+      await expect(page).toHaveURL(browsePath);
       await expect.poll(async () => (await checkpoint(page, id)).seconds, {timeout: 3000}).toBeGreaterThanOrEqual(leaveAt - 0.1);
       await page.waitForTimeout(300);
       const saved = await checkpoint(page, id, session);
@@ -196,7 +211,7 @@ test("Library exit checkpoints actual playing time before teardown without reset
   }
 });
 
-registerNavigationCheckpoints({phase, checkpoint, openMovie});
+registerNavigationCheckpoints({phase, checkpoint, openMovie, browsePath});
 
 test("progress chain distinguishes an ignored acknowledgement from an accepted stored position", {tag: "@smoke"}, async ({page}, info) => {
   test.skip(phase !== "candidate", "historical replay is separate from public progress semantics");
@@ -250,8 +265,8 @@ for (const exit of ["Browser Back", "Library"]) test(`progress chain preserves a
   expect(accepted.sessionMatches).toBe(true);
   if (exit === "Browser Back") await page.goBack();
   else {
-    await page.getByRole("link", {name: "Library", exact: true}).click();
-    await page.waitForURL(url => url.pathname === "/");
+    await page.getByRole("link", {name: "Back to search results", exact: true}).click();
+    await expect(page).toHaveURL(browsePath);
   }
   const afterExit = await checkpoint(page, id);
   expect(afterExit.seconds).toBeCloseTo(target, 1);

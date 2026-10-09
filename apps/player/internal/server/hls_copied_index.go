@@ -38,7 +38,7 @@ func (timeline *copiedHLSTimeline) point(number int) float64 {
 
 func (manager *hlsManager) indexCopiedHLS(ctx context.Context, item library.Item, recipe hlsRecipe, preparation *startupEncoding) (*copiedHLSTimeline, error) {
 	facts := manager.probe.facts(ctx, item)
-	if recipe.mode != "remux" || facts.Video.Codec != "h264" || len(recipe.omitted) != 0 || !manager.index.Safe(item.Path) {
+	if !manager.copiedHLSVideo(ctx, item, recipe) || facts.Video.Codec != "h264" || len(recipe.omitted) != 0 || !manager.index.Safe(item.Path) {
 		return nil, errCopiedHLSIndex
 	}
 	options, err := manager.hlsSettings(item, recipe)
@@ -101,23 +101,34 @@ func copiedHLSFields(line string) map[string]string {
 }
 
 func copiedHLSLines(parent context.Context, executable string, arguments []string, maximumBytes int64, maximumLines int, visit func(string) error) error {
-	ctx, cancel := context.WithCancel(parent)
+	ctx, cancel, err := copiedHLSProbeContext(parent)
+	if err != nil {
+		return err
+	}
 	defer cancel()
 	//nolint:gosec // Executable is installation config; media comes from a revalidated scanned item.
 	command := exec.CommandContext(ctx, executable, arguments...)
-	output, err := command.StdoutPipe()
+	command.Cancel = nil // The joined owner below settles the entire process group.
+	probe, output, err := startCopiedHLSProbe(ctx, command)
 	if err != nil {
 		return errCopiedHLSIndex
 	}
-	if command.Start() != nil {
-		return errCopiedHLSIndex
-	}
+	defer probe.close()
+	defer output.Close()
+	scanned := make(chan error, 1)
+	watched := make(chan copiedHLSProbeWatch, 1)
+	go func() { watched <- watchCopiedHLSProbe(ctx, probe, output, scanned) }()
 	err = scanCopiedHLSLines(output, maximumBytes, maximumLines, visit)
-	if err != nil {
-		cancel()
-	}
-	if waitErr := command.Wait(); waitErr != nil || ctx.Err() != nil {
-		err = errCopiedHLSIndex
+	scanned <- err
+	watch := <-watched
+	waitErr := probe.wait()
+	settleErr := settleCopiedHLSProbe(parent, probe)
+	watchErr := watch.completionError(ctx, err, waitErr, settleErr)
+	if watchErr != nil || waitErr != nil || settleErr != nil || ctx.Err() != nil {
+		if ctx.Err() == nil {
+			reportCopiedHLSProbeCompletion(parent, err, watchErr, waitErr, settleErr)
+		}
+		return errCopiedHLSIndex
 	}
 	return err
 }

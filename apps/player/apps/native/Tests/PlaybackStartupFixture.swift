@@ -7,13 +7,25 @@ import Testing
 // An isolated HTTP listener exercises the production client and playback
 // coordinator. Only fictional identity and bounded JSON cross this interface.
 final class PlaybackStartupFixture: @unchecked Sendable {
-    struct State { var counts: [String: Int] = [:]; var delayed = false; var denied = true; var media: Data?; var savedSeconds: Double? }
+    struct State { var counts: [String: Int] = [:]; var delayed = false; var denied = true; var media: Data?; var savedSeconds: Double?; var holdPreferences = false; var denialStatus = 403 }
     let state = Mutex(State())
     let listener: NWListener
     let server: ServerAddress
     let client: ServerClient
     let viewer: Viewer
     private let queue = DispatchQueue(label: "playback-startup-fixture")
+    private let heldPreferences = Mutex<[(NWConnection, Data)]>([])
+    var holdPreferences: Bool { get { state.withLock { $0.holdPreferences } } set { state.withLock { $0.holdPreferences = newValue } } }
+    var denialStatus: Int { get { state.withLock { $0.denialStatus } } set { state.withLock { $0.denialStatus = newValue } } }
+    var heldPreferenceCount: Int { heldPreferences.withLock { $0.count } }
+    func releasePreferences() {
+        let held = heldPreferences.withLock { pending in
+            let result = pending; pending.removeAll(); return result
+        }
+        for (connection, response) in held {
+            connection.send(content: response, completion: .contentProcessed { _ in connection.cancel() })
+        }
+    }
     var delayed: Bool { get { state.withLock { $0.delayed } } set { state.withLock { $0.delayed = newValue } } }
     var denied: Bool { get { state.withLock { $0.denied } } set { state.withLock { $0.denied = newValue } } }
     var media: Data? { get { state.withLock { $0.media } } set { state.withLock { $0.media = newValue } } }
@@ -113,10 +125,13 @@ final class PlaybackStartupFixture: @unchecked Sendable {
             let start = self.media == nil ? 0 : 3
             let body = preferences ? preferencesBody : "{\"media\":{\"duration\":\(duration)},\"plan\":{\"allowed\":true,\"mode\":\"direct\",\"reason\":\"direct-preferred\"},\"duration\":\(duration),\"start\":\(start),\"directAllowed\":true,\"direct\":\"/media/\(id)\",\"directType\":\"video/mp4\"}"
             let payload = Data((denied ? "{\"error\":\"denied\"}" : body).utf8)
-            let status = denied ? "403 Forbidden" : "200 OK"
+            let status = denied ? "\(self.denialStatus) Fixture denial" : "200 OK"
             let response = Data("HTTP/1.1 \(status)\r\nContent-Type: application/json\r\nContent-Length: \(payload.count)\r\nConnection: close\r\n\r\n".utf8) + payload
-            // A1's preference producer outlives its cancelled source reader;
-            // A2 is still pending when A1 reports cancellation.
+            if preferences && self.holdPreferences {
+                self.heldPreferences.withLock { $0.append((connection, response)) }
+                return
+            }
+            // Different source/preference delays exercise overlapping A-B-A readers.
             let delay = !delayed ? 0.0 : preferences ? 0.5 : id == "a" && count > 1 ? 1.0 : 0.2
             self.queue.asyncAfter(deadline: .now() + delay) {
                 connection.send(content: response, completion: .contentProcessed { _ in connection.cancel() })

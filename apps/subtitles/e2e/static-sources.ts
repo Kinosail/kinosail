@@ -4,10 +4,12 @@ export const playerSource = await readStaticSource([
   "../../../packages/webassets/static/player-core.js",
   "../internal/server/static/player_streaming_start.js",
   "../internal/server/static/player_streaming_end.js",
+  "../../../packages/webassets/static/player-preview.js",
   "../../../packages/webassets/static/player-controls.js",
   "../../../packages/webassets/static/player-status.js",
   "../../../packages/webassets/static/player-presentation.js",
   "../../../packages/webassets/static/player-devices.js",
   "../../../packages/webassets/static/player-progress.js",
+  "../../../packages/webassets/static/player-audio-queue.js",
   "../../../packages/webassets/static/player-progress-navigation.js",
 ], import.meta.url);

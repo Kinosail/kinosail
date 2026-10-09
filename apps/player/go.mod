@@ -1,6 +1,6 @@
 module github.com/MikeO7/kinosail-player
 
-go 1.27
+go 1.27.2
 
 require (
 	github.com/MikeO7/kinosail/packages v0.0.0
@@ -9,6 +9,7 @@ require (
 	github.com/go-webauthn/webauthn v0.18.2
 	github.com/modelcontextprotocol/go-sdk v1.8.0
 	github.com/nicksnyder/go-i18n/v2 v2.6.1
+	golang.org/x/sys v0.48.0
 	golang.org/x/text v0.42.0
 )
 
@@ -47,7 +48,6 @@ require (
 	golang.org/x/net v0.59.0 // indirect
 	golang.org/x/oauth2 v0.37.0 // indirect
 	golang.org/x/sync v0.23.0 // indirect
-	golang.org/x/sys v0.48.0 // indirect
 	golang.org/x/time v0.15.0 // indirect
 	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
 	golang.zx2c4.com/wireguard v0.0.0-20260522210424-ecfc5a8d5446 // indirect

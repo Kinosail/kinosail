@@ -7,6 +7,9 @@ repo="$(git -C "$app" rev-parse --show-toplevel)"
 cd "$app"
 # shellcheck source=scripts/ci/test-container-transport.sh
 source "$repo/scripts/ci/test-container-transport.sh"
+# shellcheck source=scripts/ci/browser-fixture-tls.sh
+source "$repo/scripts/ci/browser-fixture-tls.sh"
+validate_browser_fixture_tls
 # shellcheck source=apps/player/scripts/test-browser-journeys.sh
 source "$app/scripts/test-browser-journeys.sh"
 case "${KINOSAIL_BROWSER_SMOKE:-}" in
@@ -49,6 +52,7 @@ remove_state_volumes() {
 }
 
 cleanup() {
+  remove_browser_fixture_trust
   exec 9>&- 2>/dev/null || true
   if ((${#mcp_jobs[@]})); then
     kill "${mcp_jobs[@]}" >/dev/null 2>&1 || true
@@ -151,6 +155,7 @@ chmod a+rx "$media_dir"
 chmod a+r "$media_dir"/*.mkv "$media_dir"/*.ts
 if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
   prepare_player_checkpoint_fixture "$engine" "$image" "$media_dir" "${run[@]}"
+  prepare_audio_queue_fixture "$media_dir"
   "$engine" "${run[@]}" --rm --entrypoint sh "$image" -c 'ffmpeg -hide_banner -loglevel error -f lavfi -i testsrc2=size=640x360:rate=24:duration=12 -f lavfi -i sine=frequency=440:duration=12 -c:v libx264 -threads 1 -preset veryfast -crf 32 -pix_fmt yuv420p -c:a aac -movflags +faststart /tmp/direct-retry-control.mp4 && cat /tmp/direct-retry-control.mp4' >"$media_dir/Direct Retry Control.mp4"
   chmod a+r "$media_dir/Direct Retry Control.mp4"
 fi
@@ -158,8 +163,8 @@ start_server() {
   local publish="127.0.0.1::38127"
   local auth_url=""
   local scheme="https"
-  local tls_environment=()
-  if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
+  local tls_environment=(--env KINOSAIL_TLS_ENABLED=true)
+  if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]] && ! browser_fixture_uses_tls; then
     scheme="http"
     tls_environment=(--env KINOSAIL_TLS_ENABLED=false)
   fi
@@ -178,26 +183,15 @@ start_server() {
   wait_container_test_health "$url" "$health_host"
 }
 
-start_fresh_server() {
-  local fixed_port="$1"
-  if [[ -n "$container" ]]; then
-    "$engine" rm --force "$container" >/dev/null
-    container=""
-  fi
-  remove_state_volumes
-  suffix="$$-$RANDOM"
-  config_volume="kinosail-test-config-$suffix"
-  cache_volume="kinosail-test-cache-$suffix"
-  backup_volume="kinosail-test-backups-$suffix"
-  create_state_volumes
-  start_server "$fixed_port"
-}
 
 start_server
 port="${url##*:}"
 "$engine" rm --force "$container" >/dev/null
 container=""
 start_server "$port"
+if browser_fixture_uses_tls; then
+  trust_browser_fixture_tls "$engine" "$container" "$mcp_dir" "$suffix"
+fi
 expect_status 401 "$url/api/v1/settings"
 expect_status 403 --request POST --header 'Origin: https://attacker.example' --data 'name=Attacker&password=attacker-password' "$url/setup"
 expect_status 421 --header 'Host: attacker.example' "$url/healthz"
@@ -218,6 +212,11 @@ if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
       "${KINOSAIL_E2E_ARTIFACT_DIR:-$media_dir/playwright-artifact}/downloads-$project"
     start_fresh_server "$port"
     KINOSAIL_BROWSER_PROJECT="$project" KINOSAIL_E2E_URL="$url" KINOSAIL_E2E_OUTPUT_DIR="${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project" pnpm --dir e2e test "${browser_args[@]}"
+    if [[ "${KINOSAIL_BROWSER_SMOKE:-}" == "1" ]]; then
+      run_native_intent_regression "$project" \
+        "${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project-native-intent" \
+        "${KINOSAIL_E2E_ARTIFACT_DIR:-$media_dir/playwright-artifact}/native-intent-$project"
+    fi
     # Prepared-Owner journeys need fresh state after the installation journey.
     start_fresh_server "$port"
     run_populated_player_journeys "$project" "$url" \

@@ -78,18 +78,24 @@ jobs:
           cache-to: type=gha,mode=max,scope=${{ matrix.app }}-linux/${{ matrix.arch }}
           sbom: true
           provenance: mode=max
-      - name: Test the production image by digest
+      - name: Pull immutable candidate image
         env:
           APP: ${{ matrix.app }}
           IMAGE: ghcr.io/kinosail/kinosail-${{ matrix.app }}@${{ steps.build.outputs.digest }}
-        run: ./scripts/ci/test-image.sh "$APP" "$IMAGE"
-      - name: Scan candidate image
-        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
-        with:
-          image-ref: ghcr.io/kinosail/kinosail-${{ matrix.app }}@${{ steps.build.outputs.digest }}
-          severity: CRITICAL,HIGH
-          ignore-unfixed: true
-          exit-code: "1"
+        run: ./scripts/ci/pull-image.sh "$APP" "$IMAGE"
+      - parallel:
+          - name: Test the production image by digest
+            env:
+              APP: ${{ matrix.app }}
+              IMAGE: ghcr.io/kinosail/kinosail-${{ matrix.app }}@${{ steps.build.outputs.digest }}
+            run: ./scripts/ci/test-image.sh "$APP" "$IMAGE"
+          - name: Scan candidate image
+            uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+            with:
+              image-ref: ghcr.io/kinosail/kinosail-${{ matrix.app }}@${{ steps.build.outputs.digest }}
+              severity: CRITICAL,HIGH
+              ignore-unfixed: true
+              exit-code: "1"
       - name: Export tested and scanned digest
         env:
           DIGEST: ${{ steps.build.outputs.digest }}

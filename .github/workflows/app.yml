@@ -9,6 +9,9 @@ on:
       plan:
         required: true
         type: string
+      native_probe:
+        type: string
+        default: none
       coverage_diagnostic:
         type: boolean
         default: false
@@ -36,7 +39,7 @@ jobs:
           cache-dependency-path: "**/go.sum"
       - uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a
         with:
-          version: v2.13.1
+          version: v2.14.0
           working-directory: apps/${{ inputs.app }}
           args: --timeout=5m --new-from-rev=${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || github.event.before || 'HEAD~1' }}
       - run: make single-container tidy-check
@@ -55,6 +58,9 @@ jobs:
           go-version-file: apps/${{ inputs.app }}/go.mod
           cache-dependency-path: "**/go.sum"
       - run: sudo apt-get update && sudo apt-get install -y libarchive-tools
+      - name: Install deep media fixture codecs
+        if: fromJSON(inputs.plan).deep
+        run: sudo apt-get install -y ffmpeg
       - env:
           APP: ${{ inputs.app }}
           KINOSAIL_GO_TEST_MODE: ${{ fromJSON(inputs.plan).deep && 'deep' || 'quick' }}
@@ -127,7 +133,7 @@ jobs:
     name: Player Swift compilation
     if: inputs.app == 'player' && fromJSON(inputs.plan).client
     runs-on: xcode-27
-    timeout-minutes: 20
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -135,6 +141,102 @@ jobs:
       - run: make -C apps/player client-check
         env:
           DEVELOPER_DIR: /Applications/Xcode_27.1_beta.app/Contents/Developer
+      - name: Prepare decoded native media fixture
+        if: fromJSON(inputs.plan).deep
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+        run: |
+          command -v ffmpeg >/dev/null || brew install ffmpeg
+          media="$RUNNER_TEMP/native-media.mp4"
+          ffmpeg -nostdin -v error -f lavfi -i testsrc2=s=320x180:r=12:d=12 \
+            -f lavfi -i sine=frequency=440:sample_rate=48000:duration=12 \
+            -c:v libx264 -threads 1 -preset ultrafast -crf 38 -pix_fmt yuv420p \
+            -c:a aac -b:a 48k -movflags +faststart -shortest "$media"
+          test "$(stat -f %z "$media")" -le 1048576
+          shasum -a 256 "$media" > "$RUNNER_TEMP/native-media.sha256"
+          ffprobe -v error -show_format -show_streams -of json "$media" > "$RUNNER_TEMP/native-media.json"
+          for name in kinosail-appletv-task7-media.mp4 kinosail-player-buffer-bar.mp4 kinosail-landscape-task10-media.mp4; do
+            ln "$media" "/tmp/$name"
+          done
+      - name: Execute iOS and tvOS native contracts
+        if: fromJSON(inputs.plan).deep
+        env:
+          DEVELOPER_DIR: /Applications/Xcode_27.1_beta.app/Contents/Developer
+        run: |
+          native_failed=0
+          for platform in iOS tvOS; do
+            device="$(xcrun simctl list devices available --json | python3 scripts/ci/select-simulator.py "$platform")"
+            if ! xcodebuild test -project apps/player/apps/native/Kinosail.xcodeproj \
+              -scheme "Kinosail-$platform" -destination "id=$device" \
+              -derivedDataPath "apps/player/apps/native/.build/$([[ "$platform" == iOS ]] && echo ios || echo tvos)-simulator" \
+              -resultBundlePath "$RUNNER_TEMP/native-$platform.xcresult" \
+              -parallel-testing-enabled NO -collect-test-diagnostics never CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=-; then
+              native_failed=1
+            fi
+          done
+          exit "$native_failed"
+      - name: Validate focused probe
+        id: probe
+        if: always() && fromJSON(inputs.plan).deep && inputs.native_probe != 'none'
+        env:
+          NATIVE_PROBE: ${{ inputs.native_probe }}
+        run: |
+          [[ ${#NATIVE_PROBE} -le 7 ]]
+          case "$NATIVE_PROBE" in
+            AAC) selector=DownloadAACProbeTests ;;
+            storage) selector=DownloadStorageAuthorizationTests ;;
+            *) exit 2 ;;
+          esac
+          printf 'selector=%s\n' "$selector" >> "$GITHUB_OUTPUT"
+      - name: Execute one iOS probe suite
+        if: always() && fromJSON(inputs.plan).deep && inputs.native_probe != 'none' && steps.probe.outcome == 'success'
+        env:
+          SELECTOR: ${{ steps.probe.outputs.selector }}
+          NATIVE_PROBE: ${{ inputs.native_probe }}
+          DEVELOPER_DIR: /Applications/Xcode_27.1_beta.app/Contents/Developer
+        run: |
+          run="$RUNNER_TEMP/native-probe"
+          mkdir "$run"
+          device="$(xcrun simctl list devices available --json | python3 scripts/ci/select-simulator.py iOS)"
+          command=(xcodebuild test -project apps/player/apps/native/Kinosail.xcodeproj -scheme Kinosail-iOS
+            -destination "id=$device" -derivedDataPath apps/player/apps/native/.build/ios-simulator
+            -resultBundlePath "$run/native.xcresult" "-only-testing:Kinosail-iOSTests/$SELECTOR"
+            -parallel-testing-enabled NO -collect-test-diagnostics never CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=-)
+          printf '%q ' "${command[@]}" > "$run/command.txt"
+          if "${command[@]}" > "$run/native.log" 2>&1; then status=0; else status=$?; fi
+          export NATIVE_PROBE_EXIT="$status" NATIVE_PROBE_RUN="$run" NATIVE_PROBE_DEVICE="$device"
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, platform, re, subprocess, sys
+          run = pathlib.Path(os.environ['NATIVE_PROBE_RUN'])
+          suite, count, data = {'AAC': ('DownloadAACProbeTests', 2, 'Embedded 2106-byte AAC; malformed/truncated/wrong-kind/playlist/symlink/remote controls'),
+              'storage': ('DownloadStorageAuthorizationTests', 1, 'Synthetic blocked journal root; 40 scoped denials, reset and authorization')}[os.environ['NATIVE_PROBE']]
+          status = int(os.environ['NATIVE_PROBE_EXIT'])
+          matches = re.findall(r'Test run with (\d+) tests? .*passed', (run / 'native.log').read_text())
+          discovered = bool(matches and int(matches[-1]) == count)
+          receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+              'command': (run / 'command.txt').read_text(), 'probe': os.environ['NATIVE_PROBE'],
+              'environment': platform.platform(), 'xcode': subprocess.check_output(['xcodebuild', '-version'], text=True).strip(),
+              'simulator': os.environ['NATIVE_PROBE_DEVICE'], 'data': data,
+              'fixtureSourceSHA256': hashlib.sha256(pathlib.Path('apps/player/apps/native/Tests', suite + '.swift').read_bytes()).hexdigest(),
+              'expectedTests': count, 'discoveryVerified': discovered, 'exitCode': status,
+              'result': 'passed' if status == 0 and discovered else 'failed',
+              'boundaries': 'Focused iOS simulator regression; no physical device or full-suite proof'}
+          (run / 'receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+          if status == 0 and not discovered: sys.exit('Expected native tests were not discovered')
+          PY
+          exit "$status"
+      - name: Retain native test results
+        if: always() && fromJSON(inputs.plan).deep
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: player-native-contracts-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/native-*.xcresult
+            ${{ runner.temp }}/native-media.json
+            ${{ runner.temp }}/native-media.sha256
+            ${{ runner.temp }}/native-probe
+          retention-days: 14
+          if-no-files-found: error
 
   android:
     name: Player Android compilation
@@ -182,6 +284,7 @@ jobs:
           build-args: |
             VERSION=ci
             REVISION=${{ github.sha }}
+      # Trivy mutates checkout files; finish it before exact-revision evidence.
       - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
         with:
           image-ref: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
@@ -230,38 +333,46 @@ jobs:
       - env:
           APP: ${{ inputs.app }}
         run: pnpm --dir "apps/$APP/e2e" install --frozen-lockfile
-      - env:
-          APP: ${{ inputs.app }}
-          BROWSERS: ${{ matrix.engine == 'full' && 'chromium firefox webkit' || matrix.engine }}
-        run: |
-          read -ra browsers <<< "$BROWSERS"
-          pnpm --dir "apps/$APP/e2e" exec playwright install --with-deps "${browsers[@]}"
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
-      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc
-        with:
-          context: .
-          file: apps/${{ inputs.app }}/Containerfile
-          platforms: linux/amd64
-          cache-from: type=gha,scope=${{ inputs.app }}-linux/amd64
-          load: true
-          push: false
-          tags: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
-          build-args: |
-            VERSION=ci
-            REVISION=${{ github.sha }}
+      - parallel:
+          - env:
+              APP: ${{ inputs.app }}
+              BROWSERS: ${{ matrix.engine == 'full' && 'chromium firefox webkit' || matrix.engine }}
+            run: |
+              read -ra browsers <<< "$BROWSERS"
+              pnpm --dir "apps/$APP/e2e" exec playwright install --with-deps "${browsers[@]}"
+          - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc
+            with:
+              context: .
+              file: apps/${{ inputs.app }}/Containerfile
+              platforms: linux/amd64
+              cache-from: type=gha,scope=${{ inputs.app }}-linux/amd64
+              load: true
+              push: false
+              tags: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
+              build-args: |
+                VERSION=ci
+                REVISION=${{ github.sha }}
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         if: inputs.app == 'player' && matrix.engine == 'chromium'
         with:
           go-version-file: apps/player/go.mod
           cache-dependency-path: "**/go.sum"
       - name: Install startup fixture codecs
-        if: inputs.app == 'player' && matrix.engine == 'chromium'
+        if: inputs.app == 'player'
         run: |
           curl --fail --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/startup-ffmpeg.deb" https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.2-5/jellyfin-ffmpeg8_8.1.2-5-noble_amd64.deb
           printf '%s  %s\n' b4e72894ad26c809ed0104805f5415a97be75212b9fcf9d60b89ad25bb3d43e3 "$RUNNER_TEMP/startup-ffmpeg.deb" | sha256sum --check
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends "$RUNNER_TEMP/startup-ffmpeg.deb"
           echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
+      - name: Verify certified first-fragment regeneration and cold reopen
+        if: inputs.app == 'player' && matrix.engine == 'chromium'
+        timeout-minutes: 3
+        env:
+          GOMAXPROCS: "2"
+          KINOSAIL_COPIED_RECOVERY_MEDIA: "1"
+        run: timeout --kill-after=5s 180s go -C apps/player test -p=1 ./internal/server -run '^TestCopiedRecoveryRealFirstFragmentRegenerationReopens$' -count=1 -timeout=170s -v
       - name: Test populated browsers
         working-directory: apps/${{ inputs.app }}
         env:
@@ -307,6 +418,42 @@ jobs:
           path: |
             .verification/hls-prepared-timeline/*/receipt.json
             .verification/hls-prepared-timeline/*/SHA256SUMS
+          retention-days: 14
+          if-no-files-found: error
+      - name: Verify copied-video audio and legacy preparation
+        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        timeout-minutes: 10
+        env:
+          GOMAXPROCS: "2"
+        run: |
+          python3 -m unittest discover -s apps/player/scripts -p test_hls_followon_frames.py
+          python3 apps/player/scripts/test-hls-followon.py --suite audio
+      - name: Keep safe copied-video audio evidence
+        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: player-hls-audio-conversion-evidence
+          include-hidden-files: true
+          path: |
+            .verification/hls-followon/*/receipt.json
+            .verification/hls-followon/*/SHA256SUMS
+          retention-days: 14
+          if-no-files-found: error
+      - name: Verify complete HEVC preparation
+        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        timeout-minutes: 10
+        env:
+          GOMAXPROCS: "2"
+        run: python3 apps/player/scripts/test-hls-followon.py --suite hevc
+      - name: Keep safe complete HEVC preparation evidence
+        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: player-hls-hevc-preparation-evidence
+          include-hidden-files: true
+          path: |
+            .verification/hls-hevc-startup/*/receipt.json
+            .verification/hls-hevc-startup/*/SHA256SUMS
           retention-days: 14
           if-no-files-found: error
       - name: Verify HLS source-version freshness

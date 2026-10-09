@@ -17,7 +17,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   if (native) markup = nativePlayerMarkup(markup);
   await page.route("https://127.0.0.1:38127/", (route) => route.fulfill({ contentType: "text/html; charset=utf-8", body: markup }));
   await page.route("**/api/v1/items/movie/playback-events", (route) => route.fulfill({ status: 204 }));
-  if (testInfo.title.includes("progress save") || testInfo.title.includes("rejected fullscreen")) await page.goto("https://127.0.0.1:38127/");
+  if (testInfo.title.includes("progress save") || testInfo.title.includes("saves mobile progress") || testInfo.title.includes("rejected fullscreen")) await page.goto("https://127.0.0.1:38127/");
   else await page.setContent(markup);
   if (apple) await installAppleFullscreenApi(page, appleDevice);
   await page.evaluate(({withInBand, safariStartup, queuedPause, queuedSeeking, apple}) => {
@@ -53,12 +53,12 @@ test.beforeEach(async ({ page }, testInfo) => {
     const textTracks = Object.assign(withInBand ? [makeTrack(), document.querySelector("track")!.track] : [textTrack, makeTrack()], {addEventListener: trackEvents.addEventListener.bind(trackEvents)});
     if (!withInBand) document.querySelector("[data-subtitles]")!.insertAdjacentHTML("beforeend", '<option value="1">French</option>');
     Object.defineProperties(video, {
-      buffered: { get: () => ({ length: 1, start: () => bufferedStart, end: () => bufferedEnd }) },
+      buffered: { configurable: true, get: () => ({ length: 1, start: () => bufferedStart, end: () => bufferedEnd }) },
       currentTime: { get: () => currentTime, set: (value: number) => {
         currentTime = value;
         if (queuedSeeking) queueMicrotask(() => { video.dispatchEvent(new Event("seeking")); video.dispatchEvent(new Event("seeked")); });
       } },
-      duration: { value: 100 },
+      duration: { configurable: true, value: 100 },
       readyState: { get: () => readyState },
       networkState: { get: () => networkState },
       load: { value() {} },

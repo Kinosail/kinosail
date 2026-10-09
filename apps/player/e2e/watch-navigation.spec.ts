@@ -1,0 +1,40 @@
+import { expect, test } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
+import { observe, origin, record } from "./browse-return-helpers";
+
+test.skip(!origin, "requires disposable Go Server browse-return fixture");
+test.use({ serviceWorkers: "block", video: "off" });
+test.beforeEach(async ({ page }) => observe(page));
+
+for (const width of [390, 1440, 1920]) {
+  test(`Player has one accessible return link with Movies context and a direct-entry fallback at ${width}px`, async ({ page }, info) => {
+    await page.setViewportSize({ width, height: width === 1920 ? 1080 : 844 });
+    const path = "/?view=movies&sort=title&limit=4";
+    await page.goto(`${origin}${path}`);
+    const movie = page.locator("#library a.card").first();
+    const href = (await movie.getAttribute("href"))!;
+    await movie.click();
+    const back = page.getByRole("link", { name: "Back to Movies", exact: true });
+    await expect(back).toBeVisible();
+    await expect(back).toHaveAttribute("href", path);
+    await expect(page.getByRole("link", { name: "Library", exact: true })).toHaveCount(0);
+    expect((await new AxeBuilder({ page }).include("a.back").analyze()).violations).toEqual([]);
+    await record(page, info, "movies-player", href);
+    await back.focus();
+    await expect(back).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(page).toHaveURL(`${origin}${path}`);
+    await expect(page.locator(`#library a.card[href="${href}"]`)).toBeFocused();
+
+    const direct = await page.context().newPage();
+    await direct.goto(`${origin}${href}`);
+    const fallback = direct.getByRole("link", { name: "Library", exact: true });
+    await expect(fallback).toHaveCount(1);
+    await expect(fallback).toBeVisible();
+    await expect(fallback).toHaveAttribute("href", "/");
+    await record(direct, info, "direct-player", href);
+    await fallback.click();
+    await expect(direct).toHaveURL(`${origin}/`);
+    await direct.close();
+  });
+}

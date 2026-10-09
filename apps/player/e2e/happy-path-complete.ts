@@ -5,7 +5,7 @@ import { expectAccessible, openQuickConnect, openSettings, signOut, totp, type H
 export async function completeHappyPath(page: Page, testInfo: TestInfo, { capture, errors, passkeyCreated }: HappyPathState) {
 	await page.getByText("More", { exact: true }).click();
 	await expectAccessible(page, capture);
-	await page.getByRole("link", { name: "Home", exact: true }).first().click();
+	await page.getByRole("link", { name: "Home", exact: true }).filter({ visible: true }).first().click();
 	await openSettings(page);
 	await expect(page.getByRole("heading", { name: "Server settings" })).toBeVisible();
 	await expectAccessible(page, capture);
@@ -102,7 +102,11 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, { captur
   await video.evaluate((element: HTMLVideoElement) => element.pause());
   await progress;
   await page.getByRole("button", { name: "Add to My List" }).click();
-  await page.getByRole("link", { name: "Library", exact: true }).click();
+  const backToSearch = page.getByRole("link", { name: "Back to search results", exact: true });
+  await expect(backToSearch).toHaveAttribute("href", "/?q=Arrival");
+  await backToSearch.click();
+  await expect(page).toHaveURL("/?q=Arrival");
+  await page.getByRole("link", { name: "Home", exact: true }).filter({ visible: true }).first().click();
   await expect(page.getByRole("link", { name: /\bResume\b/ })).toHaveAttribute("href", watchPath);
   await expect(page.getByRole("heading", { name: "My List" })).toBeVisible();
 
@@ -115,7 +119,7 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, { captur
   if (await markUnwatched.isVisible()) await markUnwatched.click();
   await page.getByRole("button", { name: "Mark watched" }).click();
   await expect(page.getByRole("button", { name: "Mark unwatched" })).toBeVisible();
-  await page.getByRole("link", { name: "Library", exact: true }).click();
+  await page.locator("a[data-browse-return]").click();
   await expect(page.getByRole("heading", { name: "My List" })).toBeVisible();
   await expect(page.getByRole("link", { name: /\bResume\b/ })).toHaveCount(0);
   // Retry playback persists fixture progress; run after the original empty-Resume assertion.
