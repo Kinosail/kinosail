@@ -95,3 +95,5 @@ test('joined public direct decode needs sealed bytes, complete frames and explic
 });
 
 import './hls-nonkey-browser-color.test.mjs';
+
+import './hls-nonkey-browser-app-color.test.mjs';
