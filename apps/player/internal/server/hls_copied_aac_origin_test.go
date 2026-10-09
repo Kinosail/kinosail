@@ -22,32 +22,24 @@ func TestCopiedAACFirstSourceWitness(t *testing.T) {
 		t.Run(damage, func(t *testing.T) {
 			rows := append([]copiedHLSAudioPacket(nil), source...)
 			n, r, seek := edited, raw, int64(12000000)
-			switch damage {
-			case "absent":
-				rows = rows[1:]
-			case "ambiguous":
-				rows = append(rows, first)
-			case "raw-clock":
-				r.PTS, r.DTS = 1, 1
-			case "wrong-duration":
-				n.Duration = 1000
-			case "wrong-edit":
-				n.PTS, n.DTS = -4601, -4601
-			case "wrong-seek":
-				seek += 21
-			case "wrong-hash":
-				n.Hash = "SHA256:" + strings.Repeat("c", 64)
-			case "source-dts":
-				rows[0].DTS--
-			case "raw-dts":
-				r.DTS++
-			case "edited-dts":
-				n.DTS++
-			case "distinct-clock-ambiguity":
-				other := first
-				other.PTS, other.DTS = first.PTS+2048, first.DTS+2048
-				rows = append(rows, other)
+			changes := map[string]func(){
+				"absent":         func() { rows = rows[1:] },
+				"ambiguous":      func() { rows = append(rows, first) },
+				"raw-clock":      func() { r.PTS, r.DTS = 1, 1 },
+				"wrong-duration": func() { n.Duration = 1000 },
+				"wrong-edit":     func() { n.PTS, n.DTS = -4601, -4601 },
+				"wrong-seek":     func() { seek += 21 },
+				"wrong-hash":     func() { n.Hash = "SHA256:" + strings.Repeat("c", 64) },
+				"source-dts":     func() { rows[0].DTS-- },
+				"raw-dts":        func() { r.DTS++ },
+				"edited-dts":     func() { n.DTS++ },
+				"distinct-clock-ambiguity": func() {
+					other := first
+					other.PTS, other.DTS = first.PTS+2048, first.DTS+2048
+					rows = append(rows, other)
+				},
 			}
+			changes[damage]()
 			if _, err := copiedHLSAudioWitness(rows, n, r, seek); err == nil {
 				t.Fatal("uncertified first packet acquired an origin")
 			}

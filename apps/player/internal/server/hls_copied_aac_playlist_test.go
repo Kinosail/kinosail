@@ -78,38 +78,12 @@ func TestCopiedAACPlaylistSlowTransferReleasesMetadataLease(t *testing.T) {
 	manager, directory, held := copiedAACGenerationFixture(t)
 	item, recipe := held.item, held.recipe
 	held.close()
-	writer := &copiedAACSlowWriter{ResponseRecorder: httptest.NewRecorder(), entered: make(chan struct{}, 1), release: make(chan struct{})}
-	ctx, cancel := context.WithCancel(t.Context())
-	done := make(chan bool, 1)
-	joined := false
-	released := false
-	release := func() {
-		if !released {
-			close(writer.release)
-			released = true
-		}
-	}
-	t.Cleanup(func() {
-		cancel()
-		release()
-		if !joined {
-			select {
-			case <-done:
-				joined = true
-			case <-time.After(3 * time.Second):
-				t.Error("owned playlist caller did not join")
-			}
-		}
-	})
-	request := httptest.NewRequestWithContext(ctx, http.MethodGet, "/index.m3u8", nil)
+	owner := newCopiedAACDelivery(t)
+	request := httptest.NewRequestWithContext(owner.ctx, http.MethodGet, "/index.m3u8", nil)
 	go func() {
-		done <- manager.serveCopiedAACPlaylist(writer, request, item, recipe, "index.m3u8", filepath.Base(directory), 0, 20)
+		owner.done <- manager.serveCopiedAACPlaylist(owner.writer, request, item, recipe, "index.m3u8", filepath.Base(directory), 0, 20)
 	}()
-	select {
-	case <-writer.entered:
-	case <-time.After(3 * time.Second):
-		t.Fatal("playlist did not reach retained-byte delivery")
-	}
+	owner.waitEntered(t, "playlist did not reach retained-byte delivery")
 	admission, cancelAdmission := context.WithTimeout(t.Context(), 200*time.Millisecond)
 	defer cancelAdmission()
 	_, releaseAdmission, err := manager.copiedHLSMetadataAdmission(admission)
@@ -117,16 +91,8 @@ func TestCopiedAACPlaylistSlowTransferReleasesMetadataLease(t *testing.T) {
 		t.Fatal("slow playlist retained metadata admission")
 	}
 	releaseAdmission()
-	release()
-	select {
-	case handled := <-done:
-		joined = true
-		if !handled || writer.Code != http.StatusOK || writer.Body.Len() == 0 {
-			t.Fatal("retained playlist delivery failed")
-		}
-	case <-time.After(time.Second):
-		t.Fatal("owned playlist delivery did not join")
-	}
+	owner.release()
+	owner.join(t, "retained playlist delivery failed")
 }
 
 func copiedAACPlaylistSnapshot(t *testing.T, directory string) map[string][32]byte {

@@ -199,7 +199,8 @@ func (manager *hlsManager) bindCopiedHLSClock(ctx context.Context, item library.
 	var probeErr error
 	bound := *timeline
 	if timeline.AudioOrigin != nil {
-		clock, probeErr = manager.measureCopiedAACVideoClock(ctx, media)
+		clock = 0
+		probeErr = manager.verifyCopiedAACVideoClock(ctx, media)
 		if probeErr == nil {
 			bound.AudioOrigin, probeErr = manager.measureCopiedAACOrigin(ctx, item, recipe, policy, timeline, media)
 		}

@@ -108,18 +108,7 @@ func TestCopiedAACGenerationRejectsWrongKindAndSourceReplacement(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	content, err := os.ReadFile(held.item.Path)
-	if err != nil {
-		t.Fatal(err)
-	}
-	replacement := held.item.Path + "-replacement"
-	writeHLSLoadingFile(t, replacement, string(content))
-	if err := os.Chtimes(replacement, before.ModTime(), before.ModTime()); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.Rename(replacement, held.item.Path); err != nil {
-		t.Fatal(err)
-	}
+	copiedAACEqualStatReplacement(t, held.item.Path, before)
 	if held.current() {
 		t.Fatal("same-stat source inode replacement retained admission")
 	}

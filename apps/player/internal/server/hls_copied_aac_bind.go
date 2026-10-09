@@ -5,7 +5,6 @@ import (
 	"context"
 	"io"
 	"os"
-	"strconv"
 
 	"github.com/MikeO7/kinosail/packages/library"
 )
@@ -25,30 +24,15 @@ func (manager *hlsManager) measureCopiedAACOrigin(ctx context.Context, item libr
 		return nil, err
 	}
 	defer file.Close()
-	selected, track, err := copiedAACSourceGrid(ctx, manager.probe.executable, source)
-	if err != nil || !selected || track != pending.SourceTrack {
-		return nil, errCopiedHLSIndex
-	}
-	start := max(int64(0), pending.InitialSeekMicros-1_000_000)
-	rows, err := copiedAACPackets(ctx, manager.probe.executable, source, copiedAACMicrosText(start)+"%+#128", nil, false, pending.SourceTrack)
+	rows, err := copiedAACSourceWitness(ctx, manager.probe.executable, source, pending)
 	if err != nil {
 		return nil, err
 	}
-	initialization, err := copiedHLSCacheFile(media, "init.mp4", 2<<20)
+	edited, raw, err := manager.copiedAACGeneratedFirst(ctx, media)
 	if err != nil {
 		return nil, err
 	}
-	first, err := copiedHLSCacheFile(media, "segment-00000.m4s", 64<<20)
-	if err != nil {
-		return nil, err
-	}
-	input := func() io.Reader { return io.MultiReader(bytes.NewReader(initialization), bytes.NewReader(first)) }
-	edited, editErr := copiedAACPackets(ctx, manager.probe.executable, "pipe:0", "%+#8", input(), false, -1)
-	raw, rawErr := copiedAACPackets(ctx, manager.probe.executable, "pipe:0", "%+#8", input(), true, -1)
-	if editErr != nil || rawErr != nil || len(edited) == 0 || len(raw) == 0 {
-		return nil, errCopiedHLSIndex
-	}
-	origin, err := copiedHLSAudioWitness(rows, edited[0], raw[0], pending.InitialSeekMicros)
+	origin, err := copiedHLSAudioWitness(rows, edited, raw, pending.InitialSeekMicros)
 	if err != nil || !manager.copiedHLSSourceAudioComplete(ctx, item, recipe, policy, before, file) {
 		return nil, errCopiedHLSIndex
 	}
@@ -56,50 +40,57 @@ func (manager *hlsManager) measureCopiedAACOrigin(ctx context.Context, item libr
 	return origin, nil
 }
 
+func copiedAACSourceWitness(ctx context.Context, executable, source string, pending *copiedHLSAudioOrigin) ([]copiedHLSAudioPacket, error) {
+	selected, track, err := copiedAACSourceGrid(ctx, executable, source)
+	if err != nil || !selected || track != pending.SourceTrack {
+		return nil, errCopiedHLSIndex
+	}
+	start := max(int64(0), pending.InitialSeekMicros-1_000_000)
+	return copiedAACPackets(ctx, executable, source, copiedAACMicrosText(start)+"%+#128", nil, false, pending.SourceTrack)
+}
+
+func (manager *hlsManager) copiedAACGeneratedFirst(ctx context.Context, media *os.Root) (copiedHLSAudioPacket, copiedHLSAudioPacket, error) {
+	var empty copiedHLSAudioPacket
+	initialization, err := copiedHLSCacheFile(media, "init.mp4", 2<<20)
+	if err != nil {
+		return empty, empty, err
+	}
+	first, err := copiedHLSCacheFile(media, "segment-00000.m4s", 64<<20)
+	if err != nil {
+		return empty, empty, err
+	}
+	input := func() io.Reader { return io.MultiReader(bytes.NewReader(initialization), bytes.NewReader(first)) }
+	edited, editErr := copiedAACPackets(ctx, manager.probe.executable, "pipe:0", "%+#8", input(), false, -1)
+	raw, rawErr := copiedAACPackets(ctx, manager.probe.executable, "pipe:0", "%+#8", input(), true, -1)
+	if editErr != nil || rawErr != nil || len(edited) == 0 || len(raw) == 0 {
+		return empty, empty, errCopiedHLSIndex
+	}
+	return edited[0], raw[0], nil
+}
+
 func copiedAACPackets(ctx context.Context, executable, source, interval string, input io.Reader, raw bool, expectedTrack int) ([]copiedHLSAudioPacket, error) {
-	rows := make([]copiedHLSAudioPacket, 0, 128)
-	streams := 0
+	reader := copiedAACPacketReader{rows: make([]copiedHLSAudioPacket, 0, 128), expectedTrack: expectedTrack}
 	arguments := []string{"-v", "error", "-threads", "1"}
 	if raw {
 		arguments = append(arguments, "-ignore_editlist", "1")
 	}
 	arguments = append(arguments, "-select_streams", "a:0", "-read_intervals", interval, "-show_packets", "-show_streams",
 		"-show_data_hash", "sha256", "-show_entries", "packet=pts,dts,duration,data_hash:stream=index,codec_name,profile,sample_rate,channels,time_base", "-of", "compact=p=0", source)
-	err := copiedHLSInputLines(ctx, executable, arguments, input, 64<<10, 144, func(line string) error {
-		fields := copiedHLSFields(line)
-		if codec, ok := fields["codec_name"]; ok {
-			index, err := strconv.Atoi(fields["index"])
-			if err != nil || streams != 0 || codec != "aac" || fields["profile"] != "LC" || fields["sample_rate"] != "48000" ||
-				fields["channels"] != "2" || fields["time_base"] != "1/48000" || expectedTrack >= 0 && index != expectedTrack {
-				return errCopiedHLSIndex
-			}
-			streams++
-			return nil
-		}
-		pts, ptsErr := strconv.ParseInt(fields["pts"], 10, 64)
-		dts, dtsErr := strconv.ParseInt(fields["dts"], 10, 64)
-		duration, durationErr := strconv.ParseInt(fields["duration"], 10, 64)
-		packet := copiedHLSAudioPacket{PTS: pts, DTS: dts, Duration: duration, Hash: fields["data_hash"]}
-		if ptsErr != nil || dtsErr != nil || durationErr != nil || !validCopiedAACPacket(packet) || len(rows) >= 128 {
-			return errCopiedHLSIndex
-		}
-		rows = append(rows, packet)
-		return nil
-	})
-	if err != nil || streams != 1 || len(rows) == 0 || ctx.Err() != nil {
+	err := copiedHLSInputLines(ctx, executable, arguments, input, 64<<10, 144, reader.add)
+	if err != nil || reader.streams != 1 || len(reader.rows) == 0 || ctx.Err() != nil {
 		return nil, errCopiedHLSIndex
 	}
-	return rows, nil
+	return reader.rows, nil
 }
 
-func (manager *hlsManager) measureCopiedAACVideoClock(ctx context.Context, media *os.Root) (float64, error) {
+func (manager *hlsManager) verifyCopiedAACVideoClock(ctx context.Context, media *os.Root) error {
 	initialization, err := copiedHLSCacheFile(media, "init.mp4", 2<<20)
 	if err != nil {
-		return 0, err
+		return err
 	}
 	first, err := copiedHLSCacheFile(media, "segment-00000.m4s", 64<<20)
 	if err != nil {
-		return 0, err
+		return err
 	}
 	rows, valid := 0, false
 	arguments := []string{"-v", "error", "-threads", "1", "-select_streams", "v:0", "-read_intervals", "%+#8", "-show_packets",
@@ -113,7 +104,7 @@ func (manager *hlsManager) measureCopiedAACVideoClock(ctx context.Context, media
 		return nil
 	})
 	if err != nil || !valid || rows == 0 || ctx.Err() != nil {
-		return 0, errCopiedHLSIndex
+		return errCopiedHLSIndex
 	}
-	return 0, nil
+	return nil
 }

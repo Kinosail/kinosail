@@ -26,9 +26,9 @@ func copiedAACCanonicalRecipe(ctx context.Context, recipe hlsRecipe, policy stri
 // Called only under hls.mu; it performs no source I/O, subprocess or wait.
 func (manager *hlsManager) copiedAACWorkerCurrentLocked(ctx context.Context, key, policy string) bool {
 	identity, ok := ctx.Value(copiedAACWorkerKey{}).(*copiedAACWorkerIdentity)
-	return ok && identity != nil && identity.key == key && identity.policy == policy && copiedAACPolicyRequired(policy) &&
-		identity.job != nil && len(manager.jobs) == 1 && manager.jobs[key] == identity.job && identity.job.lifecycle.Err() == nil && ctx.Err() == nil &&
-		identity.job.observation == hlsObservationFor(ctx) && identity.job.cachePolicy == policy && identity.job.startNumber == 0
+	return ok && validCopiedAACWorkerIdentity(identity, key, policy) && len(manager.jobs) == 1 &&
+		manager.jobs[key] == identity.job && identity.job.lifecycle.Err() == nil && ctx.Err() == nil &&
+		identity.job.observation == hlsObservationFor(ctx)
 }
 
 func (manager *hlsManager) copiedAACWorkerCurrent(ctx context.Context, key, policy string) bool {
@@ -44,11 +44,8 @@ func (manager *hlsManager) bindCopiedAACIndex(ctx context.Context, item library.
 	if !copiedAACPolicyRequired(policy) {
 		return nil
 	}
-	if preparation, ok := ctx.Value(startupEncodingKey{}).(*startupEncoding); ok && preparation.timeline != nil {
-		if preparation.timeline.AudioOrigin == nil || preparation.timeline.Policy != policy {
-			return errCopiedHLSIndex
-		}
-		return nil
+	if handled, err := copiedAACPreparedIndex(ctx, policy); handled {
+		return err
 	}
 	if manager.copiedHLSTimelinePresent(directory) {
 		timeline, err := manager.readCopiedHLSTimelineContext(ctx, directory, policy)
@@ -74,4 +71,20 @@ func (manager *hlsManager) bindCopiedAACIndex(ctx context.Context, item library.
 		return errCopiedHLSIndex
 	}
 	return nil
+}
+
+func validCopiedAACWorkerIdentity(identity *copiedAACWorkerIdentity, key, policy string) bool {
+	return identity != nil && identity.key == key && identity.policy == policy && copiedAACPolicyRequired(policy) &&
+		identity.job != nil && identity.job.cachePolicy == policy && identity.job.startNumber == 0
+}
+
+func copiedAACPreparedIndex(ctx context.Context, policy string) (bool, error) {
+	preparation, ok := ctx.Value(startupEncodingKey{}).(*startupEncoding)
+	if !ok || preparation.timeline == nil {
+		return false, nil
+	}
+	if preparation.timeline.AudioOrigin == nil || preparation.timeline.Policy != policy {
+		return true, errCopiedHLSIndex
+	}
+	return true, nil
 }

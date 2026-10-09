@@ -33,34 +33,12 @@ func TestCopiedAACSlowNetworkDoesNotRetainMetadataLease(t *testing.T) {
 	manager, directory, held := copiedAACGenerationFixture(t)
 	item, recipe := held.item, held.recipe
 	held.close()
-	writer := &copiedAACSlowWriter{ResponseRecorder: httptest.NewRecorder(), entered: make(chan struct{}, 1), release: make(chan struct{})}
-	var releaseOnce sync.Once
-	releaseDelivery := func() { releaseOnce.Do(func() { close(writer.release) }) }
-	defer releaseDelivery()
-	requestContext, cancelRequest := context.WithCancel(t.Context())
-	request := httptest.NewRequestWithContext(requestContext, http.MethodGet, "/init.mp4", nil)
-	done := make(chan bool, 1)
-	joined := false
-	t.Cleanup(func() {
-		cancelRequest()
-		releaseDelivery()
-		if !joined {
-			select {
-			case <-done:
-				joined = true
-			case <-time.After(3 * time.Second):
-				t.Error("owned retained-asset caller did not join during cleanup")
-			}
-		}
-	})
+	owner := newCopiedAACDelivery(t)
+	request := httptest.NewRequestWithContext(owner.ctx, http.MethodGet, "/init.mp4", nil)
 	go func() {
-		done <- manager.serveCopiedAACFile(writer, request, item, recipe, "360p/init.mp4", filepath.Base(directory))
+		owner.done <- manager.serveCopiedAACFile(owner.writer, request, item, recipe, "360p/init.mp4", filepath.Base(directory))
 	}()
-	select {
-	case <-writer.entered:
-	case <-time.After(3 * time.Second):
-		t.Fatal("controlled asset did not reach retained-byte delivery")
-	}
+	owner.waitEntered(t, "controlled asset did not reach retained-byte delivery")
 	ctx, cancel := context.WithTimeout(t.Context(), 200*time.Millisecond)
 	defer cancel()
 	_, release, err := manager.copiedHLSMetadataAdmission(ctx)
@@ -68,15 +46,61 @@ func TestCopiedAACSlowNetworkDoesNotRetainMetadataLease(t *testing.T) {
 		t.Fatal("slow network retained the metadata gate after proof completed")
 	}
 	release()
-	// Release delivery before returning and join the caller using its owned channel.
-	releaseDelivery()
+	owner.release()
+	owner.join(t, "retained asset delivery failed after independent admission")
+}
+
+type copiedAACDeliveryOwner struct {
+	ctx    context.Context
+	cancel context.CancelFunc
+	writer *copiedAACSlowWriter
+	done   chan bool
+	joined bool
+	once   sync.Once
+}
+
+func newCopiedAACDelivery(t *testing.T) *copiedAACDeliveryOwner {
+	t.Helper()
+	ctx, cancel := context.WithCancel(t.Context())
+	owner := &copiedAACDeliveryOwner{ctx: ctx, cancel: cancel, done: make(chan bool, 1),
+		writer: &copiedAACSlowWriter{ResponseRecorder: httptest.NewRecorder(), entered: make(chan struct{}, 1), release: make(chan struct{})}}
+	t.Cleanup(func() {
+		owner.cancel()
+		owner.release()
+		if !owner.joined {
+			select {
+			case <-owner.done:
+				owner.joined = true
+			case <-time.After(3 * time.Second):
+				t.Error("owned retained-byte caller did not join during cleanup")
+			}
+		}
+	})
+	return owner
+}
+
+func (owner *copiedAACDeliveryOwner) release() {
+	owner.once.Do(func() { close(owner.writer.release) })
+}
+
+func (owner *copiedAACDeliveryOwner) waitEntered(t *testing.T, failure string) {
+	t.Helper()
 	select {
-	case handled := <-done:
-		joined = true
-		if !handled || writer.Code != http.StatusOK || writer.Body.Len() == 0 {
-			t.Fatal("retained asset delivery failed after independent admission")
+	case <-owner.writer.entered:
+	case <-time.After(3 * time.Second):
+		t.Fatal(failure)
+	}
+}
+
+func (owner *copiedAACDeliveryOwner) join(t *testing.T, failure string) {
+	t.Helper()
+	select {
+	case handled := <-owner.done:
+		owner.joined = true
+		if !handled || owner.writer.Code != http.StatusOK || owner.writer.Body.Len() == 0 {
+			t.Fatal(failure)
 		}
 	case <-time.After(time.Second):
-		t.Fatal("controlled asset delivery did not join")
+		t.Fatal("owned retained-byte delivery did not join")
 	}
 }

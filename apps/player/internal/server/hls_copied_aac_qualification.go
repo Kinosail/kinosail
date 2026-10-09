@@ -12,7 +12,7 @@ import (
 )
 
 func (manager *hlsManager) qualifyCopiedAAC(parent context.Context, item library.Item, recipe hlsRecipe, force bool) error {
-	if recipe.mode != "remux" || recipe.audio != 0 || recipe.dialogueBoost || recipe.normalizeLoudness || len(recipe.omitted) != 0 || runtime.GOOS != "linux" || !strings.EqualFold(filepath.Ext(item.Path), ".mp4") {
+	if !copiedAACRecipeSupported(item, recipe) {
 		return nil
 	}
 	if parent.Err() != nil || manager.index == nil || !manager.index.Safe(item.Path) {
@@ -58,6 +58,11 @@ func (manager *hlsManager) qualifyCopiedAAC(parent context.Context, item library
 	return manager.recordCopiedAACPolicy(key, base.Cache, before, selected, track)
 }
 
+func copiedAACRecipeSupported(item library.Item, recipe hlsRecipe) bool {
+	return recipe.mode == "remux" && recipe.audio == 0 && !recipe.dialogueBoost && !recipe.normalizeLoudness &&
+		len(recipe.omitted) == 0 && runtime.GOOS == "linux" && strings.EqualFold(filepath.Ext(item.Path), ".mp4")
+}
+
 func (manager *hlsManager) copiedAACMarkerPresent(directory string) bool {
 	root, err := manager.openCopiedHLSRoot(directory)
 	if err != nil {
@@ -69,41 +74,51 @@ func (manager *hlsManager) copiedAACMarkerPresent(directory string) bool {
 }
 
 func copiedAACSourceGrid(ctx context.Context, executable, source string) (bool, int, error) {
-	format, video, audio := "", "", 0
-	selected, track, streamCount := false, 0, 0
+	var grid copiedAACSourceDescription
 	arguments := []string{"-v", "error", "-threads", "1", "-show_streams", "-show_format", "-show_entries",
 		"stream=index,codec_type,codec_name,profile,sample_rate,channels,time_base:format=format_name", "-of", "compact=p=0", source}
-	err := copiedHLSLines(ctx, executable, arguments, 64<<10, 64, func(line string) error {
-		fields := copiedHLSFields(line)
-		if name, ok := fields["format_name"]; ok {
-			if format != "" || name == "" {
-				return errCopiedHLSIndex
-			}
-			format = name
-			return nil
-		}
-		index, err := strconv.Atoi(fields["index"])
-		if err != nil || index < 0 || index > 255 || fields["codec_type"] == "" || fields["codec_name"] == "" {
-			return errCopiedHLSIndex
-		}
-		streamCount++
-		switch fields["codec_type"] {
-		case "video":
-			if video == "" {
-				video = fields["codec_name"]
-			}
-		case "audio":
-			if audio == 0 {
-				track = index
-				selected = fields["codec_name"] == "aac" && fields["profile"] == "LC" && fields["sample_rate"] == "48000" &&
-					fields["channels"] == "2" && fields["time_base"] == "1/48000"
-			}
-			audio++
-		}
-		return nil
-	})
-	if err != nil || streamCount == 0 || format == "" || video == "" || ctx.Err() != nil {
+	err := copiedHLSLines(ctx, executable, arguments, 64<<10, 64, grid.add)
+	if err != nil || grid.streams == 0 || grid.format == "" || grid.video == "" || ctx.Err() != nil {
 		return false, 0, errCopiedHLSIndex
 	}
-	return selected && video == "h264" && strings.Contains(","+format+",", ",mp4,"), track, nil
+	return grid.selected && grid.video == "h264" && strings.Contains(","+grid.format+",", ",mp4,"), grid.track, nil
+}
+
+type copiedAACSourceDescription struct {
+	format, video         string
+	audio, track, streams int
+	selected              bool
+}
+
+func (grid *copiedAACSourceDescription) add(line string) error {
+	fields := copiedHLSFields(line)
+	if name, ok := fields["format_name"]; ok {
+		if grid.format != "" || name == "" {
+			return errCopiedHLSIndex
+		}
+		grid.format = name
+		return nil
+	}
+	index, err := strconv.Atoi(fields["index"])
+	if err != nil || !validCopiedAACSourceStream(fields, index) {
+		return errCopiedHLSIndex
+	}
+	grid.streams++
+	switch fields["codec_type"] {
+	case "video":
+		if grid.video == "" {
+			grid.video = fields["codec_name"]
+		}
+	case "audio":
+		if grid.audio == 0 {
+			grid.track = index
+			grid.selected = validCopiedAACStream(fields, index, -1)
+		}
+		grid.audio++
+	}
+	return nil
+}
+
+func validCopiedAACSourceStream(fields map[string]string, index int) bool {
+	return index >= 0 && index <= 255 && fields["codec_type"] != "" && fields["codec_name"] != ""
 }

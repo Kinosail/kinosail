@@ -23,6 +23,10 @@ func copiedHLSProducerArguments(arguments []string, timeline *copiedHLSTimeline,
 	if number == 0 {
 		return append(arguments, "-copypriorss:v", "0"), nil
 	}
+	return copiedAACRefillArguments(arguments, timeline, number)
+}
+
+func copiedAACRefillArguments(arguments []string, timeline *copiedHLSTimeline, number int) ([]string, error) {
 	if *timeline.Clock != 0 || !validCopiedHLSAudioDTS(timeline, number) {
 		return nil, errCopiedHLSIndex
 	}
@@ -67,8 +71,7 @@ func copiedAACKeyTicks(timeline *copiedHLSTimeline, dts int64) (int64, error) {
 }
 
 func copiedAACKeyRescale(timeline *copiedHLSTimeline, ticks, scale int64, ceil bool) (int64, error) {
-	if !validCopiedHLSTimeBase(timeline) || ticks < -(1<<52) || ticks > 1<<52 ||
-		timeline.Numerator > 1<<31 || timeline.Denominator > 1<<31 {
+	if !validCopiedAACRescaleInput(timeline, ticks) {
 		return 0, errCopiedHLSIndex
 	}
 	numerator := new(big.Int).Mul(big.NewInt(ticks), big.NewInt(timeline.Numerator))
@@ -90,6 +93,11 @@ func copiedAACKeyRescale(timeline *copiedHLSTimeline, ticks, scale int64, ceil b
 		return 0, errCopiedHLSIndex
 	}
 	return result, nil
+}
+
+func validCopiedAACRescaleInput(timeline *copiedHLSTimeline, ticks int64) bool {
+	return validCopiedHLSTimeBase(timeline) && ticks >= -(1<<52) && ticks <= 1<<52 &&
+		timeline.Numerator <= 1<<31 && timeline.Denominator <= 1<<31
 }
 
 func copiedAACSegmentArguments(arguments []string, timeline *copiedHLSTimeline, number int) []string {

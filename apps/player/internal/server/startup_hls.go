@@ -102,7 +102,7 @@ func (manager *hlsManager) waitStartupWindow(ctx context.Context, item library.I
 		if preparation.adopted.Load() {
 			return "adopted"
 		}
-		if manager.startupWindowReady(item, recipe, ctx) {
+		if manager.startupWindowReady(ctx, item, recipe) {
 			return "ready"
 		}
 		if err := manager.fillStartupWindow(ctx, item, recipe); err != nil {

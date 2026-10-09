@@ -5,8 +5,10 @@ import (
 	"strings"
 )
 
-const maximumCopiedAACMicros int64 = 7 * 24 * 60 * 60 * 1_000_000
-const maximumCopiedAACTicks int64 = 7 * 24 * 60 * 60 * 48000
+const (
+	maximumCopiedAACMicros int64 = 7 * 24 * 60 * 60 * 1_000_000
+	maximumCopiedAACTicks  int64 = 7 * 24 * 60 * 60 * 48000
+)
 
 // Generated proof is separate from the retained source eligibility decision.
 type copiedHLSAudioOrigin struct {
@@ -45,29 +47,41 @@ func copiedAACRescale(micros int64) (int64, error) {
 
 func copiedHLSAudioWitness(source []copiedHLSAudioPacket, edited, raw copiedHLSAudioPacket, seekMicros int64) (*copiedHLSAudioOrigin, error) {
 	seek, err := copiedAACRescale(seekMicros)
-	if err != nil || len(source) == 0 || len(source) > 128 || !validCopiedAACPacket(edited) ||
-		!validCopiedAACPacket(raw) || raw.PTS != 0 || raw.Hash != edited.Hash {
+	if err != nil || !validCopiedAACWitnessInput(source, edited, raw) {
 		return nil, errCopiedHLSIndex
 	}
 	edit := raw.PTS - edited.PTS
 	if edit < 0 || edit > 48000 || raw.DTS-edited.DTS != edit {
 		return nil, errCopiedHLSIndex
 	}
+	first, err := copiedAACUniqueSourcePacket(source, raw.Hash)
+	if err != nil || first.PTS+edit != seek {
+		return nil, errCopiedHLSIndex
+	}
+	return &copiedHLSAudioOrigin{InitialSeekMicros: seekMicros, FirstPTS: first.PTS, FirstHash: first.Hash, Physical: -first.PTS, Edit: edit}, nil
+}
+
+func validCopiedAACWitnessInput(source []copiedHLSAudioPacket, edited, raw copiedHLSAudioPacket) bool {
+	return len(source) > 0 && len(source) <= 128 && validCopiedAACPacket(edited) &&
+		validCopiedAACPacket(raw) && raw.PTS == 0 && raw.Hash == edited.Hash
+}
+
+func copiedAACUniqueSourcePacket(source []copiedHLSAudioPacket, hash string) (copiedHLSAudioPacket, error) {
 	var first copiedHLSAudioPacket
 	matches := 0
 	for _, packet := range source {
 		if !validCopiedAACPacket(packet) {
-			return nil, errCopiedHLSIndex
+			return first, errCopiedHLSIndex
 		}
-		if packet.Hash == raw.Hash {
+		if packet.Hash == hash {
 			first = packet
 			matches++
 		}
 	}
-	if matches != 1 || first.PTS+edit != seek {
-		return nil, errCopiedHLSIndex
+	if matches != 1 {
+		return first, errCopiedHLSIndex
 	}
-	return &copiedHLSAudioOrigin{InitialSeekMicros: seekMicros, FirstPTS: first.PTS, FirstHash: first.Hash, Physical: -first.PTS, Edit: edit}, nil
+	return first, nil
 }
 
 func copiedHLSAudioShift(physical, seekMicros, muxMicros int64) (int64, error) {
@@ -95,11 +109,7 @@ func validCopiedAACOrigin(timeline *copiedHLSTimeline) bool {
 	if origin == nil {
 		return !copiedAACPolicyRequired(timeline.Policy)
 	}
-	if timeline.Presentation != nil || timeline.Strategy != "h264-idr-keys-1" || !strings.HasSuffix(timeline.Policy, ":copied-aac=2") ||
-		origin.SourceTrack < 0 || origin.SourceTrack > 255 || origin.InitialSeekMicros < 0 || origin.InitialSeekMicros > maximumCopiedAACMicros {
-		return false
-	}
-	if len(timeline.Keys) == 0 {
+	if !validCopiedAACOriginEnvelope(timeline, origin) || len(timeline.Keys) == 0 {
 		return false
 	}
 	initial, err := copiedAACKeyMicros(timeline, timeline.Keys[0].PTS)
@@ -110,7 +120,15 @@ func validCopiedAACOrigin(timeline *copiedHLSTimeline) bool {
 		return origin.FirstHash == "" && origin.FirstPTS == 0 && origin.Physical == 0 && origin.Edit == 0
 	}
 	seek, err := copiedAACRescale(origin.InitialSeekMicros)
-	return err == nil && *timeline.Clock == 0 && validCopiedAACHash(origin.FirstHash) && origin.FirstPTS >= -48000 &&
-		origin.FirstPTS <= maximumCopiedAACTicks && origin.Physical == -origin.FirstPTS &&
-		origin.Edit >= 0 && origin.Edit <= 48000 && origin.FirstPTS+origin.Edit == seek
+	return err == nil && *timeline.Clock == 0 && validCopiedAACMeasuredOrigin(origin, seek)
+}
+
+func validCopiedAACOriginEnvelope(timeline *copiedHLSTimeline, origin *copiedHLSAudioOrigin) bool {
+	return timeline.Presentation == nil && timeline.Strategy == "h264-idr-keys-1" && strings.HasSuffix(timeline.Policy, ":copied-aac=2") &&
+		origin.SourceTrack >= 0 && origin.SourceTrack <= 255 && origin.InitialSeekMicros >= 0 && origin.InitialSeekMicros <= maximumCopiedAACMicros
+}
+
+func validCopiedAACMeasuredOrigin(origin *copiedHLSAudioOrigin, seek int64) bool {
+	return validCopiedAACHash(origin.FirstHash) && origin.FirstPTS >= -48000 && origin.FirstPTS <= maximumCopiedAACTicks &&
+		origin.Physical == -origin.FirstPTS && origin.Edit >= 0 && origin.Edit <= 48000 && origin.FirstPTS+origin.Edit == seek
 }

@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
@@ -17,49 +18,14 @@ func TestCopiedAACPolicyBindsSharedSourcePublication(t *testing.T) {
 	if runtime.GOOS != "linux" {
 		t.Skip("selected source inode policy is Linux-only")
 	}
-	manager, item, _, _ := hlsLoadingFixture(t)
-	recipe := hlsRecipe{mode: "remux"}
-	base, err := manager.baseHLSSettings(item, recipe)
-	if err != nil {
-		t.Fatal(err)
-	}
-	info, err := os.Stat(item.Path)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := manager.recordCopiedAACPolicy(hlsRecipeKey(item.ID, recipe), base.Cache, info, true, 1); err != nil {
-		t.Fatal(err)
-	}
-	options, err := manager.hlsSettings(item, recipe)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := playback.ValidateHLSSource(item.Path, options.Cache); err != nil {
-		t.Fatal("selected AAC policy cannot pass the shared source validator")
-	}
-	directory := t.TempDir()
-	if err := playback.BindHLSSource(directory, item.Path, options.Cache); err != nil {
-		t.Fatal("selected AAC policy cannot bind actual cache publication")
-	}
+	item, info, base, options, directory, binding := copiedAACSharedPublication(t)
 	bindingPath := filepath.Join(directory, ".source")
-	binding, err := os.ReadFile(bindingPath)
-	if err != nil || string(binding) != options.Cache {
-		t.Fatal("publication lost the full selected policy")
-	}
 	master := filepath.Join(directory, "index.m3u8")
 	writeHLSLoadingFile(t, master, "#EXTM3U\n#KINOSAIL-TRANSCODER:"+options.Cache+"\n#EXT-X-STREAM-INF:BANDWIDTH=1\n360p/index.m3u8\n")
 	if !playback.MasterFresh(master, item.Path, options.Cache) || playback.MasterFresh(master, item.Path, base.Cache) {
 		t.Fatal("master lost exact full-policy identity")
 	}
-	if err := os.Rename(bindingPath, bindingPath+"-held"); err != nil {
-		t.Fatal(err)
-	}
-	if playback.MasterFresh(master, item.Path, options.Cache) {
-		t.Fatal("missing P2 source binding acquired legacy freshness")
-	}
-	if err := os.Rename(bindingPath+"-held", bindingPath); err != nil {
-		t.Fatal(err)
-	}
+	copiedAACMissingBindingFreshness(t, master, bindingPath, item.Path, options.Cache)
 	if err := playback.BindHLSSource(directory, item.Path, base.Cache); err == nil {
 		t.Fatal("different full binding replaced Version2 policy")
 	}
@@ -67,18 +33,7 @@ func TestCopiedAACPolicyBindsSharedSourcePublication(t *testing.T) {
 	if err != nil || string(after) != string(binding) {
 		t.Fatal("rejected binding changed preserved metadata")
 	}
-	replacement := item.Path + "-replacement"
-	content, err := os.ReadFile(item.Path)
-	if err != nil {
-		t.Fatal(err)
-	}
-	writeHLSLoadingFile(t, replacement, string(content))
-	if err := os.Chtimes(replacement, info.ModTime(), info.ModTime()); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.Rename(replacement, item.Path); err != nil {
-		t.Fatal(err)
-	}
+	copiedAACEqualStatReplacement(t, item.Path, info)
 	if err := playback.ValidateHLSSource(item.Path, options.Cache); !errors.Is(err, playback.ErrHLSSourceChanged) {
 		t.Fatal("equal-stat inode replacement retained selected source identity")
 	}
@@ -155,5 +110,52 @@ func TestCopiedAACSourcePolicyKeepsLegacyVersionsAndStampChecks(t *testing.T) {
 	writeHLSLoadingFile(t, item.Path, string(content)+"changed")
 	if err := playback.ValidateHLSSource(item.Path, base.Cache); !errors.Is(err, playback.ErrHLSSourceChanged) {
 		t.Fatal("changed source stamp bypassed existing source validation")
+	}
+}
+
+func copiedAACSharedPublication(t *testing.T) (library.Item, os.FileInfo, transcodeSettings, transcodeSettings, string, []byte) {
+	t.Helper()
+	manager, item, _, _ := hlsLoadingFixture(t)
+	recipe := hlsRecipe{mode: "remux"}
+	base, err := manager.baseHLSSettings(item, recipe)
+	if err != nil {
+		t.Fatal(err)
+	}
+	info, err := os.Stat(item.Path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := manager.recordCopiedAACPolicy(hlsRecipeKey(item.ID, recipe), base.Cache, info, true, 1); err != nil {
+		t.Fatal(err)
+	}
+	options, err := manager.hlsSettings(item, recipe)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := playback.ValidateHLSSource(item.Path, options.Cache); err != nil {
+		t.Fatal("selected AAC policy cannot pass the shared source validator")
+	}
+	directory := t.TempDir()
+	if err := playback.BindHLSSource(directory, item.Path, options.Cache); err != nil {
+		t.Fatal("selected AAC policy cannot bind actual cache publication")
+	}
+	bindingPath := filepath.Join(directory, ".source")
+	binding, err := os.ReadFile(bindingPath)
+	if err != nil || string(binding) != options.Cache {
+		t.Fatal("publication lost the full selected policy")
+	}
+	return item, info, base, options, directory, binding
+}
+
+func copiedAACMissingBindingFreshness(t *testing.T, master, bindingPath, source, policy string) {
+	t.Helper()
+	if err := os.Rename(bindingPath, bindingPath+"-held"); err != nil {
+		t.Fatal(err)
+	}
+	if playback.MasterFresh(master, source, policy) {
+		t.Fatal("missing P2 source binding acquired legacy freshness")
+	}
+	if err := os.Rename(bindingPath+"-held", bindingPath); err != nil {
+		t.Fatal(err)
 	}
 }

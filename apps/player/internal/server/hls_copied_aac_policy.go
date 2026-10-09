@@ -26,8 +26,7 @@ func (manager *hlsManager) copiedAACPolicy(key, base string, source os.FileInfo)
 }
 
 func (manager *hlsManager) recordCopiedAACPolicy(key, base string, source os.FileInfo, selected bool, track int) error {
-	if key == "" || len(key) > 1024 || base == "" || len(base) > 4096 || source == nil || !source.Mode().IsRegular() ||
-		source.Size() <= 0 || selected && (track < 0 || track > 255) {
+	if !validCopiedAACPolicyInput(key, base, source, selected, track) {
 		return errCopiedHLSIndex
 	}
 	metadata := &manager.copiedMetadata
@@ -61,7 +60,7 @@ func (manager *hlsManager) copiedAACSettings(item library.Item, recipe hlsRecipe
 		return transcodeSettings{}, errHLSIdentityChanged
 	}
 	if selected {
-		if !found || !previous.selected || previous.base != options.Cache || !sameCopiedHLSFile(previous.source, source) {
+		if !currentCopiedAACPolicy(previous, found, options.Cache, source) {
 			return transcodeSettings{}, errHLSIdentityChanged
 		}
 		token, err := copiedAACSourceToken(previous.source)
@@ -88,4 +87,18 @@ func copiedAACBasePolicy(policy string) string {
 		}
 	}
 	return policy
+}
+
+func validCopiedAACPolicyInput(key, base string, source os.FileInfo, selected bool, track int) bool {
+	if key == "" || len(key) > 1024 || base == "" || len(base) > 4096 {
+		return false
+	}
+	if source == nil || !source.Mode().IsRegular() || source.Size() <= 0 {
+		return false
+	}
+	return !selected || track >= 0 && track <= 255
+}
+
+func currentCopiedAACPolicy(previous copiedAACPolicyDecision, found bool, base string, source os.FileInfo) bool {
+	return found && previous.selected && previous.base == base && sameCopiedHLSFile(previous.source, source)
 }

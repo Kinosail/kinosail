@@ -52,33 +52,55 @@ func (manager *hlsManager) openCopiedAACGeneration(parent context.Context, item 
 		return nil, err
 	}
 	value := &copiedAACGeneration{manager: manager, ctx: ctx, item: item, recipe: recipe, directory: directory, policy: options.Cache, release: release}
-	value.root, err = manager.openCopiedHLSRoot(directory)
-	if err == nil {
-		value.timeline, err = manager.readCopiedHLSTimelineRoot(ctx, directory, options.Cache, value.root)
-	}
-	if err != nil || value.timeline.Clock == nil || value.timeline.AudioOrigin == nil {
+	if err := value.open(ctx); err != nil {
 		value.close()
 		return nil, errCopiedHLSIndex
 	}
+	return value, nil
+}
+
+func (value *copiedAACGeneration) open(ctx context.Context) error {
+	if err := value.openTimeline(ctx); err != nil {
+		return err
+	}
+	if err := value.openCertificate(); err != nil {
+		return err
+	}
+	var err error
+	value.media, err = value.root.OpenRoot(value.certificate.Rendition)
+	if err != nil || verifyCopiedHLSRenditionAssets(ctx, value.media, value.certificate) != nil ||
+		verifyCopiedAACAssets(ctx, value.media, value.timeline) != nil || !value.current() {
+		return errCopiedHLSIndex
+	}
+	return nil
+}
+
+func (value *copiedAACGeneration) openTimeline(ctx context.Context) error {
+	var err error
+	value.root, err = value.manager.openCopiedHLSRoot(value.directory)
+	if err == nil {
+		value.timeline, err = value.manager.readCopiedHLSTimelineRoot(ctx, value.directory, value.policy, value.root)
+	}
+	if err != nil || value.timeline.Clock == nil || value.timeline.AudioOrigin == nil {
+		return errCopiedHLSIndex
+	}
+	return nil
+}
+
+func (value *copiedAACGeneration) openCertificate() error {
+	var err error
 	value.timelineData, err = copiedHLSCacheFile(value.root, ".copy-timeline", maximumCopiedHLSTimelineBytes)
 	if err == nil {
 		value.certificateData, err = copiedHLSCacheFile(value.root, ".copy-clock", 4096)
 	}
 	if err != nil {
-		value.close()
-		return nil, errCopiedHLSIndex
+		return errCopiedHLSIndex
 	}
 	value.certificate, err = decodeCopiedHLSCertificate(value.certificateData, value.timelineData)
 	if err != nil || value.certificate.Version != 2 {
-		value.close()
-		return nil, errCopiedHLSIndex
+		return errCopiedHLSIndex
 	}
-	value.media, err = value.root.OpenRoot(value.certificate.Rendition)
-	if err != nil || verifyCopiedHLSRenditionAssets(ctx, value.media, value.certificate) != nil || verifyCopiedAACAssets(ctx, value.media, value.timeline) != nil || !value.current() {
-		value.close()
-		return nil, errCopiedHLSIndex
-	}
-	return value, nil
+	return nil
 }
 
 func (value *copiedAACGeneration) current() bool {
@@ -151,18 +173,10 @@ func (manager *hlsManager) serveCopiedAACFile(writer http.ResponseWriter, reques
 		return true
 	}
 	defer file.Close()
-	var content io.ReadSeeker = io.NewSectionReader(file, 0, info.Size())
-	if filepath.Base(name) == "init.mp4" || filepath.Base(name) == "segment-00000.m4s" {
-		limit, expected := int64(64<<20), value.certificate.First
-		if filepath.Base(name) == "init.mp4" {
-			limit, expected = 2<<20, value.certificate.Initialization
-		}
-		data, readErr := io.ReadAll(io.LimitReader(file, limit+1))
-		if readErr != nil || int64(len(data)) != info.Size() || int64(len(data)) > limit || sha256.Sum256(data) != expected {
-			localizedNotFound(writer, request)
-			return true
-		}
-		content = bytes.NewReader(data)
+	content, err := value.assetContent(file, info, filepath.Base(name))
+	if err != nil {
+		localizedNotFound(writer, request)
+		return true
 	}
 	after, statErr := value.media.Lstat(filepath.Base(name))
 	if statErr != nil || !sameCopiedHLSFile(info, after) || !value.current() {
@@ -175,4 +189,19 @@ func (manager *hlsManager) serveCopiedAACFile(writer http.ResponseWriter, reques
 	value.release = nil // The metadata/probe lease ends before network transfer.
 	http.ServeContent(writer, request, filepath.Base(name), info.ModTime(), content)
 	return true
+}
+
+func (value *copiedAACGeneration) assetContent(file *os.File, info os.FileInfo, name string) (io.ReadSeeker, error) {
+	if name != "init.mp4" && name != "segment-00000.m4s" {
+		return io.NewSectionReader(file, 0, info.Size()), nil
+	}
+	limit, expected := int64(64<<20), value.certificate.First
+	if name == "init.mp4" {
+		limit, expected = 2<<20, value.certificate.Initialization
+	}
+	data, err := io.ReadAll(io.LimitReader(file, limit+1))
+	if err != nil || int64(len(data)) != info.Size() || int64(len(data)) > limit || sha256.Sum256(data) != expected {
+		return nil, errCopiedHLSIndex
+	}
+	return bytes.NewReader(data), nil
 }
