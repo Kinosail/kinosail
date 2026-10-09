@@ -124,13 +124,7 @@ func remainingNonKeyCollectorRejects(t *testing.T, ctx context.Context, manager 
 // from an inferred source ordinal. This does not certify production BMFF parsing.
 func remainingNonKeyCollectorPrivateAudio(t *testing.T, ctx context.Context, ffmpeg, ffprobe, source string, offset float64) ([32]byte, int64) {
 	t.Helper()
-	directory := t.TempDir()
-	remainingNonKeyCollectorCommand(t, ctx, ffmpeg, "-nostdin", "-v", "error", "-y", "-ss", fmt.Sprint(offset),
-		"-i", source, "-map", "0:v:0", "-map", "0:a:0?", "-sn", "-c", "copy", "-avoid_negative_ts", "disabled",
-		"-f", "hls", "-hls_time", "2", "-hls_playlist_type", "event", "-hls_segment_type", "fmp4",
-		"-hls_segment_options", "movflags=+skip_sidx:avoid_negative_ts=disabled",
-		"-hls_flags", "temp_file", "-hls_fmp4_init_filename", "init.mp4",
-		"-hls_segment_filename", filepath.Join(directory, "segment-%05d.m4s"), filepath.Join(directory, "index.m3u8"))
+	directory := remainingNonKeyCollectorGeneratePrivate(t, ctx, ffmpeg, source, offset)
 	initialization := remainingNonKeyCollectorRead(t, filepath.Join(directory, "init.mp4"), 2<<20)
 	fragment := remainingNonKeyCollectorRead(t, filepath.Join(directory, "segment-00000.m4s"), 8<<20)
 	joined := filepath.Join(directory, "private-first.mp4")
@@ -155,6 +149,18 @@ func remainingNonKeyCollectorPrivateAudio(t *testing.T, ctx context.Context, ffm
 	t.Logf("nonkey actual-clock-input container=%s offset=%.1f source_sha=%x private_init_sha=%x private_first_sha=%x first_aac_sha=%x original_edit=%d",
 		filepath.Ext(source), offset, remainingNonKeyCollectorHash(t, source), sha256.Sum256(initialization), sha256.Sum256(fragment), first, original)
 	return first, original
+}
+
+func remainingNonKeyCollectorGeneratePrivate(t *testing.T, ctx context.Context, ffmpeg, source string, offset float64) string {
+	t.Helper()
+	directory := t.TempDir()
+	remainingNonKeyCollectorCommand(t, ctx, ffmpeg, "-nostdin", "-v", "error", "-y", "-ss", fmt.Sprint(offset),
+		"-i", source, "-map", "0:v:0", "-map", "0:a:0?", "-sn", "-c", "copy", "-avoid_negative_ts", "disabled",
+		"-f", "hls", "-hls_time", "2", "-hls_playlist_type", "event", "-hls_segment_type", "fmp4",
+		"-hls_segment_options", "movflags=+skip_sidx:avoid_negative_ts=disabled",
+		"-hls_flags", "temp_file", "-hls_fmp4_init_filename", "init.mp4",
+		"-hls_segment_filename", filepath.Join(directory, "segment-%05d.m4s"), filepath.Join(directory, "index.m3u8"))
+	return directory
 }
 
 func remainingNonKeyCollectorSources(t *testing.T, ctx context.Context, ffmpeg string) []string {
