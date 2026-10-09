@@ -92,3 +92,19 @@ func remainingNonKeyPrivateAudioRejects(t *testing.T, ctx context.Context, initi
 		t.Fatal("nonkey canceled private AAC acquisition acquired identity")
 	}
 }
+
+func TestRemainingNonKeyPrivateAudioInputBounds(t *testing.T) {
+	for _, name := range []string{"init-byte-limit", "fragment-byte-limit"} {
+		t.Run(name, func(t *testing.T) {
+			initialization, fragment := []byte{1}, []byte{1}
+			if name == "init-byte-limit" {
+				initialization = make([]byte, (2<<20)+1)
+			} else {
+				fragment = make([]byte, (64<<20)+1)
+			}
+			if facts, err := parseCopiedHLSPrivateAudio(t.Context(), initialization, fragment); err == nil || facts != nil {
+				t.Fatal("nonkey oversized private AAC input acquired identity")
+			}
+		})
+	}
+}
