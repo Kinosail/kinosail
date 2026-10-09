@@ -179,37 +179,36 @@ def media_evidence(source_frames, media, directory, timeline, number, row):
     row['result'] = 'observed' if row['exactInitSHA256'] and row['exactBaselinePackets'] and row['exactSourceFrames'] and (number != 0 or row['exactFragmentSHA256']) else 'failed'
 
 
-def prove(binary, source, media, rows, timeline, run, guard, receipt, cli_owners):
+def prove(binary, source, media, rows, timeline, run, guard, receipt, cli_owners, retained):
     _, source_frames = decode_frames(source)
     check(len(source_frames) == 768, 'v1_stage_independent_complete_source')
     before = source_state(source)
-    with source.open('rb') as retained:
-        witness = os.fstat(retained.fileno())
-        check(stat.S_ISREG(witness.st_mode) and identity(witness) == identity(source.stat()),
-            'v1_stage_retained_source_identity')
-        for number in [0, 4, 9]:
-            row = {'cut': number, 'result': 'failed', 'serverWorkerProof': False}
-            receipt['cases'].append(row)
-            directory = run / ('stage-' + str(number))
-            directory.mkdir()
-            try:
-                original = template(rows, 0 if number == 0 else 4, source)
-                row['originalTemplateSHA256'] = hashlib.sha256(repr(original).encode()).hexdigest()
-                args = arguments(rows, source, retained, directory, timeline, number)
-                row['numericArguments'] = {'inputSeekSeconds': float(option(args, '-ss')),
-                    'startNumber': int(option(args, '-start_number')),
-                    'durationSeconds': float(option(args, '-t')),
-                    'muxOffsetSeconds': float(option(args, '-output_ts_offset') or '0')}
-                row['oldProfileTemplateCut'] = 0 if number == 0 else 4
-                row['executedArgumentsSHA256'] = hashlib.sha256(repr(args).encode()).hexdigest()
-                row['sourceFDInputWitnessed'] = identity(os.stat(option(args, '-i'))) == identity(witness)
-                check(row['sourceFDInputWitnessed'], 'v1_stage_input_fd_mismatch')
-                execute(binary, args, directory, number, guard, row, cli_owners)
-                media_evidence(source_frames, media, directory, timeline, number, row)
-            except Exception as error:
-                row.setdefault('failureClass', str(error) if isinstance(error, RuntimeError) else type(error).__name__)
-                check(not cli_owners,
-                    'v1_stage_unknown_owned_command')
-            check(identity(os.fstat(retained.fileno())) == identity(witness)
-                and identity(source.stat()) == identity(witness) and source_state(source) == before,
-                'v1_stage_source_changed')
+    witness = os.fstat(retained.fileno())
+    check(stat.S_ISREG(witness.st_mode) and identity(witness) == identity(source.stat()),
+        'v1_stage_retained_source_identity')
+    for number in [0, 4, 9]:
+        row = {'cut': number, 'result': 'failed', 'serverWorkerProof': False}
+        receipt['cases'].append(row)
+        directory = run / ('stage-' + str(number))
+        directory.mkdir()
+        try:
+            original = template(rows, 0 if number == 0 else 4, source)
+            row['originalTemplateSHA256'] = hashlib.sha256(repr(original).encode()).hexdigest()
+            args = arguments(rows, source, retained, directory, timeline, number)
+            row['numericArguments'] = {'inputSeekSeconds': float(option(args, '-ss')),
+                'startNumber': int(option(args, '-start_number')),
+                'durationSeconds': float(option(args, '-t')),
+                'muxOffsetSeconds': float(option(args, '-output_ts_offset') or '0')}
+            row['oldProfileTemplateCut'] = 0 if number == 0 else 4
+            row['executedArgumentsSHA256'] = hashlib.sha256(repr(args).encode()).hexdigest()
+            row['sourceFDInputWitnessed'] = identity(os.stat(option(args, '-i'))) == identity(witness)
+            check(row['sourceFDInputWitnessed'], 'v1_stage_input_fd_mismatch')
+            execute(binary, args, directory, number, guard, row, cli_owners)
+            media_evidence(source_frames, media, directory, timeline, number, row)
+        except Exception as error:
+            row.setdefault('failureClass', str(error) if isinstance(error, RuntimeError) else type(error).__name__)
+            check(not cli_owners,
+                'v1_stage_unknown_owned_command')
+        check(identity(os.fstat(retained.fileno())) == identity(witness)
+            and identity(source.stat()) == identity(witness) and source_state(source) == before,
+            'v1_stage_source_changed')

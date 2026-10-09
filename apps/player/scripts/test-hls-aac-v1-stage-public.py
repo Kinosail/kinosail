@@ -2,6 +2,7 @@
 """Three private V1 stage arms against an actual complete baseline cache."""
 import hashlib
 import json
+import os
 from pathlib import Path
 import platform
 import shutil
@@ -33,7 +34,7 @@ receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], tex
     'remainingBoundaries': ['Server worker and GET hydration', 'observer FD accounting',
         'source/root/owner replacement and P2 migration races', 'historical Version1 AAC failures',
         'deleted-zero baseline remains unqualified', 'all50 and fourteen scanner holds']}
-owners, cli_owners, source, before, complete, seal = [], [], None, None, None, None
+owners, cli_owners, source, before, complete, seal, retained_source = [], [], None, None, None, None, None
 guard = DiagnosticDeadline(900)
 guard.__enter__()
 
@@ -46,7 +47,7 @@ def run(command, timeout=60):
 
 
 try:
-    check(sys.platform == 'linux' and hasattr(__import__('os'), 'WNOWAIT'), 'v1_stage_linux_waitid_required')
+    check(sys.platform == 'linux' and hasattr(os, 'WNOWAIT'), 'v1_stage_linux_waitid_required')
     check(shutil.disk_usage(RUN).free >= 2 << 30, 'v1_stage_hosted_disk_budget')
     regular, _ = fixture(RUN, 'regular', 48, ','.join(str(v) for v in range(0, 32, 2)), frames=768)
     media = RUN / 'media'
@@ -74,8 +75,9 @@ try:
         'v1_stage_complete_baseline_certificate')
     seal = snapshot(complete)
     receipt['completeCacheSealBeforeSHA256'] = hashlib.sha256(json.dumps(seal, sort_keys=True).encode()).hexdigest()
+    retained_source = source.open('rb')
     prove(shutil.which('ffmpeg'), source, directory / '360p', owners[-1].source_invocation_rows(),
-        timeline, RUN, guard, receipt, cli_owners)
+        timeline, RUN, guard, receipt, cli_owners, retained_source)
     if len(receipt['cases']) == 3 and all(row['result'] == 'observed' for row in receipt['cases']):
         receipt.update(result='observed', stageFeasibilityAcceptance=True)
 except Exception as error:
@@ -90,6 +92,9 @@ finally:
                 row['cleanupFailureClass'] = 'v1_stage_final_cli_join_failed'
                 receipt.update(result='failed', cleanupFailureClass='v1_stage_final_cli_join_failed')
         receipt['unresolvedCLIOwners'] = len(cli_owners)
+        if retained_source is not None and not cli_owners:
+            retained_source.close()
+        receipt['retainedSourceClosedAfterJoinedCLI'] = retained_source.closed if retained_source is not None else None
         receipt['ownedServerEvidence'] = []
         for owner in owners:
             try:
@@ -132,6 +137,7 @@ finally:
             'sourceUnchanged': receipt.get('sourceUnchanged'), 'ownedServerEvidence': receipt['ownedServerEvidence'],
             'cleanupFailureClass': receipt.get('cleanupFailureClass'),
             'unresolvedCLIOwners': receipt['unresolvedCLIOwners'],
+            'retainedSourceClosedAfterJoinedCLI': receipt['retainedSourceClosedAfterJoinedCLI'],
             'sourceGuardFailureClass': receipt.get('sourceGuardFailureClass'),
             'cacheGuardFailureClass': receipt.get('cacheGuardFailureClass'),
             'stageFeasibilityAcceptance': receipt['stageFeasibilityAcceptance'],
